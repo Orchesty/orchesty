@@ -14,6 +14,6 @@ class TransportException extends PipesFrameworkException
 
     protected const OFFSET = 600;
 
-    public const SEND_FAILED = self::OFFSET;
+    public const SEND_FAILED = self::OFFSET + 1;
 
 }
