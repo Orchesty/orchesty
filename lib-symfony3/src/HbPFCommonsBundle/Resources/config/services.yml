@@ -1,0 +1,18 @@
+services:
+    hbpf.custom_route_manager:
+        class: Hanaboso\PipesFramework\Commons\CustomRoute\CustomRouteManager
+        arguments:
+
+    hbpf.node_repository:
+        class: Hanaboso\PipesFramework\Commons\Node\NodeRepository
+        arguments:
+          - '@service_container'
+
+    hbpf.authorization_repository:
+        class: Hanaboso\PipesFramework\Commons\Authorization\AuthorizationRepository
+        arguments:
+          - '@service_container'
+
+    hbpf.source_service:
+        class: Hanaboso\PipesFramework\Commons\Source\SourceService
+        arguments:

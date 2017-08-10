@@ -1,0 +1,28 @@
+stages:
+  - stage1
+  - cleanup
+
+full-test:
+  stage: stage1
+  script:
+    - make docker-up-force
+    - make composer-install
+    - make test
+
+build-dev-image:
+  stage: stage1
+  script:
+    - cd docker/php-dev
+    - IMAGE=dkr.hanaboso.net/pipes/lib-symfony3/php-dev:${CI_BUILD_REF_NAME}
+    - docker pull dkr.hanaboso.net/hanaboso/symfony3-base:latest
+    - docker build -t ${IMAGE} .
+    - docker push ${IMAGE}
+  only:
+    - master
+    - php-dev
+
+cleanup:
+  stage: cleanup
+  when: always
+  script:
+    - make docker-down-clean

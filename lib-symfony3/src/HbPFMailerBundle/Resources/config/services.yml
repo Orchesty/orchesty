@@ -1,0 +1,3 @@
+services:
+  hbpf.mailer.handler.generic:
+      class: Hanaboso\PipesFramework\Mailer\MessageHandler\Impl\GenericMessageHandler

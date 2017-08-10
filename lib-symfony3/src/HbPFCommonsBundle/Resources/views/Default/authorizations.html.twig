@@ -1,0 +1,32 @@
+<html>
+<head>
+    <title>HANABOSO PIPES FRAMEWORK - Authorizations</title>
+</head>
+<body>
+<h1>HANABOSO PIPES FRAMEWORK</h1>
+<h2>Authorizations</h2>
+<hr>
+<table>
+    <thead>
+    <tr>
+        <th>Id</th>
+        <th>Caption</th>
+        <th>Ready</th>
+        <th>Filled</th>
+        <th>Need create access</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for authorization in authorizations %}
+        <tr>
+            <td>{{ authorization.getID() }}</td>
+            <td>{{ authorization.getCaption() }}</td>
+            <td>{{ authorization.isReady() ? 'YES' : 'NO' }}</td>
+            <td>{{ authorization.isFilled() ? 'YES' : 'NO' }}</td>
+            <td>{{ authorization.needCreateAccess() ? 'YES' : 'NO' }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+</body>
+</html>
