@@ -2,16 +2,18 @@
 
 namespace Hanaboso\PipesFramework\Mailer\MessageHandler;
 
-use RuntimeException;
+use Hanaboso\PipesFramework\Commons\Exception\PipesFrameworkException;
 
 /**
  * Class MessageHandlerException
  *
  * @package Hanaboso\PipesFramework\Mailer\MessageHandler
  */
-class MessageHandlerException extends RuntimeException
+class MessageHandlerException extends PipesFrameworkException
 {
 
-    public const INVALID_DATA = 1;
+    protected const OFFSET = 500;
+
+    public const INVALID_DATA = self::OFFSET + 1;
 
 }

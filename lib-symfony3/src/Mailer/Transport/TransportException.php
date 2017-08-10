@@ -2,16 +2,18 @@
 
 namespace Hanaboso\PipesFramework\Mailer\Transport;
 
-use RuntimeException;
+use Hanaboso\PipesFramework\Commons\Exception\PipesFrameworkException;
 
 /**
  * Class TransportException
  *
  * @package Hanaboso\PipesFramework\Mailer\Transport
  */
-class TransportException extends RuntimeException
+class TransportException extends PipesFrameworkException
 {
 
-    public const SEND_FAILED = 1;
+    protected const OFFSET = 600;
+
+    public const SEND_FAILED = self::OFFSET;
 
 }

@@ -9,14 +9,17 @@
 
 namespace Hanaboso\PipesFramework\Commons\Authorization\Exception;
 
-use Exception;
+use Hanaboso\PipesFramework\Commons\Exception\PipesFrameworkException;
+
 
 /**
  * Class AuthorizationException
  */
-final class AuthorizationException extends Exception
+final class AuthorizationException extends PipesFrameworkException
 {
 
-    public const TOKEN_NOT_FOUND = 1;
+    protected const OFFSET = 200;
+
+    public const TOKEN_NOT_FOUND = self::OFFSET + 1;
 
 }

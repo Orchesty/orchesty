@@ -2,16 +2,18 @@
 
 namespace Hanaboso\PipesFramework\Parser;
 
-use LogicException;
+use Hanaboso\PipesFramework\Commons\Exception\PipesFrameworkException;
 
 /**
  * Class TableParserException
  *
  * @package Hanaboso\PipesFramework\Parser
  */
-final class TableParserException extends LogicException
+final class TableParserException extends PipesFrameworkException
 {
 
-    public const UNKNOWN_WRITER_TYPE = 1;
+    protected const OFFSET = 800;
+
+    public const UNKNOWN_WRITER_TYPE = self::OFFSET + 1;
 
 }

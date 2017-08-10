@@ -9,22 +9,22 @@
 
 namespace Hanaboso\PipesFramework\Commons\ServiceStorage;
 
-use Hanaboso\PipesFramework\Commons\Exception\PipeFrameworkException;
+use Hanaboso\PipesFramework\Commons\Exception\PipesFrameworkException;
 
 /**
  * Class ServiceStorageException
  *
  * @package Hanaboso\PipesFramework\Commons\ServiceStorage
  */
-class ServiceStorageException extends PipeFrameworkException
+class ServiceStorageException extends PipesFrameworkException
 {
 
-    public const SERVICE_STORAGE_OFFSET = 0x0100;
+    protected const OFFSET = 100;
 
-    public const MISSING_OR_INVALID_CONFIGURATION = self::SERVICE_STORAGE_OFFSET + 0x01;
-    public const FAILED_LOAD_DATA                 = self::SERVICE_STORAGE_OFFSET + 0x02;
-    public const FAILED_SAVE_DATA                 = self::SERVICE_STORAGE_OFFSET + 0x03;
-    public const INVALID_STATE                    = self::SERVICE_STORAGE_OFFSET + 0x04;
-    public const DATA_TYPE_NOT_AVAILABLE          = self::SERVICE_STORAGE_OFFSET + 0x05;
+    public const MISSING_OR_INVALID_CONFIGURATION = self::OFFSET + 1;
+    public const FAILED_LOAD_DATA                 = self::OFFSET + 2;
+    public const FAILED_SAVE_DATA                 = self::OFFSET + 3;
+    public const INVALID_STATE                    = self::OFFSET + 4;
+    public const DATA_TYPE_NOT_AVAILABLE          = self::OFFSET + 5;
 
 }
