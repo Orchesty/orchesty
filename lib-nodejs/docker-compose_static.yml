@@ -1,0 +1,77 @@
+---
+version: "2"
+services:
+  services:
+    image: node:alpine
+    volumes:
+      - .:/usr/src/app
+    working_dir: "/usr/src/app"
+    command: /usr/src/app/bin/pipes start services
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
+      - RABBITMQ_USER=guest
+      - RABBITMQ_PASS=guest
+      - RABBITMQ_VHOST=/
+    ports:
+      - 8007:8007
+    depends_on:
+      - rabbitmq
+      - node_1
+      - node_2
+      - node_3
+  node_1:
+    image: node:alpine
+    volumes:
+      - .:/usr/src/app
+    working_dir: "/usr/src/app"
+    command: /usr/src/app/bin/pipes start node --id node_1
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
+      - RABBITMQ_USER=guest
+      - RABBITMQ_PASS=guest
+      - RABBITMQ_VHOST=/
+    ports:
+      - 8008:8007
+      - 3333:3333
+    depends_on:
+      - rabbitmq
+  node_2:
+    image: node:alpine
+    volumes:
+    - .:/usr/src/app
+    working_dir: "/usr/src/app"
+    command: /usr/src/app/bin/pipes start node --id node_2
+    environment:
+    - RABBITMQ_HOST=rabbitmq
+    - RABBITMQ_PORT=5672
+    - RABBITMQ_USER=guest
+    - RABBITMQ_PASS=guest
+    - RABBITMQ_VHOST=/
+    ports:
+    - 8009:8007
+    depends_on:
+    - rabbitmq
+  node_3:
+    image: node:alpine
+    volumes:
+    - .:/usr/src/app
+    working_dir: "/usr/src/app"
+    command: /usr/src/app/bin/pipes start node --id node_3
+    environment:
+    - RABBITMQ_HOST=rabbitmq
+    - RABBITMQ_PORT=5672
+    - RABBITMQ_USER=guest
+    - RABBITMQ_PASS=guest
+    - RABBITMQ_VHOST=/
+    ports:
+    - 8010:8007
+    depends_on:
+    - rabbitmq
+  rabbitmq:
+    image: rabbitmq:management-alpine
+    ports:
+      - 15672:15672
+      - 5672:5672
+

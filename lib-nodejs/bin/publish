@@ -1,0 +1,58 @@
+#!/usr/bin/env node
+
+/**
+ * If you want to publish multiple randomly-ordered messages to http faucet use this script
+ *  1) set "howMany" and "url" params on bottom line
+ *  2) curl http://localhost:3333/open , replace host and port with docker-machine and exported port of http faucet
+ *  3) run script: node bin/publish.js
+ */
+
+
+const logger = require('./../src/logger')(module);
+const request = require('request');
+
+const port = process.argv[2];
+
+class Publisher {
+
+  static getRandomInt(low, high) {
+    return Math.floor((Math.random() * (high - low)) + low);
+  }
+
+  static publishSingle(url, i) {
+    return () => {
+      request({
+        url,
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          job_id: 'test',
+          sequence_id: i
+        },
+        body: JSON.stringify({
+          data: `Message no. ${i}`,
+          settings: {}
+        })
+      }, (err, response) => {
+        if (err) {
+          return logger.error(response, err);
+        }
+        return logger.info(`Published ${i}`);
+      });
+    };
+  }
+
+  static publish(howMany, url) {
+    let i = 1;
+    while (i <= howMany) {
+      setTimeout(
+        Publisher.publishSingle(url, i),
+        Publisher.getRandomInt(10, 200) // randomize order of message slightly
+      );
+      i += 1;
+    }
+  }
+
+}
+
+Publisher.publish(10, `http://localhost:${port}`);

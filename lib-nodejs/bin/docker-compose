@@ -1,0 +1,11 @@
+#!/usr/bin/env node
+
+// TODO get topology from config microservice
+const topology = require('../src/example/dev-topology');
+const Pipes = require('../src/pipes');
+
+const pipes = Pipes(topology);
+
+const file = `${process.cwd()}/docker-compose.yml`;
+
+pipes.generateDockerCompose(file);

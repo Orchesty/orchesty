@@ -1,0 +1,47 @@
+{
+  "name": "pipes",
+  "version": "1.0.0",
+  "description": "Hanaboso pipes and filters basic node skeleton implementation",
+  "main": "index.js",
+  "scripts": {
+    "start": "node --use-strict ./index.js",
+    "test": "NODE_ENV=test mocha --recursive"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@bitbucket.org/HANABOSO/pipes.git"
+  },
+  "keywords": [
+    "Pipes",
+    "skeleton",
+    "node"
+  ],
+  "author": "Hanaboso s.r.o.",
+  "license": "ISC",
+  "homepage": "https://bitbucket.org/HANABOSO/pipes#readme",
+  "dependencies": {
+    "amqplib": "0.5.1",
+    "body-parser": "1.16.1",
+    "express": "4.14.1",
+    "moniker": "0.1.2",
+    "request": "2.79.0",
+    "uuid": "3.0.1",
+    "winston": "2.2.0",
+    "write-yaml": "^0.2.2",
+    "yargs": "6.6.0"
+  },
+  "devDependencies": {
+    "chai": "3.5.0",
+    "chai-files": "1.4.0",
+    "chai-http": "^3.0.0",
+    "chai-spies": "^0.7.1",
+    "eslint": "3.9.1",
+    "eslint-config-airbnb": "13.0.0",
+    "eslint-plugin-import": "2.2.0",
+    "eslint-plugin-jsx-a11y": "2.2.3",
+    "eslint-plugin-react": "6.6.0",
+    "mocha": "3.2.0",
+    "nock": "9.0.6",
+    "nodemon": "1.11.0"
+  }
+}
