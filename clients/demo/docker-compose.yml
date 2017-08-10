@@ -1,0 +1,64 @@
+---
+
+version: '2'
+
+services:
+    # Nodes
+
+    # Services
+
+    # RabbitMQ
+    rabbitmq:
+        image: rabbitmq:3-management-alpine
+        ports:
+          - ${DEV_IP}:15672:15672
+        volumes:
+          - ./.docker-volumes/rabbitmq:/var/lib/rabbitmq
+
+    # Storage
+    mongodb:
+        image: mongo:3.4
+        ports:
+          - ${DEV_IP}:27017:27017
+        volumes:
+          - ./.docker-volumes/mongodb:/data/db
+
+    # ELK
+    elasticsearch:
+        image: elasticsearch:5-alpine
+        ports:
+          - ${DEV_IP}:9200:9200
+        volumes:
+          - ./.docker-volumes/elk-data:/var/lib/elasticsearch
+
+    kibana:
+        image: kibana:5
+        ports:
+          - ${DEV_IP}:5601:5601
+
+    logstash:
+        image: logstash:5-alpine
+
+    # Metrics
+    grafana:
+        image: grafana/grafana:4.2.0
+        environment:
+          GF_SERVER_ROOT_URL: http://${DEV_IP}:3000
+          GF_SECURITY_ADMIN_PASSWORD: password
+        ports:
+          - ${DEV_IP}:3000:3000
+        volumes:
+          - ./.docker-volumes/grafana-data:/var/lib/grafana
+          - ./.docker-volumes/grafana-plugins:/var/lib/grafana/plugins
+          - ./.docker-volumes/grafana-logs:/var/log/grafana
+
+    influxdb:
+        image: influxdb:1.2-alpine
+        ports:
+          - ${DEV_IP}:8083:8083
+          - ${DEV_IP}:8086:8086
+          - ${DEV_IP}:8089/udp:8089/udp
+          - ${DEV_IP}:25826/udp:25826/udp
+          - ${DEV_IP}:2003:2003
+        volumes:
+          - ./.docker-volumes/influxdb-data:/var/lib/influxdb
