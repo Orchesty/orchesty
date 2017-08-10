@@ -1,0 +1,58 @@
+stages:
+  - stage1
+  - stage2
+  - cleanup
+
+before_script:
+  - . build/lib/gitlab-ci-helpers.sh
+  - export REPO_ROOT=$(pwd)
+
+php-dev-image:
+  stage: stage1
+  script:
+    - DIR=lib-symfony3/docker/php-dev
+    - cd $REPO_ROOT/$DIR
+    - IMAGE=dkr.hanaboso.net/pipes/pipes/php-dev:${CI_BUILD_REF_NAME}
+    - docker pull dkr.hanaboso.net/hanaboso/symfony3-base:latest
+    - docker build -t ${IMAGE} .
+    - docker push ${IMAGE}
+  only:
+    - dev
+    - master
+    - ci
+
+lib-sym3-test:
+  stage: stage2
+  script:
+    - DIR=lib-symfony3
+    - skip_unmodified $DIR
+    - ": TODO: modify this job to allow parallel execution!"
+    - cd $REPO_ROOT/$DIR
+    - make docker-up-force
+    - make composer-install
+    - make test
+
+lib-njs-test:
+  stage: stage2
+  script:
+    - DIR=lib-nodejs
+    - skip_unmodified $DIR
+    - ": TODO: modify this job to allow parallel execution!"
+    - ": TODO: Fix the test!"
+    - cd $REPO_ROOT/$DIR
+    - export RABBITMQ_HOST=rabbitmq
+    - docker-compose up -d
+    - docker-compose exec app npm install ./usr/src/app
+    - docker-compose exec app /usr/src/app/node_modules/eslint/bin/eslint.js /usr/src/app/
+    - docker-compose exec app cd /usr/src/app & npm test
+
+
+cleanup:
+  stage: cleanup
+  when: always
+  script:
+    - cd $REPO_ROOT/lib-symfony3
+    - make docker-down-clean
+
+    - cd $REPO_ROOT/lib-nodejs
+    - docker-compose down -v
