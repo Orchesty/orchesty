@@ -37,7 +37,7 @@ class LocalMenu extends Flusanec.Component {
   }
   
   render() {
-    let menuItems = this._menu.items.map(menuItem => <LocalMenuItem onAction={this.actionMade.bind(this)} menuItem={menuItem}></LocalMenuItem>);
+    let menuItems = this._menu.items.map(menuItem => <LocalMenuItem onAction={this.actionMade.bind(this)} menuItem={menuItem} key={menuItem.unique}></LocalMenuItem>);
     return (
       <ul className="dropdown-menu">
         {menuItems}

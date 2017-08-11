@@ -41,7 +41,7 @@ class MainSubMenu extends SelfClosableMenuComponent {
   }
 
   render() {
-    var menuItems = this._menu.items.map(menuItem => <MainSubMenuItem onAction={this._close} menuItem={menuItem}></MainSubMenuItem>);
+    var menuItems = this._menu.items.map(menuItem => <MainSubMenuItem onAction={this._close} menuItem={menuItem} key={menuItem.unique}></MainSubMenuItem>);
     return (
       <ul ref={(self) => {this._self = self}}  className="nav child_menu" style={{display: this._menu.visible ? 'block' : 'none'}}>
         {menuItems}

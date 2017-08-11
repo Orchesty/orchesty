@@ -12,7 +12,6 @@ class FakeServer extends Flusanec.HttpServer{
   }
   
   send(method, relUrl, queries, data):Promise{
-    console.log({method, relUrl, queries, data});
     return new Promise((resolve, reject) => {
       if (this._fakeData[method] && this._fakeData[method][relUrl]){
         let fakeRec = this._fakeData[method][relUrl];

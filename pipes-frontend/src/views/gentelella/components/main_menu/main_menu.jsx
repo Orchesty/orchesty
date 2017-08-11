@@ -35,7 +35,7 @@ class MainMenu extends Flusanec.Component {
   }
 
   render() {
-    let menuItems = this._menu.items.map(menuItem => <MainMenuItem menuItem={menuItem}></MainMenuItem>);
+    let menuItems = this._menu.items.map(menuItem => <MainMenuItem menuItem={menuItem} key={menuItem.unique}></MainMenuItem>);
     return (
       <div id="sidebar-menu" className="main_menu_side hidden-print main_menu">
         <div className="menu_section">

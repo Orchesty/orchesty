@@ -12,8 +12,8 @@ import TopologyForm from '../views/gentelella/parts/topology/topology_form';
 import SchemeEditor from '../views/gentelella/parts/scheme/scheme_editor';
 
 class TopologyController extends BaseController {
-  constructor(managers, contextServices) {
-    super(managers, contextServices);
+  constructor(contextServices) {
+    super(contextServices);
   }
 
   _addToMenu() {
@@ -43,7 +43,7 @@ class TopologyController extends BaseController {
   }
 
   topologyListWindowAction() {
-    const manager = this._managers.topologyManager;
+    const manager = this._contextServices.managers.topologyManager;
     const list = manager.getTopologyList();
     const windowContextServices = Object.assign({}, this._contextServices, {menu: null, controller: this});
     const window = new Window(BasicWindow, 'Topology list',
@@ -55,8 +55,8 @@ class TopologyController extends BaseController {
   }
 
   topologyListPageAction() {
-    const manager = this._managers.topologyManager;
-    const list = this._managers.topologyManager.getTopologyList();
+    const manager = this._contextServices.managers.topologyManager;
+    const list = manager.getTopologyList();
     const contextServices = Object.assign({}, this._contextServices, {controller: this, menu: new FlusanecMenu.Menu()});
     this._contextServices.pageManager.addPage(
       <MainPage caption="Topology list" menu={contextServices.menu}>
@@ -67,31 +67,33 @@ class TopologyController extends BaseController {
   }
 
   topologyEditAction(id){
-    const promise = this._managers.topologyManager.getTopology(id);
+    const promise = this._contextServices.managers.topologyManager.getTopology(id);
     this._contextServices.containerType.type == ContainerType.WINDOW_AREA ? this.topologyEditWindowAction(promise) : this.topologyEditPageAction(promise);
   }
 
   
-  topologyEditWindowAction(promise){
+  topologyEditWindowAction(topology: Topology){
+    const manager = this._contextServices.managers.topologyManager;
     const windowContextServices = Object.assign({}, this._contextServices, {menu: null, controller: this});
     const window = new Window(BasicWindow, 'Topology edit',
-      <TopologyForm contextServices={windowContextServices} promise={promise} update={this._managers.topologyManager.updateTopology.bind(this._managers.topologyManager)}/>
+      <TopologyForm contextServices={windowContextServices} topology={topology} update={manager.updateTopology.bind(manager)}/>
     );
     windowContextServices.menu = window.menu;
     this._contextServices.windowManager.addWindow(window);
   }
 
-  topologyEditPageAction(promise){
+  topologyEditPageAction(topology: Topology){
+    const manager = this._contextServices.managers.topologyManager;
     const contextServices = Object.assign({}, this._contextServices, {controller: this, menu: new FlusanecMenu.Menu()});
     this._contextServices.pageManager.addPage(
       <MainPage caption="Topology edit" menu={contextServices.menu}>
-        <TopologyForm contextServices={contextServices} promise={promise} update={this._managers.topologyManager.updateTopology.bind(this._managers.topologyManager)}/>
+        <TopologyForm contextServices={contextServices} topology={topology} update={manager.updateTopology.bind(manager)}/>
       </MainPage>
     )
   }
   
   topologySchemeAction(id){
-    const promise = this._managers.topologyManager.getScheme(id);
+    const promise = this._contextServices.managers.topologyManager.getScheme(id);
     this._contextServices.containerType.type == ContainerType.WINDOW_AREA ? this.topologySchemeWindowAction(promise) : this.topologySchemePageAction(promise);
   }
   

@@ -12,10 +12,11 @@ class TopologyDataSource extends SortDataSource{
     return this.promiseToList(promise, persistentList, persistentList => this.getTopologyItems(persistentList.params, persistentList), params);
   }
   
-  getTopology(id, force = false){
-    return (!force && this.cacheObjectToPromise(id)) || this._httpServer.send('GET', `/topologies/${id}`).then(
-        response => response ? this.acceptObject(response) : response
-      );
+  getById(id, force = false){
+    return this._establishObject(id, id => this._httpServer.send('GET', `/notification_types/${id}`), force);
+    // return (!force && this.cacheObjectToPromise(id)) || this._httpServer.send('GET', `/topologies/${id}`).then(
+    //     response => response ? this.acceptObject(response) : response
+    //   );
   }
 
   updateTopology(id, data){

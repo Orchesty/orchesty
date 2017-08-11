@@ -11,8 +11,8 @@ var test_data = require('../views/common/bpmn/test.bpmn');
 
 class TestController extends BaseController {
 
-  constructor(managers, contextServices) {
-    super(managers, contextServices);
+  constructor(contextServices) {
+    super(contextServices);
   }
 
   _addToMenu() {

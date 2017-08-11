@@ -1,10 +1,9 @@
 import Flusanec from 'flusanec';
 
 class BaseController extends Flusanec.Controller{
-  constructor(managers, contextServices){
+  constructor(contextServices){
     super();
     this._onChangeContainerType = this.onChangeContainerType.bind(this);
-    this._managers = managers;
     this._contextServices = contextServices;
     this._contextServices.containerType.addChangeListener(this._onChangeContainerType);
     this._menuItems = null;

@@ -40,14 +40,14 @@ class TopologyForm extends Flusanec.Component {
   _initialize() {
     this._onChange = this.onChange.bind(this);
     this._onRelease = this.onRelease.bind(this);
-    this._state = DATA_STATE.NOT_LOADED;
+    this._onStateChange = this.onStateChange.bind(this);
+    this._onUpdateFinish = this.onUpdateFinish.bind(this);
     this._topology = null;
+    this._updating = false;
   }
 
   _useProps(props) {
-    if (this._state == DATA_STATE.NOT_LOADED && props.promise) {
-      this.setPromise(props.promise);
-    }
+    this.topology = props.topology;
   }
 
   _finalization() {
@@ -58,26 +58,12 @@ class TopologyForm extends Flusanec.Component {
     if (this._topology != topology) {
       this._topology && this._topology.removeChangeListener(this._onChange);
       this._topology && this._topology.removeReleaseListener(this._onRelease);
+      this._topology && this._topology.removeStateListener(this._onStateChange);
       this._topology = topology;
       this._topology && this._topology.addChangeListener(this._onChange);
       this._topology && this._topology.addReleaseListener(this._onRelease);
-      if (!this._topology && this._state != DATA_STATE.ERROR) {
-        this._state = DATA_STATE.NOT_LOADED;
-      }
-      if (this._topology) {
-        this._state = DATA_STATE.SUCCESS;
-      }
-      this.forceUpdate();
+      this._topology && this._topology.addStateListener(this._onStateChange);
     }
-  }
-
-  setPromise(promise) {
-    this._state = DATA_STATE.LOADING;
-    promise.then(topology => {
-      this._state = topology ? DATA_STATE.SUCCESS : DATA_STATE.ERROR;
-      this.topology = topology;
-      this.forceUpdate();
-    });
   }
 
   onChange() {
@@ -89,8 +75,23 @@ class TopologyForm extends Flusanec.Component {
     this.forceUpdate();
   }
 
+  onStateChange() {
+    this.forceUpdate();
+  }
+
+  onUpdateFinish(){
+    this._updating = false;
+    this.forceUpdate();
+  }
+
+  setPromise(promise:ES6Promise){
+    this._updating = true;
+    promise.then(this._onUpdateFinish);
+  }
+
   submit(formData) {
     if (typeof this.props.update == 'function' && this._topology) {
+      this._updating = true;
       this.setPromise(
         this.props.update(this._topology, {
           name: formData._name,
@@ -103,13 +104,13 @@ class TopologyForm extends Flusanec.Component {
   }
 
   render() {
-    if (this._state == DATA_STATE.SUCCESS) {
+    if (this._topology.objectState == DATA_STATE.SUCCESS) {
       return <Form schema={schema} formData={this._topology} onSubmit={data => {this.submit(data.formData)}}
         showErrorList={false} uiSchema={uiSchema}/>;
     }
     else {
       return (
-        <SimpleState state={this._state}></SimpleState>
+        <SimpleState state={this._topology.objectState}></SimpleState>
       );
     }
   }

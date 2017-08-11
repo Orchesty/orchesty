@@ -26,10 +26,10 @@ class SortDataSource extends Flusanec.PersistentDataSource{
     return queries;
   }
 
-  promiseToList(promise, persistentList, refresh, params){
+  promiseToList(promise, persistentList, refresh, objectAcceptCallback, params){
     promise = promise.then(response => {
       if (response && response.items){
-        response = Object.assign({}, response, {items: this.acceptObject(response.items)});
+        response = Object.assign({}, response, {items: this.acceptObject(response.items, objectAcceptCallback)});
       }
       return response;
     });

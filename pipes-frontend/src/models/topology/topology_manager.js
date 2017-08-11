@@ -1,14 +1,18 @@
-class TopologyManager {
-  constructor(topologyDataSource:TopologyDataSource) {
-    this._topologyDataSource = topologyDataSource;
+import Flusanec from 'flusanec';
+import Topology from './objects/topology';
+
+class TopologyManager extends Flusanec.PersistentManager{
+  constructor(dataSourceContainer: Flusanec.DataSourceContainer) {
+    super(dataSourceContainer);
+    this._topologyDataSource = this._dataSourceContainer.getDataSourceByObjectClass(Topology);
   }
 
-  getTopologyList(sort) {
+  getTopologyList(sort){
     return this._topologyDataSource.getTopologyItems({sort});
   }
 
   getTopology(id, force = false){
-    return this._topologyDataSource.getTopology(id, force);
+    return this._topologyDataSource.getById(id, force);
   }
 
   updateTopology(topology:Topology, data){
