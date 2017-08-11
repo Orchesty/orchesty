@@ -1,14 +1,11 @@
 <?php declare(strict_types=1);
-/**
- * Created by PhpStorm.
- * User: cerv <michal.bartl@gmail.com>
- * Date: 10.8.2017
- * Time: 13:54
- */
 
 namespace Hanaboso\PipesFramework\HbPFApiGateway\Handler;
 
-
+/**
+ * Class TopologyHandler
+ * @package Hanaboso\PipesFramework\HbPFApiGateway\Handler
+ */
 class TopologyHandler
 {
 
@@ -27,7 +24,12 @@ class TopologyHandler
 
     }
 
-    public function getTopologySchema(string $id)
+    public function getTopologyScheme(string $id)
+    {
+
+    }
+
+    public function uploadTopologyScheme(string $id, array $data)
     {
 
     }
