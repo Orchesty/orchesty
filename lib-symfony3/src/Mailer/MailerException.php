@@ -9,16 +9,18 @@
 
 namespace Hanaboso\PipesFramework\Mailer;
 
-use LogicException;
+use Hanaboso\PipesFramework\Commons\Exception\PipesFrameworkException;
 
 /**
  * Class MailerException
  *
  * @package Hanaboso\PipesFramework\Mailer
  */
-class MailerException extends LogicException
+class MailerException extends PipesFrameworkException
 {
 
-    public const MISSING_TEMPLATE_ENGINE = 1;
+    protected const OFFSET = 700;
+
+    public const MISSING_TEMPLATE_ENGINE = self::OFFSET + 1;
 
 }

@@ -2,18 +2,20 @@
 
 namespace Hanaboso\PipesFramework\Commons\Transport\Curl;
 
-use Exception;
+use Hanaboso\PipesFramework\Commons\Exception\PipesFrameworkException;
 
 /**
  * Class CurlException
  *
  * @package Hanaboso\PipesFramework\Commons\Transport\Curl
  */
-final class CurlException extends Exception
+final class CurlException extends PipesFrameworkException
 {
 
-    public const INVALID_METHOD = 1;
-    public const BODY_ON_GET    = 2;
-    public const REQUEST_FAILED = 3;
+    protected const OFFSET = 300;
+
+    public const INVALID_METHOD = self::OFFSET + 1;
+    public const BODY_ON_GET    = self::OFFSET + 2;
+    public const REQUEST_FAILED = self::OFFSET + 3;
 
 }

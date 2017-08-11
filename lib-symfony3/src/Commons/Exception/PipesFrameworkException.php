@@ -12,13 +12,13 @@ namespace Hanaboso\PipesFramework\Commons\Exception;
 use Exception;
 
 /**
- * Class PipeFrameworkException
+ * Class PipesFrameworkException
  *
  * @package Hanaboso\PipesFramework\Commons\PipesFrameworkException
  */
-class PipeFrameworkException extends Exception
+class PipesFrameworkException extends Exception
 {
 
-    public const UNKNOWN_ERROR = 0;
+    public const UNKNOWN_ERROR = 1;
 
 }
