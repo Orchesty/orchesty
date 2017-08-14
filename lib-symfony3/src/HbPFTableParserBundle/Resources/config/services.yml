@@ -7,3 +7,4 @@ services:
 
     hbpf.parser.table.service:
         class: Hanaboso\PipesFramework\Parser\TableParser
+        arguments:

@@ -9,7 +9,7 @@ services:
           - '@service_container'
 
     hbpf.authorization_repository:
-        class: Hanaboso\PipesFramework\Commons\Authorization\AuthorizationRepository
+        class: Hanaboso\PipesFramework\Commons\Authorization\Connectors\AuthorizationRepository
         arguments:
           - '@service_container'
 

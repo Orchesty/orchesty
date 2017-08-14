@@ -14,18 +14,25 @@
   "require": {
     "alcaeus/mongo-php-adapter": "^1.0",
     "doctrine/mongodb": "^1.4",
-    "doctrine/mongodb-odm": "^1.1",
+    "doctrine/mongodb-odm": "^1.0",
+    "doctrine/mongodb-odm-bundle": "^3.0",
     "friendsofsymfony/rest-bundle": "^2.1",
     "guzzlehttp/guzzle": "^6.3.0",
     "jms/serializer": "^1.5",
+    "phpoffice/phpspreadsheet": "@dev",
     "swiftmailer/swiftmailer": "^6.0",
-    "symfony/framework-bundle": "^3.3",
-    "phpoffice/phpspreadsheet": "@dev"
+    "symfony/framework-bundle": "^3.3"
   },
   "require-dev": {
+    "doctrine/doctrine-bundle": "1.6.*",
+    "jms-serializer/serializer-bundle": "1.1.*",
     "phpstan/phpstan": "^0.8",
     "phpunit/phpunit": "^6.3",
+    "sensio/framework-extra-bundle": "^3.0",
     "slevomat/coding-standard": "^3.0",
+    "symfony/phpunit-bridge": "^3.0",
+    "symfony/yaml": "^3.0",
+    "symfony/security-bundle": "^3.0",
     "squizlabs/php_codesniffer": "^3.0"
   }
 }
