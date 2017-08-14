@@ -11,11 +11,32 @@ class ResponseDto
 {
 
     /**
-     * ResponseDto constructor.
+     * @var mixed
      */
-    public function __construct()
-    {
+    private $soapCallResponse;
 
+    /**
+     * @var null|string
+     */
+    private $lastResponseHeaders;
+
+    /**
+     * @var array|null
+     */
+    private $outputHeaders;
+
+    /**
+     * ResponseDto constructor.
+     *
+     * @param             $soapCallResponse
+     * @param null|string $lastResponseHeaders
+     * @param array|null  $outputHeaders
+     */
+    public function __construct($soapCallResponse, ?string $lastResponseHeaders, ?array $outputHeaders)
+    {
+        $this->soapCallResponse    = $soapCallResponse;
+        $this->lastResponseHeaders = $lastResponseHeaders;
+        $this->outputHeaders       = $outputHeaders;
     }
 
 }

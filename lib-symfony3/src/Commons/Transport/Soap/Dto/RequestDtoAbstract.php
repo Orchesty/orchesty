@@ -3,6 +3,7 @@
 namespace Hanaboso\PipesFramework\Commons\Transport\Soap\Dto;
 
 use Hanaboso\PipesFramework\Commons\Transport\Soap\SoapException;
+use Hanaboso\PipesFramework\Commons\Transport\Soap\Wsdl\Dto\RequestHeaderDto;
 
 /**
  * Class RequestDto
@@ -38,15 +39,22 @@ abstract class RequestDtoAbstract
     private $arguments;
 
     /**
+     * @var RequestHeaderDto
+     */
+    private $header;
+
+    /**
      * RequestDtoAbstract constructor.
      *
      * @param string $function
      * @param array  $arguments
+     * @param string $namespace
      */
-    public function __construct(string $function, array $arguments = [])
+    public function __construct(string $function, array $arguments = [], string $namespace)
     {
         $this->function  = $function;
         $this->arguments = $arguments;
+        $this->header    = new RequestHeaderDto($namespace);
     }
 
     /**
@@ -122,5 +130,18 @@ abstract class RequestDtoAbstract
     {
         return $this->arguments;
     }
+
+    /**
+     * @return RequestHeaderDto
+     */
+    public function getHeader(): RequestHeaderDto
+    {
+        return $this->header;
+    }
+
+    /**
+     * @return string
+     */
+    public abstract function getType(): string;
 
 }

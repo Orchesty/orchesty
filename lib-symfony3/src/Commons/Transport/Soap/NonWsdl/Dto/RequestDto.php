@@ -2,7 +2,9 @@
 
 namespace Hanaboso\PipesFramework\Commons\Transport\Soap\NonWsdl\Dto;
 
+use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Transport\Soap\Dto\RequestDtoAbstract;
+use Hanaboso\PipesFramework\Commons\Transport\Soap\SoapManagerInterface;
 
 /**
  * Class RequestDto
@@ -13,58 +15,39 @@ class RequestDto extends RequestDtoAbstract
 {
 
     /**
-     * @var string
+     * @var Uri
      */
-    protected $uri;
-
-    /**
-     * @var string
-     */
-    protected $namespace;
-
-    /**
-     * @var array
-     */
-    protected $headers = [];
+    private $soapServiceUri;
 
     /**
      * RequestDto constructor.
      *
      * @param string $function
      * @param array  $arguments
-     * @param string $uri
      * @param string $namespace
+     * @param Uri    $soapServiceUri
      */
-    public function __construct(string $function, array $arguments = [], string $uri, string $namespace)
+    public function __construct(string $function, array $arguments = [], string $namespace, Uri $soapServiceUri)
     {
-        parent::__construct($function, $arguments);
+        parent::__construct($function, $arguments, $namespace);
 
-        $this->uri       = $uri;
-        $this->namespace = $namespace;
+        $this->soapServiceUri = $soapServiceUri;
+    }
+
+    /**
+     * @return Uri
+     */
+    public function getSoapServiceUri(): Uri
+    {
+        return $this->soapServiceUri;
     }
 
     /**
      * @return string
      */
-    public function getUri(): string
+    public function getType(): string
     {
-        return $this->uri;
-    }
-
-    /**
-     * @return string
-     */
-    public function getNamespace(): string
-    {
-        return $this->namespace;
-    }
-
-    /**
-     * @return array
-     */
-    public function getHeaders(): array
-    {
-        return $this->headers;
+        return SoapManagerInterface::MODE_NON_WSDL;
     }
 
 }
