@@ -44,6 +44,8 @@ class Mailer
 
     /**
      * @param TransportMessageInterface $message
+     *
+     * @throws MailerException
      */
     public function renderAndSend(TransportMessageInterface $message): void
     {
@@ -57,6 +59,19 @@ class Mailer
             $message->setContent($this->templateEngine->render($message->getTemplate(), $message->getDataContent()));
         }
         $this->transport->send($message);
+    }
+
+    /**
+     * @throws MailerException
+     */
+    public function renderAndSendTest(): void
+    {
+        if (!$this->templateEngine) {
+            throw new MailerException(
+                'Missing template engine. Can not render message.',
+                MailerException::MISSING_TEMPLATE_ENGINE
+            );
+        }
     }
 
 }

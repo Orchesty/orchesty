@@ -133,8 +133,9 @@ final class TableParser implements TableParserInterface
      * @param string      $type
      *
      * @return IWriter
+     * @throws TableParserException
      */
-    private function createWriter(Spreadsheet $spreadsheet, string $type): IWriter
+    public function createWriter(Spreadsheet $spreadsheet, string $type): IWriter
     {
         switch ($type) {
             case TableParserInterface::XLSX:

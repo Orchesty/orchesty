@@ -5,6 +5,8 @@ namespace Hanaboso\PipesFramework\HbPFTableParserBundle\Handler;
 use Hanaboso\PipesFramework\Commons\BaseService\NullServiceInterface;
 use Hanaboso\PipesFramework\Commons\ServiceStorage\ServiceStorageInterface;
 use Hanaboso\PipesFramework\Parser\TableParser;
+use Hanaboso\PipesFramework\Parser\TableParserException;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use stdClass;
 
 /**
@@ -48,6 +50,21 @@ class TableParserHandler
     }
 
     /**
+     * @throws TableParserHandlerException
+     */
+    public function parseToJsonTest(): string
+    {
+        if (!$this->tableParser) {
+            throw new TableParserHandlerException(
+                'Table parser not exists',
+                TableParserHandlerException::PARSER_NOT_EXISTS
+            );
+        }
+
+        return 'ok';
+    }
+
+    /**
      * @param string $type
      * @param array  $data
      *
@@ -56,6 +73,16 @@ class TableParserHandler
     public function parseFromJson(string $type, array $data): string
     {
         return $this->tableParser->parseFromJson($this->getFile($data)->path, $type, $data['has_headers'] ?? FALSE);
+    }
+
+    /**
+     * @param string $type
+     *
+     * @throws TableParserException
+     */
+    public function parseFromJsonTest(string $type): void
+    {
+        $this->tableParser->createWriter(new Spreadsheet(), $type);
     }
 
     /**

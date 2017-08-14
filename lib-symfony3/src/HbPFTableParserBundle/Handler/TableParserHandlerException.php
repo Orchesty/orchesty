@@ -15,5 +15,6 @@ final class TableParserHandlerException extends PipesFrameworkException
     protected const OFFSET = 400;
 
     public const PROPERTY_FILE_ID_NOT_SET = self::OFFSET + 1;
+    public const PARSER_NOT_EXISTS = self::OFFSET + 2;
 
 }
