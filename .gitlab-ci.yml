@@ -38,13 +38,11 @@ lib-njs-test:
     - DIR=lib-nodejs
     - skip_unmodified $DIR
     - ": TODO: modify this job to allow parallel execution!"
-    - ": TODO: Fix the test!"
     - cd $REPO_ROOT/$DIR
     - export RABBITMQ_HOST=rabbitmq
     - docker-compose up -d
-    - docker-compose exec app npm install ./usr/src/app
-    - docker-compose exec app /usr/src/app/node_modules/eslint/bin/eslint.js /usr/src/app/
-    - docker-compose exec app cd /usr/src/app & npm test
+    - docker-compose exec -T test npm run lint
+    - docker-compose exec -T test npm test
 
 
 cleanup:

@@ -1,9 +1,9 @@
 version: '2'
 services:
   services:
-    image: 'node:alpine'
-    volumes:
-      - '.:/usr/src/app'
+    build: .
+#    volumes:
+#      - '.:/usr/src/app'
     working_dir: /usr/src/app
     environment:
       - RABBITMQ_HOST=rabbitmq
@@ -20,9 +20,9 @@ services:
     ports:
       - '8007:8007'
   node_1:
-    image: 'node:alpine'
-    volumes:
-      - '.:/usr/src/app'
+    build: .
+#    volumes:
+#      - '.:/usr/src/app'
     working_dir: /usr/src/app
     environment:
       - RABBITMQ_HOST=rabbitmq
@@ -37,9 +37,9 @@ services:
       - '5001:8007'
       - '5002:3333'
   node_2:
-    image: 'node:alpine'
-    volumes:
-      - '.:/usr/src/app'
+    build: .
+#    volumes:
+#      - '.:/usr/src/app'
     working_dir: /usr/src/app
     environment:
       - RABBITMQ_HOST=rabbitmq
@@ -53,9 +53,9 @@ services:
     ports:
       - '5003:8007'
   node_3:
-    image: 'node:alpine'
-    volumes:
-      - '.:/usr/src/app'
+    build: .
+#    volumes:
+#      - '.:/usr/src/app'
     working_dir: /usr/src/app
     environment:
       - RABBITMQ_HOST=rabbitmq
@@ -73,3 +73,15 @@ services:
     ports:
       - '15672:15672'
       - '5672:5672'
+  test:
+    build: .
+    working_dir: /usr/src/app
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
+      - RABBITMQ_USER=guest
+      - RABBITMQ_PASS=guest
+      - RABBITMQ_VHOST=/
+    command: sleep infinity
+    ports:
+      - '5000:8007'
