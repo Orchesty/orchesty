@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
 
+set -e -x
+
+# Determine the tag
+[ -n "$1" ] || (echo "You must pass a tag as the first parameter"; exit 1)
+TAG=$1
+
 # Current dir
 DIR=$(dirname $0)
 
@@ -12,6 +18,18 @@ cd ${DIR}/../../
 rm -rf node_modules
 
 # Image build
-docker/build/build.sh
-docker run --volume $SSH_AUTH_SOCK:/ssh-agent --env SSH_AUTH_SOCK=/ssh-agent nodejs-build ssh-add -l && npm install --production
-docker build -f docker/dev/Dockerfile -t frontend .
+REGISTRY_PREFIX=dkr.hanaboso.net/pipes/pipes
+IMAGE=${REGISTRY_PREFIX}/pipes-frontend:${TAG}
+BUILD_IMAGE=${REGISTRY_PREFIX}/nodejs-build:dev
+
+docker pull ${BUILD_IMAGE}
+docker run --rm \
+  -v $(pwd):/app \
+  -e DEV_UID=$(id -u) \
+  -e DEV_GID=$(id -g) \
+  -v $SSH_AUTH_SOCK:/ssh-agent \
+  ${BUILD_IMAGE} \
+  bash -c "ssh-add -l && npm install --production"
+
+docker build -f docker/prod/Dockerfile -t ${IMAGE} .
+docker push ${IMAGE}

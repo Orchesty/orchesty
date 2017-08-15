@@ -1,9 +1,15 @@
 FROM node:8
 
 RUN apt-get update && \
-    apt-get upgrade -y --force-yes && \
-    npm i -g npm
+    apt-get install sudo && \
+    apt-get clean
 
-WORKDIR app
+# SSH agent socket should be mounted here from the host
+ENV SSH_AUTH_SOCK=/ssh-agent
 
-COPY package.json package.json
+WORKDIR /app
+
+COPY entrypoint.sh /
+ENTRYPOINT [ "/entrypoint.sh" ]
+
+CMD [ "/bin/bash" ]

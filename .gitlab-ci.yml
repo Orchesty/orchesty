@@ -6,6 +6,8 @@ stages:
 before_script:
   - . build/lib/gitlab-ci-helpers.sh
   - export REPO_ROOT=$(pwd)
+  - eval $(ssh-agent)
+  - ssh-add ~/.ssh/bob_the_builder_hanaboso
 
 php-dev-image:
   stage: stage1
@@ -20,6 +22,15 @@ php-dev-image:
     - dev
     - master
     - ci
+
+njs-build-image:
+  stage: stage1
+  script:
+    - pipes-frontend/docker/build/build.sh ${CI_BUILD_REF_NAME}
+  only:
+    - dev
+    - master
+    - docker-build
 
 lib-sym3-test:
   stage: stage2
@@ -44,6 +55,12 @@ lib-njs-test:
     - docker-compose exec -T test npm run lint
     - docker-compose exec -T test npm test
 
+pipes-frontend:
+  stage: stage2
+  script:
+    - DIR=pipes-frontend
+    - skip_unmodified $DIR
+    - ${DIR}/docker/prod/build.sh ${CI_BUILD_REF_NAME}
 
 cleanup:
   stage: cleanup
