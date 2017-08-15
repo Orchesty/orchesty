@@ -9,17 +9,17 @@
 
 namespace Hanaboso\PipesFramework\Mailer\MessageHandler\Impl;
 
-use Hanaboso\PipesFramework\Mailer\MessageHandler\AbstractMessageHandler;
 use Hanaboso\PipesFramework\Mailer\MessageHandler\Impl\GenericMessageHandler\GenericTransportMessage;
+use Hanaboso\PipesFramework\Mailer\MessageHandler\MessageHandlerAbstract;
 use Hanaboso\PipesFramework\Mailer\MessageHandler\MessageHandlerException;
 use Hanaboso\PipesFramework\Mailer\Transport\TransportMessageInterface;
 
 /**
- * Class GenericMessageHandler
+ * Class GenericMessageHandlerAbstract
  *
  * @package Hanaboso\PipesFramework\Mailer\MessageHandler\Impl
  */
-class GenericMessageHandler extends AbstractMessageHandler
+class GenericMessageHandler extends MessageHandlerAbstract
 {
 
     /**

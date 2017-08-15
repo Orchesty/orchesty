@@ -9,11 +9,11 @@
 namespace Hanaboso\PipesFramework\Mailer\MessageHandler;
 
 /**
- * Class AbstractMessageHandler
+ * Class MessageHandlerAbstract
  *
  * @package Hanaboso\PipesFramework\Mailer\MessageHandler
  */
-abstract class AbstractMessageHandler implements MessageHandlerInterface
+abstract class MessageHandlerAbstract implements MessageHandlerInterface
 {
 
 }

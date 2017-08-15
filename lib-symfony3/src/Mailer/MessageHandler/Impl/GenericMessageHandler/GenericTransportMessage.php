@@ -14,7 +14,7 @@ use Hanaboso\PipesFramework\Mailer\Transport\TransportMessageInterface;
 /**
  * Class GenericTransportMessage
  *
- * @package Hanaboso\PipesFramework\Mailer\MessageHandler\Impl\GenericMessageHandler
+ * @package Hanaboso\PipesFramework\Mailer\MessageHandler\Impl\GenericMessageHandlerAbstract
  */
 class GenericTransportMessage implements TransportMessageInterface
 {
