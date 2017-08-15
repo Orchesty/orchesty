@@ -10,6 +10,7 @@
 namespace Hanaboso\PipesFramework\Connector\Impl\Magento2;
 
 use GuzzleHttp\Client;
+use Hanaboso\PipesFramework\Authorizations\Impl\Magento2\Magento2AuthorizationInterface;
 use Hanaboso\PipesFramework\Commons\Node\BaseNode;
 use Psr\Http\Message\StreamInterface;
 

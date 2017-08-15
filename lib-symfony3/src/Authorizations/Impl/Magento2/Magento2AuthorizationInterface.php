@@ -7,7 +7,7 @@
  * Time: 12:31
  */
 
-namespace Hanaboso\PipesFramework\Connector\Impl\Magento2;
+namespace Hanaboso\PipesFramework\Authorizations\Impl\Magento2;
 
 /**
  * Interface Magento2AuthorizationInterface

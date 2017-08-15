@@ -8,7 +8,7 @@ services:
     hbpf.storage.interface:
         class: Hanaboso\PipesFramework\Commons\ServiceStorage\JSONSingleFileStorage
     hbpf.magento2.auth:
-        class: Hanaboso\PipesFramework\Connector\Impl\Magento2\Magento2Authorization
+        class: Hanaboso\PipesFramework\Authorizations\Impl\Magento2\Magento2Authorization
         arguments:
             - '1'
             - '@hbpf.storage.interface'

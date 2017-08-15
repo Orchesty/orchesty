@@ -7,7 +7,7 @@
  * Time: 14:35
  */
 
-namespace Hanaboso\PipesFramework\Connector\Impl\Magento2;
+namespace Hanaboso\PipesFramework\Authorizations\Impl\Magento2;
 
 use Hanaboso\PipesFramework\Commons\Authorization\Connectors\AuthorizationAbstract;
 use Hanaboso\PipesFramework\Commons\Authorization\Exception\AuthorizationException;

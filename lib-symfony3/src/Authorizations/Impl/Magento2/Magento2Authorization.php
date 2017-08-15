@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Hanaboso\PipesFramework\Connector\Impl\Magento2;
+namespace Hanaboso\PipesFramework\Authorizations\Impl\Magento2;
 
 use GuzzleHttp\Client;
 use Hanaboso\PipesFramework\Commons\Authorization\Connectors\AuthorizationAbstract;
