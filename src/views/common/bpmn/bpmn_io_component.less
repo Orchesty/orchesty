@@ -1,0 +1,29 @@
+@import "~bpmn-js-properties-panel/styles/properties.less";
+
+
+.bpmn-io-component{
+
+  @propertyPanelWidth: 350px;
+
+  .bpmn-io-canvas{
+    border: 1px solid #ccc;
+    display: inline-block;
+    width: calc(100% ~"-" @propertyPanelWidth);
+    height: 100%;
+    vertical-align: top;
+  }
+
+  .bpmn-io-properties{
+    display: inline-block;
+    width: @propertyPanelWidth;
+    height: 100%;
+    vertical-align: top;
+    border: 1px solid #ccc;
+    border-left: none;
+    overflow-y: scroll;
+
+    .label{
+      color: black;
+    }
+  }
+}

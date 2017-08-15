@@ -1,0 +1,78 @@
+{
+  "GET": {
+    "/topologies": {
+      "max_delay": 1000,
+      "error_rate": 0.01,
+      "data": {
+        "total": 24,
+        "limit": 5,
+        "count": 5,
+        "offset": 10,
+        "items": [
+          {
+            "id": 1,
+            "name": "Main",
+            "description": "Main processes",
+            "enabled": true
+          },
+          {
+            "id": 3,
+            "name": "Some other",
+            "description": "Some other description",
+            "enabled": true
+          },
+          {
+            "id": 5,
+            "name": "Old topology",
+            "description": "Deprecated topology",
+            "enabled": false
+          },
+          {
+            "id": 34,
+            "name": "Lorem ipsum dolor sit amet",
+            "description": "Mauris elementum mauris vitae tortor.",
+            "enabled": true
+          },
+          {
+            "id": 44,
+            "name": "Pellentesque pretium lectus",
+            "description": "Etiam bibendum elit eget erat. Proin in tellus sit amet nibh dignissim sagittis.",
+            "enabled": true
+          }
+        ]
+      }
+    },
+    "/topologies/1": {
+      "max_delay": 2000,
+      "error_rate": 0.01,
+      "data": {
+        "id": 1,
+        "name": "Main",
+        "description": "Main processes",
+        "enabled": true
+      }
+    },
+    "/topologies/1/scheme.bpmn": {
+      "max_delay": 2000,
+      "error_rate": 0.01,
+      "file": "bpmn_scheme1"
+    },
+    "/topologies/3/scheme.bpmn": {
+      "max_delay": 2000,
+      "error_rate": 0.01,
+      "file": "bpmn_scheme2"
+    }
+  },
+  "PATCH": {
+    "/topologies/1": {
+      "max_delay": 3000,
+      "error_rate": 0.01,
+      "data": {
+        "id": 1,
+        "name": "New name",
+        "description": "New description",
+        "enabled": false
+      }
+    }
+  }
+}
