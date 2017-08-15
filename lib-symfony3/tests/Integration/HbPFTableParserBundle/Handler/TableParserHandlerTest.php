@@ -39,7 +39,7 @@ final class TableParserHandlerTest extends TestCase
     }
 
     /**
-     *
+     * @covers TableParserHandler::parseToJson()
      */
     public function testParseToJson(): void
     {
@@ -57,7 +57,15 @@ final class TableParserHandlerTest extends TestCase
     }
 
     /**
-     *
+     * @covers TableParserHandler::parseToJsonTest()
+     */
+    public function testParseToJsonTest(): void
+    {
+        self::assertTrue($this->handler->parseToJsonTest());
+    }
+
+    /**
+     * @covers TableParserHandler::parseFromJson()
      */
     public function testParseFromJson(): void
     {
@@ -85,7 +93,15 @@ final class TableParserHandlerTest extends TestCase
     }
 
     /**
-     *
+     * @covers TableParserHandler::parseFromJsonTest()
+     */
+    public function testParseFromJsonTest(): void
+    {
+        self::assertTrue($this->handler->parseFromJsonTest(TableParserInterface::XLSX));
+    }
+
+    /**
+     * @covers TableParserHandler::parseToJson()
      */
     public function testParseToJsonWithoutFile(): void
     {
@@ -95,7 +111,7 @@ final class TableParserHandlerTest extends TestCase
     }
 
     /**
-     *
+     * @covers TableParserHandler::parseFromJson()
      */
     public function testParseFromJsonWithoutFile(): void
     {
@@ -105,7 +121,7 @@ final class TableParserHandlerTest extends TestCase
     }
 
     /**
-     *
+     * @covers TableParserHandler::parseFromJson()
      */
     public function testParseFromJsonWithInvalidType(): void
     {

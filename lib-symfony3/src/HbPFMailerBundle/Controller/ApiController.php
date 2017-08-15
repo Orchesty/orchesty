@@ -70,22 +70,23 @@ class ApiController extends FOSRestController
     /**
      * @Route("/api/mailer/{handlerId}/send/test", defaults={}, requirements={"_format"="json|xml"})
      *
-     * @param string $handlerId
+     * @param Request $request
+     * @param string  $handlerId
      *
      * @return Response
      */
-    public function sendTestAction(string $handlerId): Response
+    public function sendTestAction(Request $request, string $handlerId): Response
     {
         $response = new JsonResponse();
 
         try {
             /** @var MessageHandlerInterface $messageHandler */
-            $this->get('hbpf.mailer.handler.' . $handlerId);
+            $messageHandler = $this->get('hbpf.mailer.handler.' . $handlerId);
 
             /** @var Mailer $mailer */
             $mailer = $this->get('hbpf.mailer.service');
 
-            $mailer->renderAndSendTest();
+            $mailer->renderAndSendTest($messageHandler->buildTransportMessage($request->request->all()));
 
             $data = [
                 'status' => 'OK',

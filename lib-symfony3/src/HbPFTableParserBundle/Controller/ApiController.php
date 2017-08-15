@@ -60,10 +60,11 @@ class ApiController extends FOSRestController
     public function toJsonTestAction(): Response
     {
         $response = new JsonResponse();
+        $data = '';
         try {
-            $data = $this->tableParserHandler->parseToJsonTest();
+            $this->tableParserHandler->parseToJsonTest();
             $response->setStatusCode(200);
-        } catch (TableParserHandlerException $e) {
+        } catch (TableParserException $e) {
             $data = ControllerUtils::createExceptionData($e);
             $response->setStatusCode(500);
         }

@@ -52,16 +52,16 @@ class TableParserHandler
     /**
      * @throws TableParserHandlerException
      */
-    public function parseToJsonTest(): string
+    public function parseToJsonTest(): bool
     {
         if (!$this->tableParser) {
-            throw new TableParserHandlerException(
+            throw new TableParserException(
                 'Table parser not exists',
-                TableParserHandlerException::PARSER_NOT_EXISTS
+                TableParserException::PARSER_NOT_EXISTS
             );
         }
 
-        return 'ok';
+        return TRUE;
     }
 
     /**
@@ -78,11 +78,14 @@ class TableParserHandler
     /**
      * @param string $type
      *
+     * @return bool
      * @throws TableParserException
      */
-    public function parseFromJsonTest(string $type): void
+    public function parseFromJsonTest(string $type): bool
     {
         $this->tableParser->createWriter(new Spreadsheet(), $type);
+
+        return TRUE;
     }
 
     /**

@@ -62,16 +62,23 @@ class Mailer
     }
 
     /**
+     * @param TransportMessageInterface $message
+     *
+     * @return bool
      * @throws MailerException
      */
-    public function renderAndSendTest(): void
+    public function renderAndSendTest(TransportMessageInterface $message): bool
     {
-        if (!$this->templateEngine) {
-            throw new MailerException(
-                'Missing template engine. Can not render message.',
-                MailerException::MISSING_TEMPLATE_ENGINE
-            );
+        if ($message->getTemplate()) {
+            if (!$this->templateEngine) {
+                throw new MailerException(
+                    'Missing template engine. Can not render message.',
+                    MailerException::MISSING_TEMPLATE_ENGINE
+                );
+            }
         }
+
+        return TRUE;
     }
 
 }

@@ -15,5 +15,6 @@ final class TableParserException extends PipesFrameworkException
     protected const OFFSET = 800;
 
     public const UNKNOWN_WRITER_TYPE = self::OFFSET + 1;
+    public const PARSER_NOT_EXISTS = self::OFFSET + 2;
 
 }

@@ -24,7 +24,7 @@ class MailerTest extends TestCase
 {
 
     /**
-     *
+     * @covers Mailer::renderAndSend()
      */
     public function testSend(): void
     {
@@ -43,6 +43,28 @@ class MailerTest extends TestCase
 
         $mailer = new Mailer($transport, NULL);
         $mailer->renderAndSend($handler->buildTransportMessage($data));
+    }
+
+    /**
+     * @covers Mailer::renderAndSendTest()
+     */
+    public function testSendTest(): void
+    {
+        /** @var TransportInterface|PHPUnit_Framework_MockObject_MockObject $transport */
+        $transport = $this->createPartialMock(TransportInterface::class, ['send']);
+        $transport->method('send')->willReturn(1);
+
+        $data = [
+            'from'    => 'valid@mail.com',
+            'to'      => 'no-reply@test.com',
+            'subject' => 'Subject',
+            'content' => 'Content',
+        ];
+
+        $handler = new GenericMessageHandler();
+
+        $mailer = new Mailer($transport, NULL);
+        $mailer->renderAndSendTest($handler->buildTransportMessage($data));
     }
 
 }
