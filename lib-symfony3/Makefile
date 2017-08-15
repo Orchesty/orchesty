@@ -50,12 +50,15 @@ phpstan:
 phpunit:
 	$(MAKE) docker docker="./vendor/bin/phpunit -c phpunit.xml.dist --dont-report-useless-tests --colors tests/"
 
-test: codesniffer phpstan phpunit
+test: docker-up-force composer-install codesniffer phpstan clear-cache phpunit
 
 #Other
 
 console:
 	$(MAKE) docker docker="php bin/console ${command}"
+
+clear-cache:
+	$(MAKE) docker docker="sudo rm -rf app/cache"
 
 .env: DEV_UID != id -u
 .env: DEV_GID != id -g
