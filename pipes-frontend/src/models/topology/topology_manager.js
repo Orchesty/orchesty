@@ -8,7 +8,7 @@ class TopologyManager extends Flusanec.PersistentManager{
   }
 
   getTopologyList(sort){
-    return this._topologyDataSource.getTopologyItems({sort});
+    return this._topologyDataSource.getTopologyItems(5, 0, sort);
   }
 
   getTopology(id, force = false){

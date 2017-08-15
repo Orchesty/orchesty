@@ -28,15 +28,15 @@ class ListPagination extends Flusanec.Component {
   set list(list:SortPersistentList) {
     if (this._list != list) {
       this._list && this._list.removeDataChangeListener(this._onDataChange);
-      this._list && this._list.removeParamsChangeListener(this._onParamsChange);
+      this._list && this._list.removeLimitChangeListener(this._onParamsChange);
       this._list = list;
       this._list && this._list.addDataChangeListener(this._onDataChange);
-      this._list && this._list.addParamsChangeListener(this._onParamsChange);
+      this._list && this._list.addLimitChangeListener(this._onParamsChange);
     }
   }
 
   pageChange(pageNo) {
-    this._list.setLimitation(this.props.pageItemCount, pageNo * this.props.pageItemCount)
+    this._list.setLimitation(this.props.pageItemCount, pageNo * this.props.pageItemCount);
   }
 
   render() {

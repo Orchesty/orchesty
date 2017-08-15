@@ -38,11 +38,11 @@ class TopologyListTable extends Flusanec.Component {
     if (this._topologyList != topologyList) {
       this._topologyList && this._topologyList.removeDataChangeListener(this._onDataChange);
       this._topologyList && this._topologyList.removeStateChangeListener(this._onStateChange);
-      this._topologyList && this._topologyList.removeParamsChangeListener(this._onParamsChange);
+      this._topologyList && this._topologyList.removeSortChangeListener(this._onParamsChange);
       this._topologyList = topologyList;
       this._topologyList && this._topologyList.addStateChangeListener(this._onStateChange);
       this._topologyList && this._topologyList.addDataChangeListener(this._onDataChange);
-      this._topologyList && this._topologyList.addParamsChangeListener(this._onParamsChange);
+      this._topologyList && this._topologyList.addSortChangeListener(this._onParamsChange);
     }
   }
 

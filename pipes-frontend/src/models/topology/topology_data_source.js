@@ -1,19 +1,25 @@
-import SortDataSource from '../sort_data_souce';
+import PageDataSource from '../page_data_souce';
 import Topology from './objects/topology';
 
-class TopologyDataSource extends SortDataSource{
+class TopologyDataSource extends PageDataSource{
   constructor(httpServer: HttpServer){
     super(Topology);
     this._httpServer = httpServer;
   }
   
-  getTopologyItems(params, persistentList = null){
-    let promise = this._httpServer.send('GET', '/topologies', this.paramsToQueries(params));
-    return this.promiseToList(promise, persistentList, persistentList => this.getTopologyItems(persistentList.params, persistentList), params);
+  _loadTopologyItems(objectAcceptCallback, list:PagePersistentList){
+    let promise = this._httpServer.send('GET', '/topologies', this.listParamsToQueries(list));
+    return this.promiseToPageList(promise, list, objectAcceptCallback);
+  }
+  
+  getTopologyItems(limit, offset, sort, objectAcceptCallback){
+    let list = this.initPagePersistentList(limit, offset, this._loadTopologyItems.bind(this, objectAcceptCallback), null, sort);
+    list.refresh();
+    return list;
   }
   
   getById(id, force = false){
-    return this._establishObject(id, id => this._httpServer.send('GET', `/notification_types/${id}`), force);
+    return this._establishObject(id, id => this._httpServer.send('GET', `/topologies/${id}`), force);
     // return (!force && this.cacheObjectToPromise(id)) || this._httpServer.send('GET', `/topologies/${id}`).then(
     //     response => response ? this.acceptObject(response) : response
     //   );

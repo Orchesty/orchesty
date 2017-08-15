@@ -86,14 +86,6 @@ class SortPersistentList extends Flusanec.PersistentList{
   removeLimitChangeListener(callback) {
     this.removeListener('limit_change', callback);
   }
-
-  addSortChangeListener(callback) {
-    this.on('sort_change', callback);
-  }
-
-  removeSortChangeListener(callback) {
-    this.removeListener('sort_change', callback);
-  }
 }
 
 export default SortPersistentList;
