@@ -3,6 +3,7 @@
 namespace Hanaboso\PipesFramework\User\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Hanaboso\PipesFramework\HbPFTableParserBundle\Enum\UserTypeEnum;
 
 /**
  * Class TmpUser
@@ -13,5 +14,13 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
  */
 class TmpUser extends UserAbstract
 {
+
+    /**
+     * @return string
+     */
+    public function getType(): string
+    {
+        return UserTypeEnum::TMP_USER;
+    }
 
 }

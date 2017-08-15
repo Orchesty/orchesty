@@ -12,7 +12,7 @@ use Hanaboso\PipesFramework\Commons\Traits\IdTrait;
  * @package Hanaboso\PipesFramework\User\Document
  *
  */
-abstract class UserAbstract
+abstract class UserAbstract implements UserInterface
 {
 
     use IdTrait;
@@ -32,6 +32,14 @@ abstract class UserAbstract
     protected $created;
 
     /**
+     * UserAbstract constructor.
+     */
+    public function __construct()
+    {
+        $this->created = new DateTime();
+    }
+
+    /**
      * @return string
      */
     public function getEmail(): string
@@ -42,9 +50,9 @@ abstract class UserAbstract
     /**
      * @param string $email
      *
-     * @return UserAbstract
+     * @return UserInterface
      */
-    public function setEmail(string $email): UserAbstract
+    public function setEmail(string $email): UserInterface
     {
         $this->email = $email;
 
@@ -57,18 +65,6 @@ abstract class UserAbstract
     public function getCreated(): DateTime
     {
         return $this->created;
-    }
-
-    /**
-     * @param DateTime $created
-     *
-     * @return UserAbstract
-     */
-    public function setCreated(DateTime $created): UserAbstract
-    {
-        $this->created = $created;
-
-        return $this;
     }
 
 }
