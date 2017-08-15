@@ -2,8 +2,10 @@
 
 namespace Hanaboso\PipesFramework\HbPFMailerBundle\DependencyInjection;
 
+use RuntimeException;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
 use Symfony\Component\DependencyInjection\Loader;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 
@@ -12,8 +14,20 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
  *
  * @link http://symfony.com/doc/current/cookbook/bundles/extension.html
  */
-class HbPFMailerExtension extends Extension
+class HbPFMailerExtension extends Extension implements PrependExtensionInterface
 {
+
+    /**
+     * Allow an extension to prepend the extension configurations.
+     *
+     * @param ContainerBuilder $container
+     */
+    public function prepend(ContainerBuilder $container): void
+    {
+        if (!$container->hasExtension('hb_pf_commons')) {
+            throw new RuntimeException('You must register HbPFCommonsBundle before.');
+        };
+    }
 
     /**
      * @param array            $configs
