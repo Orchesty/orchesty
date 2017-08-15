@@ -7,8 +7,6 @@ use Hanaboso\PipesFramework\Commons\Transport\Soap\Dto\RequestDtoAbstract;
 use Hanaboso\PipesFramework\Commons\Transport\Soap\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Commons\Transport\Soap\Wsdl\Dto\RequestDto;
 use SoapFault;
-use SoapHeader;
-use SoapParam;
 
 /**
  * Class SoapManager
@@ -37,9 +35,9 @@ final class SoapManager implements SoapManagerInterface
 
             $soapCallResponse = $client->__soapCall(
                 $request->getFunction(),
-                $this->composeArguments($request),
+                SoapHelper::composeArguments($request),
                 NULL,
-                $this->composeHeaders($request),
+                SoapHelper::composeHeaders($request),
                 $outputHeaders
             );
 
@@ -75,8 +73,7 @@ final class SoapManager implements SoapManagerInterface
             $wsdl = NULL;
             if ($request->getType() == SoapManagerInterface::MODE_WSDL) {
                 /** @var RequestDto $request */
-                $wsdl = $request->getWsdlUri();
-                // TODO get string from object...
+                $wsdl = strval($request->getWsdlUri());
             }
 
             return new SoapClient($wsdl, $options);
@@ -100,8 +97,8 @@ final class SoapManager implements SoapManagerInterface
      */
     private function handleResponse(
         $soapCallResponse,
-        string $lastResponseHeaders = NULL,
-        array $outputHeaders = NULL,
+        ?string $lastResponseHeaders = NULL,
+        ?array $outputHeaders = NULL,
         RequestDtoAbstract $request
     ): ResponseDto
     {
@@ -143,72 +140,6 @@ final class SoapManager implements SoapManagerInterface
         ]);
 
         return $options;
-    }
-
-    /**
-     * @param RequestDtoAbstract|RequestDto $request
-     *
-     * @return SoapHeader[]|null
-     */
-    private function composeHeaders(RequestDtoAbstract $request): ?array
-    {
-        $requestHeader = $request->getHeader();
-
-        if (empty($requestHeader)) {
-            return NULL;
-        }
-
-        $headers = [];
-        foreach ($requestHeader->getParams() as $key => $value) {
-            $headers[] = new SoapHeader($requestHeader->getNamespace(), $key, $value);
-        }
-
-        return $headers;
-    }
-
-    /**
-     * @param RequestDtoAbstract $request
-     *
-     * @return SoapParam[]|null
-     */
-    private function composeArguments(RequestDtoAbstract $request): ?array
-    {
-        if ($request->getType() == SoapManagerInterface::MODE_WSDL) {
-            return $request->getArguments();
-        } else {
-            return $this->composeArgumentsForNonWsdl($request);
-        }
-    }
-
-    /**
-     * @param RequestDtoAbstract $request
-     *
-     * @return array|null
-     */
-    private function composeArgumentsForNonWsdl(RequestDtoAbstract $request): ?array
-    {
-        $arguments = $request->getArguments();
-        if ($arguments === NULL) {
-            return $arguments;
-        }
-
-        $soapParams = [];
-        foreach ($arguments as $key => $value) {
-            $soapParams[] = new SoapParam($this->composeDataForSoapParam($key, $value), $key);
-        }
-
-        return $soapParams;
-    }
-
-    /**
-     * @param string $key
-     * @param mixed  $value
-     */
-    private function composeDataForSoapParam(string $key, $value)
-    {
-        // TODO study first how to make it universal
-
-        // TODO create separate class for handling SoapHeader, SoapParam and SoapVar
     }
 
 }

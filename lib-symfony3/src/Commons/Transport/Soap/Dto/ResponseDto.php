@@ -28,7 +28,7 @@ class ResponseDto
     /**
      * ResponseDto constructor.
      *
-     * @param             $soapCallResponse
+     * @param mixed       $soapCallResponse
      * @param null|string $lastResponseHeaders
      * @param array|null  $outputHeaders
      */
@@ -37,6 +37,30 @@ class ResponseDto
         $this->soapCallResponse    = $soapCallResponse;
         $this->lastResponseHeaders = $lastResponseHeaders;
         $this->outputHeaders       = $outputHeaders;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSoapCallResponse()
+    {
+        return $this->soapCallResponse;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getLastResponseHeaders(): ?string
+    {
+        return $this->lastResponseHeaders;
+    }
+
+    /**
+     * @return array|null
+     */
+    public function getOutputHeaders(): ?array
+    {
+        return $this->outputHeaders;
     }
 
 }
