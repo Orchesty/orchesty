@@ -6,14 +6,14 @@ use DateTime;
 use Hanaboso\PipesFramework\User\Document\TmpUser;
 use Hanaboso\PipesFramework\User\Document\Token;
 use Hanaboso\PipesFramework\User\Document\User;
-use Tests\DatabaseTestCase;
+use Tests\DatabaseTestCaseAbstract;
 
 /**
  * Class EntityTest
  *
  * @package Tests\Integration\User
  */
-class DocumentTest extends DatabaseTestCase
+class DocumentTest extends DatabaseTestCaseAbstract
 {
 
     /**

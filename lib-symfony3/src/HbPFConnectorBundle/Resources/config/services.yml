@@ -1,2 +1,18 @@
 services:
+    hbpf.loader.connector:
+        class: Hanaboso\PipesFramework\HbPFConnectorBundle\Loaders\ConnectorLoader
+        arguments:
+            - "@service_container"
 
+    # --- Provizorní pro test --- #
+    hbpf.storage.interface:
+        class: Hanaboso\PipesFramework\Commons\ServiceStorage\JSONSingleFileStorage
+    hbpf.magento2.auth:
+        class: Hanaboso\PipesFramework\Connector\Impl\Magento2\Magento2Authorization
+        arguments:
+            - '1'
+            - '@hbpf.storage.interface'
+            - 'url'
+            - 'name'
+            - 'pass'
+    # --------------------------- #
