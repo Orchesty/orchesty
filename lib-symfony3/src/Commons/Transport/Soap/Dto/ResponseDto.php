@@ -2,6 +2,8 @@
 
 namespace Hanaboso\PipesFramework\Commons\Transport\Soap\Dto;
 
+use Hanaboso\PipesFramework\Commons\Transport\Soap\SoapHelper;
+
 /**
  * Class ResponseDto
  *
@@ -21,9 +23,9 @@ class ResponseDto
     private $lastResponseHeaders;
 
     /**
-     * @var array|null
+     * @var ResponseHeaderDto
      */
-    private $outputHeaders;
+    private $responseHeaderDto;
 
     /**
      * ResponseDto constructor.
@@ -36,7 +38,14 @@ class ResponseDto
     {
         $this->soapCallResponse    = $soapCallResponse;
         $this->lastResponseHeaders = $lastResponseHeaders;
-        $this->outputHeaders       = $outputHeaders;
+
+        $parsedHeaders           = SoapHelper::parseResponseHeaders($outputHeaders);
+        $this->responseHeaderDto = new ResponseHeaderDto(
+            $parsedHeaders['headers'],
+            $parsedHeaders['version'],
+            $parsedHeaders['statusCode'],
+            $parsedHeaders['reason']
+        );
     }
 
     /**
@@ -56,11 +65,11 @@ class ResponseDto
     }
 
     /**
-     * @return array|null
+     * @return ResponseHeaderDto|null
      */
-    public function getOutputHeaders(): ?array
+    public function getResponseHeaderDto(): ?ResponseHeaderDto
     {
-        return $this->outputHeaders;
+        return $this->responseHeaderDto;
     }
 
 }

@@ -1,0 +1,12 @@
+services:
+    hbpf.curl_manager:
+        class: Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager
+        arguments:
+
+    hbpf.soap_manager:
+        class: Hanaboso\PipesFramework\Commons\Transport\Soap\SoapManager
+        arguments:
+
+    hbpf.soap_client_factory:
+        class: Hanaboso\PipesFramework\Commons\Transport\Soap\SoapClientFactory
+        arguments:

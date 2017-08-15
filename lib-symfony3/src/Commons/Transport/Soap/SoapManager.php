@@ -5,7 +5,6 @@ namespace Hanaboso\PipesFramework\Commons\Transport\Soap;
 use Exception;
 use Hanaboso\PipesFramework\Commons\Transport\Soap\Dto\RequestDtoAbstract;
 use Hanaboso\PipesFramework\Commons\Transport\Soap\Dto\ResponseDto;
-use Hanaboso\PipesFramework\Commons\Transport\Soap\Wsdl\Dto\RequestDto;
 use SoapFault;
 
 /**
@@ -19,6 +18,21 @@ final class SoapManager implements SoapManagerInterface
     public const CONNECTION_TIMEOUT = 15;
 
     /**
+     * @var SoapClientFactory
+     */
+    private $soapClientFactory;
+
+    /**
+     * SoapManager constructor.
+     *
+     * @param SoapClientFactory $soapClientFactory
+     */
+    public function __construct(SoapClientFactory $soapClientFactory)
+    {
+        $this->soapClientFactory = $soapClientFactory;
+    }
+
+    /**
      * @param RequestDtoAbstract $request
      * @param array              $options
      *
@@ -29,7 +43,7 @@ final class SoapManager implements SoapManagerInterface
     {
         try {
 
-            $client = $this->createClient($request, $this->composeOptions($request, $options));
+            $client = $this->soapClientFactory->createSoapClient($request, $this->composeOptions($request, $options));
 
             // TODO log
 
@@ -37,7 +51,7 @@ final class SoapManager implements SoapManagerInterface
                 $request->getFunction(),
                 SoapHelper::composeArguments($request),
                 NULL,
-                SoapHelper::composeHeaders($request),
+                SoapHelper::composeRequestHeaders($request),
                 $outputHeaders
             );
 
@@ -50,40 +64,13 @@ final class SoapManager implements SoapManagerInterface
 
         } catch (SoapException $e) {
             // TODO log
-            throw new SoapException();
+            throw $e;
         } catch (SoapFault $e) {
             // TODO log
-            throw new SoapException();
+            throw new SoapException('Invalid function call.', SoapException::INVALID_FUNCTION_CALL, $e);
         } catch (Exception $e) {
             // TODO log
-            throw new SoapException();
-        }
-    }
-
-    /**
-     * @param RequestDtoAbstract $request
-     * @param array              $options
-     *
-     * @return SoapClient
-     * @throws SoapException
-     */
-    private function createClient(RequestDtoAbstract $request, array $options): SoapClient
-    {
-        try {
-            $wsdl = NULL;
-            if ($request->getType() == SoapManagerInterface::MODE_WSDL) {
-                /** @var RequestDto $request */
-                $wsdl = strval($request->getWsdlUri());
-            }
-
-            return new SoapClient($wsdl, $options);
-
-        } catch (SoapFault $e) {
-            // TODO log
-            throw new SoapException();
-        } catch (Exception $e) {
-            // TODO log
-            throw new SoapException();
+            throw new SoapException('Unknown exception.', SoapException::UNKNOWN_EXCEPTION, $e);
         }
     }
 
@@ -104,7 +91,8 @@ final class SoapManager implements SoapManagerInterface
     {
         $response = new ResponseDto($soapCallResponse, $lastResponseHeaders, $outputHeaders);
 
-        // TODO log
+        // TODO log - may use request object
+        count([$request]);
 
         return $response;
     }

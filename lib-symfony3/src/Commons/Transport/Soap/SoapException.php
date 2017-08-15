@@ -12,6 +12,9 @@ use Exception;
 final class SoapException extends Exception
 {
 
-    public const UNKNOWN_SOAP_VERSION = 900;
+    public const UNKNOWN_EXCEPTION     = 900;
+    public const UNKNOWN_SOAP_VERSION  = 901;
+    public const INVALID_FUNCTION_CALL = 902;
+    public const INVALID_WSDL          = 903;
 
 }

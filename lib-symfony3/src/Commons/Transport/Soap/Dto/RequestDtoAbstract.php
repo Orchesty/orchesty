@@ -2,8 +2,8 @@
 
 namespace Hanaboso\PipesFramework\Commons\Transport\Soap\Dto;
 
+use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Transport\Soap\SoapException;
-use Hanaboso\PipesFramework\Commons\Transport\Soap\Wsdl\Dto\RequestHeaderDto;
 
 /**
  * Class RequestDto
@@ -44,17 +44,26 @@ abstract class RequestDtoAbstract
     private $header;
 
     /**
+     * @var Uri
+     */
+    private $uri;
+
+    /**
      * RequestDtoAbstract constructor.
      *
      * @param string $function
      * @param array  $arguments
      * @param string $namespace
+     * @param Uri    $uri
      */
-    public function __construct(string $function, array $arguments = [], string $namespace)
+    public function __construct(string $function, array $arguments = [], string $namespace, Uri $uri)
     {
         $this->function  = $function;
         $this->arguments = $arguments;
-        $this->header    = new RequestHeaderDto($namespace);
+        $this->uri       = $uri;
+
+        // TODO may need to add second parameter to RequestHeaderDto
+        $this->header = new RequestHeaderDto($namespace);
     }
 
     /**
@@ -143,5 +152,13 @@ abstract class RequestDtoAbstract
      * @return string
      */
     public abstract function getType(): string;
+
+    /**
+     * @return Uri
+     */
+    public function getUri(): Uri
+    {
+        return $this->uri;
+    }
 
 }

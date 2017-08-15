@@ -9,7 +9,18 @@ use SoapClient as PhpSoapClient;
  *
  * @package Hanaboso\PipesFramework\Commons\Transport\Soap
  */
-final class SoapClient extends PhpSoapClient
+class SoapClient extends PhpSoapClient
 {
+
+    /**
+     * SoapClient constructor.
+     *
+     * @param mixed      $wsdl
+     * @param array|null $options
+     */
+    public function __construct($wsdl, ?array $options = NULL)
+    {
+        parent::__construct($wsdl, $options);
+    }
 
 }

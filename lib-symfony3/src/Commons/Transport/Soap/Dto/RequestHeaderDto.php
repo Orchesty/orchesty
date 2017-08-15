@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace Hanaboso\PipesFramework\Commons\Transport\Soap\Wsdl\Dto;
+namespace Hanaboso\PipesFramework\Commons\Transport\Soap\Dto;
 
 /**
  * Class RequestHeaderDto
  *
- * @package Hanaboso\PipesFramework\Commons\Transport\Soap\Wsdl\Dto
+ * @package Hanaboso\PipesFramework\Commons\Transport\Soap\Dto
  */
 class RequestHeaderDto
 {

@@ -3,8 +3,12 @@
 namespace Hanaboso\PipesFramework\Commons\Transport\Soap;
 
 use Hanaboso\PipesFramework\Commons\Transport\Soap\Dto\RequestDtoAbstract;
+use InvalidArgumentException;
 use SoapHeader;
 use SoapParam;
+use SoapVar;
+use Symfony\Component\HttpFoundation\HeaderBag;
+use function GuzzleHttp\headers_from_lines;
 
 /**
  * Class SoapHelper
@@ -19,11 +23,11 @@ class SoapHelper
      *
      * @return SoapHeader[]|null
      */
-    public static function composeHeaders(RequestDtoAbstract $request): ?array
+    public static function composeRequestHeaders(RequestDtoAbstract $request): ?array
     {
         $requestHeader = $request->getHeader();
 
-        if (empty($requestHeader)) {
+        if (empty($requestHeader->getParams())) {
             return NULL;
         }
 
@@ -50,19 +54,50 @@ class SoapHelper
     }
 
     /**
+     * @param null|string $headers
+     *
+     * @return array
+     */
+    public static function parseResponseHeaders(?string $headers = NULL): array
+    {
+        $result = [
+            'version'    => NULL,
+            'statusCode' => NULL,
+            'reason'     => NULL,
+            'headers'    => NULL,
+        ];
+
+        if ($headers === NULL) {
+            return $result;
+        }
+
+        $headers = explode("\n", $headers);
+        $parts   = explode(' ', array_shift($headers), 3);
+
+        if (count($parts) > 2) {
+            $result['version']    = explode('/', $parts[0])[1];
+            $result['statusCode'] = $parts[1];
+            $result['reason']     = isset($parts[2]) ? $parts[2] : NULL;
+        }
+
+        $result['headers'] = new HeaderBag(headers_from_lines($headers));
+
+        return $result;
+    }
+
+    /**
      * @param RequestDtoAbstract $request
      *
      * @return array|null
      */
     private static function composeArgumentsForNonWsdl(RequestDtoAbstract $request): ?array
     {
-        $arguments = $request->getArguments();
-        if ($arguments === NULL) {
-            return $arguments;
+        if (empty($request->getArguments())) {
+            return NULL;
         }
 
         $soapParams = [];
-        foreach ($arguments as $key => $value) {
+        foreach ($request->getArguments() as $key => $value) {
             $soapParams[] = new SoapParam(self::composeDataForSoapParam($key, $value), $key);
         }
 
@@ -70,16 +105,32 @@ class SoapHelper
     }
 
     /**
-     * @param string $key
-     * @param mixed  $value
+     * TODO may need to edit when implementing
      *
-     * @return array|null
+     * @param string $nodeName
+     * @param mixed  $data
+     *
+     * @return SoapVar
+     * @throws InvalidArgumentException
      */
-    private static function composeDataForSoapParam(string $key, $value): ?array
+    private static function composeDataForSoapParam(string $nodeName, $data): SoapVar
     {
-        // TODO study first how to make it universal
+        if (strpos($nodeName, ':') === FALSE) {
+            $nodeName = 'ns1:' . $nodeName;
+        }
 
-        return [];
+        if (is_scalar($data)) {
+            return new SoapVar($data, XSD_STRING, '', '', $nodeName);
+        } elseif (is_array($data)) {
+            $params = [];
+            foreach ($data as $subName => $subArg) {
+                $params[] = self::composeDataForSoapParam($subName, $subArg);
+            }
+
+            return new SoapVar($params, SOAP_ENC_OBJECT, $nodeName, NULL, $nodeName);
+        }
+
+        throw new InvalidArgumentException(sprintf('Type %s is not supported.', gettype($data)));
     }
 
 }
