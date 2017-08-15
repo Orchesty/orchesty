@@ -2,7 +2,7 @@
 
 namespace Hanaboso\PipesFramework\HbPFCommonsBundle\Controller;
 
-use Hanaboso\PipesFramework\Commons\Authorization\Connectors\AuthorizationRepository;
+use Hanaboso\PipesFramework\HbPFConnectorBundle\Loaders\AuthorizationLoader;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -57,10 +57,10 @@ class DefaultController extends Controller
      */
     public function authorizationInfoAction(): Response
     {
-        /** @var AuthorizationRepository $authorizationRepository */
-        $authorizationRepository = $this->container->get('hbpf.authorization_repository');
+        /** @var AuthorizationLoader $authorizationLoader */
+        $authorizationLoader = $this->container->get('hbpf.loader.authorization');
 
-        $authorizations = $authorizationRepository->getAuthorizations();
+        $authorizations = $authorizationLoader->getAuthorizations();
 
         $template = [
             'authorizations' => $authorizations,

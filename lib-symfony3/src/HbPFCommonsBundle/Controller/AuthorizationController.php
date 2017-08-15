@@ -3,10 +3,10 @@
 namespace Hanaboso\PipesFramework\HbPFCommonsBundle\Controller;
 
 use FOS\RestBundle\Controller\FOSRestController;
-use Hanaboso\PipesFramework\Commons\Authorization\Connectors\AuthorizationRepository;
 use Hanaboso\PipesFramework\Commons\Authorization\UserAction\UserActionAuthorizationInterface;
 use Hanaboso\PipesFramework\Commons\CustomRoute\CustomRouteableInterface;
 use Hanaboso\PipesFramework\Commons\CustomRoute\CustomRouteManager;
+use Hanaboso\PipesFramework\HbPFConnectorBundle\Loaders\AuthorizationLoader;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -28,11 +28,11 @@ class AuthorizationController extends FOSRestController
      */
     public function userAuthorizationAction(string $authorizationId): Response
     {
-        /** @var AuthorizationRepository $repo */
-        $repo = $this->container->get('hbpf.authorization_repository');
+        /** @var AuthorizationLoader $loader */
+        $loader = $this->container->get('hbpf.loader.authorization');
 
         /** @var UserActionAuthorizationInterface $authorization */
-        $authorization = $repo->get($authorizationId);
+        $authorization = $loader->get($authorizationId);
 
         $result = [];
         if ($authorization instanceof UserActionAuthorizationInterface) {
@@ -51,11 +51,11 @@ class AuthorizationController extends FOSRestController
      */
     public function getCustomRoutesForAuthorization(string $authorizationId): Response
     {
-        /** @var AuthorizationRepository $repo */
-        $repo = $this->container->get('hbpf.authorization_repository');
+        /** @var AuthorizationLoader $loader */
+        $loader = $this->container->get('hbpf.loader.authorization');
 
         /** @var CustomRouteableInterface $authorization */
-        $authorization = $repo->get($authorizationId);
+        $authorization = $loader->get($authorizationId);
 
         $result = [];
         if ($authorization instanceof CustomRouteableInterface) {
@@ -76,11 +76,11 @@ class AuthorizationController extends FOSRestController
      */
     public function authorizationCustomRouteAction(Request $request, string $authorizationId, string $partUrl): Response
     {
-        /** @var AuthorizationRepository $repo */
-        $repo = $this->container->get('hbpf.authorization_repository');
+        /** @var AuthorizationLoader $loader */
+        $loader = $this->container->get('hbpf.loader.authorization');
 
         /** @var UserActionAuthorizationInterface $authorization */
-        $authorization = $repo->get($authorizationId);
+        $authorization = $loader->get($authorizationId);
 
         if ($authorization instanceof CustomRouteableInterface) {
             /** @var CustomRouteManager $customRouteManager */

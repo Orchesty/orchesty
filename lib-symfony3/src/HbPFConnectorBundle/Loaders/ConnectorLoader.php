@@ -74,7 +74,7 @@ class ConnectorLoader
         $res = [];
 
         foreach ($list['services'] as $key => $item) {
-            $shortened = str_replace('hbpf.connector.', '', $key);
+            $shortened = str_replace(self::CONNECTOR_PREFIX . '.', '', $key);
             if (in_array($shortened, $exclude)) {
                 unset($exclude[$shortened]);
                 continue;
