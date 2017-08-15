@@ -1,7 +1,7 @@
 version: '2'
 services:
   php-dev:
-    image: dkr.hanaboso.net/pipes/lib-symfony3/php-dev:php-dev
+    image: dkr.hanaboso.net/pipes/pipes/php-dev:dev
     user: ${DEV_UID}:${DEV_GID}
     volumes:
       - ./:/srv/project
