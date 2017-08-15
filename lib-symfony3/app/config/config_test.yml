@@ -10,7 +10,6 @@ services:
 
 imports:
 ## Import params
-    - { resource: ../../src/HbPFCommonsBundle/Resources/config/fos_rest.yml }
     - { resource: parameters.yml }
 
 doctrine_mongodb:
