@@ -2,7 +2,6 @@
 
 namespace Tests\Integration\User;
 
-use DateTime;
 use Hanaboso\PipesFramework\User\Document\TmpUser;
 use Hanaboso\PipesFramework\User\Document\Token;
 use Hanaboso\PipesFramework\User\Document\User;
@@ -34,9 +33,8 @@ class DocumentTest extends DatabaseTestCaseAbstract
         $this->documentManager->flush();
 
         $token = (new Token())
-            ->setCreated(new DateTime('today midnight'))
-            ->setUser($user)
-            ->setTmpUser($tmpUser);
+            ->setTmpUser($tmpUser)
+            ->setUser($user);
 
         $this->documentManager->persist($token);
         $this->documentManager->flush();
@@ -45,10 +43,17 @@ class DocumentTest extends DatabaseTestCaseAbstract
         /** @var Token $existingToken */
         $existingToken = $tokenRepository->find($token->getId());
 
-        $this->assertNotEmpty($existingToken->getUuid());
-        $this->assertEquals($token->getCreated(), $existingToken->getCreated());
+        $this->assertEquals(
+            $token->getCreated()->format('d. m. Y H:i:s'),
+            $existingToken->getCreated()->format('d. m. Y H:i:s')
+        );
         $this->assertEquals($token->getUser()->getEmail(), $existingToken->getUser()->getEmail());
         $this->assertEquals($token->getTmpUser()->getEmail(), $existingToken->getTmpUser()->getEmail());
+
+        $this->documentManager->remove($existingToken->getUser());
+        $this->documentManager->remove($existingToken->getTmpUser());
+        $this->documentManager->remove($existingToken);
+        $this->documentManager->flush();
     }
 
 }

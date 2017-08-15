@@ -5,6 +5,7 @@ namespace Hanaboso\PipesFramework\User\Document;
 use DateTime;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Hanaboso\PipesFramework\Commons\Traits\DeletedTrait;
+use Hanaboso\PipesFramework\HbPFTableParserBundle\Enum\UserTypeEnum;
 
 /**
  * Class User
@@ -31,6 +32,14 @@ class User extends UserAbstract
      * @ODM\Field(type="date")
      */
     private $updated;
+
+    /**
+     * @return string
+     */
+    public function getType(): string
+    {
+        return UserTypeEnum::USER;
+    }
 
     /**
      * @return string

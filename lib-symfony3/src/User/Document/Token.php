@@ -5,6 +5,7 @@ namespace Hanaboso\PipesFramework\User\Document;
 use DateTime;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Hanaboso\PipesFramework\Commons\Traits\IdTrait;
+use LogicException;
 
 /**
  * Class Token
@@ -19,13 +20,6 @@ class Token
     use IdTrait;
 
     /**
-     * @var string
-     *
-     * @ODM\Id(strategy="UUID", type="string")
-     */
-    private $uuid;
-
-    /**
      * @var DateTime
      *
      * @ODM\Field(type="date")
@@ -33,25 +27,25 @@ class Token
     private $created;
 
     /**
-     * @var User
+     * @var UserInterface
      *
      * @ODM\ReferenceOne(targetDocument="Hanaboso\PipesFramework\User\Document\User")
      */
     private $user;
 
     /**
-     * @var TmpUser
+     * @var UserInterface
      *
      * @ODM\ReferenceOne(targetDocument="Hanaboso\PipesFramework\User\Document\TmpUser")
      */
     private $tmpUser;
 
     /**
-     * @return string
+     * Token constructor.
      */
-    public function getUuid(): string
+    public function __construct()
     {
-        return $this->uuid;
+        $this->created = new DateTime();
     }
 
     /**
@@ -63,31 +57,19 @@ class Token
     }
 
     /**
-     * @param DateTime $created
-     *
-     * @return Token
+     * @return UserInterface|null
      */
-    public function setCreated(DateTime $created): Token
-    {
-        $this->created = $created;
-
-        return $this;
-    }
-
-    /**
-     * @return User
-     */
-    public function getUser(): User
+    public function getUser(): ?UserInterface
     {
         return $this->user;
     }
 
     /**
-     * @param User $user
+     * @param UserInterface $user
      *
      * @return Token
      */
-    public function setUser(User $user): Token
+    public function setUser(UserInterface $user): Token
     {
         $this->user = $user;
 
@@ -95,23 +77,37 @@ class Token
     }
 
     /**
-     * @return TmpUser
+     * @return UserInterface|null
      */
-    public function getTmpUser(): TmpUser
+    public function getTmpUser(): ?UserInterface
     {
         return $this->tmpUser;
     }
 
     /**
-     * @param TmpUser $tmpUser
+     * @param UserInterface $tmpUser
      *
      * @return Token
      */
-    public function setTmpUser(TmpUser $tmpUser): Token
+    public function setTmpUser(UserInterface $tmpUser): Token
     {
         $this->tmpUser = $tmpUser;
 
         return $this;
+    }
+
+    /**
+     * @return UserInterface
+     */
+    public function getUserOrTmpUser(): UserInterface
+    {
+        if ($this->user) {
+            return $this->user;
+        } elseif ($this->tmpUser) {
+            return $this->tmpUser;
+        } else {
+            throw new LogicException('User is not set.');
+        }
     }
 
 }
