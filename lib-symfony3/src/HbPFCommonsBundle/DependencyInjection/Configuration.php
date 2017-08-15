@@ -19,7 +19,7 @@ class Configuration implements ConfigurationInterface
     public function getConfigTreeBuilder(): TreeBuilder
     {
         $treeBuilder = new TreeBuilder();
-        $rootNode    = $treeBuilder->root('hbpf');
+        $treeBuilder->root('hbpf');
 
         // Here you should define the parameters that are allowed to
         // configure your bundle. See the documentation linked above for

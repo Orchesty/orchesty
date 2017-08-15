@@ -8,6 +8,7 @@ use Hanaboso\PipesFramework\Commons\CustomRoute\CustomRouteManager;
 use Hanaboso\PipesFramework\Commons\Message\MessageInterface;
 use Hanaboso\PipesFramework\Commons\Node\NodeInterface;
 use Hanaboso\PipesFramework\Commons\Node\NodeRepository;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;

@@ -23,7 +23,9 @@ use Swift_Message;
 class SwiftMailerTransport implements TransportInterface
 {
 
-    /** @var Swift_Mailer */
+    /**
+     * @var Swift_Mailer
+     */
     protected $mailer;
 
     /**
@@ -38,6 +40,8 @@ class SwiftMailerTransport implements TransportInterface
 
     /**
      * @param TransportMessageInterface $messageData
+     *
+     * @throws TransportException
      */
     public function send(TransportMessageInterface $messageData): void
     {

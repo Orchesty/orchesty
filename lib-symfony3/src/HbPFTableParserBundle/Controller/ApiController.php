@@ -8,6 +8,7 @@ use Hanaboso\PipesFramework\HbPFTableParserBundle\Handler\TableParserHandler;
 use Hanaboso\PipesFramework\HbPFTableParserBundle\Handler\TableParserHandlerException;
 use Hanaboso\PipesFramework\Parser\TableParserException;
 use Hanaboso\PipesFramework\Utils\ControllerUtils;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

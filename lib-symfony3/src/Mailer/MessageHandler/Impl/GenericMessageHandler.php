@@ -26,6 +26,7 @@ class GenericMessageHandler extends AbstractMessageHandler
      * @param array $data
      *
      * @return TransportMessageInterface
+     * @throws MessageHandlerException
      */
     public function buildTransportMessage(array $data): TransportMessageInterface
     {
