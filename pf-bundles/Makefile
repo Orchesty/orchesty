@@ -67,4 +67,5 @@ clear-cache:
 .env: DEV_GID != id -g
 .env:
 	$(file >$@,DEV_UID=${DEV_UID})
-	$(file >>$@,DEV_GID=${DEV_UID})
+	$(file >>$@,DEV_GID=${DEV_GID})
+	$(file >>$@,DEV_IP=127.0.0.2)
