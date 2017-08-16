@@ -5,6 +5,7 @@ services:
     user: ${DEV_UID}:${DEV_GID}
     volumes:
       - ./:/srv/project
+      - ../:/srv/libs
       #- ${SSH_AUTH_SOCK}:/tmp/bound-ssh-agent
       - /home/dev/.composer:/home/dev/.composer
       - ./docker/php-dev/config.json:/home/dev/.composer/config.json
