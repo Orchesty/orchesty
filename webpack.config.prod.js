@@ -11,13 +11,11 @@ module.exports = {
     './src/app' // Your appʼs entry point
   ],
   output: {
-    path: path.join(__dirname, '/build'),
+    path: path.join(__dirname, '/dist'),
     filename: "bundle.js"
   },
   plugins: [
-    new CleanWebpackPlugin('build', {
-      exclude: ['.gitignore']
-    }),
+    new CleanWebpackPlugin('dist'),
     new webpack.DefinePlugin({
       'process.env':{
         'NODE_ENV': JSON.stringify('production')
