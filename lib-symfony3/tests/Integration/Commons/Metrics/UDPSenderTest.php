@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Unit\Commons\Metrics;
+namespace Tests\Integration\Commons\Metrics;
 
 use Hanaboso\PipesFramework\Commons\Metrics\UDPSender;
 use PHPUnit\Framework\TestCase;
@@ -8,7 +8,7 @@ use PHPUnit\Framework\TestCase;
 /**
  * Class UDPSenderTest
  *
- * @package Tests\Unit\Commons\Metrics
+ * @package Tests\Integration\Commons\Metrics
  */
 final class UDPSenderTest extends TestCase
 {

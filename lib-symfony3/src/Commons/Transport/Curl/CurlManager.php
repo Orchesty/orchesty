@@ -3,7 +3,6 @@
 namespace Hanaboso\PipesFramework\Commons\Transport\Curl;
 
 use Exception;
-use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Request;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
@@ -26,18 +25,18 @@ final class CurlManager implements CurlManagerInterface
     public const METHOD_PATCH   = 'PATCH';
 
     /**
-     * @var Client
+     * @var CurlClientFactory
      */
-    private $client;
+    private $curlClientFactory;
 
     /**
      * CurlManager constructor.
      *
-     * @param Client $client
+     * @param CurlClientFactory $curlClientFactory
      */
-    public function __construct(Client $client)
+    public function __construct(CurlClientFactory $curlClientFactory)
     {
-        $this->client = $client;
+        $this->curlClientFactory = $curlClientFactory;
     }
 
     /**
@@ -66,8 +65,10 @@ final class CurlManager implements CurlManagerInterface
     public function send(RequestDto $dto, array $options = []): ResponseDto
     {
         try {
-            $request     = new Request($dto->getMethod(), $dto->getUri(), $dto->getHeaders(), $dto->getBody());
-            $psrResponse = $this->client->send($request, $options);
+            $request = new Request($dto->getMethod(), $dto->getUri(), $dto->getHeaders(), $dto->getBody());
+
+            $client      = $this->curlClientFactory->create();
+            $psrResponse = $client->send($request, $options);
 
             $response = new ResponseDto(
                 $psrResponse->getStatusCode(),
