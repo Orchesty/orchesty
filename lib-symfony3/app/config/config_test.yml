@@ -35,4 +35,9 @@ doctrine_mongodb:
                     dir: "%kernel.root_dir%/../src/User/Document"
                     is_bundle: false
                     prefix: Hanaboso\PipesFramework\User\Document
+                AuthorizationsDocument:
+                    type: annotation
+                    is_bundle: false
+                    dir: "%kernel.root_dir%/../src/Authorizations/Document"
+                    prefix: Hanaboso\PipesFramework\Authorizations\Document
             metadata_cache_driver: array

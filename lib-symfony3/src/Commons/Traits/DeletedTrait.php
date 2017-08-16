@@ -17,7 +17,7 @@ trait DeletedTrait
      *
      * @ODM\Field(type="bool")
      */
-    protected $deleted;
+    protected $deleted = FALSE;
 
     /**
      * @return bool

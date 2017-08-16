@@ -3,8 +3,11 @@
 use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
 use Doctrine\Bundle\MongoDBBundle\DoctrineMongoDBBundle;
 use FOS\RestBundle\FOSRestBundle;
-use Hanaboso\PipesFramework\HbPFConnectorBundle\HbPFConnectorBundle;
+use Hanaboso\PipesFramework\HbPFAuthorizationBundle\HbPFAuthorizationBundle;
 use Hanaboso\PipesFramework\HbPFCommonsBundle\HbPFCommonsBundle;
+use Hanaboso\PipesFramework\HbPFConnectorBundle\HbPFConnectorBundle;
+use Hanaboso\PipesFramework\HbPFMailerBundle\HbPFMailerBundle;
+use Hanaboso\PipesFramework\HbPFTableParserBundle\HbPFTableParserBundle;
 use Hanaboso\PipesFramework\HbPFUserBundle\HbPFUserBundle;
 use JMS\SerializerBundle\JMSSerializerBundle;
 use Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle;
@@ -32,9 +35,13 @@ class AppKernel extends Kernel
             new JMSSerializerBundle(),
             new SecurityBundle(),
             new SensioFrameworkExtraBundle(),
+
+            new HbPFAuthorizationBundle(),
             new HbPFCommonsBundle(),
             new HbPFConnectorBundle(),
             new HbPFUserBundle(),
+            new HbPFMailerBundle(),
+            new HbPFTableParserBundle(),
         ];
 
         return $bundles;

@@ -50,6 +50,9 @@ phpstan:
 phpunit:
 	$(MAKE) docker docker="./vendor/bin/phpunit -c phpunit.xml.dist --dont-report-useless-tests --colors tests/"
 
+phpintergration:
+	$(MAKE) docker docker="./vendor/bin/phpunit -c phpunit.xml.dist --dont-report-useless-tests --colors tests/Integration/"
+
 test: docker-up-force composer-install codesniffer phpstan clear-cache phpunit
 
 #Other
