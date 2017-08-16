@@ -26,7 +26,7 @@ php-dev-image:
 njs-build-image:
   stage: stage1
   script:
-    - pipes-frontend/docker/build/build.sh ${CI_BUILD_REF_NAME}
+    - frontend/docker/build/build.sh ${CI_BUILD_REF_NAME}
   only:
     - dev
     - master
@@ -55,10 +55,10 @@ lib-njs-test:
     - docker-compose exec -T test npm run lint
     - docker-compose exec -T test npm test
 
-pipes-frontend:
+frontend:
   stage: stage2
   script:
-    - DIR=pipes-frontend
+    - DIR=frontend
     - skip_unmodified $DIR
     - ${DIR}/docker/prod/build.sh ${CI_BUILD_REF_NAME}
 

@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@gitlab.hanaboso.net:pipes/pipes-frontend.git"
+    "url": "git@gitlab.hanaboso.net:pipes/frontend.git"
   },
   "author": "Hanaboso s.r.o.",
   "license": "ISC",

@@ -19,7 +19,7 @@ rm -rf node_modules
 
 # Image build
 REGISTRY_PREFIX=dkr.hanaboso.net/pipes/pipes
-IMAGE=${REGISTRY_PREFIX}/pipes-frontend:${TAG}
+IMAGE=${REGISTRY_PREFIX}/frontend:${TAG}
 BUILD_IMAGE=${REGISTRY_PREFIX}/nodejs-build:dev
 
 docker pull ${BUILD_IMAGE}
@@ -29,7 +29,7 @@ docker run --rm \
   -e DEV_GID=$(id -g) \
   -v $SSH_AUTH_SOCK:/ssh-agent \
   ${BUILD_IMAGE} \
-  bash -c "ssh-add -l && npm install --production"
+  bash -c "ssh-add -l && npm install && npm run build"
 
 docker build -f docker/prod/Dockerfile -t ${IMAGE} .
 docker push ${IMAGE}
