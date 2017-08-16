@@ -42,8 +42,11 @@ class DocumentListener
     public function preFlush(PreFlushEventArgs $event): void
     {
         for ($i = 0; $i <= 1; $i++) {
-            $documents = $i ? $event->getDocumentManager()->getUnitOfWork()->getScheduledDocumentUpdates()
+            $documents = $i
+                ? $event->getDocumentManager()->getUnitOfWork()->getScheduledDocumentUpdates()
                 : $event->getDocumentManager()->getUnitOfWork()->getScheduledDocumentInsertions();
+
+            /** @var AuthorizationToken $document */
             foreach ($documents as $document) {
                 if ($this->isAuthorizationToken($document)) {
                     $document->setData($this->cryptService->encrypt($document->getData()));
