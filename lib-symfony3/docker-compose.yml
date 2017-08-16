@@ -20,7 +20,7 @@ services:
   nginx:
     image: nginx
     ports:
-      - 8000:8000
+      - ${DEV_IP}:8000:8000
     depends_on:
       - php-dev
     volumes:
@@ -30,14 +30,14 @@ services:
   smtp:
     image: mailhog/mailhog
     ports:
-      - 1025:1025
-      - 8025:8025
+      - ${DEV_IP}:1025:1025
+      - ${DEV_IP}:8025:8025
 
   mongo:
       image: mongo:latest
       container_name: mongo
       ports:
-        - 27017:27017
+        - ${DEV_IP}:27017:27017
       volumes:
         - mongo:/data/db
 
