@@ -19,7 +19,7 @@ final class SoapClientFactoryTest extends TestCase
 {
 
     /**
-     * @covers SoapClientFactory::createSoapClient()
+     * @covers SoapClientFactory::create()
      */
     public function testCreateSoapClientWsdlFail(): void
     {
@@ -30,11 +30,11 @@ final class SoapClientFactoryTest extends TestCase
         $this->expectExceptionCode(SoapException::INVALID_WSDL);
 
         $soapClientFactory = new SoapClientFactory();
-        $soapClientFactory->createSoapClient($request, ['uri' => '', 'location' => '']);
+        $soapClientFactory->create($request, ['uri' => '', 'location' => '']);
     }
 
     /**
-     * @covers SoapClientFactory::createSoapClient()
+     * @covers SoapClientFactory::create()
      */
     public function testCreateSoapClientNonWsdl(): void
     {
@@ -42,7 +42,7 @@ final class SoapClientFactoryTest extends TestCase
         $request->setVersion(SOAP_1_2);
 
         $soapClientFactory = new SoapClientFactory();
-        $result            = $soapClientFactory->createSoapClient($request, ['uri' => '', 'location' => '']);
+        $result            = $soapClientFactory->create($request, ['uri' => '', 'location' => '']);
 
         $this->assertInstanceOf(SoapClient::class, $result);
     }

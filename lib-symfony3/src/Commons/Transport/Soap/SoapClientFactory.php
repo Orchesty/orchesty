@@ -21,7 +21,7 @@ class SoapClientFactory
      * @return SoapClient
      * @throws SoapException
      */
-    public function createSoapClient(RequestDtoAbstract $request, array $options): SoapClient
+    public function create(RequestDtoAbstract $request, array $options): SoapClient
     {
         try {
             $wsdl = NULL;

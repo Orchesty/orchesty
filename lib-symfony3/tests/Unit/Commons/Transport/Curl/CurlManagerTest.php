@@ -5,6 +5,7 @@ namespace Tests\Unit\Commons\Transport\Curl;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\Uri;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlClientFactory;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlException;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
@@ -34,9 +35,13 @@ final class CurlManagerTest extends TestCase
         $client = $this->createPartialMock(Client::class, ['send']);
         $client->method('send')->willReturn($psr7Response);
 
+        /** @var PHPUnit_Framework_MockObject_MockObject|CurlClientFactory $curlClientFactory */
+        $curlClientFactory = $this->createPartialMock(CurlClientFactory::class, ['create']);
+        $curlClientFactory->method('create')->willReturn($client);
+
         $requestDto = new RequestDto(CurlManager::METHOD_GET, new Uri('http://example.com'));
 
-        $curlManager = new CurlManager($client);
+        $curlManager = new CurlManager($curlClientFactory);
         $result      = $curlManager->send($requestDto);
 
         $this->assertInstanceOf(ResponseDto::class, $result);
@@ -53,7 +58,7 @@ final class CurlManagerTest extends TestCase
     {
         $this->expectException(CurlException::class);
         $requestDto  = new RequestDto(CurlManager::METHOD_GET, new Uri('http://example.com'));
-        $curlManager = new CurlManager(new Client());
+        $curlManager = new CurlManager(new CurlClientFactory());
         $curlManager->send($requestDto, ['headers' => 123]);
     }
 

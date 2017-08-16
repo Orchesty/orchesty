@@ -33,8 +33,8 @@ final class SoapManagerTest extends TestCase
         $client->method('__getLastResponseHeaders')->willReturn($lastResponseHeaders);
 
         /** @var PHPUnit_Framework_MockObject_MockObject|SoapClientFactory $soapClientFactory */
-        $soapClientFactory = $this->createPartialMock(SoapClientFactory::class, ['createSoapClient']);
-        $soapClientFactory->method('createSoapClient')->willReturn($client);
+        $soapClientFactory = $this->createPartialMock(SoapClientFactory::class, ['create']);
+        $soapClientFactory->method('create')->willReturn($client);
 
         $request = new RequestDto('', [], '', new Uri(''));
         $request->setVersion(SOAP_1_2);

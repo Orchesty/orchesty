@@ -43,7 +43,7 @@ final class SoapManager implements SoapManagerInterface
     {
         try {
 
-            $client = $this->soapClientFactory->createSoapClient($request, $this->composeOptions($request, $options));
+            $client = $this->soapClientFactory->create($request, $this->composeOptions($request, $options));
 
             // TODO log
 
