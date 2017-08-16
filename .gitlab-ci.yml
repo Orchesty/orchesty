@@ -12,7 +12,7 @@ before_script:
 php-dev-image:
   stage: stage1
   script:
-    - DIR=lib-symfony3/docker/php-dev
+    - DIR=pf-bundles/docker/php-dev
     - cd $REPO_ROOT/$DIR
     - IMAGE=dkr.hanaboso.net/pipes/pipes/php-dev:${CI_BUILD_REF_NAME}
     - docker pull dkr.hanaboso.net/hanaboso/symfony3-base:latest
@@ -35,7 +35,7 @@ njs-build-image:
 lib-sym3-test:
   stage: stage2
   script:
-    - DIR=lib-symfony3
+    - DIR=pf-bundles
     - skip_unmodified $DIR
     - ": TODO: modify this job to allow parallel execution!"
     - cd $REPO_ROOT/$DIR
@@ -66,7 +66,7 @@ cleanup:
   stage: cleanup
   when: always
   script:
-    - cd $REPO_ROOT/lib-symfony3
+    - cd $REPO_ROOT/pf-bundles
     - make docker-down-clean
 
     - cd $REPO_ROOT/lib-nodejs
