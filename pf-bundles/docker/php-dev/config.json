@@ -3,7 +3,7 @@
   "repositories": [
     {
       "type": "vcs",
-      "url": "git@gitlab.hanaboso.net:pipes/lib-symfony3.git"
+      "url": "git@gitlab.hanaboso.net:pipes/pipes.git"
     }
   ]
 }

@@ -1,4 +1,0 @@
-services:
-    hbpf.handler.topology:
-        class: Hanaboso\PipesFramework\HbPFApiGateway\Handler\TopologyHandler
-        arguments:

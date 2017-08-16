@@ -1,4 +1,0 @@
-app:
-    resource: '@HbPFApiGatewayBundle/Controller/'
-    type:     annotation
-    prefix:   /api/gateway
