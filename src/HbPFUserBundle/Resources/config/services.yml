@@ -1,0 +1,5 @@
+services:
+    hbpf.user.manager.token:
+        class: Hanaboso\PipesFramework\HbPFUserBundle\Manager\TokenManager
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'

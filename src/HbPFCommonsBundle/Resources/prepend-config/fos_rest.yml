@@ -1,0 +1,8 @@
+fos_rest:
+    format_listener:
+        rules:
+            - { path: '^/api', priorities: ['application/json', 'application/xml'] }
+            - { path: '^/', priorities: ['text/html', '*/*'] }
+
+    body_converter:
+        enabled: true

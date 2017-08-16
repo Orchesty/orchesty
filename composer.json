@@ -1,0 +1,44 @@
+{
+  "name": "hanaboso/pipes-framework",
+  "description": "PipesFramework for Symfony",
+  "autoload": {
+    "psr-4": {
+      "Hanaboso\\PipesFramework\\": "src/",
+      "Tests\\": "tests/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+    }
+  },
+  "require": {
+    "alcaeus/mongo-php-adapter": "^1.1",
+    "doctrine/mongodb": "^1.6",
+    "doctrine/mongodb-odm": "^1.1",
+    "doctrine/mongodb-odm-bundle": "^3.3",
+    "friendsofsymfony/rest-bundle": "^2.2",
+    "guzzlehttp/guzzle": "^6.3.0",
+    "jms/serializer": "^1.8",
+    "paragonie/halite":"^3.2",
+    "phpoffice/phpspreadsheet": "@dev",
+    "swiftmailer/swiftmailer": "^6.0",
+    "symfony/framework-bundle": "^3.3"
+  },
+  "require-dev": {
+    "doctrine/doctrine-bundle": "^1.6",
+    "jms-serializer/serializer-bundle": "^1.1",
+    "phpunit/phpunit": "^6.3",
+    "sensio/framework-extra-bundle": "^3.0",
+    "symfony/expression-language": "^3.3",
+    "symfony/phpunit-bridge": "^3.3",
+    "symfony/security-bundle": "^3.3",
+    "symfony/yaml": "^3.3",
+    "pipes/php-check-utils": "^1.0"
+  },
+  "repositories": [
+    {
+      "type": "path",
+      "url": "../libs/php-check-utils"
+    }
+  ]
+}

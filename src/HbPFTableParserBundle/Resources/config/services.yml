@@ -1,0 +1,10 @@
+services:
+    hbpf.parser.table.handler:
+        class: Hanaboso\PipesFramework\HbPFTableParserBundle\Handler\TableParserHandler
+        arguments:
+            - Hanaboso\PipesFramework\Commons\ServiceStorage\ServiceStorageInterface
+            - Hanaboso\PipesFramework\Parser\TableParser
+
+    hbpf.parser.table.service:
+        class: Hanaboso\PipesFramework\Parser\TableParser
+        arguments:

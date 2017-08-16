@@ -1,0 +1,14 @@
+services:
+    hbpf.loader.connector:
+        class: Hanaboso\PipesFramework\HbPFConnectorBundle\Loaders\ConnectorLoader
+        arguments:
+            - "@service_container"
+    hbpf.loader.authorization:
+        class: Hanaboso\PipesFramework\HbPFConnectorBundle\Loaders\AuthorizationLoader
+        arguments:
+            - "@service_container"
+
+    # --- Provizorní pro test --- #
+    hbpf.storage.interface:
+        class: Hanaboso\PipesFramework\Commons\ServiceStorage\JSONSingleFileStorage
+    # --------------------------- #

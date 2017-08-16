@@ -1,0 +1,19 @@
+services:
+    # Magento2
+    hbpf.authorization.magento2.auth:
+        class: Hanaboso\PipesFramework\Authorizations\Impl\Magento2\Magento2Authorization
+        arguments:
+            - 'magento2.auth'
+            - '@hbpf.storage.interface'
+            - 'url://magento2'
+            - 'username'
+            - 'password'
+
+    hbpf.authorization.magento2.oauth:
+        class: Hanaboso\PipesFramework\Authorizations\Impl\Magento2\Magento2OAuthAuthorization
+        arguments:
+            - 'magento2.oauth'
+            - '@hbpf.storage.interface'
+            - 'url://magento2'
+            - 'api_key'
+            - 'secret_key'

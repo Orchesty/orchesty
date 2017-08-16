@@ -1,0 +1,47 @@
+version: '2'
+services:
+  php-dev:
+    image: dkr.hanaboso.net/pipes/pipes/php-dev:dev
+    user: ${DEV_UID}:${DEV_GID}
+    volumes:
+      - ./:/srv/project
+      - ../:/srv/libs
+      #- ${SSH_AUTH_SOCK}:/tmp/bound-ssh-agent
+      - /home/dev/.composer:/home/dev/.composer
+      - ./docker/php-dev/config.json:/home/dev/.composer/config.json
+    environment:
+      - DEV_UID=${DEV_UID}
+      - DEV_GID=${DEV_GID}
+      - COMPOSER_HOME=/home/dev/.composer
+    depends_on:
+      - mongo
+    links:
+      - mongo
+
+  nginx:
+    image: nginx
+    ports:
+      - ${DEV_IP}:8000:8000
+    depends_on:
+      - php-dev
+    volumes:
+      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./:/srv/project
+
+  smtp:
+    image: mailhog/mailhog
+    ports:
+      - ${DEV_IP}:1025:1025
+      - ${DEV_IP}:8025:8025
+
+  mongo:
+      image: mongo:latest
+      container_name: mongo
+      ports:
+        - ${DEV_IP}:27017:27017
+      volumes:
+        - mongo:/data/db
+
+volumes:
+  mongo: {}
+  composer_home:
