@@ -60,7 +60,7 @@ class DefaultController extends Controller
         /** @var AuthorizationLoader $authorizationLoader */
         $authorizationLoader = $this->container->get('hbpf.loader.authorization');
 
-        $authorizations = $authorizationLoader->getAuthorizations();
+        $authorizations = $authorizationLoader->getAllAuthorizations();
 
         $template = [
             'authorizations' => $authorizations,

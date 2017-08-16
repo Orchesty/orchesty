@@ -32,7 +32,7 @@ class AuthorizationController extends FOSRestController
         $loader = $this->container->get('hbpf.loader.authorization');
 
         /** @var UserActionAuthorizationInterface $authorization */
-        $authorization = $loader->get($authorizationId);
+        $authorization = $loader->getAuthorization($authorizationId);
 
         $result = [];
         if ($authorization instanceof UserActionAuthorizationInterface) {
@@ -55,7 +55,7 @@ class AuthorizationController extends FOSRestController
         $loader = $this->container->get('hbpf.loader.authorization');
 
         /** @var CustomRouteableInterface $authorization */
-        $authorization = $loader->get($authorizationId);
+        $authorization = $loader->getAuthorization($authorizationId);
 
         $result = [];
         if ($authorization instanceof CustomRouteableInterface) {
@@ -80,7 +80,7 @@ class AuthorizationController extends FOSRestController
         $loader = $this->container->get('hbpf.loader.authorization');
 
         /** @var UserActionAuthorizationInterface $authorization */
-        $authorization = $loader->get($authorizationId);
+        $authorization = $loader->getAuthorization($authorizationId);
 
         if ($authorization instanceof CustomRouteableInterface) {
             /** @var CustomRouteManager $customRouteManager */

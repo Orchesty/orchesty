@@ -45,7 +45,7 @@ class AuthorizationLoader
      * @return AuthorizationInterface
      * @throws AuthorizationException
      */
-    public function get(string $authorizationStr): AuthorizationInterface
+    public function getAuthorization(string $authorizationStr): AuthorizationInterface
     {
         $name = sprintf('%s.%s', self::AUTHORIZATION_PREFIX, $authorizationStr);
 
@@ -67,7 +67,7 @@ class AuthorizationLoader
      *
      * @return array
      */
-    public function getAuthorizationIDs(array $exclude = []): array
+    public function getAllAuthorizations(array $exclude = []): array
     {
         $list = Yaml::parse(file_get_contents(__DIR__ . '/../Resources/config/authorizations.yml'));
         $res  = [];
@@ -79,21 +79,6 @@ class AuthorizationLoader
                 continue;
             }
             $res[] = $key;
-        }
-
-        return $res;
-    }
-
-    /**
-     * @param array $exclude
-     *
-     * @return array
-     */
-    public function getAuthorizations(array $exclude = []): array
-    {
-        $res = [];
-        foreach ($this->getAuthorizationIDs($exclude) as $serviceId) {
-            $res[] = $this->container->get($serviceId);
         }
 
         return $res;
