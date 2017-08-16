@@ -19,6 +19,7 @@
     "friendsofsymfony/rest-bundle": "^2.2",
     "guzzlehttp/guzzle": "^6.3.0",
     "jms/serializer": "^1.8",
+    "paragonie/halite":"^3.2",
     "phpoffice/phpspreadsheet": "@dev",
     "swiftmailer/swiftmailer": "^6.0",
     "symfony/framework-bundle": "^3.3"
