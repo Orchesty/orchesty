@@ -9,6 +9,7 @@ use Hanaboso\PipesFramework\Commons\Transport\Soap\SoapHelper;
 use PHPUnit\Framework\TestCase;
 use SoapParam;
 use SoapVar;
+use Symfony\Component\HttpFoundation\HeaderBag;
 
 /**
  * Class SoapHelperTest
@@ -21,7 +22,7 @@ final class SoapHelperTest extends TestCase
     /**
      * @covers SoapHelper::composeRequestHeaders()
      */
-    public function testComposeRequestHeaders()
+    public function testComposeRequestHeaders(): void
     {
         $request = new RequestDtoNonWsdl('functionName', ['arguments'], 'namespace', new Uri(''));
         $result  = SoapHelper::composeRequestHeaders($request);
@@ -32,7 +33,7 @@ final class SoapHelperTest extends TestCase
     /**
      * @covers SoapHelper::composeArguments()
      */
-    public function testComposeArgumentsWsdl()
+    public function testComposeArgumentsWsdl(): void
     {
         $request = new RequestDtoWsdl('functionName', ['arguments'], 'namespace', new Uri(''));
         $result  = SoapHelper::composeArguments($request);
@@ -43,7 +44,7 @@ final class SoapHelperTest extends TestCase
     /**
      * @covers SoapHelper::composeArguments()
      */
-    public function testComposeArgumentsNonWsdl()
+    public function testComposeArgumentsNonWsdl(): void
     {
         $request = new RequestDtoNonWsdl('functionName', ['key1' => 'value1'], 'namespace', new Uri(''));
         $result  = SoapHelper::composeArguments($request);
@@ -56,7 +57,7 @@ final class SoapHelperTest extends TestCase
     /**
      * @covers SoapHelper::composeArguments()
      */
-    public function testComposeArgumentsNonWsdlNull()
+    public function testComposeArgumentsNonWsdlNull(): void
     {
         $request = new RequestDtoNonWsdl('functionName', [], 'namespace', new Uri(''));
         $result  = SoapHelper::composeArguments($request);
@@ -67,13 +68,11 @@ final class SoapHelperTest extends TestCase
     /**
      * @covers SoapHelper::parseResponseHeaders()
      */
-    public function testParseResponseHeaders()
+    public function testParseResponseHeaders(): void
     {
-        // TODO prepare string for testing
-        // TODO register services at transport.yml
-        // TODO fix Metrics tests
-
-        $headers = '';
+        $headers = 'HTTP/1.1 200 OK
+Content-Type: text/xml; charset="utf-8"
+Content-Length: nnnn';
         $result  = SoapHelper::parseResponseHeaders($headers);
 
         $this->assertTrue(is_array($result));
@@ -81,12 +80,26 @@ final class SoapHelperTest extends TestCase
         $this->assertArrayHasKey('statusCode', $result);
         $this->assertArrayHasKey('reason', $result);
         $this->assertArrayHasKey('headers', $result);
+
+        $this->assertEquals('1.1', $result['version']);
+        $this->assertEquals(200, $result['statusCode']);
+        $this->assertEquals('OK', $result['reason']);
+
+        /** @var HeaderBag $headerBag */
+        $headerBag = $result['headers'];
+        $this->assertInstanceOf(HeaderBag::class, $headerBag);
+
+        $expectedValues = [
+            'content-type'   => ['text/xml; charset="utf-8"'],
+            'content-length' => ['nnnn'],
+        ];
+        $this->assertEquals($expectedValues, $headerBag->all());
     }
 
     /**
      * @covers SoapHelper::parseResponseHeaders()
      */
-    public function testParseResponseHeadersEmpty()
+    public function testParseResponseHeadersEmpty(): void
     {
         $result = SoapHelper::parseResponseHeaders(NULL);
 
