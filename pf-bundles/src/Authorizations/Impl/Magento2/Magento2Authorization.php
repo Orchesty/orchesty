@@ -30,24 +30,28 @@ class Magento2Authorization extends AuthorizationAbstract implements Magento2Aut
     /**
      * Magento2Authorization constructor.
      *
-     * @param DocumentManager                                              $documentManager
+     * @param DocumentManager                                              $dm
      * @param CurlManagerInterface|PHPUnit_Framework_MockObject_MockObject $curl
      * @param string                                                       $id
+     * @param string                                                       $name
+     * @param string                                                       $description
      * @param string                                                       $url
      * @param string                                                       $username
      * @param string                                                       $password
      */
     public function __construct(
-        DocumentManager $documentManager,
+        DocumentManager $dm,
         CurlManagerInterface $curl,
         string $id,
+        string $name,
+        string $description,
         string $url,
         string $username,
         string $password
     )
     {
-        parent::__construct($id, $documentManager);
         $this->curl = $curl;
+        parent::__construct($id, $name, $description, $dm);
         $this->setConfig([
             self::URL      => $url,
             self::USERNAME => $username,
@@ -132,15 +136,6 @@ class Magento2Authorization extends AuthorizationAbstract implements Magento2Aut
     private function getAuthorizationUrl(): string
     {
         return $this->getParam($this->getConfig(), self::URL) . '/rest/V1/integration/admin/token';
-    }
-
-    /**
-     *
-     */
-    protected function setInfo(): void
-    {
-        $this->name        = 'magento2 - auth';
-        $this->description = 'magento2 - auth';
     }
 
 }

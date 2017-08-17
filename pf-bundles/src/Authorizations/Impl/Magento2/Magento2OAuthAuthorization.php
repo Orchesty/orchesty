@@ -32,21 +32,24 @@ class Magento2OAuthAuthorization extends OAuthAuthorizationAbstract implements M
      *
      * @param DocumentManager $dm
      * @param string          $id
+     * @param string          $name
+     * @param string          $description
      * @param string          $url
      * @param string          $consumerKey
      * @param string          $consumerSecret
      *
-     * @throws AuthorizationException
      */
     public function __construct(
         DocumentManager $dm,
         string $id,
+        string $name,
+        string $description,
         string $url,
         string $consumerKey,
         string $consumerSecret
     )
     {
-        parent::__construct($id, $dm);
+        parent::__construct($id, $name, $description, $dm);
 
         $this->setConfig([
             self::URL             => $url,
@@ -108,15 +111,6 @@ class Magento2OAuthAuthorization extends OAuthAuthorizationAbstract implements M
         $this->save($data);
 
         return '';
-    }
-
-    /**
-     *
-     */
-    protected function setInfo(): void
-    {
-        $this->name        = 'magento2 - oauth';
-        $this->description = 'magento2 - oauth';
     }
 
 }
