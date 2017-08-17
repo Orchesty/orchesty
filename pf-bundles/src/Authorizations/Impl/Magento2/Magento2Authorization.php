@@ -5,8 +5,9 @@ namespace Hanaboso\PipesFramework\Authorizations\Impl\Magento2;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Authorization\Connectors\AuthorizationAbstract;
-use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
+use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
+use PHPUnit_Framework_MockObject_MockObject;
 
 /**
  * Class Magento2Authorization
@@ -22,23 +23,23 @@ class Magento2Authorization extends AuthorizationAbstract implements Magento2Aut
     private const TOKEN    = 'token';
 
     /**
-     * @var CurlManager
+     * @var CurlManagerInterface|PHPUnit_Framework_MockObject_MockObject
      */
     private $curl;
 
     /**
      * Magento2Authorization constructor.
      *
-     * @param DocumentManager $documentManager
-     * @param CurlManager     $curl
-     * @param string          $id
-     * @param string          $url
-     * @param string          $username
-     * @param string          $password
+     * @param DocumentManager                                              $documentManager
+     * @param CurlManagerInterface|PHPUnit_Framework_MockObject_MockObject $curl
+     * @param string                                                       $id
+     * @param string                                                       $url
+     * @param string                                                       $username
+     * @param string                                                       $password
      */
     public function __construct(
         DocumentManager $documentManager,
-        CurlManager $curl,
+        CurlManagerInterface $curl,
         string $id,
         string $url,
         string $username,
@@ -46,7 +47,7 @@ class Magento2Authorization extends AuthorizationAbstract implements Magento2Aut
     )
     {
         parent::__construct($id, $documentManager);
-        $this->curl   = $curl;
+        $this->curl = $curl;
         $this->setConfig([
             self::URL      => $url,
             self::USERNAME => $username,
@@ -75,7 +76,6 @@ class Magento2Authorization extends AuthorizationAbstract implements Magento2Aut
      */
     public function getHeaders(): array
     {
-
         if (!$this->isAuthorized()) {
             $this->authenticate();
         }
@@ -122,6 +122,7 @@ class Magento2Authorization extends AuthorizationAbstract implements Magento2Aut
             );
         $response = $this->curl->send($dto);
         $data     = json_decode($response->getBody(), TRUE);
+
         $this->save($data);
     }
 
