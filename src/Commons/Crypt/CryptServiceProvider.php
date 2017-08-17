@@ -5,12 +5,12 @@ namespace Hanaboso\PipesFramework\Commons\Cryptography;
 /**
  * Class CryptServiceProvider
  *
- * @package Hanaboso\PipesFramework\Commons\Cryptography
+ * @package Hanaboso\PipesFramework\Commons\Crypt
  */
 class CryptServiceProvider
 {
 
-    const DEFAULT = '00_';
+    public const DEFAULT = '00_';
 
     /**
      * @var CryptInterface[]

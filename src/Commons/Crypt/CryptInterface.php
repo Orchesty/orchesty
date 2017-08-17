@@ -5,7 +5,7 @@ namespace Hanaboso\PipesFramework\Commons\Cryptography;
 /**
  * Interface CryptInterface
  *
- * @package Hanaboso\PipesFramework\Commons\Cryptography
+ * @package Hanaboso\PipesFramework\Commons\Crypt
  */
 interface CryptInterface
 {

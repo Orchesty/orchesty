@@ -7,7 +7,7 @@ use Hanaboso\PipesFramework\Commons\Exception\PipesFrameworkException;
 /**
  * Class CryptException
  *
- * @package Hanaboso\PipesFramework\Commons\Cryptography
+ * @package Hanaboso\PipesFramework\Commons\Crypt
  */
 class CryptException extends PipesFrameworkException
 {
