@@ -79,7 +79,7 @@ class ConnectorLoader
                 unset($exclude[$shortened]);
                 continue;
             }
-            $res[] = $key;
+            $res[] = $shortened;
         }
 
         return $res;

@@ -50,7 +50,7 @@ class ConnectorLoaderTest extends KernelTestCaseAbstract
         $conns = $this->loader->getAllConnectors($exclude);
 
         self::assertNotEmpty($conns);
-        self::assertFalse(in_array('hbpf.connector.magento2.modules', $conns));
+        self::assertFalse(in_array('magento2.modules', $conns));
     }
 
 }

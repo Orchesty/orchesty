@@ -8,13 +8,8 @@
 
 namespace Hanaboso\PipesFramework\HbPFAuthorizationBundle\Handler;
 
-use Hanaboso\PipesFramework\Commons\Authorization\UserAction\UserActionAuthObject;
-use Hanaboso\PipesFramework\Commons\Authorization\UserAction\UserActionAuthorizationInterface;
-use Hanaboso\PipesFramework\Commons\CustomRoute\CustomRouteableInterface;
-use Hanaboso\PipesFramework\Commons\CustomRoute\CustomRouteManager;
-use Hanaboso\PipesFramework\Commons\CustomRoute\RouteInterface;
+use Hanaboso\PipesFramework\Commons\Authorization\Connectors\OAuthAuthorizationInterface;
 use Hanaboso\PipesFramework\HbPFConnectorBundle\Loaders\AuthorizationLoader;
-use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class AuthorizationHandler
@@ -30,86 +25,55 @@ class AuthorizationHandler
     private $loader;
 
     /**
-     * @var  CustomRouteManager
-     */
-    private $customRouteManager;
-
-    /**
      * AuthorizationHandler constructor.
      *
      * @param AuthorizationLoader $authorizationRepository
-     * @param CustomRouteManager  $customRouteManager
      */
     function __construct(
-        AuthorizationLoader $authorizationRepository,
-        CustomRouteManager $customRouteManager
+        AuthorizationLoader $authorizationRepository
     )
     {
-        $this->loader             = $authorizationRepository;
-        $this->customRouteManager = $customRouteManager;
+        $this->loader = $authorizationRepository;
     }
 
     /**
      * @param string $authId
-     *
-     * @return UserActionAuthObject[]|null
      */
-    public function getUserAuthorization(string $authId): ?array
+    public function authorize(string $authId): void
     {
-        $authorization = $this->getAuthorization($authId);
+        $authorization = $this->loader->getAuthorization($authId);
 
-        if ($authorization instanceof UserActionAuthorizationInterface) {
-            return $authorization->getUserActions();
+        if ($authorization instanceof OAuthAuthorizationInterface) {
+            $authorization->authorize();
         }
-
-        return NULL;
     }
 
     /**
+     * @param array  $data
      * @param string $authId
      *
-     * @return RouteInterface[]
+     * @return string
      */
-    public function getUserAuthorizationRoutes(string $authId): ?array
+    public function saveToken(array $data, string $authId): string
     {
-        $authorization = $this->getAuthorization($authId);
+        $authorization = $this->loader->getAuthorization($authId);
+        $res           = '';
 
-        if ($authorization instanceof CustomRouteableInterface) {
-            return $authorization->getRoutes();
+        if ($authorization instanceof OAuthAuthorizationInterface) {
+            $res = $authorization->saveToken($data);
         }
 
-        return NULL;
+        return $res;
     }
 
     /**
-     * @param string  $authId
-     * @param string  $partUrl
-     * @param Request $request
-     *
-     * @return mixed|null
+     * @return string[]
      */
-    public function getUserAuthorizationCustomRoutes(string $authId, string $partUrl, Request $request)
+    public function getAuthInfo(): array
     {
-        $authorization = $this->getAuthorization($authId);
+        $keys = $this->loader->getAllAuthorizationsInfo();
 
-        if ($authorization instanceof CustomRouteableInterface) {
-            return $this->customRouteManager->processRoute($authorization, $request, $partUrl);
-        }
-
-        return NULL;
-    }
-
-    /**
-     * @param string $id
-     *
-     * @return UserActionAuthorizationInterface
-     */
-    private function getAuthorization(string $id): UserActionAuthorizationInterface
-    {
-        /** @var UserActionAuthorizationInterface $authorization */
-        $authorization = $this->loader->getAuthorization($id);
-
-        return $authorization;
+        return $keys;
     }
 
 }

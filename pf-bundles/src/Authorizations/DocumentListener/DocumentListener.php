@@ -6,11 +6,11 @@
  * Time: 3:06 PM
  */
 
-namespace Hanaboso\PipesFramework\HbPFAuthorizationBundle\DocumentListener;
+namespace Hanaboso\PipesFramework\Authorizations\DocumentListener;
 
 use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
 use Doctrine\ODM\MongoDB\Event\PreFlushEventArgs;
-use Hanaboso\PipesFramework\Authorizations\Document\AuthorizationToken;
+use Hanaboso\PipesFramework\Authorizations\Document\Authorization;
 use Hanaboso\PipesFramework\Commons\CryptService\CryptService;
 
 /**
@@ -46,10 +46,10 @@ class DocumentListener
                 ? $event->getDocumentManager()->getUnitOfWork()->getScheduledDocumentUpdates()
                 : $event->getDocumentManager()->getUnitOfWork()->getScheduledDocumentInsertions();
 
-            /** @var AuthorizationToken $document */
+            /** @var Authorization $document */
             foreach ($documents as $document) {
                 if ($this->isAuthorizationToken($document)) {
-                    $document->setData($this->cryptService->encrypt($document->getData()));
+                    $document->setEncrypted($this->cryptService->encrypt($document->getToken()));
                 }
             }
         }
@@ -62,8 +62,9 @@ class DocumentListener
     {
         $document = $event->getDocument();
 
+        /** @var Authorization $document */
         if ($this->isAuthorizationToken($document)) {
-            $document->setData($this->cryptService->decrypt($document->getData()));
+            $document->setToken($this->cryptService->decrypt($document->getEncrypted()));
         }
     }
 
@@ -74,7 +75,7 @@ class DocumentListener
      */
     private function isAuthorizationToken($document): bool
     {
-        return $document instanceof AuthorizationToken;
+        return $document instanceof Authorization;
     }
 
 }

@@ -50,7 +50,25 @@ class AuthorizationLoaderTest extends KernelTestCaseAbstract
         $conns   = $this->loader->getAllAuthorizations($exclude);
 
         self::assertNotEmpty($conns);
-        self::assertFalse(in_array('hbpf.authorization.magento2.oauth', $conns));
+        self::assertFalse(in_array('magento2.oauth', $conns));
+    }
+
+    /**
+     * @covers AuthorizationLoader::getAllAuthorizations()
+     */
+    public function testGetAllAuthorizationsInfo(): void
+    {
+        $conns   = $this->loader->getAllAuthorizationsInfo();
+
+        $expect = [
+            'name'          => 'magento2 - auth',
+            'description'   => 'magento2 - auth',
+            'type'          => 'basic',
+            'is_authorized' => TRUE,
+        ];
+
+        self::assertNotEmpty($conns);
+        self::assertEquals($expect, $conns['magento2.auth']);
     }
 
 }
