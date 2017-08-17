@@ -8,14 +8,10 @@ services:
         arguments:
           - '@service_container'
 
-    hbpf.authorization_repository:
-        class: Hanaboso\PipesFramework\Commons\Authorization\Connectors\AuthorizationRepository
-        arguments:
-          - '@service_container'
-
     hbpf.source_service:
         class: Hanaboso\PipesFramework\Commons\Source\SourceService
         arguments:
+            - '@hbpf.transport.curl_manager'
 
     hbpf.commons.crypt_service:
         class: Hanaboso\PipesFramework\Commons\CryptService\CryptService
