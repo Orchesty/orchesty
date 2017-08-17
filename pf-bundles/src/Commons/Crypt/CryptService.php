@@ -16,7 +16,7 @@ use ParagonIE\Halite\Symmetric\EncryptionKey;
 /**
  * Class CryptService
  *
- * @package Hanaboso\PipesFramework\Commons\Cryptography
+ * @package Hanaboso\PipesFramework\Commons\Crypt
  */
 class CryptService implements CryptInterface
 {
@@ -46,7 +46,7 @@ class CryptService implements CryptInterface
     {
         $hiddenString = new HiddenString(serialize($data));
 
-        return CryptInterface::DEFAULT . Crypto::encrypt($hiddenString, $this->buildEncryptionKey());
+        return CryptServiceProvider::DEFAULT . Crypto::encrypt($hiddenString, $this->buildEncryptionKey());
     }
 
     /**
@@ -57,7 +57,7 @@ class CryptService implements CryptInterface
      */
     public function decrypt(string $hash)
     {
-        if (strpos($hash, CryptInterface::DEFAULT) !== 0) {
+        if (strpos($hash, CryptServiceProvider::DEFAULT) !== 0) {
             throw new CryptException('Unknown prefix in hash.', CryptException::UNKNOWN_PREFIX);
         }
 
@@ -69,7 +69,7 @@ class CryptService implements CryptInterface
     /**
      * @return EncryptionKey
      */
-    private function buildEncryptionKey()
+    private function buildEncryptionKey(): EncryptionKey
     {
         $hiddenString = new HiddenString(KeyFactory::getKeyDataFromString(hex2bin($this->key)));
 

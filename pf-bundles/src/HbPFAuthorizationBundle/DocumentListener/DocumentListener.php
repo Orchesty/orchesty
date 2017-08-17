@@ -11,7 +11,7 @@ namespace Hanaboso\PipesFramework\HbPFAuthorizationBundle\DocumentListener;
 use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
 use Doctrine\ODM\MongoDB\Event\PreFlushEventArgs;
 use Hanaboso\PipesFramework\Authorizations\Document\AuthorizationToken;
-use Hanaboso\PipesFramework\Commons\CryptService\CryptService;
+use Hanaboso\PipesFramework\Commons\Cryptography\CryptManager;
 
 /**
  * Class AuthorizationTokenListener
@@ -22,18 +22,18 @@ class DocumentListener
 {
 
     /**
-     * @var CryptService
+     * @var CryptManager
      */
-    private $cryptService;
+    private $cryptManager;
 
     /**
-     * AuthorizationTokenListener constructor.
+     * DocumentListener constructor.
      *
-     * @param CryptService $cryptService
+     * @param CryptManager $cryptManager
      */
-    function __construct(CryptService $cryptService)
+    function __construct(CryptManager $cryptManager)
     {
-        $this->cryptService = $cryptService;
+        $this->cryptManager = $cryptManager;
     }
 
     /**
@@ -49,7 +49,7 @@ class DocumentListener
             /** @var AuthorizationToken $document */
             foreach ($documents as $document) {
                 if ($this->isAuthorizationToken($document)) {
-                    $document->setData($this->cryptService->encrypt($document->getData()));
+                    $document->setData($this->cryptManager->encrypt($document->getData()));
                 }
             }
         }
@@ -63,7 +63,7 @@ class DocumentListener
         $document = $event->getDocument();
 
         if ($this->isAuthorizationToken($document)) {
-            $document->setData($this->cryptService->decrypt($document->getData()));
+            $document->setData($this->cryptManager->decrypt($document->getData()));
         }
     }
 
