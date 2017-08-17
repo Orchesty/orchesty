@@ -9,72 +9,50 @@
 
 namespace Hanaboso\PipesFramework\Authorizations\Impl\Magento2;
 
-use Hanaboso\PipesFramework\Commons\Authorization\Connectors\AuthorizationAbstract;
+use Doctrine\ODM\MongoDB\DocumentManager;
+use Hanaboso\PipesFramework\Commons\Authorization\Connectors\OAuthAuthorizationAbstract;
 use Hanaboso\PipesFramework\Commons\Authorization\Exception\AuthorizationException;
-use Hanaboso\PipesFramework\Commons\Authorization\UserAction\RedirectUserActionAuth;
-use Hanaboso\PipesFramework\Commons\Authorization\UserAction\UserActionAuthObject;
-use Hanaboso\PipesFramework\Commons\Authorization\UserAction\UserActionAuthorizationInterface;
-use Hanaboso\PipesFramework\Commons\CustomRoute\CustomRoute;
-use Hanaboso\PipesFramework\Commons\CustomRoute\CustomRouteableInterface;
-use Hanaboso\PipesFramework\Commons\CustomRoute\RouteInterface;
-use Hanaboso\PipesFramework\Commons\ServiceStorage\ServiceStorageInterface;
-use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class Magento2OAuthAuthorization
  *
  * @package Hanaboso\PipesFramework\Connector\Impl\Magento2
  */
-class Magento2OAuthAuthorization extends AuthorizationAbstract implements UserActionAuthorizationInterface, CustomRouteableInterface, Magento2AuthorizationInterface
+class Magento2OAuthAuthorization extends OAuthAuthorizationAbstract implements Magento2AuthorizationInterface
 {
 
-    /**
-     * @var string
-     */
-    private $consumerKey;
-
-    /**
-     * @var string|null
-     */
-    private $accessToken;
-
-    /**
-     * @var string|null
-     */
-    private $accessTokenSecret;
-
-    /**
-     * @var string
-     */
-    private $url;
-
-    /**
-     * @var string
-     */
-    private $consumerSecret;
+    private const URL             = 'url';
+    private const CONSUMER_KEY    = 'consumer_key';
+    private const CONSUMER_SECRET = 'consumer_secret';
+    private const ACCESS_TOKEN    = 'access_token';
+    //private const ACCESS_TOKEN_SECRET = 'access_token_secret';
 
     /**
      * Magento2OAuthAuthorization constructor.
      *
-     * @param string                  $id
-     * @param ServiceStorageInterface $serviceStorage
-     * @param string                  $url
-     * @param string                  $consumerKey
-     * @param string                  $consumerSecret
+     * @param DocumentManager $dm
+     * @param string          $id
+     * @param string          $url
+     * @param string          $consumerKey
+     * @param string          $consumerSecret
+     *
+     * @throws AuthorizationException
      */
     public function __construct(
+        DocumentManager $dm,
         string $id,
-        ServiceStorageInterface $serviceStorage,
         string $url,
         string $consumerKey,
         string $consumerSecret
     )
     {
-        parent::__construct($id, $serviceStorage);
+        parent::__construct($id, $dm);
 
-        $this->consumerKey    = $consumerKey;
-        $this->consumerSecret = $consumerSecret;
-        $this->url            = $url;
+        $this->setConfig([
+            self::URL             => $url,
+            self::CONSUMER_KEY    => $consumerKey,
+            self::CONSUMER_SECRET => $consumerSecret,
+        ]);
     }
 
     /**
@@ -91,14 +69,14 @@ class Magento2OAuthAuthorization extends AuthorizationAbstract implements UserAc
      */
     public function getHeaders(): array
     {
-        if (empty($this->accessToken)) {
+        if (empty($this->getParam($this->getConfig(), self::ACCESS_TOKEN))) {
             throw new AuthorizationException();
         }
 
         $headers = [
             'Accept'        => 'application/json',
             'Content-Type'  => 'application/json',
-            'Authorization' => 'Bearer ' . $this->accessToken,
+            'Authorization' => 'Bearer ' . $this->getParam($this->authorization->getToken(), self::ACCESS_TOKEN),
         ];
 
         return $headers;
@@ -109,99 +87,36 @@ class Magento2OAuthAuthorization extends AuthorizationAbstract implements UserAc
      */
     public function getUrl(): string
     {
-        return $this->url;
-    }
-
-    /**
-     * @param null|string $accessToken
-     * @param null|string $accessTokenSecret
-     */
-    public function setToken(?string $accessToken, ?string $accessTokenSecret): void
-    {
-        $this->accessToken       = $accessToken;
-        $this->accessTokenSecret = $accessTokenSecret;
-        $this->saveToken();
-    }
-
-    /**
-     * @return bool
-     */
-    public function isAuthorized(): bool
-    {
-        $this->loadToken();
-
-        return !empty($this->accessToken) && !empty($this->accessTokenSecret);
-    }
-
-    /**
-     * @return UserActionAuthObject[]
-     */
-    public function getUserActions(): array
-    {
-        $str = $this->consumerKey . $this->consumerSecret;
-
-        return [
-            new RedirectUserActionAuth('http://www.magento.cz/?red=www.host.com/api/authorizations/magento/custom_routes/save_token' . $str),
-        ];
-    }
-
-    /**
-     * @return RouteInterface[]
-     */
-    public function getRoutes(): array
-    {
-        return [
-            new CustomRoute('POST', 'save_token', 'Test POST'),
-        ];
-    }
-
-    /**
-     * @param RouteInterface $route
-     * @param Request        $request
-     *
-     * @return array
-     */
-    public function routeReceive(RouteInterface $route, Request $request): array
-    {
-        $this->saveToken();
-
-        return [
-            'method'  => $request->getMethod(),
-            'queries' => $request->query->all(),
-            'request' => $request->request->all(),
-            'cookies' => $request->cookies->all(),
-        ];
-
-    }
-
-    /**
-     * --------------------------------------- HELPERS -----------------------------------------
-     */
-
-    /**
-     * @return bool
-     */
-    protected function saveToken(): bool
-    {
-        //@TODO: solve saving of Token
-
-        return FALSE;
+        return $this->getParam($this->getConfig(), self::URL);
     }
 
     /**
      *
      */
-    protected function loadToken(): void
+    public function authorize(): void
     {
-        //@TODO: solve loading of Token
+        //TODO redirect for oauth
+    }
 
-        if (isset($data)) {
-            $this->accessToken       = $data['access_token'];
-            $this->accessTokenSecret = $data['access_token_secret'];
-        } else {
-            $this->accessToken       = NULL;
-            $this->accessTokenSecret = NULL;
-        }
+    /**
+     * @param string[] $data
+     *
+     * @return string
+     */
+    public function saveToken(array $data): string
+    {
+        $this->save($data);
+
+        return '';
+    }
+
+    /**
+     *
+     */
+    protected function setInfo(): void
+    {
+        $this->name        = 'magento2 - oauth';
+        $this->description = 'magento2 - oauth';
     }
 
 }

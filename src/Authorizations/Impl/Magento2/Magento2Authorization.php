@@ -2,9 +2,11 @@
 
 namespace Hanaboso\PipesFramework\Authorizations\Impl\Magento2;
 
-use GuzzleHttp\Client;
+use Doctrine\ODM\MongoDB\DocumentManager;
+use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Authorization\Connectors\AuthorizationAbstract;
-use Hanaboso\PipesFramework\Commons\ServiceStorage\ServiceStorageInterface;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 
 /**
  * Class Magento2Authorization
@@ -14,47 +16,42 @@ use Hanaboso\PipesFramework\Commons\ServiceStorage\ServiceStorageInterface;
 class Magento2Authorization extends AuthorizationAbstract implements Magento2AuthorizationInterface
 {
 
-    /**
-     * @var string
-     */
-    private $token;
+    private const URL      = 'url';
+    private const USERNAME = 'username';
+    private const PASSWORD = 'password';
+    private const TOKEN    = 'token';
 
     /**
-     * @var string
+     * @var CurlManager
      */
-    private $url;
-
-    /**
-     * @var string
-     */
-    private $username;
-
-    /**
-     * @var string
-     */
-    private $password;
+    private $curl;
 
     /**
      * Magento2Authorization constructor.
      *
-     * @param string                  $id
-     * @param ServiceStorageInterface $serviceStorage
-     * @param string                  $url
-     * @param string                  $username
-     * @param string                  $password
+     * @param DocumentManager $documentManager
+     * @param CurlManager     $curl
+     * @param string          $id
+     * @param string          $url
+     * @param string          $username
+     * @param string          $password
      */
     public function __construct(
+        DocumentManager $documentManager,
+        CurlManager $curl,
         string $id,
-        ServiceStorageInterface $serviceStorage,
         string $url,
         string $username,
         string $password
     )
     {
-        parent::__construct($id, $serviceStorage);
-        $this->url      = $url;
-        $this->username = $username;
-        $this->password = $password;
+        parent::__construct($id, $documentManager);
+        $this->curl   = $curl;
+        $this->setConfig([
+            self::URL      => $url,
+            self::USERNAME => $username,
+            self::PASSWORD => $password,
+        ]);
     }
 
     /**
@@ -66,21 +63,27 @@ class Magento2Authorization extends AuthorizationAbstract implements Magento2Aut
     }
 
     /**
+     * @return bool
+     */
+    public function isAuthorized(): bool
+    {
+        return $this->load();
+    }
+
+    /**
      * @return array
      */
     public function getHeaders(): array
     {
 
-        if (empty($this->token)) {
-            if (!$this->loadToken()) {
-                $this->authenticate();
-            }
+        if (!$this->isAuthorized()) {
+            $this->authenticate();
         }
 
         $headers = [
             'Accept'        => 'application/json',
             'Content-Type'  => 'application/json',
-            'Authorization' => 'Bearer ' . $this->token,
+            'Authorization' => 'Bearer ' . $this->getParam($this->authorization->getToken(), self::TOKEN),
         ];
 
         return $headers;
@@ -91,17 +94,7 @@ class Magento2Authorization extends AuthorizationAbstract implements Magento2Aut
      */
     public function getUrl(): string
     {
-        return $this->url;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isAuthorized(): bool
-    {
-        $this->loadToken();
-
-        return !empty($this->token) || (!empty($this->url) && !empty($this->username) && !empty($this->password));
+        return $this->getParam($this->getConfig(), self::URL);
     }
 
 
@@ -114,19 +107,22 @@ class Magento2Authorization extends AuthorizationAbstract implements Magento2Aut
      */
     private function authenticate(): void
     {
-        $httpClient = new Client();
-        $response   = $httpClient->request('POST',
-            $this->getAuthorizationUrl(),
-            [
-                'headers' => [
-                    'Accept'       => 'application/json',
-                    'Content-Type' => 'application/json',
-                ],
-                'body'    => '{"username":"' . $this->username . '", "password":"' . $this->password . '"}',
-            ]
-        );
-        $data       = json_decode($response->getBody(), TRUE);
-        $this->saveToken($data);
+        $dto = new RequestDto('POST', new Uri($this->getAuthorizationUrl()));
+        $dto
+            ->setHeaders([
+                'Accept'       => 'application/json',
+                'Content-Type' => 'application/json',
+            ])
+            ->setBody(
+                sprintf(
+                    '{"username":"%s", "password":"%s"}',
+                    $this->getParam($this->getConfig(), self::USERNAME),
+                    $this->getParam($this->getConfig(), self::PASSWORD)
+                )
+            );
+        $response = $this->curl->send($dto);
+        $data     = json_decode($response->getBody(), TRUE);
+        $this->save($data);
     }
 
     /**
@@ -134,33 +130,16 @@ class Magento2Authorization extends AuthorizationAbstract implements Magento2Aut
      */
     private function getAuthorizationUrl(): string
     {
-        return $this->url . '/rest/V1/integration/admin/token';
+        return $this->getParam($this->getConfig(), self::URL) . '/rest/V1/integration/admin/token';
     }
 
     /**
-     * @return bool
-     */
-    private function loadToken(): bool
-    {
-        if (empty($this->token)) {
-            //@TODO: solve loading of Token
-            $this->token = '';
-        }
-
-        return TRUE;
-    }
-
-    /**
-     * @param array $data
      *
-     * @return bool
      */
-    private function saveToken(array $data): bool
+    protected function setInfo(): void
     {
-        //@TODO: solve saving of Token
-        $this->token = $data[0];
-
-        return FALSE;
+        $this->name        = 'magento2 - auth';
+        $this->description = 'magento2 - auth';
     }
 
 }

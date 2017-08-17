@@ -4,6 +4,7 @@ namespace Hanaboso\PipesFramework\HbPFAuthorizationBundle\Controller;
 
 use FOS\RestBundle\Controller\FOSRestController;
 use Hanaboso\PipesFramework\HbPFAuthorizationBundle\Handler\AuthorizationHandler;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -22,56 +23,58 @@ class AuthorizationController extends FOSRestController
     private $handler;
 
     /**
-     * @Route("/api/authorizations/{authorizationId}/user_actions", defaults={}, requirements={"authorizationId": "\w+"})
+     * AuthorizationController constructor.
      *
-     * @param string $authorizationId
-     *
-     * @return Response
+     * @param AuthorizationHandler $handler
      */
-    public function userAuthorizationAction(string $authorizationId): Response
+    function __construct(AuthorizationHandler $handler)
     {
-        $result = $this->handler->getUserAuthorization($authorizationId);
-        if (empty($result)) {
-            throw $this->createNotFoundException();
-        }
-
-        return $this->handleView($this->view($result));
+        $this->handler = $handler;
     }
 
     /**
-     * @Route("/api/authorizations/{authorizationId}/custom_routes", defaults={}, requirements={"authorizationId": "\w+"})
-     *
-     * @param string $authorizationId
-     *
-     * @return Response
-     */
-    public function getCustomRoutesForAuthorization(string $authorizationId): Response
-    {
-        $result = $this->handler->getUserAuthorizationRoutes($authorizationId);
-        if (empty($result)) {
-            throw $this->createNotFoundException();
-        }
-
-        return $this->handleView($this->view($result));
-    }
-
-    /**
-     * @Route("/api/authorizations/{authorizationId}/custom_routes/{partUrl}", defaults={}, requirements={"authorizationId":"\w+"}, requirements={"partUrl":".+"})
+     * @Route("/api/authorizations/{authorizationId}/authorize", defaults={}, requirements={"authorizationId": "\w+"})
+     * @Method('POST')
      *
      * @param Request $request
      * @param string  $authorizationId
-     * @param string  $partUrl
      *
      * @return Response
      */
-    public function authorizationCustomRouteAction(Request $request, string $authorizationId, string $partUrl): Response
+    public function authorization(Request $request, string $authorizationId): Response
     {
-        $result = $this->handler->getUserAuthorizationCustomRoutes($authorizationId, $partUrl, $request);
-        if (empty($result)) {
-            throw $this->createNotFoundException();
-        }
+        $this->handler->authorize($authorizationId);
 
-        return $this->handleView($this->view($result[0]));
+        return $this->handleView($this->redirectView($request->request->get('redirect_url')));
+    }
+
+    /**
+     * @Route("/api/authorizations/{authorizationId}/save_token", defaults={}, requirements={"authorizationId": "\w+"})
+     * @Method('POST')
+     *
+     * @param Request $request
+     * @param string  $authorizationId
+     *
+     * @return Response
+     */
+    public function saveToken(Request $request, string $authorizationId): Response
+    {
+        $url = $this->handler->saveToken($request->request->all(), $authorizationId);
+
+        return $this->handleView($this->redirectView($url));
+    }
+
+    /**
+     * @Route("/api/authorization/info")
+     * @Method('GET')
+     *
+     * @return Response
+     */
+    public function getAuthorizationsInfo(): Response
+    {
+        $data = $this->handler->getAuthInfo();
+
+        return $this->handleView($this->view($data));
     }
 
 }

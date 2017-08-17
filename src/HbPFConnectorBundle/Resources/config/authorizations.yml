@@ -3,8 +3,9 @@ services:
     hbpf.authorization.magento2.auth:
         class: Hanaboso\PipesFramework\Authorizations\Impl\Magento2\Magento2Authorization
         arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.transport.curl_manager'
             - 'magento2.auth'
-            - '@hbpf.storage.interface'
             - 'url://magento2'
             - 'username'
             - 'password'
@@ -12,8 +13,8 @@ services:
     hbpf.authorization.magento2.oauth:
         class: Hanaboso\PipesFramework\Authorizations\Impl\Magento2\Magento2OAuthAuthorization
         arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
             - 'magento2.oauth'
-            - '@hbpf.storage.interface'
             - 'url://magento2'
             - 'api_key'
             - 'secret_key'

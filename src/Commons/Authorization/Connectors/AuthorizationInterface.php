@@ -34,4 +34,9 @@ interface AuthorizationInterface
      */
     public function getHeaders(): array;
 
+    /**
+     * @return string[]
+     */
+    public function getInfo(): array;
+
 }

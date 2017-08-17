@@ -33,7 +33,10 @@ class CryptService
      */
     public function decrypt(string $hash): array
     {
-        return json_decode(base64_decode($hash), TRUE);
+        $res = json_decode(base64_decode($hash), TRUE);
+        $res = $res ?? [];
+
+        return $res;
     }
 
 }

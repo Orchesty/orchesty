@@ -9,6 +9,8 @@
 
 namespace Hanaboso\PipesFramework\HbPFConnectorBundle\Loaders;
 
+use Doctrine\ODM\MongoDB\DocumentManager;
+use Hanaboso\PipesFramework\Authorizations\Document\Authorization;
 use Hanaboso\PipesFramework\Commons\Authorization\Connectors\AuthorizationInterface;
 use Hanaboso\PipesFramework\HbPFConnectorBundle\Exception\AuthorizationException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -30,6 +32,11 @@ class AuthorizationLoader
     private $container;
 
     /**
+     * @var DocumentManager
+     */
+    private $dm;
+
+    /**
      * AuthorizationRepository constructor.
      *
      * @param ContainerInterface $container
@@ -37,6 +44,7 @@ class AuthorizationLoader
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
+        $this->dm        = $container->get('doctrine_mongodb.odm.default_document_manager');
     }
 
     /**
@@ -65,7 +73,7 @@ class AuthorizationLoader
     /**
      * @param array $exclude
      *
-     * @return array
+     * @return string[]
      */
     public function getAllAuthorizations(array $exclude = []): array
     {
@@ -78,7 +86,25 @@ class AuthorizationLoader
                 unset($exclude[$shortened]);
                 continue;
             }
-            $res[] = $key;
+            $res[] = $shortened;
+        }
+
+        return $res;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getAllAuthorizationsInfo(): array
+    {
+        $authorizations = $this->dm->getRepository(Authorization::class)->findAll();
+        $res   = [];
+
+        /** @var Authorization $authorization */
+        foreach ($authorizations as $authorization) {
+            $authorizationService = $this->getAuthorization($authorization->getAuthorizationKey());
+
+            $res[$authorization->getAuthorizationKey()] = $authorizationService->getInfo();
         }
 
         return $res;

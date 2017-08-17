@@ -8,7 +8,7 @@
 
 namespace Tests\Integration\EventListener;
 
-use Hanaboso\PipesFramework\Authorizations\Document\AuthorizationToken;
+use Hanaboso\PipesFramework\Authorizations\Document\Authorization;
 use Hanaboso\PipesFramework\Authorizations\DocumentListener\DocumentListener;
 use Tests\DatabaseTestCaseAbstract;
 
@@ -26,15 +26,15 @@ class EventListenerTest extends DatabaseTestCaseAbstract
      */
     public function testEncryptDecryptData(): void
     {
-        $token = new AuthorizationToken();
-        $token->setData(['data' => 'data']);
+        $token = new Authorization('magento2.auth');
+        $token->setToken(['data' => 'data']);
         $this->documentManager->persist($token);
         $this->documentManager->flush();
         $this->documentManager->clear();
-        $token = $this->documentManager->getRepository(AuthorizationToken::class)->find($token->getId());
+        $token = $this->documentManager->getRepository(Authorization::class)->find($token->getId());
 
-        self::assertNotEmpty($token->getData());
-        self::assertTrue(is_array($token->getData()));
+        self::assertNotEmpty($token->getToken());
+        self::assertTrue(is_array($token->getToken()));
     }
 
 }
