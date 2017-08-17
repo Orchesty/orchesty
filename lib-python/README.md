@@ -1,0 +1,6 @@
+```Default parameters```
+
+PARSER_HOST => 127.0.0.1
+PARSER_PORT => 5000
+FLASK_DEBUG => '1'
+PARSER_RELOADER => 1
