@@ -14,7 +14,9 @@ use Hanaboso\PipesFramework\Commons\BaseService\BaseServiceInterface;
 abstract class AuthorizationAbstract implements AuthorizationInterface, BaseServiceInterface
 {
 
-    protected const ID = 'id';
+    protected const ID          = 'id';
+    protected const NAME        = 'name';
+    protected const DESCRIPTION = 'description';
 
     /**
      * @var string
@@ -50,13 +52,18 @@ abstract class AuthorizationAbstract implements AuthorizationInterface, BaseServ
      * AuthorizationAbstract constructor.
      *
      * @param string          $id
+     * @param string          $name
+     * @param string          $description
      * @param DocumentManager $dm
      */
-    public function __construct(string $id, DocumentManager $dm)
+    public function __construct(string $id, string $name, string $description, DocumentManager $dm)
     {
-        $this->dm               = $dm;
-        $this->config[self::ID] = $id;
-        $this->setInfo();
+        $this->dm     = $dm;
+        $this->config = [
+            self::ID          => $id,
+            self::NAME        => $name,
+            self::DESCRIPTION => $description,
+        ];
     }
 
     /**
@@ -161,10 +168,5 @@ abstract class AuthorizationAbstract implements AuthorizationInterface, BaseServ
     {
         $this->config = array_merge($this->config, $data);
     }
-
-    /**
-     *
-     */
-    abstract protected function setInfo(): void;
 
 }

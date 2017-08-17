@@ -6,6 +6,8 @@ services:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.transport.curl_manager'
             - 'magento2.auth'
+            - 'magento2 Authorization'
+            - 'magento2 Authorization'
             - 'url://magento2'
             - 'username'
             - 'password'
@@ -15,6 +17,8 @@ services:
         arguments:
             - '@doctrine_mongodb.odm.default_document_manager'
             - 'magento2.oauth'
+            - 'magento2 OAuth'
+            - 'magento2 OAuth'
             - 'url://magento2'
             - 'api_key'
             - 'secret_key'
