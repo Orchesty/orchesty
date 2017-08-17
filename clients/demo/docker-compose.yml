@@ -20,6 +20,12 @@ services:
         depends_on:
           - mongodb
 
+    # Frontend
+    frotnend:
+        image: dkr.hanaboso.net/pipes/pipes/frontend:dev
+        ports:
+          - ${DEV_IP}:8001:80
+
     # RabbitMQ
     rabbitmq:
         image: rabbitmq:3-management-alpine
