@@ -16,7 +16,7 @@ use Hanaboso\PipesFramework\Commons\Traits\IdTrait;
  *
  * @package Hanaboso\PipesFramework\Authorizations\Document
  *
- * @ODM\Document(repositoryClass="Hanaboso\PipesFramework\Authorizations\Repository\AuthorizationTokenRepository")
+ * @ODM\Document(repositoryClass="Hanaboso\PipesFramework\Authorizations\Repository\AuthorizationRepository")
  */
 class Authorization
 {
