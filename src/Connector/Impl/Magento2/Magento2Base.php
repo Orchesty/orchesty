@@ -9,9 +9,11 @@
 
 namespace Hanaboso\PipesFramework\Connector\Impl\Magento2;
 
-use GuzzleHttp\Client;
+use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Authorizations\Impl\Magento2\Magento2AuthorizationInterface;
 use Hanaboso\PipesFramework\Commons\Node\BaseNode;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Psr\Http\Message\StreamInterface;
 
 /**
@@ -28,15 +30,22 @@ abstract class Magento2Base extends BaseNode
     private $authorization;
 
     /**
+     * @var CurlManager
+     */
+    private $curl;
+
+    /**
      * Magento2Base constructor.
      *
      * @param string                         $id
      * @param Magento2AuthorizationInterface $authorization
+     * @param CurlManager                    $curl
      */
-    public function __construct(string $id, Magento2AuthorizationInterface $authorization)
+    public function __construct(string $id, Magento2AuthorizationInterface $authorization, CurlManager $curl)
     {
         parent::__construct($id);
         $this->authorization = $authorization;
+        $this->curl          = $curl;
     }
 
     /**
@@ -50,20 +59,18 @@ abstract class Magento2Base extends BaseNode
     /**
      * @param string $method
      * @param string $urlPart
-     * @param null   $body
+     * @param string $body
      *
      * @return StreamInterface|string
      */
-    protected function processRequest($method, $urlPart, $body = NULL): StreamInterface
+    protected function processRequest(string $method, string $urlPart, string $body = ''): StreamInterface
     {
-        $httpClient = new Client();
-        $params     = ['headers' => $this->authorization->getHeaders()];
 
-        if ($body) {
-            $params['body'] = $body;
-        }
-
-        $response = $httpClient->request($method, $this->authorization->getUrl() . $urlPart, $params);
+        $dto = new RequestDto($method, new Uri($this->authorization->getUrl() . $urlPart));
+        $dto
+            ->setHeaders($this->authorization->getHeaders())
+            ->setBody($body);
+        $response = $this->curl->send($dto);
 
         return $response->getBody();
     }
