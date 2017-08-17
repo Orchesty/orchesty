@@ -1,5 +1,30 @@
 services:
+    hbpf.user.controller.user:
+        class: Hanaboso\PipesFramework\HbPFUserBundle\Controller\UserController
+        arguments:
+            - '@hbpf.user.handler.user'
+
+    hbpf.user.handler.user:
+        class: Hanaboso\PipesFramework\HbPFUserBundle\Handler\UserHandler
+        arguments:
+            - '@hbpf.user.manager.user'
+
+    hbpf.user.session:
+        class: Symfony\Component\HttpFoundation\Session\Session
+        arguments:
+
     hbpf.user.manager.token:
-        class: Hanaboso\PipesFramework\HbPFUserBundle\Manager\TokenManager
+        class: Hanaboso\PipesFramework\User\Model\Token\TokenManager
         arguments:
             - '@doctrine_mongodb.odm.default_document_manager'
+
+    hbpf.user.manager.user:
+        class: Hanaboso\PipesFramework\User\Model\User\UserManager
+        arguments:
+
+    hbpf.user.manager.security:
+        class: Hanaboso\PipesFramework\User\Model\Security\SecurityManager
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@security.encoder_factory'
+            - '@hbpf.user.session'

@@ -48,10 +48,10 @@ phpstan:
 	$(MAKE) docker docker="./vendor/bin/phpstan analyse -l 5 tests/"
 
 phpunit:
-	$(MAKE) docker docker="./vendor/bin/phpunit -c phpunit.xml.dist --dont-report-useless-tests --colors tests/"
+	$(MAKE) docker docker="./vendor/bin/phpunit -c phpunit.xml.dist --dont-report-useless-tests --colors --stderr tests/"
 
 phpintergration:
-	$(MAKE) docker docker="./vendor/bin/phpunit -c phpunit.xml.dist --dont-report-useless-tests --colors tests/Integration/"
+	$(MAKE) docker docker="./vendor/bin/phpunit -c phpunit.xml.dist --dont-report-useless-tests --colors --stderr tests/Integration/"
 
 test: docker-up-force composer-install codesniffer phpstan clear-cache phpunit
 
