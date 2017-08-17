@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Hanaboso\PipesFramework\Commons\Cryptography;
+namespace Hanaboso\PipesFramework\Commons\Crypt;
 
 /**
  * Interface CryptInterface

@@ -3,7 +3,7 @@ services:
     hbpf.core.listener:
         class: Hanaboso\PipesFramework\HbPFAuthorizationBundle\DocumentListener\DocumentListener
         arguments:
-        - '@hbpf.commons.crypt_service'
+        - '@hbpf.crypt.crypt_manager'
         tags:
         - { name: doctrine_mongodb.odm.event_listener, event: preFlush, method: preFlush }
         - { name: doctrine_mongodb.odm.event_listener, event: postLoad, method: postLoad }

@@ -6,7 +6,7 @@
  * Time: 2:38 PM
  */
 
-namespace Hanaboso\PipesFramework\Commons\Cryptography;
+namespace Hanaboso\PipesFramework\Commons\Crypt;
 
 use ParagonIE\Halite\HiddenString;
 use ParagonIE\Halite\KeyFactory;
@@ -61,7 +61,7 @@ class CryptService implements CryptInterface
             throw new CryptException('Unknown prefix in hash.', CryptException::UNKNOWN_PREFIX);
         }
 
-        $hiddenString = Crypto::decrypt(substr($hash, 2), $this->buildEncryptionKey());
+        $hiddenString = Crypto::decrypt(substr($hash, 3), $this->buildEncryptionKey());
 
         return unserialize($hiddenString->getString());
     }
