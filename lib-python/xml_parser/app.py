@@ -59,7 +59,7 @@ def handle_bad_request(error):
 
 if __name__ == "__main__":
     analytics = Metrics(UdpSender(os.environ.get('ANALYTICS_HOST'), os.environ.get('ANALYTICS_PORT')))
-    print analytics
+
     config_file = '{}/config.yml'.format(__cwd__)
     
     if os.path.exists(config_file):
