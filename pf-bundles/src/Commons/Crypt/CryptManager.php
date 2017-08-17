@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Hanaboso\PipesFramework\Commons\Cryptography;
+namespace Hanaboso\PipesFramework\Commons\Crypt;
 
 /**
  * Class CryptManager
@@ -42,7 +42,7 @@ class CryptManager
      */
     public function decrypt(string $data)
     {
-        return $this->cryptServiceProvider->getServiceForDecryption(substr($data, 0, 2))->decrypt($data);
+        return $this->cryptServiceProvider->getServiceForDecryption(substr($data, 0, 3))->decrypt($data);
     }
 
 }

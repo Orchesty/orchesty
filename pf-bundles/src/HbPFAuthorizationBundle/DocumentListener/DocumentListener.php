@@ -11,7 +11,7 @@ namespace Hanaboso\PipesFramework\HbPFAuthorizationBundle\DocumentListener;
 use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
 use Doctrine\ODM\MongoDB\Event\PreFlushEventArgs;
 use Hanaboso\PipesFramework\Authorizations\Document\AuthorizationToken;
-use Hanaboso\PipesFramework\Commons\Cryptography\CryptManager;
+use Hanaboso\PipesFramework\Commons\Crypt\CryptManager;
 
 /**
  * Class AuthorizationTokenListener
