@@ -39,7 +39,6 @@ class HbPFUserExtension extends Extension implements PrependExtensionInterface
         $this->processConfiguration($configuration, $configs);
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
-        // $loader->load('security.yml');
         $loader->load('services.yml');
     }
 

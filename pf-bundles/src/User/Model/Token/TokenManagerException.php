@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Hanaboso\PipesFramework\HbPFUserBundle\Manager;
+namespace Hanaboso\PipesFramework\User\Model\Token;
 
 use Hanaboso\PipesFramework\Commons\Exception\PipesFrameworkException;
 

@@ -34,6 +34,19 @@ class User extends UserAbstract
     private $updated;
 
     /**
+     * @param TmpUser|UserInterface $tmpUser
+     *
+     * @return User|UserInterface
+     */
+    public static function from(TmpUser $tmpUser): User
+    {
+        $user = (new self())
+            ->setEmail($tmpUser->getEmail());
+
+        return $user;
+    }
+
+    /**
      * @return string
      */
     public function getType(): string
@@ -52,7 +65,7 @@ class User extends UserAbstract
     /**
      * @param string $password
      *
-     * @return User
+     * @return UserInterface|User
      */
     public function setPassword(string $password): User
     {
@@ -72,7 +85,7 @@ class User extends UserAbstract
     /**
      * @param DateTime $updated
      *
-     * @return User
+     * @return UserInterface|User
      */
     public function setUpdated(DateTime $updated): User
     {
