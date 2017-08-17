@@ -2,7 +2,9 @@
 
 namespace Hanaboso\PipesFramework\Commons\Source;
 
-use GuzzleHttp\Client;
+use GuzzleHttp\Psr7\Uri;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 
 /**
  * Class SourceService
@@ -13,6 +15,21 @@ class SourceService implements SourceServiceInterface
 {
 
     /**
+     * @var CurlManager
+     */
+    private $curl;
+
+    /**
+     * SourceService constructor.
+     *
+     * @param CurlManager $curl
+     */
+    function __construct(CurlManager $curl)
+    {
+        $this->curl = $curl;
+    }
+
+    /**
      * @param string $id
      * @param mixed  $data
      *
@@ -20,17 +37,15 @@ class SourceService implements SourceServiceInterface
      */
     public function receiveData(string $id, $data)
     {
-        $httpClient = new Client();
-        $response   = $httpClient->request('POST',
-            'http://requestb.in/139w65j1',
-            [
-                'headers' => [
-                    'Accept'       => 'application/json',
-                    'Content-Type' => 'application/json',
-                ],
-                'body'    => json_encode($data),
-            ]
-        );
+        $dto = new RequestDto('POST', new Uri('http://requestb.in/139w65j1'));
+        $dto
+            ->setBody(json_encode($data))
+            ->setHeaders([
+                'Accept'       => 'application/json',
+                'Content-Type' => 'application/json',
+            ]);
+
+        $response = $this->curl->send($dto);
 
         return $response->getBody();
     }
