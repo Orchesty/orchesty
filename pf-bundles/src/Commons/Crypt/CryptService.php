@@ -33,7 +33,6 @@ class CryptService implements CryptInterface
      */
     public function __construct(string $key)
     {
-        // TODO generate key
         $this->key = $key;
     }
 
