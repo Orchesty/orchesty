@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Hanaboso\PipesFramework\HbPFTableParserBundle\Enum;
+namespace Hanaboso\PipesFramework\User\Enum;
 
 /**
  * Class UserTypeEnum
@@ -8,7 +8,7 @@ namespace Hanaboso\PipesFramework\HbPFTableParserBundle\Enum;
  * @method static UserTypeEnum USER()
  * @method static UserTypeEnum TMP_USER()
  *
- * @package Hanaboso\PipesFramework\HbPFTableParserBundle\Enum
+ * @package Hanaboso\PipesFramework\User\Enum
  */
 class UserTypeEnum
 {

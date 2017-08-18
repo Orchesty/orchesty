@@ -5,7 +5,7 @@ namespace Hanaboso\PipesFramework\User\Document;
 use DateTime;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Hanaboso\PipesFramework\Commons\Traits\DeletedTrait;
-use Hanaboso\PipesFramework\HbPFTableParserBundle\Enum\UserTypeEnum;
+use Hanaboso\PipesFramework\User\Enum\UserTypeEnum;
 
 /**
  * Class User

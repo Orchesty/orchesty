@@ -2,19 +2,21 @@
 
 namespace Hanaboso\PipesFramework\Commons\Transport\Soap;
 
-use Exception;
+use Hanaboso\PipesFramework\Commons\Exception\PipesFrameworkException;
 
 /**
  * Class SoapException
  *
  * @package Hanaboso\PipesFramework\Commons\Transport\Soap
  */
-final class SoapException extends Exception
+final class SoapException extends PipesFrameworkException
 {
 
-    public const UNKNOWN_EXCEPTION     = 900;
-    public const UNKNOWN_SOAP_VERSION  = 901;
-    public const INVALID_FUNCTION_CALL = 902;
-    public const INVALID_WSDL          = 903;
+    protected const OFFSET = 900;
+
+    public const UNKNOWN_EXCEPTION     = self::OFFSET + 0;
+    public const UNKNOWN_SOAP_VERSION  = self::OFFSET + 1;
+    public const INVALID_FUNCTION_CALL = self::OFFSET + 2;
+    public const INVALID_WSDL          = self::OFFSET + 3;
 
 }

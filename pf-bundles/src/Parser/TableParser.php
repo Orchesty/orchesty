@@ -2,6 +2,7 @@
 
 namespace Hanaboso\PipesFramework\Parser;
 
+use Hanaboso\PipesFramework\Parser\Exception\TableParserException;
 use Nette\Utils\Json;
 use Nette\Utils\Strings;
 use PhpOffice\PhpSpreadsheet\Cell;

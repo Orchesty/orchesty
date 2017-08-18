@@ -4,10 +4,10 @@ namespace Tests\Integration\User\Model\User;
 
 use DateTime;
 use Doctrine\ODM\MongoDB\DocumentRepository;
-use Hanaboso\PipesFramework\HbPFTableParserBundle\Enum\UserTypeEnum;
 use Hanaboso\PipesFramework\User\Document\TmpUser;
 use Hanaboso\PipesFramework\User\Document\Token;
 use Hanaboso\PipesFramework\User\Document\User;
+use Hanaboso\PipesFramework\User\Enum\UserTypeEnum;
 use Hanaboso\PipesFramework\User\Model\Security\SecurityManager;
 use Hanaboso\PipesFramework\User\Model\Token\TokenManager;
 use Hanaboso\PipesFramework\User\Model\Token\TokenManagerException;

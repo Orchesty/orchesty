@@ -12,7 +12,7 @@ use Hanaboso\PipesFramework\Commons\Exception\PipesFrameworkException;
 class CryptException extends PipesFrameworkException
 {
 
-    protected const OFFSET = 1400;
+    protected const OFFSET = 1300;
 
     public const UNKNOWN_PREFIX = self::OFFSET + 1;
 

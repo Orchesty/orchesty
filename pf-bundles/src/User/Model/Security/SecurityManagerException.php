@@ -12,7 +12,7 @@ use Hanaboso\PipesFramework\Commons\Exception\PipesFrameworkException;
 final class SecurityManagerException extends PipesFrameworkException
 {
 
-    protected const OFFSET = 1500;
+    protected const OFFSET = 1400;
 
     public const USER_NOT_LOGGED            = self::OFFSET + 1;
     public const USER_OR_PASSWORD_NOT_VALID = self::OFFSET + 2;

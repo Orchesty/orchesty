@@ -4,9 +4,9 @@ namespace Hanaboso\PipesFramework\User\Model\Token;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentRepository;
-use Hanaboso\PipesFramework\HbPFTableParserBundle\Enum\UserTypeEnum;
 use Hanaboso\PipesFramework\User\Document\Token;
 use Hanaboso\PipesFramework\User\Document\UserInterface;
+use Hanaboso\PipesFramework\User\Enum\UserTypeEnum;
 use Hanaboso\PipesFramework\User\Repository\TokenRepository;
 
 /**
