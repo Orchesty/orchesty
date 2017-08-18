@@ -18,4 +18,18 @@ use Doctrine\ODM\MongoDB\DocumentRepository;
 class AuthorizationRepository extends DocumentRepository
 {
 
+    /**
+     * @return string[]
+     */
+    public function getInstalledKeys(): array
+    {
+        $res = $this
+            ->createQueryBuilder()
+            ->distinct('authorizationKey')
+            ->getQuery()
+            ->execute();
+
+        return $res->toArray();
+    }
+
 }

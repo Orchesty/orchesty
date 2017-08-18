@@ -34,7 +34,8 @@
     "symfony/phpunit-bridge": "^3.3",
     "symfony/security-bundle": "^3.3",
     "symfony/yaml": "^3.3",
-    "pipes/php-check-utils": "^1.0"
+    "pipes/php-check-utils": "^1.0",
+    "symfony/console": "^3.3"
   },
   "repositories": [
     {

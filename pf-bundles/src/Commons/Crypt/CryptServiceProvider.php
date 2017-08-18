@@ -30,9 +30,9 @@ class CryptServiceProvider
     }
 
     /**
-     * @return CryptInterface
+     * @return CryptInterface|null
      */
-    public function getServiceForEncryption(): CryptInterface
+    public function getServiceForEncryption(): ?CryptInterface
     {
         return $this->findServiceByPrefix(self::DEFAULT);
     }
@@ -40,9 +40,9 @@ class CryptServiceProvider
     /**
      * @param string $prefix
      *
-     * @return CryptInterface
+     * @return CryptInterface|null
      */
-    public function getServiceForDecryption(string $prefix): CryptInterface
+    public function getServiceForDecryption(string $prefix): ?CryptInterface
     {
         return $this->findServiceByPrefix($prefix);
     }
@@ -50,13 +50,17 @@ class CryptServiceProvider
     /**
      * @param string $prefix
      *
-     * @return CryptInterface
+     * @return CryptInterface|null
      * @throws CryptException
      */
-    private function findServiceByPrefix(string $prefix): CryptInterface
+    private function findServiceByPrefix(string $prefix): ?CryptInterface
     {
         if (isset($this->cryptServices[$prefix])) {
             return $this->cryptServices[$prefix];
+        }
+
+        if (empty($prefix)) {
+            return NULL;
         }
 
         throw new CryptException(

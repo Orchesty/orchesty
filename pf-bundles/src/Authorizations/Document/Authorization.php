@@ -33,7 +33,7 @@ class Authorization
     /**
      * @var string[]
      */
-    private $token;
+    private $token = [];
 
 
     /**
