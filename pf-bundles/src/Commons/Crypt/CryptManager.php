@@ -32,13 +32,7 @@ class CryptManager
      */
     public function encrypt($data): string
     {
-        // Check for PHPStan
-        $service = $this->cryptServiceProvider->getServiceForEncryption();
-        if ($service) {
-            return $service->encrypt($data);
-        }
-
-        return '';
+        return $this->cryptServiceProvider->getServiceForEncryption()->encrypt($data);
     }
 
     /**
@@ -48,12 +42,7 @@ class CryptManager
      */
     public function decrypt(string $data)
     {
-        $service = $this->cryptServiceProvider->getServiceForDecryption(substr($data, 0, 3));
-        if ($service) {
-            return $service->decrypt($data);
-        }
-
-        return [];
+        return $this->cryptServiceProvider->getServiceForDecryption(substr($data, 0, 3))->decrypt($data);
     }
 
 }
