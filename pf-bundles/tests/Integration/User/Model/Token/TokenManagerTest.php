@@ -1,33 +1,28 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Integration\User;
+namespace Tests\Integration\User\Model\Token;
 
 use DateTime;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use Hanaboso\PipesFramework\HbPFTableParserBundle\Enum\UserTypeEnum;
-use Hanaboso\PipesFramework\HbPFUserBundle\Manager\TokenManager;
-use Hanaboso\PipesFramework\HbPFUserBundle\Manager\TokenManagerException;
 use Hanaboso\PipesFramework\User\Document\TmpUser;
 use Hanaboso\PipesFramework\User\Document\Token;
 use Hanaboso\PipesFramework\User\Document\User;
+use Hanaboso\PipesFramework\User\Model\Token\TokenManager;
+use Hanaboso\PipesFramework\User\Model\Token\TokenManagerException;
 use Hanaboso\PipesFramework\User\Repository\TokenRepository;
 use Tests\DatabaseTestCaseAbstract;
 use Tests\PrivateTrait;
 
 /**
- * Class ManagerTest
+ * Class TokenManagerTest
  *
- * @package Integration\User
+ * @package Tests\Integration\User\Model\Token
  */
 class TokenManagerTest extends DatabaseTestCaseAbstract
 {
 
     use PrivateTrait;
-
-    /**
-     * @var Token
-     */
-    private $token;
 
     /**
      * @var TokenManager
@@ -55,18 +50,16 @@ class TokenManagerTest extends DatabaseTestCaseAbstract
     public function testCreateUserToken(): void
     {
         $user = (new User())->setEmail('email@example.com');
-        $this->documentManager->persist($user);
-        $this->documentManager->flush();
+        $this->persistAndFlush($user);
 
         $this->tokenManager->create($user);
         $this->tokenManager->create($user);
         $this->tokenManager->create($user);
 
-        $this->token = $this->tokenRepository->find($this->tokenManager->create($user)->getId());
+        /** @var Token $token */
+        $token = $this->tokenRepository->find($this->tokenManager->create($user)->getId());
         $this->assertEquals(1, count($this->tokenRepository->findBy([UserTypeEnum::USER => $user])));
-        $this->assertEquals($user->getEmail(), $this->token->getUser()->getEmail());
-
-        $this->documentManager->remove($user);
+        $this->assertEquals($user->getEmail(), $token->getUser()->getEmail());
     }
 
     /**
@@ -75,52 +68,46 @@ class TokenManagerTest extends DatabaseTestCaseAbstract
     public function testCreateTmpUserToken(): void
     {
         $user = (new TmpUser())->setEmail('email@example.com');
-        $this->documentManager->persist($user);
-        $this->documentManager->flush();
+        $this->persistAndFlush($user);
 
         $this->tokenManager->create($user);
         $this->tokenManager->create($user);
         $this->tokenManager->create($user);
 
-        $this->token = $this->tokenRepository->find($this->tokenManager->create($user)->getId());
+        /** @var Token $token */
+        $token = $this->tokenRepository->find($this->tokenManager->create($user)->getId());
         $this->assertEquals(1, count($this->tokenRepository->findBy([UserTypeEnum::TMP_USER => $user])));
-        $this->assertEquals($user->getEmail(), $this->token->getTmpUser()->getEmail());
-
-        $this->documentManager->remove($user);
+        $this->assertEquals($user->getEmail(), $token->getTmpUser()->getEmail());;
     }
 
     /**
      *
      */
-    public function testValidateFreshToken(): void
+    public function testValidateToken(): void
     {
         $token = new Token();
+        $this->persistAndFlush($token);
 
-        $this->documentManager->persist($token);
-        $this->documentManager->flush();
-        $this->documentManager->clear();
-
-        $this->token = $this->tokenRepository->find($token->getId());
-        $this->tokenManager->validate($this->token->getId());
+        /** @var Token $token */
+        $token = $this->tokenRepository->find($token->getId());
+        $token = $this->tokenManager->validate($token->getId());
+        $this->assertInstanceOf(Token::class, $token);
     }
 
     /**
      *
      */
-    public function testValidateNotFreshToken(): void
+    public function testValidateInvalidToken(): void
     {
         $token = new Token();
         $this->setProperty($token, 'created', new DateTime('yesterday midnight'));
-
-        $this->documentManager->persist($token);
-        $this->documentManager->flush();
-        $this->documentManager->clear();
+        $this->persistAndFlush($token);
 
         $this->expectException(TokenManagerException::class);
         $this->expectExceptionCode(TokenManagerException::TOKEN_NOT_VALID);
 
-        $this->token = $this->tokenRepository->find($token->getId());
-        $this->tokenManager->validate($this->token->getId());
+        $token = $this->tokenRepository->find($token->getId());
+        $this->tokenManager->validate($token->getId());
     }
 
     /**
@@ -129,16 +116,14 @@ class TokenManagerTest extends DatabaseTestCaseAbstract
     public function testDeleteUserToken(): void
     {
         $user = (new User())->setEmail('email@example.com');
-        $this->documentManager->persist($user);
-        $this->documentManager->flush();
+        $this->persistAndFlush($user);
 
-        $this->token = $this->tokenRepository->find($this->tokenManager->create($user)->getId());
+        /** @var Token $token */
+        $token = $this->tokenRepository->find($this->tokenManager->create($user)->getId());
         $this->assertEquals(1, count($this->tokenRepository->findBy([UserTypeEnum::USER => $user])));
 
-        $this->tokenManager->delete($this->token);
+        $this->tokenManager->delete($token);
         $this->assertEquals(0, count($this->tokenRepository->findBy([UserTypeEnum::USER => $user])));
-
-        $this->documentManager->remove($user);
     }
 
     /**
@@ -147,26 +132,14 @@ class TokenManagerTest extends DatabaseTestCaseAbstract
     public function testDeleteTmpUserToken(): void
     {
         $user = (new TmpUser())->setEmail('email@example.com');
-        $this->documentManager->persist($user);
-        $this->documentManager->flush();
+        $this->persistAndFlush($user);
 
-        $this->token = $this->tokenRepository->find($this->tokenManager->create($user)->getId());
+        /** @var Token $token */
+        $token = $this->tokenRepository->find($this->tokenManager->create($user)->getId());
         $this->assertEquals(1, count($this->tokenRepository->findBy([UserTypeEnum::TMP_USER => $user])));
 
-        $this->tokenManager->delete($this->token);
+        $this->tokenManager->delete($token);
         $this->assertEquals(0, count($this->tokenRepository->findBy([UserTypeEnum::TMP_USER => $user])));
-
-        $this->documentManager->remove($user);
-    }
-
-    /**
-     *
-     */
-    protected function tearDown(): void
-    {
-        parent::tearDown();
-        $this->documentManager->remove($this->token);
-        $this->documentManager->flush();
     }
 
 }

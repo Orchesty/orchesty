@@ -27,14 +27,14 @@ class Token
     private $created;
 
     /**
-     * @var UserInterface
+     * @var UserInterface|User|null
      *
      * @ODM\ReferenceOne(targetDocument="Hanaboso\PipesFramework\User\Document\User")
      */
     private $user;
 
     /**
-     * @var UserInterface
+     * @var UserInterface|TmpUser|null
      *
      * @ODM\ReferenceOne(targetDocument="Hanaboso\PipesFramework\User\Document\TmpUser")
      */
@@ -57,7 +57,7 @@ class Token
     }
 
     /**
-     * @return UserInterface|null
+     * @return UserInterface|User|null
      */
     public function getUser(): ?UserInterface
     {
@@ -77,7 +77,7 @@ class Token
     }
 
     /**
-     * @return UserInterface|null
+     * @return UserInterface|TmpUser|null
      */
     public function getTmpUser(): ?UserInterface
     {
@@ -85,11 +85,11 @@ class Token
     }
 
     /**
-     * @param UserInterface $tmpUser
+     * @param UserInterface|null $tmpUser
      *
      * @return Token
      */
-    public function setTmpUser(UserInterface $tmpUser): Token
+    public function setTmpUser(?UserInterface $tmpUser): Token
     {
         $this->tmpUser = $tmpUser;
 
@@ -97,7 +97,7 @@ class Token
     }
 
     /**
-     * @return UserInterface
+     * @return UserInterface|User|TmpUser
      */
     public function getUserOrTmpUser(): UserInterface
     {

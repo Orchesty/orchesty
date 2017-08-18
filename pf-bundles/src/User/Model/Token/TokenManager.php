@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Hanaboso\PipesFramework\HbPFUserBundle\Manager;
+namespace Hanaboso\PipesFramework\User\Model\Token;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentRepository;
