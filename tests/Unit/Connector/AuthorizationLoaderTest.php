@@ -25,7 +25,9 @@ class AuthorizationLoaderTest extends KernelTestCaseAbstract
 
     use PrivateTrait;
 
-    /** @var  AuthorizationLoader */
+    /**
+     * @var  AuthorizationLoader
+     */
     private $loader;
 
     /**
@@ -73,8 +75,8 @@ class AuthorizationLoaderTest extends KernelTestCaseAbstract
         $conns = $this->loader->getAllAuthorizationsInfo();
 
         $expect = [
-            'name'          => 'magento2 - auth',
-            'description'   => 'magento2 - auth',
+            'name'          => 'magento2 Authorization',
+            'description'   => 'magento2 Authorization',
             'type'          => 'basic',
             'is_authorized' => FALSE,
         ];

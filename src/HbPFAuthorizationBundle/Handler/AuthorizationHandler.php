@@ -51,19 +51,14 @@ class AuthorizationHandler
     /**
      * @param array  $data
      * @param string $authId
-     *
-     * @return string
      */
-    public function saveToken(array $data, string $authId): string
+    public function saveToken(array $data, string $authId): void
     {
         $authorization = $this->loader->getAuthorization($authId);
-        $res           = '';
 
         if ($authorization instanceof OAuthAuthorizationInterface) {
-            $res = $authorization->saveToken($data);
+            $authorization->saveToken($data);
         }
-
-        return $res;
     }
 
     /**

@@ -59,9 +59,9 @@ class AuthorizationController extends FOSRestController
      */
     public function saveToken(Request $request, string $authorizationId): Response
     {
-        $url = $this->handler->saveToken($request->request->all(), $authorizationId);
+        $this->handler->saveToken($request->request->all(), $authorizationId);
 
-        return $this->handleView($this->redirectView($url));
+        return $this->handleView($this->redirectView('http://frontendURL.com'));
     }
 
     /**

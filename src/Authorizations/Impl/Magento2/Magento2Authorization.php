@@ -76,9 +76,12 @@ class Magento2Authorization extends AuthorizationAbstract implements Magento2Aut
     }
 
     /**
+     * @param string $method
+     * @param string $url
+     *
      * @return array
      */
-    public function getHeaders(): array
+    public function getHeaders(string $method, string $url): array
     {
         if (!$this->isAuthorized()) {
             $this->authenticate();
