@@ -1,0 +1,18 @@
+parameters:
+    hbpf.crypt.key: "31400300e703474eae51cc556068614dbd2b14aff0b40e1b6e2311674180245fa653be204bc4f78b400c86daf9629fac76eda2d05e5f52cce7581257c5fbd44a18cf1060afaf19b8ee8c1dca7a95f302907cfa3ace6375bc8abcd4b935bad8594565b9b6"
+
+services:
+    hbpf.crypt.crypt_service:
+        class: Hanaboso\PipesFramework\Commons\Crypt\CryptService
+        arguments:
+            - "%hbpf.crypt.key%"
+
+    hbpf.crypt.crypt_service_provider:
+        class: Hanaboso\PipesFramework\Commons\Crypt\CryptServiceProvider
+        arguments:
+            - "@hbpf.crypt.crypt_service"
+
+    hbpf.crypt.crypt_manager:
+        class: Hanaboso\PipesFramework\Commons\Crypt\CryptManager
+        arguments:
+            - "@hbpf.crypt.crypt_service_provider"
