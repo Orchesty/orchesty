@@ -7,7 +7,7 @@
  * Time: 16:25
  */
 
-namespace Hanaboso\PipesFramework\HbPFConnectorBundle\Loaders;
+namespace Hanaboso\PipesFramework\HbPFAuthorizationBundle\Loader;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\PipesFramework\Authorizations\Document\Authorization;
@@ -20,7 +20,7 @@ use Symfony\Component\Yaml\Yaml;
 /**
  * Class AuthorizationRepository
  *
- * @package Hanaboso\PipesFramework\Commons\Authorization\Connectors
+ * @package Hanaboso\PipesFramework\HbPFAuthorizationBundle\Loader
  */
 class AuthorizationLoader
 {

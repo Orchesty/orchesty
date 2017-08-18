@@ -46,6 +46,7 @@ class HbPFAuthorizationExtension extends Extension
         $loader->load('services.yml');
         $loader->load('commands.yml');
         $loader->load('oauth_providers.yml');
+        $loader->load('authorizations.yml');
     }
 
 }

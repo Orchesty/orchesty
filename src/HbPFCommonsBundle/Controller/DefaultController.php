@@ -2,7 +2,6 @@
 
 namespace Hanaboso\PipesFramework\HbPFCommonsBundle\Controller;
 
-use Hanaboso\PipesFramework\HbPFConnectorBundle\Loaders\AuthorizationLoader;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -48,30 +47,6 @@ class DefaultController extends Controller
             $template,
             new Response('', 200, ['content-type' => 'text/plain'])
         );
-    }
-
-    /**
-     * @Route("/authorization-info")
-     *
-     * @return Response
-     */
-    public function authorizationInfoAction(): Response
-    {
-        /** @var AuthorizationLoader $authorizationLoader */
-        $authorizationLoader = $this->container->get('hbpf.loader.authorization');
-
-        $authorizations = $authorizationLoader->getAllAuthorizations();
-
-        $template = [
-            'authorizations' => $authorizations,
-        ];
-
-        return $this->render(
-            'HbPFCommonsBundle:Default:authorizations.html.twig',
-            $template,
-            new Response('', 200)
-        );
-
     }
 
 }

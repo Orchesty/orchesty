@@ -12,7 +12,8 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Exception;
 use Hanaboso\PipesFramework\Authorizations\Document\Authorization;
 use Hanaboso\PipesFramework\Authorizations\Provider\Dto\OAuth1Dto;
-use Hanaboso\PipesFramework\Commons\Redirect\Redirect;
+use Hanaboso\PipesFramework\Commons\Redirect\RedirectInterface;
+use Hanaboso\PipesFramework\HbPFConnectorBundle\Exception\AuthorizationException;
 use OAuth;
 
 /**
@@ -23,8 +24,8 @@ use OAuth;
 class OAuth1Provider implements ProviderInterface
 {
 
-    public const OAUTH_TOKEN_SECRET = 'oauth_token_secret';
     public const OAUTH_TOKEN        = 'oauth_token';
+    public const OAUTH_TOKEN_SECRET = 'oauth_token_secret';
 
     private const OAUTH_VERIFIER = 'oauth_verifier';
 
@@ -34,17 +35,17 @@ class OAuth1Provider implements ProviderInterface
     private $dm;
 
     /**
-     * @var Redirect
+     * @var RedirectInterface
      */
     private $redirect;
 
     /**
      * OAuth1Provider constructor.
      *
-     * @param DocumentManager $dm
-     * @param Redirect        $redirect
+     * @param DocumentManager   $dm
+     * @param RedirectInterface $redirect
      */
-    public function __construct(DocumentManager $dm, Redirect $redirect)
+    public function __construct(DocumentManager $dm, RedirectInterface $redirect)
     {
         $this->dm       = $dm;
         $this->redirect = $redirect;
@@ -60,25 +61,18 @@ class OAuth1Provider implements ProviderInterface
      */
     public function authorize(OAuth1Dto $dto, string $tokenUrl, string $authorizeUrl, array $scopes = []): void
     {
-        $client = $this->createClient($dto);
+        $client       = $this->createClient($dto);
+        $requestToken = [];
 
         try {
             $requestToken = $client->getRequestToken($tokenUrl);
         } catch (Exception $e) {
-            //TODO log this
-
-            throw $e;
+            $this->throwException(sprintf('OAuth error: %s', $e->getMessage()));
         }
 
-        if (
-            !array_key_exists(self::OAUTH_TOKEN_SECRET, $requestToken) ||
-            !array_key_exists(self::OAUTH_TOKEN, $requestToken)
-        ) {
-            //TODO log this
-            throw new Exception();
-        }
-
+        $this->tokenAndSecretChecker($requestToken);
         $this->saveOAuthStuffs($dto->getAuthorization(), $requestToken);
+
         $authorizeUrl = $this->getAuthorizeUrl($authorizeUrl, $requestToken[self::OAUTH_TOKEN], $scopes);
 
         $this->redirect->make($authorizeUrl);
@@ -90,14 +84,15 @@ class OAuth1Provider implements ProviderInterface
      * @param string    $accessTokenUrl
      *
      * @return array
-     * @throws Exception
+     * @throws AuthorizationException
      */
     public function getAccessToken(OAuth1Dto $dto, array $request, string $accessTokenUrl): array
     {
         if (!array_key_exists(self::OAUTH_VERIFIER, $request)) {
-            //TODO log this
-            throw new Exception();
+            $this->throwException(sprintf('OAuth error: Data "%s" is missing.', self::OAUTH_VERIFIER));
         }
+
+        $this->tokenAndSecretChecker($dto->getAuthorization()->getToken());
 
         $client = $this->createClient($dto);
         $client->setToken(
@@ -105,11 +100,11 @@ class OAuth1Provider implements ProviderInterface
             $dto->getAuthorization()->getToken()[self::OAUTH_TOKEN_SECRET]
         );
 
+        $token = [];
         try {
             $token = $client->getAccessToken($accessTokenUrl, NULL, $request[self::OAUTH_VERIFIER]);
         } catch (Exception $e) {
-            //TODO log this
-            throw new Exception();
+            $this->throwException($e->getMessage());
         }
 
         return $token;
@@ -140,7 +135,7 @@ class OAuth1Provider implements ProviderInterface
      *
      * @return OAuth
      */
-    private function createClient(OAuth1Dto $dto): OAuth
+    protected function createClient(OAuth1Dto $dto): OAuth
     {
         return new OAuth(
             $dto->getConsumerKey(),
@@ -191,6 +186,38 @@ class OAuth1Provider implements ProviderInterface
         $scope = implode(',', $scopes);
 
         return sprintf('&scope=%s', $scope);
+    }
+
+    /**
+     * @param array $data
+     *
+     * @throws AuthorizationException
+     */
+    private function tokenAndSecretChecker(array $data): void
+    {
+        if (
+            !array_key_exists(self::OAUTH_TOKEN_SECRET, $data) ||
+            !array_key_exists(self::OAUTH_TOKEN, $data)
+        ) {
+            $this->throwException(
+                sprintf(
+                    'OAuth error: Data "%s" or "%s" is missing.',
+                    self::OAUTH_TOKEN_SECRET,
+                    self::OAUTH_TOKEN
+                )
+            );
+        }
+    }
+
+    /**
+     * @param string $message
+     *
+     * @throws AuthorizationException
+     */
+    private function throwException(string $message): void
+    {
+        //TODO log this
+        throw new AuthorizationException($message, AuthorizationException::AUTHORIZATION_OAUTH1_ERROR);
     }
 
 }

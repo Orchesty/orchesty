@@ -7,7 +7,7 @@
  * Time: 10:37 AM
  */
 
-namespace Hanaboso\PipesFramework\HbPFConnectorBundle\Loaders;
+namespace Hanaboso\PipesFramework\HbPFConnectorBundle\Loader;
 
 use Hanaboso\PipesFramework\Commons\Node\BaseNode;
 use Hanaboso\PipesFramework\HbPFConnectorBundle\Exception\ConnectorException;
@@ -17,7 +17,7 @@ use Symfony\Component\Yaml\Yaml;
 /**
  * Class ConnectorLoader
  *
- * @package Hanaboso\PipesFramework\HbPFConnectorBundle\Loaders
+ * @package Hanaboso\PipesFramework\HbPFConnectorBundle\Loader
  */
 class ConnectorLoader
 {

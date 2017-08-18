@@ -40,7 +40,7 @@ final class OAuth1Dto
     private $signatureMethod;
 
     /**
-     * @var string
+     * @var int
      */
     private $authType;
 
@@ -51,14 +51,14 @@ final class OAuth1Dto
      * @param string        $consumerKey
      * @param string        $consumerSecret
      * @param string        $signatureMethod
-     * @param string        $authType
+     * @param int           $authType
      */
     public function __construct(
         Authorization $authorization,
         string $consumerKey,
         string $consumerSecret,
         string $signatureMethod = OAUTH_SIG_METHOD_HMACSHA1,
-        string $authType = OAUTH_AUTH_TYPE_AUTHORIZATION
+        int $authType = OAUTH_AUTH_TYPE_AUTHORIZATION
     )
     {
         $this->authorization   = $authorization;
@@ -93,9 +93,9 @@ final class OAuth1Dto
     }
 
     /**
-     * @return string
+     * @return int
      */
-    public function getAuthType(): string
+    public function getAuthType(): int
     {
         return $this->authType;
     }

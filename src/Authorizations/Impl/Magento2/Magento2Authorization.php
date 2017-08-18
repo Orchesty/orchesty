@@ -7,7 +7,6 @@ use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Authorization\Connectors\AuthorizationAbstract;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
-use PHPUnit_Framework_MockObject_MockObject;
 
 /**
  * Class Magento2Authorization
@@ -23,21 +22,21 @@ class Magento2Authorization extends AuthorizationAbstract implements Magento2Aut
     private const TOKEN    = 'token';
 
     /**
-     * @var CurlManagerInterface|PHPUnit_Framework_MockObject_MockObject
+     * @var CurlManagerInterface
      */
     private $curl;
 
     /**
      * Magento2Authorization constructor.
      *
-     * @param DocumentManager                                              $dm
-     * @param CurlManagerInterface|PHPUnit_Framework_MockObject_MockObject $curl
-     * @param string                                                       $id
-     * @param string                                                       $name
-     * @param string                                                       $description
-     * @param string                                                       $url
-     * @param string                                                       $username
-     * @param string                                                       $password
+     * @param DocumentManager      $dm
+     * @param CurlManagerInterface $curl
+     * @param string               $id
+     * @param string               $name
+     * @param string               $description
+     * @param string               $url
+     * @param string               $username
+     * @param string               $password
      */
     public function __construct(
         DocumentManager $dm,
