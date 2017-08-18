@@ -57,7 +57,7 @@ class OAuth1Provider implements ProviderInterface
      * @param string    $authorizeUrl
      * @param array     $scopes
      *
-     * @throws Exception
+     * @throws AuthorizationException
      */
     public function authorize(OAuth1Dto $dto, string $tokenUrl, string $authorizeUrl, array $scopes = []): void
     {
@@ -116,10 +116,17 @@ class OAuth1Provider implements ProviderInterface
      * @param string    $url
      *
      * @return string
+     * @throws AuthorizationException
      */
     public function getAuthorizeHeader(OAuth1Dto $dto, string $method, string $url): string
     {
+        $this->tokenAndSecretChecker($dto->getAuthorization()->getToken());
+
         $client = $this->createClient($dto);
+        $client->setToken(
+            $dto->getAuthorization()->getToken()[self::OAUTH_TOKEN],
+            $dto->getAuthorization()->getToken()[self::OAUTH_TOKEN_SECRET]
+        );
 
         return $client->getRequestHeader($method, $url);
     }

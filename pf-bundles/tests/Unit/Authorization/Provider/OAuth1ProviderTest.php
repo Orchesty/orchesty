@@ -100,19 +100,39 @@ final class OAuth1ProviderTest extends TestCase
     }
 
     /**
+     * @dataProvider getHeaderDataProvider
      *
+     * @param array $data
+     * @param bool  $exception
      */
-    public function testGetAuthorizeHeader(): void
+    public function testGetAuthorizeHeader(array $data, bool $exception): void
     {
         $authorization = new Authorization('magento2.oauth');
+        $authorization->setToken($data);
         /** @var OAuth1Provider|PHPUnit_Framework_MockObject_MockObject $provider */
         $provider = $this->getMockedProvider(['token'], '');
         $dto      = new OAuth1Dto($authorization, 'key', 'sec');
+
+        if ($exception) {
+            $this->expectException(AuthorizationException::class);
+            $this->expectExceptionCode(AuthorizationException::AUTHORIZATION_OAUTH1_ERROR);
+        }
 
         $header = $provider->getAuthorizeHeader($dto, 'GET', 'someEndpoint/Url');
 
         $this->assertNotEmpty($header);
         $this->assertStringStartsWith('ge', $header);
+    }
+
+    /**
+     * @return array
+     */
+    public function getHeaderDataProvider(): array
+    {
+        return [
+            [[], TRUE],
+            [['oauth_token' => 'token', 'oauth_token_secret' => 'secret'], FALSE],
+        ];
     }
 
 
