@@ -68,7 +68,7 @@ abstract class Magento2Base extends BaseNode
 
         $dto = new RequestDto($method, new Uri($this->authorization->getUrl() . $urlPart));
         $dto
-            ->setHeaders($this->authorization->getHeaders())
+            ->setHeaders($this->authorization->getHeaders($dto->getMethod(), (string) $dto->getUri()))
             ->setBody($body);
         $response = $this->curl->send($dto);
 

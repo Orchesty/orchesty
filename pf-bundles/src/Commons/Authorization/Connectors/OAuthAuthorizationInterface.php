@@ -17,9 +17,7 @@ interface OAuthAuthorizationInterface
 
     /**
      * @param string[] $data
-     *
-     * @return string
      */
-    public function saveToken(array $data): string;
+    public function saveToken(array $data): void;
 
 }

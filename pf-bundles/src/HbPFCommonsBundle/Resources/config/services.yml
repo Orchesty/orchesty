@@ -1,5 +1,9 @@
 services:
 
+    hbpf.redirect:
+        class: Hanaboso\PipesFramework\Commons\Redirect\Redirect
+        arguments:
+
     hbpf.node_repository:
         class: Hanaboso\PipesFramework\Commons\Node\NodeRepository
         arguments:

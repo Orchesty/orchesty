@@ -16,6 +16,7 @@ services:
         class: Hanaboso\PipesFramework\Authorizations\Impl\Magento2\Magento2OAuthAuthorization
         arguments:
             - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.providers.oauth1_provider'
             - 'magento2.oauth'
             - 'magento2 OAuth'
             - 'magento2 OAuth'

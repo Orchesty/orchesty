@@ -23,8 +23,11 @@ interface Magento2AuthorizationInterface
     public function getUrl(): string;
 
     /**
+     * @param string $method
+     * @param string $url
+     *
      * @return array
      */
-    public function getHeaders(): array;
+    public function getHeaders(string $method, string $url): array;
 
 }

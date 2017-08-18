@@ -19,16 +19,6 @@ abstract class AuthorizationAbstract implements AuthorizationInterface, BaseServ
     protected const DESCRIPTION = 'description';
 
     /**
-     * @var string
-     */
-    protected $name;
-
-    /**
-     * @var string
-     */
-    protected $description;
-
-    /**
      * @var DocumentManager
      */
     protected $dm;
@@ -88,8 +78,8 @@ abstract class AuthorizationAbstract implements AuthorizationInterface, BaseServ
     public function getInfo(): array
     {
         return [
-            'name'          => $this->name,
-            'description'   => $this->description,
+            'name'          => $this->config[self::NAME],
+            'description'   => $this->config[self::DESCRIPTION],
             'type'          => $this->getAuthorizationType(),
             'is_authorized' => $this->isAuthorized(),
         ];
