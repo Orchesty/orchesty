@@ -1,0 +1,58 @@
+import time
+
+import service.udp_sender
+
+
+class Metrics:
+    """Metrics class for sending measurements data
+    Packet format
+    python-service,name=ubuntu,host=ubuntu key=value 1502875884010000000
+    """
+    MEASUREMENT = 'python-service'
+
+    def __init__(self, sender):
+        # type: (service.udp_sender.UdpSender) -> None
+        """Metrics collector
+        :param sender: UDP sender service
+        """
+        self.sender = sender
+
+    def send(self, fields, host=None):
+        # type: (dict, str) -> int
+
+        """Send UDP packet
+
+        :param fields: dict with message fields
+        :param host: sender host address
+        :return: send message length
+        """
+        message = self._get_message(fields, host)
+        return self.sender.send(message)
+
+    def _get_message(self, fields, host=None):
+        # type: (dict, str|None) -> str
+
+        """Prepare message for sending
+
+        :rtype: object
+        :param fields: dict with message fields
+        :param host: sender host address
+        :return: prepared message
+        """
+        micro_time = '{}000000'.format(long(time.time() * 1000))
+        prefix = self._get_prefix(host)
+        keys = ['{}={}'.format(key, value) for key, value in fields.iteritems()]
+
+        return '{} {} {}'.format(prefix, ','.join(keys), micro_time)
+
+    def _get_prefix(self, host=None):
+        # type: (str) -> str
+        """Get prefix for message, as prefix is used hostname
+
+        :param host:
+        :return:
+        """
+        if host is None:
+            host = self.sender.get_hostname()
+
+        return '{},name={},host={}'.format(self.MEASUREMENT, host, host)
