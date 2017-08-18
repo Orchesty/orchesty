@@ -106,7 +106,7 @@ class UserManagerTest extends DatabaseTestCaseAbstract
      */
     public function testRegisterMultiple(): void
     {
-        for ($i = 0; $i < 5; $i++) {
+        for ($i = 0; $i < 2; $i++) {
             $this->testRegister();
         }
     }

@@ -14,7 +14,7 @@ services:
             - Hanaboso\PipesFramework\User\Document\User:
                 class: Symfony\Component\Translation\Translator
                 algorithm: bcrypt
-                cost: 15
+                cost: 12
 
 imports:
 ## Import params
