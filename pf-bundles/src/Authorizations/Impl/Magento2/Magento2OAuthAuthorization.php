@@ -10,10 +10,10 @@
 namespace Hanaboso\PipesFramework\Authorizations\Impl\Magento2;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Hanaboso\PipesFramework\Authorizations\Exception\AuthorizationException;
 use Hanaboso\PipesFramework\Authorizations\Provider\Dto\OAuth1Dto;
 use Hanaboso\PipesFramework\Authorizations\Provider\OAuth1Provider;
 use Hanaboso\PipesFramework\Commons\Authorization\Connectors\OAuthAuthorizationAbstract;
-use Hanaboso\PipesFramework\Commons\Authorization\Exception\AuthorizationException;
 
 /**
  * Class Magento2OAuthAuthorization

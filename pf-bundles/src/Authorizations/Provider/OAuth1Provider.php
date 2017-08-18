@@ -11,9 +11,9 @@ namespace Hanaboso\PipesFramework\Authorizations\Provider;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Exception;
 use Hanaboso\PipesFramework\Authorizations\Document\Authorization;
+use Hanaboso\PipesFramework\Authorizations\Exception\AuthorizationException;
 use Hanaboso\PipesFramework\Authorizations\Provider\Dto\OAuth1Dto;
 use Hanaboso\PipesFramework\Commons\Redirect\RedirectInterface;
-use Hanaboso\PipesFramework\HbPFConnectorBundle\Exception\AuthorizationException;
 use OAuth;
 
 /**
@@ -130,8 +130,6 @@ class OAuth1Provider implements ProviderInterface
 
         return $client->getRequestHeader($method, $url);
     }
-
-
 
     /**
      * ------------------------------------ HELPERS ----------------------------------------

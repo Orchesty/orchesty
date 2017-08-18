@@ -11,9 +11,9 @@ namespace Hanaboso\PipesFramework\HbPFAuthorizationBundle\Loader;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\PipesFramework\Authorizations\Document\Authorization;
+use Hanaboso\PipesFramework\Authorizations\Exception\AuthorizationException;
 use Hanaboso\PipesFramework\Authorizations\Repository\AuthorizationRepository;
 use Hanaboso\PipesFramework\Commons\Authorization\Connectors\AuthorizationInterface;
-use Hanaboso\PipesFramework\HbPFConnectorBundle\Exception\AuthorizationException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Yaml\Yaml;
 
