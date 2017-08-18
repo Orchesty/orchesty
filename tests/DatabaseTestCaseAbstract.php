@@ -51,7 +51,7 @@ abstract class DatabaseTestCaseAbstract extends KernelTestCaseAbstract
     protected function persistAndFlush($document): void
     {
         $this->documentManager->persist($document);
-        $this->documentManager->flush();
+        $this->documentManager->flush($document);
     }
 
 }

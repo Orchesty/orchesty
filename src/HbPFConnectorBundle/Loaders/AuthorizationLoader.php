@@ -11,6 +11,7 @@ namespace Hanaboso\PipesFramework\HbPFConnectorBundle\Loaders;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\PipesFramework\Authorizations\Document\Authorization;
+use Hanaboso\PipesFramework\Authorizations\Repository\AuthorizationRepository;
 use Hanaboso\PipesFramework\Commons\Authorization\Connectors\AuthorizationInterface;
 use Hanaboso\PipesFramework\HbPFConnectorBundle\Exception\AuthorizationException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -97,17 +98,46 @@ class AuthorizationLoader
      */
     public function getAllAuthorizationsInfo(): array
     {
-        $authorizations = $this->dm->getRepository(Authorization::class)->findAll();
-        $res   = [];
+        $authorizations = $this->getInstalled();
+        $res            = [];
 
-        /** @var Authorization $authorization */
         foreach ($authorizations as $authorization) {
-            $authorizationService = $this->getAuthorization($authorization->getAuthorizationKey());
+            $authorizationService = $this->getAuthorization($authorization);
 
-            $res[$authorization->getAuthorizationKey()] = $authorizationService->getInfo();
+            $res[$authorization] = $authorizationService->getInfo();
         }
 
         return $res;
+    }
+
+    /**
+     *
+     */
+    public function installAllAuthorizations(): void
+    {
+        $installed = $this->getInstalled();
+        $keys      = $this->getAllAuthorizations($installed);
+
+        foreach ($keys as $key) {
+            $auth = new Authorization($key);
+            $this->dm->persist($auth);
+        }
+
+        $this->dm->flush();
+    }
+
+    /**
+     * @return string[]
+     */
+    private function getInstalled(): array
+    {
+        // Check for PHPStan
+        $repo = $this->dm->getRepository(Authorization::class);
+        if ($repo instanceof AuthorizationRepository) {
+            return $repo->getInstalledKeys();
+        }
+
+        return [];
     }
 
 }

@@ -9,7 +9,6 @@
 namespace Tests\Unit\Connector;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Hanaboso\PipesFramework\Authorizations\Document\Authorization;
 use Hanaboso\PipesFramework\Authorizations\Repository\AuthorizationRepository;
 use Hanaboso\PipesFramework\Commons\Authorization\Connectors\AuthorizationInterface;
 use Hanaboso\PipesFramework\HbPFConnectorBundle\Loaders\AuthorizationLoader;
@@ -35,10 +34,8 @@ class AuthorizationLoaderTest extends KernelTestCaseAbstract
     protected function setUp(): void
     {
         parent::setUp();
-        $auth = new Authorization('magento2.auth');
-
-        $repo = $this->createPartialMock(AuthorizationRepository::class, ['findAll']);
-        $repo->method('findAll')->willReturn([$auth]);
+        $repo = $this->createPartialMock(AuthorizationRepository::class, ['getInstalledKeys']);
+        $repo->method('getInstalledKeys')->willReturn(['magento2.auth']);
 
         $dm = $this->createPartialMock(DocumentManager::class, ['getRepository']);
         $dm->method('getRepository')->willReturn($repo);
