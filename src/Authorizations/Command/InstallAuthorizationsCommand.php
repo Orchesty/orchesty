@@ -8,7 +8,7 @@
 
 namespace Hanaboso\PipesFramework\Authorizations\Command;
 
-use Hanaboso\PipesFramework\HbPFConnectorBundle\Loaders\AuthorizationLoader;
+use Hanaboso\PipesFramework\HbPFAuthorizationBundle\Loader\AuthorizationLoader;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
