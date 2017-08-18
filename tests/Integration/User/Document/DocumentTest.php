@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Integration\User;
+namespace Tests\Integration\User\Document;
 
 use Hanaboso\PipesFramework\User\Document\TmpUser;
 use Hanaboso\PipesFramework\User\Document\Token;
@@ -8,9 +8,9 @@ use Hanaboso\PipesFramework\User\Document\User;
 use Tests\DatabaseTestCaseAbstract;
 
 /**
- * Class EntityTest
+ * Class DocumentTest
  *
- * @package Tests\Integration\User
+ * @package Tests\Integration\User\Document
  */
 class DocumentTest extends DatabaseTestCaseAbstract
 {

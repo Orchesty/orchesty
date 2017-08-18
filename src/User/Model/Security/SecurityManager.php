@@ -1,0 +1,108 @@
+<?php declare(strict_types=1);
+
+namespace Hanaboso\PipesFramework\User\Model\Security;
+
+use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\DocumentRepository;
+use Hanaboso\PipesFramework\User\Document\User;
+use Hanaboso\PipesFramework\User\Repository\UserRepository;
+use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\Security\Core\Encoder\EncoderFactory;
+
+/**
+ * Class SecurityManager
+ *
+ * @package Hanaboso\PipesFramework\User\Model\Security
+ */
+class SecurityManager
+{
+
+    /**
+     * @var UserRepository|DocumentRepository
+     */
+    private $userRepository;
+
+    /**
+     * @var EncoderFactory
+     */
+    private $encoderFactory;
+
+    /**
+     * @var Session
+     */
+    private $session;
+
+    /**
+     * SecurityManager constructor.
+     *
+     * @param DocumentManager $documentManager
+     * @param EncoderFactory  $encoderFactory
+     * @param Session         $session
+     */
+    public function __construct(DocumentManager $documentManager, EncoderFactory $encoderFactory, Session $session)
+    {
+        $this->userRepository = $documentManager->getRepository(User::class);
+        $this->encoderFactory = $encoderFactory;
+        $this->session        = $session;
+    }
+
+    /**
+     * @param array $data
+     *
+     * @return User
+     * @throws SecurityManagerException
+     */
+    public function login(array $data): User
+    {
+        if ($this->isLoggedIn()) {
+            return $this->userRepository->find($this->session->get('loggedUserId'));
+        }
+
+        $user = $this->userRepository->findOneBy(['email' => $data['email']]);
+
+        if (!$user) {
+            throw new SecurityManagerException(
+                sprintf('User \'%s\' or password not valid.', $data['email']),
+                SecurityManagerException::USER_OR_PASSWORD_NOT_VALID
+            );
+        }
+
+        $encoder = $this->encoderFactory->getEncoder(User::class);
+
+        if (!$encoder) {
+            throw new SecurityManagerException(
+                sprintf('User \'%s\' encoder not found.', $data['email']),
+                SecurityManagerException::USER_ENCODER_NOT_FOUND
+            );
+        }
+
+        if (!$encoder->isPasswordValid($user->getPassword(), $data['password'], '')) {
+            throw new SecurityManagerException(
+                sprintf('User \'%s\' or password not valid.', $data['email']),
+                SecurityManagerException::USER_OR_PASSWORD_NOT_VALID
+            );
+        }
+
+        $this->session->set('loggedUserId', $user->getId());
+
+        return $user;
+    }
+
+    /**
+     *
+     */
+    public function logout(): void
+    {
+        $this->session->invalidate();
+        $this->session->clear();
+    }
+
+    /**
+     * @return bool
+     */
+    public function isLoggedIn(): bool
+    {
+        return $this->session->has('loggedUserId');
+    }
+
+}

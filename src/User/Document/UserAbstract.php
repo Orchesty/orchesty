@@ -50,7 +50,7 @@ abstract class UserAbstract implements UserInterface
     /**
      * @param string $email
      *
-     * @return UserInterface
+     * @return UserInterface|User|TmpUser
      */
     public function setEmail(string $email): UserInterface
     {
