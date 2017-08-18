@@ -3,6 +3,7 @@
 namespace Tests;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Symfony\Component\HttpFoundation\Session\Session;
 
 /**
  * Class DatabaseTestCase
@@ -18,6 +19,11 @@ abstract class DatabaseTestCaseAbstract extends KernelTestCaseAbstract
     protected $documentManager;
 
     /**
+     * @var Session
+     */
+    protected $session;
+
+    /**
      * DatabaseTestCase constructor.
      */
     public function __construct()
@@ -25,6 +31,27 @@ abstract class DatabaseTestCaseAbstract extends KernelTestCaseAbstract
         parent::__construct();
         self::bootKernel();
         $this->documentManager = $this->container->get('doctrine_mongodb.odm.default_document_manager');
+        $this->session         = new Session();
+    }
+
+    /**
+     *
+     */
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->documentManager->getConnection()->dropDatabase('pipes');
+        $this->session->invalidate();
+        $this->session->clear();
+    }
+
+    /**
+     * @param object $document
+     */
+    protected function persistAndFlush($document): void
+    {
+        $this->documentManager->persist($document);
+        $this->documentManager->flush();
     }
 
 }
