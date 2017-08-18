@@ -40,22 +40,21 @@ class ConnectorLoader
     }
 
     /**
-     * @param string $system
-     * @param string $endpoint
+     * @param string $id
      *
      * @return BaseNode
      * @throws ConnectorException
      */
-    public function getConnector(string $system, string $endpoint): BaseNode
+    public function getConnector(string $id): BaseNode
     {
-        $name = sprintf('%s.%s.%s', self::CONNECTOR_PREFIX, $system, $endpoint);
+        $name = sprintf('%s.%s', self::CONNECTOR_PREFIX, $id);
 
         if ($this->container->has($name)) {
             /** @var BaseNode $conn */
             $conn = $this->container->get($name);
         } else {
             throw new ConnectorException(
-                sprintf('Service for [%s, %s] connector was not found', $system, $endpoint),
+                sprintf('Service for [%s] connector was not found', $id),
                 ConnectorException::CONNECTOR_SERVICE_NOT_FOUND
             );
         }
@@ -71,7 +70,7 @@ class ConnectorLoader
     public function getAllConnectors(array $exclude = []): array
     {
         $list = Yaml::parse(file_get_contents(__DIR__ . '/../Resources/config/connectors.yml'));
-        $res = [];
+        $res  = [];
 
         foreach ($list['services'] as $key => $item) {
             $shortened = str_replace(self::CONNECTOR_PREFIX . '.', '', $key);

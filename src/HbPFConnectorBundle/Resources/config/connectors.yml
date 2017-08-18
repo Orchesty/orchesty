@@ -20,3 +20,18 @@ services:
             - 'magento2.customers'
             - '@hbpf.authorization.magento2.oauth'
             - '@hbpf.transport.curl_manager'
+
+    hbpf.api.connector:
+        class: Hanaboso\PipesFramework\HbPFConnectorBundle\Controller\ConnectorController
+        arguments:
+            - '@hbpf.handler.connector'
+
+    hbpf.manager.connector:
+        class: Hanaboso\PipesFramework\HbPFConnectorBundle\Manager\ConnectorManager
+        arguments:
+
+    hbpf.handler.connector:
+        class: Hanaboso\PipesFramework\HbPFConnectorBundle\Handler\ConnectorHandler
+        arguments:
+            - '@hbpf.manager.connector'
+            - '@hbpf.loader.connector'
