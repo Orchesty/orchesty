@@ -9,6 +9,7 @@
 
 namespace Hanaboso\PipesFramework\Authorizations\Provider;
 
+use Hanaboso\PipesFramework\Authorizations\Exception\AuthorizationException;
 use Hanaboso\PipesFramework\Authorizations\Provider\Dto\OAuth1Dto;
 
 /**
@@ -24,6 +25,8 @@ interface ProviderInterface
      * @param string    $tokenUrl
      * @param string    $authorizeUrl
      * @param array     $scopes
+     *
+     * @throws AuthorizationException
      */
     public function authorize(OAuth1Dto $dto, string $tokenUrl, string $authorizeUrl, array $scopes = []): void;
 
@@ -33,7 +36,18 @@ interface ProviderInterface
      * @param string    $accessTokenUrl
      *
      * @return array
+     * @throws AuthorizationException
      */
     public function getAccessToken(OAuth1Dto $dto, array $request, string $accessTokenUrl): array;
+
+    /**
+     * @param OAuth1Dto $dto
+     * @param string    $method
+     * @param string    $url
+     *
+     * @return string
+     * @throws AuthorizationException
+     */
+    public function getAuthorizeHeader(OAuth1Dto $dto, string $method, string $url): string;
 
 }
