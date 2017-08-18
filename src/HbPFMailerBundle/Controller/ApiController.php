@@ -4,8 +4,8 @@ namespace Hanaboso\PipesFramework\HbPFMailerBundle\Controller;
 
 use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Controller\FOSRestController;
+use Hanaboso\PipesFramework\Mailer\Exception\MailerException;
 use Hanaboso\PipesFramework\Mailer\Mailer;
-use Hanaboso\PipesFramework\Mailer\MailerException;
 use Hanaboso\PipesFramework\Mailer\MessageHandler\MessageHandlerException;
 use Hanaboso\PipesFramework\Mailer\MessageHandler\MessageHandlerInterface;
 use Hanaboso\PipesFramework\Mailer\Transport\TransportException;

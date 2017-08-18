@@ -7,14 +7,14 @@
  * Time: 3:00 PM
  */
 
-namespace Hanaboso\PipesFramework\Mailer;
+namespace Hanaboso\PipesFramework\Mailer\Exception;
 
 use Hanaboso\PipesFramework\Commons\Exception\PipesFrameworkException;
 
 /**
  * Class MailerException
  *
- * @package Hanaboso\PipesFramework\Mailer
+ * @package Hanaboso\PipesFramework\Mailer\Exception
  */
 class MailerException extends PipesFrameworkException
 {

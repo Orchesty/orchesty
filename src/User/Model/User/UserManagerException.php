@@ -12,7 +12,7 @@ use Hanaboso\PipesFramework\Commons\Exception\PipesFrameworkException;
 final class UserManagerException extends PipesFrameworkException
 {
 
-    protected const OFFSET = 1300;
+    protected const OFFSET = 1200;
 
     public const USER_EMAIL_NOT_EXISTS     = self::OFFSET + 1;
     public const USER_EMAIL_ALREADY_EXISTS = self::OFFSET + 2;

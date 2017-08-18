@@ -3,7 +3,7 @@
 namespace Hanaboso\PipesFramework\User\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Hanaboso\PipesFramework\HbPFTableParserBundle\Enum\UserTypeEnum;
+use Hanaboso\PipesFramework\User\Enum\UserTypeEnum;
 
 /**
  * Class TmpUser

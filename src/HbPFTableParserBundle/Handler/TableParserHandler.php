@@ -4,8 +4,8 @@ namespace Hanaboso\PipesFramework\HbPFTableParserBundle\Handler;
 
 use Hanaboso\PipesFramework\Commons\BaseService\NullServiceInterface;
 use Hanaboso\PipesFramework\Commons\ServiceStorage\ServiceStorageInterface;
+use Hanaboso\PipesFramework\Parser\Exception\TableParserException;
 use Hanaboso\PipesFramework\Parser\TableParser;
-use Hanaboso\PipesFramework\Parser\TableParserException;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use stdClass;
 

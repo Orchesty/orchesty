@@ -7,14 +7,14 @@
  * Time: 10:41 AM
  */
 
-namespace Hanaboso\PipesFramework\HbPFConnectorBundle\Exception;
+namespace Hanaboso\PipesFramework\Connector\Exception;
 
 use Hanaboso\PipesFramework\Commons\Exception\PipesFrameworkException;
 
 /**
  * Class ConnectorException
  *
- * @package Hanaboso\PipesFramework\HbPFConnectorBundle\Exception
+ * @package Hanaboso\PipesFramework\Connector\Exception
  */
 class ConnectorException extends PipesFrameworkException
 {

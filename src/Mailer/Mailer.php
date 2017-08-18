@@ -9,6 +9,7 @@
 
 namespace Hanaboso\PipesFramework\Mailer;
 
+use Hanaboso\PipesFramework\Mailer\Exception\MailerException;
 use Hanaboso\PipesFramework\Mailer\Transport\TransportInterface;
 use Hanaboso\PipesFramework\Mailer\Transport\TransportMessageInterface;
 use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;

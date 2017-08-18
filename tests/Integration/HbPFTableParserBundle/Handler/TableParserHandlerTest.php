@@ -5,8 +5,8 @@ namespace Tests\Integration\HbPFTableParserBundle\Handler;
 use Hanaboso\PipesFramework\Commons\ServiceStorage\JSONSingleFileStorage;
 use Hanaboso\PipesFramework\HbPFTableParserBundle\Handler\TableParserHandler;
 use Hanaboso\PipesFramework\HbPFTableParserBundle\Handler\TableParserHandlerException;
+use Hanaboso\PipesFramework\Parser\Exception\TableParserException;
 use Hanaboso\PipesFramework\Parser\TableParser;
-use Hanaboso\PipesFramework\Parser\TableParserException;
 use Hanaboso\PipesFramework\Parser\TableParserInterface;
 use PHPUnit\Framework\TestCase;
 

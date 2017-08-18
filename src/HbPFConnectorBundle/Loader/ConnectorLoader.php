@@ -10,7 +10,7 @@
 namespace Hanaboso\PipesFramework\HbPFConnectorBundle\Loader;
 
 use Hanaboso\PipesFramework\Commons\Node\BaseNode;
-use Hanaboso\PipesFramework\HbPFConnectorBundle\Exception\ConnectorException;
+use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Yaml\Yaml;
 
@@ -71,7 +71,7 @@ class ConnectorLoader
     public function getAllConnectors(array $exclude = []): array
     {
         $list = Yaml::parse(file_get_contents(__DIR__ . '/../Resources/config/connectors.yml'));
-        $res = [];
+        $res  = [];
 
         foreach ($list['services'] as $key => $item) {
             $shortened = str_replace(self::CONNECTOR_PREFIX . '.', '', $key);
