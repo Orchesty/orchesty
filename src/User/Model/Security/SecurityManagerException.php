@@ -14,7 +14,8 @@ final class SecurityManagerException extends PipesFrameworkException
 
     protected const OFFSET = 1500;
 
-    public const USER_OR_PASSWORD_NOT_VALID = self::OFFSET + 1;
-    public const USER_ENCODER_NOT_FOUND     = self::OFFSET + 2;
+    public const USER_NOT_LOGGED            = self::OFFSET + 1;
+    public const USER_OR_PASSWORD_NOT_VALID = self::OFFSET + 2;
+    public const USER_ENCODER_NOT_FOUND     = self::OFFSET + 3;
 
 }

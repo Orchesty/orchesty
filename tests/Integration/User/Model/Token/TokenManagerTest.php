@@ -45,7 +45,7 @@ class TokenManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     *
+     * @covers TokenManager::create()
      */
     public function testCreateUserToken(): void
     {
@@ -63,7 +63,7 @@ class TokenManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     *
+     * @covers TokenManager::create()
      */
     public function testCreateTmpUserToken(): void
     {
@@ -81,7 +81,7 @@ class TokenManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     *
+     * @covers TokenManager::validate()
      */
     public function testValidateToken(): void
     {
@@ -95,7 +95,7 @@ class TokenManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     *
+     * @covers TokenManager::validate()
      */
     public function testValidateInvalidToken(): void
     {
@@ -111,7 +111,7 @@ class TokenManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     *
+     * @covers TokenManager::delete()
      */
     public function testDeleteUserToken(): void
     {
@@ -127,7 +127,7 @@ class TokenManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     *
+     * @covers TokenManager::delete()
      */
     public function testDeleteTmpUserToken(): void
     {

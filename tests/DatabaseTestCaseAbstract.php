@@ -6,7 +6,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Symfony\Component\HttpFoundation\Session\Session;
 
 /**
- * Class DatabaseTestCase
+ * Class DatabaseTestCaseAbstract
  *
  * @package Tests
  */

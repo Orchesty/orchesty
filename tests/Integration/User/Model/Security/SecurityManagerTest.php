@@ -46,7 +46,7 @@ class SecurityManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     *
+     * @covers SecurityManager::login()
      */
     public function testLogin(): void
     {
@@ -61,7 +61,7 @@ class SecurityManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     *
+     * @covers SecurityManager::login()
      */
     public function testLoginInvalidEmail(): void
     {
@@ -76,7 +76,7 @@ class SecurityManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     *
+     * @covers SecurityManager::login()
      */
     public function testLoginInvalidPassword(): void
     {
@@ -91,7 +91,7 @@ class SecurityManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     *
+     * @covers SecurityManager::isLoggedIn()
      */
     public function testIsLoggedIn(): void
     {
@@ -124,7 +124,7 @@ class SecurityManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     *
+     * @covers SecurityManager::logout()
      */
     public function testLogout(): void
     {
@@ -144,6 +144,38 @@ class SecurityManagerTest extends DatabaseTestCaseAbstract
         $this->securityManager->logout();
         $this->assertFalse($this->session->has('loggedUserId'));
         $this->assertNull($this->userRepository->find($this->session->get('loggedUserId')));
+    }
+
+    /**
+     * @covers SecurityManager::getLoggedUser()
+     */
+    public function testGetLoggedUser(): void
+    {
+        $user = (new User())
+            ->setEmail('email@example.com')
+            ->setPassword($this->encoder->encodePassword('passw0rd', ''));
+        $this->persistAndFlush($user);
+
+        $this->securityManager->login(['email' => 'email@example.com', 'password' => 'passw0rd']);
+
+        $user = $this->securityManager->getLoggedUser();
+        $this->assertEquals('email@example.com', $user->getEmail());
+        $this->assertTrue($this->encoder->isPasswordValid($user->getPassword(), 'passw0rd', ''));
+    }
+
+    /**
+     * @covers SecurityManager::getLoggedUser()
+     */
+    public function testGetNotLoggedUser(): void
+    {
+        $user = (new User())
+            ->setEmail('email@example.com')
+            ->setPassword($this->encoder->encodePassword('passw0rd', ''));
+        $this->persistAndFlush($user);
+
+        $this->expectException(SecurityManagerException::class);
+        $this->expectExceptionCode(SecurityManagerException::USER_NOT_LOGGED);
+        $this->securityManager->getLoggedUser();
     }
 
 }

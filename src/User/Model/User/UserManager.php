@@ -8,8 +8,10 @@ use Hanaboso\PipesFramework\User\Document\TmpUser;
 use Hanaboso\PipesFramework\User\Document\User;
 use Hanaboso\PipesFramework\User\Model\Security\SecurityManager;
 use Hanaboso\PipesFramework\User\Model\Token\TokenManager;
+use Hanaboso\PipesFramework\User\Model\User\Event\UserEvent;
 use Hanaboso\PipesFramework\User\Repository\TmpUserRepository;
 use Hanaboso\PipesFramework\User\Repository\UserRepository;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\Security\Core\Encoder\EncoderFactory;
 use Symfony\Component\Security\Core\Encoder\PasswordEncoderInterface;
 
@@ -50,6 +52,10 @@ class UserManager
      * @var PasswordEncoderInterface
      */
     private $encoder;
+    /**
+     * @var EventDispatcher
+     */
+    private $eventDispatcher;
 
     /**
      * UserManager constructor.
@@ -58,12 +64,14 @@ class UserManager
      * @param SecurityManager $securityManager
      * @param TokenManager    $tokenManager
      * @param EncoderFactory  $encoderFactory
+     * @param EventDispatcher $eventDispatcher
      */
     public function __construct(
         DocumentManager $documentManager,
         SecurityManager $securityManager,
         TokenManager $tokenManager,
-        EncoderFactory $encoderFactory
+        EncoderFactory $encoderFactory,
+        EventDispatcher $eventDispatcher
     )
     {
         $this->documentManager   = $documentManager;
@@ -72,6 +80,7 @@ class UserManager
         $this->userRepository    = $documentManager->getRepository(User::class);
         $this->tmpUserRepository = $documentManager->getRepository(TmpUser::class);
         $this->encoder           = $encoderFactory->getEncoder(User::class);
+        $this->eventDispatcher   = $eventDispatcher;
     }
 
     /**
@@ -81,7 +90,10 @@ class UserManager
      */
     public function login(array $data): User
     {
-        return $this->securityManager->login($data);
+        $user = $this->securityManager->login($data);
+        $this->eventDispatcher->dispatch(UserEvent::USER_LOGIN, new UserEvent($user));
+
+        return $user;
     }
 
     /**
@@ -89,6 +101,10 @@ class UserManager
      */
     public function logout(): void
     {
+        $this->eventDispatcher->dispatch(
+            UserEvent::USER_LOGOUT,
+            new UserEvent($this->securityManager->getLoggedUser())
+        );
         $this->securityManager->logout();
     }
 
@@ -115,6 +131,7 @@ class UserManager
         }
 
         $this->tokenManager->create($user); // TODO: Send token by email
+        $this->eventDispatcher->dispatch(UserEvent::USER_REGISTER, new UserEvent($user));
     }
 
     /**
@@ -131,6 +148,7 @@ class UserManager
 
         $token->setUser($user)->setTmpUser(NULL);
         $this->documentManager->flush();
+        $this->eventDispatcher->dispatch(UserEvent::USER_ACTIVATE, new UserEvent($user));
 
         // TODO: Send notification by email
     }
@@ -167,6 +185,7 @@ class UserManager
         }
 
         $this->tokenManager->create($user); // TODO: Send token by email
+        $this->eventDispatcher->dispatch(UserEvent::USER_RESET_PASSWORD, new UserEvent($user));
     }
 
 }
