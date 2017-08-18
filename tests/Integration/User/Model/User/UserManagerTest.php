@@ -16,6 +16,7 @@ use Hanaboso\PipesFramework\User\Model\User\UserManagerException;
 use Hanaboso\PipesFramework\User\Repository\TmpUserRepository;
 use Hanaboso\PipesFramework\User\Repository\TokenRepository;
 use Hanaboso\PipesFramework\User\Repository\UserRepository;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Security\Core\Encoder\PasswordEncoderInterface;
 use Tests\DatabaseTestCaseAbstract;
@@ -73,7 +74,8 @@ class UserManagerTest extends DatabaseTestCaseAbstract
             $this->documentManager,
             new SecurityManager($this->documentManager, $encoderFactory, new Session()),
             $this->tokenManager,
-            $encoderFactory
+            $encoderFactory,
+            new EventDispatcher()
         );
         $this->userRepository    = $this->documentManager->getRepository(User::class);
         $this->tmpUserRepository = $this->documentManager->getRepository(TmpUser::class);
@@ -82,7 +84,7 @@ class UserManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     *
+     * @covers UserManager::register()
      */
     public function testRegister(): void
     {
@@ -102,7 +104,7 @@ class UserManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     *
+     * @covers UserManager::register()
      */
     public function testRegisterMultiple(): void
     {
@@ -112,7 +114,7 @@ class UserManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     *
+     * @covers UserManager::register()
      */
     public function testRegisterInvalidEmail(): void
     {
@@ -124,7 +126,7 @@ class UserManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     *
+     * @covers UserManager::activate()
      */
     public function testActivate(): void
     {
@@ -156,7 +158,7 @@ class UserManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     *
+     * @covers UserManager::activate()
      */
     public function testActivateNotValid(): void
     {
@@ -173,7 +175,7 @@ class UserManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     *
+     * @covers UserManager::resetPassword()
      */
     public function testResetPassword(): void
     {
@@ -190,7 +192,7 @@ class UserManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     *
+     * @covers UserManager::setPassword()
      */
     public function testSetPassword(): void
     {
@@ -212,7 +214,7 @@ class UserManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     *
+     * @covers UserManager::setPassword()
      */
     public function testSetPasswordNotValid(): void
     {

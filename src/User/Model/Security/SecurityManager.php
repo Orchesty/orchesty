@@ -105,4 +105,21 @@ class SecurityManager
         return $this->session->has('loggedUserId');
     }
 
+    /**
+     * @return User
+     * @throws SecurityManagerException
+     */
+    public function getLoggedUser(): User
+    {
+        if (!$this->isLoggedIn()) {
+            throw new SecurityManagerException(
+                'User not logged.',
+                SecurityManagerException::USER_NOT_LOGGED
+            );
+
+        }
+
+        return $this->userRepository->find($this->session->get('loggedUserId'));
+    }
+
 }
