@@ -11,11 +11,11 @@ namespace Hanaboso\PipesFramework\Authorizations\Repository;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 
 /**
- * Class AuthorizationTokenRepository
+ * Class AuthorizationRepository
  *
  * @package Hanaboso\PipesFramework\Authorizations\Repository
  */
-class AuthorizationTokenRepository extends DocumentRepository
+class AuthorizationRepository extends DocumentRepository
 {
 
 }
