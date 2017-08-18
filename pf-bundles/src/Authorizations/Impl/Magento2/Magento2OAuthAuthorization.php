@@ -70,7 +70,7 @@ class Magento2OAuthAuthorization extends OAuthAuthorizationAbstract implements M
      */
     public function getAuthorizationType(): string
     {
-        return self::OAUTH2;
+        return self::OAUTH;
     }
 
     /**

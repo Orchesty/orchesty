@@ -1,5 +1,10 @@
 services:
 
+    hbpf.loader.authorization:
+        class: Hanaboso\PipesFramework\HbPFAuthorizationBundle\Loader\AuthorizationLoader
+        arguments:
+            - "@service_container"
+
     hbpf.core.listener:
         class: Hanaboso\PipesFramework\Authorizations\DocumentListener\DocumentListener
         arguments:

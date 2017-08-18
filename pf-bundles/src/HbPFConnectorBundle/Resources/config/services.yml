@@ -1,10 +1,6 @@
 services:
     hbpf.loader.connector:
-        class: Hanaboso\PipesFramework\HbPFConnectorBundle\Loaders\ConnectorLoader
-        arguments:
-            - "@service_container"
-    hbpf.loader.authorization:
-        class: Hanaboso\PipesFramework\HbPFConnectorBundle\Loaders\AuthorizationLoader
+        class: Hanaboso\PipesFramework\HbPFConnectorBundle\Loader\ConnectorLoader
         arguments:
             - "@service_container"
 

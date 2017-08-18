@@ -22,5 +22,6 @@ class AuthorizationException extends PipesFrameworkException
     protected const OFFSET = 1200;
 
     public const AUTHORIZATION_SERVICE_NOT_FOUND = self::OFFSET + 1;
+    public const AUTHORIZATION_OAUTH1_ERROR      = self::OFFSET + 2;
 
 }

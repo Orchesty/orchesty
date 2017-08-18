@@ -9,7 +9,7 @@
 namespace Tests\Unit\Connector;
 
 use Hanaboso\PipesFramework\Commons\Node\BaseNode;
-use Hanaboso\PipesFramework\HbPFConnectorBundle\Loaders\ConnectorLoader;
+use Hanaboso\PipesFramework\HbPFConnectorBundle\Loader\ConnectorLoader;
 use Tests\KernelTestCaseAbstract;
 
 /**
