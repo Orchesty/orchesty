@@ -1,0 +1,17 @@
+---
+
+version: '2'
+
+services:
+  mapper:
+    image: dkr.hanaboso.net/pipes/pipes/php-dev:dev
+    user: ${DEV_UID}:${DEV_GID}
+    volumes:
+      - ./:/srv/project
+      - ../../../:/srv/libs
+    environment:
+      - DEV_UID=${DEV_UID}
+      - DEV_GID=${DEV_GID}
+      - COMPOSER_HOME=/home/dev/.composer
+    ports:
+      - ${DEV_IP}:8000:8000

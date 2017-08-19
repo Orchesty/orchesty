@@ -31,7 +31,9 @@
         "symfony/swiftmailer-bundle": "^2.3.10",
         "symfony/symfony": "3.3.*",
         "twig/twig": "^1.0||^2.0",
-        "pipes/php-check-utils": "*"
+        "pipes/php-check-utils": "^1.0",
+        "hanaboso/pipes-framework": "^1.0",
+        "phpoffice/phpspreadsheet": "@dev"
     },
     "require-dev": {
         "sensio/generator-bundle": "^3.0",
@@ -71,9 +73,16 @@
     "repositories": [
         {
             "type": "path",
-            "url": "../../../php-check-utils",
+            "url": "../libs/php-check-utils",
             "options": {
-                "symlink": true
+                "symlink": false
+            }
+        },
+        {
+            "type": "path",
+            "url": "../libs/pf-bundles",
+            "options": {
+                "symlink": false
             }
         }
     ]

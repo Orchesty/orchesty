@@ -1,6 +1,7 @@
 {
   "name": "hanaboso/pipes-framework",
   "description": "PipesFramework for Symfony",
+  "version": "1.0.0",
   "autoload": {
     "psr-4": {
       "Hanaboso\\PipesFramework\\": "src/",
