@@ -9,7 +9,7 @@
 namespace Hanaboso\PipesFramework\HbPFConnectorBundle\Handler;
 
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
-use Hanaboso\PipesFramework\HbPFConnectorBundle\Loaders\ConnectorLoader;
+use Hanaboso\PipesFramework\HbPFConnectorBundle\Loader\ConnectorLoader;
 use Hanaboso\PipesFramework\HbPFConnectorBundle\Manager\ConnectorManager;
 
 /**
