@@ -2,7 +2,7 @@
 
 namespace Tests\Unit\Mailer\Transport\Impl;
 
-use Hanaboso\PipesFramework\Mailer\MessageHandler\Impl\GenericMessageHandler\GenericTransportMessage;
+use Hanaboso\PipesFramework\Mailer\MessageBuilder\Impl\GenericMessageBuilder\GenericTransportMessage;
 use Hanaboso\PipesFramework\Mailer\Transport\Impl\SwiftMailerTransport;
 use PHPUnit\Framework\TestCase;
 use PHPUnit_Framework_MockObject_MockObject;

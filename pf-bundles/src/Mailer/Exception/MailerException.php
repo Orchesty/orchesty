@@ -16,11 +16,12 @@ use Hanaboso\PipesFramework\Commons\Exception\PipesFrameworkException;
  *
  * @package Hanaboso\PipesFramework\Mailer\Exception
  */
-class MailerException extends PipesFrameworkException
+final class MailerException extends PipesFrameworkException
 {
 
     protected const OFFSET = 700;
 
-    public const MISSING_TEMPLATE_ENGINE = self::OFFSET + 1;
+    public const MISSING_TEMPLATE_ENGINE   = self::OFFSET + 1;
+    public const BUILDER_SERVICE_NOT_FOUND = self::OFFSET + 2;
 
 }

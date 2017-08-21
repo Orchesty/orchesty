@@ -1,0 +1,6 @@
+services:
+    hbpf.mailer.mail_handler:
+        class: Hanaboso\PipesFramework\HbPFMailerBundle\Handler\MailHandler
+        arguments:
+            - "@hbpf.mail.mailer"
+            - "@hbpf.mail.mail_builders_loader"

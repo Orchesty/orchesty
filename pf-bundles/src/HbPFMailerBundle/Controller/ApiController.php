@@ -4,10 +4,9 @@ namespace Hanaboso\PipesFramework\HbPFMailerBundle\Controller;
 
 use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Controller\FOSRestController;
+use Hanaboso\PipesFramework\HbPFMailerBundle\Handler\MailHandler;
 use Hanaboso\PipesFramework\Mailer\Exception\MailerException;
-use Hanaboso\PipesFramework\Mailer\Mailer;
-use Hanaboso\PipesFramework\Mailer\MessageHandler\MessageHandlerException;
-use Hanaboso\PipesFramework\Mailer\MessageHandler\MessageHandlerInterface;
+use Hanaboso\PipesFramework\Mailer\MessageBuilder\MessageBuilderException;
 use Hanaboso\PipesFramework\Mailer\Transport\TransportException;
 use Hanaboso\PipesFramework\Utils\ControllerUtils;
 use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
@@ -24,6 +23,21 @@ class ApiController extends FOSRestController
 {
 
     /**
+     * @var MailHandler
+     */
+    private $mailHandler;
+
+    /**
+     * ApiController constructor.
+     *
+     * @param MailHandler $mailHandler
+     */
+    public function __construct(MailHandler $mailHandler)
+    {
+        $this->mailHandler = $mailHandler;
+    }
+
+    /**
      * @Route("/api/mailer/{handlerId}/send", defaults={}, requirements={"_format"="json|xml"})
      *
      * @param Request $request
@@ -36,13 +50,7 @@ class ApiController extends FOSRestController
         $response = new JsonResponse();
 
         try {
-            /** @var MessageHandlerInterface $messageHandler */
-            $messageHandler = $this->get('hbpf.mailer.handler.' . $handlerId);
-
-            /** @var Mailer $mailer */
-            $mailer = $this->get('hbpf.mailer.service');
-
-            $mailer->renderAndSend($messageHandler->buildTransportMessage($request->request->all()));
+            $this->mailHandler->send($handlerId, $request->request->all());
 
             $data = [
                 'status' => 'OK',
@@ -56,7 +64,7 @@ class ApiController extends FOSRestController
             ];
 
             $response->setStatusCode(500);
-        } catch (MessageHandlerException|TransportException $e) {
+        } catch (MessageBuilderException|TransportException $e) {
             $data = ControllerUtils::createExceptionData($e);
 
             $response->setStatusCode(500);
@@ -80,13 +88,7 @@ class ApiController extends FOSRestController
         $response = new JsonResponse();
 
         try {
-            /** @var MessageHandlerInterface $messageHandler */
-            $messageHandler = $this->get('hbpf.mailer.handler.' . $handlerId);
-
-            /** @var Mailer $mailer */
-            $mailer = $this->get('hbpf.mailer.service');
-
-            $mailer->renderAndSendTest($messageHandler->buildTransportMessage($request->request->all()));
+            $this->mailHandler->testSend($handlerId, $request->request->all());
 
             $data = [
                 'status' => 'OK',
@@ -100,7 +102,7 @@ class ApiController extends FOSRestController
             ];
 
             $response->setStatusCode(500);
-        } catch (MessageHandlerException|TransportException|MailerException $e) {
+        } catch (MessageBuilderException|TransportException|MailerException $e) {
             $data = ControllerUtils::createExceptionData($e);
 
             $response->setStatusCode(500);

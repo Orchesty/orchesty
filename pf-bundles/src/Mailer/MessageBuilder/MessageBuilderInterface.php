@@ -7,16 +7,16 @@
  * Time: 6:11 PM
  */
 
-namespace Hanaboso\PipesFramework\Mailer\MessageHandler;
+namespace Hanaboso\PipesFramework\Mailer\MessageBuilder;
 
 use Hanaboso\PipesFramework\Mailer\Transport\TransportMessageInterface;
 
 /**
- * Interface MessageHandlerInterface
+ * Interface MessageBuilderInterface
  *
- * @package Hanaboso\PipesFramework\Mailer\MessageHandler
+ * @package Hanaboso\PipesFramework\Mailer\MessageBuilder
  */
-interface MessageHandlerInterface
+interface MessageBuilderInterface
 {
 
     /**

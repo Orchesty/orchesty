@@ -10,7 +10,7 @@
 namespace Tests\Unit\Mailer;
 
 use Hanaboso\PipesFramework\Mailer\Mailer;
-use Hanaboso\PipesFramework\Mailer\MessageHandler\Impl\GenericMessageHandler;
+use Hanaboso\PipesFramework\Mailer\MessageBuilder\Impl\GenericMessageBuilder;
 use Hanaboso\PipesFramework\Mailer\Transport\TransportInterface;
 use PHPUnit\Framework\TestCase;
 use PHPUnit_Framework_MockObject_MockObject;
@@ -39,7 +39,7 @@ class MailerTest extends TestCase
             'content' => 'Content',
         ];
 
-        $handler = new GenericMessageHandler();
+        $handler = new GenericMessageBuilder();
 
         $mailer = new Mailer($transport, NULL);
         $mailer->renderAndSend($handler->buildTransportMessage($data));
@@ -61,7 +61,7 @@ class MailerTest extends TestCase
             'content' => 'Content',
         ];
 
-        $handler = new GenericMessageHandler();
+        $handler = new GenericMessageBuilder();
 
         $mailer = new Mailer($transport, NULL);
         $mailer->renderAndSendTest($handler->buildTransportMessage($data));
