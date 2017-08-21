@@ -37,7 +37,7 @@ class ConnectorLoaderTest extends KernelTestCaseAbstract
      */
     public function testGetConnector(): void
     {
-        $conn = $this->loader->getConnector('magento2', 'orders');
+        $conn = $this->loader->getConnector('magento2.orders');
         self::assertInstanceOf(BaseNode::class, $conn);
     }
 

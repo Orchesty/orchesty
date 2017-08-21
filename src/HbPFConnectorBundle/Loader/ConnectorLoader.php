@@ -40,22 +40,21 @@ class ConnectorLoader
     }
 
     /**
-     * @param string $system
-     * @param string $endpoint
+     * @param string $id
      *
      * @return BaseNode
      * @throws ConnectorException
      */
-    public function getConnector(string $system, string $endpoint): BaseNode
+    public function getConnector(string $id): BaseNode
     {
-        $name = sprintf('%s.%s.%s', self::CONNECTOR_PREFIX, $system, $endpoint);
+        $name = sprintf('%s.%s', self::CONNECTOR_PREFIX, $id);
 
         if ($this->container->has($name)) {
             /** @var BaseNode $conn */
             $conn = $this->container->get($name);
         } else {
             throw new ConnectorException(
-                sprintf('Service for [%s, %s] connector was not found', $system, $endpoint),
+                sprintf('Service for [%s] connector was not found', $id),
                 ConnectorException::CONNECTOR_SERVICE_NOT_FOUND
             );
         }
