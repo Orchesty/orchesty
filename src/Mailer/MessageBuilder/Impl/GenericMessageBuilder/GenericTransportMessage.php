@@ -7,14 +7,14 @@
  * Time: 6:22 PM
  */
 
-namespace Hanaboso\PipesFramework\Mailer\MessageHandler\Impl\GenericMessageHandler;
+namespace Hanaboso\PipesFramework\Mailer\MessageBuilder\Impl\GenericMessageBuilder;
 
 use Hanaboso\PipesFramework\Mailer\Transport\TransportMessageInterface;
 
 /**
  * Class GenericTransportMessage
  *
- * @package Hanaboso\PipesFramework\Mailer\MessageHandler\Impl\GenericMessageHandlerAbstract
+ * @package Hanaboso\PipesFramework\Mailer\MessageBuilder\Impl\GenericMessageBuilder
  */
 class GenericTransportMessage implements TransportMessageInterface
 {

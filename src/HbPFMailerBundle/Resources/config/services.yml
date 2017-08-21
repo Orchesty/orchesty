@@ -1,3 +1,10 @@
 services:
-  hbpf.mailer.handler.generic:
-      class: Hanaboso\PipesFramework\Mailer\MessageHandler\Impl\GenericMessageHandler
+
+  hbpf.mail.mailer:
+    class: Hanaboso\PipesFramework\Mailer\Mailer
+    arguments:
+
+  hbpf.mail.mail_builders_loader:
+      class: Hanaboso\PipesFramework\HbPFMailerBundle\Loader\MailBuildersLoader
+      arguments:
+        - "@service_container"

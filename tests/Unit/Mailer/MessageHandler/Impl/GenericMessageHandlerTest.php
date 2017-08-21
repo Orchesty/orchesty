@@ -2,8 +2,8 @@
 
 namespace Tests\Unit\Mailer\MessageHandler\Impl;
 
-use Hanaboso\PipesFramework\Mailer\MessageHandler\Impl\GenericMessageHandler;
-use Hanaboso\PipesFramework\Mailer\MessageHandler\MessageHandlerException;
+use Hanaboso\PipesFramework\Mailer\MessageBuilder\Impl\GenericMessageBuilder;
+use Hanaboso\PipesFramework\Mailer\MessageBuilder\MessageBuilderException;
 use Hanaboso\PipesFramework\Mailer\Transport\TransportMessageInterface;
 use PHPUnit\Framework\TestCase;
 
@@ -27,7 +27,7 @@ class GenericMessageHandlerTest extends TestCase
             'content' => 'Content',
         ];
 
-        $this->assertTrue(GenericMessageHandler::isValid($data));
+        $this->assertTrue(GenericMessageBuilder::isValid($data));
     }
 
     /**
@@ -42,7 +42,7 @@ class GenericMessageHandlerTest extends TestCase
             'content' => 'Content',
         ];
 
-        $this->assertFalse(GenericMessageHandler::isValid($data));
+        $this->assertFalse(GenericMessageBuilder::isValid($data));
     }
 
     /**
@@ -57,7 +57,7 @@ class GenericMessageHandlerTest extends TestCase
             'content' => 'Content',
         ];
 
-        $handler = new GenericMessageHandler();
+        $handler = new GenericMessageBuilder();
         $message = $handler->buildTransportMessage($data);
 
         $this->assertInstanceOf(TransportMessageInterface::class, $message);
@@ -75,10 +75,10 @@ class GenericMessageHandlerTest extends TestCase
             'content' => 'Content',
         ];
 
-        $handler = new GenericMessageHandler();
+        $handler = new GenericMessageBuilder();
 
-        $this->expectException(MessageHandlerException::class);
-        $this->expectExceptionCode(MessageHandlerException::INVALID_DATA);
+        $this->expectException(MessageBuilderException::class);
+        $this->expectExceptionCode(MessageBuilderException::INVALID_DATA);
 
         $handler->buildTransportMessage($data);
     }

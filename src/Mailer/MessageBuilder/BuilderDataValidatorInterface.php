@@ -7,14 +7,14 @@
  * Time: 6:26 PM
  */
 
-namespace Hanaboso\PipesFramework\Mailer\MessageHandler;
+namespace Hanaboso\PipesFramework\Mailer\MessageBuilder;
 
 /**
- * Interface HandlerDataValidatorInterface
+ * Interface BuilderDataValidatorInterface
  *
- * @package Hanaboso\PipesFramework\Mailer\MessageHandler
+ * @package Hanaboso\PipesFramework\Mailer\MessageBuilder
  */
-interface HandlerDataValidatorInterface
+interface BuilderDataValidatorInterface
 {
 
     /**

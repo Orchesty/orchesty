@@ -7,31 +7,31 @@
  * Time: 6:21 PM
  */
 
-namespace Hanaboso\PipesFramework\Mailer\MessageHandler\Impl;
+namespace Hanaboso\PipesFramework\Mailer\MessageBuilder\Impl;
 
-use Hanaboso\PipesFramework\Mailer\MessageHandler\Impl\GenericMessageHandler\GenericTransportMessage;
-use Hanaboso\PipesFramework\Mailer\MessageHandler\MessageHandlerAbstract;
-use Hanaboso\PipesFramework\Mailer\MessageHandler\MessageHandlerException;
+use Hanaboso\PipesFramework\Mailer\MessageBuilder\Impl\GenericMessageBuilder\GenericTransportMessage;
+use Hanaboso\PipesFramework\Mailer\MessageBuilder\MessageBuilderAbstract;
+use Hanaboso\PipesFramework\Mailer\MessageBuilder\MessageBuilderException;
 use Hanaboso\PipesFramework\Mailer\Transport\TransportMessageInterface;
 
 /**
- * Class GenericMessageHandlerAbstract
+ * Class GenericBuilderHandler
  *
- * @package Hanaboso\PipesFramework\Mailer\MessageHandler\Impl
+ * @package Hanaboso\PipesFramework\Mailer\MessageBuilder\Impl
  */
-class GenericMessageHandler extends MessageHandlerAbstract
+class GenericMessageBuilder extends MessageBuilderAbstract
 {
 
     /**
      * @param array $data
      *
      * @return TransportMessageInterface
-     * @throws MessageHandlerException
+     * @throws MessageBuilderException
      */
     public function buildTransportMessage(array $data): TransportMessageInterface
     {
         if (!self::isValid($data)) {
-            throw new MessageHandlerException('Invalid data.', MessageHandlerException::INVALID_DATA);
+            throw new MessageBuilderException('Invalid data.', MessageBuilderException::INVALID_DATA);
         }
 
         return new GenericTransportMessage(
