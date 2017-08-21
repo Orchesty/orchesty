@@ -11,7 +11,7 @@ namespace Hanaboso\PipesFramework\Connector\Impl\Magento2;
 
 use Hanaboso\PipesFramework\Commons\Message\MessageInterface;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
-use Hanaboso\PipesFramework\HbPFConnectorBundle\Exception\ConnectorException;
+use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
 
 /**
  * Class Magento2CustomersConnector
