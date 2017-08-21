@@ -9,8 +9,8 @@
 namespace Hanaboso\PipesFramework\HbPFConnectorBundle\Handler;
 
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
+use Hanaboso\PipesFramework\Connector\Model\ConnectorManager;
 use Hanaboso\PipesFramework\HbPFConnectorBundle\Loader\ConnectorLoader;
-use Hanaboso\PipesFramework\HbPFConnectorBundle\Manager\ConnectorManager;
 
 /**
  * Class ConnectorHandler
@@ -51,6 +51,7 @@ class ConnectorHandler
      */
     public function processEvent(string $id, string $token, array $data): array
     {
+        //@TODO: find topology by $token
         /** @var ConnectorInterface $conn */
         $conn = $this->loader->getConnector($id);
         $res  = $this->connManager->processEvent($conn, $data);

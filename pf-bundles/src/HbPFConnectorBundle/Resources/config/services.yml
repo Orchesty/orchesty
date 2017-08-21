@@ -4,7 +4,12 @@ services:
         arguments:
             - "@service_container"
 
-    # --- Provizorní pro test --- #
-    hbpf.storage.interface:
-        class: Hanaboso\PipesFramework\Commons\ServiceStorage\JSONSingleFileStorage
-    # --------------------------- #
+    hbpf.handler.connector:
+        class: Hanaboso\PipesFramework\HbPFConnectorBundle\Handler\ConnectorHandler
+        arguments:
+            - '@hbpf.manager.connector'
+            - '@hbpf.loader.connector'
+
+    hbpf.manager.connector:
+        class: Hanaboso\PipesFramework\Connector\Model\ConnectorManager
+        arguments:

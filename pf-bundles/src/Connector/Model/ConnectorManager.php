@@ -6,14 +6,14 @@
  * Time: 2:02 PM
  */
 
-namespace Hanaboso\PipesFramework\HbPFConnectorBundle\Manager;
+namespace Hanaboso\PipesFramework\Connector\Model;
 
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 
 /**
  * Class ConnectorManager
  *
- * @package Hanaboso\PipesFramework\HbPFConnectorBundle\Manager
+ * @package Hanaboso\PipesFramework\Connector\Model
  */
 class ConnectorManager
 {
@@ -28,7 +28,7 @@ class ConnectorManager
     {
         $dto = $conn->processEvent($data);
 
-        return [];
+        return $dto->getData();
     }
 
 }

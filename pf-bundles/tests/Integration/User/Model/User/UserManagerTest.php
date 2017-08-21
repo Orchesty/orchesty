@@ -69,17 +69,17 @@ class UserManagerTest extends DatabaseTestCaseAbstract
     {
         parent::setUp();
         $encoderFactory          = $this->container->get('security.encoder_factory');
-        $this->tokenManager      = new TokenManager($this->documentManager);
+        $this->tokenManager      = new TokenManager($this->dm);
         $this->userManager       = new UserManager(
-            $this->documentManager,
-            new SecurityManager($this->documentManager, $encoderFactory, new Session()),
+            $this->dm,
+            new SecurityManager($this->dm, $encoderFactory, new Session()),
             $this->tokenManager,
             $encoderFactory,
             new EventDispatcher()
         );
-        $this->userRepository    = $this->documentManager->getRepository(User::class);
-        $this->tmpUserRepository = $this->documentManager->getRepository(TmpUser::class);
-        $this->tokenRepository   = $this->documentManager->getRepository(Token::class);
+        $this->userRepository    = $this->dm->getRepository(User::class);
+        $this->tmpUserRepository = $this->dm->getRepository(TmpUser::class);
+        $this->tokenRepository   = $this->dm->getRepository(Token::class);
         $this->encoder           = $encoderFactory->getEncoder(new User());
     }
 

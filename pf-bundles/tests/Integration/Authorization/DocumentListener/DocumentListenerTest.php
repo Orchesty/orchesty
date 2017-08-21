@@ -28,10 +28,10 @@ class DocumentListenerTest extends DatabaseTestCaseAbstract
     {
         $token = new Authorization('magento2.auth');
         $token->setToken(['data' => 'data']);
-        $this->documentManager->persist($token);
-        $this->documentManager->flush();
-        $this->documentManager->clear();
-        $token = $this->documentManager->getRepository(Authorization::class)->find($token->getId());
+        $this->dm->persist($token);
+        $this->dm->flush();
+        $this->dm->clear();
+        $token = $this->dm->getRepository(Authorization::class)->find($token->getId());
 
         self::assertNotEmpty($token->getToken());
         self::assertTrue(is_array($token->getToken()));

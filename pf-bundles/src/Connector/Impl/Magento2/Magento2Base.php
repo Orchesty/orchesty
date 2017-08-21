@@ -50,14 +50,6 @@ abstract class Magento2Base extends BaseNode implements ConnectorInterface
     }
 
     /**
-     * @return string
-     */
-    public function getServiceType(): string
-    {
-        return self::CONNECTOR;
-    }
-
-    /**
      * @param string $method
      * @param string $urlPart
      * @param string $body

@@ -2,7 +2,6 @@
 
 namespace Tests\Integration\HbPFTableParserBundle\Handler;
 
-use Hanaboso\PipesFramework\Commons\ServiceStorage\JSONSingleFileStorage;
 use Hanaboso\PipesFramework\HbPFTableParserBundle\Handler\TableParserHandler;
 use Hanaboso\PipesFramework\HbPFTableParserBundle\Handler\TableParserHandlerException;
 use Hanaboso\PipesFramework\Parser\Exception\TableParserException;
@@ -34,7 +33,7 @@ final class TableParserHandlerTest extends TestCase
     public function __construct()
     {
         parent::__construct();
-        $this->handler = new TableParserHandler(new JSONSingleFileStorage(), new TableParser());
+        $this->handler = new TableParserHandler(new TableParser());
         $this->path    = sprintf('%s/../../Parser/data', __DIR__);
     }
 
@@ -44,16 +43,16 @@ final class TableParserHandlerTest extends TestCase
     public function testParseToJson(): void
     {
         $result = $this->handler->parseToJson([
-            'file_id'     => sprintf('%s/input-1k.xlsx', $this->path),
+            'file_id'     => sprintf('%s/input-10.xlsx', $this->path),
             'has_headers' => FALSE,
         ]);
-        $this->assertEquals(file_get_contents(sprintf('%s/output-1k.json', $this->path)), $result);
+        $this->assertEquals(file_get_contents(sprintf('%s/output-10.json', $this->path)), $result);
 
         $result = $this->handler->parseToJson([
-            'file_id'     => sprintf('%s/input-1kh.xlsx', $this->path),
+            'file_id'     => sprintf('%s/input-10h.xlsx', $this->path),
             'has_headers' => TRUE,
         ]);
-        $this->assertEquals(file_get_contents(sprintf('%s/output-1kh.json', $this->path)), $result);
+        $this->assertEquals(file_get_contents(sprintf('%s/output-10h.json', $this->path)), $result);
     }
 
     /**
@@ -70,25 +69,25 @@ final class TableParserHandlerTest extends TestCase
     public function testParseFromJson(): void
     {
         $resultPath = $this->handler->parseFromJson(TableParserInterface::XLSX, [
-            'file_id'     => sprintf('%s/output-1k.json', $this->path),
+            'file_id'     => sprintf('%s/output-10.json', $this->path),
             'has_headers' => FALSE,
         ]);
         $result     = $this->handler->parseToJson([
             'file_id'     => $resultPath,
             'has_headers' => FALSE,
         ]);
-        $this->assertEquals(file_get_contents(sprintf('%s/output-1k.json', $this->path)), $result);
+        $this->assertEquals(file_get_contents(sprintf('%s/output-10.json', $this->path)), $result);
         unlink($resultPath);
 
         $resultPath = $this->handler->parseFromJson(TableParserInterface::XLSX, [
-            'file_id'     => sprintf('%s/output-1kh.json', $this->path),
+            'file_id'     => sprintf('%s/output-10h.json', $this->path),
             'has_headers' => TRUE,
         ]);
         $result     = $this->handler->parseToJson([
             'file_id'     => $resultPath,
             'has_headers' => TRUE,
         ]);
-        $this->assertEquals(file_get_contents(sprintf('%s/output-1kh.json', $this->path)), $result);
+        $this->assertEquals(file_get_contents(sprintf('%s/output-10h.json', $this->path)), $result);
         unlink($resultPath);
     }
 
@@ -127,7 +126,7 @@ final class TableParserHandlerTest extends TestCase
     {
         $this->expectException(TableParserException::class);
         $this->expectExceptionCode(TableParserException::UNKNOWN_WRITER_TYPE);
-        $this->handler->parseFromJson('Invalid', ['file_id' => sprintf('%s/output-1k.json', $this->path)]);
+        $this->handler->parseFromJson('Invalid', ['file_id' => sprintf('%s/output-10.json', $this->path)]);
     }
 
 }
