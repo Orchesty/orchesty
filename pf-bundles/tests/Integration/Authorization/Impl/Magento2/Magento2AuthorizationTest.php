@@ -8,8 +8,7 @@
 
 namespace Tests\Integration\Authorization\Impl\Magento2;
 
-use Hanaboso\PipesFramework\Authorizations\Impl\Magento2\Magento2Authorization;
-use Hanaboso\PipesFramework\Commons\Authorization\Connectors\AuthorizationAbstract;
+use Hanaboso\PipesFramework\Authorization\Impl\Magento2\Magento2Authorization;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
 use PHPUnit_Framework_MockObject_MockObject;

@@ -4,9 +4,10 @@ services:
         class: Hanaboso\PipesFramework\HbPFAuthorizationBundle\Loader\AuthorizationLoader
         arguments:
             - "@service_container"
+            - "@doctrine_mongodb.odm.default_document_manager"
 
     hbpf.core.listener:
-        class: Hanaboso\PipesFramework\Authorizations\DocumentListener\DocumentListener
+        class: Hanaboso\PipesFramework\Authorization\DocumentListener\DocumentListener
         arguments:
         - '@hbpf.crypt.crypt_manager'
         tags:

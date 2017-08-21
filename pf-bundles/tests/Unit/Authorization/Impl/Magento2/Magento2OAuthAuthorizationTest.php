@@ -8,10 +8,10 @@
 
 namespace Tests\Unit\Authorization\Impl\Magento2;
 
-use Hanaboso\PipesFramework\Authorizations\Document\Authorization;
-use Hanaboso\PipesFramework\Authorizations\Impl\Magento2\Magento2OAuthAuthorization;
-use Hanaboso\PipesFramework\Authorizations\Provider\OAuth1Provider;
-use Hanaboso\PipesFramework\Commons\Authorization\Connectors\AuthorizationInterface;
+use Hanaboso\PipesFramework\Authorization\Base\AuthorizationInterface;
+use Hanaboso\PipesFramework\Authorization\Document\Authorization;
+use Hanaboso\PipesFramework\Authorization\Impl\Magento2\Magento2OAuthAuthorization;
+use Hanaboso\PipesFramework\Authorization\Provider\OAuth1Provider;
 use PHPUnit_Framework_MockObject_MockObject;
 use Tests\KernelTestCaseAbstract;
 use Tests\PrivateTrait;
