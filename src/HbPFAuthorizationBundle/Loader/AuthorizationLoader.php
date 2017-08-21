@@ -10,10 +10,10 @@
 namespace Hanaboso\PipesFramework\HbPFAuthorizationBundle\Loader;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Hanaboso\PipesFramework\Authorizations\Document\Authorization;
-use Hanaboso\PipesFramework\Authorizations\Exception\AuthorizationException;
-use Hanaboso\PipesFramework\Authorizations\Repository\AuthorizationRepository;
-use Hanaboso\PipesFramework\Commons\Authorization\Connectors\AuthorizationInterface;
+use Hanaboso\PipesFramework\Authorization\Base\AuthorizationInterface;
+use Hanaboso\PipesFramework\Authorization\Document\Authorization;
+use Hanaboso\PipesFramework\Authorization\Exception\AuthorizationException;
+use Hanaboso\PipesFramework\Authorization\Repository\AuthorizationRepository;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Yaml\Yaml;
 
@@ -41,11 +41,12 @@ class AuthorizationLoader
      * AuthorizationRepository constructor.
      *
      * @param ContainerInterface $container
+     * @param DocumentManager    $dm
      */
-    public function __construct(ContainerInterface $container)
+    public function __construct(ContainerInterface $container, DocumentManager $dm)
     {
         $this->container = $container;
-        $this->dm        = $container->get('doctrine_mongodb.odm.default_document_manager');
+        $this->dm        = $dm;
     }
 
     /**

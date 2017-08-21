@@ -1,6 +1,6 @@
 services:
     app.command.account_active_check:
-        class: Hanaboso\PipesFramework\Authorizations\Command\InstallAuthorizationsCommand
+        class: Hanaboso\PipesFramework\Authorization\Command\InstallAuthorizationsCommand
         arguments:
             - '@hbpf.loader.authorization'
         tags:
