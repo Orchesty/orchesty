@@ -14,6 +14,7 @@ use Hanaboso\PipesFramework\Authorizations\Impl\Magento2\Magento2AuthorizationIn
 use Hanaboso\PipesFramework\Commons\Node\BaseNode;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
+use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Psr\Http\Message\StreamInterface;
 
 /**
@@ -21,7 +22,7 @@ use Psr\Http\Message\StreamInterface;
  *
  * @package Hanaboso\PipesFramework\Connector\Impl\Magento2
  */
-abstract class Magento2Base extends BaseNode
+abstract class Magento2Base extends BaseNode implements ConnectorInterface
 {
 
     /**
