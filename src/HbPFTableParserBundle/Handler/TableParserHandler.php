@@ -2,8 +2,6 @@
 
 namespace Hanaboso\PipesFramework\HbPFTableParserBundle\Handler;
 
-use Hanaboso\PipesFramework\Commons\BaseService\NullServiceInterface;
-use Hanaboso\PipesFramework\Commons\ServiceStorage\ServiceStorageInterface;
 use Hanaboso\PipesFramework\Parser\Exception\TableParserException;
 use Hanaboso\PipesFramework\Parser\TableParser;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -18,11 +16,6 @@ class TableParserHandler
 {
 
     /**
-     * @var ServiceStorageInterface
-     */
-    private $storageInterface;
-
-    /**
      * @var TableParser
      */
     private $tableParser;
@@ -30,13 +23,11 @@ class TableParserHandler
     /**
      * TableParserHandler constructor.
      *
-     * @param ServiceStorageInterface $serviceStorage
-     * @param TableParser             $tableParser
+     * @param TableParser $tableParser
      */
-    public function __construct(ServiceStorageInterface $serviceStorage, TableParser $tableParser)
+    public function __construct(TableParser $tableParser)
     {
-        $this->storageInterface = $serviceStorage;
-        $this->tableParser      = $tableParser;
+        $this->tableParser = $tableParser;
     }
 
     /**
@@ -97,7 +88,11 @@ class TableParserHandler
     private function getFile(array $data): stdClass
     {
         if (isset($data['file_id'])) {
-            return $this->storageInterface->getFile(new NullServiceInterface(), $data['file_id']);
+            //@TODO - add FileStorage
+            $class       = new stdClass();
+            $class->path = $data['file_id'];
+
+            return $class;
         }
 
         throw new TableParserHandlerException(

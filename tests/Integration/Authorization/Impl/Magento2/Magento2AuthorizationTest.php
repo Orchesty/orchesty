@@ -60,7 +60,7 @@ class Magento2AuthorizationTest extends DatabaseTestCaseAbstract
         $curl->method('send')->willReturn($response);
 
         return new Magento2Authorization(
-            $this->container->get('doctrine_mongodb.odm.default_document_manager'),
+            $this->dm,
             $curl,
             'magento2.auth',
             'Magento2 auth',

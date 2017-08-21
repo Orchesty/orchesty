@@ -40,8 +40,8 @@ class TokenManagerTest extends DatabaseTestCaseAbstract
     protected function setUp(): void
     {
         parent::setUp();
-        $this->tokenManager    = new TokenManager($this->documentManager);
-        $this->tokenRepository = $this->documentManager->getRepository(Token::class);
+        $this->tokenManager    = new TokenManager($this->dm);
+        $this->tokenRepository = $this->dm->getRepository(Token::class);
     }
 
     /**

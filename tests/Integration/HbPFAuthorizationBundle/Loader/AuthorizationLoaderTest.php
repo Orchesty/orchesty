@@ -27,13 +27,12 @@ class AuthorizationLoaderTest extends DatabaseTestCaseAbstract
     public function testInstallAllAuthorizations(): void
     {
         $loader = $this->container->get('hbpf.loader.authorization');
-        $dm     = $this->container->get('doctrine_mongodb.odm.default_document_manager');
         /** @var AuthorizationRepository $repo */
-        $repo = $dm->getRepository(Authorization::class);
+        $repo = $this->dm->getRepository(Authorization::class);
 
         $auth = new Authorization('magento2.auth');
         $this->persistAndFlush($auth);
-        $dm->clear();
+        $this->dm->clear();
 
         $installed = $repo->getInstalledKeys();
         self::assertEquals(1, count($installed));

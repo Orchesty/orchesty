@@ -41,8 +41,8 @@ class SecurityManagerTest extends DatabaseTestCaseAbstract
         parent::setUp();
         $encodeFactory         = $this->container->get('security.encoder_factory');
         $this->encoder         = $encodeFactory->getEncoder(User::class);
-        $this->securityManager = new SecurityManager($this->documentManager, $encodeFactory, $this->session);
-        $this->userRepository  = $this->documentManager->getRepository(User::class);
+        $this->securityManager = new SecurityManager($this->dm, $encodeFactory, $this->session);
+        $this->userRepository  = $this->dm->getRepository(User::class);
     }
 
     /**

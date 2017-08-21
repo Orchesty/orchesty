@@ -16,7 +16,7 @@ abstract class DatabaseTestCaseAbstract extends KernelTestCaseAbstract
     /**
      * @var DocumentManager
      */
-    protected $documentManager;
+    protected $dm;
 
     /**
      * @var Session
@@ -30,8 +30,8 @@ abstract class DatabaseTestCaseAbstract extends KernelTestCaseAbstract
     {
         parent::__construct();
         self::bootKernel();
-        $this->documentManager = $this->container->get('doctrine_mongodb.odm.default_document_manager');
-        $this->session         = new Session();
+        $this->dm      = $this->container->get('doctrine_mongodb.odm.default_document_manager');
+        $this->session = new Session();
     }
 
     /**
@@ -40,7 +40,7 @@ abstract class DatabaseTestCaseAbstract extends KernelTestCaseAbstract
     protected function setUp(): void
     {
         parent::setUp();
-        $this->documentManager->getConnection()->dropDatabase('pipes');
+        $this->dm->getConnection()->dropDatabase('pipes');
         $this->session->invalidate();
         $this->session->clear();
     }
@@ -50,8 +50,8 @@ abstract class DatabaseTestCaseAbstract extends KernelTestCaseAbstract
      */
     protected function persistAndFlush($document): void
     {
-        $this->documentManager->persist($document);
-        $this->documentManager->flush($document);
+        $this->dm->persist($document);
+        $this->dm->flush($document);
     }
 
 }

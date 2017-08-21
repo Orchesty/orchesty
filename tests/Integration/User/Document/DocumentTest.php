@@ -20,7 +20,7 @@ class DocumentTest extends DatabaseTestCaseAbstract
      */
     public function testReferences(): void
     {
-        $tokenRepository = $this->documentManager->getRepository(Token::class);
+        $tokenRepository = $this->dm->getRepository(Token::class);
 
         /** @var User $user */
         $user = (new User())->setEmail('email@example.com');
@@ -28,17 +28,17 @@ class DocumentTest extends DatabaseTestCaseAbstract
         /** @var TmpUser $tmpUser */
         $tmpUser = (new TmpUser())->setEmail('email@example.com');
 
-        $this->documentManager->persist($user);
-        $this->documentManager->persist($tmpUser);
-        $this->documentManager->flush();
+        $this->dm->persist($user);
+        $this->dm->persist($tmpUser);
+        $this->dm->flush();
 
         $token = (new Token())
             ->setTmpUser($tmpUser)
             ->setUser($user);
 
-        $this->documentManager->persist($token);
-        $this->documentManager->flush();
-        $this->documentManager->clear();
+        $this->dm->persist($token);
+        $this->dm->flush();
+        $this->dm->clear();
 
         /** @var Token $existingToken */
         $existingToken = $tokenRepository->find($token->getId());
@@ -50,10 +50,10 @@ class DocumentTest extends DatabaseTestCaseAbstract
         $this->assertEquals($token->getUser()->getEmail(), $existingToken->getUser()->getEmail());
         $this->assertEquals($token->getTmpUser()->getEmail(), $existingToken->getTmpUser()->getEmail());
 
-        $this->documentManager->remove($existingToken->getUser());
-        $this->documentManager->remove($existingToken->getTmpUser());
-        $this->documentManager->remove($existingToken);
-        $this->documentManager->flush();
+        $this->dm->remove($existingToken->getUser());
+        $this->dm->remove($existingToken->getTmpUser());
+        $this->dm->remove($existingToken);
+        $this->dm->flush();
     }
 
 }

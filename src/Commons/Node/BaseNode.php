@@ -9,14 +9,12 @@
 
 namespace Hanaboso\PipesFramework\Commons\Node;
 
-use Hanaboso\PipesFramework\Commons\BaseService\BaseServiceInterface;
-
 /**
  * Class BaseNode
  *
  * @package Hanaboso\PipesFramework\Commons\Node
  */
-abstract class BaseNode implements BaseServiceInterface, NodeInterface
+abstract class BaseNode implements NodeInterface
 {
 
     /**

@@ -109,7 +109,7 @@ final class Magento2OAuthAuthorizationTest extends KernelTestCaseAbstract
             ->setMethods(['getToken'])
             ->setConstructorArgs(
                 [
-                    $this->container->get('doctrine_mongodb.odm.default_document_manager'),
+                    $this->dm,
                     $provider,
                     'magento2.oauth',
                     'Magento name',

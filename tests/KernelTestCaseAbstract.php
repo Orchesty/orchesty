@@ -8,6 +8,7 @@
 
 namespace Tests;
 
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -25,6 +26,11 @@ abstract class KernelTestCaseAbstract extends KernelTestCase
     protected $container;
 
     /**
+     * @var DocumentManager
+     */
+    protected $dm;
+
+    /**
      * DatabaseTestCase constructor.
      */
     public function __construct()
@@ -32,6 +38,7 @@ abstract class KernelTestCaseAbstract extends KernelTestCase
         parent::__construct();
         self::bootKernel();
         $this->container = self::$kernel->getContainer();
+        $this->dm = $this->container->get('doctrine_mongodb.odm.default_document_manager');
     }
 
 }

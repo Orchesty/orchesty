@@ -29,12 +29,4 @@ abstract class SourceConnector extends BaseNode
         $this->sourceService = $sourceService;
     }
 
-    /**
-     * @return string
-     */
-    public function getServiceType(): string
-    {
-        return self::CONNECTOR;
-    }
-
 }
