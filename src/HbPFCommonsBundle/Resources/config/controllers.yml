@@ -1,0 +1,9 @@
+services:
+    hbpf.commons.controller.api:
+        class: Hanaboso\PipesFramework\HbPFCommonsBundle\Controller\ApiController
+        arguments:
+            - '@hbpf.commons.node_handler'
+
+    hbpf.commons.controller.default:
+        class: Hanaboso\PipesFramework\HbPFCommonsBundle\Controller\ApiController
+        arguments:

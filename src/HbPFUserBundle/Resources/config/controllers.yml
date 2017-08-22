@@ -1,0 +1,5 @@
+services:
+    hbpf.user.controller.user:
+        class: Hanaboso\PipesFramework\HbPFUserBundle\Controller\UserController
+        arguments:
+            - '@hbpf.user.handler.user'

@@ -1,0 +1,5 @@
+services:
+    hbpf.connector.controller.connector:
+        class: Hanaboso\PipesFramework\HbPFConnectorBundle\Controller\ConnectorController
+        arguments:
+            - '@hbpf.handler.connector'

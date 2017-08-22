@@ -1,5 +1,4 @@
 services:
-
     hbpf.loader.authorization:
         class: Hanaboso\PipesFramework\HbPFAuthorizationBundle\Loader\AuthorizationLoader
         arguments:

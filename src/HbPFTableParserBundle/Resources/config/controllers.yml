@@ -1,0 +1,5 @@
+services:
+    hbpf.parser.table.controller.api:
+        class: Hanaboso\PipesFramework\HbPFTableParserBundle\Controller\ApiController
+        arguments:
+            - '@hbpf.parser.table.handler'
