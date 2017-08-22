@@ -46,4 +46,9 @@ imports:
 3. Make POST request to `/api/nodes/{nodeId}/process`.
 
 ## Error offsets
-ServiceStorageException - 0x0100
+https://hanaboso.atlassian.net/wiki/spaces/PIP/pages/77529243/Exceptions
+
+## PHP - Develop
+make docker-up  -- start environment
+
+make test       -- run tests
