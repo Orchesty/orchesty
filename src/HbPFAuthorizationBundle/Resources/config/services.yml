@@ -6,7 +6,7 @@ services:
             - "@service_container"
             - "@doctrine_mongodb.odm.default_document_manager"
 
-    hbpf.core.listener:
+    hbpf.listener.authorization:
         class: Hanaboso\PipesFramework\Authorization\DocumentListener\DocumentListener
         arguments:
         - '@hbpf.crypt.crypt_manager'
