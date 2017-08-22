@@ -22,6 +22,7 @@
     "paragonie/halite":"^3.2",
     "phpoffice/phpspreadsheet": "@dev",
     "symfony/framework-bundle": "^3.3",
+    "symfony/monolog-bundle": "^3.1",
     "symfony/translation": "^3.3",
     "swiftmailer/swiftmailer": "^6.0"
   },
