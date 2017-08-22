@@ -20,4 +20,14 @@ final class StorageTypeEnum
     public const TEMPORARY  = 'temporary';
     public const PUBLIC     = 'public';
 
+    /**
+     * @param string $type
+     *
+     * @return bool
+     */
+    public static function isValid(string $type): bool
+    {
+        return in_array($type, [self::PERSISTENT, self::PUBLIC, self::TEMPORARY]);
+    }
+
 }

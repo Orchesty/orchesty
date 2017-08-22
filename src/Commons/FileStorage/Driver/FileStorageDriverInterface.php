@@ -8,6 +8,8 @@
 
 namespace Hanaboso\PipesFramework\Commons\FileStorage\Driver;
 
+use Hanaboso\PipesFramework\Commons\FileStorage\Dto\FileInfoDto;
+
 /**
  * Class FileStorageDriverInterface
  *
@@ -20,20 +22,20 @@ interface FileStorageDriverInterface
      * @param string      $content
      * @param null|string $filename
      *
+     * @return FileInfoDto
+     */
+    public function save(string $content, ?string $filename = NULL): FileInfoDto;
+
+    /**
+     * @param string $fileUrl
+     */
+    public function delete(string $fileUrl): void;
+
+    /**
+     * @param string $fileUrl
+     *
      * @return string
      */
-    public function save(string $content, ?string $filename = NULL): string;
-
-    /**
-     * @param string $filename
-     */
-    public function delete(string $filename): void;
-
-    /**
-     * @param string $filename
-     *
-     * @return mixed
-     */
-    public function get(string $filename);
+    public function get(string $fileUrl): string;
 
 }
