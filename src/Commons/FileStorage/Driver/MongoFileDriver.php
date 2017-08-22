@@ -73,31 +73,30 @@ class MongoFileDriver
     }
 
     /**
-     * @param string $filename
+     * @param string $fileId
      */
-    public function delete(string $filename): void
+    public function delete(string $fileId): void
     {
         /** @var FileMongo $file */
-        $file = $this->get($filename);
+        $file = $this->get($fileId);
 
         $this->dm->remove($file);
         $this->dm->flush();
     }
 
     /**
-     * @param string $filename
+     * @param string $fileId
      *
      * @return mixed
      * @throws FileStorageException
      */
-    public function get(string $filename)
+    public function get(string $fileId)
     {
-        $file = $this->dm->getRepository(FileMongo::class)
-            ->findOneBy(['filename' => $this->generatePath($filename)]);
+        $file = $this->dm->getRepository(FileMongo::class)->find($fileId);
 
         if (!$file) {
             throw new FileStorageException(
-                sprintf('File in Mongo with given name [%s] not found.', $filename),
+                sprintf('File in Mongo with given id [%s] not found.', $fileId),
                 FileStorageException::FILE_NOT_FOUND
             );
         }

@@ -19,7 +19,7 @@ class HashPathGenerator implements PathGeneratorInterface
     /**
      * @var int
      */
-    private $levels = 2;
+    private $levels = 3;
 
     /**
      * @var int
