@@ -77,18 +77,20 @@ class AuthorizationLoaderTest extends KernelTestCaseAbstract
      */
     public function testGetAllAuthorizationsInfo(): void
     {
-        self::markTestSkipped();
         $conns = $this->loader->getAllAuthorizationsInfo();
-
-        $expect = [
-            'name'          => 'magento2 Authorization',
-            'description'   => 'magento2 Authorization',
-            'type'          => 'basic',
-            'is_authorized' => FALSE,
-        ];
-
         self::assertNotEmpty($conns);
-        self::assertEquals($expect, $conns['magento2.auth']);
+
+        /** @var array $magento2 */
+        $magento2 = $conns['magento2.auth'];
+
+        self::assertArrayHasKey('name', $magento2);
+        self::assertArrayHasKey('description', $magento2);
+        self::assertArrayHasKey('type', $magento2);
+        self::assertArrayHasKey('is_authorized', $magento2);
+
+        self::assertEquals('magento2 Authorization', $magento2['name']);
+        self::assertEquals('magento2 Authorization', $magento2['description']);
+        self::assertEquals('basic', $magento2['type']);
     }
 
 }
