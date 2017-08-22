@@ -69,7 +69,7 @@ class MongoFileDriver
         $this->dm->persist($file);
         $this->dm->flush($file);
 
-        return $file->getId();
+        return $filename;
     }
 
     /**
