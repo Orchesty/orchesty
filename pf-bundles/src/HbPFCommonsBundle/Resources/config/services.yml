@@ -25,8 +25,13 @@ services:
         arguments:
 
     hbpf.file_storage.locator:
-        class: Hanaboso\PipesFramework\Commons\FileStorage\Driver\FIleStorageDriverLocator
+        class: Hanaboso\PipesFramework\Commons\FileStorage\Driver\FileStorageDriverLocator
         arguments:
             - '@hbpf.file_storage.driver.mongo'
             - '@hbpf.file_storage.driver.mongo'
             - '@hbpf.file_storage.driver.mongo'
+
+    hbpf.file_storage:
+        class: Hanaboso\PipesFramework\Commons\FileStorage\FileStorage
+        arguments:
+            - '@hbpf.file_storage.locator'

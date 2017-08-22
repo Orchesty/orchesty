@@ -12,11 +12,11 @@ use Hanaboso\PipesFramework\Commons\Enum\StorageTypeEnum;
 use Hanaboso\PipesFramework\Commons\Exception\FileStorageException;
 
 /**
- * Class FIleStorageDriverLocator
+ * Class FileStorageDriverLocator
  *
  * @package Hanaboso\PipesFramework\Commons\FileStorage\Driver
  */
-class FIleStorageDriverLocator
+class FileStorageDriverLocator
 {
 
     /**
@@ -68,8 +68,8 @@ class FIleStorageDriverLocator
                 return $this->public;
             default:
                 throw new FileStorageException(
-                    sprintf('[%s] is wrong driver type. Choose from StorageTypeEnum.', $type),
-                    FileStorageException::WRONG_DRIVER_TYPE
+                    sprintf('Given storage type [%s] is not a valid option.', $type),
+                    FileStorageException::INVALID_STORAGE_TYPE
                 );
         }
     }
