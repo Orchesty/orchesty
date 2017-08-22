@@ -13,3 +13,17 @@ services:
         class: Hanaboso\PipesFramework\Commons\Source\SourceService
         arguments:
             - '@hbpf.transport.curl_manager'
+
+    hbpf.file_storage.driver:
+        class: Hanaboso\PipesFramework\Commons\FileStorage\Driver\MongoFileDriver
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.path_generator.hash'
+
+    hbpf.file_storage.filetypes:
+        class: Hanaboso\PipesFramework\Commons\FileStorage\FileTypes
+        arguments:
+
+    hbpf.path_generator.hash:
+        class: Hanaboso\PipesFramework\Commons\FileStorage\PathGenerator\HashPathGenerator
+        arguments:

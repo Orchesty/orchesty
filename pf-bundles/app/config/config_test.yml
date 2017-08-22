@@ -48,4 +48,9 @@ doctrine_mongodb:
                     is_bundle: false
                     dir: "%kernel.root_dir%/../src/Authorization/Document"
                     prefix: Hanaboso\PipesFramework\Authorization\Document
+                MongoFileDocument:
+                    type: annotation
+                    is_bundle: false
+                    dir: "%kernel.root_dir%/../src/Commons/FileStorage/Driver"
+                    prefix: Hanaboso\PipesFramework\Commons\FileStorage\Driver
             metadata_cache_driver: array
