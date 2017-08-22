@@ -18,6 +18,7 @@ class FileStorageException extends PipesFrameworkException
 
     protected const OFFSET = 1500;
 
-    public const FILE_NOT_FOUND = self::OFFSET + 1;
+    public const FILE_NOT_FOUND    = self::OFFSET + 1;
+    public const WRONG_DRIVER_TYPE = self::OFFSET + 2;
 
 }

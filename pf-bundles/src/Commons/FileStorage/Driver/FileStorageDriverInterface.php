@@ -17,12 +17,12 @@ interface FileStorageDriverInterface
 {
 
     /**
-     * @param mixed       $content
+     * @param string      $content
      * @param null|string $filename
      *
      * @return string
      */
-    public function save($content, ?string $filename = NULL): string;
+    public function save(string $content, ?string $filename = NULL): string;
 
     /**
      * @param string $filename

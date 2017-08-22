@@ -17,7 +17,7 @@ final class FileTypes
 {
 
     /** @var string[] */
-    protected $mimetypes = [
+    protected static $mimetypes = [
         '3dml'        => 'text/vnd.in3d.3dml',
         '3g2'         => 'video/3gpp2',
         '3gp'         => 'video/3gpp',
@@ -929,11 +929,11 @@ final class FileTypes
      * @return string|null
      *
      */
-    public function fromExtension(string $extension): ?string
+    public static function fromExtension(string $extension): ?string
     {
         $extension = strtolower($extension);
 
-        return isset($this->mimetypes[$extension]) ? $this->mimetypes[$extension] : NULL;
+        return isset(self::$mimetypes[$extension]) ? self::$mimetypes[$extension] : NULL;
     }
 
     /**
@@ -941,9 +941,9 @@ final class FileTypes
      *
      * @return string|null
      */
-    public function fromFilename(string $filename): ?string
+    public static function fromFilename(string $filename): ?string
     {
-        return $this->fromExtension(pathinfo($filename, PATHINFO_EXTENSION));
+        return self::fromExtension(pathinfo($filename, PATHINFO_EXTENSION));
     }
 
 }
