@@ -1,0 +1,149 @@
+import React from 'react'
+import ReactDOM from 'react-dom';
+
+import BpmnModeler from 'bpmn-js/lib/Modeler';
+import PropertiesPanelModule from 'bpmn-js-properties-panel';
+import PropertiesProviderModule from 'bpmn-js-properties-panel/lib/provider/camunda';
+
+import download from '../../../utils/donwload';
+
+import CamundaModdleDescriptor from 'camunda-bpmn-moddle/resources/camunda.json';
+
+import 'diagram-js/assets/diagram-js.css';
+import 'bpmn-js/assets/bpmn-font/css/bpmn-embedded.css';
+import './bpmn_io_component.less';
+
+class BpmnIoComponent extends React.Component {
+  constructor(props){
+    super(props);
+    this._self = null;
+    this._modeler = null;
+  }
+
+  componentWillMount(){
+    this.props.actions([
+      {
+        caption: 'Import BPMN',
+        action: this.importBPMN.bind(this)
+      },
+      {
+        caption: 'Export BPMN',
+        action: this.exportBPMN.bind(this)
+      },
+      {
+        caption: 'Export SVG',
+        action: this.exportSVG.bind(this)
+      }
+    ])
+  }
+
+  loadXML() {
+    this._modeler.importXML(this.props.schema, err => {
+      err && this.props.onError(String(err));
+    });
+  }
+
+  exportBPMN(){
+    if (this._modeler){
+      this._modeler.saveXML({format: true}, function (err, xml) {
+        if (err){
+          err && this.props.onError(String(err));
+        }
+        else{
+          download(xml, 'export.bpmn', 'application/bpmn-20-xml');
+        }
+      })
+    }
+  }
+
+  exportSVG(){
+    if (this._modeler){
+      this._modeler.saveSVG(function (err, svg) {
+        if (err){
+          err && this.props.onError(String(err));
+        }
+        else {
+          download(svg, 'export.svg', 'image/svg+xml');
+        }
+      });
+    }
+  }
+
+  importBPMN(){
+    const parent = ReactDOM.findDOMNode(this);
+    parent.childNodes[2].click();
+  }
+  
+  openBPMN(data){
+    this._modeler.importXML(data.content, err => {
+      if (err) {
+        err && this.props.onError(String(err));
+      }
+      else {
+        this.props.onImport(`File [${data.file.name}] imported.`);
+      }
+    });
+  }
+
+  onWindowResize() {
+    this.calculateHeight();
+  }
+
+  calculateHeight() {
+    if (this._self){
+      this.setState({
+        height: window.innerHeight - this._self.getBoundingClientRect().top - window.scrollX - 10
+      });
+    }
+  }
+
+  componentDidMount() {
+//    window.addEventListener('resize', this._onWindowResize);
+//    this.calculateHeight();
+    const parent = ReactDOM.findDOMNode(this);
+    this._modeler = new BpmnModeler({
+      propertiesPanel: {
+        parent: parent.childNodes[1]
+      },
+      additionalModules: [
+        PropertiesPanelModule,
+        PropertiesProviderModule
+      ],
+      moddleExtensions: {
+        camunda: CamundaModdleDescriptor
+      }
+    });
+    this._modeler.attachTo(parent.childNodes[0]);
+    this.loadXML();
+
+    parent.childNodes[2].addEventListener('change', e => {
+      const reader = new FileReader();
+      const file = e.target.files[0];
+      reader.onload = response => {
+        this.openBPMN({file, content: response.target.result});
+      };
+      reader.readAsText(file);
+    })
+  }
+
+  componentWillUnmount() {
+    this._modeler.detach();
+  }
+
+  setSelf(self) {
+    this._self = self;
+   // this.calculateHeight();
+  }
+
+  render() {
+    return (
+      <div ref={self => {this.setSelf(self)}} className="bpmn-io-component">
+        <div className="bpmn-io-canvas"/>
+        <div className="bpmn-io-properties"/>
+        <input className="open-file-dialog" type="file" />
+      </div>
+    );
+  }
+}
+
+export default BpmnIoComponent;

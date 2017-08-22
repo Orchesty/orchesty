@@ -1,0 +1,11 @@
+{
+  "dashboard": {
+    "caption": "Dashboard"
+  },
+  "topology_list": {
+    "caption": "Topology list"
+  },
+  "topology_schema": {
+    "caption": "Topology schema"
+  }
+}
