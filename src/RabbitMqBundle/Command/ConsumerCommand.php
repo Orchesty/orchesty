@@ -1,4 +1,5 @@
 <?php
+
 namespace RabbitMqBundle\Command;
 
 use Bunny\Channel;
@@ -8,12 +9,8 @@ use Bunny\Protocol\MethodBasicQosOkFrame;
 use Bunny\Protocol\MethodQueueBindOkFrame;
 use Bunny\Protocol\MethodQueueDeclareOkFrame;
 use RabbitMqBundle\BunnyManager;
-//use Skrz\Bundle\BunnyBundle\Annotation\Consumer;
-//use Skrz\Bundle\BunnyBundle\BunnyException;
-//use Skrz\Bundle\BunnyBundle\ContentTypes;
-use Skrz\Meta\JSON\JsonMetaInterface;
-use Skrz\Meta\MetaInterface;
-use Skrz\Meta\Protobuf\ProtobufMetaInterface;
+use RabbitMqBundle\Consumer\AbstractConsumer;
+use RabbitMqBundle\Serializers\IMessageSerializer;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -39,15 +36,8 @@ class ConsumerCommand extends Command
 	{
 		parent::__construct("rabbit-mq:consumer");
 		$this->container = $container;
-		$this->manager = $manager;
-		$this->consumers = [];
-
-		foreach ($consumers as $consumerName => $annotations) {
-			$this->consumers[$consumerName] = [];
-			foreach ($annotations as $annotation) {
-				$this->consumers[$consumerName][] = Consumer::fromArray($annotation);
-			}
-		}
+		$this->manager   = $manager;
+		$this->consumers = $consumers;
 	}
 
 	protected function configure()
@@ -68,109 +58,117 @@ class ConsumerCommand extends Command
 
 		$consumerArgv = $input->getArgument("consumer-parameters");
 		array_unshift($consumerArgv, $consumerName);
-
 		$this->manager->setUp();
 
 		$channel = $this->manager->getChannel();
-		$consumer = $this->container->get($this->consumers[$consumerName][0]->name);
-		$maxMessages = PHP_INT_MAX;
-		$maxSeconds = PHP_INT_MAX;
+
+		/** @var AbstractConsumer $consumer */
+		$consumer     = $this->consumers[$consumerName];
+		$maxMessages  = PHP_INT_MAX;
+		$maxSeconds   = PHP_INT_MAX;
 		$calledSetUps = [];
-		$tickMethod = null;
-		$tickSeconds = null;
+		$tickMethod   = NULL;
+		$tickSeconds  = NULL;
 
-		foreach ($this->consumers[$consumerName] as $consumerSpec) {
-			$maxMessages = min($maxMessages, $consumerSpec->maxMessages ?: PHP_INT_MAX);
-			$maxSeconds = min($maxSeconds, $consumerSpec->maxSeconds ?: PHP_INT_MAX);
+		$maxMessages = min($maxMessages, $consumer->getMaxMessages() ?: PHP_INT_MAX);
+		$maxSeconds  = min($maxSeconds, $consumer->getMaxSeconds() ?: PHP_INT_MAX);
 
-			if (empty($consumerSpec->queue)) {
-				$queueOk = $channel->queueDeclare("", false, false, true);
-				if (!($queueOk instanceof MethodQueueDeclareOkFrame)) {
-					throw new BunnyException("Could not declare anonymous queue.");
-				}
-
-				$consumerSpec->queue = $queueOk->queue;
-
-				$bindOk = $channel->queueBind($consumerSpec->queue, $consumerSpec->exchange, $consumerSpec->routingKey);
-				if (!($bindOk instanceof MethodQueueBindOkFrame)) {
-					throw new BunnyException("Could not bind anonymous queue.");
-				}
+		if (empty($consumer->getQueue())) {
+			$queueOk = $channel->queueDeclare("", FALSE, FALSE, TRUE);
+			if (!($queueOk instanceof MethodQueueDeclareOkFrame)) {
+				throw new BunnyException("Could not declare anonymous queue.");
 			}
 
-			if ($consumerSpec->prefetchSize || $consumerSpec->prefetchCount) {
-				$qosOk = $channel->qos($consumerSpec->prefetchSize, $consumerSpec->prefetchCount);
-				if (!($qosOk instanceof MethodBasicQosOkFrame)) {
-					throw new BunnyException("Could not set prefetch-size/prefetch-count.");
-				}
+			$consumer->setQueue($queueOk->queue);
+
+			$bindOk = $channel->queueBind($consumer->getQueue(), $consumer->getExchange(), $consumer->getRoutingKey());
+			if (!($bindOk instanceof MethodQueueBindOkFrame)) {
+				throw new BunnyException("Could not bind anonymous queue.");
+			}
+		}
+
+		if ($consumer->getPrefetchSize() || $consumer->getPrefetchCount()) {
+			$qosOk = $channel->qos($consumer->getPrefetchSize(), $consumer->getPrefetchCount());
+			if (!($qosOk instanceof MethodBasicQosOkFrame)) {
+				throw new BunnyException("Could not set prefetch-size/prefetch-count.");
+			}
+		}
+
+		$serializer = NULL;
+		if ($consumer->getSerializer()) {
+			/** @var IMessageSerializer $metaClassName */
+			$metaClassName = $consumer->getSerializer();
+
+			if (!class_exists($metaClassName)) {
+				throw new BunnyException("Consumer meta class {$metaClassName} does not exist.");
 			}
 
-			$meta = null;
-			if ($consumerSpec->meta) {
-				/** @var MetaInterface $metaClassName */
-				$metaClassName = $consumerSpec->meta;
-
-				if (!class_exists($metaClassName)) {
-					throw new BunnyException("Consumer meta class {$metaClassName} does not exist.");
-				}
-
-				if (!method_exists($metaClassName, "getInstance")) {
-					throw new BunnyException("Method {$metaClassName}::getInstance() does not exist.");
-				}
-
-				$meta = $metaClassName::getInstance();
+			if (!method_exists($metaClassName, "getInstance")) {
+				throw new BunnyException("Method {$metaClassName}::getInstance() does not exist.");
 			}
 
-			if ($consumerSpec->setUpMethod && !isset($calledSetUps[$consumerSpec->setUpMethod])) {
-				if (!method_exists($consumer, $consumerSpec->setUpMethod)) {
+			$serializer = $metaClassName::getInstance();
+		}
+
+		if ($consumer->getSetUpMethod() && !isset($calledSetUps[$consumer->getSetUpMethod()])) {
+			if (!method_exists($consumer, $consumer->getSetUpMethod())) {
+				throw new BunnyException(
+					"Init method " . get_class($consumer) . "::{$consumer->getSetUpMethod()} does not exist."
+				);
+			}
+
+			$consumer->{$consumer->getSetUpMethod()}($channel, $channel->getClient(), $consumerArgv);
+			$calledSetUps[$consumer->getSetUpMethod()] = TRUE;
+		}
+
+		if ($consumer->getTickMethod()) {
+			if ($tickMethod) {
+				if ($consumer->getTickMethod() !== $tickMethod) {
 					throw new BunnyException(
-						"Init method " . get_class($consumer) . "::{$consumerSpec->setUpMethod} does not exist."
+						"Only single tick method is supported - " . get_class($consumer) . "."
 					);
 				}
 
-				$consumer->{$consumerSpec->setUpMethod}($channel, $channel->getClient(), $consumerArgv);
-				$calledSetUps[$consumerSpec->setUpMethod] = true;
-			}
-
-			if ($consumerSpec->tickMethod) {
-				if ($tickMethod) {
-					if ($consumerSpec->tickMethod !== $tickMethod) {
-						throw new BunnyException(
-							"Only single tick method is supported - " . get_class($consumer) . "."
-						);
-					}
-
-					if ($consumerSpec->tickSeconds !== $tickSeconds) {
-						throw new BunnyException(
-							"Only single tick seconds is supported - " . get_class($consumer) . "."
-						);
-					}
-
-				} else {
-					if (!$consumerSpec->tickSeconds) {
-						throw new BunnyException(
-							"If you specify 'tickMethod', you have to specify 'tickSeconds' - " . get_class($consumer) . "."
-						);
-					}
-
-					if (!method_exists($consumer, $consumerSpec->tickMethod)) {
-						throw new BunnyException(
-							"Tick method " . get_class($consumer) . "::{$consumerSpec->tickMethod} does not exist."
-						);
-					}
-
-					$tickMethod = $consumerSpec->tickMethod;
-					$tickSeconds = $consumerSpec->tickSeconds;
+				if ($consumer->getTickSeconds() !== $tickSeconds) {
+					throw new BunnyException(
+						"Only single tick seconds is supported - " . get_class($consumer) . "."
+					);
 				}
-			}
 
-			$channel->consume(function (Message $message, Channel $channel, Client $client) use ($consumer, $consumerSpec, $meta) {
-				$this->handleMessage($consumer, $consumerSpec, $meta, $message, $channel, $client);
-			}, $consumerSpec->queue, $consumerSpec->consumerTag, $consumerSpec->noLocal, $consumerSpec->noAck, $consumerSpec->exclusive, false, $consumerSpec->arguments);
+			} else {
+				if (!$consumer->getTickSeconds()) {
+					throw new BunnyException(
+						"If you specify 'tickMethod', you have to specify 'tickSeconds' - " . get_class($consumer) . "."
+					);
+				}
+
+				if (!method_exists($consumer, $consumer->getTickMethod())) {
+					throw new BunnyException(
+						"Tick method " . get_class($consumer) . "::{$consumer->getTickMethod()} does not exist."
+					);
+				}
+
+				$tickMethod  = $consumer->getTickMethod();
+				$tickSeconds = $consumer->getTickSeconds();
+			}
 		}
 
-		$startTime = microtime(true);
+		$channel->consume(
+			function (Message $message, Channel $channel, Client $client) use ($consumer, $serializer) {
+				$this->handleMessage($consumer, $serializer, $message, $channel, $client);
+			},
+			$consumer->getQueue(),
+			$consumer->getConsumerTag(),
+			$consumer->isNoLocal(),
+			$consumer->isNoAck(),
+			$consumer->isExclusive(),
+			$consumer->isNowait(),
+			$consumer->getArguments()
+		);
 
-		while (microtime(true) < $startTime + $maxSeconds && $this->messages < $maxMessages) {
+		$startTime = microtime(TRUE);
+
+		while (microtime(TRUE) < $startTime + $maxSeconds && $this->messages < $maxMessages) {
 			$channel->getClient()->run($tickSeconds ?: $maxSeconds);
 			if ($tickMethod) {
 				$consumer->{$tickMethod}($channel, $channel->getClient());
@@ -179,24 +177,22 @@ class ConsumerCommand extends Command
 		$channel->getClient()->disconnect();
 	}
 
-	public function handleMessage($consumer, Consumer $consumerSpec, $meta = null, Message $message, Channel $channel, Client $client)
+	public function handleMessage(
+		AbstractConsumer $consumer,
+		$serializer = NULL,
+		Message $message,
+		Channel $channel,
+		Client $client
+	)
 	{
 		$data = $message->content;
-		if ($meta) {
+		if ($serializer) {
 			switch ($message->getHeader("content-type")) {
 				case ContentTypes::APPLICATION_JSON:
-					if ($meta instanceof JsonMetaInterface) {
-						$data = $meta->fromJson($data);
+					if ($serializer instanceof IMessageSerializer) {
+						$data = $serializer->fromJson($data);
 					} else {
 						throw new BunnyException("Meta class does not support JSON.");
-					}
-					break;
-
-				case ContentTypes::APPLICATION_PROTOBUF:
-					if ($meta instanceof ProtobufMetaInterface) {
-						$data = $meta->fromProtobuf($data);
-					} else {
-						throw new BunnyException("Meta class does not support Protobuf.");
 					}
 					break;
 
@@ -205,9 +201,9 @@ class ConsumerCommand extends Command
 			}
 		}
 
-		$consumer->{$consumerSpec->method}($data, $message, $channel, $client);
+		$consumer->handleMessage($data, $message, $channel, $client);
 
-		if ($consumerSpec->maxMessages !== null && ++$this->messages >= $consumerSpec->maxMessages) {
+		if ($consumer->getMaxMessages() !== NULL && ++$this->messages >= $consumer->getMaxMessages()) {
 			$client->stop();
 		}
 	}

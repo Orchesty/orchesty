@@ -306,4 +306,12 @@ abstract class AbstractConsumer
 		return $this->maxSeconds;
 	}
 
+	/**
+	 * @param null $queue
+	 */
+	public function setQueue($queue)
+	{
+		$this->queue = $queue;
+	}
+
 }
