@@ -28,7 +28,7 @@ class MongoFileDriverTest extends DatabaseTestCaseAbstract
      */
     public function testFileStorage(): void
     {
-        $driver = $this->container->get('hbpf.file_storage.driver');
+        $driver = $this->container->get('hbpf.file_storage.driver.mongo');
 
         $driver->save('test_content', 'test_name');
         $this->dm->clear();

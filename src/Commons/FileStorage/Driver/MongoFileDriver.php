@@ -9,44 +9,15 @@
 namespace Hanaboso\PipesFramework\Commons\FileStorage\Driver;
 
 use Doctrine\MongoDB\GridFSFile;
-use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\PipesFramework\Commons\Exception\FileStorageException;
-use Hanaboso\PipesFramework\Commons\FileStorage\PathGenerator\PathGeneratorInterface;
 
 /**
  * Class MongoFileDriver
  *
  * @package Hanaboso\PipesFramework\Commons\FileStorage\Driver
  */
-class MongoFileDriver
+class MongoFileDriver extends FileStorageDriverAbstract
 {
-
-    /**
-     * @var string
-     */
-    private $filePrefix = '';
-
-    /**
-     * @var DocumentManager
-     */
-    private $dm;
-
-    /**
-     * @var PathGeneratorInterface
-     */
-    private $pathGenerator;
-
-    /**
-     * MongoFileDriver constructor.
-     *
-     * @param DocumentManager        $dm
-     * @param PathGeneratorInterface $defaultPathGenerator
-     */
-    function __construct(DocumentManager $dm, PathGeneratorInterface $defaultPathGenerator)
-    {
-        $this->dm            = $dm;
-        $this->pathGenerator = $defaultPathGenerator;
-    }
 
     /**
      * @param string      $content
@@ -69,7 +40,7 @@ class MongoFileDriver
         $this->dm->persist($file);
         $this->dm->flush($file);
 
-        return $filename;
+        return $file->getId();
     }
 
     /**
@@ -102,16 +73,6 @@ class MongoFileDriver
         }
 
         return $file;
-    }
-
-    /**
-     * @param string|null $filename
-     *
-     * @return string
-     */
-    private function generatePath(?string $filename): string
-    {
-        return $this->filePrefix . $this->pathGenerator->generate($filename);
     }
 
 }
