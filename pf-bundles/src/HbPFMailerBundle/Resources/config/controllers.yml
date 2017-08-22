@@ -1,0 +1,5 @@
+services:
+    hbpf.mailer.controller.api:
+        class: Hanaboso\PipesFramework\HbPFMailerBundle\Controller\ApiController
+        arguments:
+            - '@hbpf.mailer.mail_handler'

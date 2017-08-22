@@ -23,10 +23,18 @@ class ApiController extends FOSRestController
 
     /**
      * @var TableParserHandler
-     *
-     * @Autowire()
      */
     private $tableParserHandler;
+
+    /**
+     * ApiController constructor.
+     *
+     * @param TableParserHandler $tableParserHandler
+     */
+    public function __construct(TableParserHandler $tableParserHandler)
+    {
+        $this->tableParserHandler = $tableParserHandler;
+    }
 
     /**
      * @Route("/api/parser/{type}/to/json", requirements={"type"="\w+"})
@@ -61,7 +69,7 @@ class ApiController extends FOSRestController
     public function toJsonTestAction(): Response
     {
         $response = new JsonResponse();
-        $data = '';
+        $data     = '';
         try {
             $this->tableParserHandler->parseToJsonTest();
             $response->setStatusCode(200);
