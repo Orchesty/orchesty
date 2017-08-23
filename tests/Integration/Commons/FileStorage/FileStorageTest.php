@@ -26,8 +26,8 @@ class FileStorageTest extends DatabaseTestCaseAbstract
 {
 
     /**
-     * @covers FileStorage::saveFile()
-     * @covers FileStorage::getFileContent()
+     * @covers FileStorage::saveFileFromContent()
+     * @covers FileStorage::getFileStorage()
      * @covers FileStorage::deleteFile()
      */
     public function testFileStorage(): void
@@ -35,13 +35,13 @@ class FileStorageTest extends DatabaseTestCaseAbstract
         $storage = $this->mockStorageService();
         $dto     = new FileContentDto('test_content', 'csv', 'test_name');
 
-        $file = $storage->saveFile($dto);
+        $file = $storage->saveFileFromContent($dto);
         self::assertEquals('test_name', $file->getFilename());
         self::assertEquals('fileUrl', $file->getFileUrl());
         self::assertEquals('7', $file->getSize());
         self::assertNotEmpty($file->getStorageType());
 
-        $content = $storage->getFileContent($file);
+        $content = $storage->getFileStorage($file);
         self::assertEquals('test_content', $content->getContent());
 
         $storage->deleteFile($file);
