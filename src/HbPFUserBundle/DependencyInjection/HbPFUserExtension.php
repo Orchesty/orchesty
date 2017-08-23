@@ -27,6 +27,9 @@ class HbPFUserExtension extends Extension implements PrependExtensionInterface
         if (!$container->hasExtension('hb_pf_commons')) {
             throw new RuntimeException('You must register HbPFCommonsBundle before.');
         };
+
+        $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
+        $loader->load('doctrine_mongo.yml');
     }
 
     /**
