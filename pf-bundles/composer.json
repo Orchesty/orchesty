@@ -18,17 +18,16 @@
     "doctrine/mongodb-odm-bundle": "^3.3",
     "friendsofsymfony/rest-bundle": "^2.2",
     "guzzlehttp/guzzle": "^6.3.0",
-    "jms/serializer": "^1.8",
+    "jms-serializer/serializer-bundle": "^1.1",
     "paragonie/halite":"^3.2",
     "phpoffice/phpspreadsheet": "@dev",
+    "swiftmailer/swiftmailer": "^6.0",
     "symfony/framework-bundle": "^3.3",
     "symfony/monolog-bundle": "^3.1",
-    "symfony/translation": "^3.3",
-    "swiftmailer/swiftmailer": "^6.0"
+    "symfony/translation": "^3.3"
   },
   "require-dev": {
     "doctrine/doctrine-bundle": "^1.6",
-    "jms-serializer/serializer-bundle": "^1.1",
     "phpunit/phpunit": "^6.3",
     "sensio/framework-extra-bundle": "^3.0",
     "symfony/expression-language": "^3.3",
