@@ -30,19 +30,18 @@ class MongoFileDriverTest extends DatabaseTestCaseAbstract
     {
         $driver = $this->container->get('hbpf.file_storage.driver.mongo');
 
-        $id = $driver->save('test_content', 'test_name');
+        $res = $driver->save('test_content', 'test_name');
         $this->dm->clear();
 
         /** @var FileMongo $file */
-        $file = $driver->get($id);
-        self::assertEquals('test_name', $file->getContent()->getFilename());
-        self::assertEquals('test_content', $file->getContent()->getBytes());
+        $fileContent = $driver->get($res->getUrl());
+        self::assertEquals('test_content', $fileContent);
 
         $this->dm->clear();
-        $driver->delete($id);
+        $driver->delete($res->getUrl());
         $this->expectException(FileStorageException::class);
         $this->expectExceptionCode(FileStorageException::FILE_NOT_FOUND);
-        $driver->get($id);
+        $driver->get($res->getUrl());
     }
 
 }

@@ -8,6 +8,8 @@
 
 namespace Hanaboso\PipesFramework\Commons\FileStorage;
 
+use Hanaboso\PipesFramework\Commons\Exception\FileStorageException;
+
 /**
  * Class FileTypes
  *
@@ -926,22 +928,29 @@ final class FileTypes
     /**
      * @param string $extension
      *
-     * @return string|null
-     *
+     * @return string
+     * @throws FileStorageException
      */
-    public static function fromExtension(string $extension): ?string
+    public static function fromExtension(string $extension): string
     {
         $extension = strtolower($extension);
 
-        return isset(self::$mimetypes[$extension]) ? self::$mimetypes[$extension] : NULL;
+        if (!isset(self::$mimetypes[$extension])) {
+            throw new FileStorageException(
+                sprintf('Missing mimic format for [%s] file format.', $extension),
+                FileStorageException::INVALID_MIMIC_FORMAT
+            );
+        }
+
+        return self::$mimetypes[$extension];
     }
 
     /**
      * @param string $filename
      *
-     * @return string|null
+     * @return string
      */
-    public static function fromFilename(string $filename): ?string
+    public static function fromFilename(string $filename): string
     {
         return self::fromExtension(pathinfo($filename, PATHINFO_EXTENSION));
     }
