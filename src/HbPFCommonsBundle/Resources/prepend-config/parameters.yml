@@ -1,0 +1,2 @@
+parameters:
+    logger_handler: syslog

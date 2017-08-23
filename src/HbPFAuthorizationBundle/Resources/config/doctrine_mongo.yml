@@ -5,5 +5,5 @@ doctrine_mongodb:
                 AuthorizationDocument:
                     type: annotation
                     is_bundle: false
-                    dir: "%kernel.root_dir%/../src/Authorization/Document"
+                    dir: "%src_dir%/Authorization/Document"
                     prefix: Hanaboso\PipesFramework\Authorization\Document
