@@ -1,9 +1,0 @@
-{
-  "config": {},
-  "repositories": [
-    {
-      "type": "vcs",
-      "url": "git@gitlab.hanaboso.net:pipes/pipes.git"
-    }
-  ]
-}

@@ -27,6 +27,7 @@ class HbPFCommonsExtension extends Extension implements PrependExtensionInterfac
         $loader->load('doctrine_mongo.yml');
         $loader->load('fos_rest.yml');
         $loader->load('sensio_framework_extra.yml');
+        $loader->load('monolog.yml');
     }
 
     /**

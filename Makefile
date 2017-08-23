@@ -41,7 +41,7 @@ composer-deploy:
 #CI
 
 codesniffer:
-	$(MAKE) docker docker="./vendor/bin/phpcs --standard=./vendor/pipes/php-check-utils/ruleset.xml --colors -p src/ tests/"
+	$(MAKE) docker docker="./vendor/bin/phpcs --standard=./ruleset.xml --colors -p src/ tests/"
 
 phpstan:
 	$(MAKE) docker docker="./vendor/bin/phpstan analyse -l 7 src/"
