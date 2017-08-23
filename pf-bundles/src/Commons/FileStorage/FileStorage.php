@@ -9,9 +9,11 @@
 namespace Hanaboso\PipesFramework\Commons\FileStorage;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Hanaboso\PipesFramework\Commons\Exception\FileStorageException;
 use Hanaboso\PipesFramework\Commons\FileStorage\Document\File;
 use Hanaboso\PipesFramework\Commons\FileStorage\Driver\FileStorageDriverLocator;
 use Hanaboso\PipesFramework\Commons\FileStorage\Dto\FileContentDto;
+use Hanaboso\PipesFramework\Commons\FileStorage\Dto\FileStorageDto;
 
 /**
  * Class FileStorage
@@ -48,7 +50,7 @@ class FileStorage
      *
      * @return File
      */
-    public function saveFile(FileContentDto $content): File
+    public function saveFileFromContent(FileContentDto $content): File
     {
         $driver = $this->locator->get($content->getStorageType());
         $info   = $driver->save($content->getContent(), $content->getFilename());
@@ -70,13 +72,13 @@ class FileStorage
     /**
      * @param File $file
      *
-     * @return FileContentDto
+     * @return FileStorageDto
      */
-    public function getFileContent(File $file): FileContentDto
+    public function getFileStorage(File $file): FileStorageDto
     {
         $driver = $this->locator->get($file->getStorageType());
 
-        return new FileContentDto($driver->get($file->getFileUrl()), $file->getFilename());
+        return new FileStorageDto($file, $driver->get($file->getFileUrl()));
     }
 
     /**
@@ -89,6 +91,26 @@ class FileStorage
 
         $this->dm->remove($file);
         $this->dm->flush($file);
+    }
+
+    /**
+     * @param string $fileId
+     *
+     * @return File
+     * @throws FileStorageException
+     */
+    public function getFileDocument(string $fileId): File
+    {
+        $file = $this->dm->getRepository(File::class)->find($fileId);
+
+        if (!$file) {
+            throw new FileStorageException(
+                sprintf('File with given id [%s] was not found.', $fileId),
+                FileStorageException::FILE_NOT_FOUND
+            );
+        }
+
+        return $file;
     }
 
 }

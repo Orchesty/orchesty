@@ -35,3 +35,4 @@ services:
         class: Hanaboso\PipesFramework\Commons\FileStorage\FileStorage
         arguments:
             - '@hbpf.file_storage.locator'
+            - '@doctrine_mongodb.odm.default_document_manager'
