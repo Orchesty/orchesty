@@ -6,7 +6,8 @@ services:
     volumes:
       - ./:/srv/project
       - ../:/srv/libs
-      #- ${SSH_AUTH_SOCK}:/tmp/bound-ssh-agent
+      - ${SSH_AUTH_SOCK}:/tmp/bound-ssh-agent
+      - ./docker/php-dev/config.json:/home/dev/.composer/config.json
     environment:
       - DEV_UID=${DEV_UID}
       - DEV_GID=${DEV_GID}
@@ -42,4 +43,3 @@ services:
 
 volumes:
   mongo: {}
-  composer_home:
