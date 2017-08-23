@@ -24,4 +24,14 @@ final class FileFormatEnum
     public const XLSX = 'xlsx';
     public const ODS  = 'ods';
 
+    /**
+     * @param string $type
+     *
+     * @return bool
+     */
+    public static function isValid(string $type): bool
+    {
+        return in_array($type, [self::JSON, self::CSV, self::ODS, self::XLS, self::XLSX, self::XML]);
+    }
+
 }

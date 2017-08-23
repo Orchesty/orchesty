@@ -21,4 +21,9 @@ doctrine_mongodb:
                     is_bundle: false
                     dir: "%kernel.root_dir%/../src/Commons/FileStorage/Driver"
                     prefix: Hanaboso\PipesFramework\Commons\FileStorage\Driver
+                FileDocument:
+                    type: annotation
+                    is_bundle: false
+                    dir: "%kernel.root_dir%/../src/Commons/FileStorage/Document"
+                    prefix: Hanaboso\PipesFramework\Commons\FileStorage\Document
             metadata_cache_driver: array

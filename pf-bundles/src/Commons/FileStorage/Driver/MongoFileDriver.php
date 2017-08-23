@@ -10,6 +10,7 @@ namespace Hanaboso\PipesFramework\Commons\FileStorage\Driver;
 
 use Doctrine\MongoDB\GridFSFile;
 use Hanaboso\PipesFramework\Commons\Exception\FileStorageException;
+use Hanaboso\PipesFramework\Commons\FileStorage\Dto\FileInfoDto;
 
 /**
  * Class MongoFileDriver
@@ -23,9 +24,9 @@ class MongoFileDriver extends FileStorageDriverAbstract
      * @param string      $content
      * @param null|string $filename
      *
-     * @return string
+     * @return FileInfoDto
      */
-    public function save(string $content, ?string $filename = NULL): string
+    public function save(string $content, ?string $filename = NULL): FileInfoDto
     {
         $filename = $this->generatePath($filename);
 
@@ -40,7 +41,7 @@ class MongoFileDriver extends FileStorageDriverAbstract
         $this->dm->persist($file);
         $this->dm->flush($file);
 
-        return $file->getId();
+        return new FileInfoDto($file->getId(), (string) ($file->getContent()->getSize()));
     }
 
     /**
@@ -49,7 +50,7 @@ class MongoFileDriver extends FileStorageDriverAbstract
     public function delete(string $fileId): void
     {
         /** @var FileMongo $file */
-        $file = $this->get($fileId);
+        $file = $this->getDocument($fileId);
 
         $this->dm->remove($file);
         $this->dm->flush();
@@ -58,11 +59,25 @@ class MongoFileDriver extends FileStorageDriverAbstract
     /**
      * @param string $fileId
      *
-     * @return mixed
+     * @return string
      * @throws FileStorageException
      */
-    public function get(string $fileId)
+    public function get(string $fileId): string
     {
+        $file = $this->getDocument($fileId);
+
+        return $file->getContent()->getBytes() ?? '';
+    }
+
+    /**
+     * @param string $fileId
+     *
+     * @return FileMongo
+     * @throws FileStorageException
+     */
+    private function getDocument(string $fileId): FileMongo
+    {
+        /** @var FileMongo $file */
         $file = $this->dm->getRepository(FileMongo::class)->find($fileId);
 
         if (!$file) {

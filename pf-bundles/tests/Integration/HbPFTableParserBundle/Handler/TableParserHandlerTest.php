@@ -2,19 +2,21 @@
 
 namespace Tests\Integration\HbPFTableParserBundle\Handler;
 
+use Hanaboso\PipesFramework\Commons\FileStorage\Dto\FileContentDto;
+use Hanaboso\PipesFramework\Commons\FileStorage\FileStorage;
 use Hanaboso\PipesFramework\HbPFTableParserBundle\Handler\TableParserHandler;
 use Hanaboso\PipesFramework\HbPFTableParserBundle\Handler\TableParserHandlerException;
 use Hanaboso\PipesFramework\Parser\Exception\TableParserException;
 use Hanaboso\PipesFramework\Parser\TableParser;
 use Hanaboso\PipesFramework\Parser\TableParserInterface;
-use PHPUnit\Framework\TestCase;
+use Tests\KernelTestCaseAbstract;
 
 /**
  * Class TableParserHandlerTest
  *
  * @package Tests\Integration\HbPFTableParserBundle\Handler
  */
-final class TableParserHandlerTest extends TestCase
+final class TableParserHandlerTest extends KernelTestCaseAbstract
 {
 
     /**
@@ -28,12 +30,18 @@ final class TableParserHandlerTest extends TestCase
     private $path;
 
     /**
+     * @var FileStorage
+     */
+    private $storage;
+
+    /**
      * TableParserHandlerTest constructor.
      */
     public function __construct()
     {
         parent::__construct();
-        $this->handler = new TableParserHandler(new TableParser());
+        $this->storage = $this->container->get('hbpf.file_storage');
+        $this->handler = new TableParserHandler(new TableParser(), $this->storage);
         $this->path    = sprintf('%s/../../Parser/data', __DIR__);
     }
 
@@ -53,6 +61,18 @@ final class TableParserHandlerTest extends TestCase
             'has_headers' => TRUE,
         ]);
         $this->assertEquals(file_get_contents(sprintf('%s/output-10h.json', $this->path)), $result);
+    }
+
+    /**
+     * @covers TableParserHandler::parseToJson()
+     */
+    public function testParseToJsonFromContent(): void
+    {
+        $content = file_get_contents(sprintf('%s/input-10.xlsx', $this->path));
+        $file    = $this->storage->saveFileFromContent(new FileContentDto($content, 'xlsx'));
+
+        $result = $this->handler->parseToJson(['file_id' => $file->getId()]);
+        $this->assertEquals(file_get_contents(sprintf('%s/output-10.json', $this->path)), $result);
     }
 
     /**
@@ -88,6 +108,25 @@ final class TableParserHandlerTest extends TestCase
             'has_headers' => TRUE,
         ]);
         $this->assertEquals(file_get_contents(sprintf('%s/output-10h.json', $this->path)), $result);
+        unlink($resultPath);
+    }
+
+    /**
+     * @covers TableParserHandler::parseFromJson()
+     */
+    public function testParseFromJsonFromContent(): void
+    {
+        $content = file_get_contents(sprintf('%s/output-10.json', $this->path));
+        $file    = $this->storage->saveFileFromContent(new FileContentDto($content, 'json'));
+
+        $resultPath = $this->handler->parseFromJson(TableParserInterface::XLSX, [
+            'file_id' => $file->getId(),
+        ]);
+        $result     = $this->handler->parseToJson([
+            'file_id'     => $resultPath,
+            'has_headers' => FALSE,
+        ]);
+        $this->assertEquals(file_get_contents(sprintf('%s/output-10.json', $this->path)), $result);
         unlink($resultPath);
     }
 
