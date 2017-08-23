@@ -49,7 +49,7 @@ class RabbitMqBundle extends Bundle
 		$commands = [
 			$this->container->get("command.rabbit-mq.setup"),
 			$this->container->get("command.rabbit-mq.consumer"),
-			$this->container->get("command.rabbit-mq.producer"),
+//			$this->container->get("command.rabbit-mq.producer"),
 		];
 
 		foreach ($commands as $command) {

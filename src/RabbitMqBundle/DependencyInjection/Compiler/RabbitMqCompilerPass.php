@@ -8,6 +8,7 @@
 
 namespace RabbitMqBundle\DependencyInjection\Compiler;
 
+use InvalidArgumentException;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
@@ -75,7 +76,7 @@ class RabbitMqCompilerPass implements CompilerPassInterface
 	public function process(ContainerBuilder $container)
 	{
 		if (!$container->hasParameter($this->configKey)) {
-			throw new \InvalidArgumentException("Container doesn't have parameter '{$this->configKey}', RabbitMqBunnyExtension probably haven't processed config.");
+			throw new InvalidArgumentException("Container doesn't have parameter '{$this->configKey}', RabbitMqBunnyExtension probably haven't processed config.");
 		}
 
 		$config = $container->getParameter($this->configKey);
@@ -84,7 +85,7 @@ class RabbitMqCompilerPass implements CompilerPassInterface
 		$producers = [];
 
 		if (!array_key_exists('producers', $config)) {
-			throw new \InvalidArgumentException("Container doesn't have config parameter 'producers', RabbitMqBunnyExtension probably haven't processed config.");
+			throw new InvalidArgumentException("Container doesn't have config parameter 'producers', RabbitMqBunnyExtension probably haven't processed config.");
 		}
 
 		foreach ($config['producers'] as $key => $value) {
@@ -107,7 +108,7 @@ class RabbitMqCompilerPass implements CompilerPassInterface
 		}
 
 		if (!array_key_exists('consumers', $config)) {
-			throw new \InvalidArgumentException("Container doesn't have config parameter 'consumers', RabbitMqBunnyExtension probably haven't processed config.");
+			throw new InvalidArgumentException("Container doesn't have config parameter 'consumers', RabbitMqBunnyExtension probably haven't processed config.");
 		}
 
 		foreach ($config['consumers'] as $key => $value) {
@@ -160,7 +161,6 @@ class RabbitMqCompilerPass implements CompilerPassInterface
 			$this->clientServiceId,
 			$config,
 		]));
-
 		/**
 		 * Bunny channel
 		 */
@@ -180,12 +180,12 @@ class RabbitMqCompilerPass implements CompilerPassInterface
 				$consumers,
 			]));
 
-		$container->setDefinition($this->producerCommandServiceId,
-			new Definition('%rabbit-mq.command.producer%', [
-				new Reference("service_container"),
-				new Reference($this->managerServiceId),
-				$producers,
-			]));
+//		$container->setDefinition($this->producerCommandServiceId,
+//			new Definition('%rabbit-mq.command.producer%', [
+//				new Reference("service_container"),
+//				new Reference($this->managerServiceId),
+//				$producers,
+//			]));
 	}
 
 }

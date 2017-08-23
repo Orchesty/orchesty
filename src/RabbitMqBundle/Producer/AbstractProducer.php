@@ -100,11 +100,11 @@ class AbstractProducer
 			$message = $this->serializer->fromJson($message);
 		}
 
-		if ($this->beforeMethod) {
+		if ($this->getBeforeMethod()) {
 			$this->{$this->beforeMethod}($message, $this->manager->getChannel());
 		}
 
-		switch ($this->contentType) {
+		switch ($this->getContentType()) {
 			case ContentTypes::APPLICATION_JSON:
 				if ($this->serializer instanceof IMessageSerializer) {
 					$message = $this->serializer->toJson($message);
@@ -174,9 +174,10 @@ class AbstractProducer
 	}
 
 	/**
-	 * @return object
+	 * @return NULL|IMessageSerializer
 	 */
-	public function getSerializer(): object
+	//TODO: add return type
+	public function getSerializer()
 	{
 		return $this->serializer;
 	}

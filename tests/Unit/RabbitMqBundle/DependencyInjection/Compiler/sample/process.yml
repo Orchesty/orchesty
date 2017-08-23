@@ -11,22 +11,18 @@ rabbit-mq:
     vhost: '%rabbitmq.vhost%'        # default: /
     user: '%rabbitmq.user%'          # default: guest
     password: '%rabbitmq.password%'  # default: guest
-
-    # make heartbeat as long as longest message processing time in any consumer might take
-    heartbeat: 120 # in seconds = 2 minutes, default: 60 seconds
+    heartbeat: 120
 
     exchanges:
         change:
-            durable: true  # durable means exchange won't be deleted on broker restart
-            type: topic    # topic exchanges route messages by given routing key
-                     # see https://www.rabbitmq.com/tutorials/amqp-concepts.html#exchange-topic
-                     # other possible types: direct, fanout, headers
+            durable: true
+            type: topic
 
         change_done:
             durable: true
             type: topic
             bindings:
-                - exchange: change  # RabbitMQ-specific functionality = exchange-to-exchange bindings
+                - exchange: change
                   routing_key: "#"
 
         test_direct:
@@ -45,8 +41,6 @@ rabbit-mq:
             bindings:
                 - exchange: test_direct
                   routing_key: "*"
-        demo:
-            durable: true
 
     producers:
         demo:
@@ -54,10 +48,15 @@ rabbit-mq:
             exchange: demo
             serializer: Commons\RabbitMq\Demo\DemoSerializer
             routing_key: demo
+            mandatory: false
+            immediate: true
+            before_method: ''
+            content_type: 'application/json'
 
     consumers:
         demo:
             class: Commons\RabbitMq\Demo\DemoConsumer
+            exchange: foo
             routing_key: '*'
             queue: demo
             no_local: false
@@ -74,5 +73,6 @@ rabbit-mq:
             tick_seconds: null
             max_messages: null
             max_seconds: null
+            consumer_tag: 'abc'
 
 
