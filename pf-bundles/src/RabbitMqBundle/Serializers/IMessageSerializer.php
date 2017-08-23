@@ -26,15 +26,15 @@ interface IMessageSerializer
 	/**
 	 * @param string $json
 	 *
-	 * @return object
+	 * @return array
 	 */
-	public static function fromJson(string $json): object;
+	public static function fromJson(string $json): array;
 
 	/**
 	 * @param mixed $object
 	 *
-	 * @return array
+	 * @return string
 	 */
-	public static function toJson($object): array;
+	public static function toJson($object): string;
 
 }

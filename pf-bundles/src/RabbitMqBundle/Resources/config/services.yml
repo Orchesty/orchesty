@@ -4,4 +4,4 @@ parameters:
     rabbit-mq.bunny-client: Bunny\Client
     rabbit-mq.command.setup: RabbitMqBundle\Command\SetupCommand
     rabbit-mq.command.consumer: RabbitMqBundle\Command\ConsumerCommand
-    rabbit-mq.command.producer: RabbitMqBundle\Command\ProducerCommand
+    #rabbit-mq.command.producer: RabbitMqBundle\Command\ProducerCommand

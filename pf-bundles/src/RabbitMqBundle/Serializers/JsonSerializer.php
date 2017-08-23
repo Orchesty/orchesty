@@ -1,16 +1,14 @@
 <?php
 /**
  * Created by PhpStorm.
- * User: sep
- * Date: 22.8.17
- * Time: 13:47
+ * User: Pavel Severyn
+ * Date: 23.8.17
+ * Time: 14:00
  */
 
-namespace Commons\RabbitMq\Demo;
+namespace RabbitMqBundle\Serializers;
 
-use RabbitMqBundle\Serializers\IMessageSerializer;
-
-class DemoSerializer implements IMessageSerializer
+class JsonSerializer implements IMessageSerializer
 {
 
 	/**
