@@ -9,9 +9,10 @@ services:
     app:
         image: dkr.hanaboso.net/pipes/pipes/php-dev:dev
         user: 1000:10000
+        working_dir: ${WORKDIR}
         environment:
-          DEV_UID: 1000
-          DEV_GID: 1000
+          DEV_UID: ${DEV_UID}
+          DEV_GID: ${DEV_GID}
         volumes:
           - ../../:/var/www/pipes
         depends_on:
@@ -22,9 +23,9 @@ services:
         image: dkr.hanaboso.net/pipes/pipes/nodejs-build:dev
         user: 1000:10000
         environment:
-          DEV_UID: 1000
-          DEV_GID: 1000
-          WEBROOT: /var/www/pipes/clients/demo/mapper/web
+          DEV_UID: ${DEV_UID}
+          DEV_GID: ${DEV_GID}
+          WEBROOT: ${WORKDIR}/web
         ports:
           - ${DEV_IP}:80:80
         volumes:
