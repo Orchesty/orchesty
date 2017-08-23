@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<ruleset name="HANABOSO_PIPES">
+    <!-- Slevomat coding standards -->
+    <rule ref="./vendor/pipes/php-check-utils/ruleset.xml"/>
+    <rule ref="SlevomatCodingStandard.Files.TypeNameMatchesFileName">
+        <properties>
+            <property name="rootNamespaces" type="array" value="
+                src=>Hanaboso\PipesFramework,
+                tests=>Tests
+            "/>
+        </properties>
+    </rule>
+
+</ruleset>

@@ -12,6 +12,7 @@ use Hanaboso\PipesFramework\HbPFUserBundle\HbPFUserBundle;
 use JMS\SerializerBundle\JMSSerializerBundle;
 use Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
+use Symfony\Bundle\MonologBundle\MonologBundle;
 use Symfony\Bundle\SecurityBundle\SecurityBundle;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\HttpKernel\Kernel;
@@ -35,6 +36,7 @@ class AppKernel extends Kernel
             new JMSSerializerBundle(),
             new SecurityBundle(),
             new SensioFrameworkExtraBundle(),
+            new MonologBundle(),
 
             new HbPFAuthorizationBundle(),
             new HbPFCommonsBundle(),

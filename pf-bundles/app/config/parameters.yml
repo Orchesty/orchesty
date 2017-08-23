@@ -4,3 +4,5 @@ parameters:
 
     # A secret key that's used to generate certain security-related tokens
     kernel.secret: ThisTokenIsNotSoSecretChangeIt
+
+    logger_handler: syslog
