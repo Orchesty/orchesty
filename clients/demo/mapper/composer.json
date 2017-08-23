@@ -31,13 +31,13 @@
         "symfony/swiftmailer-bundle": "^2.3.10",
         "symfony/symfony": "3.3.*",
         "twig/twig": "^1.0||^2.0",
-        "pipes/php-check-utils": "^1.0",
         "hanaboso/pipes-framework": "^1.0",
         "phpoffice/phpspreadsheet": "@dev"
     },
     "require-dev": {
         "sensio/generator-bundle": "^3.0",
-        "symfony/phpunit-bridge": "^3.0"
+        "symfony/phpunit-bridge": "^3.0",
+        "pipes/php-check-utils": "^1.0"
     },
     "scripts": {
         "symfony-scripts": [
@@ -75,14 +75,14 @@
             "type": "path",
             "url": "../libs/php-check-utils",
             "options": {
-                "symlink": false
+                "symlink": true
             }
         },
         {
             "type": "path",
             "url": "../libs/pf-bundles",
             "options": {
-                "symlink": false
+                "symlink": true
             }
         }
     ]

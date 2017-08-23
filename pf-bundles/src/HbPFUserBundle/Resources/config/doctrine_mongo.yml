@@ -5,5 +5,5 @@ doctrine_mongodb:
                 UserDocument:
                     type: annotation
                     is_bundle: false
-                    dir: "%kernel.root_dir%/../src/User/Document"
+                    dir: "%src_dir%/User/Document"
                     prefix: Hanaboso\PipesFramework\User\Document

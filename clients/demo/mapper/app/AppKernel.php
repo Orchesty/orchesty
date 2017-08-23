@@ -1,25 +1,52 @@
 <?php
 
+use AppBundle\AppBundle;
+use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
+use Doctrine\Bundle\MongoDBBundle\DoctrineMongoDBBundle;
+use FOS\RestBundle\FOSRestBundle;
+use Hanaboso\PipesFramework\HbPFAuthorizationBundle\HbPFAuthorizationBundle;
+use Hanaboso\PipesFramework\HbPFCommonsBundle\HbPFCommonsBundle;
+use Hanaboso\PipesFramework\HbPFConnectorBundle\HbPFConnectorBundle;
+use Hanaboso\PipesFramework\HbPFMailerBundle\HbPFMailerBundle;
+use Hanaboso\PipesFramework\HbPFTableParserBundle\HbPFTableParserBundle;
+use Hanaboso\PipesFramework\HbPFUserBundle\HbPFUserBundle;
+use JMS\SerializerBundle\JMSSerializerBundle;
+use Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle;
+use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
+use Symfony\Bundle\MonologBundle\MonologBundle;
+use Symfony\Bundle\SecurityBundle\SecurityBundle;
+use Symfony\Bundle\SwiftmailerBundle\SwiftmailerBundle;
+use Symfony\Bundle\TwigBundle\TwigBundle;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\Config\Loader\LoaderInterface;
 
 class AppKernel extends Kernel
 {
+
     public function registerBundles()
     {
         $bundles = [
-            new Symfony\Bundle\FrameworkBundle\FrameworkBundle(),
-            new Symfony\Bundle\SecurityBundle\SecurityBundle(),
-            new Symfony\Bundle\TwigBundle\TwigBundle(),
-            new Symfony\Bundle\MonologBundle\MonologBundle(),
-            new Symfony\Bundle\SwiftmailerBundle\SwiftmailerBundle(),
-            new Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
-            new Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle(),
-            new AppBundle\AppBundle(),
-			new \Hanaboso\PipesFramework\HbPFCommonsBundle\HbPFCommonsBundle(),
+            new FrameworkBundle(),
+            new SecurityBundle(),
+            new TwigBundle(),
+            new MonologBundle(),
+            new SwiftmailerBundle(),
+            new DoctrineBundle(),
+            new SensioFrameworkExtraBundle(),
+            new FOSRestBundle(),
+            new JMSSerializerBundle(),
+            new DoctrineMongoDBBundle(),
+
+            new AppBundle(),
+            new HbPFAuthorizationBundle(),
+            new HbPFCommonsBundle(),
+            new HbPFConnectorBundle(),
+            new HbPFUserBundle(),
+            new HbPFMailerBundle(),
+            new HbPFTableParserBundle(),
         ];
 
-        if (in_array($this->getEnvironment(), ['dev', 'test'], true)) {
+        if (in_array($this->getEnvironment(), ['dev', 'test'], TRUE)) {
             $bundles[] = new Symfony\Bundle\DebugBundle\DebugBundle();
             $bundles[] = new Symfony\Bundle\WebProfilerBundle\WebProfilerBundle();
             $bundles[] = new Sensio\Bundle\DistributionBundle\SensioDistributionBundle();
@@ -40,16 +67,17 @@ class AppKernel extends Kernel
 
     public function getCacheDir()
     {
-        return dirname(__DIR__).'/var/cache/'.$this->getEnvironment();
+        return dirname(__DIR__) . '/var/cache/' . $this->getEnvironment();
     }
 
     public function getLogDir()
     {
-        return dirname(__DIR__).'/var/logs';
+        return dirname(__DIR__) . '/var/logs';
     }
 
     public function registerContainerConfiguration(LoaderInterface $loader)
     {
-        $loader->load($this->getRootDir().'/config/config_'.$this->getEnvironment().'.yml');
+        $loader->load($this->getRootDir() . '/config/config_' . $this->getEnvironment() . '.yml');
     }
+
 }
