@@ -16,11 +16,10 @@ ENV TERM=xterm
 
 # Allow these binaries to be executed with root privileges (Don't you dare use this in prod image!)
 RUN chmod u+s /usr/sbin/useradd && \
-    chmod u+s /usr/sbin/groupadd && \
-    chmod u+s /bin/chown
+    chmod u+s /usr/sbin/groupadd
 
 # Enable paswordless sudo for the dev user
-RUN echo "dev ALL=NOPASSWD: ALL" > /etc/sudoers.d/developer
+RUN echo "dev ALL=NOPASSWD: ALL" > /etc/sudoers.d/dev
 
 COPY php-local.ini /usr/local/etc/php/conf.d/zz_local.ini
 
@@ -30,6 +29,6 @@ RUN sed -i "s/^user =.*/user = dev/; s/^group = .*/group = dev/;" /usr/local/etc
 COPY entrypoint.sh /
 ENTRYPOINT [ "/entrypoint.sh" ]
 
-WORKDIR /srv/project
+WORKDIR /var/www/pipes
 
 CMD sudo -E php-fpm
