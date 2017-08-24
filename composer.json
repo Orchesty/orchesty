@@ -26,7 +26,6 @@
     "symfony/framework-bundle": "^3.3",
     "symfony/monolog-bundle": "^3.1",
     "symfony/translation": "^3.3",
-    "swiftmailer/swiftmailer": "^6.0",
     "bunny/bunny": "~0.2.4"
   },
   "require-dev": {

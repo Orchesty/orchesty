@@ -1,6 +1,6 @@
-<?php
+<?php declare(strict_types=1);
 
-namespace RabbitMqBundle;
+namespace Hanaboso\PipesFramework\RabbitMqBundle;
 
 use Bunny\Channel;
 use Bunny\Client;

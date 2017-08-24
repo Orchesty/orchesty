@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: Pavel Severyn
@@ -6,10 +6,10 @@
  * Time: 8:54
  */
 
-namespace RabbitMqBundle;
+namespace Hanaboso\PipesFramework\RabbitMqBundle;
 
-use RabbitMqBundle\DependencyInjection\Compiler\RabbitMqCompilerPass;
-use RabbitMqBundle\DependencyInjection\RabbitMqExtension;
+use Hanaboso\PipesFramework\RabbitMqBundle\DependencyInjection\Compiler\RabbitMqCompilerPass;
+use Hanaboso\PipesFramework\RabbitMqBundle\DependencyInjection\RabbitMqExtension;
 use Symfony\Component\Console\Application;
 use Symfony\Component\DependencyInjection\Compiler\PassConfig;
 use Symfony\Component\DependencyInjection\ContainerBuilder;

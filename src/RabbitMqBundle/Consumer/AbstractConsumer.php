@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: Pavel Severyn
@@ -6,7 +6,7 @@
  * Time: 12:57
  */
 
-namespace RabbitMqBundle\Consumer;
+namespace Hanaboso\PipesFramework\RabbitMqBundle\Consumer;
 
 use Bunny\Channel;
 use Bunny\Client;

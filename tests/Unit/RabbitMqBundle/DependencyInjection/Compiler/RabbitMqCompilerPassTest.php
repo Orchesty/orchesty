@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: Pavel Severyn
@@ -8,7 +8,7 @@
 
 namespace Tests\Unit\RabbitMqBundle\DependencyInjection\Compiler;
 
-use RabbitMqBundle\DependencyInjection\Compiler\RabbitMqCompilerPass;
+use Hanaboso\PipesFramework\RabbitMqBundle\DependencyInjection\Compiler\RabbitMqCompilerPass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 use Symfony\Component\Yaml\Yaml;

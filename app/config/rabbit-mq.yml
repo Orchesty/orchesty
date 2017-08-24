@@ -17,62 +17,27 @@ rabbit-mq:
 
     exchanges:
         change:
-            durable: true  # durable means exchange won't be deleted on broker restart
-            type: topic    # topic exchanges route messages by given routing key
-                     # see https://www.rabbitmq.com/tutorials/amqp-concepts.html#exchange-topic
-                     # other possible types: direct, fanout, headers
-
-        change_done:
-            durable: true
-            type: topic
-            bindings:
-                - exchange: change  # RabbitMQ-specific functionality = exchange-to-exchange bindings
-                  routing_key: "#"
-
-        test_direct:
-            durable: true
-            type: direct
-
+            durable: true   # durable means exchange won't be deleted on broker restart
+            type: topic     # topic exchanges route messages by given routing key
+                            # see https://www.rabbitmq.com/tutorials/amqp-concepts.html#exchange-topic
+                            # other possible types: direct, fanout, headers
     queues:
-        product_categorize:
-            durable: true
-            bindings:
-                - exchange: change
-                  routing_key: "change.product.#"
-
-        test_consumer:
-            durable: true
-            bindings:
-                - exchange: test_direct
-                  routing_key: "*"
         demo:
             durable: true
+            bindings:
+                - exchange: demo
+                  routing_key: demo_key
 
     producers:
         demo:
-            class: Commons\RabbitMq\Demo\DemoProducer
+            class: Hanaboso\PipesFramework\Commons\RabbitMq\Demo\DemoProducer
             exchange: demo
-            serializer: Commons\RabbitMq\Demo\DemoSerializer
-            routing_key: demo
+            serializer: Hanaboso\PipesFramework\RabbitMqBundle\Serializers\JsonSerializer
+            routing_key: demo_key
 
     consumers:
         demo:
-            class: Commons\RabbitMq\Demo\DemoConsumer
-            routing_key: '*'
+            class: Hanaboso\PipesFramework\Commons\RabbitMq\Demo\DemoConsumer
+            routing_key: demo_key
             queue: demo
-            no_local: false
-            no_ack: false
-            exclusive: false
-            nowait: false
-            arguments:
-                 arg: 1
-            prefetch_count: null
-            prefetch_size: null
-            serializer: Commons\RabbitMq\Demo\DemoSerializer
-            set_up_method: null
-            tick_method: null
-            tick_seconds: null
-            max_messages: null
-            max_seconds: null
-
-
+            serializer: Hanaboso\PipesFramework\RabbitMqBundle\Serializers\JsonSerializer

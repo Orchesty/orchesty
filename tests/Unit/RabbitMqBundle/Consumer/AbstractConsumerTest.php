@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: Pavel Severyn
@@ -8,8 +8,8 @@
 
 namespace Tests\Unit\RabbitMqBundle\Consumer;
 
-use RabbitMqBundle\Consumer\AbstractConsumer;
-use RabbitMqBundle\Serializers\JsonSerializer;
+use Hanaboso\PipesFramework\RabbitMqBundle\Consumer\AbstractConsumer;
+use Hanaboso\PipesFramework\RabbitMqBundle\Serializers\JsonSerializer;
 use Tests\KernelTestCaseAbstract;
 
 /**

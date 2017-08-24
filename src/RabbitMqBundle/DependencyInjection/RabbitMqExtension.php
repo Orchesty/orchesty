@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: sep
@@ -6,7 +6,7 @@
  * Time: 8:57
  */
 
-namespace RabbitMqBundle\DependencyInjection;
+namespace Hanaboso\PipesFramework\RabbitMqBundle\DependencyInjection;
 
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
