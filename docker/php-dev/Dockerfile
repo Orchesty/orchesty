@@ -29,6 +29,6 @@ RUN sed -i "s/^user =.*/user = dev/; s/^group = .*/group = dev/;" /usr/local/etc
 COPY entrypoint.sh /
 ENTRYPOINT [ "/entrypoint.sh" ]
 
-WORKDIR /var/www/pipes
+WORKDIR /var/www/pipes/pf-bundle
 
 CMD sudo -E php-fpm
