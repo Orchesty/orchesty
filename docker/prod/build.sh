@@ -27,6 +27,7 @@ docker run --rm \
   -v $(pwd):/app \
   -e DEV_UID=$(id -u) \
   -e DEV_GID=$(id -g) \
+  -u $(id -u):$(id -g) \
   -v $SSH_AUTH_SOCK:/ssh-agent \
   ${BUILD_IMAGE} \
   bash -c "ssh-add -l && npm install && npm run build"
