@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: Pavel Severyn
@@ -6,12 +6,12 @@
  * Time: 12:42
  */
 
-namespace RabbitMqBundle\Producer;
+namespace Hanaboso\PipesFramework\RabbitMqBundle\Producer;
 
 use Bunny\Exception\BunnyException;
-use RabbitMqBundle\BunnyManager;
-use RabbitMqBundle\ContentTypes;
-use RabbitMqBundle\Serializers\IMessageSerializer;
+use Hanaboso\PipesFramework\RabbitMqBundle\BunnyManager;
+use Hanaboso\PipesFramework\RabbitMqBundle\ContentTypes;
+use Hanaboso\PipesFramework\RabbitMqBundle\Serializers\IMessageSerializer;
 
 class AbstractProducer
 {
@@ -176,8 +176,7 @@ class AbstractProducer
 	/**
 	 * @return NULL|IMessageSerializer
 	 */
-	//TODO: add return type
-	public function getSerializer()
+	public function getSerializer():? IMessageSerializer
 	{
 		return $this->serializer;
 	}

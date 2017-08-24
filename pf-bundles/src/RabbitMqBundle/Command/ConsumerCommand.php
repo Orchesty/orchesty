@@ -1,6 +1,6 @@
-<?php
+<?php  declare(strict_types=1);
 
-namespace RabbitMqBundle\Command;
+namespace Hanaboso\PipesFramework\RabbitMqBundle\Command;
 
 use Bunny\Channel;
 use Bunny\Client;
@@ -8,9 +8,9 @@ use Bunny\Message;
 use Bunny\Protocol\MethodBasicQosOkFrame;
 use Bunny\Protocol\MethodQueueBindOkFrame;
 use Bunny\Protocol\MethodQueueDeclareOkFrame;
-use RabbitMqBundle\BunnyManager;
-use RabbitMqBundle\Consumer\AbstractConsumer;
-use RabbitMqBundle\Serializers\IMessageSerializer;
+use Hanaboso\PipesFramework\RabbitMqBundle\BunnyManager;
+use Hanaboso\PipesFramework\RabbitMqBundle\Consumer\AbstractConsumer;
+use Hanaboso\PipesFramework\RabbitMqBundle\Serializers\IMessageSerializer;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -182,7 +182,7 @@ class ConsumerCommand extends Command
 		$serializer = NULL,
 		Message $message,
 		Channel $channel,
-		Client $client
+        Client $client
 	)
 	{
 		$data = $message->content;

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: Pavel Severyn
@@ -6,7 +6,7 @@
  * Time: 14:00
  */
 
-namespace RabbitMqBundle\Serializers;
+namespace Hanaboso\PipesFramework\RabbitMqBundle\Serializers;
 
 class JsonSerializer implements IMessageSerializer
 {
@@ -28,7 +28,7 @@ class JsonSerializer implements IMessageSerializer
 	 */
 	public static function fromJson(string $json): array
 	{
-		return json_decode($json, 1);
+		return json_decode($json, TRUE);
 	}
 
 	/**

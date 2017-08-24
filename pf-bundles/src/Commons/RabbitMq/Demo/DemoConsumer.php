@@ -1,17 +1,17 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
- * User: sep
+ * User: Pavel Severyn
  * Date: 22.8.17
  * Time: 13:46
  */
 
-namespace Commons\RabbitMq\Demo;
+namespace Hanaboso\PipesFramework\Commons\RabbitMq\Demo;
 
 use Bunny\Channel;
 use Bunny\Client;
 use Bunny\Message;
-use RabbitMqBundle\Consumer\AbstractConsumer;
+use Hanaboso\PipesFramework\RabbitMqBundle\Consumer\AbstractConsumer;
 
 class DemoConsumer extends AbstractConsumer
 {
@@ -26,7 +26,7 @@ class DemoConsumer extends AbstractConsumer
 	 */
 	public function handle($data, Message $message, Channel $channel, Client $client)
 	{
-		// TODO: Implement handle() method.
+        $channel->ack($message);
 	}
 
 }

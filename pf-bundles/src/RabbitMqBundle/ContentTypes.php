@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: Pavel Severyn
@@ -6,7 +6,7 @@
  * Time: 12:45
  */
 
-namespace RabbitMqBundle;
+namespace Hanaboso\PipesFramework\RabbitMqBundle;
 
 final class ContentTypes
 {

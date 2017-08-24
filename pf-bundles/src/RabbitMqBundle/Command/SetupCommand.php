@@ -1,8 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 
-namespace RabbitMqBundle\Command;
+namespace Hanaboso\PipesFramework\RabbitMqBundle\Command;
 
-use RabbitMqBundle\BunnyManager;
+use Hanaboso\PipesFramework\RabbitMqBundle\BunnyManager;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;

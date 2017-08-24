@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: Pavel Severyn
@@ -6,7 +6,7 @@
  * Time: 9:04
  */
 
-namespace RabbitMqBundle\DependencyInjection\Compiler;
+namespace Hanaboso\PipesFramework\RabbitMqBundle\DependencyInjection\Compiler;
 
 use InvalidArgumentException;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
