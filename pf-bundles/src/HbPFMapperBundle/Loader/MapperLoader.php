@@ -3,6 +3,7 @@
 namespace Hanaboso\PipesFramework\HbPFMapperBundle\Loader;
 
 use Hanaboso\PipesFramework\HbPFMapperBundle\Exception\MapperException;
+use Hanaboso\PipesFramework\Mapper\MapperInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -33,14 +34,17 @@ class MapperLoader
     /**
      * @param string $id
      *
-     * @return object
+     * @return MapperInterface
      * @throws MapperException
      */
-    public function loadMapper(string $id)
+    public function loadMapper(string $id): MapperInterface
     {
         $name = sprintf('%s%s', MapperLoader::PREFIX, $id);
         if ($this->container->has($name)) {
-            return $this->container->get($name);
+            $mapper = $this->container->get($name);
+            if ($mapper instanceof MapperInterface) {
+                return $mapper;
+            }
         }
 
         throw new MapperException(
