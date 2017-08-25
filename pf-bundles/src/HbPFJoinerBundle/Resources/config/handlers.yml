@@ -1,1 +1,5 @@
 services:
+    hbpf.handler.joiner:
+        class: Hanaboso\PipesFramework\HbPFJoinerBundle\Handler\JoinerHandler
+        arguments:
+            - '@hbpf.loader.joiner'
