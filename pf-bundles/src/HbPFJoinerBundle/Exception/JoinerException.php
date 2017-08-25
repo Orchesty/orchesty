@@ -15,11 +15,12 @@ use Hanaboso\PipesFramework\Commons\Exception\PipesFrameworkException;
  *
  * @package Hanaboso\PipesFramework\HbPFJoinerBundle\Exception
  */
-class JoinerException extends PipesFrameworkException
+final class JoinerException extends PipesFrameworkException
 {
 
     protected const OFFSET = 1600;
 
     public const JOINER_SERVICE_NOT_FOUND = self::OFFSET + 1;
+    public const MISSING_DATA_IN_REQUEST  = self::OFFSET + 2;
 
 }
