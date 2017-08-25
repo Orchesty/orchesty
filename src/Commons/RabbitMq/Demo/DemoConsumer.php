@@ -13,20 +13,25 @@ use Bunny\Client;
 use Bunny\Message;
 use Hanaboso\PipesFramework\RabbitMqBundle\Consumer\AbstractConsumer;
 
+/**
+ * Class DemoConsumer
+ *
+ * @package Hanaboso\PipesFramework\Commons\RabbitMq\Demo
+ */
 class DemoConsumer extends AbstractConsumer
 {
 
-	/**
-	 * @param mixed   $data
-	 * @param Message $message
-	 * @param Channel $channel
-	 * @param Client  $client
-	 *
-	 * @return mixed
-	 */
-	public function handle($data, Message $message, Channel $channel, Client $client)
-	{
+    /**
+     * @param mixed   $data
+     * @param Message $message
+     * @param Channel $channel
+     * @param Client  $client
+     *
+     * @return mixed
+     */
+    public function handle($data, Message $message, Channel $channel, Client $client): void
+    {
         $channel->ack($message);
-	}
+    }
 
 }

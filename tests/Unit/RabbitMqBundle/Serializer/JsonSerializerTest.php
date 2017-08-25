@@ -10,14 +10,14 @@ namespace Tests\Unit\RabbitMqBundle\Serializer;
 
 use Hanaboso\PipesFramework\RabbitMqBundle\Serializers\IMessageSerializer;
 use Hanaboso\PipesFramework\RabbitMqBundle\Serializers\JsonSerializer;
-use Tests\KernelTestCaseAbstract;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Class JsonSerializerTest
  *
  * @package Tests\Unit\RabbitMqBundle\Serializer
  */
-class JsonSerializerTest extends KernelTestCaseAbstract
+class JsonSerializerTest extends TestCase
 {
 
     /**
@@ -26,58 +26,53 @@ class JsonSerializerTest extends KernelTestCaseAbstract
     protected $serializer;
 
     /**
-     *
+     * @return void
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
         $this->serializer = new JsonSerializer();
     }
 
     /**
-     *
+     * @return void
      */
-    public function testGetInstance()
+    public function testGetInstance(): void
     {
         $this->assertInstanceOf(JsonSerializer::class, $this->serializer->getInstance());
     }
 
     /**
+     * @dataProvider toJsonProvider
      *
+     * @param array  $src
+     * @param string $result
+     *
+     * @return void
      */
-    public function testToJson()
+    public function testToJson(array $src, string $result): void
     {
-        $dataProvider = $this->toJsonProvider();
-        while (list($src, $result) = current($dataProvider)) {
-
-            $serialized = $this->serializer->toJson($src);
-
-            $this->assertEquals($result, $serialized);
-
-            next($dataProvider);
-        }
+        $serialized = $this->serializer->toJson($src);
+        $this->assertEquals($result, $serialized);
     }
 
     /**
+     * @dataProvider fromJsonProvider
      *
+     * @param string $src
+     * @param array  $result
+     * @return void
      */
-    public function testFromJson()
+    public function testFromJson(string $src, array $result): void
     {
-        $dataProvider = $this->fromJsonProvider();
-        while (list($src, $result) = current($dataProvider)) {
-
-            $serialized = $this->serializer->fromJson($src);
-
-            $this->assertEquals($result, $serialized);
-
-            next($dataProvider);
-        }
+        $serialized = $this->serializer->fromJson($src);
+        $this->assertEquals($result, $serialized);
     }
 
     /**
      * @return array
      */
-    public function toJsonProvider()
+    public function toJsonProvider(): array
     {
         return [
             [[1, 2, 3], '[1,2,3]'],
@@ -88,7 +83,7 @@ class JsonSerializerTest extends KernelTestCaseAbstract
     /**
      * @return array
      */
-    public function fromJsonProvider()
+    public function fromJsonProvider(): array
     {
         return [
             ['[1,2,3]', [1, 2, 3]],

@@ -10,6 +10,11 @@ namespace Hanaboso\PipesFramework\Commons\RabbitMq\Demo;
 
 use Hanaboso\PipesFramework\RabbitMqBundle\Producer\AbstractProducer;
 
+/**
+ * Class DemoProducer
+ *
+ * @package Hanaboso\PipesFramework\Commons\RabbitMq\Demo
+ */
 class DemoProducer extends AbstractProducer
 {
 

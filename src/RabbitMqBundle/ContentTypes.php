@@ -8,12 +8,17 @@
 
 namespace Hanaboso\PipesFramework\RabbitMqBundle;
 
+/**
+ * Class ContentTypes
+ *
+ * @package Hanaboso\PipesFramework\RabbitMqBundle
+ */
 final class ContentTypes
 {
 
-	/**
-	 * JSON serialization
-	 */
-	const APPLICATION_JSON = "application/json";
+    /**
+     * JSON serialization
+     */
+    public const APPLICATION_JSON = 'application/json';
 
 }

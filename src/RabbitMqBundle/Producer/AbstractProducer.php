@@ -13,196 +13,244 @@ use Hanaboso\PipesFramework\RabbitMqBundle\BunnyManager;
 use Hanaboso\PipesFramework\RabbitMqBundle\ContentTypes;
 use Hanaboso\PipesFramework\RabbitMqBundle\Serializers\IMessageSerializer;
 
+/**
+ * Class AbstractProducer
+ *
+ * @package Hanaboso\PipesFramework\RabbitMqBundle\Producer
+ */
 class AbstractProducer
 {
 
-	/** @var string */
-	private $exchange;
+    /**
+     * @var string
+     */
+    private $exchange;
 
-	/** @var string */
-	private $routingKey;
+    /**
+     * @var string
+     */
+    private $routingKey;
 
-	/** @var boolean */
-	private $mandatory;
+    /**
+     * @var boolean
+     */
+    private $mandatory;
 
-	/** @var boolean */
-	private $immediate;
+    /**
+     * @var boolean
+     */
+    private $immediate;
 
-	/** @var string */
-	private $serializerClassName;
+    /**
+     * @var string
+     */
+    private $serializerClassName;
 
-	/** @var object */
-	private $serializer;
+    /**
+     * @var IMessageSerializer|null
+     */
+    private $serializer = NULL;
 
-	/** @var string */
-	private $beforeMethod;
+    /**
+     * @var string
+     */
+    private $beforeMethod;
 
-	/** @var string */
-	private $contentType;
+    /**
+     * @var string
+     */
+    private $contentType;
 
-	/** @var BunnyManager */
-	protected $manager;
+    /**
+     * @var BunnyManager
+     */
+    protected $manager;
 
-	public function __construct(
-		$exchange,
-		$routingKey,
-		$mandatory,
-		$immediate,
-		$serializerClassName,
-		$beforeMethod,
-		$contentType,
-		BunnyManager $manager
-	)
-	{
-		$this->exchange            = $exchange;
-		$this->routingKey          = $routingKey;
-		$this->mandatory           = $mandatory;
-		$this->immediate           = $immediate;
-		$this->serializerClassName = $serializerClassName;
-		$this->beforeMethod        = $beforeMethod;
-		$this->contentType         = $contentType;
-		$this->manager             = $manager;
-	}
+    /**
+     * AbstractProducer constructor.
+     *
+     * @param string       $exchange
+     * @param string       $routingKey
+     * @param bool         $mandatory
+     * @param bool         $immediate
+     * @param string       $serializerClassName
+     * @param string       $beforeMethod
+     * @param string       $contentType
+     * @param BunnyManager $manager
+     */
+    public function __construct(
+        string $exchange,
+        string $routingKey,
+        bool $mandatory,
+        bool $immediate,
+        string $serializerClassName,
+        string $beforeMethod,
+        string $contentType,
+        BunnyManager $manager
+    )
+    {
+        $this->exchange            = $exchange;
+        $this->routingKey          = $routingKey;
+        $this->mandatory           = $mandatory;
+        $this->immediate           = $immediate;
+        $this->serializerClassName = $serializerClassName;
+        $this->beforeMethod        = $beforeMethod;
+        $this->contentType         = $contentType;
+        $this->manager             = $manager;
+    }
 
-	public function createMeta()
-	{
-		if ($this->serializerClassName) {
-			/** @var MetaInterface $metaClassName */
-			$metaClassName = $this->serializerClassName;
+    /**
+     * @return IMessageSerializer|null
+     */
+    public function createMeta(): ?IMessageSerializer
+    {
+        if ($this->serializerClassName) {
+            /** @var IMessageSerializer $metaClassName */
+            $metaClassName = $this->serializerClassName;
 
-			return $metaClassName::getInstance();
-		} else {
-			return NULL;
-		}
-	}
+            return $metaClassName::getInstance();
+        } else {
 
-	public function getMeta()
-	{
-		if ($this->serializer === NULL) {
-			$this->serializer = $this->createMeta();
-		}
+            return NULL;
+        }
+    }
 
-		return $this->serializer;
-	}
+    /**
+     * @return IMessageSerializer|null
+     */
+    public function getMeta(): ?IMessageSerializer
+    {
+        if ($this->serializer === NULL) {
+            $this->serializer = $this->createMeta();
+        }
 
-	/**
-	 * @param       $message
-	 * @param null  $routingKey
-	 * @param array $headers
-	 */
-	public function publish($message, $routingKey = NULL, array $headers = [])
-	{
-		if (!$this->getMeta()) {
-			throw new BunnyException("Could not create meta class {$this->serializerClassName}.");
-		}
+        return $this->serializer;
+    }
 
-		if (is_string($message)) {
-			$message = $this->serializer->fromJson($message);
-		}
+    /**
+     * @param mixed $message
+     * @param null  $routingKey
+     * @param array $headers
+     *
+     * @return void
+     */
+    public function publish($message, $routingKey = NULL, array $headers = []): void
+    {
+        if (!$this->getMeta()) {
+            throw new BunnyException(
+                sprintf('Could not create meta class %s.', $this->serializerClassName)
+            );
+        }
 
-		if ($this->getBeforeMethod()) {
-			$this->{$this->beforeMethod}($message, $this->manager->getChannel());
-		}
+        if (is_string($message) && $this->serializer) {
+            $message = $this->serializer->fromJson($message);
+        }
 
-		switch ($this->getContentType()) {
-			case ContentTypes::APPLICATION_JSON:
-				if ($this->serializer instanceof IMessageSerializer) {
-					$message = $this->serializer->toJson($message);
-				} else {
-					throw new BunnyException("Cannot serialize message to JSON.");
-				}
-				break;
+        if ($this->getBeforeMethod()) {
+            $this->{$this->beforeMethod}($message, $this->manager->getChannel());
+        }
 
-			default:
-				throw new BunnyException("Unhandled content type '{$this->contentType}'.");
-		}
+        switch ($this->getContentType()) {
+            case ContentTypes::APPLICATION_JSON:
+                if ($this->serializer instanceof IMessageSerializer) {
+                    $message = $this->serializer->toJson($message);
+                } else {
+                    throw new BunnyException('Cannot serialize message to JSON.');
+                }
+                break;
 
-		if ($routingKey === NULL) {
-			$routingKey = $this->routingKey;
-		}
+            default:
+                throw new BunnyException(
+                    sprintf('Unhandled content type \'%s\'.', $this->contentType)
+                );
+        }
 
-		$headers["content-type"] = $this->contentType;
+        if ($routingKey === NULL) {
+            $routingKey = $this->routingKey;
+        }
 
-		$this->manager->getChannel()->publish(
-			$message,
-			$headers,
-			$this->exchange,
-			$routingKey,
-			$this->mandatory,
-			$this->immediate
-		);
-	}
+        $headers['content-type'] = $this->contentType;
 
-	/**
-	 * @return string
-	 */
-	public function getExchange(): string
-	{
-		return $this->exchange;
-	}
+        $this->manager->getChannel()->publish(
+            $message,
+            $headers,
+            $this->exchange,
+            $routingKey,
+            $this->mandatory,
+            $this->immediate
+        );
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getRoutingKey(): string
-	{
-		return $this->routingKey;
-	}
+    /**
+     * @return string
+     */
+    public function getExchange(): string
+    {
+        return $this->exchange;
+    }
 
-	/**
-	 * @return bool
-	 */
-	public function isMandatory(): bool
-	{
-		return $this->mandatory;
-	}
+    /**
+     * @return string
+     */
+    public function getRoutingKey(): string
+    {
+        return $this->routingKey;
+    }
 
-	/**
-	 * @return bool
-	 */
-	public function isImmediate(): bool
-	{
-		return $this->immediate;
-	}
+    /**
+     * @return bool
+     */
+    public function isMandatory(): bool
+    {
+        return $this->mandatory;
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getSerializerClassName(): string
-	{
-		return $this->serializerClassName;
-	}
+    /**
+     * @return bool
+     */
+    public function isImmediate(): bool
+    {
+        return $this->immediate;
+    }
 
-	/**
-	 * @return NULL|IMessageSerializer
-	 */
-	public function getSerializer():? IMessageSerializer
-	{
-		return $this->serializer;
-	}
+    /**
+     * @return string
+     */
+    public function getSerializerClassName(): string
+    {
+        return $this->serializerClassName;
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getBeforeMethod(): string
-	{
-		return $this->beforeMethod;
-	}
+    /**
+     * @return IMessageSerializer|null
+     */
+    public function getSerializer(): ?IMessageSerializer
+    {
+        return $this->serializer;
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getContentType(): string
-	{
-		return $this->contentType;
-	}
+    /**
+     * @return string
+     */
+    public function getBeforeMethod(): string
+    {
+        return $this->beforeMethod;
+    }
 
-	/**
-	 * @return BunnyManager
-	 */
-	public function getManager(): BunnyManager
-	{
-		return $this->manager;
-	}
+    /**
+     * @return string
+     */
+    public function getContentType(): string
+    {
+        return $this->contentType;
+    }
+
+    /**
+     * @return BunnyManager
+     */
+    public function getManager(): BunnyManager
+    {
+        return $this->manager;
+    }
 
 }
