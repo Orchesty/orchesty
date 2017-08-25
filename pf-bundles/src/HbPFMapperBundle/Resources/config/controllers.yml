@@ -1,0 +1,5 @@
+services:
+    hbpf.mapper.controller.mapper:
+        class: Hanaboso\PipesFramework\HbPFMapperBundle\Controller\MapperController
+        arguments:
+            - '@hbpf.mapper.handler.mapper'
