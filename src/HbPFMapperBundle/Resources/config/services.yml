@@ -1,4 +1,9 @@
 services:
+    hbpf.mapper.loader.mapper:
+        class: Hanaboso\PipesFramework\HbPFMapperBundle\Loader\MapperLoader
+        arguments:
+
     hbpf.mapper.handler.mapper:
         class: Hanaboso\PipesFramework\HbPFMapperBundle\Handler\MapperHandler
         arguments:
+            - '@hbpf.mapper.loader.mapper'
