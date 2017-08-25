@@ -32,17 +32,17 @@ class RabbitMqBundleTest extends KernelTestCaseAbstract
     protected $bundle;
 
     /**
-     *
+     * @return void
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->bundle = new RabbitMqBundle();
     }
 
     /**
-     *
+     * @return void
      */
-    public function testGetContainerExtension()
+    public function testGetContainerExtension(): void
     {
         $this->assertInstanceOf(
             RabbitMqExtension::class,
@@ -51,9 +51,9 @@ class RabbitMqBundleTest extends KernelTestCaseAbstract
     }
 
     /**
-     *
+     * @return void
      */
-    public function testBuild()
+    public function testBuild(): void
     {
         $containerBuilder = new ContainerBuilder();
         $this->bundle->build($containerBuilder);
@@ -74,11 +74,13 @@ class RabbitMqBundleTest extends KernelTestCaseAbstract
     }
 
     /**
-     *
+     * @return void
      */
-    public function testRegisterCommands()
+    public function testRegisterCommands(): void
     {
+        /** @var Application $application */
         $application = $this->getMockBuilder(Application::class)->getMock();
+
         $container   = $this->getMockBuilder(ContainerInterface::class)->getMock();
         $container->method("get")->willReturnCallback(function ($id) {
             if (in_array($id, [
@@ -89,10 +91,11 @@ class RabbitMqBundleTest extends KernelTestCaseAbstract
                 return new Command($id);
             }
 
-            throw new InvalidArgumentException("Service '{$id}' does not exist.");
+            throw new InvalidArgumentException(
+                sprintf('Service \'%s\' does not exist.', $id)
+            );
         });
 
-        /** @var Application $application */
         /** @var ContainerInterface $container */
         $this->bundle->setContainer($container);
         $this->bundle->registerCommands($application);

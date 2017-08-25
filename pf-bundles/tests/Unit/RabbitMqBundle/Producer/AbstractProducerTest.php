@@ -14,6 +14,7 @@ use Hanaboso\PipesFramework\RabbitMqBundle\BunnyManager;
 use Hanaboso\PipesFramework\RabbitMqBundle\ContentTypes;
 use Hanaboso\PipesFramework\RabbitMqBundle\Producer\AbstractProducer;
 use Hanaboso\PipesFramework\RabbitMqBundle\Serializers\JsonSerializer;
+use PHPUnit_Framework_MockObject_MockObject;
 use Tests\KernelTestCaseAbstract;
 
 /**
@@ -30,17 +31,17 @@ class AbstractProducerTest extends KernelTestCaseAbstract
     protected $producer;
 
     /**
-     *
+     * @return void
      */
-    protected function setUp()
+    protected function setUp(): void
     {
-        $this->producer = $this->getPublisher();
+        $this->producer = $this->getPublisher($this->getDefaultBunnyManager());
     }
 
     /**
-     *
+     * @return void
      */
-    public function testParamFromConstructor()
+    public function testParamFromConstructor(): void
     {
         $this->assertEquals('foo', $this->producer->getExchange());
         $this->assertEquals('*.*', $this->producer->getRoutingKey());
@@ -53,9 +54,9 @@ class AbstractProducerTest extends KernelTestCaseAbstract
     }
 
     /**
-     *
+     * @return void
      */
-    public function testGetMeta()
+    public function testGetMeta(): void
     {
         $this->assertNull($this->producer->getSerializer());
         $serializer = $this->producer->getMeta();
@@ -63,18 +64,18 @@ class AbstractProducerTest extends KernelTestCaseAbstract
     }
 
     /**
-     *
+     * @return void
      */
-    public function testCreateMeta()
+    public function testCreateMeta(): void
     {
-        $publisher = $this->getPublisher('');
+        $publisher = $this->getPublisher($this->getDefaultBunnyManager(), '');
         $this->assertNull($publisher->createMeta());
     }
 
     /**
-     *
+     * @return void
      */
-    public function testPublish()
+    public function testPublish(): void
     {
         $bunnyManager = $this->getMockBuilder(BunnyManager::class)
             ->disableOriginalConstructor()
@@ -87,34 +88,34 @@ class AbstractProducerTest extends KernelTestCaseAbstract
 
         $bunnyManager->method('getChannel')->willReturn($channel);
 
-        $publisher = $this->getPublisher(JsonSerializer::class, '', $bunnyManager);
+        $publisher = $this->getPublisher($bunnyManager, JsonSerializer::class, '');
 
         $publisher->publish('[1,3,2]');
     }
 
-    public function testPublishNoSerializer()
+    /**
+     * @return void
+     */
+    public function testPublishNoSerializer(): void
     {
         $this->expectException(BunnyException::class);
-        $publisher = $this->getPublisher('', '');
+        $publisher = $this->getPublisher($this->getDefaultBunnyManager(), '', '');
         $publisher->publish('[1,2,3]');
     }
 
     /**
-     * @param string $serializerClassName
-     * @param string $beforeExecute
-     * @param null   $bunnyManager
+     * @param PHPUnit_Framework_MockObject_MockObject $bunnyManager
+     * @param string                                  $serializerClassName
+     * @param string                                  $beforeExecute
      *
      * @return \PHPUnit_Framework_MockObject_MockObject|AbstractProducer
      */
     protected function getPublisher(
+        PHPUnit_Framework_MockObject_MockObject $bunnyManager,
         $serializerClassName = JsonSerializer::class,
-        $beforeExecute = 'beforeExecute',
-        $bunnyManager = NULL
-    )
+        $beforeExecute = 'beforeExecute'
+    ): AbstractProducer
     {
-        if (!$bunnyManager) {
-            $bunnyManager = $this->getMockBuilder(BunnyManager::class)->disableOriginalConstructor()->getMock();
-        }
 
         return $this->getMockForAbstractClass(AbstractProducer::class, [
             'foo',
@@ -127,4 +128,13 @@ class AbstractProducerTest extends KernelTestCaseAbstract
             $bunnyManager,
         ]);
     }
+
+    /**
+     * @return PHPUnit_Framework_MockObject_MockObject
+     */
+    protected function getDefaultBunnyManager(): PHPUnit_Framework_MockObject_MockObject
+    {
+        return $this->getMockBuilder(BunnyManager::class)->disableOriginalConstructor()->getMock();
+    }
+
 }

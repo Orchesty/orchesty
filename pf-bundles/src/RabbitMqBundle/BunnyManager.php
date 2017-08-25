@@ -9,166 +9,211 @@ use Bunny\Protocol\MethodExchangeBindOkFrame;
 use Bunny\Protocol\MethodExchangeDeclareOkFrame;
 use Bunny\Protocol\MethodQueueBindOkFrame;
 use Bunny\Protocol\MethodQueueDeclareOkFrame;
+use Exception;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
+/**
+ * Class BunnyManager
+ *
+ * @package Hanaboso\PipesFramework\RabbitMqBundle
+ */
 class BunnyManager
 {
 
-	/**
-	 * @var string
-	 */
-	private $clientServiceId;
+    /**
+     * @var string
+     */
+    private $clientServiceId;
 
-	/** @var ContainerInterface */
-	private $container;
+    /**
+     * @var ContainerInterface
+     */
+    private $container;
 
-	/** @var Client */
-	private $client;
+    /**
+     * @var Client
+     */
+    private $client;
 
-	/** @var Channel */
-	private $channel;
+    /**
+     * @var Channel|\React\Promise\PromiseInterface|null
+     */
+    private $channel = NULL;
 
-	/** @var  Channel */
-	private $transactionalChannel;
+    /**
+     * @var Channel|\React\Promise\PromiseInterface
+     */
+    private $transactionalChannel;
 
-	/** @var array */
-	private $config;
+    /**
+     * @var array
+     */
+    private $config;
 
-	/** @var boolean */
-	private $setUpComplete = FALSE;
+    /**
+     * @var boolean
+     */
+    private $setUpComplete = FALSE;
 
-	public function __construct(ContainerInterface $container, $clientServiceId, array $config)
-	{
-		$this->container       = $container;
-		$this->clientServiceId = $clientServiceId;
-		$this->config          = $config;
-	}
+    /**
+     * BunnyManager constructor.
+     *
+     * @param ContainerInterface $container
+     * @param string             $clientServiceId
+     * @param array              $config
+     */
+    public function __construct(ContainerInterface $container, string $clientServiceId, array $config)
+    {
+        $this->container       = $container;
+        $this->clientServiceId = $clientServiceId;
+        $this->config          = $config;
+    }
 
-	public function getClient()
-	{
-		if ($this->client === NULL) {
-			$this->client = $this->container->get($this->clientServiceId);
-		}
+    /**
+     * @return Client|object
+     */
+    public function getClient()
+    {
+        if ($this->client === NULL) {
+            $this->client = $this->container->get($this->clientServiceId);
+        }
 
-		return $this->client;
-	}
+        return $this->client;
+    }
 
-	public function createChannel()
-	{
-		if (!$this->getClient()->isConnected()) {
-			$this->getClient()->connect();
-		}
+    /**
+     * @return Channel|\React\Promise\PromiseInterface
+     */
+    public function createChannel()
+    {
+        if (!$this->getClient()->isConnected()) {
+            $this->getClient()->connect();
+        }
 
-		return $this->getClient()->channel();
-	}
+        return $this->getClient()->channel();
+    }
 
-	public function getChannel()
-	{
-		if (!$this->channel) {
-			$this->channel = $this->createChannel();
-		}
+    /**
+     * @return Channel|\React\Promise\PromiseInterface
+     */
+    public function getChannel()
+    {
+        if (!$this->channel) {
+            $this->channel = $this->createChannel();
+        }
 
-		return $this->channel;
-	}
+        return $this->channel;
+    }
 
-	/**
-	 * create/return transactional channel, where messages need to be commited
-	 *
-	 * @throws BunnyException
-	 * @return Channel|\React\Promise\PromiseInterface
-	 */
-	public function getTransactionalChannel()
-	{
-		if (!$this->transactionalChannel) {
-			$this->transactionalChannel = $this->createChannel();
+    /**
+     * create/return transactional channel, where messages need to be commited
+     *
+     * @throws BunnyException
+     * @return Channel|\React\Promise\PromiseInterface
+     */
+    public function getTransactionalChannel()
+    {
+        if (!$this->transactionalChannel) {
+            $this->transactionalChannel = $this->createChannel();
 
-			// create transactional channel from normal one
-			try {
-				$this->transactionalChannel->txSelect();
-			} catch (\Exception $e) {
-				throw new BunnyException("Cannot create transaction channel.");
-			}
-		}
+            // create transactional channel from normal one
+            try {
+                $this->transactionalChannel->txSelect();
+            } catch (Exception $e) {
+                throw new BunnyException('Cannot create transaction channel.');
+            }
+        }
 
-		return $this->transactionalChannel;
-	}
+        return $this->transactionalChannel;
+    }
 
-	public function setUp()
-	{
-		if ($this->setUpComplete) {
-			return;
-		}
+    /**
+     * @return void
+     */
+    public function setUp(): void
+    {
+        if ($this->setUpComplete) {
+            return;
+        }
 
-		$channel = $this->getChannel();
+        $channel = $this->getChannel();
 
-		foreach ($this->config["exchanges"] as $exchangeName => $exchangeDefinition) {
-			$frame = $channel->exchangeDeclare(
-				$exchangeName,
-				$exchangeDefinition["type"],
-				FALSE,
-				$exchangeDefinition["durable"],
-				$exchangeDefinition["auto_delete"],
-				$exchangeDefinition["internal"],
-				FALSE,
-				$exchangeDefinition["arguments"]
-			);
+        foreach ($this->config['exchanges'] as $exchangeName => $exchangeDefinition) {
+            $frame = $channel->exchangeDeclare(
+                $exchangeName,
+                $exchangeDefinition['type'],
+                FALSE,
+                $exchangeDefinition['durable'],
+                $exchangeDefinition['auto_delete'],
+                $exchangeDefinition['internal'],
+                FALSE,
+                $exchangeDefinition['arguments']
+            );
 
-			if (!($frame instanceof MethodExchangeDeclareOkFrame)) {
-				throw new BunnyException("Could not declare exchange '{$exchangeName}'.");
-			}
-		}
+            if (!($frame instanceof MethodExchangeDeclareOkFrame)) {
+                throw new BunnyException(sprintf('Could not declare exchange \'%s\'.', $exchangeName));
+            }
+        }
 
-		foreach ($this->config["exchanges"] as $exchangeName => $exchangeDefinition) {
-			foreach ($exchangeDefinition["bindings"] as $binding) {
-				$frame = $channel->exchangeBind(
-					$exchangeName,
-					$binding["exchange"],
-					$binding["routing_key"],
-					FALSE,
-					$binding["arguments"]
-				);
+        foreach ($this->config['exchanges'] as $exchangeName => $exchangeDefinition) {
+            foreach ($exchangeDefinition['bindings'] as $binding) {
+                $frame = $channel->exchangeBind(
+                    $exchangeName,
+                    $binding['exchange'],
+                    $binding['routing_key'],
+                    FALSE,
+                    $binding['arguments']
+                );
 
-				if (!($frame instanceof MethodExchangeBindOkFrame)) {
-					throw new BunnyException(
-						"Could not bind exchange '{$exchangeName}' to '{$binding["exchange"]}' with routing key '{$binding["routing_key"]}'."
-					);
-				}
-			}
-		}
+                if (!($frame instanceof MethodExchangeBindOkFrame)) {
+                    throw new BunnyException(
+                        sprintf(
+                            'Could not bind exchange \'%s\' to \'%s\' with routing key \'%s\'.',
+                            $exchangeName,
+                            $binding['exchange'],
+                            $binding['routing_key']
+                        )
+                    );
+                }
+            }
+        }
 
-		foreach ($this->config["queues"] as $queueName => $queueDefinition) {
-			$frame = $channel->queueDeclare(
-				$queueName,
-				FALSE,
-				$queueDefinition["durable"],
-				$queueDefinition["exclusive"],
-				$queueDefinition["auto_delete"],
-				FALSE,
-				$queueDefinition["arguments"]
-			);
+        foreach ($this->config['queues'] as $queueName => $queueDefinition) {
+            $frame = $channel->queueDeclare(
+                $queueName,
+                FALSE,
+                $queueDefinition['durable'],
+                $queueDefinition['exclusive'],
+                $queueDefinition['auto_delete'],
+                FALSE,
+                $queueDefinition['arguments']
+            );
 
-			if (!($frame instanceof MethodQueueDeclareOkFrame)) {
-				throw new BunnyException("Could not declare queue '{$queueName}'.");
-			}
+            if (!($frame instanceof MethodQueueDeclareOkFrame)) {
+                throw new BunnyException(sprintf('Could not declare queue \'%s\'.', $queueName));
+            }
 
-			foreach ($queueDefinition["bindings"] as $binding) {
-				$frame = $channel->queueBind(
-					$queueName,
-					$binding["exchange"],
-					$binding["routing_key"],
-					FALSE,
-					$binding["arguments"]
-				);
+            foreach ($queueDefinition['bindings'] as $binding) {
+                $frame = $channel->queueBind(
+                    $queueName,
+                    $binding['exchange'],
+                    $binding['routing_key'],
+                    FALSE,
+                    $binding['arguments']
+                );
 
-				if (!($frame instanceof MethodQueueBindOkFrame)) {
-					throw new BunnyException(
-						"Could not bind queue '{$queueName}' to '{$binding["exchange"]}' with routing key '{$binding["routing_key"]}'."
-					);
-				}
-			}
-		}
+                if (!($frame instanceof MethodQueueBindOkFrame)) {
+                    throw new BunnyException(
+                        sprintf(
+                            'Could not bind queue \'%s\' to \'%s\' with routing key \'%s\'.',
+                            $queueName, $binding["exchange"], $binding["routing_key"]
+                        )
+                    );
+                }
+            }
+        }
 
-		$this->setUpComplete = TRUE;
-	}
+        $this->setUpComplete = TRUE;
+    }
 
 }

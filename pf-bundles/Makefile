@@ -42,7 +42,7 @@ codesniffer:
 
 phpstan:
 	$(DE) ./vendor/bin/phpstan analyse -l 7 src/
-	$(DE) ./vendor/bin/phpstan analyse -l 5 tests/
+	$(DE) ./vendor/bin/phpstan analyse -l 4 tests/
 
 phpunit:
 	$(DE) ./vendor/bin/phpunit -c phpunit.xml.dist --dont-report-useless-tests --colors --stderr tests/Unit
