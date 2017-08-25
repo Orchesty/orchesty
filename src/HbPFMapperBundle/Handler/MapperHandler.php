@@ -35,9 +35,18 @@ class MapperHandler
      */
     public function process(string $id, array $data): array
     {
-        $mapper = $this->mapperLoader->loadMapper($id);
+        return $this->mapperLoader->loadMapper($id)->process($data);
+    }
 
-        return [];
+    /**
+     * @param string $id
+     * @param array  $data
+     *
+     * @return void
+     */
+    public function processTest(string $id, array $data): void
+    {
+        $this->mapperLoader->loadMapper($id);
     }
 
 }
