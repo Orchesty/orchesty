@@ -7,6 +7,7 @@ use Hanaboso\PipesFramework\HbPFAuthorizationBundle\HbPFAuthorizationBundle;
 use Hanaboso\PipesFramework\HbPFCommonsBundle\HbPFCommonsBundle;
 use Hanaboso\PipesFramework\HbPFConnectorBundle\HbPFConnectorBundle;
 use Hanaboso\PipesFramework\HbPFMailerBundle\HbPFMailerBundle;
+use Hanaboso\PipesFramework\HbPFMapperBundle\HbPFMapperBundle;
 use Hanaboso\PipesFramework\HbPFTableParserBundle\HbPFTableParserBundle;
 use Hanaboso\PipesFramework\HbPFUserBundle\HbPFUserBundle;
 use JMS\SerializerBundle\JMSSerializerBundle;
@@ -41,9 +42,10 @@ class AppKernel extends Kernel
             new HbPFAuthorizationBundle(),
             new HbPFCommonsBundle(),
             new HbPFConnectorBundle(),
-            new HbPFUserBundle(),
             new HbPFMailerBundle(),
+            new HbPFMapperBundle(),
             new HbPFTableParserBundle(),
+            new HbPFUserBundle(),
         ];
 
         return $bundles;
