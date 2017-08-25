@@ -1,1 +1,5 @@
 services:
+    hbpf.loader.joiner:
+        class: Hanaboso\PipesFramework\HbPFJoinerBundle\Loader\JoinerLoader
+        arguments:
+            - '@service_container'
