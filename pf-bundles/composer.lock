@@ -5746,11 +5746,11 @@
         },
         {
             "name": "pipes/php-check-utils",
-            "version": "1.0.1",
+            "version": "1.0.2",
             "dist": {
                 "type": "path",
                 "url": "../libs/php-check-utils",
-                "reference": "9ba4c4bc2cca385499466d6ec05ff547a9bb2eba",
+                "reference": "195d66595841a12e287f760970448e4f6b9a44be",
                 "shasum": null
             },
             "require": {

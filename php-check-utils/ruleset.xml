@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <ruleset name="HANABOSO_PIPES">
     <!-- Slevomat coding standards -->
-    <rule ref="./vendor/slevomat/coding-standard/SlevomatCodingStandard/ruleset.xml">
+    <rule ref="./../../slevomat/coding-standard/SlevomatCodingStandard/ruleset.xml">
         <exclude
                 name="SlevomatCodingStandard.Namespaces.FullyQualifiedClassNameInAnnotation.NonFullyQualifiedClassName"/>
         <exclude name="SlevomatCodingStandard.Namespaces.UseOnlyWhitelistedNamespaces.NonFullyQualified"/>
