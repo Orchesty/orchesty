@@ -9,6 +9,7 @@
 namespace Hanaboso\PipesFramework\HbPFJoinerBundle\Loader;
 
 use Hanaboso\PipesFramework\HbPFJoinerBundle\Exception\JoinerException;
+use Hanaboso\PipesFramework\Joiner\JoinerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -18,6 +19,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  */
 final class JoinerLoader
 {
+
+    public const PREFIX = 'hbpf.joiner';
 
     /**
      * @var ContainerInterface
@@ -37,14 +40,17 @@ final class JoinerLoader
     /**
      * @param string $joiner
      *
-     * @return object
+     * @return JoinerInterface
      * @throws JoinerException
      */
-    public function get(string $joiner)
+    public function get(string $joiner): JoinerInterface
     {
-        $name = sprintf('hbpf.joiner.%s', $joiner);
+        $name = sprintf('%s.%s', self::PREFIX, $joiner);
         if ($this->container->has($name)) {
-            return $this->container->get($name);
+            /** @var JoinerInterface $joiner */
+            $joiner = $this->container->get($name);
+
+            return $joiner;
         }
 
         throw new JoinerException(

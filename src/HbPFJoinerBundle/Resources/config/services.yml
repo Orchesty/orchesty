@@ -3,3 +3,7 @@ services:
         class: Hanaboso\PipesFramework\HbPFJoinerBundle\Loader\JoinerLoader
         arguments:
             - '@service_container'
+
+    hbpf.joiner.null:
+        class: Hanaboso\PipesFramework\Joiner\Impl\NullJoiner
+        arguments:

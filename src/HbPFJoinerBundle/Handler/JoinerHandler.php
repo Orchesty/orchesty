@@ -8,6 +8,7 @@
 
 namespace Hanaboso\PipesFramework\HbPFJoinerBundle\Handler;
 
+use Hanaboso\PipesFramework\HbPFJoinerBundle\Exception\JoinerException;
 use Hanaboso\PipesFramework\HbPFJoinerBundle\Loader\JoinerLoader;
 
 /**
@@ -42,19 +43,33 @@ class JoinerHandler
     public function processJoiner(string $joinerId, array $data): array
     {
         $joiner = $this->loader->get($joinerId);
-        // TODO pip-82 call joinerInterface
+        $res    = $joiner->process($data['data'], $data['count']);
 
-        return [];
+        return $res;
     }
 
     /**
      * @param string $joinerId
      * @param array  $data
+     *
+     * @throws JoinerException
      */
     public function processJoinerTest(string $joinerId, array $data): void
     {
-        // TODO nullJoiner pip-82
-        $joiner = $this->loader->get($joinerId);
+        $this->loader->get($joinerId);
+
+        if (!isset($data['data'])) {
+            throw new JoinerException(
+                'Data under \'data\' key are missing in request.',
+                JoinerException::MISSING_DATA_IN_REQUEST
+            );
+        }
+        if (!isset($data['count'])) {
+            throw new JoinerException(
+                'Total data count under \'count\' key is missing in request.',
+                JoinerException::MISSING_DATA_IN_REQUEST
+            );
+        }
     }
 
 }
