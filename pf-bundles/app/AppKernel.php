@@ -44,7 +44,6 @@ class AppKernel extends Kernel
             new HbPFCommonsBundle(),
             new HbPFConnectorBundle(),
             new HbPFJoinerBundle(),
-            new HbPFUserBundle(),
             new HbPFMailerBundle(),
             new HbPFMapperBundle(),
             new HbPFTableParserBundle(),
