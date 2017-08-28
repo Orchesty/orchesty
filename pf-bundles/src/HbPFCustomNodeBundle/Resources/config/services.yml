@@ -1,5 +1,9 @@
 services:
     hbpf.loader.custom_node:
-        class: Hanaboso\PipesFramework\HbPFCustomNodeBundle\Loader\CustomNodeController
+        class: Hanaboso\PipesFramework\HbPFCustomNodeBundle\Loader\CustomNodeLoader
         arguments:
             - '@service_container'
+
+    hbpf.custom_node.null:
+        class: Hanaboso\PipesFramework\CustomNode\Impl\NullCustomNode
+        arguments:
