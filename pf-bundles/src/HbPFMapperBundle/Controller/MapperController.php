@@ -69,8 +69,8 @@ class MapperController extends FOSRestController
     public function processTestAction(Request $request, string $id): Response
     {
         try {
-            $this->mapperHandler->processTest($id, $request->request->all());
-            $view = $this->view([], 200);
+            $data = $this->mapperHandler->processTest($id, $request->request->all());
+            $view = $this->view($data, 200);
         } catch (MapperException $e) {
             $view = $this->view(ControllerUtils::createExceptionData($e), 500);
         }
