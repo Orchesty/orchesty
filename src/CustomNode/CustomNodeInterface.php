@@ -3,10 +3,9 @@
 namespace Hanaboso\PipesFramework\CustomNode;
 
 /**
- * Created by PhpStorm.
- * User: david.horacek
- * Date: 8/28/17
- * Time: 8:03 AM
+ * Interface CustomNodeInterface
+ *
+ * @package Hanaboso\PipesFramework\CustomNode
  */
 interface CustomNodeInterface
 {
