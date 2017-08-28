@@ -1,1 +1,5 @@
 services:
+    hbpf.handler.custom_node:
+        class: Hanaboso\PipesFramework\HbPFCustomNodeBundle\Handler\CustomNodeHandler
+        arguments:
+            - '@hbpf.loader.custom_node'
