@@ -4079,16 +4079,16 @@
     "packages-dev": [
         {
             "name": "doctrine/dbal",
-            "version": "v2.6.1",
+            "version": "v2.6.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/dbal.git",
-                "reference": "1a086f853425b1f5349775ce57e45a772d2d2ba5"
+                "reference": "1a4ee83a5a709555f2c6f9057a3aacf892451c7e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/dbal/zipball/1a086f853425b1f5349775ce57e45a772d2d2ba5",
-                "reference": "1a086f853425b1f5349775ce57e45a772d2d2ba5",
+                "url": "https://api.github.com/repos/doctrine/dbal/zipball/1a4ee83a5a709555f2c6f9057a3aacf892451c7e",
+                "reference": "1a4ee83a5a709555f2c6f9057a3aacf892451c7e",
                 "shasum": ""
             },
             "require": {
@@ -4148,7 +4148,7 @@
                 "persistence",
                 "queryobject"
             ],
-            "time": "2017-07-28T10:40:18+00:00"
+            "time": "2017-08-28T11:02:56+00:00"
         },
         {
             "name": "doctrine/doctrine-bundle",
@@ -5746,18 +5746,18 @@
         },
         {
             "name": "pipes/php-check-utils",
-            "version": "1.0.2",
+            "version": "1.0.3",
             "dist": {
                 "type": "path",
                 "url": "../libs/php-check-utils",
-                "reference": "195d66595841a12e287f760970448e4f6b9a44be",
+                "reference": "63f48a5712a587b599f6afd464361648d6c89347",
                 "shasum": null
             },
             "require": {
                 "php": ">=7.1",
                 "phpstan/phpstan": "^0.8",
                 "phpunit/phpunit": "^6.3",
-                "slevomat/coding-standard": "^3.1",
+                "slevomat/coding-standard": "^3.3",
                 "squizlabs/php_codesniffer": "^3.0"
             },
             "type": "library",
@@ -6406,16 +6406,16 @@
         },
         {
             "name": "slevomat/coding-standard",
-            "version": "3.2.1",
+            "version": "3.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/slevomat/coding-standard.git",
-                "reference": "cb6986fa61665de0a4c89708db8caa9733f7ed27"
+                "reference": "84c2f64f0ef800d93711c7e0d1993d7a715ab0b7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/slevomat/coding-standard/zipball/cb6986fa61665de0a4c89708db8caa9733f7ed27",
-                "reference": "cb6986fa61665de0a4c89708db8caa9733f7ed27",
+                "url": "https://api.github.com/repos/slevomat/coding-standard/zipball/84c2f64f0ef800d93711c7e0d1993d7a715ab0b7",
+                "reference": "84c2f64f0ef800d93711c7e0d1993d7a715ab0b7",
                 "shasum": ""
             },
             "require": {
@@ -6425,7 +6425,7 @@
             "require-dev": {
                 "jakub-onderka/php-parallel-lint": "0.9.2",
                 "phing/phing": "2.16",
-                "phpstan/phpstan": "0.8.3",
+                "phpstan/phpstan": "0.8.4",
                 "phpunit/phpunit": "6.3.0"
             },
             "type": "library",
@@ -6439,7 +6439,7 @@
                 "MIT"
             ],
             "description": "Slevomat Coding Standard for PHP_CodeSniffer extends Consistence Coding Standard by providing sniffs with additional checks.",
-            "time": "2017-08-23T20:35:37+00:00"
+            "time": "2017-08-25T15:10:17+00:00"
         },
         {
             "name": "squizlabs/php_codesniffer",

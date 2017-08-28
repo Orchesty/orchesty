@@ -42,11 +42,13 @@ class MapperHandler
      * @param string $id
      * @param array  $data
      *
-     * @return void
+     * @return array
      */
-    public function processTest(string $id, array $data): void
+    public function processTest(string $id, array $data): array
     {
         $this->mapperLoader->loadMapper($id);
+
+        return $data;
     }
 
 }
