@@ -5,8 +5,10 @@ namespace Hanaboso\PipesFramework\User\Model\Security;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use Hanaboso\PipesFramework\User\Document\User;
+use Hanaboso\PipesFramework\User\Model\Token;
 use Hanaboso\PipesFramework\User\Repository\UserRepository;
 use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 use Symfony\Component\Security\Core\Encoder\EncoderFactory;
 
 /**
@@ -33,11 +35,15 @@ class SecurityManager
     private $session;
 
     /**
+     * @var TokenStorage
+     */
+    private $tokenStorage;
+
+    /**
      * SecurityManager constructor.
      *
      * @param DocumentManager $documentManager
      * @param EncoderFactory  $encoderFactory
-     * @param Session         $session
      */
     public function __construct(DocumentManager $documentManager, EncoderFactory $encoderFactory, Session $session)
     {
@@ -83,6 +89,8 @@ class SecurityManager
             );
         }
 
+
+        $this->tokenStorage->setToken(new Token($user, $data['password'],'secured_area'));
         $this->session->set('loggedUserId', $user->getId());
 
         return $user;

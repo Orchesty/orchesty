@@ -49,7 +49,7 @@ phpstan:
 	$(DE) ./vendor/bin/phpstan analyse -l 4 tests/
 
 phpunit:
-	$(DE) ./vendor/bin/phpunit -c phpunit.xml.dist --dont-report-useless-tests --colors --stderr tests/Unit
+	$(DE) ./vendor/bin/phpunit -c phpunit.xml.dist --dont-report-useless-tests --colors --stderr tests/Controller
 
 phpintergration:
 	$(DE) ./vendor/bin/phpunit -c phpunit.xml.dist --dont-report-useless-tests --colors --stderr tests/Integration/

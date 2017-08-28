@@ -19,8 +19,7 @@ class Configuration implements ConfigurationInterface
     public function getConfigTreeBuilder(): TreeBuilder
     {
         $treeBuilder = new TreeBuilder();
-        $rootNode    = $treeBuilder->root('hbpf');
-        $rootNode->children()->arrayNode('mapper');
+        $rootNode    = $treeBuilder->root('mapper');
 
         return $treeBuilder;
     }

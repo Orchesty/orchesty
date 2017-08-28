@@ -6,3 +6,6 @@ parameters:
     kernel.secret: ThisTokenIsNotSoSecretChangeIt
 
     logger_handler: syslog
+
+    request_listener.http_port: 80
+    request_listener.https_port: 80

@@ -4,13 +4,22 @@ namespace Hanaboso\PipesFramework\HbPFUserBundle\Handler;
 
 use Hanaboso\PipesFramework\User\Document\User;
 use Hanaboso\PipesFramework\User\Model\User\UserManager;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
+use Symfony\Component\HttpKernel\KernelEvents;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+use Symfony\Component\Security\Core\Exception\AuthenticationCredentialsNotFoundException;
+use Symfony\Component\Security\Core\Exception\AuthenticationException;
+use Symfony\Component\Security\Http\Logout\LogoutSuccessHandlerInterface;
 
 /**
  * Class UserHandler
  *
  * @package Hanaboso\PipesFramework\HbPFUserBundle\Handler
  */
-class UserHandler
+class UserHandler implements LogoutSuccessHandlerInterface, EventSubscriberInterface
 {
 
     /**
@@ -77,6 +86,47 @@ class UserHandler
     public function resetPassword(array $data): void
     {
         $this->userManager->resetPassword($data);
+    }
+
+    /**
+     * Don't redirect after logout
+     *
+     * @param Request $request
+     *
+     * @return bool
+     */
+    public function onLogoutSuccess(Request $request)
+    {
+
+        return TRUE;
+    }
+
+    /**
+     * @return array
+     */
+    public static function getSubscribedEvents()
+    {
+        return [
+            KernelEvents::EXCEPTION => [
+                ['onCoreException', 1000],
+            ],
+        ];
+    }
+
+    /**
+     * Don't redirect when not authenticated
+     *
+     * @param GetResponseForExceptionEvent $event
+     */
+    public function onCoreException(GetResponseForExceptionEvent $event)
+    {
+        $exception = $event->getException();
+
+        if ($exception instanceof AuthenticationException || $exception instanceof AccessDeniedException || $exception instanceof AuthenticationCredentialsNotFoundException) {
+            $jsonResponse = new JsonResponse('acc ', 403);
+
+            $event->setResponse($jsonResponse);
+        }
     }
 
 }
