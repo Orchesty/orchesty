@@ -6,6 +6,7 @@ use FOS\RestBundle\FOSRestBundle;
 use Hanaboso\PipesFramework\HbPFAuthorizationBundle\HbPFAuthorizationBundle;
 use Hanaboso\PipesFramework\HbPFCommonsBundle\HbPFCommonsBundle;
 use Hanaboso\PipesFramework\HbPFConnectorBundle\HbPFConnectorBundle;
+use Hanaboso\PipesFramework\HbPFCustomNodeBundle\HbPFCustomNodeBundle;
 use Hanaboso\PipesFramework\HbPFJoinerBundle\HbPFJoinerBundle;
 use Hanaboso\PipesFramework\HbPFMailerBundle\HbPFMailerBundle;
 use Hanaboso\PipesFramework\HbPFMapperBundle\HbPFMapperBundle;
@@ -43,6 +44,7 @@ class AppKernel extends Kernel
             new HbPFAuthorizationBundle(),
             new HbPFCommonsBundle(),
             new HbPFConnectorBundle(),
+            new HbPFCustomNodeBundle(),
             new HbPFJoinerBundle(),
             new HbPFMailerBundle(),
             new HbPFMapperBundle(),
