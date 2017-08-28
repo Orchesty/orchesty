@@ -34,15 +34,23 @@ class MapperControllerTest extends DatabaseWebTestCaseAbstract
        // $client->getContainer()->get('security.token_storage')->setToken(new Token($user, 'password','secured_area'));
 
         $session = $client->getContainer()->get('hbpf.user.session');
+        $session->start();
 
         $session->set('loggedUserId', $user->getId());
+        $session->save();
 
         $a = $session->getId();
         $b = $session->getName();
 
-        $session->save();
+        var_dump($_SESSION);
+        var_dump($session->getId());
+        var_dump($session->getName());
+
+
 
       //  die(var_dump($b));
+
+
 
         $cookie = new Cookie($session->getName(), $session->getId());
         $client->getCookieJar()->set($cookie);
@@ -63,6 +71,8 @@ class MapperControllerTest extends DatabaseWebTestCaseAbstract
         $container->set('hbpf.mapper.handler.mapper', $mapperHandlerMock);
 
         $client->request('POST', '/api/mapper/null/process/test', [], [], [], '{"test":1}');
+
+       var_dump($client->getCookieJar()->allValues('/'));
 
         $code = $client->getResponse()->getStatusCode();
 
