@@ -39,7 +39,7 @@ class DatabaseWebTestCaseAbstract extends WebTestCase
         self::bootKernel();
         $this->container = self::$kernel->getContainer();
         $this->dm        = $this->container->get('doctrine_mongodb.odm.default_document_manager');
-        $this->session = $this->container->get('hbpf.user.session');
+        $this->session   = $this->container->get('hbpf.user.session');
     }
 
     /**

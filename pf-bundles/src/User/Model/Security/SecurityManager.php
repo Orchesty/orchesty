@@ -44,12 +44,20 @@ class SecurityManager
      *
      * @param DocumentManager $documentManager
      * @param EncoderFactory  $encoderFactory
+     * @param Session         $session
+     * @param TokenStorage    $tokenStorage
      */
-    public function __construct(DocumentManager $documentManager, EncoderFactory $encoderFactory, Session $session)
+    public function __construct(
+        DocumentManager $documentManager,
+        EncoderFactory $encoderFactory,
+        Session $session,
+        TokenStorage $tokenStorage
+    )
     {
         $this->userRepository = $documentManager->getRepository(User::class);
         $this->encoderFactory = $encoderFactory;
         $this->session        = $session;
+        $this->tokenStorage   = $tokenStorage;
     }
 
     /**
@@ -89,8 +97,7 @@ class SecurityManager
             );
         }
 
-
-        $this->tokenStorage->setToken(new Token($user, $data['password'],'secured_area'));
+        $this->tokenStorage->setToken(new Token($user, $data['password'], 'secured_area'));
         $this->session->set('loggedUserId', $user->getId());
 
         return $user;
