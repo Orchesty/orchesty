@@ -1,9 +1,10 @@
-.PHONY: docker-up docker-up-force docker-down-clean test codesniffer phpstan phpunit
+.PHONY: docker-up .env docker-up-force docker-down-clean test codesniffer phpstan phpunit
 
 DC=docker-compose
 DE=docker-compose exec -T php-dev
 DEC=docker-compose exec -T php-dev composer
 
+# Docker
 docker-up: .env
 	$(DC) pull
 	$(DC) up -d
@@ -35,6 +36,9 @@ composer-require-dev:
 composer-deploy:
 	$(DEC) update --prefer-dist --no-dev -o
 
+# App
+init: .env docker-up-force composer-install
+
 #CI
 
 codesniffer:
@@ -60,9 +64,9 @@ console:
 clear-cache:
 	$(DE) sudo rm -rf app/cache
 
-.env: DEV_UID != id -u
-.env: DEV_GID != id -g
 .env:
-	$(file >$@,DEV_UID=${DEV_UID})
-	$(file >>$@,DEV_GID=${DEV_GID})
-	$(file >>$@,DEV_IP=127.0.0.2)
+	@if ! [ -f .env ]; then \
+		sed -e "s/{DEV_UID}/$(shell id -u)/g" \
+			-e "s/{DEV_GID}/$(shell id -u)/g" \
+			.env.dist >> .env; \
+	fi;

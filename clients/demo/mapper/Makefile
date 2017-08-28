@@ -1,12 +1,19 @@
-.PHONY: docker-up docker-up-force composer-install composer-update codesniffer phpstan phpunit init test
+.PHONY: docker-up docker-up-force .env composer-install composer-update codesniffer phpstan phpunit init test
 
 DC=docker-compose
 DE=docker-compose exec -T mapper
 
-docker-up:
+.env:
+	@if ! [ -f .env ]; then \
+		sed -e "s/{DEV_UID}/$(shell id -u)/g" \
+			-e "s/{DEV_GID}/$(shell id -u)/g" \
+			.env.dist >> .env; \
+	fi;
+
+docker-up: .env
 	$(DC) up -d
 
-docker-up-force:
+docker-up-force: .env
 	$(DC) up -d --force-recreate
 
 composer-install:

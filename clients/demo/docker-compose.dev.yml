@@ -8,7 +8,7 @@ services:
     # Services
     app:
         image: dkr.hanaboso.net/pipes/pipes/php-dev:dev
-        user: 1000:10000
+        user: ${DEV_UID}:${DEV_GID}
         working_dir: ${WORKDIR}
         environment:
           DEV_UID: ${DEV_UID}
@@ -21,13 +21,13 @@ services:
     # Frontend
     frontend:
         image: dkr.hanaboso.net/pipes/pipes/nodejs-build:dev
-        user: 1000:10000
+        user: ${DEV_UID}:${DEV_GID}
         environment:
           DEV_UID: ${DEV_UID}
           DEV_GID: ${DEV_GID}
           WEBROOT: ${WORKDIR}/web
         ports:
-          - ${DEV_IP}:80:80
+          - ${DEV_IP}:8080:8080
         volumes:
           - ../../:/var/www/pipes
         depends_on:
