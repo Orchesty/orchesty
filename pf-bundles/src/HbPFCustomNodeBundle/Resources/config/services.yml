@@ -1,1 +1,5 @@
 services:
+    hbpf.loader.custom_node:
+        class: Hanaboso\PipesFramework\HbPFCustomNodeBundle\Loader\CustomNodeController
+        arguments:
+            - '@service_container'
