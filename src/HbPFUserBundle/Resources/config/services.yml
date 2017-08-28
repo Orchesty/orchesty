@@ -33,3 +33,4 @@ services:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@security.encoder_factory'
             - '@hbpf.user.session'
+            - '@security.token_storage'

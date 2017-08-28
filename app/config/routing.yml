@@ -1,3 +1,7 @@
 hb_pf_mapper:
     resource: "@HbPFMapperBundle"
     type: annotation
+
+hb_pf_user:
+    resource: "@HbPFUserBundle"
+    type: annotation
