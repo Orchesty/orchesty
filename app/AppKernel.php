@@ -14,6 +14,7 @@ use Hanaboso\PipesFramework\HbPFMailerBundle\HbPFMailerBundle;
 use Hanaboso\PipesFramework\HbPFMapperBundle\HbPFMapperBundle;
 use Hanaboso\PipesFramework\HbPFTableParserBundle\HbPFTableParserBundle;
 use Hanaboso\PipesFramework\HbPFUserBundle\HbPFUserBundle;
+use Hanaboso\PipesFramework\RabbitMqBundle\RabbitMqBundle;
 use JMS\SerializerBundle\JMSSerializerBundle;
 use Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
@@ -56,6 +57,8 @@ class AppKernel extends Kernel
             new HbPFMapperBundle(),
             new HbPFTableParserBundle(),
             new HbPFUserBundle(),
+            new RabbitMqBundle(),
+            new HbPFAclBundle(),
         ];
 
         return $bundles;

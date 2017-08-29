@@ -14,6 +14,7 @@ use Hanaboso\PipesFramework\RabbitMqBundle\ContentTypes;
 use Hanaboso\PipesFramework\RabbitMqBundle\Serializers\IMessageSerializer;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 
 /**
  * Class AbstractProducer
@@ -104,6 +105,8 @@ class AbstractProducer implements LoggerAwareInterface
         $this->beforeMethod        = $beforeMethod;
         $this->contentType         = $contentType;
         $this->manager             = $manager;
+
+        $this->logger = new NullLogger();
     }
 
     /**
