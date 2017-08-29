@@ -96,3 +96,24 @@ services:
         image: mailhog/mailhog
         ports:
           - ${DEV_IP}:8025:8025
+
+    magento:
+        image: alexcheng/magento2
+        ports:
+          - ${DEV_IP}:8090:80
+
+    mysql:
+        image: mariadb
+        environment:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: magento
+
+    swagger-ui:
+            image: swaggerapi/swagger-ui
+            ports:
+              - ${DEV_IP}:8087:8080
+
+    swagger-editor:
+        image: swaggerapi/swagger-editor
+        ports:
+          - ${DEV_IP}:8088:8080
