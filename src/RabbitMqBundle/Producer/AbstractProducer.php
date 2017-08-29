@@ -24,7 +24,7 @@ class AbstractProducer implements LoggerAwareInterface
 {
 
     /**
-     * @var LoggerAwareInterface
+     * @var LoggerInterface
      */
     protected $logger;
 
@@ -267,7 +267,7 @@ class AbstractProducer implements LoggerAwareInterface
      *
      * @return void
      */
-    public function setLogger(LoggerInterface $logger)
+    public function setLogger(LoggerInterface $logger): void
     {
         $this->logger = $logger;
     }

@@ -24,7 +24,7 @@ abstract class AbstractConsumer implements LoggerAwareInterface
 {
 
     /**
-     * @var LoggerAwareInterface
+     * @var LoggerInterface
      */
     protected $logger;
 
@@ -100,23 +100,23 @@ abstract class AbstractConsumer implements LoggerAwareInterface
     /**
      * AbstractConsumer constructor.
      *
-     * @param null|string $exchange
-     * @param string      $routingKey
-     * @param null|string $queue
-     * @param string      $consumerTag
-     * @param bool        $noLocal
-     * @param bool        $noAck
-     * @param bool        $exclusive
-     * @param bool        $nowait
-     * @param array       $arguments
-     * @param int|null    $prefetchCount
-     * @param int|null    $prefetchSize
-     * @param null|string $serializer
-     * @param null|string $setUpMethod
-     * @param null|string $tickMethod
-     * @param int|null    $tickSeconds
-     * @param int|null    $maxMessages
-     * @param int|null    $maxSeconds
+     * @param null|string             $exchange
+     * @param string                  $routingKey
+     * @param null|string             $queue
+     * @param string                  $consumerTag
+     * @param bool                    $noLocal
+     * @param bool                    $noAck
+     * @param bool                    $exclusive
+     * @param bool                    $nowait
+     * @param array                   $arguments
+     * @param int|null                $prefetchCount
+     * @param int|null                $prefetchSize
+     * @param null|IMessageSerializer $serializer
+     * @param null|string             $setUpMethod
+     * @param null|string             $tickMethod
+     * @param int|null                $tickSeconds
+     * @param int|null                $maxMessages
+     * @param int|null                $maxSeconds
      */
     public function __construct(
         ?string $exchange = NULL,
@@ -324,7 +324,10 @@ abstract class AbstractConsumer implements LoggerAwareInterface
         return $this->maxSeconds;
     }
 
-    public function setLogger(LoggerInterface $logger)
+    /**
+     * @param LoggerInterface $logger
+     */
+    public function setLogger(LoggerInterface $logger): void
     {
         $this->logger = $logger;
     }
