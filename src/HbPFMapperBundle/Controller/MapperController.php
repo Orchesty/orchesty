@@ -8,8 +8,8 @@ use Hanaboso\PipesFramework\HbPFMapperBundle\Exception\MapperException;
 use Hanaboso\PipesFramework\HbPFMapperBundle\Handler\MapperHandler;
 use Hanaboso\PipesFramework\Utils\ControllerUtils;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class MapperController
@@ -43,18 +43,18 @@ class MapperController extends FOSRestController
      * @param Request $request
      * @param string  $id
      *
-     * @return Response
+     * @return JsonResponse
      */
-    public function processAction(Request $request, string $id): Response
+    public function processAction(Request $request, string $id): JsonResponse
     {
         try {
-            $data = $this->mapperHandler->process($id, $request->request->all());
-            $view = $this->view($data, 200);
+            $data     = $this->mapperHandler->process($id, $request->request->all());
+            $response = new JsonResponse($data, 200);
         } catch (MapperException $e) {
-            $view = $this->view(ControllerUtils::createExceptionData($e), 500);
+            $response = new JsonResponse(ControllerUtils::createExceptionData($e), 500);
         }
 
-        return $this->handleView($view);
+        return $response;
     }
 
     /**
@@ -64,18 +64,18 @@ class MapperController extends FOSRestController
      * @param Request $request
      * @param string  $id
      *
-     * @return Response
+     * @return JsonResponse
      */
-    public function processTestAction(Request $request, string $id): Response
+    public function processTestAction(Request $request, string $id): JsonResponse
     {
         try {
-            $data = $this->mapperHandler->processTest($id, $request->request->all());
-            $view = $this->view($data, 200);
+            $this->mapperHandler->processTest($id, $request->request->all());
+            $response = new JsonResponse([], 200);
         } catch (MapperException $e) {
-            $view = $this->view(ControllerUtils::createExceptionData($e), 500);
+            $response = new JsonResponse(ControllerUtils::createExceptionData($e), 500);
         }
 
-        return $this->handleView($view);
+        return $response;
     }
 
 }

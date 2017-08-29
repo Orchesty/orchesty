@@ -97,7 +97,6 @@ class UserHandler implements LogoutSuccessHandlerInterface, EventSubscriberInter
      */
     public function onLogoutSuccess(Request $request)
     {
-
         return TRUE;
     }
 
@@ -123,7 +122,7 @@ class UserHandler implements LogoutSuccessHandlerInterface, EventSubscriberInter
         $exception = $event->getException();
 
         if ($exception instanceof AuthenticationException || $exception instanceof AccessDeniedException || $exception instanceof AuthenticationCredentialsNotFoundException) {
-            $jsonResponse = new JsonResponse('acc ', 403);
+            $jsonResponse = new JsonResponse($exception->getMessage(), 403);
 
             $event->setResponse($jsonResponse);
         }

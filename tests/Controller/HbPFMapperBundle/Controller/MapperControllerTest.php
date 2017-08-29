@@ -2,136 +2,109 @@
 
 namespace Tests\Controller\HbPFMapperBundle\Controller;
 
+use Hanaboso\PipesFramework\HbPFMapperBundle\Controller\MapperController;
+use Hanaboso\PipesFramework\HbPFMapperBundle\Exception\MapperException;
 use Hanaboso\PipesFramework\HbPFMapperBundle\Handler\MapperHandler;
 use Hanaboso\PipesFramework\HbPFMapperBundle\Loader\MapperLoader;
-use Hanaboso\PipesFramework\User\Document\User;
-use Hanaboso\PipesFramework\User\Model\Token;
-use Symfony\Bundle\FrameworkBundle\Client;
-use Symfony\Component\BrowserKit\Cookie;
-use Symfony\Component\HttpFoundation\Session\Session;
-use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
-use Symfony\Component\HttpFoundation\Session\Storage\MockFileSessionStorage;
-use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
-use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
-use Tests\DatabaseWebTestCaseAbstract;
+use Tests\ControllerTestCaseAbstract;
 
 /**
  * Class MapperControllerTest
  *
  * @package Tests\Controller\HbPFMapperBundle\Controller
  */
-class MapperControllerTest extends DatabaseWebTestCaseAbstract
+final class MapperControllerTest extends ControllerTestCaseAbstract
 {
 
     /**
-     * @var Client
+     * @covers MapperController::processTestAction()
      */
-    private $client;
-
-    /**
-     * @var EncoderFactoryInterface
-     */
-    private $encoder;
-
-    /**
-     *
-     */
-    public function testProcess(): void
+    public function testProcessTest(): void
     {
-        $this->client = self::createClient([], ['HTTP_X-Requested-With' => 'XMLHttpRequest']);
-        $container    = $this->client->getContainer();
-
-        $this->dm       = $this->container->get('doctrine.odm.mongodb.document_manager');
-        $encoderFactory = $container->get('security.encoder_factory');
-        $this->encoder  = $encoderFactory->getEncoder(User::class);
-
-        // Login
-        $user = $this->loginUser('test@example.com', 'password');
-
         $mapperHandlerMock = $this->getMockBuilder(MapperHandler::class)
-            ->setConstructorArgs([
-                new MapperLoader($container),
-            ])
-            ->setMethods([
-                'processTest',
-            ])
+            ->setConstructorArgs([new MapperLoader($this->container)])
+            ->setMethods(['processTest'])
             ->getMock();
 
         $mapperHandlerMock->method('processTest')->willReturn('Test');
 
-        $container->set('hbpf.mapper.handler.mapper', $mapperHandlerMock);
+        $this->container->set('hbpf.mapper.handler.mapper', $mapperHandlerMock);
 
         $this->client->request('POST', '/api/mapper/null/process/test', [], [], [], '{"test":1}');
 
-        $code = $this->client->getResponse()->getStatusCode();
+        $response = $this->client->getResponse();
 
-        self::assertEquals(200, $code);
+        self::assertEquals(200, $response->getStatusCode());
     }
 
     /**
-     * @param string $username
-     * @param string $password
-     *
-     * @return User
+     * @covers MapperController::processTestAction()
      */
-    private function loginUser(string $username, string $password): User
+    public function testProcessTestFail(): void
     {
-        $user = new User();
-        $user
-            ->setEmail($username)
-            ->setPassword($this->encoder->encodePassword($password, ''));
+        $mapperHandlerMock = $this->getMockBuilder(MapperHandler::class)
+            ->setConstructorArgs([new MapperLoader($this->container)])
+            ->setMethods(['processTest'])
+            ->getMock();
 
-        $this->persistAndFlush($user);
+        $mapperHandlerMock->method('processTest')->willReturn('Test');
 
-        $user = $this->getUser($username, $password);
+        $this->container->set('hbpf.mapper.handler.mapper', $mapperHandlerMock);
 
-        // $client->getContainer()->get('security.token_storage')->setToken(new Token($user, 'password','secured_area'));
+        $this->client->request('POST', '/api/mapper/abc/process/test', [], [], [], '{"test":1}');
 
-        $session = $this->client->getContainer()->get('hbpf.user.session');
-        //$session = new Session(new MockArraySessionStorage());
-        //$session = new Session(new MockFileSessionStorage());
-        $session->start();
+        $response = $this->client->getResponse();
 
-        $firewall = 'secured_area';
-        $token    = new UsernamePasswordToken($user->getEmail(), NULL, $firewall, []);
-        $session->set('loggedUserId', serialize($token));
-        $session->save();
-
-        $cookie = new Cookie($session->getName(), $session->getId());
-        $this->client->getCookieJar()->set($cookie);
-
-        return $user;
+        self::assertEquals(500, $response->getStatusCode());
     }
 
     /**
-     * @param string $username
-     * @param string $password
-     *
-     * @return User
+     * @covers MapperController::processAction()
      */
-    private function getUser(string $username, string $password): User
+    public function testProcess(): void
     {
-        $content = [
-            'email'    => $username,
-            'password' => $password,
-        ];
+        $mapperHandlerMock = $this->getMockBuilder(MapperHandler::class)
+            ->setConstructorArgs([new MapperLoader($this->container)])
+            ->setMethods(['processTest'])
+            ->getMock();
 
-        $this->client->request(
-            'POST',
-            '/api/user/login',
-            [],
-            [],
-            ['CONTENT_TYPE' => 'application/json',],
-            json_encode($content)
-        );
+        $mapperHandlerMock->method('processTest')->willReturn('Test');
 
-        $abc = $this->client->getResponse();
+        $this->container->set('hbpf.mapper.handler.mapper', $mapperHandlerMock);
 
-        $response = json_decode($this->client->getResponse()->getContent(), TRUE);
+        $params = ['abc' => 'def'];
+        $this->client->request('POST', '/api/mapper/null/process', $params, [], [], '{"test":1}');
 
-        $stop = 1;
+        $response = $this->client->getResponse();
 
-        return $this->dm->getRepository(User::class)->find($response['id']);
+        self::assertEquals(200, $response->getStatusCode());
+        self::assertEquals($params, json_decode($response->getContent(), TRUE));
+    }
+
+    /**
+     * @covers MapperController::processAction()
+     */
+    public function testProcessFail(): void
+    {
+        $mapperHandlerMock = $this->getMockBuilder(MapperHandler::class)
+            ->setConstructorArgs([new MapperLoader($this->container)])
+            ->setMethods(['processTest'])
+            ->getMock();
+
+        $mapperHandlerMock->method('processTest')->willReturn('Test');
+
+        $this->container->set('hbpf.mapper.handler.mapper', $mapperHandlerMock);
+
+        $params = ['abc' => 'def'];
+        $this->client->request('POST', '/api/mapper/abc/process', $params, [], [], '{"test":1}');
+
+        $response = $this->client->getResponse();
+
+        $content = json_decode($response->getContent(), TRUE);
+
+        self::assertEquals(500, $response->getStatusCode());
+        self::assertEquals('ERROR', $content['status']);
+        self::assertEquals(MapperException::MAPPER_NOT_EXIST, $content['error_code']);
     }
 
 }

@@ -10,7 +10,5 @@ framework:
     default_locale: "%locale%"
     trusted_hosts: ~
     trusted_proxies: ~
-    session:
-        storage_id: session.storage.native
     fragments: ~
     http_method_override: true
