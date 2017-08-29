@@ -9,9 +9,7 @@ services:
     hbpf.user.session:
         class: Symfony\Component\HttpFoundation\Session\Session
         arguments:
-            - "@session.storage.php_bridge"
-        calls:
-            - [start, []]
+            - "@session.storage.mock_file"
 
     hbpf.user.manager.token:
         class: Hanaboso\PipesFramework\User\Model\Token\TokenManager
