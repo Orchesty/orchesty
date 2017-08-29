@@ -14,8 +14,19 @@ namespace Hanaboso\PipesFramework\Commons\Enum;
  * @package AppBundle\Model\Enums
  */
 
-final class FileFormatEnum
+final class FileFormatEnum extends EnumAbstraction
 {
+
+    /**
+     * @var string[]
+     */
+    protected static $choices = [
+        self::XML  => 'XML',
+        self::JSON => 'JSON',
+        self::CSV  => 'CSV',
+        self::XLSX => 'XLSX',
+        self::ODS  => 'ODS',
+    ];
 
     public const XML  = 'xml';
     public const JSON = 'json';
@@ -23,15 +34,5 @@ final class FileFormatEnum
     public const XLS  = 'xls';
     public const XLSX = 'xlsx';
     public const ODS  = 'ods';
-
-    /**
-     * @param string $type
-     *
-     * @return bool
-     */
-    public static function isValid(string $type): bool
-    {
-        return in_array($type, [self::JSON, self::CSV, self::ODS, self::XLS, self::XLSX, self::XML]);
-    }
 
 }
