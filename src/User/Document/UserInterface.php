@@ -3,13 +3,14 @@
 namespace Hanaboso\PipesFramework\User\Document;
 
 use DateTime;
+use Symfony\Component\Security\Core\User\UserInterface as SecurityCoreUserInterface;
 
 /**
  * Interface UserInterface
  *
  * @package Hanaboso\PipesFramework\User\Document
  */
-interface UserInterface
+interface UserInterface extends SecurityCoreUserInterface
 {
 
     /**

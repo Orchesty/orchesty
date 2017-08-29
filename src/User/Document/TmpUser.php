@@ -23,4 +23,13 @@ class TmpUser extends UserAbstract
         return UserTypeEnum::TMP_USER;
     }
 
+    /**
+     * Needed by symfony's UserInterface.
+     *
+     * @return string
+     */
+    public function getPassword(): string
+    {
+        return '';
+    }
 }
