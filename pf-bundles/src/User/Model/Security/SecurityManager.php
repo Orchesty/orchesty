@@ -5,8 +5,10 @@ namespace Hanaboso\PipesFramework\User\Model\Security;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use Hanaboso\PipesFramework\User\Document\User;
+use Hanaboso\PipesFramework\User\Model\Token;
 use Hanaboso\PipesFramework\User\Repository\UserRepository;
 use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 use Symfony\Component\Security\Core\Encoder\EncoderFactory;
 
 /**
@@ -16,6 +18,9 @@ use Symfony\Component\Security\Core\Encoder\EncoderFactory;
  */
 class SecurityManager
 {
+
+    public const SECURITY_KEY = '_security_';
+    public const SECURED_AREA = 'secured_area';
 
     /**
      * @var UserRepository|DocumentRepository
@@ -33,17 +38,36 @@ class SecurityManager
     private $session;
 
     /**
+     * @var TokenStorage
+     */
+    private $tokenStorage;
+
+    /**
+     * @var string
+     */
+    private $sessionName;
+
+    /**
      * SecurityManager constructor.
      *
      * @param DocumentManager $documentManager
      * @param EncoderFactory  $encoderFactory
      * @param Session         $session
+     * @param TokenStorage    $tokenStorage
      */
-    public function __construct(DocumentManager $documentManager, EncoderFactory $encoderFactory, Session $session)
+    public function __construct(
+        DocumentManager $documentManager,
+        EncoderFactory $encoderFactory,
+        Session $session,
+        TokenStorage $tokenStorage
+    )
     {
         $this->userRepository = $documentManager->getRepository(User::class);
         $this->encoderFactory = $encoderFactory;
         $this->session        = $session;
+        $this->tokenStorage   = $tokenStorage;
+
+        $this->sessionName = self::SECURITY_KEY . self::SECURED_AREA;
     }
 
     /**
@@ -55,7 +79,7 @@ class SecurityManager
     public function login(array $data): User
     {
         if ($this->isLoggedIn()) {
-            return $this->userRepository->find($this->session->get('loggedUserId'));
+            return $this->userRepository->find($this->session->get($this->sessionName));
         }
 
         $user = $this->userRepository->findOneBy(['email' => $data['email']]);
@@ -83,7 +107,9 @@ class SecurityManager
             );
         }
 
-        $this->session->set('loggedUserId', $user->getId());
+        $token = new Token($user, $data['password'], self::SECURED_AREA);
+        $this->tokenStorage->setToken($token);
+        $this->session->set($this->sessionName, serialize($token));
 
         return $user;
     }
@@ -102,7 +128,7 @@ class SecurityManager
      */
     public function isLoggedIn(): bool
     {
-        return $this->session->has('loggedUserId');
+        return $this->session->has($this->sessionName);
     }
 
     /**
@@ -119,7 +145,10 @@ class SecurityManager
 
         }
 
-        return $this->userRepository->find($this->session->get('loggedUserId'));
+        /** @var Token $token */
+        $token = unserialize($this->session->get($this->sessionName));
+
+        return $this->userRepository->find($token->getUser()->getId());
     }
 
 }

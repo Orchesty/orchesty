@@ -3,10 +3,13 @@ services:
         class: Hanaboso\PipesFramework\HbPFUserBundle\Handler\UserHandler
         arguments:
             - '@hbpf.user.manager.user'
+        tags:
+            - { name: kernel.event_subscriber }
 
     hbpf.user.session:
         class: Symfony\Component\HttpFoundation\Session\Session
         arguments:
+            - "@session.storage.mock_file"
 
     hbpf.user.manager.token:
         class: Hanaboso\PipesFramework\User\Model\Token\TokenManager
@@ -16,6 +19,11 @@ services:
     hbpf.user.manager.user:
         class: Hanaboso\PipesFramework\User\Model\User\UserManager
         arguments:
+            - "@doctrine_mongodb.odm.default_document_manager"
+            - "@hbpf.user.manager.security"
+            - "@hbpf.user.manager.token"
+            - "@security.encoder_factory.generic"
+            - "@event_dispatcher"
 
     hbpf.user.manager.security:
         class: Hanaboso\PipesFramework\User\Model\Security\SecurityManager
@@ -23,3 +31,4 @@ services:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@security.encoder_factory'
             - '@hbpf.user.session'
+            - '@security.token_storage'

@@ -6,6 +6,7 @@ use Doctrine\ODM\MongoDB\DocumentRepository;
 use Hanaboso\PipesFramework\User\Document\User;
 use Hanaboso\PipesFramework\User\Model\Security\SecurityManager;
 use Hanaboso\PipesFramework\User\Model\Security\SecurityManagerException;
+use Hanaboso\PipesFramework\User\Model\Token;
 use Hanaboso\PipesFramework\User\Repository\UserRepository;
 use Symfony\Component\Security\Core\Encoder\PasswordEncoderInterface;
 use Tests\DatabaseTestCaseAbstract;
@@ -41,7 +42,12 @@ class SecurityManagerTest extends DatabaseTestCaseAbstract
         parent::setUp();
         $encodeFactory         = $this->container->get('security.encoder_factory');
         $this->encoder         = $encodeFactory->getEncoder(User::class);
-        $this->securityManager = new SecurityManager($this->dm, $encodeFactory, $this->session);
+        $this->securityManager = new SecurityManager(
+            $this->dm,
+            $encodeFactory,
+            $this->session,
+            $this->container->get('security.token_storage')
+        );
         $this->userRepository  = $this->dm->getRepository(User::class);
     }
 
@@ -101,10 +107,12 @@ class SecurityManagerTest extends DatabaseTestCaseAbstract
         $this->persistAndFlush($user);
 
         $this->securityManager->login(['email' => 'email@example.com', 'password' => 'passw0rd']);
-        $this->assertTrue($this->session->has('loggedUserId'));
+        $this->assertTrue($this->session->has(SecurityManager::SECURITY_KEY . SecurityManager::SECURED_AREA));
 
+        /** @var Token $token */
+        $token = unserialize($this->session->get(SecurityManager::SECURITY_KEY . SecurityManager::SECURED_AREA));
         /** @var User $user */
-        $user = $this->userRepository->find($this->session->get('loggedUserId'));
+        $user = $this->userRepository->find($token->getUser()->getId());
         $this->assertEquals('email@example.com', $user->getEmail());
         $this->assertTrue($this->encoder->isPasswordValid($user->getPassword(), 'passw0rd', ''));
     }
@@ -119,8 +127,8 @@ class SecurityManagerTest extends DatabaseTestCaseAbstract
             ->setPassword($this->encoder->encodePassword('passw0rd', ''));
         $this->persistAndFlush($user);
 
-        $this->assertFalse($this->session->has('loggedUserId'));
-        $this->assertNull($this->userRepository->find($this->session->get('loggedUserId')));
+        $this->assertFalse($this->session->has(SecurityManager::SECURITY_KEY . SecurityManager::SECURED_AREA));
+        $this->assertNull($this->userRepository->find($this->session->get(SecurityManager::SECURITY_KEY . SecurityManager::SECURED_AREA)));
     }
 
     /**
@@ -134,16 +142,19 @@ class SecurityManagerTest extends DatabaseTestCaseAbstract
         $this->persistAndFlush($user);
 
         $this->securityManager->login(['email' => 'email@example.com', 'password' => 'passw0rd']);
-        $this->assertTrue($this->session->has('loggedUserId'));
+        $this->assertTrue($this->session->has(SecurityManager::SECURITY_KEY . SecurityManager::SECURED_AREA));
+
+        /** @var Token $token */
+        $token = unserialize($this->session->get(SecurityManager::SECURITY_KEY . SecurityManager::SECURED_AREA));
 
         /** @var User $user */
-        $user = $this->userRepository->find($this->session->get('loggedUserId'));
+        $user = $this->userRepository->find($token->getUser()->getId());
         $this->assertEquals('email@example.com', $user->getEmail());
         $this->assertTrue($this->encoder->isPasswordValid($user->getPassword(), 'passw0rd', ''));
 
         $this->securityManager->logout();
-        $this->assertFalse($this->session->has('loggedUserId'));
-        $this->assertNull($this->userRepository->find($this->session->get('loggedUserId')));
+        $this->assertFalse($this->session->has(SecurityManager::SECURITY_KEY . SecurityManager::SECURED_AREA));
+        $this->assertNull($this->userRepository->find($this->session->get(SecurityManager::SECURITY_KEY . SecurityManager::SECURED_AREA)));
     }
 
     /**
