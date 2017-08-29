@@ -13,21 +13,20 @@ namespace Hanaboso\PipesFramework\Commons\Enum;
  *
  * @package Hanaboso\PipesFramework\Commons\Enum
  */
-final class StorageTypeEnum
+final class StorageTypeEnum extends EnumAbstraction
 {
+
+    /**
+     * @var string[]
+     */
+    protected static $choices = [
+        self::PERSISTENT => 'Persistent',
+        self::TEMPORARY  => 'Temporary',
+        self::PUBLIC     => 'Public',
+    ];
 
     public const PERSISTENT = 'persistent';
     public const TEMPORARY  = 'temporary';
     public const PUBLIC     = 'public';
-
-    /**
-     * @param string $type
-     *
-     * @return bool
-     */
-    public static function isValid(string $type): bool
-    {
-        return in_array($type, [self::PERSISTENT, self::PUBLIC, self::TEMPORARY]);
-    }
 
 }
