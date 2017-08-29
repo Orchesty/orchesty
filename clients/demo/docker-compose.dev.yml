@@ -15,6 +15,7 @@ services:
           DEV_GID: ${DEV_GID}
         volumes:
           - ../../:/var/www/pipes
+          - ${SSH_AUTH_SOCK}:/ssh-agent
         depends_on:
           - mongodb
 
@@ -22,14 +23,16 @@ services:
     frontend:
         image: dkr.hanaboso.net/pipes/pipes/nodejs-build:dev
         user: ${DEV_UID}:${DEV_GID}
+        working_dir: /var/www/pipes/frontend
         environment:
           DEV_UID: ${DEV_UID}
           DEV_GID: ${DEV_GID}
-          WEBROOT: ${WORKDIR}/web
+          WEBROOT: /var/www/pipes/frontend
         ports:
-          - ${DEV_IP}:8080:8080
+          - ${DEV_IP}:80:80
         volumes:
           - ../../:/var/www/pipes
+          - ${SSH_AUTH_SOCK}:/ssh-agent
         depends_on:
           - app
 

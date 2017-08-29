@@ -22,3 +22,4 @@
  * Use new NodeJS dev image instead of the current build image
  * Enhance NPM caching
  * Enghance Composer caching
+ * Look into pf-bundle docker-compose and see if we need a special nginx contaner
