@@ -4,6 +4,7 @@ namespace Hanaboso\PipesFramework\User\Document;
 
 use DateTime;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Exception;
 use Hanaboso\PipesFramework\Commons\Traits\IdTrait;
 
 /**
@@ -65,6 +66,44 @@ abstract class UserAbstract implements UserInterface
     public function getCreated(): DateTime
     {
         return $this->created;
+    }
+
+    /**
+     * Needed by symfony's UserInterface.
+     *
+     * @return array
+     */
+    public function getRoles(): array
+    {
+        return [];
+    }
+
+    /**
+     * Needed by symfony's UserInterface.
+     *
+     * @return string
+     */
+    public function getSalt(): string
+    {
+        return '';
+    }
+
+    /**
+     * Needed by symfony's UserInterface.
+     *
+     * @return string
+     */
+    public function getUsername(): string
+    {
+        return $this->email;
+    }
+
+    /**
+     * Needed by symfony's UserInterface.
+     */
+    public function eraseCredentials(): void
+    {
+        throw new Exception(__CLASS__ . '::' . __METHOD__ . ' is not implemented');
     }
 
 }
