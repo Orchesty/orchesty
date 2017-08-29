@@ -125,9 +125,13 @@ class MapperControllerTest extends DatabaseWebTestCaseAbstract
             json_encode($content)
         );
 
+        $abc = $this->client->getResponse();
+
         $response = json_decode($this->client->getResponse()->getContent(), TRUE);
 
-        return $this->dm->getRepository(User::class)->find($response['data']['id']);
+        $stop = 1;
+
+        return $this->dm->getRepository(User::class)->find($response['id']);
     }
 
 }
