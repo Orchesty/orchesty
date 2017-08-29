@@ -10,6 +10,7 @@ use Hanaboso\PipesFramework\User\Model\Token\TokenManagerException;
 use Hanaboso\PipesFramework\User\Model\User\UserManagerException;
 use Hanaboso\PipesFramework\Utils\ControllerUtils;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -45,17 +46,18 @@ class UserController extends FOSRestController
      *
      * @param Request $request
      *
-     * @return Response
+     * @return JsonResponse
      */
-    public function loginAction(Request $request): Response
+    public function loginAction(Request $request): JsonResponse
     {
+
         try {
-            $view = $this->view($this->userHandler->login($request->request->all()), 200);
+            $response = new JsonResponse($this->userHandler->login($request->request->all())->toArray(), 200);
         } catch (SecurityManagerException $e) {
-            $view = $this->view(ControllerUtils::createExceptionData($e), 500);
+            $response = new JsonResponse(ControllerUtils::createExceptionData($e), 500);
         }
 
-        return $this->handleView($view);
+        return $response;
     }
 
     /**

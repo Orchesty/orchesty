@@ -94,5 +94,17 @@ class User extends UserAbstract
         return $this;
     }
 
+    /**
+     * @return array
+     */
+    public function toArray(): array
+    {
+        return [
+            'id'       => $this->getId(),
+            'email'    => $this->getEmail(),
+            'password' => $this->getPassword(),
+        ];
+    }
+
 }
 
