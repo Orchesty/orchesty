@@ -4,6 +4,11 @@ services:
         arguments:
             - '@service_container'
 
+    hbpf.joiner.handler:
+            class: Hanaboso\PipesFramework\HbPFJoinerBundle\Handler\JoinerHandler
+            arguments:
+                - '@hbpf.loader.joiner'
+
     hbpf.joiner.null:
         class: Hanaboso\PipesFramework\Joiner\Impl\NullJoiner
         arguments:

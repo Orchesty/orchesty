@@ -12,6 +12,7 @@ use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Controller\FOSRestController;
 use Hanaboso\PipesFramework\HbPFJoinerBundle\Handler\JoinerHandler;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -45,13 +46,13 @@ class JoinerController extends FOSRestController
      * @param Request $request
      * @param string  $joinerId
      *
-     * @return Response
+     * @return JsonResponse
      */
-    public function sendAction(Request $request, string $joinerId): Response
+    public function sendAction(Request $request, string $joinerId): JsonResponse
     {
-        $res = $this->handler->processJoiner($joinerId, $request->request->all());
+        $data = $this->handler->processJoiner($joinerId, $request->request->all());
 
-        return $this->handleView($this->view($res));
+        return new JsonResponse($data, 200);
     }
 
     /**

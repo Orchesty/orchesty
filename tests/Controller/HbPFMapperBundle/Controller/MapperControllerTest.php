@@ -21,14 +21,7 @@ final class MapperControllerTest extends ControllerTestCaseAbstract
      */
     public function testProcessTest(): void
     {
-        $mapperHandlerMock = $this->getMockBuilder(MapperHandler::class)
-            ->setConstructorArgs([new MapperLoader($this->container)])
-            ->setMethods(['processTest'])
-            ->getMock();
-
-        $mapperHandlerMock->method('processTest')->willReturn('Test');
-
-        $this->container->set('hbpf.mapper.handler.mapper', $mapperHandlerMock);
+        $this->prepareMapperHandlerMock('processTest');
 
         $this->client->request('POST', '/api/mapper/null/process/test', [], [], [], '{"test":1}');
 
@@ -42,14 +35,7 @@ final class MapperControllerTest extends ControllerTestCaseAbstract
      */
     public function testProcessTestFail(): void
     {
-        $mapperHandlerMock = $this->getMockBuilder(MapperHandler::class)
-            ->setConstructorArgs([new MapperLoader($this->container)])
-            ->setMethods(['processTest'])
-            ->getMock();
-
-        $mapperHandlerMock->method('processTest')->willReturn('Test');
-
-        $this->container->set('hbpf.mapper.handler.mapper', $mapperHandlerMock);
+        $this->prepareMapperHandlerMock('processTest');
 
         $this->client->request('POST', '/api/mapper/abc/process/test', [], [], [], '{"test":1}');
 
@@ -63,14 +49,7 @@ final class MapperControllerTest extends ControllerTestCaseAbstract
      */
     public function testProcess(): void
     {
-        $mapperHandlerMock = $this->getMockBuilder(MapperHandler::class)
-            ->setConstructorArgs([new MapperLoader($this->container)])
-            ->setMethods(['processTest'])
-            ->getMock();
-
-        $mapperHandlerMock->method('processTest')->willReturn('Test');
-
-        $this->container->set('hbpf.mapper.handler.mapper', $mapperHandlerMock);
+        $this->prepareMapperHandlerMock('process');
 
         $params = ['abc' => 'def'];
         $this->client->request('POST', '/api/mapper/null/process', $params, [], [], '{"test":1}');
@@ -86,14 +65,7 @@ final class MapperControllerTest extends ControllerTestCaseAbstract
      */
     public function testProcessFail(): void
     {
-        $mapperHandlerMock = $this->getMockBuilder(MapperHandler::class)
-            ->setConstructorArgs([new MapperLoader($this->container)])
-            ->setMethods(['processTest'])
-            ->getMock();
-
-        $mapperHandlerMock->method('processTest')->willReturn('Test');
-
-        $this->container->set('hbpf.mapper.handler.mapper', $mapperHandlerMock);
+        $this->prepareMapperHandlerMock('process');
 
         $params = ['abc' => 'def'];
         $this->client->request('POST', '/api/mapper/abc/process', $params, [], [], '{"test":1}');
@@ -105,6 +77,21 @@ final class MapperControllerTest extends ControllerTestCaseAbstract
         self::assertEquals(500, $response->getStatusCode());
         self::assertEquals('ERROR', $content['status']);
         self::assertEquals(MapperException::MAPPER_NOT_EXIST, $content['error_code']);
+    }
+
+    /**
+     * @param string $methodName
+     */
+    private function prepareMapperHandlerMock(string $methodName): void
+    {
+        $mapperHandlerMock = $this->getMockBuilder(MapperHandler::class)
+            ->setConstructorArgs([new MapperLoader($this->container)])
+            ->setMethods([$methodName])
+            ->getMock();
+
+        $mapperHandlerMock->method($methodName)->willReturn('Test');
+
+        $this->container->set('hbpf.mapper.handler.mapper', $mapperHandlerMock);
     }
 
 }
