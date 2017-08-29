@@ -1,14 +1,17 @@
 monolog:
     use_microseconds: false
-    channels: [stdout, authorization, commons, connector, mailer, parser_table, user]
+    channels: [stdout, authorization, commons, connector, mailer, parser_table, user, rabbit-mq]
     handlers:
         stdout:
             type: stream
             path: "php://stdout"
             level: info
+            channels: [rabbit-mq]
         authorization:
             type: "%logger_handler%"
-            path: "%kernel.logs_dir%/authorization_%kernel.environment%.log"
+            path: "%kernel.logs_dir%/authoriza
+
+            tion_%kernel.environment%.log"
             level: info
             max_files: 10
         commons:
@@ -36,3 +39,9 @@ monolog:
             path: "%kernel.logs_dir%/user_%kernel.environment%.log"
             level: info
             max_files: 10
+        rabbit-mq:
+            type: "%logger_handler%"
+            path: "%kernel.logs_dir%/rabbit-mq_%kernel.environment%.log"
+            level: info
+            max_files: 10
+            channels: rabbit-mq

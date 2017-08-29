@@ -12,14 +12,21 @@ use Bunny\Channel;
 use Bunny\Client;
 use Bunny\Message;
 use Hanaboso\PipesFramework\RabbitMqBundle\Serializers\IMessageSerializer;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Class AbstractConsumer
  *
  * @package RabbitMqBundle\Consumer
  */
-abstract class AbstractConsumer
+abstract class AbstractConsumer implements LoggerAwareInterface
 {
+
+    /**
+     * @var LoggerAwareInterface
+     */
+    protected $logger;
 
     /**
      * @var string|null
@@ -315,6 +322,11 @@ abstract class AbstractConsumer
     public function getMaxSeconds(): ?int
     {
         return $this->maxSeconds;
+    }
+
+    public function setLogger(LoggerInterface $logger)
+    {
+        $this->logger = $logger;
     }
 
 }
