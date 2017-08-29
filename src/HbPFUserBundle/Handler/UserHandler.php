@@ -95,7 +95,7 @@ class UserHandler implements LogoutSuccessHandlerInterface, EventSubscriberInter
      *
      * @return bool
      */
-    public function onLogoutSuccess(Request $request)
+    public function onLogoutSuccess(Request $request): bool
     {
         return TRUE;
     }
@@ -103,7 +103,7 @@ class UserHandler implements LogoutSuccessHandlerInterface, EventSubscriberInter
     /**
      * @return array
      */
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
         return [
             KernelEvents::EXCEPTION => [
@@ -117,7 +117,7 @@ class UserHandler implements LogoutSuccessHandlerInterface, EventSubscriberInter
      *
      * @param GetResponseForExceptionEvent $event
      */
-    public function onCoreException(GetResponseForExceptionEvent $event)
+    public function onCoreException(GetResponseForExceptionEvent $event): void
     {
         $exception = $event->getException();
 

@@ -72,7 +72,12 @@ class UserManagerTest extends DatabaseTestCaseAbstract
         $this->tokenManager      = new TokenManager($this->dm);
         $this->userManager       = new UserManager(
             $this->dm,
-            new SecurityManager($this->dm, $encoderFactory, new Session()),
+            new SecurityManager(
+                $this->dm,
+                $encoderFactory,
+                new Session(),
+                $this->container->get('security.token_storage')
+            ),
             $this->tokenManager,
             $encoderFactory,
             new EventDispatcher()

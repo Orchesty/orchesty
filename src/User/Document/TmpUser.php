@@ -32,4 +32,5 @@ class TmpUser extends UserAbstract
     {
         return '';
     }
+
 }
