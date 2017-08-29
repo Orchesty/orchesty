@@ -145,7 +145,10 @@ class SecurityManager
 
         }
 
-        return $this->userRepository->find($this->session->get($this->sessionName));
+        /** @var Token $token */
+        $token = unserialize($this->session->get($this->sessionName));
+
+        return $this->userRepository->find($token->getUser()->getId());
     }
 
 }
