@@ -49,11 +49,6 @@ class DocumentTest extends DatabaseTestCaseAbstract
         );
         $this->assertEquals($token->getUser()->getEmail(), $existingToken->getUser()->getEmail());
         $this->assertEquals($token->getTmpUser()->getEmail(), $existingToken->getTmpUser()->getEmail());
-
-        $this->dm->remove($existingToken->getUser());
-        $this->dm->remove($existingToken->getTmpUser());
-        $this->dm->remove($existingToken);
-        $this->dm->flush();
     }
 
 }
