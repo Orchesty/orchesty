@@ -12,14 +12,21 @@ use Bunny\Exception\BunnyException;
 use Hanaboso\PipesFramework\RabbitMqBundle\BunnyManager;
 use Hanaboso\PipesFramework\RabbitMqBundle\ContentTypes;
 use Hanaboso\PipesFramework\RabbitMqBundle\Serializers\IMessageSerializer;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Class AbstractProducer
  *
  * @package Hanaboso\PipesFramework\RabbitMqBundle\Producer
  */
-class AbstractProducer
+class AbstractProducer implements LoggerAwareInterface
 {
+
+    /**
+     * @var LoggerAwareInterface
+     */
+    protected $logger;
 
     /**
      * @var string
@@ -251,6 +258,18 @@ class AbstractProducer
     public function getManager(): BunnyManager
     {
         return $this->manager;
+    }
+
+    /**
+     * Sets a logger instance on the object.
+     *
+     * @param LoggerInterface $logger
+     *
+     * @return void
+     */
+    public function setLogger(LoggerInterface $logger)
+    {
+        $this->logger = $logger;
     }
 
 }

@@ -9,8 +9,10 @@
 namespace Hanaboso\PipesFramework\RabbitMqBundle\DependencyInjection\Compiler;
 
 use InvalidArgumentException;
+use Psr\Log\LoggerAwareInterface;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
 
@@ -130,6 +132,12 @@ class RabbitMqCompilerPass implements CompilerPassInterface
                 new Reference($this->managerServiceId),
             ]);
 
+            if (array_key_exists(LoggerAwareInterface::class, class_implements($value['class']))) {
+                $definition->addMethodCall('setLogger', [
+                    new Reference('monolog.logger.rabbit-mq', ContainerInterface::IGNORE_ON_INVALID_REFERENCE),
+                ]);
+            }
+
             $producers[$key] = $definition;
 
             $serviceName = sprintf('rabbit-mq.producer.%s', $key);
@@ -143,7 +151,6 @@ class RabbitMqCompilerPass implements CompilerPassInterface
         }
 
         foreach ($config['consumers'] as $key => $value) {
-
             $definition = new Definition($value['class'], [
                 $value['exchange'],
                 $value['routing_key'],
@@ -163,6 +170,12 @@ class RabbitMqCompilerPass implements CompilerPassInterface
                 $value['max_messages'],
                 $value['max_seconds'],
             ]);
+
+            if (array_key_exists(LoggerAwareInterface::class, class_implements($value['class']))) {
+                $definition->addMethodCall('setLogger', [
+                    new Reference('monolog.logger.rabbit-mq', ContainerInterface::IGNORE_ON_INVALID_REFERENCE),
+                ]);
+            }
 
             $consumers[$key] = $definition;
 
