@@ -100,6 +100,7 @@ class RabbitMqExtension extends Extension implements ConfigurationInterface
         $consumersNode->children()->scalarNode('class')->isRequired();
         $consumersNode->children()->scalarNode('queue')->isRequired();
         $consumersNode->children()->scalarNode('serializer')->isRequired();
+        $consumersNode->children()->scalarNode('callback')->isRequired();
         $consumersNode->children()->scalarNode('exchange')->defaultValue(NULL);
         $consumersNode->children()->scalarNode('routing_key')->defaultValue('');
         $consumersNode->children()->scalarNode('consumer_tag')->defaultValue('');

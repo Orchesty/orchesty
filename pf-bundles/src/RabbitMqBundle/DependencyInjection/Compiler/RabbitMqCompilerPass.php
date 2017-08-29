@@ -177,6 +177,10 @@ class RabbitMqCompilerPass implements CompilerPassInterface
                 ]);
             }
 
+            $definition->addMethodCall('setCallback', [
+                new Reference($value['callback'], ContainerInterface::EXCEPTION_ON_INVALID_REFERENCE),
+            ]);
+
             $consumers[$key] = $definition;
 
             $serviceName = sprintf('rabbit-mq.consumer.%s', $key);

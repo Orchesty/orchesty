@@ -41,12 +41,16 @@ services:
         - mongo:/data/db
 
   rabbitmq:
-      image: 'rabbitmq:management-alpine'
-      ports:
-       - ${DEV_IP}:15672:15672
-       - ${DEV_IP}:5672:5672
-      volumes:
+    image: 'rabbitmq:management-alpine'
+    volumes:
        - rabbit-mq:/var/lib/rabbitmq
+    ports:
+      - '${DEV_IP}:15672:15672'
+      - '${DEV_IP}:5672:5672'
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
+      - RABBITMQ_DEFAULT_VHOST=${RABBITMQ_DEFAULT_VHOST}
 
   mariadb:
       image: mariadb:10.3

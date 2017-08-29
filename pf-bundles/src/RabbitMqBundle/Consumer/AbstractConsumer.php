@@ -14,6 +14,7 @@ use Bunny\Message;
 use Hanaboso\PipesFramework\RabbitMqBundle\Serializers\IMessageSerializer;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 
 /**
  * Class AbstractConsumer
@@ -111,7 +112,7 @@ abstract class AbstractConsumer implements LoggerAwareInterface
      * @param array                   $arguments
      * @param int|null                $prefetchCount
      * @param int|null                $prefetchSize
-     * @param null|IMessageSerializer $serializer
+     * @param IMessageSerializer|null $serializer
      * @param null|string             $setUpMethod
      * @param null|string             $tickMethod
      * @param int|null                $tickSeconds
@@ -155,6 +156,8 @@ abstract class AbstractConsumer implements LoggerAwareInterface
         $this->tickSeconds   = $tickSeconds;
         $this->maxMessages   = $maxMessages;
         $this->maxSeconds    = $maxSeconds;
+
+        $this->logger = new NullLogger();
     }
 
     /**
@@ -162,23 +165,8 @@ abstract class AbstractConsumer implements LoggerAwareInterface
      * @param Message $message
      * @param Channel $channel
      * @param Client  $client
-     *
-     * @return void
      */
-    public function handleMessage($data, Message $message, Channel $channel, Client $client): void
-    {
-        $this->handle($data, $message, $channel, $client);
-    }
-
-    /**
-     * @param mixed   $data
-     * @param Message $message
-     * @param Channel $channel
-     * @param Client  $client
-     *
-     * @return mixed
-     */
-    abstract public function handle($data, Message $message, Channel $channel, Client $client): void;
+    abstract function handleMessage($data, Message $message, Channel $channel, Client $client): void;
 
     /**
      * @return string|null

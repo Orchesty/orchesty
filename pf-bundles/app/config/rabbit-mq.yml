@@ -41,3 +41,5 @@ rabbit-mq:
             routing_key: demo_key
             queue: demo
             serializer: Hanaboso\PipesFramework\RabbitMqBundle\Serializers\JsonSerializer
+
+{ resource: rabbit-mq/repeater.yml }
