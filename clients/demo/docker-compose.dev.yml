@@ -91,3 +91,8 @@ services:
           - ${DEV_IP}:2003:2003
         volumes:
           - ./.docker-volumes/influxdb-data:/var/lib/influxdb
+
+    mailhog:
+        image: mailhog/mailhog
+        ports:
+          - ${DEV_IP}:8025:8025
