@@ -3,6 +3,7 @@
 use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
 use Doctrine\Bundle\MongoDBBundle\DoctrineMongoDBBundle;
 use FOS\RestBundle\FOSRestBundle;
+use Hanaboso\PipesFramework\HbPFAclBundle\HbPFAclBundle;
 use Hanaboso\PipesFramework\HbPFAuthorizationBundle\HbPFAuthorizationBundle;
 use Hanaboso\PipesFramework\HbPFCommonsBundle\HbPFCommonsBundle;
 use Hanaboso\PipesFramework\HbPFConnectorBundle\HbPFConnectorBundle;
@@ -50,6 +51,7 @@ class AppKernel extends Kernel
             new HbPFMapperBundle(),
             new HbPFTableParserBundle(),
             new HbPFUserBundle(),
+            new HbPFAclBundle(),
         ];
 
         return $bundles;
