@@ -1,0 +1,5 @@
+parameters:
+    acl_rule:
+        resources:
+            group: Hanaboso\PipesFramework\Acl\Document\Group
+            rule: Hanaboso\PipesFramework\Acl\Document\Rule
