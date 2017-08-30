@@ -16,6 +16,10 @@ namespace Hanaboso\PipesFramework\Commons\Enum;
 final class StorageTypeEnum extends EnumAbstraction
 {
 
+    public const PERSISTENT = 'persistent';
+    public const TEMPORARY  = 'temporary';
+    public const PUBLIC     = 'public';
+
     /**
      * @var string[]
      */
@@ -24,9 +28,5 @@ final class StorageTypeEnum extends EnumAbstraction
         self::TEMPORARY  => 'Temporary',
         self::PUBLIC     => 'Public',
     ];
-
-    public const PERSISTENT = 'persistent';
-    public const TEMPORARY  = 'temporary';
-    public const PUBLIC     = 'public';
 
 }
