@@ -1,1 +1,5 @@
 services:
+    hbpf.acl.provider.database:
+        class: Hanaboso\PipesFramework\Acl\Provider\Impl\DatabaseProvider
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
