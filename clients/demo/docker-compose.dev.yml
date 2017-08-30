@@ -27,7 +27,7 @@ services:
         environment:
           DEV_UID: ${DEV_UID}
           DEV_GID: ${DEV_GID}
-          WEBROOT: /var/www/pipes/frontend
+          PHP_WEBROOT: ${WORKDIR}/web
         ports:
           - ${DEV_IP}:80:80
         volumes:
