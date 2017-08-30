@@ -9,12 +9,13 @@ use Hanaboso\PipesFramework\Commons\Exception\PipesFrameworkException;
  *
  * @package Hanaboso\PipesFramework\Acl\Exception
  */
-class AclException extends PipesFrameworkException
+final class AclException extends PipesFrameworkException
 {
 
-    protected const OFFSET = 1000;
+    protected const OFFSET = 2100;
 
-    public const MISSING_DATA = self::OFFSET + 1;
-    public const ZERO_MASK    = self::OFFSET + 2;
+    public const MISSING_DATA          = self::OFFSET + 1;
+    public const ZERO_MASK             = self::OFFSET + 2;
+    public const MISSING_DEFAULT_RULES = self::OFFSET + 3;
 
 }

@@ -1,0 +1,6 @@
+parameters:
+    acl_rule:
+        owner:
+            user: ['read', 'write', 'delete']
+            group: ['write', 'read']
+            rule: ['read', 'write', 'delete']

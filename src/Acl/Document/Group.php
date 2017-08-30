@@ -42,6 +42,13 @@ class Group
     private $users;
 
     /**
+     * @var User
+     *
+     * @ODM\ReferenceOne(targetDocument="Hanaboso\PipesFramework\User\Document\User")
+     */
+    private $owner;
+
+    /**
      * @return string
      */
     public function getName(): string
@@ -97,6 +104,26 @@ class Group
     public function addUser(User $user): Group
     {
         $this->users[] = $user;
+
+        return $this;
+    }
+
+    /**
+     * @return User
+     */
+    public function getOwner(): User
+    {
+        return $this->owner;
+    }
+
+    /**
+     * @param User $owner
+     *
+     * @return Group
+     */
+    public function setOwner(User $owner): Group
+    {
+        $this->owner = $owner;
 
         return $this;
     }

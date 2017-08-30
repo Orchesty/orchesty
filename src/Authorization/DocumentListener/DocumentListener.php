@@ -14,7 +14,7 @@ use Hanaboso\PipesFramework\Authorization\Document\Authorization;
 use Hanaboso\PipesFramework\Commons\Crypt\CryptManager;
 
 /**
- * Class AuthorizationTokenListener
+ * Class DocumentListener
  *
  * @package Hanaboso\PipesFramework\Authorization\EntityListener
  */
