@@ -7,7 +7,7 @@ namespace Hanaboso\PipesFramework\Acl\Enum;
  *
  * @package Hanaboso\PipesFramework\Acl\Enum
  */
-class ResourceEnum
+final class ResourceEnum
 {
 
 }

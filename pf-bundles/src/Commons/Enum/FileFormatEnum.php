@@ -17,6 +17,13 @@ namespace Hanaboso\PipesFramework\Commons\Enum;
 final class FileFormatEnum extends EnumAbstraction
 {
 
+    public const XML  = 'xml';
+    public const JSON = 'json';
+    public const CSV  = 'csv';
+    public const XLS  = 'xls';
+    public const XLSX = 'xlsx';
+    public const ODS  = 'ods';
+
     /**
      * @var string[]
      */
@@ -27,12 +34,5 @@ final class FileFormatEnum extends EnumAbstraction
         self::XLSX => 'XLSX',
         self::ODS  => 'ODS',
     ];
-
-    public const XML  = 'xml';
-    public const JSON = 'json';
-    public const CSV  = 'csv';
-    public const XLS  = 'xls';
-    public const XLSX = 'xlsx';
-    public const ODS  = 'ods';
 
 }
