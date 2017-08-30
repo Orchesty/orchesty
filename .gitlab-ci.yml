@@ -56,6 +56,3 @@ cleanup:
   script:
     - cd $REPO_ROOT/pf-bundles
     - make docker-down-clean
-
-    - cd $REPO_ROOT/hbpf-nodejs
-    - docker-compose down -v
