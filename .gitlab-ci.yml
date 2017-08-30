@@ -43,17 +43,6 @@ lib-sym3-test:
     - make composer-install
     - make test
 
-lib-njs-test:
-  stage: stage2
-  script:
-    - DIR=hbpf-nodejs
-    - skip_unmodified $DIR
-    - ": TODO: modify this job to allow parallel execution!"
-    - cd $REPO_ROOT/$DIR
-    - export RABBITMQ_HOST=rabbitmq
-    - docker-compose up -d
-    - docker-compose exec -T test npm test
-
 frontend:
   stage: stage2
   script:
