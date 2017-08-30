@@ -18,15 +18,13 @@ class MaskFactoryTest extends KernelTestCaseAbstract
      */
     public function testMaskAction(): void
     {
-        $fac = $this->container->get('hbpf.factory.mask');
-
         $data = [
             'read'   => FALSE,
             'write'  => 1,
             'delete' => 'true',
         ];
 
-        self::assertEquals(6, $fac->maskAction($data));
+        self::assertEquals(6, MaskFactory::maskAction($data));
     }
 
     /**
@@ -34,14 +32,12 @@ class MaskFactoryTest extends KernelTestCaseAbstract
      */
     public function testMaskProperty(): void
     {
-        $fac = $this->container->get('hbpf.factory.mask');
-
         $data = [
             'owner' => '1',
             'group' => 1,
         ];
 
-        self::assertEquals(2, $fac->maskProperty($data));
+        self::assertEquals(2, MaskFactory::maskProperty($data));
     }
 
 }

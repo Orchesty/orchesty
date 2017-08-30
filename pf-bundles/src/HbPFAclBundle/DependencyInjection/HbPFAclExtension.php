@@ -43,6 +43,7 @@ class HbPFAclExtension extends Extension implements PrependExtensionInterface
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('acl.yml');
+        $loader->load('acl_rules.yml');
         $loader->load('services.yml');
     }
 

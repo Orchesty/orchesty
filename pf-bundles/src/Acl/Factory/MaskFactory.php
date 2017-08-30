@@ -20,7 +20,7 @@ class MaskFactory
      * @return int
      * @throws AclException
      */
-    public function maskAction(array $data): int
+    public static function maskAction(array $data): int
     {
         if (!isset($data[ActionEnum::DELETE]) || !isset($data[ActionEnum::READ]) || !isset($data[ActionEnum::WRITE])
         ) {
@@ -42,12 +42,23 @@ class MaskFactory
     }
 
     /**
+     * @param string[] $rule
+     *
+     * @return int
+     */
+    public static function maskActionFromYmlArray(array $rule): int
+    {
+        return in_array(ActionEnum::DELETE, $rule) << 2 | in_array(ActionEnum::WRITE, $rule) << 1 |
+            in_array(ActionEnum::READ, $rule);
+    }
+
+    /**
      * @param string[] $data
      *
      * @return int
      * @throws AclException
      */
-    public function maskProperty(array $data): int
+    public static function maskProperty(array $data): int
     {
         if (!isset($data[PropertyEnum::OWNER]) || !isset($data[PropertyEnum::GROUP])) {
             throw new AclException(
