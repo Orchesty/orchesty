@@ -50,3 +50,15 @@ services:
     ports:
       - '15672:15672'
       - '5672:5672'
+  test:
+      build: .
+      working_dir: /usr/app
+      environment:
+        - RABBITMQ_HOST=rabbitmq
+        - RABBITMQ_PORT=5672
+        - RABBITMQ_USER=guest
+        - RABBITMQ_PASS=guest
+        - RABBITMQ_VHOST=/
+      depends_on:
+        - rabbitmq
+      command: sleep infinity
