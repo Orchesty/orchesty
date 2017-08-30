@@ -1,1 +1,3 @@
 services:
+    hbpf.factory.mask:
+        class: Hanaboso\PipesFramework\Acl\Factory\MaskFactory
