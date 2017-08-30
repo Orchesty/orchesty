@@ -12,12 +12,12 @@ services:
             - 'username'
             - 'password'
 
-    hbpf.authorization.magento2.oauth:
+    hbpf.authorization.magento2_oauth:
         class: Hanaboso\PipesFramework\Authorization\Impl\Magento2\Magento2OAuthAuthorization
         arguments:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.providers.oauth1_provider'
-            - 'magento2.oauth'
+            - 'magento2_oauth'
             - 'magento2 OAuth'
             - 'magento2 OAuth'
             - 'url://magento2'
