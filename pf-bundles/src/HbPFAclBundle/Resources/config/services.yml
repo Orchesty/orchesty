@@ -1,9 +1,14 @@
 services:
-
     hbpf.factory.mask:
         class: Hanaboso\PipesFramework\Acl\Factory\MaskFactory
+        arguments:
 
     hbpf.acl.provider.database:
         class: Hanaboso\PipesFramework\Acl\Provider\Impl\DatabaseProvider
         arguments:
             - '@doctrine_mongodb.odm.default_document_manager'
+
+    hbpf.acl.provider.resource:
+        class: Hanaboso\PipesFramework\HbPFAclBundle\Provider\ResourceProvider
+        arguments:
+            - '%acl_rule%'

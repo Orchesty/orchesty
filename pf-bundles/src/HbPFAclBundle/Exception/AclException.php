@@ -14,4 +14,8 @@ final class AclException extends PipesFrameworkException
 
     protected const OFFSET = 1900;
 
+    public const ACL_NOT_EXIST      = self::OFFSET + 1;
+    public const ACL_NOT_ARRAY      = self::OFFSET + 2;
+    public const RESOURCE_NOT_EXIST = self::OFFSET + 3;
+
 }
