@@ -1,0 +1,64 @@
+import { Channel } from "amqplib";
+import logger from "lib-nodejs/dist/src/logger/Logger";
+import Connection from "lib-nodejs/dist/src/rabbitmq/Connection";
+import Publisher from "lib-nodejs/dist/src/rabbitmq/Publisher";
+import JobMessage from "../../../message/JobMessage";
+import {IAMQPDrainSettings, IFollower} from "../AMQPDrain";
+
+/**
+ * This class will be injected to all drains and all counter result messages will be published using it
+ */
+class FollowersPublisher extends Publisher {
+
+    private settings: IAMQPDrainSettings;
+
+    constructor(conn: Connection, settings: IAMQPDrainSettings) {
+        super(
+            conn, (ch: Channel) => {
+                const followersPromises: Array<Promise<any>> = [];
+                settings.followers.forEach((f: IFollower) => {
+                    const prom = new Promise((resolve) => {
+                        ch.assertExchange(f.exchange.name, f.exchange.type, f.exchange.options)
+                            .then(() => { resolve(); });
+                    });
+
+                    followersPromises.push(prom);
+                });
+
+                return Promise.all(followersPromises)
+                    .then(() => {
+                        logger.info(`Followers publisher prepared.`);
+                    });
+            });
+        this.settings = settings;
+    }
+
+    /**
+     *
+     * @param {JobMessage} message
+     * @return {Promise<void>}
+     */
+    public send(message: JobMessage): Promise<void> {
+        const options = { headers: message.getHeaders(), messageId: message.getId() };
+
+        const promises: Array<Promise<void>> = [];
+        this.settings.followers.forEach((follower: IFollower) => {
+            promises.push(
+                this.publish(
+                    follower.exchange.name,
+                    follower.routing_key,
+                    new Buffer(message.getContent()),
+                    options,
+                ),
+            );
+        });
+
+        return Promise.all(promises)
+            .then(() => {
+                logger.info(`Messages forwarded to ${promises.length} followers.`);
+            });
+    }
+
+}
+
+export default FollowersPublisher;
