@@ -58,9 +58,9 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
     public function __construct()
     {
         parent::__construct();
-        self::bootKernel();
-        $this->container    = self::$kernel->getContainer();
+
         $this->client       = self::createClient([], ['HTTP_X-Requested-With' => 'XMLHttpRequest']);
+        $this->container    = self::$kernel->getContainer();
         $this->dm           = $this->container->get('doctrine_mongodb.odm.default_document_manager');
         $this->session      = $this->container->get('hbpf.user.session');
         $this->tokenStorage = $this->container->get('security.token_storage');

@@ -40,8 +40,11 @@ final class MapperControllerTest extends ControllerTestCaseAbstract
         $this->client->request('POST', '/api/mapper/abc/process/test', [], [], [], '{"test":1}');
 
         $response = $this->client->getResponse();
+        $content  = json_decode($response->getContent(), TRUE);
 
         self::assertEquals(500, $response->getStatusCode());
+        self::assertEquals('ERROR', $content['status']);
+        self::assertEquals(MapperException::MAPPER_NOT_EXIST, $content['error_code']);
     }
 
     /**
@@ -71,8 +74,7 @@ final class MapperControllerTest extends ControllerTestCaseAbstract
         $this->client->request('POST', '/api/mapper/abc/process', $params, [], [], '{"test":1}');
 
         $response = $this->client->getResponse();
-
-        $content = json_decode($response->getContent(), TRUE);
+        $content  = json_decode($response->getContent(), TRUE);
 
         self::assertEquals(500, $response->getStatusCode());
         self::assertEquals('ERROR', $content['status']);
