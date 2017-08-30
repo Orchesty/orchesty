@@ -9,8 +9,11 @@ use Hanaboso\PipesFramework\Commons\Enum\EnumAbstraction;
  *
  * @package Hanaboso\PipesFramework\User\Enum
  */
-class UserTypeEnum extends EnumAbstraction
+final class UserTypeEnum extends EnumAbstraction
 {
+
+    public const USER     = 'user';
+    public const TMP_USER = 'tmpUser';
 
     /**
      * @var string[]
@@ -19,8 +22,5 @@ class UserTypeEnum extends EnumAbstraction
         self::USER     => 'User',
         self::TMP_USER => 'Unactivated user',
     ];
-
-    public const USER     = 'user';
-    public const TMP_USER = 'tmpUser';
 
 }
