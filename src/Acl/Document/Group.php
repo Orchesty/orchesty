@@ -6,7 +6,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\PersistentCollection;
 use Hanaboso\PipesFramework\Commons\Traits\IdTrait;
-use Hanaboso\PipesFramework\User\Document\User;
+use Hanaboso\PipesFramework\User\Document\UserInterface;
 
 /**
  * Class Group
@@ -15,7 +15,7 @@ use Hanaboso\PipesFramework\User\Document\User;
  *
  * @ODM\Document(repositoryClass="Hanaboso\PipesFramework\Acl\Repository\GroupRepository")
  */
-class Group
+class Group extends DocumentAbstract
 {
 
     use IdTrait;
@@ -35,18 +35,11 @@ class Group
     private $rules;
 
     /**
-     * @var User[]|null
+     * @var UserInterface[]|null
      *
      * @ODM\ReferenceMany(targetDocument="Hanaboso\PipesFramework\User\Document\User")
      */
     private $users;
-
-    /**
-     * @var User
-     *
-     * @ODM\ReferenceOne(targetDocument="Hanaboso\PipesFramework\User\Document\User")
-     */
-    private $owner;
 
     /**
      * @return string
@@ -71,9 +64,21 @@ class Group
     /**
      * @return Rule[]|PersistentCollection|ArrayCollection|null
      */
-    public function getRules(): ?PersistentCollection
+    public function getRules()
     {
         return $this->rules;
+    }
+
+    /**
+     * @param array $rules
+     *
+     * @return Group
+     */
+    public function setRules(array $rules): Group
+    {
+        $this->rules = $rules;
+
+        return $this;
     }
 
     /**
@@ -89,41 +94,33 @@ class Group
     }
 
     /**
-     * @return User[]|PersistentCollection|ArrayCollection|null
+     * @return UserInterface[]|PersistentCollection|ArrayCollection|null
      */
-    public function getUsers(): ?PersistentCollection
+    public function getUsers()
     {
         return $this->users;
     }
 
     /**
-     * @param User $user
+     * @param UserInterface[] $users
      *
      * @return Group
      */
-    public function addUser(User $user): Group
+    public function setUsers($users): Group
     {
-        $this->users[] = $user;
+        $this->users = $users;
 
         return $this;
     }
 
     /**
-     * @return User
-     */
-    public function getOwner(): User
-    {
-        return $this->owner;
-    }
-
-    /**
-     * @param User $owner
+     * @param UserInterface $user
      *
      * @return Group
      */
-    public function setOwner(User $owner): Group
+    public function addUser(UserInterface $user): Group
     {
-        $this->owner = $owner;
+        $this->users[] = $user;
 
         return $this;
     }

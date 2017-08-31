@@ -23,7 +23,7 @@ class DocumentTest extends DatabaseTestCaseAbstract
         $user = (new User())->setEmail('email@example.com');
         $this->persistAndFlush($user);
 
-        $group = (new Group())
+        $group = (new Group($user))
             ->setName('Group')
             ->addUser($user);
         $this->persistAndFlush($group);

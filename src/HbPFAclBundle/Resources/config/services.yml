@@ -7,7 +7,7 @@ services:
     hbpf.acl.provider.resource:
         class: Hanaboso\PipesFramework\HbPFAclBundle\Provider\ResourceProvider
         arguments:
-            - '%acl_rule%'
+            - '%acl_res%'
 
     hbpf.factory.rule:
         class: Hanaboso\PipesFramework\Acl\Factory\RuleFactory
@@ -15,9 +15,12 @@ services:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '%acl_rule%'
 
-    hbpf.listener.acl:
-        class: Hanaboso\PipesFramework\Acl\DocumentListener\UserEventSubscriber
+    hbpf.access.manager:
+        class: Hanaboso\PipesFramework\Acl\Manager\AccessManager
         arguments:
-        - '@hbpf.factory.rule'
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.factory.rule'
+            - '@hbpf.acl.provider.database'
+            - '@hbpf.acl.provider.resource'
         tags:
         - { name: kernel.event_subscriber }
