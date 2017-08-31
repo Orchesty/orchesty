@@ -53,6 +53,24 @@ class MaskFactory
     }
 
     /**
+     * @param string $act
+     *
+     * @return int
+     * @throws AclException
+     */
+    public static function getActionByte(string $act): int
+    {
+        switch ($act) {
+            case ActionEnum::DELETE:
+                return 2;
+            case ActionEnum::WRITE:
+                return 1;
+            case ActionEnum::READ:
+                return 0;
+        }
+    }
+
+    /**
      * @param string[] $data
      *
      * @return int
