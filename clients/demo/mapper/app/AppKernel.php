@@ -40,10 +40,9 @@ class AppKernel extends Kernel
             new AppBundle(),
             new HbPFAuthorizationBundle(),
             new HbPFCommonsBundle(),
-            new HbPFConnectorBundle(),
-            new HbPFUserBundle(),
-            new HbPFMailerBundle(),
-            new HbPFTableParserBundle(),
+            //new HbPFConnectorBundle(),
+            //new HbPFMailerBundle(),
+            //new HbPFTableParserBundle(),
         ];
 
         if (in_array($this->getEnvironment(), ['dev', 'test'], TRUE)) {
