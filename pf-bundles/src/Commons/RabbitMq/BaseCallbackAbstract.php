@@ -46,6 +46,8 @@ abstract class BaseCallbackAbstract
                     RabbitMqException::UNKNOWN_CALLBACK_STATUS_CODE
                 );
         }
+
+        return $result;
     }
 
     /**

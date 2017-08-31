@@ -1,23 +1,18 @@
-<?php declare(strict_types=1);
+<?php
 /**
  * Created by PhpStorm.
  * User: Pavel Severyn
- * Date: 29.8.17
- * Time: 11:28
+ * Date: 31.8.17
+ * Time: 14:25
  */
 
-namespace Hanaboso\PipesFramework\Commons\RabbitMq\Repeater;
+namespace Hanaboso\PipesFramework\Commons\RabbitMq\Demo;
 
 use Bunny\Message;
 use Hanaboso\PipesFramework\Commons\RabbitMq\BaseCallbackAbstract;
 use Hanaboso\PipesFramework\Commons\RabbitMq\CallbackStatus;
 
-/**
- * Class RepeaterCallback
- *
- * @package Hanaboso\PipesFramework\Commons\Repeater
- */
-class RepeaterCallback extends BaseCallbackAbstract
+class DemoCallback extends BaseCallbackAbstract
 {
 
     /**
@@ -28,6 +23,7 @@ class RepeaterCallback extends BaseCallbackAbstract
      */
     function handle($data, Message $message): CallbackStatus
     {
+        echo "receive:" . print_r($data, 1);
         return new CallbackStatus(CallbackStatus::FAILED_DONE);
     }
 

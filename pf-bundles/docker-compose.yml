@@ -13,8 +13,10 @@ services:
       - COMPOSER_HOME=/home/dev/.composer
     depends_on:
       - mongo
+      - rabbitmq
     links:
       - mongo
+      - rabbitmq
 
   nginx:
     image: nginx

@@ -37,7 +37,6 @@ abstract class BaseConsumerAbstract extends AbstractConsumer
      */
     public function handleMessage($data, Message $message, Channel $channel, Client $client): void
     {
-
         if (!is_callable($this->getCallback())) {
             throw new RabbitMqException(
                 'Missing callback definition',
@@ -46,6 +45,7 @@ abstract class BaseConsumerAbstract extends AbstractConsumer
         }
 
         $result = call_user_func($this->getCallback(), $data, $message, $channel, $client);
+        $this->handleResult($result, $message, $channel);
     }
 
     /**
@@ -66,6 +66,19 @@ abstract class BaseConsumerAbstract extends AbstractConsumer
         $this->callback = $callback;
 
         return $this;
+    }
+
+    /**
+     * @param CallbackStatus $result
+     * @param Message        $message
+     * @param Channel        $channel
+     */
+    protected function handleResult(CallbackStatus $result, Message $message, Channel $channel)
+    {
+
+        if (!$this->isNoAck()) {
+            $channel->ack($message);
+        }
     }
 
 }
