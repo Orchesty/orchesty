@@ -2,7 +2,7 @@ services:
     hbpf.acl.provider.database:
         class: Hanaboso\PipesFramework\Acl\Provider\Impl\DatabaseProvider
         arguments:
-            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.database_manager_locator.user'
 
     hbpf.acl.provider.resource:
         class: Hanaboso\PipesFramework\HbPFAclBundle\Provider\ResourceProvider
@@ -12,7 +12,7 @@ services:
     hbpf.factory.rule:
         class: Hanaboso\PipesFramework\Acl\Factory\RuleFactory
         arguments:
-            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.database_manager_locator.user'
             - '%acl_rule%'
 
     hbpf.access.manager:

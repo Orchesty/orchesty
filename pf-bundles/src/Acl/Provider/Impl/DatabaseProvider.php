@@ -3,10 +3,12 @@
 namespace Hanaboso\PipesFramework\Acl\Provider\Impl;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ORM\EntityManager;
 use Hanaboso\PipesFramework\Acl\Document\Group;
 use Hanaboso\PipesFramework\Acl\Document\Rule;
 use Hanaboso\PipesFramework\Acl\Provider\ProviderInterface;
 use Hanaboso\PipesFramework\Acl\Repository\GroupRepository;
+use Hanaboso\PipesFramework\User\DatabaseManager\UserDatabaseManagerLocator;
 use Hanaboso\PipesFramework\User\Document\User;
 use Hanaboso\PipesFramework\User\Document\UserInterface;
 
@@ -19,18 +21,18 @@ class DatabaseProvider implements ProviderInterface
 {
 
     /**
-     * @var DocumentManager
+     * @var DocumentManager|EntityManager
      */
-    private $documentManager;
+    private $em;
 
     /**
      * DatabaseProvider constructor.
      *
-     * @param DocumentManager $documentManager
+     * @param UserDatabaseManagerLocator $databaseManagerLocator
      */
-    public function __construct(DocumentManager $documentManager)
+    public function __construct(UserDatabaseManagerLocator $databaseManagerLocator)
     {
-        $this->documentManager = $documentManager;
+        $this->em = $databaseManagerLocator->get();
     }
 
     /**
@@ -41,7 +43,7 @@ class DatabaseProvider implements ProviderInterface
     public function getRules(UserInterface $user): array
     {
         /** @var GroupRepository $groupRepository */
-        $groupRepository = $this->documentManager->getRepository(Group::class);
+        $groupRepository = $this->em->getRepository(Group::class);
 
         $rules = [];
         foreach ($groupRepository->getUserGroups($user) as $group) {

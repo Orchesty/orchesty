@@ -2,8 +2,7 @@
 
 namespace Hanaboso\PipesFramework\User\Model\Security;
 
-use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\DocumentRepository;
+use Hanaboso\PipesFramework\User\DatabaseManager\UserDatabaseManagerLocator;
 use Hanaboso\PipesFramework\User\Document\User;
 use Hanaboso\PipesFramework\User\Model\Token;
 use Hanaboso\PipesFramework\User\Repository\UserRepository;
@@ -23,7 +22,7 @@ class SecurityManager
     public const SECURED_AREA = 'secured_area';
 
     /**
-     * @var UserRepository|DocumentRepository
+     * @var UserRepository
      */
     private $userRepository;
 
@@ -50,24 +49,23 @@ class SecurityManager
     /**
      * SecurityManager constructor.
      *
-     * @param DocumentManager $documentManager
-     * @param EncoderFactory  $encoderFactory
-     * @param Session         $session
-     * @param TokenStorage    $tokenStorage
+     * @param UserDatabaseManagerLocator $databaseManagerLocator
+     * @param EncoderFactory             $encoderFactory
+     * @param Session                    $session
+     * @param TokenStorage               $tokenStorage
      */
     public function __construct(
-        DocumentManager $documentManager,
+        UserDatabaseManagerLocator $databaseManagerLocator,
         EncoderFactory $encoderFactory,
         Session $session,
         TokenStorage $tokenStorage
     )
     {
-        $this->userRepository = $documentManager->getRepository(User::class);
+        $this->userRepository = $databaseManagerLocator->get()->getRepository(User::class);
         $this->encoderFactory = $encoderFactory;
-        $this->session        = $session;
         $this->tokenStorage   = $tokenStorage;
-
-        $this->sessionName = self::SECURITY_KEY . self::SECURED_AREA;
+        $this->session        = $session;
+        $this->sessionName    = self::SECURITY_KEY . self::SECURED_AREA;
     }
 
     /**

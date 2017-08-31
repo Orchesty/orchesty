@@ -3,10 +3,12 @@
 namespace Hanaboso\PipesFramework\Acl\Factory;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ORM\EntityManager;
 use Hanaboso\PipesFramework\Acl\Document\Group;
 use Hanaboso\PipesFramework\Acl\Document\Rule;
 use Hanaboso\PipesFramework\Acl\Enum\ResourceEnum;
 use Hanaboso\PipesFramework\Acl\Exception\AclException;
+use Hanaboso\PipesFramework\User\DatabaseManager\UserDatabaseManagerLocator;
 
 /**
  * Class RuleFactory
@@ -22,19 +24,19 @@ class RuleFactory
     private $rules;
 
     /**
-     * @var DocumentManager
+     * @var DocumentManager|EntityManager
      */
-    private $dm;
+    private $em;
 
     /**
      * RuleFactory constructor.
      *
-     * @param DocumentManager $dm
-     * @param array           $rules
+     * @param UserDatabaseManagerLocator $databaseManagerLocator
+     * @param array                      $rules
      *
      * @throws AclException
      */
-    function __construct(DocumentManager $dm, array $rules)
+    function __construct(UserDatabaseManagerLocator $databaseManagerLocator, array $rules)
     {
         if (!is_array($rules) || !array_key_exists('owner', $rules)) {
             throw new AclException(
@@ -43,7 +45,7 @@ class RuleFactory
             );
         }
 
-        $this->dm    = $dm;
+        $this->em    = $databaseManagerLocator->get();
         $this->rules = $rules['owner'];
     }
 
@@ -84,7 +86,7 @@ class RuleFactory
      */
     public function getDefaultRules(Group $group): array
     {
-        $this->dm->persist($group);
+        $this->em->persist($group);
 
         // TODO ošetřit následnou změnu defaultních práv
         $rules = [];
@@ -92,7 +94,7 @@ class RuleFactory
             $actMask = MaskFactory::maskActionFromYmlArray($rule);
             $rule    = self::createRule($key, $group, $actMask, 1);
             $group->addRule($rule);
-            $this->dm->persist($rule);
+            $this->em->persist($rule);
 
             $rules[] = $rule;
         }

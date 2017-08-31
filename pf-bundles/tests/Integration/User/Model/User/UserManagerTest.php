@@ -3,21 +3,16 @@
 namespace Tests\Integration\User\Model\User;
 
 use DateTime;
-use Doctrine\ODM\MongoDB\DocumentRepository;
 use Hanaboso\PipesFramework\User\Document\TmpUser;
 use Hanaboso\PipesFramework\User\Document\Token;
 use Hanaboso\PipesFramework\User\Document\User;
 use Hanaboso\PipesFramework\User\Enum\UserTypeEnum;
-use Hanaboso\PipesFramework\User\Model\Security\SecurityManager;
-use Hanaboso\PipesFramework\User\Model\Token\TokenManager;
 use Hanaboso\PipesFramework\User\Model\Token\TokenManagerException;
 use Hanaboso\PipesFramework\User\Model\User\UserManager;
 use Hanaboso\PipesFramework\User\Model\User\UserManagerException;
 use Hanaboso\PipesFramework\User\Repository\TmpUserRepository;
 use Hanaboso\PipesFramework\User\Repository\TokenRepository;
 use Hanaboso\PipesFramework\User\Repository\UserRepository;
-use Symfony\Component\EventDispatcher\EventDispatcher;
-use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Security\Core\Encoder\PasswordEncoderInterface;
 use Tests\DatabaseTestCaseAbstract;
 use Tests\PrivateTrait;
@@ -38,22 +33,17 @@ class UserManagerTest extends DatabaseTestCaseAbstract
     private $userManager;
 
     /**
-     * @var TokenManager
-     */
-    private $tokenManager;
-
-    /**
-     * @var UserRepository|DocumentRepository
+     * @var UserRepository
      */
     private $userRepository;
 
     /**
-     * @var TmpUserRepository|DocumentRepository
+     * @var TmpUserRepository
      */
     private $tmpUserRepository;
 
     /**
-     * @var TokenRepository|DocumentRepository
+     * @var TokenRepository
      */
     private $tokenRepository;
 
@@ -69,23 +59,11 @@ class UserManagerTest extends DatabaseTestCaseAbstract
     {
         parent::setUp();
         $encoderFactory          = $this->container->get('security.encoder_factory');
-        $this->tokenManager      = new TokenManager($this->dm);
-        $this->userManager       = new UserManager(
-            $this->dm,
-            new SecurityManager(
-                $this->dm,
-                $encoderFactory,
-                new Session(),
-                $this->container->get('security.token_storage')
-            ),
-            $this->tokenManager,
-            $encoderFactory,
-            new EventDispatcher()
-        );
+        $this->userManager       = $this->container->get('hbpf.user.manager.user');
         $this->userRepository    = $this->dm->getRepository(User::class);
         $this->tmpUserRepository = $this->dm->getRepository(TmpUser::class);
         $this->tokenRepository   = $this->dm->getRepository(Token::class);
-        $this->encoder           = $encoderFactory->getEncoder(new User());
+        $this->encoder           = $encoderFactory->getEncoder(User::class);
     }
 
     /**
