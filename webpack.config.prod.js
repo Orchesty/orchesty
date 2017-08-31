@@ -1,25 +1,44 @@
 var path = require('path');
 var webpack = require('webpack');
+
 var CopyWebpackPlugin = require('copy-webpack-plugin');
+var CleanWebpackPlugin = require('clean-webpack-plugin');
+
 
 module.exports = {
-  devtool: 'source-map',
   entry: [
-    'webpack-dev-server/client?http://localhost:8080',
-    'webpack/hot/only-dev-server',
-    './src/main.jsx'
+    'babel-polyfill',
+    './src/main.jsx' // Your appʼs entry point
   ],
   output: {
     path: path.join(__dirname, 'dist'),
-    filename: 'bundle.js'
+    filename: "bundle.js"
   },
   plugins: [
+    new CleanWebpackPlugin('dist'),
+    new webpack.DefinePlugin({
+      'process.env':{
+        'NODE_ENV': JSON.stringify('production')
+      }
+    }),
+    new webpack.optimize.UglifyJsPlugin({
+      beautify: false,
+      mangle: {
+        screw_ie8: true,
+        keep_fnames: true
+      },
+      compress: {
+        screw_ie8: true,
+        warnings: false
+      },
+      comments: false
+    }),
     new CopyWebpackPlugin([{
       from: './src/index.html'
-    }]),
-    new webpack.NamedModulesPlugin()
+    }])
   ],
   resolve: {
+    // require files in app without specifying extensions
     extensions: ['.js', '.jsx']
   },
   module: {
@@ -27,7 +46,7 @@ module.exports = {
       {
         test: /\.jsx?$/,
         exclude: /node_modules/,
-        loaders: ['react-hot-loader', 'babel-loader?presets[]=react,presets[]=es2015']
+        loaders: ['babel-loader?presets[]=react,presets[]=es2015']
       },
       {
         test: /\.css$/,
