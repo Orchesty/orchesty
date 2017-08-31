@@ -5,6 +5,7 @@ namespace Hanaboso\PipesFramework\Acl\Factory;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\PipesFramework\Acl\Document\Group;
 use Hanaboso\PipesFramework\Acl\Document\Rule;
+use Hanaboso\PipesFramework\Acl\Enum\ResourceEnum;
 use Hanaboso\PipesFramework\Acl\Exception\AclException;
 
 /**
@@ -16,13 +17,14 @@ class RuleFactory
 {
 
     /**
-     * @var DocumentManager
-     */
-    private $dm;
-    /**
      * @var array
      */
     private $rules;
+
+    /**
+     * @var DocumentManager
+     */
+    private $dm;
 
     /**
      * RuleFactory constructor.
@@ -50,55 +52,52 @@ class RuleFactory
      * @param Group  $group
      * @param int    $actMask
      * @param int    $propMask
+     *
+     * @return Rule
+     * @throws AclException
      */
-    public function createRule(string $resource, Group $group, int $actMask, int $propMask): void
+    public static function createRule(string $resource, Group $group, int $actMask, int $propMask): Rule
     {
-        /** @var Rule $rule */
-        $rule = $this->dm->getRepository(Rule::class)->findOneBy([
-            'resource'     => $resource,
-            'group'        => $group,
-            'propertyMask' => $propMask,
-        ]);
-
-        if (!$rule) {
-            $rule = new Rule();
-            $rule
-                ->setResource($resource)
-                ->setGroup($group)
-                ->setActionMask($actMask)
-                ->setPropertyMask($propMask);
-
-            $this->dm->persist($rule);
-            $group->addRule($rule);
-        } else {
-            $rule->setActionMask($rule->getActionMask() | $actMask);
+        if (!ResourceEnum::isValid($resource)) {
+            throw new AclException(
+                sprintf('[%s] is not a valid resource', $resource),
+                AclException::INVALID_RESOURCE
+            );
         }
 
-        $this->dm->flush();
+        $rule = new Rule();
+        $rule
+            ->setResource($resource)
+            ->setGroup($group)
+            ->setActionMask($actMask)
+            ->setPropertyMask($propMask);
+
+        $group->addRule($rule);
+
+        return $rule;
     }
 
     /**
      * @param Group $group
+     *
+     * @return Rule[]
      */
-    public function setDefaultRules(Group $group): void
+    public function getDefaultRules(Group $group): array
     {
-        // TODO ošetřit následnou změnu defaultních práv
-
         $this->dm->persist($group);
+
+        // TODO ošetřit následnou změnu defaultních práv
+        $rules = [];
         foreach ($this->rules as $key => $rule) {
             $actMask = MaskFactory::maskActionFromYmlArray($rule);
-            $rule    = new Rule();
-            $rule
-                ->setPropertyMask(1)
-                ->setActionMask($actMask)
-                ->setGroup($group)
-                ->setResource($key);
-
-            $this->dm->persist($rule);
+            $rule    = self::createRule($key, $group, $actMask, 1);
             $group->addRule($rule);
+            $this->dm->persist($rule);
+
+            $rules[] = $rule;
         }
 
-        $this->dm->flush();
+        return $rules;
     }
 
 }

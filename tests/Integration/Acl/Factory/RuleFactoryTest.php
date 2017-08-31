@@ -4,7 +4,6 @@ namespace Tests\Integration\Acl\Factory;
 
 use Hanaboso\PipesFramework\Acl\Document\Group;
 use Hanaboso\PipesFramework\Acl\Document\Rule;
-use Hanaboso\PipesFramework\Acl\DocumentListener\UserEventSubscriber;
 use Hanaboso\PipesFramework\Acl\Factory\RuleFactory;
 use Hanaboso\PipesFramework\User\Document\User;
 use Hanaboso\PipesFramework\User\Model\User\Event\UserEvent;
@@ -23,26 +22,22 @@ class RuleFactoryTest extends DatabaseTestCaseAbstract
      */
     public function testRuleFactory(): void
     {
-        $group = new Group();
+        $group = new Group(NULL);
         $group->setName('group');
         $this->persistAndFlush($group);
 
         $fac = $this->container->get('hbpf.factory.rule');
-        $fac->createRule('res', $group, 3, 2);
-        $fac->createRule('res', $group, 5, 2);
+        /** @var Rule $rule */
+        $rule = $fac->createRule('user', $group, 3, 2);
 
-        $res = $this->dm->getRepository(Rule::class)->findBy([
-            'resource'     => 'res',
-            'group'        => $group,
-            'propertyMask' => 2,
-        ]);
-
-        self::assertCount(1, $res);
-        self::assertEquals(7, $res[0]->getActionMask());
+        self::assertInstanceOf(Rule::class, $rule);
+        self::assertEquals(3, $rule->getActionMask());
+        self::assertEquals(2, $rule->getPropertyMask());
+        self::assertEquals('user', $rule->getResource());
     }
 
     /**
-     * @covers RuleFactory::setDefaultRules()
+     * @covers RuleFactory::getDefaultRules()
      * @covers UserEventSubscriber::createGroup()
      */
     public function testSetDefaultRules(): void
@@ -60,7 +55,7 @@ class RuleFactoryTest extends DatabaseTestCaseAbstract
             ]),
         ]);
 
-        self::assertCount(3, $res);
+        self::assertCount(2, $res);
         self::assertEquals(7, $res[0]->getActionMask());
         self::assertEquals(3, $res[1]->getActionMask());
     }

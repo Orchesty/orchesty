@@ -24,16 +24,16 @@ class DatabaseProviderTest extends DatabaseTestCaseAbstract
         /** @var DatabaseProvider $databaseProvider */
         $databaseProvider = $this->container->get('hbpf.acl.provider.database');
 
-        $ruleOne = (new Rule)->setResource('R1');
+        $ruleOne = (new Rule())->setResource('R1');
         $this->persistAndFlush($ruleOne);
-        $ruleTwo = (new Rule)->setResource('R2');
+        $ruleTwo = (new Rule())->setResource('R2');
         $this->persistAndFlush($ruleTwo);
-        $ruleThree = (new Rule)->setResource('R3');
+        $ruleThree = (new Rule())->setResource('R3');
         $this->persistAndFlush($ruleThree);
-        $ruleFour = (new Rule)->setResource('R4');
+        $ruleFour = (new Rule())->setResource('R4');
         $this->persistAndFlush($ruleFour);
 
-        $groupOne = (new Group())
+        $groupOne = (new Group(NULL))
             ->setName('G1')
             ->addRule($ruleOne)
             ->addRule($ruleThree);
@@ -41,7 +41,7 @@ class DatabaseProviderTest extends DatabaseTestCaseAbstract
         $ruleThree->setGroup($groupOne);
         $this->persistAndFlush($groupOne);
 
-        $groupTwo = (new Group())
+        $groupTwo = (new Group(NULL))
             ->setName('G1')
             ->addRule($ruleTwo)
             ->addRule($ruleFour);
