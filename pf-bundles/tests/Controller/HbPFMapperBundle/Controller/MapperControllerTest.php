@@ -3,9 +3,7 @@
 namespace Tests\Controller\HbPFMapperBundle\Controller;
 
 use Hanaboso\PipesFramework\HbPFMapperBundle\Controller\MapperController;
-use Hanaboso\PipesFramework\HbPFMapperBundle\Exception\MapperException;
 use Hanaboso\PipesFramework\HbPFMapperBundle\Handler\MapperHandler;
-use Hanaboso\PipesFramework\HbPFMapperBundle\Loader\MapperLoader;
 use Tests\ControllerTestCaseAbstract;
 
 /**
@@ -21,7 +19,7 @@ final class MapperControllerTest extends ControllerTestCaseAbstract
      */
     public function testProcessTest(): void
     {
-        $this->prepareMapperHandlerMock('processTest');
+        $this->prepareMapperHandlerMock('processTest', []);
 
         $this->client->request('POST', '/api/mapper/null/process/test', [], [], [], '{"test":1}');
 
@@ -31,30 +29,13 @@ final class MapperControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers MapperController::processTestAction()
-     */
-    public function testProcessTestFail(): void
-    {
-        $this->prepareMapperHandlerMock('processTest');
-
-        $this->client->request('POST', '/api/mapper/abc/process/test', [], [], [], '{"test":1}');
-
-        $response = $this->client->getResponse();
-        $content  = json_decode($response->getContent(), TRUE);
-
-        self::assertEquals(500, $response->getStatusCode());
-        self::assertEquals('ERROR', $content['status']);
-        self::assertEquals(MapperException::MAPPER_NOT_EXIST, $content['error_code']);
-    }
-
-    /**
      * @covers MapperController::processAction()
      */
     public function testProcess(): void
     {
-        $this->prepareMapperHandlerMock('process');
-
         $params = ['abc' => 'def'];
+        $this->prepareMapperHandlerMock('process', $params);
+
         $this->client->request('POST', '/api/mapper/null/process', $params, [], [], '{"test":1}');
 
         $response = $this->client->getResponse();
@@ -64,36 +45,18 @@ final class MapperControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers MapperController::processAction()
-     */
-    public function testProcessFail(): void
-    {
-        $this->prepareMapperHandlerMock('process');
-
-        $params = ['abc' => 'def'];
-        $this->client->request('POST', '/api/mapper/abc/process', $params, [], [], '{"test":1}');
-
-        $response = $this->client->getResponse();
-        $content  = json_decode($response->getContent(), TRUE);
-
-        self::assertEquals(500, $response->getStatusCode());
-        self::assertEquals('ERROR', $content['status']);
-        self::assertEquals(MapperException::MAPPER_NOT_EXIST, $content['error_code']);
-    }
-
-    /**
      * @param string $methodName
+     * @param string $returnValue
      */
-    private function prepareMapperHandlerMock(string $methodName): void
+    private function prepareMapperHandlerMock(string $methodName, $returnValue = 'Test'): void
     {
         $mapperHandlerMock = $this->getMockBuilder(MapperHandler::class)
-            ->setConstructorArgs([new MapperLoader($this->container)])
-            ->setMethods([$methodName])
+            ->disableOriginalConstructor()
             ->getMock();
 
-        $mapperHandlerMock->method($methodName)->willReturn('Test');
+        $mapperHandlerMock->method($methodName)->willReturn($returnValue);
 
-        $this->container->set('hbpf.mapper.handler.mapper', $mapperHandlerMock);
+        $this->client->getContainer()->set('hbpf.mapper.handler.mapper', $mapperHandlerMock);
     }
 
 }
