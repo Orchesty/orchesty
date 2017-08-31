@@ -15,13 +15,16 @@ use Hanaboso\PipesFramework\Authorization\Exception\AuthorizationException;
 use Hanaboso\PipesFramework\Authorization\Provider\Dto\OAuth1Dto;
 use Hanaboso\PipesFramework\Commons\Redirect\RedirectInterface;
 use OAuth;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 
 /**
  * Class OAuth1Provider
  *
  * @package Hanaboso\PipesFramework\Authorization\Provider
  */
-class OAuth1Provider implements ProviderInterface
+class OAuth1Provider implements ProviderInterface, LoggerAwareInterface
 {
 
     public const OAUTH_TOKEN        = 'oauth_token';
@@ -40,6 +43,11 @@ class OAuth1Provider implements ProviderInterface
     private $redirect;
 
     /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    /**
      * OAuth1Provider constructor.
      *
      * @param DocumentManager   $dm
@@ -49,6 +57,19 @@ class OAuth1Provider implements ProviderInterface
     {
         $this->dm       = $dm;
         $this->redirect = $redirect;
+        $this->logger   = new NullLogger();
+    }
+
+    /**
+     * @param LoggerInterface $logger
+     *
+     * @return OAuth1Provider
+     */
+    public function setLogger(LoggerInterface $logger): OAuth1Provider
+    {
+        $this->logger = $logger;
+
+        return $this;
     }
 
     /**
@@ -221,7 +242,7 @@ class OAuth1Provider implements ProviderInterface
      */
     private function throwException(string $message): void
     {
-        //TODO log this
+        $this->logger->error($message);
         throw new AuthorizationException($message, AuthorizationException::AUTHORIZATION_OAUTH1_ERROR);
     }
 
