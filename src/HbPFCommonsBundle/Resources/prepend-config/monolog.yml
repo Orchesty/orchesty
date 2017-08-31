@@ -4,44 +4,42 @@ monolog:
     handlers:
         stdout:
             type: stream
-            path: "php://stdout"
+            path: 'php://stdout'
             level: info
             channels: [rabbit-mq]
         authorization:
-            type: "%logger_handler%"
-            path: "%kernel.logs_dir%/authoriza
-
-            tion_%kernel.environment%.log"
+            type: '%logger_handler%'
+            path: '%kernel.logs_dir%/authorization_%kernel.environment%.log'
             level: info
             max_files: 10
         commons:
-            type: "%logger_handler%"
-            path: "%kernel.logs_dir%/commons_%kernel.environment%.log"
+            type: '%logger_handler%'
+            path: '%kernel.logs_dir%/commons_%kernel.environment%.log'
             level: info
             max_files: 10
         connector:
-            type: "%logger_handler%"
-            path: "%kernel.logs_dir%/connector_%kernel.environment%.log"
+            type: '%logger_handler%'
+            path: '%kernel.logs_dir%/connector_%kernel.environment%.log'
             level: info
             max_files: 10
         mailer:
-            type: "%logger_handler%"
-            path: "%kernel.logs_dir%/mailer_%kernel.environment%.log"
+            type: '%logger_handler%'
+            path: '%kernel.logs_dir%/mailer_%kernel.environment%.log'
             level: info
             max_files: 10
         parser_table:
-            type: "%logger_handler%"
-            path: "%kernel.logs_dir%/parser_table_%kernel.environment%.log"
+            type: '%logger_handler%'
+            path: '%kernel.logs_dir%/parser_table_%kernel.environment%.log'
             level: info
             max_files: 10
         user:
-            type: "%logger_handler%"
-            path: "%kernel.logs_dir%/user_%kernel.environment%.log"
+            type: '%logger_handler%'
+            path: '%kernel.logs_dir%/user_%kernel.environment%.log'
             level: info
             max_files: 10
         rabbit-mq:
-            type: "%logger_handler%"
-            path: "%kernel.logs_dir%/rabbit-mq_%kernel.environment%.log"
+            type: '%logger_handler%'
+            path: '%kernel.logs_dir%/rabbit-mq_%kernel.environment%.log'
             level: info
             max_files: 10
             channels: rabbit-mq

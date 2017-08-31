@@ -23,3 +23,5 @@ services:
             - 'url://magento2'
             - 'api_key'
             - 'secret_key'
+        calls:
+            - ['setLogger', ['@monolog.logger.authorization']]
