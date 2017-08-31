@@ -2,8 +2,8 @@ services:
     hbpf.loader.authorization:
         class: Hanaboso\PipesFramework\HbPFAuthorizationBundle\Loader\AuthorizationLoader
         arguments:
-            - "@service_container"
-            - "@doctrine_mongodb.odm.default_document_manager"
+            - '@service_container'
+            - '@doctrine_mongodb.odm.default_document_manager'
 
     hbpf.listener.authorization:
         class: Hanaboso\PipesFramework\Authorization\DocumentListener\DocumentListener

@@ -14,13 +14,16 @@ use Hanaboso\PipesFramework\Authorization\Base\OAuthAuthorizationAbstract;
 use Hanaboso\PipesFramework\Authorization\Exception\AuthorizationException;
 use Hanaboso\PipesFramework\Authorization\Provider\Dto\OAuth1Dto;
 use Hanaboso\PipesFramework\Authorization\Provider\OAuth1Provider;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 
 /**
  * Class Magento2OAuthAuthorization
  *
  * @package Hanaboso\PipesFramework\Authorization\Impl\Magento2
  */
-class Magento2OAuthAuthorization extends OAuthAuthorizationAbstract implements Magento2AuthorizationInterface
+class Magento2OAuthAuthorization extends OAuthAuthorizationAbstract implements Magento2AuthorizationInterface, LoggerAwareInterface
 {
 
     private const URL             = 'url';
@@ -31,6 +34,11 @@ class Magento2OAuthAuthorization extends OAuthAuthorizationAbstract implements M
      * @var OAuth1Provider
      */
     private $auth1Provider;
+
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
 
     /**
      * Magento2OAuthAuthorization constructor.
@@ -63,6 +71,19 @@ class Magento2OAuthAuthorization extends OAuthAuthorizationAbstract implements M
             self::CONSUMER_SECRET => $consumerSecret,
         ]);
         $this->auth1Provider = $auth1Provider;
+        $this->logger        = new NullLogger();
+    }
+
+    /**
+     * @param LoggerInterface $logger
+     *
+     * @return Magento2OAuthAuthorization
+     */
+    public function setLogger(LoggerInterface $logger): Magento2OAuthAuthorization
+    {
+        $this->logger = $logger;
+
+        return $this;
     }
 
     /**
@@ -84,7 +105,7 @@ class Magento2OAuthAuthorization extends OAuthAuthorizationAbstract implements M
     {
 
         if (!$this->isAuthorized()) {
-            //TODO log this
+            $this->logger->error('Magento2 OAuth not authorized');
             throw new AuthorizationException();
         }
 

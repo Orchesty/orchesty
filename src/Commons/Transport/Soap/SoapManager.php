@@ -5,6 +5,9 @@ namespace Hanaboso\PipesFramework\Commons\Transport\Soap;
 use Exception;
 use Hanaboso\PipesFramework\Commons\Transport\Soap\Dto\RequestDtoAbstract;
 use Hanaboso\PipesFramework\Commons\Transport\Soap\Dto\ResponseDto;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use SoapFault;
 
 /**
@@ -12,7 +15,7 @@ use SoapFault;
  *
  * @package Hanaboso\PipesFramework\Commons\Transport\Soap
  */
-final class SoapManager implements SoapManagerInterface
+final class SoapManager implements SoapManagerInterface, LoggerAwareInterface
 {
 
     public const CONNECTION_TIMEOUT = 15;
@@ -23,6 +26,11 @@ final class SoapManager implements SoapManagerInterface
     private $soapClientFactory;
 
     /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    /**
      * SoapManager constructor.
      *
      * @param SoapClientFactory $soapClientFactory
@@ -30,6 +38,19 @@ final class SoapManager implements SoapManagerInterface
     public function __construct(SoapClientFactory $soapClientFactory)
     {
         $this->soapClientFactory = $soapClientFactory;
+        $this->logger            = new NullLogger();
+    }
+
+    /**
+     * @param LoggerInterface $logger
+     *
+     * @return SoapManager
+     */
+    public function setLogger(LoggerInterface $logger): SoapManager
+    {
+        $this->logger = $logger;
+
+        return $this;
     }
 
     /**
@@ -45,7 +66,13 @@ final class SoapManager implements SoapManagerInterface
 
             $client = $this->soapClientFactory->create($request, $this->composeOptions($request, $options));
 
-            // TODO log
+            $this->logger->info(sprintf('Request: Type: %s, Uri: %s, Headers: %s, User: %s, Password: %s',
+                $request->getType(),
+                $request->getUri(),
+                implode(', ', $request->getHeader()->getParams()),
+                $request->getUser(),
+                $request->getPassword()
+            ));
 
             $soapCallResponse = $client->__soapCall(
                 $request->getFunction(),
@@ -63,13 +90,13 @@ final class SoapManager implements SoapManagerInterface
             );
 
         } catch (SoapException $e) {
-            // TODO log
+            $this->logger->error($e->getMessage());
             throw $e;
         } catch (SoapFault $e) {
-            // TODO log
+            $this->logger->error(sprintf('Invalid function call: %s', $e->getMessage()));
             throw new SoapException('Invalid function call.', SoapException::INVALID_FUNCTION_CALL, $e);
         } catch (Exception $e) {
-            // TODO log
+            $this->logger->error(sprintf('Unknown exception: %s', $e->getMessage()));
             throw new SoapException('Unknown exception.', SoapException::UNKNOWN_EXCEPTION, $e);
         }
     }
@@ -91,7 +118,17 @@ final class SoapManager implements SoapManagerInterface
     {
         $response = new ResponseDto($soapCallResponse, $lastResponseHeaders, $outputHeaders);
 
-        // TODO log - may use request object
+        if ($response->getResponseHeaderDto()) {
+            $this->logger->info(sprintf('Response: Status Code: %s, Reason Phrase: %s, Headers: %s, Body: %s',
+                $response->getResponseHeaderDto()->getHttpStatusCode(),
+                $response->getResponseHeaderDto()->getHttpReason(),
+                $response->getLastResponseHeaders(),
+                $response->getSoapCallResponse()
+            ));
+        } else {
+            $this->logger->info(sprintf('Response: Body: %s', $response->getSoapCallResponse()));
+        }
+
         count([$request]);
 
         return $response;
