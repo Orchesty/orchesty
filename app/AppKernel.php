@@ -42,6 +42,7 @@ class AppKernel extends Kernel
             new SensioFrameworkExtraBundle(),
             new MonologBundle(),
 
+            new HbPFAclBundle(),
             new HbPFAuthorizationBundle(),
             new HbPFCommonsBundle(),
             new HbPFConnectorBundle(),
@@ -51,7 +52,6 @@ class AppKernel extends Kernel
             new HbPFMapperBundle(),
             new HbPFTableParserBundle(),
             new HbPFUserBundle(),
-            new HbPFAclBundle(),
         ];
 
         return $bundles;
