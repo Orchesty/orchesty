@@ -9,10 +9,8 @@
 
 namespace Tests\Controller\HbPFJoinerBundle\Controller;
 
-use Hanaboso\PipesFramework\HbPFJoinerBundle\Exception\JoinerException;
-use Hanaboso\PipesFramework\HbPFJoinerBundle\Loader\JoinerLoader;
+use Hanaboso\PipesFramework\HbPFJoinerBundle\Handler\JoinerHandler;
 use Tests\ControllerTestCaseAbstract;
-use Tests\Unit\HbPFJoinerBundle\Handler\JoinerHandler;
 
 /**
  * Class JoinerControllerTest
@@ -27,40 +25,18 @@ final class JoinerControllerTest extends ControllerTestCaseAbstract
      */
     public function testSend(): void
     {
-        $this->prepareJoinerHandlerMock('processJoiner');
-
         $params = [
             'data'  => ['abc' => 'def'],
             'count' => 1,
         ];
-        $this->client->request('POST', '/api/joiner/null/join', $params, [], [], '{"test":1}');
+        $this->prepareJoinerHandlerMock('processJoiner', $params);
+
+        $this->client->request('POST', '/api/joiner/null/join', [], [], [], '{"test":1}');
 
         $response = $this->client->getResponse();
 
         self::assertEquals(200, $response->getStatusCode());
-        self::assertEquals([], json_decode($response->getContent(), TRUE));
-    }
-
-    /**
-     * @covers JoinerController::sendAction()
-     */
-    public function testSendFail(): void
-    {
-        $this->prepareJoinerHandlerMock('processJoiner');
-
-        $params = [
-            'data'  => ['abc' => 'def'],
-            'count' => 1,
-        ];
-
-        $this->client->request('POST', '/api/joiner/abc/join', $params, [], [], '{"test":1}');
-
-        $response = $this->client->getResponse();
-        $content  = json_decode($response->getContent(), TRUE);
-
-        self::assertEquals(500, $response->getStatusCode());
-        self::assertEquals('ERROR', $content['status']);
-        self::assertEquals(JoinerException::JOINER_SERVICE_NOT_FOUND, $content['error_code']);
+        self::assertEquals($params, json_decode($response->getContent(), TRUE));
     }
 
     /**
@@ -68,14 +44,13 @@ final class JoinerControllerTest extends ControllerTestCaseAbstract
      */
     public function testSendTest(): void
     {
-        $this->prepareJoinerHandlerMock('processJoinerTest');
-
         $params = [
             'data'  => ['abc' => 'def'],
             'count' => 1,
         ];
+        $this->prepareJoinerHandlerMock('processJoinerTest', $params);
 
-        $this->client->request('POST', '/api/joiner/null/join/test', $params, [], [], '{"test":1}');
+        $this->client->request('POST', '/api/joiner/null/join/test', [], [], [], '{"test":1}');
 
         $response = $this->client->getResponse();
 
@@ -84,82 +59,18 @@ final class JoinerControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers JoinerController::sendTestAction()
-     */
-    public function testSendTestFail(): void
-    {
-        $this->prepareJoinerHandlerMock('processJoinerTest');
-
-        $params = [
-            'data'  => ['abc' => 'def'],
-            'count' => 1,
-        ];
-
-        $this->client->request('POST', '/api/joiner/abc/join/test', $params, [], [], '{"test":1}');
-
-        $response = $this->client->getResponse();
-        $content  = json_decode($response->getContent(), TRUE);
-
-        self::assertEquals(500, $response->getStatusCode());
-        self::assertEquals('ERROR', $content['status']);
-        self::assertEquals(JoinerException::JOINER_SERVICE_NOT_FOUND, $content['error_code']);
-    }
-
-    /**
-     * @covers JoinerController::sendTestAction()
-     */
-    public function testSendTestFailData(): void
-    {
-        $this->prepareJoinerHandlerMock('processJoinerTest');
-
-        $params = [
-            'count' => 1,
-        ];
-
-        $this->client->request('POST', '/api/joiner/null/join/test', $params, [], [], '{"test":1}');
-
-        $response = $this->client->getResponse();
-        $content  = json_decode($response->getContent(), TRUE);
-
-        self::assertEquals(500, $response->getStatusCode());
-        self::assertEquals('ERROR', $content['status']);
-        self::assertEquals(JoinerException::MISSING_DATA_IN_REQUEST, $content['error_code']);
-    }
-
-    /**
-     * @covers JoinerController::sendTestAction()
-     */
-    public function testSendTestFailCount(): void
-    {
-        $this->prepareJoinerHandlerMock('processJoinerTest');
-
-        $params = [
-            'data'  => ['abc' => 'def'],
-        ];
-
-        $this->client->request('POST', '/api/joiner/null/join/test', $params, [], [], '{"test":1}');
-
-        $response = $this->client->getResponse();
-        $content  = json_decode($response->getContent(), TRUE);
-
-        self::assertEquals(500, $response->getStatusCode());
-        self::assertEquals('ERROR', $content['status']);
-        self::assertEquals(JoinerException::MISSING_DATA_IN_REQUEST, $content['error_code']);
-    }
-
-    /**
      * @param string $methodName
+     * @param string $returnValue
      */
-    private function prepareJoinerHandlerMock(string $methodName): void
+    private function prepareJoinerHandlerMock(string $methodName, $returnValue = 'Test'): void
     {
         $joinerHandlerMock = $this->getMockBuilder(JoinerHandler::class)
-            ->setConstructorArgs([new JoinerLoader($this->container)])
-            ->setMethods([$methodName])
+            ->disableOriginalConstructor()
             ->getMock();
 
-        $joinerHandlerMock->method($methodName)->willReturn('Test');
+        $joinerHandlerMock->method($methodName)->willReturn($returnValue);
 
-        $this->container->set('hbpf.handler.joiner', $joinerHandlerMock);
+        $this->client->getContainer()->set('hbpf.handler.joiner', $joinerHandlerMock);
     }
 
 }

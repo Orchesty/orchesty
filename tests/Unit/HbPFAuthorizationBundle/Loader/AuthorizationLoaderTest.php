@@ -56,7 +56,7 @@ class AuthorizationLoaderTest extends KernelTestCaseAbstract
      */
     public function testGetAuthorization(): void
     {
-        $conn = $this->loader->getAuthorization('magento2.oauth');
+        $conn = $this->loader->getAuthorization('magento2_oauth');
         self::assertInstanceOf(AuthorizationInterface::class, $conn);
     }
 
@@ -65,11 +65,11 @@ class AuthorizationLoaderTest extends KernelTestCaseAbstract
      */
     public function testGetAllAuthorizations(): void
     {
-        $exclude = ['magento2.oauth'];
+        $exclude = ['magento2_oauth'];
         $conns   = $this->loader->getAllAuthorizations($exclude);
 
         self::assertNotEmpty($conns);
-        self::assertFalse(in_array('magento2.oauth', $conns));
+        self::assertFalse(in_array('magento2_oauth', $conns));
     }
 
     /**

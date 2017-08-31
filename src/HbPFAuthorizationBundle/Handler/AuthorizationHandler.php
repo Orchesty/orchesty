@@ -29,9 +29,7 @@ class AuthorizationHandler
      *
      * @param AuthorizationLoader $authorizationRepository
      */
-    function __construct(
-        AuthorizationLoader $authorizationRepository
-    )
+    function __construct(AuthorizationLoader $authorizationRepository)
     {
         $this->loader = $authorizationRepository;
     }
