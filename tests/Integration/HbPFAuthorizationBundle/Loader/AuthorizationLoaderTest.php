@@ -30,18 +30,18 @@ class AuthorizationLoaderTest extends DatabaseTestCaseAbstract
         /** @var AuthorizationRepository $repo */
         $repo = $this->dm->getRepository(Authorization::class);
 
-        $auth = new Authorization('magento2.auth');
+        $auth = new Authorization('magento2_auth');
         $this->persistAndFlush($auth);
         $this->dm->clear();
 
         $installed = $repo->getInstalledKeys();
         self::assertEquals(1, count($installed));
-        self::assertEquals('magento2.auth', $installed[0]);
+        self::assertEquals('magento2_auth', $installed[0]);
 
         $loader->installAllAuthorizations();
         $installed = $repo->getInstalledKeys();
         self::assertGreaterThan(1, count($installed));
-        self::assertContains('magento2.oauth', $installed);
+        self::assertContains('magento2_oauth', $installed);
     }
 
 }

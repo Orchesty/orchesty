@@ -58,8 +58,7 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
     public function __construct()
     {
         parent::__construct();
-
-        $this->client       = self::createClient([], ['HTTP_X-Requested-With' => 'XMLHttpRequest']);
+        self::bootKernel();
         $this->container    = self::$kernel->getContainer();
         $this->dm           = $this->container->get('doctrine_mongodb.odm.default_document_manager');
         $this->session      = $this->container->get('hbpf.user.session');
@@ -74,6 +73,7 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
     protected function setUp(): void
     {
         parent::setUp();
+        $this->client = self::createClient([], ['HTTP_X-Requested-With' => 'XMLHttpRequest']);
         $this->dm->getConnection()->dropDatabase('pipes');
         $this->session->invalidate();
         $this->session->clear();

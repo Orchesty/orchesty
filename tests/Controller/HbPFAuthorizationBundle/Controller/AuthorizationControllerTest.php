@@ -4,8 +4,7 @@ namespace Tests\Controller\HbPFAuthorizationBundle\Controller;
 
 use Hanaboso\PipesFramework\HbPFAuthorizationBundle\Controller\AuthorizationController;
 use Hanaboso\PipesFramework\HbPFAuthorizationBundle\Handler\AuthorizationHandler;
-use Hanaboso\PipesFramework\HbPFAuthorizationBundle\Loader\AuthorizationLoader;
-use InvalidArgumentException;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Tests\ControllerTestCaseAbstract;
 
 /**
@@ -27,9 +26,11 @@ final class AuthorizationControllerTest extends ControllerTestCaseAbstract
         $params = ['redirect_url' => 'asdf'];
         $this->client->request('POST', '/api/authorizations/magento2_oauth/authorize', $params, [], [], '{"test":1}');
 
+        /** @var RedirectResponse $response */
         $response = $this->client->getResponse();
 
         self::assertEquals(302, $response->getStatusCode());
+        self::assertEquals($params['redirect_url'], $response->getTargetUrl());
     }
 
     /**
@@ -39,9 +40,11 @@ final class AuthorizationControllerTest extends ControllerTestCaseAbstract
     {
         $this->prepareAuthorizationHandlerMock('authorize');
 
-        $this->expectException(InvalidArgumentException::class);
-
         $this->client->request('POST', '/api/authorizations/abc/authorize', [], [], [], '{"test":1}');
+
+        $response = $this->client->getResponse();
+
+        self::assertEquals(500, $response->getStatusCode());
     }
 
     /**
@@ -87,13 +90,8 @@ final class AuthorizationControllerTest extends ControllerTestCaseAbstract
      */
     private function prepareAuthorizationHandlerMock(string $methodName, $returnValue = 'Test'): void
     {
-        // TODO mock does not work when this line is only in setup()
-        $this->client = self::createClient([], ['HTTP_X-Requested-With' => 'XMLHttpRequest']);
-
         $authorizationHandlerMock = $this->getMockBuilder(AuthorizationHandler::class)
-            //->setConstructorArgs([new AuthorizationLoader($this->container, $this->dm)])
             ->disableOriginalConstructor()
-            ->setMethods([$methodName])
             ->getMock();
 
         $authorizationHandlerMock->method($methodName)->willReturn($returnValue);
