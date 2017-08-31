@@ -7,6 +7,7 @@ use FOS\RestBundle\Controller\FOSRestController;
 use Hanaboso\PipesFramework\Authorization\Exception\AuthorizationException;
 use Hanaboso\PipesFramework\HbPFAuthorizationBundle\Handler\AuthorizationHandler;
 use Hanaboso\PipesFramework\Utils\ControllerUtils;
+use InvalidArgumentException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -52,7 +53,7 @@ class AuthorizationController extends FOSRestController
         try {
             $this->handler->authorize($authorizationId);
             $response = new RedirectResponse($request->request->get('redirect_url'));
-        } catch (AuthorizationException $e) {
+        } catch (AuthorizationException | InvalidArgumentException $e) {
             $response = new JsonResponse(ControllerUtils::createExceptionData($e), 500);
         }
 
