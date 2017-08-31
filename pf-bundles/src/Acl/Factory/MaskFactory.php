@@ -67,6 +67,8 @@ class MaskFactory
                 return 1;
             case ActionEnum::READ:
                 return 0;
+            default:
+                throw new AclException(sprintf('Wrong action type "%s"', $act), AclException::INVALID_ACTION);
         }
     }
 
