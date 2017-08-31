@@ -9,6 +9,7 @@
 namespace Hanaboso\PipesFramework\RabbitMqBundle\Producer;
 
 use Bunny\Exception\BunnyException;
+use Hanaboso\PipesFramework\RabbitMqBundle\DebugMessageTrait;
 use Hanaboso\PipesFramework\RabbitMqBundle\BunnyManager;
 use Hanaboso\PipesFramework\RabbitMqBundle\ContentTypes;
 use Hanaboso\PipesFramework\RabbitMqBundle\Serializers\IMessageSerializer;
@@ -24,6 +25,7 @@ use Psr\Log\NullLogger;
 class AbstractProducer implements LoggerAwareInterface
 {
 
+    use DebugMessageTrait;
     /**
      * @var LoggerInterface
      */
@@ -60,7 +62,7 @@ class AbstractProducer implements LoggerAwareInterface
     private $serializer = NULL;
 
     /**
-     * @var string
+     * @var ?string
      */
     private $beforeMethod;
 
@@ -82,7 +84,7 @@ class AbstractProducer implements LoggerAwareInterface
      * @param bool         $mandatory
      * @param bool         $immediate
      * @param string       $serializerClassName
-     * @param string       $beforeMethod
+     * @param string|null  $beforeMethod
      * @param string       $contentType
      * @param BunnyManager $manager
      */
@@ -92,7 +94,7 @@ class AbstractProducer implements LoggerAwareInterface
         bool $mandatory,
         bool $immediate,
         string $serializerClassName,
-        string $beforeMethod,
+        ?string $beforeMethod,
         string $contentType,
         BunnyManager $manager
     )
@@ -147,6 +149,7 @@ class AbstractProducer implements LoggerAwareInterface
     public function publish($message, $routingKey = NULL, array $headers = []): void
     {
         if (!$this->getMeta()) {
+            $this->getLogger()->warning('Could not create meta class %s.', $this->serializerClassName);
             throw new BunnyException(
                 sprintf('Could not create meta class %s.', $this->serializerClassName)
             );
@@ -180,6 +183,11 @@ class AbstractProducer implements LoggerAwareInterface
         }
 
         $headers['content-type'] = $this->contentType;
+
+        $this->getLogger()->debug(
+            'publish',
+            $this->prepareMessage('', $this->exchange, $routingKey, $headers)
+        );
 
         $this->manager->getChannel()->publish(
             $message,
@@ -240,9 +248,9 @@ class AbstractProducer implements LoggerAwareInterface
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getBeforeMethod(): string
+    public function getBeforeMethod(): ?string
     {
         return $this->beforeMethod;
     }
@@ -273,6 +281,14 @@ class AbstractProducer implements LoggerAwareInterface
     public function setLogger(LoggerInterface $logger): void
     {
         $this->logger = $logger;
+    }
+
+    /**
+     * @return LoggerInterface
+     */
+    protected function getLogger(): LoggerInterface
+    {
+        return $this->logger;
     }
 
 }

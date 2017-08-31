@@ -74,7 +74,7 @@ abstract class AbstractConsumer implements LoggerAwareInterface
      */
     private $prefetchSize;
     /**
-     * @var IMessageSerializer|null
+     * @var string|null
      */
     private $serializer;
     /**
@@ -131,7 +131,7 @@ abstract class AbstractConsumer implements LoggerAwareInterface
         array $arguments = [],
         ?int $prefetchCount = NULL,
         ?int $prefetchSize = NULL,
-        ?IMessageSerializer $serializer = NULL,
+        ?string $serializer = NULL,
         ?string $setUpMethod = NULL,
         ?string $tickMethod = NULL,
         ?int $tickSeconds = NULL,
@@ -265,9 +265,9 @@ abstract class AbstractConsumer implements LoggerAwareInterface
     }
 
     /**
-     * @return IMessageSerializer|null
+     * @return string|null
      */
-    public function getSerializer(): ?IMessageSerializer
+    public function getSerializer(): ?string
     {
         return $this->serializer;
     }

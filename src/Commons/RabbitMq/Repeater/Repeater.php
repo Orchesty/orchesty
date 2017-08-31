@@ -76,7 +76,7 @@ class Repeater
         }
 
         //TODO: log
-        $this->producer->publish($message->content, $message->routingKey, $headers);
+        $this->producer->publish($message->content, NULL, $headers);
 
         return TRUE;
     }

@@ -9,12 +9,14 @@ services:
         class: Symfony\Bridge\Doctrine\Security\User\EntityUserProvider
         arguments:
             - "@doctrine_mongodb"
+            - '@?'
 
 
 imports:
 ## Import params
     - { resource: parameters.yml }
     - { resource: security.yml }
+    - { resource: rabbit-mq.yml }
 
 framework:
     #esi: ~

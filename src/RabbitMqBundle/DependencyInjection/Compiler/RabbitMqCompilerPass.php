@@ -109,7 +109,6 @@ class RabbitMqCompilerPass implements CompilerPassInterface
         }
 
         $config = $container->getParameter($this->configKey);
-
         $consumers = [];
         $producers = [];
 
@@ -151,6 +150,7 @@ class RabbitMqCompilerPass implements CompilerPassInterface
         }
 
         foreach ($config['consumers'] as $key => $value) {
+
             $definition = new Definition($value['class'], [
                 $value['exchange'],
                 $value['routing_key'],
@@ -178,7 +178,7 @@ class RabbitMqCompilerPass implements CompilerPassInterface
             }
 
             $definition->addMethodCall('setCallback', [
-                new Reference($value['callback'], ContainerInterface::EXCEPTION_ON_INVALID_REFERENCE),
+                 [new Reference($value['callback'], ContainerInterface::EXCEPTION_ON_INVALID_REFERENCE), 'handleMessage'],
             ]);
 
             $consumers[$key] = $definition;

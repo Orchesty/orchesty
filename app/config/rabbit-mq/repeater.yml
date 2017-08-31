@@ -1,5 +1,5 @@
+#REPEATER
 rabbit-mq:
-
     exchanges:
         repeater:
             durable: true
@@ -14,8 +14,8 @@ rabbit-mq:
 
     producers:
         repeater:
-            class: Hanaboso\PipesFramework\Commons\RabbitMq\Demo\DemoProducer
-            exchange: demo
+            class: Hanaboso\PipesFramework\Commons\RabbitMq\Repeater\RepeaterProducer
+            exchange: repeater
             serializer: Hanaboso\PipesFramework\RabbitMqBundle\Serializers\JsonSerializer
             routing_key: repeater
 
@@ -23,21 +23,18 @@ rabbit-mq:
         repeater:
             class: Hanaboso\PipesFramework\Commons\RabbitMq\Demo\DemoConsumer
             routing_key: repeater
-            queue: demo
+            queue: repeater
             serializer: Hanaboso\PipesFramework\RabbitMqBundle\Serializers\JsonSerializer
-            callback: hanaboso.pipes_framevork.commons.repeater.repeater_callback
+            callback: hanaboso.pipes_framework.commons.repeater.repeater_callback
+            no_ack: true
 
 services:
-    hanaboso.pipes_framevork.commons.repeater.repeater_callback:
-        class: Hanaboso\PipesFramevork\Commons\Repeater\RepeaterCallback
+    # callback for repeater
+    hanaboso.pipes_framework.commons.repeater.repeater_callback:
+        class: Hanaboso\PipesFramework\Commons\RabbitMq\Repeater\RepeaterCallback
         calls:
-            - [setRepeater, ['@hanaboso.pipes_framevork.commons.repeater.repeater']]
+            - [setRepeater, ['@hanaboso.pipes_framework.commons.rabbit_mq.repeater.repeater']]
 
-    hanaboso.pipes_framevork.commons.repeater.repeater:
-        class: Hanaboso\PipesFramevork\Commons\Repeater\Repeater
-        arguments: ['@hanaboso.pipes_framevork.commons.repeater.repeater_producer', '2']
-
-    hanaboso.pipes_framevork.commons.repeater.repeater_producer:
-        class: Hanaboso\PipesFramevork\Commons\Repeater\RepeaterProducer
-        calls:
-            - [setLogger, ['@monolog.logger.rabbit-mq']]
+    hanaboso.pipes_framework.commons.rabbit_mq.repeater.repeater:
+        class: Hanaboso\PipesFramework\Commons\RabbitMq\Repeater\Repeater
+        arguments: ['@rabbit-mq.producer.repeater', '3']
