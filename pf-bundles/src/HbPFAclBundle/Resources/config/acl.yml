@@ -1,5 +1,6 @@
 parameters:
-    acl_rule:
+    acl_res:
         resources:
+#        Add new resources to ResourceEnum class
             group: Hanaboso\PipesFramework\Acl\Document\Group
-            rule: Hanaboso\PipesFramework\Acl\Document\Rule
+            user: Hanaboso\PipesFramework\User\Document\User
