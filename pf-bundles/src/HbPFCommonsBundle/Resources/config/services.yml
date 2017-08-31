@@ -36,3 +36,9 @@ services:
         arguments:
             - '@hbpf.file_storage.locator'
             - '@doctrine_mongodb.odm.default_document_manager'
+
+    hbpf.database_manager_locator:
+        class: Hanaboso\PipesFramework\Commons\DatabaseManager\DatabaseManagerLocator
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@doctrine.orm.default_entity_manager'
