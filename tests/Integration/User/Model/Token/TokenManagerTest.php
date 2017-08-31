@@ -40,7 +40,7 @@ class TokenManagerTest extends DatabaseTestCaseAbstract
     protected function setUp(): void
     {
         parent::setUp();
-        $this->tokenManager    = new TokenManager($this->dm);
+        $this->tokenManager    = $this->container->get('hbpf.user.manager.token');
         $this->tokenRepository = $this->dm->getRepository(Token::class);
     }
 

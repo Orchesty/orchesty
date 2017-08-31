@@ -1,0 +1,4 @@
+parameters:
+    database_type:
+        - 'ODM'
+#        ODM | ORM

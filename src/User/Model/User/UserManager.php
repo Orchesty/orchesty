@@ -4,6 +4,8 @@ namespace Hanaboso\PipesFramework\User\Model\User;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use Doctrine\ORM\EntityManager;
+use Hanaboso\PipesFramework\User\DatabaseManager\UserDatabaseManagerLocator;
 use Hanaboso\PipesFramework\User\Document\TmpUser;
 use Hanaboso\PipesFramework\User\Document\User;
 use Hanaboso\PipesFramework\User\Model\Security\SecurityManager;
@@ -24,9 +26,9 @@ class UserManager
 {
 
     /**
-     * @var DocumentManager
+     * @var DocumentManager|EntityManager
      */
-    private $documentManager;
+    private $em;
 
     /**
      * @var SecurityManager
@@ -61,25 +63,25 @@ class UserManager
     /**
      * UserManager constructor.
      *
-     * @param DocumentManager          $documentManager
-     * @param SecurityManager          $securityManager
-     * @param TokenManager             $tokenManager
-     * @param EncoderFactory           $encoderFactory
-     * @param EventDispatcherInterface $eventDispatcher
+     * @param UserDatabaseManagerLocator $databaseManagerLocator
+     * @param SecurityManager            $securityManager
+     * @param TokenManager               $tokenManager
+     * @param EncoderFactory             $encoderFactory
+     * @param EventDispatcherInterface   $eventDispatcher
      */
     public function __construct(
-        DocumentManager $documentManager,
+        UserDatabaseManagerLocator $databaseManagerLocator,
         SecurityManager $securityManager,
         TokenManager $tokenManager,
         EncoderFactory $encoderFactory,
         EventDispatcherInterface $eventDispatcher
     )
     {
-        $this->documentManager   = $documentManager;
+        $this->em                = $databaseManagerLocator->get();
         $this->securityManager   = $securityManager;
         $this->tokenManager      = $tokenManager;
-        $this->userRepository    = $documentManager->getRepository(User::class);
-        $this->tmpUserRepository = $documentManager->getRepository(TmpUser::class);
+        $this->userRepository    = $this->em->getRepository(User::class);
+        $this->tmpUserRepository = $this->em->getRepository(TmpUser::class);
         $this->encoder           = $encoderFactory->getEncoder(User::class);
         $this->eventDispatcher   = $eventDispatcher;
     }
@@ -127,8 +129,8 @@ class UserManager
 
         if (!$user) {
             $user = (new TmpUser())->setEmail($data['email']);
-            $this->documentManager->persist($user);
-            $this->documentManager->flush();
+            $this->em->persist($user);
+            $this->em->flush();
         }
 
         $this->tokenManager->create($user); // TODO: Send token by email
@@ -143,12 +145,12 @@ class UserManager
         $token = $this->tokenManager->validate($id);
 
         $user = User::from($token->getUserOrTmpUser());
-        $this->documentManager->remove($token->getUserOrTmpUser());
-        $this->documentManager->persist($user);
-        $this->documentManager->flush();
+        $this->em->remove($token->getUserOrTmpUser());
+        $this->em->persist($user);
+        $this->em->flush();
 
         $token->setUser($user)->setTmpUser(NULL);
-        $this->documentManager->flush();
+        $this->em->flush();
         $this->eventDispatcher->dispatch(UserEvent::USER_ACTIVATE, new UserEvent($user));
 
         // TODO: Send notification by email
@@ -165,8 +167,8 @@ class UserManager
             ->getUserOrTmpUser()
             ->setPassword($this->encoder->encodePassword($data['password'], ''));
 
-        $this->documentManager->remove($token);
-        $this->documentManager->flush();
+        $this->em->remove($token);
+        $this->em->flush();
     }
 
     /**

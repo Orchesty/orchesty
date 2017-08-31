@@ -4,6 +4,8 @@ namespace Hanaboso\PipesFramework\User\Model\Token;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use Doctrine\ORM\EntityManager;
+use Hanaboso\PipesFramework\User\DatabaseManager\UserDatabaseManagerLocator;
 use Hanaboso\PipesFramework\User\Document\Token;
 use Hanaboso\PipesFramework\User\Document\UserInterface;
 use Hanaboso\PipesFramework\User\Enum\UserTypeEnum;
@@ -18,7 +20,7 @@ class TokenManager
 {
 
     /**
-     * @var DocumentManager
+     * @var DocumentManager|EntityManager
      */
     private $documentManager;
 
@@ -30,12 +32,12 @@ class TokenManager
     /**
      * TokenManager constructor.
      *
-     * @param DocumentManager $documentManager
+     * @param UserDatabaseManagerLocator $databaseManagerLocator
      */
-    public function __construct(DocumentManager $documentManager)
+    public function __construct(UserDatabaseManagerLocator $databaseManagerLocator)
     {
-        $this->documentManager = $documentManager;
-        $this->tokenRepository = $documentManager->getRepository(Token::class);
+        $this->documentManager = $databaseManagerLocator->get();
+        $this->tokenRepository = $this->documentManager->getRepository(Token::class);
     }
 
     /**
