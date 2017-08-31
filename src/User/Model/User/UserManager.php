@@ -11,7 +11,6 @@ use Hanaboso\PipesFramework\User\Model\Token\TokenManager;
 use Hanaboso\PipesFramework\User\Model\User\Event\UserEvent;
 use Hanaboso\PipesFramework\User\Repository\TmpUserRepository;
 use Hanaboso\PipesFramework\User\Repository\UserRepository;
-use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Security\Core\Encoder\EncoderFactory;
 use Symfony\Component\Security\Core\Encoder\PasswordEncoderInterface;
@@ -177,6 +176,7 @@ class UserManager
      */
     public function resetPassword(array $data): void
     {
+        /** @var User $user */
         $user = $this->userRepository->findOneBy(['email' => $data['email']]);
 
         if (!$user) {

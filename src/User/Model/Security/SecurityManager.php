@@ -79,9 +79,13 @@ class SecurityManager
     public function login(array $data): User
     {
         if ($this->isLoggedIn()) {
-            return $this->userRepository->find($this->session->get($this->sessionName));
+            /** @var User $user */
+            $user = $this->userRepository->find($this->session->get($this->sessionName));
+
+            return $user;
         }
 
+        /** @var User $user */
         $user = $this->userRepository->findOneBy(['email' => $data['email']]);
 
         if (!$user) {
@@ -148,7 +152,10 @@ class SecurityManager
         /** @var Token $token */
         $token = unserialize($this->session->get($this->sessionName));
 
-        return $this->userRepository->find($token->getUser()->getId());
+        /** @var User $user */
+        $user = $this->userRepository->find($token->getUser()->getId());
+
+        return $user;
     }
 
 }

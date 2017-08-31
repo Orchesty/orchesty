@@ -101,6 +101,7 @@ class FileStorage
      */
     public function getFileDocument(string $fileId): File
     {
+        /** @var File $file */
         $file = $this->dm->getRepository(File::class)->find($fileId);
 
         if (!$file) {
