@@ -7,4 +7,4 @@ services:
   hbpf.mail.mail_builders_loader:
       class: Hanaboso\PipesFramework\HbPFMailerBundle\Loader\MailBuildersLoader
       arguments:
-        - "@service_container"
+        - '@service_container'

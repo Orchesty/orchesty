@@ -1,7 +1,8 @@
 services:
-
     hbpf.providers.oauth1_provider:
         class: Hanaboso\PipesFramework\Authorization\Provider\OAuth1Provider
         arguments:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.redirect'
+        calls:
+            - ['setLogger', ['@monolog.logger.authorization']]

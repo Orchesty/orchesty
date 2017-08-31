@@ -2,4 +2,4 @@ services:
     hbpf.commons.node_handler:
         class: Hanaboso\PipesFramework\HbPFCommonsBundle\Handler\NodeHandler
         arguments:
-            - "@hbpf.node_repository"
+            - '@hbpf.node_repository'
