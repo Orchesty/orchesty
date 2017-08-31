@@ -54,7 +54,7 @@ phpunit:
 phpcontroller:
 	$(DE) ./vendor/bin/phpunit -c phpunit.xml.dist --dont-report-useless-tests --colors --stderr tests/Controller
 
-phpintergration:
+phpintergration: database-create
 	$(DE) ./vendor/bin/phpunit -c phpunit.xml.dist --dont-report-useless-tests --colors --stderr tests/Integration/
 
 test: docker-up-force composer-install codesniffer phpstan clear-cache phpunit phpcontroller phpintergration
@@ -66,6 +66,10 @@ console:
 
 clear-cache:
 	$(DE) sudo rm -rf app/cache
+
+database-create:
+	$(DE) php bin/console doctrine:database:drop --force || true
+	$(DE) php bin/console doctrine:database:create
 
 .env:
 	@if ! [ -f .env ]; then \
