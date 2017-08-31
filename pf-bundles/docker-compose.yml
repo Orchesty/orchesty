@@ -41,10 +41,24 @@ services:
         - mongo:/data/db
 
   rabbitmq:
-    image: 'rabbitmq:management-alpine'
-    ports:
-      - ${DEV_IP}:15672:15672
-      - ${DEV_IP}:5672:5672
+      image: 'rabbitmq:management-alpine'
+      ports:
+       - ${DEV_IP}:15672:15672
+       - ${DEV_IP}:5672:5672
+      volumes:
+       - rabbit-mq:/var/lib/rabbitmq
+
+  mariadb:
+      image: mariadb:10.3
+      command: "mysqld --innodb_flush_method=nosync"
+      environment:
+       MYSQL_ROOT_PASSWORD: root
+      ports:
+       - ${DEV_IP}:3306:3306
+      volumes:
+       - mariadb:/var/lib/mysql
 
 volumes:
   mongo: {}
+  mariadb: {}
+  rabbit-mq: {}
