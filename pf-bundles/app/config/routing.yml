@@ -13,3 +13,8 @@ hb_pf_joiner:
 hb_pf_user:
     resource: "@HbPFUserBundle"
     type: annotation
+
+hb_pf_api_gateway:
+    resource: '@HbPFApiGatewayBundle/Controller/'
+    type:     annotation
+    prefix:   /api/gateway
