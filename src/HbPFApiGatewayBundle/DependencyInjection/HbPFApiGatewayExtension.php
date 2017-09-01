@@ -2,6 +2,7 @@
 
 namespace Hanaboso\PipesFramework\HbPFApiGateway\DependencyInjection;
 
+use RuntimeException;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
@@ -36,6 +37,8 @@ class HbPFApiGatewayExtension extends Extension implements PrependExtensionInter
      */
     public function prepend(ContainerBuilder $container)
     {
-        $container->setParameter('src_dir', __DIR__ . '/../..');
+        if (!$container->hasExtension('hb_pf_commons')) {
+            throw new RuntimeException('You must register HbPFCommonsBundle before.');
+        };
     }
 }

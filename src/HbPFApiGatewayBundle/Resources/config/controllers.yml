@@ -1,0 +1,5 @@
+services:
+    hbpf.controller.custom_node:
+        class: Hanaboso\PipesFramework\HbPFCustomNodeBundle\Controller\CustomNodeController
+        arguments:
+            - '@hbpf.handler.custom_node'
