@@ -2,8 +2,12 @@
 
 namespace Hanaboso\PipesFramework\HbPFUserBundle\Handler;
 
+use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ORM\EntityManager;
+use Hanaboso\PipesFramework\Commons\DatabaseManager\DatabaseManagerLocator;
 use Hanaboso\PipesFramework\User\Document\User;
 use Hanaboso\PipesFramework\User\Model\User\UserManager;
+use Hanaboso\PipesFramework\User\Model\User\UserManagerException;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -23,6 +27,11 @@ class UserHandler implements LogoutSuccessHandlerInterface, EventSubscriberInter
 {
 
     /**
+     * @var DocumentManager|EntityManager
+     */
+    private $databaseManager;
+
+    /**
      * @var UserManager
      */
     private $userManager;
@@ -30,11 +39,13 @@ class UserHandler implements LogoutSuccessHandlerInterface, EventSubscriberInter
     /**
      * UserHandler constructor.
      *
-     * @param UserManager $userManager
+     * @param DatabaseManagerLocator $databaseManagerLocator
+     * @param UserManager            $userManager
      */
-    public function __construct(UserManager $userManager)
+    public function __construct(DatabaseManagerLocator $databaseManagerLocator, UserManager $userManager)
     {
-        $this->userManager = $userManager;
+        $this->databaseManager = $databaseManagerLocator->getDm();
+        $this->userManager     = $userManager;
     }
 
     /**
@@ -48,44 +59,72 @@ class UserHandler implements LogoutSuccessHandlerInterface, EventSubscriberInter
     }
 
     /**
-     *
+     * @return array
      */
-    public function logout(): void
+    public function logout(): array
     {
         $this->userManager->logout();
+
+        return [];
     }
 
     /**
      * @param array $data
+     *
+     * @return array
      */
-    public function register(array $data): void
+    public function register(array $data): array
     {
         $this->userManager->register($data);
+
+        return [];
     }
 
     /**
      * @param string $id
+     *
+     * @return array
      */
-    public function activate(string $id): void
+    public function activate(string $id): array
     {
         $this->userManager->activate($id);
+
+        return [];
     }
 
     /**
      * @param string $id
      * @param array  $data
+     *
+     * @return array
      */
-    public function setPassword(string $id, array $data): void
+    public function setPassword(string $id, array $data): array
     {
         $this->userManager->setPassword($id, $data);
+
+        return [];
     }
 
     /**
      * @param array $data
+     *
+     * @return array
      */
-    public function resetPassword(array $data): void
+    public function resetPassword(array $data): array
     {
         $this->userManager->resetPassword($data);
+
+        return [];
+    }
+
+    /**
+     * @param string $id
+     *
+     * @return User
+     */
+    public function delete(string $id): User
+    {
+        return $this->userManager->delete($this->getUser($id));
     }
 
     /**
@@ -126,6 +165,26 @@ class UserHandler implements LogoutSuccessHandlerInterface, EventSubscriberInter
 
             $event->setResponse($jsonResponse);
         }
+    }
+
+    /**
+     * @param string $id
+     *
+     * @return User
+     * @throws UserManagerException
+     */
+    private function getUser(string $id): User
+    {
+        $user = $this->databaseManager->getRepository(User::class)->findOneBy(['id' => $id]);
+
+        if (!$user) {
+            throw new UserManagerException(
+                sprintf('User \'%s\' not exists.', $id),
+                UserManagerException::USER_NOT_EXISTS
+            );
+        }
+
+        return $user;
     }
 
 }

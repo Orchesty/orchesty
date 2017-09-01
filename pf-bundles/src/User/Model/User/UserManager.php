@@ -190,4 +190,34 @@ class UserManager
         $this->eventDispatcher->dispatch(UserEvent::USER_RESET_PASSWORD, new UserEvent($user));
     }
 
+    /**
+     * @param User $user
+     *
+     * @return User
+     * @throws UserManagerException
+     */
+    public function delete(User $user): User
+    {
+        $this->eventDispatcher->dispatch(
+            UserEvent::USER_DELETE_BEFORE,
+            new UserEvent($user, $this->securityManager->getLoggedUser())
+        );
+
+        if ($this->securityManager->getLoggedUser()->getId() === $user->getId()) {
+            throw new UserManagerException(
+                sprintf('User \'%s\' delete not allowed.', $user->getId()),
+                UserManagerException::USER_DELETE_NOT_ALLOWED
+            );
+        }
+
+        $user->setDeleted(TRUE);
+        $this->documentManager->flush();
+        $this->eventDispatcher->dispatch(
+            UserEvent::USER_DELETE_AFTER,
+            new UserEvent($user, $this->securityManager->getLoggedUser())
+        );
+
+        return $user;
+    }
+
 }
