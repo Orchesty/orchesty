@@ -2,7 +2,6 @@
 
 namespace Hanaboso\PipesFramework\Acl\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
 use Hanaboso\PipesFramework\User\Entity\UserInterface;
 
 /**
@@ -14,9 +13,7 @@ abstract class EntityAbstract
 {
 
     /**
-     * @var UserInterface|null
-     *
-     * @ORM\OneToMany(targetEntity="User")
+     * @var UserInterface[]|null
      */
     protected $owner;
 
@@ -27,7 +24,7 @@ abstract class EntityAbstract
      */
     function __construct(?UserInterface $owner)
     {
-        $this->owner = $owner;
+        $this->owner[0] = $owner;
     }
 
     /**
@@ -35,7 +32,7 @@ abstract class EntityAbstract
      */
     public function getOwner(): ?UserInterface
     {
-        return $this->owner;
+        return $this->owner[0];
     }
 
     /**
@@ -45,7 +42,7 @@ abstract class EntityAbstract
      */
     public function setOwner(?UserInterface $owner): ?EntityAbstract
     {
-        $this->owner = $owner;
+        $this->owner[0] = $owner;
 
         return $this;
     }

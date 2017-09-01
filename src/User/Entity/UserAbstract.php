@@ -3,6 +3,7 @@
 namespace Hanaboso\PipesFramework\User\Entity;
 
 use DateTime;
+use Doctrine\ORM\Mapping as ORM;
 use Exception;
 use Hanaboso\PipesFramework\Commons\Traits\Entity\IdTrait;
 
@@ -27,9 +28,16 @@ abstract class UserAbstract implements UserInterface
     /**
      * @var DateTime
      *
-     * @ODM\Column(type="date")
+     * @ORM\Column(type="date")
      */
     protected $created;
+
+    /**
+     * @var Token
+     *
+     * @ORM\OneToOne(targetEntity="Hanaboso\PipesFramework\User\Entity\User", inversedBy="user")
+     */
+    protected $token;
 
     /**
      * UserAbstract constructor.

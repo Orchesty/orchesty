@@ -30,14 +30,14 @@ class Token implements TokenInterface
     /**
      * @var UserInterface|null
      *
-     * @ORM\OneToOne(targetDocument="Hanaboso\PipesFramework\User\Entity\User")
+     * @ORM\OneToOne(targetEntity="Hanaboso\PipesFramework\User\Entity\User", mappedBy="token")
      */
     private $user;
 
     /**
      * @var UserInterface|TmpUserInterface|null
      *
-     * @ORM\OneToOne(targetDocument="Hanaboso\PipesFramework\User\Entity\TmpUser")
+     * @ORM\OneToOne(targetEntity="Hanaboso\PipesFramework\User\Entity\TmpUser", mappedBy="token")
      */
     private $tmpUser;
 

@@ -4,7 +4,7 @@ namespace Hanaboso\PipesFramework\User\Repository\Entity;
 
 use DateTime;
 use Doctrine\ORM\EntityRepository;
-use Hanaboso\PipesFramework\User\Document\Token;
+use Hanaboso\PipesFramework\User\Entity\Token;
 
 /**
  * Class TokenRepository
@@ -27,7 +27,7 @@ class TokenRepository extends EntityRepository
             ->setParameter('id', $id)
             ->setParameter('created', new DateTime('-1 day'))
             ->getQuery()
-            ->getSingleResult();
+            ->getOneOrNullResult();
     }
 
 }

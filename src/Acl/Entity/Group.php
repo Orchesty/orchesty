@@ -13,7 +13,7 @@ use Hanaboso\PipesFramework\User\Entity\UserInterface;
  *
  * @package Hanaboso\PipesFramework\Acl\Entity
  *
- * @ORM\Table()
+ * @ORM\Table(name="`group`")
  * @ORM\Entity(repositoryClass="Hanaboso\PipesFramework\Acl\Repository\Entity\GroupRepository")
  */
 class Group extends EntityAbstract implements GroupInterface
@@ -31,16 +31,26 @@ class Group extends EntityAbstract implements GroupInterface
     /**
      * @var RuleInterface[]|null
      *
-     * @ORM\ManyToOne(targetDocument="Hanaboso\PipesFramework\Acl\Entity\Rule")
+     * @ORM\OneToMany(targetEntity="Hanaboso\PipesFramework\Acl\Entity\Rule", mappedBy="group")
      */
     private $rules;
 
     /**
      * @var UserInterface[]|null
      *
-     * @ORM\ManyToOne(targetDocument="Hanaboso\PipesFramework\User\Entity\User")
+     * @ORM\ManyToMany(targetEntity="Hanaboso\PipesFramework\User\Entity\User")
+     * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
      */
     private $users;
+
+    /**
+     * @var UserInterface[]|null
+     *
+     * @ORM\ManyToMany(targetEntity="Hanaboso\PipesFramework\User\Entity\User")
+     * @ORM\JoinColumn(name="group_id", referencedColumnName="id")
+     * @ORM\JoinTable(name="group_owner")
+     */
+    protected $owner;
 
     /**
      * @return string

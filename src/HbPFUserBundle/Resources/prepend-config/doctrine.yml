@@ -1,0 +1,18 @@
+doctrine_mongodb:
+    document_managers:
+        default:
+            mappings:
+                UserDocument:
+                    type: annotation
+                    is_bundle: false
+                    dir: "%src_dir%/User/Document"
+                    prefix: Hanaboso\PipesFramework\User\Document
+
+doctrine:
+    orm:
+        mappings:
+            UserEntity:
+                type: annotation
+                is_bundle: false
+                dir: "%src_dir%/User/Entity"
+                prefix: Hanaboso\PipesFramework\User\Entity
