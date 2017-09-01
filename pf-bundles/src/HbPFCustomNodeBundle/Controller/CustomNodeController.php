@@ -11,14 +11,18 @@ namespace Hanaboso\PipesFramework\HbPFCustomNodeBundle\Controller;
 use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Controller\FOSRestController;
 use Hanaboso\PipesFramework\HbPFCustomNodeBundle\Handler\CustomNodeHandler;
+use Hanaboso\PipesFramework\HbPFJoinerBundle\Exception\JoinerException;
+use Hanaboso\PipesFramework\Utils\ControllerUtils;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class CustomNodeController
  *
  * @package Hanaboso\PipesFramework\HbPFCustomNodeBundle\Controller
+ *
+ * @Route(service="hbpf.controller.custom_node")
  */
 class CustomNodeController extends FOSRestController
 {
@@ -45,13 +49,18 @@ class CustomNodeController extends FOSRestController
      * @param Request $request
      * @param string  $nodeId
      *
-     * @return Response
+     * @return JsonResponse
      */
-    public function sendAction(Request $request, string $nodeId): Response
+    public function sendAction(Request $request, string $nodeId): JsonResponse
     {
-        $res = $this->handler->process($nodeId, $request->request->all());
+        try {
+            $data     = $this->handler->process($nodeId, $request->request->all());
+            $response = new JsonResponse($data, 200);
+        } catch (JoinerException $e) {
+            $response = new JsonResponse(ControllerUtils::createExceptionData($e), 500);
+        }
 
-        return $this->handleView($this->view($res));
+        return $response;
     }
 
     /**
@@ -60,13 +69,18 @@ class CustomNodeController extends FOSRestController
      *
      * @param string $nodeId
      *
-     * @return Response
+     * @return JsonResponse
      */
-    public function sendActionTest(string $nodeId): Response
+    public function sendTestAction(string $nodeId): JsonResponse
     {
-        $this->handler->processTest($nodeId);
+        try {
+            $this->handler->processTest($nodeId);
+            $response = new JsonResponse([], 200);
+        } catch (JoinerException $e) {
+            $response = new JsonResponse(ControllerUtils::createExceptionData($e), 500);
+        }
 
-        return $this->handleView($this->view());
+        return $response;
     }
 
 }
