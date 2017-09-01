@@ -6,6 +6,8 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\PipesFramework\User\Document\User;
 use Hanaboso\PipesFramework\User\Model\Security\SecurityManager;
 use Hanaboso\PipesFramework\User\Model\Token;
+use Nette\Utils\Json;
+use stdClass;
 use Symfony\Bundle\FrameworkBundle\Client;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\BrowserKit\Cookie;
@@ -116,6 +118,40 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
         $this->client->getCookieJar()->set($cookie);
 
         return $user;
+    }
+
+    /**
+     * @param string     $url
+     * @param array      $parameters
+     * @param array|null $content
+     *
+     * @return stdClass
+     */
+    protected function sendPost(string $url, array $parameters, ?array $content = NULL): stdClass
+    {
+        $this->client->request('POST', $url, $parameters, [], [], $content ? Json::encode($content) : []);
+        $response = $this->client->getResponse();
+
+        return (object) [
+            'status'  => $response->getStatusCode(),
+            'content' => Json::decode($response->getContent()),
+        ];
+    }
+
+    /**
+     * @param string $url
+     *
+     * @return stdClass
+     */
+    protected function sendDelete(string $url): stdClass
+    {
+        $this->client->request('DELETE', $url);
+        $response = $this->client->getResponse();
+
+        return (object) [
+            'status'  => $response->getStatusCode(),
+            'content' => Json::decode($response->getContent()),
+        ];
     }
 
 }
