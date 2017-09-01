@@ -9,7 +9,7 @@ namespace Hanaboso\PipesFramework\HbPFApiGateway\Handler;
 class TopologyHandler
 {
 
-    public function getTopologies()
+    public function getTopologies($limit = null, $offset = null, $orderBy = null)
     {
 
     }

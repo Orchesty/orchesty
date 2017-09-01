@@ -12,7 +12,7 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
  *
  * @link http://symfony.com/doc/current/cookbook/bundles/extension.html
  */
-class HbPFCommonsExtension extends Extension
+class HbPFApiGatewayExtension extends Extension
 {
 
     /**

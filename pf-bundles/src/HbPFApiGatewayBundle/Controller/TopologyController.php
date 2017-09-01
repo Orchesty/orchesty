@@ -27,7 +27,8 @@ class TopologyController extends FOSRestController
         /** @var TopologyHandler $topologyHandler */
         $topologyHandler = $this->container->get('hbpf.handler.topology');
 
-        $result = $topologyHandler->getTopologies();
+        $query = $request->query;
+        $result = $topologyHandler->getTopologies($query->get('limit'), $query->get('offset'), $query->get('order_by'));
 
         return $this->handleView($this->view($result));
     }
