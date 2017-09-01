@@ -11,14 +11,14 @@ const initialState = {
 function addElements(oldElements, newElements){
   const result = Object.assign({}, oldElements);
   newElements.forEach(item => {
-    result[item.id] = item;
+    result[item._id] = item;
   });
   return result;
 }
 
 function addElement(oldElements, element){
   const result = Object.assign({}, oldElements, {
-    [element.id]: element
+    [element._id]: element
   });
   return result;
 }
@@ -36,7 +36,7 @@ function listReducer(state, action){
       const {data} = action;
       return Object.assign({}, state, {
         state: stateType.SUCCESS,
-        items: data.items.map(item => item.id),
+        items: data.items.map(item => item._id),
         count: data.count,
         limit: data.limit,
         offset: data.offset,
@@ -97,7 +97,7 @@ export default (state = initialState, action) => {
         sort: action.sort,
         items: null
       };
-      if (action.listType = listType.PAGINATION){
+      if (action.listType == listType.PAGINATION){
         list['pageSize'] = action.pageSize;
         list['page'] = 1;
       }

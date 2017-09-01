@@ -1,7 +1,7 @@
 import React from 'react'
 import {connect} from 'react-redux';
 
-import TopologySchema from '../components/topologySchema';
+import TopologySchema from '../components/topology/topologySchema';
 import ActionButton from '../elements/actionButton';
 
 class SchemaPage extends React.Component {

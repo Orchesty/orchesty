@@ -1,6 +1,6 @@
 import React from 'react'
 
-import ToggleLocalMenu from './toggle_local_menu';
+import ToggleLocalMenu from './menu/toggle_local_menu';
 
 class ActionButton extends React.Component {
   constructor(props) {

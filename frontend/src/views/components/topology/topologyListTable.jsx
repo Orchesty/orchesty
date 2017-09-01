@@ -1,14 +1,14 @@
 import React from 'react'
 import {connect} from 'react-redux';
 
-import * as topologyActions from '../../actions/topologyActions';
-import * as applicationActions from '../../actions/applicationActions';
+import * as topologyActions from '../../../actions/topologyActions';
+import * as applicationActions from '../../../actions/applicationActions';
 
-import SimpleState from '../elements/simpleState';
-import BoolValue from '../elements/boolValue';
-import SortTh from '../elements/sortTh';
-import ActionButton from '../elements/actionButton';
-import ListPagination from '../elements/listPagination';
+import SimpleState from '../../elements/state/simpleState';
+import BoolValue from '../../elements/boolValue';
+import SortTh from '../../elements/table/sortTh';
+import ActionButton from '../../elements/actionButton';
+import ListPagination from '../../elements/table/listPagination';
 
 class TopologyListTable extends React.Component {
   constructor(props) {
@@ -31,6 +31,7 @@ class TopologyListTable extends React.Component {
   render() {
     const {list, elements, openModal, selectPage} = this.props;
     const sort = list && list.sort;
+
     const rows = list && list.items ? list.items.map(id => {
         const item = elements[id];
         const menuItems = [
@@ -44,11 +45,11 @@ class TopologyListTable extends React.Component {
           }
         ];
         return (
-          <tr key={item.id}>
-            <td>{item.id}</td>
+          <tr key={item._id}>
+            <td>{item._id}</td>
             <td>{item.name}</td>
-            <td>{item.description}</td>
-            <td><BoolValue value={item.enabled}/></td>
+            <td>{item.descr}</td>
+            <td><BoolValue value={item.status}/></td>
             <td><ActionButton items={menuItems} right={true} /></td>
           </tr>
         )
@@ -66,7 +67,7 @@ class TopologyListTable extends React.Component {
               <SortTh name="id" state={sort} onChangeSort={this._changeSort}>#</SortTh>
               <SortTh name="name" state={sort} onChangeSort={this._changeSort}>Name</SortTh>
               <SortTh name="description" state={sort} onChangeSort={this._changeSort}>Description</SortTh>
-              <SortTh name="enabled" state={sort} onChangeSort={this._changeSort}>Enabled</SortTh>
+              <SortTh name="status" state={sort} onChangeSort={this._changeSort}>Enabled</SortTh>
               <th>Actions</th>
             </tr>
             </thead>

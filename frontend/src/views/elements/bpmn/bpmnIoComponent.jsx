@@ -5,7 +5,7 @@ import BpmnModeler from 'bpmn-js/lib/Modeler';
 import PropertiesPanelModule from 'bpmn-js-properties-panel';
 import PropertiesProviderModule from 'bpmn-js-properties-panel/lib/provider/camunda';
 
-import download from '../../utils/donwload';
+import download from '../../../utils/donwload';
 
 import CamundaModdleDescriptor from 'camunda-bpmn-moddle/resources/camunda.json';
 

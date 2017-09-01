@@ -3,8 +3,8 @@ import { connect } from 'react-redux';
 
 import * as notificationActions from '../../actions/notificationActions';
 
-import ToasterItem from '../elements/toasterItem';
-import EmptyToasterItem from '../elements/emptyToasterItem';
+import ToasterItem from '../elements/toaster/toasterItem';
+import EmptyToasterItem from '../elements/toaster/emptyToasterItem';
 
 import './toaster.less';
 
