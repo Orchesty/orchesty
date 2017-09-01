@@ -7,6 +7,10 @@ hb_pf_authorization:
     resource: "@HbPFAuthorizationBundle"
     type: annotation
 
+hb_pf_commons:
+    resource: "@HbPFCommonsBundle"
+    type: annotation
+
 hb_pf_connector:
     resource: "@HbPFConnectorBundle"
     type: annotation
@@ -33,8 +37,4 @@ hb_pf_table_parser:
 
 hb_pf_user:
     resource: "@HbPFUserBundle"
-    type: annotation
-
-hb_pf_commons:
-    resource: "@HbPFCommonsBundle"
     type: annotation
