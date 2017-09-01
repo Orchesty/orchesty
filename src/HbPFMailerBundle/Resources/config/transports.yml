@@ -3,3 +3,4 @@ services:
     hbpf.mailer.transport.swift:
         class: Hanaboso\PipesFramework\Mailer\Transport\Impl\SwiftMailerTransport
         arguments:
+            - '@swiftmailer.mailer.default'

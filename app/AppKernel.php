@@ -18,6 +18,7 @@ use Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\MonologBundle\MonologBundle;
 use Symfony\Bundle\SecurityBundle\SecurityBundle;
+use Symfony\Bundle\SwiftmailerBundle\SwiftmailerBundle;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\HttpKernel\Kernel;
 
@@ -38,9 +39,10 @@ class AppKernel extends Kernel
             new FOSRestBundle(),
             new FrameworkBundle(),
             new JMSSerializerBundle(),
+            new MonologBundle(),
             new SecurityBundle(),
             new SensioFrameworkExtraBundle(),
-            new MonologBundle(),
+            new SwiftmailerBundle(),
 
             new HbPFAclBundle(),
             new HbPFAuthorizationBundle(),

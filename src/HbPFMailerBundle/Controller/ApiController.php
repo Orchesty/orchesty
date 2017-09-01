@@ -9,15 +9,17 @@ use Hanaboso\PipesFramework\Mailer\Exception\MailerException;
 use Hanaboso\PipesFramework\Mailer\MessageBuilder\MessageBuilderException;
 use Hanaboso\PipesFramework\Mailer\Transport\TransportException;
 use Hanaboso\PipesFramework\Utils\ControllerUtils;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class ApiController
  *
  * @package Hanaboso\PipesFramework\HbPFMailerBundle\Controller
+ *
+ * @Route(service="hbpf.mailer.controller.api")
  */
 class ApiController extends FOSRestController
 {
@@ -39,40 +41,22 @@ class ApiController extends FOSRestController
 
     /**
      * @Route("/api/mailer/{handlerId}/send", defaults={}, requirements={"_format"="json|xml"})
+     * @Method({"POST", "OPTIONS"})
      *
      * @param Request $request
      * @param string  $handlerId
      *
-     * @return Response
+     * @return JsonResponse
      */
-    public function sendAction(Request $request, string $handlerId): Response
+    public function sendAction(Request $request, string $handlerId): JsonResponse
     {
-        $response = new JsonResponse();
-
         try {
             $this->mailHandler->send($handlerId, $request->request->all());
 
-            $data = [
-                'status' => 'OK',
-            ];
-        } catch (ServiceNotFoundException $e) {
-            $data = [
-                'status'     => 'ERROR',
-                'error_code' => 0,
-                'type'       => get_class($e),
-                'message'    => sprintf('Mailer[id=%s] was not found', $handlerId),
-            ];
-
-            $response->setStatusCode(500);
-        } catch (MessageBuilderException|TransportException $e) {
-            $data = ControllerUtils::createExceptionData($e);
-
-            $response->setStatusCode(500);
+            return new JsonResponse(['status' => 'OK']);
+        } catch (ServiceNotFoundException | MessageBuilderException | TransportException | MailerException $e) {
+            return new JsonResponse(ControllerUtils::createExceptionData($e), 500);
         }
-
-        $response->setData($data);
-
-        return $response;
     }
 
     /**
@@ -81,36 +65,17 @@ class ApiController extends FOSRestController
      * @param Request $request
      * @param string  $handlerId
      *
-     * @return Response
+     * @return JsonResponse
      */
-    public function sendTestAction(Request $request, string $handlerId): Response
+    public function sendTestAction(Request $request, string $handlerId): JsonResponse
     {
-        $response = new JsonResponse();
-
         try {
             $this->mailHandler->testSend($handlerId, $request->request->all());
 
-            $data = [
-                'status' => 'OK',
-            ];
-        } catch (ServiceNotFoundException $e) {
-            $data = [
-                'status'     => 'ERROR',
-                'error_code' => 0,
-                'type'       => get_class($e),
-                'message'    => sprintf('Mailer[id=%s] was not found', $handlerId),
-            ];
-
-            $response->setStatusCode(500);
-        } catch (MessageBuilderException|TransportException|MailerException $e) {
-            $data = ControllerUtils::createExceptionData($e);
-
-            $response->setStatusCode(500);
+            return new JsonResponse(['status' => 'OK']);
+        } catch (ServiceNotFoundException | MessageBuilderException | TransportException | MailerException $e) {
+            return new JsonResponse(ControllerUtils::createExceptionData($e), 500);
         }
-
-        $response->setData($data);
-
-        return $response;
     }
 
 }

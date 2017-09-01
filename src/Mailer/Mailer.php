@@ -35,9 +35,9 @@ class Mailer
      * Mailer constructor.
      *
      * @param TransportInterface   $transport
-     * @param null|EngineInterface $templateEngine
+     * @param EngineInterface|null $templateEngine
      */
-    public function __construct(TransportInterface $transport, ?EngineInterface $templateEngine)
+    public function __construct(TransportInterface $transport, ?EngineInterface $templateEngine = NULL)
     {
         $this->transport      = $transport;
         $this->templateEngine = $templateEngine;
