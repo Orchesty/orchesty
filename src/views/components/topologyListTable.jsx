@@ -1,8 +1,8 @@
 import React from 'react'
 import {connect} from 'react-redux';
 
-import * as topologyActions from '../../../actions/topologyActions';
-import * as applicationActions from '../../../actions/applicationActions';
+import * as topologyActions from '../../actions/topologyActions';
+import * as applicationActions from '../../actions/applicationActions';
 
 import SimpleState from '../elements/simpleState';
 import BoolValue from '../elements/boolValue';

@@ -1,7 +1,7 @@
 import React from 'react'
 import {connect} from 'react-redux';
 
-import * as topologyActions from '../../../actions/topologyActions';
+import * as topologyActions from '../../actions/topologyActions';
 
 import TopologyListTable from '../components/topologyListTable';
 
