@@ -13,3 +13,7 @@ hb_pf_joiner:
 hb_pf_user:
     resource: "@HbPFUserBundle"
     type: annotation
+
+hb_pf_custom_node:
+    resource: "@HbPFCustomNodeBundle"
+    type: annotation
