@@ -39,3 +39,10 @@ swiftmailer:
     host:      ''
     username:  ''
     password:  ''
+
+doctrine_mongodb:
+    connections:
+        default:
+            server: "mongodb://%db_document_host%:%db_document_port%"
+            options: {}
+    default_database: "%db_document_name%"
