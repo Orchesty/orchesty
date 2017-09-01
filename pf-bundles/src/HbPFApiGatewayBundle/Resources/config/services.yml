@@ -1,4 +1,5 @@
 services:
     hbpf.handler.topology:
-        class: Hanaboso\PipesFramework\HbPFApiGateway\Handler\TopologyHandler
+        class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Handler\TopologyHandler
         arguments:
+            - "@hbpf.database_manager_locator"

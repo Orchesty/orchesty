@@ -1,5 +1,5 @@
 services:
     hbpf.controller.topology:
-        class: Hanaboso\PipesFramework\HbPFApiGateway\Controller\TopologyController
+        class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\TopologyController
         arguments:
             - '@hbpf.handler.topology'

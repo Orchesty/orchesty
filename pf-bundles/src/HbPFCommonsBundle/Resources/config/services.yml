@@ -9,6 +9,10 @@ services:
         arguments:
           - '@service_container'
 
+    hbpf.topology_repository:
+        class: Hanaboso\PipesFramework\Commons\Topology\TopologyRepository
+        arguments:
+
     hbpf.source_service:
         class: Hanaboso\PipesFramework\Commons\Source\SourceService
         arguments:
