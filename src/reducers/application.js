@@ -1,7 +1,7 @@
-import * as types from '../action_types';
+import * as types from '../actionTypes';
 
 import pages from '../config/pages.json';
-import mainMenu from '../config/main_menu.json';
+import mainMenu from '../config/mainMenu.json';
 
 
 const initialState = {

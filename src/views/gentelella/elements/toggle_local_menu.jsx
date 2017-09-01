@@ -1,6 +1,6 @@
 import React from 'react'
 
-import LocalMenu from './local_menu';
+import LocalMenu from './localMenu';
 
 class ToggleLocalMenu extends React.Component {
   constructor(props) {

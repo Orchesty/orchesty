@@ -1,4 +1,4 @@
-import * as types from '../action_types';
+import * as types from '../actionTypes';
 
 const initialState = {
   elements: {},
