@@ -2,7 +2,7 @@ import React from 'react'
 import {connect} from 'react-redux';
 import Form from 'react-jsonschema-form';
 
-import * as topologyActions from '../../../actions/topologyActions';
+import * as topologyActions from '../../actions/topologyActions';
 
 
 const schema = {

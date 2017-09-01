@@ -1,8 +1,6 @@
 import React from 'react'
 import {connect} from 'react-redux';
 
-import * as topologyActions from '../../../actions/topologyActions';
-
 import TopologySchema from '../components/topologySchema';
 import ActionButton from '../elements/actionButton';
 

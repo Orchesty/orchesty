@@ -1,7 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux';
 
-import * as notificationActions from '../../../actions/notificationActions';
+import * as notificationActions from '../../actions/notificationActions';
 
 
 class DashboardPage extends React.Component {
