@@ -8,17 +8,21 @@
 
 namespace Hanaboso\PipesFramework\HbPFConnectorBundle\Controller;
 
+use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Controller\FOSRestController;
+use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
 use Hanaboso\PipesFramework\HbPFConnectorBundle\Handler\ConnectorHandler;
+use Hanaboso\PipesFramework\Utils\ControllerUtils;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * Class ConnectorController
  *
  * @package Hanaboso\PipesFramework\HbPFConnectorBundle\Controller
+ *
+ * @Route(service="hbpf.controller.connector")
  */
 class ConnectorController extends FOSRestController
 {
@@ -39,20 +43,25 @@ class ConnectorController extends FOSRestController
     }
 
     /**
-     * @Route("/api/conector/{id}/topology/{token}", defaults={}, requirements={"id": "\w+", "token": "\w+"})
-     * @Method('GET')
+     * @Route("/api/connector/{id}/topology/{token}", defaults={}, requirements={"id": "\w+", "token": "\w+"})
+     * @Method({"POST", "OPTIONS"})
      *
      * @param string  $id
      * @param string  $token
      * @param Request $request
      *
-     * @return Response
+     * @return JsonResponse
      */
-    public function processEvent(string $id, string $token, Request $request): Response
+    public function processEvent(string $id, string $token, Request $request): JsonResponse
     {
-        $data = $this->handler->processEvent($id, $token, $request->request->all());
+        try {
+            $data = $this->handler->processEvent($id, $token, $request->request->all());
+            $response = new JsonResponse($data, 200);
+        } catch (ConnectorException $e) {
+            $response = new JsonResponse(ControllerUtils::createExceptionData($e), 500);
+        }
 
-        return $this->handleView($this->view($data));
+        return $response;
     }
 
 }

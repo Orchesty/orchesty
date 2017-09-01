@@ -21,3 +21,7 @@ hb_pf_table_parser:
 hb_pf_user:
     resource: "@HbPFUserBundle"
     type: annotation
+
+hb_pf_connector:
+    resource: "@HbPFConnectorBundle"
+    type: annotation
