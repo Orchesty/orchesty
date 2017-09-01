@@ -2,6 +2,7 @@ services:
     hbpf.user.handler.user:
         class: Hanaboso\PipesFramework\HbPFUserBundle\Handler\UserHandler
         arguments:
+            - '@hbpf.database_manager_locator'
             - '@hbpf.user.manager.user'
         tags:
             - { name: kernel.event_subscriber }

@@ -23,4 +23,11 @@ services:
             - '@hbpf.acl.provider.database'
             - '@hbpf.acl.provider.resource'
         tags:
-        - { name: kernel.event_subscriber }
+            - { name: kernel.event_subscriber }
+
+    hbpf.manager.user:
+        class: Hanaboso\PipesFramework\Acl\Manager\UserManager
+        arguments:
+            - '@hbpf.access.manager'
+        tags:
+            - { name: kernel.event_subscriber }
