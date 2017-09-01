@@ -1,20 +1,19 @@
 <?php declare(strict_types=1);
 
-namespace Hanaboso\PipesFramework\User\Document;
+namespace Hanaboso\PipesFramework\User\Entity;
 
 use DateTime;
-use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Hanaboso\PipesFramework\Commons\Traits\Document\DeletedTrait;
-use Hanaboso\PipesFramework\User\Entity\TmpUserInterface;
-use Hanaboso\PipesFramework\User\Entity\UserInterface;
+use Doctrine\ORM\Mapping as ORM;
+use Hanaboso\PipesFramework\Commons\Traits\Entity\DeletedTrait;
 use Hanaboso\PipesFramework\User\Enum\UserTypeEnum;
 
 /**
  * Class User
  *
- * @package Hanaboso\PipesFramework\User\Document
+ * @package Hanaboso\PipesFramework\User\Entity
  *
- * @ODM\Document(repositoryClass="Hanaboso\PipesFramework\User\Repository\Document\UserRepository")
+ * @ORM\Table()
+ * @ORM\Entity(repositoryClass="Hanaboso\PipesFramework\User\Repository\Entity\UserRepository")
  */
 class User extends UserAbstract
 {
@@ -24,14 +23,14 @@ class User extends UserAbstract
     /**
      * @var string
      *
-     * @ODM\Field(type="string")
+     * @ORM\Column(type="string")
      */
     private $password;
 
     /**
      * @var DateTime
      *
-     * @ODM\Field(type="date")
+     * @ORM\Column(type="date")
      */
     private $updated;
 
@@ -109,4 +108,3 @@ class User extends UserAbstract
     }
 
 }
-

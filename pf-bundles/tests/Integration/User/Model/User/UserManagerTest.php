@@ -3,6 +3,7 @@
 namespace Tests\Integration\User\Model\User;
 
 use DateTime;
+use Doctrine\ODM\MongoDB\DocumentRepository;
 use Hanaboso\PipesFramework\User\Document\TmpUser;
 use Hanaboso\PipesFramework\User\Document\Token;
 use Hanaboso\PipesFramework\User\Document\User;
@@ -10,9 +11,6 @@ use Hanaboso\PipesFramework\User\Enum\UserTypeEnum;
 use Hanaboso\PipesFramework\User\Model\Token\TokenManagerException;
 use Hanaboso\PipesFramework\User\Model\User\UserManager;
 use Hanaboso\PipesFramework\User\Model\User\UserManagerException;
-use Hanaboso\PipesFramework\User\Repository\TmpUserRepository;
-use Hanaboso\PipesFramework\User\Repository\TokenRepository;
-use Hanaboso\PipesFramework\User\Repository\UserRepository;
 use Symfony\Component\Security\Core\Encoder\PasswordEncoderInterface;
 use Tests\DatabaseTestCaseAbstract;
 use Tests\PrivateTrait;
@@ -33,17 +31,17 @@ class UserManagerTest extends DatabaseTestCaseAbstract
     private $userManager;
 
     /**
-     * @var UserRepository
+     * @var DocumentRepository
      */
     private $userRepository;
 
     /**
-     * @var TmpUserRepository
+     * @var DocumentRepository
      */
     private $tmpUserRepository;
 
     /**
-     * @var TokenRepository
+     * @var DocumentRepository
      */
     private $tokenRepository;
 

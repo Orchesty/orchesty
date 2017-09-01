@@ -2,11 +2,11 @@
 
 namespace Hanaboso\PipesFramework\Acl\Dto;
 
-use Hanaboso\PipesFramework\Acl\Document\Group;
+use Hanaboso\PipesFramework\Acl\Entity\GroupInterface;
 use Hanaboso\PipesFramework\Acl\Exception\AclException;
 use Hanaboso\PipesFramework\Acl\Factory\MaskFactory;
 use Hanaboso\PipesFramework\Acl\Factory\RuleFactory;
-use Hanaboso\PipesFramework\User\Document\UserInterface;
+use Hanaboso\PipesFramework\User\Entity\UserInterface;
 
 /**
  * Class GroupDto
@@ -27,7 +27,7 @@ final class GroupDto
     private $rules;
 
     /**
-     * @var Group
+     * @var GroupInterface
      */
     private $group;
 
@@ -39,10 +39,10 @@ final class GroupDto
     /**
      * GroupDto constructor.
      *
-     * @param Group       $group
-     * @param string|null $name
+     * @param GroupInterface $group
+     * @param string|null    $name
      */
-    function __construct(Group $group, ?string $name = NULL)
+    function __construct(GroupInterface $group, ?string $name = NULL)
     {
         $this->group = $group;
         $this->name  = $name;
@@ -123,9 +123,9 @@ final class GroupDto
     }
 
     /**
-     * @return Group
+     * @return GroupInterface
      */
-    public function getGroup(): Group
+    public function getGroup(): GroupInterface
     {
         return $this->group;
     }

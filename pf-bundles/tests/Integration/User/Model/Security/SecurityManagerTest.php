@@ -6,8 +6,6 @@ use Doctrine\ODM\MongoDB\DocumentRepository;
 use Hanaboso\PipesFramework\User\Document\User;
 use Hanaboso\PipesFramework\User\Model\Security\SecurityManager;
 use Hanaboso\PipesFramework\User\Model\Security\SecurityManagerException;
-use Hanaboso\PipesFramework\User\Model\Token;
-use Hanaboso\PipesFramework\User\Repository\UserRepository;
 use Symfony\Component\Security\Core\Encoder\PasswordEncoderInterface;
 use Tests\DatabaseTestCaseAbstract;
 
@@ -30,7 +28,7 @@ class SecurityManagerTest extends DatabaseTestCaseAbstract
     private $securityManager;
 
     /**
-     * @var UserRepository|DocumentRepository
+     * @var DocumentRepository
      */
     private $userRepository;
 
@@ -46,7 +44,8 @@ class SecurityManagerTest extends DatabaseTestCaseAbstract
             $this->container->get('hbpf.database_manager_locator.user'),
             $encodeFactory,
             $this->session,
-            $this->container->get('security.token_storage')
+            $this->container->get('security.token_storage'),
+            $this->container->get('hbpf.acl.provider.resource')
         );
         $this->userRepository  = $this->dm->getRepository(User::class);
     }
@@ -109,7 +108,6 @@ class SecurityManagerTest extends DatabaseTestCaseAbstract
         $this->securityManager->login(['email' => 'email@example.com', 'password' => 'passw0rd']);
         $this->assertTrue($this->session->has(SecurityManager::SECURITY_KEY . SecurityManager::SECURED_AREA));
 
-        /** @var Token $token */
         $token = unserialize($this->session->get(SecurityManager::SECURITY_KEY . SecurityManager::SECURED_AREA));
         /** @var User $user */
         $user = $this->userRepository->find($token->getUser()->getId());
@@ -144,7 +142,6 @@ class SecurityManagerTest extends DatabaseTestCaseAbstract
         $this->securityManager->login(['email' => 'email@example.com', 'password' => 'passw0rd']);
         $this->assertTrue($this->session->has(SecurityManager::SECURITY_KEY . SecurityManager::SECURED_AREA));
 
-        /** @var Token $token */
         $token = unserialize($this->session->get(SecurityManager::SECURITY_KEY . SecurityManager::SECURED_AREA));
 
         /** @var User $user */

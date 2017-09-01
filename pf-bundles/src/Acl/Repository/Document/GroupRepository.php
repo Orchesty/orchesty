@@ -1,16 +1,16 @@
 <?php declare(strict_types=1);
 
-namespace Hanaboso\PipesFramework\Acl\Repository;
+namespace Hanaboso\PipesFramework\Acl\Repository\Document;
 
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use Doctrine\ODM\MongoDB\Query\Query;
 use Hanaboso\PipesFramework\Acl\Document\Group;
-use Hanaboso\PipesFramework\User\Document\UserInterface;
+use Hanaboso\PipesFramework\User\Entity\UserInterface;
 
 /**
  * Class GroupRepository
  *
- * @package Hanaboso\PipesFramework\Acl\Repository
+ * @package Hanaboso\PipesFramework\Acl\Repository\Document
  */
 class GroupRepository extends DocumentRepository
 {

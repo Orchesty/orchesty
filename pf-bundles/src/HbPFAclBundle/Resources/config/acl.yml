@@ -4,3 +4,5 @@ parameters:
 #        Add new resources to ResourceEnum class
             group: Hanaboso\PipesFramework\Acl\Document\Group
             user: Hanaboso\PipesFramework\User\Document\User
+            tmp_user: Hanaboso\PipesFramework\User\Document\TmpUser
+            token: Hanaboso\PipesFramework\User\Document\Token

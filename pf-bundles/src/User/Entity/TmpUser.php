@@ -1,17 +1,17 @@
 <?php declare(strict_types=1);
 
-namespace Hanaboso\PipesFramework\User\Document;
+namespace Hanaboso\PipesFramework\User\Entity;
 
-use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Hanaboso\PipesFramework\User\Entity\TmpUserInterface;
+use Doctrine\ORM\Mapping as ORM;
 use Hanaboso\PipesFramework\User\Enum\UserTypeEnum;
 
 /**
  * Class TmpUser
  *
- * @package Hanaboso\PipesFramework\User\Document
+ * @package Hanaboso\PipesFramework\User\Entity
  *
- * @ODM\Document(repositoryClass="Hanaboso\PipesFramework\User\Repository\Document\TmpUserRepository")
+ * @ORM\Table()
+ * @ORM\Entity(repositoryClass="Hanaboso\PipesFramework\User\Repository\Entity\TmpUserRepository")
  */
 class TmpUser extends UserAbstract implements TmpUserInterface
 {

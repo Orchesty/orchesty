@@ -1,18 +1,17 @@
 <?php declare(strict_types=1);
 
-namespace Hanaboso\PipesFramework\Acl\Document;
+namespace Hanaboso\PipesFramework\Acl\Entity;
 
-use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Hanaboso\PipesFramework\Acl\Entity\GroupInterface;
-use Hanaboso\PipesFramework\Acl\Entity\RuleInterface;
-use Hanaboso\PipesFramework\Commons\Traits\Document\IdTrait;
+use Doctrine\ORM\Mapping as ORM;
+use Hanaboso\PipesFramework\Commons\Traits\Entity\IdTrait;
 
 /**
  * Class Rule
  *
- * @package Hanaboso\PipesFramework\Acl\Document
+ * @package Hanaboso\PipesFramework\Acl\Entity
  *
- * @ODM\Document(repositoryClass="Hanaboso\PipesFramework\Acl\Repository\Document\RuleRepository")
+ * @ORM\Table()
+ * @ORM\Entity(repositoryClass="Hanaboso\PipesFramework\Acl\Repository\Entity\RuleRepository")
  */
 class Rule implements RuleInterface
 {
@@ -22,28 +21,28 @@ class Rule implements RuleInterface
     /**
      * @var string
      *
-     * @ODM\Field(type="string")
+     * @ORM\Column(type="string")
      */
     private $resource;
 
     /**
      * @var GroupInterface
      *
-     * @ODM\ReferenceOne(targetDocument="Hanaboso\PipesFramework\Acl\Document\Group")
+     * @ORM\OneToMany(targetDocument="Hanaboso\PipesFramework\Acl\Entity\Group")
      */
     private $group;
 
     /**
      * @var int
      *
-     * @ODM\Field(type="int")
+     * @ORM\Column(type="int")
      */
     private $actionMask;
 
     /**
      * @var int
      *
-     * @ODM\Field(type="int")
+     * @ORM\Column(type="int")
      */
     private $propertyMask;
 

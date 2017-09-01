@@ -13,7 +13,7 @@ use Hanaboso\PipesFramework\Commons\Enum\FileFormatEnum;
 use Hanaboso\PipesFramework\Commons\Enum\StorageTypeEnum;
 use Hanaboso\PipesFramework\Commons\Exception\FileStorageException;
 use Hanaboso\PipesFramework\Commons\FileStorage\FileTypes;
-use Hanaboso\PipesFramework\Commons\Traits\IdTrait;
+use Hanaboso\PipesFramework\Commons\Traits\Document\IdTrait;
 
 /**
  * Class File

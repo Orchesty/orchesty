@@ -9,7 +9,7 @@
 namespace Hanaboso\PipesFramework\Authorization\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Hanaboso\PipesFramework\Commons\Traits\IdTrait;
+use Hanaboso\PipesFramework\Commons\Traits\Document\IdTrait;
 
 /**
  * Class Authorization

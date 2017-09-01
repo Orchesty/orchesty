@@ -2,8 +2,9 @@ services:
     hbpf.user.handler.user:
         class: Hanaboso\PipesFramework\HbPFUserBundle\Handler\UserHandler
         arguments:
-            - '@hbpf.database_manager_locator'
+            - '@hbpf.database_manager_locator.user'
             - '@hbpf.user.manager.user'
+            - '@hbpf.acl.provider.resource'
         tags:
             - { name: kernel.event_subscriber }
 
@@ -15,16 +16,18 @@ services:
     hbpf.user.manager.token:
         class: Hanaboso\PipesFramework\User\Model\Token\TokenManager
         arguments:
-            - '@hbpf.database_manager_locator'
+           - "@hbpf.database_manager_locator.user"
+           - '@hbpf.acl.provider.resource'
 
     hbpf.user.manager.user:
         class: Hanaboso\PipesFramework\User\Model\User\UserManager
         arguments:
-            - "@hbpf.database_manager_locator"
+            - "@hbpf.database_manager_locator.user"
             - "@hbpf.user.manager.security"
             - "@hbpf.user.manager.token"
             - "@security.encoder_factory.generic"
             - "@event_dispatcher"
+            - '@hbpf.acl.provider.resource'
 
     hbpf.user.manager.security:
         class: Hanaboso\PipesFramework\User\Model\Security\SecurityManager
@@ -33,6 +36,7 @@ services:
             - '@security.encoder_factory'
             - '@hbpf.user.session'
             - '@security.token_storage'
+            - '@hbpf.acl.provider.resource'
 
     hbpf.database_manager_locator.user:
         class: Hanaboso\PipesFramework\User\DatabaseManager\UserDatabaseManagerLocator
