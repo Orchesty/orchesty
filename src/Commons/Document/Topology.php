@@ -2,8 +2,10 @@
 
 namespace Hanaboso\PipesFramework\Commons\Document;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 use Hanaboso\PipesFramework\Commons\Traits\IdTrait;
-use MongoDB\Collection;
 
 /**
  * Class Topology
@@ -46,9 +48,9 @@ class Topology
     protected $bpmn;
 
     /**
-     * @var Node[]|Collection
+     * @var string
      *
-     * @MongoDB\ReferenceMany(targetDocument="Node", mappedBy="Topology")
+     * @MongoDB\Field(type="string")
      */
     protected $nodes;
 
@@ -133,19 +135,23 @@ class Topology
     }
 
     /**
-     * @return Node[]|Collection
+     * @return string
      */
-    public function getNodes()
+    public function getNodes(): string
     {
         return $this->nodes;
     }
 
     /**
-     * @param Node[]|Collection $nodes
+     * @param string $nodes
+     *
+     * @return Topology
      */
-    public function setNodes($nodes)
+    public function setNodes(string $nodes): Topology
     {
         $this->nodes = $nodes;
+
+        return $this;
     }
 
 }
