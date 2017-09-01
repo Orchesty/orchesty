@@ -1,5 +1,6 @@
 services:
-    hbpf.controller.topology:
-        class: Hanaboso\PipesFramework\HbPFApiGateway\Controller\TopologyController
+    hbpf.controller.custom_node:
+        class: Hanaboso\PipesFramework\HbPFCustomNodeBundle\Controller\CustomNodeController
         arguments:
-            - '@hbpf.handler.topology'
+            - '@hbpf.handler.custom_node'
+
