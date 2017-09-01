@@ -1,6 +1,6 @@
 import React from 'react'
 
-import {stateType} from '../../types';
+import {stateType} from '../../../types';
 
 import ErrorState from './errorState';
 import LoadingState from './loadingState';

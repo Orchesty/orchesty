@@ -2,15 +2,15 @@ import React from 'react'
 import {connect} from 'react-redux';
 import Form from 'react-jsonschema-form';
 
-import * as topologyActions from '../../actions/topologyActions';
+import * as topologyActions from '../../../actions/topologyActions';
 
 
 const schema = {
   type: "object",
   required: ["name"],
   properties: {
-    id: {
-      type: 'integer',
+    _id: {
+      type: 'string',
       title: 'Id'
     },
     name: {
@@ -18,12 +18,12 @@ const schema = {
       title: "Name",
       default: "Nejaky nazev"
     },
-    description: {
+    descr: {
       type: "string",
       title: "Description",
       default: "Description"
     },
-    enabled: {
+    status: {
       type: 'boolean',
       title: 'Enabled',
       default: true
@@ -32,7 +32,7 @@ const schema = {
 };
 
 const uiSchema = {
-  id: {
+  _id: {
     "ui:readonly": true
   }
 };
@@ -52,12 +52,12 @@ class TopologyForm extends React.Component {
   }
 
   onSubmit(data){
-    const {name, description, enabled} = data;
+    const {name, descr, status} = data;
     const {onProcessing} = this.props;
     if (typeof onProcessing == 'function'){
       onProcessing(true);
     }
-    this.props.topologyUpdate({name, description, enabled}).then(
+    this.props.topologyUpdate({name, descr, status: status ? 1 : 0}).then(
       response => {
         const {onSuccess, onProcessing} = this.props;
         if (typeof onProcessing == 'function'){

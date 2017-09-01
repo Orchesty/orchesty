@@ -1,13 +1,13 @@
 import React from 'react'
 import {connect} from 'react-redux';
 
-import {stateType} from '../../types';
+import {stateType} from '../../../types';
 
-import * as topologyActions from '../../actions/topologyActions';
-import * as notificationActions from '../../actions/notificationActions';
+import * as topologyActions from '../../../actions/topologyActions';
+import * as notificationActions from '../../../actions/notificationActions';
 
-import SimpleState from '../elements/simpleState';
-import BpmnIoComponent from '../elements/bpmnIoComponent';
+import SimpleState from '../../elements/state/simpleState';
+import BpmnIoComponent from '../../elements/bpmn/bpmnIoComponent';
 
 class TopologyScheme extends React.Component {
   constructor(props) {
