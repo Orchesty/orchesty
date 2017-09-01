@@ -3,11 +3,11 @@ import {connect} from 'react-redux';
 
 import {stateType} from '../../../types';
 
-import * as topologyActions from '../../../actions/topology_actions';
-import * as notificationActions from '../../../actions/notification_actions';
+import * as topologyActions from '../../../actions/topologyActions';
+import * as notificationActions from '../../../actions/notificationActions';
 
-import SimpleState from '../elements/simple_state';
-import BpmnIoComponent from '../elements/bpmn_io_component';
+import SimpleState from '../elements/simpleState';
+import BpmnIoComponent from '../elements/bpmnIoComponent';
 
 class TopologyScheme extends React.Component {
   constructor(props) {

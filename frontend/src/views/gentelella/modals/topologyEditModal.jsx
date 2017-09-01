@@ -1,6 +1,6 @@
 import React from 'react'
 
-import TopologyForm from '../components/topology_form';
+import TopologyForm from '../components/topologyForm';
 
 class TopologyEditModal extends React.Component {
   constructor(props) {

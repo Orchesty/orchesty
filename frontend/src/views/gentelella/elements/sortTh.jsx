@@ -1,6 +1,6 @@
 import React from 'react'
 
-import './sort_th.less';
+import './sortTh.less';
 
 class SortTh extends React.Component {
   constructor(props) {

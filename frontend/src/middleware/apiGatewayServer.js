@@ -1,6 +1,6 @@
 import config from '../config/params';
 
-import * as notificationActions from '../actions/notification_actions';
+import * as notificationActions from '../actions/notificationActions';
 
 function check(dispatch, response) {
   if (response.ok){

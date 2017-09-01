@@ -1,8 +1,8 @@
-import * as types from '../action_types';
-import serverRequest, {sortToQuery, rawRequest} from '../middleware/api_gateway_server';
-import * as applicationActions from './application_actions';
+import * as types from '../actionTypes';
+import serverRequest, {sortToQuery, rawRequest} from '../middleware/apiGatewayServer';
+import * as applicationActions from './applicationActions';
 import {listType} from '../types';
-import objectEquals from '../utils/object_equals';
+import objectEquals from '../utils/objectEquals';
 
 import params from '../config/params';
 

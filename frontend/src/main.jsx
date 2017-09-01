@@ -4,7 +4,7 @@ import { Provider } from 'react-redux';
 
 import App from './views/gentelella/app';
 
-import configureStore from './configure_store';
+import configureStore from './configureStore';
 
 var store = configureStore();
 

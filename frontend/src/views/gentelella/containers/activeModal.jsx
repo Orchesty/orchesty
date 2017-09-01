@@ -1,9 +1,9 @@
 import React from 'react'
 import { connect } from 'react-redux';
 
-import * as applicationActions from '../../../actions/application_actions';
+import * as applicationActions from '../../../actions/applicationActions';
 
-import TopologyEditModal from '../modals/topology_edit_modal';
+import TopologyEditModal from '../modals/topologyEditModal';
 
 
 class ActiveModal extends React.Component {

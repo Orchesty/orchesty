@@ -1,6 +1,6 @@
 import React from 'react'
 
-import LocalMenuItem from './local_menu_item';
+import LocalMenuItem from './localMenuItem';
 
 class LocalMenu extends React.Component {
   constructor(props) {

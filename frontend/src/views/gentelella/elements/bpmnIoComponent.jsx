@@ -11,7 +11,7 @@ import CamundaModdleDescriptor from 'camunda-bpmn-moddle/resources/camunda.json'
 
 import 'diagram-js/assets/diagram-js.css';
 import 'bpmn-js/assets/bpmn-font/css/bpmn-embedded.css';
-import './bpmn_io_component.less';
+import './bpmnIoComponent.less';
 
 class BpmnIoComponent extends React.Component {
   constructor(props){

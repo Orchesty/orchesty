@@ -1,12 +1,12 @@
 import React from 'react'
 import { connect } from 'react-redux';
 
-import Error404Page from '../pages/error_404_page';
-import DashboardPage from '../pages/dashboard_page';
-import TopologyPage from '../pages/topology_page';
-import SchemaPage from '../pages/schema_page';
+import Error404Page from '../pages/error404Page';
+import DashboardPage from '../pages/dashboardPage';
+import TopologyPage from '../pages/topologyPage';
+import SchemaPage from '../pages/schemaPage';
 
-import './active_page.less';
+import './activePage.less';
 
 class ActivePage extends React.Component {
   render() {

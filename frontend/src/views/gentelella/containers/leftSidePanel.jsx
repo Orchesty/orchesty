@@ -1,6 +1,6 @@
 import React from 'react'
 
-import SideMenuPanel from './side_menu_panel';
+import SideMenuPanel from './sideMenuPanel';
 
 class LeftSidePanel extends React.Component {
   constructor(props) {
