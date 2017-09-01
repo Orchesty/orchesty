@@ -2,17 +2,19 @@
 
 namespace Hanaboso\PipesFramework\HbPFCommonsBundle\Controller;
 
+use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Controller\FOSRestController;
 use Hanaboso\PipesFramework\Commons\Message\MessageInterface;
 use Hanaboso\PipesFramework\HbPFCommonsBundle\Handler\NodeHandler;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 /**
  * Class ApiController
  *
  * @package Hanaboso\PipesFramework\HbPFCommonsBundle\Controller
+ *
+ * @Route(service="hbpf.commons.controller.api")
  */
 class ApiController extends FOSRestController
 {
@@ -43,13 +45,11 @@ class ApiController extends FOSRestController
      * @param string           $nodeId
      * @param MessageInterface $message
      *
-     * @return Response
+     * @return JsonResponse
      */
-    public function nodeAction(string $nodeId, MessageInterface $message): Response
+    public function nodeAction(string $nodeId, MessageInterface $message): JsonResponse
     {
-        $data = $this->nodeHandler->processData($nodeId, $message);
-
-        return $this->handleView($this->view($data));
+        return new JsonResponse($this->nodeHandler->processData($nodeId, $message));
     }
 
 }
