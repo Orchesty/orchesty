@@ -18,20 +18,28 @@ class UserEvent extends Event
     public const USER_REGISTER       = 'user.register';
     public const USER_ACTIVATE       = 'user.activate';
     public const USER_RESET_PASSWORD = 'user.reset.password';
+    public const USER_DELETE_BEFORE  = 'user.delete.before';
+    public const USER_DELETE_AFTER   = 'user.delete.after';
 
     /**
      * @var UserInterface
      */
     private $user;
+    /**
+     * @var UserInterface|null
+     */
+    private $loggedUser;
 
     /**
      * UserEvent constructor.
      *
-     * @param UserInterface $user
+     * @param UserInterface      $user
+     * @param UserInterface|null $loggedUser
      */
-    public function __construct(UserInterface $user)
+    public function __construct(UserInterface $user, ?UserInterface $loggedUser = NULL)
     {
-        $this->user = $user;
+        $this->user       = $user;
+        $this->loggedUser = $loggedUser;
     }
 
     /**
@@ -40,6 +48,14 @@ class UserEvent extends Event
     public function getUser(): UserInterface
     {
         return $this->user;
+    }
+
+    /**
+     * @return UserInterface
+     */
+    public function getLoggedUser(): UserInterface
+    {
+        return $this->loggedUser ?? $this->user;
     }
 
 }
