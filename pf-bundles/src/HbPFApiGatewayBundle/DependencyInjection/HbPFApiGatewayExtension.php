@@ -4,6 +4,7 @@ namespace Hanaboso\PipesFramework\HbPFApiGateway\DependencyInjection;
 
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
 use Symfony\Component\DependencyInjection\Loader;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 
@@ -12,7 +13,7 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
  *
  * @link http://symfony.com/doc/current/cookbook/bundles/extension.html
  */
-class HbPFApiGatewayExtension extends Extension
+class HbPFApiGatewayExtension extends Extension implements PrependExtensionInterface
 {
 
     /**
@@ -28,4 +29,13 @@ class HbPFApiGatewayExtension extends Extension
         $loader->load('services.yml');
     }
 
+    /**
+     * Allow an extension to prepend the extension configurations.
+     *
+     * @param ContainerBuilder $container
+     */
+    public function prepend(ContainerBuilder $container)
+    {
+        $container->setParameter('src_dir', __DIR__ . '/../..');
+    }
 }
