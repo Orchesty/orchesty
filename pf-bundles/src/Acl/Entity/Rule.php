@@ -28,21 +28,21 @@ class Rule implements RuleInterface
     /**
      * @var GroupInterface
      *
-     * @ORM\OneToMany(targetDocument="Hanaboso\PipesFramework\Acl\Entity\Group")
+     * @ORM\ManyToOne(targetEntity="Hanaboso\PipesFramework\Acl\Entity\Group", inversedBy="rules")
      */
     private $group;
 
     /**
      * @var int
      *
-     * @ORM\Column(type="int")
+     * @ORM\Column(type="integer")
      */
     private $actionMask;
 
     /**
      * @var int
      *
-     * @ORM\Column(type="int")
+     * @ORM\Column(type="integer")
      */
     private $propertyMask;
 

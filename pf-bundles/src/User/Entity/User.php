@@ -30,7 +30,7 @@ class User extends UserAbstract
     /**
      * @var DateTime
      *
-     * @ORM\Column(type="date")
+     * @ORM\Column(type="date", columnDefinition="DATETIME ON UPDATE CURRENT_TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
      */
     private $updated;
 

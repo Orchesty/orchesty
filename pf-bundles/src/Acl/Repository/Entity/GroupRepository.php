@@ -21,14 +21,12 @@ class GroupRepository extends EntityRepository
      */
     public function getUserGroups(UserInterface $user): array
     {
-        $res = $this->createQueryBuilder('g')
+        return $this->createQueryBuilder('g')
             ->join('g.users', 'u')
             ->where('u = :user')
             ->setParameter('user', $user)
             ->getQuery()
             ->execute();
-
-        return $res->toArray();
     }
 
 }

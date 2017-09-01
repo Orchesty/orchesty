@@ -30,14 +30,14 @@ class Group extends DocumentAbstract implements GroupInterface
     private $name;
 
     /**
-     * @var RuleInterface[]|null
+     * @var RuleInterface[]|ArrayCollection
      *
      * @ODM\ReferenceMany(targetDocument="Hanaboso\PipesFramework\Acl\Document\Rule")
      */
     private $rules;
 
     /**
-     * @var UserInterface[]|null
+     * @var UserInterface[]|ArrayCollection
      *
      * @ODM\ReferenceMany(targetDocument="Hanaboso\PipesFramework\User\Document\User")
      */
