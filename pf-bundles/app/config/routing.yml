@@ -7,12 +7,20 @@ hb_pf_authorization:
     resource: "@HbPFAuthorizationBundle"
     type: annotation
 
+hb_pf_connector:
+    resource: "@HbPFConnectorBundle"
+    type: annotation
+
 hb_pf_custom_node:
     resource: "@HbPFCustomNodeBundle"
     type: annotation
 
 hb_pf_joiner:
     resource: "@HbPFJoinerBundle"
+    type: annotation
+
+hb_pf_mailer:
+    resource: "@HbPFMailerBundle"
     type: annotation
 
 hb_pf_mapper:
@@ -25,8 +33,4 @@ hb_pf_table_parser:
 
 hb_pf_user:
     resource: "@HbPFUserBundle"
-    type: annotation
-
-hb_pf_mailer:
-    resource: "@HbPFMailerBundle"
     type: annotation
