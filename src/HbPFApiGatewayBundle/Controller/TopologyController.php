@@ -16,6 +16,20 @@ class TopologyController extends FOSRestController
 {
 
     /**
+     * @var TopologyHandler
+     */
+    private $topologyHandler;
+
+    /**
+     * TopologyController constructor.
+     * @param TopologyHandler $topologyHandler
+     */
+    public function __construct(TopologyHandler $topologyHandler)
+    {
+        $this->topologyHandler = $topologyHandler;
+    }
+
+    /**
      * @Route("/topologies")
      * @Method(["GET", "OPTIONS"])
      *
@@ -24,11 +38,8 @@ class TopologyController extends FOSRestController
      */
     public function getTopologiesAction(Request $request): Response
     {
-        /** @var TopologyHandler $topologyHandler */
-        $topologyHandler = $this->container->get('hbpf.handler.topology');
-
         $query = $request->query;
-        $result = $topologyHandler->getTopologies($query->get('limit'), $query->get('offset'), $query->get('order_by'));
+        $result = $this->topologyHandler->getTopologies($query->get('limit'), $query->get('offset'), $query->get('order_by'));
 
         return $this->handleView($this->view($result));
     }
@@ -42,10 +53,7 @@ class TopologyController extends FOSRestController
      */
     public function getTopologyAction(string $id): Response
     {
-        /** @var TopologyHandler $topologyHandler */
-        $topologyHandler = $this->container->get('hbpf.handler.topology');
-
-        $result = $topologyHandler->getTopology($id);
+        $result = $this->topologyHandler->getTopology($id);
 
         return $this->handleView($this->view($result));
     }
@@ -60,10 +68,7 @@ class TopologyController extends FOSRestController
      */
     public function updateTopologyAction(Request $request, string $id): Response
     {
-        /** @var TopologyHandler $topologyHandler */
-        $topologyHandler = $this->container->get('hbpf.handler.topology');
-
-        $result = $topologyHandler->updateTopology($id, $request->request->all());
+        $result = $this->topologyHandler->updateTopology($id, $request->request->all());
 
         return $this->handleView($this->view($result));
     }
@@ -77,10 +82,7 @@ class TopologyController extends FOSRestController
      */
     public function getTopologyScheme(string $id): Response
     {
-        /** @var TopologyHandler $topologyHandler */
-        $topologyHandler = $this->container->get('hbpf.handler.topology');
-
-        $result = $topologyHandler->getTopologyScheme($id);
+        $result = $this->topologyHandler->getTopologyScheme($id);
 
         return $this->handleView($this->view($result));
     }
@@ -95,10 +97,7 @@ class TopologyController extends FOSRestController
      */
     public function uploadTopologyScheme(Request $request, string $id): Response
     {
-        /** @var TopologyHandler $topologyHandler */
-        $topologyHandler = $this->container->get('hbpf.handler.topology');
-
-        $result = $topologyHandler->updateTopology($id, $request->request->all());
+        $result = $this->topologyHandler->updateTopology($id, $request->request->all());
 
         return $this->handleView($this->view($result));
     }
