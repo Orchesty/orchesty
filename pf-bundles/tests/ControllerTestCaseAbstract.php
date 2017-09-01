@@ -121,6 +121,22 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
     }
 
     /**
+     * @param string $url
+     *
+     * @return stdClass
+     */
+    protected function sendGet(string $url): stdClass
+    {
+        $this->client->request('GET', $url);
+        $response = $this->client->getResponse();
+
+        return (object) [
+            'status'  => $response->getStatusCode(),
+            'content' => Json::decode($response->getContent()),
+        ];
+    }
+
+    /**
      * @param string     $url
      * @param array      $parameters
      * @param array|null $content

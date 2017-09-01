@@ -3,6 +3,7 @@ services:
   hbpf.mail.mailer:
     class: Hanaboso\PipesFramework\Mailer\Mailer
     arguments:
+        - '@hbpf.mailer.transport.swift'
 
   hbpf.mail.mail_builders_loader:
       class: Hanaboso\PipesFramework\HbPFMailerBundle\Loader\MailBuildersLoader
