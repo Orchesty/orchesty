@@ -13,3 +13,7 @@ hb_pf_joiner:
 hb_pf_user:
     resource: "@HbPFUserBundle"
     type: annotation
+
+hb_pf_table_parser:
+    resource: "@HbPFTableParserBundle"
+    type: annotation
