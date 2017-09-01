@@ -12,15 +12,19 @@ use Hanaboso\PipesFramework\Commons\Enum\EnumAbstraction;
 final class ResourceEnum extends EnumAbstraction
 {
 
-    public const GROUP = 'group';
-    public const USER  = 'user';
+    public const GROUP       = 'group';
+    public const USER        = 'user';
+    public const TMP_USER    = 'tmp_user';
+    public const TOKEN       = 'token';
 
     /**
      * @var string[]
      */
     protected static $choices = [
-        self::GROUP => 'Group document',
-        self::USER  => 'User document',
+        self::GROUP       => 'Group entity',
+        self::USER        => 'User entity',
+        self::TMP_USER    => 'TmpUser entity',
+        self::TOKEN       => 'Token entity',
     ];
 
 }

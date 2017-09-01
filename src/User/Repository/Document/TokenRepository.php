@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Hanaboso\PipesFramework\User\Repository;
+namespace Hanaboso\PipesFramework\User\Repository\Document;
 
 use DateTime;
 use Doctrine\ODM\MongoDB\DocumentRepository;
@@ -9,7 +9,7 @@ use Hanaboso\PipesFramework\User\Document\Token;
 /**
  * Class TokenRepository
  *
- * @package Hanaboso\PipesFramework\User\Repository
+ * @package Hanaboso\PipesFramework\User\Repository\Document
  */
 class TokenRepository extends DocumentRepository
 {

@@ -4,8 +4,10 @@ namespace Hanaboso\PipesFramework\HbPFUserBundle\Handler;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ORM\EntityManager;
-use Hanaboso\PipesFramework\Commons\DatabaseManager\DatabaseManagerLocator;
-use Hanaboso\PipesFramework\User\Document\User;
+use Hanaboso\PipesFramework\Acl\Enum\ResourceEnum;
+use Hanaboso\PipesFramework\HbPFAclBundle\Provider\ResourceProvider;
+use Hanaboso\PipesFramework\User\DatabaseManager\UserDatabaseManagerLocator;
+use Hanaboso\PipesFramework\User\Entity\UserInterface;
 use Hanaboso\PipesFramework\User\Model\User\UserManager;
 use Hanaboso\PipesFramework\User\Model\User\UserManagerException;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -29,7 +31,7 @@ class UserHandler implements LogoutSuccessHandlerInterface, EventSubscriberInter
     /**
      * @var DocumentManager|EntityManager
      */
-    private $databaseManager;
+    private $dm;
 
     /**
      * @var UserManager
@@ -37,23 +39,34 @@ class UserHandler implements LogoutSuccessHandlerInterface, EventSubscriberInter
     private $userManager;
 
     /**
+     * @var ResourceProvider
+     */
+    private $provider;
+
+    /**
      * UserHandler constructor.
      *
-     * @param DatabaseManagerLocator $databaseManagerLocator
-     * @param UserManager            $userManager
+     * @param UserDatabaseManagerLocator $userDml
+     * @param UserManager                $userManager
+     * @param ResourceProvider           $provider
      */
-    public function __construct(DatabaseManagerLocator $databaseManagerLocator, UserManager $userManager)
+    public function __construct(
+        UserDatabaseManagerLocator $userDml,
+        UserManager $userManager,
+        ResourceProvider $provider
+    )
     {
-        $this->databaseManager = $databaseManagerLocator->getDm();
-        $this->userManager     = $userManager;
+        $this->dm          = $userDml->get();
+        $this->userManager = $userManager;
+        $this->provider    = $provider;
     }
 
     /**
      * @param array $data
      *
-     * @return User
+     * @return UserInterface
      */
-    public function login(array $data): User
+    public function login(array $data): UserInterface
     {
         return $this->userManager->login($data);
     }
@@ -120,9 +133,9 @@ class UserHandler implements LogoutSuccessHandlerInterface, EventSubscriberInter
     /**
      * @param string $id
      *
-     * @return User
+     * @return UserInterface
      */
-    public function delete(string $id): User
+    public function delete(string $id): UserInterface
     {
         return $this->userManager->delete($this->getUser($id));
     }
@@ -170,12 +183,15 @@ class UserHandler implements LogoutSuccessHandlerInterface, EventSubscriberInter
     /**
      * @param string $id
      *
-     * @return User
+     * @return UserInterface
      * @throws UserManagerException
      */
-    private function getUser(string $id): User
+    private function getUser(string $id): UserInterface
     {
-        $user = $this->databaseManager->getRepository(User::class)->findOneBy(['id' => $id]);
+        /** @var UserInterface $user */
+        $user = $this->dm->getRepository(
+            $this->provider->getResource(ResourceEnum::USER)
+        )->findOneBy(['id' => $id]);
 
         if (!$user) {
             throw new UserManagerException(

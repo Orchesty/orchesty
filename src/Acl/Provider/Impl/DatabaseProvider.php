@@ -4,13 +4,14 @@ namespace Hanaboso\PipesFramework\Acl\Provider\Impl;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ORM\EntityManager;
-use Hanaboso\PipesFramework\Acl\Document\Group;
-use Hanaboso\PipesFramework\Acl\Document\Rule;
+use Hanaboso\PipesFramework\Acl\Entity\RuleInterface;
+use Hanaboso\PipesFramework\Acl\Enum\ResourceEnum;
 use Hanaboso\PipesFramework\Acl\Provider\ProviderInterface;
-use Hanaboso\PipesFramework\Acl\Repository\GroupRepository;
+use Hanaboso\PipesFramework\Acl\Repository\document\GroupRepository as OdmRepo;
+use Hanaboso\PipesFramework\Acl\Repository\Entity\GroupRepository as OrmRepo;
+use Hanaboso\PipesFramework\HbPFAclBundle\Provider\ResourceProvider;
 use Hanaboso\PipesFramework\User\DatabaseManager\UserDatabaseManagerLocator;
-use Hanaboso\PipesFramework\User\Document\User;
-use Hanaboso\PipesFramework\User\Document\UserInterface;
+use Hanaboso\PipesFramework\User\Entity\UserInterface;
 
 /**
  * Class DatabaseProvider
@@ -23,27 +24,34 @@ class DatabaseProvider implements ProviderInterface
     /**
      * @var DocumentManager|EntityManager
      */
-    private $em;
+    private $dm;
+
+    /**
+     * @var ResourceProvider
+     */
+    private $provider;
 
     /**
      * DatabaseProvider constructor.
      *
-     * @param UserDatabaseManagerLocator $databaseManagerLocator
+     * @param UserDatabaseManagerLocator $userDml
+     * @param ResourceProvider           $provider
      */
-    public function __construct(UserDatabaseManagerLocator $databaseManagerLocator)
+    public function __construct(UserDatabaseManagerLocator $userDml, ResourceProvider $provider)
     {
-        $this->em = $databaseManagerLocator->get();
+        $this->dm       = $userDml->get();
+        $this->provider = $provider;
     }
 
     /**
-     * @param UserInterface|User $user
+     * @param UserInterface $user
      *
-     * @return Rule[]
+     * @return RuleInterface[]
      */
     public function getRules(UserInterface $user): array
     {
-        /** @var GroupRepository $groupRepository */
-        $groupRepository = $this->em->getRepository(Group::class);
+        /** @var OrmRepo|OdmRepo $groupRepository */
+        $groupRepository = $this->dm->getRepository($this->provider->getResource(ResourceEnum::GROUP));
 
         $rules = [];
         foreach ($groupRepository->getUserGroups($user) as $group) {

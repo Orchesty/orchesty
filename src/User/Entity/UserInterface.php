@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Hanaboso\PipesFramework\User\Document;
+namespace Hanaboso\PipesFramework\User\Entity;
 
 use DateTime;
 use Symfony\Component\Security\Core\User\UserInterface as SecurityCoreUserInterface;
@@ -8,7 +8,7 @@ use Symfony\Component\Security\Core\User\UserInterface as SecurityCoreUserInterf
 /**
  * Interface UserInterface
  *
- * @package Hanaboso\PipesFramework\User\Document
+ * @package Hanaboso\PipesFramework\User\Entity
  */
 interface UserInterface extends SecurityCoreUserInterface
 {
@@ -39,5 +39,10 @@ interface UserInterface extends SecurityCoreUserInterface
      * @return DateTime
      */
     public function getCreated(): DateTime;
+
+    /**
+     * @return array
+     */
+    public function toArray(): array;
 
 }

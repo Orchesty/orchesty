@@ -1,27 +1,27 @@
 <?php declare(strict_types=1);
 
-namespace Hanaboso\PipesFramework\Acl\Document;
+namespace Hanaboso\PipesFramework\Acl\Entity;
 
-use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ORM\Mapping as ORM;
 use Hanaboso\PipesFramework\User\Entity\UserInterface;
 
 /**
- * Class DocumentAbstract
+ * Class EntityAbstract
  *
- * @package Hanaboso\PipesFramework\Acl\Document
+ * @package Hanaboso\PipesFramework\Acl\Entity
  */
-abstract class DocumentAbstract
+abstract class EntityAbstract
 {
 
     /**
      * @var UserInterface|null
      *
-     * @ODM\ReferenceOne(targetDocument="Hanaboso\PipesFramework\User\Document\User")
+     * @ORM\OneToMany(targetEntity="User")
      */
     protected $owner;
 
     /**
-     * DocumentAbstract constructor.
+     * EntityAbstract constructor.
      *
      * @param UserInterface|null $owner
      */
@@ -41,9 +41,9 @@ abstract class DocumentAbstract
     /**
      * @param UserInterface|null $owner
      *
-     * @return DocumentAbstract
+     * @return EntityAbstract
      */
-    public function setOwner(?UserInterface $owner): ?DocumentAbstract
+    public function setOwner(?UserInterface $owner): ?EntityAbstract
     {
         $this->owner = $owner;
 

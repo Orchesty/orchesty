@@ -1,23 +1,22 @@
 <?php declare(strict_types=1);
 
-namespace Hanaboso\PipesFramework\Acl\Document;
+namespace Hanaboso\PipesFramework\Acl\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Doctrine\ODM\MongoDB\PersistentCollection;
-use Hanaboso\PipesFramework\Acl\Entity\GroupInterface;
-use Hanaboso\PipesFramework\Acl\Entity\RuleInterface;
-use Hanaboso\PipesFramework\Commons\Traits\Document\IdTrait;
+use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\PersistentCollection;
+use Hanaboso\PipesFramework\Commons\Traits\Entity\IdTrait;
 use Hanaboso\PipesFramework\User\Entity\UserInterface;
 
 /**
  * Class Group
  *
- * @package Hanaboso\PipesFramework\Acl\Document
+ * @package Hanaboso\PipesFramework\Acl\Entity
  *
- * @ODM\Document(repositoryClass="Hanaboso\PipesFramework\Acl\Repository\Document\GroupRepository")
+ * @ORM\Table()
+ * @ORM\Entity(repositoryClass="Hanaboso\PipesFramework\Acl\Repository\Entity\GroupRepository")
  */
-class Group extends DocumentAbstract implements GroupInterface
+class Group extends EntityAbstract implements GroupInterface
 {
 
     use IdTrait;
@@ -25,21 +24,21 @@ class Group extends DocumentAbstract implements GroupInterface
     /**
      * @var string
      *
-     * @ODM\Field(type="string")
+     * @ORM\Column(type="string")
      */
     private $name;
 
     /**
      * @var RuleInterface[]|null
      *
-     * @ODM\ReferenceMany(targetDocument="Hanaboso\PipesFramework\Acl\Document\Rule")
+     * @ORM\ManyToOne(targetDocument="Hanaboso\PipesFramework\Acl\Entity\Rule")
      */
     private $rules;
 
     /**
      * @var UserInterface[]|null
      *
-     * @ODM\ReferenceMany(targetDocument="Hanaboso\PipesFramework\User\Document\User")
+     * @ORM\ManyToOne(targetDocument="Hanaboso\PipesFramework\User\Entity\User")
      */
     private $users;
 
@@ -132,7 +131,7 @@ class Group extends DocumentAbstract implements GroupInterface
      */
     public function getType(): string
     {
-        return self::TYPE_ODM;
+        return self::TYPE_ORM;
     }
 
 }

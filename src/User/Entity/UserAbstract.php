@@ -1,17 +1,15 @@
 <?php declare(strict_types=1);
 
-namespace Hanaboso\PipesFramework\User\Document;
+namespace Hanaboso\PipesFramework\User\Entity;
 
 use DateTime;
-use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Exception;
-use Hanaboso\PipesFramework\Commons\Traits\Document\IdTrait;
-use Hanaboso\PipesFramework\User\Entity\UserInterface;
+use Hanaboso\PipesFramework\Commons\Traits\Entity\IdTrait;
 
 /**
  * Class UserAbstract
  *
- * @package Hanaboso\PipesFramework\User\Document
+ * @package Hanaboso\PipesFramework\User\Entity
  *
  */
 abstract class UserAbstract implements UserInterface
@@ -22,14 +20,14 @@ abstract class UserAbstract implements UserInterface
     /**
      * @var string
      *
-     * @ODM\Field(type="string")
+     * @ORM\Column(type="string")
      */
     protected $email;
 
     /**
      * @var DateTime
      *
-     * @ODM\Field(type="date")
+     * @ODM\Column(type="date")
      */
     protected $created;
 

@@ -10,7 +10,6 @@ use Hanaboso\PipesFramework\User\Document\User;
 use Hanaboso\PipesFramework\User\Enum\UserTypeEnum;
 use Hanaboso\PipesFramework\User\Model\Token\TokenManager;
 use Hanaboso\PipesFramework\User\Model\Token\TokenManagerException;
-use Hanaboso\PipesFramework\User\Repository\TokenRepository;
 use Tests\DatabaseTestCaseAbstract;
 use Tests\PrivateTrait;
 
@@ -30,7 +29,7 @@ class TokenManagerTest extends DatabaseTestCaseAbstract
     private $tokenManager;
 
     /**
-     * @var TokenRepository|DocumentRepository
+     * @var DocumentRepository
      */
     private $tokenRepository;
 

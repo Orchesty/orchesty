@@ -1,21 +1,19 @@
 <?php declare(strict_types=1);
 
-namespace Hanaboso\PipesFramework\User\Document;
+namespace Hanaboso\PipesFramework\User\Entity;
 
 use DateTime;
-use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Hanaboso\PipesFramework\Commons\Traits\Document\IdTrait;
-use Hanaboso\PipesFramework\User\Entity\TmpUserInterface;
-use Hanaboso\PipesFramework\User\Entity\TokenInterface;
-use Hanaboso\PipesFramework\User\Entity\UserInterface;
+use Doctrine\ORM\Mapping as ORM;
+use Hanaboso\PipesFramework\Commons\Traits\Entity\IdTrait;
 use LogicException;
 
 /**
  * Class Token
  *
- * @package Hanaboso\PipesFramework\User\Document
+ * @package Hanaboso\PipesFramework\User\Entity
  *
- * @ODM\Document(repositoryClass="Hanaboso\PipesFramework\User\Repository\Document\TokenRepository")
+ * @ORM\Table()
+ * @ORM\Entity(repositoryClass="Hanaboso\PipesFramework\User\Repository\Entity\TokenRepository")
  */
 class Token implements TokenInterface
 {
@@ -25,21 +23,21 @@ class Token implements TokenInterface
     /**
      * @var DateTime
      *
-     * @ODM\Field(type="date")
+     * @ORM\Column(type="date")
      */
     private $created;
 
     /**
      * @var UserInterface|null
      *
-     * @ODM\ReferenceOne(targetDocument="Hanaboso\PipesFramework\User\Document\User")
+     * @ORM\OneToOne(targetDocument="Hanaboso\PipesFramework\User\Entity\User")
      */
     private $user;
 
     /**
      * @var UserInterface|TmpUserInterface|null
      *
-     * @ODM\ReferenceOne(targetDocument="Hanaboso\PipesFramework\User\Document\TmpUser")
+     * @ORM\OneToOne(targetDocument="Hanaboso\PipesFramework\User\Entity\TmpUser")
      */
     private $tmpUser;
 

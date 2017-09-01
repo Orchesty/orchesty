@@ -2,10 +2,13 @@
 
 namespace Hanaboso\PipesFramework\User\Model\Security;
 
+use Hanaboso\PipesFramework\Acl\Enum\ResourceEnum;
+use Hanaboso\PipesFramework\HbPFAclBundle\Provider\ResourceProvider;
 use Hanaboso\PipesFramework\User\DatabaseManager\UserDatabaseManagerLocator;
-use Hanaboso\PipesFramework\User\Document\User;
+use Hanaboso\PipesFramework\User\Entity\UserInterface;
 use Hanaboso\PipesFramework\User\Model\Token;
-use Hanaboso\PipesFramework\User\Repository\UserRepository;
+use Hanaboso\PipesFramework\User\Repository\Document\UserRepository as OdmRepo;
+use Hanaboso\PipesFramework\User\Repository\Entity\UserRepository as OrmRepo;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 use Symfony\Component\Security\Core\Encoder\EncoderFactory;
@@ -22,7 +25,7 @@ class SecurityManager
     public const SECURED_AREA = 'secured_area';
 
     /**
-     * @var UserRepository
+     * @var OrmRepo|OdmRepo
      */
     private $userRepository;
 
@@ -47,43 +50,51 @@ class SecurityManager
     private $sessionName;
 
     /**
+     * @var ResourceProvider
+     */
+    private $provider;
+
+    /**
      * SecurityManager constructor.
      *
-     * @param UserDatabaseManagerLocator $databaseManagerLocator
+     * @param UserDatabaseManagerLocator $userDml
      * @param EncoderFactory             $encoderFactory
      * @param Session                    $session
      * @param TokenStorage               $tokenStorage
+     * @param ResourceProvider           $provider
      */
     public function __construct(
-        UserDatabaseManagerLocator $databaseManagerLocator,
+        UserDatabaseManagerLocator $userDml,
         EncoderFactory $encoderFactory,
         Session $session,
-        TokenStorage $tokenStorage
+        TokenStorage $tokenStorage,
+        ResourceProvider $provider
     )
     {
-        $this->userRepository = $databaseManagerLocator->get()->getRepository(User::class);
+        $this->userRepository = $userDml->get()->getRepository($provider->getResource(ResourceEnum::USER));
         $this->encoderFactory = $encoderFactory;
         $this->tokenStorage   = $tokenStorage;
         $this->session        = $session;
         $this->sessionName    = self::SECURITY_KEY . self::SECURED_AREA;
+        $this->provider = $provider;
     }
 
     /**
      * @param array $data
      *
-     * @return User
+     * @return UserInterface
      * @throws SecurityManagerException
      */
-    public function login(array $data): User
+    public function login(array $data): UserInterface
     {
         if ($this->isLoggedIn()) {
-            /** @var User $user */
+            /** @var UserInterface $user */
             $user = $this->userRepository->find($this->session->get($this->sessionName));
 
             return $user;
         }
 
-        /** @var User $user */
+        /** @var UserInterface $user */
         $user = $this->userRepository->findOneBy(['email' => $data['email']]);
 
         if (!$user) {
@@ -93,7 +104,7 @@ class SecurityManager
             );
         }
 
-        $encoder = $this->encoderFactory->getEncoder(User::class);
+        $encoder = $this->encoderFactory->getEncoder($this->provider->getResource(ResourceEnum::USER));
 
         if (!$encoder) {
             throw new SecurityManagerException(
@@ -134,10 +145,10 @@ class SecurityManager
     }
 
     /**
-     * @return User
+     * @return UserInterface
      * @throws SecurityManagerException
      */
-    public function getLoggedUser(): User
+    public function getLoggedUser(): UserInterface
     {
         if (!$this->isLoggedIn()) {
             throw new SecurityManagerException(
@@ -150,7 +161,7 @@ class SecurityManager
         /** @var Token $token */
         $token = unserialize($this->session->get($this->sessionName));
 
-        /** @var User $user */
+        /** @var UserInterface $user */
         $user = $this->userRepository->find($token->getUser()->getId());
 
         return $user;
