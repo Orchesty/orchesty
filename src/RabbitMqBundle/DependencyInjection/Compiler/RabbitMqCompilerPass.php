@@ -232,12 +232,12 @@ class RabbitMqCompilerPass implements CompilerPassInterface
                 $consumers,
             ]));
 
-        $container->setDefinition($this->producerCommandServiceId,
-            new Definition('%rabbit-mq.command.producer%', [
-                new Reference("service_container"),
-                new Reference($this->managerServiceId),
-                $consumers,
-            ]));
+//        $container->setDefinition($this->producerCommandServiceId,
+//            new Definition('%rabbit-mq.command.producer%', [
+//                new Reference("service_container"),
+//                new Reference($this->managerServiceId),
+//                $consumers,
+//            ]));
     }
 
     /**

@@ -58,7 +58,6 @@ class AppKernel extends Kernel
             new HbPFTableParserBundle(),
             new HbPFUserBundle(),
             new RabbitMqBundle(),
-            new HbPFAclBundle(),
         ];
 
         return $bundles;
