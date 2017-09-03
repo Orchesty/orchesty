@@ -10,23 +10,37 @@ namespace Hanaboso\PipesFramework\Commons\RabbitMq\Repeater;
 
 use Bunny\Message;
 use Hanaboso\PipesFramework\RabbitMqBundle\Producer\AbstractProducer;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 
 /**
  * Class Repeater
  *
  * @package Hanaboso\PipesFramework\Commons\RabbitMq\Repeater
  */
-class Repeater
+class Repeater implements LoggerAwareInterface
 {
 
     /**
-     *
+     * @var int
      */
     public const MAX_HOP_FIELD = 'max_hop';
+
     /**
-     *
+     * @var int
      */
     public const CURRENT_HOP_FIELD = 'current_hop';
+
+    /**
+     * @var string
+     */
+    public const DESTINATION_EXCHANGE = 'repeater_destination_exchange';
+
+    /**
+     * @var string
+     */
+    public const DESTINATION_ROUTING_KEY = 'repeater_destination_rk';
 
     /**
      * @var int
@@ -37,6 +51,11 @@ class Repeater
      * @var int | null
      */
     protected $currentHop = NULL;
+
+    /**
+     * @var LoggerInterface
+     */
+    protected $logger;
 
     /**
      * @var AbstractProducer
@@ -53,6 +72,7 @@ class Repeater
     {
         $this->hopLimit = $hopLimit;
         $this->producer = $producer;
+        $this->logger   = new NullLogger();
     }
 
     /**
@@ -63,6 +83,9 @@ class Repeater
     public function add(Message $message): bool
     {
         $headers = $message->headers;
+
+        $headers[self::DESTINATION_EXCHANGE]    = $message->exchange;
+        $headers[self::DESTINATION_ROUTING_KEY] = $message->routingKey;
 
         if ($message->hasHeader(self::MAX_HOP_FIELD)) {
             $headers[self::CURRENT_HOP_FIELD]++;
@@ -87,6 +110,34 @@ class Repeater
     public function getHopLimit(): int
     {
         return $this->hopLimit;
+    }
+
+    /**
+     * @param Message $message
+     *
+     * @return bool
+     */
+    public static function validRepeaterMessage(Message $message): bool
+    {
+        if (
+            $message->hasHeader(self::DESTINATION_ROUTING_KEY) &&
+            $message->hasHeader(self::DESTINATION_EXCHANGE)) {
+            return TRUE;
+        }
+
+        return FALSE;
+    }
+
+    /**
+     * Sets a logger instance on the object.
+     *
+     * @param LoggerInterface $logger
+     *
+     * @return void
+     */
+    public function setLogger(LoggerInterface $logger): void
+    {
+        $this->logger = $logger;
     }
 
 }

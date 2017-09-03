@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: Pavel Severyn
@@ -12,6 +12,11 @@ use Bunny\Message;
 use Hanaboso\PipesFramework\Commons\RabbitMq\BaseCallbackAbstract;
 use Hanaboso\PipesFramework\Commons\RabbitMq\CallbackStatus;
 
+/**
+ * Class DemoCallback
+ *
+ * @package Hanaboso\PipesFramework\Commons\RabbitMq\Demo
+ */
 class DemoCallback extends BaseCallbackAbstract
 {
 
@@ -23,8 +28,13 @@ class DemoCallback extends BaseCallbackAbstract
      */
     function handle($data, Message $message): CallbackStatus
     {
-        echo "receive:" . print_r($data, 1);
-        return new CallbackStatus(CallbackStatus::FAILED_DONE);
+        if (empty($data)) {
+
+            return new CallbackStatus(CallbackStatus::RESEND);
+        } else {
+
+            return new CallbackStatus(CallbackStatus::SUCCESS);
+        }
     }
 
 }

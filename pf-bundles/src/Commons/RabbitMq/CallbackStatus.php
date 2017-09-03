@@ -8,21 +8,31 @@
 
 namespace Hanaboso\PipesFramework\Commons\RabbitMq;
 
+/**
+ * Class CallbackStatus
+ *
+ * @package Hanaboso\PipesFramework\Commons\RabbitMq
+ */
 final class CallbackStatus
 {
 
     /**
      * @var int
      */
-    public const SUCCESS_DONE = 1;
+    public const SUCCESS = 1;
 
     /**
      * @var int
      */
-    public const FAILED_DONE = 2;
+    public const FAILED = 2;
 
     /**
      * @var int
+     */
+    public const RESEND = 3;
+
+    /**
+     * @var int|null
      */
     private $status = NULL;
 
@@ -44,9 +54,9 @@ final class CallbackStatus
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getStatus(): int
+    public function getStatus(): ?int
     {
         return $this->status;
     }
@@ -64,9 +74,9 @@ final class CallbackStatus
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getStatusMessage(): string
+    public function getStatusMessage(): ?string
     {
         return $this->statusMessage;
     }

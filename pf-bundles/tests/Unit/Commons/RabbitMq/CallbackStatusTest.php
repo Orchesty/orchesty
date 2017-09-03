@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: Pavel Severyn
@@ -12,9 +12,13 @@ namespace Tests\Unit\Commons\RabbitMq;
 use Hanaboso\PipesFramework\Commons\RabbitMq\CallbackStatus;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * Class CallbackStatusTest
+ *
+ * @package Tests\Unit\Commons\RabbitMq
+ */
 class CallbackStatusTest extends TestCase
 {
-
 
     /**
      * @dataProvider getCallbackStatus
@@ -22,8 +26,10 @@ class CallbackStatusTest extends TestCase
      *
      * @param int    $status
      * @param string $message
+     *
+     * @return void
      */
-    public function testCallbackStatus(int $status, string $message)
+    public function testCallbackStatus(int $status, string $message): void
     {
         $callbackStatus = new CallbackStatus($status, $message);
         $this->assertEquals($status, $callbackStatus->getStatus());
@@ -33,11 +39,11 @@ class CallbackStatusTest extends TestCase
     /**
      * @return array
      */
-    public function getCallbackStatus()
+    public function getCallbackStatus(): array
     {
         return [
-            [CallbackStatus::SUCCESS_DONE, 'test message'],
-            [CallbackStatus::FAILED_DONE, ''],
+            [CallbackStatus::SUCCESS, 'test message'],
+            [CallbackStatus::FAILED, ''],
         ];
     }
 

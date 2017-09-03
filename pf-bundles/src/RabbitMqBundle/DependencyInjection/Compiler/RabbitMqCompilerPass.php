@@ -108,7 +108,7 @@ class RabbitMqCompilerPass implements CompilerPassInterface
             );
         }
 
-        $config = $container->getParameter($this->configKey);
+        $config    = $container->getParameter($this->configKey);
         $consumers = [];
         $producers = [];
 
@@ -178,7 +178,10 @@ class RabbitMqCompilerPass implements CompilerPassInterface
             }
 
             $definition->addMethodCall('setCallback', [
-                 [new Reference($value['callback'], ContainerInterface::EXCEPTION_ON_INVALID_REFERENCE), 'handleMessage'],
+                [
+                    new Reference($value['callback'], ContainerInterface::EXCEPTION_ON_INVALID_REFERENCE),
+                    'handleMessage',
+                ],
             ]);
 
             $consumers[$key] = $definition;
@@ -224,6 +227,13 @@ class RabbitMqCompilerPass implements CompilerPassInterface
 
         $container->setDefinition($this->consumerCommandServiceId,
             new Definition('%rabbit-mq.command.consumer%', [
+                new Reference("service_container"),
+                new Reference($this->managerServiceId),
+                $consumers,
+            ]));
+
+        $container->setDefinition($this->producerCommandServiceId,
+            new Definition('%rabbit-mq.command.producer%', [
                 new Reference("service_container"),
                 new Reference($this->managerServiceId),
                 $consumers,

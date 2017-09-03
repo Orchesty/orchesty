@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: Pavel Severyn
@@ -8,6 +8,11 @@
 
 namespace Hanaboso\PipesFramework\RabbitMqBundle;
 
+/**
+ * Trait DebugMessageTrait
+ *
+ * @package Hanaboso\PipesFramework\RabbitMqBundle
+ */
 trait DebugMessageTrait
 {
 

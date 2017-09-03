@@ -11,7 +11,7 @@ namespace Hanaboso\PipesFramework\RabbitMqBundle\Serializers;
 /**
  * Interface IMessageSerializer
  *
- * @package RabbitMqBundle\Serializers
+ * @package Hanaboso\PipesFramework\RabbitMqBundle\Serializers
  */
 interface IMessageSerializer
 {
