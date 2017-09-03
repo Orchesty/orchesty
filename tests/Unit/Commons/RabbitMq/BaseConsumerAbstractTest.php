@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: Pavel Severyn
@@ -12,6 +12,7 @@ use Bunny\Channel;
 use Bunny\Client;
 use Bunny\Message;
 use Hanaboso\PipesFramework\Commons\RabbitMq\BaseConsumerAbstract;
+use Hanaboso\PipesFramework\Commons\RabbitMq\CallbackStatus;
 use Hanaboso\PipesFramework\Commons\RabbitMq\Exception\RabbitMqException;
 use PHPUnit\Framework\TestCase;
 use TypeError;
@@ -30,8 +31,10 @@ class BaseConsumerAbstractTest extends TestCase
      *
      * @param callable    $callback
      * @param null|string $exception
+     *
+     * @return void
      */
-    public function testSetCallback($callback, $exception = NULL)
+    public function testSetCallback($callback, $exception = NULL): void
     {
         if ($exception) {
             $this->expectException($exception);
@@ -47,8 +50,10 @@ class BaseConsumerAbstractTest extends TestCase
      *
      * @param BaseConsumerAbstract $baseConsumer
      * @param null|string          $exception
+     *
+     * @return void
      */
-    public function testHandleMessage(BaseConsumerAbstract $baseConsumer, ?string $exception = NULL)
+    public function testHandleMessage(BaseConsumerAbstract $baseConsumer, ?string $exception = NULL): void
     {
         $message = $this->getMockBuilder(Message::class)->disableOriginalConstructor()->getMock();
         $channel = $this->getMockBuilder(Channel::class)->disableOriginalConstructor()->getMock();
@@ -69,6 +74,7 @@ class BaseConsumerAbstractTest extends TestCase
             [$this->getBaseConsumer(), RabbitMqException::class],
             [
                 $this->getBaseConsumer(function () {
+                    return new CallbackStatus(CallbackStatus::SUCCESS);
                 }), NULL,
             ],
         ];
@@ -81,7 +87,7 @@ class BaseConsumerAbstractTest extends TestCase
     {
         return [
             [
-                (function () {
+                (function (): void {
                 }), NULL,
             ],
             [
@@ -92,7 +98,10 @@ class BaseConsumerAbstractTest extends TestCase
                     new class
                     {
 
-                        public function get()
+                        /**
+                         * @return void
+                         */
+                        public function get(): void
                         {
                         }
                     }, 'get',

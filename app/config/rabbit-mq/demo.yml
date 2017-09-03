@@ -30,5 +30,7 @@ rabbit-mq:
 services:
     hanaboso.pipes_framework.commons.rabbit_mq.demo.demo_callback:
         class: Hanaboso\PipesFramework\Commons\RabbitMq\Demo\DemoCallback
+        arguments:
+            - '@monolog.logger.rabbit-mq'
         calls:
             - [setRepeater, ['@hanaboso.pipes_framework.commons.rabbit_mq.repeater.repeater']]

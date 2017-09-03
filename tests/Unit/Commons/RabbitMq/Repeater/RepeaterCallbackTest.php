@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: Pavel Severyn
@@ -8,30 +8,88 @@
 
 namespace Tests\Unit\Commons\RabbitMq\Repeater;
 
-use Hanaboso\PipesFramevork\Commons\Repeater\RepeaterCallback;
+use Bunny\Message;
+use Hanaboso\PipesFramework\Commons\RabbitMq\CallbackStatus;
+use Hanaboso\PipesFramework\Commons\RabbitMq\Repeater\Repeater;
+use Hanaboso\PipesFramework\Commons\RabbitMq\Repeater\RepeaterCallback;
+use Hanaboso\PipesFramework\Commons\RabbitMq\Repeater\RepeaterProducer;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * Class RepeaterCallbackTest
+ *
+ * @package Tests\Unit\Commons\RabbitMq\Repeater
+ */
 class RepeaterCallbackTest extends TestCase
 {
 
     /**
-     * @dataProvider handle
-     * @covers       RepeaterCallback::handle()
+     * @var Message
      */
-    public function testHandle()
+    protected $message;
+
+    /**
+     * @return void
+     */
+    protected function setUp(): void
     {
-        $this->markTestIncomplete('after callback implementation');
-        $this->assertTrue(TRUE);
+        $this->message = new Message(
+            'tag',
+            'tag',
+            FALSE,
+            '',
+            '',
+            [],
+            'content'
+        );
     }
 
     /**
-     * @return array
+     * @covers       RepeaterCallback::handle()
+     *
+     * @return void
      */
-    public function handle(): array
+    public function testHandleNoProducer(): void
     {
-        return [
+        /** @var RepeaterCallback $callback */
+        $callback = new RepeaterCallback();
+        $result   = $callback->handle([], $this->message);
+        $this->assertInstanceOf(CallbackStatus::class, $result);
+        $this->assertEquals(1, $result->getStatus());
+    }
 
+    /**
+     * @covers RepeaterCallback::handle()
+     * @return void
+     */
+    public function testHandleBadMessage(): void
+    {
+        $producer = $this->getMockBuilder(RepeaterProducer::class)->disableOriginalConstructor()->getMock();
+        $producer->expects($this->never())->method('publish')->willReturn(TRUE);
+        $callback = new RepeaterCallback($producer);
+        $result   = $callback->handle([], $this->message);
+        $this->assertInstanceOf(CallbackStatus::class, $result);
+        $this->assertEquals(1, $result->getStatus());
+    }
+
+    /**
+     * @covers RepeaterCallback::handle()
+     * @return void
+     */
+    public function testHandle(): void
+    {
+        $this->message->headers = [
+            Repeater::DESTINATION_EXCHANGE    => 'test',
+            Repeater::DESTINATION_ROUTING_KEY => 'test',
         ];
+
+        $producer = $this->getMockBuilder(RepeaterProducer::class)->disableOriginalConstructor()->getMock();
+        $producer->expects($this->once())->method('publish')->willReturn(TRUE);
+
+        $callback = new RepeaterCallback($producer);
+        $result   = $callback->handle([], $this->message);
+        $this->assertInstanceOf(CallbackStatus::class, $result);
+        $this->assertEquals(1, $result->getStatus());
     }
 
 }

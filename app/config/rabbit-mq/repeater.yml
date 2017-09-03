@@ -32,6 +32,8 @@ services:
     # callback for repeater
     hanaboso.pipes_framework.commons.repeater.repeater_callback:
         class: Hanaboso\PipesFramework\Commons\RabbitMq\Repeater\RepeaterCallback
+        arguments:
+            - '@rabbit-mq.producer.repeater'
         calls:
             - [setRepeater, ['@hanaboso.pipes_framework.commons.rabbit_mq.repeater.repeater']]
 

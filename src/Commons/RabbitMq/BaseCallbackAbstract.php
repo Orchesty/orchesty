@@ -11,38 +11,78 @@ namespace Hanaboso\PipesFramework\Commons\RabbitMq;
 use Bunny\Message;
 use Hanaboso\PipesFramework\Commons\RabbitMq\Exception\RabbitMqException;
 use Hanaboso\PipesFramework\Commons\RabbitMq\Repeater\Repeater;
+use Hanaboso\PipesFramework\RabbitMqBundle\DebugMessageTrait;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 
 /**
  * Class BaseCallbackAbstract
  *
  * @package Hanaboso\PipesFramework\Commons\RabbitMq
  */
-abstract class BaseCallbackAbstract
+abstract class BaseCallbackAbstract implements LoggerAwareInterface
 {
+
+    use DebugMessageTrait;
 
     /**
      * @var Repeater | NULL
      */
     protected $repeater = NULL;
 
-    final public function handleMessage($data, Message $message)
+    /**
+     * @var LoggerInterface
+     */
+    protected $logger;
+
+    /**
+     * BaseCallbackAbstract constructor.
+     */
+    public function __construct()
     {
-        $result = $this->handle($data, $message);
+        $this->logger = new NullLogger();
+    }
+
+    /**
+     * @param mixed   $data
+     * @param Message $message
+     *
+     * @return CallbackStatus
+     * @throws RabbitMqException
+     */
+    final public function handleMessage($data, Message $message): CallbackStatus
+    {
+        $result         = $this->handle($data, $message);
+        $prepareMessage = $this->prepareMessage(
+            '',
+            $message->exchange,
+            $message->routingKey,
+            $message->headers
+        );
+
+        $prepareMessage['message'] = sprintf('return status:%s', $result->getStatus());
+        $this->logger->debug('BaseCallback::handleMessage', $prepareMessage);
 
         switch ($result->getStatus()) {
-            case CallbackStatus::SUCCESS_DONE:
+            case CallbackStatus::SUCCESS:
                 //TODO: what else
                 break;
-            case CallbackStatus::FAILED_DONE:
-                //TODO: log
+            case CallbackStatus::FAILED:
+                //TODO: what else
+                break;
+            case CallbackStatus::RESEND:
                 if ($this->getRepeater()) {
+                    $prepareMessage['message'] = 'Repeat message';
+                    $this->logger->info('BaseCallback::handleMessage', $prepareMessage);
+
                     $this->getRepeater()->add($message);
                 }
                 break;
             default:
-                //TODO: log
+                $this->logger->error('BaseCallback::handleMessage', $prepareMessage);
                 throw new RabbitMqException(
-                    sprintf('Unknown callback status code: ', $result->getStatus()),
+                    sprintf('Unknown callback status code: %s', $result->getStatus()),
                     RabbitMqException::UNKNOWN_CALLBACK_STATUS_CODE
                 );
         }
@@ -63,11 +103,21 @@ abstract class BaseCallbackAbstract
      *
      * @return BaseCallbackAbstract
      */
-    public function setRepeater(Repeater $repeater)
+    public function setRepeater(Repeater $repeater): BaseCallbackAbstract
     {
         $this->repeater = $repeater;
 
         return $this;
+    }
+
+    /**
+     * @param LoggerInterface $logger
+     *
+     * @return void
+     */
+    public function setLogger(LoggerInterface $logger): void
+    {
+        $this->logger = $logger;
     }
 
     /**

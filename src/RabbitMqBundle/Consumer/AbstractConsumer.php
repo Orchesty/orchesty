@@ -11,7 +11,6 @@ namespace Hanaboso\PipesFramework\RabbitMqBundle\Consumer;
 use Bunny\Channel;
 use Bunny\Client;
 use Bunny\Message;
-use Hanaboso\PipesFramework\RabbitMqBundle\Serializers\IMessageSerializer;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -101,23 +100,23 @@ abstract class AbstractConsumer implements LoggerAwareInterface
     /**
      * AbstractConsumer constructor.
      *
-     * @param null|string             $exchange
-     * @param string                  $routingKey
-     * @param null|string             $queue
-     * @param string                  $consumerTag
-     * @param bool                    $noLocal
-     * @param bool                    $noAck
-     * @param bool                    $exclusive
-     * @param bool                    $nowait
-     * @param array                   $arguments
-     * @param int|null                $prefetchCount
-     * @param int|null                $prefetchSize
-     * @param IMessageSerializer|null $serializer
-     * @param null|string             $setUpMethod
-     * @param null|string             $tickMethod
-     * @param int|null                $tickSeconds
-     * @param int|null                $maxMessages
-     * @param int|null                $maxSeconds
+     * @param null|string $exchange
+     * @param string      $routingKey
+     * @param null|string $queue
+     * @param string      $consumerTag
+     * @param bool        $noLocal
+     * @param bool        $noAck
+     * @param bool        $exclusive
+     * @param bool        $nowait
+     * @param array       $arguments
+     * @param int|null    $prefetchCount
+     * @param int|null    $prefetchSize
+     * @param string|null $serializer
+     * @param null|string $setUpMethod
+     * @param null|string $tickMethod
+     * @param int|null    $tickSeconds
+     * @param int|null    $maxMessages
+     * @param int|null    $maxSeconds
      */
     public function __construct(
         ?string $exchange = NULL,

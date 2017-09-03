@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: Pavel Severyn
@@ -10,6 +10,11 @@ namespace Hanaboso\PipesFramework\Commons\RabbitMq\Exception;
 
 use Hanaboso\PipesFramework\Commons\Exception\PipesFrameworkException;
 
+/**
+ * Class RabbitMqException
+ *
+ * @package Hanaboso\PipesFramework\Commons\RabbitMq\Exception
+ */
 class RabbitMqException extends PipesFrameworkException
 {
 

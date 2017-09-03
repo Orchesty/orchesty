@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: Pavel Severyn
@@ -27,16 +27,18 @@ class RepeaterTest extends TestCase
      *
      * @param int $limit
      * @param int $result
+     *
+     * @return void
      */
-    public function testGetHopLimit(int $limit, int $result)
+    public function testGetHopLimit(int $limit, int $result): void
     {
+        /** @var AbstractProducer $producer */
         $producer = $this->getMockBuilder(AbstractProducer::class)
             ->disableOriginalConstructor()
             ->getMock();
 
         $repeater = new Repeater($producer, $limit);
         $this->assertEquals($result, $repeater->getHopLimit());
-
     }
 
     /**
@@ -46,9 +48,11 @@ class RepeaterTest extends TestCase
      * @param array $header
      * @param int   $hopLimit
      * @param array $result
-     * @param bool      $return
+     * @param bool  $return
+     *
+     * @return void
      */
-    public function testAdd(array $header, int $hopLimit, array $result, bool $return)
+    public function testAdd(array $header, int $hopLimit, array $result, bool $return): void
     {
         $message = new Message(
             'tag',
@@ -64,52 +68,119 @@ class RepeaterTest extends TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $producer
-            ->expects($this->any())
+        $producer->expects($this->any())
             ->method('publish')
             ->with($message->content, $message->routingKey, $result);
 
+        /** @var AbstractProducer $producer */
         $repeater = new Repeater($producer, $hopLimit);
         $added    = $repeater->add($message);
 
         $this->assertEquals($return, $added);
+    }
 
+    /**
+     * @dataProvider validRepeaterMessage
+     * @covers       Repeater::validRepeaterMessage()
+     *
+     * @param array $header
+     * @param bool  $result
+     *
+     * @return void
+     */
+    public function testValidRepeaterMessage(array $header, bool $result): void
+    {
+        $message = new Message(
+            'tag',
+            'tag',
+            FALSE,
+            '',
+            '',
+            $header,
+            'content'
+        );
+        $this->assertEquals($result, Repeater::validRepeaterMessage($message));
     }
 
     /**
      * @return array
      */
-    public function add()
+    public function validRepeaterMessage(): array
+    {
+        return [
+            [[], FALSE],
+            [
+                ['repeater_destination_exchange' => 'test', 'repeater_destination_rk' => 'test'],
+                TRUE,
+            ],
+            [
+                ['repeater_destination_exchange' => 'test'],
+                FALSE,
+            ],
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    public function add(): array
     {
         return [
             [
                 [],
                 2,
-                ['max_hop' => 2, 'current_hop' => 1],
+                [
+                    'max_hop'                       => 2,
+                    'current_hop'                   => 1,
+                    'repeater_destination_exchange' => '',
+                    'repeater_destination_rk'       => '',
+                ],
                 TRUE,
             ],
             [
                 ['max_hop' => 2, 'current_hop' => 2],
                 2,
-                ['max_hop' => 2, 'current_hop' => 2],
+                [
+                    'max_hop'                       => 2,
+                    'current_hop'                   => 2,
+                    'repeater_destination_exchange' => '',
+                    'repeater_destination_rk'       => '',
+                ],
                 FALSE,
             ],
             [
                 ['max_hop' => 3, 'current_hop' => 2],
                 3,
-                ['max_hop' => 3, 'current_hop' => 3],
+                [
+                    'max_hop'                       => 3,
+                    'current_hop'                   => 3,
+                    'repeater_destination_exchange' => '',
+                    'repeater_destination_rk'       => '',
+                ],
                 TRUE,
             ],
             [
                 ['max_hop' => 3, 'current_hop' => 1, 'job_id' => 123],
                 3,
-                ['max_hop' => 3, 'current_hop' => 2, 'job_id' => 123],
+                [
+                    'max_hop'                       => 3,
+                    'current_hop'                   => 2,
+                    'job_id'                        => 123,
+                    'repeater_destination_exchange' => '',
+                    'repeater_destination_rk'       => '',
+                ],
                 TRUE,
             ],
             [
                 ['max_hop' => 3, 'job_id' => 123],
                 3,
-                ['max_hop' => 3, 'current_hop' => 1, 'job_id' => 123],
+                [
+                    'max_hop'                       => 3,
+                    'current_hop'                   => 1,
+                    'job_id'                        => 123,
+                    'repeater_destination_exchange' => '',
+                    'repeater_destination_rk'       => '',
+                ],
                 TRUE,
             ],
         ];

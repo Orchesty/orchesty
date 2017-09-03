@@ -4,4 +4,4 @@ parameters:
     rabbit-mq.bunny-client: Bunny\Client
     rabbit-mq.command.setup: Hanaboso\PipesFramework\RabbitMqBundle\Command\SetupCommand
     rabbit-mq.command.consumer: Hanaboso\PipesFramework\RabbitMqBundle\Command\ConsumerCommand
-    #rabbit-mq.command.producer: RabbitMqBundle\Command\ProducerCommand
+    rabbit-mq.command.producer: Hanaboso\PipesFramework\RabbitMqBundle\Command\ProducerCommand

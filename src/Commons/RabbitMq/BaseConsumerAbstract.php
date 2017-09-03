@@ -1,4 +1,4 @@
-<?php  declare(strict_types=1);
+<?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: pavel.severyn
@@ -72,10 +72,11 @@ abstract class BaseConsumerAbstract extends AbstractConsumer
      * @param CallbackStatus $result
      * @param Message        $message
      * @param Channel        $channel
+     *
+     * @return void
      */
-    protected function handleResult(CallbackStatus $result, Message $message, Channel $channel)
+    protected function handleResult(CallbackStatus $result, Message $message, Channel $channel): void
     {
-
         if (!$this->isNoAck()) {
             $channel->ack($message);
         }
