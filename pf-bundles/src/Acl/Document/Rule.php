@@ -3,16 +3,18 @@
 namespace Hanaboso\PipesFramework\Acl\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Hanaboso\PipesFramework\Commons\Traits\IdTrait;
+use Hanaboso\PipesFramework\Acl\Entity\GroupInterface;
+use Hanaboso\PipesFramework\Acl\Entity\RuleInterface;
+use Hanaboso\PipesFramework\Commons\Traits\Document\IdTrait;
 
 /**
  * Class Rule
  *
  * @package Hanaboso\PipesFramework\Acl\Document
  *
- * @ODM\Document(repositoryClass="Hanaboso\PipesFramework\Acl\Repository\RuleRepository")
+ * @ODM\Document(repositoryClass="Hanaboso\PipesFramework\Acl\Repository\Document\RuleRepository")
  */
-class Rule
+class Rule implements RuleInterface
 {
 
     use IdTrait;
@@ -25,7 +27,7 @@ class Rule
     private $resource;
 
     /**
-     * @var Group
+     * @var GroupInterface
      *
      * @ODM\ReferenceOne(targetDocument="Hanaboso\PipesFramework\Acl\Document\Group")
      */
@@ -56,9 +58,9 @@ class Rule
     /**
      * @param string $resource
      *
-     * @return Rule
+     * @return RuleInterface
      */
-    public function setResource(string $resource): Rule
+    public function setResource(string $resource): RuleInterface
     {
         $this->resource = $resource;
 
@@ -66,19 +68,19 @@ class Rule
     }
 
     /**
-     * @return Group
+     * @return GroupInterface
      */
-    public function getGroup(): Group
+    public function getGroup(): GroupInterface
     {
         return $this->group;
     }
 
     /**
-     * @param Group $group
+     * @param GroupInterface $group
      *
-     * @return Rule
+     * @return RuleInterface
      */
-    public function setGroup(Group $group): Rule
+    public function setGroup(GroupInterface $group): RuleInterface
     {
         $this->group = $group;
 
@@ -96,9 +98,9 @@ class Rule
     /**
      * @param int $actionMask
      *
-     * @return Rule
+     * @return RuleInterface
      */
-    public function setActionMask(int $actionMask): Rule
+    public function setActionMask(int $actionMask): RuleInterface
     {
         $this->actionMask = $actionMask;
 
@@ -116,9 +118,9 @@ class Rule
     /**
      * @param int $propertyMask
      *
-     * @return Rule
+     * @return RuleInterface
      */
-    public function setPropertyMask(int $propertyMask): Rule
+    public function setPropertyMask(int $propertyMask): RuleInterface
     {
         $this->propertyMask = $propertyMask;
 

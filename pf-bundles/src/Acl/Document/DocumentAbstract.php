@@ -3,7 +3,7 @@
 namespace Hanaboso\PipesFramework\Acl\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Hanaboso\PipesFramework\User\Document\UserInterface;
+use Hanaboso\PipesFramework\User\Entity\UserInterface;
 
 /**
  * Class DocumentAbstract

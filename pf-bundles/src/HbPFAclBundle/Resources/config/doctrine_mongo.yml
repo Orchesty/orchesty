@@ -1,9 +1,0 @@
-doctrine_mongodb:
-    document_managers:
-        default:
-            mappings:
-                AclDocument:
-                    type: annotation
-                    is_bundle: false
-                    dir: "%src_dir%/Acl/Document"
-                    prefix: Hanaboso\PipesFramework\Acl\Document

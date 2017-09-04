@@ -70,6 +70,7 @@ clear-cache:
 database-create:
 	$(DE) php bin/console doctrine:database:drop --force || true
 	$(DE) php bin/console doctrine:database:create
+	$(DE) php bin/console doctrine:schema:create
 
 .env:
 	@if ! [ -f .env ]; then \

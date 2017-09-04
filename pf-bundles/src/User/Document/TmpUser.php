@@ -3,6 +3,7 @@
 namespace Hanaboso\PipesFramework\User\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Hanaboso\PipesFramework\User\Entity\TmpUserInterface;
 use Hanaboso\PipesFramework\User\Enum\UserTypeEnum;
 
 /**
@@ -10,9 +11,9 @@ use Hanaboso\PipesFramework\User\Enum\UserTypeEnum;
  *
  * @package Hanaboso\PipesFramework\User\Document
  *
- * @ODM\Document(repositoryClass="Hanaboso\PipesFramework\User\Repository\TmpUserRepository")
+ * @ODM\Document(repositoryClass="Hanaboso\PipesFramework\User\Repository\Document\TmpUserRepository")
  */
-class TmpUser extends UserAbstract
+class TmpUser extends UserAbstract implements TmpUserInterface
 {
 
     /**
@@ -31,6 +32,14 @@ class TmpUser extends UserAbstract
     public function getPassword(): string
     {
         return '';
+    }
+
+    /**
+     * @return array
+     */
+    public function toArray(): array
+    {
+        return [];
     }
 
 }

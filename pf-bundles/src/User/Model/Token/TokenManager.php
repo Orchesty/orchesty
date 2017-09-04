@@ -3,11 +3,14 @@
 namespace Hanaboso\PipesFramework\User\Model\Token;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\DocumentRepository;
+use Doctrine\ORM\EntityManager;
+use Hanaboso\PipesFramework\Acl\Enum\ResourceEnum;
+use Hanaboso\PipesFramework\HbPFAclBundle\Provider\ResourceProvider;
+use Hanaboso\PipesFramework\User\DatabaseManager\UserDatabaseManagerLocator;
 use Hanaboso\PipesFramework\User\Document\Token;
-use Hanaboso\PipesFramework\User\Document\UserInterface;
+use Hanaboso\PipesFramework\User\Entity\TokenInterface;
+use Hanaboso\PipesFramework\User\Entity\UserInterface;
 use Hanaboso\PipesFramework\User\Enum\UserTypeEnum;
-use Hanaboso\PipesFramework\User\Repository\TokenRepository;
 
 /**
  * Class TokenManager
@@ -18,39 +21,42 @@ class TokenManager
 {
 
     /**
-     * @var DocumentManager
+     * @var DocumentManager|EntityManager
      */
-    private $documentManager;
+    private $dm;
 
     /**
-     * @var TokenRepository|DocumentRepository
+     * @var ResourceProvider
      */
-    private $tokenRepository;
+    private $provider;
 
     /**
      * TokenManager constructor.
      *
-     * @param DocumentManager $documentManager
+     * @param UserDatabaseManagerLocator $userDml
+     * @param ResourceProvider           $provider
      */
-    public function __construct(DocumentManager $documentManager)
+    public function __construct(UserDatabaseManagerLocator $userDml, ResourceProvider $provider)
     {
-        $this->documentManager = $documentManager;
-        $this->tokenRepository = $documentManager->getRepository(Token::class);
+        $this->dm       = $userDml->get();
+        $this->provider = $provider;
     }
 
     /**
      * @param UserInterface $user
      *
-     * @return Token
+     * @return TokenInterface
      */
-    public function create(UserInterface $user): Token
+    public function create(UserInterface $user): TokenInterface
     {
-        $token = new Token();
+        $class = $this->provider->getResource(ResourceEnum::TOKEN);
+        /** @var TokenInterface $token */
+        $token = new $class();
         $this->removeExistingTokens($user);
         $user->getType() === UserTypeEnum::USER ? $token->setUser($user) : $token->setTmpUser($user);
 
-        $this->documentManager->persist($token);
-        $this->documentManager->flush();
+        $this->dm->persist($token);
+        $this->dm->flush();
 
         return $token;
     }
@@ -58,12 +64,12 @@ class TokenManager
     /**
      * @param string $id
      *
-     * @return Token
+     * @return TokenInterface
      * @throws TokenManagerException
      */
-    public function validate(string $id): Token
+    public function validate(string $id): TokenInterface
     {
-        $token = $this->tokenRepository->getFreshToken($id);
+        $token = $this->dm->getRepository($this->provider->getResource(ResourceEnum::TOKEN))->getFreshToken($id);
 
         if (!$token) {
             throw new TokenManagerException(
@@ -77,12 +83,12 @@ class TokenManager
     }
 
     /**
-     * @param Token $token
+     * @param TokenInterface $token
      */
-    public function delete(Token $token): void
+    public function delete(TokenInterface $token): void
     {
         $this->removeExistingTokens($token->getUserOrTmpUser());
-        $this->documentManager->flush();
+        $this->dm->flush();
     }
 
     /**
@@ -90,8 +96,8 @@ class TokenManager
      */
     private function removeExistingTokens(UserInterface $user): void
     {
-        foreach ($this->tokenRepository->findBy([$user->getType() => $user]) as $token) {
-            $this->documentManager->remove($token);
+        foreach ($this->dm->getRepository(Token::class)->findBy([$user->getType() => $user]) as $token) {
+            $this->dm->remove($token);
         }
     }
 
