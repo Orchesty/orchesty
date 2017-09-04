@@ -1,93 +1,95 @@
-/**
- * Created by Admin on 22.3.2017.
- */
-import Flusanec from 'flusanec';
-import FlusanecMenu from 'flusanec/src/view_models/menu'
-import ContainerType from './view_models/content/container_type';
-import WindowManager from 'flusanec/src/view_models/window/window_manager';
-import SinglePageManager from './_flusanec/view_models/page/single_page_manager';
-//import TestController from './controllers/test_controller';
-import TopologyDataSource from './models/topology/topology_data_source';
-import TopologyManager from './models/topology/topology_manager';
-import TopologyController from './controllers/topology_controller';
-//import FakeServer from './services/servers/fake_server';
-import ApiGatewayServer from './services/servers/api_gateway_server';
-import OpenFileDialogService from './services/files/open_file_dialog_service';
-import NotifyService from './services/notification/notify_service';
-import ContextMenuService from 'flusanec/src/services/context_menu/context_menu_service';
-
-//import server_fake_data from './data/fake/server.json';
-//import server_fake_files from './data/fake/files_loader';
-
+import download from './utils/download';
 
 class Application{
-  constructor(){
-    this._name = 'Pipes';
-    //this._server = new FakeServer(server_fake_data, server_fake_files);
-    this._server = new ApiGatewayServer('http://pipes-example:81/gateway/api');
-    this._notifyService = new NotifyService(10000);
-    this._containerType = new ContainerType(ContainerType.PAGE);
-    this._menu = new FlusanecMenu.Menu([], true);
-    this._openFileDialogService = new OpenFileDialogService();
-    this._contextMenuService = new ContextMenuService();
-    this._windowManager = new WindowManager();
-    this._pageManager = new SinglePageManager();
+  constructor(store){
+    this._store = store;
+    this._record = null;
+    this._recordUnsubscribe = null;
+  }
 
-    this._dataSourceContainer = new Flusanec.DataSourceContainer([
-      new TopologyDataSource(this._server)
-    ]);
+  downloadState(){
+    download(JSON.stringify(this._store.getState()), 'state.json', 'application/json');
+  }
 
-    this._contextServices = {
-      pageManager: this._pageManager,
-      windowManager: this._windowManager,
-      menu: this._menu,
-      containerType: this._containerType,
-      contextMenuService: this._contextMenuService,
-      openFileDialogService: this._openFileDialogService,
-      notifyService: this._notifyService,
-      managers: {
-        topologyManager: new TopologyManager(this._dataSourceContainer)
-      }
+  _createRec(){
+    this._record.states.push({
+      state: this._store.getState(),
+      datetime: new Date()
+    });
+  }
+
+  startRec(caption){
+    this._record = {
+      caption,
+      start: new Date(),
+      finish: null,
+      states: []
     };
-   // this._testController = new TestController(this._contextServices);
-    this._topologyController = new TopologyController(this._contextServices);
-  }
-  
-  get name(){
-    return this._name;
+    this._createRec();
+    this._recordSubscription = this._store.subscribe(this._createRec.bind(this));
   }
 
-  get menu(): Menu{
-    return this._menu;
+  stopRec(downloadIt = false){
+    this._recordSubscription();
+    this._record.finish = new Date();
+    if (downloadIt){
+      download(JSON.stringify(this._record), 'rec.json', 'application/json');
+    }
+
+    return this._record;
   }
 
-  get pageManager(): SinglePageManager{
-    return this._pageManager;
+
+  _playNext(rec, index, time, speed, callback) {
+    const state = rec.states[index];
+    const nextTime = new Date(state ? state.datetime : rec.finish);
+    setTimeout(() => {
+      if (state){
+        console.log(`Play state ${index} - ${time}`);
+        this._store.dispatch({type: 'SET_STATE', state: state.state});
+        this._playNext(rec, index + 1, nextTime, speed, callback);
+      } else {
+        console.log('Play - DONE');
+        if (typeof callback == 'function'){
+          callback();
+        }
+      }
+    }, Math.ceil((nextTime.getTime() - time.getTime()) / speed));
   }
 
-  get server(): HttpServer{
-    return this._server;
+  play(rec, speed = 1, callback) {
+    console.log('Play - ' + rec.caption);
+    this._playNext(rec, 0, new Date(rec.start), speed, callback);
   }
 
-  get containerType(): ContainerType{
-    return this._containerType;
+  _openFileAndPlay(element, file, speed, callback){
+    element.parentElement.removeChild(element);
+    const reader = new FileReader();
+    reader.onload = response => {
+      this.play(JSON.parse(response.target.result), speed, callback);
+    };
+    reader.readAsText(file);
   }
 
-  get contextServices(){
-    return this._contextServices;
-  }
-
-  get contextMenuService(): ContextMenuService{
-    return this._contextMenuService;
-  }
-
-  get openFileDialogService(): OpenFileDialogService{
-    return this._openFileDialogService;
-  }
-
-  get notifyService(): NotifyService{
-    return this._notifyService;
+  uploadAndPlay(speed = 1, callback){
+    var elemDiv = document.createElement('div');
+    elemDiv.style.cssText = 'top:0px;left:0px;position:absolute;width:250px;height:50px;z-index:100000;background:yellowgreen;';
+    var input = document.createElement('input');
+    input.type = 'file';
+    input.style = 'margin: 10px';
+    input.addEventListener('change', (e) => this._openFileAndPlay(elemDiv, e.target.files[0], speed, callback));
+    elemDiv.appendChild(input);
+    document.body.appendChild(elemDiv);
   }
 }
 
-export default Application;
+var application = null;
+
+export default store => {
+  if (!application){
+    application = new Application(store);
+    window.application = application;
+  }
+  
+  return application;
+}

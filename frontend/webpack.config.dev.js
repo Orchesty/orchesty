@@ -1,56 +1,47 @@
-var path = require('path'),
-  webpack = require('webpack');
+var path = require('path');
+var webpack = require('webpack');
 var CopyWebpackPlugin = require('copy-webpack-plugin');
 
-
 module.exports = {
+  devtool: 'source-map',
   entry: [
-    'webpack-dev-server/client?http://localhost:8080', // WebpackDevServer host and port
+    'webpack-dev-server/client?http://localhost:8080',
     'webpack/hot/only-dev-server',
-    'babel-polyfill',
-    './src/app' // Your appʼs entry point
+    './src/main.jsx'
   ],
   output: {
-    path: path.join(__dirname, '/build'),
-    filename: "bundle.js"
+    path: path.join(__dirname, 'dist'),
+    filename: 'bundle.js'
   },
   plugins: [
-    new webpack.HotModuleReplacementPlugin(),
-    new webpack.NoErrorsPlugin(),
     new CopyWebpackPlugin([{
       from: './src/index.html'
-    }])
+    }]),
+    new webpack.NamedModulesPlugin()
   ],
   resolve: {
-    // require files in app without specifying extensions
-    extensions: ['', '.js', '.json', '.jsx', '.less'],
-    alias: {
-      // pretty useful to have a starting point in nested modules
-      'appRoot': path.join(__dirname, 'src'),
-      'vendor': 'appRoot/vendor'
-    }
+    extensions: ['.js', '.jsx']
   },
   module: {
     loaders: [
-      { test: /\.json$/,      loader: 'json'},
-      { test: /\.(xml|bpmn)$/,      loader: 'raw-loader'},
-      { test: /\.less$/,      loader: 'style-loader!css-loader!autoprefixer?browsers=last 2 version!less-loader' },
-      { test: /\.css$/,       loader: 'style-loader!css-loader' },
-      { test: /\.(png|jpg)$/, loader: 'url-loader?limit=8192'}, // inline base64 URLs for <=8k images, direct URLs for the rest
       {
         test: /\.jsx?$/,
-        include: [
-          path.resolve(__dirname, "src"),
-          path.resolve(__dirname, "node_modules/flusanec")
-        ],
-        loaders: ['react-hot', 'babel?presets[]=react,presets[]=es2016,presets[]=es2015'] // loaders process from right to left
+        exclude: /node_modules/,
+        loaders: ['react-hot-loader', 'babel-loader?presets[]=react,presets[]=es2015']
       },
-      { test: /\.woff(\?.*)?$/,  loader: "url-loader?prefix=fonts/&name=[path][name].[ext]&limit=10000&mimetype=application/font-woff" },
-      { test: /\.woff2(\?.*)?$/, loader: "url-loader?prefix=fonts/&name=[path][name].[ext]&limit=10000&mimetype=application/font-woff2" },
-      { test: /\.ttf(\?.*)?$/,   loader: "url-loader?prefix=fonts/&name=[path][name].[ext]&limit=10000&mimetype=application/octet-stream" },
-      { test: /\.eot(\?.*)?$/,   loader: "file-loader?prefix=fonts/&name=[path][name].[ext]" },
-      { test: /\.svg(\?.*)?$/,   loader: "url-loader?prefix=fonts/&name=[path][name].[ext]&limit=10000&mimetype=image/svg+xml" },
+      {
+        test: /\.css$/,
+        loaders: ['style-loader', 'css-loader']
+      },
+      {
+        test: /\.less$/,
+        loaders: ['style-loader', 'css-loader', 'less-loader']
+      },
+      { test: /\.woff(\?.*)?$/,  loader: "url-loader?name=fonts/[hash].[ext]&limit=1000" },
+      { test: /\.woff2(\?.*)?$/, loader: "url-loader?name=fonts/[hash].[ext]&limit=1000" },
+      { test: /\.ttf(\?.*)?$/,   loader: "url-loader?name=fonts/[hash].[ext]&limit=1000" },
+      { test: /\.eot(\?.*)?$/,   loader: "file-loader?name=fonts/[hash].[ext]&limit=1000" },
+      { test: /\.svg(\?.*)?$/,   loader: "url-loader?name=fonts/[hash].[ext]&limit=1000" }
     ]
   }
 };
-
