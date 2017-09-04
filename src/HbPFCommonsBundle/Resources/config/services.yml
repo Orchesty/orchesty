@@ -4,19 +4,9 @@ services:
         class: Hanaboso\PipesFramework\Commons\Redirect\Redirect
         arguments:
 
-    hbpf.node_repository:
-        class: Hanaboso\PipesFramework\Commons\Node\NodeRepository
-        arguments:
-          - '@service_container'
-
     hbpf.topology_repository:
         class: Hanaboso\PipesFramework\Commons\Topology\TopologyRepository
         arguments:
-
-    hbpf.source_service:
-        class: Hanaboso\PipesFramework\Commons\Source\SourceService
-        arguments:
-            - '@hbpf.transport.curl_manager'
 
     hbpf.file_storage.driver.mongo:
         class: Hanaboso\PipesFramework\Commons\FileStorage\Driver\MongoFileDriver
