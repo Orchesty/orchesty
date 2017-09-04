@@ -4,3 +4,28 @@ parameters:
 #        Key must match with key in acl.yml under resources
             user: ['read', 'write', 'delete']
             group: ['write', 'read']
+
+        fixture_groups:
+            service:
+                level: 0
+                users:
+                    - {email: 'root@hanaboso.com', password: 'root'}
+                rules:
+                    group: ['read', 'write', 'delete']
+                    user: ['read', 'write', 'delete']
+                    tmp_user: ['read', 'write', 'delete']
+                    token: ['read', 'write', 'delete']
+            admin:
+                level: 1
+                users:
+                rules:
+                    group: ['read', 'write', 'delete']
+                    user: ['read', 'write', 'delete']
+                    tmp_user: ['read', 'write', 'delete']
+                    token: ['read', 'write', 'delete']
+            user:
+                level: 5
+                users:
+                rules:
+                    user: ['read']
+                    token: ['read']
