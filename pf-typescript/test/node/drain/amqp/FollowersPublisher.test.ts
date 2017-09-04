@@ -88,7 +88,7 @@ describe("FollowersPublisher", () => {
             (received: Message) => {
                 receivedMessages.push(received);
                 // Check if content and headers remain the same
-                assert.deepEqual(msgBody, JSON.parse(received.content.toString()),);
+                assert.deepEqual(msgBody, JSON.parse(received.content.toString()));
                 assert.deepEqual(msgHeaders, received.properties.headers);
                 checkEnd();
             },

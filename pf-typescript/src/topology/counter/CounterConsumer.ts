@@ -1,6 +1,6 @@
 import { Channel, Message } from "amqplib";
-import Consumer from "lib-nodejs/dist/src/rabbitmq/Consumer";
 import Connection from "lib-nodejs/dist/src/rabbitmq/Connection";
+import Consumer from "lib-nodejs/dist/src/rabbitmq/Consumer";
 import JobMessage from "../../message/JobMessage";
 
 class CounterConsumer extends Consumer {
