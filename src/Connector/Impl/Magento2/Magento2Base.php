@@ -25,6 +25,11 @@ abstract class Magento2Base implements ConnectorInterface
 {
 
     /**
+     * @var string
+     */
+    private $id;
+
+    /**
      * @var Magento2AuthorizationInterface
      */
     private $authorization;
@@ -37,11 +42,13 @@ abstract class Magento2Base implements ConnectorInterface
     /**
      * Magento2Base constructor.
      *
+     * @param string                         $id
      * @param Magento2AuthorizationInterface $authorization
      * @param CurlManager                    $curl
      */
-    public function __construct(Magento2AuthorizationInterface $authorization, CurlManager $curl)
+    public function __construct(string $id, Magento2AuthorizationInterface $authorization, CurlManager $curl)
     {
+        $this->id            = $id;
         $this->authorization = $authorization;
         $this->curl          = $curl;
     }
@@ -63,6 +70,14 @@ abstract class Magento2Base implements ConnectorInterface
         $response = $this->curl->send($dto);
 
         return $response->getBody();
+    }
+
+    /**
+     * @return string
+     */
+    public function getId(): string
+    {
+        return $this->id;
     }
 
 }

@@ -9,8 +9,3 @@ parameters:
 
     request_listener.http_port: 80
     request_listener.https_port: 80
-
-    # Database for connector - mongo db
-    db_document_host: mongodb
-    db_document_port: 27017
-    db_document_name: pipes

@@ -20,6 +20,11 @@ interface ConnectorInterface
 {
 
     /**
+     * @return string
+     */
+    public function getId(): string;
+
+    /**
      * @param string[] $data
      *
      * @return ProcessDto|void
