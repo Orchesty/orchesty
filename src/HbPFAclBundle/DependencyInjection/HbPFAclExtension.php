@@ -28,8 +28,8 @@ class HbPFAclExtension extends Extension implements PrependExtensionInterface
             throw new RuntimeException('You must register HbPFUserBundle before.');
         };
 
-        $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
-        $loader->load('doctrine_mongo.yml');
+        $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/prepend-config'));
+        $loader->load('doctrine.yml');
     }
 
     /**

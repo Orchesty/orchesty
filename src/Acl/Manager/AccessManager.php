@@ -3,9 +3,10 @@
 namespace Hanaboso\PipesFramework\Acl\Manager;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Hanaboso\PipesFramework\Acl\Document\Group;
-use Hanaboso\PipesFramework\Acl\Document\Rule;
+use Doctrine\ORM\EntityManager;
 use Hanaboso\PipesFramework\Acl\Dto\GroupDto;
+use Hanaboso\PipesFramework\Acl\Entity\GroupInterface;
+use Hanaboso\PipesFramework\Acl\Entity\RuleInterface;
 use Hanaboso\PipesFramework\Acl\Enum\ActionEnum;
 use Hanaboso\PipesFramework\Acl\Enum\ResourceEnum;
 use Hanaboso\PipesFramework\Acl\Exception\AclException;
@@ -13,8 +14,8 @@ use Hanaboso\PipesFramework\Acl\Factory\MaskFactory;
 use Hanaboso\PipesFramework\Acl\Factory\RuleFactory;
 use Hanaboso\PipesFramework\Acl\Provider\Impl\DatabaseProvider;
 use Hanaboso\PipesFramework\HbPFAclBundle\Provider\ResourceProvider;
-use Hanaboso\PipesFramework\User\Document\User;
-use Hanaboso\PipesFramework\User\Document\UserInterface;
+use Hanaboso\PipesFramework\User\DatabaseManager\UserDatabaseManagerLocator;
+use Hanaboso\PipesFramework\User\Entity\UserInterface;
 use Hanaboso\PipesFramework\User\Model\User\Event\UserEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -27,7 +28,7 @@ class AccessManager implements EventSubscriberInterface
 {
 
     /**
-     * @var DocumentManager
+     * @var DocumentManager|EntityManager
      */
     private $dm;
 
@@ -49,19 +50,19 @@ class AccessManager implements EventSubscriberInterface
     /**
      * AccessManager constructor.
      *
-     * @param DocumentManager  $dm
-     * @param RuleFactory      $factory
-     * @param DatabaseProvider $dbProvider
-     * @param ResourceProvider $resProvider
+     * @param UserDatabaseManagerLocator $userDml
+     * @param RuleFactory                $factory
+     * @param DatabaseProvider           $dbProvider
+     * @param ResourceProvider           $resProvider
      */
     function __construct(
-        DocumentManager $dm,
+        UserDatabaseManagerLocator $userDml,
         RuleFactory $factory,
         DatabaseProvider $dbProvider,
         ResourceProvider $resProvider
     )
     {
-        $this->dm          = $dm;
+        $this->dm          = $userDml->get();
         $this->factory     = $factory;
         $this->dbProvider  = $dbProvider;
         $this->resProvider = $resProvider;
@@ -83,7 +84,7 @@ class AccessManager implements EventSubscriberInterface
         $rules = $this->dbProvider->getRules($user);
         $rule  = NULL;
         $byte  = MaskFactory::getActionByte($act);
-        /** @var Rule $val */
+
         foreach ($rules as $val) {
             if ($this->hasRight($val, $res, $byte)) {
                 $rule = $val;
@@ -133,7 +134,6 @@ class AccessManager implements EventSubscriberInterface
         $rules = $this->dbProvider->getRules($user);
         $byte  = MaskFactory::getActionByte($act);
 
-        /** @var Rule $val */
         foreach ($rules as $val) {
             if ($this->hasRight($val, $res, $byte)) {
                 if ($val->getPropertyMask() === 2) {
@@ -155,11 +155,13 @@ class AccessManager implements EventSubscriberInterface
     /**
      * @param string $name
      *
-     * @return Group
+     * @return GroupInterface
      */
-    public function addGroup(string $name): Group
+    public function addGroup(string $name): GroupInterface
     {
-        $group = new Group(NULL);
+        $class = $this->resProvider->getResource(ResourceEnum::GROUP);
+        /** @var GroupInterface $group */
+        $group = new $class(NULL);
         $group->setName($name);
         $this->dm->persist($group);
         $this->dm->flush($group);
@@ -170,10 +172,10 @@ class AccessManager implements EventSubscriberInterface
     /**
      * @param GroupDto $data
      *
-     * @return Group
+     * @return GroupInterface
      * @throws AclException
      */
-    public function updateGroup(GroupDto $data): Group
+    public function updateGroup(GroupDto $data): GroupInterface
     {
         $group = $data->getGroup();
 
@@ -202,9 +204,9 @@ class AccessManager implements EventSubscriberInterface
     }
 
     /**
-     * @param Group $group
+     * @param GroupInterface $group
      */
-    public function removeGroup(Group $group): void
+    public function removeGroup(GroupInterface $group): void
     {
         foreach ($group->getRules() as $rule) {
             $this->dm->remove($rule);
@@ -219,9 +221,10 @@ class AccessManager implements EventSubscriberInterface
      */
     public function createGroup(UserEvent $event): void
     {
-        /** @var User $user */
         $user  = $event->getUser();
-        $group = new Group($user);
+        $class = $this->resProvider->getResource(ResourceEnum::GROUP);
+        /** @var GroupInterface $group */
+        $group = new $class($user);
         $group
             ->setName($user->getEmail())
             ->addUser($user);
@@ -257,13 +260,13 @@ class AccessManager implements EventSubscriberInterface
     }
 
     /**
-     * @param Rule   $rule
-     * @param string $res
-     * @param int    $byte
+     * @param RuleInterface $rule
+     * @param string        $res
+     * @param int           $byte
      *
      * @return bool
      */
-    private function hasRight(Rule $rule, string $res, int $byte): bool
+    private function hasRight(RuleInterface $rule, string $res, int $byte): bool
     {
         return $rule->getResource() === $res && $rule->getActionMask() >> $byte & 1;
     }

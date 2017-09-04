@@ -5,7 +5,8 @@ namespace Hanaboso\PipesFramework\User\Document;
 use DateTime;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Exception;
-use Hanaboso\PipesFramework\Commons\Traits\IdTrait;
+use Hanaboso\PipesFramework\Commons\Traits\Document\IdTrait;
+use Hanaboso\PipesFramework\User\Entity\UserInterface;
 
 /**
  * Class UserAbstract

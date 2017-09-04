@@ -2,8 +2,9 @@ services:
     hbpf.user.handler.user:
         class: Hanaboso\PipesFramework\HbPFUserBundle\Handler\UserHandler
         arguments:
-            - '@hbpf.database_manager_locator'
+            - '@hbpf.database_manager_locator.user'
             - '@hbpf.user.manager.user'
+            - '@hbpf.acl.provider.resource'
         tags:
             - { name: kernel.event_subscriber }
 
@@ -15,21 +16,31 @@ services:
     hbpf.user.manager.token:
         class: Hanaboso\PipesFramework\User\Model\Token\TokenManager
         arguments:
-            - '@doctrine_mongodb.odm.default_document_manager'
+           - "@hbpf.database_manager_locator.user"
+           - '@hbpf.acl.provider.resource'
 
     hbpf.user.manager.user:
         class: Hanaboso\PipesFramework\User\Model\User\UserManager
         arguments:
-            - '@doctrine_mongodb.odm.default_document_manager'
-            - '@hbpf.user.manager.security'
-            - '@hbpf.user.manager.token'
-            - '@security.encoder_factory.generic'
-            - '@event_dispatcher'
+            - "@hbpf.database_manager_locator.user"
+            - "@hbpf.user.manager.security"
+            - "@hbpf.user.manager.token"
+            - "@security.encoder_factory.generic"
+            - "@event_dispatcher"
+            - '@hbpf.acl.provider.resource'
 
     hbpf.user.manager.security:
         class: Hanaboso\PipesFramework\User\Model\Security\SecurityManager
         arguments:
-            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.database_manager_locator.user'
             - '@security.encoder_factory'
             - '@hbpf.user.session'
             - '@security.token_storage'
+            - '@hbpf.acl.provider.resource'
+
+    hbpf.database_manager_locator.user:
+        class: Hanaboso\PipesFramework\User\DatabaseManager\UserDatabaseManagerLocator
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@doctrine.orm.default_entity_manager'
+            - '%database_type%'

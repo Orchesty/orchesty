@@ -5,17 +5,19 @@ namespace Hanaboso\PipesFramework\Acl\Document;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\PersistentCollection;
-use Hanaboso\PipesFramework\Commons\Traits\IdTrait;
-use Hanaboso\PipesFramework\User\Document\UserInterface;
+use Hanaboso\PipesFramework\Acl\Entity\GroupInterface;
+use Hanaboso\PipesFramework\Acl\Entity\RuleInterface;
+use Hanaboso\PipesFramework\Commons\Traits\Document\IdTrait;
+use Hanaboso\PipesFramework\User\Entity\UserInterface;
 
 /**
  * Class Group
  *
  * @package Hanaboso\PipesFramework\Acl\Document
  *
- * @ODM\Document(repositoryClass="Hanaboso\PipesFramework\Acl\Repository\GroupRepository")
+ * @ODM\Document(repositoryClass="Hanaboso\PipesFramework\Acl\Repository\Document\GroupRepository")
  */
-class Group extends DocumentAbstract
+class Group extends DocumentAbstract implements GroupInterface
 {
 
     use IdTrait;
@@ -28,14 +30,14 @@ class Group extends DocumentAbstract
     private $name;
 
     /**
-     * @var Rule[]|null
+     * @var RuleInterface[]|ArrayCollection
      *
      * @ODM\ReferenceMany(targetDocument="Hanaboso\PipesFramework\Acl\Document\Rule")
      */
     private $rules;
 
     /**
-     * @var UserInterface[]|null
+     * @var UserInterface[]|ArrayCollection
      *
      * @ODM\ReferenceMany(targetDocument="Hanaboso\PipesFramework\User\Document\User")
      */
@@ -52,9 +54,9 @@ class Group extends DocumentAbstract
     /**
      * @param string $name
      *
-     * @return Group
+     * @return GroupInterface
      */
-    public function setName(string $name): Group
+    public function setName(string $name): GroupInterface
     {
         $this->name = $name;
 
@@ -62,7 +64,7 @@ class Group extends DocumentAbstract
     }
 
     /**
-     * @return Rule[]|PersistentCollection|ArrayCollection|null
+     * @return RuleInterface[]|PersistentCollection|ArrayCollection|null
      */
     public function getRules()
     {
@@ -72,9 +74,9 @@ class Group extends DocumentAbstract
     /**
      * @param array $rules
      *
-     * @return Group
+     * @return GroupInterface
      */
-    public function setRules(array $rules): Group
+    public function setRules(array $rules): GroupInterface
     {
         $this->rules = $rules;
 
@@ -82,11 +84,11 @@ class Group extends DocumentAbstract
     }
 
     /**
-     * @param Rule $rule
+     * @param RuleInterface $rule
      *
-     * @return Group
+     * @return GroupInterface
      */
-    public function addRule(Rule $rule): Group
+    public function addRule(RuleInterface $rule): GroupInterface
     {
         $this->rules[] = $rule;
 
@@ -104,9 +106,9 @@ class Group extends DocumentAbstract
     /**
      * @param UserInterface[] $users
      *
-     * @return Group
+     * @return GroupInterface
      */
-    public function setUsers($users): Group
+    public function setUsers($users): GroupInterface
     {
         $this->users = $users;
 
@@ -116,13 +118,21 @@ class Group extends DocumentAbstract
     /**
      * @param UserInterface $user
      *
-     * @return Group
+     * @return GroupInterface
      */
-    public function addUser(UserInterface $user): Group
+    public function addUser(UserInterface $user): GroupInterface
     {
         $this->users[] = $user;
 
         return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getType(): string
+    {
+        return self::TYPE_ODM;
     }
 
 }

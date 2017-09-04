@@ -2,7 +2,7 @@
 
 namespace Hanaboso\PipesFramework\User\Model\User\Event;
 
-use Hanaboso\PipesFramework\User\Document\UserInterface;
+use Hanaboso\PipesFramework\User\Entity\UserInterface;
 use Symfony\Component\EventDispatcher\Event;
 
 /**

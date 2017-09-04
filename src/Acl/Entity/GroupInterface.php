@@ -1,0 +1,80 @@
+<?php declare(strict_types=1);
+
+namespace Hanaboso\PipesFramework\Acl\Entity;
+
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\PersistentCollection;
+use Hanaboso\PipesFramework\User\Entity\UserInterface;
+
+/**
+ * Interface GroupInterface
+ *
+ * @package Hanaboso\PipesFramework\Acl\Entity
+ */
+interface GroupInterface extends EntityInterface
+{
+
+    public const TYPE_ODM = 'odm';
+    public const TYPE_ORM = 'orm';
+
+    /**
+     * @return string
+     */
+    public function getName(): string;
+
+    /**
+     * @param string $name
+     *
+     * @return GroupInterface
+     */
+    public function setName(string $name): GroupInterface;
+
+    /**
+     * @return RuleInterface[]|PersistentCollection|ArrayCollection|null
+     */
+    public function getRules();
+
+    /**
+     * @param array $rules
+     *
+     * @return GroupInterface
+     */
+    public function setRules(array $rules): GroupInterface;
+
+    /**
+     * @param RuleInterface $rule
+     *
+     * @return GroupInterface
+     */
+    public function addRule(RuleInterface $rule): GroupInterface;
+
+    /**
+     * @return UserInterface[]|PersistentCollection|ArrayCollection|null
+     */
+    public function getUsers();
+
+    /**
+     * @param UserInterface[] $users
+     *
+     * @return GroupInterface
+     */
+    public function setUsers($users): GroupInterface;
+
+    /**
+     * @param UserInterface $user
+     *
+     * @return GroupInterface
+     */
+    public function addUser(UserInterface $user): GroupInterface;
+
+    /**
+     * @return string
+     */
+    public function getId(): string;
+
+    /**
+     * @return string
+     */
+    public function getType(): string;
+
+}

@@ -1,13 +1,13 @@
 <?php declare(strict_types=1);
 
-namespace Hanaboso\PipesFramework\Commons\Traits;
+namespace Hanaboso\PipesFramework\Commons\Traits\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 /**
  * Trait IdTrait
  *
- * @package Hanaboso\PipesFramework\Commons\Traits
+ * @package Hanaboso\PipesFramework\Commons\Traits\Document
  */
 trait IdTrait
 {

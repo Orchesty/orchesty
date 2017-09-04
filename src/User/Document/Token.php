@@ -4,7 +4,10 @@ namespace Hanaboso\PipesFramework\User\Document;
 
 use DateTime;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Hanaboso\PipesFramework\Commons\Traits\IdTrait;
+use Hanaboso\PipesFramework\Commons\Traits\Document\IdTrait;
+use Hanaboso\PipesFramework\User\Entity\TmpUserInterface;
+use Hanaboso\PipesFramework\User\Entity\TokenInterface;
+use Hanaboso\PipesFramework\User\Entity\UserInterface;
 use LogicException;
 
 /**
@@ -12,9 +15,9 @@ use LogicException;
  *
  * @package Hanaboso\PipesFramework\User\Document
  *
- * @ODM\Document(repositoryClass="Hanaboso\PipesFramework\User\Repository\TokenRepository")
+ * @ODM\Document(repositoryClass="Hanaboso\PipesFramework\User\Repository\Document\TokenRepository")
  */
-class Token
+class Token implements TokenInterface
 {
 
     use IdTrait;
@@ -27,14 +30,14 @@ class Token
     private $created;
 
     /**
-     * @var UserInterface|User|null
+     * @var UserInterface|null
      *
      * @ODM\ReferenceOne(targetDocument="Hanaboso\PipesFramework\User\Document\User")
      */
     private $user;
 
     /**
-     * @var UserInterface|TmpUser|null
+     * @var UserInterface|TmpUserInterface|null
      *
      * @ODM\ReferenceOne(targetDocument="Hanaboso\PipesFramework\User\Document\TmpUser")
      */
@@ -57,7 +60,7 @@ class Token
     }
 
     /**
-     * @return UserInterface|User|null
+     * @return UserInterface|null
      */
     public function getUser(): ?UserInterface
     {
@@ -67,9 +70,9 @@ class Token
     /**
      * @param UserInterface $user
      *
-     * @return Token
+     * @return TokenInterface
      */
-    public function setUser(UserInterface $user): Token
+    public function setUser(UserInterface $user): TokenInterface
     {
         $this->user = $user;
 
@@ -77,7 +80,7 @@ class Token
     }
 
     /**
-     * @return UserInterface|TmpUser|null
+     * @return UserInterface|TmpUserInterface|null
      */
     public function getTmpUser(): ?UserInterface
     {
@@ -87,9 +90,9 @@ class Token
     /**
      * @param UserInterface|null $tmpUser
      *
-     * @return Token
+     * @return TokenInterface
      */
-    public function setTmpUser(?UserInterface $tmpUser): Token
+    public function setTmpUser(?UserInterface $tmpUser): TokenInterface
     {
         $this->tmpUser = $tmpUser;
 
@@ -97,7 +100,7 @@ class Token
     }
 
     /**
-     * @return UserInterface|User|TmpUser
+     * @return UserInterface|TmpUserInterface
      */
     public function getUserOrTmpUser(): UserInterface
     {

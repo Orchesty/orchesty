@@ -4,7 +4,9 @@ namespace Hanaboso\PipesFramework\User\Document;
 
 use DateTime;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Hanaboso\PipesFramework\Commons\Traits\DeletedTrait;
+use Hanaboso\PipesFramework\Commons\Traits\Document\DeletedTrait;
+use Hanaboso\PipesFramework\User\Entity\TmpUserInterface;
+use Hanaboso\PipesFramework\User\Entity\UserInterface;
 use Hanaboso\PipesFramework\User\Enum\UserTypeEnum;
 
 /**
@@ -12,7 +14,7 @@ use Hanaboso\PipesFramework\User\Enum\UserTypeEnum;
  *
  * @package Hanaboso\PipesFramework\User\Document
  *
- * @ODM\Document(repositoryClass="Hanaboso\PipesFramework\User\Repository\UserRepository")
+ * @ODM\Document(repositoryClass="Hanaboso\PipesFramework\User\Repository\Document\UserRepository")
  */
 class User extends UserAbstract
 {
@@ -34,11 +36,11 @@ class User extends UserAbstract
     private $updated;
 
     /**
-     * @param TmpUser|UserInterface $tmpUser
+     * @param TmpUserInterface $tmpUser
      *
-     * @return User|UserInterface
+     * @return UserInterface
      */
-    public static function from(TmpUser $tmpUser): User
+    public static function from(TmpUserInterface $tmpUser): UserInterface
     {
         $user = (new self())
             ->setEmail($tmpUser->getEmail());
@@ -65,9 +67,9 @@ class User extends UserAbstract
     /**
      * @param string $password
      *
-     * @return UserInterface|User
+     * @return UserInterface
      */
-    public function setPassword(string $password): User
+    public function setPassword(string $password): UserInterface
     {
         $this->password = $password;
 
@@ -85,9 +87,9 @@ class User extends UserAbstract
     /**
      * @param DateTime $updated
      *
-     * @return UserInterface|User
+     * @return UserInterface
      */
-    public function setUpdated(DateTime $updated): User
+    public function setUpdated(DateTime $updated): UserInterface
     {
         $this->updated = $updated;
 

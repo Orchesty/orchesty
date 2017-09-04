@@ -3,10 +3,14 @@
 namespace Hanaboso\PipesFramework\Acl\Factory;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Hanaboso\PipesFramework\Acl\Document\Group;
-use Hanaboso\PipesFramework\Acl\Document\Rule;
+use Doctrine\ORM\EntityManager;
+use Hanaboso\PipesFramework\Acl\Document\Rule as OdmRule;
+use Hanaboso\PipesFramework\Acl\Entity\GroupInterface;
+use Hanaboso\PipesFramework\Acl\Entity\Rule as OrmRule;
+use Hanaboso\PipesFramework\Acl\Entity\RuleInterface;
 use Hanaboso\PipesFramework\Acl\Enum\ResourceEnum;
 use Hanaboso\PipesFramework\Acl\Exception\AclException;
+use Hanaboso\PipesFramework\User\DatabaseManager\UserDatabaseManagerLocator;
 
 /**
  * Class RuleFactory
@@ -22,19 +26,19 @@ class RuleFactory
     private $rules;
 
     /**
-     * @var DocumentManager
+     * @var DocumentManager|EntityManager
      */
     private $dm;
 
     /**
      * RuleFactory constructor.
      *
-     * @param DocumentManager $dm
-     * @param array           $rules
+     * @param UserDatabaseManagerLocator $userDml
+     * @param array                      $rules
      *
      * @throws AclException
      */
-    function __construct(DocumentManager $dm, array $rules)
+    function __construct(UserDatabaseManagerLocator $userDml, array $rules)
     {
         if (!is_array($rules) || !array_key_exists('owner', $rules)) {
             throw new AclException(
@@ -43,20 +47,21 @@ class RuleFactory
             );
         }
 
-        $this->dm    = $dm;
+        $this->dm    = $userDml->get();
         $this->rules = $rules['owner'];
     }
 
     /**
-     * @param string $resource
-     * @param Group  $group
-     * @param int    $actMask
-     * @param int    $propMask
+     * @param string         $resource
+     * @param GroupInterface $group
+     * @param int            $actMask
+     * @param int            $propMask
      *
-     * @return Rule
+     * @return RuleInterface
      * @throws AclException
      */
-    public static function createRule(string $resource, Group $group, int $actMask, int $propMask): Rule
+    public static function createRule(string $resource, GroupInterface $group, int $actMask,
+                                      int $propMask): RuleInterface
     {
         if (!ResourceEnum::isValid($resource)) {
             throw new AclException(
@@ -65,7 +70,12 @@ class RuleFactory
             );
         }
 
-        $rule = new Rule();
+        if ($group->getType() === GroupInterface::TYPE_ORM) {
+            $rule = new OrmRule();
+        } else {
+            $rule = new OdmRule();
+        }
+
         $rule
             ->setResource($resource)
             ->setGroup($group)
@@ -78,11 +88,11 @@ class RuleFactory
     }
 
     /**
-     * @param Group $group
+     * @param GroupInterface $group
      *
-     * @return Rule[]
+     * @return RuleInterface[]
      */
-    public function getDefaultRules(Group $group): array
+    public function getDefaultRules(GroupInterface $group): array
     {
         $this->dm->persist($group);
 

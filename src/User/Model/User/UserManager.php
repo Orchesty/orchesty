@@ -3,14 +3,21 @@
 namespace Hanaboso\PipesFramework\User\Model\User;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\DocumentRepository;
-use Hanaboso\PipesFramework\User\Document\TmpUser;
-use Hanaboso\PipesFramework\User\Document\User;
+use Doctrine\ORM\EntityManager;
+use Hanaboso\PipesFramework\Acl\Enum\ResourceEnum;
+use Hanaboso\PipesFramework\HbPFAclBundle\Provider\ResourceProvider;
+use Hanaboso\PipesFramework\User\DatabaseManager\UserDatabaseManagerLocator;
+use Hanaboso\PipesFramework\User\Document\User as OdmUser;
+use Hanaboso\PipesFramework\User\Entity\TmpUserInterface;
+use Hanaboso\PipesFramework\User\Entity\User as OrmUser;
+use Hanaboso\PipesFramework\User\Entity\UserInterface;
 use Hanaboso\PipesFramework\User\Model\Security\SecurityManager;
 use Hanaboso\PipesFramework\User\Model\Token\TokenManager;
 use Hanaboso\PipesFramework\User\Model\User\Event\UserEvent;
-use Hanaboso\PipesFramework\User\Repository\TmpUserRepository;
-use Hanaboso\PipesFramework\User\Repository\UserRepository;
+use Hanaboso\PipesFramework\User\Repository\Document\TmpUserRepository as OdmTmpRepo;
+use Hanaboso\PipesFramework\User\Repository\Document\UserRepository as OdmRepo;
+use Hanaboso\PipesFramework\User\Repository\Entity\TmpUserRepository as OrmTmpRepo;
+use Hanaboso\PipesFramework\User\Repository\Entity\UserRepository as OrmRepo;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Security\Core\Encoder\EncoderFactory;
 use Symfony\Component\Security\Core\Encoder\PasswordEncoderInterface;
@@ -24,9 +31,9 @@ class UserManager
 {
 
     /**
-     * @var DocumentManager
+     * @var DocumentManager|EntityManager
      */
-    private $documentManager;
+    private $dm;
 
     /**
      * @var SecurityManager
@@ -39,12 +46,12 @@ class UserManager
     private $tokenManager;
 
     /**
-     * @var UserRepository|DocumentRepository
+     * @var OdmRepo|OrmRepo
      */
     private $userRepository;
 
     /**
-     * @var TmpUserRepository|DocumentRepository
+     * @var OdmTmpRepo|OrmTmpRepo
      */
     private $tmpUserRepository;
 
@@ -59,37 +66,45 @@ class UserManager
     private $eventDispatcher;
 
     /**
+     * @var ResourceProvider
+     */
+    private $provider;
+
+    /**
      * UserManager constructor.
      *
-     * @param DocumentManager          $documentManager
-     * @param SecurityManager          $securityManager
-     * @param TokenManager             $tokenManager
-     * @param EncoderFactory           $encoderFactory
-     * @param EventDispatcherInterface $eventDispatcher
+     * @param UserDatabaseManagerLocator $userDml
+     * @param SecurityManager            $securityManager
+     * @param TokenManager               $tokenManager
+     * @param EncoderFactory             $encoderFactory
+     * @param EventDispatcherInterface   $eventDispatcher
+     * @param ResourceProvider           $provider
      */
     public function __construct(
-        DocumentManager $documentManager,
+        UserDatabaseManagerLocator $userDml,
         SecurityManager $securityManager,
         TokenManager $tokenManager,
         EncoderFactory $encoderFactory,
-        EventDispatcherInterface $eventDispatcher
+        EventDispatcherInterface $eventDispatcher,
+        ResourceProvider $provider
     )
     {
-        $this->documentManager   = $documentManager;
+        $this->dm                = $userDml->get();
         $this->securityManager   = $securityManager;
         $this->tokenManager      = $tokenManager;
-        $this->userRepository    = $documentManager->getRepository(User::class);
-        $this->tmpUserRepository = $documentManager->getRepository(TmpUser::class);
-        $this->encoder           = $encoderFactory->getEncoder(User::class);
+        $this->userRepository    = $this->dm->getRepository($provider->getResource(ResourceEnum::USER));
+        $this->tmpUserRepository = $this->dm->getRepository($provider->getResource(ResourceEnum::TMP_USER));
+        $this->encoder           = $encoderFactory->getEncoder($provider->getResource(ResourceEnum::USER));
         $this->eventDispatcher   = $eventDispatcher;
+        $this->provider          = $provider;
     }
 
     /**
      * @param array $data
      *
-     * @return User
+     * @return UserInterface
      */
-    public function login(array $data): User
+    public function login(array $data): UserInterface
     {
         $user = $this->securityManager->login($data);
         $this->eventDispatcher->dispatch(UserEvent::USER_LOGIN, new UserEvent($user));
@@ -126,9 +141,12 @@ class UserManager
         $user = $this->tmpUserRepository->findOneBy(['email' => $data['email']]);
 
         if (!$user) {
-            $user = (new TmpUser())->setEmail($data['email']);
-            $this->documentManager->persist($user);
-            $this->documentManager->flush();
+            $class = $this->provider->getResource(ResourceEnum::TMP_USER);
+            /** @var TmpUserInterface $user */
+            $user = new $class();
+            $user->setEmail($data['email']);
+            $this->dm->persist($user);
+            $this->dm->flush();
         }
 
         $this->tokenManager->create($user); // TODO: Send token by email
@@ -142,13 +160,15 @@ class UserManager
     {
         $token = $this->tokenManager->validate($id);
 
-        $user = User::from($token->getUserOrTmpUser());
-        $this->documentManager->remove($token->getUserOrTmpUser());
-        $this->documentManager->persist($user);
-        $this->documentManager->flush();
+        /** @var OdmUser|OrmUser $class */
+        $class = $this->provider->getResource(ResourceEnum::USER);
+        $user  = $class::from($token->getUserOrTmpUser());
+        $this->dm->remove($token->getUserOrTmpUser());
+        $this->dm->persist($user);
+        $this->dm->flush();
 
         $token->setUser($user)->setTmpUser(NULL);
-        $this->documentManager->flush();
+        $this->dm->flush();
         $this->eventDispatcher->dispatch(UserEvent::USER_ACTIVATE, new UserEvent($user));
 
         // TODO: Send notification by email
@@ -165,8 +185,8 @@ class UserManager
             ->getUserOrTmpUser()
             ->setPassword($this->encoder->encodePassword($data['password'], ''));
 
-        $this->documentManager->remove($token);
-        $this->documentManager->flush();
+        $this->dm->remove($token);
+        $this->dm->flush();
     }
 
     /**
@@ -176,7 +196,7 @@ class UserManager
      */
     public function resetPassword(array $data): void
     {
-        /** @var User $user */
+        /** @var UserInterface $user */
         $user = $this->userRepository->findOneBy(['email' => $data['email']]);
 
         if (!$user) {
@@ -191,12 +211,12 @@ class UserManager
     }
 
     /**
-     * @param User $user
+     * @param UserInterface|OdmUser|OrmUser $user
      *
-     * @return User
+     * @return UserInterface
      * @throws UserManagerException
      */
-    public function delete(User $user): User
+    public function delete($user): UserInterface
     {
         $this->eventDispatcher->dispatch(
             UserEvent::USER_DELETE_BEFORE,
@@ -211,7 +231,7 @@ class UserManager
         }
 
         $user->setDeleted(TRUE);
-        $this->documentManager->flush();
+        $this->dm->flush();
         $this->eventDispatcher->dispatch(
             UserEvent::USER_DELETE_AFTER,
             new UserEvent($user, $this->securityManager->getLoggedUser())
