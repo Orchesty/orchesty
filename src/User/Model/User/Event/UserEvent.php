@@ -13,13 +13,14 @@ use Symfony\Component\EventDispatcher\Event;
 class UserEvent extends Event
 {
 
-    public const USER_LOGIN          = 'user.login';
-    public const USER_LOGOUT         = 'user.logout';
-    public const USER_REGISTER       = 'user.register';
-    public const USER_ACTIVATE       = 'user.activate';
-    public const USER_RESET_PASSWORD = 'user.reset.password';
-    public const USER_DELETE_BEFORE  = 'user.delete.before';
-    public const USER_DELETE_AFTER   = 'user.delete.after';
+    public const USER_LOGIN           = 'user.login';
+    public const USER_LOGOUT          = 'user.logout';
+    public const USER_REGISTER        = 'user.register';
+    public const USER_ACTIVATE        = 'user.activate';
+    public const USER_RESET_PASSWORD  = 'user.reset.password';
+    public const USER_DELETE_BEFORE   = 'user.delete.before';
+    public const USER_DELETE_AFTER    = 'user.delete.after';
+    public const USER_CHANGE_PASSWORD = 'user.change.password';
 
     /**
      * @var UserInterface
