@@ -35,6 +35,16 @@ class TmpUser extends UserAbstract implements TmpUserInterface
     }
 
     /**
+     * @param string $pwd
+     *
+     * @return UserInterface
+     */
+    public function setPassword(string $pwd): UserInterface
+    {
+        return $this;
+    }
+
+    /**
      * @return array
      */
     public function toArray(): array
