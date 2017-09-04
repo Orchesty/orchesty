@@ -3,7 +3,12 @@
 namespace Hanaboso\PipesFramework\Commons\Node\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
+use Doctrine\ODM\MongoDB\Mapping\Annotations\Index;
+use Hanaboso\PipesFramework\Commons\Enum\TypeEnum;
+use Hanaboso\PipesFramework\Commons\Exception\NodeException;
+use Hanaboso\PipesFramework\Commons\Node\Embed\EmbedNode;
 use Hanaboso\PipesFramework\Commons\Traits\Document\IdTrait;
+use Nette\Utils\Strings;
 
 /**
  * Class Node
@@ -16,5 +21,177 @@ class Node
 {
 
     use IdTrait;
+
+    /**
+     * @var string
+     *
+     * @MongoDB\Field(type="string")
+     */
+    protected $name;
+
+    /**
+     * @var string
+     *
+     * @MongoDB\Field(type="string")
+     * @Index()
+     */
+    protected $topology;
+
+    /**
+     * @var EmbedNode[]
+     *
+     * @MongoDB\EmbedMany(targetDocument="Hanaboso\PipesFramework\Commons\Node\Embed\EmbedNode")
+     */
+    protected $next = [];
+
+    /**
+     * @var string
+     *
+     * @MongoDB\Field(type="string")
+     */
+    protected $service;
+
+    /**
+     * @var string
+     *
+     * @MongoDB\Field(type="string")
+     */
+    protected $type;
+
+    /**
+     * @var bool
+     *
+     * @MongoDB\Field(type="boolean", options={"default":"1"})
+     */
+    protected $enabled;
+
+    /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return Node
+     */
+    public function setName(string $name): Node
+    {
+        $this->name = Strings::webalize($name);
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTopology(): string
+    {
+        return $this->topology;
+    }
+
+    /**
+     * @param string $topology
+     *
+     * @return Node
+     */
+    public function setTopology(string $topology): Node
+    {
+        $this->topology = $topology;
+
+        return $this;
+    }
+
+    /**
+     * @return EmbedNode[]
+     */
+    public function getNext(): array
+    {
+        return $this->next;
+    }
+
+    /**
+     * @param EmbedNode $next
+     *
+     * @return Node
+     */
+    public function addNext(EmbedNode $next): Node
+    {
+        $this->next[] = $next;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getService(): string
+    {
+        return $this->service;
+    }
+
+    /**
+     * @param string $service
+     *
+     * @return Node
+     * @throws NodeException
+     */
+    public function setService(string $service): Node
+    {
+        $this->service = $service;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getType(): string
+    {
+        return $this->type;
+    }
+
+    /**
+     * @param string $type
+     *
+     * @return Node
+     * @throws NodeException
+     */
+    public function setType(string $type): Node
+    {
+        if (TypeEnum::isValid($type)) {
+            $this->type = $type;
+        } else {
+            throw new NodeException(
+                sprintf('Invalid node type "%s"', $type),
+                NodeException::INVALID_TYPE
+            );
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isEnabled(): bool
+    {
+        return $this->enabled;
+    }
+
+    /**
+     * @param bool $enabled
+     *
+     * @return Node
+     */
+    public function setEnabled(bool $enabled): Node
+    {
+        $this->enabled = $enabled;
+
+        return $this;
+    }
 
 }
