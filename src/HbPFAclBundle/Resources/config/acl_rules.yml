@@ -19,7 +19,7 @@ parameters:
                 level: 1
                 users:
                 rules:
-                    group: ['read', 'write', 'delete']
+                    group: ['read']
                     user: ['read', 'write', 'delete']
                     tmp_user: ['read', 'write', 'delete']
                     token: ['read', 'write', 'delete']
