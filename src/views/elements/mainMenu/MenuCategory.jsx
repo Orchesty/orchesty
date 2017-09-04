@@ -1,7 +1,7 @@
 import React from 'react'
 
-import MenuItem from './menuItem';
-import './menuCategory.less';
+import MenuItem from './MenuItem';
+import './MenuCategory.less';
 
 class MenuCategory extends React.Component {
   constructor(props) {

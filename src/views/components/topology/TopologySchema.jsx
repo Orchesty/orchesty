@@ -6,8 +6,8 @@ import {stateType} from '../../../types';
 import * as topologyActions from '../../../actions/topologyActions';
 import * as notificationActions from '../../../actions/notificationActions';
 
-import SimpleState from '../../elements/state/simpleState';
-import BpmnIoComponent from '../../elements/bpmn/bpmnIoComponent';
+import SimpleState from '../../elements/state/SimpleState';
+import BpmnIoComponent from '../../elements/bpmn/BpmnIoComponent';
 
 class TopologyScheme extends React.Component {
   constructor(props) {

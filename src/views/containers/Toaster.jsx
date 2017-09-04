@@ -3,10 +3,10 @@ import { connect } from 'react-redux';
 
 import * as notificationActions from '../../actions/notificationActions';
 
-import ToasterItem from '../elements/toaster/toasterItem';
-import EmptyToasterItem from '../elements/toaster/emptyToasterItem';
+import ToasterItem from '../elements/toaster/ToasterItem';
+import EmptyToasterItem from '../elements/toaster/EmptyToasterItem';
 
-import './toaster.less';
+import './Toaster.less';
 
 class Toaster extends React.Component {
   constructor(props) {

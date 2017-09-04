@@ -4,11 +4,11 @@ import {connect} from 'react-redux';
 import * as topologyActions from '../../../actions/topologyActions';
 import * as applicationActions from '../../../actions/applicationActions';
 
-import SimpleState from '../../elements/state/simpleState';
-import BoolValue from '../../elements/boolValue';
-import SortTh from '../../elements/table/sortTh';
-import ActionButton from '../../elements/actionButton';
-import ListPagination from '../../elements/table/listPagination';
+import SimpleState from '../../elements/state/SimpleState';
+import BoolValue from '../../elements/BoolValue';
+import SortTh from '../../elements/table/SortTh';
+import ActionButton from '../../elements/ActionButton';
+import ListPagination from '../../elements/table/ListPagination';
 
 class TopologyListTable extends React.Component {
   constructor(props) {

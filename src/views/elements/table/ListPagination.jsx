@@ -3,7 +3,7 @@ import ReactPaginate from 'react-paginate';
 
 import {stateType, listType} from '../../../types';
 
-import './listPagination.less';
+import './ListPagination.less';
 
 class ListPagination extends React.Component {
   constructor(props) {

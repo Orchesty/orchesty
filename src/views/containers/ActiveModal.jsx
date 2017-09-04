@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 
 import * as applicationActions from '../../actions/applicationActions';
 
-import TopologyEditModal from '../modals/topologyEditModal';
+import TopologyEditModal from '../modals/TopologyEditModal';
 
 
 class ActiveModal extends React.Component {

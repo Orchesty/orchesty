@@ -3,7 +3,7 @@ import {connect} from 'react-redux';
 
 import * as topologyActions from '../../actions/topologyActions';
 
-import TopologyListTable from '../components/topology/topologyListTable';
+import TopologyListTable from '../components/topology/TopologyListTable';
 
 class TopologyPage extends React.Component {
   constructor(props) {

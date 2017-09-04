@@ -2,9 +2,9 @@ import React from 'react'
 
 import {stateType} from '../../../types';
 
-import ErrorState from './errorState';
-import LoadingState from './loadingState';
-import NotLoadedState from './notLoadedState';
+import ErrorState from './ErrorState';
+import LoadingState from './LoadingState';
+import NotLoadedState from './NotLoadedState';
 
 class SimpleState extends React.Component {
   render() {
