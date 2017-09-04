@@ -9,10 +9,6 @@
 
 namespace Hanaboso\PipesFramework\HbPFCommonsBundle\Handler;
 
-use Hanaboso\PipesFramework\Commons\Message\MessageInterface;
-use Hanaboso\PipesFramework\Commons\Node\NodeInterface;
-use Hanaboso\PipesFramework\Commons\Node\NodeRepository;
-
 /**
  * Class NodeHandler
  *
@@ -20,34 +16,5 @@ use Hanaboso\PipesFramework\Commons\Node\NodeRepository;
  */
 class NodeHandler
 {
-
-    /**
-     * @var NodeRepository
-     */
-    private $nodeRepository;
-
-    /**
-     * NodeHandler constructor.
-     *
-     * @param NodeRepository $nodeRepository
-     */
-    public function __construct(NodeRepository $nodeRepository)
-    {
-        $this->nodeRepository = $nodeRepository;
-    }
-
-    /**
-     * @param string           $id
-     * @param MessageInterface $message
-     *
-     * @return mixed
-     */
-    public function processData(string $id, MessageInterface $message)
-    {
-        /** @var NodeInterface $node */
-        $node = $this->nodeRepository->get($id);
-
-        return $node->processData($id, $message);
-    }
 
 }

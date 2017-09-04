@@ -11,7 +11,6 @@ namespace Hanaboso\PipesFramework\Connector\Impl\Magento2;
 
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Authorization\Impl\Magento2\Magento2AuthorizationInterface;
-use Hanaboso\PipesFramework\Commons\Node\BaseNode;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
@@ -22,7 +21,7 @@ use Psr\Http\Message\StreamInterface;
  *
  * @package Hanaboso\PipesFramework\Connector\Impl\Magento2
  */
-abstract class Magento2Base extends BaseNode implements ConnectorInterface
+abstract class Magento2Base implements ConnectorInterface
 {
 
     /**
@@ -38,13 +37,11 @@ abstract class Magento2Base extends BaseNode implements ConnectorInterface
     /**
      * Magento2Base constructor.
      *
-     * @param string                         $id
      * @param Magento2AuthorizationInterface $authorization
      * @param CurlManager                    $curl
      */
-    public function __construct(string $id, Magento2AuthorizationInterface $authorization, CurlManager $curl)
+    public function __construct(Magento2AuthorizationInterface $authorization, CurlManager $curl)
     {
-        parent::__construct($id);
         $this->authorization = $authorization;
         $this->curl          = $curl;
     }

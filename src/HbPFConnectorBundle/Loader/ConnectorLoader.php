@@ -9,8 +9,12 @@
 
 namespace Hanaboso\PipesFramework\HbPFConnectorBundle\Loader;
 
-use Hanaboso\PipesFramework\Commons\Node\BaseNode;
+use Hanaboso\PipesFramework\Commons\Source\SourceConnector;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
+use Hanaboso\PipesFramework\Connector\Impl\Magento2\Magento2Base;
+use Hanaboso\PipesFramework\Connector\Impl\Magento2\Magento2CustomersConnector;
+use Hanaboso\PipesFramework\Connector\Impl\Magento2\Magento2ModulesConnector;
+use Hanaboso\PipesFramework\Connector\Impl\Magento2\Magento2OrdersConnector;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Yaml\Yaml;
 
@@ -42,15 +46,15 @@ class ConnectorLoader
     /**
      * @param string $id
      *
-     * @return BaseNode
+     * @return Magento2Base|Magento2OrdersConnector|Magento2CustomersConnector|Magento2ModulesConnector|SourceConnector
      * @throws ConnectorException
      */
-    public function getConnector(string $id): BaseNode
+    public function getConnector(string $id)
     {
         $name = sprintf('%s.%s', self::CONNECTOR_PREFIX, $id);
 
         if ($this->container->has($name)) {
-            /** @var BaseNode $conn */
+            /** @var Magento2Base|Magento2OrdersConnector|Magento2CustomersConnector|Magento2ModulesConnector|SourceConnector $conn */
             $conn = $this->container->get($name);
         } else {
             throw new ConnectorException(
