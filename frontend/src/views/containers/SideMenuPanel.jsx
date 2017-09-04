@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 
 import * as applicationActions from '../../actions/applicationActions';
 
-import MenuCategory from '../elements/main_menu/menuCategory';
+import MenuCategory from '../elements/mainMenu/MenuCategory';
 
 class SideMenuPanel extends React.Component {
   constructor(props) {

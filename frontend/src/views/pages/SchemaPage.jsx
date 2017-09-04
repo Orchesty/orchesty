@@ -1,8 +1,8 @@
 import React from 'react'
 import {connect} from 'react-redux';
 
-import TopologySchema from '../components/topology/topologySchema';
-import ActionButton from '../elements/actionButton';
+import TopologySchema from '../components/topology/TopologySchema';
+import ActionButton from '../elements/ActionButton';
 
 class SchemaPage extends React.Component {
   constructor(props) {

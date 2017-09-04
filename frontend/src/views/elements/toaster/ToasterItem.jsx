@@ -1,6 +1,6 @@
 import React from 'react'
 
-import './toasterItem.less';
+import './ToasterItem.less';
 
 class ToasterItem extends React.Component {
   constructor(props) {

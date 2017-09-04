@@ -5,13 +5,13 @@ import BpmnModeler from 'bpmn-js/lib/Modeler';
 import PropertiesPanelModule from 'bpmn-js-properties-panel';
 import PropertiesProviderModule from 'bpmn-js-properties-panel/lib/provider/camunda';
 
-import download from '../../../utils/donwload';
+import download from '../../../utils/download';
 
 import CamundaModdleDescriptor from 'camunda-bpmn-moddle/resources/camunda.json';
 
 import 'diagram-js/assets/diagram-js.css';
 import 'bpmn-js/assets/bpmn-font/css/bpmn-embedded.css';
-import './bpmnIoComponent.less';
+import './BpmnIoComponent.less';
 
 class BpmnIoComponent extends React.Component {
   constructor(props){

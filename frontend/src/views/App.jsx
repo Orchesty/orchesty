@@ -5,13 +5,13 @@ import './vendor/bootstrap/css/bootstrap.css';
 import './vendor/font-awesome/css/font-awesome.css';
 import './custom.css';
 
-import LeftSidePanel from './containers/leftSidePanel';
-import TopNavigation from './containers/topNavigation';
-import ActivePage from './containers/activePage';
-import Toaster from './containers/toaster';
-import ActiveModal from './containers/activeModal';
+import LeftSidePanel from './containers/LeftSidePanel';
+import TopNavigation from './containers/TopNavigation';
+import ActivePage from './containers/ActivePage';
+import Toaster from './containers/Toaster';
+import ActiveModal from './containers/ActiveModal';
 
-import './app.less';
+import './App.less';
 
 
 class App extends React.Component {
