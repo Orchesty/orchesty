@@ -1,63 +1,37 @@
 import React from 'react'
 import {connect} from 'react-redux';
-import Form from 'react-jsonschema-form';
+import {Field, reduxForm} from 'redux-form'
 
 import * as topologyActions from '../../../actions/topologyActions';
 
-
-const schema = {
-  type: "object",
-  required: ["name"],
-  properties: {
-    _id: {
-      type: 'string',
-      title: 'Id'
-    },
-    name: {
-      type: "string",
-      title: "Name",
-      default: "Nejaky nazev"
-    },
-    descr: {
-      type: "string",
-      title: "Description",
-      default: "Description"
-    },
-    enabled: {
-      type: 'boolean',
-      title: 'Enabled',
-      default: true
-    }
-  }
-};
-
-const uiSchema = {
-  _id: {
-    "ui:readonly": true
-  }
-};
+import TextInput from '../../elements/form/TextInput';
 
 class TopologyForm extends React.Component {
   constructor(props) {
     super(props);
-    this._submitButton = null;
+    this._onSubmit = this.onSubmit.bind(this);
+    this._setButton = this.setButton.bind(this);
   }
 
   componentDidMount() {
     this.props.setSubmit(this.submit.bind(this));
   }
-  
+
+  setButton(button){
+    this._button = button;
+  }
+
   submit(){
-    this._submitButton.click();
+    this._button.click();
   }
 
   onSubmit(data){
-    const {name, descr, enabled} = data;
+    const {name, descr} = data;
     const {onProcessing} = this.props;
     if (typeof onProcessing == 'function'){
       onProcessing(true);
     }
-    this.props.topologyUpdate({name, descr, enabled}).then(
+    this.props.topologyUpdate({name, descr}).then(
       response => {
         const {onSuccess, onProcessing} = this.props;
         if (typeof onProcessing == 'function'){
@@ -69,26 +43,18 @@ class TopologyForm extends React.Component {
           }
         }
         return response;
-      }      
+      }
     )
   }
 
   render() {
-    const {topology} = this.props;
-    if (topology){
-      return <Form
-        schema={schema}
-        formData={topology}
-        onSubmit={data => {this.onSubmit(data.formData)}}
-        showErrorList={false}
-        uiSchema={uiSchema}
-        liveValidate={true}
-      >
-        <button ref={button => {this._submitButton = button}} className="hidden" />
-      </Form>;
-    }
     return (
-      <span>Waiting for data</span>
+      <form className="form-horizontal form-label-left" onSubmit={this.props.handleSubmit(this._onSubmit)}>
+        <Field name="_id" component={TextInput} label="Id" readOnly/>
+        <Field name="name" component={TextInput} label="Name" />
+        <Field name="descr" component={TextInput} label="Description" />
+        <button ref={this._setButton} className="hidden" />
+      </form>
     );
   }
 }
@@ -96,7 +62,7 @@ class TopologyForm extends React.Component {
 function mapStateToProps(state, ownProps) {
   const {topology} = state;
   return {
-    topology: topology.elements[ownProps.topologyId]
+    initialValues: topology.elements[ownProps.topologyId]
   };
 }
 
@@ -106,4 +72,4 @@ function mapActionsToProps(dispatch, ownProps){
   }
 }
 
-export default connect(mapStateToProps, mapActionsToProps)(TopologyForm);
+export default connect(mapStateToProps, mapActionsToProps)(reduxForm()(TopologyForm));
