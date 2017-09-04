@@ -191,6 +191,18 @@ class UserManager
 
     /**
      * @param array $data
+     */
+    public function changePassword(array $data): void
+    {
+        $loggedUser = $this->securityManager->getLoggedUser();
+        $this->eventDispatcher->dispatch(UserEvent::USER_CHANGE_PASSWORD, new UserEvent($loggedUser));
+
+        $loggedUser->setPassword($this->encoder->encodePassword($data['password'], ''));
+        $this->dm->flush();
+    }
+
+    /**
+     * @param array $data
      *
      * @throws UserManagerException
      */
