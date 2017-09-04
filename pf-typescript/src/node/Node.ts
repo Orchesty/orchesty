@@ -85,7 +85,7 @@ class Node {
             resp.sendStatus(this.nodeStatus);
         });
 
-        // First node has "/open" node to start consuming from source
+        // Initial nodes have "/open" route to start consuming from source
         if (this.isInitial) {
             app.get(ROUTE_OPEN, (req, resp) => {
                 logger.info("Open request received.");
@@ -134,8 +134,21 @@ class Node {
         this.opened = true;
 
         return this.faucet.open(
-            (msgIn: JobMessage) => this.worker.processData(msgIn),
-            (msgOut: JobMessage) => this.drain.open(msgOut),
+            (msgIn: JobMessage) => {
+                logger.info(`Node ${this.id} received message.`);
+                return this.worker.processData(msgIn)
+                    .then((msgOut: JobMessage) => {
+                        logger.info(`Node ${this.id} processed message`);
+                        return msgOut;
+                    });
+            },
+            (msgOut: JobMessage) => {
+                return this.drain.open(msgOut)
+                    .then((forwarded) => {
+                        logger.info(`Node ${this.id} forwarded message.`);
+                        return forwarded;
+                    });
+            },
         );
     }
 
