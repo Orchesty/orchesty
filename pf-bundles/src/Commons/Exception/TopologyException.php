@@ -7,7 +7,7 @@ namespace Hanaboso\PipesFramework\Commons\Exception;
  *
  * @package Hanaboso\PipesFramework\Commons\Exception
  */
-class TopologyException extends PipesFrameworkException
+final class TopologyException extends PipesFrameworkException
 {
 
     protected const OFFSET = 2200;
