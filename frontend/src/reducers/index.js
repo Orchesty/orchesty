@@ -10,4 +10,10 @@ const rootReducer = combineReducers({
   topology
 });
 
-export default rootReducer;
+export default (state, action) => {
+  if (action.type == 'SET_STATE'){
+    return action.state;
+  } else {
+    return rootReducer(state, action);
+  }
+}
