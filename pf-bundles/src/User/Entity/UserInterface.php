@@ -45,4 +45,11 @@ interface UserInterface extends SecurityCoreUserInterface
      */
     public function toArray(): array;
 
+    /**
+     * @param string $pwd
+     *
+     * @return UserInterface
+     */
+    public function setPassword(string $pwd): UserInterface;
+
 }

@@ -223,6 +223,31 @@ class UserControllerTest extends ControllerTestCaseAbstract
     /**
      *
      */
+    public function testChangePassword(): void
+    {
+        $user     = $this->loginUser('email@example.com', 'passw0rd');
+        $response = $this->sendPost('/api/user/change_password', ['password' => 'anotherPassw0rd']);
+
+        $this->dm->clear();
+        $existingUser = $this->dm->getRepository(User::class)->find($user->getId());
+
+        $this->assertEquals(200, $response->status);
+        $this->assertNotSame($user->getPassword(), $existingUser->getPassword());
+    }
+
+    /**
+     *
+     */
+    public function testChangePasswordNotLogged(): void
+    {
+        $response = $this->sendPost('/api/user/change_password', ['password' => 'anotherPassw0rd']);
+
+        $this->assertEquals(403, $response->status);
+    }
+
+    /**
+     *
+     */
     public function testResetPassword(): void
     {
         $this->loginUser('email@example.com', 'passw0rd');
