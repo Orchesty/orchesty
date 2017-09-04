@@ -81,13 +81,17 @@ class AccessManager implements EventSubscriberInterface
     {
         $this->checkParams($act, $res);
 
-        $rules = $this->dbProvider->getRules($user);
-        $rule  = NULL;
-        $byte  = MaskFactory::getActionByte($act);
+        $rules   = $this->dbProvider->getRules($user);
+        $rule    = NULL;
+        $byte    = MaskFactory::getActionByte($act);
+        $userLvl = 999;
 
         foreach ($rules as $val) {
             if ($this->hasRight($val, $res, $byte)) {
                 $rule = $val;
+                if ($rule->getGroup()->getLevel() < $userLvl) {
+                    $userLvl = $rule->getGroup()->getLevel();
+                }
                 if ($val->getPropertyMask() === 2) {
                     $byte = -1;
                     break;
@@ -106,7 +110,16 @@ class AccessManager implements EventSubscriberInterface
         if ($byte >= 0) {
             $data['owner'] = $user;
         }
+
         $val = $this->dm->getRepository($this->resProvider->getResource($res))->findOneBy($data);
+
+        if ($val) {
+            if ($res === ResourceEnum::GROUP) {
+                $val = $this->hasRightForGroup($val, $userLvl);
+            } else if ($res === ResourceEnum::USER) {
+                $val = $this->hasRightForUser($val, $userLvl);
+            }
+        }
 
         if (!$val) {
             throw new AclException(
@@ -122,12 +135,12 @@ class AccessManager implements EventSubscriberInterface
      * @param string        $act
      * @param string        $res
      * @param UserInterface $user
-     * @param mixed         $document
+     * @param mixed         $object
      *
      * @return bool
      * @throws AclException
      */
-    public function isAllowedEntity(string $act, string $res, UserInterface $user, $document): bool
+    public function isAllowedEntity(string $act, string $res, UserInterface $user, $object): bool
     {
         $this->checkParams($act, $res);
 
@@ -139,7 +152,7 @@ class AccessManager implements EventSubscriberInterface
                 if ($val->getPropertyMask() === 2) {
                     return TRUE;
                 } else {
-                    if ($user === $document->getOwner()) {
+                    if ($user === $object->getOwner()) {
                         return TRUE;
                     }
                 }
@@ -269,6 +282,36 @@ class AccessManager implements EventSubscriberInterface
     private function hasRight(RuleInterface $rule, string $res, int $byte): bool
     {
         return $rule->getResource() === $res && $rule->getActionMask() >> $byte & 1;
+    }
+
+    /**
+     * @param UserInterface $user
+     * @param int           $userLvl
+     *
+     * @return UserInterface|null
+     */
+    private function hasRightForUser(UserInterface $user, int $userLvl): ?UserInterface
+    {
+        $groups = $this->dm->getRepository($this->resProvider->getResource(ResourceEnum::GROUP))->getUserGroups($user);
+
+        foreach ($groups as $group) {
+            if ($group->getLevel() < $userLvl) {
+                return NULL;
+            }
+        }
+
+        return $user;
+    }
+
+    /**
+     * @param GroupInterface $group
+     * @param int            $userLvl
+     *
+     * @return GroupInterface|null
+     */
+    private function hasRightForGroup(GroupInterface $group, int $userLvl): ?GroupInterface
+    {
+        return ($group->getLevel() < $userLvl) ? NULL : $group;
     }
 
 }

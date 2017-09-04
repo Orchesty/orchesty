@@ -1,6 +1,7 @@
 <?php declare(strict_types=1);
 
 use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
+use Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle;
 use Doctrine\Bundle\MongoDBBundle\DoctrineMongoDBBundle;
 use FOS\RestBundle\FOSRestBundle;
 use Hanaboso\PipesFramework\HbPFAclBundle\HbPFAclBundle;
@@ -36,6 +37,7 @@ class AppKernel extends Kernel
     {
         $bundles = [
             new DoctrineBundle(),
+            new DoctrineFixturesBundle(),
             new DoctrineMongoDBBundle(),
             new FOSRestBundle(),
             new FrameworkBundle(),

@@ -77,4 +77,16 @@ interface GroupInterface extends EntityInterface
      */
     public function getType(): string;
 
+    /**
+     * @return int
+     */
+    public function getLevel(): int;
+
+    /**
+     * @param int $level
+     *
+     * @return GroupInterface
+     */
+    public function setLevel(int $level): GroupInterface;
+
 }
