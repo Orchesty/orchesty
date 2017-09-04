@@ -5,7 +5,7 @@ namespace Hanaboso\PipesFramework\Commons\Topology\Document;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 use Hanaboso\PipesFramework\Commons\Enum\TopologyStatusEnum;
 use Hanaboso\PipesFramework\Commons\Exception\TopologyException;
-use Hanaboso\PipesFramework\Commons\Traits\IdTrait;
+use Hanaboso\PipesFramework\Commons\Traits\Document\IdTrait;
 
 /**
  * Class Topology
