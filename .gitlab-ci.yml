@@ -26,7 +26,7 @@ php-dev-image:
 njs-build-image:
   stage: stage1
   script:
-    - frontend/docker/build/build.sh ${CI_BUILD_REF_NAME}
+    - frontend/docker/prod/build.sh ${CI_BUILD_REF_NAME}
   only:
     - dev
     - master
