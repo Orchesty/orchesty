@@ -35,7 +35,7 @@ class AMQPFaucet implements IFaucet {
      * @param settings
      * @param connection
      */
-    constructor(settings: any, connection: Connection) {
+    constructor(settings: IAMQPFaucetSettings, connection: Connection) {
         this.settings = settings;
         this.connection = connection;
     }
@@ -65,16 +65,18 @@ class AMQPFaucet implements IFaucet {
             ]).then((results: any) => {
                 const ok = results[0];
                 const ex = results[1];
+
                 return ch.bindQueue(ok.queue, ex.exchange, s.routing_key);
             });
         };
 
         this.consumer = new Consumer(this.connection, prepareFn, processData, drain);
 
-        return Promise.resolve(() => {
+        return new Promise((resolve) => {
             this.consumer.consume(this.settings.queue.name, {})
                 .then(() => {
                     logger.info(`RabbitMQ Faucet for queue "${this.settings.queue.name}" opened`);
+                    resolve();
                 });
         });
     }
