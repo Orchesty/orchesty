@@ -53,6 +53,13 @@ class Group extends EntityAbstract implements GroupInterface
     protected $owner;
 
     /**
+     * @var int
+     *
+     * @ORM\Column(type="integer")
+     */
+    protected $level = 999;
+
+    /**
      * @return string
      */
     public function getName(): string
@@ -142,6 +149,26 @@ class Group extends EntityAbstract implements GroupInterface
     public function getType(): string
     {
         return self::TYPE_ORM;
+    }
+
+    /**
+     * @return int
+     */
+    public function getLevel(): int
+    {
+        return $this->level;
+    }
+
+    /**
+     * @param int $level
+     *
+     * @return GroupInterface
+     */
+    public function setLevel(int $level): GroupInterface
+    {
+        $this->level = $level;
+
+        return $this;
     }
 
 }
