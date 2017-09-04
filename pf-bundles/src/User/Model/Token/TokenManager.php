@@ -11,6 +11,8 @@ use Hanaboso\PipesFramework\User\Document\Token;
 use Hanaboso\PipesFramework\User\Entity\TokenInterface;
 use Hanaboso\PipesFramework\User\Entity\UserInterface;
 use Hanaboso\PipesFramework\User\Enum\UserTypeEnum;
+use Hanaboso\PipesFramework\User\Repository\Document\TokenRepository as DocumentTokenRepository;
+use Hanaboso\PipesFramework\User\Repository\Entity\TokenRepository as EntityTokenRepository;
 
 /**
  * Class TokenManager
@@ -69,7 +71,9 @@ class TokenManager
      */
     public function validate(string $id): TokenInterface
     {
-        $token = $this->dm->getRepository($this->provider->getResource(ResourceEnum::TOKEN))->getFreshToken($id);
+        /** @var EntityTokenRepository|DocumentTokenRepository $repo */
+        $repo = $this->dm->getRepository($this->provider->getResource(ResourceEnum::TOKEN));
+        $token = $repo->getFreshToken($id);
 
         if (!$token) {
             throw new TokenManagerException(

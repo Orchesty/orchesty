@@ -13,6 +13,8 @@ use Hanaboso\PipesFramework\Acl\Exception\AclException;
 use Hanaboso\PipesFramework\Acl\Factory\MaskFactory;
 use Hanaboso\PipesFramework\Acl\Factory\RuleFactory;
 use Hanaboso\PipesFramework\Acl\Provider\Impl\DatabaseProvider;
+use Hanaboso\PipesFramework\Acl\Repository\Document\GroupRepository as DocumentGroupRepository;
+use Hanaboso\PipesFramework\Acl\Repository\Entity\GroupRepository as EntityGroupRepository;
 use Hanaboso\PipesFramework\HbPFAclBundle\Provider\ResourceProvider;
 use Hanaboso\PipesFramework\User\DatabaseManager\UserDatabaseManagerLocator;
 use Hanaboso\PipesFramework\User\Entity\UserInterface;
@@ -115,8 +117,10 @@ class AccessManager implements EventSubscriberInterface
 
         if ($val) {
             if ($res === ResourceEnum::GROUP) {
+                /** @var GroupInterface $val */
                 $val = $this->hasRightForGroup($val, $userLvl);
             } else if ($res === ResourceEnum::USER) {
+                /** @var UserInterface $val */
                 $val = $this->hasRightForUser($val, $userLvl);
             }
         }
@@ -292,7 +296,9 @@ class AccessManager implements EventSubscriberInterface
      */
     private function hasRightForUser(UserInterface $user, int $userLvl): ?UserInterface
     {
-        $groups = $this->dm->getRepository($this->resProvider->getResource(ResourceEnum::GROUP))->getUserGroups($user);
+        /** @var EntityGroupRepository|DocumentGroupRepository $repo */
+        $repo = $this->dm->getRepository($this->resProvider->getResource(ResourceEnum::GROUP));
+        $groups = $repo->getUserGroups($user);
 
         foreach ($groups as $group) {
             if ($group->getLevel() < $userLvl) {
