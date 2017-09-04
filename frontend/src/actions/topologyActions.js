@@ -75,9 +75,11 @@ function receiveSchema(id, data){
   }
 }
 
-function load(id){
+function load(id, loadingState = true){
   return (dispatch, getState) => {
-    dispatch(loading(id));
+    if (loadingState) {
+      dispatch(loading(id));
+    }
     const list = getState().topology.lists[id];
     const offset = list.page ? (list.page - 1) * list.pageSize : 0;
     return serverRequest(dispatch, 'GET', '/topologies', sortToQuery(list.sort, {
@@ -113,7 +115,7 @@ export function topologyListChangeSort(topologyListId, sort) {
     const oldSort = getState().topology.lists[topologyListId].sort;
     if (!objectEquals(oldSort, sort)) {
       dispatch(changeSort(topologyListId, sort));
-      return dispatch(load(topologyListId));
+      return dispatch(load(topologyListId, false));
     }
     else {
       return Promise.resolve(true);

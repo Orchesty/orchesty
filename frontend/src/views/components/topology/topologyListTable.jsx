@@ -47,9 +47,10 @@ class TopologyListTable extends React.Component {
         return (
           <tr key={item._id}>
             <td>{item._id}</td>
+            <td>{item.status}</td>
             <td>{item.name}</td>
             <td>{item.descr}</td>
-            <td><BoolValue value={item.status}/></td>
+            <td><BoolValue value={item.enabled}/></td>
             <td><ActionButton items={menuItems} right={true} /></td>
           </tr>
         )
@@ -65,9 +66,10 @@ class TopologyListTable extends React.Component {
             <thead>
             <tr>
               <SortTh name="id" state={sort} onChangeSort={this._changeSort}>#</SortTh>
+              <SortTh name="status" state={sort} onChangeSort={this._changeSort}>Status</SortTh>
               <SortTh name="name" state={sort} onChangeSort={this._changeSort}>Name</SortTh>
               <SortTh name="description" state={sort} onChangeSort={this._changeSort}>Description</SortTh>
-              <SortTh name="status" state={sort} onChangeSort={this._changeSort}>Enabled</SortTh>
+              <SortTh name="enabled" state={sort} onChangeSort={this._changeSort}>Enabled</SortTh>
               <th>Actions</th>
             </tr>
             </thead>
