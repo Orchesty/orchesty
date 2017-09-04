@@ -44,6 +44,13 @@ class Group extends DocumentAbstract implements GroupInterface
     private $users;
 
     /**
+     * @var int
+     *
+     * @ODM\Field(type="int")
+     */
+    protected $level = 999;
+
+    /**
      * @return string
      */
     public function getName(): string
@@ -133,6 +140,26 @@ class Group extends DocumentAbstract implements GroupInterface
     public function getType(): string
     {
         return self::TYPE_ODM;
+    }
+
+    /**
+     * @return int
+     */
+    public function getLevel(): int
+    {
+        return $this->level;
+    }
+
+    /**
+     * @param int $level
+     *
+     * @return GroupInterface
+     */
+    public function setLevel(int $level): GroupInterface
+    {
+        $this->level = $level;
+
+        return $this;
     }
 
 }
