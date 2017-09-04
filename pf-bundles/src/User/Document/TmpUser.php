@@ -4,6 +4,7 @@ namespace Hanaboso\PipesFramework\User\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Hanaboso\PipesFramework\User\Entity\TmpUserInterface;
+use Hanaboso\PipesFramework\User\Entity\UserInterface;
 use Hanaboso\PipesFramework\User\Enum\UserTypeEnum;
 
 /**
@@ -32,6 +33,16 @@ class TmpUser extends UserAbstract implements TmpUserInterface
     public function getPassword(): string
     {
         return '';
+    }
+
+    /**
+     * @param string $pwd
+     *
+     * @return UserInterface
+     */
+    public function setPassword(string $pwd): UserInterface
+    {
+        return $this;
     }
 
     /**

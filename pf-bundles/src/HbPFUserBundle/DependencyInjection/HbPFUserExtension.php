@@ -45,6 +45,7 @@ class HbPFUserExtension extends Extension implements PrependExtensionInterface
         $loader->load('controllers.yml');
         $loader->load('services.yml');
         $loader->load('parameters.yml');
+        $loader->load('commands.yml');
     }
 
 }

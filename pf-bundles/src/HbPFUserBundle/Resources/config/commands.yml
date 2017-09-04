@@ -1,0 +1,9 @@
+services:
+    acme_hello.command.my_command:
+        class: Hanaboso\PipesFramework\HbPFUserBundle\Command\ChangePasswordCommand
+        arguments:
+            - '@hbpf.database_manager_locator.user'
+            - '@hbpf.acl.provider.resource'
+            - '@security.encoder_factory.generic'
+        tags:
+            -  { name: console.command }
