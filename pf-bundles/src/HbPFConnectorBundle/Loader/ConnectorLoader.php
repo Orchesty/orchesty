@@ -9,7 +9,7 @@
 
 namespace Hanaboso\PipesFramework\HbPFConnectorBundle\Loader;
 
-use Hanaboso\PipesFramework\Commons\Node\BaseNode;
+use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Yaml\Yaml;
@@ -42,15 +42,15 @@ class ConnectorLoader
     /**
      * @param string $id
      *
-     * @return BaseNode
+     * @return ConnectorInterface
      * @throws ConnectorException
      */
-    public function getConnector(string $id): BaseNode
+    public function getConnector(string $id): ConnectorInterface
     {
         $name = sprintf('%s.%s', self::CONNECTOR_PREFIX, $id);
 
         if ($this->container->has($name)) {
-            /** @var BaseNode $conn */
+            /** @var ConnectorInterface $conn */
             $conn = $this->container->get($name);
         } else {
             throw new ConnectorException(
