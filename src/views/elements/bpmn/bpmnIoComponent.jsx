@@ -45,12 +45,12 @@ class BpmnIoComponent extends React.Component {
 
   exportBPMN(){
     if (this._modeler){
-      this._modeler.saveXML({format: true}, function (err, xml) {
+      this._modeler.saveXML({format: true}, (err, xml) => {
         if (err){
           err && this.props.onError(String(err));
         }
         else{
-          download(xml, 'export.bpmn', 'application/bpmn-20-xml');
+          download(xml, 'export.bpmn', 'application/bpmn+xml');
         }
       })
     }
@@ -58,7 +58,7 @@ class BpmnIoComponent extends React.Component {
 
   exportSVG(){
     if (this._modeler){
-      this._modeler.saveSVG(function (err, svg) {
+      this._modeler.saveSVG((err, svg) => {
         if (err){
           err && this.props.onError(String(err));
         }

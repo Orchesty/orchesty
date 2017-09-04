@@ -23,7 +23,7 @@ const schema = {
       title: "Description",
       default: "Description"
     },
-    status: {
+    enabled: {
       type: 'boolean',
       title: 'Enabled',
       default: true
@@ -52,12 +52,12 @@ class TopologyForm extends React.Component {
   }
 
   onSubmit(data){
-    const {name, descr, status} = data;
+    const {name, descr, enabled} = data;
     const {onProcessing} = this.props;
     if (typeof onProcessing == 'function'){
       onProcessing(true);
     }
-    this.props.topologyUpdate({name, descr, status: status ? 1 : 0}).then(
+    this.props.topologyUpdate({name, descr, enabled}).then(
       response => {
         const {onSuccess, onProcessing} = this.props;
         if (typeof onProcessing == 'function'){
