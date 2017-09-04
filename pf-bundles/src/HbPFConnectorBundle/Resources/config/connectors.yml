@@ -3,20 +3,17 @@ services:
     hbpf.connector.magento2.orders:
         class: Hanaboso\PipesFramework\Connector\Impl\Magento2\Magento2OrdersConnector
         arguments:
-            - 'magento2.orders'
             - '@hbpf.authorization.magento2_oauth'
             - '@hbpf.transport.curl_manager'
 
     hbpf.connector.magento2.modules:
         class: Hanaboso\PipesFramework\Connector\Impl\Magento2\Magento2ModulesConnector
         arguments:
-            - 'magento2.modules'
             - '@hbpf.authorization.magento2_oauth'
             - '@hbpf.transport.curl_manager'
 
     hbpf.connector.magento2.customers:
         class: Hanaboso\PipesFramework\Connector\Impl\Magento2\Magento2CustomersConnector
         arguments:
-            - 'magento2.customers'
             - '@hbpf.authorization.magento2_oauth'
             - '@hbpf.transport.curl_manager'

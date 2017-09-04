@@ -4,6 +4,7 @@ namespace Tests\Controller\HbPFApiGatewayBundle\Controller;
 
 use Hanaboso\PipesFramework\Commons\Topology\Document\Topology;
 use Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\TopologyController;
+use stdClass;
 use Tests\ControllerTestCaseAbstract;
 
 /**
@@ -19,7 +20,18 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
      */
     public function testGetTopologies(): void
     {
-        self::markTestIncomplete();
+        $topologies = $this->createTopologies(4);
+
+        $response = $this->sendGet('/api/gateway/topologies?limit=2&offset=1&order_by=name-');
+
+        self::assertEquals(200, $response->status);
+        self::assertEquals(1, $response->content->offset);
+        self::assertEquals(2, $response->content->limit);
+        self::assertEquals(2, $response->content->count);
+        self::assertEquals(4, $response->content->total);
+
+        $this->assertTopology($topologies[2], $response->content->items[0]);
+        $this->assertTopology($topologies[1], $response->content->items[1]);
     }
 
     /**
@@ -27,7 +39,89 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
      */
     public function testGetTopology(): void
     {
-        $bpmn = '<?xml version="1.0" encoding="UTF-8"?>
+        /** @var Topology $topology */
+        $topology = $this->createTopologies()[0];
+
+        $response = $this->sendGet('/api/gateway/topologies/' . $topology->getId());
+
+        self::assertEquals(200, $response->status);
+
+        $this->assertTopology($topology, $response->content);
+    }
+
+    /**
+     * @covers TopologyController::updateTopologyAction()
+     */
+    public function testUpdateTopology(): void
+    {
+        self::markTestIncomplete();
+    }
+
+    /**
+     * @covers TopologyController::getTopologySchema()
+     */
+    public function testGetTopologySchema(): void
+    {
+        /** @var Topology $topology */
+        $topology = $this->createTopologies()[0];
+
+        $response = $this->sendGet('/api/gateway/topologies/' . $topology->getId() . '/schema.bpmn');
+
+        self::assertEquals(200, $response->status);
+        self::assertEquals($topology->getBpmn(), $response->content);
+    }
+
+    /**
+     * @covers TopologyController::saveTopologySchema()
+     */
+    public function testSaveTopologySchema(): void
+    {
+        self::markTestIncomplete();
+    }
+
+    /**
+     * @param Topology $topology
+     * @param stdClass $item
+     */
+    private function assertTopology(Topology $topology, stdClass $item): void
+    {
+        self::assertEquals($topology->getId(), $item->_id);
+        self::assertEquals($topology->getName(), $item->name);
+        self::assertEquals($topology->getDescr(), $item->descr);
+        self::assertEquals($topology->isEnabled(), $item->enabled);
+    }
+
+    /**
+     * @param int $count
+     *
+     * @return array
+     */
+    private function createTopologies(int $count = 1): array
+    {
+        $data = [];
+        for ($i = 1; $i <= $count; $i++) {
+            $topology = new Topology();
+            $topology
+                ->setName('name ' . $i)
+                ->setDescr('descr ' . $i)
+                ->setEnabled(TRUE)
+                ->setBpmn($this->getBpmn());
+
+            $this->dm->persist($topology);
+            $this->dm->flush();
+
+            $data[] = $topology;
+        }
+
+        return $data;
+    }
+
+    /**
+     * @return string
+     */
+    private function getBpmn(): string
+    {
+        return '<?xml version="1.0" encoding="UTF-8"?>
 <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn">
     <bpmn:process id="Process_1" isExecutable="false">
         <bpmn:startEvent id="StartEvent_1" />
@@ -44,81 +138,6 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
         </bpmndi:BPMNPlane>
     </bpmndi:BPMNDiagram>
 </bpmn:definitions>';
-
-        $nodes = '[
-        {
-          "id": "node_1",                    
-          "faucet": {
-              "type": "amq",
-              "config": {}
-          },                 
-          "worker": {
-            "type": "pipes_rest",
-            "config": {
-              "service": "magento_parser"
-            }
-          },
-          "next": [
-            {
-              "node": "node_2",
-              "settings": {}
-            }
-          ],
-          "drain": {
-              "type": "fs",
-              "resequencer": true,
-              "config": {}
-          },
-          "opts": 2,
-          "view": {
-              "type": "parser"
-          }
-        }
-    ]';
-
-        $topology = new Topology();
-        $topology
-            ->setName('name')
-            ->setDescr('descr')
-            ->setStatus(true)
-            ->setBpmn($bpmn)
-            ->setNodes($nodes);
-
-        $this->dm->persist($topology);
-        $this->dm->flush();
-
-        $response = $this->sendGet('/api/gateway/topologies/' . $topology->getId());
-
-        self::assertEquals(200, $response->status);
-        self::assertEquals($topology->getId(), $response->content->_id);
-        self::assertEquals($topology->getName(), $response->content->name);
-        self::assertEquals($topology->getDescr(), $response->content->descr);
-        self::assertEquals($topology->getStatus(), $response->content->status);
-        self::assertEquals($topology->getNodes(), $response->content->nodes);
-    }
-
-    /**
-     * @covers TopologyController::updateTopologyAction()
-     */
-    public function testUpdateTopology(): void
-    {
-        self::markTestIncomplete();
-    }
-
-    /**
-     * @covers TopologyController::getTopologyScheme()
-     */
-    public function testGetTopologyScheme(): void
-    {
-        self::markTestIncomplete();
-    }
-
-    /**
-     * @covers TopologyController::uploadTopologyScheme()
-     */
-    public function testUploadTopologyScheme(): void
-    {
-        self::markTestIncomplete();
     }
 
 }

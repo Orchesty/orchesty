@@ -155,6 +155,24 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
     }
 
     /**
+     * @param string     $url
+     * @param array      $parameters
+     * @param array|null $content
+     *
+     * @return stdClass
+     */
+    protected function sendPut(string $url, array $parameters, ?array $content = NULL): stdClass
+    {
+        $this->client->request('PUT', $url, $parameters, [], [], $content ? Json::encode($content) : []);
+        $response = $this->client->getResponse();
+
+        return (object) [
+            'status'  => $response->getStatusCode(),
+            'content' => Json::decode($response->getContent()),
+        ];
+    }
+
+    /**
      * @param string $url
      *
      * @return stdClass

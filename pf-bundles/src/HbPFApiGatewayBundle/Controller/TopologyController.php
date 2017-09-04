@@ -2,13 +2,13 @@
 
 namespace Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller;
 
+use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Controller\FOSRestController;
 use Hanaboso\PipesFramework\HbPFApiGatewayBundle\Handler\TopologyHandler;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use FOS\RestBundle\Controller\Annotations\Route;
 
 /**
  * Class TopologyController
@@ -46,9 +46,13 @@ class TopologyController extends FOSRestController
     public function getTopologiesAction(Request $request): Response
     {
         $query = $request->query;
-        $this->topologyHandler->getTopologies($query->get('limit'), $query->get('offset'), $query->get('order_by'));
+        $data  = $this->topologyHandler->getTopologies(
+            $query->get('limit'),
+            $query->get('offset'),
+            $query->get('order_by')
+        );
 
-        return $this->handleView($this->view([]));
+        return new JsonResponse($data, 200);
     }
 
     /**
@@ -77,28 +81,28 @@ class TopologyController extends FOSRestController
      */
     public function updateTopologyAction(Request $request, string $id): Response
     {
-        $this->topologyHandler->updateTopology($id, $request->request->all());
+        $data = $this->topologyHandler->updateTopology($id, $request->request->all());
 
-        return $this->handleView($this->view([]));
+        return new JsonResponse($data, 200);
     }
 
     /**
-     * @Route("/topologies/{id}/scheme", defaults={}, requirements={"id": "\w+"})
+     * @Route("/topologies/{id}/schema.bpmn", defaults={}, requirements={"id": "\w+"})
      * @Method({"GET", "OPTIONS"})
      *
      * @param string $id
      *
      * @return Response
      */
-    public function getTopologyScheme(string $id): Response
+    public function getTopologySchema(string $id): Response
     {
-        $this->topologyHandler->getTopologyScheme($id);
+        $data = $this->topologyHandler->getTopologySchema($id);
 
-        return $this->handleView($this->view([]));
+        return new JsonResponse($data, 200);
     }
 
     /**
-     * @Route("/topologies/{id}/scheme", defaults={}, requirements={"id": "\w+"})
+     * @Route("/topologies/{id}/schema.bpmn", defaults={}, requirements={"id": "\w+"})
      * @Method({"PUT", "OPTIONS"})
      *
      * @param Request $request
@@ -106,11 +110,11 @@ class TopologyController extends FOSRestController
      *
      * @return Response
      */
-    public function uploadTopologyScheme(Request $request, string $id): Response
+    public function saveTopologySchema(Request $request, string $id): Response
     {
-        $this->topologyHandler->updateTopology($id, $request->request->all());
+        $this->topologyHandler->saveTopologySchema($id, $request->request->all());
 
-        return $this->handleView($this->view([]));
+        return new JsonResponse([], 200);
     }
 
 }

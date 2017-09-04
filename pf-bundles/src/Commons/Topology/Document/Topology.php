@@ -3,6 +3,8 @@
 namespace Hanaboso\PipesFramework\Commons\Topology\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
+use Hanaboso\PipesFramework\Commons\Enum\TopologyStatusEnum;
+use Hanaboso\PipesFramework\Commons\Exception\TopologyException;
 use Hanaboso\PipesFramework\Commons\Traits\IdTrait;
 
 /**
@@ -32,11 +34,18 @@ class Topology
     protected $descr;
 
     /**
+     * @var string
+     *
+     * @MongoDB\Field(type="string")
+     */
+    protected $status;
+
+    /**
      * @var bool
      *
      * @MongoDB\Field(type="boolean", options={"default":"1"})
      */
-    protected $status;
+    protected $enabled;
 
     /**
      * @var string
@@ -44,13 +53,6 @@ class Topology
      * @MongoDB\Field(type="string")
      */
     protected $bpmn;
-
-    /**
-     * @var string
-     *
-     * @MongoDB\Field(type="string")
-     */
-    protected $nodes;
 
     /**
      * @return string
@@ -93,21 +95,49 @@ class Topology
     }
 
     /**
-     * @return bool
+     * @return string
      */
-    public function getStatus(): bool
+    public function getStatus(): string
     {
         return $this->status;
     }
 
     /**
-     * @param bool $status
+     * @param string $status
+     *
+     * @return Topology
+     * @throws TopologyException
+     */
+    public function setStatus(string $status): Topology
+    {
+        if (TopologyStatusEnum::isValid($status)) {
+            $this->status = $status;
+        } else {
+            throw new TopologyException(
+                sprintf('Invalid topology status "%s"', $status),
+                TopologyException::INVALID_TOPOLOGY_TYPE
+            );
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isEnabled(): bool
+    {
+        return $this->enabled;
+    }
+
+    /**
+     * @param bool $enabled
      *
      * @return Topology
      */
-    public function setStatus(bool $status): Topology
+    public function setEnabled(bool $enabled): Topology
     {
-        $this->status = $status;
+        $this->enabled = $enabled;
 
         return $this;
     }
@@ -128,26 +158,6 @@ class Topology
     public function setBpmn(string $bpmn): Topology
     {
         $this->bpmn = $bpmn;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getNodes(): string
-    {
-        return $this->nodes;
-    }
-
-    /**
-     * @param string $nodes
-     *
-     * @return Topology
-     */
-    public function setNodes(string $nodes): Topology
-    {
-        $this->nodes = $nodes;
 
         return $this;
     }

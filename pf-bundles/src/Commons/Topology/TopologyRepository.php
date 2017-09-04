@@ -12,4 +12,12 @@ use Doctrine\ODM\MongoDB\DocumentRepository;
 class TopologyRepository extends DocumentRepository
 {
 
+    /**
+     * @return integer
+     */
+    public function getTotalCount(): int
+    {
+        return $this->createQueryBuilder()->count()->getQuery()->execute();
+    }
+
 }
