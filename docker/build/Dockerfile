@@ -8,7 +8,8 @@ RUN apt-get update && \
 ENV SSH_AUTH_SOCK=/ssh-agent
 
 ENV WEBROOT /var/www/html
-COPY nginx.conf /etc/nginx/
+
+COPY docker/build/nginx.conf /etc/nginx/
 
 # Allow these binaries to be executed with root privileges (Don't you dare use this in prod image!)
 RUN chmod u+s /usr/sbin/useradd && \
@@ -20,7 +21,7 @@ RUN deluser node
 # sudo for dev user
 RUN echo "dev ALL=NOPASSWD: ALL" > /etc/sudoers.d/dev
 
-COPY entrypoint.sh /
+COPY docker/build/entrypoint.sh /
 ENTRYPOINT [ "/entrypoint.sh" ]
 
 WORKDIR /app
