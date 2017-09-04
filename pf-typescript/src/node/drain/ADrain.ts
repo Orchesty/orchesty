@@ -19,7 +19,7 @@ abstract class ADrain implements IDrain {
         return this.resequencer ? this.resequencer.getMessages(message) : [message];
     }
 
-    public abstract open(msgOut: JobMessage): Promise<void>;
+    public abstract open(msgOut: JobMessage): Promise<boolean>;
 }
 
 export default ADrain;

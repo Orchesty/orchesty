@@ -30,24 +30,20 @@ const settings: IAMQPDrainSettings = {
 };
 
 describe("AMQPDrain", () => {
-    it("forward to counter and followers on open", () => {
-        const counterMock: CounterPublisher = mock.mock(CounterPublisher);
-        // mock.when(counterMock.send).thenReturn((jm: JobMessage) => Promise.resolve());
-        // const counterPublisher: CounterPublisher = mock.instance(counterMock);
-        counterMock.send = (jm: JobMessage) => Promise.resolve();
-
-        const followMock: FollowersPublisher = mock.mock(FollowersPublisher);
-        // mock.when(followMock.send).thenReturn((jm: JobMessage) => Promise.resolve());
-        // const followerPublisher: FollowersPublisher = mock.instance(followMock);
-        followMock.send = (jm: JobMessage) => Promise.resolve();
-
-        // const drain = new AMQPDrain(settings, counterPublisher, followerPublisher);
-        const drain = new AMQPDrain(settings, counterMock, followMock);
+    it("should forward to counter and followers on open", () => {
+        const counterPub: CounterPublisher = mock.mock(CounterPublisher);
+        counterPub.send = (jm: JobMessage) => Promise.resolve();
+        const followPub: FollowersPublisher = mock.mock(FollowersPublisher);
+        followPub.send = (jm: JobMessage) => Promise.resolve();
+        const drain = new AMQPDrain(settings, counterPub, followPub);
 
         const msg: JobMessage = new JobMessage(
             { job_id: "123", sequence_id: 1}, JSON.stringify({data: "test", settings: {}}),
         );
 
-        return drain.open(msg);
+        return drain.open(msg)
+            .then((result: boolean) => {
+                assert.isTrue(result);
+            });
     });
 });

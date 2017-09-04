@@ -52,6 +52,7 @@ lib-njs-test:
     - cd $REPO_ROOT/$DIR
     - export RABBITMQ_HOST=rabbitmq
     - docker-compose up -d
+    - docker-compose exec -T test npm run-script lint
     - docker-compose exec -T test npm test
 
 frontend:

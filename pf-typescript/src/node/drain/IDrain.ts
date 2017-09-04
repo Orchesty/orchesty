@@ -1,6 +1,6 @@
 import JobMessage from "../../message/JobMessage";
 
-export type DrainOpenFn = (msg: JobMessage) => Promise<void>;
+export type DrainOpenFn = (msg: JobMessage) => Promise<boolean>;
 
 interface IDrain {
 

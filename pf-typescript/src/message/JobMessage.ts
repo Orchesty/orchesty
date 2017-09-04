@@ -1,4 +1,3 @@
-import * as assert from "assert";
 import * as uuid from "uuid/v1";
 import IMessage from "./IMessage";
 import { ResultCode } from "./ResultCode";
@@ -16,8 +15,12 @@ class JobMessage implements IMessage {
      * @param content {String}
      */
     constructor(headers: any, content: string) {
-        assert(headers.job_id, "Missing 'job_id' message header.");
-        assert(headers.sequence_id, "Missing 'sequence_id' message header.");
+        if (!headers.job_id) {
+            throw new Error("Cannot instantiate JobMessage. Missing job_id.");
+        }
+        if (!headers.sequence_id || parseInt(headers.sequence_id, 10) < 0) {
+            throw new Error("Cannot instantiate JobMessage. Missing or invalid sequence_id");
+        }
 
         this.headers = headers;
         this.content = content;
@@ -101,8 +104,13 @@ class JobMessage implements IMessage {
      */
     public open(): { data: any, settings: any } {
         const parsed = JSON.parse(this.content);
-        assert(parsed.data, `Opening message ${this.getId()}, but no data found inside.`);
-        assert(parsed.settings, `Opening message ${this.getId()}, but no settings found inside.`);
+
+        if (!parsed.data) {
+            throw new Error(`Opening message ${this.getId()}, but no data found inside.`);
+        }
+        if (!parsed.settings) {
+            throw new Error(`Opening message ${this.getId()}, but no settings found inside.`);
+        }
 
         return parsed;
     }

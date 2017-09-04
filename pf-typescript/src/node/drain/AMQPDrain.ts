@@ -52,7 +52,7 @@ class AMQPDrain extends ADrain implements IDrain {
      *
      * @param {JobMessage} message
      */
-    public open(message: JobMessage): Promise<void> {
+    public open(message: JobMessage): Promise<boolean> {
         return new Promise((resolve) => {
             this.getMessageBuffer(message).forEach((bufMsg: JobMessage) => {
                 this.counterPublisher.send(bufMsg)
@@ -61,13 +61,15 @@ class AMQPDrain extends ADrain implements IDrain {
                     })
                     .then(() => {
                         logger.info("Drain forward complete.");
+
+                        resolve(true);
                     })
                     .catch((err: Error) => {
                         logger.error(`Drain open error: ${err.message}`);
+
+                        resolve(false);
                     });
             });
-
-            resolve();
         });
     }
 

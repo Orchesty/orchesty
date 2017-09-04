@@ -61,7 +61,7 @@ class HttpFaucet implements IFaucet {
         });
 
         return Promise.resolve(() => {
-            // do nothing, already prepared
+            // no need to do anything, everything is already prepared
         });
     }
 
@@ -73,8 +73,14 @@ class HttpFaucet implements IFaucet {
      * @return {Promise<void>}
      */
     private handleRequest(req: IValidHttpRequest, processData: WorkerProcessFn, drain: DrainOpenFn): Promise<void> {
-        const body = JSON.stringify(req.body);
-        const inMsg = new JobMessage(req.headers, body);
+        let inMsg: JobMessage;
+
+        try {
+            const body = JSON.stringify(req.body);
+            inMsg = new JobMessage(req.headers, body);
+        } catch (err) {
+            return Promise.reject(err);
+        }
 
         return processData(inMsg)
             .then((outMsg: JobMessage) => {
