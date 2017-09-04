@@ -32,5 +32,5 @@ docker run --rm \
   ${BUILD_IMAGE} \
   bash -c "ssh-add -l && npm install && npm run build"
 
-docker build -f docker/prod/Dockerfile -t ${IMAGE} .
+docker build -f docker/build/Dockerfile -t ${IMAGE} .
 docker push ${IMAGE}
