@@ -5,6 +5,7 @@ var CopyWebpackPlugin = require('copy-webpack-plugin');
 module.exports = {
   devtool: 'source-map',
   entry: [
+    'react-hot-loader/patch',
     'webpack-dev-server/client?http://localhost:8080',
     'webpack/hot/only-dev-server',
     './src/main.jsx'
@@ -27,7 +28,7 @@ module.exports = {
       {
         test: /\.jsx?$/,
         exclude: /node_modules/,
-        loaders: ['react-hot-loader', 'babel-loader?presets[]=react,presets[]=es2015']
+        loaders: ['react-hot-loader/webpack', 'babel-loader?presets[]=react,presets[]=es2015']
       },
       {
         test: /\.css$/,
@@ -43,5 +44,9 @@ module.exports = {
       { test: /\.eot(\?.*)?$/,   loader: "file-loader?name=fonts/[hash].[ext]&limit=1000" },
       { test: /\.svg(\?.*)?$/,   loader: "url-loader?name=fonts/[hash].[ext]&limit=1000" }
     ]
+  },
+  devServer: {
+    hot: true,
+    inline: true
   }
 };
