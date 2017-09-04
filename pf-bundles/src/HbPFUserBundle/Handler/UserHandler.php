@@ -123,6 +123,18 @@ class UserHandler implements LogoutSuccessHandlerInterface, EventSubscriberInter
      *
      * @return array
      */
+    public function changePassword(array $data): array
+    {
+        $this->userManager->changePassword($data);
+
+        return [];
+    }
+
+    /**
+     * @param array $data
+     *
+     * @return array
+     */
     public function resetPassword(array $data): array
     {
         $this->userManager->resetPassword($data);

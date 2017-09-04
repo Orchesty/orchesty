@@ -129,6 +129,23 @@ class UserController extends FOSRestController
     }
 
     /**
+     * @Route("/api/user/change_password")
+     * @Method({"POST", "OPTIONS"})
+     *
+     * @param Request $request
+     *
+     * @return JsonResponse
+     */
+    public function changePasswordAction(Request $request): JsonResponse
+    {
+        try {
+            return new JsonResponse($this->userHandler->changePassword($request->request->all()));
+        } catch (SecurityManagerException $e) {
+            return new JsonResponse(ControllerUtils::createExceptionData($e), 500);
+        }
+    }
+
+    /**
      *
      * @Route("/api/user/reset_password")
      * @Method({"POST", "OPTIONS"})
