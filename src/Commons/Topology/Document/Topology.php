@@ -36,7 +36,7 @@ class Topology
     /**
      * @var string
      *
-     * @MongoDB\Field(type="string")
+     * @MongoDB\Field(type="string", options={"default":"draft"})
      */
     protected $status = TopologyStatusEnum::DRAFT;
 

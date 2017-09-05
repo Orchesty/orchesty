@@ -3,3 +3,7 @@ services:
         class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\TopologyController
         arguments:
             - '@hbpf.handler.topology'
+    hbpf.controller.node:
+        class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\NodeController
+        arguments:
+            - '@hbpf.handler.node'
