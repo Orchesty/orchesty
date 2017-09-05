@@ -36,23 +36,16 @@ class NodeController extends FOSRestController
     }
 
     /**
-     * @Route("/topologies/{id}/nodes", defaults={}, requirements={"id": "\w+"})
+     * @Route("/topologies/{id}/events", defaults={}, requirements={"id": "\w+"})
      * @Method({"GET", "OPTIONS"})
      *
-     * @param Request $request
-     * @param string  $id
+     * @param string $id
      *
      * @return Response
      */
-    public function getNodesAction(Request $request, string $id): Response
+    public function getNodesAction(string $id): Response
     {
-        $query = $request->query;
-        $data  = $this->nodeHandler->getNodes(
-            $id,
-            $query->get('limit'),
-            $query->get('offset'),
-            $query->get('order_by')
-        );
+        $data = $this->nodeHandler->getNodes($id);
 
         return new JsonResponse($data, 200);
     }

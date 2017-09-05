@@ -9,7 +9,6 @@ use Hanaboso\PipesFramework\Commons\DatabaseManager\DatabaseManagerLocator;
 use Hanaboso\PipesFramework\Commons\Exception\NodeException;
 use Hanaboso\PipesFramework\Commons\Node\Document\Node;
 use Hanaboso\PipesFramework\Commons\Node\NodeRepository;
-use Hanaboso\PipesFramework\Commons\Utils\UriParams;
 
 /**
  * Class NodeHandler
@@ -49,28 +48,19 @@ class NodeHandler
 
     /**
      * @param string $topologyId
-     * @param null   $limit
-     * @param null   $offset
-     * @param null   $orderBy
      *
      * @return array
      */
-    public function getNodes(string $topologyId, $limit = NULL, $offset = NULL, $orderBy = NULL): array
+    public function getNodes(string $topologyId): array
     {
-        $sort  = UriParams::parseOrderBy($orderBy);
-        $nodes = $this->nodeRepository->findBy(['topology' => $topologyId], $sort, $limit, $offset);
+        $nodes = $this->nodeRepository->getEventNodesByTopology($topologyId);
 
-        $data = [];
+        $items = [];
         foreach ($nodes as $node) {
-            $data['items'][] = $this->getNodeData($node);
+            $items[] = $this->getNodeData($node);
         }
 
-        $data['total']  = $this->nodeRepository->getTotalCount();
-        $data['limit']  = $limit;
-        $data['count']  = count($data['items']);
-        $data['offset'] = $offset;
-
-        return $data;
+        return ['items' => $items];
     }
 
     /**

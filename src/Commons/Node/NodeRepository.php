@@ -3,6 +3,7 @@
 namespace Hanaboso\PipesFramework\Commons\Node;
 
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use Hanaboso\PipesFramework\Commons\Enum\HandlerEnum;
 
 /**
  * Class NodeRepository
@@ -13,11 +14,18 @@ class NodeRepository extends DocumentRepository
 {
 
     /**
-     * @return integer
+     * @param string $topologyId
+     *
+     * @return array
      */
-    public function getTotalCount(): int
+    public function getEventNodesByTopology(string $topologyId): array
     {
-        return $this->createQueryBuilder()->count()->getQuery()->execute();
+        $criteria = [
+            'topology' => $topologyId,
+            'handler'  => HandlerEnum::EVENT,
+        ];
+
+        return $this->findBy($criteria);
     }
 
     /**
