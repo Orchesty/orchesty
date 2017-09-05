@@ -4,7 +4,9 @@ namespace Hanaboso\PipesFramework\HbPFApiGatewayBundle\Handler;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use Hanaboso\PipesFramework\ApiGateway\Manager\TopologyManager;
 use Hanaboso\PipesFramework\Commons\DatabaseManager\DatabaseManagerLocator;
+use Hanaboso\PipesFramework\Commons\Exception\TopologyException;
 use Hanaboso\PipesFramework\Commons\Topology\Document\Topology;
 use Hanaboso\PipesFramework\Commons\Topology\TopologyRepository;
 
@@ -27,14 +29,21 @@ class TopologyHandler
     private $dm;
 
     /**
+     * @var TopologyManager
+     */
+    private $manager;
+
+    /**
      * TopologyHandler constructor.
      *
      * @param DatabaseManagerLocator $dml
+     * @param TopologyManager        $manager
      */
-    public function __construct(DatabaseManagerLocator $dml)
+    public function __construct(DatabaseManagerLocator $dml, TopologyManager $manager)
     {
         $this->dm                 = $dml->getDm();
         $this->topologyRepository = $this->dm->getRepository(Topology::class);
+        $this->manager = $manager;
     }
 
     /**
@@ -77,13 +86,8 @@ class TopologyHandler
      */
     public function getTopology(string $id): array
     {
-        /** @var Topology $topology */
-        $topology = $this->topologyRepository->find($id);
-
-        $data = [];
-        if ($topology) {
-            $data = $this->getTopologyData($topology);
-        }
+        $topology = $this->getTopologyById($id);
+        $data = $this->getTopologyData($topology);
 
         return $data;
     }
@@ -96,15 +100,8 @@ class TopologyHandler
      */
     public function updateTopology(string $id, array $data): array
     {
-        /** @var Topology $topology */
-        $topology = $this->topologyRepository->find($id);
-
-        // TODO create method for getting topology by ID, throw exception if not found
-
-        $topology->setName($data['name']);
-        $topology->setDescr($data['descr']);
-        $topology->setEnabled($data['enabled']);
-        $this->dm->flush();
+        $topology = $this->getTopologyById($id);
+        $this->manager->updateTopology($topology, $data);
 
         return $this->getTopologyData($topology);
     }
@@ -116,8 +113,7 @@ class TopologyHandler
      */
     public function getTopologySchema(string $id): string
     {
-        /** @var Topology $topology */
-        $topology = $this->topologyRepository->find($id);
+        $topology = $this->getTopologyById($id);
 
         return $topology->getBpmn();
     }
@@ -125,10 +121,41 @@ class TopologyHandler
     /**
      * @param string $id
      * @param array  $data
+     *
+     * @return string[]
      */
-    public function saveTopologySchema(string $id, array $data): void
+    public function saveTopologySchema(string $id, array $data): array
     {
-        // TODO
+        $topology = $this->getTopologyById($id);
+        $topology = $this->manager->saveTopologySchema($topology, $data);
+
+        return $this->getTopologyData($topology);
+    }
+
+    /**
+     * @param string $id
+     *
+     * @return string[]
+     */
+    public function publishTopology(string $id): array
+    {
+        $topology = $this->getTopologyById($id);
+        $this->manager->publishTopology($topology);
+
+        return $this->getTopologyData($topology);
+    }
+
+    /**
+     * @param string $id
+     *
+     * @return string[]
+     */
+    public function cloneTopology(string $id): array
+    {
+        $topology = $this->getTopologyById($id);
+        $this->manager->cloneTopology($topology);
+
+        return $this->getTopologyData($topology);
     }
 
     /**
@@ -143,7 +170,28 @@ class TopologyHandler
             'name'    => $topology->getName(),
             'descr'   => $topology->getDescr(),
             'enabled' => $topology->isEnabled(),
+            'status'  => $topology->getStatus(),
         ];
+    }
+
+    /**
+     * @param string $id
+     *
+     * @return Topology
+     * @throws TopologyException
+     */
+    private function getTopologyById(string $id): Topology
+    {
+        $res = $this->dm->getRepository(Topology::class)->findOneBy(['id' => $id]);
+
+        if (!$res) {
+            throw new TopologyException(
+                sprintf('Topology with [%s] id was not found.', $id),
+                TopologyException::TOPOLOGY_NOT_FOUND
+            );
+        }
+
+        return $res;
     }
 
 }
