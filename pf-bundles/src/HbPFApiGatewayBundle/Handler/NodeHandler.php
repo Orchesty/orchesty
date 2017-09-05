@@ -4,7 +4,9 @@ namespace Hanaboso\PipesFramework\HbPFApiGatewayBundle\Handler;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use Hanaboso\PipesFramework\ApiGateway\Manager\NodeManager;
 use Hanaboso\PipesFramework\Commons\DatabaseManager\DatabaseManagerLocator;
+use Hanaboso\PipesFramework\Commons\Exception\NodeException;
 use Hanaboso\PipesFramework\Commons\Node\Document\Node;
 use Hanaboso\PipesFramework\Commons\Node\NodeRepository;
 use Hanaboso\PipesFramework\Commons\Utils\UriParams;
@@ -28,14 +30,21 @@ class NodeHandler
     private $dm;
 
     /**
+     * @var NodeManager
+     */
+    private $manager;
+
+    /**
      * NodeHandler constructor.
      *
      * @param DatabaseManagerLocator $dml
+     * @param NodeManager            $manager
      */
-    public function __construct(DatabaseManagerLocator $dml)
+    public function __construct(DatabaseManagerLocator $dml, NodeManager $manager)
     {
         $this->dm             = $dml->getDm();
         $this->nodeRepository = $this->dm->getRepository(Node::class);
+        $this->manager        = $manager;
     }
 
     /**
@@ -71,15 +80,7 @@ class NodeHandler
      */
     public function getNode(string $id): array
     {
-        /** @var Node $node */
-        $node = $this->nodeRepository->find($id);
-
-        $data = [];
-        if ($node) {
-            $data = $this->getNodeData($node);
-        }
-
-        return $data;
+        return $this->getNodeData($this->getNodeById($id));
     }
 
     /**
@@ -90,11 +91,7 @@ class NodeHandler
      */
     public function updateNode(string $id, array $data): array
     {
-        /** @var Node $node */
-        $node = $this->nodeRepository->find($id);
-
-        $node->setEnabled($data['enabled']);
-        $this->dm->flush();
+        $node = $this->manager->updateNode($this->getNodeById($id), $data);
 
         return $this->getNodeData($node);
     }
@@ -115,6 +112,26 @@ class NodeHandler
             'handler'     => $node->getHandler(),
             'enabled'     => $node->isEnabled(),
         ];
+    }
+
+    /**
+     * @param string $id
+     *
+     * @return Node
+     * @throws NodeException
+     */
+    private function getNodeById(string $id): Node
+    {
+        $res = $this->nodeRepository->find($id);
+
+        if (!$res) {
+            throw new NodeException(
+                sprintf('Node with [%s] id was not found.', $id),
+                NodeException::NODE_NOT_FOUND
+            );
+        }
+
+        return $res;
     }
 
 }

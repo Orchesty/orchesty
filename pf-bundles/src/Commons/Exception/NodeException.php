@@ -14,5 +14,6 @@ final class NodeException extends PipesFrameworkException
 
     public const INVALID_TYPE    = self::OFFSET + 1;
     public const INVALID_HANDLER = self::OFFSET + 2;
+    public const NODE_NOT_FOUND  = self::OFFSET + 3;
 
 }
