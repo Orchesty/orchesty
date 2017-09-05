@@ -82,6 +82,7 @@ class AccessManager implements EventSubscriberInterface
     public function isAllowed(string $act, string $res, UserInterface $user, string $id)
     {
         $this->checkParams($act, $res);
+        $class = $this->resProvider->getResource($res);
 
         $rules   = $this->dbProvider->getRules($user);
         $rule    = NULL;
@@ -94,7 +95,9 @@ class AccessManager implements EventSubscriberInterface
                 if ($rule->getGroup()->getLevel() < $userLvl) {
                     $userLvl = $rule->getGroup()->getLevel();
                 }
-                if ($val->getPropertyMask() === 2) {
+                if (!property_exists($class, 'owner')) {
+                    break;
+                } else if ($val->getPropertyMask() === 2) {
                     $byte = -1;
                     break;
                 }
@@ -109,11 +112,12 @@ class AccessManager implements EventSubscriberInterface
         }
 
         $data = ['id' => $id];
-        if ($byte >= 0) {
+
+        if (property_exists($class, 'owner') && $byte >= 0) {
             $data['owner'] = $user;
         }
 
-        $val = $this->dm->getRepository($this->resProvider->getResource($res))->findOneBy($data);
+        $val = $this->dm->getRepository($class)->findOneBy($data);
 
         if ($val) {
             if ($res === ResourceEnum::GROUP) {
@@ -153,12 +157,16 @@ class AccessManager implements EventSubscriberInterface
 
         foreach ($rules as $val) {
             if ($this->hasRight($val, $res, $byte)) {
-                if ($val->getPropertyMask() === 2) {
-                    return TRUE;
-                } else {
-                    if ($user === $object->getOwner()) {
+                if (property_exists($object, 'owner')) {
+                    if ($val->getPropertyMask() === 2) {
                         return TRUE;
+                    } else {
+                        if ($user === $object->getOwner()) {
+                            return TRUE;
+                        }
                     }
+                } else {
+                    return TRUE;
                 }
             }
         }
@@ -297,7 +305,7 @@ class AccessManager implements EventSubscriberInterface
     private function hasRightForUser(UserInterface $user, int $userLvl): ?UserInterface
     {
         /** @var EntityGroupRepository|DocumentGroupRepository $repo */
-        $repo = $this->dm->getRepository($this->resProvider->getResource(ResourceEnum::GROUP));
+        $repo   = $this->dm->getRepository($this->resProvider->getResource(ResourceEnum::GROUP));
         $groups = $repo->getUserGroups($user);
 
         foreach ($groups as $group) {
