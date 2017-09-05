@@ -11,6 +11,10 @@ logger = logging.getLogger(__name__)
 
 
 class Validator:
+    DTD = 'dtd'
+    XSD = 'xsd'
+    RNG = 'rng'
+
     def __init__(self, validator_type=None, validator_file=None, validator_content=None):
         self.type = validator_type
         self.file = validator_file
@@ -27,11 +31,11 @@ class Validator:
 
     def get_validate_object(self):
 
-        if self.type == 'dtd':
+        if self.type == self.DTD:
             return self._get_dtd()
-        elif self.type == 'xsd':
+        elif self.type == self.XSD:
             return self._get_xsd()
-        elif self.type == 'rng':
+        elif self.type == self.RNG:
             return self._get_ng()
         else:
             return None
