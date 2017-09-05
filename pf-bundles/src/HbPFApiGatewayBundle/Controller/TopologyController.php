@@ -112,9 +112,39 @@ class TopologyController extends FOSRestController
      */
     public function saveTopologySchema(Request $request, string $id): Response
     {
-        $this->topologyHandler->saveTopologySchema($id, $request->request->all());
+        $data = $this->topologyHandler->saveTopologySchema($id, $request->request->all());
 
-        return new JsonResponse([], 200);
+        return new JsonResponse($data, 200);
+    }
+
+    /**
+     * @Route("/topologies/{id}/publish", defaults={}, requirements={"id": "\w+"})
+     * @Method({"GET", "OPTIONS"})
+     *
+     * @param string $id
+     *
+     * @return Response
+     */
+    public function publishTopology(string $id): Response
+    {
+        $data = $this->topologyHandler->publishTopology($id);
+
+        return new JsonResponse($data, 200);
+    }
+
+    /**
+     * @Route("/topologies/{id}/clone", defaults={}, requirements={"id": "\w+"})
+     * @Method({"GET", "OPTIONS"})
+     *
+     * @param string $id
+     *
+     * @return Response
+     */
+    public function cloneTopology(string $id): Response
+    {
+        $data = $this->topologyHandler->cloneTopology($id);
+
+        return new JsonResponse($data, 200);
     }
 
 }

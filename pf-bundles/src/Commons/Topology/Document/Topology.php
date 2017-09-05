@@ -38,7 +38,7 @@ class Topology
      *
      * @MongoDB\Field(type="string")
      */
-    protected $status;
+    protected $status = TopologyStatusEnum::DRAFT;
 
     /**
      * @var bool

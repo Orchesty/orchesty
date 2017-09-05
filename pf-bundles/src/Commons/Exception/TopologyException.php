@@ -13,5 +13,6 @@ final class TopologyException extends PipesFrameworkException
     protected const OFFSET = 2200;
 
     public const INVALID_TOPOLOGY_TYPE = self::OFFSET + 1;
+    public const TOPOLOGY_NOT_FOUND    = self::OFFSET + 2;
 
 }
