@@ -1,5 +1,5 @@
 import * as types from '../actionTypes';
-
+import objectEquals from '../utils/objectEquals';
 import pages from '../config/pages.json';
 import mainMenu from '../config/mainMenu.json';
 
@@ -20,7 +20,7 @@ const initialState = {
 export default (state = initialState, action) => {
   switch (action.type){
     case types.SELECT_PAGE:
-      if (state.selectedPage != action.page) {
+      if (state.selectedPage.key != action.key || !objectEquals(state.selectedPage.args, action.args)) {
         return Object.assign({}, state, {
           selectedPage: {
             key: action.key,

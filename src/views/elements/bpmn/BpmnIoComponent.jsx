@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types';
 import ReactDOM from 'react-dom';
 
 import BpmnModeler from 'bpmn-js/lib/Modeler';
@@ -33,6 +34,10 @@ class BpmnIoComponent extends React.Component {
       {
         caption: 'Export SVG',
         action: this.exportSVG.bind(this)
+      },
+      {
+        caption: 'Save',
+        action: this.saveBPMN.bind(this)
       }
     ])
   }
@@ -64,6 +69,19 @@ class BpmnIoComponent extends React.Component {
         }
         else {
           download(svg, 'export.svg', 'image/svg+xml');
+        }
+      });
+    }
+  }
+
+  saveBPMN(){
+    if (this._modeler){
+      this._modeler.saveXML((err, xml) => {
+        if (err){
+          err && this.props.onError(STring(err));
+        }
+        else if (this.props.onSave){
+          this.props.onSave(xml);
         }
       });
     }
@@ -145,5 +163,13 @@ class BpmnIoComponent extends React.Component {
     );
   }
 }
+
+BpmnIoComponent.propTypes = {
+  onSave: PropTypes.func,
+  schema: PropTypes.string,
+  onError: PropTypes.func.isRequired,
+  onImport: PropTypes.func.isRequired,
+  actions: PropTypes.func.isRequired
+};
 
 export default BpmnIoComponent;

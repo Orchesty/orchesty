@@ -44,6 +44,19 @@ export function rawRequest(dispatch, method, relUrl, queries, options){
     });
 }
 
+export function rawRequestJSONReceive(dispatch, method, relUrl, queries, options){
+  const opt = Object.assign({method}, options);
+  opt.headers = Object.assign({Accept: 'application/json'}, opt.headers);
+  
+  return fetch(makeUrl(relUrl, queries), opt)
+    .then(check.bind(null, dispatch))
+    .then(response => response ? response.json() : undefined)
+    .catch(error => {
+      dispatch(notificationActions.addNotification('error', `Error in server request: ${error}`));
+      return undefined;
+    });
+}
+
 export default (dispatch, method, relUrl, queries, data) => {
   let headers = {
     Accept: 'application/json'

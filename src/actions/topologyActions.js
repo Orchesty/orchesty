@@ -1,5 +1,5 @@
 import * as types from '../actionTypes';
-import serverRequest, {sortToQuery, rawRequest} from '../middleware/apiGatewayServer';
+import serverRequest, {sortToQuery, rawRequest, rawRequestJSONReceive} from '../middleware/apiGatewayServer';
 import * as applicationActions from './applicationActions';
 import {listType} from '../types';
 import objectEquals from '../utils/objectEquals';
@@ -149,16 +149,31 @@ export function topologyUpdate(id, data){
 export function loadTopologySchema(id, force = false){
   return (dispatch, getState) => {
     if (force || !getState().topology.schemas[id]){
-      return rawRequest(dispatch, 'GET', `/topologies/${id}/schema.bpmn`).then(
-        response => {
-          if (response){
-            dispatch(receiveSchema(id, response));
-          }
-          return response;
+      return rawRequest(dispatch, 'GET', `/topologies/${id}/schema.bpmn`).then( response => {
+        if (response){
+          dispatch(receiveSchema(id, response));
         }
-      )
+        return response;
+      })
     } else {
       return Promise.resolve(true);
     }
+  }
+}
+
+export function saveTopologySchema(id, schema){
+  return dispatch => {
+    return rawRequestJSONReceive(dispatch, 'PUT', `/topologies/${id}/schema.bpmn`, null, {
+      headers: {
+        'Content-Type': 'application/bpmn+xml'
+      },
+      body: schema
+    }).then(response => {
+        if (response) {
+          dispatch(receiveSchema(response._id, schema));
+          dispatch(receive(response));
+        }
+        return response;
+    })
   }
 }
