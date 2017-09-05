@@ -159,7 +159,7 @@ class Node
      */
     public function getHandler(): string
     {
-        return $this->type;
+        return $this->handler;
     }
 
     /**

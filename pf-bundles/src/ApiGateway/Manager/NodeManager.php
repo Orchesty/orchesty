@@ -40,17 +40,25 @@ class NodeManager
      */
     public function updateNode(Node $node, array $data): Node
     {
-        if ($node->getHandler() == HandlerEnum::EVENT) {
-            $node->setEnabled($data['enabled']);
-            $this->dm->flush();
+        if (isset($data['enabled'])) {
+            if ($node->getHandler() != HandlerEnum::EVENT) {
+                throw new NodeException(
+                    sprintf('Trying to enable/disable a non event Node'),
+                    NodeException::DISALLOWED_ACTION_ON_NON_EVENT_NODE
+                );
+            }
 
-            return $node;
+            $node->setEnabled($data['enabled']);
+        } else {
+            $node
+                ->setName($data['name'])
+                ->setType($data['type'])
+                ->setHandler($data['handler']);
         }
 
-        throw new NodeException(
-            sprintf('Trying to update a non event Node'),
-            NodeException::TRYING_TO_UPDATE_NON_EVENT_NODE
-        );
+        $this->dm->flush();
+
+        return $node;
     }
 
 }
