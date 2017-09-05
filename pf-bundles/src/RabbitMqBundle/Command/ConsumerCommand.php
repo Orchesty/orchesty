@@ -19,6 +19,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use TypeError;
 
 /**
  * Class ConsumerCommand
@@ -223,9 +224,14 @@ class ConsumerCommand extends Command
             switch ($message->getHeader("content-type")) {
                 case ContentTypes::APPLICATION_JSON:
                     if ($serializer instanceof IMessageSerializer) {
-                        $data = $serializer->fromJson($data);
+                        try {
+                            $data = $serializer->fromJson($data);
+                        } catch (TypeError $e) {
+                            throw new BunnyException('Bad input data format.');
+                        }
+
                     } else {
-                        throw new BunnyException("Meta class does not support JSON.");
+                        throw new BunnyException('Meta class does not support JSON.');
                     }
                     break;
 

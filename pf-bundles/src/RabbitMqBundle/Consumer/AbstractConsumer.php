@@ -11,9 +11,9 @@ namespace Hanaboso\PipesFramework\RabbitMqBundle\Consumer;
 use Bunny\Channel;
 use Bunny\Client;
 use Bunny\Message;
-use Hanaboso\PipesFramework\RabbitMqBundle\Serializers\IMessageSerializer;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 
 /**
  * Class AbstractConsumer
@@ -73,7 +73,7 @@ abstract class AbstractConsumer implements LoggerAwareInterface
      */
     private $prefetchSize;
     /**
-     * @var IMessageSerializer|null
+     * @var string|null
      */
     private $serializer;
     /**
@@ -100,23 +100,23 @@ abstract class AbstractConsumer implements LoggerAwareInterface
     /**
      * AbstractConsumer constructor.
      *
-     * @param null|string             $exchange
-     * @param string                  $routingKey
-     * @param null|string             $queue
-     * @param string                  $consumerTag
-     * @param bool                    $noLocal
-     * @param bool                    $noAck
-     * @param bool                    $exclusive
-     * @param bool                    $nowait
-     * @param array                   $arguments
-     * @param int|null                $prefetchCount
-     * @param int|null                $prefetchSize
-     * @param null|IMessageSerializer $serializer
-     * @param null|string             $setUpMethod
-     * @param null|string             $tickMethod
-     * @param int|null                $tickSeconds
-     * @param int|null                $maxMessages
-     * @param int|null                $maxSeconds
+     * @param null|string $exchange
+     * @param string      $routingKey
+     * @param null|string $queue
+     * @param string      $consumerTag
+     * @param bool        $noLocal
+     * @param bool        $noAck
+     * @param bool        $exclusive
+     * @param bool        $nowait
+     * @param array       $arguments
+     * @param int|null    $prefetchCount
+     * @param int|null    $prefetchSize
+     * @param string|null $serializer
+     * @param null|string $setUpMethod
+     * @param null|string $tickMethod
+     * @param int|null    $tickSeconds
+     * @param int|null    $maxMessages
+     * @param int|null    $maxSeconds
      */
     public function __construct(
         ?string $exchange = NULL,
@@ -130,7 +130,7 @@ abstract class AbstractConsumer implements LoggerAwareInterface
         array $arguments = [],
         ?int $prefetchCount = NULL,
         ?int $prefetchSize = NULL,
-        ?IMessageSerializer $serializer = NULL,
+        ?string $serializer = NULL,
         ?string $setUpMethod = NULL,
         ?string $tickMethod = NULL,
         ?int $tickSeconds = NULL,
@@ -155,6 +155,8 @@ abstract class AbstractConsumer implements LoggerAwareInterface
         $this->tickSeconds   = $tickSeconds;
         $this->maxMessages   = $maxMessages;
         $this->maxSeconds    = $maxSeconds;
+
+        $this->logger = new NullLogger();
     }
 
     /**
@@ -162,23 +164,8 @@ abstract class AbstractConsumer implements LoggerAwareInterface
      * @param Message $message
      * @param Channel $channel
      * @param Client  $client
-     *
-     * @return void
      */
-    public function handleMessage($data, Message $message, Channel $channel, Client $client): void
-    {
-        $this->handle($data, $message, $channel, $client);
-    }
-
-    /**
-     * @param mixed   $data
-     * @param Message $message
-     * @param Channel $channel
-     * @param Client  $client
-     *
-     * @return mixed
-     */
-    abstract public function handle($data, Message $message, Channel $channel, Client $client): void;
+    abstract function handleMessage($data, Message $message, Channel $channel, Client $client): void;
 
     /**
      * @return string|null
@@ -277,9 +264,9 @@ abstract class AbstractConsumer implements LoggerAwareInterface
     }
 
     /**
-     * @return IMessageSerializer|null
+     * @return string|null
      */
-    public function getSerializer(): ?IMessageSerializer
+    public function getSerializer(): ?string
     {
         return $this->serializer;
     }

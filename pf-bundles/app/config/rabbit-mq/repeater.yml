@@ -1,0 +1,52 @@
+#REPEATER
+rabbit-mq:
+    exchanges:
+        repeater:
+            durable: true
+            type: direct
+
+    queues:
+        repeater:
+            durable: true
+            bindings:
+                - exchange: repeater
+                  routing_key: repeater
+
+        delayed_repeater:
+            durable: true
+            arguments:
+                x-dead-letter-exchange: 'repeater'
+                x-message-ttl: 6000
+                x-dead-letter-routing-key: 'repeater'
+            bindings:
+                - exchange: repeater
+                  routing_key: delayed_repeater
+
+    producers:
+        repeater:
+            class: Hanaboso\PipesFramework\Commons\RabbitMq\Repeater\RepeaterProducer
+            exchange: repeater
+            serializer: Hanaboso\PipesFramework\RabbitMqBundle\Serializers\JsonSerializer
+            routing_key: repeater
+
+    consumers:
+        repeater:
+            class: Hanaboso\PipesFramework\Commons\RabbitMq\Demo\DemoConsumer
+            routing_key: repeater
+            queue: repeater
+            serializer: Hanaboso\PipesFramework\RabbitMqBundle\Serializers\JsonSerializer
+            callback: hanaboso.pipes_framework.commons.repeater.repeater_callback
+            no_ack: true
+
+services:
+    # callback for repeater
+    hanaboso.pipes_framework.commons.repeater.repeater_callback:
+        class: Hanaboso\PipesFramework\Commons\RabbitMq\Repeater\RepeaterCallback
+        arguments:
+            - '@rabbit-mq.producer.repeater'
+        calls:
+            - [setRepeater, ['@hanaboso.pipes_framework.commons.rabbit_mq.repeater.repeater']]
+
+    hanaboso.pipes_framework.commons.rabbit_mq.repeater.repeater:
+        class: Hanaboso\PipesFramework\Commons\RabbitMq\Repeater\Repeater
+        arguments: ['@rabbit-mq.producer.repeater', '3']

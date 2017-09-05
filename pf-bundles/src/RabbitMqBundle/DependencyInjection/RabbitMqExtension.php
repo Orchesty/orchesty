@@ -52,8 +52,8 @@ class RabbitMqExtension extends Extension implements ConfigurationInterface
         $rootNode->children()->scalarNode("heartbeat")->defaultValue(60);
 
         /** @var ArrayNodeDefinition $exchangesNode */
-        $exchangesNode = $rootNode->children()->arrayNode("exchanges")->normalizeKeys(FALSE)->defaultValue([])
-            ->prototype("array");
+        $exchangesNode = $rootNode->children()->arrayNode("exchanges")->useAttributeAsKey('key')->normalizeKeys(FALSE)
+            ->defaultValue([])->prototype("array");
         $exchangesNode->children()->scalarNode("type");
         $exchangesNode->children()->booleanNode("durable")->defaultValue(FALSE);
         $exchangesNode->children()->booleanNode("auto_delete")->defaultValue(FALSE);
@@ -69,7 +69,8 @@ class RabbitMqExtension extends Extension implements ConfigurationInterface
             ->defaultValue([]);
 
         /** @var ArrayNodeDefinition $queuesNode */
-        $queuesNode = $rootNode->children()->arrayNode('queues')->normalizeKeys(FALSE)->defaultValue([])
+        $queuesNode = $rootNode->children()->arrayNode('queues')->useAttributeAsKey('key')->normalizeKeys(FALSE)
+            ->defaultValue([])
             ->prototype("array");
         $queuesNode->children()->booleanNode("durable")->defaultValue(FALSE);
         $queuesNode->children()->booleanNode("exclusive")->defaultValue(FALSE);
@@ -84,7 +85,8 @@ class RabbitMqExtension extends Extension implements ConfigurationInterface
         $queuesBindingsNode->children()->arrayNode("arguments")->normalizeKeys(FALSE)->prototype("scalar")
             ->defaultValue([]);
 
-        $producersNode = $rootNode->children()->arrayNode('producers')->normalizeKeys(FALSE)->defaultValue([])
+        $producersNode = $rootNode->children()->arrayNode('producers')->useAttributeAsKey('key')->normalizeKeys(FALSE)
+            ->defaultValue([])
             ->prototype('array');
         $producersNode->children()->scalarNode('class')->isRequired();
         $producersNode->children()->scalarNode('serializer')->isRequired();
@@ -95,11 +97,13 @@ class RabbitMqExtension extends Extension implements ConfigurationInterface
         $producersNode->children()->scalarNode('before_method')->defaultNull();
         $producersNode->children()->scalarNode('content_type')->defaultValue('application/json');
 
-        $consumersNode = $rootNode->children()->arrayNode('consumers')->normalizeKeys(FALSE)->defaultValue([])
+        $consumersNode = $rootNode->children()->arrayNode('consumers')->useAttributeAsKey('key')->normalizeKeys(FALSE)
+            ->defaultValue([])
             ->prototype('array');
         $consumersNode->children()->scalarNode('class')->isRequired();
         $consumersNode->children()->scalarNode('queue')->isRequired();
         $consumersNode->children()->scalarNode('serializer')->isRequired();
+        $consumersNode->children()->scalarNode('callback')->isRequired();
         $consumersNode->children()->scalarNode('exchange')->defaultValue(NULL);
         $consumersNode->children()->scalarNode('routing_key')->defaultValue('');
         $consumersNode->children()->scalarNode('consumer_tag')->defaultValue('');

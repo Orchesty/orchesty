@@ -11,9 +11,11 @@ namespace Hanaboso\PipesFramework\RabbitMqBundle\Producer;
 use Bunny\Exception\BunnyException;
 use Hanaboso\PipesFramework\RabbitMqBundle\BunnyManager;
 use Hanaboso\PipesFramework\RabbitMqBundle\ContentTypes;
+use Hanaboso\PipesFramework\RabbitMqBundle\DebugMessageTrait;
 use Hanaboso\PipesFramework\RabbitMqBundle\Serializers\IMessageSerializer;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 
 /**
  * Class AbstractProducer
@@ -23,6 +25,8 @@ use Psr\Log\LoggerInterface;
 class AbstractProducer implements LoggerAwareInterface
 {
 
+    use DebugMessageTrait;
+
     /**
      * @var LoggerInterface
      */
@@ -31,7 +35,7 @@ class AbstractProducer implements LoggerAwareInterface
     /**
      * @var string
      */
-    private $exchange;
+    protected $exchange;
 
     /**
      * @var string
@@ -59,7 +63,7 @@ class AbstractProducer implements LoggerAwareInterface
     private $serializer = NULL;
 
     /**
-     * @var string
+     * @var ?string
      */
     private $beforeMethod;
 
@@ -81,7 +85,7 @@ class AbstractProducer implements LoggerAwareInterface
      * @param bool         $mandatory
      * @param bool         $immediate
      * @param string       $serializerClassName
-     * @param string       $beforeMethod
+     * @param string|null  $beforeMethod
      * @param string       $contentType
      * @param BunnyManager $manager
      */
@@ -91,7 +95,7 @@ class AbstractProducer implements LoggerAwareInterface
         bool $mandatory,
         bool $immediate,
         string $serializerClassName,
-        string $beforeMethod,
+        ?string $beforeMethod,
         string $contentType,
         BunnyManager $manager
     )
@@ -104,12 +108,14 @@ class AbstractProducer implements LoggerAwareInterface
         $this->beforeMethod        = $beforeMethod;
         $this->contentType         = $contentType;
         $this->manager             = $manager;
+
+        $this->logger = new NullLogger();
     }
 
     /**
      * @return IMessageSerializer|null
      */
-    public function createMeta(): ?IMessageSerializer
+    public function createSerializer(): ?IMessageSerializer
     {
         if ($this->serializerClassName) {
             /** @var IMessageSerializer $metaClassName */
@@ -125,25 +131,27 @@ class AbstractProducer implements LoggerAwareInterface
     /**
      * @return IMessageSerializer|null
      */
-    public function getMeta(): ?IMessageSerializer
+    public function getSerializer(): ?IMessageSerializer
     {
         if ($this->serializer === NULL) {
-            $this->serializer = $this->createMeta();
+            $this->serializer = $this->createSerializer();
         }
 
         return $this->serializer;
     }
 
     /**
-     * @param mixed $message
-     * @param null  $routingKey
-     * @param array $headers
+     * @param mixed       $message
+     * @param string|null $routingKey
+     * @param array       $headers
      *
      * @return void
      */
-    public function publish($message, $routingKey = NULL, array $headers = []): void
+    public function publish($message, ?string $routingKey = NULL, array $headers = []): void
     {
-        if (!$this->getMeta()) {
+        if (!$this->getSerializer()) {
+            $this->getLogger()
+                ->warning('Could not create meta class %s.', $this->prepareMessage($this->serializerClassName));
             throw new BunnyException(
                 sprintf('Could not create meta class %s.', $this->serializerClassName)
             );
@@ -177,6 +185,11 @@ class AbstractProducer implements LoggerAwareInterface
         }
 
         $headers['content-type'] = $this->contentType;
+
+        $this->getLogger()->debug(
+            'publish',
+            $this->prepareMessage('', $this->exchange, $routingKey, $headers)
+        );
 
         $this->manager->getChannel()->publish(
             $message,
@@ -229,17 +242,9 @@ class AbstractProducer implements LoggerAwareInterface
     }
 
     /**
-     * @return IMessageSerializer|null
+     * @return string|null
      */
-    public function getSerializer(): ?IMessageSerializer
-    {
-        return $this->serializer;
-    }
-
-    /**
-     * @return string
-     */
-    public function getBeforeMethod(): string
+    public function getBeforeMethod(): ?string
     {
         return $this->beforeMethod;
     }
@@ -270,6 +275,24 @@ class AbstractProducer implements LoggerAwareInterface
     public function setLogger(LoggerInterface $logger): void
     {
         $this->logger = $logger;
+    }
+
+    /**
+     * @return LoggerInterface
+     */
+    protected function getLogger(): LoggerInterface
+    {
+        return $this->logger;
+    }
+
+    /**
+     * @param string $exchange
+     *
+     * @return void
+     */
+    public function setExchange(string $exchange): void
+    {
+        $this->exchange = $exchange;
     }
 
 }
