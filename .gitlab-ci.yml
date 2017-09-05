@@ -43,7 +43,7 @@ lib-sym3-test:
     - make composer-install
     - make test
 
-lib-njs-test:
+pf-typescript-test:
   stage: stage2
   script:
     - DIR=pf-typescript
@@ -52,7 +52,6 @@ lib-njs-test:
     - cd $REPO_ROOT/$DIR
     - export RABBITMQ_HOST=rabbitmq
     - docker-compose up -d
-    - docker-compose exec -T test npm run-script lint
     - docker-compose exec -T test npm test
 
 frontend:
@@ -61,6 +60,13 @@ frontend:
     - DIR=frontend
     - skip_unmodified $DIR
     - ${DIR}/docker/prod/build.sh ${CI_BUILD_REF_NAME}
+
+pf-typescript:
+  stage: stage2
+  script:
+    - DIR=pf-typescript
+    - skip_unmodified $DIR
+    - ${DIR}/build.sh ${CI_BUILD_REF_NAME}
 
 cleanup:
   stage: cleanup

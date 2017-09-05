@@ -2,7 +2,7 @@
   "name": "pipes",
   "version": "1.0.0",
   "description": "Hanaboso pipes and filters basic node skeleton implementation",
-  "main": "index.js",
+  "main": "dist/src/bin/pipes.js",
   "scripts": {
     "build": "./node_modules/.bin/tsc",
     "lint": "./node_modules/.bin/tslint ./src/**/*.ts ./test/**/*.ts",

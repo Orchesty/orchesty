@@ -1,8 +1,7 @@
 version: '2'
 services:
   services:
-    build: .
-    working_dir: /usr/app
+    image: dkr.hanaboso.net/pipes/pipes/pf-typescript:typescript
     environment:
       - RABBITMQ_HOST=rabbitmq
       - RABBITMQ_PORT=5672
@@ -17,8 +16,7 @@ services:
     ports:
       - '8007:8007'
   node_1:
-    build: .
-    working_dir: /usr/app
+    image: dkr.hanaboso.net/pipes/pipes/pf-typescript:typescript
     environment:
       - RABBITMQ_HOST=rabbitmq
       - RABBITMQ_PORT=5672
@@ -32,8 +30,7 @@ services:
       - '5001:8007'
       - '3333:3333'
   node_2:
-    build: .
-    working_dir: /usr/app
+    image: dkr.hanaboso.net/pipes/pipes/pf-typescript:typescript
     environment:
       - RABBITMQ_HOST=rabbitmq
       - RABBITMQ_PORT=5672
@@ -51,8 +48,7 @@ services:
       - '15672:15672'
       - '5672:5672'
   test:
-      build: .
-      working_dir: /usr/app
+      image: dkr.hanaboso.net/pipes/pipes/pf-typescript:typescript
       environment:
         - RABBITMQ_HOST=rabbitmq
         - RABBITMQ_PORT=5672

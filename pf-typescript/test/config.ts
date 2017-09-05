@@ -1,7 +1,7 @@
 import {IOptions} from "lib-nodejs/dist/src/rabbitmq/Connection";
 
 export const testAmqpConnectionOptions: IOptions = {
-    host: "docker-pa",
+    host: process.env.RABBITMQ_HOST || "docker-pa",
     user: "guest",
     pass: "guest",
     port: 5672,
