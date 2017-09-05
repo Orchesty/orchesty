@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 
 import './vendor/bootstrap/css/bootstrap.css';
 import './vendor/font-awesome/css/font-awesome.css';
+import './vendor/iCheck/skins/flat/green.css';
 import './custom.css';
 
 import LeftSidePanel from './containers/LeftSidePanel';
