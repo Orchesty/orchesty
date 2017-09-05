@@ -12,6 +12,16 @@ rabbit-mq:
                 - exchange: repeater
                   routing_key: repeater
 
+        delayed_repeater:
+            durable: true
+            arguments:
+                x-dead-letter-exchange: 'repeater'
+                x-message-ttl: 6000
+                x-dead-letter-routing-key: 'repeater'
+            bindings:
+                - exchange: repeater
+                  routing_key: delayed_repeater
+
     producers:
         repeater:
             class: Hanaboso\PipesFramework\Commons\RabbitMq\Repeater\RepeaterProducer
