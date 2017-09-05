@@ -1,5 +1,4 @@
 import logger from "lib-nodejs/dist/src/logger/Logger";
-import Connection from "lib-nodejs/dist/src/rabbitmq/Connection";
 import JobMessage from "../../message/JobMessage";
 import ADrain from "./ADrain";
 import CounterPublisher from "./amqp/CounterPublisher";
@@ -11,6 +10,10 @@ export interface IFollower {
     exchange: {
         name: string,
         type: string,
+        options: any,
+    };
+    queue: {
+        name: string,
         options: any,
     };
     routing_key: string;

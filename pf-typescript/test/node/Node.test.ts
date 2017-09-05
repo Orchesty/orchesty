@@ -29,7 +29,6 @@ describe("Node", () => {
 
         return node.prepare()
             .then(() => {
-                assert.isNotTrue(node.isOpened());
                 return node.startServer();
             })
             .then(() => {
@@ -37,11 +36,9 @@ describe("Node", () => {
             })
             .then((resp: string) => {
                 assert.equal("OK", resp);
-                return rp("http://localhost:5000/open");
-            })
-            .then((resp: string) => {
-                assert.equal("OK", resp);
-                assert.isTrue(node.isOpened());
             });
+    });
+    it.skip("node creates input and output queues, exchanges and binds", () => {
+
     });
 });

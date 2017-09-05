@@ -20,13 +20,17 @@ const argv = yargs
     .argv;
 
 switch (argv.services) {
-    case "services":
-        Promise.all([
-            pipes.startCounter(),
-            pipes.startProbe(),
-        ]).then(() => {
-            logger.info("All services are running.");
+    case "counter":
+        pipes.startCounter()
+        .then(() => {
+            logger.info("Counter is running.");
         });
+        break;
+    case "probe":
+        pipes.startProbe()
+            .then(() => {
+                logger.info("Probe is running.");
+            });
         break;
     case "node":
         logger.info(`Starting node '${argv.id}'`);

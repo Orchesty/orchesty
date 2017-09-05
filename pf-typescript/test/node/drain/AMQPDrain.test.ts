@@ -24,6 +24,10 @@ const settings: IAMQPDrainSettings = {
                 type: "direct",
                 options: {},
             },
+            queue: {
+                name: "test-amqpdrain-follower-queue",
+                options: {},
+            },
             routing_key: "amqpdrain-RK",
         },
     ],

@@ -80,6 +80,10 @@ class Defaults {
                         type: "direct",
                         options: {},
                     },
+                    queue: {
+                        name: `pipes.${topoName}.${nextNode}`,
+                        options: {},
+                    },
                     routing_key: `${topoName}.${nextNode}`,
                 };
             }),

@@ -74,15 +74,6 @@ class Pipes {
     }
 
     /**
-     * Populates the list of nodes with instances
-     */
-    private createAllNodes(): void {
-        for (const nodeCfg of this.topology.nodes) {
-            this.createNode(nodeCfg);
-        }
-    }
-
-    /**
      *
      * @param {INodeConfig} nodeCfg
      * @return {Node}

@@ -12,22 +12,33 @@ class FollowersPublisher extends Publisher {
 
     private settings: IAMQPDrainSettings;
 
+    /**
+     *
+     * @param {AMQPConnection} conn
+     * @param {IAMQPDrainSettings} settings
+     */
     constructor(conn: Connection, settings: IAMQPDrainSettings) {
         super(
             conn, (ch: Channel) => {
-                const followersPromises: Array<Promise<any>> = [];
+                // Prepare exchange to publish to and queue and bind for following node
+                // in order not to loose messages if following node is not ready yet
+                const followersPromises: any[] = [];
+
                 settings.followers.forEach((f: IFollower) => {
-                    const prom = new Promise((resolve) => {
-                        ch.assertExchange(f.exchange.name, f.exchange.type, f.exchange.options)
-                            .then(() => { resolve(); });
-                    });
+                    const prom = ch.assertExchange(f.exchange.name, f.exchange.type, f.exchange.options)
+                        .then(() => {
+                            return ch.assertQueue(f.queue.name, f.queue.options);
+                        })
+                        .then(() => {
+                            return ch.bindQueue(f.queue.name, f.exchange.name, f.routing_key);
+                        });
 
                     followersPromises.push(prom);
                 });
 
                 return Promise.all(followersPromises)
                     .then(() => {
-                        logger.info(`Followers publisher prepared.`);
+                        logger.info(`Followers exchanges, queues and binds ready.`);
                     });
             });
         this.settings = settings;

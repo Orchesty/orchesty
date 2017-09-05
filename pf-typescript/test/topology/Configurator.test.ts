@@ -68,6 +68,10 @@ const expectedTopo: ITopologyConfig = {
                                 type: "direct",
                             },
                             node_id: "node_b",
+                            queue: {
+                                name: "pipes.test-topo.node_b",
+                                options: {},
+                            },
                             routing_key: "test-topo.node_b",
                         },
                     ],

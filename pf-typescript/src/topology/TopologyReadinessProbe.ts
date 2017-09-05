@@ -42,7 +42,7 @@ class TopologyReadinessProbe {
 
         app.get(HTTP_PROBE_PATH, (req, resp) => {
             this.checkTopology()
-                .then((res: {status: number, message: string}) => {
+                .then((res: {status: Status, message: string}) => {
                     resp.status(res.status).send(res.message);
                 })
                 .catch((err: Error) => {
@@ -62,7 +62,7 @@ class TopologyReadinessProbe {
      * @return {Promise}
      * @private
      */
-    private checkTopology() {
+    public checkTopology(): Promise<{status: Status, message: string}> {
         return new Promise((resolve) => {
             let resolved = false;
             let ready = 0;

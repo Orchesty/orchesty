@@ -23,20 +23,28 @@ const settings: IAMQPDrainSettings = {
         {
             node_id: "follower1",
             exchange: {
-                name: "follower-queue",
+                name: "follower-exchange",
                 type: "direct",
                 options: {},
             },
-            routing_key: "drainRK",
+            queue: {
+                name: "follower-queue",
+                options: {},
+            },
+            routing_key: "drainRK1",
         },
         {
             node_id: "follower2",
             exchange: {
-                name: "follower-queue",
+                name: "follower-exchange",
                 type: "direct",
                 options: {},
             },
-            routing_key: "drainRK",
+            queue: {
+                name: "follower-queue",
+                options: {},
+            },
+            routing_key: "drainRK2",
         },
     ],
 };

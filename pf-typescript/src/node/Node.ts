@@ -27,7 +27,6 @@ class Node {
     private debugPort: number;
     private isInitial: boolean;
     private nodeStatus: NODE_STATUS;
-    private opened: boolean;
 
     constructor(
         id: string,
@@ -45,7 +44,6 @@ class Node {
         this.isInitial = isInitial;
 
         this.nodeStatus = NODE_STATUS.UNPREPARED;
-        this.opened = false;
     }
 
     /**
@@ -54,19 +52,12 @@ class Node {
      * @return Promise<Function>
      */
     public prepare(): Promise<() => void> {
-        if (this.isInitial) {
-            this.nodeStatus = NODE_STATUS.READY;
-
-            return Promise.resolve(emptyFn);
-        }
-
-        const a = this.openNode();
-        return a
-            .then(() => {
+        return this.openNode()
+            .then((run: () => void) => {
                 this.nodeStatus = NODE_STATUS.READY;
                 logger.info("Node opened.");
 
-                return emptyFn;
+                return run;
             });
     }
 
@@ -85,21 +76,6 @@ class Node {
             resp.sendStatus(this.nodeStatus);
         });
 
-        // Initial nodes have "/open" route to start consuming from source
-        if (this.isInitial) {
-            app.get(ROUTE_OPEN, (req, resp) => {
-                logger.info("Open request received.");
-                this.openNode()
-                    .then((run: () => void) => {
-                        resp.sendStatus(200);
-                        run();
-                    })
-                    .catch(() => {
-                        resp.sendStatus(NODE_STATUS.ERROR);
-                    });
-            });
-        }
-
         return new Promise((resolve) => {
             const server = app.listen(this.debugPort, () => {
                 const sa = server.address();
@@ -113,25 +89,13 @@ class Node {
     }
 
     /**
-     *
-     * @return {boolean}
-     */
-    public isOpened() {
-        return this.opened;
-    }
-
-    /**
      * Opens node for work
      *
      * @return {Promise}
      * @private
      */
     private openNode(): Promise<() => void> {
-        if (this.opened) {
-            return Promise.resolve(emptyFn);
-        }
-
-        this.opened = true;
+        // TODO - add sending basic metrics here
 
         return this.faucet.open(
             (msgIn: JobMessage) => {
