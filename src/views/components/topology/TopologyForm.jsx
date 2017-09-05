@@ -4,7 +4,7 @@ import {Field, reduxForm} from 'redux-form'
 
 import * as topologyActions from '../../../actions/topologyActions';
 
-import TextInput from '../../elements/form/TextInput';
+import {FormTextInput, FormCheckboxInput} from '../../elements/formInputs';
 
 class TopologyForm extends React.Component {
   constructor(props) {
@@ -26,12 +26,12 @@ class TopologyForm extends React.Component {
   }
 
   onSubmit(data){
-    const {name, descr} = data;
+    const {name, descr, enabled} = data;
     const {onProcessing} = this.props;
     if (typeof onProcessing == 'function'){
       onProcessing(true);
     }
-    this.props.topologyUpdate({name, descr}).then(
+    this.props.topologyUpdate({name, descr, enabled: Boolean(enabled)}).then(
       response => {
         const {onSuccess, onProcessing} = this.props;
         if (typeof onProcessing == 'function'){
@@ -50,13 +50,23 @@ class TopologyForm extends React.Component {
   render() {
     return (
       <form className="form-horizontal form-label-left" onSubmit={this.props.handleSubmit(this._onSubmit)}>
-        <Field name="_id" component={TextInput} label="Id" readOnly/>
-        <Field name="name" component={TextInput} label="Name" />
-        <Field name="descr" component={TextInput} label="Description" />
+        <Field name="_id" component={FormTextInput} label="Id" readOnly/>
+        <Field name="name" component={FormTextInput} label="Name" />
+        <Field name="descr" component={FormTextInput} label="Description" />
+        <Field name="enabled" component={FormCheckboxInput} label="Enabled" />
         <button ref={this._setButton} className="hidden" />
       </form>
     );
   }
+}
+
+function validate(values){
+  const errors = {};
+  if (!values.name) {
+    errors.name = 'Name is required';
+  }
+
+  return errors;
 }
 
 function mapStateToProps(state, ownProps) {
@@ -72,4 +82,4 @@ function mapActionsToProps(dispatch, ownProps){
   }
 }
 
-export default connect(mapStateToProps, mapActionsToProps)(reduxForm()(TopologyForm));
+export default connect(mapStateToProps, mapActionsToProps)(reduxForm({validate})(TopologyForm));
