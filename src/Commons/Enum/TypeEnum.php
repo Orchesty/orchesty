@@ -10,15 +10,17 @@ namespace Hanaboso\PipesFramework\Commons\Enum;
 class TypeEnum extends EnumAbstraction
 {
 
-    public const ACTION = 'action';
-    public const EVENT  = 'event';
+    public const CONNECTOR = 'connector';
+    public const MAPPER    = 'mapper';
+    public const PARSER    = 'parser';
 
     /**
      * @var string[]
      */
     protected static $choices = [
-        self::ACTION => 'action',
-        self::EVENT  => 'event',
+        self::CONNECTOR => 'connector',
+        self::MAPPER    => 'mapper',
+        self::PARSER    => 'parser',
     ];
 
 }

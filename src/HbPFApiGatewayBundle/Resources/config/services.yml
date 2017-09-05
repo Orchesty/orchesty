@@ -3,8 +3,10 @@ services:
         class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Handler\TopologyHandler
         arguments:
             - "@hbpf.database_manager_locator"
-            - '@hbpf.manager.topology'
-
+    hbpf.handler.node:
+        class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Handler\NodeHandler
+        arguments:
+            - "@hbpf.database_manager_locator"
     hbpf.manager.topology:
         class: Hanaboso\PipesFramework\ApiGateway\Manager\TopologyManager
         arguments:

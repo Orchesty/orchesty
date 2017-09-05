@@ -9,6 +9,7 @@ use Hanaboso\PipesFramework\Commons\DatabaseManager\DatabaseManagerLocator;
 use Hanaboso\PipesFramework\Commons\Exception\TopologyException;
 use Hanaboso\PipesFramework\Commons\Topology\Document\Topology;
 use Hanaboso\PipesFramework\Commons\Topology\TopologyRepository;
+use Hanaboso\PipesFramework\Commons\Utils\UriParams;
 
 /**
  * Class TopologyHandler
@@ -55,15 +56,7 @@ class TopologyHandler
      */
     public function getTopologies($limit = NULL, $offset = NULL, $orderBy = NULL): array
     {
-        $sort = [];
-        if (!empty($orderBy)) {
-            foreach (explode(',', $orderBy) as $item) {
-                $name        = substr($item, 0, -1);
-                $direction   = substr($item, -1);
-                $sort[$name] = $direction;
-            }
-        }
-
+        $sort       = UriParams::parseOrderBy($orderBy);
         $topologies = $this->topologyRepository->findBy([], $sort, $limit, $offset);
 
         $data = [];
@@ -169,6 +162,7 @@ class TopologyHandler
             '_id'     => $topology->getId(),
             'name'    => $topology->getName(),
             'descr'   => $topology->getDescr(),
+            'status'  => $topology->getStatus(),
             'enabled' => $topology->isEnabled(),
             'status'  => $topology->getStatus(),
         ];
