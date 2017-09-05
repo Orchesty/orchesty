@@ -3,12 +3,15 @@
 namespace Hanaboso\PipesFramework\Commons\Node;
 
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 use Hanaboso\PipesFramework\Commons\Enum\HandlerEnum;
 
 /**
  * Class NodeRepository
  *
- * @package Hanaboso\PipesFramework\Commons\Node
+ * @MongoDB\Document(repositoryClass="Hanaboso\PipesFramework\Commons\Node\NodeRepository")
+ *
+ * @package Hanaboso\PipesFramework\Commons\Node\Document
  */
 class NodeRepository extends DocumentRepository
 {
@@ -34,6 +37,8 @@ class NodeRepository extends DocumentRepository
      */
     public function getNodeByTopology(string $topologyId, string $nodeId): void
     {
+        // todo
+
         count([$topologyId, $nodeId]);
     }
 
