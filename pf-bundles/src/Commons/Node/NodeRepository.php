@@ -13,6 +13,14 @@ class NodeRepository extends DocumentRepository
 {
 
     /**
+     * @return integer
+     */
+    public function getTotalCount(): int
+    {
+        return $this->createQueryBuilder()->count()->getQuery()->execute();
+    }
+
+    /**
      * @param string $topologyId
      * @param string $nodeId
      */

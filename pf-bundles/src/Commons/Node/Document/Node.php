@@ -4,6 +4,7 @@ namespace Hanaboso\PipesFramework\Commons\Node\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\Index;
+use Hanaboso\PipesFramework\Commons\Enum\HandlerEnum;
 use Hanaboso\PipesFramework\Commons\Enum\TypeEnum;
 use Hanaboso\PipesFramework\Commons\Exception\NodeException;
 use Hanaboso\PipesFramework\Commons\Node\Embed\EmbedNode;
@@ -49,14 +50,14 @@ class Node
      *
      * @MongoDB\Field(type="string")
      */
-    protected $service;
+    protected $type;
 
     /**
      * @var string
      *
      * @MongoDB\Field(type="string")
      */
-    protected $type;
+    protected $handler;
 
     /**
      * @var bool
@@ -128,27 +129,6 @@ class Node
     /**
      * @return string
      */
-    public function getService(): string
-    {
-        return $this->service;
-    }
-
-    /**
-     * @param string $service
-     *
-     * @return Node
-     * @throws NodeException
-     */
-    public function setService(string $service): Node
-    {
-        $this->service = $service;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
     public function getType(): string
     {
         return $this->type;
@@ -168,6 +148,34 @@ class Node
             throw new NodeException(
                 sprintf('Invalid node type "%s"', $type),
                 NodeException::INVALID_TYPE
+            );
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getHandler(): string
+    {
+        return $this->type;
+    }
+
+    /**
+     * @param string $handler
+     *
+     * @return Node
+     * @throws NodeException
+     */
+    public function setHandler(string $handler): Node
+    {
+        if (HandlerEnum::isValid($handler)) {
+            $this->handler = $handler;
+        } else {
+            throw new NodeException(
+                sprintf('Invalid node handler value "%s"', $handler),
+                NodeException::INVALID_HANDLER
             );
         }
 
