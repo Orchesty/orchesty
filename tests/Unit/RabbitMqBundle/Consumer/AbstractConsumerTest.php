@@ -65,7 +65,7 @@ class AbstractConsumerTest extends KernelTestCaseAbstract
             ['x-header-dead' => 500],
             10,
             500,
-            JsonSerializer::getInstance(),
+            JsonSerializer::class,
             NULL,
             'tick_up',
             5,
@@ -84,7 +84,7 @@ class AbstractConsumerTest extends KernelTestCaseAbstract
         $this->assertEquals(['x-header-dead' => 500], $consumer->getArguments());
         $this->assertEquals(10, $consumer->getPrefetchCount());
         $this->assertEquals(500, $consumer->getPrefetchSize());
-        $this->assertInstanceOf(JsonSerializer::class, $consumer->getSerializer());
+        $this->assertEquals('Hanaboso\PipesFramework\RabbitMqBundle\Serializers\JsonSerializer', $consumer->getSerializer());
         $this->assertNull($consumer->getSetUpMethod());
         $this->assertEquals('tick_up', $consumer->getTickMethod());
         $this->assertEquals(5, $consumer->getTickSeconds());

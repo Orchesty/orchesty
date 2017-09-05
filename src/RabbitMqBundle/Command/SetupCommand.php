@@ -21,10 +21,10 @@ class SetupCommand extends Command
     public $manager;
 
     /**
-	 * SetupCommand constructor.
-	 *
-	 * @param BunnyManager $manager
-	 */
+     * SetupCommand constructor.
+     *
+     * @param BunnyManager $manager
+     */
     public function __construct(BunnyManager $manager)
     {
         parent::__construct("rabbit-mq:setup");

@@ -58,8 +58,7 @@ class AbstractProducerTest extends KernelTestCaseAbstract
      */
     public function testGetMeta(): void
     {
-        $this->assertNull($this->producer->getSerializer());
-        $serializer = $this->producer->getMeta();
+        $serializer = $this->producer->getSerializer();
         $this->assertInstanceOf(JsonSerializer::class, $serializer);
     }
 
@@ -69,7 +68,7 @@ class AbstractProducerTest extends KernelTestCaseAbstract
     public function testCreateMeta(): void
     {
         $publisher = $this->getPublisher($this->getDefaultBunnyManager(), '');
-        $this->assertNull($publisher->createMeta());
+        $this->assertNull($publisher->createSerializer());
     }
 
     /**
@@ -108,7 +107,7 @@ class AbstractProducerTest extends KernelTestCaseAbstract
      * @param string                                  $serializerClassName
      * @param string                                  $beforeExecute
      *
-     * @return \PHPUnit_Framework_MockObject_MockObject|AbstractProducer
+     * @return PHPUnit_Framework_MockObject_MockObject|AbstractProducer
      */
     protected function getPublisher(
         PHPUnit_Framework_MockObject_MockObject $bunnyManager,
@@ -116,8 +115,8 @@ class AbstractProducerTest extends KernelTestCaseAbstract
         $beforeExecute = 'beforeExecute'
     ): AbstractProducer
     {
-
-        return $this->getMockForAbstractClass(AbstractProducer::class, [
+        /** @var PHPUnit_Framework_MockObject_MockObject $producer */
+        $producer = $this->getMockForAbstractClass(AbstractProducer::class, [
             'foo',
             '*.*',
             FALSE,
@@ -127,6 +126,8 @@ class AbstractProducerTest extends KernelTestCaseAbstract
             ContentTypes::APPLICATION_JSON,
             $bunnyManager,
         ]);
+
+        return $producer;
     }
 
     /**

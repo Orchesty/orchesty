@@ -1,5 +1,5 @@
 parameters:
-    rabbitmq.host: 127.0.0.1
+    rabbitmq.host: rabbitmq
     rabbitmq.port: 5672
     rabbitmq.vhost: /
     rabbitmq.user: guest
@@ -15,29 +15,6 @@ rabbit-mq:
     # make heartbeat as long as longest message processing time in any consumer might take
     heartbeat: 120 # in seconds = 2 minutes, default: 60 seconds
 
-    exchanges:
-        change:
-            durable: true   # durable means exchange won't be deleted on broker restart
-            type: topic     # topic exchanges route messages by given routing key
-                            # see https://www.rabbitmq.com/tutorials/amqp-concepts.html#exchange-topic
-                            # other possible types: direct, fanout, headers
-    queues:
-        demo:
-            durable: true
-            bindings:
-                - exchange: demo
-                  routing_key: demo_key
-
-    producers:
-        demo:
-            class: Hanaboso\PipesFramework\Commons\RabbitMq\Demo\DemoProducer
-            exchange: demo
-            serializer: Hanaboso\PipesFramework\RabbitMqBundle\Serializers\JsonSerializer
-            routing_key: demo_key
-
-    consumers:
-        demo:
-            class: Hanaboso\PipesFramework\Commons\RabbitMq\Demo\DemoConsumer
-            routing_key: demo_key
-            queue: demo
-            serializer: Hanaboso\PipesFramework\RabbitMqBundle\Serializers\JsonSerializer
+imports:
+    - { resource: rabbit-mq/repeater.yml }
+    - { resource: rabbit-mq/demo.yml }

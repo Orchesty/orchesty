@@ -108,8 +108,7 @@ class RabbitMqCompilerPass implements CompilerPassInterface
             );
         }
 
-        $config = $container->getParameter($this->configKey);
-
+        $config    = $container->getParameter($this->configKey);
         $consumers = [];
         $producers = [];
 
@@ -151,6 +150,7 @@ class RabbitMqCompilerPass implements CompilerPassInterface
         }
 
         foreach ($config['consumers'] as $key => $value) {
+
             $definition = new Definition($value['class'], [
                 $value['exchange'],
                 $value['routing_key'],
@@ -176,6 +176,13 @@ class RabbitMqCompilerPass implements CompilerPassInterface
                     new Reference('monolog.logger.rabbit-mq', ContainerInterface::IGNORE_ON_INVALID_REFERENCE),
                 ]);
             }
+
+            $definition->addMethodCall('setCallback', [
+                [
+                    new Reference($value['callback'], ContainerInterface::EXCEPTION_ON_INVALID_REFERENCE),
+                    'handleMessage',
+                ],
+            ]);
 
             $consumers[$key] = $definition;
 
@@ -224,6 +231,13 @@ class RabbitMqCompilerPass implements CompilerPassInterface
                 new Reference($this->managerServiceId),
                 $consumers,
             ]));
+
+        //        $container->setDefinition($this->producerCommandServiceId,
+        //            new Definition('%rabbit-mq.command.producer%', [
+        //                new Reference("service_container"),
+        //                new Reference($this->managerServiceId),
+        //                $consumers,
+        //            ]));
     }
 
     /**
