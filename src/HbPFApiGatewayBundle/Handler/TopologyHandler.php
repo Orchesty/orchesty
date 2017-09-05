@@ -44,7 +44,7 @@ class TopologyHandler
     {
         $this->dm                 = $dml->getDm();
         $this->topologyRepository = $this->dm->getRepository(Topology::class);
-        $this->manager = $manager;
+        $this->manager            = $manager;
     }
 
     /**
@@ -80,7 +80,7 @@ class TopologyHandler
     public function getTopology(string $id): array
     {
         $topology = $this->getTopologyById($id);
-        $data = $this->getTopologyData($topology);
+        $data     = $this->getTopologyData($topology);
 
         return $data;
     }
@@ -164,7 +164,6 @@ class TopologyHandler
             'descr'   => $topology->getDescr(),
             'status'  => $topology->getStatus(),
             'enabled' => $topology->isEnabled(),
-            'status'  => $topology->getStatus(),
         ];
     }
 

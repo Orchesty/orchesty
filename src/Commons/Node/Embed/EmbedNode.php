@@ -26,18 +26,16 @@ class EmbedNode
 
     /**
      * @param string $id
-     *
-     * @return string
      */
-    protected function setId($id)
+    protected function setId($id): void
     {
-        return $this->id = $id;
+        $this->id = $id;
     }
 
     /**
      * @return string
      */
-    public function getId()
+    public function getId(): string
     {
         return $this->id;
     }
@@ -45,21 +43,17 @@ class EmbedNode
     /**
      * @return string
      */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
     /**
      * @param string $name
-     *
-     * @return EmbedNode
      */
-    public function setName($name)
+    public function setName($name): void
     {
         $this->name = $name;
-
-        return $this;
     }
 
     /**
@@ -67,7 +61,7 @@ class EmbedNode
      *
      * @return self
      */
-    public static function from(Node $node)
+    public static function from(Node $node): EmbedNode
     {
         $e = new self();
         $e->setId($node->getId());
