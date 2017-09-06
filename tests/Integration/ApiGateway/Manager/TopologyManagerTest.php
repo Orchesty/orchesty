@@ -2,8 +2,12 @@
 
 namespace Tests\Integration\ApiGateway\Manager;
 
+use Hanaboso\PipesFramework\ApiGateway\Exception\TopologyException;
 use Hanaboso\PipesFramework\Commons\Enum\TopologyStatusEnum;
+use Hanaboso\PipesFramework\Commons\Enum\TypeEnum;
+use Hanaboso\PipesFramework\Commons\Node\Document\Node;
 use Hanaboso\PipesFramework\Commons\Topology\Document\Topology;
+use Hanaboso\PipesFramework\Commons\Topology\TopologyRepository;
 use Tests\DatabaseTestCaseAbstract;
 
 /**
@@ -81,6 +85,33 @@ class TopologyManagerTest extends DatabaseTestCaseAbstract
         self::assertEquals($top->getDescr(), $res->getDescr());
         self::assertEquals(TopologyStatusEnum::DRAFT, $res->getVisibility());
         self::assertEquals($top->isEnabled(), $res->isEnabled());
+    }
+
+    /**
+     *
+     */
+    public function testDeleteTopology(): void
+    {
+        $manager = $this->container->get('hbpf.manager.topology');
+
+        $node = new Node();
+        $top  = new Topology();
+        $top
+            ->setName('name')
+            ->setVisibility(TopologyStatusEnum::PUBLIC);
+        $this->persistAndFlush($top);
+        $node->setName('node')->setType(TypeEnum::MAPPER)->setTopology($top->getId());
+        $this->persistAndFlush($node);
+
+        self::expectException(TopologyException::class);
+        self::expectExceptionCode(TopologyException::CANNOT_DELETE_PUBLIC_TOPOLOGY);
+        $manager->deleteTopology($top);
+
+        $top->setVisibility(TopologyStatusEnum::DRAFT);
+        $manager->deleteTopology($top);
+        $this->dm->clear();
+        self::assertNull($this->dm->getRepository(TopologyRepository::class)->find($top->getId()));
+        self::assertNull($this->dm->getRepository(Node::class)->find($node->getId()));
     }
 
 }
