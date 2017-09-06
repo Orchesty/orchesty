@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types';
 import ReactDOM from 'react-dom';
 
 import BpmnModeler from 'bpmn-js/lib/Modeler';
@@ -18,23 +19,45 @@ class BpmnIoComponent extends React.Component {
     super(props);
     this._self = null;
     this._modeler = null;
+    this._changed = false;
+  }
+
+  _sendActions(){
+    this.props.actions([
+      {
+        caption: 'Save',
+        action: this.saveBPMN.bind(this),
+        disabled: !this._changed
+      },
+      {
+        caption: 'Import / Export',
+        items: [
+          {
+            caption: 'Import BPMN',
+            action: this.importBPMN.bind(this)
+          },
+          {
+            caption: 'Export BPMN',
+            action: this.exportBPMN.bind(this)
+          },
+          {
+            caption: 'Export SVG',
+            action: this.exportSVG.bind(this)
+          }
+        ]
+      }
+    ])
   }
 
   componentWillMount(){
-    this.props.actions([
-      {
-        caption: 'Import BPMN',
-        action: this.importBPMN.bind(this)
-      },
-      {
-        caption: 'Export BPMN',
-        action: this.exportBPMN.bind(this)
-      },
-      {
-        caption: 'Export SVG',
-        action: this.exportSVG.bind(this)
-      }
-    ])
+    this._sendActions();
+  }
+
+  changed(){
+    if (!this._changed){
+      this._changed = true;
+      this._sendActions();
+    }
   }
 
   loadXML() {
@@ -64,6 +87,19 @@ class BpmnIoComponent extends React.Component {
         }
         else {
           download(svg, 'export.svg', 'image/svg+xml');
+        }
+      });
+    }
+  }
+
+  saveBPMN(){
+    if (this._modeler){
+      this._modeler.saveXML((err, xml) => {
+        if (err){
+          err && this.props.onError(STring(err));
+        }
+        else if (this.props.onSave){
+          this.props.onSave(xml);
         }
       });
     }
@@ -115,6 +151,7 @@ class BpmnIoComponent extends React.Component {
     });
     this._modeler.attachTo(parent.childNodes[0]);
     this.loadXML();
+    this._modeler.get('eventBus').on('commandStack.changed', e => {this.changed()});
 
     parent.childNodes[2].addEventListener('change', e => {
       const reader = new FileReader();
@@ -145,5 +182,13 @@ class BpmnIoComponent extends React.Component {
     );
   }
 }
+
+BpmnIoComponent.propTypes = {
+  onSave: PropTypes.func,
+  schema: PropTypes.string,
+  onError: PropTypes.func.isRequired,
+  onImport: PropTypes.func.isRequired,
+  actions: PropTypes.func.isRequired
+};
 
 export default BpmnIoComponent;
