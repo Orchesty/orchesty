@@ -31,16 +31,15 @@ class TopologyManager
     }
 
     /**
-     * @param Topology $topology
-     * @param array    $data
+     * @param array $data
      *
      * @return Topology
      */
-    public function updateTopology(Topology $topology, array $data): Topology
+    public function createTopology(array $data): Topology
     {
-        $topology->setName($data['name']);
-        $topology->setDescr($data['descr']);
-        $topology->setEnabled($data['enabled']);
+        $topology = $this->setTopologyData(new Topology(), $data);
+
+        $this->dm->persist($topology);
         $this->dm->flush();
 
         return $topology;
@@ -52,20 +51,33 @@ class TopologyManager
      *
      * @return Topology
      */
-    public function saveTopologySchema(Topology $topology, array $data): Topology
+    public function updateTopology(Topology $topology, array $data): Topology
     {
-        if ($topology->getStatus() === TopologyStatusEnum::PUBLIC) {
-            $res = $this->cloneTopology($topology, $data['name']);
-        } else {
-            $res = $topology;
-            $res->setName($data['name']);
-            $this->dm->persist($res);
+        $topology = $this->setTopologyData($topology, $data);
+        $this->dm->flush();
+
+        return $topology;
+    }
+
+    /**
+     * @param Topology $topology
+     * @param string   $content
+     * @param array    $data
+     *
+     * @return Topology
+     */
+    public function saveTopologySchema(Topology $topology, string $content, array $data): Topology
+    {
+        if ($topology->getVisibility() === TopologyStatusEnum::PUBLIC) {
+            $topology = $this->cloneTopology($topology);
         }
 
-        $res->setDescr($data['descr']);
-        $res->setEnabled($data['enabled']);
+        $topology
+            ->setBpmn($data)
+            ->setRawBpmn($content);
+        $this->dm->flush();
 
-        return $res;
+        return $topology;
     }
 
     /**
@@ -75,32 +87,60 @@ class TopologyManager
      */
     public function publishTopology(Topology $topology): Topology
     {
-        $topology->setStatus(TopologyStatusEnum::PUBLIC);
+        $topology->setVisibility(TopologyStatusEnum::PUBLIC);
         $this->dm->flush();
 
         return $topology;
     }
 
     /**
-     * @param Topology    $topology
-     * @param string|NULL $name
+     * @param Topology $topology
      *
      * @return Topology
      */
-    public function cloneTopology(Topology $topology, ?string $name = NULL): Topology
+    public function cloneTopology(Topology $topology): Topology
     {
         $res = new Topology();
         $res
-            ->setStatus(TopologyStatusEnum::DRAFT)
-            ->setName(
-                $name ?? $topology->getName() . ' - copy'
-            )
+            ->setName($topology->getName() . ' - copy')
             ->setDescr($topology->getDescr())
             ->setEnabled($topology->isEnabled())
-            ->setBpmn($topology->getBpmn());
+            ->setBpmn($topology->getBpmn())
+            ->setRawBpmn($topology->getRawBpmn());
         $this->dm->persist($res);
 
         return $res;
+    }
+
+    /**
+     * @param Topology $topology
+     * @param array    $data
+     *
+     * @return Topology
+     */
+    private function setTopologyData(Topology $topology, array $data): Topology
+    {
+        if (isset($data['name'])) {
+            $topology->setName($data['name']);
+        }
+
+        if (isset($data['descr'])) {
+            $topology->setDescr($data['descr']);
+        }
+
+        if (isset($data['enabled'])) {
+            $topology->setEnabled($data['enabled']);
+        }
+
+        if (isset($data['visibility'])) {
+            $topology->setVisibility($data['visibility']);
+        }
+
+        if (isset($data['status'])) {
+            $topology->setStatus($data['status']);
+        }
+
+        return $topology;
     }
 
 }

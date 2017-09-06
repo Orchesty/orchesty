@@ -7,7 +7,7 @@ namespace Hanaboso\PipesFramework\Commons\Enum;
  *
  * @package Hanaboso\PipesFramework\Commons\Enum
  */
-class TopologyStatusEnum extends EnumAbstraction
+class TopologyStatusEnum extends EnumAbstract
 {
 
     public const DRAFT  = 'draft';

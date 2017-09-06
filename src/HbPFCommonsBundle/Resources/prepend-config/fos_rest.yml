@@ -1,8 +1,14 @@
 fos_rest:
     format_listener:
         rules:
+            - { path: '^/api/gateway/topologies/\w+/schema.bpmn', priorities: ['application/xml'] }
             - { path: '^/api', priorities: ['application/json', 'application/xml'] }
             - { path: '^/', priorities: ['text/html', '*/*'] }
 
     body_converter:
         enabled: true
+
+    body_listener:
+        decoders:
+            json: fos_rest.decoder.json
+            xml: fos_rest.decoder.xml

@@ -2,14 +2,14 @@
 
 namespace Hanaboso\PipesFramework\Acl\Enum;
 
-use Hanaboso\PipesFramework\Commons\Enum\EnumAbstraction;
+use Hanaboso\PipesFramework\Commons\Enum\EnumAbstract;
 
 /**
  * Class ResourceEnum
  *
  * @package Hanaboso\PipesFramework\Acl\Enum
  */
-final class ResourceEnum extends EnumAbstraction
+final class ResourceEnum extends EnumAbstract
 {
 
     public const GROUP    = 'group';

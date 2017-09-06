@@ -2,14 +2,14 @@
 
 namespace Hanaboso\PipesFramework\Acl\Enum;
 
-use Hanaboso\PipesFramework\Commons\Enum\EnumAbstraction;
+use Hanaboso\PipesFramework\Commons\Enum\EnumAbstract;
 
 /**
  * Class ActionEnum
  *
  * @package Hanaboso\PipesFramework\Acl\Enum
  */
-final class ActionEnum extends EnumAbstraction
+final class ActionEnum extends EnumAbstract
 {
 
     public const READ   = 'read';

@@ -2,14 +2,14 @@
 
 namespace Hanaboso\PipesFramework\User\Enum;
 
-use Hanaboso\PipesFramework\Commons\Enum\EnumAbstraction;
+use Hanaboso\PipesFramework\Commons\Enum\EnumAbstract;
 
 /**
  * Class UserTypeEnum
  *
  * @package Hanaboso\PipesFramework\User\Enum
  */
-final class UserTypeEnum extends EnumAbstraction
+final class UserTypeEnum extends EnumAbstract
 {
 
     public const USER     = 'user';

@@ -14,7 +14,7 @@ namespace Hanaboso\PipesFramework\Commons\Enum;
  * @package AppBundle\Model\Enums
  */
 
-final class FileFormatEnum extends EnumAbstraction
+final class FileFormatEnum extends EnumAbstract
 {
 
     public const XML  = 'xml';

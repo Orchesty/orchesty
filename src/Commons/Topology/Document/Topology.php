@@ -3,9 +3,11 @@
 namespace Hanaboso\PipesFramework\Commons\Topology\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
+use Hanaboso\PipesFramework\Commons\Enum\StatusEnum;
 use Hanaboso\PipesFramework\Commons\Enum\TopologyStatusEnum;
 use Hanaboso\PipesFramework\Commons\Exception\TopologyException;
 use Hanaboso\PipesFramework\Commons\Traits\Document\IdTrait;
+use Nette\Utils\Json;
 
 /**
  * Class Topology
@@ -38,7 +40,14 @@ class Topology
      *
      * @MongoDB\Field(type="string", options={"default":"draft"})
      */
-    protected $status = TopologyStatusEnum::DRAFT;
+    protected $visibility = TopologyStatusEnum::DRAFT;
+
+    /**
+     * @var string
+     *
+     * @MongoDB\Field(type="string")
+     */
+    protected $status = StatusEnum::NEW;
 
     /**
      * @var bool
@@ -53,6 +62,22 @@ class Topology
      * @MongoDB\Field(type="string")
      */
     protected $bpmn;
+
+    /**
+     * @var string
+     *
+     * @MongoDB\Field(type="string")
+     */
+    protected $rawBpmn;
+
+    /**
+     * Topology constructor.
+     */
+    public function __construct()
+    {
+        $this->visibility = TopologyStatusEnum::DRAFT;
+        $this->status     = StatusEnum::NEW;
+    }
 
     /**
      * @return string
@@ -97,6 +122,34 @@ class Topology
     /**
      * @return string
      */
+    public function getVisibility(): string
+    {
+        return $this->visibility;
+    }
+
+    /**
+     * @param string $visibility
+     *
+     * @return Topology
+     * @throws TopologyException
+     */
+    public function setVisibility(string $visibility): Topology
+    {
+        if (TopologyStatusEnum::isValid($visibility)) {
+            $this->visibility = $visibility;
+        } else {
+            throw new TopologyException(
+                sprintf('Invalid topology visibility "%s"', $visibility),
+                TopologyException::INVALID_TOPOLOGY_TYPE
+            );
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
     public function getStatus(): string
     {
         return $this->status;
@@ -106,18 +159,10 @@ class Topology
      * @param string $status
      *
      * @return Topology
-     * @throws TopologyException
      */
     public function setStatus(string $status): Topology
     {
-        if (TopologyStatusEnum::isValid($status)) {
-            $this->status = $status;
-        } else {
-            throw new TopologyException(
-                sprintf('Invalid topology status "%s"', $status),
-                TopologyException::INVALID_TOPOLOGY_TYPE
-            );
-        }
+        $this->status = (new StatusEnum($status))->getValue();
 
         return $this;
     }
@@ -143,21 +188,41 @@ class Topology
     }
 
     /**
-     * @return string
+     * @return array
      */
-    public function getBpmn(): string
+    public function getBpmn(): array
     {
-        return $this->bpmn;
+        return Json::decode($this->bpmn, Json::FORCE_ARRAY);
     }
 
     /**
-     * @param string $bpmn
+     * @param array $bpmn
      *
      * @return Topology
      */
-    public function setBpmn(string $bpmn): Topology
+    public function setBpmn(array $bpmn): Topology
     {
-        $this->bpmn = $bpmn;
+        $this->bpmn = Json::encode($bpmn);
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getRawBpmn(): string
+    {
+        return $this->rawBpmn;
+    }
+
+    /**
+     * @param string $rawBpmn
+     *
+     * @return Topology
+     */
+    public function setRawBpmn(string $rawBpmn): Topology
+    {
+        $this->rawBpmn = $rawBpmn;
 
         return $this;
     }

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                  xmlns:camunda="http://camunda.org/schema/1.0/bpmn"
+                  id="Schema1" targetNamespace="http://bpmn.io/schema/bpmn">
+    <bpmn:process id="Process1" isExecutable="1">
+        <bpmn:startEvent id="StartEvent1" name="StartEvent1" camunda:initiator="StartEvent1"/>
+        <bpmn:startEvent id="StartEvent2" name="StartEvent2" camunda:initiator="StartEvent2"/>
+        <bpmn:startEvent id="StartEvent3" name="StartEvent3" camunda:initiator="StartEvent3"/>
+    </bpmn:process>
+</bpmn:definitions>
