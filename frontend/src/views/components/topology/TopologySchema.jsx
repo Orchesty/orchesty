@@ -18,27 +18,29 @@ class TopologySchema extends React.Component {
   }
 
   componentWillMount(){
-    this._loadSchema();
+    this._needSchema(this.props);
   }
 
-  componentWillReceiveProps (nextProps){
-    if (this.props.schemaId != nextProps.schemaId){
-      this._loadSchema();
+  componentWillReceiveProps(nextProps){
+    this._needSchema(nextProps);
+  }
+
+  _needSchema(props){
+    if (props.schema === undefined){
+      this.setState({state: stateType.LOADING});
+      props.loadTopologySchema().then(response => {
+        this.setState({state: stateType.SUCCESS});
+      });
     }
-  }
-
-  _loadSchema(){
-    this.setState({state: stateType.LOADING});
-    this.props.loadTopologySchema().then(response => {
-      this.setState({state: stateType.SUCCESS});
-    });
   }
 
   save(xml){
     this.props.saveTopologySchema(xml).then(topology => {
-      if (topology && topology._id !== this.props.schemaId){
+      if (topology){
         this.props.addSuccessNotification('Schema was saved successfully.');
-        this.props.onChangeTopology(topology._id);
+        if (topology._id !== this.props.schemaId){
+          this.props.onChangeTopology(topology._id);
+        }
       }
     });
   }

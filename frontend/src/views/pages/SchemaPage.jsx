@@ -5,7 +5,7 @@ import {connect} from 'react-redux';
 import * as applicationActions from '../../actions/applicationActions';
 
 import TopologySchema from '../components/topology/TopologySchema';
-import ActionButton from '../elements/ActionButton';
+import ActionButtonPanel from '../elements/actions/ActionButtonPanel';
 
 class SchemaPage extends React.Component {
   constructor(props) {
@@ -32,8 +32,7 @@ class SchemaPage extends React.Component {
             <div className="title_left"><h3>Topology schema</h3></div>
             <div className="title_right">
               <div className="pull-right">
-
-                {pageActions ? <ActionButton items={pageActions} size="md" right={true}/> : null}
+                <ActionButtonPanel items={pageActions} size="md" right={true}/>
               </div>
             </div>
           </div>

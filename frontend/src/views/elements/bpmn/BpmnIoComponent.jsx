@@ -24,20 +24,25 @@ class BpmnIoComponent extends React.Component {
   componentWillMount(){
     this.props.actions([
       {
-        caption: 'Import BPMN',
-        action: this.importBPMN.bind(this)
-      },
-      {
-        caption: 'Export BPMN',
-        action: this.exportBPMN.bind(this)
-      },
-      {
-        caption: 'Export SVG',
-        action: this.exportSVG.bind(this)
-      },
-      {
         caption: 'Save',
         action: this.saveBPMN.bind(this)
+      },
+      {
+        caption: 'Import / Export',
+        items: [
+          {
+            caption: 'Import BPMN',
+            action: this.importBPMN.bind(this)
+          },
+          {
+            caption: 'Export BPMN',
+            action: this.exportBPMN.bind(this)
+          },
+          {
+            caption: 'Export SVG',
+            action: this.exportSVG.bind(this)
+          }
+        ]
       }
     ])
   }

@@ -7,7 +7,7 @@ import * as applicationActions from '../../../actions/applicationActions';
 import SimpleState from '../../elements/state/SimpleState';
 import BoolValue from '../../elements/BoolValue';
 import SortTh from '../../elements/table/SortTh';
-import ActionButton from '../../elements/ActionButton';
+import ActionButton from '../../elements/actions/ActionButton';
 import ListPagination from '../../elements/table/ListPagination';
 
 class TopologyListTable extends React.Component {
@@ -51,7 +51,7 @@ class TopologyListTable extends React.Component {
             <td>{item.name}</td>
             <td>{item.descr}</td>
             <td><BoolValue value={item.enabled}/></td>
-            <td><ActionButton items={menuItems} right={true} /></td>
+            <td><ActionButton item={menuItems} right={true} /></td>
           </tr>
         )
       }
