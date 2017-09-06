@@ -146,6 +146,19 @@ export function topologyUpdate(id, data){
   }
 }
 
+export function topologyCreate(data){
+  return dispath => {
+    return serverRequest(dispath, 'POST', `/topologies`, null, data).then(
+      response => {
+        if (response){
+          dispath(receive(response));
+        }
+        return response;
+      }
+    )
+  }
+}
+
 export function loadTopologySchema(id, force = false){
   return (dispatch, getState) => {
     if (force || !getState().topology.schemas[id]){
