@@ -18,3 +18,4 @@ rabbit-mq:
 imports:
     - { resource: rabbit-mq/repeater.yml }
     - { resource: rabbit-mq/demo.yml }
+    - { resource: rabbit-mq/starting-point.yml }

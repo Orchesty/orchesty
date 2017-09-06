@@ -1,0 +1,5 @@
+rabbit-mq:
+    producers:
+        starting_point:
+            class: Hanaboso\PipesFramework\Commons\StartingPoint\StartingPointProducer
+            serializer: Hanaboso\PipesFramework\RabbitMqBundle\Serializers\JsonSerializer

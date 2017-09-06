@@ -1,4 +1,9 @@
 services:
     hbpf.commons.node_handler:
         class: Hanaboso\PipesFramework\HbPFCommonsBundle\Handler\NodeHandler
+
+    hbpf.commons.handler.starting_point:
+        class: Hanaboso\PipesFramework\HbPFCommonsBundle\Handler\StartingPointHandler
         arguments:
+            - "@doctrine.odm.mongodb.document_manager"
+            - '@hbpf.starting_point.starting_point'
