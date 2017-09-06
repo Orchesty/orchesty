@@ -1,4 +1,4 @@
-import JobMessage from "../../../message/JobMessage";
+import JobMessage, {IResult} from "../../../message/JobMessage";
 
 export interface IHttpWorkerRequestParams {
     method: string;
@@ -7,16 +7,27 @@ export interface IHttpWorkerRequestParams {
     gzip: boolean;
     body: string;
     headers: {
-        messageId: string,
-        replyToUrl?: string,
-        replyToMethod?: string,
+        job_id: string,
+        sequence_id: number,
+        message_id: string,
+        reply_to_url?: string,
+        reply_to_method?: string,
     };
 }
 
 class AHttpWorker {
 
-    constructor(private method: string, private url: string) {
+    protected static createOutMessage(inMsg: JobMessage, content: string, result: IResult) {
+        return new JobMessage(
+            inMsg.getJobId(),
+            inMsg.getSequenceId(),
+            inMsg.getHeaders(),
+            content,
+            result,
+        );
     }
+
+    constructor(private method: string, private url: string) {}
 
     protected getHttpRequestParams(inMsg: JobMessage): IHttpWorkerRequestParams {
         return {
@@ -24,9 +35,11 @@ class AHttpWorker {
             url: this.url,
             json: true,
             gzip: true,
-            body: inMsg.getContent(),
+            body: JSON.stringify(inMsg.getContent()),
             headers: {
-                messageId: inMsg.getId(),
+                job_id: inMsg.getJobId(),
+                sequence_id: inMsg.getSequenceId(),
+                message_id: inMsg.getUuid(),
             },
         };
     }

@@ -1,4 +1,4 @@
-import { Channel } from "amqplib";
+import {Channel, Options} from "amqplib";
 import logger from "lib-nodejs/dist/src/logger/Logger";
 import Connection from "lib-nodejs/dist/src/rabbitmq/Connection";
 import Publisher from "lib-nodejs/dist/src/rabbitmq/Publisher";
@@ -50,7 +50,13 @@ class FollowersPublisher extends Publisher {
      * @return {Promise<void>}
      */
     public send(message: JobMessage): Promise<void> {
-        const options = { headers: message.getHeaders(), messageId: message.getId() };
+        const options: Options.Publish = {
+            headers: message.getHeaders(),
+            type: "job_message",
+            messageId: message.getUuid(),
+            timestamp: Date.now(),
+            appId: this.settings.node_id,
+        };
 
         const promises: Array<Promise<void>> = [];
         this.settings.followers.forEach((follower: IFollower) => {

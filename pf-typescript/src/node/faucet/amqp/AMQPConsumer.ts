@@ -24,7 +24,12 @@ class Consumer extends BasicConsumer {
     public processMessage(amqMsg: Message, channel: Channel): void {
         let message: JobMessage;
         try {
-            message = new JobMessage(amqMsg.properties.headers, amqMsg.content.toString());
+            message = new JobMessage(
+                amqMsg.properties.headers.job_id,
+                amqMsg.properties.headers.sequence_id,
+                amqMsg.properties.headers,
+                amqMsg.content.toString(),
+            );
         } catch (e) {
             logger.error(`Dead-lettering message. Reason: ${e}`);
             channel.nack(amqMsg, false, false); // dead-letter due to invalid message

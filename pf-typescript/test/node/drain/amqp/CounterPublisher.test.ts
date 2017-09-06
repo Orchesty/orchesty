@@ -1,10 +1,11 @@
 import { assert } from "chai";
 import "mocha";
 
-import {Channel, Message} from "amqplib";
+import {Channel, Message, Options} from "amqplib";
 import Connection from "lib-nodejs/dist/src/rabbitmq/Connection";
 import SimpleConsumer from "lib-nodejs/dist/src/rabbitmq/SimpleConsumer";
 import JobMessage from "../../../../src/message/JobMessage";
+import {ResultCode} from "../../../../src/message/ResultCode";
 import CounterPublisher from "../../../../src/node/drain/amqp/CounterPublisher";
 import {IAMQPDrainSettings} from "../../../../src/node/drain/AMQPDrain";
 import {testAmqpConnectionOptions} from "../../../config";
@@ -52,16 +53,36 @@ const settings: IAMQPDrainSettings = {
 describe("CounterPublisher", () => {
     it("composes message in correct format", () => {
         const publisher = new CounterPublisher(conn, settings);
-        const msgHeaders = { job_id: "123", sequence_id: 1};
+        const msgJobId = "123";
+        const msgSeqId = 1;
+        const msgHeaders = { job_id: msgJobId, sequence_id: msgSeqId.toString()};
         const msgBody = JSON.stringify({data: "test", settings: {}});
-        const msg: JobMessage = new JobMessage(msgHeaders, msgBody);
-        msg.setJobResultOK();
+        const msg: JobMessage = new JobMessage(
+            msgJobId,
+            msgSeqId,
+            msgHeaders,
+            msgBody,
+            { status: ResultCode.SUCCESS, message: ""},
+        );
 
         // Overrides the parental function to check the data being sent easily
-        publisher.sendToQueue = (q: string, body: Buffer, opts: any) => {
+        publisher.sendToQueue = (q: string, body: Buffer, opts: Options.Publish) => {
             return new Promise((resolve) => {
                 assert.equal(q, settings.counter_event.queue.name);
-                assert.deepEqual(opts, { headers: { job_id: "123", node_id: settings.node_id}});
+                // In order to be able to test these random values
+                opts.messageId = "fakeId";
+                opts.timestamp = 10203040;
+                assert.deepEqual(
+                    opts,
+                    {
+                        headers: { job_id: "123", node_id: settings.node_id},
+                        type: "counter_message",
+                        appId: settings.node_id,
+                        messageId: "fakeId",
+                        timestamp: 10203040,
+
+            },
+                );
                 assert.deepEqual(
                     JSON.parse(body.toString()),
                     {
@@ -83,7 +104,9 @@ describe("CounterPublisher", () => {
     });
     it("publishes message to counter input queue", (done) => {
         const publisher = new CounterPublisher(conn, settings);
-        const msgHeaders = { job_id: "123", sequence_id: 1};
+        const msgJobId = "123";
+        const msgSeqId = 1;
+        const msgHeaders = { job_id: msgJobId, sequence_id: msgSeqId.toString()};
         const msgBody = {data: "test", settings: {}};
 
         const consumer = new SimpleConsumer(
@@ -113,8 +136,13 @@ describe("CounterPublisher", () => {
         );
         consumer.consume(settings.counter_event.queue.name, {})
             .then(() => {
-                const msg: JobMessage = new JobMessage(msgHeaders, JSON.stringify(msgBody));
-                msg.setJobResultOK();
+                const msg: JobMessage = new JobMessage(
+                    msgJobId,
+                    msgSeqId,
+                    msgHeaders,
+                    JSON.stringify(msgBody),
+                    { status: ResultCode.SUCCESS, message: ""},
+                );
                 publisher.send(msg);
             });
     });

@@ -67,7 +67,7 @@ class HttpAsyncWorker extends AHttpWorker {
                     return reject(inMsg);
                 }
 
-                this.pending[inMsg.getId()] = { msg: inMsg, resolve, reject };
+                this.pending[inMsg.getUuid()] = { msg: inMsg, resolve, reject };
 
                 return JobMessage;
             });
@@ -81,8 +81,8 @@ class HttpAsyncWorker extends AHttpWorker {
      */
     private addReplyToHeaders(reqParams: IHttpWorkerRequestParams): IHttpWorkerRequestParams {
         const respConf = this.settings.response;
-        reqParams.headers.replyToUrl = `${respConf.host}:${respConf.port}${respConf.path}`;
-        reqParams.headers.replyToMethod = respConf.method;
+        reqParams.headers.reply_to_url = `${respConf.host}:${respConf.port}${respConf.path}`;
+        reqParams.headers.reply_to_method = respConf.method;
 
         return reqParams;
     }

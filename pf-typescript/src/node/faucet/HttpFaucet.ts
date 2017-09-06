@@ -77,8 +77,9 @@ class HttpFaucet implements IFaucet {
 
         try {
             const body = JSON.stringify(req.body);
-            inMsg = new JobMessage(req.headers, body);
+            inMsg = new JobMessage(req.headers.job_id, parseInt(req.headers.sequence_id, 10), req.headers, body);
         } catch (err) {
+            err.message = `Cannot create JobMessage from http request. ${err.message}`;
             return Promise.reject(err);
         }
 

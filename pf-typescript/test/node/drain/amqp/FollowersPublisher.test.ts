@@ -5,6 +5,7 @@ import {Channel, Message} from "amqplib";
 import Connection from "lib-nodejs/dist/src/rabbitmq/Connection";
 import SimpleConsumer from "lib-nodejs/dist/src/rabbitmq/SimpleConsumer";
 import JobMessage from "../../../../src/message/JobMessage";
+import {ResultCode} from "../../../../src/message/ResultCode";
 import FollowersPublisher from "../../../../src/node/drain/amqp/FollowersPublisher";
 import {IAMQPDrainSettings} from "../../../../src/node/drain/AMQPDrain";
 import {testAmqpConnectionOptions} from "../../../config";
@@ -19,7 +20,7 @@ const settings: IAMQPDrainSettings = {
         },
     },
     resequencer: false,
-    // All followers targets the same exchange with the same RK
+    // All followers targets the same exchange and queue with the same RK
     followers: [
         {
             node_id: "follower1",
@@ -72,11 +73,12 @@ describe("FollowersPublisher", () => {
             }
         };
 
-        const outputQueue = "test-followers-queue";
         const fConfig = settings.followers[0];
-
+        const outputQueue = fConfig.queue.name;
         const publisher = new FollowersPublisher(conn, settings);
-        const msgHeaders = { job_id: "123", sequence_id: 1};
+        const msgJobId = "123";
+        const msgSeqId = 1;
+        const msgHeaders = { job_id: msgJobId, sequence_id: msgSeqId.toString()};
         const msgBody = {data: "test", settings: {}};
 
         const consumer = new SimpleConsumer(
@@ -108,8 +110,14 @@ describe("FollowersPublisher", () => {
 
         consumer.consume(outputQueue, {})
             .then(() => {
-                const msg: JobMessage = new JobMessage(msgHeaders, JSON.stringify(msgBody));
-                msg.setJobResultOK();
+                const msg: JobMessage = new JobMessage(
+                    msgJobId,
+                    msgSeqId,
+                    msgHeaders,
+                    JSON.stringify(msgBody),
+                    { status: ResultCode.SUCCESS, message: ""},
+                );
+
                 // This should send 3 messages
                 publisher.send(msg);
             });

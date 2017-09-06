@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 
-// TODO get topology from config microservice
 import logger from "lib-nodejs/dist/src/logger/Logger";
 import * as yargs from "yargs";
 import Pipes from "../Pipes";

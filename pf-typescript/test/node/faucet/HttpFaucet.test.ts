@@ -56,7 +56,7 @@ describe("HttpFaucet", () => {
             .then(() => {
                 const options = {
                     method: "post",
-                    uri: "http://localhost:6038/",
+                    uri: "http://localhost:6039/",
                     headers: {
                         // Missing job_id header
                         // job_id: "A23B23",
@@ -68,7 +68,7 @@ describe("HttpFaucet", () => {
             })
             .catch((err: any) => {
                 assert.equal(500, err.statusCode);
-                assert.include(err.message, "Cannot instantiate JobMessage. Missing job_id.");
+                assert.include(err.message, "Cannot create JobMessage from http request.");
             });
     });
 });

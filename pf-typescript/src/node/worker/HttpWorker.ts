@@ -14,11 +14,11 @@ class HttpWorker extends AHttpWorker {
 
     /**
      *
-     * @param {JobMessage} msg
+     * @param {JobMessage} inMsg
      * @return {Promise<JobMessage>}
      */
-    public processData(msg: JobMessage): Promise<JobMessage> {
-        const reqParams = this.getHttpRequestParams(msg);
+    public processData(inMsg: JobMessage): Promise<JobMessage> {
+        const reqParams = this.getHttpRequestParams(inMsg);
 
         return new Promise((resolve, reject) => {
 
@@ -27,21 +27,35 @@ class HttpWorker extends AHttpWorker {
             // Make http request and wait for response
             request(reqParams, (err, response, body) => {
                 if (err) {
-                    msg.setJobResultFailed(ResultCode.HTTP_ERROR, err);
-                    return reject(msg);
+                    return reject(
+                        AHttpWorker.createOutMessage(
+                            inMsg,
+                            inMsg.getContent(),
+                            { status: ResultCode.HTTP_ERROR, message: err },
+                        ),
+                    );
                 }
 
                 if (!response.statusCode || response.statusCode !== 200) {
-                    msg.setJobResultFailed(
-                        ResultCode.HTTP_ERROR, `Http response with code ${response.statusCode} received`,
+                    return reject(
+                        AHttpWorker.createOutMessage(
+                            inMsg,
+                            inMsg.getContent(),
+                            {
+                                status: ResultCode.HTTP_ERROR,
+                                message: `Http response with code ${response.statusCode} received`,
+                            },
+                        ),
                     );
-                    return reject(msg);
                 }
 
-                msg.setContent(body);
-                msg.setJobResultOK();
+                const outMsg = AHttpWorker.createOutMessage(
+                    inMsg,
+                    body,
+                    { status: ResultCode.SUCCESS, message: "Http worker OK." },
+                );
 
-                return resolve(msg);
+                return resolve(outMsg);
             });
         });
     }
