@@ -8,7 +8,7 @@ doctrine_mongodb:
     hydrator_dir: "%kernel.cache_dir%/doctrine/odm/mongodb/Hydrators"
     connections:
         default:
-            server: mongodb://mongo
+            server: "mongodb://%mongo_host%"
             options:
                 connectTimeoutMS: 5000
                 socketTimeoutMS: 5000
