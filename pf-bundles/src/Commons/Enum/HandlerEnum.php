@@ -7,7 +7,7 @@ namespace Hanaboso\PipesFramework\Commons\Enum;
  *
  * @package Hanaboso\PipesFramework\Commons\Enum
  */
-class HandlerEnum extends EnumAbstraction
+class HandlerEnum extends EnumAbstract
 {
 
     public const ACTION = 'action';

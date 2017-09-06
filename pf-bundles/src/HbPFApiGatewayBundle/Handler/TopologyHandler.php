@@ -80,9 +80,21 @@ class TopologyHandler
     public function getTopology(string $id): array
     {
         $topology = $this->getTopologyById($id);
-        $data     = $this->getTopologyData($topology);
 
-        return $data;
+        return $this->getTopologyData($topology);
+    }
+
+    /**
+     * @param array $data
+     *
+     * @return array
+     */
+    public function createTopology(array $data): array
+    {
+        $topology = $this->manager->createTopology($data);
+
+        return $this->getTopologyData($topology);
+
     }
 
     /**
@@ -106,21 +118,20 @@ class TopologyHandler
      */
     public function getTopologySchema(string $id): string
     {
-        $topology = $this->getTopologyById($id);
-
-        return $topology->getBpmn();
+        return $this->getTopologyById($id)->getRawBpmn();
     }
 
     /**
      * @param string $id
+     * @param string $content
      * @param array  $data
      *
      * @return string[]
      */
-    public function saveTopologySchema(string $id, array $data): array
+    public function saveTopologySchema(string $id, string $content, array $data): array
     {
         $topology = $this->getTopologyById($id);
-        $topology = $this->manager->saveTopologySchema($topology, $data);
+        $topology = $this->manager->saveTopologySchema($topology, $content, $data);
 
         return $this->getTopologyData($topology);
     }
@@ -159,11 +170,12 @@ class TopologyHandler
     private function getTopologyData(Topology $topology): array
     {
         return [
-            '_id'     => $topology->getId(),
-            'name'    => $topology->getName(),
-            'descr'   => $topology->getDescr(),
-            'status'  => $topology->getStatus(),
-            'enabled' => $topology->isEnabled(),
+            '_id'        => $topology->getId(),
+            'name'       => $topology->getName(),
+            'descr'      => $topology->getDescr(),
+            'enabled'    => $topology->isEnabled(),
+            'visibility' => $topology->getVisibility(),
+            'status'     => $topology->getStatus(),
         ];
     }
 

@@ -4,7 +4,9 @@ namespace Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller;
 
 use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Controller\FOSRestController;
+use Hanaboso\PipesFramework\Commons\Exception\TopologyException;
 use Hanaboso\PipesFramework\HbPFApiGatewayBundle\Handler\TopologyHandler;
+use Hanaboso\PipesFramework\Utils\ControllerUtils;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -65,9 +67,29 @@ class TopologyController extends FOSRestController
      */
     public function getTopologyAction(string $id): Response
     {
-        $data = $this->topologyHandler->getTopology($id);
+        try {
+            return new JsonResponse($this->topologyHandler->getTopology($id));
+        } catch (TopologyException $e) {
+            return new JsonResponse(ControllerUtils::createExceptionData($e), 500);
+        }
 
-        return new JsonResponse($data, 200);
+    }
+
+    /**
+     * @Route("/topologies", requirements={"id": "\w+"})
+     * @Method({"POST"})
+     *
+     * @param Request $request
+     *
+     * @return Response
+     */
+    public function createTopologyAction(Request $request): Response
+    {
+        try {
+            return new JsonResponse($this->topologyHandler->createTopology($request->request->all()));
+        } catch (TopologyException $e) {
+            return new JsonResponse(ControllerUtils::createExceptionData($e), 500);
+        }
     }
 
     /**
@@ -81,13 +103,15 @@ class TopologyController extends FOSRestController
      */
     public function updateTopologyAction(Request $request, string $id): Response
     {
-        $data = $this->topologyHandler->updateTopology($id, $request->request->all());
-
-        return new JsonResponse($data, 200);
+        try {
+            return new JsonResponse($this->topologyHandler->updateTopology($id, $request->request->all()));
+        } catch (TopologyException $e) {
+            return new JsonResponse(ControllerUtils::createExceptionData($e), 500);
+        }
     }
 
     /**
-     * @Route("/topologies/{id}/schema.bpmn", defaults={}, requirements={"id": "\w+"})
+     * @Route("/topologies/{id}/schema.bpmn", defaults={"_format"="xml"}, requirements={"id": "\w+"})
      * @Method({"GET", "OPTIONS"})
      *
      * @param string $id
@@ -96,13 +120,18 @@ class TopologyController extends FOSRestController
      */
     public function getTopologySchema(string $id): Response
     {
-        $data = $this->topologyHandler->getTopologySchema($id);
+        try {
+            $response = new Response($this->topologyHandler->getTopologySchema($id));
+            $response->headers->set('Content-Type', 'application/xml');
 
-        return new JsonResponse($data, 200);
+            return $response;
+        } catch (TopologyException $e) {
+            return new JsonResponse(ControllerUtils::createExceptionData($e), 500);
+        }
     }
 
     /**
-     * @Route("/topologies/{id}/schema.bpmn", defaults={}, requirements={"id": "\w+"})
+     * @Route("/topologies/{id}/schema.bpmn", defaults={"_format"="xml"}, requirements={"id": "\w+"})
      * @Method({"PUT", "OPTIONS"})
      *
      * @param Request $request
@@ -112,9 +141,18 @@ class TopologyController extends FOSRestController
      */
     public function saveTopologySchema(Request $request, string $id): Response
     {
-        $data = $this->topologyHandler->saveTopologySchema($id, $request->request->all());
+        try {
+            /** @var string $content */
+            $content = $request->getContent();
 
-        return new JsonResponse($data, 200);
+            return new JsonResponse($this->topologyHandler->saveTopologySchema(
+                $id,
+                $content,
+                $request->request->all()
+            ));
+        } catch (TopologyException $e) {
+            return new JsonResponse(ControllerUtils::createExceptionData($e), 500);
+        }
     }
 
     /**

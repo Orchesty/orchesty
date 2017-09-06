@@ -5,11 +5,11 @@ namespace Hanaboso\PipesFramework\Commons\Enum;
 use Hanaboso\PipesFramework\Commons\Exception\EnumException;
 
 /**
- * Class EnumAbstraction
+ * Class EnumAbstract
  *
  * @package Hanaboso\PipesFramework\Commons\Enum
  */
-abstract class EnumAbstraction
+abstract class EnumAbstract
 {
 
     /**
@@ -23,7 +23,7 @@ abstract class EnumAbstraction
     protected static $choices = [];
 
     /**
-     * EnumAbstraction constructor.
+     * EnumAbstract constructor.
      *
      * @param string $val
      * @throws EnumException

@@ -21,10 +21,11 @@ class TopologyManagerTest extends DatabaseTestCaseAbstract
     {
         $top = new Topology();
         $top
-            ->setStatus(TopologyStatusEnum::DRAFT)
+            ->setVisibility(TopologyStatusEnum::DRAFT)
             ->setDescr('asd')
             ->setName('asdd')
-            ->setBpmn('bpmn')
+            ->setBpmn(['bpmn'])
+            ->setRawBpmn('bpmn')
             ->setEnabled(TRUE);
 
         $this->dm->persist($top);
@@ -42,36 +43,9 @@ class TopologyManagerTest extends DatabaseTestCaseAbstract
         $top = $this->dm->getRepository(Topology::class)->findOneBy(['id' => $top->getId()]);
         self::assertEquals('name', $top->getName());
         self::assertEquals('desc', $top->getDescr());
-        self::assertEquals('bpmn', $top->getBpmn());
+        self::assertEquals(['bpmn'], $top->getBpmn());
+        self::assertEquals('bpmn', $top->getRawBpmn());
         self::assertFalse($top->isEnabled());
-    }
-
-    /**
-     *
-     */
-    public function testSaveTopologySchema(): void
-    {
-        $top = new Topology();
-        $top
-            ->setName('asd')
-            ->setDescr('wer')
-            ->setStatus(TopologyStatusEnum::PUBLIC)
-            ->setEnabled(FALSE)
-            ->setBpmn('asdd');
-        $this->dm->persist($top);
-
-        $data = [
-            'name'    => NULL,
-            'descr'   => 'qwe',
-            'enabled' => TRUE,
-        ];
-
-        /** @var Topology $res */
-        $res = $this->container->get('hbpf.manager.topology')->saveTopologySchema($top, $data);
-        self::assertNotEquals($top->getId(), $res->getId());
-        self::assertEquals($top->getName() . ' - copy', $res->getName());
-        self::assertEquals($data['descr'], $res->getDescr());
-        self::assertEquals($data['enabled'], $res->isEnabled());
     }
 
     /**
@@ -80,10 +54,10 @@ class TopologyManagerTest extends DatabaseTestCaseAbstract
     public function testPublishTopology(): void
     {
         $top = new Topology();
-        $top->setName('asd')->setStatus(TopologyStatusEnum::DRAFT);
+        $top->setName('asd')->setVisibility(TopologyStatusEnum::DRAFT);
         /** @var Topology $res */
         $res = $this->container->get('hbpf.manager.topology')->publishTopology($top);
-        self::assertEquals(TopologyStatusEnum::PUBLIC, $res->getStatus());
+        self::assertEquals(TopologyStatusEnum::PUBLIC, $res->getVisibility());
     }
 
     /**
@@ -94,17 +68,18 @@ class TopologyManagerTest extends DatabaseTestCaseAbstract
         $top = new Topology();
         $top
             ->setName('name')
-            ->setStatus(TopologyStatusEnum::PUBLIC)
+            ->setVisibility(TopologyStatusEnum::PUBLIC)
             ->setEnabled(FALSE)
             ->setDescr('desc')
-            ->setBpmn('asd');
+            ->setBpmn(['asd'])
+            ->setRawBpmn('asd');
 
         /** @var Topology $res */
         $res = $this->container->get('hbpf.manager.topology')->cloneTopology($top);
 
         self::assertEquals($top->getName() . ' - copy', $res->getName());
         self::assertEquals($top->getDescr(), $res->getDescr());
-        self::assertEquals(TopologyStatusEnum::DRAFT, $res->getStatus());
+        self::assertEquals(TopologyStatusEnum::DRAFT, $res->getVisibility());
         self::assertEquals($top->isEnabled(), $res->isEnabled());
     }
 

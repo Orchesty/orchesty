@@ -2,14 +2,14 @@
 
 namespace Hanaboso\PipesFramework\Acl\Enum;
 
-use Hanaboso\PipesFramework\Commons\Enum\EnumAbstraction;
+use Hanaboso\PipesFramework\Commons\Enum\EnumAbstract;
 
 /**
  * Class PropertyEnum
  *
  * @package Hanaboso\PipesFramework\Acl\Enum
  */
-final class PropertyEnum extends EnumAbstraction
+final class PropertyEnum extends EnumAbstract
 {
 
     public const OWNER = 'owner';

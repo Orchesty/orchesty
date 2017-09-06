@@ -13,7 +13,7 @@ namespace Hanaboso\PipesFramework\Commons\Enum;
  *
  * @package Hanaboso\PipesFramework\Commons\Enum
  */
-final class StorageTypeEnum extends EnumAbstraction
+final class StorageTypeEnum extends EnumAbstract
 {
 
     public const PERSISTENT = 'persistent';

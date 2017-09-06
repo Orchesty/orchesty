@@ -7,7 +7,7 @@ namespace Hanaboso\PipesFramework\Commons\Enum;
  *
  * @package Hanaboso\PipesFramework\Commons\Enum
  */
-class TypeEnum extends EnumAbstraction
+class TypeEnum extends EnumAbstract
 {
 
     public const CONNECTOR = 'connector';

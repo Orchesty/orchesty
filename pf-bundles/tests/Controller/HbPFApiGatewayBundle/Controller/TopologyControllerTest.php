@@ -2,8 +2,10 @@
 
 namespace Tests\Controller\HbPFApiGatewayBundle\Controller;
 
+use Hanaboso\PipesFramework\Commons\Exception\TopologyException;
 use Hanaboso\PipesFramework\Commons\Topology\Document\Topology;
 use Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\TopologyController;
+use Nette\Utils\Json;
 use stdClass;
 use Tests\ControllerTestCaseAbstract;
 
@@ -30,8 +32,8 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
         self::assertEquals(2, $response->content->count);
         self::assertEquals(4, $response->content->total);
 
-        $this->assertTopology($topologies[2], $response->content->items[0]);
-        $this->assertTopology($topologies[1], $response->content->items[1]);
+        self::assertTopology($topologies[2], $response->content->items[0]);
+        self::assertTopology($topologies[1], $response->content->items[1]);
     }
 
     /**
@@ -39,14 +41,41 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
      */
     public function testGetTopology(): void
     {
-        /** @var Topology $topology */
         $topology = $this->createTopologies()[0];
 
-        $response = $this->sendGet('/api/gateway/topologies/' . $topology->getId());
+        $response = $this->sendGet(sprintf('/api/gateway/topologies/%s', $topology->getId()));
 
         self::assertEquals(200, $response->status);
+        self::assertTopology($topology, $response->content);
+    }
 
-        $this->assertTopology($topology, $response->content);
+    /**
+     * @covers TopologyController::getTopologyAction()
+     */
+    public function testGetTopologyNotFound(): void
+    {
+        $response = $this->sendGet('/api/gateway/topologies/999');
+
+        self::assertEquals(500, $response->status);
+        self::assertEquals(TopologyException::class, $response->content->type);
+        self::assertEquals(TopologyException::TOPOLOGY_NOT_FOUND, $response->content->error_code);
+    }
+
+    /**
+     * @covers TopologyController::createTopologyAction()
+     */
+    public function testCreateTopology(): void
+    {
+        $response = $this->sendPost('/api/gateway/topologies', [
+            'name'    => 'Topology',
+            'descr'   => 'Topology',
+            'enabled' => TRUE,
+        ]);
+
+        self::assertEquals(200, $response->status);
+        self::assertEquals('Topology', $response->content->name);
+        self::assertEquals('Topology', $response->content->descr);
+        self::assertEquals(TRUE, $response->content->enabled);
     }
 
     /**
@@ -54,7 +83,37 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
      */
     public function testUpdateTopology(): void
     {
-        self::markTestIncomplete();
+        $topology = (new Topology())
+            ->setName('Topology')
+            ->setDescr('Topology');
+        $this->persistAndFlush($topology);
+
+        $response = $this->sendPut(sprintf('/api/gateway/topologies/%s', $topology->getId()), [
+            'name'    => 'Topology 2',
+            'descr'   => 'Topology 2',
+            'enabled' => TRUE,
+        ]);
+
+        self::assertEquals(200, $response->status);
+        self::assertEquals('Topology 2', $response->content->name);
+        self::assertEquals('Topology 2', $response->content->descr);
+        self::assertEquals(TRUE, $response->content->enabled);
+    }
+
+    /**
+     * @covers TopologyController::updateTopologyAction()
+     */
+    public function testUpdateTopologyNotFound(): void
+    {
+        $response = $this->sendPut(sprintf('/api/gateway/topologies/999'), [
+            'name'    => 'Topology 2',
+            'descr'   => 'Topology 2',
+            'enabled' => TRUE,
+        ]);
+
+        self::assertEquals(500, $response->status);
+        self::assertEquals(TopologyException::class, $response->content->type);
+        self::assertEquals(TopologyException::TOPOLOGY_NOT_FOUND, $response->content->error_code);
     }
 
     /**
@@ -62,13 +121,42 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
      */
     public function testGetTopologySchema(): void
     {
-        /** @var Topology $topology */
         $topology = $this->createTopologies()[0];
 
-        $response = $this->sendGet('/api/gateway/topologies/' . $topology->getId() . '/schema.bpmn');
+        $this->client->request(
+            'GET',
+            sprintf('/api/gateway/topologies/%s/schema.bpmn', $topology->getId())
+        );
+
+        $response = $this->client->getResponse();
+        $response = (object) [
+            'status'  => $response->getStatusCode(),
+            'content' => $response->getContent(),
+        ];
 
         self::assertEquals(200, $response->status);
-        self::assertEquals($topology->getBpmn(), $response->content);
+        self::assertEquals($topology->getRawBpmn(), $response->content);
+    }
+
+    /**
+     * @covers TopologyController::getTopologySchema()
+     */
+    public function testGetTopologySchemaNotFound(): void
+    {
+        $this->client->request(
+            'GET',
+            '/api/gateway/topologies/999/schema.bpmn'
+        );
+
+        $response = $this->client->getResponse();
+        $response = (object) [
+            'status'  => $response->getStatusCode(),
+            'content' => Json::decode($response->getContent()),
+        ];
+
+        self::assertEquals(500, $response->status);
+        self::assertEquals(TopologyException::class, $response->content->type);
+        self::assertEquals(TopologyException::TOPOLOGY_NOT_FOUND, $response->content->error_code);
     }
 
     /**
@@ -76,7 +164,98 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
      */
     public function testSaveTopologySchema(): void
     {
-        self::markTestIncomplete();
+        $topology = (new Topology())
+            ->setName('Topology')
+            ->setDescr('Topology')
+            ->setEnabled(TRUE);
+        $this->persistAndFlush($topology);
+
+        $this->client->request(
+            'PUT',
+            sprintf('/api/gateway/topologies/%s/schema.bpmn', $topology->getId()),
+            [],
+            [],
+            [
+                'CONTENT_TYPE' => 'application/xml',
+                'ACCEPT'       => 'application/xml',
+            ],
+            $this->getBpmn()
+        );
+
+        $response = $this->client->getResponse();
+        $response = (object) [
+            'status'  => $response->getStatusCode(),
+            'content' => Json::decode($response->getContent()),
+        ];
+
+        self::assertEquals(200, $response->status);
+    }
+
+    /**
+     * @covers TopologyController::saveTopologySchema()
+     */
+    public function testSaveTopologySchemaNotFound(): void
+    {
+        $this->client->request(
+            'PUT',
+            '/api/gateway/topologies/999/schema.bpmn',
+            [],
+            [],
+            [
+                'CONTENT_TYPE' => 'application/xml',
+                'ACCEPT'       => 'application/xml',
+            ],
+            $this->getBpmn()
+        );
+
+        $response = $this->client->getResponse();
+        $response = (object) [
+            'status'  => $response->getStatusCode(),
+            'content' => Json::decode($response->getContent()),
+        ];
+
+        self::assertEquals(500, $response->status);
+        self::assertEquals(TopologyException::class, $response->content->type);
+        self::assertEquals(TopologyException::TOPOLOGY_NOT_FOUND, $response->content->error_code);
+    }
+
+    /**
+     * @covers TopologyController::saveTopologySchema()
+     * @covers TopologyController::getTopologySchema()
+     */
+    public function testSaveAndGetTopologySchema(): void
+    {
+        $topology = (new Topology())
+            ->setName('Topology')
+            ->setDescr('Topology')
+            ->setEnabled(TRUE);
+        $this->persistAndFlush($topology);
+
+        $this->client->request(
+            'PUT',
+            sprintf('/api/gateway/topologies/%s/schema.bpmn', $topology->getId()),
+            [],
+            [],
+            [
+                'CONTENT_TYPE' => 'application/xml',
+                'ACCEPT'       => 'application/xml',
+            ],
+            $this->getBpmn()
+        );
+
+        $this->client->request(
+            'GET',
+            sprintf('/api/gateway/topologies/%s/schema.bpmn', $topology->getId())
+        );
+
+        $response = $this->client->getResponse();
+        $response = (object) [
+            'status'  => $response->getStatusCode(),
+            'content' => $response->getContent(),
+        ];
+
+        self::assertEquals(200, $response->status);
+        self::assertEquals($this->getBpmn(), $response->content);
     }
 
     /**
@@ -94,26 +273,24 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
     /**
      * @param int $count
      *
-     * @return array
+     * @return Topology[]
      */
     private function createTopologies(int $count = 1): array
     {
-        $data = [];
+        $topologies = [];
         for ($i = 1; $i <= $count; $i++) {
-            $topology = new Topology();
-            $topology
-                ->setName('name ' . $i)
-                ->setDescr('descr ' . $i)
+            $topology = (new Topology())
+                ->setName(sprintf('name %s', $i))
+                ->setDescr(sprintf('descr %s', $i))
                 ->setEnabled(TRUE)
-                ->setBpmn($this->getBpmn());
+                ->setBpmn($this->getBpmnArray())
+                ->setRawBpmn($this->getBpmn());
+            $this->persistAndFlush($topology);
 
-            $this->dm->persist($topology);
-            $this->dm->flush();
-
-            $data[] = $topology;
+            $topologies[] = $topology;
         }
 
-        return $data;
+        return $topologies;
     }
 
     /**
@@ -121,23 +298,15 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
      */
     private function getBpmn(): string
     {
-        return '<?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn">
-    <bpmn:process id="Process_1" isExecutable="false">
-        <bpmn:startEvent id="StartEvent_1" />
-        <bpmn:task id="Task_1" />
-    </bpmn:process>
-    <bpmndi:BPMNDiagram id="BPMNDiagram_1">
-        <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_1">
-            <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
-                <dc:Bounds x="173" y="102" width="36" height="36" />
-            </bpmndi:BPMNShape>
-            <bpmndi:BPMNShape id="Task_1_di" bpmnElement="Task_1">
-                <dc:Bounds x="353" y="80" width="100" height="80" />
-            </bpmndi:BPMNShape>
-        </bpmndi:BPMNPlane>
-    </bpmndi:BPMNDiagram>
-</bpmn:definitions>';
+        return file_get_contents(sprintf('%s/data/schema.bpmn', __DIR__));
+    }
+
+    /**
+     * @return array
+     */
+    private function getBpmnArray(): array
+    {
+        return Json::decode(file_get_contents(sprintf('%s/data/schema.json', __DIR__)), Json::FORCE_ARRAY);
     }
 
 }
