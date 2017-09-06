@@ -6,6 +6,7 @@ import {default as AMQPDrain, IAMQPDrainSettings} from "./drain/AMQPDrain";
 import {default as AMQPFaucet, IAMQPFaucetSettings} from "./faucet/AMQPFaucet";
 import {default as HttpFaucet, IHttpFaucetSettings} from "./faucet/HttpFaucet";
 import AppenderWorker, {IAppenderWorkerSettings} from "./worker/AppenderWorker";
+import HttpWorker, {IHttpWorkerSettings} from "./worker/HttpWorker";
 import UppercaseWorker from "./worker/UppercaseWorker";
 
 class ComponentFactories extends Container {
@@ -41,6 +42,9 @@ class ComponentFactories extends Container {
         });
         this.set("worker.uppercase", (settings: {}) => {
             return new UppercaseWorker();
+        });
+        this.set("worker.http", (settings: IHttpWorkerSettings) => {
+            return new HttpWorker(settings);
         });
     }
 
