@@ -40,3 +40,9 @@ services:
         arguments:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@doctrine.orm.default_entity_manager'
+
+    # Starting point
+    hbpf.starting_point.starting_point:
+        class: Hanaboso\PipesFramework\Commons\StartingPoint\StartingPoint
+        arguments:
+            - '@rabbit-mq.producer.starting_point'

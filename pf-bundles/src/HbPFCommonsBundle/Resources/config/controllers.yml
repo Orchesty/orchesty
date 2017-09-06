@@ -4,6 +4,7 @@ services:
         arguments:
             - '@hbpf.commons.node_handler'
 
-    hbpf.commons.controller.default:
-        class: Hanaboso\PipesFramework\HbPFCommonsBundle\Controller\ApiController
+    hbpf.commons.controller.starting_point:
+        class: Hanaboso\PipesFramework\HbPFCommonsBundle\Controller\StartingPointController
         arguments:
+            - '@hbpf.commons.handler.starting_point'
