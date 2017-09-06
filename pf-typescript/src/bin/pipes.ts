@@ -1,15 +1,16 @@
 #!/usr/bin/env node
 
+import * as fs from "fs";
 import logger from "lib-nodejs/dist/src/logger/Logger";
 import * as yargs from "yargs";
 import Pipes from "../Pipes";
-import { exampleTopo } from "../topology";
 
-const pipes = new Pipes(exampleTopo);
+const topologyConfig = JSON.parse(fs.readFileSync("topology.json", "utf8"));
+const pipes = new Pipes(topologyConfig);
 
 const argv = yargs
-    .usage("Usage: $0 start <services|node> [options]")
-    .command("start <services|node>", "Starts concrete node or topology complementary services")
+    .usage("Usage: $0 start <counter|probe|node> [options]")
+    .command("start <counter|probe|node>", "Starts concrete node or topology complementary services")
     .option("id", {
         describe: "Node ID to start",
         type: "string",

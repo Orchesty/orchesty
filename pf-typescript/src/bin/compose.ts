@@ -1,11 +1,10 @@
 #!/usr/bin/env node
 
-// TODO get topology from config microservice
-import logger from "lib-nodejs/dist/src/logger/Logger";
+import * as fs from "fs";
 import Pipes from "../Pipes";
-import { exampleTopo } from "../topology";
 
-const pipes = new Pipes(exampleTopo);
+const topologyConfig = JSON.parse(fs.readFileSync("topology.json", "utf8"));
+const pipes = new Pipes(topologyConfig);
 
 const file = "./docker-compose.yml";
 

@@ -1,4 +1,4 @@
-import { ITopologyConfigSkeleton } from "./topology/Configurator";
+import { ITopologyConfigSkeleton } from "./../src/topology/Configurator";
 
 export const exampleTopo: ITopologyConfigSkeleton = {
     name: "pf-example",
