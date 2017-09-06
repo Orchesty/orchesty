@@ -2,8 +2,11 @@
 
 namespace Tests\Integration\ApiGateway\Manager;
 
+use Hanaboso\PipesFramework\Commons\Enum\HandlerEnum;
 use Hanaboso\PipesFramework\Commons\Enum\TopologyStatusEnum;
+use Hanaboso\PipesFramework\Commons\Node\Document\Node;
 use Hanaboso\PipesFramework\Commons\Topology\Document\Topology;
+use Nette\Utils\Json;
 use Tests\DatabaseTestCaseAbstract;
 
 /**
@@ -81,6 +84,61 @@ class TopologyManagerTest extends DatabaseTestCaseAbstract
         self::assertEquals($top->getDescr(), $res->getDescr());
         self::assertEquals(TopologyStatusEnum::DRAFT, $res->getVisibility());
         self::assertEquals($top->isEnabled(), $res->isEnabled());
+    }
+
+    /**
+     *
+     */
+    public function testSaveTopologySchema(): void
+    {
+        $topology = (new Topology())
+            ->setName('Topology')
+            ->setDescr('Topology');
+        $this->persistAndFlush($topology);
+
+        $topologyManager = $this->container->get('hbpf.manager.topology');
+
+        $topologyManager->saveTopologySchema(
+            $topology,
+            '',
+            Json::decode(file_get_contents(sprintf('%s/data/schema-1.json', __DIR__)), Json::FORCE_ARRAY)
+        );
+
+        $nodes = $this->dm->getRepository(Node::class)->findBy(['topology' => $topology->getId()]);
+
+        self::assertEquals(3, count($nodes));
+        self::assertEquals('startovaci-node', $nodes[0]->getName());
+        self::assertEquals(HandlerEnum::EVENT, $nodes[0]->getHandler());
+        self::assertEquals(1, count($nodes[0]->getNext()));
+        self::assertEquals('task-node', $nodes[0]->getNext()[0]->getName());
+        self::assertEquals('task-node', $nodes[1]->getName());
+        self::assertEquals(HandlerEnum::ACTION, $nodes[1]->getHandler());
+        self::assertEquals(1, count($nodes[1]->getNext()));
+        self::assertEquals('end-node', $nodes[1]->getNext()[0]->getName());
+        self::assertEquals('end-node', $nodes[2]->getName());
+        self::assertEquals(HandlerEnum::EVENT, $nodes[2]->getHandler());
+        self::assertEquals(0, count($nodes[2]->getNext()));
+
+        $topologyManager->saveTopologySchema(
+            $topology,
+            '',
+            Json::decode(file_get_contents(sprintf('%s/data/schema-2.json', __DIR__)), Json::FORCE_ARRAY)
+        );
+
+        $nodes = $this->dm->getRepository(Node::class)->findBy(['topology' => $topology->getId()]);
+
+        self::assertEquals(3, count($nodes));
+        self::assertEquals('startovaci-node', $nodes[0]->getName());
+        self::assertEquals(HandlerEnum::EVENT, $nodes[0]->getHandler());
+        self::assertEquals(2, count($nodes[0]->getNext()));
+        self::assertEquals('task-node', $nodes[0]->getNext()[0]->getName());
+        self::assertEquals('end-node', $nodes[0]->getNext()[1]->getName());
+        self::assertEquals('task-node', $nodes[1]->getName());
+        self::assertEquals(HandlerEnum::ACTION, $nodes[1]->getHandler());
+        self::assertEquals(1, count($nodes[1]->getNext()));
+        self::assertEquals('end-node', $nodes[2]->getName());
+        self::assertEquals(HandlerEnum::EVENT, $nodes[2]->getHandler());
+        self::assertEquals(0, count($nodes[2]->getNext()));
     }
 
 }
