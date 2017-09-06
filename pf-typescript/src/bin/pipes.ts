@@ -9,8 +9,8 @@ const topologyConfig = JSON.parse(fs.readFileSync("topology.json", "utf8"));
 const pipes = new Pipes(topologyConfig);
 
 const argv = yargs
-    .usage("Usage: $0 start <counter|probe|node> [options]")
-    .command("start <counter|probe|node>", "Starts concrete node or topology complementary services")
+    .usage("Usage: $0 start <service> [options]")
+    .command("start <service>", "Starts concrete node or topology complementary services")
     .option("id", {
         describe: "Node ID to start",
         type: "string",
@@ -19,7 +19,7 @@ const argv = yargs
     .help()
     .argv;
 
-switch (argv.services) {
+switch (argv.service) {
     case "counter":
         pipes.startCounter()
         .then(() => {
