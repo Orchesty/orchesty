@@ -3,13 +3,19 @@ import JobMessage from "../../message/JobMessage";
 import { ResultCode } from "../../message/ResultCode";
 import AHttpWorker from "./http/AHttpWorker";
 
+export interface IHttpWorkerSettings {
+    method: string;
+    url: string;
+    opts: any;
+}
+
 class HttpWorker extends AHttpWorker {
 
     private opts: {};
 
-    constructor(method: string, url: string, opts: {}) {
-        super(method, url);
-        this.opts = opts;
+    constructor(settings: IHttpWorkerSettings) {
+        super(settings.method, settings.url);
+        this.opts = settings.opts;
     }
 
     /**
@@ -62,4 +68,4 @@ class HttpWorker extends AHttpWorker {
 
 }
 
-module.exports = HttpWorker;
+export default HttpWorker;
