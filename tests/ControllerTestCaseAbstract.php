@@ -76,7 +76,7 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
     {
         parent::setUp();
         $this->client = self::createClient([], ['HTTP_X-Requested-With' => 'XMLHttpRequest']);
-        $this->dm->getConnection()->dropDatabase('pipes');
+        //$this->dm->getConnection()->dropDatabase('pipes');
         $this->session->invalidate();
         $this->session->clear();
 

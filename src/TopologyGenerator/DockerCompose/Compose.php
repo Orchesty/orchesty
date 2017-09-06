@@ -1,0 +1,94 @@
+<?php declare(strict_types=1);
+/**
+ * Created by PhpStorm.
+ * User: venca
+ * Date: 9/5/17
+ * Time: 11:48 AM
+ */
+
+namespace Hanaboso\PipesFramework\TopologyGenerator\DockerCompose;
+
+/**
+ * Class Compose
+ *
+ * @package Hanaboso\PipesFramevork\TopologyGenerator\DockerCompose
+ */
+class Compose
+{
+
+    /**
+     * @var string
+     */
+    protected $version = '2';
+
+    /**
+     * @var Service[]
+     */
+    protected $services = [];
+
+    /**
+     * @var array
+     */
+    protected $networks = [];
+
+    /**
+     * @return string
+     */
+    public function getVersion(): string
+    {
+        return $this->version;
+    }
+
+    /**
+     * @param string $version
+     *
+     * @return Compose
+     */
+    public function setVersion(string $version): Compose
+    {
+        $this->version = $version;
+
+        return $this;
+    }
+
+    /**
+     * @return Service[]
+     */
+    public function getServices(): array
+    {
+        return $this->services;
+    }
+
+    /**
+     * @param Service $service
+     *
+     * @return Compose
+     */
+    public function addServices(Service $service): Compose
+    {
+        $this->services[] = $service;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getNetworks(): array
+    {
+        return $this->networks;
+    }
+
+    /**
+     * @param string $network
+     *
+     * @return Compose
+     */
+    public function addNetwork(string $network): Compose
+    {
+        $this->networks[] = $network;
+
+        return $this;
+    }
+
+}

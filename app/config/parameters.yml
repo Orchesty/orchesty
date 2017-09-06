@@ -9,3 +9,10 @@ parameters:
 
     request_listener.http_port: 80
     request_listener.https_port: 80
+
+    # Rabbitmq
+    rabbitmq.host: rabbitmq
+    rabbitmq.port: 5672
+    rabbitmq.vhost: /
+    rabbitmq.user: guest
+    rabbitmq.password: guest

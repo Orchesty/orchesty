@@ -11,71 +11,120 @@ namespace Tests\Utils;
 use Hanaboso\PipesFramework\Commons\Node\Document\Embed\EmbedNode;
 use Hanaboso\PipesFramework\Commons\Node\Document\Node;
 use Hanaboso\PipesFramework\Commons\Topology\Document\Topology;
-use Tests\DatabaseTestCaseAbstract;
+use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\Generator;
+use Tests\ControllerTestCaseAbstract;
 
 /**
  * Class TopologyFixtures
  *
  * @package Tests\Utils
  */
-class TopologyFixtures extends DatabaseTestCaseAbstract
+class TopologyFixtures extends ControllerTestCaseAbstract
 {
+
+    private const FILE_NAME = 'topology.txt';
 
     /**
      * @todo temporary test
      */
-    public function testTopology(): void
+    public function testCreateTopology(): void
     {
-        $topology = new Topology();
-        $topology->setName('topology');
-        $this->dm->persist($topology);
-        $this->dm->flush();
+        if (file_exists(__DIR__ . '/' . self::FILE_NAME)) {
+            $topologyId = file_get_contents(__DIR__ . '/' . self::FILE_NAME);
 
-        $node1 = new Node();
-        $node1
-            ->setName('magento2_customer')
-            ->setTopology($topology->getId());
-        $this->dm->persist($node1);
+            $topology = $this->dm->getRepository(Topology::class)->find($topologyId);
 
-        $node2 = new Node();
-        $node2
-            ->setName('xml_parser')
-            ->setTopology($topology->getId());
-        $this->dm->persist($node2);
+            $nodes = $this->dm->getRepository(Node::class)->findBy([
+                'topology' => $topologyId,
+            ]);
+        } else {
+            $topology = new Topology();
+            $topology->setName('topology');
+            $this->dm->persist($topology);
+            $this->dm->flush();
 
-        $node3 = new Node();
-        $node3
-            ->setName('filter_1')
-            ->setTopology($topology->getId());
-        $this->dm->persist($node3);
+            $node1 = new Node();
+            $node1
+                ->setName('magento2_customer')
+                ->setTopology($topology->getId());
+            $this->dm->persist($node1);
 
-        $node4 = new Node();
-        $node4
-            ->setName('mail')
-            ->setTopology($topology->getId());
-        $this->dm->persist($node4);
+            $node2 = new Node();
+            $node2
+                ->setName('xml_parser')
+                ->setTopology($topology->getId());
+            $this->dm->persist($node2);
 
-        $node5 = new Node();
-        $node5
-            ->setName('ftp')
-            ->setTopology($topology->getId());
-        $this->dm->persist($node5);
+            $node3 = new Node();
+            $node3
+                ->setName('filter_1')
+                ->setTopology($topology->getId());
+            $this->dm->persist($node3);
 
-        $node6 = new Node();
-        $node6
-            ->setName('api')
-            ->setTopology($topology->getId());
-        $this->dm->persist($node6);
+            $node4 = new Node();
+            $node4
+                ->setName('mail')
+                ->setTopology($topology->getId());
+            $this->dm->persist($node4);
 
-        $node1->addNext(EmbedNode::from($node2));
+            $node5 = new Node();
+            $node5
+                ->setName('ftp')
+                ->setTopology($topology->getId());
+            $this->dm->persist($node5);
 
-        $node2->addNext(EmbedNode::from($node3));
+            $node6 = new Node();
+            $node6
+                ->setName('api')
+                ->setTopology($topology->getId());
+            $this->dm->persist($node6);
 
-        $node3->addNext(EmbedNode::from($node4));
-        $node3->addNext(EmbedNode::from($node5));
-        $node3->addNext(EmbedNode::from($node6));
+            $node1->addNext(EmbedNode::from($node2));
 
-        $this->dm->flush();
+            $node2->addNext(EmbedNode::from($node3));
+
+            $node3->addNext(EmbedNode::from($node4));
+            $node3->addNext(EmbedNode::from($node5));
+            $node3->addNext(EmbedNode::from($node6));
+
+            $nodes[] = $node1;
+            $nodes[] = $node2;
+            $nodes[] = $node3;
+            $nodes[] = $node4;
+            $nodes[] = $node5;
+            $nodes[] = $node6;
+
+            $this->dm->flush();
+
+            file_put_contents(__DIR__ . '/' . self::FILE_NAME, $topology->getId());
+
+            $generator = new Generator($topology, $nodes);
+
+            $generator->generate(__DIR__);
+        }
+
+        $this->sendRequest($topology, $nodes);
+    }
+
+    /**
+     * @param Topology $topology
+     * @param array    $nodes
+     */
+    public function sendRequest(Topology $topology, array $nodes): void
+    {
+        $this->client->request(
+            'POST',
+            '/api/run/' . $topology->getId() . '/' . $nodes[0]->getId(),
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            '{"test":1}'
+        );
+
+        $response = $this->client->getResponse();
+
+        self::assertEquals(200, $response->getStatusCode());
+        self::assertEquals([], json_decode($response->getContent(), TRUE));
     }
 
 }
