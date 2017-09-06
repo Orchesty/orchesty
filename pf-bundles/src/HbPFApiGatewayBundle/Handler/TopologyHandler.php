@@ -163,6 +163,19 @@ class TopologyHandler
     }
 
     /**
+     * @param string $id
+     *
+     * @return bool
+     */
+    public function deleteTopology(string $id): bool
+    {
+        $topology = $this->getTopologyById($id);
+        $this->manager->deleteTopology($topology);
+
+        return TRUE;
+    }
+
+    /**
      * @param Topology $topology
      *
      * @return array
