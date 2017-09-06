@@ -31,7 +31,7 @@ class TopologyForm extends React.Component {
     if (typeof onProcessing == 'function'){
       onProcessing(true);
     }
-    this.props.topologyUpdate({name, descr, enabled: Boolean(enabled)}).then(
+    this.props.commitAction({name, descr, enabled: Boolean(enabled)}).then(
       response => {
         const {onSuccess, onProcessing} = this.props;
         if (typeof onProcessing == 'function'){
@@ -48,9 +48,10 @@ class TopologyForm extends React.Component {
   }
 
   render() {
+    const {addNew} = this.props;
     return (
       <form className="form-horizontal form-label-left" onSubmit={this.props.handleSubmit(this._onSubmit)}>
-        <Field name="_id" component={FormTextInput} label="Id" readOnly/>
+        {!addNew && <Field name="_id" component={FormTextInput} label="Id" readOnly/>}
         <Field name="name" component={FormTextInput} label="Name" />
         <Field name="descr" component={FormTextInput} label="Description" />
         <Field name="enabled" component={FormCheckboxInput} label="Enabled" />
@@ -72,13 +73,15 @@ function validate(values){
 function mapStateToProps(state, ownProps) {
   const {topology} = state;
   return {
-    initialValues: topology.elements[ownProps.topologyId]
+    initialValues: ownProps.addNew ? {enabled: false} : topology.elements[ownProps.topologyId]
   };
 }
 
 function mapActionsToProps(dispatch, ownProps){
   return {
-    topologyUpdate: (data) => dispatch(topologyActions.topologyUpdate(ownProps.topologyId, data))
+    commitAction: (data) => dispatch(
+      ownProps.addNew ? topologyActions.topologyCreate(data) : topologyActions.topologyUpdate(ownProps.topologyId, data)
+    )
   }
 }
 

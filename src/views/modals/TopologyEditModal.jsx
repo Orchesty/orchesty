@@ -40,9 +40,9 @@ class TopologyEditModal extends React.Component {
   }
 
   render() {
-    const {topologyId} = this.props;
+    const {topologyId, addNew} = this.props;
     const {processing} = this.state;
-
+    const formKey = 'topology.' + (addNew ? 'new' : topologyId);
     return (
       <div className="modal fade in" tabIndex="-1" role="dialog" aria-hidden="true" style={{display: 'block', paddingRight: '17px'}}>
         <div className="modal-dialog modal-md">
@@ -52,7 +52,14 @@ class TopologyEditModal extends React.Component {
               <h4 className="modal-title" id="myModalLabel">Topology edit</h4>
             </div>
             <div className="modal-body">
-              <TopologyForm form="topologyForm" setSubmit={this._setSubmit} topologyId={topologyId} onSuccess={this._close} onProcessing={this._onProcessing} />
+              <TopologyForm
+                form="topologyForm"
+                setSubmit={this._setSubmit}
+                topologyId={topologyId}
+                addNew={addNew}
+                onSuccess={this._close}
+                onProcessing={this._onProcessing}
+              />
             </div>
             <div className="modal-footer">
               <button type="button" className="btn btn-default" onClick={this._closeClick}>Close</button>
