@@ -43,9 +43,7 @@ export function closeModal(){
 }
 
 export function changePageArgs(args) {
-  return (dispatch, getState) => ({
-    type: types.SELECT_PAGE,
-    key: getState().application.selectedPage.key,
-    args
-  })
+  return (dispatch, getState) => {
+    return dispatch(selectPage(getState().application.selectedPage.key, args));
+  }
 }
