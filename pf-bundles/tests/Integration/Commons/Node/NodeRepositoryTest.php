@@ -47,24 +47,4 @@ final class NodeRepositoryTest extends DatabaseTestCaseAbstract
         self::assertEquals($node1, $result[0]);
     }
 
-    /**
-     * @covers NodeRepository::getNodeByTopology()
-     */
-    public function testGetNodeByTopology(): void
-    {
-        $node1 = new Node();
-        $node1->setName('name 1');
-        $node1->setTopology('abc123');
-
-        $this->dm->persist($node1);
-        $this->dm->flush();
-
-        /** @var NodeRepository $repo */
-        $repo = $this->dm->getRepository(Node::class);
-
-        $result = $repo->getNodeByTopology('abc123', $node1->getId());
-
-        self::assertEquals($node1, $result);
-    }
-
 }
