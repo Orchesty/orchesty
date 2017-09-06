@@ -9,4 +9,5 @@ rabbit-mq:
     heartbeat: 120 # in seconds = 2 minutes, default: 60 seconds
 
 imports:
-    - { resource: rabbit-mq/demo.yml }
+    - { resource: rabbit-mq/repeater.yml }
+    - { resource: rabbit-mq/starting-point.yml }

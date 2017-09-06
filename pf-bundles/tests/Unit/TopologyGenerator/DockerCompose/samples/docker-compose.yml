@@ -1,0 +1,111 @@
+version: '2'
+services:
+  probe:
+    image: 'dkr.hanaboso.net/pipes/pipes/pf-typescript:dev'
+    environment:
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: '5672'
+      RABBITMQ_USER: guest
+      RABBITMQ_PASS: guest
+      RABBITMQ_VHOST: /
+    volumes:
+      - './topology.json:/srv/app/topology.json'
+    ports:
+      - '8007:8007'
+    networks:
+      - demo_default
+    command: './dist/src/bin/pipes.js start probe'
+  counter:
+    image: 'dkr.hanaboso.net/pipes/pipes/pf-typescript:dev'
+    environment:
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: '5672'
+      RABBITMQ_USER: guest
+      RABBITMQ_PASS: guest
+      RABBITMQ_VHOST: /
+    volumes:
+      - './topology.json:/srv/app/topology.json'
+    networks:
+      - demo_default
+    command: './dist/src/bin/pipes.js start counter'
+  1-magento2-customer:
+    image: 'dkr.hanaboso.net/pipes/pipes/pf-typescript:dev'
+    environment:
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: '5672'
+      RABBITMQ_USER: guest
+      RABBITMQ_PASS: guest
+      RABBITMQ_VHOST: /
+    volumes:
+      - './topology.json:/srv/app/topology.json'
+    networks:
+      - demo_default
+    command: './dist/src/bin/pipes.js start node --id 1-magento2-customer'
+  2-xml-parser:
+    image: 'dkr.hanaboso.net/pipes/pipes/pf-typescript:dev'
+    environment:
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: '5672'
+      RABBITMQ_USER: guest
+      RABBITMQ_PASS: guest
+      RABBITMQ_VHOST: /
+    volumes:
+      - './topology.json:/srv/app/topology.json'
+    networks:
+      - demo_default
+    command: './dist/src/bin/pipes.js start node --id 2-xml-parser'
+  3-filter-1:
+    image: 'dkr.hanaboso.net/pipes/pipes/pf-typescript:dev'
+    environment:
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: '5672'
+      RABBITMQ_USER: guest
+      RABBITMQ_PASS: guest
+      RABBITMQ_VHOST: /
+    volumes:
+      - './topology.json:/srv/app/topology.json'
+    networks:
+      - demo_default
+    command: './dist/src/bin/pipes.js start node --id 3-filter-1'
+  4-mail:
+    image: 'dkr.hanaboso.net/pipes/pipes/pf-typescript:dev'
+    environment:
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: '5672'
+      RABBITMQ_USER: guest
+      RABBITMQ_PASS: guest
+      RABBITMQ_VHOST: /
+    volumes:
+      - './topology.json:/srv/app/topology.json'
+    networks:
+      - demo_default
+    command: './dist/src/bin/pipes.js start node --id 4-mail'
+  5-ftp:
+    image: 'dkr.hanaboso.net/pipes/pipes/pf-typescript:dev'
+    environment:
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: '5672'
+      RABBITMQ_USER: guest
+      RABBITMQ_PASS: guest
+      RABBITMQ_VHOST: /
+    volumes:
+      - './topology.json:/srv/app/topology.json'
+    networks:
+      - demo_default
+    command: './dist/src/bin/pipes.js start node --id 5-ftp'
+  6-api:
+    image: 'dkr.hanaboso.net/pipes/pipes/pf-typescript:dev'
+    environment:
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: '5672'
+      RABBITMQ_USER: guest
+      RABBITMQ_PASS: guest
+      RABBITMQ_VHOST: /
+    volumes:
+      - './topology.json:/srv/app/topology.json'
+    networks:
+      - demo_default
+    command: './dist/src/bin/pipes.js start node --id 6-api'
+networks:
+  demo_default:
+    external: true

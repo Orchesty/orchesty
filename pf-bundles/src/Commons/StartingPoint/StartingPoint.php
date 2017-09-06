@@ -163,7 +163,7 @@ class StartingPoint
         $this->startingPointProducer
             ->getManager()
             ->getChannel()
-            ->queueDeclare($this->createQueueName($topology, $node));
+            ->queueDeclare($this->createQueueName($topology, $node), FALSE, TRUE);
 
         $this->startingPointProducer->publish(
             $content,

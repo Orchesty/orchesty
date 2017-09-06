@@ -108,11 +108,11 @@ class Node
     }
 
     /**
-     * @return EmbedNode[]
+     * @return EmbedNode[]|iterable|PersistentCollection
      */
-    public function getNext(): array
+    public function getNext(): iterable
     {
-        return $this->next->toArray();
+        return $this->next;
     }
 
     /**

@@ -3,3 +3,6 @@
 /vendor
 /app/cache
 /app/logs
+
+/tests/Unit/TopologyGenerator/DockerCompose/output/*
+!/tests/Unit/TopologyGenerator/DockerCompose/output/.gitkeep

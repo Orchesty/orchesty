@@ -8,3 +8,8 @@ parameters:
     database_user: root
     database_password: null
     secret: ThisTokenIsNotSoSecretChangeIt
+    rabbitmq.host: rabbitmq
+    rabbitmq.port: 5672
+    rabbitmq.vhost: /
+    rabbitmq.user: guest
+    rabbitmq.password: guest

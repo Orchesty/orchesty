@@ -6,7 +6,7 @@ services:
     # Nodes
 
     # Services
-    mapper:
+    backend:
         image: dkr.hanaboso.net/pipes/pipes/cl-demo-mapper:dev
         ports:
           - ${DEV_IP}:8000:8000
