@@ -7,6 +7,7 @@ import {default as AMQPFaucet, IAMQPFaucetSettings} from "./faucet/AMQPFaucet";
 import {default as HttpFaucet, IHttpFaucetSettings} from "./faucet/HttpFaucet";
 import AppenderWorker, {IAppenderWorkerSettings} from "./worker/AppenderWorker";
 import HttpWorker, {IHttpWorkerSettings} from "./worker/HttpWorker";
+import NullWorker from "./worker/NullWorker";
 import UppercaseWorker from "./worker/UppercaseWorker";
 
 class ComponentFactories extends Container {
@@ -40,11 +41,14 @@ class ComponentFactories extends Container {
         this.set("worker.appender", (settings: IAppenderWorkerSettings) => {
             return new AppenderWorker(settings);
         });
-        this.set("worker.uppercase", (settings: {}) => {
-            return new UppercaseWorker();
-        });
         this.set("worker.http", (settings: IHttpWorkerSettings) => {
             return new HttpWorker(settings);
+        });
+        this.set("worker.null", (settings: {}) => {
+            return new NullWorker();
+        });
+        this.set("worker.uppercase", (settings: {}) => {
+            return new UppercaseWorker();
         });
     }
 

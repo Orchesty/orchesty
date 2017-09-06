@@ -3,9 +3,9 @@ import JobMessage, {IResult} from "../../../message/JobMessage";
 export interface IHttpWorkerRequestParams {
     method: string;
     url: string;
-    json: boolean;
-    gzip: boolean;
-    body: string;
+    json: any;
+    gzip?: boolean;
+    body?: string;
     headers: {
         job_id: string,
         sequence_id: number,
@@ -33,9 +33,7 @@ class AHttpWorker {
         return {
             method: this.method.toUpperCase(),
             url: this.url,
-            json: true,
-            gzip: true,
-            body: JSON.stringify(inMsg.getContent()),
+            json: JSON.parse(inMsg.getContent()),
             headers: {
                 job_id: inMsg.getJobId(),
                 sequence_id: inMsg.getSequenceId(),
