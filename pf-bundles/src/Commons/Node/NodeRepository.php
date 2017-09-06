@@ -5,6 +5,7 @@ namespace Hanaboso\PipesFramework\Commons\Node;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 use Hanaboso\PipesFramework\Commons\Enum\HandlerEnum;
+use Hanaboso\PipesFramework\Commons\Node\Document\Node;
 
 /**
  * Class NodeRepository
@@ -34,12 +35,17 @@ class NodeRepository extends DocumentRepository
     /**
      * @param string $topologyId
      * @param string $nodeId
+     *
+     * @return Node|null|object
      */
-    public function getNodeByTopology(string $topologyId, string $nodeId): void
+    public function getNodeByTopology(string $topologyId, string $nodeId): ?Node
     {
-        // todo
+        $criteria = [
+            'id'       => $nodeId,
+            'topology' => $topologyId,
+        ];
 
-        count([$topologyId, $nodeId]);
+        return $this->findOneBy($criteria);
     }
 
 }

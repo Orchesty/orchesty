@@ -5,7 +5,6 @@ namespace Tests\Integration\Commons\Node;
 use Hanaboso\PipesFramework\Commons\Enum\HandlerEnum;
 use Hanaboso\PipesFramework\Commons\Node\Document\Node;
 use Hanaboso\PipesFramework\Commons\Node\NodeRepository;
-use Hanaboso\PipesFramework\Commons\Topology\Document\Topology;
 use Tests\DatabaseTestCaseAbstract;
 
 /**
@@ -24,34 +23,25 @@ final class NodeRepositoryTest extends DatabaseTestCaseAbstract
         /** @var NodeRepository $repo */
         $repo = $this->dm->getRepository(Node::class);
 
-        $topology = new Topology();
-        $topology->setName('topology name');
-
-        $this->dm->persist($topology);
-        $this->dm->flush();
-
-        $result = $repo->getEventNodesByTopology($topology->getId());
+        $result = $repo->getEventNodesByTopology('abc123');
 
         self::assertEquals(NULL, $result[0]);
 
         $node1 = new Node();
         $node1->setName('name 1');
         $node1->setHandler(HandlerEnum::EVENT);
-        $node1->setTopology($topology->getId());
+        $node1->setTopology('abc123');
 
         $node2 = new Node();
         $node2->setName('name 2');
         $node2->setHandler(HandlerEnum::ACTION);
-        $node2->setTopology($topology->getId());
+        $node2->setTopology('abc123');
 
         $this->dm->persist($node1);
         $this->dm->persist($node2);
         $this->dm->flush();
 
-        $node1->setHandler(HandlerEnum::EVENT);
-        $this->dm->flush();
-
-        $result = $repo->getEventNodesByTopology($topology->getId());
+        $result = $repo->getEventNodesByTopology('abc123');
 
         self::assertCount(1, $result);
         self::assertEquals($node1, $result[0]);
@@ -62,7 +52,19 @@ final class NodeRepositoryTest extends DatabaseTestCaseAbstract
      */
     public function testGetNodeByTopology(): void
     {
+        $node1 = new Node();
+        $node1->setName('name 1');
+        $node1->setTopology('abc123');
 
+        $this->dm->persist($node1);
+        $this->dm->flush();
+
+        /** @var NodeRepository $repo */
+        $repo = $this->dm->getRepository(Node::class);
+
+        $result = $repo->getNodeByTopology('abc123', $node1->getId());
+
+        self::assertEquals($node1, $result);
     }
 
 }
