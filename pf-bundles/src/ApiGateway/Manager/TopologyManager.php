@@ -8,8 +8,8 @@ use Hanaboso\PipesFramework\Commons\DatabaseManager\DatabaseManagerLocator;
 use Hanaboso\PipesFramework\Commons\Enum\HandlerEnum;
 use Hanaboso\PipesFramework\Commons\Enum\TopologyStatusEnum;
 use Hanaboso\PipesFramework\Commons\Enum\TypeEnum;
+use Hanaboso\PipesFramework\Commons\Node\Document\Embed\EmbedNode;
 use Hanaboso\PipesFramework\Commons\Node\Document\Node;
-use Hanaboso\PipesFramework\Commons\Node\Embed\EmbedNode;
 use Hanaboso\PipesFramework\Commons\Topology\Document\Topology;
 use Nette\Utils\Strings;
 

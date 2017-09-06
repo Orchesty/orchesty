@@ -8,7 +8,7 @@ use Doctrine\ODM\MongoDB\PersistentCollection;
 use Hanaboso\PipesFramework\Commons\Enum\HandlerEnum;
 use Hanaboso\PipesFramework\Commons\Enum\TypeEnum;
 use Hanaboso\PipesFramework\Commons\Exception\NodeException;
-use Hanaboso\PipesFramework\Commons\Node\Embed\EmbedNode;
+use Hanaboso\PipesFramework\Commons\Node\Document\Embed\EmbedNode;
 use Hanaboso\PipesFramework\Commons\Traits\Document\IdTrait;
 use Nette\Utils\Strings;
 
@@ -42,7 +42,7 @@ class Node
     /**
      * @var EmbedNode[]|PersistentCollection
      *
-     * @MongoDB\EmbedMany(targetDocument="Hanaboso\PipesFramework\Commons\Node\Embed\EmbedNode")
+     * @MongoDB\EmbedMany(targetDocument="Hanaboso\PipesFramework\Commons\Node\Document\Embed\EmbedNode")
      */
     protected $next = [];
 
