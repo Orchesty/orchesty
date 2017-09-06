@@ -1,2 +1,3 @@
 parameters:
     logger_handler: syslog
+    mongo_host: mongo
