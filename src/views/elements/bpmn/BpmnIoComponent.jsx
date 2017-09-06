@@ -19,13 +19,15 @@ class BpmnIoComponent extends React.Component {
     super(props);
     this._self = null;
     this._modeler = null;
+    this._changed = false;
   }
 
-  componentWillMount(){
+  _sendActions(){
     this.props.actions([
       {
         caption: 'Save',
-        action: this.saveBPMN.bind(this)
+        action: this.saveBPMN.bind(this),
+        disabled: !this._changed
       },
       {
         caption: 'Import / Export',
@@ -45,6 +47,17 @@ class BpmnIoComponent extends React.Component {
         ]
       }
     ])
+  }
+
+  componentWillMount(){
+    this._sendActions();
+  }
+
+  changed(){
+    if (!this._changed){
+      this._changed = true;
+      this._sendActions();
+    }
   }
 
   loadXML() {
@@ -138,6 +151,7 @@ class BpmnIoComponent extends React.Component {
     });
     this._modeler.attachTo(parent.childNodes[0]);
     this.loadXML();
+    this._modeler.get('eventBus').on('commandStack.changed', e => {this.changed()});
 
     parent.childNodes[2].addEventListener('change', e => {
       const reader = new FileReader();

@@ -52,7 +52,7 @@ class ActionButton extends React.Component {
         case 1:
           return (
             <div className="btn-group">
-              <button className={`btn btn-${size} btn-info`} type="button" aria-expanded="true" onClick={e => this.makeAction(e, items[0])}>{caption}</button>
+              <button className={`btn btn-${size} btn-info`} type="button" aria-expanded="true" onClick={e => this.makeAction(e, items[0])} disabled={items[0].disabled}>{caption}</button>
             </div>
           );
 
