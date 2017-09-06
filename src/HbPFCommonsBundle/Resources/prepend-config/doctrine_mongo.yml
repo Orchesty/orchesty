@@ -36,4 +36,9 @@ doctrine_mongodb:
                     is_bundle: false
                     dir: "%src_dir%/Commons/Node/Document"
                     prefix: Hanaboso\PipesFramework\Commons\Node\Document
+                EmbedNodeDocument:
+                    type: annotation
+                    is_bundle: false
+                    dir: "%src_dir%/Commons/Node/Embed"
+                    prefix: Hanaboso\PipesFramework\Commons\Node\Embed
             metadata_cache_driver: array
