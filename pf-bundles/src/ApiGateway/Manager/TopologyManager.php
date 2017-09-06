@@ -3,8 +3,10 @@
 namespace Hanaboso\PipesFramework\ApiGateway\Manager;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Hanaboso\PipesFramework\ApiGateway\Exception\TopologyException;
 use Hanaboso\PipesFramework\Commons\DatabaseManager\DatabaseManagerLocator;
 use Hanaboso\PipesFramework\Commons\Enum\TopologyStatusEnum;
+use Hanaboso\PipesFramework\Commons\Node\Document\Node;
 use Hanaboso\PipesFramework\Commons\Topology\Document\Topology;
 
 /**
@@ -110,6 +112,37 @@ class TopologyManager
         $this->dm->persist($res);
 
         return $res;
+    }
+
+    /**
+     * @param Topology $topology
+     *
+     * @throws TopologyException
+     */
+    public function deleteTopology(Topology $topology): void
+    {
+        if ($topology->getVisibility() === TopologyStatusEnum::PUBLIC) {
+            throw new TopologyException(
+                'Cannot delete published topology.',
+                TopologyException::CANNOT_DELETE_PUBLIC_TOPOLOGY
+            );
+        }
+
+        $this->removeNodesByTopology($topology);
+        $this->dm->remove($topology);
+        $this->dm->flush();
+    }
+
+    /**
+     * @param Topology $topology
+     */
+    private function removeNodesByTopology(Topology $topology): void
+    {
+        foreach ($this->dm->getRepository(Node::class)->findBy(['topology' => $topology->getId()]) as $node) {
+            $this->dm->remove($node);
+        }
+
+        $this->dm->flush();
     }
 
     /**

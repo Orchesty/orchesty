@@ -118,7 +118,7 @@ class TopologyController extends FOSRestController
      *
      * @return Response
      */
-    public function getTopologySchema(string $id): Response
+    public function getTopologySchemaAction(string $id): Response
     {
         try {
             $response = new Response($this->topologyHandler->getTopologySchema($id));
@@ -139,7 +139,7 @@ class TopologyController extends FOSRestController
      *
      * @return Response
      */
-    public function saveTopologySchema(Request $request, string $id): Response
+    public function saveTopologySchemaAction(Request $request, string $id): Response
     {
         try {
             /** @var string $content */
@@ -163,7 +163,7 @@ class TopologyController extends FOSRestController
      *
      * @return Response
      */
-    public function publishTopology(string $id): Response
+    public function publishTopologyAction(string $id): Response
     {
         $data = $this->topologyHandler->publishTopology($id);
 
@@ -178,11 +178,26 @@ class TopologyController extends FOSRestController
      *
      * @return Response
      */
-    public function cloneTopology(string $id): Response
+    public function cloneTopologyAction(string $id): Response
     {
         $data = $this->topologyHandler->cloneTopology($id);
 
         return new JsonResponse($data, 200);
+    }
+
+    /**
+     * @Route("/topologies/{id}/delete", defaults={}, requirements={"id": "\w+"})
+     * @Method({"GET", "OPTIONS"})
+     *
+     * @param string $id
+     *
+     * @return Response
+     */
+    public function deleteTopologyAction(string $id): Response
+    {
+        $this->topologyHandler->deleteTopology($id);
+
+        return new JsonResponse([], 200);
     }
 
 }
