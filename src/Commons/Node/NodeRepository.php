@@ -28,13 +28,4 @@ class NodeRepository extends DocumentRepository
         return $this->findBy($criteria);
     }
 
-    /**
-     * @param string $topologyId
-     * @param string $nodeId
-     */
-    public function getNodeByTopology(string $topologyId, string $nodeId): void
-    {
-        count([$topologyId, $nodeId]);
-    }
-
 }
