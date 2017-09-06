@@ -142,4 +142,16 @@ class StartingPointTest extends TestCase
         $this->assertSame('pipes.1-topology.1-magento2-customer', $name);
     }
 
+    /**
+     * @covers StartingPoint::createHeaders()
+     */
+    public function testCreateHeaders(): void
+    {
+        $startingPoint = new StartingPoint($this->startingPointProducer);
+        $headers       = $startingPoint->createHeaders();
+
+        $this->assertCount(1, $headers->getHeaders());
+        $this->assertArrayHasKey('job_id', $headers->getHeaders());
+    }
+
 }
