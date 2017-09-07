@@ -37,7 +37,8 @@
     "symfony/serializer": "^3.3",
     "symfony/swiftmailer-bundle": "^3.0",
     "symfony/yaml": "^3.3",
-    "nette/utils": "^2.4"
+    "nette/utils": "^2.4",
+    "ramsey/uuid": "^3.7"
   },
   "require-dev": {
     "pipes/php-check-utils": "^1.0",
