@@ -1,5 +1,5 @@
+import Container from "lib-nodejs/dist/src/container/Container";
 import { default as Connection } from "lib-nodejs/dist/src/rabbitmq/Connection";
-import Container from "../Container";
 import CounterPublisher from "./drain/amqp/CounterPublisher";
 import FollowersPublisher from "./drain/amqp/FollowersPublisher";
 import {default as AMQPDrain, IAMQPDrainSettings} from "./drain/AMQPDrain";

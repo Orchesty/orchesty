@@ -17,16 +17,6 @@ export interface IHttpWorkerRequestParams {
 
 class AHttpWorker {
 
-    protected static createOutMessage(inMsg: JobMessage, content: string, result: IResult) {
-        return new JobMessage(
-            inMsg.getJobId(),
-            inMsg.getSequenceId(),
-            inMsg.getHeaders(),
-            content,
-            result,
-        );
-    }
-
     constructor(private method: string, private url: string) {}
 
     protected getHttpRequestParams(inMsg: JobMessage): IHttpWorkerRequestParams {

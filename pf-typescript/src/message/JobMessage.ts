@@ -1,3 +1,4 @@
+import TimeUtils from "lib-nodejs/dist/src/utils/TimeUtils";
 import * as uuid from "uuid/v1";
 import IMessage from "./IMessage";
 import { ResultCode } from "./ResultCode";
@@ -8,11 +9,16 @@ export interface IResult {
 }
 
 /**
- * Immutable class representing the flowing message through the node
+ * Class representing the flowing message through the node
  */
 class JobMessage implements IMessage {
 
     private msgUuid: string;
+
+    // timestamps
+    private receivedTime: number;
+    private processedTime: number;
+    private publishedTime: number;
 
     /**
      *
@@ -36,19 +42,13 @@ class JobMessage implements IMessage {
             throw new Error("Invalid sequenceId.");
         }
 
+        this.receivedTime = TimeUtils.nowMili();
         this.headers = headers;
         this.addHeader("job_id", jobId);
         this.addHeader("sequence_id", `${sequenceId}`);
         this.content = content;
 
         this.msgUuid = `${jobId}-${sequenceId}-${uuid()}`;
-
-        if (!this.result) {
-            this.result = {
-                status: ResultCode.NOT_PROCESSED,
-                message: "",
-            };
-        }
     }
 
     /**
@@ -88,7 +88,7 @@ class JobMessage implements IMessage {
      *
      * @return {*}
      */
-    public getHeaders(): {} {
+    public getHeaders(): { [key: string]: string } {
         return this.headers;
     }
 
@@ -102,10 +102,34 @@ class JobMessage implements IMessage {
 
     /**
      *
+     * @param {string} content
+     */
+    public setContent(content: string) {
+        this.content = content;
+    }
+
+    /**
+     *
      * @return {IResult}
      */
     public getResult(): IResult {
+        if (!this.result) {
+            return {
+                status: ResultCode.NOT_PROCESSED,
+                message: "Message was not changed by any worker.",
+            };
+        }
+
         return this.result;
+    }
+
+    /**
+     *
+     * @param {IResult} result
+     */
+    public setResult(result: IResult): void {
+        this.processedTime = TimeUtils.nowMili();
+        this.result = result;
     }
 
     /**
@@ -113,8 +137,41 @@ class JobMessage implements IMessage {
      * @param key
      * @param value
      */
-    private addHeader(key: string, value: string): void {
+    public addHeader(key: string, value: string): void {
         this.headers[key] = value;
+    }
+
+    /**
+     * Marks the message as published
+     */
+    public setPublishedTime(): void {
+        this.publishedTime = TimeUtils.nowMili();
+    }
+
+    /**
+     * Returns in [ms] the time needed to process message
+     *
+     * @return {number}
+     */
+    public getProcessDuration(): number {
+        if (this.processedTime && this.receivedTime) {
+            return this.processedTime - this.receivedTime;
+        }
+
+        return 0;
+    }
+
+    /**
+     * Returns in [ms] the time needed to process and publish message
+     *
+     * @return {number}
+     */
+    public getTotalDuration(): number {
+        if (this.publishedTime && this.receivedTime) {
+            return this.publishedTime - this.receivedTime;
+        }
+
+        return 0;
     }
 
 }

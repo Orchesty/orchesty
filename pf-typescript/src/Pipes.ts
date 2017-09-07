@@ -1,6 +1,6 @@
+import Container from "lib-nodejs/dist/src/container/Container";
 import logger from "lib-nodejs/dist/src/logger/Logger";
 import {default as Connection, IOptions} from "lib-nodejs/dist/src/rabbitmq/Connection";
-import Container from "./Container";
 import ComponentFactories from "./node/ComponentFactories";
 import Node from "./node/Node";
 import {default as Configurator, INodeConfig, ITopologyConfig, ITopologyConfigSkeleton} from "./topology/Configurator";

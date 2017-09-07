@@ -11,21 +11,13 @@ class AppenderWorker implements IWorker {
 
     constructor(private settings: IAppenderWorkerSettings) {}
 
-    public processData(inMsg: JobMessage): Promise<JobMessage> {
-        const outMsg = new JobMessage(
-            inMsg.getJobId(),
-            inMsg.getSequenceId(),
-            inMsg.getHeaders(),
-            `${inMsg.getContent()}${this.settings.suffix}`,
-            {
-                status: ResultCode.SUCCESS,
-                message: "Appender worker process message successfully",
-            },
-        );
+    public processData(msg: JobMessage): Promise<JobMessage> {
+        msg.setContent(`${msg.getContent()}${this.settings.suffix}`);
+        msg.setResult({status: ResultCode.SUCCESS, message: "Appender worker OK"});
 
-        logger.info(`AppenderWorker changed data to: "${outMsg.getContent()}"`);
+        logger.info(`Worker[type"appender"] processed message[id="${msg.getUuid()}]"`);
 
-        return Promise.resolve(outMsg);
+        return Promise.resolve(msg);
     }
 
 }

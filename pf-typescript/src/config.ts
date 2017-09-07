@@ -16,3 +16,9 @@ export const mongodbConnectionOptions: IMongoDBConnectionOptions = {
     db: process.env.MONGODB_DB || "pipes",
     collection: process.env.MONGODB_COLLECTION || "topology",
 };
+
+export const metricsOptions = {
+    measurement: "pipes-node",
+    server: process.env.METRICS_HOST || "influxdb",
+    port: parseInt(process.env.METRICS_PORT, 10) || 8089,
+};
