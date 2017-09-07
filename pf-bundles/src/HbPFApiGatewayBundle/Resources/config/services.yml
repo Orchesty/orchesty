@@ -9,6 +9,12 @@ services:
         arguments:
             - "@hbpf.database_manager_locator"
             - "@hbpf.manager.node"
+
+    hbpf.handler.starting_point:
+        class: Hanaboso\PipesFramework\HbPFCommonsBundle\Handler\StartingPointHandler
+        arguments:
+            - "@doctrine.odm.mongodb.document_manager"
+            - '@hbpf.starting_point.starting_point'
     hbpf.manager.topology:
         class: Hanaboso\PipesFramework\ApiGateway\Manager\TopologyManager
         arguments:
