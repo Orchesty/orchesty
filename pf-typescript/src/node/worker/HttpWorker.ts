@@ -1,51 +1,77 @@
+import logger from "lib-nodejs/dist/src/logger/Logger";
 import * as request from "request";
 import JobMessage from "../../message/JobMessage";
 import { ResultCode } from "../../message/ResultCode";
 import AHttpWorker from "./http/AHttpWorker";
 
+export interface IHttpWorkerSettings {
+    method: string;
+    url: string;
+    opts: any;
+}
+
 class HttpWorker extends AHttpWorker {
 
     private opts: {};
 
-    constructor(method: string, url: string, opts: {}) {
-        super(method, url);
-        this.opts = opts;
+    constructor(settings: IHttpWorkerSettings) {
+        super(settings.method, settings.url);
+        this.opts = settings.opts;
     }
 
     /**
      *
-     * @param {JobMessage} msg
+     * @param {JobMessage} inMsg
      * @return {Promise<JobMessage>}
      */
-    public processData(msg: JobMessage): Promise<JobMessage> {
-        const reqParams = this.getHttpRequestParams(msg);
+    public processData(inMsg: JobMessage): Promise<JobMessage> {
+        const reqParams = this.getHttpRequestParams(inMsg);
 
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
 
             Object.assign(reqParams, this.opts);
+
+            logger.info(`HttpWorker "${reqParams.method}" request to: ${reqParams.url} [id=${inMsg.getUuid()}]`);
 
             // Make http request and wait for response
             request(reqParams, (err, response, body) => {
                 if (err) {
-                    msg.setJobResultFailed(ResultCode.HTTP_ERROR, err);
-                    return reject(msg);
+                    logger.error(`HttpWorker response[id=${inMsg.getUuid()}], Error: ${err}`);
+                    return resolve(
+                        AHttpWorker.createOutMessage(
+                            inMsg,
+                            inMsg.getContent(),
+                            { status: ResultCode.HTTP_ERROR, message: err },
+                        ),
+                    );
                 }
 
                 if (!response.statusCode || response.statusCode !== 200) {
-                    msg.setJobResultFailed(
-                        ResultCode.HTTP_ERROR, `Http response with code ${response.statusCode} received`,
+                    logger.error(`HttpWorker response[id=${inMsg.getUuid()}], Status code ${response.statusCode}`);
+                    return resolve(
+                        AHttpWorker.createOutMessage(
+                            inMsg,
+                            inMsg.getContent(),
+                            {
+                                status: ResultCode.HTTP_ERROR,
+                                message: `Http response with code ${response.statusCode} received`,
+                            },
+                        ),
                     );
-                    return reject(msg);
                 }
 
-                msg.setContent(body);
-                msg.setJobResultOK();
+                logger.info(`HttpWorker response[id=${inMsg.getUuid()}] received.`);
+                const outMsg = AHttpWorker.createOutMessage(
+                    inMsg,
+                    JSON.stringify(body),
+                    { status: ResultCode.SUCCESS, message: "Http worker OK." },
+                );
 
-                return resolve(msg);
+                return resolve(outMsg);
             });
         });
     }
 
 }
 
-module.exports = HttpWorker;
+export default HttpWorker;

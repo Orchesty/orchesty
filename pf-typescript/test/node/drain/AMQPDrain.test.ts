@@ -42,7 +42,7 @@ describe("AMQPDrain", () => {
         const drain = new AMQPDrain(settings, counterPub, followPub);
 
         const msg: JobMessage = new JobMessage(
-            { job_id: "123", sequence_id: 1}, JSON.stringify({data: "test", settings: {}}),
+            "123", 1, {}, JSON.stringify({data: "test", settings: {}}),
         );
 
         return drain.open(msg)

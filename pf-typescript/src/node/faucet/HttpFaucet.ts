@@ -38,9 +38,9 @@ class HttpFaucet implements IFaucet {
      *
      * @param {WorkerProcessFn} processFn
      * @param {DrainOpenFn} drainFn
-     * @return {Promise<() => void>}
+     * @return {Promise<void>}
      */
-    public open(processFn: WorkerProcessFn, drainFn: DrainOpenFn): Promise<() => void> {
+    public open(processFn: WorkerProcessFn, drainFn: DrainOpenFn): Promise<void> {
         const app = express();
         app.use(bodyParser.json());
 
@@ -60,9 +60,7 @@ class HttpFaucet implements IFaucet {
                 ${server.address().address}:${server.address().port}${this.path}`);
         });
 
-        return Promise.resolve(() => {
-            // no need to do anything, everything is already prepared
-        });
+        return Promise.resolve();
     }
 
     /**
@@ -77,8 +75,9 @@ class HttpFaucet implements IFaucet {
 
         try {
             const body = JSON.stringify(req.body);
-            inMsg = new JobMessage(req.headers, body);
+            inMsg = new JobMessage(req.headers.job_id, parseInt(req.headers.sequence_id, 10), req.headers, body);
         } catch (err) {
+            err.message = `Cannot create JobMessage from http request. ${err.message}`;
             return Promise.reject(err);
         }
 

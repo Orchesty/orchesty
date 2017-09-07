@@ -2,54 +2,110 @@ import * as uuid from "uuid/v1";
 import IMessage from "./IMessage";
 import { ResultCode } from "./ResultCode";
 
+export interface IResult {
+    status: ResultCode;
+    message: string;
+}
+
+/**
+ * Immutable class representing the flowing message through the node
+ */
 class JobMessage implements IMessage {
 
-    private headers: any;
-    private content: string;
-    private sequenceId: number;
-    private msgId: string;
+    private msgUuid: string;
 
     /**
      *
-     * @param headers {Object}
-     * @param content {String}
+     * @param {string} jobId
+     * @param {number} sequenceId
+     * @param {Object} headers
+     * @param {string} content
+     * @param result
      */
-    constructor(headers: any, content: string) {
-        if (!headers.job_id) {
-            throw new Error("Cannot instantiate JobMessage. Missing job_id.");
+    constructor(
+        private jobId: string,
+        private sequenceId: number,
+        private headers: { [key: string]: string },
+        private content: string,
+        private result?: IResult,
+    ) {
+        if (!jobId) {
+            throw new Error("Invalid jobId.");
         }
-        if (!headers.sequence_id || parseInt(headers.sequence_id, 10) < 0) {
-            throw new Error("Cannot instantiate JobMessage. Missing or invalid sequence_id");
+        if (!sequenceId) {
+            throw new Error("Invalid sequenceId.");
         }
 
         this.headers = headers;
+        this.addHeader("job_id", jobId);
+        this.addHeader("sequence_id", `${sequenceId}`);
         this.content = content;
-        this.sequenceId = parseInt(headers.sequence_id, 10);
-        this.msgId = `${headers.job_id}-${uuid()}`;
+
+        this.msgUuid = `${jobId}-${sequenceId}-${uuid()}`;
+
+        if (!this.result) {
+            this.result = {
+                status: ResultCode.NOT_PROCESSED,
+                message: "",
+            };
+        }
     }
 
     /**
      *
      * @return {string}
      */
-    public getId() {
-        return this.msgId;
+    public getUuid(): string {
+        return this.msgUuid;
     }
 
     /**
      *
      * @return {string}
      */
-    public getJobId() {
-        return this.headers.job_id;
+    public getJobId(): string {
+        return this.jobId;
     }
 
     /**
      *
      * @return {Number}
      */
-    public getSequenceId() {
+    public getSequenceId(): number {
         return this.sequenceId;
+    }
+
+    /**
+     *
+     * @param key
+     * @return {*}
+     */
+    public getHeader(key: string): string {
+        return this.headers[key];
+    }
+
+    /**
+     *
+     * @return {*}
+     */
+    public getHeaders(): {} {
+        return this.headers;
+    }
+
+    /**
+     *
+     * @return {string}
+     */
+    public getContent(): string {
+        return this.content;
+    }
+
+    /**
+     *
+     * @return {IResult}
+     */
+    public getResult(): IResult {
+        return this.result;
     }
 
     /**
@@ -57,106 +113,8 @@ class JobMessage implements IMessage {
      * @param key
      * @param value
      */
-    public setHeader(key: string, value: string | number) {
+    private addHeader(key: string, value: string): void {
         this.headers[key] = value;
-    }
-
-    /**
-     *
-     * @param key
-     * @return {*}
-     */
-    public getHeader(key: string) {
-        if (this.headers[key] || this.headers[key] === 0) {
-            return this.headers[key];
-        }
-
-        return null;
-    }
-
-    /**
-     *
-     * @return {*}
-     */
-    public getHeaders() {
-        return this.headers;
-    }
-
-    /**
-     *
-     * @param content {String}
-     */
-    public setContent(content: string) {
-        this.content = content;
-    }
-
-    /**
-     *
-     * @return {string}
-     */
-    public getContent() {
-        return this.content;
-    }
-
-    /**
-     *
-     * @return { data, settings }
-     */
-    public open(): { data: any, settings: any } {
-        const parsed = JSON.parse(this.content);
-
-        if (!parsed.data) {
-            throw new Error(`Opening message ${this.getId()}, but no data found inside.`);
-        }
-        if (!parsed.settings) {
-            throw new Error(`Opening message ${this.getId()}, but no settings found inside.`);
-        }
-
-        return parsed;
-    }
-
-    /**
-     * @param message
-     */
-    public setJobResultOK(message = "") {
-        this.setHeader("result.code", ResultCode.SUCCESS);
-        this.setHeader("result.message", message);
-    }
-
-    /**
-     * @param errorCode
-     * @param message
-     */
-    public setJobResultFailed(errorCode: number, message = "") {
-        this.setHeader("result.code", errorCode);
-        this.setHeader("result.message", message);
-    }
-
-    /**
-     * Will return job status if is set, or 1 if not
-     *
-     * status === 0  => OK
-     * status > 0  => NOK
-     *
-     * @return {int}
-     */
-    public getJobResultCode() {
-        if (this.getHeader("result.code") !== null) {
-            return this.getHeader("result.code");
-        }
-
-        return 1;
-    }
-
-    /**
-     * @return {string}
-     */
-    public getJobResultMessage() {
-        if (this.getHeader("result.message") !== null) {
-            return this.getHeader("result.message");
-        }
-
-        return "";
     }
 
 }

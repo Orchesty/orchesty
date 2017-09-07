@@ -1,12 +1,10 @@
 import { Channel, Message } from "amqplib";
 import Connection from "lib-nodejs/dist/src/rabbitmq/Connection";
 import Consumer from "lib-nodejs/dist/src/rabbitmq/Consumer";
-import JobMessage from "../../message/JobMessage";
 
 class CounterConsumer extends Consumer {
 
     private processData: (msg: Message) => void;
-    private drain: (outMsg: JobMessage) => {};
 
     constructor(
         conn: Connection,

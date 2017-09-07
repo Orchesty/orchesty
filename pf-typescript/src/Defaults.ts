@@ -31,7 +31,7 @@ class Defaults {
      * @return {IWorkerConfig}
      */
     public static getDefaultWorkerConfig(): IWorkerConfig {
-        const type = "worker.uppercase";
+        const type = "worker.null";
         const settings = {};
 
         return { type, settings };

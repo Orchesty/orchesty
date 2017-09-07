@@ -43,9 +43,9 @@ class AMQPFaucet implements IFaucet {
     /**
      * Creates channel and starts messages consumption.
      */
-    public open(processData: WorkerProcessFn, drain: DrainOpenFn): Promise<() => void> {
+    public open(processData: WorkerProcessFn, drain: DrainOpenFn): Promise<void> {
 
-        logger.info("RabbitMQ Faucet being opened ...");
+        logger.info(`Preparing amqp faucet to read from "${this.settings.queue.name}"`);
 
         const prepareFn = (ch: Channel) => {
             const s = this.settings;
@@ -72,13 +72,10 @@ class AMQPFaucet implements IFaucet {
 
         this.consumer = new Consumer(this.connection, prepareFn, processData, drain);
 
-        return new Promise((resolve) => {
-            this.consumer.consume(this.settings.queue.name, {})
-                .then(() => {
-                    logger.info(`RabbitMQ Faucet for queue "${this.settings.queue.name}" opened`);
-                    resolve();
-                });
-        });
+        return this.consumer.consume(this.settings.queue.name, {})
+            .then(() => {
+                logger.info(`Amqp faucet started consuming "${this.settings.queue.name}"`);
+            });
     }
 
 }

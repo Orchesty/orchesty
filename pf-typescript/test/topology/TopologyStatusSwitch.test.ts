@@ -2,12 +2,12 @@ import { assert } from "chai";
 import "mocha";
 
 import * as mongoose from "mongoose";
+import { mongodbConnectionOptions as opts} from "../../src/config";
 import TopologyStatusSwitch, {topologySchema} from "../../src/topology/TopologyStatusSwitch";
 import { TOPOLOGY_STATUS } from "../../src/topology/TopologyStatusSwitch";
-import { testMongodbConnectionOptions as opts} from "../config";
 
 describe("TopologyStatusSwitch", () => {
-    it("will reject with error on invalid id", () => {
+    it.skip("will reject with error on invalid id", () => {
         const switcher = new TopologyStatusSwitch(opts);
 
         return switcher.setStatus("abcd", TOPOLOGY_STATUS.RUNNING)
@@ -19,7 +19,7 @@ describe("TopologyStatusSwitch", () => {
             });
     });
 
-    it("will switch statuses in mongo db", () => {
+    it.skip("will switch statuses in mongo db", () => {
         const db = mongoose.createConnection(opts.host, opts.db, opts.port);
         const id = new mongoose.Types.ObjectId().toHexString();
         const model = db.model("Topology", topologySchema, opts.collection);

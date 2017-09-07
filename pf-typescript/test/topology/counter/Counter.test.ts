@@ -7,11 +7,11 @@ import logger from "lib-nodejs/dist/src/logger/Logger";
 import Connection from "lib-nodejs/dist/src/rabbitmq/Connection";
 import Publisher from "lib-nodejs/dist/src/rabbitmq/Publisher";
 import SimpleConsumer from "lib-nodejs/dist/src/rabbitmq/SimpleConsumer";
+import {amqpConnectionOptions} from "../../../src/config";
 import {ResultCode} from "../../../src/message/ResultCode";
 import {default as Counter, ICounterJobInfo} from "../../../src/topology/counter/Counter";
-import {testAmqpConnectionOptions} from "../../config";
 
-const conn = new Connection(testAmqpConnectionOptions);
+const conn = new Connection(amqpConnectionOptions);
 const counterSettings = {
     sub: {queue: {name: "test_counter_sub_q", prefetch: 1, options: {}}},
     pub: {exchange: {name: "test_counter_pub_e", type: "direct", options: {}}, routing_key: "pub_rk"},

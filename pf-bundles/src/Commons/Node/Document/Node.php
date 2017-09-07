@@ -4,10 +4,11 @@ namespace Hanaboso\PipesFramework\Commons\Node\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\Index;
+use Doctrine\ODM\MongoDB\PersistentCollection;
 use Hanaboso\PipesFramework\Commons\Enum\HandlerEnum;
 use Hanaboso\PipesFramework\Commons\Enum\TypeEnum;
 use Hanaboso\PipesFramework\Commons\Exception\NodeException;
-use Hanaboso\PipesFramework\Commons\Node\Embed\EmbedNode;
+use Hanaboso\PipesFramework\Commons\Node\Document\Embed\EmbedNode;
 use Hanaboso\PipesFramework\Commons\Traits\Document\IdTrait;
 use Nette\Utils\Strings;
 
@@ -39,9 +40,9 @@ class Node
     protected $topology;
 
     /**
-     * @var EmbedNode[]
+     * @var EmbedNode[]|PersistentCollection
      *
-     * @MongoDB\EmbedMany(targetDocument="Hanaboso\PipesFramework\Commons\Node\Embed\EmbedNode")
+     * @MongoDB\EmbedMany(targetDocument="Hanaboso\PipesFramework\Commons\Node\Document\Embed\EmbedNode")
      */
     protected $next = [];
 
@@ -111,7 +112,7 @@ class Node
      */
     public function getNext(): array
     {
-        return $this->next;
+        return $this->next->toArray();
     }
 
     /**

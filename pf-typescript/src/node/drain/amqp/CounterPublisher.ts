@@ -1,4 +1,4 @@
-import { Channel } from "amqplib";
+import {Channel, Options} from "amqplib";
 import Connection from "lib-nodejs/dist/src/rabbitmq/Connection";
 import Publisher from "lib-nodejs/dist/src/rabbitmq/Publisher";
 import CounterMessage from "../../../message/CounterMessage";
@@ -44,15 +44,25 @@ class CounterPublisher extends Publisher {
         const resMsg = new CounterMessage(
             message.getJobId(),
             this.settings.node_id,
-            message.getJobResultCode(), // 0 OK, >0 NOK
-            message.getJobResultMessage(),
+            message.getResult().status, // 0 OK, >0 NOK
+            message.getResult().message,
             this.settings.followers.length,
             1, // TODO - unhardcode 1 if the node is of type "splitter"
         );
 
-        const opts = { headers: resMsg.getHeaders() };
+        const opts: Options.Publish = {
+            headers: resMsg.getHeaders(),
+            type: "counter_message",
+            messageId: resMsg.getUuid(),
+            timestamp: Date.now(),
+            appId: this.settings.node_id,
+        };
 
-        return this.sendToQueue(this.settings.counter_event.queue.name, new Buffer(resMsg.getContent()), opts);
+        return this.sendToQueue(
+            this.settings.counter_event.queue.name,
+            new Buffer(resMsg.getContent()),
+            opts,
+        );
     }
 
 }
