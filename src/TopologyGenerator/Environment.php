@@ -16,11 +16,16 @@ namespace Hanaboso\PipesFramework\TopologyGenerator;
 class Environment
 {
 
-    public const RABBITMQ_HOST  = 'RABBITMQ_HOST';
-    public const RABBITMQ_PORT  = 'RABBITMQ_PORT';
-    public const RABBITMQ_USER  = 'RABBITMQ_USER';
-    public const RABBITMQ_PASS  = 'RABBITMQ_PASS';
-    public const RABBITMQ_VHOST = 'RABBITMQ_VHOST';
+    public const RABBITMQ_HOST       = 'RABBITMQ_HOST';
+    public const RABBITMQ_PORT       = 'RABBITMQ_PORT';
+    public const RABBITMQ_USER       = 'RABBITMQ_USER';
+    public const RABBITMQ_PASS       = 'RABBITMQ_PASS';
+    public const RABBITMQ_VHOST      = 'RABBITMQ_VHOST';
+    public const XML_PARSER_HOST     = 'PARSER_HOST';
+    public const XML_PARSER_PORT     = 'PARSER_PORT';
+    public const XML_PARSER_RELOADED = 'PARSER_RELOADED';
+    public const METRICS_HOST        = 'METRICS_HOST';
+    public const METRICS_PORT        = 'METRICS_PORT';
 
     /**
      * @var string
@@ -46,6 +51,31 @@ class Environment
      * @var string
      */
     protected $rabbitMqVHost = '/';
+
+    /**
+     * @var string
+     */
+    protected $xmlParserHost = 'xml-parser';
+
+    /**
+     * @var int
+     */
+    protected $xmlParserPort = 80;
+
+    /**
+     * @var int
+     */
+    protected $xmlParserReloaded = 1;
+
+    /**
+     * @var string
+     */
+    protected $metricsHost = 'metrics';
+
+    /**
+     * @var int
+     */
+    protected $metricsPort = 5555;
 
     /**
      * @return string
@@ -143,6 +173,106 @@ class Environment
     public function setRabbitMqVHost(string $rabbitMqVHost): Environment
     {
         $this->rabbitMqVHost = $rabbitMqVHost;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getXmlParserHost(): string
+    {
+        return $this->xmlParserHost;
+    }
+
+    /**
+     * @param string $xmlParserHost
+     *
+     * @return Environment
+     */
+    public function setXmlParserHost(string $xmlParserHost): Environment
+    {
+        $this->xmlParserHost = $xmlParserHost;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getXmlParserPort(): int
+    {
+        return $this->xmlParserPort;
+    }
+
+    /**
+     * @param int $xmlParserPort
+     *
+     * @return Environment
+     */
+    public function setXmlParserPort(int $xmlParserPort): Environment
+    {
+        $this->xmlParserPort = $xmlParserPort;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getXmlParserReloaded(): int
+    {
+        return $this->xmlParserReloaded;
+    }
+
+    /**
+     * @param int $xmlParserReloaded
+     *
+     * @return Environment
+     */
+    public function setXmlParserReloaded(int $xmlParserReloaded): Environment
+    {
+        $this->xmlParserReloaded = $xmlParserReloaded;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getMetricsHost(): string
+    {
+        return $this->metricsHost;
+    }
+
+    /**
+     * @param string $metricsHost
+     *
+     * @return Environment
+     */
+    public function setMetricsHost(string $metricsHost): Environment
+    {
+        $this->metricsHost = $metricsHost;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getMetricsPort(): int
+    {
+        return $this->metricsPort;
+    }
+
+    /**
+     * @param int $metricsPort
+     *
+     * @return Environment
+     */
+    public function setMetricsPort(int $metricsPort): Environment
+    {
+        $this->metricsPort = $metricsPort;
 
         return $this;
     }

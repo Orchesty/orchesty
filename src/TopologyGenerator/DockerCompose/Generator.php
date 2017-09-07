@@ -13,6 +13,7 @@ use Hanaboso\PipesFramework\Commons\Topology\Document\Topology;
 use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\Impl\CounterServiceBuilder;
 use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\Impl\NodeServiceBuilder;
 use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\Impl\ProbeServiceBuilder;
+use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\Impl\XmlParserServiceBuilder;
 use Hanaboso\PipesFramework\TopologyGenerator\Environment;
 use Hanaboso\PipesFramework\TopologyGenerator\GeneratorInterface;
 use Hanaboso\PipesFramework\TopologyGenerator\GeneratorUtils;
@@ -98,6 +99,10 @@ class Generator implements GeneratorInterface
         $compose->addServices($nodeWatcherService);
 
         $builder        = new CounterServiceBuilder($environment, self::REGISTRY, self::NETWORK);
+        $counterService = $builder->build(new Node());
+        $compose->addServices($counterService);
+
+        $builder        = new XmlParserServiceBuilder($environment, self::REGISTRY, self::NETWORK);
         $counterService = $builder->build(new Node());
         $compose->addServices($counterService);
 

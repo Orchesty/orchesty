@@ -28,6 +28,19 @@ services:
     networks:
       - demo_default
     command: './dist/src/bin/pipes.js start counter'
+  xml-parser:
+    image: 'dkr.hanaboso.net/pipes/pipes/python-xml-parser:prod'
+    environment:
+      PARSER_HOST: xml-parser
+      PARSER_PORT: '80'
+      PARSER_RELOADED: '1'
+      METRICS_HOST: metrics
+      METRICS_PORT: '5555'
+    ports:
+      - '8080:80'
+    networks:
+      - demo_default
+    command: ''
   1-magento2-customer:
     image: 'dkr.hanaboso.net/pipes/pipes/pf-typescript:dev'
     environment:
