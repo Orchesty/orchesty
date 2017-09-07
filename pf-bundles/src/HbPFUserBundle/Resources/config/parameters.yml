@@ -2,3 +2,4 @@ parameters:
     database_type:
         - 'ODM'
 #        ODM | ORM
+    resource_enum: Hanaboso\PipesFramework\Acl\Enum\ResourceEnum
