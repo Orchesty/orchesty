@@ -33,7 +33,7 @@ class Topology
      *
      * @MongoDB\Field(type="string")
      */
-    protected $descr;
+    protected $descr = '';
 
     /**
      * @var string
@@ -54,21 +54,21 @@ class Topology
      *
      * @MongoDB\Field(type="boolean", options={"default":"1"})
      */
-    protected $enabled;
+    protected $enabled = TRUE;
 
     /**
      * @var string
      *
      * @MongoDB\Field(type="string")
      */
-    protected $bpmn;
+    protected $bpmn = '';
 
     /**
      * @var string
      *
      * @MongoDB\Field(type="string")
      */
-    protected $rawBpmn;
+    protected $rawBpmn = '';
 
     /**
      * Topology constructor.

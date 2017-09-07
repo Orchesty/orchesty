@@ -1,0 +1,7 @@
+services:
+    hbpf.command.run_topology:
+        class: Hanaboso\PipesFramework\Commons\Command\RunTopologyCommand
+        arguments:
+            - '@hbpf.commons.handler.starting_point'
+        tags:
+            -  { name: console.command }

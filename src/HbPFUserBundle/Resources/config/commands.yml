@@ -1,5 +1,5 @@
 services:
-    acme_hello.command.my_command:
+    hbpf.command.change_password:
         class: Hanaboso\PipesFramework\HbPFUserBundle\Command\ChangePasswordCommand
         arguments:
             - '@hbpf.database_manager_locator.user'
