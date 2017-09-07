@@ -24,8 +24,8 @@ class HbPFUserExtension extends Extension implements PrependExtensionInterface
      */
     public function prepend(ContainerBuilder $container): void
     {
-        if (!$container->hasExtension('hb_pf_commons')) {
-            throw new RuntimeException('You must register HbPFCommonsBundle before.');
+        if (!$container->hasExtension('doctrine') && !$container->hasExtension('doctrine_mongodb')) {
+            throw new RuntimeException('You must register ORM or ODM (or both) before.');
         };
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/prepend-config'));
