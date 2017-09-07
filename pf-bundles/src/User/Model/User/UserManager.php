@@ -162,14 +162,13 @@ class UserManager
 
         /** @var OdmUser|OrmUser $class */
         $class = $this->provider->getResource(ResourceEnum::USER);
-        $user  = $class::from($token->getUserOrTmpUser());
-        $this->dm->remove($token->getUserOrTmpUser());
+        $user  = $class::from($token->getTmpUser());
         $this->dm->persist($user);
-        $this->dm->flush();
+        $this->eventDispatcher->dispatch(UserEvent::USER_ACTIVATE, new UserEvent($user, NULL, $token->getTmpUser()));
 
+        $this->dm->remove($token->getTmpUser());
         $token->setUser($user)->setTmpUser(NULL);
         $this->dm->flush();
-        $this->eventDispatcher->dispatch(UserEvent::USER_ACTIVATE, new UserEvent($user));
 
         // TODO: Send notification by email
     }

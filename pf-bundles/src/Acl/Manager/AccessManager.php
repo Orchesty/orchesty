@@ -2,8 +2,10 @@
 
 namespace Hanaboso\PipesFramework\Acl\Manager;
 
+use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ORM\EntityManager;
+use Hanaboso\PipesFramework\Acl\Annotation\OwnerAnnotation;
 use Hanaboso\PipesFramework\Acl\Dto\GroupDto;
 use Hanaboso\PipesFramework\Acl\Entity\GroupInterface;
 use Hanaboso\PipesFramework\Acl\Entity\RuleInterface;
@@ -19,6 +21,8 @@ use Hanaboso\PipesFramework\HbPFAclBundle\Provider\ResourceProvider;
 use Hanaboso\PipesFramework\User\DatabaseManager\UserDatabaseManagerLocator;
 use Hanaboso\PipesFramework\User\Entity\UserInterface;
 use Hanaboso\PipesFramework\User\Model\User\Event\UserEvent;
+use ReflectionClass;
+use ReflectionProperty;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
@@ -113,8 +117,13 @@ class AccessManager implements EventSubscriberInterface
 
         $data = ['id' => $id];
 
-        if (property_exists($class, 'owner') && $byte >= 0) {
-            $data['owner'] = $user;
+        if ((new ReflectionClass($class))->hasProperty('owner') && $byte >= 0) {
+            $reader = new AnnotationReader();
+
+            $data['owner'] =
+                $reader->getPropertyAnnotation(new ReflectionProperty($class, 'owner'), OwnerAnnotation::class)
+                    ? $user
+                    : $user->getId();
         }
 
         $val = $this->dm->getRepository($class)->findOneBy($data);

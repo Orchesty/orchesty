@@ -2,6 +2,7 @@
 
 namespace Hanaboso\PipesFramework\Acl\Entity;
 
+use Hanaboso\PipesFramework\Acl\Annotation\OwnerAnnotation as OWNER;
 use Hanaboso\PipesFramework\User\Entity\UserInterface;
 
 /**
@@ -14,6 +15,7 @@ abstract class EntityAbstract
 
     /**
      * @var UserInterface[]|null
+     * @OWNER()
      */
     protected $owner;
 
