@@ -3,25 +3,25 @@ import JobMessage from "../../message/JobMessage";
 import {ResultCode} from "../../message/ResultCode";
 import IWorker from "./IWorker";
 
-class UppercaseWorker implements IWorker {
+class NullWorker implements IWorker {
 
     public processData(inMsg: JobMessage): Promise<JobMessage> {
         const outMsg = new JobMessage(
             inMsg.getJobId(),
             inMsg.getSequenceId(),
             inMsg.getHeaders(),
-            inMsg.getContent().toUpperCase(),
+            inMsg.getContent(),
             {
                 status: ResultCode.SUCCESS,
-                message: "Uppercase worker OK",
+                message: "Null worker OK",
             },
         );
 
-        logger.info(`UppercaseWorker changed data to: "${outMsg.getContent()}"`);
+        logger.info(`Worker[type"null"] processed message[id="${inMsg.getUuid()}]"`);
 
         return Promise.resolve(outMsg);
     }
 
 }
 
-export default UppercaseWorker;
+export default NullWorker;

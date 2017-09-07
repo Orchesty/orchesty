@@ -16,7 +16,7 @@ describe("Node", () => {
         const drain = mock.mock(AMQPDrain);
         const faucet = mock.mock(HttpFaucet);
         const faucetInstance: HttpFaucet = mock.instance(faucet);
-        faucetInstance.open = () => Promise.resolve(() => {});
+        faucetInstance.open = () => Promise.resolve();
 
         const node = new Node(
             "test-node",
@@ -27,7 +27,7 @@ describe("Node", () => {
             true,
         );
 
-        return node.prepare()
+        return node.open()
             .then(() => {
                 return node.startServer();
             })

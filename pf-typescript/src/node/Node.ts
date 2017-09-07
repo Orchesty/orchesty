@@ -47,21 +47,6 @@ class Node {
     }
 
     /**
-     * Opens all nodes except the first one
-     *
-     * @return Promise<Function>
-     */
-    public prepare(): Promise<() => void> {
-        return this.openNode()
-            .then((run: () => void) => {
-                this.nodeStatus = NODE_STATUS.READY;
-                logger.info("Node opened.");
-
-                return run;
-            });
-    }
-
-    /**
      * Starts node's http server
      *  1. provides self-status
      *  2. accepts signal to start itself in case of first node in topology
@@ -94,26 +79,32 @@ class Node {
      * @return {Promise}
      * @private
      */
-    private openNode(): Promise<() => void> {
+    public open(): Promise<void> {
         // TODO - add sending basic metrics here
+        this.nodeStatus = NODE_STATUS.READY;
 
         return this.faucet.open(
             (msgIn: JobMessage) => {
-                logger.info(`Node ${this.id} received message.`);
+                logger.info(`Node[id=${this.id}] received message[id=${msgIn.getUuid()}].`);
                 return this.worker.processData(msgIn)
                     .then((msgOut: JobMessage) => {
-                        logger.info(`Node ${this.id} processed message`);
+                        logger.info(
+                            `Node[id=${this.id}] received processed message[id="${msgOut.getUuid()}", \
+                            status="${msgOut.getResult().status}", info="${msgOut.getResult().message}"].`,
+                        );
                         return msgOut;
                     });
             },
             (msgOut: JobMessage) => {
                 return this.drain.open(msgOut)
                     .then((forwarded) => {
-                        logger.info(`Node ${this.id} forwarded message.`);
+                        // logger.info(`Node[id=${this.id}]  message[${msgOut.getUuid()}].`);
                         return forwarded;
                     });
             },
-        );
+        ).then(() => {
+            logger.info(`Node ${this.id} has been opened.`);
+        });
     }
 
 }

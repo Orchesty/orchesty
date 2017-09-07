@@ -2,9 +2,9 @@ import { assert } from "chai";
 import "mocha";
 
 import * as mongoose from "mongoose";
+import { mongodbConnectionOptions as opts} from "../../src/config";
 import TopologyStatusSwitch, {topologySchema} from "../../src/topology/TopologyStatusSwitch";
 import { TOPOLOGY_STATUS } from "../../src/topology/TopologyStatusSwitch";
-import { testMongodbConnectionOptions as opts} from "../config";
 
 describe("TopologyStatusSwitch", () => {
     it.skip("will reject with error on invalid id", () => {

@@ -3,10 +3,11 @@
 import * as fs from "fs";
 import logger from "lib-nodejs/dist/src/logger/Logger";
 import * as yargs from "yargs";
+import * as config from "../config";
 import Pipes from "../Pipes";
 
 const topologyConfig = JSON.parse(fs.readFileSync("topology.json", "utf8"));
-const pipes = new Pipes(topologyConfig);
+const pipes = new Pipes(topologyConfig, config.amqpConnectionOptions);
 
 const argv = yargs
     .usage("Usage: $0 start <service> [options]")

@@ -4,13 +4,13 @@ import "mocha";
 import {Channel, Message} from "amqplib";
 import Connection from "lib-nodejs/dist/src/rabbitmq/Connection";
 import SimpleConsumer from "lib-nodejs/dist/src/rabbitmq/SimpleConsumer";
+import {amqpConnectionOptions} from "../../../../src/config";
 import JobMessage from "../../../../src/message/JobMessage";
 import {ResultCode} from "../../../../src/message/ResultCode";
 import FollowersPublisher from "../../../../src/node/drain/amqp/FollowersPublisher";
 import {IAMQPDrainSettings} from "../../../../src/node/drain/AMQPDrain";
-import {testAmqpConnectionOptions} from "../../../config";
 
-const conn = new Connection(testAmqpConnectionOptions);
+const conn = new Connection(amqpConnectionOptions);
 const settings: IAMQPDrainSettings = {
     node_id: "test-counter-publisher",
     counter_event: {

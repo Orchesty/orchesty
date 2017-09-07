@@ -63,12 +63,10 @@ class AMQPDrain extends ADrain implements IDrain {
                         return this.followersPublisher.send(bufMsg);
                     })
                     .then(() => {
-                        logger.info("Drain forward complete.");
-
                         resolve(true);
                     })
                     .catch((err: Error) => {
-                        logger.error(`Drain open error: ${err.message}`);
+                        logger.error(`Amqp drain open error: ${err.message}`);
 
                         resolve(false);
                     });

@@ -1,3 +1,4 @@
+import logger from "lib-nodejs/dist/src/logger/Logger";
 import * as request from "request";
 import JobMessage from "../../message/JobMessage";
 import { ResultCode } from "../../message/ResultCode";
@@ -26,14 +27,17 @@ class HttpWorker extends AHttpWorker {
     public processData(inMsg: JobMessage): Promise<JobMessage> {
         const reqParams = this.getHttpRequestParams(inMsg);
 
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
 
             Object.assign(reqParams, this.opts);
+
+            logger.info(`HttpWorker "${reqParams.method}" request to: ${reqParams.url} [id=${inMsg.getUuid()}]`);
 
             // Make http request and wait for response
             request(reqParams, (err, response, body) => {
                 if (err) {
-                    return reject(
+                    logger.error(`HttpWorker response[id=${inMsg.getUuid()}], Error: ${err}`);
+                    return resolve(
                         AHttpWorker.createOutMessage(
                             inMsg,
                             inMsg.getContent(),
@@ -43,7 +47,8 @@ class HttpWorker extends AHttpWorker {
                 }
 
                 if (!response.statusCode || response.statusCode !== 200) {
-                    return reject(
+                    logger.error(`HttpWorker response[id=${inMsg.getUuid()}], Status code ${response.statusCode}`);
+                    return resolve(
                         AHttpWorker.createOutMessage(
                             inMsg,
                             inMsg.getContent(),
@@ -55,9 +60,10 @@ class HttpWorker extends AHttpWorker {
                     );
                 }
 
+                logger.info(`HttpWorker response[id=${inMsg.getUuid()}] received.`);
                 const outMsg = AHttpWorker.createOutMessage(
                     inMsg,
-                    body,
+                    JSON.stringify(body),
                     { status: ResultCode.SUCCESS, message: "Http worker OK." },
                 );
 

@@ -3,6 +3,7 @@ import logger from "lib-nodejs/dist/src/logger/Logger";
 import Connection from "lib-nodejs/dist/src/rabbitmq/Connection";
 import Publisher from "lib-nodejs/dist/src/rabbitmq/Publisher";
 import JobMessage from "../../../message/JobMessage";
+import {ResultCode} from "../../../message/ResultCode";
 import {IAMQPDrainSettings, IFollower} from "../AMQPDrain";
 
 /**
@@ -38,7 +39,7 @@ class FollowersPublisher extends Publisher {
 
                 return Promise.all(followersPromises)
                     .then(() => {
-                        logger.info(`Followers exchanges, queues and binds ready.`);
+                        logger.info(`Drain "${this.settings.node_id}" is ready`);
                     });
             });
         this.settings = settings;
@@ -50,6 +51,15 @@ class FollowersPublisher extends Publisher {
      * @return {Promise<void>}
      */
     public send(message: JobMessage): Promise<void> {
+        if (message.getResult().status !== ResultCode.SUCCESS) {
+            logger.warn(
+                `Aqp drain will not forward message[id="${message.getUuid()}", \
+                status="${message.getResult().status}, info="${message.getResult().message}""].`,
+            );
+
+            return Promise.resolve();
+        }
+
         const options: Options.Publish = {
             headers: message.getHeaders(),
             type: "job_message",
@@ -72,7 +82,7 @@ class FollowersPublisher extends Publisher {
 
         return Promise.all(promises)
             .then(() => {
-                logger.info(`Messages forwarded to ${promises.length} followers.`);
+                logger.info(`Amqp drain forwarded message "${message.getUuid()}" to "${promises.length}" followers.`);
             });
     }
 

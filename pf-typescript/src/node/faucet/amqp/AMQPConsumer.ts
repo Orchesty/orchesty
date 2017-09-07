@@ -42,7 +42,7 @@ class Consumer extends BasicConsumer {
                 return this.drain(outMsg);
             })
             .catch((error: Error) => {
-                logger.error(`Requeuing message. Reason: ${error.message}`);
+                logger.error(`Requeuing message. Reason: ${error}`);
                 channel.nack(amqMsg); // requeue due to worker processing error
             });
     }

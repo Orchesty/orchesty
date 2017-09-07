@@ -1,4 +1,5 @@
 import {IOptions} from "lib-nodejs/dist/src/rabbitmq/Connection";
+import {IMongoDBConnectionOptions} from "./topology/TopologyStatusSwitch";
 
 export const amqpConnectionOptions: IOptions = {
     host: process.env.RABBITMQ_HOST || "localhost",
@@ -7,4 +8,11 @@ export const amqpConnectionOptions: IOptions = {
     port: parseInt(process.env.RABBITMQ_PORT, 10) || 5672,
     vhost: process.env.RABBITMQ_VHOST || "/",
     heartbeat: parseInt(process.env.RABBITMQ_HEARTBEAT, 10) || 60,
+};
+
+export const mongodbConnectionOptions: IMongoDBConnectionOptions = {
+    host: process.env.MONGODB_HOST || "localhost",
+    port: parseInt(process.env.MONGODB_PORT, 10) || 27017,
+    db: process.env.MONGODB_DB || "pipes",
+    collection: process.env.MONGODB_COLLECTION || "topology",
 };
