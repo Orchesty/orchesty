@@ -81,6 +81,14 @@ class Pipes {
 
     /**
      *
+     * @return {ITopologyConfig}
+     */
+    public getTopologyConfig(): ITopologyConfig {
+        return this.topology;
+    }
+
+    /**
+     *
      * @param {INodeConfig} nodeCfg
      * @return {Node}
      */

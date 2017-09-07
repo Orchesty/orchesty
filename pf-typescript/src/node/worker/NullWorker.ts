@@ -13,7 +13,7 @@ class NullWorker implements IWorker {
             inMsg.getContent(),
             {
                 status: ResultCode.SUCCESS,
-                message: "Null worker process message successfully",
+                message: "Null worker OK",
             },
         );
 

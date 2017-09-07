@@ -13,7 +13,7 @@ class UppercaseWorker implements IWorker {
             inMsg.getContent().toUpperCase(),
             {
                 status: ResultCode.SUCCESS,
-                message: "Uppercase worker process message successfully",
+                message: "Uppercase worker OK",
             },
         );
 
