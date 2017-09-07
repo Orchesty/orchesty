@@ -65,7 +65,7 @@ class Node
      *
      * @MongoDB\Field(type="boolean", options={"default":"1"})
      */
-    protected $enabled;
+    protected $enabled = TRUE;
 
     /**
      * @return string

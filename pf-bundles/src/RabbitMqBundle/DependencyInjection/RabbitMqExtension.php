@@ -89,7 +89,7 @@ class RabbitMqExtension extends Extension implements ConfigurationInterface
             ->defaultValue([])
             ->prototype('array');
         $producersNode->children()->scalarNode('class')->isRequired();
-        $producersNode->children()->scalarNode('serializer')->isRequired();
+        $producersNode->children()->scalarNode('serializer')->defaultNull();
         $producersNode->children()->scalarNode('exchange')->defaultValue('');
         $producersNode->children()->scalarNode('routing_key')->defaultValue('');
         $producersNode->children()->booleanNode('mandatory')->defaultFalse();
