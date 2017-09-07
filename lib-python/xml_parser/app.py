@@ -14,12 +14,12 @@ from hb_metrics.metrics import Metrics
 from hb_metrics.service.udp_sender import UdpSender
 from model.request_data import RequestData
 
-os.environ.setdefault('PARSER_HOST', '127.0.0.1')
-os.environ.setdefault('PARSER_PORT', '5000')
+os.environ.setdefault('PARSER_HOST', '0.0.0.0')
+os.environ.setdefault('PARSER_PORT', '80')
 os.environ.setdefault('FLASK_DEBUG', '0')
 os.environ.setdefault('PARSER_RELOADED', '1')
-os.environ.setdefault('ANALYTICS_HOST', '127.0.0.1')
-os.environ.setdefault('ANALYTICS_PORT', '5555')
+os.environ.setdefault('METRICS_HOST', '127.0.0.1')
+os.environ.setdefault('METRICS_PORT', '5555')
 
 try:
     import flask
@@ -68,7 +68,7 @@ def handle_bad_request(error):
 
 
 if __name__ == "__main__":
-    metrics = Metrics(UdpSender(os.environ.get('ANALYTICS_HOST'), os.environ.get('ANALYTICS_PORT')))
+    metrics = Metrics(UdpSender(os.environ.get('METRICS_HOST'), os.environ.get('METRICS_PORT')))
 
     logger = logging.getLogger(__name__)
 
