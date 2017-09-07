@@ -52,18 +52,17 @@ TopologyPage.propTypes = {
   openNewTopology: PropTypes.func
 };
 
-function mapStateToProps(state){
-  const {application} = state;
+function mapStateToProps(state, ownProps){
   return {
-    listId: application.selectedPage.data ? application.selectedPage.data.topologyListId : null
+    listId: ownProps.pageKey
   }
 }
 
-function mapActionsToProps(dispatch){
+function mapActionsToProps(dispatch, ownProps){
   return {
-    openTopologyList: () => dispatch(topologyActions.openTopologyList()),
-    closeTopologyList: id => dispatch(topologyActions.closeTopologyList(id)),
-    openNewTopology: () => dispatch(applicationActions.openModal('topology_edit', {addNew: true}))
+    openNewTopology: () => dispatch(applicationActions.openModal(ownProps.pageKey, {addNew: true})),
+    openTopologyList: () => dispatch(topologyActions.openTopologyList(ownProps.pageKey)),
+    closeTopologyList: () => dispatch(topologyActions.closeTopologyList(ownProps.pageKey))
   }
 }
 
