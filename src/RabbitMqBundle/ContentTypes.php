@@ -21,4 +21,9 @@ final class ContentTypes
      */
     public const APPLICATION_JSON = 'application/json';
 
+    /**
+     * Plain text
+     */
+    public const TEXT_PLAIN = 'text/plain';
+
 }

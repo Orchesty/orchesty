@@ -94,7 +94,7 @@ class AbstractProducer implements LoggerAwareInterface
         string $routingKey,
         bool $mandatory,
         bool $immediate,
-        string $serializerClassName,
+        ?string $serializerClassName,
         ?string $beforeMethod,
         string $contentType,
         BunnyManager $manager
@@ -141,13 +141,11 @@ class AbstractProducer implements LoggerAwareInterface
     }
 
     /**
-     * @param mixed       $message
-     * @param string|null $routingKey
-     * @param array       $headers
+     * @param mixed $message
      *
-     * @return void
+     * @return array
      */
-    public function publish($message, ?string $routingKey = NULL, array $headers = []): void
+    public function beforeSerializer($message): array
     {
         if (!$this->getSerializer()) {
             $this->getLogger()
@@ -165,13 +163,28 @@ class AbstractProducer implements LoggerAwareInterface
             $this->{$this->beforeMethod}($message, $this->manager->getChannel());
         }
 
+        return $message;
+    }
+
+    /**
+     * @param mixed       $message
+     * @param string|null $routingKey
+     * @param array       $headers
+     *
+     * @return void
+     */
+    public function publish($message, ?string $routingKey = NULL, array $headers = []): void
+    {
         switch ($this->getContentType()) {
             case ContentTypes::APPLICATION_JSON:
+                $message = $this->beforeSerializer($message);
                 if ($this->serializer instanceof IMessageSerializer) {
                     $message = $this->serializer->toJson($message);
                 } else {
                     throw new BunnyException('Cannot serialize message to JSON.');
                 }
+                break;
+            case ContentTypes::TEXT_PLAIN:
                 break;
 
             default:

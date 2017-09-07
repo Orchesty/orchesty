@@ -2,4 +2,4 @@ rabbit-mq:
     producers:
         starting_point:
             class: Hanaboso\PipesFramework\Commons\StartingPoint\StartingPointProducer
-            serializer: Hanaboso\PipesFramework\RabbitMqBundle\Serializers\JsonSerializer
+            content_type: text/plain

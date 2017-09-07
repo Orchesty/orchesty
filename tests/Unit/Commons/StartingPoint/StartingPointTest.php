@@ -155,4 +155,101 @@ class StartingPointTest extends TestCase
         $this->assertArrayHasKey('sequence_id', $headers->getHeaders());
     }
 
+    /**
+     * @covers StartingPoint::createBodyFromRequest()
+     */
+    public function testCreateBodyFromRequestXml(): void
+    {
+        $startingPoint = new StartingPoint($this->startingPointProducer);
+
+        $request = new Request([], [], [], [], [], [
+            'CONTENT_TYPE' => 'application/xml',
+        ], '
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- Comment -->
+<root attr="Name">
+  <title>Title</title>
+</root>'
+        );
+
+        $body = $startingPoint->createBodyFromRequest($request);
+
+        $body = json_decode($body, TRUE);
+
+        $this->assertSame([
+            "data"     => '
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- Comment -->
+<root attr="Name">
+  <title>Title</title>
+</root>',
+            "settings" => "",
+        ], $body);
+    }
+
+    /**
+     * @covers StartingPoint::createBodyFromRequest()
+     */
+    public function testCreateBodyFromRequestJson(): void
+    {
+        $startingPoint = new StartingPoint($this->startingPointProducer);
+
+        $request = new Request([], [], [], [], [], [
+            'CONTENT_TYPE' => 'application/json',
+        ],
+            '{"name": "Name", "array": []}'
+        );
+
+        $body = $startingPoint->createBodyFromRequest($request);
+
+        $body = json_decode($body, TRUE);
+
+        $this->assertSame([
+            "data"     => [
+                "name"  => "Name",
+                "array" => [],
+            ],
+            "settings" => "",
+        ], $body);
+    }
+
+    /**
+     * @covers StartingPoint::createBodyFromRequest()
+     */
+    public function testCreateBodyFromRequestCsv(): void
+    {
+        $startingPoint = new StartingPoint($this->startingPointProducer);
+
+        $request = new Request([], [], [], [], [], [
+            'CONTENT_TYPE' => 'text/csv',
+        ],
+            'Data1,Data2,Data3'
+        );
+
+        $body = $startingPoint->createBodyFromRequest($request);
+
+        $body = json_decode($body, TRUE);
+
+        $this->assertSame([
+            "data"     => "Data1,Data2,Data3",
+            "settings" => "",
+        ], $body);
+    }
+
+    /**
+     * @covers StartingPoint::createBody()
+     */
+    public function testCreateBody(): void
+    {
+        $startingPoint = new StartingPoint($this->startingPointProducer);
+        $body          = $startingPoint->createBody();
+
+        $body = json_decode($body, TRUE);
+
+        $this->assertSame([
+            "data"     => "",
+            "settings" => "",
+        ], $body);
+    }
+
 }
