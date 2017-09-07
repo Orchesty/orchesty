@@ -1,5 +1,3 @@
-// todo - zkontroluje topology probe a pokud vrati 200 ulozi do monga do kolekce topology status 1
-
 import * as mongoose from "mongoose";
 import {Connection, Model} from "mongoose";
 
