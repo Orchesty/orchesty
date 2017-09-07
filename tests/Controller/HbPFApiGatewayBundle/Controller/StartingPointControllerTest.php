@@ -31,7 +31,7 @@ class StartingPointControllerTest extends ControllerTestCaseAbstract
 
         $this->client->request(
             'POST',
-            '/api/run/1/mapper_123',
+            '/api/gateway/topologies/1/nodes/mapper_123/run',
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],

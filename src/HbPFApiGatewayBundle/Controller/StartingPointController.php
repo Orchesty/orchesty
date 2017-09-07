@@ -41,7 +41,7 @@ class StartingPointController extends FOSRestController
     }
 
     /**
-     * @Route("/topologies/{topologyId}/nodes/{nodeId}", defaults={}, requirements={"topologyId": "\w+", "nodeId": "\w+"})
+     * @Route("/topologies/{topologyId}/nodes/{nodeId}/run", defaults={}, requirements={"topologyId": "\w+", "nodeId": "\w+"})
      * @Method({"POST"})
      *
      * @param Request $request

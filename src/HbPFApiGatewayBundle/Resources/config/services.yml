@@ -11,7 +11,7 @@ services:
             - "@hbpf.manager.node"
 
     hbpf.handler.starting_point:
-        class: Hanaboso\PipesFramework\HbPFCommonsBundle\Handler\StartingPointHandler
+        class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Handler\StartingPointHandler
         arguments:
             - "@doctrine.odm.mongodb.document_manager"
             - '@hbpf.starting_point.starting_point'
