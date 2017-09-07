@@ -80,8 +80,8 @@ class UserManagerTest extends DatabaseTestCaseAbstract
         $tokens = $this->tokenRepository->findBy([UserTypeEnum::TMP_USER => $tmpUsers[0]]);
         $this->assertEquals(1, count($tokens));
         $this->assertInstanceOf(Token::class, $tokens[0]);
-        $this->assertInstanceOf(TmpUser::class, $tokens[0]->getUserOrTmpUser());
-        $this->assertEquals('email@example.com', $tokens[0]->getUserOrTmpUser()->getEmail());
+        $this->assertInstanceOf(TmpUser::class, $tokens[0]->getTmpUser());
+        $this->assertEquals('email@example.com', $tokens[0]->getTmpUser()->getEmail());
     }
 
     /**
