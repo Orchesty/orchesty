@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import {Field, reduxForm} from 'redux-form'
 
@@ -9,8 +10,9 @@ import {FormTextInput, FormCheckboxInput} from '../../elements/formInputs';
 class TopologyForm extends React.Component {
   constructor(props) {
     super(props);
-    this._onSubmit = this.onSubmit.bind(this);
-    this._setButton = this.setButton.bind(this);
+    this.onSubmit = this.onSubmit.bind(this);
+    this.setButton = this.setButton.bind(this);
+    this._button = null;
   }
 
   componentDidMount() {
@@ -28,17 +30,17 @@ class TopologyForm extends React.Component {
   onSubmit(data){
     const {name, descr, enabled} = data;
     const {onProcessing} = this.props;
-    if (typeof onProcessing == 'function'){
+    if (onProcessing){
       onProcessing(true);
     }
-    this.props.topologyUpdate({name, descr, enabled: Boolean(enabled)}).then(
+    this.props.commitAction({name, descr, enabled: Boolean(enabled)}).then(
       response => {
         const {onSuccess, onProcessing} = this.props;
         if (typeof onProcessing == 'function'){
           onProcessing(false);
         }
         if (response){
-          if (typeof onSuccess == 'function'){
+          if (onSuccess){
             onSuccess(this);
           }
         }
@@ -48,17 +50,27 @@ class TopologyForm extends React.Component {
   }
 
   render() {
+    const {addNew} = this.props;
     return (
-      <form className="form-horizontal form-label-left" onSubmit={this.props.handleSubmit(this._onSubmit)}>
-        <Field name="_id" component={FormTextInput} label="Id" readOnly/>
+      <form className="form-horizontal form-label-left" onSubmit={this.props.handleSubmit(this.onSubmit)}>
+        {!addNew && <Field name="_id" component={FormTextInput} label="Id" readOnly/>}
         <Field name="name" component={FormTextInput} label="Name" />
         <Field name="descr" component={FormTextInput} label="Description" />
         <Field name="enabled" component={FormCheckboxInput} label="Enabled" />
-        <button ref={this._setButton} className="hidden" />
+        <button ref={this.setButton} className="hidden" />
       </form>
     );
   }
 }
+
+TopologyForm.propTypes = {
+  addNew: PropTypes.bool,
+  handleSubmit: PropTypes.func.isRequired,
+  setSubmit: PropTypes.func.isRequired,
+  onProcessing: PropTypes.func,
+  onSuccess: PropTypes.func,
+  commitAction: PropTypes.func.isRequired
+};
 
 function validate(values){
   const errors = {};
@@ -72,13 +84,15 @@ function validate(values){
 function mapStateToProps(state, ownProps) {
   const {topology} = state;
   return {
-    initialValues: topology.elements[ownProps.topologyId]
+    initialValues: ownProps.addNew ? {enabled: false} : topology.elements[ownProps.topologyId]
   };
 }
 
 function mapActionsToProps(dispatch, ownProps){
   return {
-    topologyUpdate: (data) => dispatch(topologyActions.topologyUpdate(ownProps.topologyId, data))
+    commitAction: (data) => dispatch(
+      ownProps.addNew ? topologyActions.topologyCreate(data) : topologyActions.topologyUpdate(ownProps.topologyId, data)
+    )
   }
 }
 
