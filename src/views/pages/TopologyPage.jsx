@@ -60,7 +60,7 @@ function mapStateToProps(state, ownProps){
 
 function mapActionsToProps(dispatch, ownProps){
   return {
-    openNewTopology: () => dispatch(applicationActions.openModal(ownProps.pageKey, {addNew: true})),
+    openNewTopology: () => dispatch(applicationActions.openModal('topology_edit', {addNew: true})),
     openTopologyList: () => dispatch(topologyActions.openTopologyList(ownProps.pageKey)),
     closeTopologyList: () => dispatch(topologyActions.closeTopologyList(ownProps.pageKey))
   }
