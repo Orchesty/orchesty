@@ -1,64 +1,12 @@
 import * as types from '../actionTypes';
+import listFactory from './factories/listFactory';
 import serverRequest, {sortToQuery, rawRequest, rawRequestJSONReceive} from '../middleware/apiGatewayServer';
-import * as applicationActions from './applicationActions';
 import {listType} from '../types';
 import objectEquals from '../utils/objectEquals';
 
 import params from '../config/params';
 
-function createList(type, pageSize, sort){
-  return {
-    type: types.TOPOLOGY_LIST_CREATE,
-    listType: type,
-    pageSize,
-    sort
-  }
-}
-
-function loading(id){
-  return {
-    type: types.TOPOLOGY_LIST_LOAD,
-    listId: id
-  }
-}
-
-function receiveListData(id, response) {
-  return {
-    type: types.TOPOLOGY_LIST_RECEIVE,
-    listId: id,
-    data: response
-  }
-}
-
-function listError(id) {
-  return {
-    type: types.TOPOLOGY_LIST_ERROR,
-    listId: id
-  }
-}
-
-function deleteList(id){
-  return {
-    type: types.TOPOLOGY_LIST_DELETE,
-    listId: id
-  }
-}
-
-function changeSort(id, sort){
-  return {
-    type: types.TOPOLOGY_LIST_CHANGE_SORT,
-    listId: id,
-    sort
-  }
-}
-
-function changePage(id, page){
-  return {
-    type: types.TOPOLOGY_LIST_CHANGE_PAGE,
-    listId: id,
-    page
-  }
-}
+const {createPaginationList, listLoading, listError, listReceive, listDelete, listChangeSort, listChangePage} = listFactory('TOPOLOGY/LIST/');
 
 function receive(data){
   return {
@@ -75,10 +23,10 @@ function receiveSchema(id, data){
   }
 }
 
-function load(id, loadingState = true){
+function loadList(id, loadingState = true){
   return (dispatch, getState) => {
     if (loadingState) {
-      dispatch(loading(id));
+      dispatch(listLoading(id));
     }
     const list = getState().topology.lists[id];
     const offset = list.page ? (list.page - 1) * list.pageSize : 0;
@@ -86,27 +34,25 @@ function load(id, loadingState = true){
       offset,
       limit: list.pageSize
     })).then(response => {
-      dispatch(response ? receiveListData(id, response) : listError(id));
+      dispatch(response ? listReceive(id, response) : listError(id));
       return response;
     })
   }
 }
 
-export function openTopologyList(topologyListId, pageSize = params.defaultPageSize) {
+export function openTopologyList(listId, pageSize = params.defaultPageSize) {
   return (dispatch, getState) => {
-    if (!topologyListId) {
-      dispatch(createList(listType.PAGINATION, pageSize));
-      topologyListId = getState().topology.listNewId;
+    const list = getState().topology.lists[listId];
+    if (!list) {
+      dispatch(createPaginationList(listId, pageSize));
     }
-    dispatch(applicationActions.setPageData({topologyListId}));
-    return dispatch(load(topologyListId));
+    return dispatch(loadList(listId));
   }
 }
 
 export function closeTopologyList(topologyListId) {
   return (dispatch) => {
-    dispatch(deleteList(topologyListId));
-    dispatch(applicationActions.setPageData(null));
+    dispatch(listDelete(topologyListId));
   }
 }
 
@@ -114,8 +60,8 @@ export function topologyListChangeSort(topologyListId, sort) {
   return (dispatch, getState) => {
     const oldSort = getState().topology.lists[topologyListId].sort;
     if (!objectEquals(oldSort, sort)) {
-      dispatch(changeSort(topologyListId, sort));
-      return dispatch(load(topologyListId, false));
+      dispatch(listChangeSort(topologyListId, sort));
+      return dispatch(loadList(topologyListId, false));
     }
     else {
       return Promise.resolve(true);
@@ -127,8 +73,8 @@ export function topologyListChangePage(topologyListId, page) {
   return (dispatch, getState) => {
     const oldPage = getState().topology.lists[topologyListId].page;
     if (!objectEquals(oldPage, page)){
-      dispatch(changePage(topologyListId, page));
-      dispatch(load(topologyListId));
+      dispatch(listChangePage(topologyListId, page));
+      dispatch(loadList(topologyListId));
     }
   }
 }

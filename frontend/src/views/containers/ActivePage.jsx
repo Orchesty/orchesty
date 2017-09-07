@@ -13,11 +13,11 @@ class ActivePage extends React.Component {
     const {page} = this.props;
     switch (page.key){
       case 'dashboard':
-        return <DashboardPage {...page.args}/>;
+        return <DashboardPage pageKey={page.key} {...page.args}/>;
       case 'topology_list':
-        return <TopologyPage {...page.args}/>;
+        return <TopologyPage pageKey={page.key} {...page.args}/>;
       case 'topology_schema':
-        return <SchemaPage {...page.args}/>;
+        return <SchemaPage pageKey={page.key} {...page.args}/>;
       default:
         return <Error404Page />;
     }

@@ -26,6 +26,8 @@ export default (WrappedComponent) => {
       );
     }
   }
+
+  FormElement.displayName = `FormElement(${WrappedComponent.displayName || WrappedComponent.name || 'Component'})`;
   
   return FormElement;
 }

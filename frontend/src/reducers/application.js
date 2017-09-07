@@ -35,7 +35,7 @@ export default (state = initialState, action) => {
     case types.SET_PAGE_DATA:
       return Object.assign({}, state, {
         selectedPage: Object.assign({}, state.selectedPage, {
-          data: action.data
+          data: Object.assign({}, state.selectedPage.data, action.data)
         })
       });
       
