@@ -9,7 +9,7 @@ use Hanaboso\PipesFramework\Commons\Enum\EnumAbstract;
  *
  * @package Hanaboso\PipesFramework\Acl\Enum
  */
-final class ResourceEnum extends EnumAbstract
+class ResourceEnum extends EnumAbstract
 {
 
     public const GROUP    = 'group';
