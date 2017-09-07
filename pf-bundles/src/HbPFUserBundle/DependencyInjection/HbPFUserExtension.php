@@ -24,7 +24,7 @@ class HbPFUserExtension extends Extension implements PrependExtensionInterface
      */
     public function prepend(ContainerBuilder $container): void
     {
-        if (!$container->hasExtension('doctrine') && !$container->hasExtension('doctrine_mongodb')) {
+        if (!$container->hasExtension('doctrine_mongodb') && !$container->hasExtension('doctrine')) {
             throw new RuntimeException('You must register ORM or ODM (or both) before.');
         };
 
