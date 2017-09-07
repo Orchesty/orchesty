@@ -14,7 +14,7 @@ DE_PROD=docker-compose -f docker-compose.prod.yml exec -T
 
 init-dev: .env
 	$(DC_DEV) up -d --force-recreate
-	$(DE_DEV) backend composer install --ignore-platform-reqs
+	$(DE_DEV) app composer install --ignore-platform-reqs
 	#$(DE_DEV) magento install-sampledata
 	$(DE_DEV) magento install-magento
 

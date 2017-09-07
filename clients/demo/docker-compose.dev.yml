@@ -6,10 +6,10 @@ services:
     # Nodes
 
     # Services
-    backend:
+    app:
         image: dkr.hanaboso.net/pipes/pipes/php-dev:dev
         user: ${DEV_UID}:${DEV_GID}
-        working_dir: ${WORKDIR}
+        working_dir: /var/www/pipes/backend
         environment:
           DEV_UID: ${DEV_UID}
           DEV_GID: ${DEV_GID}
@@ -18,6 +18,7 @@ services:
           - ${SSH_AUTH_SOCK}:/ssh-agent
         depends_on:
           - mongodb
+          - rabbitmq
 
     # Frontend
     frontend:
@@ -34,7 +35,7 @@ services:
           - ../../:/var/www/pipes
           - ${SSH_AUTH_SOCK}:/ssh-agent
         depends_on:
-          - backend
+          - app
 
     # RabbitMQ
     rabbitmq:
