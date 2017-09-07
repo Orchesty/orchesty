@@ -23,6 +23,8 @@ use Symfony\Component\HttpFoundation\Request;
 class StartingPoint
 {
 
+    private const CONTENT = '{"data":%s, "settings": ""}';
+
     /**
      * @var StartingPointProducer
      */
@@ -99,9 +101,33 @@ class StartingPoint
     public function createHeaders(): Headers
     {
         $headers = new Headers();
-        $headers->addHeader('job_id', Uuid::uuid4()->toString());
+        $headers
+            ->addHeader('job_id', Uuid::uuid4()->toString())
+            ->addHeader('sequence_id', '1');
 
         return $headers;
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @return string
+     */
+    public function createBodyFromRequest(Request $request): string
+    {
+        if ($request->getContentType() === 'json') {
+            return sprintf(self::CONTENT, $request->getContent());
+        } else {
+            return sprintf(self::CONTENT, json_encode($request->getContent()));
+        }
+    }
+
+    /**
+     * @return string
+     */
+    public function createBody(): string
+    {
+        return sprintf(self::CONTENT, '""');
     }
 
     /**
@@ -111,12 +137,7 @@ class StartingPoint
      */
     public function runWithRequest(Request $request, Topology $topology, Node $node): void
     {
-        $this->runTopology($topology, $node, $this->createHeaders(), [
-            'data'     => base64_decode($request->getContent()),
-            'settings' => [
-                "content-type" => $request->getContentType(),
-            ],
-        ]);
+        $this->runTopology($topology, $node, $this->createHeaders(), $this->createBodyFromRequest($request));
     }
 
     /**
@@ -125,21 +146,18 @@ class StartingPoint
      */
     public function run(Topology $topology, Node $node): void
     {
-        $this->runTopology($topology, $node, $this->createHeaders(), [
-            'data'     => [],
-            'settings' => [],
-        ]);
+        $this->runTopology($topology, $node, $this->createHeaders(), $this->createBody());
     }
 
     /**
      * @param Topology $topology
      * @param Node     $node
      * @param Headers  $headers
-     * @param array    $content
+     * @param string   $content
      *
      * @internal param array $data
      */
-    protected function runTopology(Topology $topology, Node $node, Headers $headers, array $content = []): void
+    protected function runTopology(Topology $topology, Node $node, Headers $headers, string $content = ''): void
     {
         $this->validateTopology($topology, $node);
         $this->startingPointProducer
