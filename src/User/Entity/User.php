@@ -12,7 +12,7 @@ use Hanaboso\PipesFramework\User\Enum\UserTypeEnum;
  *
  * @package Hanaboso\PipesFramework\User\Entity
  *
- * @ORM\Table()
+ * @ORM\Table(name="`user`")
  * @ORM\Entity(repositoryClass="Hanaboso\PipesFramework\User\Repository\Entity\UserRepository")
  */
 class User extends UserAbstract

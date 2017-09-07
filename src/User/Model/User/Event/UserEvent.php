@@ -26,21 +26,29 @@ class UserEvent extends Event
      * @var UserInterface
      */
     private $user;
+
     /**
      * @var UserInterface|null
      */
     private $loggedUser;
 
     /**
+     * @var UserInterface|null
+     */
+    private $tmpUser;
+
+    /**
      * UserEvent constructor.
      *
      * @param UserInterface      $user
      * @param UserInterface|null $loggedUser
+     * @param UserInterface|null $tmpUser
      */
-    public function __construct(UserInterface $user, ?UserInterface $loggedUser = NULL)
+    public function __construct(UserInterface $user, ?UserInterface $loggedUser = NULL, ?UserInterface $tmpUser = NULL)
     {
         $this->user       = $user;
         $this->loggedUser = $loggedUser;
+        $this->tmpUser = $tmpUser;
     }
 
     /**
@@ -57,6 +65,14 @@ class UserEvent extends Event
     public function getLoggedUser(): UserInterface
     {
         return $this->loggedUser ?? $this->user;
+    }
+
+    /**
+     * @return UserInterface|null
+     */
+    public function getTmpUser(): ?UserInterface
+    {
+        return $this->tmpUser;
     }
 
 }

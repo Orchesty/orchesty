@@ -12,7 +12,7 @@ use LogicException;
  *
  * @package Hanaboso\PipesFramework\User\Entity
  *
- * @ORM\Table()
+ * @ORM\Table(name="token")
  * @ORM\Entity(repositoryClass="Hanaboso\PipesFramework\User\Repository\Entity\TokenRepository")
  */
 class Token implements TokenInterface

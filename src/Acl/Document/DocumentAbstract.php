@@ -3,6 +3,7 @@
 namespace Hanaboso\PipesFramework\Acl\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Hanaboso\PipesFramework\Acl\Annotation\OwnerAnnotation as OWNER;
 use Hanaboso\PipesFramework\User\Entity\UserInterface;
 
 /**
@@ -17,6 +18,7 @@ abstract class DocumentAbstract
      * @var UserInterface|null
      *
      * @ODM\ReferenceOne(targetDocument="Hanaboso\PipesFramework\User\Document\User")
+     * @OWNER()
      */
     protected $owner;
 

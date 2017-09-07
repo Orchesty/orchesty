@@ -10,7 +10,7 @@ use Hanaboso\PipesFramework\User\Enum\UserTypeEnum;
  *
  * @package Hanaboso\PipesFramework\User\Entity
  *
- * @ORM\Table()
+ * @ORM\Table(name="tmp_user")
  * @ORM\Entity(repositoryClass="Hanaboso\PipesFramework\User\Repository\Entity\TmpUserRepository")
  */
 class TmpUser extends UserAbstract implements TmpUserInterface

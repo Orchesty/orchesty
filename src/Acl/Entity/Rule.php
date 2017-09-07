@@ -10,7 +10,7 @@ use Hanaboso\PipesFramework\Commons\Traits\Entity\IdTrait;
  *
  * @package Hanaboso\PipesFramework\Acl\Entity
  *
- * @ORM\Table()
+ * @ORM\Table(name="rule")
  * @ORM\Entity(repositoryClass="Hanaboso\PipesFramework\Acl\Repository\Entity\RuleRepository")
  */
 class Rule implements RuleInterface
