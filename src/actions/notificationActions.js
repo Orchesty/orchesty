@@ -42,3 +42,9 @@ export function closeNotification(id) {
     id
   }
 }
+
+export function addSuccess(message, timeout) {
+  return dispatch => {
+    return dispatch(addNotification('success', message, timeout));
+  }
+}

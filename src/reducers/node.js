@@ -1,17 +1,22 @@
 import * as types from '../actionTypes';
 import listsReducer from './list';
 
-const listPrefix = 'TOPOLOGY/LIST/';
+const listPrefix = 'NODE/LIST/';
 const listPrefixLength = listPrefix.length;
 
 const initialState = {
   elements: {},
-  lists: {},
-  schemas: {}
+  lists: {}
 };
 
 function getElementId(element){
   return element._id;
+}
+
+function addElement(oldElements, element){
+  return Object.assign({}, oldElements, {
+    [element._id]: element
+  });
 }
 
 function addElements(oldElements, newElements){
@@ -22,29 +27,16 @@ function addElements(oldElements, newElements){
   return result;
 }
 
-function addElement(oldElements, element){
-  return Object.assign({}, oldElements, {
-    [element._id]: element
-  });
-}
-
-function reducer(state = initialState, action){
+function reducer(state, action){
   switch (action.type){
-    case types.TOPOLOGY_LIST_RECEIVE: 
+    case types.NODE_LIST_RECEIVE:
       return Object.assign({}, state, {
         elements: addElements(state.elements, action.data.items)
       });
-    
-    case types.TOPOLOGY_RECEIVE:
+
+    case types.NODE_RECEIVE:
       return Object.assign({}, state, {
         elements: addElement(state.elements, action.data)
-      });
-
-    case types.TOPOLOGY_RECEIVE_SCHEMA:
-      return Object.assign({}, state, {
-        schemas: Object.assign({}, state.schemas, {
-          [action.id]: action.data
-        })
       });
 
     default:
