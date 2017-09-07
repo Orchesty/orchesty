@@ -8,7 +8,7 @@ import * as applicationActions from '../../../actions/applicationActions';
 import StateComponent from '../../wrappers/StateComponent';
 import BoolValue from '../../elements/BoolValue';
 import SortTh from '../../elements/table/SortTh';
-import ActionButton from '../../elements/actions/ActionButton';
+import ActionButtonPanel from '../../elements/actions/ActionButtonPanel';
 import ListPagination from '../../elements/table/ListPagination';
 import TopologyNodeListTable from '../node/TopologyNodeListTable';
 
@@ -40,7 +40,7 @@ class TopologyListTable extends React.Component {
   }
 
   render() {
-    const {list, elements, openModal, selectPage, selected, list: {sort, items}} = this.props;
+    const {list, elements, openModal, clone, selectPage, selected, list: {sort, items}} = this.props;
 
     let rows = null;
     if (items){
@@ -54,6 +54,10 @@ class TopologyListTable extends React.Component {
             {
               caption: 'View schema',
               action: () => {selectPage('topology_schema', {schemaId: id});}
+            },
+            {
+              caption: 'Clone',
+              action: () => {clone(id)}
             }
           ];
           return (
@@ -63,7 +67,7 @@ class TopologyListTable extends React.Component {
               <td>{item.name}</td>
               <td>{item.descr}</td>
               <td><BoolValue value={item.enabled}/></td>
-              <td><ActionButton item={menuItems} right={true} /></td>
+              <td><ActionButtonPanel items={menuItems} right={true} size="sm" /></td>
             </tr>
           )
         }
@@ -102,7 +106,7 @@ class TopologyListTable extends React.Component {
           </tr>
           </thead>
           <tbody>
-          {rows}
+            {rows}
           </tbody>
         </table>
         <ListPagination list={list} onPageChange={this.changePage} />
@@ -138,7 +142,8 @@ function mapActionsToProps(dispatch){
     topologyListChangePage: (id, page) => dispatch(topologyActions.topologyListChangePage(id, page)),
     openModal: (id, data) => dispatch(applicationActions.openModal(id, data)),
     selectPage: (key, args) => dispatch(applicationActions.selectPage(key, args)),
-    setPageData: data => dispatch(applicationActions.setPageData(data))
+    setPageData: data => dispatch(applicationActions.setPageData(data)),
+    clone: id => dispatch(topologyActions.cloneTopology(id))
   }
 }
 

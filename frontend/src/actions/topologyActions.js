@@ -5,6 +5,7 @@ import {listType} from '../types';
 import objectEquals from '../utils/objectEquals';
 
 import params from '../config/params';
+import * as notificationActions from './notificationActions';
 
 const {createPaginationList, listLoading, listError, listReceive, listDelete, listChangeSort, listChangePage} = listFactory('TOPOLOGY/LIST/');
 
@@ -93,11 +94,26 @@ export function topologyUpdate(id, data){
 }
 
 export function topologyCreate(data){
-  return dispath => {
-    return serverRequest(dispath, 'POST', `/topologies`, null, data).then(
+  return dispatch => {
+    return serverRequest(dispatch, 'POST', `/topologies`, null, data).then(
       response => {
         if (response){
-          dispath(receive(response));
+          dispatch(receive(response));
+        }
+        return response;
+      }
+    )
+  }
+}
+
+export function cloneTopology(id, silent = false){
+  return dispatch => {
+    return serverRequest(dispatch, 'POST', `/topologies/${id}/clone`).then(
+      response => {
+        if (response){
+          if (!silent){
+            dispatch(notificationActions.addSuccess('Node was cloned successfully.'));
+          }dispatch(receive(response));
         }
         return response;
       }
