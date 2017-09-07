@@ -104,6 +104,7 @@ describe("TopologyReadinessProbe", () => {
             .catch((err: any) => {
                 assert.equal(503, err.statusCode);
                 assert.include(err.message, "Topology status: 1 of 2 nodes ready.");
+                assert.include(err.message, "http://localhost:8002/status");
                 m1server.close();
                 m2server.close();
             });

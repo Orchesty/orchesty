@@ -63,6 +63,7 @@ class AMQPDrain extends ADrain implements IDrain {
                         return this.followersPublisher.send(bufMsg);
                     })
                     .then(() => {
+                        bufMsg.setPublishedTime();
                         resolve(true);
                     })
                     .catch((err: Error) => {

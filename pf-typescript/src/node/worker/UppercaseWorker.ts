@@ -5,21 +5,13 @@ import IWorker from "./IWorker";
 
 class UppercaseWorker implements IWorker {
 
-    public processData(inMsg: JobMessage): Promise<JobMessage> {
-        const outMsg = new JobMessage(
-            inMsg.getJobId(),
-            inMsg.getSequenceId(),
-            inMsg.getHeaders(),
-            inMsg.getContent().toUpperCase(),
-            {
-                status: ResultCode.SUCCESS,
-                message: "Uppercase worker OK",
-            },
-        );
+    public processData(msg: JobMessage): Promise<JobMessage> {
+        msg.setContent(msg.getContent().toUpperCase());
+        msg.setResult({status: ResultCode.SUCCESS, message: "Uppercase worker OK"});
 
-        logger.info(`UppercaseWorker changed data to: "${outMsg.getContent()}"`);
+        logger.info(`Worker[type"uppercase"] processed message[id="${msg.getUuid()}]"`);
 
-        return Promise.resolve(outMsg);
+        return Promise.resolve(msg);
     }
 
 }

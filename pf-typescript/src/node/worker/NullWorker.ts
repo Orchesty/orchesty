@@ -5,21 +5,12 @@ import IWorker from "./IWorker";
 
 class NullWorker implements IWorker {
 
-    public processData(inMsg: JobMessage): Promise<JobMessage> {
-        const outMsg = new JobMessage(
-            inMsg.getJobId(),
-            inMsg.getSequenceId(),
-            inMsg.getHeaders(),
-            inMsg.getContent(),
-            {
-                status: ResultCode.SUCCESS,
-                message: "Null worker OK",
-            },
-        );
+    public processData(msg: JobMessage): Promise<JobMessage> {
+        msg.setResult({status: ResultCode.SUCCESS, message: "Null worker OK"});
 
-        logger.info(`Worker[type"null"] processed message[id="${inMsg.getUuid()}]"`);
+        logger.info(`Worker[type"null"] processed message[id="${msg.getUuid()}]"`);
 
-        return Promise.resolve(outMsg);
+        return Promise.resolve(msg);
     }
 
 }
