@@ -1,8 +1,6 @@
 export const listType = {
-  ALL: 'all',
-  PAGINATION: 'pagination',
-  LOAD_MORE: 'load_more',
-  FIXED: 'fixed'
+  RELATION: 'relation',
+  PAGINATION: 'pagination'
 };
 
 export const stateType = {

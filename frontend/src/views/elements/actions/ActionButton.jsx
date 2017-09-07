@@ -21,6 +21,7 @@ class ActionButton extends React.Component {
 
   toggleMenu(e){
     e.preventDefault();
+    e.stopPropagation();
     this.setState(previousState => {return {collapsed: !previousState.collapsed}});
   }
 

@@ -5,11 +5,13 @@ import {reducer as form} from 'redux-form'
 import application from './application';
 import notification from './notification';
 import topology from './topology';
+import node from './node';
 
 const rootReducer = combineReducers({
   application,
   notification,
   topology,
+  node,
   form
 });
 
