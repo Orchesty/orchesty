@@ -1,5 +1,7 @@
 import * as express from "express";
 import logger from "lib-nodejs/dist/src/logger/Logger";
+import Metrics from "lib-nodejs/dist/src/metrics/Metrics";
+import {metricsOptions} from "../config";
 import JobMessage from "../message/JobMessage";
 import IDrain from "./drain/IDrain";
 import IFaucet from "./faucet/IFaucet";
@@ -18,6 +20,10 @@ const emptyFn: () => void = () => {
     // function that does nothing and serves as a mock
 };
 
+/**
+ * Node class wraps faucet-worker-drain objects and links them together
+ * Also is responsible for sending basic metrics
+ */
 class Node {
 
     private id: string;
@@ -27,6 +33,7 @@ class Node {
     private debugPort: number;
     private isInitial: boolean;
     private nodeStatus: NODE_STATUS;
+    private metrics: Metrics;
 
     constructor(
         id: string,
@@ -44,21 +51,7 @@ class Node {
         this.isInitial = isInitial;
 
         this.nodeStatus = NODE_STATUS.UNPREPARED;
-    }
-
-    /**
-     * Opens all nodes except the first one
-     *
-     * @return Promise<Function>
-     */
-    public prepare(): Promise<() => void> {
-        return this.openNode()
-            .then((run: () => void) => {
-                this.nodeStatus = NODE_STATUS.READY;
-                logger.info("Node opened.");
-
-                return run;
-            });
+        this.metrics = new Metrics(metricsOptions.measurement, id, id, metricsOptions.server, metricsOptions.port);
     }
 
     /**
@@ -94,26 +87,64 @@ class Node {
      * @return {Promise}
      * @private
      */
-    private openNode(): Promise<() => void> {
-        // TODO - add sending basic metrics here
+    public open(): Promise<void> {
+        this.nodeStatus = NODE_STATUS.READY;
 
         return this.faucet.open(
             (msgIn: JobMessage) => {
-                logger.info(`Node ${this.id} received message.`);
+                logger.info(`Node[id=${this.id}] received message[id=${msgIn.getUuid()}].`);
                 return this.worker.processData(msgIn)
                     .then((msgOut: JobMessage) => {
-                        logger.info(`Node ${this.id} processed message`);
+                        this.sendProcessDurationMetric(msgOut);
+
                         return msgOut;
                     });
             },
             (msgOut: JobMessage) => {
                 return this.drain.open(msgOut)
                     .then((forwarded) => {
-                        logger.info(`Node ${this.id} forwarded message.`);
+                        this.sendTotalDurationMetric(msgOut);
+
                         return forwarded;
                     });
             },
+        ).then(() => {
+            logger.info(`Node ${this.id} has been opened.`);
+        });
+    }
+
+    /**
+     *
+     * @param {JobMessage} msg
+     */
+    private sendProcessDurationMetric(msg: JobMessage): void {
+        logger.info(
+            `Node[id=${this.id}] received processed message[id="${msg.getUuid()}", \
+            status="${msg.getResult().status}", info="${msg.getResult().message}". \
+            process_duration="${msg.getProcessDuration()}"].`,
         );
+
+        this.metrics.send({node_process_duration: msg.getProcessDuration()})
+            .then(() => {
+                // logger.debug(`metric sent: ${JSON.stringify({node_process_duration: msg.getProcessDuration()})}`);
+            })
+            .catch((err) => {
+                logger.warn(err);
+            });
+    }
+
+    /**
+     *
+     * @param {JobMessage} msg
+     */
+    private sendTotalDurationMetric(msg: JobMessage): void {
+        this.metrics.send({node_total_duration: msg.getTotalDuration()})
+            .then(() => {
+                // logger.debug(`metric sent: ${JSON.stringify({node_total_duration: msg.getTotalDuration()})}`);
+            })
+            .catch((err) => {
+                logger.warn(err);
+            });
     }
 
 }

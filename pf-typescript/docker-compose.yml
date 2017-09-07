@@ -47,6 +47,11 @@ services:
     ports:
       - '15672:15672'
       - '5672:5672'
+  rabbitmq:
+    image: 'rabbitmq:management-alpine'
+    ports:
+      - '15672:15672'
+      - '5672:5672'
   test:
       image: dkr.hanaboso.net/pipes/pipes/pf-typescript:typescript
       environment:

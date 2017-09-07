@@ -4,9 +4,9 @@ import "mocha";
 import {Channel} from "amqplib";
 import Connection from "lib-nodejs/dist/src/rabbitmq/Connection";
 import Publisher from "lib-nodejs/dist/src/rabbitmq/Publisher";
+import {amqpConnectionOptions} from "../../../src/config";
 import JobMessage from "../../../src/message/JobMessage";
 import {default as AMQPFaucet, IAMQPFaucetSettings} from "../../../src/node/faucet/AMQPFaucet";
-import {testAmqpConnectionOptions} from "../../config";
 
 const settings: IAMQPFaucetSettings = {
     exchange: {
@@ -26,7 +26,7 @@ const settings: IAMQPFaucetSettings = {
     },
     routing_key: "amqp_faucet_test_rk",
 };
-const conn = new Connection(testAmqpConnectionOptions);
+const conn = new Connection(amqpConnectionOptions);
 
 // Publisher emulates the previous node in topology
 const publisher = new Publisher(conn, (ch: Channel) =>  Promise.resolve() );

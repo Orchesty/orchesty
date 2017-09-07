@@ -92,7 +92,7 @@ const expectedTopo: ITopologyConfig = {
             resequencer: true,
             worker: {
                 settings: {},
-                type: "worker.uppercase",
+                type: "worker.null",
             },
         },
         {

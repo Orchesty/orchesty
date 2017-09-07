@@ -1,5 +1,6 @@
 import logger from "lib-nodejs/dist/src/logger/Logger";
 import JobMessage from "../../message/JobMessage";
+import {ResultCode} from "../../message/ResultCode";
 import IWorker from "./IWorker";
 
 export interface IAppenderWorkerSettings {
@@ -8,17 +9,13 @@ export interface IAppenderWorkerSettings {
 
 class AppenderWorker implements IWorker {
 
-    constructor(private settings: IAppenderWorkerSettings) {
-    }
+    constructor(private settings: IAppenderWorkerSettings) {}
 
     public processData(msg: JobMessage): Promise<JobMessage> {
-        const original = msg.open();
-        msg.setContent(JSON.stringify(
-            { data: `${original.data}${this.settings.suffix}`, settings: original.settings }),
-        );
-        msg.setJobResultOK();
+        msg.setContent(`${msg.getContent()}${this.settings.suffix}`);
+        msg.setResult({status: ResultCode.SUCCESS, message: "Appender worker OK"});
 
-        logger.info(`AppenderWorker changed data to: "${msg.getContent()}"`);
+        logger.info(`Worker[type"appender"] processed message[id="${msg.getUuid()}]"`);
 
         return Promise.resolve(msg);
     }

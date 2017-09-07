@@ -1,15 +1,15 @@
 import logger from "lib-nodejs/dist/src/logger/Logger";
 import JobMessage from "../../message/JobMessage";
+import {ResultCode} from "../../message/ResultCode";
 import IWorker from "./IWorker";
 
 class UppercaseWorker implements IWorker {
 
     public processData(msg: JobMessage): Promise<JobMessage> {
-        const original = msg.open();
-        msg.setContent(JSON.stringify({ data: original.data.toUpperCase(), settings: original.settings }));
-        msg.setJobResultOK();
+        msg.setContent(msg.getContent().toUpperCase());
+        msg.setResult({status: ResultCode.SUCCESS, message: "Uppercase worker OK"});
 
-        logger.info(`UppercaseWorker changed data to: "${msg.getContent()}"`);
+        logger.info(`Worker[type"uppercase"] processed message[id="${msg.getUuid()}]"`);
 
         return Promise.resolve(msg);
     }

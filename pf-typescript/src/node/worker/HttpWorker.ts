@@ -1,15 +1,22 @@
+import logger from "lib-nodejs/dist/src/logger/Logger";
 import * as request from "request";
 import JobMessage from "../../message/JobMessage";
 import { ResultCode } from "../../message/ResultCode";
 import AHttpWorker from "./http/AHttpWorker";
 
+export interface IHttpWorkerSettings {
+    method: string;
+    url: string;
+    opts: any;
+}
+
 class HttpWorker extends AHttpWorker {
 
     private opts: {};
 
-    constructor(method: string, url: string, opts: {}) {
-        super(method, url);
-        this.opts = opts;
+    constructor(settings: IHttpWorkerSettings) {
+        super(settings.method, settings.url);
+        this.opts = settings.opts;
     }
 
     /**
@@ -20,26 +27,36 @@ class HttpWorker extends AHttpWorker {
     public processData(msg: JobMessage): Promise<JobMessage> {
         const reqParams = this.getHttpRequestParams(msg);
 
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
 
             Object.assign(reqParams, this.opts);
+
+            logger.info(`HttpWorker "${reqParams.method}" request to: ${reqParams.url} [id=${msg.getUuid()}]`);
 
             // Make http request and wait for response
             request(reqParams, (err, response, body) => {
                 if (err) {
-                    msg.setJobResultFailed(ResultCode.HTTP_ERROR, err);
-                    return reject(msg);
+                    logger.error(`HttpWorker response[id=${msg.getUuid()}], Error: ${err}`);
+                    msg.setResult({ status: ResultCode.HTTP_ERROR, message: err });
+
+                    return resolve(msg);
                 }
 
                 if (!response.statusCode || response.statusCode !== 200) {
-                    msg.setJobResultFailed(
-                        ResultCode.HTTP_ERROR, `Http response with code ${response.statusCode} received`,
+                    logger.error(`HttpWorker response[id=${msg.getUuid()}], Status code ${response.statusCode}`);
+                    msg.setResult(
+                        {
+                            status: ResultCode.HTTP_ERROR,
+                            message: `Http response with code ${response.statusCode} received`,
+                        },
                     );
-                    return reject(msg);
+                    return resolve(msg);
                 }
 
-                msg.setContent(body);
-                msg.setJobResultOK();
+                logger.info(`HttpWorker response[id=${msg.getUuid()}] received.`);
+
+                msg.setResult({ status: ResultCode.SUCCESS, message: "Http worker OK." });
+                msg.setContent(JSON.stringify(body));
 
                 return resolve(msg);
             });
@@ -48,4 +65,4 @@ class HttpWorker extends AHttpWorker {
 
 }
 
-module.exports = HttpWorker;
+export default HttpWorker;

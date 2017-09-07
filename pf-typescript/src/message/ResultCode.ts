@@ -4,5 +4,6 @@ export enum ResultCode {
     SUCCESS = 0,
     WORKER_TIMEOUT = 1,
     HTTP_ERROR = 2,
-    UNKNOWN_ERROR = 255,
+    UNKNOWN_ERROR = 254,
+    NOT_PROCESSED = 255,
 }

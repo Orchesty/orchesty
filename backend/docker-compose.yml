@@ -1,0 +1,59 @@
+version: '2'
+services:
+  php-dev:
+    image: dkr.hanaboso.net/pipes/pipes/php-dev:dev
+    user: ${DEV_UID}:${DEV_GID}
+    volumes:
+      - ./:/srv/project
+      - ../pf-bundles/:/srv/pf-bundles
+      - ${SSH_AUTH_SOCK}:/tmp/bound-ssh-agent
+    environment:
+      - DEV_UID=${DEV_UID}
+      - DEV_GID=${DEV_GID}
+      - COMPOSER_HOME=/home/dev/.composer
+    depends_on:
+      - mongo
+      - rabbitmq
+    links:
+      - mongo
+      - rabbitmq
+
+  nginx:
+    image: nginx
+    ports:
+      - ${DEV_IP}:8000:8000
+    depends_on:
+      - php-dev
+    volumes:
+      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./:/srv/project
+
+  smtp:
+    image: mailhog/mailhog
+    ports:
+      - ${DEV_IP}:1025:1025
+      - ${DEV_IP}:8025:8025
+
+  mongo:
+      image: mongo:latest
+      ports:
+        - ${DEV_IP}:27017:27017
+      volumes:
+        - mongo:/data/db
+
+  rabbitmq:
+    image: 'rabbitmq:management-alpine'
+    volumes:
+       - rabbit-mq:/var/lib/rabbitmq
+    ports:
+      - '${DEV_IP}:15672:15672'
+      - '${DEV_IP}:5672:5672'
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
+      - RABBITMQ_DEFAULT_VHOST=${RABBITMQ_DEFAULT_VHOST}
+
+volumes:
+  mongo: {}
+  mariadb: {}
+  rabbit-mq: {}

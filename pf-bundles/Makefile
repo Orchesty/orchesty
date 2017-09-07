@@ -49,13 +49,13 @@ phpstan:
 	$(DE) ./vendor/bin/phpstan analyse -l 4 tests/
 
 phpunit:
-	$(DE) ./vendor/bin/phpunit -c phpunit.xml.dist --dont-report-useless-tests --colors --stderr tests/Unit
+	$(DE) ./vendor/bin/phpunit -c phpunit.xml.dist --colors --stderr tests/Unit
 
 phpcontroller:
-	$(DE) ./vendor/bin/phpunit -c phpunit.xml.dist --dont-report-useless-tests --colors --stderr tests/Controller
+	$(DE) ./vendor/bin/phpunit -c phpunit.xml.dist --colors --stderr tests/Controller
 
 phpintergration: database-create
-	$(DE) ./vendor/bin/phpunit -c phpunit.xml.dist --dont-report-useless-tests --colors --stderr tests/Integration/
+	$(DE) ./vendor/bin/phpunit -c phpunit.xml.dist --colors --stderr tests/Integration/
 
 test: docker-up-force composer-install codesniffer phpstan clear-cache phpunit phpcontroller phpintergration
 

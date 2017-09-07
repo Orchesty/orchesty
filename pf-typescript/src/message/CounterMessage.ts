@@ -1,3 +1,4 @@
+import * as uuid from "uuid/v1";
 import IMessage from "./IMessage";
 import { ResultCode } from "./ResultCode";
 
@@ -19,6 +20,7 @@ class CounterMessage implements IMessage {
     private resultMsg: string;
     private following: number;
     private multiplier: number;
+    private msgUuid: string;
 
     /**
      *
@@ -43,6 +45,7 @@ class CounterMessage implements IMessage {
         this.resultMsg = resultMsg;
         this.following = following;
         this.multiplier = multiplier;
+        this.msgUuid = uuid();
     }
 
     /**
@@ -72,6 +75,14 @@ class CounterMessage implements IMessage {
         };
 
         return JSON.stringify(content);
+    }
+
+    /**
+     *
+     * @return {string}
+     */
+    public getUuid(): string {
+        return this.msgUuid;
     }
 
 }

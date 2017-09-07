@@ -1,7 +1,6 @@
+import Container from "lib-nodejs/dist/src/container/Container";
 import logger from "lib-nodejs/dist/src/logger/Logger";
-import { default as Connection } from "lib-nodejs/dist/src/rabbitmq/Connection";
-import { amqpConnectionOptions } from "./config";
-import Container from "./Container";
+import {default as Connection, IOptions} from "lib-nodejs/dist/src/rabbitmq/Connection";
 import ComponentFactories from "./node/ComponentFactories";
 import Node from "./node/Node";
 import {default as Configurator, INodeConfig, ITopologyConfig, ITopologyConfigSkeleton} from "./topology/Configurator";
@@ -13,12 +12,17 @@ class Pipes {
 
     public nodes: Container;
 
+    private amqpConnOptions: IOptions;
     private amqpConn: Connection;
     private topology: ITopologyConfig;
     private components: ComponentFactories;
 
-    constructor(topology: ITopologyConfig | ITopologyConfigSkeleton) {
-        this.amqpConn = new Connection(amqpConnectionOptions);
+    constructor(
+        topology: ITopologyConfig | ITopologyConfigSkeleton,
+        amqpConnOptions: IOptions,
+    ) {
+        this.amqpConnOptions = amqpConnOptions;
+        this.amqpConn = new Connection(amqpConnOptions);
         this.topology = Configurator.createConfigFromSkeleton(topology);
         this.nodes = new Container();
         this.components = new ComponentFactories(this.amqpConn);
@@ -32,10 +36,12 @@ class Pipes {
     public startNode(nodeId: string): Promise<void> {
         const node: Node = this.createNode(this.getNodeConfig(nodeId));
 
-        return node.prepare()
-            .then((run: () => void) => {
-                run();
-                return node.startServer();
+        return node.startServer()
+            .then(() => {
+                return node.open();
+            })
+            .then(() => {
+                logger.info(`Node ${nodeId} properly started`);
             });
     }
 
@@ -70,7 +76,15 @@ class Pipes {
      * @param {string} file
      */
     public generateDockerCompose(file: string): void {
-        DockerComposeGenerator.generate(this.topology.nodes, amqpConnectionOptions, file);
+        DockerComposeGenerator.generate(this.topology.nodes, this.amqpConnOptions, file);
+    }
+
+    /**
+     *
+     * @return {ITopologyConfig}
+     */
+    public getTopologyConfig(): ITopologyConfig {
+        return this.topology;
     }
 
     /**

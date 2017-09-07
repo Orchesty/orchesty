@@ -1,16 +1,17 @@
 #!/usr/bin/env node
 
-// TODO get topology from config microservice
+import * as fs from "fs";
 import logger from "lib-nodejs/dist/src/logger/Logger";
 import * as yargs from "yargs";
+import * as config from "../config";
 import Pipes from "../Pipes";
-import { exampleTopo } from "../topology";
 
-const pipes = new Pipes(exampleTopo);
+const topologyConfig = JSON.parse(fs.readFileSync("topology.json", "utf8"));
+const pipes = new Pipes(topologyConfig, config.amqpConnectionOptions);
 
 const argv = yargs
-    .usage("Usage: $0 start <services|node> [options]")
-    .command("start <services|node>", "Starts concrete node or topology complementary services")
+    .usage("Usage: $0 start <service> [options]")
+    .command("start <service>", "Starts concrete node or topology complementary services")
     .option("id", {
         describe: "Node ID to start",
         type: "string",
@@ -19,7 +20,7 @@ const argv = yargs
     .help()
     .argv;
 
-switch (argv.services) {
+switch (argv.service) {
     case "counter":
         pipes.startCounter()
         .then(() => {

@@ -1,11 +1,14 @@
 <?php declare(strict_types=1);
 
-namespace Hanaboso\PipesFramework\Commons\Node\Embed;
+namespace Hanaboso\PipesFramework\Commons\Node\Document\Embed;
 
+use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 use Hanaboso\PipesFramework\Commons\Node\Document\Node;
 
 /**
  * Class EmbedNode
+ *
+ * @MongoDB\EmbeddedDocument
  *
  * @package Hanaboso\PipesFramework\Commons\Node\Embed
  */

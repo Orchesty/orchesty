@@ -5,6 +5,7 @@ namespace Tests\Controller\HbPFApiGatewayBundle\Controller;
 use Hanaboso\PipesFramework\Commons\Exception\TopologyException;
 use Hanaboso\PipesFramework\Commons\Topology\Document\Topology;
 use Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\TopologyController;
+use Hanaboso\PipesFramework\HbPFApiGatewayBundle\Handler\TopologyHandler;
 use Nette\Utils\Json;
 use stdClass;
 use Tests\ControllerTestCaseAbstract;
@@ -117,7 +118,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers TopologyController::getTopologySchema()
+     * @covers TopologyController::getTopologySchemaAction()
      */
     public function testGetTopologySchema(): void
     {
@@ -139,7 +140,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers TopologyController::getTopologySchema()
+     * @covers TopologyController::getTopologySchemaAction()
      */
     public function testGetTopologySchemaNotFound(): void
     {
@@ -160,7 +161,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers TopologyController::saveTopologySchema()
+     * @covers TopologyController::saveTopologySchemaAction()
      */
     public function testSaveTopologySchema(): void
     {
@@ -192,7 +193,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers TopologyController::saveTopologySchema()
+     * @covers TopologyController::saveTopologySchemaAction()
      */
     public function testSaveTopologySchemaNotFound(): void
     {
@@ -220,8 +221,8 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers TopologyController::saveTopologySchema()
-     * @covers TopologyController::getTopologySchema()
+     * @covers TopologyController::saveTopologySchemaAction()
+     * @covers TopologyController::getTopologySchemaAction()
      */
     public function testSaveAndGetTopologySchema(): void
     {
@@ -256,6 +257,30 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
 
         self::assertEquals(200, $response->status);
         self::assertEquals($this->getBpmn(), $response->content);
+    }
+
+    /**
+     * @covers TopologyController::deleteTopologyAction()
+     */
+    public function testDeleteTopology(): void
+    {
+        $this->mockHandler('deleteTopology', TRUE);
+
+        $this->client->request(
+            'GET',
+            '/api/gateway/topologies/999/delete',
+            [],
+            [],
+            [
+                'CONTENT_TYPE' => 'application/xml',
+                'ACCEPT'       => 'application/xml',
+            ],
+            $this->getBpmn()
+        );
+
+        $response = $this->client->getResponse();
+
+        self::assertEquals(200, $response->getStatusCode());
     }
 
     /**
@@ -307,6 +332,21 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
     private function getBpmnArray(): array
     {
         return Json::decode(file_get_contents(sprintf('%s/data/schema.json', __DIR__)), Json::FORCE_ARRAY);
+    }
+
+    /**
+     * @param string $methodName
+     * @param mixed  $res
+     */
+    private function mockHandler(string $methodName, $res = ['test']): void
+    {
+        $joinerHandlerMock = $this->getMockBuilder(TopologyHandler::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $joinerHandlerMock->method($methodName)->willReturn($res);
+
+        $this->client->getContainer()->set('hbpf.handler.topology', $joinerHandlerMock);
     }
 
 }

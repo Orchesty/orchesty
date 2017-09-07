@@ -1,0 +1,22 @@
+{
+    "name": "pf-example",
+    "nodes": [
+        {
+            "id": "node_1",
+            "resequencer": true,
+            "faucet": {
+                "type": "faucet.http",
+                "settings": {
+                    "port": 3333
+                }
+            },
+            "next": ["node_2"]
+        },
+        {
+            "id": "node_2",
+            "resequencer": true,
+            "worker": { "type": "worker.appender", "settings": { "suffix": "| something" } },
+            "next": []
+        }
+    ]
+}
