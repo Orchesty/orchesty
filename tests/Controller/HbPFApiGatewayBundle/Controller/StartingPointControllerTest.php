@@ -6,15 +6,15 @@
  * Time: 12:10 PM
  */
 
-namespace Tests\Controller\HbPFCommonsBundle\Controller;
+namespace Tests\Controller\HbPFApiGatewayBundle\Controller;
 
-use Hanaboso\PipesFramework\HbPFCommonsBundle\Handler\StartingPointHandler;
+use Hanaboso\PipesFramework\HbPFApiGatewayBundle\Handler\StartingPointHandler;
 use Tests\ControllerTestCaseAbstract;
 
 /**
  * Class StartingPointControllerTest
  *
- * @package Tests\Controller\HbPFCommonsBundle\Controller
+ * @package Tests\Controller\HbPFApiGatewayBundle\Controller
  */
 class StartingPointControllerTest extends ControllerTestCaseAbstract
 {
@@ -27,11 +27,11 @@ class StartingPointControllerTest extends ControllerTestCaseAbstract
         $startingPointHandler = $this->createMock(StartingPointHandler::class);
         $startingPointHandler->method('runWithRequest')->willReturn(NULL);
 
-        $this->client->getContainer()->set('hbpf.commons.handler.starting_point', $startingPointHandler);
+        $this->client->getContainer()->set('hbpf.handler.starting_point', $startingPointHandler);
 
         $this->client->request(
             'POST',
-            '/api/run/1/mapper_123',
+            '/api/gateway/topologies/1/nodes/mapper_123/run',
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
