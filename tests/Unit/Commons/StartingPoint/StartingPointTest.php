@@ -150,8 +150,9 @@ class StartingPointTest extends TestCase
         $startingPoint = new StartingPoint($this->startingPointProducer);
         $headers       = $startingPoint->createHeaders();
 
-        $this->assertCount(1, $headers->getHeaders());
+        $this->assertCount(2, $headers->getHeaders());
         $this->assertArrayHasKey('job_id', $headers->getHeaders());
+        $this->assertArrayHasKey('sequence_id', $headers->getHeaders());
     }
 
 }

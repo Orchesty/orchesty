@@ -99,7 +99,9 @@ class StartingPoint
     public function createHeaders(): Headers
     {
         $headers = new Headers();
-        $headers->addHeader('job_id', Uuid::uuid4()->toString());
+        $headers
+            ->addHeader('job_id', Uuid::uuid4()->toString())
+            ->addHeader('sequence_id', '1');
 
         return $headers;
     }
