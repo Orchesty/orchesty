@@ -6,11 +6,11 @@
  * Time: 11:59 AM
  */
 
-namespace Hanaboso\PipesFramework\HbPFCommonsBundle\Controller;
+namespace Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller;
 
 use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Controller\FOSRestController;
-use Hanaboso\PipesFramework\HbPFCommonsBundle\Handler\StartingPointHandler;
+use Hanaboso\PipesFramework\HbPFApiGatewayBundle\Handler\StartingPointHandler;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -20,7 +20,7 @@ use Symfony\Component\HttpFoundation\Response;
  *
  * @Route(service="hbpf.commons.controller.starting_point")
  *
- * @package Hanaboso\PipesFramework\HbPFCommonsBundle\Controller
+ * @package Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller
  */
 class StartingPointController extends FOSRestController
 {
@@ -41,7 +41,7 @@ class StartingPointController extends FOSRestController
     }
 
     /**
-     * @Route("/api/run/{topologyId}/{nodeId}", defaults={}, requirements={"topologyId": "\w+", "nodeId": "\w+"})
+     * @Route("/topologies/{topologyId}/nodes/{nodeId}", defaults={}, requirements={"topologyId": "\w+", "nodeId": "\w+"})
      * @Method({"POST"})
      *
      * @param Request $request

@@ -6,7 +6,7 @@
  * Time: 12:07 PM
  */
 
-namespace Hanaboso\PipesFramework\HbPFCommonsBundle\Handler;
+namespace Hanaboso\PipesFramework\HbPFApiGatewayBundle\Handler;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Exception;
@@ -18,7 +18,7 @@ use Symfony\Component\HttpFoundation\Request;
 /**
  * Class StartingPointHandler
  *
- * @package Hanaboso\PipesFramework\HbPFCommonsBundle\Handler
+ * @package Hanaboso\PipesFramework\HbPFApiGatewayBundle\Handler
  */
 class StartingPointHandler
 {

@@ -3,8 +3,3 @@ services:
         class: Hanaboso\PipesFramework\HbPFCommonsBundle\Controller\ApiController
         arguments:
             - '@hbpf.commons.node_handler'
-
-    hbpf.commons.controller.starting_point:
-        class: Hanaboso\PipesFramework\HbPFCommonsBundle\Controller\StartingPointController
-        arguments:
-            - '@hbpf.commons.handler.starting_point'

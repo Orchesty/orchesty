@@ -6,7 +6,7 @@
  * Time: 3:46 PM
  */
 
-namespace Tests\Unit\HbPFCommonsBundle\Handler;
+namespace Tests\Unit\ApiGateway\Handler;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentRepository;
@@ -14,14 +14,14 @@ use Exception;
 use Hanaboso\PipesFramework\Commons\Node\Document\Node;
 use Hanaboso\PipesFramework\Commons\StartingPoint\StartingPoint;
 use Hanaboso\PipesFramework\Commons\Topology\Document\Topology;
-use Hanaboso\PipesFramework\HbPFCommonsBundle\Handler\StartingPointHandler;
+use Hanaboso\PipesFramework\HbPFApiGatewayBundle\Handler\StartingPointHandler;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class StartingPointHandlerTest
  *
- * @package Tests\Unit\HbPFCommonsBundle\Handler
+ * @package Tests\Unit\ApiGateway\Handler
  */
 class StartingPointHandlerTest extends TestCase
 {
