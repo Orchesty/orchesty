@@ -45,6 +45,7 @@ class HbPFAclExtension extends Extension implements PrependExtensionInterface
         $loader->load('acl.yml');
         $loader->load('acl_rules.yml');
         $loader->load('services.yml');
+        $loader->load('parameters.yml');
     }
 
 }
