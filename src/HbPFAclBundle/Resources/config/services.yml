@@ -23,6 +23,7 @@ services:
             - '@hbpf.factory.rule'
             - '@hbpf.acl.provider.database'
             - '@hbpf.acl.provider.resource'
+            - '%resource_enum%'
         tags:
             - { name: kernel.event_subscriber }
 

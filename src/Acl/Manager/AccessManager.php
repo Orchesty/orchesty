@@ -54,24 +54,32 @@ class AccessManager implements EventSubscriberInterface
     private $resProvider;
 
     /**
+     * @var mixed
+     */
+    private $resEnum;
+
+    /**
      * AccessManager constructor.
      *
      * @param UserDatabaseManagerLocator $userDml
      * @param RuleFactory                $factory
      * @param DatabaseProvider           $dbProvider
      * @param ResourceProvider           $resProvider
+     * @param mixed                      $resEnum
      */
     function __construct(
         UserDatabaseManagerLocator $userDml,
         RuleFactory $factory,
         DatabaseProvider $dbProvider,
-        ResourceProvider $resProvider
+        ResourceProvider $resProvider,
+        $resEnum
     )
     {
         $this->dm          = $userDml->get();
         $this->factory     = $factory;
         $this->dbProvider  = $dbProvider;
         $this->resProvider = $resProvider;
+        $this->resEnum     = $resEnum;
     }
 
     /**
@@ -285,7 +293,7 @@ class AccessManager implements EventSubscriberInterface
      */
     private function checkParams(string $act, string $res): void
     {
-        if (!ActionEnum::isValid($act) || !ResourceEnum::isValid($res)) {
+        if (!ActionEnum::isValid($act) || !($this->resEnum)::isValid($res)) {
             throw new AclException(
                 'Invalid resource or action type.',
                 AclException::INVALID_RESOURCE
