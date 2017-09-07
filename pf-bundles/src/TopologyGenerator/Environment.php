@@ -26,6 +26,8 @@ class Environment
     public const XML_PARSER_RELOADED = 'PARSER_RELOADED';
     public const METRICS_HOST        = 'METRICS_HOST';
     public const METRICS_PORT        = 'METRICS_PORT';
+    public const DEV_UID             = 'DEV_UID';
+    public const DEV_GID             = 'DEV_GID';
 
     /**
      * @var string
@@ -76,6 +78,16 @@ class Environment
      * @var int
      */
     protected $metricsPort = 5555;
+
+    /**
+     * @var string
+     */
+    protected $devUid = '${DEV_UID}';
+
+    /**
+     * @var string
+     */
+    protected $devGid = '${DEV_GID}';
 
     /**
      * @return string
@@ -273,6 +285,46 @@ class Environment
     public function setMetricsPort(int $metricsPort): Environment
     {
         $this->metricsPort = $metricsPort;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDevUid(): string
+    {
+        return $this->devUid;
+    }
+
+    /**
+     * @param string $devUid
+     *
+     * @return Environment
+     */
+    public function setDevUid(string $devUid): Environment
+    {
+        $this->devUid = $devUid;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDevGid(): string
+    {
+        return $this->devGid;
+    }
+
+    /**
+     * @param string $devGid
+     *
+     * @return Environment
+     */
+    public function setDevGid(string $devGid): Environment
+    {
+        $this->devGid = $devGid;
 
         return $this;
     }
