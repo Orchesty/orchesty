@@ -86,12 +86,12 @@ class AccessManager implements EventSubscriberInterface
      * @param string        $act
      * @param string        $res
      * @param UserInterface $user
-     * @param string        $id
+     * @param string|null   $id
      *
      * @return mixed
      * @throws AclException
      */
-    public function isAllowed(string $act, string $res, UserInterface $user, string $id)
+    public function isAllowed(string $act, string $res, UserInterface $user, ?string $id = NULL)
     {
         $this->checkParams($act, $res);
         $class = $this->resProvider->getResource($res);
@@ -121,6 +121,10 @@ class AccessManager implements EventSubscriberInterface
                 sprintf('User has no permission on [%s] resource for [%s] action.', $res, $act),
                 AclException::PERMISSION
             );
+        }
+
+        if (!$id && $act === ActionEnum::WRITE) {
+            return TRUE;
         }
 
         $data = ['id' => $id];
