@@ -8,7 +8,7 @@ import {amqpConnectionOptions} from "../../../../src/config";
 import JobMessage from "../../../../src/message/JobMessage";
 import {ResultCode} from "../../../../src/message/ResultCode";
 import CounterPublisher from "../../../../src/node/drain/amqp/CounterPublisher";
-import {IAmqpDrainSettings} from "../../../../src/node/drain/AMQPDrain";
+import {IAmqpDrainSettings} from "../../../../src/node/drain/AmqpDrain";
 
 const conn = new Connection(amqpConnectionOptions);
 const settings: IAmqpDrainSettings = {

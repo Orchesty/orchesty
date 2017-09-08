@@ -2,23 +2,14 @@ version: '2'
 services:
   rabbitmq:
     image: 'rabbitmq:management-alpine'
-    ports:
-      - '15672:15672'
-      - '5672:5672'
   influxdb:
     image: 'influxdb:latest'
-    ports:
-      - "8083:8083"
-      - "8086:8086"
-      - "8090:8090"
   test:
-      image: dkr.hanaboso.net/pipes/pipes/pf-typescript:typescript
+      image: dkr.hanaboso.net/pipes/pipes/pf-typescript:dev
       environment:
         - RABBITMQ_HOST=rabbitmq
-        - RABBITMQ_PORT=5672
-        - RABBITMQ_USER=guest
-        - RABBITMQ_PASS=guest
-        - RABBITMQ_VHOST=/
+        - METRICS_HOST=influxdb
+        - METRICS_PORT=8086
       depends_on:
         - rabbitmq
       command: sleep infinity

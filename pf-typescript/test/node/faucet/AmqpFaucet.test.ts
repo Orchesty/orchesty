@@ -6,7 +6,7 @@ import Connection from "lib-nodejs/dist/src/rabbitmq/Connection";
 import Publisher from "lib-nodejs/dist/src/rabbitmq/Publisher";
 import {amqpConnectionOptions} from "../../../src/config";
 import JobMessage from "../../../src/message/JobMessage";
-import {default as AMQPFaucet, IAmqpFaucetSettings} from "../../../src/node/faucet/AMQPFaucet";
+import {default as AmqpFaucet, IAmqpFaucetSettings} from "../../../src/node/faucet/AmqpFaucet";
 
 const settings: IAmqpFaucetSettings = {
     exchange: {
@@ -37,7 +37,7 @@ describe("AmqpFaucet", () => {
             assert.equal(msg.getSequenceId(), 999);
             assert.equal(msg.getJobId(), "a23");
         };
-        const faucet = new AMQPFaucet(settings, conn);
+        const faucet = new AmqpFaucet(settings, conn);
 
         const workerFn = (msg: JobMessage) => {
             check(msg);

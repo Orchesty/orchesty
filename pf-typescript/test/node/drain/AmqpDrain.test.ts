@@ -5,7 +5,7 @@ import * as mock from "ts-mockito";
 import JobMessage from "../../../src/message/JobMessage";
 import CounterPublisher from "../../../src/node/drain/amqp/CounterPublisher";
 import FollowersPublisher from "../../../src/node/drain/amqp/FollowersPublisher";
-import AMQPDrain, {IAmqpDrainSettings} from "../../../src/node/drain/AMQPDrain";
+import AmqpDrain, {IAmqpDrainSettings} from "../../../src/node/drain/AmqpDrain";
 
 const settings: IAmqpDrainSettings = {
     node_id: "test-amqpdrain",
@@ -33,13 +33,13 @@ const settings: IAmqpDrainSettings = {
     ],
 };
 
-describe("AMQPDrain", () => {
+describe("AmqpDrain", () => {
     it("should forward to counter and followers on open", () => {
         const counterPub: CounterPublisher = mock.mock(CounterPublisher);
         counterPub.send = (jm: JobMessage) => Promise.resolve();
         const followPub: FollowersPublisher = mock.mock(FollowersPublisher);
         followPub.send = (jm: JobMessage) => Promise.resolve();
-        const drain = new AMQPDrain(settings, counterPub, followPub);
+        const drain = new AmqpDrain(settings, counterPub, followPub);
 
         const msg: JobMessage = new JobMessage(
             "123", 1, {}, JSON.stringify({data: "test", settings: {}}),

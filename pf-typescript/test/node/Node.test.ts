@@ -5,7 +5,7 @@ import "mocha";
 
 import * as rp from "request-promise";
 import * as mock from "ts-mockito";
-import AMQPDrain from "../../src/node/drain/AMQPDrain";
+import AmqpDrain from "../../src/node/drain/AmqpDrain";
 import HttpFaucet from "../../src/node/faucet/HttpFaucet";
 import Node from "../../src/node/Node";
 import UppercaseWorker from "../../src/node/worker/UppercaseWorker";
@@ -13,7 +13,7 @@ import UppercaseWorker from "../../src/node/worker/UppercaseWorker";
 describe("Node", () => {
     it("prepare and start and open node", () => {
         const worker = mock.mock(UppercaseWorker);
-        const drain = mock.mock(AMQPDrain);
+        const drain = mock.mock(AmqpDrain);
         const faucet = mock.mock(HttpFaucet);
         const faucetInstance: HttpFaucet = mock.instance(faucet);
         faucetInstance.open = () => Promise.resolve();
