@@ -8,11 +8,14 @@
 
 namespace Tests\Unit\TopologyGenerator\DockerCompose;
 
+use Hanaboso\PipesFramework\Commons\Enum\TypeEnum;
 use Hanaboso\PipesFramework\Commons\Node\Document\Embed\EmbedNode;
 use Hanaboso\PipesFramework\Commons\Node\Document\Node;
 use Hanaboso\PipesFramework\Commons\Topology\Document\Topology;
 use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\Generator;
+use Hanaboso\PipesFramework\TopologyGenerator\Environment;
 use Hanaboso\PipesFramework\TopologyGenerator\GeneratorUtils;
+use Hanaboso\PipesFramework\TopologyGenerator\HostMapper;
 use PHPUnit\Framework\TestCase;
 use Tests\PrivateTrait;
 
@@ -37,27 +40,39 @@ class GeneratorTest extends TestCase
 
         $node1 = new Node();
         $this->setProperty($node1, 'id', '1');
-        $node1->setName('magento2_customer');
+        $node1
+            ->setName('magento2_customer')
+            ->setType(TypeEnum::CONNECTOR);
 
         $node2 = new Node();
         $this->setProperty($node2, 'id', '2');
-        $node2->setName('xml_parser');
+        $node2
+            ->setName('xml_parser')
+            ->setType(TypeEnum::XML_PARSER);
 
         $node3 = new Node();
         $this->setProperty($node3, 'id', '3');
-        $node3->setName('filter_1');
+        $node3
+            ->setName('mapper_1')
+            ->setType(TypeEnum::MAPPER);
 
         $node4 = new Node();
         $this->setProperty($node4, 'id', '4');
-        $node4->setName('mail');
+        $node4
+            ->setName('mail')
+            ->setType(TypeEnum::EMAIL);
 
         $node5 = new Node();
         $this->setProperty($node5, 'id', '5');
-        $node5->setName('ftp');
+        $node5
+            ->setName('ftp')
+            ->setType(TypeEnum::FTP);
 
         $node6 = new Node();
         $this->setProperty($node6, 'id', '6');
-        $node6->setName('api');
+        $node6
+            ->setName('api')
+            ->setType(TypeEnum::API);
 
         $node1->addNext(EmbedNode::from($node2));
 
@@ -74,9 +89,9 @@ class GeneratorTest extends TestCase
         $nodes[] = $node5;
         $nodes[] = $node6;
 
-        $generator = new Generator($topology, $nodes);
+        $generator = new Generator(new Environment(), new HostMapper(), __DIR__ . '/output', 'demo_defualt');
 
-        $generator->generate(__DIR__ . '/output');
+        $generator->generate($topology, $nodes);
 
         $this->assertSame(
             file_get_contents(__DIR__ . '/samples/docker-compose.yml'),

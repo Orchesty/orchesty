@@ -13,7 +13,7 @@ services:
     ports:
       - '8007:8007'
     networks:
-      - demo_default
+      - demo_defualt
     command: './dist/src/bin/pipes.js start probe'
   counter:
     image: 'dkr.hanaboso.net/pipes/pipes/pf-typescript:dev'
@@ -26,7 +26,7 @@ services:
     volumes:
       - './topology.json:/srv/app/topology.json'
     networks:
-      - demo_default
+      - demo_defualt
     command: './dist/src/bin/pipes.js start counter'
   xml-parser:
     image: 'dkr.hanaboso.net/pipes/pipes/python-xml-parser:prod'
@@ -39,20 +39,7 @@ services:
     ports:
       - '8080:80'
     networks:
-      - demo_default
-    command: ''
-  app:
-    image: 'dkr.hanaboso.net/pipes/pipes/php-dev:dev'
-    working_dir: /var/www/pipes/client/demo/mapper
-    user: '${DEV_UID}:${DEV_GID}'
-    environment:
-      DEV_UID: '${DEV_UID}'
-      DEV_GID: '${DEV_GID}'
-    volumes:
-      - '../../:/var/www/pipes'
-      - '${SSH_AUTH_SOCK}:/ssh-agent'
-    networks:
-      - demo_default
+      - demo_defualt
     command: ''
   1-magento2-customer:
     image: 'dkr.hanaboso.net/pipes/pipes/pf-typescript:dev'
@@ -65,8 +52,21 @@ services:
     volumes:
       - './topology.json:/srv/app/topology.json'
     networks:
-      - demo_default
+      - demo_defualt
     command: './dist/src/bin/pipes.js start node --id 1-magento2-customer'
+  pipes-api:
+    image: 'dkr.hanaboso.net/pipes/pipes/php-dev:dev'
+    working_dir: /var/www/pipes/client/demo/mapper
+    user: '${DEV_UID}:${DEV_GID}'
+    environment:
+      DEV_UID: '${DEV_UID}'
+      DEV_GID: '${DEV_GID}'
+    volumes:
+      - '../../:/var/www/pipes'
+      - '${SSH_AUTH_SOCK}:/ssh-agent'
+    networks:
+      - demo_defualt
+    command: ''
   2-xml-parser:
     image: 'dkr.hanaboso.net/pipes/pipes/pf-typescript:dev'
     environment:
@@ -78,9 +78,9 @@ services:
     volumes:
       - './topology.json:/srv/app/topology.json'
     networks:
-      - demo_default
+      - demo_defualt
     command: './dist/src/bin/pipes.js start node --id 2-xml-parser'
-  3-filter-1:
+  3-mapper-1:
     image: 'dkr.hanaboso.net/pipes/pipes/pf-typescript:dev'
     environment:
       RABBITMQ_HOST: rabbitmq
@@ -91,8 +91,8 @@ services:
     volumes:
       - './topology.json:/srv/app/topology.json'
     networks:
-      - demo_default
-    command: './dist/src/bin/pipes.js start node --id 3-filter-1'
+      - demo_defualt
+    command: './dist/src/bin/pipes.js start node --id 3-mapper-1'
   4-mail:
     image: 'dkr.hanaboso.net/pipes/pipes/pf-typescript:dev'
     environment:
@@ -104,7 +104,7 @@ services:
     volumes:
       - './topology.json:/srv/app/topology.json'
     networks:
-      - demo_default
+      - demo_defualt
     command: './dist/src/bin/pipes.js start node --id 4-mail'
   5-ftp:
     image: 'dkr.hanaboso.net/pipes/pipes/pf-typescript:dev'
@@ -117,7 +117,7 @@ services:
     volumes:
       - './topology.json:/srv/app/topology.json'
     networks:
-      - demo_default
+      - demo_defualt
     command: './dist/src/bin/pipes.js start node --id 5-ftp'
   6-api:
     image: 'dkr.hanaboso.net/pipes/pipes/pf-typescript:dev'
@@ -130,8 +130,8 @@ services:
     volumes:
       - './topology.json:/srv/app/topology.json'
     networks:
-      - demo_default
+      - demo_defualt
     command: './dist/src/bin/pipes.js start node --id 6-api'
 networks:
-  demo_default:
+  demo_defualt:
     external: true

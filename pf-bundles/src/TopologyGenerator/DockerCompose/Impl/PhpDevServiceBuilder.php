@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: Pavel Severyn
@@ -8,11 +8,18 @@
 
 namespace Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\Impl;
 
+use Hanaboso\PipesFramework\Commons\Enum\TypeEnum;
 use Hanaboso\PipesFramework\Commons\Node\Document\Node;
 use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\Service;
 use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\ServiceBuilderInterface;
 use Hanaboso\PipesFramework\TopologyGenerator\Environment;
+use Hanaboso\PipesFramework\TopologyGenerator\HostMapper;
 
+/**
+ * Class PhpDevServiceBuilder
+ *
+ * @package Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\Impl
+ */
 class PhpDevServiceBuilder implements ServiceBuilderInterface
 {
 
@@ -34,17 +41,24 @@ class PhpDevServiceBuilder implements ServiceBuilderInterface
     private $network;
 
     /**
+     * @var HostMapper
+     */
+    private $hostMapper;
+
+    /**
      * NodeServiceBuilder constructor.
      *
      * @param Environment $environment
+     * @param HostMapper  $hostMapper
      * @param string      $registry
      * @param string      $network
      */
-    public function __construct(Environment $environment, string $registry, string $network)
+    public function __construct(Environment $environment, HostMapper $hostMapper, string $registry, string $network)
     {
         $this->environment = $environment;
         $this->registry    = $registry;
         $this->network     = $network;
+        $this->hostMapper  = $hostMapper;
     }
 
     /**
@@ -54,7 +68,8 @@ class PhpDevServiceBuilder implements ServiceBuilderInterface
      */
     public function build(Node $node): Service
     {
-        $service = new Service('app');
+        $host    = $this->hostMapper->getHost(new TypeEnum($node->getType()));
+        $service = new Service($host);
         $service
             ->setImage($this->registry . '/' . self::IMAGE)
             ->setUser('${DEV_UID}:${DEV_GID}')

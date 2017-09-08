@@ -60,14 +60,14 @@ class Environment
     protected $xmlParserHost = 'xml-parser';
 
     /**
-     * @var int
+     * @var string
      */
-    protected $xmlParserPort = 80;
+    protected $xmlParserPort = '80';
 
     /**
-     * @var int
+     * @var string
      */
-    protected $xmlParserReloaded = 1;
+    protected $xmlParserReloaded = '1';
 
     /**
      * @var string
@@ -75,9 +75,9 @@ class Environment
     protected $metricsHost = 'metrics';
 
     /**
-     * @var int
+     * @var string
      */
-    protected $metricsPort = 5555;
+    protected $metricsPort = '5555';
 
     /**
      * @var string
@@ -210,19 +210,19 @@ class Environment
     }
 
     /**
-     * @return int
+     * @return string
      */
-    public function getXmlParserPort(): int
+    public function getXmlParserPort(): string 
     {
         return $this->xmlParserPort;
     }
 
     /**
-     * @param int $xmlParserPort
+     * @param string $xmlParserPort
      *
      * @return Environment
      */
-    public function setXmlParserPort(int $xmlParserPort): Environment
+    public function setXmlParserPort(string $xmlParserPort): Environment
     {
         $this->xmlParserPort = $xmlParserPort;
 
@@ -230,19 +230,19 @@ class Environment
     }
 
     /**
-     * @return int
+     * @return string
      */
-    public function getXmlParserReloaded(): int
+    public function getXmlParserReloaded(): string 
     {
         return $this->xmlParserReloaded;
     }
 
     /**
-     * @param int $xmlParserReloaded
+     * @param string $xmlParserReloaded
      *
      * @return Environment
      */
-    public function setXmlParserReloaded(int $xmlParserReloaded): Environment
+    public function setXmlParserReloaded(string $xmlParserReloaded): Environment
     {
         $this->xmlParserReloaded = $xmlParserReloaded;
 
@@ -270,19 +270,19 @@ class Environment
     }
 
     /**
-     * @return int
+     * @return string
      */
-    public function getMetricsPort(): int
+    public function getMetricsPort(): string
     {
         return $this->metricsPort;
     }
 
     /**
-     * @param int $metricsPort
+     * @param string $metricsPort
      *
      * @return Environment
      */
-    public function setMetricsPort(int $metricsPort): Environment
+    public function setMetricsPort(string $metricsPort): Environment
     {
         $this->metricsPort = $metricsPort;
 

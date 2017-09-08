@@ -8,10 +8,11 @@
 
 namespace Tests\Utils;
 
+use Hanaboso\PipesFramework\Commons\Enum\TypeEnum;
 use Hanaboso\PipesFramework\Commons\Node\Document\Embed\EmbedNode;
 use Hanaboso\PipesFramework\Commons\Node\Document\Node;
 use Hanaboso\PipesFramework\Commons\Topology\Document\Topology;
-use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\Generator;
+use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\GeneratorFactory;
 use Tests\ControllerTestCaseAbstract;
 
 /**
@@ -46,36 +47,42 @@ class TopologyFixtures extends ControllerTestCaseAbstract
             $node1 = new Node();
             $node1
                 ->setName('magento2_customer')
+                ->setType(TypeEnum::CONNECTOR)
                 ->setTopology($topology->getId());
             $this->dm->persist($node1);
 
             $node2 = new Node();
             $node2
                 ->setName('xml_parser')
+                ->setType(TypeEnum::XML_PARSER)
                 ->setTopology($topology->getId());
             $this->dm->persist($node2);
 
             $node3 = new Node();
             $node3
-                ->setName('filter_1')
+                ->setName('mapper_1')
+                ->setType(TypeEnum::MAPPER)
                 ->setTopology($topology->getId());
             $this->dm->persist($node3);
 
             $node4 = new Node();
             $node4
                 ->setName('mail')
+                ->setType(TypeEnum::EMAIL)
                 ->setTopology($topology->getId());
             $this->dm->persist($node4);
 
             $node5 = new Node();
             $node5
                 ->setName('ftp')
+                ->setType(TypeEnum::FTP)
                 ->setTopology($topology->getId());
             $this->dm->persist($node5);
 
             $node6 = new Node();
             $node6
                 ->setName('api')
+                ->setType(TypeEnum::API)
                 ->setTopology($topology->getId());
             $this->dm->persist($node6);
 
@@ -98,9 +105,10 @@ class TopologyFixtures extends ControllerTestCaseAbstract
 
             file_put_contents(__DIR__ . '/' . self::FILE_NAME, $topology->getId());
 
-            $generator = new Generator($topology, $nodes);
+            $generatorFactory = new GeneratorFactory(__DIR__, 'demo');
+            $generator        = $generatorFactory->create();
 
-            $generator->generate(__DIR__);
+            $generator->generate($topology, $nodes);
         }
 
         $this->sendRequest($topology, $nodes);

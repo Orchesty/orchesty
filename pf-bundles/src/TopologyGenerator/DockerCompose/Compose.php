@@ -66,7 +66,7 @@ class Compose
      */
     public function addServices(Service $service): Compose
     {
-        $this->services[] = $service;
+        $this->services[$service->getName()] = $service;
 
         return $this;
     }

@@ -8,6 +8,7 @@
 
 namespace Hanaboso\PipesFramework\TopologyGenerator\DockerCompose;
 
+use Hanaboso\PipesFramework\Commons\Enum\TypeEnum;
 use Hanaboso\PipesFramework\Commons\Node\Document\Node;
 use Hanaboso\PipesFramework\Commons\Topology\Document\Topology;
 use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\Impl\CounterServiceBuilder;
@@ -18,6 +19,7 @@ use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\Impl\XmlParserServic
 use Hanaboso\PipesFramework\TopologyGenerator\Environment;
 use Hanaboso\PipesFramework\TopologyGenerator\GeneratorInterface;
 use Hanaboso\PipesFramework\TopologyGenerator\GeneratorUtils;
+use Hanaboso\PipesFramework\TopologyGenerator\HostMapper;
 
 /**
  * Class Generator
@@ -28,17 +30,6 @@ class Generator implements GeneratorInterface
 {
 
     public const REGISTRY = 'dkr.hanaboso.net/pipes/pipes';
-    public const NETWORK  = 'demo_default';
-
-    /**
-     * @var Topology
-     */
-    private $topology;
-
-    /**
-     * @var iterable|Node[]
-     */
-    private $nodes;
 
     /**
      * @var ComposeBuilder
@@ -46,31 +37,65 @@ class Generator implements GeneratorInterface
     private $composeBuilder;
 
     /**
+     * @var HostMapper
+     */
+    private $hostMapper;
+
+    /**
+     * @var Environment
+     */
+    private $environment;
+
+    /**
+     * @var string
+     */
+    private $targetDir;
+
+    /**
+     * @var string
+     */
+    private $network;
+
+    /**
      * Generator constructor.
      *
-     * @param Topology $topology
-     * @param iterable $nodes
+     * @param Environment $environment
+     * @param HostMapper  $hostMapper
+     * @param string      $targetDir
+     * @param string      $network
      */
-    public function __construct(Topology $topology, iterable $nodes)
+    public function __construct(Environment $environment, HostMapper $hostMapper, string $targetDir, string $network)
     {
-        $this->topology       = $topology;
-        $this->nodes          = $nodes;
+        $this->environment    = $environment;
+        $this->hostMapper     = $hostMapper;
+        $this->targetDir      = $targetDir;
+        $this->network        = $network;
         $this->composeBuilder = new ComposeBuilder();
     }
 
     /**
+     * @param Topology        $topology
+     * @param iterable|Node[] $nodes
+     *
      * @return string
      */
-    public function createTopologyConfig(): string
+    public function createTopologyConfig(Topology $topology, iterable $nodes): string
     {
-        $config['name'] = GeneratorUtils::normalizeName($this->topology->getId(), $this->topology->getName());
+        $config['name'] = GeneratorUtils::normalizeName($topology->getId(), $topology->getName());
 
-        foreach ($this->nodes as $node) {
+        foreach ($nodes as $node) {
+
+            $url = sprintf(
+                '%s/%s',
+                $this->hostMapper->getUrl(new TypeEnum($node->getType())),
+                $node->getName()
+            );
+
             $nodeConfig['id']                 = GeneratorUtils::normalizeName($node->getId(), $node->getName());
             $nodeConfig['worker']['type']     = 'worker.http';
             $nodeConfig['worker']['settings'] = [
                 'method' => 'POST',
-                'url'    => 'backend',
+                'url'    => $url,
                 'opts'   => [],
             ];
 
@@ -86,64 +111,85 @@ class Generator implements GeneratorInterface
     }
 
     /**
+     * @param Topology        $topology
+     * @param iterable|Node[] $nodes
+     *
      * @return string
      */
-    public function createCompose(): string
+    public function createCompose(Topology $topology, iterable $nodes): string
     {
-        $compose     = new Compose();
-        $environment = new Environment();
+        $compose = new Compose();
 
-        $compose->addNetwork(self::NETWORK);
+        $compose->addNetwork($this->network);
 
-        $builder            = new ProbeServiceBuilder($environment, self::REGISTRY, self::NETWORK);
+        $builder            = new ProbeServiceBuilder($this->environment, self::REGISTRY, $this->network);
         $nodeWatcherService = $builder->build(new Node());
         $compose->addServices($nodeWatcherService);
 
-        $builder        = new CounterServiceBuilder($environment, self::REGISTRY, self::NETWORK);
+        $builder        = new CounterServiceBuilder($this->environment, self::REGISTRY, $this->network);
         $counterService = $builder->build(new Node());
         $compose->addServices($counterService);
 
-        $builder          = new XmlParserServiceBuilder($environment, self::REGISTRY, self::NETWORK);
+        $builder          = new XmlParserServiceBuilder(
+            $this->environment,
+            $this->hostMapper,
+            self::REGISTRY,
+            $this->network
+        );
         $xmlParserService = $builder->build(new Node());
         $compose->addServices($xmlParserService);
 
-        $builder       = new PhpDevServiceBuilder($environment, self::REGISTRY, self::NETWORK);
-        $phpDevService = $builder->build(new Node());
-        $compose->addServices($phpDevService);
-
-        foreach ($this->nodes as $node) {
-            $builder = new NodeServiceBuilder($environment, self::REGISTRY, self::NETWORK);
+        foreach ($nodes as $node) {
+            $builder = new NodeServiceBuilder($this->environment, self::REGISTRY, $this->network);
             $compose->addServices($builder->build($node));
+
+            if (HostMapper::isPhpType(new TypeEnum($node->getType()))) {
+                $builder       = new PhpDevServiceBuilder(
+                    $this->environment,
+                    $this->hostMapper,
+                    self::REGISTRY,
+                    $this->network
+                );
+                $phpDevService = $builder->build($node);
+                $compose->addServices($phpDevService);
+            }
         }
 
         return $this->composeBuilder->build($compose);
     }
 
     /**
-     * @param string $targetDir
+     * @param Topology        $topology
+     * @param iterable|Node[] $nodes
      */
-    public function generate(string $targetDir): void
+    public function generate(Topology $topology, iterable $nodes): void
     {
-        if (!is_dir($this->getTopologyDir($targetDir))) {
-            mkdir($this->getTopologyDir($targetDir));
+        if (!is_dir($this->getTopologyDir($topology))) {
+            mkdir($this->getTopologyDir($topology));
         }
 
-        file_put_contents($this->getTopologyDir($targetDir) . '/topology.json', $this->createTopologyConfig());
+        file_put_contents(
+            $this->getTopologyDir($topology) . '/topology.json',
+            $this->createTopologyConfig($topology, $nodes)
+        );
 
-        file_put_contents($this->getTopologyDir($targetDir) . '/docker-compose.yml', $this->createCompose());
+        file_put_contents(
+            $this->getTopologyDir($topology) . '/docker-compose.yml',
+            $this->createCompose($topology, $nodes)
+        );
     }
 
     /**
-     * @param string $targetDir
+     * @param Topology $topology
      *
      * @return string
      */
-    protected function getTopologyDir(string $targetDir): string
+    protected function getTopologyDir(Topology $topology): string
     {
         return sprintf(
             '%s/%s',
-            $targetDir,
-            GeneratorUtils::normalizeName($this->topology->getId(), $this->topology->getName())
+            $this->targetDir,
+            GeneratorUtils::normalizeName($topology->getId(), $topology->getName())
         );
     }
 
