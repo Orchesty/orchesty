@@ -2,6 +2,9 @@
 
 set -e -x
 
+# Is SSH agent forwarding ready?
+[ -n "$SSH_AUTH_HOST" ] || (echo "SSH_AUTH_HOST variable must be set"; exit 1)
+
 # Determine the tag
 [ -n "$1" ] || (echo "You must pass a tag as the first parameter"; exit 1)
 TAG=$1
@@ -27,10 +30,10 @@ docker run --rm \
   -v $(pwd):/app \
   -e DEV_UID=$(id -u) \
   -e DEV_GID=$(id -g) \
+  -e SSH_AUTH_SOCK=/tmp/ssh-agent \
   -u $(id -u):$(id -g) \
-  -v $SSH_AUTH_SOCK:/ssh-agent \
   ${BUILD_IMAGE} \
-  bash -c "ssh-add -l && npm install && npm run build"
+  bash -c "socat UNIX-LISTEN:/tmp/ssh-agent,reuseaddr,fork TCP:${SSH_AUTH_HOST}:2214 & sleep .2 && ssh-add -l && npm install && npm run build"
 
 docker build -f docker/build/Dockerfile -t ${IMAGE} .
 docker push ${IMAGE}
