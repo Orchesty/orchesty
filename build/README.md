@@ -5,11 +5,12 @@
 ### M1
 
  * Prepare WORKING build scripts for all subprojects
- * Reolve the workdir problem
+ * ~~ Resolve the workdir problem~~
  * * ~~pipes-frontend~~
  * ~~Prepare NodeJS dev image, usable for local development AND as a build image (the PHP way)~~
+ * Run webpack server conditionally 
  * Simplify clients' docker-compose files (find a best way to extend them)
- * Finist clients' prod docker-composes 
+ * Finist clients' prod docker-composes
 
 
 ### M2
