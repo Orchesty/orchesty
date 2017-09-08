@@ -21,7 +21,16 @@ class AccessManagerTest extends DatabaseTestCaseAbstract
 {
 
     /**
-     * @covers AccessManager::isAllowed()
+     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::isAllowed()
+     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::checkObjectPermission()
+     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::selectRule()
+     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::checkGroupLvl()
+     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::getObjectById()
+     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::checkParams()
+     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::throwPermissionException()
+     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::hasRight()
+     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::hasRightForUser()
+     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::hasRightForGroup()
      */
     public function testIsAllowed(): void
     {
@@ -39,59 +48,8 @@ class AccessManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers AccessManager::isAllowed()
-     */
-    public function testIsAllowedNotOwning(): void
-    {
-        $user = new User();
-        $user
-            ->setEmail('test@test.com')
-            ->setPassword('pwd');
-        $this->persistAndFlush($user);
-
-        $rule = $this->createRule($user);
-
-        $user2 = new User();
-        $user2
-            ->setEmail('test2@test.com')
-            ->setPassword('pwd');
-        $this->persistAndFlush($user2);
-
-        $rule->setPropertyMask(1);
-        $rule->getGroup()->setOwner($user2);
-        $this->persistAndFlush($rule);
-        $this->persistAndFlush($rule->getGroup());
-
-        $this->expectException(AclException::class);
-        $this->expectExceptionCode(AclException::PERMISSION);
-        $this->container->get('hbpf.access.manager')
-            ->isAllowed(ActionEnum::WRITE, ResourceEnum::GROUP, $user, $rule->getGroup()->getId());
-    }
-
-    /**
-     * @covers AccessManager::isAllowedEntity()
-     */
-    public function testIsAllowedEntity(): void
-    {
-        $user = new User();
-        $user
-            ->setEmail('test@test.com')
-            ->setPassword('pwd');
-        $this->persistAndFlush($user);
-
-        $rule = $this->createRule($user);
-        self::assertTrue($this->container->get('hbpf.access.manager')
-            ->isAllowedEntity(ActionEnum::WRITE, ResourceEnum::GROUP, $user, $rule->getGroup()));
-
-        $this->expectException(AclException::class);
-        $this->expectExceptionCode(AclException::PERMISSION);
-        $this->container->get('hbpf.access.manager')
-            ->isAllowedEntity(ActionEnum::WRITE, ResourceEnum::USER, $user, $user);
-    }
-
-    /**
-     * @covers AccessManager::addGroup()
-     * @covers AccessManager::updateGroup()
+     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::addGroup()
+     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::updateGroup()
      */
     public function testAddAndUpdateGroup(): void
     {
@@ -145,7 +103,7 @@ class AccessManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers AccessManager::removeGroup()
+     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::removeGroup()
      */
     public function testRemoveGroup(): void
     {
