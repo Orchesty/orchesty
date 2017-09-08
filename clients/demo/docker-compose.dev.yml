@@ -31,11 +31,13 @@ services:
           PHP_WEBROOT: ${WORKDIR}/web
         ports:
           - ${DEV_IP}:80:80
+          - ${DEV_IP}:81:8080
         volumes:
           - ../../:/var/www/pipes
           - ${SSH_AUTH_SOCK}:/ssh-agent
         depends_on:
           - app
+        command: bash -c "npm install && npm start"
 
     # RabbitMQ
     rabbitmq:
