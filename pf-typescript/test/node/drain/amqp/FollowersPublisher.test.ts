@@ -8,10 +8,10 @@ import {amqpConnectionOptions} from "../../../../src/config";
 import JobMessage from "../../../../src/message/JobMessage";
 import {ResultCode} from "../../../../src/message/ResultCode";
 import FollowersPublisher from "../../../../src/node/drain/amqp/FollowersPublisher";
-import {IAMQPDrainSettings} from "../../../../src/node/drain/AMQPDrain";
+import {IAmqpDrainSettings} from "../../../../src/node/drain/AMQPDrain";
 
 const conn = new Connection(amqpConnectionOptions);
-const settings: IAMQPDrainSettings = {
+const settings: IAmqpDrainSettings = {
     node_id: "test-counter-publisher",
     counter_event: {
         queue: {

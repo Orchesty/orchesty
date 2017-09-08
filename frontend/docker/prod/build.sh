@@ -23,14 +23,13 @@ IMAGE=${REGISTRY_PREFIX}/frontend:${TAG}
 BUILD_IMAGE=${REGISTRY_PREFIX}/nodejs-build:dev
 
 docker pull ${BUILD_IMAGE}
-docker run --rm \
-  -v $(pwd):/app \
+docker run -ti --rm  \
+  -v /Users/kedlas/projects/hanaboso/pipes/pf-typescript:/app \
   -e DEV_UID=$(id -u) \
-  -e DEV_GID=$(id -g) \
-  -u $(id -u):$(id -g) \
-  -v $SSH_AUTH_SOCK:/ssh-agent \
+  -e DEV_GID=1020 \
+  -u $(id -u):1020 \
   ${BUILD_IMAGE} \
-  bash -c "ssh-add -l && npm install && npm run build"
+  bash
 
 docker build -f docker/build/Dockerfile -t ${IMAGE} .
-docker push ${IMAGE}
+#docker push ${IMAGE}

@@ -31,7 +31,7 @@ describe("Topology overall test", () => {
         });
         httpWorkerMock.listen(3000);
 
-        const pip = new Pipes(testTopology, config.amqpConnectionOptions);
+        const pip = new Pipes(testTopology);
 
         Promise.all([
             pip.startCounter(),

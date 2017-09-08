@@ -6,7 +6,7 @@ import { WorkerProcessFn } from "../worker/IWorker";
 import Consumer from "./amqp/AMQPConsumer";
 import IFaucet from "./IFaucet";
 
-export interface IAMQPFaucetSettings {
+export interface IAmqpFaucetSettings {
     exchange: {
         name: string,
         type: string,
@@ -25,9 +25,9 @@ export interface IAMQPFaucetSettings {
     routing_key: string;
 }
 
-class AMQPFaucet implements IFaucet {
+class AmqpFaucet implements IFaucet {
 
-    private settings: IAMQPFaucetSettings;
+    private settings: IAmqpFaucetSettings;
     private connection: Connection;
     private consumer: Consumer;
 
@@ -35,7 +35,7 @@ class AMQPFaucet implements IFaucet {
      * @param settings
      * @param connection
      */
-    constructor(settings: IAMQPFaucetSettings, connection: Connection) {
+    constructor(settings: IAmqpFaucetSettings, connection: Connection) {
         this.settings = settings;
         this.connection = connection;
     }
@@ -80,4 +80,4 @@ class AMQPFaucet implements IFaucet {
 
 }
 
-export default AMQPFaucet;
+export default AmqpFaucet;

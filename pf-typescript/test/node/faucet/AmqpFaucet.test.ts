@@ -6,9 +6,9 @@ import Connection from "lib-nodejs/dist/src/rabbitmq/Connection";
 import Publisher from "lib-nodejs/dist/src/rabbitmq/Publisher";
 import {amqpConnectionOptions} from "../../../src/config";
 import JobMessage from "../../../src/message/JobMessage";
-import {default as AMQPFaucet, IAMQPFaucetSettings} from "../../../src/node/faucet/AMQPFaucet";
+import {default as AMQPFaucet, IAmqpFaucetSettings} from "../../../src/node/faucet/AMQPFaucet";
 
-const settings: IAMQPFaucetSettings = {
+const settings: IAmqpFaucetSettings = {
     exchange: {
         name: "amqp_faucet_test_ex",
         type: "direct",

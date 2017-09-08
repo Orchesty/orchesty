@@ -1,35 +1,28 @@
 import Container from "lib-nodejs/dist/src/container/Container";
 import logger from "lib-nodejs/dist/src/logger/Logger";
-import {default as Connection, IOptions} from "lib-nodejs/dist/src/rabbitmq/Connection";
-import ComponentFactories from "./node/ComponentFactories";
+import DIContainer from "./DIContainer";
 import Node from "./node/Node";
 import {default as Configurator, INodeConfig, ITopologyConfig, ITopologyConfigSkeleton} from "./topology/Configurator";
 import Counter from "./topology/counter/Counter";
-import DockerComposeGenerator from "./topology/DockerComposeGenerator";
 import TopologyReadinessProbe from "./topology/TopologyReadinessProbe";
 
 class Pipes {
 
     public nodes: Container;
 
-    private amqpConnOptions: IOptions;
-    private amqpConn: Connection;
     private topology: ITopologyConfig;
-    private components: ComponentFactories;
+    private dic: DIContainer;
 
-    constructor(
-        topology: ITopologyConfig | ITopologyConfigSkeleton,
-        amqpConnOptions: IOptions,
-    ) {
-        this.amqpConnOptions = amqpConnOptions;
-        this.amqpConn = new Connection(amqpConnOptions);
-        this.topology = Configurator.createConfigFromSkeleton(topology);
+    constructor(topology: ITopologyConfig | ITopologyConfigSkeleton) {
         this.nodes = new Container();
-        this.components = new ComponentFactories(this.amqpConn);
+        this.dic = new DIContainer();
+
+        this.topology = Configurator.createConfigFromSkeleton(topology);
     }
 
     /**
-     * Starts single node by its ID
+     * Starts single node by its ID and opens it http probe server
+     *
      * @param {string} nodeId
      * @return {Promise<void>}
      */
@@ -49,12 +42,13 @@ class Pipes {
      * Starts topology counter
      */
     public startCounter(): Promise<void> {
-        const counter = new Counter(this.topology.counter, this.amqpConn);
+        const counter = new Counter(this.topology.counter, this.dic.get("amqp.connection"));
 
         return counter.listen();
     }
 
     /**
+     * Starts topology probe
      *
      * @param {number} port
      */
@@ -72,14 +66,7 @@ class Pipes {
     }
 
     /**
-     *
-     * @param {string} file
-     */
-    public generateDockerCompose(file: string): void {
-        DockerComposeGenerator.generate(this.topology.nodes, this.amqpConnOptions, file);
-    }
-
-    /**
+     * Return the real full topology config
      *
      * @return {ITopologyConfig}
      */
@@ -95,9 +82,9 @@ class Pipes {
     private createNode(nodeCfg: INodeConfig): Node {
         const node = new Node(
             nodeCfg.id,
-            this.components.get(nodeCfg.worker.type)(nodeCfg.worker.settings),
-            this.components.get(nodeCfg.faucet.type)(nodeCfg.faucet.settings),
-            this.components.get(nodeCfg.drain.type)(nodeCfg.drain.settings),
+            this.dic.get(nodeCfg.worker.type)(nodeCfg.worker.settings),
+            this.dic.get(nodeCfg.faucet.type)(nodeCfg.faucet.settings),
+            this.dic.get(nodeCfg.drain.type)(nodeCfg.drain.settings),
             nodeCfg.debug.port,
             nodeCfg.initial,
         );
@@ -108,6 +95,7 @@ class Pipes {
     }
 
     /**
+     * Returns node config for particular node or throws error if node does not exist
      *
      * @param {string} nodeId
      * @return {INodeConfig}

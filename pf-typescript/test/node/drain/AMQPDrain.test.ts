@@ -5,9 +5,9 @@ import * as mock from "ts-mockito";
 import JobMessage from "../../../src/message/JobMessage";
 import CounterPublisher from "../../../src/node/drain/amqp/CounterPublisher";
 import FollowersPublisher from "../../../src/node/drain/amqp/FollowersPublisher";
-import AMQPDrain, {IAMQPDrainSettings} from "../../../src/node/drain/AMQPDrain";
+import AMQPDrain, {IAmqpDrainSettings} from "../../../src/node/drain/AMQPDrain";
 
-const settings: IAMQPDrainSettings = {
+const settings: IAmqpDrainSettings = {
     node_id: "test-amqpdrain",
     counter_event: {
         queue: {

@@ -49,9 +49,11 @@ pf-typescript-test:
     - DIR=pf-typescript
     - skip_unmodified $DIR
     - ": TODO: modify this job to allow parallel execution!"
-    - cd $REPO_ROOT/$DIR
+    - cd $REPO_ROOT/$DIR/test
     - export RABBITMQ_HOST=rabbitmq
+    - export METRICS_HOST=influxdb
     - docker-compose up -d
+    - docker-compose exec -T test npm run lint
     - docker-compose exec -T test npm test
 
 frontend:
@@ -75,5 +77,5 @@ cleanup:
     - cd $REPO_ROOT/pf-bundles
     - make docker-down-clean
 
-    - cd $REPO_ROOT/pf-typescript
+    - cd $REPO_ROOT/pf-typescript/test
     - docker-compose down -v

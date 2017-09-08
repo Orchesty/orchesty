@@ -4,21 +4,21 @@ import Connection from "lib-nodejs/dist/src/rabbitmq/Connection";
 import Publisher from "lib-nodejs/dist/src/rabbitmq/Publisher";
 import JobMessage from "../../../message/JobMessage";
 import {ResultCode} from "../../../message/ResultCode";
-import {IAMQPDrainSettings, IFollower} from "../AMQPDrain";
+import {IAmqpDrainSettings, IFollower} from "../AmqpDrain";
 
 /**
  * This class will be injected to all drains and all counter result messages will be published using it
  */
 class FollowersPublisher extends Publisher {
 
-    private settings: IAMQPDrainSettings;
+    private settings: IAmqpDrainSettings;
 
     /**
      *
      * @param {AMQPConnection} conn
-     * @param {IAMQPDrainSettings} settings
+     * @param {IAmqpDrainSettings} settings
      */
-    constructor(conn: Connection, settings: IAMQPDrainSettings) {
+    constructor(conn: Connection, settings: IAmqpDrainSettings) {
         super(
             conn, (ch: Channel) => {
                 // Prepare exchange to publish to and queue and bind for following node

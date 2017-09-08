@@ -1,5 +1,5 @@
-import { IAMQPDrainSettings } from "./node/drain/AMQPDrain";
-import { IAMQPFaucetSettings } from "./node/faucet/AMQPFaucet";
+import { IAmqpDrainSettings } from "./node/drain/AmqpDrain";
+import { IAmqpFaucetSettings } from "./node/faucet/AmqpFaucet";
 import { INodeConfig } from "./topology/Configurator";
 import { INodeConfigSkeleton } from "./topology/Configurator";
 import { IDrainConfig } from "./topology/Configurator";
@@ -45,7 +45,7 @@ class Defaults {
      */
     public static getDefaultFaucetConfig(topoName: string, node: INodeConfigSkeleton): IFaucetConfig {
         const type = "faucet.amqp";
-        const settings: IAMQPFaucetSettings = {
+        const settings: IAmqpFaucetSettings = {
             exchange: { name: `pipes.${topoName}.events`, type: "direct", options: {} },
             queue: { name: `pipes.${topoName}.${node.id}`, options: {} },
             prefetch: 1,
@@ -64,7 +64,7 @@ class Defaults {
      */
     public static getDefaultDrainConfig(topoName: string, node: INodeConfigSkeleton): IDrainConfig {
         const type = "drain.amqp";
-        const settings: IAMQPDrainSettings = {
+        const settings: IAmqpDrainSettings = {
             node_id: node.id,
             counter_event: {
                 queue: {

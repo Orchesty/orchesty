@@ -1,65 +1,16 @@
 version: '2'
 services:
-  counter:
-    image: dkr.hanaboso.net/pipes/pipes/pf-typescript:typescript
-    environment:
-      - RABBITMQ_HOST=rabbitmq
-      - RABBITMQ_PORT=5672
-      - RABBITMQ_USER=guest
-      - RABBITMQ_PASS=guest
-      - RABBITMQ_VHOST=/
-    depends_on:
-      - rabbitmq
-      - node_1
-      - node_2
-    command: ./dist/src/bin/pipes.js start counter
-  probe:
-    image: dkr.hanaboso.net/pipes/pipes/pf-typescript:typescript
-    environment:
-      - RABBITMQ_HOST=rabbitmq
-      - RABBITMQ_PORT=5672
-      - RABBITMQ_USER=guest
-      - RABBITMQ_PASS=guest
-      - RABBITMQ_VHOST=/
-    depends_on:
-      - rabbitmq
-      - node_1
-      - node_2
-    command: ./dist/src/bin/pipes.js start probe
-    ports:
-      - '8007:8007'
-  node_1:
-    image: dkr.hanaboso.net/pipes/pipes/pf-typescript:typescript
-    environment:
-      - RABBITMQ_HOST=rabbitmq
-      - RABBITMQ_PORT=5672
-      - RABBITMQ_USER=guest
-      - RABBITMQ_PASS=guest
-      - RABBITMQ_VHOST=/
-    depends_on:
-      - rabbitmq
-    command: ./dist/src/bin/pipes.js start node --id node_1
-    ports:
-      - '5001:8007'
-      - '3333:3333'
-  node_2:
-    image: dkr.hanaboso.net/pipes/pipes/pf-typescript:typescript
-    environment:
-      - RABBITMQ_HOST=rabbitmq
-      - RABBITMQ_PORT=5672
-      - RABBITMQ_USER=guest
-      - RABBITMQ_PASS=guest
-      - RABBITMQ_VHOST=/
-    depends_on:
-      - rabbitmq
-    command: ./dist/src/bin/pipes.js start node --id node_2
-    ports:
-      - '5002:8007'
   rabbitmq:
     image: 'rabbitmq:management-alpine'
     ports:
       - '15672:15672'
       - '5672:5672'
+  influxdb:
+    image: 'influxdb:latest'
+    ports:
+      - "8083:8083"
+      - "8086:8086"
+      - "8090:8090"
   test:
       image: dkr.hanaboso.net/pipes/pipes/pf-typescript:typescript
       environment:

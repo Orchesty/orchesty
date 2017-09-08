@@ -19,7 +19,7 @@ export interface IFollower {
     routing_key: string;
 }
 
-export interface IAMQPDrainSettings {
+export interface IAmqpDrainSettings {
     node_id: string;
     counter_event: {
         queue: {
@@ -34,16 +34,16 @@ export interface IAMQPDrainSettings {
 /**
  * Drain is responsible for passing messages to following node and for informing counter
  */
-class AMQPDrain extends ADrain implements IDrain {
+class AmqpDrain extends ADrain implements IDrain {
 
     /**
      *
-     * @param {IAMQPDrainSettings} settings
+     * @param {IAmqpDrainSettings} settings
      * @param {CounterPublisher} counterPublisher
      * @param {FollowersPublisher} followersPublisher
      */
     constructor(
-        private settings: IAMQPDrainSettings,
+        private settings: IAmqpDrainSettings,
         private counterPublisher: CounterPublisher,
         private followersPublisher: FollowersPublisher,
     ) {
@@ -77,4 +77,4 @@ class AMQPDrain extends ADrain implements IDrain {
 
 }
 
-export default AMQPDrain;
+export default AmqpDrain;

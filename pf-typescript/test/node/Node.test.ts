@@ -38,7 +38,4 @@ describe("Node", () => {
                 assert.equal("OK", resp);
             });
     });
-    it.skip("node creates input and output queues, exchanges and binds", () => {
-
-    });
 });

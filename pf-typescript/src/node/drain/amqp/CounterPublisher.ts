@@ -3,21 +3,21 @@ import Connection from "lib-nodejs/dist/src/rabbitmq/Connection";
 import Publisher from "lib-nodejs/dist/src/rabbitmq/Publisher";
 import CounterMessage from "../../../message/CounterMessage";
 import JobMessage from "../../../message/JobMessage";
-import {IAMQPDrainSettings} from "../AMQPDrain";
+import {IAmqpDrainSettings} from "../AmqpDrain";
 
 /**
  * This class will be injected to all drains and all counter result messages will be published using it
  */
 class CounterPublisher extends Publisher {
 
-    private settings: IAMQPDrainSettings;
+    private settings: IAmqpDrainSettings;
 
     /**
      *
      * @param {AMQPConnection} conn
-     * @param {IAMQPDrainSettings} settings
+     * @param {IAmqpDrainSettings} settings
      */
-    constructor(conn: Connection, settings: IAMQPDrainSettings) {
+    constructor(conn: Connection, settings: IAmqpDrainSettings) {
         super(
             conn,
             (ch: Channel) => {
