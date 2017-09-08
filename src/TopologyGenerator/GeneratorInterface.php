@@ -8,6 +8,9 @@
 
 namespace Hanaboso\PipesFramework\TopologyGenerator;
 
+use Hanaboso\PipesFramework\Commons\Node\Document\Node;
+use Hanaboso\PipesFramework\Commons\Topology\Document\Topology;
+
 /**
  * Interface GeneratorInterface
  *
@@ -17,8 +20,9 @@ interface GeneratorInterface
 {
 
     /**
-     * @param string $targetPath
+     * @param Topology        $topology
+     * @param iterable|Node[] $nodes
      */
-    public function generate(string $targetPath): void;
+    public function generate(Topology $topology, iterable $nodes): void;
 
 }

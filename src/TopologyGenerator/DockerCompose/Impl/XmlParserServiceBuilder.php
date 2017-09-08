@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: Pavel Severyn
@@ -8,11 +8,18 @@
 
 namespace Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\Impl;
 
+use Hanaboso\PipesFramework\Commons\Enum\TypeEnum;
 use Hanaboso\PipesFramework\Commons\Node\Document\Node;
 use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\Service;
 use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\ServiceBuilderInterface;
 use Hanaboso\PipesFramework\TopologyGenerator\Environment;
+use Hanaboso\PipesFramework\TopologyGenerator\HostMapper;
 
+/**
+ * Class XmlParserServiceBuilder
+ *
+ * @package Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\Impl
+ */
 class XmlParserServiceBuilder implements ServiceBuilderInterface
 {
 
@@ -34,17 +41,24 @@ class XmlParserServiceBuilder implements ServiceBuilderInterface
     private $network;
 
     /**
+     * @var HostMapper
+     */
+    private $hostMapper;
+
+    /**
      * NodeServiceBuilder constructor.
      *
      * @param Environment $environment
+     * @param HostMapper  $hostMapper
      * @param string      $registry
      * @param string      $network
      */
-    public function __construct(Environment $environment, string $registry, string $network)
+    public function __construct(Environment $environment, HostMapper $hostMapper, string $registry, string $network)
     {
         $this->environment = $environment;
         $this->registry    = $registry;
         $this->network     = $network;
+        $this->hostMapper  = $hostMapper;
     }
 
     /**
@@ -54,10 +68,11 @@ class XmlParserServiceBuilder implements ServiceBuilderInterface
      */
     public function build(Node $node): Service
     {
-        $service = new Service('xml-parser');
+        $host    = $this->hostMapper->getHost(new TypeEnum(TypeEnum::XML_PARSER));
+        $service = new Service($host);
         $service
             ->setImage($this->registry . '/' . self::IMAGE)
-            ->addEnvironment(Environment::XML_PARSER_HOST, $this->environment->getXmlParserHost())
+            ->addEnvironment(Environment::XML_PARSER_HOST, $host)
             ->addEnvironment(Environment::XML_PARSER_PORT, $this->environment->getXmlParserPort())
             ->addEnvironment(Environment::XML_PARSER_RELOADED, $this->environment->getXmlParserReloaded())
             ->addEnvironment(Environment::METRICS_HOST, $this->environment->getMetricsHost())
