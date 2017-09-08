@@ -1,5 +1,6 @@
 import { ITopologyConfigSkeleton } from "../src/topology/Configurator";
 
+// Each node's http server must run on different port in order not to collide when they're ran on the same machine
 export const testTopology: ITopologyConfigSkeleton = {
     name: "test-topo",
     nodes: [
