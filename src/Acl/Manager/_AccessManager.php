@@ -30,7 +30,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
  *
  * @package Hanaboso\PipesFramework\Acl\Manager
  */
-class AccessManager implements EventSubscriberInterface
+class _AccessManager implements EventSubscriberInterface
 {
 
     /**
@@ -80,6 +80,129 @@ class AccessManager implements EventSubscriberInterface
         $this->dbProvider  = $dbProvider;
         $this->resProvider = $resProvider;
         $this->resEnum     = $resEnum;
+    }
+
+    /**
+     * @param string        $act
+     * @param string        $res
+     * @param UserInterface $user
+     * @param string|null   $id
+     *
+     * @return mixed
+     * @throws AclException
+     */
+    public function isAllowed(string $act, string $res, UserInterface $user, ?string $id = NULL)
+    {
+        $this->checkParams($act, $res);
+        $class = $this->resProvider->getResource($res);
+
+        $rules   = $this->dbProvider->getRules($user);
+        $rule    = NULL;
+        $byte    = MaskFactory::getActionByte($act);
+        $userLvl = 999;
+
+        foreach ($rules as $val) {
+            if ($this->hasRight($val, $res, $byte)) {
+                $rule = $val;
+                if ($rule->getGroup()->getLevel() < $userLvl) {
+                    $userLvl = $rule->getGroup()->getLevel();
+                }
+                if (!property_exists($class, 'owner')) {
+                    break;
+                } else if ($val->getPropertyMask() === 2) {
+                    $byte = -1;
+                    break;
+                }
+            }
+        }
+
+        if (!$rule) {
+            throw new AclException(
+                sprintf('User has no permission on [%s] resource for [%s] action.', $res, $act),
+                AclException::PERMISSION
+            );
+        }
+
+        if (!$id && $act === ActionEnum::WRITE) {
+            return TRUE;
+        }
+
+        $data = ['id' => $id];
+
+        if ((new ReflectionClass($class))->hasProperty('owner') && $byte >= 0) {
+            $reader = new AnnotationReader();
+
+            $data['owner'] =
+                $reader->getPropertyAnnotation(new ReflectionProperty($class, 'owner'), OwnerAnnotation::class)
+                    ? $user
+                    : $user->getId();
+        }
+
+        $val = $this->dm->getRepository($class)->findOneBy($data);
+
+        if ($val) {
+            if ($res === ResourceEnum::GROUP) {
+                /** @var GroupInterface $val */
+                $val = $this->hasRightForGroup($val, $userLvl);
+            } else if ($res === ResourceEnum::USER) {
+                /** @var UserInterface $val */
+                $val = $this->hasRightForUser($val, $userLvl);
+            }
+        }
+
+        if (!$val) {
+            throw new AclException(
+                sprintf('User has no permission or entity with given [%s] id doesn\'t exist.', $id),
+                AclException::PERMISSION
+            );
+        }
+
+        return $val;
+    }
+
+    /**
+     * @param string        $act
+     * @param string        $res
+     * @param UserInterface $user
+     * @param mixed         $object
+     *
+     * @return bool
+     * @throws AclException
+     */
+    public function isAllowedEntity(string $act, string $res, UserInterface $user, $object): bool
+    {
+        if (!is_object($object)) {
+            throw new AclException(
+                'Not given object',
+                AclException::PERMISSION
+            );
+        }
+
+        $this->checkParams($act, $res);
+
+        $rules = $this->dbProvider->getRules($user);
+        $byte  = MaskFactory::getActionByte($act);
+
+        foreach ($rules as $val) {
+            if ($this->hasRight($val, $res, $byte)) {
+                if (property_exists($object, 'owner')) {
+                    if ($val->getPropertyMask() === 2) {
+                        return TRUE;
+                    } else {
+                        if ($user === $object->getOwner()) {
+                            return TRUE;
+                        }
+                    }
+                } else {
+                    return TRUE;
+                }
+            }
+        }
+
+        throw new AclException(
+            sprintf('User has no permission on [%s] resource for [%s] action.', $res, $act),
+            AclException::PERMISSION
+        );
     }
 
     /**
@@ -171,178 +294,6 @@ class AccessManager implements EventSubscriberInterface
         return [
             UserEvent::USER_ACTIVATE => 'createGroup',
         ];
-    }
-
-    /**
-     * @param string        $act
-     * @param string        $res
-     * @param UserInterface $user
-     * @param mixed|null    $object
-     *
-     * @return mixed
-     * @throws AclException
-     */
-    public function isAllowed(string $act, string $res, UserInterface $user, $object)
-    {
-        $this->checkParams($act, $res);
-        $userLvl = 999;
-        $rule    = $this->selectRule($user, $act, $res, $userLvl);
-
-        if (is_string($object)) {
-
-            return $this->checkObjectPermission($rule, $this->getObjectById($rule, $user, $res, $object),
-                $user, $userLvl, $res, TRUE);
-
-        } else if (is_object($object)) {
-
-            return $this->checkObjectPermission($rule, $object, $user, $userLvl, $res);
-
-        } else if (is_null($object)) {
-
-            if ($act !== ActionEnum::WRITE) {
-                $this->throwPermissionException('Without given entity or it\'s id only Write permission is allowed.');
-            }
-
-            return TRUE;
-        } else {
-            $this->throwPermissionException('Given object should be entity or it\'s id or null in case of write permission.');
-        }
-
-        return NULL;
-    }
-
-    /**
-     * @param RuleInterface $rule
-     * @param mixed         $object
-     * @param UserInterface $user
-     * @param int           $userLvl
-     * @param string        $res
-     * @param bool          $checkedGroup
-     *
-     * @return mixed
-     */
-    private function checkObjectPermission(
-        RuleInterface $rule,
-        $object,
-        UserInterface $user,
-        int $userLvl,
-        string $res,
-        bool $checkedGroup = FALSE
-    )
-    {
-        if (!$checkedGroup && $rule->getPropertyMask() === 1
-            && property_exists($object, 'owner')
-        ) {
-            if ($user->getId() !== is_string($object->getOwner())
-                ? $object->getOwner() : $object->getOwner()->getId()
-            ) {
-                $this->throwPermissionException('User has no permission from given object and action.');
-            }
-        }
-
-        if ($res === ResourceEnum::GROUP) {
-            return $this->hasRightForGroup($object, $userLvl);
-        } else if ($res === ResourceEnum::USER) {
-            return $this->hasRightForUser($object, $userLvl);
-        }
-
-        return $object;
-    }
-
-    /**
-     * @param UserInterface $user
-     * @param string        $act
-     * @param string        $res
-     * @param int           $userLvl
-     *
-     * @return RuleInterface
-     * @throws AclException
-     */
-    private function selectRule(UserInterface $user, string $act, string $res, int $userLvl): RuleInterface
-    {
-        $rules     = $this->dbProvider->getRules($user);
-        $bit       = MaskFactory::getActionByte($act);
-        $rule      = NULL;
-        $groupRule = FALSE;
-
-        foreach ($rules as $val) {
-            if ($this->hasRight($val, $res, $bit)) {
-
-                if ($val->getPropertyMask() === 2) {
-                    $groupRule = TRUE;
-                    $this->checkGroupLvl($rule, $val, $userLvl);
-                } else if (!$groupRule) {
-                    $this->checkGroupLvl($rule, $val, $userLvl);
-                }
-
-            }
-        }
-
-        if (!$rule) {
-            $this->throwPermissionException('User has no permission on [%s] resource for desired action.', $res);
-        }
-
-        return $rule;
-    }
-
-    /**
-     * @param RuleInterface|null $old
-     * @param RuleInterface      $new
-     * @param int                $userLvl
-     */
-    private function checkGroupLvl(?RuleInterface &$old, RuleInterface $new, int &$userLvl): void
-    {
-        if (is_null($old) || ($old->getGroup()->getLevel() < $new->getGroup()->getLevel())) {
-            $old     = $new;
-            $userLvl = $new->getGroup()->getLevel();
-        }
-    }
-
-    /**
-     * @param RuleInterface $rule
-     * @param UserInterface $user
-     * @param string        $res
-     * @param string        $id
-     *
-     * @return mixed
-     * @throws AclException
-     */
-    private function getObjectById(RuleInterface $rule, UserInterface $user, string $res, string $id)
-    {
-        $params = ['id' => $id];
-
-        $class = $this->resProvider->getResource($res);
-        if ((new ReflectionClass($class))->hasProperty('owner') && $rule->getPropertyMask() === 1) {
-
-            $reader          = new AnnotationReader();
-            $params['owner'] = $reader->getPropertyAnnotation(
-                new ReflectionProperty($class, 'owner'), OwnerAnnotation::class)
-                ? $user : $user->getId();
-        }
-
-        $res = $this->dm->getRepository($class)->findOneBy($params);
-
-        if (!$res) {
-            $this->throwPermissionException('User has no permissin on entity with [%s] id or it doesn\'t exist.');
-        }
-
-        return $res;
-    }
-
-    /**
-     * @param string      $message
-     * @param null|string $id
-     *
-     * @throws AclException
-     */
-    private function throwPermissionException(string $message, ?string $id = NULL): void
-    {
-        $message = is_null($id) ? $message : sprintf($message, $id);
-
-        throw new AclException(
-            $message,
-            AclException::PERMISSION
-        );
     }
 
     /**
