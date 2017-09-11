@@ -45,7 +45,7 @@ class UserManager implements EventSubscriberInterface
      */
     public function checkPermission(UserEvent $userEvent): void
     {
-        $this->accessManager->isAllowedEntity(
+        $this->accessManager->isAllowed(
             ActionEnum::DELETE,
             ResourceEnum::USER,
             $userEvent->getLoggedUser(),
