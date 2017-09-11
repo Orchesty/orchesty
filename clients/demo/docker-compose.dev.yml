@@ -9,7 +9,7 @@ services:
     app:
         image: dkr.hanaboso.net/pipes/pipes/php-dev:dev
         user: ${DEV_UID}:${DEV_GID}
-        working_dir: /var/www/pipes/backend
+        working_dir: /var/www/pipes/clients/demo/pipes-api
         environment:
           DEV_UID: ${DEV_UID}
           DEV_GID: ${DEV_GID}
@@ -17,7 +17,7 @@ services:
           - ../../:/var/www/pipes
           - ${SSH_AUTH_SOCK}:/ssh-agent
         depends_on:
-          - mongodb
+          - mongo
           - rabbitmq
 
     # Frontend
@@ -28,16 +28,16 @@ services:
         environment:
           DEV_UID: ${DEV_UID}
           DEV_GID: ${DEV_GID}
-          PHP_WEBROOT: ${WORKDIR}/web
+          PHP_WEBROOT: /var/www/pipes/clients/demo/mapper/web
         ports:
           - ${DEV_IP}:80:80
-          - ${DEV_IP}:81:8080
+          #- ${DEV_IP}:81:8080
         volumes:
           - ../../:/var/www/pipes
           - ${SSH_AUTH_SOCK}:/ssh-agent
         depends_on:
           - app
-        command: bash -c "npm install && npm start"
+        #command: bash -c "npm install && npm start"
 
     # RabbitMQ
     rabbitmq:
@@ -48,7 +48,7 @@ services:
           - ./.docker-volumes/rabbitmq:/var/lib/rabbitmq
 
     # Storage
-    mongodb:
+    mongo:
         image: mongo:3.4
         ports:
           - ${DEV_IP}:27017:27017

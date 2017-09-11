@@ -21,7 +21,7 @@ class ConnectorControllerTest extends ControllerTestCaseAbstract
     {
         $this->mockHandler('processEvent');
 
-        $this->client->request('POST', '/api/connector/magento/topology/asd', [], [], [], '{}');
+        $this->client->request('POST', '/api/connector/magento', [], [], [], '{}');
 
         $response = $this->client->getResponse();
 

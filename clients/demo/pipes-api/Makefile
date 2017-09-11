@@ -1,7 +1,7 @@
 .PHONY: docker-up docker-up-force .env composer-install composer-update codesniffer phpstan phpunit init test
 
 DC=docker-compose
-DE=docker-compose exec -T mapper
+DE=docker-compose exec -T pipes-api
 
 .env:
 	@if ! [ -f .env ]; then \

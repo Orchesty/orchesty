@@ -4,10 +4,13 @@ use AppBundle\AppBundle;
 use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
 use Doctrine\Bundle\MongoDBBundle\DoctrineMongoDBBundle;
 use FOS\RestBundle\FOSRestBundle;
+use Hanaboso\PipesFramework\HbPFApiGatewayBundle\HbPFApiGatewayBundle;
 use Hanaboso\PipesFramework\HbPFAuthorizationBundle\HbPFAuthorizationBundle;
 use Hanaboso\PipesFramework\HbPFCommonsBundle\HbPFCommonsBundle;
 use Hanaboso\PipesFramework\HbPFConnectorBundle\HbPFConnectorBundle;
+use Hanaboso\PipesFramework\HbPFCustomNodeBundle\HbPFCustomNodeBundle;
 use Hanaboso\PipesFramework\HbPFMailerBundle\HbPFMailerBundle;
+use Hanaboso\PipesFramework\HbPFMapperBundle\HbPFMapperBundle;
 use Hanaboso\PipesFramework\HbPFTableParserBundle\HbPFTableParserBundle;
 use Hanaboso\PipesFramework\HbPFUserBundle\HbPFUserBundle;
 use Hanaboso\PipesFramework\RabbitMqBundle\RabbitMqBundle;
@@ -41,10 +44,11 @@ class AppKernel extends Kernel
             new AppBundle(),
             new HbPFAuthorizationBundle(),
             new HbPFCommonsBundle(),
-            new RabbitMqBundle()
-            //new HbPFConnectorBundle(),
-            //new HbPFMailerBundle(),
-            //new HbPFTableParserBundle(),
+            new RabbitMqBundle(),
+            new HbPFConnectorBundle(),
+            new HbPFMapperBundle(),
+            new HbPFApiGatewayBundle(),
+            new HbPFCustomNodeBundle()
         ];
 
         if (in_array($this->getEnvironment(), ['dev', 'test'], TRUE)) {

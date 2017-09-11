@@ -85,17 +85,11 @@ class Generator implements GeneratorInterface
 
         foreach ($nodes as $node) {
 
-            $url = sprintf(
-                '%s/%s',
-                $this->hostMapper->getUrl(new TypeEnum($node->getType())),
-                $node->getName()
-            );
-
             $nodeConfig['id']                 = GeneratorUtils::normalizeName($node->getId(), $node->getName());
             $nodeConfig['worker']['type']     = 'worker.http';
             $nodeConfig['worker']['settings'] = [
                 'method' => 'POST',
-                'url'    => $url,
+                'url'    => $this->hostMapper->getUrl(new TypeEnum($node->getType()), $node->getName()),
                 'opts'   => [],
             ];
 
@@ -130,15 +124,6 @@ class Generator implements GeneratorInterface
         $counterService = $builder->build(new Node());
         $compose->addServices($counterService);
 
-        $builder          = new XmlParserServiceBuilder(
-            $this->environment,
-            $this->hostMapper,
-            self::REGISTRY,
-            $this->network
-        );
-        $xmlParserService = $builder->build(new Node());
-        $compose->addServices($xmlParserService);
-
         foreach ($nodes as $node) {
             $builder = new NodeServiceBuilder($this->environment, self::REGISTRY, $this->network);
             $compose->addServices($builder->build($node));
@@ -152,6 +137,17 @@ class Generator implements GeneratorInterface
                 );
                 $phpDevService = $builder->build($node);
                 $compose->addServices($phpDevService);
+            }
+
+            if ($node->getType() === TypeEnum::XML_PARSER) {
+                $builder          = new XmlParserServiceBuilder(
+                    $this->environment,
+                    $this->hostMapper,
+                    self::REGISTRY,
+                    $this->network
+                );
+                $xmlParserService = $builder->build(new Node());
+                $compose->addServices($xmlParserService);
             }
         }
 

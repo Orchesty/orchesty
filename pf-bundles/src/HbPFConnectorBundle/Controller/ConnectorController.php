@@ -43,19 +43,18 @@ class ConnectorController extends FOSRestController
     }
 
     /**
-     * @Route("/api/connector/{id}/topology/{token}", defaults={}, requirements={"id": "\w+", "token": "\w+"})
+     * @Route("/api/connector/{id}", defaults={}, requirements={"id": "[\w-]+"})
      * @Method({"POST", "OPTIONS"})
      *
      * @param string  $id
-     * @param string  $token
      * @param Request $request
      *
      * @return JsonResponse
      */
-    public function processEvent(string $id, string $token, Request $request): JsonResponse
+    public function processEvent(string $id, Request $request): JsonResponse
     {
         try {
-            $data = $this->handler->processEvent($id, $token, $request->request->all());
+            $data     = $this->handler->processEvent($id, $request->request->all());
             $response = new JsonResponse($data, 200);
         } catch (ConnectorException $e) {
             $response = new JsonResponse(ControllerUtils::createExceptionData($e), 500);

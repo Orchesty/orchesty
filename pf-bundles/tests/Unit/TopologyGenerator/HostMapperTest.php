@@ -55,7 +55,7 @@ class HostMapperTest extends TestCase
     public function testGetRoute(string $type, string $result): void
     {
         $hostMapper = new HostMapper();
-        $this->assertSame($result, $hostMapper->getRoute(new TypeEnum($type)));
+        $this->assertSame($result, $hostMapper->getRoute(new TypeEnum($type), '1'));
     }
 
     /**
@@ -64,9 +64,9 @@ class HostMapperTest extends TestCase
     public function getRouteProvider(): array
     {
         return [
-            [TypeEnum::XML_PARSER, 'api/parser'],
-            [TypeEnum::MAPPER, 'api/mapper'],
-            [TypeEnum::CONNECTOR, 'api/connector'],
+            [TypeEnum::XML_PARSER, 'api/parser/1'],
+            [TypeEnum::MAPPER, 'api/mapper/1'],
+            [TypeEnum::CONNECTOR, 'api/connector/1'],
         ];
     }
 
@@ -76,7 +76,7 @@ class HostMapperTest extends TestCase
     public function testGetUrl(): void
     {
         $hostMapper = new HostMapper();
-        $this->assertSame('pipes-api/api/mapper', $hostMapper->getUrl(new TypeEnum('mapper')));
+        $this->assertSame('http://pipes-api/api/mapper/1', $hostMapper->getUrl(new TypeEnum('mapper'), '1'));
     }
 
 }

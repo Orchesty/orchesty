@@ -122,7 +122,7 @@ class TopologyFixtures extends ControllerTestCaseAbstract
     {
         $this->client->request(
             'POST',
-            '/api/run/' . $topology->getId() . '/' . $nodes[0]->getId(),
+            '/api/gateway/topologies/' . $topology->getId() . '/nodes/' . $nodes[0]->getId() . '/run',
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
