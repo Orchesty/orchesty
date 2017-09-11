@@ -1,6 +1,7 @@
 stages:
   - stage1
   - stage2
+  - stage3
   - cleanup
 
 before_script:
@@ -26,11 +27,14 @@ php-dev-image:
 njs-build-image:
   stage: stage1
   script:
-    - frontend/docker/prod/build.sh ${CI_BUILD_REF_NAME}
+    - cd $REPO_ROOT/frontend/docker/build
+    - IMAGE=dkr.hanaboso.net/pipes/pipes/nodejs-build:${CI_BUILD_REF_NAME}
+    - docker build -t ${IMAGE} .
+    - docker push ${IMAGE}
   only:
     - dev
     - master
-    - docker-build
+    - ci
 
 lib-sym3-test:
   stage: stage2
@@ -44,7 +48,7 @@ lib-sym3-test:
     - make test
 
 pf-typescript-test:
-  stage: stage2
+  stage: stage3
   script:
     - DIR=pf-typescript
     - skip_unmodified $DIR
