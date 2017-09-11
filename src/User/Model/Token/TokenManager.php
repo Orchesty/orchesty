@@ -7,7 +7,6 @@ use Doctrine\ORM\EntityManager;
 use Hanaboso\PipesFramework\Acl\Enum\ResourceEnum;
 use Hanaboso\PipesFramework\HbPFAclBundle\Provider\ResourceProvider;
 use Hanaboso\PipesFramework\User\DatabaseManager\UserDatabaseManagerLocator;
-use Hanaboso\PipesFramework\User\Document\Token;
 use Hanaboso\PipesFramework\User\Entity\TokenInterface;
 use Hanaboso\PipesFramework\User\Entity\UserInterface;
 use Hanaboso\PipesFramework\User\Enum\UserTypeEnum;
@@ -72,7 +71,7 @@ class TokenManager
     public function validate(string $id): TokenInterface
     {
         /** @var EntityTokenRepository|DocumentTokenRepository $repo */
-        $repo = $this->dm->getRepository($this->provider->getResource(ResourceEnum::TOKEN));
+        $repo  = $this->dm->getRepository($this->provider->getResource(ResourceEnum::TOKEN));
         $token = $repo->getFreshToken($id);
 
         if (!$token) {
@@ -100,7 +99,8 @@ class TokenManager
      */
     private function removeExistingTokens(UserInterface $user): void
     {
-        foreach ($this->dm->getRepository(Token::class)->findBy([$user->getType() => $user]) as $token) {
+        $repo = $this->dm->getRepository($this->provider->getResource(ResourceEnum::TOKEN));
+        foreach ($repo->findBy([$user->getType() => $user]) as $token) {
             $this->dm->remove($token);
         }
     }
