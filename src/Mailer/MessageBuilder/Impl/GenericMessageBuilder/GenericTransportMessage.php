@@ -58,8 +58,13 @@ class GenericTransportMessage implements TransportMessageInterface
      * @param string      $dataContent
      * @param null|string $template
      */
-    public function __construct(string $from, string $to, string $subject, string $dataContent,
-                                ?string $template = NULL)
+    public function __construct(
+        string $from,
+        string $to,
+        string $subject,
+        string $dataContent,
+        ?string $template = NULL
+    )
     {
         $this->from        = $from;
         $this->to          = $to;

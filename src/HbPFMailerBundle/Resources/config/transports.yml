@@ -4,3 +4,5 @@ services:
         class: Hanaboso\PipesFramework\Mailer\Transport\Impl\SwiftMailerTransport
         arguments:
             - '@swiftmailer.mailer.default'
+        calls:
+            - ['setLogger', ['@monolog.logger.mailer']]
