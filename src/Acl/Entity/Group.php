@@ -47,7 +47,7 @@ class Group extends EntityAbstract implements GroupInterface
      * @var UserInterface[]|null
      *
      * @ORM\ManyToMany(targetEntity="Hanaboso\PipesFramework\User\Entity\User")
-     * @ORM\JoinColumn(name="group_id", referencedColumnName="id")
+     * @ORM\JoinColumn(name="group_id", referencedColumnName="id", nullable=true)
      * @ORM\JoinTable(name="group_owner")
      */
     protected $owner;
