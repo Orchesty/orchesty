@@ -12,6 +12,7 @@ namespace Hanaboso\PipesFramework\Mailer\Transport\Impl;
 use Hanaboso\PipesFramework\Mailer\Transport\TransportException;
 use Hanaboso\PipesFramework\Mailer\Transport\TransportInterface;
 use Hanaboso\PipesFramework\Mailer\Transport\TransportMessageInterface;
+use Psr\Log\LoggerInterface;
 use Swift_Mailer;
 use Swift_Message;
 
@@ -27,6 +28,11 @@ class SwiftMailerTransport implements TransportInterface
      * @var Swift_Mailer
      */
     protected $mailer;
+
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
 
     /**
      * SwiftMailerTransport constructor.
@@ -53,8 +59,26 @@ class SwiftMailerTransport implements TransportInterface
         $message->setBody($messageData->getContent(), $messageData->getContentType(), 'utf-8');
 
         if (!$this->mailer->send($message)) {
+            $this->logger->error(
+                sprintf(
+                    'Message send failed: subject: %s, recipient: %s, datetime: %s.',
+                    $messageData->getSubject(),
+                    $messageData->getTo(),
+                    date(DATE_ATOM)
+                )
+            );
             throw new TransportException('Message send failed.', TransportException::SEND_FAILED);
         }
+    }
+
+    /**
+     * Sets a logger instance on the object.
+     *
+     * @param LoggerInterface $logger
+     */
+    public function setLogger(LoggerInterface $logger): void
+    {
+        $this->logger = $logger;
     }
 
 }
