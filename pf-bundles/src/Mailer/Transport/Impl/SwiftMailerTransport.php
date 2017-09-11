@@ -58,17 +58,18 @@ class SwiftMailerTransport implements TransportInterface
 
         $message->setBody($messageData->getContent(), $messageData->getContentType(), 'utf-8');
 
+        $logBody = sprintf('subject: %s, recipient: %s, datetime: %s.',
+            $messageData->getSubject(),
+            $messageData->getTo(),
+            date(DATE_ATOM)
+        );
+
         if (!$this->mailer->send($message)) {
-            $this->logger->error(
-                sprintf(
-                    'Message send failed: subject: %s, recipient: %s, datetime: %s.',
-                    $messageData->getSubject(),
-                    $messageData->getTo(),
-                    date(DATE_ATOM)
-                )
-            );
+            $this->logger->error(sprintf('Message send failed: %s', $logBody));
             throw new TransportException('Message send failed.', TransportException::SEND_FAILED);
         }
+
+        $this->logger->info(sprintf('Message sent: %s', $logBody));
     }
 
     /**
