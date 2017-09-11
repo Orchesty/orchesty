@@ -55,23 +55,27 @@ class RoleFixtures implements FixtureInterface, ContainerAwareInterface
                 ->setLevel($val['level']);
             $manager->persist($group);
 
-            foreach ($val['users'] as $row) {
-                $user = new User();
-                $user
-                    ->setPassword($encoder->encodePassword($row['password'], ''))
-                    ->setEmail($row['email']);
-                $manager->persist($user);
-                $group->addUser($user);
+            if (is_array($val['users'])) {
+                foreach ($val['users'] as $row) {
+                    $user = new User();
+                    $user
+                        ->setPassword($encoder->encodePassword($row['password'], ''))
+                        ->setEmail($row['email']);
+                    $manager->persist($user);
+                    $group->addUser($user);
+                }
             }
-            foreach ($val['rules'] as $res => $rights) {
-                $rule = new Rule();
-                $rule
-                    ->setGroup($group)
-                    ->setActionMask(MaskFactory::maskActionFromYmlArray($rights))
-                    ->setResource($res)
-                    ->setPropertyMask(2);
-                $manager->persist($rule);
-                $group->addRule($rule);
+            if (is_array($val['rules'])) {
+                foreach ($val['rules'] as $res => $rights) {
+                    $rule = new Rule();
+                    $rule
+                        ->setGroup($group)
+                        ->setActionMask(MaskFactory::maskActionFromYmlArray($rights))
+                        ->setResource($res)
+                        ->setPropertyMask(2);
+                    $manager->persist($rule);
+                    $group->addRule($rule);
+                }
             }
 
         }
