@@ -17,7 +17,8 @@ RUN chmod u+s /usr/sbin/useradd && \
     chmod u+s /usr/sbin/groupadd
 
 # We dont need this any more
-RUN deluser node
+# "dialout" collides with osx default user group
+RUN deluser node && delgroup dialout
 
 # sudo for dev user
 RUN echo "dev ALL=NOPASSWD: ALL" > /etc/sudoers.d/dev
