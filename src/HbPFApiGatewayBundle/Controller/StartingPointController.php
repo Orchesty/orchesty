@@ -18,7 +18,7 @@ use Symfony\Component\HttpFoundation\Response;
 /**
  * Class StartingPointController
  *
- * @Route(service="hbpf.commons.controller.starting_point")
+ * @Route(service="hbpf.api_gateway.controller.starting_point")
  *
  * @package Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller
  */

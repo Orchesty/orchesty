@@ -73,10 +73,12 @@ class PhpDevServiceBuilder implements ServiceBuilderInterface
         $service
             ->setImage($this->registry . '/' . self::IMAGE)
             ->setUser('${DEV_UID}:${DEV_GID}')
-            ->setWorkDir('/var/www/pipes/client/demo/mapper')
+            // @todo add dynamic service path
+            ->setWorkDir('/var/www/pipes/clients/demo/pipes-api')
             ->addEnvironment(Environment::DEV_UID, $this->environment->getDevUid())
             ->addEnvironment(Environment::DEV_GID, $this->environment->getDevGid())
-            ->addVolume('../../:/var/www/pipes')
+            // @todo change path from backend dir
+            ->addVolume('../../../../:/var/www/pipes')
             ->addVolume('${SSH_AUTH_SOCK}:/ssh-agent')
             ->addNetwork($this->network);
 

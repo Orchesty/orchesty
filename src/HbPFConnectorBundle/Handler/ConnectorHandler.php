@@ -44,14 +44,12 @@ class ConnectorHandler
 
     /**
      * @param string   $id
-     * @param string   $token
      * @param string[] $data
      *
      * @return string[]
      */
-    public function processEvent(string $id, string $token, array $data): array
+    public function processEvent(string $id, array $data): array
     {
-        //@TODO: find topology by $token
         /** @var ConnectorInterface $conn */
         $conn = $this->loader->getConnector($id);
         $res  = $this->connManager->processEvent($conn, $data);

@@ -57,6 +57,8 @@ class HostMapper
                 return 'pipes-api';
             case TypeEnum::EMAIL:
                 return 'pipes-api';
+            case TypeEnum::CUSTOM:
+                return 'frontend';
             default:
                 throw new InvalidArgumentException(sprintf('Type "%s" does not exist.', $enum->getValue()));
                 break;
@@ -65,39 +67,51 @@ class HostMapper
 
     /**
      * @param TypeEnum $enum
+     * @param string   $serviceId
      *
      * @return string
-     * @throws \Exception
      */
-    public function getRoute(TypeEnum $enum): string
+    public function getRoute(TypeEnum $enum, string $serviceId): string
     {
         switch ($enum->getValue()) {
             case TypeEnum::CONNECTOR:
-                return 'api/connector';
+                $route = 'api/connector/{service_id}';
+                break;
             case TypeEnum::MAPPER:
-                return 'api/mapper';
+                $route = 'api/mapper/{service_id}';
+                break;
             case TypeEnum::XML_PARSER:
-                return 'api/parser';
+                $route = 'api/parser/{service_id}';
+                break;
             case TypeEnum::API:
-                return 'api/connector';
+                $route = 'api/connector/{service_id}';
+                break;
             case TypeEnum::FTP:
-                return 'api/connector';
+                $route = 'api/connector/{service_id}';
+                break;
             case TypeEnum::EMAIL:
-                return 'api/mailer';
+                $route = 'api/mailer/{service_id}';
+                break;
+            case TypeEnum::CUSTOM:
+                $route = 'api/custom_node/{service_id}/process';
+                break;
             default:
                 throw new InvalidArgumentException(sprintf('Type "%s" does not exist.', $enum->getValue()));
                 break;
         }
+
+        return preg_replace('/{service_id}/', $serviceId, $route);
     }
 
     /**
      * @param TypeEnum $enum
+     * @param string   $serviceId
      *
      * @return string
      */
-    public function getUrl(TypeEnum $enum): string
+    public function getUrl(TypeEnum $enum, string $serviceId): string
     {
-        return sprintf('%s/%s', $this->getHost($enum), $this->getRoute($enum));
+        return sprintf('http://%s/%s', $this->getHost($enum), $this->getRoute($enum, $serviceId));
     }
 
 }

@@ -16,6 +16,7 @@ class TypeEnum extends EnumAbstract
     public const API        = 'api';
     public const FTP        = 'ftp';
     public const EMAIL      = 'email';
+    public const CUSTOM     = 'custom';
 
     /**
      * @var string[]
@@ -27,6 +28,7 @@ class TypeEnum extends EnumAbstract
         self::API        => 'api',
         self::FTP        => 'ftp',
         self::EMAIL      => 'email',
+        self::CUSTOM     => 'custom',
     ];
 
 }

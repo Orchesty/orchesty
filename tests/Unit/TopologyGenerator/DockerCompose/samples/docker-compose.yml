@@ -28,19 +28,6 @@ services:
     networks:
       - demo_defualt
     command: './dist/src/bin/pipes.js start counter'
-  xml-parser:
-    image: 'dkr.hanaboso.net/pipes/pipes/python-xml-parser:prod'
-    environment:
-      PARSER_HOST: xml-parser
-      PARSER_PORT: '80'
-      PARSER_RELOADED: '1'
-      METRICS_HOST: metrics
-      METRICS_PORT: '5555'
-    ports:
-      - '8080:80'
-    networks:
-      - demo_defualt
-    command: ''
   1-magento2-customer:
     image: 'dkr.hanaboso.net/pipes/pipes/pf-typescript:dev'
     environment:
@@ -56,13 +43,13 @@ services:
     command: './dist/src/bin/pipes.js start node --id 1-magento2-customer'
   pipes-api:
     image: 'dkr.hanaboso.net/pipes/pipes/php-dev:dev'
-    working_dir: /var/www/pipes/client/demo/mapper
+    working_dir: /var/www/pipes/clients/demo/pipes-api
     user: '${DEV_UID}:${DEV_GID}'
     environment:
       DEV_UID: '${DEV_UID}'
       DEV_GID: '${DEV_GID}'
     volumes:
-      - '../../:/var/www/pipes'
+      - '../../../../:/var/www/pipes'
       - '${SSH_AUTH_SOCK}:/ssh-agent'
     networks:
       - demo_defualt
@@ -80,6 +67,19 @@ services:
     networks:
       - demo_defualt
     command: './dist/src/bin/pipes.js start node --id 2-xml-parser'
+  xml-parser:
+    image: 'dkr.hanaboso.net/pipes/pipes/python-xml-parser:prod'
+    environment:
+      PARSER_HOST: xml-parser
+      PARSER_PORT: '80'
+      PARSER_RELOADED: '1'
+      METRICS_HOST: metrics
+      METRICS_PORT: '5555'
+    ports:
+      - '8080:80'
+    networks:
+      - demo_defualt
+    command: ''
   3-mapper-1:
     image: 'dkr.hanaboso.net/pipes/pipes/pf-typescript:dev'
     environment:
