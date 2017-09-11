@@ -4,7 +4,7 @@ import DIContainer from "./DIContainer";
 import Node from "./node/Node";
 import {default as Configurator, INodeConfig, ITopologyConfig, ITopologyConfigSkeleton} from "./topology/Configurator";
 import Counter from "./topology/counter/Counter";
-import TopologyReadinessProbe from "./topology/TopologyReadinessProbe";
+import Probe from "./topology/Probe";
 
 class Pipes {
 
@@ -53,7 +53,7 @@ class Pipes {
      * @param {number} port
      */
     public startProbe(port?: number): Promise<void> {
-        const probe = new TopologyReadinessProbe(port);
+        const probe = new Probe(port);
 
         for (const nodeCfg of this.topology.nodes) {
             probe.addNode(nodeCfg);

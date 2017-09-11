@@ -12,7 +12,7 @@ export enum Status {
     ERROR = 503,
 }
 
-class TopologyReadinessProbe {
+class Probe {
 
     private port: number;
     private nodes: INodeConfig[];
@@ -105,4 +105,4 @@ class TopologyReadinessProbe {
 
 }
 
-export default TopologyReadinessProbe;
+export default Probe;

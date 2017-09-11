@@ -4,7 +4,7 @@ import "mocha";
 import * as express from "express";
 import * as rp from "request-promise";
 import {default as Configurator, INodeConfig} from "../../src/topology/Configurator";
-import TopologyReadinessProbe from "../../src/topology/TopologyReadinessProbe";
+import Probe from "../../src/topology/Probe";
 
 const topo = Configurator.createConfigFromSkeleton(
     {
@@ -32,9 +32,9 @@ const topo = Configurator.createConfigFromSkeleton(
     },
 );
 
-describe("TopologyReadinessProbe", () => {
-    it("nodes are not running", () => {
-        const probe = new TopologyReadinessProbe(8005);
+describe("Probe", () => {
+    it("should return that none of nodes is running", () => {
+        const probe = new Probe(8005);
         topo.nodes.forEach((node: INodeConfig) => {
              probe.addNode(node);
         });
@@ -48,7 +48,7 @@ describe("TopologyReadinessProbe", () => {
             });
     });
 
-    it("all nodes are running", () => {
+    it("should satet that all nodes are running", () => {
         // Node1 server mock
         const mock1 = express();
         mock1.get("/status", (req, resp) => {
@@ -63,7 +63,7 @@ describe("TopologyReadinessProbe", () => {
         });
         const m2server = mock2.listen(topo.nodes[1].debug.port);
 
-        const probe = new TopologyReadinessProbe(8006);
+        const probe = new Probe(8006);
         topo.nodes.forEach((node: INodeConfig) => {
             probe.addNode(node);
         });
@@ -78,7 +78,7 @@ describe("TopologyReadinessProbe", () => {
             });
     });
 
-    it("first node is prepared, but the second is not", () => {
+    it("should state that first node is prepared, but the second is not", () => {
         // Node1 server mock
         const mock1 = express();
         mock1.get("/status", (req, resp) => {
@@ -93,7 +93,7 @@ describe("TopologyReadinessProbe", () => {
         });
         const m2server = mock2.listen(topo.nodes[1].debug.port);
 
-        const probe = new TopologyReadinessProbe(8007);
+        const probe = new Probe(8007);
         topo.nodes.forEach((node: INodeConfig) => {
             probe.addNode(node);
         });
