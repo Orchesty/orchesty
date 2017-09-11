@@ -7,6 +7,11 @@ export const CLOSE_MODAL = 'CLOSE_MODAL';
 export const TOGGLE_MAIN_SUB_MENU = 'TOGGLE_MAIN_SUB_MENU';
 export const TOGGLE_MAIN_MENU = 'TOGGLE_MAIN_MENU';
 
+// Authorization
+
+export const USER_LOGGED = 'USER_LOGGED';
+export const USER_LOGOUT = 'USER_LOGOUT';
+
 // Notifications
 export const NOTIFICATION_INCREMENT_ID = 'NOTIFICATION_INCREMENT_ID';
 export const NOTIFICATION_ADD = 'NOTIFICATION_ADD';
