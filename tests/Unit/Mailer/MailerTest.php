@@ -29,8 +29,9 @@ class MailerTest extends TestCase
     public function testSend(): void
     {
         /** @var TransportInterface|PHPUnit_Framework_MockObject_MockObject $transport */
-        $transport = $this->createPartialMock(TransportInterface::class, ['send']);
+        $transport = $this->createPartialMock(TransportInterface::class, ['send', 'setLogger']);
         $transport->method('send')->willReturn(1);
+        $transport->method('setLogger')->willReturn(1);
 
         $data = [
             'from'    => 'valid@mail.com',
@@ -51,8 +52,9 @@ class MailerTest extends TestCase
     public function testSendTest(): void
     {
         /** @var TransportInterface|PHPUnit_Framework_MockObject_MockObject $transport */
-        $transport = $this->createPartialMock(TransportInterface::class, ['send']);
+        $transport = $this->createPartialMock(TransportInterface::class, ['send', 'setLogger']);
         $transport->method('send')->willReturn(1);
+        $transport->method('setLogger')->willReturn(1);
 
         $data = [
             'from'    => 'valid@mail.com',
