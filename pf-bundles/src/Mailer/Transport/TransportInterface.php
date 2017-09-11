@@ -9,12 +9,14 @@
 
 namespace Hanaboso\PipesFramework\Mailer\Transport;
 
+use Psr\Log\LoggerAwareInterface;
+
 /**
  * Interface TransportInterface
  *
  * @package Hanaboso\PipesFramework\Mailer\Transport
  */
-interface TransportInterface
+interface TransportInterface extends LoggerAwareInterface
 {
 
     /**
