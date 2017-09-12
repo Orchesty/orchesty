@@ -64,7 +64,7 @@ class HostMapperTest extends TestCase
     public function getRouteProvider(): array
     {
         return [
-            [TypeEnum::XML_PARSER, 'api/parser/1'],
+            [TypeEnum::XML_PARSER, 'api/xml-parser/1'],
             [TypeEnum::MAPPER, 'api/mapper/1'],
             [TypeEnum::CONNECTOR, 'api/connector/1'],
         ];
