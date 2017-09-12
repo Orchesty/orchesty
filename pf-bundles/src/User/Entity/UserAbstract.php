@@ -33,13 +33,6 @@ abstract class UserAbstract implements UserInterface
     protected $created;
 
     /**
-     * @var Token
-     *
-     * @ORM\OneToOne(targetEntity="Hanaboso\PipesFramework\User\Entity\User", inversedBy="user")
-     */
-    protected $token;
-
-    /**
      * UserAbstract constructor.
      */
     public function __construct()

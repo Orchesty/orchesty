@@ -17,6 +17,13 @@ class TmpUser extends UserAbstract implements TmpUserInterface
 {
 
     /**
+     * @var TokenInterface|null
+     *
+     * @ORM\OneToOne(targetEntity="Hanaboso\PipesFramework\User\Entity\Token", inversedBy="tmpUser")
+     */
+    protected $token;
+
+    /**
      * @return string
      */
     public function getType(): string
@@ -41,6 +48,26 @@ class TmpUser extends UserAbstract implements TmpUserInterface
      */
     public function setPassword(string $pwd): UserInterface
     {
+        return $this;
+    }
+
+    /**
+     * @return TokenInterface|null
+     */
+    public function getToken(): ?TokenInterface
+    {
+        return $this->token;
+    }
+
+    /**
+     * @param TokenInterface|null $token
+     *
+     * @return UserInterface
+     */
+    public function setToken(?TokenInterface $token): UserInterface
+    {
+        $this->token = $token;
+
         return $this;
     }
 
