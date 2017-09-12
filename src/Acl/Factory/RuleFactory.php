@@ -8,7 +8,6 @@ use Hanaboso\PipesFramework\Acl\Document\Rule as OdmRule;
 use Hanaboso\PipesFramework\Acl\Entity\GroupInterface;
 use Hanaboso\PipesFramework\Acl\Entity\Rule as OrmRule;
 use Hanaboso\PipesFramework\Acl\Entity\RuleInterface;
-use Hanaboso\PipesFramework\Acl\Enum\ResourceEnum;
 use Hanaboso\PipesFramework\Acl\Exception\AclException;
 use Hanaboso\PipesFramework\User\DatabaseManager\UserDatabaseManagerLocator;
 
@@ -31,14 +30,20 @@ class RuleFactory
     private $dm;
 
     /**
+     * @var mixed
+     */
+    private $resource;
+
+    /**
      * RuleFactory constructor.
      *
      * @param UserDatabaseManagerLocator $userDml
      * @param array                      $rules
+     * @param mixed                      $resEnum
      *
      * @throws AclException
      */
-    function __construct(UserDatabaseManagerLocator $userDml, array $rules)
+    function __construct(UserDatabaseManagerLocator $userDml, array $rules, $resEnum)
     {
         if (!is_array($rules) || !array_key_exists('owner', $rules)) {
             throw new AclException(
@@ -47,8 +52,9 @@ class RuleFactory
             );
         }
 
-        $this->dm    = $userDml->get();
-        $this->rules = $rules['owner'];
+        $this->dm       = $userDml->get();
+        $this->rules    = $rules['owner'];
+        $this->resource = $resEnum;
     }
 
     /**
@@ -63,13 +69,6 @@ class RuleFactory
     public static function createRule(string $resource, GroupInterface $group, int $actMask,
                                       int $propMask): RuleInterface
     {
-        if (!ResourceEnum::isValid($resource)) {
-            throw new AclException(
-                sprintf('[%s] is not a valid resource', $resource),
-                AclException::INVALID_RESOURCE
-            );
-        }
-
         if ($group->getType() === GroupInterface::TYPE_ORM) {
             $rule = new OrmRule();
         } else {
@@ -90,7 +89,8 @@ class RuleFactory
     /**
      * @param GroupInterface $group
      *
-     * @return RuleInterface[]
+     * @return array|RuleInterface[]
+     * @throws AclException
      */
     public function getDefaultRules(GroupInterface $group): array
     {
@@ -99,6 +99,13 @@ class RuleFactory
         // TODO ošetřit následnou změnu defaultních práv
         $rules = [];
         foreach ($this->rules as $key => $rule) {
+            if (!($this->resource)::isValid($key)) {
+                throw new AclException(
+                    sprintf('[%s] is not a valid resource', $key),
+                    AclException::INVALID_RESOURCE
+                );
+            }
+
             $actMask = MaskFactory::maskActionFromYmlArray($rule);
             $rule    = self::createRule($key, $group, $actMask, 1);
             $group->addRule($rule);
