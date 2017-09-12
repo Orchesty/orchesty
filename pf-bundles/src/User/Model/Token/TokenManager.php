@@ -99,8 +99,9 @@ class TokenManager
      */
     private function removeExistingTokens(UserInterface $user): void
     {
+        /** @var EntityTokenRepository|DocumentTokenRepository $repo */
         $repo = $this->dm->getRepository($this->provider->getResource(ResourceEnum::TOKEN));
-        foreach ($repo->findBy([$user->getType() => $user]) as $token) {
+        foreach ($repo->getExistingTokens($user) as $token) {
             $this->dm->remove($token);
         }
     }
