@@ -5,6 +5,8 @@ namespace Hanaboso\PipesFramework\User\Repository\Entity;
 use DateTime;
 use Doctrine\ORM\EntityRepository;
 use Hanaboso\PipesFramework\User\Entity\Token;
+use Hanaboso\PipesFramework\User\Entity\UserInterface;
+use Hanaboso\PipesFramework\User\Enum\UserTypeEnum;
 
 /**
  * Class TokenRepository
@@ -28,6 +30,21 @@ class TokenRepository extends EntityRepository
             ->setParameter('created', new DateTime('-1 day'))
             ->getQuery()
             ->getOneOrNullResult();
+    }
+
+    /**
+     * @param UserInterface $user
+     *
+     * @return array
+     */
+    public function getExistingTokens(UserInterface $user): array
+    {
+        return $this->createQueryBuilder('t')
+            ->join($user->getType() === UserTypeEnum::USER ? 't.user' : 't.tmpUser', 'u')
+            ->where('u.id = :id')
+            ->setParameter('id', $user->getId())
+            ->getQuery()
+            ->getArrayResult();
     }
 
 }
