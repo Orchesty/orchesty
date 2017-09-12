@@ -28,7 +28,7 @@ services:
         environment:
           DEV_UID: ${DEV_UID}
           DEV_GID: ${DEV_GID}
-          PHP_WEBROOT: /var/www/pipes/clients/demo/mapper/web
+          PHP_WEBROOT: /var/www/pipes/clients/demo/pipes-api/web
         ports:
           - ${DEV_IP}:80:80
           #- ${DEV_IP}:81:8080
