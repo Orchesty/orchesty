@@ -59,7 +59,9 @@ class TopologyHandler
         $sort       = UriParams::parseOrderBy($orderBy);
         $topologies = $this->topologyRepository->findBy([], $sort, $limit, $offset);
 
-        $data = [];
+        $data = [
+            'items' => []
+        ];
         foreach ($topologies as $topology) {
             $data['items'][] = $this->getTopologyData($topology);
         }
