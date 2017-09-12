@@ -90,10 +90,9 @@ services:
           - ${DEV_IP}:8083:8083
           - ${DEV_IP}:8086:8086
           - ${DEV_IP}:8089/udp:8089/udp
-          - ${DEV_IP}:25826/udp:25826/udp
-          - ${DEV_IP}:2003:2003
         volumes:
           - ./.docker-volumes/influxdb-data:/var/lib/influxdb
+          - ./influxdb.conf:/etc/influxdb/influxdb.conf
 
     # Fake Services
     mailhog:
