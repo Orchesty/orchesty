@@ -22,7 +22,7 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * @package Hanaboso\PipesFramework\HbPFCustomNodeBundle\Controller
  *
- * @Route(service="hbpf.controller.custom_node")
+ * @Route(service="hbpf.custom.custom_node")
  */
 class CustomNodeController extends FOSRestController
 {
@@ -33,7 +33,7 @@ class CustomNodeController extends FOSRestController
     private $handler;
 
     /**
-     * JoinerController constructor.
+     * CustomNodeController constructor.
      *
      * @param CustomNodeHandler $handler
      */
