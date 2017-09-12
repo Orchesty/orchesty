@@ -81,7 +81,7 @@ class HostMapper
                 $route = 'api/mapper/{service_id}';
                 break;
             case TypeEnum::XML_PARSER:
-                $route = 'api/parser/{service_id}';
+                $route = 'api/xml-parser/{service_id}';
                 break;
             case TypeEnum::API:
                 $route = 'api/connector/{service_id}';
