@@ -1,10 +1,8 @@
 import { Channel } from "amqplib";
 import logger from "lib-nodejs/dist/src/logger/Logger";
 import Connection from "lib-nodejs/dist/src/rabbitmq/Connection";
-import { DrainOpenFn } from "../drain/IDrain";
-import { WorkerProcessFn } from "../worker/IWorker";
 import Consumer from "./amqp/AMQPConsumer";
-import IFaucet from "./IFaucet";
+import IFaucet, {FaucetProcessMsgFn} from "./IFaucet";
 
 export interface IAmqpFaucetSettings {
     exchange: {
@@ -43,7 +41,7 @@ class AmqpFaucet implements IFaucet {
     /**
      * Creates channel and starts messages consumption.
      */
-    public open(processData: WorkerProcessFn, drain: DrainOpenFn): Promise<void> {
+    public open(processData: FaucetProcessMsgFn): Promise<void> {
 
         logger.info(`Preparing amqp faucet to read from "${this.settings.queue.name}"`);
 
@@ -70,7 +68,7 @@ class AmqpFaucet implements IFaucet {
             });
         };
 
-        this.consumer = new Consumer(this.connection, prepareFn, processData, drain);
+        this.consumer = new Consumer(this.connection, prepareFn, processData);
 
         return this.consumer.consume(this.settings.queue.name, {})
             .then(() => {

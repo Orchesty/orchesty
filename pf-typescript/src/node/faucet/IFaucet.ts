@@ -1,7 +1,7 @@
-import { DrainOpenFn } from "../drain/IDrain";
-import { WorkerProcessFn } from "../worker/IWorker";
+import JobMessage from "../../message/JobMessage";
 
-export type FaucetOpenFn = (processData: WorkerProcessFn, drain: DrainOpenFn) => Promise<void>;
+export type FaucetProcessMsgFn = (msgIn: JobMessage) => Promise<JobMessage>;
+export type FaucetOpenFn = (processMsgFn: FaucetProcessMsgFn) => Promise<void>;
 
 interface IFaucet {
 

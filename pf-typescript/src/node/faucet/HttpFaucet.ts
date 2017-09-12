@@ -2,9 +2,7 @@ import * as bodyParser from "body-parser";
 import * as express from "express";
 import logger from "lib-nodejs/dist/src/logger/Logger";
 import JobMessage from "../../message/JobMessage";
-import { DrainOpenFn } from "../drain/IDrain";
-import { WorkerProcessFn } from "../worker/IWorker";
-import IFaucet from "./IFaucet";
+import IFaucet, {FaucetProcessMsgFn} from "./IFaucet";
 
 export interface IValidHttpRequest {
     headers: {
@@ -36,16 +34,15 @@ class HttpFaucet implements IFaucet {
 
     /**
      *
-     * @param {WorkerProcessFn} processFn
-     * @param {DrainOpenFn} drainFn
+     * @param {FaucetProcessMsgFn} processFn
      * @return {Promise<void>}
      */
-    public open(processFn: WorkerProcessFn, drainFn: DrainOpenFn): Promise<void> {
+    public open(processFn: FaucetProcessMsgFn): Promise<void> {
         const app = express();
         app.use(bodyParser.json());
 
         app.post(this.path, (req: any, resp: any) => {
-            this.handleRequest(req, processFn, drainFn)
+            this.handleRequest(req, processFn)
                 .then(() => {
                     resp.sendStatus(200);
                 })
@@ -66,11 +63,10 @@ class HttpFaucet implements IFaucet {
     /**
      *
      * @param {IValidHttpRequest} req
-     * @param {WorkerProcessFn} processData
-     * @param {DrainOpenFn} drain
+     * @param {FaucetProcessMsgFn} processData
      * @return {Promise<void>}
      */
-    private handleRequest(req: IValidHttpRequest, processData: WorkerProcessFn, drain: DrainOpenFn): Promise<void> {
+    private handleRequest(req: IValidHttpRequest, processData: FaucetProcessMsgFn): Promise<JobMessage> {
         let inMsg: JobMessage;
 
         try {
@@ -81,11 +77,7 @@ class HttpFaucet implements IFaucet {
             return Promise.reject(err);
         }
 
-        return processData(inMsg)
-            .then((outMsg: JobMessage) => {
-                // Yes, ignore drain promise, do not wait till the end of it
-                drain(outMsg);
-            });
+        return processData(inMsg);
     }
 
 }
