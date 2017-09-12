@@ -24,8 +24,8 @@ composer-update-dev:
 	$(DE_DEV) app composer update --ignore-platform-reqs
 
 init-prod: .env
-	$(DC_DEV) up -d --force-recreate
-	$(DE_DEV) app composer install --no-dev --optimize-autoloader --ignore-platform-reqs
+	$(DC_PROD) up -d --force-recreate
+	$(DE_PROD) app composer install --no-dev --optimize-autoloader --ignore-platform-reqs
 
 generate:
 	curl -X POST -H content-type=application/json http://127.0.0.66/api/gateway/test/topology/generate
