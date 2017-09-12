@@ -12,5 +12,5 @@ export const amqpConnectionOptions: IOptions = {
 export const metricsOptions = {
     measurement: process.env.METRICS_MEASUREMENT || "pipes_node",
     server: process.env.METRICS_HOST || "influxdb",
-    port: parseInt(process.env.METRICS_PORT, 10) || 8086,
+    port: parseInt(process.env.METRICS_PORT, 10) || 8089,
 };
