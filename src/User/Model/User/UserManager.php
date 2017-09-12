@@ -182,7 +182,8 @@ class UserManager
         $token = $this->tokenManager->validate($id);
         $token
             ->getUserOrTmpUser()
-            ->setPassword($this->encoder->encodePassword($data['password'], ''));
+            ->setPassword($this->encoder->encodePassword($data['password'], ''))
+            ->setToken(NULL);
 
         $this->dm->remove($token);
         $this->dm->flush();

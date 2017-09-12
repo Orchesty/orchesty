@@ -33,9 +33,9 @@ abstract class UserAbstract implements UserInterface
     protected $created;
 
     /**
-     * @var Token
+     * @var TokenInterface|null
      *
-     * @ORM\OneToOne(targetEntity="Hanaboso\PipesFramework\User\Entity\User", inversedBy="user")
+     * @ORM\OneToOne(targetEntity="Hanaboso\PipesFramework\User\Entity\Token", inversedBy="user")
      */
     protected $token;
 
@@ -73,6 +73,26 @@ abstract class UserAbstract implements UserInterface
     public function getCreated(): DateTime
     {
         return $this->created;
+    }
+
+    /**
+     * @return TokenInterface|null
+     */
+    public function getToken(): ?TokenInterface
+    {
+        return $this->token;
+    }
+
+    /**
+     * @param TokenInterface|null $token
+     *
+     * @return UserInterface
+     */
+    public function setToken(?TokenInterface $token): UserInterface
+    {
+        $this->token = $token;
+
+        return $this;
     }
 
     /**

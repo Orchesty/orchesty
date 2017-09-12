@@ -6,6 +6,7 @@ use DateTime;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Exception;
 use Hanaboso\PipesFramework\Commons\Traits\Document\IdTrait;
+use Hanaboso\PipesFramework\User\Entity\TokenInterface;
 use Hanaboso\PipesFramework\User\Entity\UserInterface;
 
 /**
@@ -32,6 +33,13 @@ abstract class UserAbstract implements UserInterface
      * @ODM\Field(type="date")
      */
     protected $created;
+
+    /**
+     * @var TokenInterface|null
+     *
+     * @ODM\ReferenceOne(targetDocument="Hanaboso\PipesFramework\User\Document\Token")
+     */
+    protected $token;
 
     /**
      * UserAbstract constructor.
@@ -67,6 +75,26 @@ abstract class UserAbstract implements UserInterface
     public function getCreated(): DateTime
     {
         return $this->created;
+    }
+
+    /**
+     * @return TokenInterface|null
+     */
+    public function getToken(): ?TokenInterface
+    {
+        return $this->token;
+    }
+
+    /**
+     * @param TokenInterface|null $token
+     *
+     * @return UserInterface
+     */
+    public function setToken(?TokenInterface $token): UserInterface
+    {
+        $this->token = $token;
+
+        return $this;
     }
 
     /**
