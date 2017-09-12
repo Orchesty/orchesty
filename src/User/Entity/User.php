@@ -21,9 +21,16 @@ class User extends UserAbstract
     use DeletedTrait;
 
     /**
-     * @var string
+     * @var TokenInterface|null
      *
-     * @ORM\Column(type="string")
+     * @ORM\OneToOne(targetEntity="Hanaboso\PipesFramework\User\Entity\Token", inversedBy="user")
+     */
+    protected $token;
+
+    /**
+     * @var string|null
+     *
+     * @ORM\Column(type="string", nullable=true)
      */
     private $password;
 
@@ -56,9 +63,9 @@ class User extends UserAbstract
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getPassword(): string
+    public function getPassword(): ?string
     {
         return $this->password;
     }
@@ -91,6 +98,26 @@ class User extends UserAbstract
     public function setUpdated(DateTime $updated): UserInterface
     {
         $this->updated = $updated;
+
+        return $this;
+    }
+
+    /**
+     * @return TokenInterface|null
+     */
+    public function getToken(): ?TokenInterface
+    {
+        return $this->token;
+    }
+
+    /**
+     * @param TokenInterface|null $token
+     *
+     * @return UserInterface
+     */
+    public function setToken(?TokenInterface $token): UserInterface
+    {
+        $this->token = $token;
 
         return $this;
     }
