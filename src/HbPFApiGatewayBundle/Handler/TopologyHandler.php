@@ -60,7 +60,7 @@ class TopologyHandler
         $topologies = $this->topologyRepository->findBy([], $sort, $limit, $offset);
 
         $data = [
-            'items' => []
+            'items' => [],
         ];
         foreach ($topologies as $topology) {
             $data['items'][] = $this->getTopologyData($topology);
@@ -68,7 +68,7 @@ class TopologyHandler
 
         $data['total']  = $this->topologyRepository->getTotalCount();
         $data['limit']  = $limit;
-        $data['count']  = count($data['items']);
+        $data['count']  = count($topologies);
         $data['offset'] = $offset;
 
         return $data;
