@@ -76,7 +76,7 @@ class SecurityManager
         $this->tokenStorage   = $tokenStorage;
         $this->session        = $session;
         $this->sessionName    = self::SECURITY_KEY . self::SECURED_AREA;
-        $this->provider = $provider;
+        $this->provider       = $provider;
     }
 
     /**
@@ -95,7 +95,10 @@ class SecurityManager
         }
 
         /** @var UserInterface $user */
-        $user = $this->userRepository->findOneBy(['email' => $data['email']]);
+        $user = $this->userRepository->findOneBy([
+            'email'   => $data['email'],
+            'deleted' => FALSE,
+        ]);
 
         if (!$user) {
             throw new SecurityManagerException(

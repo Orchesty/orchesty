@@ -41,15 +41,27 @@ interface UserInterface extends SecurityCoreUserInterface
     public function getCreated(): DateTime;
 
     /**
-     * @return array
-     */
-    public function toArray(): array;
-
-    /**
      * @param string $pwd
      *
      * @return UserInterface
      */
     public function setPassword(string $pwd): UserInterface;
+
+    /**
+     * @return TokenInterface|null
+     */
+    public function getToken(): ?TokenInterface;
+
+    /**
+     * @param TokenInterface|null $token
+     *
+     * @return UserInterface
+     */
+    public function setToken(?TokenInterface $token): UserInterface;
+
+    /**
+     * @return array
+     */
+    public function toArray(): array;
 
 }
