@@ -3,6 +3,7 @@ import * as request from "request";
 import JobMessage from "../../message/JobMessage";
 import { ResultCode } from "../../message/ResultCode";
 import AHttpWorker from "./http/AHttpWorker";
+import IWorker from "./IWorker";
 
 export interface IHttpWorkerSettings {
     method: string;
@@ -10,7 +11,7 @@ export interface IHttpWorkerSettings {
     opts: any;
 }
 
-class HttpWorker extends AHttpWorker {
+class HttpWorker extends AHttpWorker implements IWorker {
 
     private opts: {};
 
@@ -24,11 +25,11 @@ class HttpWorker extends AHttpWorker {
      * @param {JobMessage} msg
      * @return {Promise<JobMessage>}
      */
-    public processData(msg: JobMessage): Promise<JobMessage> {
+    public processData(msg: JobMessage): Promise<JobMessage[]> {
         const reqParams = this.getHttpRequestParams(msg);
 
         return new Promise((resolve) => {
-
+            const output: JobMessage[] = [];
             Object.assign(reqParams, this.opts);
 
             logger.info(`HttpWorker "${reqParams.method}" request to: ${reqParams.url} [id=${msg.getUuid()}]`);
@@ -38,11 +39,7 @@ class HttpWorker extends AHttpWorker {
                 if (err) {
                     logger.error(`HttpWorker response[id=${msg.getUuid()}], Error: ${err}`);
                     msg.setResult({ status: ResultCode.HTTP_ERROR, message: err });
-
-                    return resolve(msg);
-                }
-
-                if (!response.statusCode || response.statusCode !== 200) {
+                } else if (!response.statusCode || response.statusCode !== 200) {
                     logger.error(`HttpWorker response[id=${msg.getUuid()}], Status code ${response.statusCode}`);
                     msg.setResult(
                         {
@@ -50,15 +47,16 @@ class HttpWorker extends AHttpWorker {
                             message: `Http response with code ${response.statusCode} received`,
                         },
                     );
-                    return resolve(msg);
+                } else {
+                    logger.info(`HttpWorker response[id=${msg.getUuid()}] received.`);
+
+                    msg.setResult({ status: ResultCode.SUCCESS, message: "Http worker OK." });
+                    msg.setContent(JSON.stringify(body));
                 }
 
-                logger.info(`HttpWorker response[id=${msg.getUuid()}] received.`);
+                output.push(msg);
 
-                msg.setResult({ status: ResultCode.SUCCESS, message: "Http worker OK." });
-                msg.setContent(JSON.stringify(body));
-
-                return resolve(msg);
+                return resolve(output);
             });
         });
     }

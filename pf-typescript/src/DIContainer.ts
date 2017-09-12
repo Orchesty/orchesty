@@ -10,6 +10,7 @@ import AppenderWorker, {IAppenderWorkerSettings} from "./node/worker/AppenderWor
 import HttpWorker, {IHttpWorkerSettings} from "./node/worker/HttpWorker";
 import NullWorker from "./node/worker/NullWorker";
 import UppercaseWorker from "./node/worker/UppercaseWorker";
+import SplitterWorker from "./node/worker/SplitterWorker";
 
 class DIContainer extends Container {
 
@@ -52,6 +53,9 @@ class DIContainer extends Container {
         });
         this.set("worker.null", (settings: {}) => {
             return new NullWorker();
+        });
+        this.set("worker.splitter", (settings: {}) => {
+            return new SplitterWorker();
         });
         this.set("worker.uppercase", (settings: {}) => {
             return new UppercaseWorker();

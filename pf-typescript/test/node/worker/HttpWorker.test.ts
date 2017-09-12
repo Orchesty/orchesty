@@ -28,9 +28,9 @@ describe("HttpWorker", () => {
             opts : {},
         });
         return worker.processData(msg)
-            .then((outMsg: JobMessage) => {
-                assert.equal(outMsg.getResult().status, ResultCode.SUCCESS);
-                assert.equal(outMsg.getContent(), JSON.stringify({ val: "modified" }));
+            .then((outMsgs: JobMessage[]) => {
+                assert.equal(outMsgs[0].getResult().status, ResultCode.SUCCESS);
+                assert.equal(outMsgs[0].getContent(), JSON.stringify({ val: "modified" }));
             });
     });
 
@@ -42,9 +42,9 @@ describe("HttpWorker", () => {
             opts : {},
         });
         return worker.processData(msg)
-            .then((outMsg: JobMessage) => {
-                assert.equal(outMsg.getResult().status, ResultCode.HTTP_ERROR);
-                assert.equal(outMsg.getContent(), JSON.stringify({ val: "original" }));
+            .then((outMsgs: JobMessage[]) => {
+                assert.equal(outMsgs[0].getResult().status, ResultCode.HTTP_ERROR);
+                assert.equal(outMsgs[0].getContent(), JSON.stringify({ val: "original" }));
             });
     });
 
@@ -56,9 +56,9 @@ describe("HttpWorker", () => {
             opts : {},
         });
         return worker.processData(msg)
-            .then((outMsg: JobMessage) => {
-                assert.equal(outMsg.getResult().status, ResultCode.HTTP_ERROR);
-                assert.equal(outMsg.getContent(), JSON.stringify({ val: "original" }));
+            .then((outMsgs: JobMessage[]) => {
+                assert.equal(outMsgs[0].getResult().status, ResultCode.HTTP_ERROR);
+                assert.equal(outMsgs[0].getContent(), JSON.stringify({ val: "original" }));
             });
     });
 

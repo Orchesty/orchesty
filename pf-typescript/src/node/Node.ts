@@ -90,19 +90,34 @@ class Node {
     public open(): Promise<void> {
         this.nodeStatus = NODE_STATUS.READY;
 
-        const processFn = (msgIn: JobMessage) => {
+        const processFn = (msgIn: JobMessage): Promise<JobMessage[]> => {
             logger.info(`Node[id=${this.id}] received message[id=${msgIn.getUuid()}].`);
 
             return this.worker.processData(msgIn)
-                .then((msgOut: JobMessage) => {
-                    this.sendProcessDurationMetric(msgOut);
+                .then((msgsOut: JobMessage[]) => {
+                    const proms: Array<Promise<JobMessage>> = [];
+                    msgsOut.forEach((msgOut: JobMessage) => {
+                        this.sendProcessDurationMetric(msgOut);
 
-                    return this.drain.forward(msgOut);
+                        proms.push(this.drain.forward(msgOut));
+                    });
+
+                    return Promise.all(proms);
                 })
-                .then((forwarded: JobMessage) => {
-                    this.sendTotalDurationMetric(forwarded);
+                .then((forwarded: JobMessage[]) => {
+                    forwarded.forEach((msgOut: JobMessage) => {
+                        this.sendTotalDurationMetric(msgOut);
+                    });
 
                     return forwarded;
+                })
+                .catch((err: any) => {
+                    // This should never happen.
+                    logger.error(`Node processFn error: ${err}`);
+                    const out: JobMessage[] = [];
+                    out.push(msgIn);
+
+                    return out;
                 });
         };
 
