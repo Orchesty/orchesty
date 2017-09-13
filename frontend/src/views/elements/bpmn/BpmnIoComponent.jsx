@@ -2,17 +2,12 @@ import React from 'react'
 import PropTypes from 'prop-types';
 import ReactDOM from 'react-dom';
 
-import BpmnModeler from 'bpmn-js/lib/Modeler';
-import PropertiesPanelModule from 'bpmn-js-properties-panel';
-import PropertiesProviderModule from 'bpmn-js-properties-panel/lib/provider/camunda';
-
-import download from '../../../utils/download';
-
-import CamundaModdleDescriptor from 'camunda-bpmn-moddle/resources/camunda.json';
-
 import 'diagram-js/assets/diagram-js.css';
 import 'bpmn-js/assets/bpmn-font/css/bpmn-embedded.css';
 import './BpmnIoComponent.less';
+
+import CustomBPMNModeler from './custom-modeler';
+import download from '../../../utils/download';
 
 class BpmnIoComponent extends React.Component {
   constructor(props){
@@ -109,7 +104,7 @@ class BpmnIoComponent extends React.Component {
     const parent = ReactDOM.findDOMNode(this);
     parent.childNodes[2].click();
   }
-  
+
   openBPMN(data){
     this._modeler.importXML(data.content, err => {
       if (err) {
@@ -134,20 +129,11 @@ class BpmnIoComponent extends React.Component {
   }
 
   componentDidMount() {
-//    window.addEventListener('resize', this._onWindowResize);
-//    this.calculateHeight();
     const parent = ReactDOM.findDOMNode(this);
-    this._modeler = new BpmnModeler({
+    this._modeler = new CustomBPMNModeler({
       propertiesPanel: {
         parent: parent.childNodes[1]
       },
-      additionalModules: [
-        PropertiesPanelModule,
-        PropertiesProviderModule
-      ],
-      moddleExtensions: {
-        camunda: CamundaModdleDescriptor
-      }
     });
     this._modeler.attachTo(parent.childNodes[0]);
     this.loadXML();
