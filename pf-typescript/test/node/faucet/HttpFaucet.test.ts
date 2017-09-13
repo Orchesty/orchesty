@@ -16,7 +16,7 @@ describe("HttpFaucet", () => {
 
         const processFn: FaucetProcessMsgFn = (msg: JobMessage) => {
             check(msg);
-            return Promise.resolve([msg]);
+            return Promise.resolve(msg);
         };
 
         return faucet.open(processFn)
@@ -41,7 +41,7 @@ describe("HttpFaucet", () => {
         const faucet = new HttpFaucet({port: 6039});
 
         const processFn: FaucetProcessMsgFn = (msg: JobMessage) => {
-            return Promise.resolve([msg]);
+            return Promise.resolve(msg);
         };
 
         return faucet.open(processFn)

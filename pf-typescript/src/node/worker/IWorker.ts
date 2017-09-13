@@ -1,6 +1,6 @@
 import JobMessage from "../../message/JobMessage";
 
-export type WorkerProcessFn = (msg: JobMessage) => Promise<JobMessage[]>;
+export type WorkerProcessFn = (msg: JobMessage) => Promise<JobMessage>;
 
 interface IWorker {
 

@@ -57,7 +57,8 @@ class AmqpDrain extends ADrain implements IDrain {
      */
     public forward(message: JobMessage): Promise<JobMessage> {
         return new Promise((resolve) => {
-            this.getMessageBuffer(message).forEach((bufMsg: JobMessage) => {
+            const buffered = this.getMessageBuffer(message);
+            buffered.forEach((bufMsg: JobMessage) => {
                 this.counterPublisher.send(bufMsg)
                     .then(() => {
                         return this.followersPublisher.send(bufMsg);

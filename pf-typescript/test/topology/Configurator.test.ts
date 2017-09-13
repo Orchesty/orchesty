@@ -127,7 +127,7 @@ const expectedTopo: ITopologyConfig = {
                         options: {},
                         type: "direct",
                     },
-                    prefetch: 1,
+                    prefetch: 10000,
                     queue: {
                         name: "pipes.test-topo.node_b",
                         options: {},

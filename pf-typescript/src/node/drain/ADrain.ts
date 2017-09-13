@@ -6,8 +6,8 @@ abstract class ADrain implements IDrain {
 
     protected resequencer: Resequencer;
 
-    constructor(enabledResequencer: boolean = false) {
-        this.resequencer = enabledResequencer ? new Resequencer() : null;
+    constructor(enableResequencer: boolean = false) {
+        this.resequencer = enableResequencer ? new Resequencer() : null;
     }
 
     /**

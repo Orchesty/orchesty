@@ -10,48 +10,75 @@ interface IJsonMessageFormat {
 
 class SplitterWorker implements IWorker {
 
-    public processData(msg: JobMessage): Promise<JobMessage[]> {
-        const output: JobMessage[] = [];
+    public processData(msg: JobMessage): Promise<JobMessage> {
 
         try {
             const content: IJsonMessageFormat = JSON.parse(msg.getContent());
 
-            if (content.data && Array.isArray(content.data) && content.data.length > 0) {
-                let i: number = 1;
-                content.data.forEach((item) => {
-                    const splitContent: IJsonMessageFormat = {
-                        data: item,
-                        settings: content.settings,
-                    };
-                    const splitMsg = new JobMessage(
-                        msg.getJobId(),
-                        i,
-                        msg.getHeaders(),
-                        JSON.stringify(splitContent),
-                        { status: ResultCode.SUCCESS, message: "Message split successfully."},
-                    );
-                    splitMsg.setReceivedTime(msg.getReceivedTime());
-
-                    output.push(splitMsg);
-                    i++;
-                });
+            if (!content.data || !content.settings) {
+                throw new Error("Cannot split content, data and/or settings key is missing.");
             }
 
+            if (!Array.isArray(content.data) || content.data.length < 1) {
+                throw new Error("Cannot split content. data is not array or is empty.");
+            }
+
+            msg = this.split(msg, content);
+
+            logger.info(
+                `Worker[type"splitter"] split message[id="${msg.getUuid()}]" \
+                resultStatus="${msg.getResult().status}" resultMessage="${msg.getResult().message}"]`,
+            );
+
+            return Promise.resolve(msg);
+
         } catch (err) {
-            output.splice(0, output.length);
             msg.setResult({
                 status: ResultCode.INVALID_MESSAGE_CONTENT_FORMAT,
-                message: `Invalid message content format. Error: ${err}`,
+                message: `Invalid message content format that cannot be split. Error: ${err}`,
             });
-            output.push(msg);
+
+            logger.warn(`Worker[type="splitter"] could not split message. Err: ${msg.getResult().message}`);
+
+            return Promise.resolve(msg);
         }
+    }
 
-        logger.info(
-            `Worker[type"splitter"] processed message[id="${msg.getUuid()}]" \
-            resultStatus="${msg.getResult().status}" resultMessage="${msg.getResult().message}"]`,
-        );
+    /**
+     *
+     * @param {JobMessage} msg
+     * @param {IJsonMessageFormat} content
+     * @return {JobMessage}
+     */
+    private split(msg: JobMessage, content: IJsonMessageFormat): JobMessage {
+        const splitSet: JobMessage[] = [];
+        let i: number = 1;
 
-        return Promise.resolve(output);
+        content.data.forEach((item: any) => {
+            const splitContent: IJsonMessageFormat = {
+                data: item,
+                settings: content.settings,
+            };
+            const splitMsg = new JobMessage(
+                msg.getJobId(),
+                i,
+                JSON.parse(JSON.stringify(msg.getHeaders())), // simple object cloning
+                JSON.stringify(splitContent),
+                { status: ResultCode.SUCCESS, message: `Split ${i}/${content.data.length}.`},
+            );
+            splitMsg.setReceivedTime(msg.getReceivedTime());
+
+            splitSet.push(splitMsg);
+            i++;
+        });
+
+        msg.setSplit(splitSet);
+        msg.setResult({
+            status: ResultCode.SUCCESS,
+            message: `Message split into ${splitSet.length} parts was successful.`,
+        });
+
+        return msg;
     }
 
 }

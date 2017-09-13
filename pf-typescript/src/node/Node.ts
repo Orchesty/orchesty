@@ -90,35 +90,25 @@ class Node {
     public open(): Promise<void> {
         this.nodeStatus = NODE_STATUS.READY;
 
-        const processFn = (msgIn: JobMessage): Promise<JobMessage[]> => {
+        const processFn = (msgIn: JobMessage): Promise<JobMessage> => {
             logger.info(`Node[id=${this.id}] received message[id=${msgIn.getUuid()}].`);
 
             return this.worker.processData(msgIn)
-                .then((msgsOut: JobMessage[]) => {
-                    const proms: Array<Promise<JobMessage>> = [];
-                    msgsOut.forEach((msgOut: JobMessage) => {
-                        this.sendProcessDurationMetric(msgOut);
+                .then((msgOut: JobMessage) => {
+                    this.sendProcessDurationMetric(msgOut);
 
-                        // Forward to following nodes
-                        proms.push(this.drain.forward(msgOut));
-                    });
-
-                    return Promise.all(proms);
+                    return this.drain.forward(msgOut);
                 })
-                .then((forwarded: JobMessage[]) => {
-                    forwarded.forEach((msgOut: JobMessage) => {
-                        this.sendTotalDurationMetric(msgOut);
-                    });
+                .then((forwarded: JobMessage) => {
+                    this.sendTotalDurationMetric(forwarded);
 
                     return forwarded;
                 })
                 .catch((err: any) => {
                     // This should never happen.
                     logger.error(`Node processFn error: ${err}`);
-                    const out: JobMessage[] = [];
-                    out.push(msgIn);
 
-                    return out;
+                    return msgIn;
                 });
         };
 
@@ -134,7 +124,7 @@ class Node {
      */
     private sendProcessDurationMetric(msg: JobMessage): void {
         logger.info(
-            `Node[id=${this.id}] received processed message[id="${msg.getUuid()}", \
+            `Node[id=${this.id}] processed message[id="${msg.getUuid()}", \
             status="${msg.getResult().status}", info="${msg.getResult().message}". \
             process_duration="${msg.getProcessDuration()}"].`,
         );
