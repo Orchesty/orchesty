@@ -9,15 +9,63 @@ import Publisher from "lib-nodejs/dist/src/rabbitmq/Publisher";
 import SimpleConsumer from "lib-nodejs/dist/src/rabbitmq/SimpleConsumer";
 import * as config from "../src/config";
 import {ResultCode} from "../src/message/ResultCode";
+import {ITopologyConfigSkeleton} from "../src/topology/Configurator";
 import {ICounterJobInfo} from "../src/topology/counter/Counter";
 import Pipes from "./../src/Pipes";
-import { testTopology } from "./topology";
+
+const testTopology: ITopologyConfigSkeleton = {
+    name: "linear-topo",
+    nodes: [
+        {
+            id: "first",
+            resequencer: true,
+            debug: {
+                port: 4001,
+                host: "localhost",
+                url: "http://localhost:4001/status",
+            },
+            next: ["second"],
+        },
+        {
+            id: "second",
+            resequencer: true,
+            worker: {
+                type: "worker.http",
+                settings: {
+                    method: "post",
+                    url: "http://localhost:3000/httpworker1/",
+                    opts: {},
+                },
+            },
+            debug: {
+                port: 4002,
+                host: "localhost",
+                url: "http://localhost:4002/status",
+            },
+            next: ["third"],
+        },
+        {
+            id: "third",
+            resequencer: true,
+            worker: {
+                type: "worker.uppercase",
+                settings: {},
+            },
+            debug: {
+                port: 4003,
+                host: "localhost",
+                url: "http://localhost:4003/status",
+            },
+            next: [],
+        },
+    ],
+};
 
 const amqpConn = new Connection(config.amqpConnectionOptions);
-const firstQueue = "pipes.test-topo.first";
+const firstQueue = `pipes.${testTopology.name}.${testTopology.nodes[0].id}`;
 
-describe("Topology overall test", () => {
-    it("will start all nodes", (done) => {
+describe("Linear Topology test", () => {
+    it("complete flow of messages till the end", (done) => {
         const msgTestContent = { val: "test content" };
         const msgHeaders = { headers: { job_id: "test", sequence_id: 1 } };
 
@@ -35,15 +83,15 @@ describe("Topology overall test", () => {
 
         Promise.all([
             pip.startCounter(),
-            pip.startNode("first"),
-            pip.startNode("second"),
-            pip.startNode("third"),
+            pip.startNode(testTopology.nodes[0].id),
+            pip.startNode(testTopology.nodes[1].id),
+            pip.startNode(testTopology.nodes[2].id),
         ])
         .then(() => {
-            // Prepare consumer of counter output
+            // Prepares consumer of counter output
             // Prepares function for evaluation of test end
             const counterResultQueue = {
-                name: "counter-result",
+                name: "linear-topology-counter-result",
                 options: {},
             };
             const resultConsumer = new SimpleConsumer(
@@ -78,7 +126,10 @@ describe("Topology overall test", () => {
                         assert.equal(info.resultCode, ResultCode.SUCCESS);
                         trace.push(info.node);
                     });
-                    assert.deepEqual(trace, ["first", "second", "third"]);
+                    assert.deepEqual(
+                        trace,
+                        [testTopology.nodes[0].id, testTopology.nodes[1].id, testTopology.nodes[2].id],
+                    );
                     done();
                 },
             );

@@ -34,8 +34,8 @@ class Resequencer {
         const buf = this.getBuffer(msg.getJobId());
 
         if (msg.getSequenceId() < buf.waitingFor) {
-            let warn = `Resequencer has already processed sequenceId ${msg.getSequenceId()} of job ${msg.getJobId()}`;
-            warn += "This is possible message duplicate and will be ignored.";
+            let warn = `Resequencer has already processed seqId ${msg.getSequenceId()} of job "${msg.getJobId()}."`;
+            warn += " This is possible message duplicate and will be ignored.";
             logger.warn(warn);
             return [];
         }

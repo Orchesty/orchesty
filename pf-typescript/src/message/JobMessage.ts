@@ -20,6 +20,8 @@ class JobMessage implements IMessage {
     private processedTime: number;
     private publishedTime: number;
 
+    private split: JobMessage[];
+
     /**
      *
      * @param {string} jobId
@@ -42,13 +44,15 @@ class JobMessage implements IMessage {
             throw new Error("Invalid sequenceId.");
         }
 
+        this.msgUuid = `${jobId}-${sequenceId}-${uuid()}`;
         this.receivedTime = TimeUtils.nowMili();
+
+        delete headers.job_id;
+        delete headers.sequence_id;
         this.headers = headers;
-        this.addHeader("job_id", jobId);
-        this.addHeader("sequence_id", `${sequenceId}`);
         this.content = content;
 
-        this.msgUuid = `${jobId}-${sequenceId}-${uuid()}`;
+        this.split = [this];
     }
 
     /**
@@ -89,7 +93,11 @@ class JobMessage implements IMessage {
      * @return {*}
      */
     public getHeaders(): { [key: string]: string } {
-        return this.headers;
+        const h = this.headers;
+        h.job_id = this.getJobId();
+        h.sequence_id = `${this.getSequenceId()}`;
+
+        return h;
     }
 
     /**
@@ -142,6 +150,20 @@ class JobMessage implements IMessage {
     }
 
     /**
+     * Sets timestamp when message was received to node
+     */
+    public setReceivedTime(timestamp: number): void {
+        this.receivedTime = timestamp;
+    }
+
+    /**
+     * @return {number}
+     */
+    public getReceivedTime(): number {
+        return this.receivedTime;
+    }
+
+    /**
      * Marks the message as published
      */
     public setPublishedTime(): void {
@@ -174,6 +196,23 @@ class JobMessage implements IMessage {
         return 0;
     }
 
+    /**
+     * Allows to change the list of messages that should be forwarded to following nodes
+     *
+     * @param {JobMessage[]} messages
+     */
+    public setSplit(messages: JobMessage[]) {
+        this.split = messages;
+    }
+
+
+    /**
+     * Returns the list of messages that should be forwarded to followers
+     * @return {JobMessage[]}
+     */
+    public getSplit(): JobMessage[] {
+        return this.split;
+    }
 }
 
 export default JobMessage;

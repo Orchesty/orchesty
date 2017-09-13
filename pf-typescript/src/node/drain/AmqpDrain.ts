@@ -55,21 +55,22 @@ class AmqpDrain extends ADrain implements IDrain {
      *
      * @param {JobMessage} message
      */
-    public open(message: JobMessage): Promise<boolean> {
+    public forward(message: JobMessage): Promise<JobMessage> {
         return new Promise((resolve) => {
-            this.getMessageBuffer(message).forEach((bufMsg: JobMessage) => {
+            const buffered = this.getMessageBuffer(message);
+            buffered.forEach((bufMsg: JobMessage) => {
                 this.counterPublisher.send(bufMsg)
                     .then(() => {
                         return this.followersPublisher.send(bufMsg);
                     })
                     .then(() => {
                         bufMsg.setPublishedTime();
-                        resolve(true);
+                        resolve(bufMsg);
                     })
                     .catch((err: Error) => {
-                        logger.error(`Amqp drain open error: ${err.message}`);
+                        logger.error(`Drain could not forward message[id=${bufMsg.getUuid()}]: ${err.message}`);
 
-                        resolve(false);
+                        resolve(bufMsg);
                     });
             });
         });

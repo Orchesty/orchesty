@@ -3,6 +3,7 @@ import * as request from "request";
 import JobMessage from "../../message/JobMessage";
 import { ResultCode } from "../../message/ResultCode";
 import AHttpWorker from "./http/AHttpWorker";
+import IWorker from "./IWorker";
 
 export interface IHttpWorkerSettings {
     method: string;
@@ -10,7 +11,7 @@ export interface IHttpWorkerSettings {
     opts: any;
 }
 
-class HttpWorker extends AHttpWorker {
+class HttpWorker extends AHttpWorker implements IWorker {
 
     private opts: {};
 
@@ -28,7 +29,6 @@ class HttpWorker extends AHttpWorker {
         const reqParams = this.getHttpRequestParams(msg);
 
         return new Promise((resolve) => {
-
             Object.assign(reqParams, this.opts);
 
             logger.info(`HttpWorker "${reqParams.method}" request to: ${reqParams.url} [id=${msg.getUuid()}]`);
@@ -50,10 +50,12 @@ class HttpWorker extends AHttpWorker {
                             message: `Http response with code ${response.statusCode} received`,
                         },
                     );
+
                     return resolve(msg);
                 }
 
-                logger.info(`HttpWorker response[id=${msg.getUuid()}] received.`);
+                // Everything OK
+                logger.info(`HttpWorker valid response[id=${msg.getUuid()}] received.`);
 
                 msg.setResult({ status: ResultCode.SUCCESS, message: "Http worker OK." });
                 msg.setContent(JSON.stringify(body));

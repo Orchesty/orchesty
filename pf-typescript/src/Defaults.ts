@@ -48,7 +48,7 @@ class Defaults {
         const settings: IAmqpFaucetSettings = {
             exchange: { name: `pipes.${topoName}.events`, type: "direct", options: {} },
             queue: { name: `pipes.${topoName}.${node.id}`, options: {} },
-            prefetch: 1,
+            prefetch: 10000,
             dead_letter_exchange: { name: "pipes.dead-letter", type: "direct", options: {} },
             routing_key: `${topoName}.${node.id}`,
         };

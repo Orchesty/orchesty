@@ -34,7 +34,7 @@ const settings: IAmqpDrainSettings = {
 };
 
 describe("AmqpDrain", () => {
-    it("should forward to counter and followers on open", () => {
+    it("should forward to followers and send message to counter", () => {
         const counterPub: CounterPublisher = mock.mock(CounterPublisher);
         counterPub.send = (jm: JobMessage) => Promise.resolve();
         const followPub: FollowersPublisher = mock.mock(FollowersPublisher);
@@ -45,9 +45,9 @@ describe("AmqpDrain", () => {
             "123", 1, {}, JSON.stringify({data: "test", settings: {}}),
         );
 
-        return drain.open(msg)
-            .then((result: boolean) => {
-                assert.isTrue(result);
+        return drain.forward(msg)
+            .then((result: JobMessage) => {
+                assert.instanceOf(result, JobMessage);
             });
     });
 });

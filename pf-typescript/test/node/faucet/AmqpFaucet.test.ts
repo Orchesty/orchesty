@@ -7,6 +7,7 @@ import Publisher from "lib-nodejs/dist/src/rabbitmq/Publisher";
 import {amqpConnectionOptions} from "../../../src/config";
 import JobMessage from "../../../src/message/JobMessage";
 import {default as AmqpFaucet, IAmqpFaucetSettings} from "../../../src/node/faucet/AmqpFaucet";
+import {FaucetProcessMsgFn} from "../../../src/node/faucet/IFaucet";
 
 const settings: IAmqpFaucetSettings = {
     exchange: {
@@ -39,17 +40,12 @@ describe("AmqpFaucet", () => {
         };
         const faucet = new AmqpFaucet(settings, conn);
 
-        const workerFn = (msg: JobMessage) => {
+        const processFn: FaucetProcessMsgFn = (msg: JobMessage) => {
             check(msg);
             return Promise.resolve(msg);
         };
 
-        const drainFn = (msg: JobMessage) => {
-            check(msg);
-            return Promise.resolve(true);
-        };
-
-        return faucet.open(workerFn, drainFn)
+        return faucet.open(processFn)
             .then(() => {
                 // send message to exchange via which it should be routed to amqpFaucet's input queue
                 return publisher.publish(

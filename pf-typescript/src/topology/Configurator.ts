@@ -101,13 +101,18 @@ class Configurator {
     ): INodeConfig {
         const defNode: INodeConfig = Defaults.getNodeConfigDefaults(topoName, nodeSkeleton);
 
+        const isResequencer = nodeSkeleton.resequencer || defNode.resequencer;
+
+        const drainSettings = nodeSkeleton.drain || defNode.drain;
+        drainSettings.settings.resequencer = isResequencer;
+
         return {
             id: nodeSkeleton.id,
             next: nodeSkeleton.next,
             worker: nodeSkeleton.worker || defNode.worker,
             faucet: nodeSkeleton.faucet || defNode.faucet,
-            drain: nodeSkeleton.drain || defNode.drain,
-            resequencer: nodeSkeleton.resequencer || defNode.resequencer,
+            drain: drainSettings,
+            resequencer: isResequencer,
             debug: nodeSkeleton.debug || defNode.debug,
             initial: isInitial,
         };

@@ -1,10 +1,10 @@
 import JobMessage from "../../message/JobMessage";
 
-export type DrainOpenFn = (msg: JobMessage) => Promise<boolean>;
+export type DrainForwardFn = (msg: JobMessage) => Promise<JobMessage>;
 
 interface IDrain {
 
-    open: DrainOpenFn;
+    forward: DrainForwardFn;
 
     getMessageBuffer(message: JobMessage): JobMessage[];
 

@@ -1,4 +1,4 @@
-import JobMessage, {IResult} from "../../../message/JobMessage";
+import JobMessage from "../../../message/JobMessage";
 
 export interface IHttpWorkerRequestParams {
     method: string;

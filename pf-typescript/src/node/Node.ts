@@ -90,27 +90,32 @@ class Node {
     public open(): Promise<void> {
         this.nodeStatus = NODE_STATUS.READY;
 
-        return this.faucet.open(
-            (msgIn: JobMessage) => {
-                logger.info(`Node[id=${this.id}] received message[id=${msgIn.getUuid()}].`);
-                return this.worker.processData(msgIn)
-                    .then((msgOut: JobMessage) => {
-                        this.sendProcessDurationMetric(msgOut);
+        const processFn = (msgIn: JobMessage): Promise<JobMessage> => {
+            logger.info(`Node[id=${this.id}] received message[id=${msgIn.getUuid()}].`);
 
-                        return msgOut;
-                    });
-            },
-            (msgOut: JobMessage) => {
-                return this.drain.open(msgOut)
-                    .then((forwarded) => {
-                        this.sendTotalDurationMetric(msgOut);
+            return this.worker.processData(msgIn)
+                .then((msgOut: JobMessage) => {
+                    this.sendProcessDurationMetric(msgOut);
 
-                        return forwarded;
-                    });
-            },
-        ).then(() => {
-            logger.info(`Node ${this.id} has been opened.`);
-        });
+                    return this.drain.forward(msgOut);
+                })
+                .then((forwarded: JobMessage) => {
+                    this.sendTotalDurationMetric(forwarded);
+
+                    return forwarded;
+                })
+                .catch((err: any) => {
+                    // This should never happen.
+                    logger.error(`Node processFn error: ${err}`);
+
+                    return msgIn;
+                });
+        };
+
+        return this.faucet.open(processFn)
+            .then(() => {
+                logger.info(`Node[id=${this.id}] faucet has been opened.`);
+            });
     }
 
     /**
@@ -119,15 +124,12 @@ class Node {
      */
     private sendProcessDurationMetric(msg: JobMessage): void {
         logger.info(
-            `Node[id=${this.id}] received processed message[id="${msg.getUuid()}", \
+            `Node[id=${this.id}] processed message[id="${msg.getUuid()}", \
             status="${msg.getResult().status}", info="${msg.getResult().message}". \
             process_duration="${msg.getProcessDuration()}"].`,
         );
 
         this.metrics.send({node_process_duration: msg.getProcessDuration()})
-            .then(() => {
-                // logger.debug(`metric sent: ${JSON.stringify({node_process_duration: msg.getProcessDuration()})}`);
-            })
             .catch((err) => {
                 logger.warn(err);
             });
@@ -139,9 +141,6 @@ class Node {
      */
     private sendTotalDurationMetric(msg: JobMessage): void {
         this.metrics.send({node_total_duration: msg.getTotalDuration()})
-            .then(() => {
-                // logger.debug(`metric sent: ${JSON.stringify({node_total_duration: msg.getTotalDuration()})}`);
-            })
             .catch((err) => {
                 logger.warn(err);
             });

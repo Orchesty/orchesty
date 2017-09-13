@@ -47,7 +47,7 @@ class CounterPublisher extends Publisher {
             message.getResult().status, // 0 OK, >0 NOK
             message.getResult().message,
             this.settings.followers.length,
-            1, // TODO - unhardcode 1 if the node is of type "splitter"
+            message.getSplit().length,
         );
 
         const opts: Options.Publish = {

@@ -4,6 +4,7 @@ import "mocha";
 import * as rp from "request-promise";
 import JobMessage from "../../../src/message/JobMessage";
 import HttpFaucet from "../../../src/node/faucet/HttpFaucet";
+import {FaucetProcessMsgFn} from "../../../src/node/faucet/IFaucet";
 
 describe("HttpFaucet", () => {
     it("should handle http request", () => {
@@ -13,17 +14,12 @@ describe("HttpFaucet", () => {
         };
         const faucet = new HttpFaucet({port: 6038});
 
-        const workerFn = (msg: JobMessage) => {
+        const processFn: FaucetProcessMsgFn = (msg: JobMessage) => {
             check(msg);
             return Promise.resolve(msg);
         };
 
-        const drainFn = (msg: JobMessage) => {
-            check(msg);
-            return Promise.resolve(true);
-        };
-
-        return faucet.open(workerFn, drainFn)
+        return faucet.open(processFn)
             .then(() => {
                 const options = {
                     method: "post",
@@ -44,15 +40,11 @@ describe("HttpFaucet", () => {
     it("should respond with 500 error on missing headers", () => {
         const faucet = new HttpFaucet({port: 6039});
 
-        const workerFn = (msg: JobMessage) => {
+        const processFn: FaucetProcessMsgFn = (msg: JobMessage) => {
             return Promise.resolve(msg);
         };
 
-        const drainFn = (msg: JobMessage) => {
-            return Promise.resolve(true);
-        };
-
-        return faucet.open(workerFn, drainFn)
+        return faucet.open(processFn)
             .then(() => {
                 const options = {
                     method: "post",
