@@ -4,6 +4,7 @@ namespace Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller;
 
 use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Controller\FOSRestController;
+use Hanaboso\PipesFramework\ApiGateway\Exception\TopologyException as GatewayTopologyException;
 use Hanaboso\PipesFramework\Commons\Exception\TopologyException;
 use Hanaboso\PipesFramework\HbPFApiGatewayBundle\Handler\TopologyHandler;
 use Hanaboso\PipesFramework\Utils\ControllerUtils;
@@ -152,6 +153,8 @@ class TopologyController extends FOSRestController
             ));
         } catch (TopologyException $e) {
             return new JsonResponse(ControllerUtils::createExceptionData($e), 500);
+        } catch (GatewayTopologyException $e) {
+            return new JsonResponse(ControllerUtils::createExceptionData($e), 400);
         }
     }
 
