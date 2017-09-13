@@ -255,9 +255,10 @@ export default class Counter {
     private onJobFinished(job: ICounterJobInfo): void {
         const e = this.settings.pub.exchange;
         const rKey = this.settings.pub.routing_key;
-        this.publisher.publish(e.name, rKey, new Buffer(JSON.stringify(job)), {});
-
-        logger.info("Counter message sent", JSON.stringify(job));
+        this.publisher.publish(e.name, rKey, new Buffer(JSON.stringify(job)), {})
+            .then(() => {
+                logger.info(`Counter job[id="${job.id}"] finished`);
+            });
     }
 
 }

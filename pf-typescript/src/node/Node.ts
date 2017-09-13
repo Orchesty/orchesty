@@ -1,7 +1,7 @@
 import * as express from "express";
-import logger from "lib-nodejs/dist/src/logger/Logger";
 import Metrics from "lib-nodejs/dist/src/metrics/Metrics";
 import {metricsOptions} from "../config";
+import logger from "../logger/Logger";
 import JobMessage from "../message/JobMessage";
 import IDrain from "./drain/IDrain";
 import IFaucet from "./faucet/IFaucet";
@@ -10,7 +10,6 @@ import IWorker from "./worker/IWorker";
 export enum NODE_STATUS {
     READY = 200,
     UNPREPARED = 503, // Service Unavailable
-    ERROR = 500, // Internal Server Error
 }
 
 const ROUTE_STATUS = "/status";
