@@ -24,7 +24,7 @@ final class NodeControllerTest extends ControllerTestCaseAbstract
 
         $this->prepareNodeHandlerMock('getNodes', $returnValue);
 
-        $this->client->request('GET', '/api/gateway/topologies/abc123/events', [], [], []);
+        $this->client->request('GET', '/api/gateway/topologies/abc123/nodes', [], [], []);
 
         /** @var JsonResponse $response */
         $response = $this->client->getResponse();

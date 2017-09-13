@@ -36,7 +36,7 @@ class NodeController extends FOSRestController
     }
 
     /**
-     * @Route("/topologies/{id}/events", defaults={}, requirements={"id": "\w+"})
+     * @Route("/topologies/{id}/nodes", defaults={}, requirements={"id": "\w+"})
      * @Method({"GET", "OPTIONS"})
      *
      * @param string $id
