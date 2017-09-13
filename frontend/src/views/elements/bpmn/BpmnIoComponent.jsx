@@ -6,6 +6,8 @@ import 'diagram-js/assets/diagram-js.css';
 import 'bpmn-js/assets/bpmn-font/css/bpmn-embedded.css';
 import './BpmnIoComponent.less';
 
+import emptySchema from './empty-schema.bpmn';
+
 import CustomBPMNModeler from './custom-modeler';
 import download from '../../../utils/download';
 
@@ -56,7 +58,9 @@ class BpmnIoComponent extends React.Component {
   }
 
   loadXML() {
-    this._modeler.importXML(this.props.schema, err => {
+    const schema = this.props.schema ? this.props.schema : emptySchema;
+    console.log(emptySchema);
+    this._modeler.importXML(schema, err => {
       err && this.props.onError(String(err));
     });
   }
