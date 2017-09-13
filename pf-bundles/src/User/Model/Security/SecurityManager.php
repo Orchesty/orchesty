@@ -88,10 +88,7 @@ class SecurityManager
     public function login(array $data): UserInterface
     {
         if ($this->isLoggedIn()) {
-            /** @var UserInterface $user */
-            $user = $this->userRepository->find($this->session->get($this->sessionName));
-
-            return $user;
+            return $this->getUserFromSession();
         }
 
         /** @var UserInterface $user */
@@ -161,6 +158,14 @@ class SecurityManager
 
         }
 
+        return $this->getUserFromSession();
+    }
+
+    /**
+     * @return UserInterface
+     */
+    private function getUserFromSession(): UserInterface
+    {
         /** @var Token $token */
         $token = unserialize($this->session->get($this->sessionName));
 

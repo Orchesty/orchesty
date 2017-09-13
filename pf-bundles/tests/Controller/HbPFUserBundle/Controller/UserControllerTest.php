@@ -49,6 +49,11 @@ class UserControllerTest extends ControllerTestCaseAbstract
             'password' => 'passw0rd',
         ]);
 
+        $response = $this->sendPost('/api/user/login', [
+            'email'    => $user->getEmail(),
+            'password' => 'passw0rd',
+        ]);
+
         $this->assertEquals(200, $response->status);
         $this->assertEquals($user->getEmail(), $response->content->email);
         $this->assertEquals($user->getPassword(), $response->content->password);
