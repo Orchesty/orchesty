@@ -45,8 +45,9 @@ class RoleFixtures implements FixtureInterface, ContainerAwareInterface
         }
 
         /** @var PasswordEncoderInterface $encoder */
-        $encoder = $this->container->get('security.encoder_factory')->getEncoder(User::class);
-        $rules   = $this->container->getParameter('acl_rule')['fixture_groups'];
+        $encoder    = $this->container->get('security.encoder_factory')->getEncoder(User::class);
+        $rules      = $this->container->getParameter('acl_rule')['fixture_groups'];
+        $ownerRules = $this->container->getParameter('acl_rule')['owner'];
 
         foreach ($rules as $key => $val) {
             $group = new Group(NULL);
@@ -67,20 +68,36 @@ class RoleFixtures implements FixtureInterface, ContainerAwareInterface
             }
             if (is_array($val['rules'])) {
                 foreach ($val['rules'] as $res => $rights) {
-                    $rule = new Rule();
-                    $rule
-                        ->setGroup($group)
-                        ->setActionMask(MaskFactory::maskActionFromYmlArray($rights))
-                        ->setResource($res)
-                        ->setPropertyMask(2);
-                    $manager->persist($rule);
-                    $group->addRule($rule);
+                    $this->createRule($manager, $group, $rights, $res);
+                }
+            }
+            if (is_array($ownerRules)) {
+                foreach ($ownerRules as $res => $rights) {
+                    $this->createRule($manager, $group, $rights, $res);
                 }
             }
 
         }
 
         $manager->flush();
+    }
+
+    /**
+     * @param ObjectManager $manager
+     * @param Group         $group
+     * @param array         $rights
+     * @param string        $res
+     */
+    private function createRule(ObjectManager $manager, Group $group, array $rights, string $res): void
+    {
+        $rule = new Rule();
+        $rule
+            ->setGroup($group)
+            ->setActionMask(MaskFactory::maskActionFromYmlArray($rights))
+            ->setResource($res)
+            ->setPropertyMask(2);
+        $manager->persist($rule);
+        $group->addRule($rule);
     }
 
 }
