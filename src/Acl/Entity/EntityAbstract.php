@@ -26,7 +26,9 @@ abstract class EntityAbstract
      */
     function __construct(?UserInterface $owner)
     {
-        $this->owner[0] = $owner;
+        if (!is_null($owner)) {
+            $this->owner[0] = $owner;
+        }
     }
 
     /**
@@ -34,6 +36,10 @@ abstract class EntityAbstract
      */
     public function getOwner(): ?UserInterface
     {
+        if (is_null($this->owner)) {
+            return NULL;
+        }
+
         return $this->owner[0];
     }
 
@@ -44,7 +50,11 @@ abstract class EntityAbstract
      */
     public function setOwner(?UserInterface $owner): ?EntityAbstract
     {
-        $this->owner[0] = $owner;
+        if (is_null($owner)) {
+            $this->owner = NULL;
+        } else {
+            $this->owner[0] = $owner;
+        }
 
         return $this;
     }
