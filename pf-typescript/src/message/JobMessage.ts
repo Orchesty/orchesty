@@ -142,6 +142,20 @@ class JobMessage implements IMessage {
     }
 
     /**
+     * Sets timestamp when message was received to node
+     */
+    public setReceivedTime(timestamp: number): void {
+        this.receivedTime = timestamp;
+    }
+
+    /**
+     * @return {number}
+     */
+    public getReceivedTime(): number {
+        return this.receivedTime;
+    }
+
+    /**
      * Marks the message as published
      */
     public setPublishedTime(): void {

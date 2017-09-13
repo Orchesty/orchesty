@@ -66,7 +66,7 @@ class HttpFaucet implements IFaucet {
      * @param {FaucetProcessMsgFn} processData
      * @return {Promise<void>}
      */
-    private handleRequest(req: IValidHttpRequest, processData: FaucetProcessMsgFn): Promise<JobMessage> {
+    private handleRequest(req: IValidHttpRequest, processData: FaucetProcessMsgFn): Promise<JobMessage[]> {
         let inMsg: JobMessage;
 
         try {

@@ -99,6 +99,7 @@ class Node {
                     msgsOut.forEach((msgOut: JobMessage) => {
                         this.sendProcessDurationMetric(msgOut);
 
+                        // Forward to following nodes
                         proms.push(this.drain.forward(msgOut));
                     });
 

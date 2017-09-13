@@ -9,8 +9,8 @@ import {default as HttpFaucet, IHttpFaucetSettings} from "./node/faucet/HttpFauc
 import AppenderWorker, {IAppenderWorkerSettings} from "./node/worker/AppenderWorker";
 import HttpWorker, {IHttpWorkerSettings} from "./node/worker/HttpWorker";
 import NullWorker from "./node/worker/NullWorker";
-import UppercaseWorker from "./node/worker/UppercaseWorker";
 import SplitterWorker from "./node/worker/SplitterWorker";
+import UppercaseWorker from "./node/worker/UppercaseWorker";
 
 class DIContainer extends Container {
 
