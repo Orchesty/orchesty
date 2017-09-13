@@ -1,0 +1,24 @@
+{
+  "name": "Pipes",
+  "prefix": "pipes",
+  "uri": "http://www.omg.org/spec/Pipes/20100524/MODEL",
+  "xml": {
+    "tagAlias": "lowerCase"
+  },
+  "associations": [],
+  "types": [
+    {
+      "name": "PipesParameters",
+      "extends": [
+        "bpmn:BaseElement"
+      ],
+      "properties": [
+        {
+          "name": "pipesType",
+          "isAttr": true,
+          "type": "String"
+        }
+      ]
+    }
+  ]
+}
