@@ -3,7 +3,6 @@
 namespace Hanaboso\PipesFramework\Commons\Node;
 
 use Doctrine\ODM\MongoDB\DocumentRepository;
-use Hanaboso\PipesFramework\Commons\Enum\HandlerEnum;
 
 /**
  * Class NodeRepository
@@ -20,12 +19,13 @@ class NodeRepository extends DocumentRepository
      */
     public function getEventNodesByTopology(string $topologyId): array
     {
-        $criteria = [
-            'topology' => $topologyId,
-            'handler'  => HandlerEnum::EVENT,
-        ];
-
-        return $this->findBy($criteria);
+        return $this->createQueryBuilder()
+            ->field('topology')
+            ->equals($topologyId)
+            ->field('type')
+            ->notIn(NodeReduction::$typeExclude)
+            ->getQuery()
+            ->toArray();
     }
 
 }
