@@ -8,9 +8,11 @@ use Hanaboso\PipesFramework\Commons\DatabaseManager\DatabaseManagerLocator;
 use Hanaboso\PipesFramework\Commons\Enum\HandlerEnum;
 use Hanaboso\PipesFramework\Commons\Enum\TopologyStatusEnum;
 use Hanaboso\PipesFramework\Commons\Enum\TypeEnum;
+use Hanaboso\PipesFramework\Commons\Exception\EnumException;
 use Hanaboso\PipesFramework\Commons\Node\Document\Embed\EmbedNode;
 use Hanaboso\PipesFramework\Commons\Node\Document\Node;
 use Hanaboso\PipesFramework\Commons\Topology\Document\Topology;
+use Nette\Utils\Arrays;
 use Nette\Utils\Strings;
 
 /**
@@ -168,17 +170,31 @@ class TopologyManager
             /** @var EmbedNode[] $embedNodes */
             $embedNodes = [];
 
-            foreach ($data['bpmn:process'] as $key => $process) {
-                if (in_array($key, ['bpmn:startEvent', 'bpmn:task', 'bpmn:endEvent'], TRUE)) {
-                    $node = (new Node())
-                        ->setName($process['@name'])
-                        ->setType(TypeEnum::CONNECTOR)//TODO: Currently not part of XML, change it later...
-                        ->setTopology($topology->getId())
-                        ->setHandler(Strings::endsWith($key, 'Event') ? HandlerEnum::EVENT : HandlerEnum::ACTION);
-
-                    $this->dm->persist($node);
-                    $nodes[$process['@id']]      = $node;
-                    $embedNodes[$process['@id']] = EmbedNode::from($node);
+            foreach ($data['bpmn:process'] as $handler => $process) {
+                if (in_array($handler, ['bpmn:startEvent', 'bpmn:task', 'bpmn:event', 'bpmn:endEvent'], TRUE)) {
+                    if (!Arrays::isList($process)) {
+                        $this->createNode(
+                            $topology,
+                            $process['@id'],
+                            $handler,
+                            $process['@name'],
+                            $process['@pipes:pipesType'],
+                            $nodes,
+                            $embedNodes
+                        );
+                    } else {
+                        foreach ($process as $innerProcess) {
+                            $this->createNode(
+                                $topology,
+                                $innerProcess['@id'],
+                                $handler,
+                                $innerProcess['@name'],
+                                $innerProcess['@pipes:pipesType'],
+                                $nodes,
+                                $embedNodes
+                            );
+                        }
+                    }
                 }
             }
 
@@ -190,6 +206,64 @@ class TopologyManager
                 }
             }
         }
+    }
+
+    /**
+     * @param Topology    $topology
+     * @param string      $id
+     * @param string      $handler
+     * @param string|null $name
+     * @param string|null $type
+     * @param array       $nodes
+     * @param array       $embedNodes
+     *
+     * @return Node
+     * @throws TopologyException
+     */
+    private function createNode(
+        Topology $topology,
+        string $id,
+        string $handler,
+        ?string $name = NULL,
+        ?string $type = NULL,
+        array &$nodes,
+        array &$embedNodes
+    ): Node
+    {
+        if (!$name) {
+            throw new TopologyException(
+                sprintf('Node [%s] name not found', $id),
+                TopologyException::TOPOLOGY_NODE_NAME_NOT_FOUND
+            );
+        }
+
+        if (!$type) {
+            throw new TopologyException(
+                sprintf('Node [%s] type not found', $id),
+                TopologyException::TOPOLOGY_NODE_TYPE_NOT_FOUND
+            );
+        }
+
+        try {
+            $type = (new TypeEnum($type))->getValue();
+        } catch (EnumException $e) {
+            throw new TopologyException(
+                sprintf('Node [%s] type [%s] not exist', $id, $type),
+                TopologyException::TOPOLOGY_NODE_TYPE_NOT_EXIST
+            );
+        }
+
+        $node = (new Node())
+            ->setName($name)
+            ->setType($type)
+            ->setTopology($topology->getId())
+            ->setHandler(Strings::endsWith($handler, 'vent') ? HandlerEnum::EVENT : HandlerEnum::ACTION);
+        $this->dm->persist($node);
+
+        $nodes[$id]      = $node;
+        $embedNodes[$id] = EmbedNode::from($node);
+
+        return $node;
     }
 
     /**

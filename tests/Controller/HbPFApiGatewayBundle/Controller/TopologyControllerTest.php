@@ -222,6 +222,102 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers TopologyController::saveTopologySchemaAction()
+     */
+    public function testSaveTopologySchemaNameNotFound(): void
+    {
+        $topology = (new Topology())
+            ->setName('Topology')
+            ->setDescr('Topology')
+            ->setEnabled(TRUE);
+        $this->persistAndFlush($topology);
+
+        $this->client->request(
+            'PUT',
+            sprintf('/api/gateway/topologies/%s/schema.bpmn', $topology->getId()),
+            [],
+            [],
+            [
+                'CONTENT_TYPE' => 'application/xml',
+                'ACCEPT'       => 'application/xml',
+            ],
+            str_replace('name="Start Event"', '', $this->getBpmn())
+        );
+
+        $response = $this->client->getResponse();
+        $response = (object) [
+            'status'  => $response->getStatusCode(),
+            'content' => Json::decode($response->getContent()),
+        ];
+
+        self::assertEquals(400, $response->status);
+    }
+
+    /**
+     * @covers TopologyController::saveTopologySchemaAction()
+     */
+    public function testSaveTopologySchemaTypeNotFound(): void
+    {
+        $topology = (new Topology())
+            ->setName('Topology')
+            ->setDescr('Topology')
+            ->setEnabled(TRUE);
+        $this->persistAndFlush($topology);
+
+        $this->client->request(
+            'PUT',
+            sprintf('/api/gateway/topologies/%s/schema.bpmn', $topology->getId()),
+            [],
+            [],
+            [
+                'CONTENT_TYPE' => 'application/xml',
+                'ACCEPT'       => 'application/xml',
+            ],
+            str_replace('pipes:pipesType="custom"', '', $this->getBpmn())
+        );
+
+        $response = $this->client->getResponse();
+        $response = (object) [
+            'status'  => $response->getStatusCode(),
+            'content' => Json::decode($response->getContent()),
+        ];
+
+        self::assertEquals(400, $response->status);
+    }
+
+    /**
+     * @covers TopologyController::saveTopologySchemaAction()
+     */
+    public function testSaveTopologySchemaTypeNotExist(): void
+    {
+        $topology = (new Topology())
+            ->setName('Topology')
+            ->setDescr('Topology')
+            ->setEnabled(TRUE);
+        $this->persistAndFlush($topology);
+
+        $this->client->request(
+            'PUT',
+            sprintf('/api/gateway/topologies/%s/schema.bpmn', $topology->getId()),
+            [],
+            [],
+            [
+                'CONTENT_TYPE' => 'application/xml',
+                'ACCEPT'       => 'application/xml',
+            ],
+            str_replace('pipes:pipesType="custom"', 'pipes:pipesType="Unknown"', $this->getBpmn())
+        );
+
+        $response = $this->client->getResponse();
+        $response = (object) [
+            'status'  => $response->getStatusCode(),
+            'content' => Json::decode($response->getContent()),
+        ];
+
+        self::assertEquals(400, $response->status);
+    }
+
+    /**
+     * @covers TopologyController::saveTopologySchemaAction()
      * @covers TopologyController::getTopologySchemaAction()
      */
     public function testSaveAndGetTopologySchema(): void
