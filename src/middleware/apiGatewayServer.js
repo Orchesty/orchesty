@@ -8,7 +8,7 @@ function check(dispatch, response) {
   } else {
     response.json()
       .then(errorData => {
-        dispatch(notificationActions.addNotification('error', `Error in server request: ${errorData.code} - ${errorData.msg}`));
+        dispatch(notificationActions.addNotification('error', `Error in server request: ${errorData.error_code} - ${errorData.message}`));
       })
       .catch(parserError => {
         dispatch(notificationActions.addNotification('error', `Error in server request: ${response.status} - ${response.statusText}`));
@@ -72,7 +72,8 @@ export default (dispatch, method, relUrl, queries, data) => {
 
   return fetch(makeUrl(relUrl, queries), options)
     .then(check.bind(null, dispatch))
-    .then(response => response ? response.json() : undefined)
+    .then(response => response ? response.text() : undefined)
+    .then(textResponse => textResponse === undefined ? textResponse : (textResponse ? JSON.parse(textResponse) : true))
     .catch(error => {
       dispatch(notificationActions.addNotification('error', `Error in server request: ${error}`));
       return undefined;
