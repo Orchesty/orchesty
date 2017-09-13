@@ -125,7 +125,7 @@ export function loadTopologySchema(id, force = false){
   return (dispatch, getState) => {
     if (force || !getState().topology.schemas[id]){
       return rawRequest(dispatch, 'GET', `/topologies/${id}/schema.bpmn`).then( response => {
-        if (response){
+        if (response !== undefined){
           dispatch(receiveSchema(id, response === true ? null : response));
         }
         return response;
