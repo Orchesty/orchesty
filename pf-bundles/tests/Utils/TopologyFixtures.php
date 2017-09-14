@@ -9,9 +9,9 @@
 namespace Tests\Utils;
 
 use Hanaboso\PipesFramework\Commons\Enum\TypeEnum;
-use Hanaboso\PipesFramework\Commons\Node\Document\Embed\EmbedNode;
-use Hanaboso\PipesFramework\Commons\Node\Document\Node;
-use Hanaboso\PipesFramework\Commons\Topology\Document\Topology;
+use Hanaboso\PipesFramework\Configurator\Document\Embed\EmbedNode;
+use Hanaboso\PipesFramework\Configurator\Document\Node;
+use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\GeneratorFactory;
 use Tests\ControllerTestCaseAbstract;
 

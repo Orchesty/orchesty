@@ -1,11 +1,11 @@
 parameters:
     acl_res:
         resources:
-#        Add new resources to ResourceEnum class
+            # Add new resources to ResourceEnum class
             group: Hanaboso\PipesFramework\Acl\Document\Group
             user: Hanaboso\PipesFramework\User\Document\User
             tmp_user: Hanaboso\PipesFramework\User\Document\TmpUser
             token: Hanaboso\PipesFramework\User\Document\Token
-            topology: Hanaboso\PipesFramework\Commons\Topology\Document\Topology
-            node: Hanaboso\PipesFramework\Commons\Node\Document\Node
+            topology: Hanaboso\PipesFramework\Configurator\Document\Topology
+            node: Hanaboso\PipesFramework\Configurator\Document\Node
             file: Hanaboso\PipesFramework\Commons\FileStorage\Document\File

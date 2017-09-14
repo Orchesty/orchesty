@@ -8,8 +8,8 @@
 
 namespace Hanaboso\PipesFramework\TopologyGenerator;
 
-use Hanaboso\PipesFramework\Commons\Node\Document\Node;
-use Hanaboso\PipesFramework\Commons\Topology\Document\Topology;
+use Hanaboso\PipesFramework\Configurator\Document\Node;
+use Hanaboso\PipesFramework\Configurator\Document\Topology;
 
 /**
  * Interface GeneratorInterface

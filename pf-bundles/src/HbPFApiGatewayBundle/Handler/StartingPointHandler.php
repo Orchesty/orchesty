@@ -10,9 +10,9 @@ namespace Hanaboso\PipesFramework\HbPFApiGatewayBundle\Handler;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Exception;
-use Hanaboso\PipesFramework\Commons\Node\Document\Node;
 use Hanaboso\PipesFramework\Commons\StartingPoint\StartingPoint;
-use Hanaboso\PipesFramework\Commons\Topology\Document\Topology;
+use Hanaboso\PipesFramework\Configurator\Document\Node;
+use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Symfony\Component\HttpFoundation\Request;
 
 /**

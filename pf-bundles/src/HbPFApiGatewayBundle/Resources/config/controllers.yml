@@ -1,14 +1,4 @@
 services:
-    hbpf.api_gateway.controller.topology:
-        class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\TopologyController
-        arguments:
-            - '@hbpf.handler.topology'
-
-    hbpf.api_gateway.controller.node:
-        class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\NodeController
-        arguments:
-            - '@hbpf.handler.node'
-
     hbpf.api_gateway.controller.starting_point:
         class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\StartingPointController
         arguments:
@@ -19,4 +9,4 @@ services:
         arguments:
             - '@doctrine.odm.mongodb.document_manager'
             - '@hbpf.handler.starting_point'
-            - "%kernel.project_dir%"
+            - '%kernel.project_dir%'
