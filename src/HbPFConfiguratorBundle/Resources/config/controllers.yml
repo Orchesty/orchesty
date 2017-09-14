@@ -1,0 +1,10 @@
+services:
+    hbpf.configurator.controller.topology:
+        class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController
+        arguments:
+            - '@hbpf.configurator.handler.topology'
+
+    hbpf.configurator.controller.node:
+        class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\NodeController
+        arguments:
+            - '@hbpf.configurator.handler.node'

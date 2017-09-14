@@ -1,0 +1,12 @@
+services:
+    hbpf.configurator.handler.topology:
+            class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler
+            arguments:
+                - '@hbpf.database_manager_locator'
+                - '@hbpf.configurator.manager.topology'
+
+    hbpf.configurator.handler.node:
+        class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\NodeHandler
+        arguments:
+            - '@hbpf.database_manager_locator'
+            - '@hbpf.configurator.manager.node'

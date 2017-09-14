@@ -38,3 +38,8 @@ hb_pf_table_parser:
 hb_pf_user:
     resource: "@HbPFUserBundle"
     type: annotation
+
+hb_pf_configurator:
+    resource: '@HbPFConfiguratorBundle'
+    type:     annotation
+    prefix:   /api/gateway

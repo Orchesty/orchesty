@@ -9,11 +9,11 @@
 namespace Tests\Unit\Commons\StartingPoint;
 
 use Bunny\Channel;
-use Hanaboso\PipesFramework\Commons\Node\Document\Node;
 use Hanaboso\PipesFramework\Commons\StartingPoint\Exception\StartingPointException;
 use Hanaboso\PipesFramework\Commons\StartingPoint\StartingPoint;
 use Hanaboso\PipesFramework\Commons\StartingPoint\StartingPointProducer;
-use Hanaboso\PipesFramework\Commons\Topology\Document\Topology;
+use Hanaboso\PipesFramework\Configurator\Document\Node;
+use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\RabbitMqBundle\BunnyManager;
 use PHPUnit\Framework\TestCase;
 use PHPUnit_Framework_MockObject_MockObject;

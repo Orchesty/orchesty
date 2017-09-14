@@ -16,17 +16,17 @@ services:
     hbpf.user.manager.token:
         class: Hanaboso\PipesFramework\User\Model\Token\TokenManager
         arguments:
-           - "@hbpf.database_manager_locator.user"
+           - '@hbpf.database_manager_locator.user'
            - '@hbpf.acl.provider.resource'
 
     hbpf.user.manager.user:
         class: Hanaboso\PipesFramework\User\Model\User\UserManager
         arguments:
-            - "@hbpf.database_manager_locator.user"
-            - "@hbpf.user.manager.security"
-            - "@hbpf.user.manager.token"
-            - "@security.encoder_factory.generic"
-            - "@event_dispatcher"
+            - '@hbpf.database_manager_locator.user'
+            - '@hbpf.user.manager.security'
+            - '@hbpf.user.manager.token'
+            - '@security.encoder_factory.generic'
+            - '@event_dispatcher'
             - '@hbpf.acl.provider.resource'
 
     hbpf.user.manager.security:

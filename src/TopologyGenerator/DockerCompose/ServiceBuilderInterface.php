@@ -8,7 +8,7 @@
 
 namespace Hanaboso\PipesFramework\TopologyGenerator\DockerCompose;
 
-use Hanaboso\PipesFramework\Commons\Node\Document\Node;
+use Hanaboso\PipesFramework\Configurator\Document\Node;
 
 /**
  * Interface ServiceBuilderInterface

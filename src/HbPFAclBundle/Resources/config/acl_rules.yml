@@ -1,7 +1,7 @@
 parameters:
     acl_rule:
         owner:
-#        Key must match with key in acl.yml under resources
+            # Key must match with key in acl.yml under resources
             user: ['read', 'write', 'delete']
             group: ['write', 'read']
 

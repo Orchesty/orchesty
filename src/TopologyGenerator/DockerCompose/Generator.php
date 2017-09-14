@@ -9,8 +9,8 @@
 namespace Hanaboso\PipesFramework\TopologyGenerator\DockerCompose;
 
 use Hanaboso\PipesFramework\Commons\Enum\TypeEnum;
-use Hanaboso\PipesFramework\Commons\Node\Document\Node;
-use Hanaboso\PipesFramework\Commons\Topology\Document\Topology;
+use Hanaboso\PipesFramework\Configurator\Document\Node;
+use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\Impl\CounterServiceBuilder;
 use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\Impl\NodeServiceBuilder;
 use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\Impl\PhpDevServiceBuilder;

@@ -6,7 +6,7 @@ use Hanaboso\PipesFramework\Acl\Document\Group;
 use Hanaboso\PipesFramework\Acl\Document\Rule;
 use Hanaboso\PipesFramework\Acl\Dto\GroupDto;
 use Hanaboso\PipesFramework\Acl\Exception\AclException;
-use Hanaboso\PipesFramework\Commons\Node\Document\Node;
+use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\User\Document\User;
 use Tests\DatabaseTestCaseAbstract;
 
