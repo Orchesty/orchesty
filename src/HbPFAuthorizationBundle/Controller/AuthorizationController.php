@@ -117,14 +117,14 @@ class AuthorizationController extends FOSRestController
      * @Route("/authorization/info")
      * @Method({"GET", "OPTIONS"})
      *
+     * @param Request $request
+     *
      * @return Response
      */
-    public function getAuthorizationsInfoAction(): Response
+    public function getAuthorizationsInfoAction(Request $request): Response
     {
         $this->construct();
-        $data = $this->handler->getAuthInfo();
-
-        return new JsonResponse($data, 200);
+        return new JsonResponse($this->handler->getAuthInfo($request->getSchemeAndHttpHost()), 200);
     }
 
     /**

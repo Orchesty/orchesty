@@ -77,7 +77,7 @@ class AuthorizationLoaderTest extends KernelTestCaseAbstract
      */
     public function testGetAllAuthorizationsInfo(): void
     {
-        $conns = $this->loader->getAllAuthorizationsInfo();
+        $conns = $this->loader->getAllAuthorizationsInfo('http://localhost');
         self::assertNotEmpty($conns);
 
         /** @var array $magento2 */

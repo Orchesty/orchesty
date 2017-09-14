@@ -38,9 +38,11 @@ interface AuthorizationInterface
     public function getHeaders(string $method, string $url): array;
 
     /**
-     * @return string[]
+     * @param string $hostname
+     *
+     * @return string []
      */
-    public function getInfo(): array;
+    public function getInfo(string $hostname): array;
 
     /**
      * @return array
@@ -51,5 +53,10 @@ interface AuthorizationInterface
      * @param string[] $data
      */
     public function saveSettings(array $data): void;
+
+    /**
+     * @return string
+     */
+    public function getReadMe(): string;
 
 }

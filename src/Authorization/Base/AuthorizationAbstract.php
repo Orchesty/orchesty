@@ -64,9 +64,11 @@ abstract class AuthorizationAbstract implements AuthorizationInterface
     }
 
     /**
-     * @return mixed[]
+     * @param string $hostname
+     *
+     * @return array
      */
-    public function getInfo(): array
+    public function getInfo(string $hostname): array
     {
         return [
             'name'          => $this->config[self::NAME],

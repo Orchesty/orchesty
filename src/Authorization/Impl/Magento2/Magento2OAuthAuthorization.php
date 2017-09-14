@@ -148,6 +148,8 @@ class Magento2OAuthAuthorization extends OAuthAuthorizationAbstract implements M
             );
         }
 
+        $settings['readme'] = $this->getReadMe();
+
         return $settings;
     }
 
@@ -189,6 +191,19 @@ class Magento2OAuthAuthorization extends OAuthAuthorizationAbstract implements M
     }
 
     /**
+     * @param string $hostname
+     *
+     * @return array
+     */
+    public function getInfo(string $hostname): array
+    {
+        $info                 = parent::getInfo($hostname);
+        $info['redirect_url'] = sprintf('%s/api/authorizations/%s/save_token', $hostname, $this->getId());
+
+        return $info;
+    }
+
+    /**
      *
      */
     public function authorize(): void
@@ -200,6 +215,14 @@ class Magento2OAuthAuthorization extends OAuthAuthorizationAbstract implements M
             $this->getAuthorizationUrl(),
             []
         );
+    }
+
+    /**
+     * @return string
+     */
+    public function getReadMe(): string
+    {
+        return '[Name => Content]: [url => Connector URL] [username_key => Consumer Key] [password_secret => Consumer Secret]';
     }
 
     /**

@@ -13,6 +13,7 @@ use Doctrine\ODM\MongoDB\DocumentRepository;
 use Hanaboso\PipesFramework\Authorization\Base\AuthorizationInterface;
 use Hanaboso\PipesFramework\Authorization\Document\Authorization;
 use Hanaboso\PipesFramework\Authorization\Exception\AuthorizationException;
+use Hanaboso\PipesFramework\Authorization\Impl\Magento2\Magento2Authorization;
 use Hanaboso\PipesFramework\Authorization\Impl\Magento2\Magento2OAuthAuthorization;
 use Hanaboso\PipesFramework\Authorization\Provider\OAuth1Provider;
 use PHPUnit_Framework_MockObject_MockObject;
@@ -57,6 +58,19 @@ final class Magento2OAuthAuthorizationTest extends KernelTestCaseAbstract
             'Content-Type'  => 'application/json',
             'Authorization' => 'Bearer access_token',
         ], $authorization->getHeaders('GET', 'http://magento.com'));
+    }
+
+    /**
+     * @covers Magento2Authorization::getReadMe()
+     */
+    public function testGetReadme(): void
+    {
+        $readme = $this->getMockedAuthorization()->getReadMe();
+
+        $this->assertEquals(
+            '[Name => Content]: [url => Connector URL] [username_key => Consumer Key] [password_secret => Consumer Secret]',
+            $readme
+        );
     }
 
     /**
