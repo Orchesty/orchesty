@@ -121,6 +121,8 @@ class Magento2Authorization extends AuthorizationAbstract implements Magento2Aut
             );
         }
 
+        $settings['readme'] = $this->getReadMe();
+
         return $settings;
     }
 
@@ -146,6 +148,14 @@ class Magento2Authorization extends AuthorizationAbstract implements Magento2Aut
 
         $this->authorization->setToken($this->authorize());
         $this->dm->flush();
+    }
+
+    /**
+     * @return string
+     */
+    public function getReadMe(): string
+    {
+        return '[Name => Content]: [url => Connector URL] [username_key => Username] [password_secret => Password]';
     }
 
     /**

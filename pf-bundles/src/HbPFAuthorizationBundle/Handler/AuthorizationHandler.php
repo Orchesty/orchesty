@@ -10,6 +10,7 @@ namespace Hanaboso\PipesFramework\HbPFAuthorizationBundle\Handler;
 
 use Hanaboso\PipesFramework\Authorization\Base\OAuthAuthorizationInterface;
 use Hanaboso\PipesFramework\HbPFAuthorizationBundle\Loader\AuthorizationLoader;
+use Hanaboso\PipesFramework\Utils\ControllerUtils;
 
 /**
  * Class AuthorizationHandler
@@ -52,6 +53,7 @@ class AuthorizationHandler
      */
     public function saveSettings(array $data, string $authId): void
     {
+        ControllerUtils::checkParameters(['url', 'username_key', 'password_secret'], $data);
         $authorization = $this->loader->getAuthorization($authId);
         $authorization->saveSettings($data);
     }
@@ -80,11 +82,13 @@ class AuthorizationHandler
     }
 
     /**
-     * @return string[]
+     * @param string $hostname
+     *
+     * @return array
      */
-    public function getAuthInfo(): array
+    public function getAuthInfo(string $hostname): array
     {
-        $keys = $this->loader->getAllAuthorizationsInfo();
+        $keys = $this->loader->getAllAuthorizationsInfo($hostname);
 
         return $keys;
     }

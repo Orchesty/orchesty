@@ -64,6 +64,19 @@ class Magento2AuthorizationTest extends DatabaseTestCaseAbstract
     }
 
     /**
+     * @covers Magento2Authorization::getReadMe()
+     */
+    public function testGetReadme(): void
+    {
+        $readme = $this->getMockedAuthorization()->getReadMe();
+
+        $this->assertEquals(
+            '[Name => Content]: [url => Connector URL] [username_key => Username] [password_secret => Password]',
+            $readme
+        );
+    }
+
+    /**
      * @covers Magento2Authorization::authorize()
      * @covers Magento2Authorization::getSettings()
      * @covers Magento2Authorization::saveSettings()
