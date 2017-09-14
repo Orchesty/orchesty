@@ -8,8 +8,11 @@
 
 namespace Tests\Unit\Authorization\Impl\Magento2;
 
+use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\DocumentRepository;
 use Hanaboso\PipesFramework\Authorization\Base\AuthorizationInterface;
 use Hanaboso\PipesFramework\Authorization\Document\Authorization;
+use Hanaboso\PipesFramework\Authorization\Exception\AuthorizationException;
 use Hanaboso\PipesFramework\Authorization\Impl\Magento2\Magento2OAuthAuthorization;
 use Hanaboso\PipesFramework\Authorization\Provider\OAuth1Provider;
 use PHPUnit_Framework_MockObject_MockObject;
@@ -31,38 +34,166 @@ final class Magento2OAuthAuthorizationTest extends KernelTestCaseAbstract
      */
     public function testGetAuthorizationType(): void
     {
-        $auth = $this->getMockedAuthorization();
-        $type = $auth->getAuthorizationType();
-
-        $this->assertEquals(AuthorizationInterface::OAUTH, $type);
+        $this->assertEquals(AuthorizationInterface::OAUTH, $this->getMockedAuthorization()->getAuthorizationType());
     }
 
     /**
+     * @covers Magento2OAuthAuthorization::buildDto()
      * @covers Magento2OAuthAuthorization::getHeaders()
+     * @covers Magento2OAuthAuthorization::getSettings()
+     * @covers Magento2OAuthAuthorization::saveSettings()
      */
     public function testGetHeaders(): void
     {
-        $auth = $this->getMockedAuthorization();
+        $authorization = $this->getMockedAuthorization();
+        $authorization->saveSettings([
+            'url'             => 'url://magento2',
+            'username_key'    => 'api_key',
+            'password_secret' => 'secret_key',
+        ]);
 
-        $headers = $auth->getHeaders('GET', 'http://magento.com');
-        $expects = [
+        self::assertEquals([
             'Accept'        => 'application/json',
             'Content-Type'  => 'application/json',
             'Authorization' => 'Bearer access_token',
-        ];
+        ], $authorization->getHeaders('GET', 'http://magento.com'));
+    }
 
-        self::assertEquals($expects, $headers);
+    /**
+     * @covers Magento2OAuthAuthorization::buildDto()
+     * @covers Magento2OAuthAuthorization::getHeaders()
+     * @covers Magento2OAuthAuthorization::getSettings()
+     * @covers Magento2OAuthAuthorization::saveSettings()
+     */
+    public function testGetHeadersMissingUrl(): void
+    {
+        $this->expectException(AuthorizationException::class);
+        $this->expectExceptionCode(AuthorizationException::AUTHORIZATION_SETTINGS_NOT_FOUND);
+
+        $authorization = $this->getMockedAuthorization();
+        $authorization->saveSettings([
+            'url'             => '',
+            'username_key'    => 'api_key',
+            'password_secret' => 'secret_key',
+        ]);
+        $authorization->getHeaders('GET', 'http://magento.com');
+    }
+
+    /**
+     * @covers Magento2OAuthAuthorization::buildDto()
+     * @covers Magento2OAuthAuthorization::getHeaders()
+     * @covers Magento2OAuthAuthorization::getSettings()
+     * @covers Magento2OAuthAuthorization::saveSettings()
+     */
+    public function testGetHeadersMissingKey(): void
+    {
+        $this->expectException(AuthorizationException::class);
+        $this->expectExceptionCode(AuthorizationException::AUTHORIZATION_SETTINGS_NOT_FOUND);
+
+        $authorization = $this->getMockedAuthorization();
+        $authorization->saveSettings([
+            'url'             => 'url://magento2',
+            'username_key'    => '',
+            'password_secret' => 'secret_key',
+        ]);
+        $authorization->getHeaders('GET', 'http://magento.com');
+    }
+
+    /**
+     * @covers Magento2OAuthAuthorization::buildDto()
+     * @covers Magento2OAuthAuthorization::getHeaders()
+     * @covers Magento2OAuthAuthorization::getSettings()
+     * @covers Magento2OAuthAuthorization::saveSettings()
+     */
+    public function testGetHeadersMissingSecret(): void
+    {
+        $this->expectException(AuthorizationException::class);
+        $this->expectExceptionCode(AuthorizationException::AUTHORIZATION_SETTINGS_NOT_FOUND);
+
+        $authorization = $this->getMockedAuthorization();
+        $authorization->saveSettings([
+            'url'             => 'url://magento2',
+            'username_key'    => 'api_key',
+            'password_secret' => '',
+        ]);
+        $authorization->getHeaders('GET', 'http://magento.com');
     }
 
     /**
      * @covers Magento2OAuthAuthorization::getUrl()
+     * @covers Magento2OAuthAuthorization::getSettings()
+     * @covers Magento2OAuthAuthorization::saveSettings()
      */
     public function testGetUrl(): void
     {
-        $auth = $this->getMockedAuthorization();
-        $url  = $auth->getUrl();
+        $authorization = $this->getMockedAuthorization();
+        $authorization->saveSettings([
+            'url'             => 'url://magento2',
+            'username_key'    => 'api_key',
+            'password_secret' => 'secret_key',
+        ]);
 
-        $this->assertEquals('url://magento2', $url);
+        $this->assertEquals('url://magento2', $authorization->getUrl());
+    }
+
+    /**
+     * @covers Magento2OAuthAuthorization::getUrl()
+     * @covers Magento2OAuthAuthorization::getSettings()
+     * @covers Magento2OAuthAuthorization::saveSettings()
+     */
+    public function testGetSettingsMissingUrl(): void
+    {
+        $this->expectException(AuthorizationException::class);
+        $this->expectExceptionCode(AuthorizationException::AUTHORIZATION_SETTINGS_NOT_FOUND);
+
+        $authorization = $this->getMockedAuthorization();
+        $authorization->saveSettings([
+            'url'             => '',
+            'username_key'    => 'api_key',
+            'password_secret' => 'secret_key',
+        ]);
+
+        $authorization->getSettings();
+    }
+
+    /**
+     * @covers Magento2OAuthAuthorization::getUrl()
+     * @covers Magento2OAuthAuthorization::getSettings()
+     * @covers Magento2OAuthAuthorization::saveSettings()
+     */
+    public function testGetSettingsMissingKey(): void
+    {
+        $this->expectException(AuthorizationException::class);
+        $this->expectExceptionCode(AuthorizationException::AUTHORIZATION_SETTINGS_NOT_FOUND);
+
+        $authorization = $this->getMockedAuthorization();
+        $authorization->saveSettings([
+            'url'             => 'url://magento2',
+            'username_key'    => '',
+            'password_secret' => 'secret_key',
+        ]);
+
+        $authorization->getSettings();
+    }
+
+    /**
+     * @covers Magento2OAuthAuthorization::getUrl()
+     * @covers Magento2OAuthAuthorization::getSettings()
+     * @covers Magento2OAuthAuthorization::saveSettings()
+     */
+    public function testGetSettingsMissingSecret(): void
+    {
+        $this->expectException(AuthorizationException::class);
+        $this->expectExceptionCode(AuthorizationException::AUTHORIZATION_SETTINGS_NOT_FOUND);
+
+        $authorization = $this->getMockedAuthorization();
+        $authorization->saveSettings([
+            'url'             => 'url://magento2',
+            'username_key'    => 'api_key',
+            'password_secret' => '',
+        ]);
+
+        $authorization->getSettings();
     }
 
     /**
@@ -70,65 +201,77 @@ final class Magento2OAuthAuthorizationTest extends KernelTestCaseAbstract
      */
     public function testIsAuthorized(): void
     {
-        $auth = $this->getMockedAuthorization();
-        $this->assertTrue($auth->isAuthorized());
+        $this->assertTrue($this->getMockedAuthorization()->isAuthorized());
     }
 
     /**
      * @covers Magento2OAuthAuthorization::authorize()
+     * @covers Magento2OAuthAuthorization::saveSettings()
      */
     public function testAuthorize(): void
     {
-        $auth = $this->getMockedAuthorization();
-        $this->assertEmpty($auth->authorize());
+        $authorization = $this->getMockedAuthorization();
+        $authorization->saveSettings([
+            'url'             => 'url://magento2',
+            'username_key'    => 'api_key',
+            'password_secret' => 'secret_key',
+        ]);
+
+        $this->assertEmpty($authorization->authorize());
     }
 
     /**
+     * @covers Magento2OAuthAuthorization::saveSettings()
      * @covers Magento2OAuthAuthorization::saveToken()
      */
     public function testSaveToken(): void
     {
-        $auth = $this->getMockedAuthorization();
-        $this->assertEmpty($auth->saveToken([]));
-    }
+        $authorization = $this->getMockedAuthorization();
+        $authorization->saveSettings([
+            'url'             => 'url://magento2',
+            'username_key'    => 'api_key',
+            'password_secret' => 'secret_key',
+        ]);
 
-    /**
-     * ----------------------------------------- HELPERS ---------------------------------------------
-     */
+        $this->assertEmpty($authorization->saveToken([]));
+    }
 
     /**
      * @return Magento2OAuthAuthorization|PHPUnit_Framework_MockObject_MockObject
      */
-    public function getMockedAuthorization(): PHPUnit_Framework_MockObject_MockObject
+    private function getMockedAuthorization(): PHPUnit_Framework_MockObject_MockObject
     {
+        $innerAuthorization = (new Authorization('magento2.oauth'))->setToken([
+            'oauth_token'        => 'token',
+            'oauth_token_secret' => 'secret',
+        ]);
+
         $provider = $this->createMock(OAuth1Provider::class);
         $provider->method('getAuthorizeHeader')->willReturn('Bearer access_token');
 
-        /** @var Magento2OAuthAuthorization|PHPUnit_Framework_MockObject_MockObject $auth */
-        $auth = $this->getMockBuilder(Magento2OAuthAuthorization::class)
-            ->setMethods(['getToken'])
-            ->setConstructorArgs(
-                [
-                    $this->dm,
-                    $provider,
-                    'magento2.oauth',
-                    'Magento name',
-                    'Magento dsc',
-                    'url://magento2',
-                    'api_key',
-                    'secret_key',
-                ]
-            )
-            ->getMock();
+        /** @var DocumentRepository|PHPUnit_Framework_MockObject_MockObject $repository */
+        $repository = $this->createPartialMock(DocumentRepository::class, ['findOneBy']);
+        $repository->method('findOneBy')->willReturn($innerAuthorization);
 
-        $this->setProperty(
-            $auth,
-            'authorization',
-            (new Authorization('magento2.oauth'))
-                ->setToken(['oauth_token' => 'token', 'oauth_token_secret' => 'secret'])
-        );
+        /** @var DocumentManager|PHPUnit_Framework_MockObject_MockObject $documentManager */
+        $documentManager = $this->createPartialMock(DocumentManager::class, ['getRepository', 'flush']);
+        $documentManager->method('getRepository')->willReturn($repository);
+        $documentManager->method('flush')->willReturn(NULL);
 
-        return $auth;
+        /** @var Magento2OAuthAuthorization|PHPUnit_Framework_MockObject_MockObject $authorization */
+        $authorization = $this->getMockBuilder(Magento2OAuthAuthorization::class)
+            ->setMethods(['getToken', 'loadAuthorization'])
+            ->setConstructorArgs([
+                $documentManager,
+                $provider,
+                'magento2.oauth',
+                'Magento name',
+                'Magento dsc',
+            ])->getMock();
+
+        $this->setProperty($authorization, 'authorization', $innerAuthorization);
+
+        return $authorization;
     }
 
 }

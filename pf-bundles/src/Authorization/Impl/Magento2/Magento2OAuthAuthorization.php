@@ -11,6 +11,7 @@ namespace Hanaboso\PipesFramework\Authorization\Impl\Magento2;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\PipesFramework\Authorization\Base\OAuthAuthorizationAbstract;
+use Hanaboso\PipesFramework\Authorization\Document\Authorization;
 use Hanaboso\PipesFramework\Authorization\Exception\AuthorizationException;
 use Hanaboso\PipesFramework\Authorization\Provider\Dto\OAuth1Dto;
 use Hanaboso\PipesFramework\Authorization\Provider\OAuth1Provider;
@@ -48,28 +49,16 @@ class Magento2OAuthAuthorization extends OAuthAuthorizationAbstract implements M
      * @param string          $id
      * @param string          $name
      * @param string          $description
-     * @param string          $url
-     * @param string          $consumerKey
-     * @param string          $consumerSecret
      */
     public function __construct(
         DocumentManager $dm,
         OAuth1Provider $auth1Provider,
         string $id,
         string $name,
-        string $description,
-        string $url,
-        string $consumerKey,
-        string $consumerSecret
+        string $description
     )
     {
         parent::__construct($id, $name, $description, $dm);
-
-        $this->setConfig([
-            self::URL             => $url,
-            self::CONSUMER_KEY    => $consumerKey,
-            self::CONSUMER_SECRET => $consumerSecret,
-        ]);
         $this->auth1Provider = $auth1Provider;
         $this->logger        = new NullLogger();
     }
@@ -95,6 +84,19 @@ class Magento2OAuthAuthorization extends OAuthAuthorizationAbstract implements M
     }
 
     /**
+     * @return bool
+     */
+    public function isAuthorized(): bool
+    {
+        if (!$this->authorization) {
+            return FALSE;
+        }
+        $token = $this->authorization->getToken();
+
+        return !empty($token[OAuth1Provider::OAUTH_TOKEN] ?? '') && !empty($token[OAuth1Provider::OAUTH_TOKEN_SECRET] ?? '');
+    }
+
+    /**
      * @param string $method
      * @param string $url
      *
@@ -103,19 +105,16 @@ class Magento2OAuthAuthorization extends OAuthAuthorizationAbstract implements M
      */
     public function getHeaders(string $method, string $url): array
     {
-
         if (!$this->isAuthorized()) {
             $this->logger->error('Magento2 OAuth not authorized');
-            throw new AuthorizationException();
+            throw new AuthorizationException('Magento2 OAuth not authorized');
         }
 
-        $headers = [
+        return [
             'Accept'        => 'application/json',
             'Content-Type'  => 'application/json',
             'Authorization' => $this->auth1Provider->getAuthorizeHeader($this->buildDto(), $method, $url),
         ];
-
-        return $headers;
     }
 
     /**
@@ -123,33 +122,54 @@ class Magento2OAuthAuthorization extends OAuthAuthorizationAbstract implements M
      */
     public function getUrl(): string
     {
-        return $this->getParam($this->getConfig(), self::URL);
+        return $this->getSettings()[self::URL];
     }
 
     /**
-     * @return bool
-     */
-    public function isAuthorized(): bool
-    {
-        $this->load();
-
-        if (
-            empty($this->getParam($this->authorization->getToken(), OAuth1Provider::OAUTH_TOKEN)) ||
-            empty($this->getParam($this->authorization->getToken(), OAuth1Provider::OAUTH_TOKEN_SECRET))
-        ) {
-            return FALSE;
-        };
-
-        return TRUE;
-    }
-
-    /**
+     * @return string[]
      *
+     * @throws AuthorizationException
      */
-    public function authorize(): void
+    public function getSettings(): array
     {
-        $this->load();
-        $this->auth1Provider->authorize($this->buildDto(), $this->getRequestTokenUrl(), $this->getAuthorizeUrl(), []);
+        $this->loadAuthorization();
+        if (!$this->authorization) {
+            throw new AuthorizationException(
+                sprintf('Authorization settings \'%s\' not found', $this->getId()),
+                AuthorizationException::AUTHORIZATION_SETTINGS_NOT_FOUND
+            );
+        }
+
+        $settings = $this->authorization->getSettings();
+        if (empty($settings[self::URL]) || empty($settings[self::CONSUMER_KEY]) || empty($settings[self::CONSUMER_SECRET])) {
+            throw new AuthorizationException(
+                sprintf('Authorization settings \'%s\' not found', $this->getId()),
+                AuthorizationException::AUTHORIZATION_SETTINGS_NOT_FOUND
+            );
+        }
+
+        return $settings;
+    }
+
+    /**
+     * @param string[] $data
+     *
+     * @throws AuthorizationException
+     */
+    public function saveSettings(array $data): void
+    {
+        $this->loadAuthorization();
+        if (!$this->authorization) {
+            $this->authorization = new Authorization($this->getId());
+            $this->dm->persist($this->authorization);
+        }
+
+        $this->authorization->setSettings([
+            self::URL             => $data['url'],
+            self::CONSUMER_KEY    => $data['username_key'],
+            self::CONSUMER_SECRET => $data['password_secret'],
+        ]);
+        $this->dm->flush();
     }
 
     /**
@@ -157,40 +177,57 @@ class Magento2OAuthAuthorization extends OAuthAuthorizationAbstract implements M
      */
     public function saveToken(array $data): void
     {
-        $this->load();
-        $this->save($this->auth1Provider->getAccessToken($this->buildDto(), $data, $this->getAccessTokenUrl()));
+        $this->loadAuthorization();
+        if (!$this->authorization) {
+            $this->authorization = new Authorization($this->getId());
+            $this->dm->persist($this->authorization);
+        }
+
+        $token = $this->auth1Provider->getAccessToken($this->buildDto(), $data, $this->getAccessTokenUrl());
+        $this->authorization->setToken($token);
+        $this->dm->flush();
     }
 
     /**
-     * ------------------------------------------ HELPERS ----------------------------------------
+     *
      */
+    public function authorize(): void
+    {
+        $this->loadAuthorization();
+        $this->auth1Provider->authorize(
+            $this->buildDto(),
+            $this->getRequestTokenUrl(),
+            $this->getAuthorizationUrl(),
+            []
+        );
+    }
+
+    /**
+     *
+     */
+    private function loadAuthorization(): void
+    {
+        $this->authorization = $this->dm->getRepository(Authorization::class)->findOneBy([
+            'authorizationKey' => $this->getId(),
+        ]);
+    }
 
     /**
      * @return OAuth1Dto
      */
     private function buildDto(): OAuth1Dto
     {
-        return new OAuth1Dto(
-            $this->authorization,
-            $this->getParam($this->getConfig(), self::CONSUMER_KEY),
-            $this->getParam($this->getConfig(), self::CONSUMER_SECRET)
-        );
+        $settings = $this->getSettings();
+
+        return new OAuth1Dto($this->authorization, $settings[self::CONSUMER_KEY], $settings[self::CONSUMER_SECRET]);
     }
 
     /**
      * @return string
      */
-    private function getRequestTokenUrl(): string
+    private function getAuthorizationUrl(): string
     {
-        return $this->getParam($this->getConfig(), self::URL) . '/oauth/initiate';
-    }
-
-    /**
-     * @return string
-     */
-    private function getAuthorizeUrl(): string
-    {
-        return $this->getParam($this->getConfig(), self::URL) . '/admin/oauth_authorize';
+        return sprintf('%s/admin/oauth_authorize', $this->getSettings()[self::URL]);
     }
 
     /**
@@ -198,7 +235,15 @@ class Magento2OAuthAuthorization extends OAuthAuthorizationAbstract implements M
      */
     private function getAccessTokenUrl(): string
     {
-        return $this->getParam($this->getConfig(), self::URL) . '/oauth/token';
+        return sprintf('%s/oauth/token', $this->getSettings()[self::URL]);
+    }
+
+    /**
+     * @return string
+     */
+    private function getRequestTokenUrl(): string
+    {
+        return sprintf('%s/oauth/initiate', $this->getSettings()[self::URL]);
     }
 
 }

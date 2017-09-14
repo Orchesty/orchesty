@@ -42,4 +42,14 @@ interface AuthorizationInterface
      */
     public function getInfo(): array;
 
+    /**
+     * @return array
+     */
+    public function getSettings(): array;
+
+    /**
+     * @param string[] $data
+     */
+    public function saveSettings(array $data): void;
+
 }
