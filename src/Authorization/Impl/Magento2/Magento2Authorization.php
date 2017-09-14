@@ -5,8 +5,11 @@ namespace Hanaboso\PipesFramework\Authorization\Impl\Magento2;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Authorization\Base\AuthorizationAbstract;
+use Hanaboso\PipesFramework\Authorization\Document\Authorization;
+use Hanaboso\PipesFramework\Authorization\Exception\AuthorizationException;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
+use Nette\Utils\Json;
 
 /**
  * Class Magento2Authorization
@@ -34,28 +37,17 @@ class Magento2Authorization extends AuthorizationAbstract implements Magento2Aut
      * @param string               $id
      * @param string               $name
      * @param string               $description
-     * @param string               $url
-     * @param string               $username
-     * @param string               $password
      */
     public function __construct(
         DocumentManager $dm,
         CurlManagerInterface $curl,
         string $id,
         string $name,
-        string $description,
-        string $url,
-        string $username,
-        string $password
+        string $description
     )
     {
-        $this->curl = $curl;
         parent::__construct($id, $name, $description, $dm);
-        $this->setConfig([
-            self::URL      => $url,
-            self::USERNAME => $username,
-            self::PASSWORD => $password,
-        ]);
+        $this->curl = $curl;
     }
 
     /**
@@ -71,7 +63,12 @@ class Magento2Authorization extends AuthorizationAbstract implements Magento2Aut
      */
     public function isAuthorized(): bool
     {
-        return $this->load();
+        $this->loadAuthorization();
+        if (!$this->authorization) {
+            return FALSE;
+        }
+
+        return isset($this->authorization->getToken()[self::TOKEN]);
     }
 
     /**
@@ -83,16 +80,14 @@ class Magento2Authorization extends AuthorizationAbstract implements Magento2Aut
     public function getHeaders(string $method, string $url): array
     {
         if (!$this->isAuthorized()) {
-            $this->authenticate();
+            $this->authorize();
         }
 
-        $headers = [
+        return [
             'Accept'        => 'application/json',
             'Content-Type'  => 'application/json',
-            'Authorization' => 'Bearer ' . $this->getParam($this->authorization->getToken(), self::TOKEN),
+            'Authorization' => sprintf('Bearer %s', $this->authorization->getToken()[self::TOKEN]),
         ];
-
-        return $headers;
     }
 
     /**
@@ -100,36 +95,86 @@ class Magento2Authorization extends AuthorizationAbstract implements Magento2Aut
      */
     public function getUrl(): string
     {
-        return $this->getParam($this->getConfig(), self::URL);
+        return $this->getSettings()[self::URL];
     }
 
-
     /**
-     * --------------------------------------- HELPERS -------------------------------------------------
-     */
-
-    /**
+     * @return string[]
      *
+     * @throws AuthorizationException
      */
-    private function authenticate(): void
+    public function getSettings(): array
     {
-        $dto = new RequestDto('POST', new Uri($this->getAuthorizationUrl()));
-        $dto
+        $this->loadAuthorization();
+        if (!$this->authorization) {
+            throw new AuthorizationException(
+                sprintf('Authorization settings \'%s\' not found', $this->getId()),
+                AuthorizationException::AUTHORIZATION_SETTINGS_NOT_FOUND
+            );
+        }
+
+        $settings = $this->authorization->getSettings();
+        if (empty($settings[self::URL]) || empty($settings[self::USERNAME]) || empty($settings[self::PASSWORD])) {
+            throw new AuthorizationException(
+                sprintf('Authorization settings \'%s\' not found', $this->getId()),
+                AuthorizationException::AUTHORIZATION_SETTINGS_NOT_FOUND
+            );
+        }
+
+        return $settings;
+    }
+
+    /**
+     * @param string[] $data
+     *
+     * @throws AuthorizationException
+     */
+    public function saveSettings(array $data): void
+    {
+        $this->loadAuthorization();
+        if (!$this->authorization) {
+            $this->authorization = new Authorization($this->getId());
+            $this->dm->persist($this->authorization);
+        }
+
+        $this->authorization->setSettings([
+            self::URL      => $data['url'],
+            self::USERNAME => $data['username_key'],
+            self::PASSWORD => $data['password_secret'],
+        ]);
+        $this->dm->flush();
+
+        $this->authorization->setToken($this->authorize());
+        $this->dm->flush();
+    }
+
+    /**
+     * @return array
+     */
+    private function authorize(): array
+    {
+        $settings = $this->getSettings();
+
+        $dto = (new RequestDto('POST', new Uri($this->getAuthorizationUrl())))
             ->setHeaders([
                 'Accept'       => 'application/json',
                 'Content-Type' => 'application/json',
             ])
             ->setBody(
-                sprintf(
-                    '{"username":"%s", "password":"%s"}',
-                    $this->getParam($this->getConfig(), self::USERNAME),
-                    $this->getParam($this->getConfig(), self::PASSWORD)
-                )
+                sprintf('{"username":"%s", "password":"%s"}', $settings[self::USERNAME], $settings[self::PASSWORD])
             );
-        $response = $this->curl->send($dto);
-        $data     = json_decode($response->getBody(), TRUE);
 
-        $this->save($data);
+        return Json::decode($this->curl->send($dto)->getBody(), Json::FORCE_ARRAY);
+    }
+
+    /**
+     *
+     */
+    private function loadAuthorization(): void
+    {
+        $this->authorization = $this->dm->getRepository(Authorization::class)->findOneBy([
+            'authorizationKey' => $this->getId(),
+        ]);
     }
 
     /**
@@ -137,7 +182,7 @@ class Magento2Authorization extends AuthorizationAbstract implements Magento2Aut
      */
     private function getAuthorizationUrl(): string
     {
-        return $this->getParam($this->getConfig(), self::URL) . '/rest/V1/integration/admin/token';
+        return sprintf('%s/rest/V1/integration/admin/token', $this->getSettings()[self::URL]);
     }
 
 }

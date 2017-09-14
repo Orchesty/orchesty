@@ -35,13 +35,24 @@ class Authorization
      */
     private $token = [];
 
+    /**
+     * @var string
+     *
+     * @ODM\Field(type="string")
+     */
+    private $encryptedToken = '';
+
+    /**
+     * @var string[]
+     */
+    private $settings = [];
 
     /**
      * @var string
      *
      * @ODM\Field(type="string")
      */
-    private $encrypted = '';
+    private $encryptedSettings = '';
 
     /**
      * Authorization constructor.
@@ -96,17 +107,57 @@ class Authorization
     /**
      * @return string
      */
-    public function getEncrypted(): string
+    public function getEncryptedToken(): string
     {
-        return $this->encrypted;
+        return $this->encryptedToken;
     }
 
     /**
-     * @param string $encrypted
+     * @param string $encryptedToken
      */
-    public function setEncrypted(string $encrypted): void
+    public function setEncryptedToken(string $encryptedToken): void
     {
-        $this->encrypted = $encrypted;
+        $this->encryptedToken = $encryptedToken;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getSettings(): array
+    {
+        return $this->settings;
+    }
+
+    /**
+     * @param string[] $settings
+     *
+     * @return Authorization
+     */
+    public function setSettings(array $settings): Authorization
+    {
+        $this->settings = $settings;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getEncryptedSettings(): string
+    {
+        return $this->encryptedSettings;
+    }
+
+    /**
+     * @param string $encryptedSettings
+     *
+     * @return Authorization
+     */
+    public function setEncryptedSettings(string $encryptedSettings): Authorization
+    {
+        $this->encryptedSettings = $encryptedSettings;
+
+        return $this;
     }
 
 }

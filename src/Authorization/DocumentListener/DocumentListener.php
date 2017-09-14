@@ -48,8 +48,9 @@ class DocumentListener
 
             /** @var Authorization $document */
             foreach ($documents as $document) {
-                if ($this->isAuthorizationToken($document)) {
-                    $document->setEncrypted($this->cryptManager->encrypt($document->getToken()));
+                if ($this->isAuthorization($document)) {
+                    $document->setEncryptedToken($this->cryptManager->encrypt($document->getToken()));
+                    $document->setEncryptedSettings($this->cryptManager->encrypt($document->getSettings()));
                 }
             }
         }
@@ -63,8 +64,9 @@ class DocumentListener
         $document = $event->getDocument();
 
         /** @var Authorization $document */
-        if ($this->isAuthorizationToken($document)) {
-            $document->setToken($this->cryptManager->decrypt($document->getEncrypted()));
+        if ($this->isAuthorization($document)) {
+            $document->setToken($this->cryptManager->decrypt($document->getEncryptedToken()));
+            $document->setSettings($this->cryptManager->decrypt($document->getEncryptedSettings()));
         }
     }
 
@@ -73,7 +75,7 @@ class DocumentListener
      *
      * @return bool
      */
-    private function isAuthorizationToken($document): bool
+    private function isAuthorization($document): bool
     {
         return $document instanceof Authorization;
     }

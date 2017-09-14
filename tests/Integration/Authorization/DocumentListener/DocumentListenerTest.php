@@ -24,17 +24,36 @@ class DocumentListenerTest extends DatabaseTestCaseAbstract
      * @covers DocumentListener::postLoad()
      * @covers DocumentListener::preFlush()
      */
-    public function testEncryptDecryptData(): void
+    public function testEncryptDecryptToken(): void
     {
-        $token = new Authorization('magento2.auth');
-        $token->setToken(['data' => 'data']);
-        $this->dm->persist($token);
+        $authorization = new Authorization('magento2.auth');
+        $authorization->setToken(['token' => 'token']);
+        $this->dm->persist($authorization);
         $this->dm->flush();
         $this->dm->clear();
-        $token = $this->dm->getRepository(Authorization::class)->find($token->getId());
+        $authorization = $this->dm->getRepository(Authorization::class)->find($authorization->getId());
 
-        self::assertNotEmpty($token->getToken());
-        self::assertTrue(is_array($token->getToken()));
+        self::assertNotEmpty($authorization->getToken());
+        self::assertTrue(is_array($authorization->getToken()));
+        self::assertEquals(['token' => 'token'], $authorization->getToken());
+    }
+
+    /**
+     * @covers DocumentListener::postLoad()
+     * @covers DocumentListener::preFlush()
+     */
+    public function testEncryptDecryptSettings(): void
+    {
+        $authorization = new Authorization('magento2.auth');
+        $authorization->setSettings(['settings' => 'settings']);
+        $this->dm->persist($authorization);
+        $this->dm->flush();
+        $this->dm->clear();
+        $authorization = $this->dm->getRepository(Authorization::class)->find($authorization->getId());
+
+        self::assertNotEmpty($authorization->getSettings());
+        self::assertTrue(is_array($authorization->getSettings()));
+        self::assertEquals(['settings' => 'settings'], $authorization->getSettings());
     }
 
 }
