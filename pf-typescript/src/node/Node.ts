@@ -69,9 +69,8 @@ class Node {
         });
 
         return new Promise((resolve) => {
-            const server = app.listen(this.debugPort, () => {
-                const sa = server.address();
-                logger.debug(`Node provides "${ROUTE_STATUS}" on: ${sa.address}:${sa.port}`, { node_id: this.id });
+            app.listen(this.debugPort, () => {
+                logger.debug(`Node provides ${ROUTE_STATUS} on:${this.debugPort}`, { node_id: this.id });
                 resolve();
             });
         });

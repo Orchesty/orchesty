@@ -9,7 +9,7 @@ switch (nodeEnv) {
         level = "info";
         break;
     case "test":
-        level = "error";
+        level = "debug";
         break;
     default:
         level = "debug";
@@ -21,7 +21,7 @@ const pfFormatter = (options: any) => {
         hostname: os.hostname(),
         type: process.env.PIPES_NODE_TYPE || "pipes_node",
         severity: `${options.level}`.toUpperCase(),
-        message: options.message,
+        message: options.message.replace( /\s\s+/g, " "),
         node_id: "",
         correlation_id: "",
         stacktrace: {},
@@ -38,7 +38,7 @@ const pfFormatter = (options: any) => {
     if (options.meta.error) {
         if (options.meta.error instanceof Error) {
             line.stacktrace =  {
-                message: options.meta.error.message,
+                message: options.meta.error.message.replace( /\s\s+/g, " "),
                 code: options.meta.error.code,
                 file: options.meta.error.fileName,
                 trace: options.meta.error.stack,
