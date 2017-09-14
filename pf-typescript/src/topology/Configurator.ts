@@ -101,10 +101,14 @@ class Configurator {
     ): INodeConfig {
         const defNode: INodeConfig = Defaults.getNodeConfigDefaults(topoName, nodeSkeleton);
 
+        const faucetSettings = nodeSkeleton.faucet || defNode.faucet;
+        faucetSettings.settings.node_id = nodeSkeleton.id;
+
         const isResequencer = nodeSkeleton.resequencer || defNode.resequencer;
 
         const drainSettings = nodeSkeleton.drain || defNode.drain;
         drainSettings.settings.resequencer = isResequencer;
+        drainSettings.settings.node_id = nodeSkeleton.id;
 
         return {
             id: nodeSkeleton.id,

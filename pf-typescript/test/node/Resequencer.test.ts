@@ -12,7 +12,7 @@ describe("Resequencer", () => {
         for (let i = 1; i <= 10; i++) {
             messages.push(new JobMessage("someId", i, {}, ""));
         }
-        const resequencer = new Resequencer();
+        const resequencer = new Resequencer("nodeId");
         let output: JobMessage[] = [];
 
         shuffle(messages);
@@ -36,7 +36,7 @@ describe("Resequencer", () => {
                 messages.push(new JobMessage(`${i}`, j, {}, ""));
             }
         }
-        const resequencer = new Resequencer();
+        const resequencer = new Resequencer("nodeId");
         let output1: JobMessage[] = [];
         let output2: JobMessage[] = [];
 

@@ -1,6 +1,6 @@
 import Container from "lib-nodejs/dist/src/container/Container";
-import logger from "lib-nodejs/dist/src/logger/Logger";
 import DIContainer from "./DIContainer";
+import logger from "./logger/Logger";
 import Node from "./node/Node";
 import {default as Configurator, INodeConfig, ITopologyConfig, ITopologyConfigSkeleton} from "./topology/Configurator";
 import Counter from "./topology/counter/Counter";
@@ -34,7 +34,7 @@ class Pipes {
                 return node.open();
             })
             .then(() => {
-                logger.info(`Node ${nodeId} properly started`);
+                logger.info(`Node started`, { node_id: nodeId });
             });
     }
 
@@ -44,7 +44,10 @@ class Pipes {
     public startCounter(): Promise<void> {
         const counter = new Counter(this.topology.counter, this.dic.get("amqp.connection"));
 
-        return counter.listen();
+        return counter.listen()
+            .then(() => {
+                logger.info(`Counter for topology "${this.getTopologyConfig().name}" is running.`);
+            });
     }
 
     /**
@@ -61,7 +64,7 @@ class Pipes {
 
         return probe.start()
             .then(() => {
-                logger.info("Topology probe is ready.");
+                logger.info(`Probe of topology "${this.getTopologyConfig().name}" is running.`);
             });
     }
 

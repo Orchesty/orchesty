@@ -12,7 +12,7 @@ describe("HttpFaucet", () => {
             assert.equal(msg.getSequenceId(), 1);
             assert.equal(msg.getJobId(), "A23B23");
         };
-        const faucet = new HttpFaucet({port: 6038});
+        const faucet = new HttpFaucet({port: 6038, node_id: "someId"});
 
         const processFn: FaucetProcessMsgFn = (msg: JobMessage) => {
             check(msg);
@@ -38,7 +38,7 @@ describe("HttpFaucet", () => {
     });
 
     it("should respond with 500 error on missing headers", () => {
-        const faucet = new HttpFaucet({port: 6039});
+        const faucet = new HttpFaucet({port: 6039, node_id: "someId"});
 
         const processFn: FaucetProcessMsgFn = (msg: JobMessage) => {
             return Promise.resolve(msg);

@@ -82,6 +82,7 @@ const expectedTopo: ITopologyConfig = {
             },
             faucet: {
                 settings: {
+                    node_id: "node_a",
                     port: 3333,
                 },
                 type: "faucet.http",
@@ -127,6 +128,7 @@ const expectedTopo: ITopologyConfig = {
                         options: {},
                         type: "direct",
                     },
+                    node_id: "node_b",
                     prefetch: 10000,
                     queue: {
                         name: "pipes.test-topo.node_b",

@@ -1,10 +1,11 @@
 import { Channel } from "amqplib";
-import logger from "lib-nodejs/dist/src/logger/Logger";
 import Connection from "lib-nodejs/dist/src/rabbitmq/Connection";
+import logger from "../../logger/Logger";
 import Consumer from "./amqp/AMQPConsumer";
 import IFaucet, {FaucetProcessMsgFn} from "./IFaucet";
 
 export interface IAmqpFaucetSettings {
+    node_id: string;
     exchange: {
         name: string,
         type: string,
@@ -43,7 +44,10 @@ class AmqpFaucet implements IFaucet {
      */
     public open(processData: FaucetProcessMsgFn): Promise<void> {
 
-        logger.info(`Preparing amqp faucet to read from "${this.settings.queue.name}"`);
+        logger.info(
+            `AmqpFaucet input to be configured to read from "${this.settings.queue.name}"`,
+            { node_id: this.settings.node_id},
+        );
 
         const prepareFn = (ch: Channel) => {
             const s = this.settings;
@@ -68,11 +72,14 @@ class AmqpFaucet implements IFaucet {
             });
         };
 
-        this.consumer = new Consumer(this.connection, prepareFn, processData);
+        this.consumer = new Consumer(this.settings.node_id, this.connection, prepareFn, processData);
 
         return this.consumer.consume(this.settings.queue.name, {})
             .then(() => {
-                logger.info(`Amqp faucet started consuming "${this.settings.queue.name}"`);
+                logger.info(
+                    `AmqpFaucet started consumption of "${this.settings.queue.name}"`,
+                    { node_id: this.settings.node_id},
+                );
             });
     }
 

@@ -1,7 +1,7 @@
 import {Channel, Options} from "amqplib";
-import logger from "lib-nodejs/dist/src/logger/Logger";
 import Connection from "lib-nodejs/dist/src/rabbitmq/Connection";
 import Publisher from "lib-nodejs/dist/src/rabbitmq/Publisher";
+import logger from "../../../logger/Logger";
 import JobMessage from "../../../message/JobMessage";
 import {ResultCode} from "../../../message/ResultCode";
 import {IAmqpDrainSettings, IFollower} from "../AmqpDrain";
@@ -39,7 +39,7 @@ class FollowersPublisher extends Publisher {
 
                 return Promise.all(followersPromises)
                     .then(() => {
-                        logger.info(`Drain "${this.settings.node_id}" is ready`);
+                        logger.info("AmqpDrain followers publisher ready", {node_id: this.settings.node_id});
                     });
             });
         this.settings = settings;
@@ -53,8 +53,9 @@ class FollowersPublisher extends Publisher {
     public send(message: JobMessage): Promise<void> {
         if (message.getResult().status !== ResultCode.SUCCESS) {
             logger.warn(
-                `Amqp drain will not forward message[id="${message.getUuid()}", \
-                status="${message.getResult().status}, info="${message.getResult().message}""].`,
+                `AmqpDrain will not forward message[", \
+                status="${message.getResult().status}, message="${message.getResult().message}"].`,
+                {node_id: this.settings.node_id, correlation_id: message.getJobId()},
             );
 
             return Promise.resolve();
@@ -65,8 +66,9 @@ class FollowersPublisher extends Publisher {
         return Promise.all(sendPromises)
             .then(() => {
                 logger.info(
-                    `Amqp drain forwarded msg "${message.getUuid()}" to "${this.settings.followers.length}" followers \
-                    split ${message.getSplit().length}. Messages produced: ${sendPromises.length}`,
+                    `AmqpDrain forwarded ${sendPromises.length}x message.\
+                    Followers: ${this.settings.followers.length}, Split ${message.getSplit().length}.`,
+                    { node_id: this.settings.node_id, correlation_id: message.getJobId() },
                 );
             });
     }
