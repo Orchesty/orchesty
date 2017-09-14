@@ -1,8 +1,8 @@
 import { Channel, Message } from "amqplib";
-import logger from "lib-nodejs/dist/src/logger/Logger";
 import Connection from "lib-nodejs/dist/src/rabbitmq/Connection";
 import Publisher from "lib-nodejs/dist/src/rabbitmq/Publisher";
 import * as assert from "power-assert";
+import logger from "../../logger/Logger";
 import { ICounterMessageContent } from "../../message/CounterMessage";
 import { ResultCode } from "../../message/ResultCode";
 import CounterConsumer from "./CounterConsumer";
@@ -147,7 +147,7 @@ export default class Counter {
     public listen(): Promise<void> {
         return this.consumer.consume(this.settings.sub.queue.name, this.settings.sub.queue.options)
             .then(() => {
-                logger.info("Counter is listening.");
+                logger.info(`Counter started consuming messages from "${this.settings.sub.queue.name}" queue`);
             });
     }
 
@@ -186,7 +186,6 @@ export default class Counter {
      * @return {boolean}
      */
     private handleMessage(msg: Message): void {
-        logger.info("Counter message received", msg.properties.headers, msg.content.toString());
         let headers: {job_id: string, node_id: string} = null;
         let content: ICounterMessageContent = null;
 
@@ -204,9 +203,11 @@ export default class Counter {
             const multiplier = content.route.multiplier;
             const log: ICounterLog = { resultCode, node, message: content.result.message };
 
+            logger.info("Counter message received", { node_id: "counter", correlation_id: jobId });
+
             this.handleJob(jobId, resultCode, following, multiplier, log);
         } catch (e) {
-            logger.error("Invalid counter message. Error: ", e.message, msg.properties, msg.content.toString());
+            logger.error("Invalid counter message.", { node_id: "counter", error: e });
         }
 
         return;
@@ -257,7 +258,10 @@ export default class Counter {
         const rKey = this.settings.pub.routing_key;
         this.publisher.publish(e.name, rKey, new Buffer(JSON.stringify(job)), {})
             .then(() => {
-                logger.info(`Counter job[id="${job.id}"] finished`);
+                logger.info(
+                    "Counter job evaluated as finished",
+                    { node_id: "counter", correlation_id: job.id },
+                );
             });
     }
 

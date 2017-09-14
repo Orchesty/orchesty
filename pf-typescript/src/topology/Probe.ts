@@ -51,8 +51,8 @@ class Probe {
         });
 
         return new Promise((resolve) => {
-            const server = app.listen(this.port, () => {
-                logger.debug(`Topology Probe listening info on: ${server.address().address}:${server.address().port}`);
+            app.listen(this.port, () => {
+                logger.info(`Topology Probe listening info on port: ${this.port}`);
                 resolve();
             });
         });

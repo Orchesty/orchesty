@@ -1,4 +1,4 @@
-import logger from "lib-nodejs/dist/src/logger/Logger";
+import logger from "../../logger/Logger";
 import JobMessage from "../../message/JobMessage";
 import ADrain from "./ADrain";
 import CounterPublisher from "./amqp/CounterPublisher";
@@ -47,7 +47,7 @@ class AmqpDrain extends ADrain implements IDrain {
         private counterPublisher: CounterPublisher,
         private followersPublisher: FollowersPublisher,
     ) {
-        super(settings.resequencer);
+        super(settings.node_id, settings.resequencer);
         this.settings = settings;
     }
 
@@ -68,7 +68,10 @@ class AmqpDrain extends ADrain implements IDrain {
                         resolve(bufMsg);
                     })
                     .catch((err: Error) => {
-                        logger.error(`Drain could not forward message[id=${bufMsg.getUuid()}]: ${err.message}`);
+                        logger.error(
+                            "AmqpDrain could not forward message",
+                            { node_id: this.settings.node_id, correlation_id: message.getJobId(), error: err },
+                        );
 
                         resolve(bufMsg);
                     });

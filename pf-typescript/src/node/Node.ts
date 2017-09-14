@@ -71,10 +71,7 @@ class Node {
         return new Promise((resolve) => {
             const server = app.listen(this.debugPort, () => {
                 const sa = server.address();
-                logger.debug(`Node '${this.id}' provides "${ROUTE_STATUS}" on: ${sa.address}:${sa.port}`);
-                if (this.isInitial) {
-                    logger.debug(`Node '${this.id}' provides "${ROUTE_OPEN}" on: ${sa.address}:${sa.port}`);
-                }
+                logger.debug(`Node provides "${ROUTE_STATUS}" on: ${sa.address}:${sa.port}`, { node_id: this.id });
                 resolve();
             });
         });
@@ -90,7 +87,7 @@ class Node {
         this.nodeStatus = NODE_STATUS.READY;
 
         const processFn = (msgIn: JobMessage): Promise<JobMessage> => {
-            logger.info(`Node[id=${this.id}] received message[id=${msgIn.getUuid()}].`);
+            logger.info(`Message received.`, { node_id: this.id, correlation_id: msgIn.getJobId() });
 
             return this.worker.processData(msgIn)
                 .then((msgOut: JobMessage) => {
@@ -104,8 +101,10 @@ class Node {
                     return forwarded;
                 })
                 .catch((err: any) => {
-                    // This should never happen.
-                    logger.error(`Node processFn error: ${err}`);
+                    logger.error(
+                        `Node process failed.`,
+                        { node_id: this.id, correlation_id: msgIn.getJobId(), error: err},
+                    );
 
                     return msgIn;
                 });
@@ -113,7 +112,7 @@ class Node {
 
         return this.faucet.open(processFn)
             .then(() => {
-                logger.info(`Node[id=${this.id}] faucet has been opened.`);
+                logger.info("Faucet has been opened.", {node_id: this.id});
             });
     }
 
@@ -123,14 +122,14 @@ class Node {
      */
     private sendProcessDurationMetric(msg: JobMessage): void {
         logger.info(
-            `Node[id=${this.id}] processed message[id="${msg.getUuid()}", \
-            status="${msg.getResult().status}", info="${msg.getResult().message}". \
+            `Node worker result["status="${msg.getResult().status}", message="${msg.getResult().message}". \
             process_duration="${msg.getProcessDuration()}"].`,
+            { node_id: this.id, correlation_id: msg.getJobId()},
         );
 
         this.metrics.send({node_process_duration: msg.getProcessDuration()})
             .catch((err) => {
-                logger.warn(err);
+                logger.warn("Unable to send metrics", { node_id: this.id, correlation_id: msg.getJobId(), error: err});
             });
     }
 
@@ -141,7 +140,7 @@ class Node {
     private sendTotalDurationMetric(msg: JobMessage): void {
         this.metrics.send({node_total_duration: msg.getTotalDuration()})
             .catch((err) => {
-                logger.warn(err);
+                logger.warn("Unable to send metrics", { node_id: this.id, correlation_id: msg.getJobId(), error: err});
             });
     }
 

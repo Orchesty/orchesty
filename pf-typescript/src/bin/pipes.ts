@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
 import * as fs from "fs";
-import logger from "lib-nodejs/dist/src/logger/Logger";
 import * as yargs from "yargs";
+import logger from "../logger/Logger";
 import Pipes from "../Pipes";
 
 const topologyConfig = JSON.parse(fs.readFileSync("topology.json", "utf8"));
@@ -19,25 +19,18 @@ const argv = yargs
     .help()
     .argv;
 
+process.env.PIPES_NODE_TYPE = `pipes_${argv.service}_${argv.id}`;
+
 switch (argv.service) {
     case "counter":
-        pipes.startCounter()
-        .then(() => {
-            logger.info("Counter is running.");
-        });
+        pipes.startCounter();
         break;
     case "probe":
-        pipes.startProbe()
-            .then(() => {
-                logger.info("Probe is running.");
-            });
+        pipes.startProbe();
         break;
     case "node":
-        logger.info(`Starting node '${argv.id}'`);
-        pipes.startNode(argv.id)
-            .then(() => {
-                logger.info(`Node ${argv.id} is running.`);
-            });
+        logger.info("Starting node", { node_id: argv.id });
+        pipes.startNode(argv.id);
         break;
     default:
 }

@@ -205,7 +205,6 @@ class JobMessage implements IMessage {
         this.split = messages;
     }
 
-
     /**
      * Returns the list of messages that should be forwarded to followers
      * @return {JobMessage[]}

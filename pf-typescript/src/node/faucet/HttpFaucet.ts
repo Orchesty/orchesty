@@ -1,6 +1,6 @@
 import * as bodyParser from "body-parser";
 import * as express from "express";
-import logger from "lib-nodejs/dist/src/logger/Logger";
+import logger from "../../logger/Logger";
 import JobMessage from "../../message/JobMessage";
 import IFaucet, {FaucetProcessMsgFn} from "./IFaucet";
 
@@ -16,6 +16,7 @@ export interface IValidHttpRequest {
 }
 
 export interface IHttpFaucetSettings {
+    node_id: string;
     port: number;
 }
 
@@ -28,7 +29,7 @@ class HttpFaucet implements IFaucet {
      *
      * @param {IHttpFaucetSettings} settings
      */
-    constructor(settings: IHttpFaucetSettings) {
+    constructor(private settings: IHttpFaucetSettings) {
         this.port = settings.port;
     }
 
@@ -47,14 +48,13 @@ class HttpFaucet implements IFaucet {
                     resp.sendStatus(200);
                 })
                 .catch((err: Error) => {
-                    logger.error(`HttpFaucet processData error: ${err}`);
+                    logger.error("HttpFaucet processData error.", { node_id: this.settings.node_id, error: err});
                     resp.status(500).end(err.message);
                 });
         });
 
-        const server = app.listen(this.port, () => {
-            logger.debug(`HttpFaucet ready. Listening on: \\
-                ${server.address().address}:${server.address().port}${this.path}`);
+        app.listen(this.port, () => {
+            logger.info(`HttpFaucet Listening on: ${this.port}${this.path}`, { node_id: this.settings.node_id});
         });
 
         return Promise.resolve();

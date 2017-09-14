@@ -1,4 +1,4 @@
-import logger from "lib-nodejs/dist/src/logger/Logger";
+import logger from "../../logger/Logger";
 import JobMessage from "../../message/JobMessage";
 import {ResultCode} from "../../message/ResultCode";
 import IWorker from "./IWorker";
@@ -8,7 +8,13 @@ interface IJsonMessageFormat {
     settings: any;
 }
 
+export interface ISplitterWorkerSettings {
+    node_id: string;
+}
+
 class SplitterWorker implements IWorker {
+
+    constructor(private settings: ISplitterWorkerSettings) {}
 
     public processData(msg: JobMessage): Promise<JobMessage> {
 
@@ -26,8 +32,9 @@ class SplitterWorker implements IWorker {
             msg = this.split(msg, content);
 
             logger.info(
-                `Worker[type"splitter"] split message[id="${msg.getUuid()}]" \
-                resultStatus="${msg.getResult().status}" resultMessage="${msg.getResult().message}"]`,
+                `Worker[type"splitter"] split message. \
+                Status="${msg.getResult().status}" message="${msg.getResult().message}"]`,
+                {node_id: this.settings.node_id, correlation_id: msg.getJobId()},
             );
 
             return Promise.resolve(msg);
@@ -38,7 +45,10 @@ class SplitterWorker implements IWorker {
                 message: `Invalid message content format that cannot be split. Error: ${err}`,
             });
 
-            logger.warn(`Worker[type="splitter"] could not split message. Err: ${msg.getResult().message}`);
+            logger.warn(
+                "Worker[type'splitter'] could not split message.",
+                {node_id: this.settings.node_id, correlation_id: msg.getJobId(), error: err},
+            );
 
             return Promise.resolve(msg);
         }

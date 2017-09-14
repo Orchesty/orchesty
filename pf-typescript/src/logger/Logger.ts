@@ -1,38 +1,31 @@
-import * as winston from "winston";
+import {default as winston } from "./Winston";
 
-const nodeEnv = process.env.NODE_ENV || "production";
-
-let level;
-switch (nodeEnv) {
-    case "production":
-        level = "info";
-        break;
-    case "test":
-        level = "error";
-        break;
-    default:
-        level = "debug";
+export interface ILogContext {
+    node_id?: string;
+    correlation_id?: string;
+    error?: Error;
 }
 
-const pfFormatter = (options: any) => {
-    return JSON.stringify({
-        timestamp: Date.now(),
-        severity: options.level,
-        message: options.message,
-        hostname: "localhost", // TODO - use os.host
-        type: "type", // TODO - use process.env
-        stacktrace: "", // TODO - how to pass this
-    });
-};
+class Logger {
 
-const transports = [
-    new (winston.transports.Console)({
-        colorize: true,
-        level,
-        formatter: pfFormatter,
-    }),
-];
+    public debug(message: string, context?: ILogContext): void {
+        winston.debug(message, context ? context : {});
+    }
 
-const logger = new (winston.Logger)({ transports });
+    public info(message: string, context?: ILogContext): void {
+        winston.info(message, context ? context : {});
+    }
+
+    public warn(message: string, context?: ILogContext): void {
+        winston.warn(message, context ? context : {});
+    }
+
+    public error(message: string, context?: ILogContext): void {
+        winston.error(message, context ? context : {});
+    }
+
+}
+
+const logger = new Logger();
 
 export default logger;

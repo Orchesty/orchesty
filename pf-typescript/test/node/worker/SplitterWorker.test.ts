@@ -8,7 +8,7 @@ import SplitterWorker from "../../../src/node/worker/SplitterWorker";
 describe("Splitter worker", () => {
     it("should fail when cannot JSON parse content", () => {
         const msg = new JobMessage("123", 1, {}, JSON.stringify("{foo : 1, }"));
-        const worker = new SplitterWorker();
+        const worker = new SplitterWorker({node_id: "someId"});
         return worker.processData(msg)
             .then((outMsg: JobMessage) => {
                 assert.equal(outMsg.getResult().status, ResultCode.INVALID_MESSAGE_CONTENT_FORMAT);
@@ -18,7 +18,7 @@ describe("Splitter worker", () => {
 
     it("should fail when JSON content is not array with some element", () => {
         const msg = new JobMessage("123", 1, {}, JSON.stringify({data: [], settings: {}}));
-        const worker = new SplitterWorker();
+        const worker = new SplitterWorker({node_id: "someId"});
         return worker.processData(msg)
             .then((outMsg: JobMessage) => {
                 assert.equal(outMsg.getResult().status, ResultCode.INVALID_MESSAGE_CONTENT_FORMAT);
@@ -38,7 +38,7 @@ describe("Splitter worker", () => {
             },
         };
         const msg = new JobMessage("123", 1, {}, JSON.stringify(content));
-        const worker = new SplitterWorker();
+        const worker = new SplitterWorker({node_id: "someId"});
         return worker.processData(msg)
             .then((outMsg: JobMessage) => {
                 assert.equal(outMsg.getResult().status, ResultCode.SUCCESS);

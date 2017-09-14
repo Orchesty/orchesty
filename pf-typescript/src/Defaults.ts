@@ -46,6 +46,7 @@ class Defaults {
     public static getDefaultFaucetConfig(topoName: string, node: INodeConfigSkeleton): IFaucetConfig {
         const type = "faucet.amqp";
         const settings: IAmqpFaucetSettings = {
+            node_id: node.id,
             exchange: { name: `pipes.${topoName}.events`, type: "direct", options: {} },
             queue: { name: `pipes.${topoName}.${node.id}`, options: {} },
             prefetch: 10000,
