@@ -3,6 +3,8 @@
 namespace Hanaboso\PipesFramework\HbPFMailerBundle\DependencyInjection;
 
 use RuntimeException;
+use Symfony\Component\Config\Definition\Builder\TreeBuilder;
+use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
@@ -18,6 +20,14 @@ class HbPFMailerExtension extends Extension implements PrependExtensionInterface
 {
 
     /**
+     * @return string
+     */
+    public function getAlias(): string
+    {
+        return 'hb_pf_mailer';
+    }
+
+    /**
      * Allow an extension to prepend the extension configurations.
      *
      * @param ContainerBuilder $container
@@ -26,7 +36,12 @@ class HbPFMailerExtension extends Extension implements PrependExtensionInterface
     {
         if (!$container->hasExtension('hb_pf_commons')) {
             throw new RuntimeException('You must register HbPFCommonsBundle before.');
+        } elseif (!$container->hasExtension('rabbit-mq')) {
+            throw new RuntimeException('You must register RabbitMqBundle before.');
         };
+
+        $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/prepend-config'));
+        $loader->load('hb_pf_mailer.yml');
     }
 
     /**
@@ -36,7 +51,7 @@ class HbPFMailerExtension extends Extension implements PrependExtensionInterface
     public function load(array $configs, ContainerBuilder $container): void
     {
         $configuration = new Configuration();
-        $this->processConfiguration($configuration, $configs);
+        $container->setParameter($this->getAlias(), $this->processConfiguration($configuration, $configs));
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('controllers.yml');
