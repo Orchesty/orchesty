@@ -12,7 +12,8 @@ module.exports = {
   ],
   output: {
     path: path.join(__dirname, 'dist'),
-    filename: 'bundle.js'
+    filename: 'bundle.js',
+    publicPath: '/'
   },
   plugins: [
     new CopyWebpackPlugin([{
@@ -40,21 +41,24 @@ module.exports = {
       },
       { 
         test: /\.(png|jpg)$/, 
-        loader: 'url-loader?name=imgs/[hash].[ext]&limit=16384'
+        loader: 'url-loader?name=files/[hash].[ext]&limit=16384'
       },
       {
         test: /\.(xml|bpmn)$/,
         loader: 'raw-loader'
       },
-      { test: /\.woff(\?.*)?$/,  loader: "url-loader?name=fonts/[hash].[ext]&limit=1000" },
-      { test: /\.woff2(\?.*)?$/, loader: "url-loader?name=fonts/[hash].[ext]&limit=1000" },
-      { test: /\.ttf(\?.*)?$/,   loader: "url-loader?name=fonts/[hash].[ext]&limit=1000" },
-      { test: /\.eot(\?.*)?$/,   loader: "file-loader?name=fonts/[hash].[ext]&limit=1000" },
-      { test: /\.svg(\?.*)?$/,   loader: "url-loader?name=fonts/[hash].[ext]&limit=1000" }
+      { test: /\.woff(\?.*)?$/,  loader: "url-loader?name=files/[hash].[ext]&limit=1000" },
+      { test: /\.woff2(\?.*)?$/, loader: "url-loader?name=files/[hash].[ext]&limit=1000" },
+      { test: /\.ttf(\?.*)?$/,   loader: "url-loader?name=files/[hash].[ext]&limit=1000" },
+      { test: /\.eot(\?.*)?$/,   loader: "file-loader?name=files/[hash].[ext]&limit=1000" },
+      { test: /\.svg(\?.*)?$/,   loader: "url-loader?name=files/[hash].[ext]&limit=1000" }
     ]
   },
   devServer: {
     hot: true,
-    inline: true
+    inline: true,
+    historyApiFallback: {
+      index: '/'
+    }
   }
 };
