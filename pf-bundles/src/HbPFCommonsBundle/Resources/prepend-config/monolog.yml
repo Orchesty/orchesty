@@ -1,12 +1,7 @@
 monolog:
     use_microseconds: false
-    channels: [stdout, authorization, commons, connector, mailer, parser_table, user, rabbit-mq]
+    channels: [authorization, commons, connector, mailer, parser_table, user, rabbit-mq, test]
     handlers:
-        stdout:
-            type: stream
-            path: 'php://stdout'
-            level: info
-            channels: [rabbit-mq]
         authorization:
             type: '%logger_handler%'
             path: '%kernel.logs_dir%/authorization_%kernel.environment%.log'
@@ -43,3 +38,32 @@ monolog:
             level: info
             max_files: 10
             channels: rabbit-mq
+
+        test:
+            type: group
+            members: [file_handler]
+            channels: test
+
+        # Commons handlers
+        stdout_handler:
+            type:  stream
+            path:  "php://stdout"
+            level: info
+            formatter: logstash_formatter
+
+        syslog_handler:
+            type: syslog
+            level: info
+
+        file_handler:
+            type: rotating_file
+            path: '%kernel.logs_dir%/test_%kernel.environment%.log'
+            level: info
+            max_files: 10
+
+services:
+    logstash_formatter:
+        class: Hanaboso\PipesFramework\Commons\Monolog\LogstashFormatter
+        arguments:
+            - 'asdasd'
+
