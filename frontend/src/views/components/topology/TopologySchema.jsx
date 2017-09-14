@@ -31,6 +31,8 @@ class TopologySchema extends React.Component {
       props.loadTopologySchema().then(response => {
         this.setState({state: stateType.SUCCESS});
       });
+    } else {
+      this.setState({state: stateType.SUCCESS});
     }
   }
 

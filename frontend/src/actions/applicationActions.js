@@ -20,11 +20,12 @@ export function setPageData(data){
   }
 }
 
-export function selectPage(key, args){
+export function selectPage(key, args = null, data = null){
   return {
     type: types.SELECT_PAGE,
     key,
-    args
+    args,
+    data
   }
 }
 

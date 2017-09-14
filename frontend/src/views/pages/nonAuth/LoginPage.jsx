@@ -2,10 +2,10 @@ import React from 'react'
 import {Field, reduxForm} from 'redux-form'
 import { connect } from 'react-redux';
 
-import * as authActions from '../../actions/authActions';
+import * as authActions from '../../../actions/authActions';
 
-import TextInput from '../elements/input/TextInput';
-import PasswordInput from '../elements/input/PasswordInput';
+import TextInput from '../../elements/input/TextInput';
+import PasswordInput from '../../elements/input/PasswordInput';
 
 import './LoginPage.less';
 
