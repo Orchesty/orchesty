@@ -4,6 +4,7 @@ namespace Tests\Integration\User\Model\User;
 
 use DateTime;
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use Doctrine\ORM\Mapping as ORM;
 use Hanaboso\PipesFramework\User\Document\TmpUser;
 use Hanaboso\PipesFramework\User\Document\Token;
 use Hanaboso\PipesFramework\User\Document\User;
@@ -19,6 +20,8 @@ use Tests\PrivateTrait;
  * Class UserManagerTest
  *
  * @package Tests\Integration\User\Model\User
+ * @ORM\Entity
+ * @ORM\Table(name="user_manager_test")
  */
 class UserManagerTest extends DatabaseTestCaseAbstract
 {

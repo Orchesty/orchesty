@@ -1,0 +1,38 @@
+rabbit-mq:
+    exchanges:
+        mailer:
+            durable: true
+            type: direct
+
+    queues:
+        pf-mailer:
+            durable: true
+            bindings:
+                - exchange: mailer
+                  routing_key: mailer
+
+    producers:
+        pf-mailer:
+            class: Hanaboso\PipesFramework\Commons\RabbitMq\Mailer\MailerProducer
+            exchange: mailer
+            serializer: Hanaboso\PipesFramework\RabbitMqBundle\Serializers\JsonSerializer
+            routing_key: mailer
+
+    consumers:
+        pf-mailer:
+            class: Hanaboso\PipesFramework\Commons\RabbitMq\Mailer\MailerConsumer
+            queue: pf-mailer
+            serializer: Hanaboso\PipesFramework\RabbitMqBundle\Serializers\JsonSerializer
+            callback: hanaboso.pipes_framework.commons.rabbit_mq.mailer.mailer_callback
+            no_ack: true
+
+services:
+    hanaboso.pipes_framework.commons.rabbit_mq.mailer.mailer_callback:
+        class: Hanaboso\PipesFramework\Commons\RabbitMq\Mailer\MailerCallback
+        calls:
+            - [setRepeater, ['@hanaboso.pipes_framework.commons.rabbit_mq.repeater.repeater']]
+            - [setLogger, ['@monolog.logger.rabbit-mq']]
+        arguments:
+            - '@hbpf.mail.mailer'
+            - '@hbpf.mail_builder.generic'
+            - '@hbpfmailer.default_value'
