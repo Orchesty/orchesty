@@ -8,9 +8,9 @@
 
 namespace Hanaboso\PipesFramework\Commons\StartingPoint;
 
-use Hanaboso\PipesFramework\Commons\Node\Document\Node;
 use Hanaboso\PipesFramework\Commons\StartingPoint\Exception\StartingPointException;
-use Hanaboso\PipesFramework\Commons\Topology\Document\Topology;
+use Hanaboso\PipesFramework\Configurator\Document\Node;
+use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Nette\Utils\Strings;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\HttpFoundation\Request;

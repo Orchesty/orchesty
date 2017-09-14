@@ -9,7 +9,7 @@
 namespace Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\Impl;
 
 use Hanaboso\PipesFramework\Commons\Enum\TypeEnum;
-use Hanaboso\PipesFramework\Commons\Node\Document\Node;
+use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\Service;
 use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\ServiceBuilderInterface;
 use Hanaboso\PipesFramework\TopologyGenerator\Environment;

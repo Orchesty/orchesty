@@ -8,6 +8,7 @@ use Hanaboso\PipesFramework\HbPFAclBundle\HbPFAclBundle;
 use Hanaboso\PipesFramework\HbPFApiGatewayBundle\HbPFApiGatewayBundle;
 use Hanaboso\PipesFramework\HbPFAuthorizationBundle\HbPFAuthorizationBundle;
 use Hanaboso\PipesFramework\HbPFCommonsBundle\HbPFCommonsBundle;
+use Hanaboso\PipesFramework\HbPFConfiguratorBundle\HbPFConfiguratorBundle;
 use Hanaboso\PipesFramework\HbPFConnectorBundle\HbPFConnectorBundle;
 use Hanaboso\PipesFramework\HbPFCustomNodeBundle\HbPFCustomNodeBundle;
 use Hanaboso\PipesFramework\HbPFJoinerBundle\HbPFJoinerBundle;
@@ -52,6 +53,7 @@ class AppKernel extends Kernel
             new HbPFApiGatewayBundle(),
             new HbPFAuthorizationBundle(),
             new HbPFCommonsBundle(),
+            new HbPFConfiguratorBundle(),
             new HbPFConnectorBundle(),
             new HbPFCustomNodeBundle(),
             new HbPFJoinerBundle(),
