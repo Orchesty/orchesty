@@ -28,27 +28,17 @@ class TopologyController extends FOSRestController
     private $topologyHandler;
 
     /**
-     * TopologyController constructor.
-     *
-     * @param TopologyHandler $topologyHandler
-     */
-    public function __construct(TopologyHandler $topologyHandler)
-    {
-        $this->topologyHandler = $topologyHandler;
-    }
-
-    /**
      * @Route("/topologies")
      * @Method({"GET", "OPTIONS"})
      *
-     * @param Request $request
+     * @param mixed $query
      *
      * @return Response
      */
-    public function getTopologiesAction(Request $request): Response
+    public function getTopologiesAction($query): Response
     {
-        $query = $request->query;
-        $data  = $this->topologyHandler->getTopologies(
+        $this->construct();
+        $data = $this->topologyHandler->getTopologies(
             $query->get('limit'),
             $query->get('offset'),
             $query->get('order_by')
@@ -67,6 +57,7 @@ class TopologyController extends FOSRestController
      */
     public function getTopologyAction(string $id): Response
     {
+        $this->construct();
         try {
             return new JsonResponse($this->topologyHandler->getTopology($id));
         } catch (TopologyException $e) {
@@ -85,6 +76,7 @@ class TopologyController extends FOSRestController
      */
     public function createTopologyAction(Request $request): Response
     {
+        $this->construct();
         try {
             return new JsonResponse($this->topologyHandler->createTopology($request->request->all()));
         } catch (TopologyException $e) {
@@ -103,6 +95,7 @@ class TopologyController extends FOSRestController
      */
     public function updateTopologyAction(Request $request, string $id): Response
     {
+        $this->construct();
         try {
             return new JsonResponse($this->topologyHandler->updateTopology($id, $request->request->all()));
         } catch (TopologyException $e) {
@@ -120,6 +113,7 @@ class TopologyController extends FOSRestController
      */
     public function getTopologySchemaAction(string $id): Response
     {
+        $this->construct();
         try {
             $response = new Response($this->topologyHandler->getTopologySchema($id));
             $response->headers->set('Content-Type', 'application/xml');
@@ -141,6 +135,7 @@ class TopologyController extends FOSRestController
      */
     public function saveTopologySchemaAction(Request $request, string $id): Response
     {
+        $this->construct();
         try {
             /** @var string $content */
             $content = $request->getContent();
@@ -172,6 +167,7 @@ class TopologyController extends FOSRestController
      */
     public function publishTopologyAction(string $id): Response
     {
+        $this->construct();
         $data = $this->topologyHandler->publishTopology($id);
 
         return new JsonResponse($data, 200);
@@ -187,6 +183,7 @@ class TopologyController extends FOSRestController
      */
     public function cloneTopologyAction(string $id): Response
     {
+        $this->construct();
         $data = $this->topologyHandler->cloneTopology($id);
 
         return new JsonResponse($data, 200);
@@ -202,9 +199,20 @@ class TopologyController extends FOSRestController
      */
     public function deleteTopologyAction(string $id): Response
     {
+        $this->construct();
         $this->topologyHandler->deleteTopology($id);
 
         return new JsonResponse([], 200);
+    }
+
+    /**
+     *
+     */
+    private function construct(): void
+    {
+        if (!$this->topologyHandler) {
+            $this->topologyHandler = $this->container->get('hbpf.configurator.handler.topology');
+        }
     }
 
 }

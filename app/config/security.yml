@@ -10,19 +10,19 @@ security:
                 property: email
     firewalls:
         unsecured_areas:
-            pattern: ^/(api/user/login|api/user/logout|api/user/register|api/user/\w+/activate|/api/user/\w+/set_password|/api/user/reset_password)
+            pattern: ^/(api/gateway/user/login|api/gateway/user/logout|api/gateway/user/register|api/gateway/user/\w+/activate|/api/user/\w+/set_password|/api/user/reset_password)
             security: false
         secured_area:
             pattern: ^/
             security: true
             provider: user_provider
             form_login:
-                check_path: /api/user/login
-                login_path: /api/user/login
+                check_path: /api/gateway/user/login
+                login_path: /api/gateway/user/login
                 default_target_path: /
 
             logout:
-                path: /api/user/logout
+                path: /api/gateway/user/logout
                 target: /
                 invalidate_session: true
                 success_handler: hbpf.user.handler.user
