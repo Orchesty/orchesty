@@ -32,8 +32,11 @@ const testTopology: ITopologyConfigSkeleton = {
             worker: {
                 type: "worker.http",
                 settings: {
+                    host: "localhost",
                     method: "post",
-                    url: "http://localhost:3000/httpworker1/",
+                    port: 3000,
+                    path: "/httpworker1/",
+                    secure: false,
                     opts: {},
                 },
             },

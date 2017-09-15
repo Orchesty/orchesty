@@ -9,11 +9,11 @@ import IWorker from "./worker/IWorker";
 
 export enum NODE_STATUS {
     READY = 200,
-    UNPREPARED = 503, // Service Unavailable
+    BRIDGE_NOT_READY = 500,
+    WORKER_NOT_READY = 503,
 }
 
 const ROUTE_STATUS = "/status";
-const ROUTE_OPEN = "/open";
 
 const emptyFn: () => void = () => {
     // function that does nothing and serves as a mock
@@ -49,7 +49,7 @@ class Node {
         this.debugPort = debugPort;
         this.isInitial = isInitial;
 
-        this.nodeStatus = NODE_STATUS.UNPREPARED;
+        this.nodeStatus = NODE_STATUS.BRIDGE_NOT_READY;
         this.metrics = new Metrics(metricsOptions.measurement, id, id, metricsOptions.server, metricsOptions.port);
     }
 
@@ -65,7 +65,17 @@ class Node {
 
         // All nodes have "/status" route to indicate their readiness
         app.get(ROUTE_STATUS, (req, resp) => {
-            resp.sendStatus(this.nodeStatus);
+            if (this.nodeStatus === NODE_STATUS.BRIDGE_NOT_READY) {
+                return resp.status(NODE_STATUS.BRIDGE_NOT_READY).send("Bridge not ready yet");
+            }
+
+            this.worker.isWorkerReady().then((isReady: boolean) => {
+                if (isReady) {
+                    return resp.status(NODE_STATUS.READY).send("Bridge and worker are both ready.");
+                } else {
+                    return resp.status(NODE_STATUS.WORKER_NOT_READY).send("Worker not ready yet");
+                }
+            });
         });
 
         return new Promise((resolve) => {

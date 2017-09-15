@@ -2,24 +2,42 @@ import * as request from "request";
 import logger from "../../logger/Logger";
 import JobMessage from "../../message/JobMessage";
 import { ResultCode } from "../../message/ResultCode";
-import AHttpWorker from "./http/AHttpWorker";
 import IWorker from "./IWorker";
 
 export interface IHttpWorkerSettings {
     node_id: string;
+    host: string;
+    port: number;
     method: string;
-    url: string;
+    path: string;
+    secure: boolean;
     opts: any;
 }
 
-class HttpWorker extends AHttpWorker implements IWorker {
+export interface IHttpWorkerRequestParams {
+    method: string;
+    url: string;
+    json: any;
+    gzip?: boolean;
+    body?: string;
+    headers: {
+        job_id: string,
+        sequence_id: number,
+        message_id: string,
+        reply_to_url?: string,
+        reply_to_method?: string,
+    };
+}
 
-    private opts: {};
+const STATUS_METHOD = "GET";
+const STATUS_PATH = "/status";
 
-    constructor(private settings: IHttpWorkerSettings) {
-        super(settings.method, settings.url);
-        this.opts = settings.opts;
-    }
+/**
+ * Converts JobMessage to Http request and then converts received Http response back to JobMessage object
+ */
+class HttpWorker implements IWorker {
+
+    constructor(private settings: IHttpWorkerSettings) {}
 
     /**
      *
@@ -27,10 +45,10 @@ class HttpWorker extends AHttpWorker implements IWorker {
      * @return {Promise<JobMessage>}
      */
     public processData(msg: JobMessage): Promise<JobMessage> {
-        const reqParams = this.getHttpRequestParams(msg);
+        const reqParams = this.getJobRequestParams(msg);
 
         return new Promise((resolve) => {
-            Object.assign(reqParams, this.opts);
+            Object.assign(reqParams, this.settings.opts);
 
             logger.info(
                 `Worker[type'http'] sent request to: ${reqParams.url}`,
@@ -76,6 +94,72 @@ class HttpWorker extends AHttpWorker implements IWorker {
                 return resolve(msg);
             });
         });
+    }
+
+    /**
+     * Returns whether the worker is ready or not
+     *
+     * @return {Promise<boolean>}
+     */
+    public isWorkerReady(): Promise<boolean> {
+        return new Promise((resolve) => {
+            // Every http worker service must provide :80/status route
+            const reqParams = { method: STATUS_METHOD, url: this.getUrl(STATUS_PATH)};
+
+            logger.info(`HttpWorker asking worker if is ready on ${reqParams.url}`, {node_id: this.settings.node_id});
+
+            request(reqParams, (err, response) => {
+                if (err) {
+                    logger.warn(
+                        "HttpWorker worker not ready.", { node_id: this.settings.node_id, error: err },
+                    );
+
+                    return resolve(false);
+                }
+
+                if (response.statusCode !== 200) {
+                    logger.warn(
+                        `HttpWorker worker not ready: statusCode="${response.statusCode}"`,
+                        { node_id: this.settings.node_id },
+                    );
+
+                    return resolve(false);
+                }
+
+                logger.info("Worker[type'http'] ready", { node_id: this.settings.node_id });
+
+                return resolve(true);
+            });
+        });
+    }
+
+    /**
+     *
+     * @param {JobMessage} inMsg
+     * @return {IHttpWorkerRequestParams}
+     */
+    private getJobRequestParams(inMsg: JobMessage): IHttpWorkerRequestParams {
+        return {
+            method: this.settings.method.toUpperCase(),
+            url: this.getUrl(this.settings.path),
+            json: JSON.parse(inMsg.getContent()),
+            headers: {
+                job_id: inMsg.getJobId(),
+                sequence_id: inMsg.getSequenceId(),
+                message_id: inMsg.getUuid(),
+            },
+        };
+    }
+
+    /**
+     *
+     * @param {string} path
+     * @return {string}
+     */
+    private getUrl(path: string): string {
+        const protocol = this.settings.secure ? "https://" : "http://";
+
+        return `${protocol}${this.settings.host}:${this.settings.port}${path}`;
     }
 
 }

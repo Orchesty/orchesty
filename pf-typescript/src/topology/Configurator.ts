@@ -104,8 +104,10 @@ class Configurator {
         const faucetSettings = nodeSkeleton.faucet || defNode.faucet;
         faucetSettings.settings.node_id = nodeSkeleton.id;
 
-        const isResequencer = nodeSkeleton.resequencer || defNode.resequencer;
+        const workerSettings = nodeSkeleton.worker || defNode.worker;
+        workerSettings.settings.node_id = nodeSkeleton.id;
 
+        const isResequencer = nodeSkeleton.resequencer || defNode.resequencer;
         const drainSettings = nodeSkeleton.drain || defNode.drain;
         drainSettings.settings.resequencer = isResequencer;
         drainSettings.settings.node_id = nodeSkeleton.id;
@@ -113,8 +115,8 @@ class Configurator {
         return {
             id: nodeSkeleton.id,
             next: nodeSkeleton.next,
-            worker: nodeSkeleton.worker || defNode.worker,
-            faucet: nodeSkeleton.faucet || defNode.faucet,
+            worker: workerSettings,
+            faucet: faucetSettings,
             drain: drainSettings,
             resequencer: isResequencer,
             debug: nodeSkeleton.debug || defNode.debug,

@@ -12,10 +12,19 @@ export interface ISplitterWorkerSettings {
     node_id: string;
 }
 
+/**
+ *
+ */
 class SplitterWorker implements IWorker {
 
     constructor(private settings: ISplitterWorkerSettings) {}
 
+    /**
+     * Splits the the JSON data in the content into separate messages
+     *
+     * @param {JobMessage} msg
+     * @return {Promise<JobMessage>}
+     */
     public processData(msg: JobMessage): Promise<JobMessage> {
 
         try {
@@ -52,6 +61,15 @@ class SplitterWorker implements IWorker {
 
             return Promise.resolve(msg);
         }
+    }
+
+    /**
+     * Returns whether the worker is ready or not
+     *
+     * @return {Promise<boolean>}
+     */
+    public isWorkerReady(): Promise<boolean> {
+        return Promise.resolve(true);
     }
 
     /**

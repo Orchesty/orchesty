@@ -92,7 +92,9 @@ const expectedTopo: ITopologyConfig = {
             next: ["node_b"],
             resequencer: true,
             worker: {
-                settings: {},
+                settings: {
+                    node_id: "node_a",
+                },
                 type: "worker.null",
             },
         },
@@ -144,6 +146,7 @@ const expectedTopo: ITopologyConfig = {
             resequencer: true,
             worker: {
                 settings: {
+                    node_id: "node_b",
                     suffix: "| something",
                 },
                 type: "worker.appender",
