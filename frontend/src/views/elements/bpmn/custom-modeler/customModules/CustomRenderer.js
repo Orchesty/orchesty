@@ -16,6 +16,10 @@ function CustomRenderer(eventBus, styles, pathMap, canvas) {
   };
 
   this.drawShape = (parentGfx, element) => {
+    if (element.type === 'label') {
+      return;
+    }
+
     const pipesType = element.pipesType || element.businessObject.pipesType;
 
     switch (pipesType) {
