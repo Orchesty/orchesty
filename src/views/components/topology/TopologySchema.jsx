@@ -48,7 +48,7 @@ class TopologySchema extends React.Component {
   }
 
   render() {
-    const {schema, actions, addErrorNotification , addSuccessNotification} = this.props;
+    const {schema, setActions, addErrorNotification , addSuccessNotification} = this.props;
 
     return (
       <SimpleState state={this.state.state}>
@@ -56,7 +56,7 @@ class TopologySchema extends React.Component {
           schema={schema}
           onError={addErrorNotification}
           onImport={addSuccessNotification}
-          actions={actions}
+          setActions={setActions}
           onSave={this.save}
         />
       </SimpleState>
@@ -68,7 +68,7 @@ TopologySchema.propTypes = {
   loadTopologySchema: PropTypes.func.isRequired,
   addSuccessNotification: PropTypes.func.isRequired,
   addErrorNotification: PropTypes.func.isRequired,
-  actions: PropTypes.func.isRequired,
+  setActions: PropTypes.func.isRequired,
   schema: PropTypes.string,
   schemaId: PropTypes.string,
   saveTopologySchema: PropTypes.func.isRequired,

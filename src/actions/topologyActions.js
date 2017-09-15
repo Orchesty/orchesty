@@ -41,7 +41,7 @@ function loadList(id, loadingState = true){
   }
 }
 
-export function openTopologyList(listId, pageSize = params.defaultPageSize) {
+export function needTopologyList(listId, pageSize = params.defaultPageSize) {
   return (dispatch, getState) => {
     const list = getState().topology.lists[listId];
     if (!list) {

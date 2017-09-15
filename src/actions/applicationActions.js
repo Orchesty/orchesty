@@ -31,7 +31,7 @@ export function selectPage(key, args = null, data = null){
 
 export function openModal(id, data){
   return {
-    type: types.OPEN_MODAL,
+    type: types.MODAL_OPEN,
     id,
     data
   }
@@ -39,7 +39,7 @@ export function openModal(id, data){
 
 export function closeModal(){
   return {
-    type: types.CLOSE_MODAL
+    type: types.MODAL_CLOSE
   }
 }
 

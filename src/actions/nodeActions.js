@@ -13,7 +13,7 @@ function receive(data){
   }
 }
 
-function loadForTopology(listId, topologyId, loadingState = true) {
+function loadListForTopology(listId, topologyId, loadingState = true) {
   return dispatch => {
     if (loadingState){
       dispatch(listLoading(listId));
@@ -33,7 +33,7 @@ export function needNodesForTopology(topologyId, forced = false, loadingState = 
       dispatch(createRelationList(listId, 'topology', topologyId));
     }
     if (forced || !list || list.state == stateType.NOT_LOADED || list.state == stateType.ERROR){
-      return dispatch(loadForTopology(listId, topologyId, loadingState));
+      return dispatch(loadListForTopology(listId, topologyId, loadingState));
     } else {
       return Promise.resolve(true);
     }

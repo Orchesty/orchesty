@@ -7,18 +7,11 @@
     "page": "dashboard"
   },
   {
-    "id": "topology",
-    "type": "sub",
+    "id": "topology_list",
+    "type": "item",
     "icon": "fa fa-connectdevelop",
-    "caption": "Topology",
-    "items": [
-      {
-        "id": "topology_list",
-        "type": "item",
-        "caption": "List",
-        "page": "topology_list"
-      }
-    ]
+    "caption": "Topologies",
+    "page": "topology_list"
   },
   {
     "id": "test_sub_menu",

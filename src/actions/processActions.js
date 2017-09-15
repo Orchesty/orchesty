@@ -3,7 +3,7 @@ import {stateType} from '../types';
 
 export function startProcess(id) {
   return {
-    type: types.SET_PROCESS_STATE,
+    type: types.PROCESS_SET_STATE,
     id,
     stateType: stateType.LOADING
   }
@@ -11,7 +11,7 @@ export function startProcess(id) {
 
 export function successProcess(id){
   return {
-    type: types.SET_PROCESS_STATE,
+    type: types.PROCESS_SET_STATE,
     id,
     stateType: stateType.SUCCESS
   }
@@ -19,7 +19,7 @@ export function successProcess(id){
 
 export function errorProcess(id) {
   return {
-    type: types.SET_PROCESS_STATE,
+    type: types.PROCESS_SET_STATE,
     id,
     stateType: stateType.ERROR
   }
