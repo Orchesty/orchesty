@@ -26,12 +26,12 @@ function CustomElementFactory(bpmnFactory, moddle, translate) {
     let element = this.createBpmnElement(elementType, attrs);
 
     // Creating of new shape from palette
-    if (attrs.createPipes && attrs.pipesType) {
+    if (attrs.createPipes && attrs.pipesType && attrs.pipesType !== '') {
       // Set field in panel
       element.businessObject.pipesType = attrs.pipesType;
 
       // Generate default name for task
-      if (element.type === 'bpmn:Task' && !element.businessObject.name) {
+      if (!element.businessObject.name) {
         element.businessObject.name = attrs.pipesType.charAt(0).toUpperCase() + attrs.pipesType.slice(1);
       }
     }
