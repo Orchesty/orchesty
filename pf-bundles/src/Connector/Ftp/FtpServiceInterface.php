@@ -23,7 +23,7 @@ interface FtpServiceInterface
      * @param int    $port
      * @param int    $timeout
      */
-    public function connect(string $host, bool $ssl, int $port = 21, $timeout = 15): void;
+    public function connect(string $host, bool $ssl = FALSE, int $port = 21, $timeout = 15): void;
 
     /**
      *
@@ -39,8 +39,10 @@ interface FtpServiceInterface
     /**
      * @param string $remoteFile
      * @param string $content
+     *
+     * @return bool
      */
-    public function uploadFile(string $remoteFile, string $content): void;
+    public function uploadFile(string $remoteFile, string $content): bool;
 
     /**
      * @param string $remoteFile
