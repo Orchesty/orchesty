@@ -48,9 +48,9 @@ final class Magento2OAuthAuthorizationTest extends KernelTestCaseAbstract
     {
         $authorization = $this->getMockedAuthorization();
         $authorization->saveSettings([
-            'url'             => 'url://magento2',
-            'username_key'    => 'api_key',
-            'password_secret' => 'secret_key',
+            'field1' => 'url://magento2',
+            'field2' => 'api_key',
+            'field3' => 'secret_key',
         ]);
 
         self::assertEquals([
@@ -68,7 +68,7 @@ final class Magento2OAuthAuthorizationTest extends KernelTestCaseAbstract
         $readme = $this->getMockedAuthorization()->getReadMe();
 
         $this->assertEquals(
-            '[Name => Content]: [url => Connector URL] [username_key => Consumer Key] [password_secret => Consumer Secret]',
+            'Field1 contains connector URL, field2 contains consumer key, field3 contains consumer secret.',
             $readme
         );
     }
@@ -86,9 +86,9 @@ final class Magento2OAuthAuthorizationTest extends KernelTestCaseAbstract
 
         $authorization = $this->getMockedAuthorization();
         $authorization->saveSettings([
-            'url'             => '',
-            'username_key'    => 'api_key',
-            'password_secret' => 'secret_key',
+            'field1' => '',
+            'field2' => 'api_key',
+            'field3' => 'secret_key',
         ]);
         $authorization->getHeaders('GET', 'http://magento.com');
     }
@@ -106,9 +106,9 @@ final class Magento2OAuthAuthorizationTest extends KernelTestCaseAbstract
 
         $authorization = $this->getMockedAuthorization();
         $authorization->saveSettings([
-            'url'             => 'url://magento2',
-            'username_key'    => '',
-            'password_secret' => 'secret_key',
+            'field1' => 'url://magento2',
+            'field2' => '',
+            'field3' => 'secret_key',
         ]);
         $authorization->getHeaders('GET', 'http://magento.com');
     }
@@ -126,9 +126,9 @@ final class Magento2OAuthAuthorizationTest extends KernelTestCaseAbstract
 
         $authorization = $this->getMockedAuthorization();
         $authorization->saveSettings([
-            'url'             => 'url://magento2',
-            'username_key'    => 'api_key',
-            'password_secret' => '',
+            'field1' => 'url://magento2',
+            'field2' => 'api_key',
+            'field3' => '',
         ]);
         $authorization->getHeaders('GET', 'http://magento.com');
     }
@@ -142,9 +142,9 @@ final class Magento2OAuthAuthorizationTest extends KernelTestCaseAbstract
     {
         $authorization = $this->getMockedAuthorization();
         $authorization->saveSettings([
-            'url'             => 'url://magento2',
-            'username_key'    => 'api_key',
-            'password_secret' => 'secret_key',
+            'field1' => 'url://magento2',
+            'field2' => 'api_key',
+            'field3' => 'secret_key',
         ]);
 
         $this->assertEquals('url://magento2', $authorization->getUrl());
@@ -162,9 +162,9 @@ final class Magento2OAuthAuthorizationTest extends KernelTestCaseAbstract
 
         $authorization = $this->getMockedAuthorization();
         $authorization->saveSettings([
-            'url'             => '',
-            'username_key'    => 'api_key',
-            'password_secret' => 'secret_key',
+            'field1' => '',
+            'field2' => 'api_key',
+            'field3' => 'secret_key',
         ]);
 
         $authorization->getSettings();
@@ -182,9 +182,9 @@ final class Magento2OAuthAuthorizationTest extends KernelTestCaseAbstract
 
         $authorization = $this->getMockedAuthorization();
         $authorization->saveSettings([
-            'url'             => 'url://magento2',
-            'username_key'    => '',
-            'password_secret' => 'secret_key',
+            'field1' => 'url://magento2',
+            'field2' => '',
+            'field3' => 'secret_key',
         ]);
 
         $authorization->getSettings();
@@ -202,9 +202,9 @@ final class Magento2OAuthAuthorizationTest extends KernelTestCaseAbstract
 
         $authorization = $this->getMockedAuthorization();
         $authorization->saveSettings([
-            'url'             => 'url://magento2',
-            'username_key'    => 'api_key',
-            'password_secret' => '',
+            'field1' => 'url://magento2',
+            'field2' => 'api_key',
+            'field3' => '',
         ]);
 
         $authorization->getSettings();
@@ -226,9 +226,9 @@ final class Magento2OAuthAuthorizationTest extends KernelTestCaseAbstract
     {
         $authorization = $this->getMockedAuthorization();
         $authorization->saveSettings([
-            'url'             => 'url://magento2',
-            'username_key'    => 'api_key',
-            'password_secret' => 'secret_key',
+            'field1' => 'url://magento2',
+            'field2' => 'api_key',
+            'field3' => 'secret_key',
         ]);
 
         $this->assertEmpty($authorization->authorize());
@@ -242,9 +242,9 @@ final class Magento2OAuthAuthorizationTest extends KernelTestCaseAbstract
     {
         $authorization = $this->getMockedAuthorization();
         $authorization->saveSettings([
-            'url'             => 'url://magento2',
-            'username_key'    => 'api_key',
-            'password_secret' => 'secret_key',
+            'field1' => 'url://magento2',
+            'field2' => 'api_key',
+            'field3' => 'secret_key',
         ]);
 
         $this->assertEmpty($authorization->saveToken([]));

@@ -140,9 +140,9 @@ class Magento2Authorization extends AuthorizationAbstract implements Magento2Aut
         }
 
         $this->authorization->setSettings([
-            self::URL      => $data['url'],
-            self::USERNAME => $data['username_key'],
-            self::PASSWORD => $data['password_secret'],
+            self::URL      => $data['field1'],
+            self::USERNAME => $data['field2'],
+            self::PASSWORD => $data['field3'],
         ]);
         $this->dm->flush();
 
@@ -155,7 +155,7 @@ class Magento2Authorization extends AuthorizationAbstract implements Magento2Aut
      */
     public function getReadMe(): string
     {
-        return '[Name => Content]: [url => Connector URL] [username_key => Username] [password_secret => Password]';
+        return 'Field1 contains connector URL, field2 contains username, field3 contains password.';
     }
 
     /**

@@ -167,9 +167,9 @@ class Magento2OAuthAuthorization extends OAuthAuthorizationAbstract implements M
         }
 
         $this->authorization->setSettings([
-            self::URL             => $data['url'],
-            self::CONSUMER_KEY    => $data['username_key'],
-            self::CONSUMER_SECRET => $data['password_secret'],
+            self::URL             => $data['field1'],
+            self::CONSUMER_KEY    => $data['field2'],
+            self::CONSUMER_SECRET => $data['field3'],
         ]);
         $this->dm->flush();
     }
@@ -222,7 +222,7 @@ class Magento2OAuthAuthorization extends OAuthAuthorizationAbstract implements M
      */
     public function getReadMe(): string
     {
-        return '[Name => Content]: [url => Connector URL] [username_key => Consumer Key] [password_secret => Consumer Secret]';
+        return 'Field1 contains connector URL, field2 contains consumer key, field3 contains consumer secret.';
     }
 
     /**
