@@ -43,10 +43,16 @@ class Probe {
         app.get(HTTP_PROBE_PATH, (req, resp) => {
             this.checkTopology()
                 .then((res: {status: Status, message: string}) => {
-                    resp.status(res.status).send(res.message);
+                    resp
+                        .set("Accept", "application/json")
+                        .status(res.status)
+                        .send(res.message);
                 })
                 .catch((err: Error) => {
-                    resp.status(Status.ERROR).send(`Error: ${err}`);
+                    resp
+                        .set("Accept", "application/json")
+                        .status(Status.ERROR)
+                        .send(`Error: ${err}`);
                 });
         });
 
@@ -68,17 +74,17 @@ class Probe {
             let ready = 0;
             let failed = 0;
             let total = 0;
-            const failedUrls: Array<{ url: string, err: string }> = [];
+            const failedUrls: Array<{ url: string, body: string, err: string }> = [];
 
             this.nodes.forEach((node: INodeConfig) => {
-                request(node.debug.url, (err, response) => {
+                request(node.debug.url, (err, response, body) => {
                     total += 1;
 
                     if (!err && response.statusCode && response.statusCode === Status.SUCCESS) {
                         ready += 1;
                     } else {
                         failed += 1;
-                        failedUrls.push({ url: node.debug.url, err });
+                        failedUrls.push({ url: node.debug.url, body, err });
                     }
 
                     if (!resolved && this.nodes.length === total) {
