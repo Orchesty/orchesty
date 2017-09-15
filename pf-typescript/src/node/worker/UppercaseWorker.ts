@@ -2,6 +2,9 @@ import JobMessage from "../../message/JobMessage";
 import {ResultCode} from "../../message/ResultCode";
 import IWorker from "./IWorker";
 
+/**
+ * Worker for testing purposes,
+ */
 class UppercaseWorker implements IWorker {
 
     public processData(msg: JobMessage): Promise<JobMessage> {
@@ -9,6 +12,15 @@ class UppercaseWorker implements IWorker {
         msg.setResult({status: ResultCode.SUCCESS, message: "Uppercase worker OK"});
 
         return Promise.resolve(msg);
+    }
+
+    /**
+     * Returns whether the worker is ready or not
+     *
+     * @return {Promise<boolean>}
+     */
+    public isWorkerReady(): Promise<boolean> {
+        return Promise.resolve(true);
     }
 
 }

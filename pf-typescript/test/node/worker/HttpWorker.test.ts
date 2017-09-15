@@ -24,10 +24,14 @@ describe("HttpWorker", () => {
         const msg = new JobMessage("123", 1, {}, JSON.stringify({ val: "original" }));
         const worker = new HttpWorker({
             node_id: "someId",
+            host: "localhost",
             method: "post",
-            url: "http://localhost:4020/ok",
+            port: 4020,
+            path: "/ok",
+            secure: false,
             opts : {},
         });
+
         return worker.processData(msg)
             .then((outMsg: JobMessage) => {
                 assert.equal(outMsg.getResult().status, ResultCode.SUCCESS);
@@ -39,10 +43,14 @@ describe("HttpWorker", () => {
         const msg = new JobMessage("123", 1, {}, JSON.stringify({ val: "original" }));
         const worker = new HttpWorker({
             node_id: "someId",
+            host: "localhost",
             method: "post",
-            url: "http://localhost:4020/not-ok",
+            port: 4020,
+            path: "/not-ok",
+            secure: false,
             opts : {},
         });
+
         return worker.processData(msg)
             .then((outMsg: JobMessage) => {
                 assert.equal(outMsg.getResult().status, ResultCode.HTTP_ERROR);
@@ -54,14 +62,64 @@ describe("HttpWorker", () => {
         const msg = new JobMessage("123", 1, {}, JSON.stringify({ val: "original" }));
         const worker = new HttpWorker({
             node_id: "someId",
+            host: "localhost",
             method: "post",
-            url: "http://localhost:4020/non-existing",
+            port: 4020,
+            path: "/non-existing",
+            secure: false,
             opts : {},
         });
+
         return worker.processData(msg)
             .then((outMsg: JobMessage) => {
                 assert.equal(outMsg.getResult().status, ResultCode.HTTP_ERROR);
                 assert.equal(outMsg.getContent(), JSON.stringify({ val: "original" }));
+            });
+    });
+
+    it("should return that worker is ready when it is really ready", () => {
+        const workerServer = express();
+        workerServer.get("/status", (req, resp) => {
+            resp.sendStatus(200);
+        });
+        workerServer.listen(4321);
+
+        const worker = new HttpWorker({
+            node_id: "someId",
+            host: "localhost",
+            method: "post",
+            port: 4321,
+            path: "/some-path",
+            secure: false,
+            opts : {},
+        });
+
+        return worker.isWorkerReady()
+            .then((isReady: boolean) => {
+                assert.isTrue(isReady);
+            });
+    });
+
+    it("should return that worker is not ready when it says it is not", () => {
+        const workerServer = express();
+        workerServer.get("/status", (req, resp) => {
+            resp.sendStatus(500);
+        });
+        workerServer.listen(4322);
+
+        const worker = new HttpWorker({
+            node_id: "someId",
+            host: "localhost",
+            method: "post",
+            port: 4322,
+            path: "/some-path",
+            secure: false,
+            opts : {},
+        });
+
+        return worker.isWorkerReady()
+            .then((isReady: boolean) => {
+                assert.isFalse(isReady);
             });
     });
 

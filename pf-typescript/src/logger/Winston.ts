@@ -9,7 +9,7 @@ switch (nodeEnv) {
         level = "info";
         break;
     case "test":
-        level = "debug";
+        level = "warn";
         break;
     default:
         level = "debug";
@@ -55,6 +55,7 @@ const pfFormatter = (options: any) => {
 
 const transports = [
     new (winston.transports.Console)({
+        name: "pf",
         colorize: true,
         level,
         formatter: pfFormatter,
@@ -62,5 +63,10 @@ const transports = [
 ];
 
 const winstonLogger = new (winston.Logger)({ transports });
+
+// Do not output anything when running test
+if (nodeEnv === "test") {
+    winstonLogger.remove(transports[0]);
+}
 
 export default winstonLogger;
