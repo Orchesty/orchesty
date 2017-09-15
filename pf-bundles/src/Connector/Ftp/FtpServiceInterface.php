@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Hanaboso\PipesFramework\Ftp;
+namespace Hanaboso\PipesFramework\Connector\Ftp;
 
 use SplFileInfo;
 

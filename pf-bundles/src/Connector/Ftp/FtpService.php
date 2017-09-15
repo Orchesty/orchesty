@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace Hanaboso\PipesFramework\Ftp;
+namespace Hanaboso\PipesFramework\Connector\Ftp;
 
-use Hanaboso\PipesFramework\Ftp\Adapter\FtpAdapterInterface;
+use Hanaboso\PipesFramework\Connector\Ftp\Adapter\FtpAdapterInterface;
 use Nette\Utils\FileSystem;
 use SplFileInfo;
 

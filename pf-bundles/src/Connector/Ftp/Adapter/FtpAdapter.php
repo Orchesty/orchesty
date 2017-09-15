@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace Hanaboso\PipesFramework\Ftp\Adapter;
+namespace Hanaboso\PipesFramework\Connector\Ftp\Adapter;
 
-use Hanaboso\PipesFramework\Ftp\Exception\FtpException;
-use Hanaboso\PipesFramework\Ftp\FtpServiceInterface;
+use Hanaboso\PipesFramework\Connector\Ftp\Exception\FtpException;
+use Hanaboso\PipesFramework\Connector\Ftp\FtpServiceInterface;
 
 /**
  * Class FtpAdapter
