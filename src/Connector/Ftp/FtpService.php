@@ -35,7 +35,7 @@ class FtpService implements FtpServiceInterface
      * @param int    $port
      * @param int    $timeout
      */
-    public function connect(string $host, bool $ssl, int $port = 21, $timeout = 15): void
+    public function connect(string $host, bool $ssl = FALSE, int $port = 21, $timeout = 15): void
     {
         $this->adapter->connect([
             self::HOST    => trim($host),
@@ -65,8 +65,10 @@ class FtpService implements FtpServiceInterface
     /**
      * @param string $remoteFile
      * @param string $content
+     *
+     * @return bool
      */
-    public function uploadFile(string $remoteFile, string $content): void
+    public function uploadFile(string $remoteFile, string $content): bool
     {
         if (!$this->adapter->dirExists(dirname($remoteFile))) {
             $this->adapter->makeDirRecursive(dirname($remoteFile));
@@ -80,6 +82,8 @@ class FtpService implements FtpServiceInterface
         } finally {
             FileSystem::delete($filename);
         }
+
+        return TRUE;
     }
 
     /**
