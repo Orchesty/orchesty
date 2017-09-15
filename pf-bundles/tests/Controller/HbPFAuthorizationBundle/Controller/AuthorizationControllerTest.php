@@ -24,7 +24,7 @@ final class AuthorizationControllerTest extends ControllerTestCaseAbstract
         $this->prepareAuthorizationHandlerMock('authorize');
 
         $params = ['redirect_url' => 'asdf'];
-        $this->client->request('POST', '/api/authorizations/magento2_oauth/authorize', $params, [], [], '{"test":1}');
+        $this->client->request('POST', '/api/gateway/authorizations/magento2_oauth/authorize', $params, [], [], '{"test":1}');
 
         /** @var RedirectResponse $response */
         $response = $this->client->getResponse();
@@ -40,7 +40,7 @@ final class AuthorizationControllerTest extends ControllerTestCaseAbstract
     {
         $this->prepareAuthorizationHandlerMock('authorize');
 
-        $this->client->request('POST', '/api/authorizations/abc/authorize', [], [], [], '{"test":1}');
+        $this->client->request('POST', '/api/gateway/authorizations/abc/authorize', [], [], [], '{"test":1}');
 
         $response = $this->client->getResponse();
 
@@ -54,7 +54,7 @@ final class AuthorizationControllerTest extends ControllerTestCaseAbstract
     {
         $this->prepareAuthorizationHandlerMock('saveToken');
 
-        $this->client->request('POST', '/api/authorizations/magento2_oauth/save_token', [], [], [], '{"test":1}');
+        $this->client->request('POST', '/api/gateway/authorizations/magento2_oauth/save_token', [], [], [], '{"test":1}');
 
         $response = $this->client->getResponse();
 
@@ -75,7 +75,7 @@ final class AuthorizationControllerTest extends ControllerTestCaseAbstract
 
         $this->prepareAuthorizationHandlerMock('getAuthInfo', $returnValue);
 
-        $this->client->request('GET', '/api/authorization/info', [], [], [], '{"test":1}');
+        $this->client->request('GET', '/api/gateway/authorization/info', [], [], [], '{"test":1}');
 
         $response = $this->client->getResponse();
         $content  = json_decode($response->getContent(), TRUE);
