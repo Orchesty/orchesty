@@ -4,7 +4,7 @@ import * as request from "request";
 import { INodeConfig } from "./Configurator";
 
 const HTTP_PORT = 8007;
-const HTTP_PROBE_PATH = "/topology-status";
+const HTTP_PROBE_PATH = "/status";
 const HTTP_TIMEOUT = 10000;
 
 export enum Status {

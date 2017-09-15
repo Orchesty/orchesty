@@ -9,7 +9,8 @@ export interface IHttpWorkerSettings {
     host: string;
     port: number;
     method: string;
-    path: string;
+    process_path: string;
+    status_path: string;
     secure: boolean;
     opts: any;
 }
@@ -28,9 +29,6 @@ export interface IHttpWorkerRequestParams {
         reply_to_method?: string,
     };
 }
-
-const STATUS_METHOD = "GET";
-const STATUS_PATH = "/status";
 
 /**
  * Converts JobMessage to Http request and then converts received Http response back to JobMessage object
@@ -104,7 +102,7 @@ class HttpWorker implements IWorker {
     public isWorkerReady(): Promise<boolean> {
         return new Promise((resolve) => {
             // Every http worker service must provide :80/status route
-            const reqParams = { method: STATUS_METHOD, url: this.getUrl(STATUS_PATH)};
+            const reqParams = { method: this.settings.method, url: this.getUrl(this.settings.status_path)};
 
             logger.info(`HttpWorker asking worker if is ready on ${reqParams.url}`, {node_id: this.settings.node_id});
 
@@ -141,7 +139,7 @@ class HttpWorker implements IWorker {
     private getJobRequestParams(inMsg: JobMessage): IHttpWorkerRequestParams {
         return {
             method: this.settings.method.toUpperCase(),
-            url: this.getUrl(this.settings.path),
+            url: this.getUrl(this.settings.process_path),
             json: JSON.parse(inMsg.getContent()),
             headers: {
                 job_id: inMsg.getJobId(),

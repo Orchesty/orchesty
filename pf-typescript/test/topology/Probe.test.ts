@@ -40,7 +40,7 @@ describe("Probe", () => {
         });
         return probe.start()
             .then(() => {
-                return rp("http://localhost:8005/topology-status");
+                return rp("http://localhost:8005/status");
             })
             .catch((err: any) => {
                 assert.equal(503, err.statusCode);
@@ -69,7 +69,7 @@ describe("Probe", () => {
         });
         return probe.start()
             .then(() => {
-                return rp("http://localhost:8006/topology-status");
+                return rp("http://localhost:8006/status");
             })
             .then((resp: string) => {
                 assert.include(resp, "All 2 nodes are ready");
@@ -99,7 +99,7 @@ describe("Probe", () => {
         });
         return probe.start()
             .then(() => {
-                return rp("http://localhost:8006/topology-status");
+                return rp("http://localhost:8006/status");
             })
             .catch((err: any) => {
                 assert.equal(503, err.statusCode);

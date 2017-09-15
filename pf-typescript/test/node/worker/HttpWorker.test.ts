@@ -27,7 +27,8 @@ describe("HttpWorker", () => {
             host: "localhost",
             method: "post",
             port: 4020,
-            path: "/ok",
+            process_path: "/ok",
+            status_path: "/status",
             secure: false,
             opts : {},
         });
@@ -46,7 +47,8 @@ describe("HttpWorker", () => {
             host: "localhost",
             method: "post",
             port: 4020,
-            path: "/not-ok",
+            process_path: "/not-ok",
+            status_path: "/status",
             secure: false,
             opts : {},
         });
@@ -58,14 +60,15 @@ describe("HttpWorker", () => {
             });
     });
 
-    it("should return original message content when server route does not exist", () => {
+    it("should return original message content when process_path does not exist", () => {
         const msg = new JobMessage("123", 1, {}, JSON.stringify({ val: "original" }));
         const worker = new HttpWorker({
             node_id: "someId",
             host: "localhost",
             method: "post",
             port: 4020,
-            path: "/non-existing",
+            process_path: "/non-existing",
+            status_path: "/status",
             secure: false,
             opts : {},
         });
@@ -79,7 +82,7 @@ describe("HttpWorker", () => {
 
     it("should return that worker is ready when it is really ready", () => {
         const workerServer = express();
-        workerServer.get("/status", (req, resp) => {
+        workerServer.post("/status", (req, resp) => {
             resp.sendStatus(200);
         });
         workerServer.listen(4321);
@@ -89,7 +92,8 @@ describe("HttpWorker", () => {
             host: "localhost",
             method: "post",
             port: 4321,
-            path: "/some-path",
+            process_path: "/some-path",
+            status_path: "/status",
             secure: false,
             opts : {},
         });
@@ -102,7 +106,7 @@ describe("HttpWorker", () => {
 
     it("should return that worker is not ready when it says it is not", () => {
         const workerServer = express();
-        workerServer.get("/status", (req, resp) => {
+        workerServer.post("/status", (req, resp) => {
             resp.sendStatus(500);
         });
         workerServer.listen(4322);
@@ -112,7 +116,8 @@ describe("HttpWorker", () => {
             host: "localhost",
             method: "post",
             port: 4322,
-            path: "/some-path",
+            process_path: "/some-path",
+            status_path: "/status",
             secure: false,
             opts : {},
         });
