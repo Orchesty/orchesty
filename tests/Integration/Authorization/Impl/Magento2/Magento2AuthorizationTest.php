@@ -37,9 +37,9 @@ class Magento2AuthorizationTest extends DatabaseTestCaseAbstract
         /** @var Magento2Authorization $authorization */
         $authorization = $this->getMockedAuthorization();
         $authorization->saveSettings([
-            'url'             => 'url://magento2',
-            'username_key'    => 'username',
-            'password_secret' => 'password',
+            'field1' => 'url://magento2',
+            'field2' => 'username',
+            'field3' => 'password',
         ]);
 
         self::assertEquals([
@@ -71,7 +71,7 @@ class Magento2AuthorizationTest extends DatabaseTestCaseAbstract
         $readme = $this->getMockedAuthorization()->getReadMe();
 
         $this->assertEquals(
-            '[Name => Content]: [url => Connector URL] [username_key => Username] [password_secret => Password]',
+            'Field1 contains connector URL, field2 contains username, field3 contains password.',
             $readme
         );
     }
@@ -89,9 +89,9 @@ class Magento2AuthorizationTest extends DatabaseTestCaseAbstract
         /** @var Magento2Authorization $authorization */
         $authorization = $this->getMockedAuthorization();
         $authorization->saveSettings([
-            'url'             => '',
-            'username_key'    => 'username',
-            'password_secret' => 'password',
+            'field1' => '',
+            'field2' => 'username',
+            'field3' => 'password',
         ]);
     }
 
@@ -108,9 +108,9 @@ class Magento2AuthorizationTest extends DatabaseTestCaseAbstract
         /** @var Magento2Authorization $authorization */
         $authorization = $this->getMockedAuthorization();
         $authorization->saveSettings([
-            'url'             => 'url://magento2',
-            'username_key'    => '',
-            'password_secret' => 'password',
+            'field1' => 'url://magento2',
+            'field2' => '',
+            'field3' => 'password',
         ]);
     }
 
@@ -127,9 +127,9 @@ class Magento2AuthorizationTest extends DatabaseTestCaseAbstract
         /** @var Magento2Authorization $authorization */
         $authorization = $this->getMockedAuthorization();
         $authorization->saveSettings([
-            'url'             => 'url://magento2',
-            'username_key'    => 'username',
-            'password_secret' => '',
+            'field1' => 'url://magento2',
+            'field2' => 'username',
+            'field3' => '',
         ]);
     }
 
