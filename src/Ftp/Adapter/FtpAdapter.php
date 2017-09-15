@@ -3,6 +3,7 @@
 namespace Hanaboso\PipesFramework\Ftp\Adapter;
 
 use Hanaboso\PipesFramework\Ftp\Exception\FtpException;
+use Hanaboso\PipesFramework\Ftp\FtpServiceInterface;
 
 /**
  * Class FtpAdapter
@@ -24,17 +25,22 @@ class FtpAdapter implements FtpAdapterInterface
      */
     public function connect(array $params): void
     {
-        if ($params['ssl']) {
-            $this->ftp = @ftp_ssl_connect($params['host'], $params['port'], $params['timeout']);
+        if ($params[FtpServiceInterface::SSL]) {
+            $this->ftp = @ftp_ssl_connect(
+                $params[FtpServiceInterface::HOST],
+                $params[FtpServiceInterface::PORT],
+                $params[FtpServiceInterface::TIMEOUT]
+            );
         } else {
-            $this->ftp = @ftp_connect($params['host'], $params['port'], $params['timeout']);
+            $this->ftp = @ftp_connect(
+                $params[FtpServiceInterface::HOST],
+                $params[FtpServiceInterface::PORT],
+                $params[FtpServiceInterface::TIMEOUT]
+            );
         }
 
         if (!is_resource($this->ftp)) {
-            throw new FtpException(
-                sprintf('Ftp connection to host %s failed.', $params['host']),
-                FtpException::CONNECTION_FAILED
-            );
+            throw new FtpException(sprintf('Connection to Ftp server failed.'), FtpException::CONNECTION_FAILED);
         }
     }
 
@@ -43,8 +49,8 @@ class FtpAdapter implements FtpAdapterInterface
      */
     public function disconnect(): void
     {
-        if (is_resource($this->ftp)) {
-            $res = @ftp_close($this->ftp);
+        if (is_resource($this->getResource())) {
+            $res = @ftp_close($this->getResource());
             if ($res === FALSE) {
                 throw new FtpException('Connection close failed.', FtpException::CONNECTION_CLOSE_FAILED);
             }
@@ -59,8 +65,7 @@ class FtpAdapter implements FtpAdapterInterface
      */
     public function login(string $username, string $password): void
     {
-        // TODO where do i get the password from? decrypted already?
-        $res = @ftp_login($this->ftp, $username, $password);
+        $res = @ftp_login($this->getResource(), $username, $password);
 
         if ($res === FALSE) {
             throw new FtpException('Login failed.', FtpException::LOGIN_FAILED);
@@ -69,17 +74,13 @@ class FtpAdapter implements FtpAdapterInterface
 
     /**
      * @param string $remoteFile
-     * @param string $content
+     * @param string $localFile
      *
      * @throws FtpException
      */
-    public function uploadFile(string $remoteFile, string $content): void
+    public function uploadFile(string $remoteFile, string $localFile): void
     {
-        $tmp = tmpfile();
-        fwrite($tmp, $content);
-        fseek($tmp, 0);
-
-        $res = @ftp_put($this->ftp, $remoteFile, $tmp, FTP_BINARY);
+        $res = @ftp_put($this->getResource(), $remoteFile, $localFile, FTP_BINARY);
 
         if ($res === FALSE) {
             throw new FtpException('File upload failed.', FtpException::FILE_UPLOAD_FAILED);
@@ -94,7 +95,7 @@ class FtpAdapter implements FtpAdapterInterface
      */
     public function downloadFile(string $remoteFile, string $localFile): void
     {
-        $res = @ftp_get($this->ftp, $localFile, $remoteFile, FTP_BINARY);
+        $res = @ftp_get($this->getResource(), $localFile, $remoteFile, FTP_BINARY);
 
         if ($res === FALSE) {
             throw new FtpException('File download failed.', FtpException::FILE_DOWNLOAD_FAILED);
@@ -109,13 +110,93 @@ class FtpAdapter implements FtpAdapterInterface
      */
     public function listDir(string $dir): array
     {
-        $list = @ftp_nlist($this->ftp, $dir);
+        $list = @ftp_nlist($this->getResource(), $dir);
 
         if ($list === FALSE) {
-            throw new FtpException('Failed to list files in directory.');
+            throw new FtpException('Failed to list files in directory.', FtpException::FILES_LISTING_FAILED);
         }
 
         return $list;
+    }
+
+    /**
+     * @param string $dir
+     *
+     * @return bool
+     */
+    public function dirExists(string $dir): bool
+    {
+        $current = ftp_pwd($this->getResource());
+        if (@ftp_chdir($this->getResource(), $dir)) {
+            ftp_chdir($this->getResource(), $current);
+
+            return TRUE;
+        }
+
+        return FALSE;
+    }
+
+    /**
+     * @param string $dir
+     *
+     * @return void
+     * @throws FtpException
+     */
+    public function makeDir($dir): void
+    {
+        $res = @ftp_mkdir($this->getResource(), $dir);
+        if ($res === FALSE) {
+            throw new FtpException(
+                sprintf('Unable to create directory %s', $dir),
+                FtpException::UNABLE_TO_CREATE_DIR
+            );
+        }
+    }
+
+    /**
+     * @param string $dir
+     *
+     * @return void
+     * @throws FtpException
+     */
+    public function makeDirRecursive($dir): void
+    {
+        $current = @ftp_pwd($this->getResource());
+        $parts   = explode('/', trim($dir, '/'));
+
+        foreach ($parts as $part) {
+            if (!@ftp_chdir($this->getResource(), $part) && !$this->isFile($part)) {
+                $this->makeDir($part);
+                ftp_chdir($this->getResource(), $part);
+            }
+        }
+
+        ftp_chdir($this->getResource(), $current);
+    }
+
+    /**************************************** HELPERS ****************************************/
+
+    /**
+     * @return resource
+     * @throws FtpException
+     */
+    private function getResource()
+    {
+        if (is_resource($this->ftp)) {
+            return $this->ftp;
+        }
+
+        throw new FtpException('Connection to Ftp server not established.', FtpException::CONNECTION_NOT_ESTABLISHED);
+    }
+
+    /**
+     * @param string $file
+     *
+     * @return bool
+     */
+    public function isFile($file): bool
+    {
+        return @ftp_size($this->getResource(), $file) !== -1;
     }
 
 }

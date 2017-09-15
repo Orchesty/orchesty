@@ -14,7 +14,7 @@ class SftpAdapter implements FtpAdapterInterface
 {
 
     /**
-     * @var SFTP
+     * @var SFTP|null
      */
     private $sftp;
 
@@ -43,7 +43,7 @@ class SftpAdapter implements FtpAdapterInterface
      */
     public function login(string $username, string $password): void
     {
-        if (!$this->sftp->login($username, $password)) {
+        if (!$this->getResource()->login($username, $password)) {
             throw new FtpException('Login failed.', FtpException::LOGIN_FAILED);
         }
     }
@@ -53,25 +53,21 @@ class SftpAdapter implements FtpAdapterInterface
      */
     public function disconnect(): void
     {
-        if ($this->sftp->isConnected()) {
-            $this->sftp->disconnect();
+        if ($this->getResource()) {
+            $this->getResource()->disconnect();
             $this->sftp = NULL;
         }
     }
 
     /**
      * @param string $remoteFile
-     * @param string $content
+     * @param string $localFile
      *
      * @throws FtpException
      */
-    public function uploadFile(string $remoteFile, string $content): void
+    public function uploadFile(string $remoteFile, string $localFile): void
     {
-        $tmp = tmpfile();
-        fwrite($tmp, $content);
-        fseek($tmp, 0);
-
-        if (!$this->sftp->put($remoteFile, $tmp, SFTP::SOURCE_LOCAL_FILE)) {
+        if (!$this->getResource()->put($remoteFile, $localFile, SFTP::SOURCE_LOCAL_FILE)) {
             throw new FtpException('File upload failed.', FtpException::FILE_UPLOAD_FAILED);
         }
     }
@@ -84,7 +80,7 @@ class SftpAdapter implements FtpAdapterInterface
      */
     public function downloadFile(string $remoteFile, string $localFile): void
     {
-        if ($this->sftp->get($remoteFile, $localFile) === FALSE) {
+        if ($this->getResource()->get($remoteFile, $localFile) === FALSE) {
             throw new FtpException('File download failed.', FtpException::FILE_DOWNLOAD_FAILED);
         }
     }
@@ -93,10 +89,91 @@ class SftpAdapter implements FtpAdapterInterface
      * @param string $dir
      *
      * @return array
+     * @throws FtpException
      */
-    public function downloadFiles(string $dir): array
+    public function listDir(string $dir): array
     {
+        $list = $this->getResource()->nlist($dir);
 
+        if (!$list) {
+            throw new FtpException('Failed to list files in directory.', FtpException::FILES_LISTING_FAILED);
+        }
+
+        return (array) $list;
+    }
+
+    /**
+     * @param string $dir
+     *
+     * @return bool
+     */
+    public function dirExists(string $dir): bool
+    {
+        return $this->getResource()->is_dir($dir);
+    }
+
+    /**
+     * @param string $dir
+     *
+     * @return void
+     * @throws FtpException
+     */
+    public function makeDir($dir): void
+    {
+        $mkdir = $this->getResource()->mkdir($dir);
+
+        if (!$mkdir) {
+            throw new FtpException(
+                sprintf('Unable to create directory %s', $dir),
+                FtpException::UNABLE_TO_CREATE_DIR
+            );
+        }
+    }
+
+    /**
+     * @param string $dir
+     *
+     * @return void
+     * @throws FtpException
+     */
+    public function makeDirRecursive($dir): void
+    {
+        $current = $this->getResource()->pwd();
+        $parts   = explode('/', trim($dir, '/'));
+
+        foreach ($parts as $part) {
+            if (!$this->getResource()->chdir($part) && !$this->isFile($part)) {
+                $this->makeDir($part);
+                $this->getResource()->chdir($part);
+            }
+        }
+
+        $this->getResource()->chdir($current);
+    }
+
+    /**************************************** HELPERS ****************************************/
+
+    /**
+     * @return SFTP
+     * @throws FtpException
+     */
+    private function getResource(): SFTP
+    {
+        if ($this->sftp && $this->sftp->isConnected()) {
+            return $this->sftp;
+        }
+
+        throw new FtpException('Connection to Ftp server not established.', FtpException::CONNECTION_NOT_ESTABLISHED);
+    }
+
+    /**
+     * @param string $file
+     *
+     * @return bool
+     */
+    public function isFile($file): bool
+    {
+        return $this->getResource()->is_file($file);
     }
 
 }

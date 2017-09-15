@@ -32,11 +32,11 @@ interface FtpAdapterInterface
 
     /**
      * @param string $remoteFile
-     * @param string $content
+     * @param string $localFile
      *
      * @throws FtpException
      */
-    public function uploadFile(string $remoteFile, string $content): void;
+    public function uploadFile(string $remoteFile, string $localFile): void;
 
     /**
      * @param string $remoteFile
@@ -52,5 +52,28 @@ interface FtpAdapterInterface
      * @return array
      */
     public function listDir(string $dir): array;
+
+    /**
+     * @param string $dir
+     *
+     * @return bool
+     */
+    public function dirExists(string $dir): bool;
+
+    /**
+     * @param string $dir
+     *
+     * @return void
+     * @throws FtpException
+     */
+    public function makeDir($dir): void;
+
+    /**
+     * @param string $dir
+     *
+     * @return void
+     * @throws FtpException
+     */
+    public function makeDirRecursive($dir): void;
 
 }
