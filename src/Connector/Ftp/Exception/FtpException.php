@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Hanaboso\PipesFramework\Ftp\Exception;
+namespace Hanaboso\PipesFramework\Connector\Ftp\Exception;
 
 use Hanaboso\PipesFramework\Commons\Exception\PipesFrameworkException;
 
