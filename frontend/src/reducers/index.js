@@ -7,6 +7,7 @@ import notification from './notification';
 import topology from './topology';
 import node from './node';
 import auth from './auth';
+import process from './process';
 
 const rootReducer = combineReducers({
   application,
@@ -14,6 +15,7 @@ const rootReducer = combineReducers({
   notification,
   topology,
   node,
+  process,
   form
 });
 

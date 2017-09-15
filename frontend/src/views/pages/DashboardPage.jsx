@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 
 import * as notificationActions from '../../actions/notificationActions';
 
-
 class DashboardPage extends React.Component {
   constructor(props) {
     super(props);
@@ -29,7 +28,7 @@ class DashboardPage extends React.Component {
 
 function mapActionsToProps(dispatch){
   return {
-    addNotification: (type, message) => dispatch(notificationActions.addNotification(type, message))
+    addNotification: (type, message) => dispatch(notificationActions.addNotification(type, message)),
   }
 }
 

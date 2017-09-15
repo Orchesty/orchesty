@@ -5,6 +5,8 @@ import storageFilter from 'redux-storage-decorator-filter';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import createEngine from 'redux-storage-engine-localstorage';
 
+import * as router from './services/router';
+
 import rootReducer from './reducers/index';
 import * as types from './actionTypes';
 
@@ -25,7 +27,14 @@ export default function (initialState) {
 
   const store = createStoreWithMiddleware(reducer, initialState);
 
-  storage.createLoader(engine)(store);
+  router.init(store);
 
-  return store;
+  return new Promise((resolve, reject) => {
+    storage.createLoader(engine)(store).then(
+      () => {resolve(store)}
+    ).catch(
+      () => {reject('Loading stored data failed.')}
+    );
+  });
+  
 }

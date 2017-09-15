@@ -10,21 +10,25 @@ import initialState from './initialState.json';
 
 import configureStore from './configureStore';
 
-var store = configureStore(initialState);
+configureStore(initialState).then(store => {
 
-getApplication(store);
+  getApplication(store);
 
-window.store = store;
+  window.store = store;
 
-const render = Component => {
-  ReactDOM.render(
-    <AppContainer>
-      <Provider store={store}>
-        <Component />
-      </Provider>
-    </AppContainer>,
-    document.getElementById('app')
-  );
-};
 
-render(App);
+  const render = Component => {
+    ReactDOM.render(
+      <AppContainer>
+        <Provider store={store}>
+          <Component />
+        </Provider>
+      </AppContainer>,
+      document.getElementById('app')
+    );
+  };
+
+  render(App);
+});
+
+

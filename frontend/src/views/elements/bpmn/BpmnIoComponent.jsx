@@ -59,7 +59,6 @@ class BpmnIoComponent extends React.Component {
 
   loadXML() {
     const schema = this.props.schema ? this.props.schema : emptySchema;
-    console.log(emptySchema);
     this._modeler.importXML(schema, err => {
       err && this.props.onError(String(err));
     });

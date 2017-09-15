@@ -1,6 +1,6 @@
 import * as types from '../actionTypes';
 import listFactory from './factories/listFactory';
-import serverRequest, {sortToQuery, rawRequest, rawRequestJSONReceive} from '../middleware/apiGatewayServer';
+import serverRequest, {sortToQuery, rawRequest, rawRequestJSONReceive} from '../services/apiGatewayServer';
 import {listType} from '../types';
 import objectEquals from '../utils/objectEquals';
 

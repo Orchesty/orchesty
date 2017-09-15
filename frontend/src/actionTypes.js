@@ -7,6 +7,11 @@ export const CLOSE_MODAL = 'CLOSE_MODAL';
 export const TOGGLE_MAIN_SUB_MENU = 'TOGGLE_MAIN_SUB_MENU';
 export const TOGGLE_MAIN_MENU = 'TOGGLE_MAIN_MENU';
 
+// Process
+
+export const SET_PROCESS_STATE = 'SET_PROCESS_STATE';
+export const CLEAR_PROCESS = 'CLEAR_PROCESS';
+
 // Authorization
 
 export const USER_LOGGED = 'USER_LOGGED';
