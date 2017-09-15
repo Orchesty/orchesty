@@ -15,6 +15,10 @@ import ActivePage from './containers/ActivePage';
 import Toaster from './containers/Toaster';
 import ActiveModal from './containers/ActiveModal';
 import LoginPage from './pages/nonAuth/LoginPage';
+import RegistrationPage from './pages/nonAuth/RegistrationPage';
+import ResetPasswordPage from './pages/nonAuth/ResetPasswordPage';
+import SetPasswordPage from './pages/nonAuth/SetPasswordPage';
+import ActivationPage from './pages/nonAuth/ActivationPage';
 import Error404Page from './pages/nonAuth/Error404Page';
 
 import './App.less';
@@ -49,7 +53,15 @@ class App extends React.Component {
       } else {
         switch (page.key){
           case 'login':
-            return <LoginPage />;
+            return <LoginPage {...page.args}/>;
+          case 'registration':
+            return <RegistrationPage {...page.args} />;
+          case 'reset_password':
+            return <ResetPasswordPage {...page.args} />;
+          case 'set_password':
+            return <SetPasswordPage {...page.args} />;
+          case 'user_activation':
+            return <ActivationPage {...page.args} />;
           default:
             return <Error404Page />;
         }
@@ -59,7 +71,7 @@ class App extends React.Component {
 }
 
 function mapStateToProps(state){
-  const {application, auth, router} = state;
+  const {application, auth} = state;
 
   return {
     showMenu: application.showMenu,
