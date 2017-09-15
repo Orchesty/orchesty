@@ -1,19 +1,17 @@
 export const SELECT_PAGE = 'SELECT_PAGE';
 export const SET_PAGE_DATA = 'SET_PAGE_DATA';
 
-export const OPEN_MODAL = 'OPEN_MODAL';
-export const CLOSE_MODAL = 'CLOSE_MODAL';
+export const MODAL_OPEN = 'MODAL_OPEN';
+export const MODAL_CLOSE = 'MODAL_CLOSE';
 
 export const TOGGLE_MAIN_SUB_MENU = 'TOGGLE_MAIN_SUB_MENU';
 export const TOGGLE_MAIN_MENU = 'TOGGLE_MAIN_MENU';
 
 // Process
-
-export const SET_PROCESS_STATE = 'SET_PROCESS_STATE';
-export const CLEAR_PROCESS = 'CLEAR_PROCESS';
+export const PROCESS_SET_STATE = 'PROCESS_SET_STATE';
+export const PROCESS_CLEAR = 'PROCESS_CLEAR';
 
 // Authorization
-
 export const USER_LOGGED = 'USER_LOGGED';
 export const USER_LOGOUT = 'USER_LOGOUT';
 

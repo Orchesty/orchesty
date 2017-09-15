@@ -4,10 +4,10 @@ const initialState = {};
 
 export default (state = initialState, action) => {
   switch (action.type){
-    case types.SET_PROCESS_STATE:
+    case types.PROCESS_SET_STATE:
       return Object.assign({}, state, {[action.id]: action.stateType});
     
-    case types.CLEAR_PROCESS:
+    case types.PROCESS_CLEAR:
       if (state.hasOwnProperty(action.id)) {
         const newState = Object.assign({}, state);
         delete newState[action.id];

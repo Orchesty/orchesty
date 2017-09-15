@@ -89,6 +89,5 @@ export function init (store){
   window.onpopstate = e => {
     historyIndex = e.state || 0;
     processUrl(store, window.location.pathname, qs.parse(window.location.search));
-    console.log(historyIndex);
   }
 }
