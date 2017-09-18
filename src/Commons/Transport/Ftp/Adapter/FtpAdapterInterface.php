@@ -1,13 +1,13 @@
 <?php declare(strict_types=1);
 
-namespace Hanaboso\PipesFramework\Connector\Ftp\Adapter;
+namespace Hanaboso\PipesFramework\Commons\Transport\Ftp\Adapter;
 
-use Hanaboso\PipesFramework\Connector\Ftp\Exception\FtpException;
+use Hanaboso\PipesFramework\Commons\Transport\Ftp\Exception\FtpException;
 
 /**
  * Interface FtpAdapterInterface
  *
- * @package Hanaboso\PipesFramework\Ftp\Adapter
+ * @package Hanaboso\PipesFramework\Commons\Transport\Ftp\Adapter
  */
 interface FtpAdapterInterface
 {

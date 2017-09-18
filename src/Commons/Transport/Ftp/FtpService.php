@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace Hanaboso\PipesFramework\Connector\Ftp;
+namespace Hanaboso\PipesFramework\Commons\Transport\Ftp;
 
-use Hanaboso\PipesFramework\Connector\Ftp\Adapter\FtpAdapterInterface;
+use Hanaboso\PipesFramework\Commons\Transport\Ftp\Adapter\FtpAdapterInterface;
 use Nette\Utils\FileSystem;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
@@ -12,7 +12,7 @@ use SplFileInfo;
 /**
  * Class FtpService
  *
- * @package Hanaboso\PipesFramework\Ftp
+ * @package Hanaboso\PipesFramework\Commons\Transport\Ftp
  */
 class FtpService implements FtpServiceInterface, LoggerAwareInterface
 {

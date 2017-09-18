@@ -2,8 +2,8 @@
 
 namespace Tests\Unit\Connector\Ftp;
 
-use Hanaboso\PipesFramework\Connector\Ftp\Adapter\SftpAdapter;
-use Hanaboso\PipesFramework\Connector\Ftp\Exception\FtpException;
+use Hanaboso\PipesFramework\Commons\Transport\Ftp\Adapter\SftpAdapter;
+use Hanaboso\PipesFramework\Commons\Transport\Ftp\Exception\FtpException;
 use phpseclib\Net\SFTP;
 use PHPUnit\Framework\TestCase;
 use PHPUnit_Framework_MockObject_MockObject;

@@ -1,13 +1,13 @@
 <?php declare(strict_types=1);
 
-namespace Hanaboso\PipesFramework\Connector\Ftp\Exception;
+namespace Hanaboso\PipesFramework\Commons\Transport\Ftp\Exception;
 
 use Hanaboso\PipesFramework\Commons\Exception\PipesFrameworkException;
 
 /**
  * Class FtpException
  *
- * @package Hanaboso\PipesFramework\Ftp\Exception
+ * @package Hanaboso\PipesFramework\Commons\Transport\Ftp\Exception
  */
 class FtpException extends PipesFrameworkException
 {

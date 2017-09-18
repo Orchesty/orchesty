@@ -2,9 +2,9 @@
 
 namespace Tests\Unit\Connector\Ftp;
 
-use Hanaboso\PipesFramework\Connector\Ftp\Adapter\FtpAdapter;
-use Hanaboso\PipesFramework\Connector\Ftp\Exception\FtpException;
-use Hanaboso\PipesFramework\Connector\Ftp\FtpService;
+use Hanaboso\PipesFramework\Commons\Transport\Ftp\Adapter\FtpAdapter;
+use Hanaboso\PipesFramework\Commons\Transport\Ftp\Exception\FtpException;
+use Hanaboso\PipesFramework\Commons\Transport\Ftp\FtpService;
 use PHPUnit\Framework\TestCase;
 use PHPUnit_Framework_MockObject_MockObject;
 use SplFileInfo;

@@ -1,13 +1,13 @@
 <?php declare(strict_types=1);
 
-namespace Hanaboso\PipesFramework\Connector\Ftp;
+namespace Hanaboso\PipesFramework\Commons\Transport\Ftp;
 
 use SplFileInfo;
 
 /**
  * Interface FtpServiceInterface
  *
- * @package Hanaboso\PipesFramework\Ftp
+ * @package Hanaboso\PipesFramework\Commons\Transport\Ftp
  */
 interface FtpServiceInterface
 {
