@@ -9,10 +9,12 @@
 
 namespace Hanaboso\PipesFramework\Mailer\Transport\Impl;
 
+use Hanaboso\PipesFramework\Commons\FileStorage\FileStorage;
 use Hanaboso\PipesFramework\Mailer\Transport\TransportException;
 use Hanaboso\PipesFramework\Mailer\Transport\TransportInterface;
 use Hanaboso\PipesFramework\Mailer\Transport\TransportMessageInterface;
 use Psr\Log\LoggerInterface;
+use Swift_Attachment;
 use Swift_Mailer;
 use Swift_Message;
 
@@ -35,13 +37,20 @@ class SwiftMailerTransport implements TransportInterface
     private $logger;
 
     /**
+     * @var FileStorage
+     */
+    private $fileStorage;
+
+    /**
      * SwiftMailerTransport constructor.
      *
      * @param Swift_Mailer $mailer
+     * @param FileStorage  $fileStorage
      */
-    public function __construct(Swift_Mailer $mailer)
+    public function __construct(Swift_Mailer $mailer, FileStorage $fileStorage)
     {
-        $this->mailer = $mailer;
+        $this->mailer      = $mailer;
+        $this->fileStorage = $fileStorage;
     }
 
     /**
@@ -57,6 +66,27 @@ class SwiftMailerTransport implements TransportInterface
             ->setTo($messageData->getTo());
 
         $message->setBody($messageData->getContent(), $messageData->getContentType(), 'utf-8');
+
+        if ($messageData->getContentAttachments()) {
+            foreach ($messageData->getContentAttachments() as $contentAttachment) {
+                $message->attach(
+                    new Swift_Attachment(
+                        $contentAttachment->getContent(),
+                        $contentAttachment->getFilename(),
+                        $contentAttachment->getContentType()
+                    )
+                );
+            }
+        }
+
+        if ($messageData->getFileStorageAttachments()) {
+            foreach ($messageData->getFileStorageAttachments() as $fsAttachment) {
+                $file     = $this->fileStorage->getFileDocument($fsAttachment->getId());
+                $dto      = $this->fileStorage->getFileStorage($file);
+                $filename = $fsAttachment->getFilename() ? $fsAttachment->getFilename() : $file->getFilename();
+                $message->attach(new Swift_Attachment($dto->getContent(), $filename, $fsAttachment->getContentType()));
+            }
+        }
 
         $logBody = sprintf('subject: %s, recipient: %s, datetime: %s.',
             $messageData->getSubject(),
