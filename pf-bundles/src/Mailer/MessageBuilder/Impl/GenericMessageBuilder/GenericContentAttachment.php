@@ -18,11 +18,11 @@ class GenericContentAttachment extends GenericAttachmentAbstract
     /**
      * GenericContentAttachment constructor.
      *
-     * @param string      $content
-     * @param string      $contentType
-     * @param null|string $filename
+     * @param string $content
+     * @param string $contentType
+     * @param string $filename
      */
-    public function __construct(string $content, string $contentType, ?string $filename = NULL)
+    public function __construct(string $content, string $contentType, string $filename)
     {
         parent::__construct($contentType, $filename);
 
