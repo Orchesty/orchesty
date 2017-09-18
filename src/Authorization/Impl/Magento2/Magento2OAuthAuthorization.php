@@ -110,6 +110,14 @@ class Magento2OAuthAuthorization extends OAuthAuthorizationAbstract implements M
             throw new AuthorizationException('Magento2 OAuth not authorized');
         }
 
+        $settings = $this->authorization->getSettings();
+        if (empty($settings[self::URL]) || empty($settings[self::CONSUMER_KEY]) || empty($settings[self::CONSUMER_SECRET])) {
+            throw new AuthorizationException(
+                sprintf('Authorization settings \'%s\' not found', $this->getId()),
+                AuthorizationException::AUTHORIZATION_SETTINGS_NOT_FOUND
+            );
+        }
+
         return [
             'Accept'        => 'application/json',
             'Content-Type'  => 'application/json',
@@ -122,7 +130,7 @@ class Magento2OAuthAuthorization extends OAuthAuthorizationAbstract implements M
      */
     public function getUrl(): string
     {
-        return $this->getSettings()[self::URL];
+        return $this->getSettings()[self::URL] ?? '';
     }
 
     /**
@@ -134,18 +142,12 @@ class Magento2OAuthAuthorization extends OAuthAuthorizationAbstract implements M
     {
         $this->loadAuthorization();
         if (!$this->authorization) {
-            throw new AuthorizationException(
-                sprintf('Authorization settings \'%s\' not found', $this->getId()),
-                AuthorizationException::AUTHORIZATION_SETTINGS_NOT_FOUND
-            );
+            return [];
         }
 
         $settings = $this->authorization->getSettings();
         if (empty($settings[self::URL]) || empty($settings[self::CONSUMER_KEY]) || empty($settings[self::CONSUMER_SECRET])) {
-            throw new AuthorizationException(
-                sprintf('Authorization settings \'%s\' not found', $this->getId()),
-                AuthorizationException::AUTHORIZATION_SETTINGS_NOT_FOUND
-            );
+            return [];
         }
 
         $settings['readme'] = $this->getReadMe();
@@ -166,11 +168,19 @@ class Magento2OAuthAuthorization extends OAuthAuthorizationAbstract implements M
             $this->dm->persist($this->authorization);
         }
 
+        if (empty($data['field1']) || empty($data['field2']) || empty($data['field3'])) {
+            throw new AuthorizationException(
+                sprintf('Authorization settings \'%s\' not found', $this->getId()),
+                AuthorizationException::AUTHORIZATION_SETTINGS_NOT_FOUND
+            );
+        }
+
         $this->authorization->setSettings([
             self::URL             => $data['field1'],
             self::CONSUMER_KEY    => $data['field2'],
             self::CONSUMER_SECRET => $data['field3'],
         ]);
+
         $this->dm->flush();
     }
 

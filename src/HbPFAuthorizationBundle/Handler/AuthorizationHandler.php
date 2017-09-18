@@ -53,7 +53,7 @@ class AuthorizationHandler
      */
     public function saveSettings(array $data, string $authId): void
     {
-        ControllerUtils::checkParameters(['url', 'username_key', 'password_secret'], $data);
+        ControllerUtils::checkParameters(['field1', 'field2', 'field3'], $data);
         $authorization = $this->loader->getAuthorization($authId);
         $authorization->saveSettings($data);
     }
