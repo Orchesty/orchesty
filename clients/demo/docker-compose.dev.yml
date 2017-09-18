@@ -83,19 +83,21 @@ services:
 
     # ELK
     elasticsearch:
-        image: elasticsearch:5-alpine
+        image: docker.elastic.co/elasticsearch/elasticsearch:5.6.0
         ports:
           - ${DEV_IP}:9200:9200
         volumes:
-          - ./.docker-volumes/elk-data:/var/lib/elasticsearch
+          - elasticsearch:/usr/share/elasticsearch/data
 
     kibana:
-        image: kibana:5
+        image: docker.elastic.co/kibana/kibana:5.6.0
         ports:
           - ${DEV_IP}:5601:5601
 
     logstash:
-        image: logstash:5-alpine
+        image: docker.elastic.co/logstash/logstash:5.6.0
+        volumes:
+          - ./logstash.conf:/usr/share/logstash/pipeline/logstash.conf
 
     # Metrics
     grafana:
@@ -167,3 +169,6 @@ services:
         image: swaggerapi/swagger-editor
         ports:
           - ${DEV_IP}:8088:8080
+
+volumes:
+  elasticsearch: {}
