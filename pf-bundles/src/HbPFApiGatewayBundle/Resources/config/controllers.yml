@@ -10,3 +10,19 @@ services:
             - '@doctrine.odm.mongodb.document_manager'
             - '@hbpf.handler.starting_point'
             - '%kernel.project_dir%'
+
+    hbpf.api_gateway.controller.node:
+        class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\NodeController
+        arguments:
+
+    hbpf.api_gateway.controller.topology:
+        class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\TopologyController
+        arguments:
+
+    hbpf.api_gateway.controller.user:
+        class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\UserController
+        arguments:
+
+    hbpf.api_gateway.controller.authorization:
+        class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\AuthorizationController
+        arguments:

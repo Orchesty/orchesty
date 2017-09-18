@@ -26,16 +26,6 @@ class NodeController extends FOSRestController
     private $nodeHandler;
 
     /**
-     * NodeController constructor.
-     *
-     * @param NodeHandler $nodeHandler
-     */
-    public function __construct(NodeHandler $nodeHandler)
-    {
-        $this->nodeHandler = $nodeHandler;
-    }
-
-    /**
      * @Route("/topologies/{id}/nodes", defaults={}, requirements={"id": "\w+"})
      * @Method({"GET", "OPTIONS"})
      *
@@ -45,6 +35,7 @@ class NodeController extends FOSRestController
      */
     public function getNodesAction(string $id): Response
     {
+        $this->construct();
         $data = $this->nodeHandler->getNodes($id);
 
         return new JsonResponse($data, 200);
@@ -60,13 +51,14 @@ class NodeController extends FOSRestController
      */
     public function getNodeAction(string $id): Response
     {
+        $this->construct();
         $data = $this->nodeHandler->getNode($id);
 
         return new JsonResponse($data, 200);
     }
 
     /**
-     * @Route("/nodes/{id}", defaults={}, requirements={"id": "\w+"})
+     * @Route("/nodes/{id}/{request}", defaults={}, requirements={"id": "\w+"})
      * @Method({"PATCH", "OPTIONS"})
      *
      * @param Request $request
@@ -76,9 +68,20 @@ class NodeController extends FOSRestController
      */
     public function updateNodeAction(Request $request, string $id): Response
     {
+        $this->construct();
         $data = $this->nodeHandler->updateNode($id, $request->request->all());
 
         return new JsonResponse($data, 200);
+    }
+
+    /**
+     *
+     */
+    private function construct(): void
+    {
+        if (!$this->nodeHandler) {
+            $this->nodeHandler = $this->container->get('hbpf.configurator.handler.node');
+        }
     }
 
 }

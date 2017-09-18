@@ -2,4 +2,3 @@ services:
     hbpf.authorization.controller.authorization:
         class: Hanaboso\PipesFramework\HbPFAuthorizationBundle\Controller\AuthorizationController
         arguments:
-            - '@hbpf.handler.authorization'
