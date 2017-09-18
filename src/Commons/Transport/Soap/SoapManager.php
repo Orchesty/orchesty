@@ -63,13 +63,12 @@ final class SoapManager implements SoapManagerInterface, LoggerAwareInterface
     public function send(RequestDtoAbstract $request, array $options = []): ResponseDto
     {
         try {
-
             $client = $this->soapClientFactory->create($request, $this->composeOptions($request, $options));
 
             $this->logger->info(sprintf('Request: Type: %s, Uri: %s, Headers: %s, User: %s, Password: %s',
                 $request->getType(),
                 $request->getUri(),
-                implode(', ', $request->getHeader()->getParams()),
+                $this->getHeadersAsString($request->getHeader()->getParams()),
                 $request->getUser(),
                 $request->getPassword()
             ));
@@ -165,6 +164,21 @@ final class SoapManager implements SoapManagerInterface, LoggerAwareInterface
         ]);
 
         return $options;
+    }
+
+    /**
+     * @param array $headers
+     *
+     * @return string
+     */
+    private function getHeadersAsString(array $headers): string
+    {
+        $string = '';
+        foreach ($headers as $key => $value) {
+            $string .= sprintf('%s: %s, ', $key, is_array($value) ? array_values($value)[0] : $value);
+        }
+
+        return mb_substr($string, 0, -2);
     }
 
 }
