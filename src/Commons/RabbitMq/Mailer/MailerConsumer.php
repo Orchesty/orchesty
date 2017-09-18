@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: pavel.severyn
@@ -10,6 +10,11 @@ namespace Hanaboso\PipesFramework\Commons\RabbitMq\Mailer;
 
 use Hanaboso\PipesFramework\Commons\RabbitMq\BaseConsumerAbstract;
 
+/**
+ * Class MailerConsumer
+ *
+ * @package Hanaboso\PipesFramework\Commons\RabbitMq\Mailer
+ */
 class MailerConsumer extends BaseConsumerAbstract
 {
 

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: Pavel Severyn
@@ -68,7 +68,7 @@ class DefaultValues
         array $data,
         array $defaults,
         array $fields = ['from', 'subject', 'to', 'bcc']
-    )
+    ): array
     {
         foreach ($fields as $field) {
             if ((!array_key_exists($field, $data) || empty($data[$field])) && $defaults[$field]) {

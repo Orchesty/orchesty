@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: Pavel Severyn
@@ -11,9 +11,17 @@ namespace Tests\Unit\HbPFMailerBundle\DefaultValues;
 use Hanaboso\PipesFramework\HbPFMailerBundle\DefaultValues\DefaultValues;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * Class DefaultValuesTest
+ *
+ * @package Tests\Unit\HbPFMailerBundle\DefaultValues
+ */
 class DefaultValuesTest extends TestCase
 {
 
+    /**
+     * @var array
+     */
     protected static $data = [
         ['foo' => 'foo@foo.com', 'boo' => 'boo@boo.com'],   //from
         ['foo' => 'Foo subject', 'test' => 'test@example.com'],   //subject
@@ -28,7 +36,7 @@ class DefaultValuesTest extends TestCase
      * @param string $module
      * @param array  $result
      */
-    public function testEmptyConstruct(string $module, array $result)
+    public function testEmptyConstruct(string $module, array $result): void
     {
         $default = new DefaultValues();
         $this->assertEquals($result, $default->getDefaults($module));
@@ -38,11 +46,11 @@ class DefaultValuesTest extends TestCase
      * @dataProvider filledConstructor
      * @covers       DefaultValues::__construct()
      *
-     * @param $data
-     * @param $module
-     * @param $result
+     * @param array  $data
+     * @param string $module
+     * @param array  $result
      */
-    public function testFilledConstructor($data, $module, $result)
+    public function testFilledConstructor(array $data, string $module, array $result): void
     {
         list($from, $subject, $to, $bcc) = $data;
         $defaults = new DefaultValues($from, $subject, $to, $bcc);
@@ -52,13 +60,14 @@ class DefaultValuesTest extends TestCase
 
     /**
      * @dataProvider handleDefaults
+     * @covers DefaultValues::handleDefaults()
      *
      * @param array $data
      * @param array $defaults
      * @param array $fields
      * @param array $result
      */
-    public function testHandleDefaults(array $data, array $defaults, array $fields, array $result)
+    public function testHandleDefaults(array $data, array $defaults, array $fields, array $result): void
     {
         $defaultData = DefaultValues::handleDefaults($data, $defaults, $fields);
         $this->assertEquals($result, $defaultData);
@@ -125,8 +134,7 @@ class DefaultValuesTest extends TestCase
     /**
      * @return array
      */
-    public
-    function emptyConstructor(): array
+    public function emptyConstructor(): array
     {
         return [
             ['foo', ['from' => NULL, 'subject' => NULL, 'to' => NULL, 'bcc' => NULL]],

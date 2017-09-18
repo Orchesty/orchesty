@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: sep
@@ -13,13 +13,18 @@ use Hanaboso\PipesFramework\User\Model\Messages\ResetPasswordMessage;
 use Hanaboso\PipesFramework\User\Model\MessageSubject;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * Class ResetPasswordMessageTest
+ *
+ * @package Tests\Unit\User\Model\Messages
+ */
 class ResetPasswordMessageTest extends TestCase
 {
 
     /**
      * @covers ResetPasswordMessage::getMessage()
      */
-    public function testGetMessage()
+    public function testGetMessage(): void
     {
         $user = $this->getMockBuilder(User::class)->disableOriginalConstructor()->getMock();
         $user->method('getEmail')->willReturn('test@example.com');

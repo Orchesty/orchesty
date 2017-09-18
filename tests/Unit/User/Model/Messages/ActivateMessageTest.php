@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: Pavel Severyn
@@ -24,7 +24,7 @@ class ActivateMessageTest extends TestCase
     /**
      * @covers ActivateMessage::getMessage()
      */
-    public function testGetMessage()
+    public function testGetMessage(): void
     {
         $user = $this->getMockBuilder(User::class)->disableOriginalConstructor()->getMock();
         $user->method('getEmail')->willReturn('test@example.com');
