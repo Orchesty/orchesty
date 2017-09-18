@@ -18,25 +18,6 @@ interface FtpServiceInterface
     public const TIMEOUT = 'timeout';
 
     /**
-     * @param string $host
-     * @param bool   $ssl
-     * @param int    $port
-     * @param int    $timeout
-     */
-    public function connect(string $host, bool $ssl = FALSE, int $port = 21, $timeout = 15): void;
-
-    /**
-     *
-     */
-    public function disconnect(): void;
-
-    /**
-     * @param string $username
-     * @param string $password
-     */
-    public function login(string $username, string $password): void;
-
-    /**
      * @param string $remoteFile
      * @param string $content
      *
