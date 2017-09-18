@@ -14,6 +14,6 @@ run the ssh agent forwarder using the ip addres from above
 run the build.sh file
 ```
 $ ifconfig
-$ ./../docker/build/ssh-agent-forwarder.sh 10.211.55.2
+$ ./../frontend/docker/build/ssh-agent-forwarder.sh 10.211.55.2
 $ ./build.sh
 ```

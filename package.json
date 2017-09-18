@@ -57,7 +57,7 @@
     "chai-http": "^3.0.0",
     "chai-spies": "^0.7.1",
     "core-js": "^2.5.1",
-    "mocha": "^3.5.2",
+    "mocha": "^3.5.3",
     "nock": "9.0.6",
     "nodemon": "1.11.0",
     "shuffle-array": "^1.0.1",

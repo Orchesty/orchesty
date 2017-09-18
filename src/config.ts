@@ -14,3 +14,8 @@ export const metricsOptions = {
     server: process.env.METRICS_HOST || "influxdb",
     port: parseInt(process.env.METRICS_PORT, 10) || 8089,
 };
+
+export const loggerOptions = {
+    server: process.env.UDP_LOGGER_HOST || "logstash",
+    port: parseInt(process.env.UDP_LOGGER_PORT, 10) || 5120,
+};
