@@ -3,6 +3,7 @@
 namespace Hanaboso\PipesFramework\Commons\Transport\Ftp;
 
 use Hanaboso\PipesFramework\Commons\Transport\Ftp\Adapter\FtpAdapterInterface;
+use Hanaboso\PipesFramework\Commons\Transport\Ftp\Exception\FtpException;
 use Nette\Utils\FileSystem;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
@@ -51,19 +52,34 @@ class FtpService implements FtpServiceInterface, LoggerAwareInterface
     }
 
     /**
+     * @return FtpAdapterInterface
+     */
+    public function getAdapter(): FtpAdapterInterface
+    {
+        return $this->adapter;
+    }
+
+    /**
      * @param string $host
      * @param bool   $ssl
      * @param int    $port
      * @param int    $timeout
+     *
+     * @throws FtpException
      */
     public function connect(string $host, bool $ssl = FALSE, int $port = 21, $timeout = 15): void
     {
-        $this->adapter->connect([
-            self::HOST    => trim($host),
-            self::PORT    => intval($port),
-            self::TIMEOUT => intval($timeout),
-            self::SSL     => boolval($ssl),
-        ]);
+        try {
+            $this->adapter->connect([
+                self::HOST    => trim($host),
+                self::PORT    => intval($port),
+                self::TIMEOUT => intval($timeout),
+                self::SSL     => boolval($ssl),
+            ]);
+        } catch (FtpException $e) {
+            $this->logger->error($e->getMessage());
+            throw $e;
+        }
     }
 
     /**
@@ -71,16 +87,28 @@ class FtpService implements FtpServiceInterface, LoggerAwareInterface
      */
     public function disconnect(): void
     {
-        $this->adapter->disconnect();
+        try {
+            $this->adapter->disconnect();
+        } catch (FtpException $e) {
+            $this->logger->error($e->getMessage());
+            throw $e;
+        }
     }
 
     /**
      * @param string $username
      * @param string $password
+     *
+     * @throws FtpException
      */
     public function login(string $username, string $password): void
     {
-        $this->adapter->login($username, $password);
+        try {
+            $this->adapter->login($username, $password);
+        } catch (FtpException $e) {
+            $this->logger->error($e->getMessage());
+            throw $e;
+        }
     }
 
     /**
@@ -88,6 +116,7 @@ class FtpService implements FtpServiceInterface, LoggerAwareInterface
      * @param string $content
      *
      * @return bool
+     * @throws FtpException
      */
     public function uploadFile(string $remoteFile, string $content): bool
     {
@@ -100,6 +129,10 @@ class FtpService implements FtpServiceInterface, LoggerAwareInterface
 
         try {
             $this->adapter->uploadFile($remoteFile, $filename);
+            $this->logger->info(sprintf('File %s successfully uploaded.', $remoteFile));
+        } catch (FtpException $e) {
+            $this->logger->error($e->getMessage());
+            throw $e;
         } finally {
             FileSystem::delete($filename);
         }
@@ -111,13 +144,20 @@ class FtpService implements FtpServiceInterface, LoggerAwareInterface
      * @param string $remoteFile
      *
      * @return SplFileInfo
+     * @throws FtpException
      */
     public function downloadFile(string $remoteFile): SplFileInfo
     {
         $filename  = basename($remoteFile);
         $localFile = sys_get_temp_dir() . DIRECTORY_SEPARATOR . $filename;
 
-        $this->adapter->downloadFile($remoteFile, $localFile);
+        try {
+            $this->adapter->downloadFile($remoteFile, $localFile);
+            $this->logger->info(sprintf('File %s successfully downloaded to %s.', $remoteFile, $localFile));
+        } catch (FtpException $e) {
+            $this->logger->error($e->getMessage());
+            throw $e;
+        }
 
         return new SplFileInfo($localFile);
     }
@@ -125,15 +165,24 @@ class FtpService implements FtpServiceInterface, LoggerAwareInterface
     /**
      * @param string $dir
      *
-     * @return SplFileInfo[]
+     * @return array
+     * @throws FtpException
      */
     public function downloadFiles(string $dir): array
     {
-        $list = $this->adapter->listDir($dir);
+        try {
+            $list = $this->adapter->listDir($dir);
+            $this->logger->info(sprintf('Downloading files from %s directory', $dir));
 
-        $downloaded = [];
-        foreach ($list as $file) {
-            $downloaded[] = $this->downloadFile($file);
+            $downloaded = [];
+            foreach ($list as $file) {
+                $downloaded[] = $this->downloadFile($file);
+            }
+
+            $this->logger->info('Downloading files finished successfully.');
+        } catch (FtpException $e) {
+            $this->logger->error($e->getMessage());
+            throw $e;
         }
 
         return $downloaded;

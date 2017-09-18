@@ -22,5 +22,6 @@ class FtpException extends PipesFrameworkException
     public const CONNECTION_NOT_ESTABLISHED = self::OFFSET + 6;
     public const UNABLE_TO_CREATE_DIR       = self::OFFSET + 7;
     public const FILES_LISTING_FAILED       = self::OFFSET + 8;
+    public const UNKNOWN_ADAPTER_TYPE       = self::OFFSET + 9;
 
 }

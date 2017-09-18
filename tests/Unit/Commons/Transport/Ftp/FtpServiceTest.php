@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Unit\Connector\Ftp;
+namespace Tests\Unit\Commons\Transport\Ftp;
 
 use Hanaboso\PipesFramework\Commons\Transport\Ftp\Adapter\FtpAdapter;
 use Hanaboso\PipesFramework\Commons\Transport\Ftp\Exception\FtpException;
