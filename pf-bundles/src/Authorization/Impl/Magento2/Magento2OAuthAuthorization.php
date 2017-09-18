@@ -27,9 +27,9 @@ use Psr\Log\NullLogger;
 class Magento2OAuthAuthorization extends OAuthAuthorizationAbstract implements Magento2AuthorizationInterface, LoggerAwareInterface
 {
 
-    private const URL             = 'url';
-    private const CONSUMER_KEY    = 'consumer_key';
-    private const CONSUMER_SECRET = 'consumer_secret';
+    private const URL             = 'field1';
+    private const CONSUMER_KEY    = 'field2';
+    private const CONSUMER_SECRET = 'field3';
 
     /**
      * @var OAuth1Provider
@@ -142,12 +142,12 @@ class Magento2OAuthAuthorization extends OAuthAuthorizationAbstract implements M
     {
         $this->loadAuthorization();
         if (!$this->authorization) {
-            return [];
+            return ['readme' => $this->getReadMe()];
         }
 
         $settings = $this->authorization->getSettings();
         if (empty($settings[self::URL]) || empty($settings[self::CONSUMER_KEY]) || empty($settings[self::CONSUMER_SECRET])) {
-            return [];
+            return ['readme' => $this->getReadMe()];
         }
 
         $settings['readme'] = $this->getReadMe();
