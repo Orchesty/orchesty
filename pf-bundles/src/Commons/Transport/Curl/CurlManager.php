@@ -91,7 +91,7 @@ final class CurlManager implements CurlManagerInterface, LoggerAwareInterface
             $this->logger->info(sprintf('Request: Method: %s, Uri: %s, Headers: %s, Body: %s',
                 $dto->getMethod(),
                 $dto->getUri(),
-                $dto->getHeaders(),
+                $this->getHeadersAsString($dto->getHeaders()),
                 $dto->getBody()
             ));
 
@@ -108,7 +108,7 @@ final class CurlManager implements CurlManagerInterface, LoggerAwareInterface
             $this->logger->info(sprintf('Response: Status Code: %s, Reason Phrase: %s, Headers: %s, Body: %s',
                 $psrResponse->getStatusCode(),
                 $psrResponse->getReasonPhrase(),
-                $psrResponse->getHeaders(),
+                $this->getHeadersAsString($psrResponse->getHeaders()),
                 $psrResponse->getBody()->getContents()
             ));
 
@@ -122,6 +122,21 @@ final class CurlManager implements CurlManagerInterface, LoggerAwareInterface
         }
 
         return $response;
+    }
+
+    /**
+     * @param array $headers
+     *
+     * @return string
+     */
+    private function getHeadersAsString(array $headers): string
+    {
+        $string = '';
+        foreach ($headers as $key => $value) {
+            $string .= sprintf('%s: %s, ', $key, is_array($value) ? array_values($value)[0] : $value);
+        }
+
+        return mb_substr($string, 0, -2);
     }
 
 }
