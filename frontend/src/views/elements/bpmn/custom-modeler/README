@@ -1,0 +1,5 @@
+Přidání nového formulářového prvku do panelu
+
+1) Přidat definici do /PropertiesPanel/parts
+2) Načíst v /PropertiesPanel/PropertiesProvider.js a přidat do skupiny.
+3) Přidat definici do /descriptors/pipes.json. Objekt properties.

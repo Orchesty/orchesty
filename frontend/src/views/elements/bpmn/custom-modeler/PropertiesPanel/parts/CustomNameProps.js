@@ -37,9 +37,6 @@ export default function (group, element, translate) {
         return getBusinessObject(element).name;
       },
       setProperty: function(element, properties) {
-
-        element = element.labelTarget || element;
-
         return cmdHelper.updateProperties(element, properties);
       },
     })
