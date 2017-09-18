@@ -30,18 +30,8 @@ class UserController extends FOSRestController
     private $userHandler;
 
     /**
-     * UserController constructor.
      *
-     * @param UserHandler $userHandler
-     */
-    public function __construct(UserHandler $userHandler)
-    {
-        $this->userHandler = $userHandler;
-    }
-
-    /**
-     *
-     * @Route("/api/user/login")
+     * @Route("/user/login")
      * @Method({"POST", "OPTIONS"})
      *
      * @param Request $request
@@ -50,6 +40,7 @@ class UserController extends FOSRestController
      */
     public function loginAction(Request $request): JsonResponse
     {
+        $this->construct();
         try {
             return new JsonResponse($this->userHandler->login($request->request->all())->toArray(), 200);
         } catch (SecurityManagerException $e) {
@@ -59,13 +50,14 @@ class UserController extends FOSRestController
 
     /**
      *
-     * @Route("/api/user/logout")
+     * @Route("/user/logout")
      * @Method({"POST", "OPTIONS"})
      *
      * @return JsonResponse
      */
     public function logoutAction(): JsonResponse
     {
+        $this->construct();
         try {
             return new JsonResponse($this->userHandler->logout());
         } catch (SecurityManagerException $e) {
@@ -75,7 +67,7 @@ class UserController extends FOSRestController
 
     /**
      *
-     * @Route("/api/user/register")
+     * @Route("/user/register")
      * @Method({"POST", "OPTIONS"})
      *
      * @param Request $request
@@ -84,6 +76,7 @@ class UserController extends FOSRestController
      */
     public function registerAction(Request $request): JsonResponse
     {
+        $this->construct();
         try {
             return new JsonResponse($this->userHandler->register($request->request->all()));
         } catch (UserManagerException $e) {
@@ -93,7 +86,7 @@ class UserController extends FOSRestController
 
     /**
      *
-     * @Route("/api/user/{token}/activate", requirements={"token": "\w+"})
+     * @Route("/user/{token}/activate", requirements={"token": "\w+"})
      * @Method({"POST", "OPTIONS"})
      *
      * @param string $token
@@ -102,6 +95,7 @@ class UserController extends FOSRestController
      */
     public function activateAction(string $token): JsonResponse
     {
+        $this->construct();
         try {
             return new JsonResponse($this->userHandler->activate($token));
         } catch (TokenManagerException $e) {
@@ -111,7 +105,7 @@ class UserController extends FOSRestController
 
     /**
      *
-     * @Route("/api/user/{token}/set_password", requirements={"token": "\w+"})
+     * @Route("/user/{token}/set_password", requirements={"token": "\w+"})
      * @Method({"POST", "OPTIONS"})
      *
      * @param Request $request
@@ -121,6 +115,7 @@ class UserController extends FOSRestController
      */
     public function setPasswordAction(Request $request, string $token): JsonResponse
     {
+        $this->construct();
         try {
             return new JsonResponse($this->userHandler->setPassword($token, $request->request->all()));
         } catch (TokenManagerException $e) {
@@ -129,7 +124,7 @@ class UserController extends FOSRestController
     }
 
     /**
-     * @Route("/api/user/change_password")
+     * @Route("/user/change_password")
      * @Method({"POST", "OPTIONS"})
      *
      * @param Request $request
@@ -138,6 +133,7 @@ class UserController extends FOSRestController
      */
     public function changePasswordAction(Request $request): JsonResponse
     {
+        $this->construct();
         try {
             return new JsonResponse($this->userHandler->changePassword($request->request->all()));
         } catch (SecurityManagerException $e) {
@@ -147,7 +143,7 @@ class UserController extends FOSRestController
 
     /**
      *
-     * @Route("/api/user/reset_password")
+     * @Route("/user/reset_password")
      * @Method({"POST", "OPTIONS"})
      *
      * @param Request $request
@@ -156,6 +152,7 @@ class UserController extends FOSRestController
      */
     public function resetPasswordAction(Request $request): JsonResponse
     {
+        $this->construct();
         try {
             return new JsonResponse($this->userHandler->resetPassword($request->request->all()));
         } catch (UserManagerException $e) {
@@ -166,7 +163,7 @@ class UserController extends FOSRestController
 
     /**
      *
-     * @Route("/api/user/{id}/delete")
+     * @Route("/user/{id}/delete")
      * @Method({"DELETE", "OPTIONS"})
      *
      * @param string $id
@@ -175,10 +172,21 @@ class UserController extends FOSRestController
      */
     public function deleteAction(string $id): JsonResponse
     {
+        $this->construct();
         try {
             return new JsonResponse($this->userHandler->delete($id)->toArray(), 200);
         } catch (AclException | UserManagerException $e) {
             return new JsonResponse(ControllerUtils::createExceptionData($e), 500);
+        }
+    }
+
+    /**
+     *
+     */
+    private function construct(): void
+    {
+        if (!$this->userHandler) {
+            $this->userHandler = $this->container->get('hbpf.user.handler.user');
         }
     }
 
