@@ -52,7 +52,7 @@ class AuthorizationController extends FOSRestController
     }
 
     /**
-     * @Route("/api/authorizations/{authorizationId}/settings", defaults={}, requirements={"authorizationId": "\w+"})
+     * @Route("/authorizations/{authorizationId}/settings", defaults={}, requirements={"authorizationId": "\w+"})
      * @Method({"GET", "OPTIONS"})
      *
      * @param string $authorizationId
@@ -71,7 +71,7 @@ class AuthorizationController extends FOSRestController
     }
 
     /**
-     * @Route("/api/authorizations/{authorizationId}/save_settings", defaults={}, requirements={"authorizationId": "\w+"})
+     * @Route("/authorizations/{authorizationId}/save_settings", defaults={}, requirements={"authorizationId": "\w+"})
      * @Method({"POST", "OPTIONS"})
      *
      * @param Request $request

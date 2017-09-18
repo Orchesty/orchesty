@@ -76,11 +76,20 @@ class Magento2Authorization extends AuthorizationAbstract implements Magento2Aut
      * @param string $url
      *
      * @return array
+     * @throws AuthorizationException
      */
     public function getHeaders(string $method, string $url): array
     {
         if (!$this->isAuthorized()) {
             $this->authorize();
+        }
+
+        $settings = $this->authorization->getSettings();
+        if (empty($settings[self::URL]) || empty($settings[self::USERNAME]) || empty($settings[self::PASSWORD])) {
+            throw new AuthorizationException(
+                sprintf('Authorization settings \'%s\' not found', $this->getId()),
+                AuthorizationException::AUTHORIZATION_SETTINGS_NOT_FOUND
+            );
         }
 
         return [
@@ -107,18 +116,12 @@ class Magento2Authorization extends AuthorizationAbstract implements Magento2Aut
     {
         $this->loadAuthorization();
         if (!$this->authorization) {
-            throw new AuthorizationException(
-                sprintf('Authorization settings \'%s\' not found', $this->getId()),
-                AuthorizationException::AUTHORIZATION_SETTINGS_NOT_FOUND
-            );
+            return [];
         }
 
         $settings = $this->authorization->getSettings();
         if (empty($settings[self::URL]) || empty($settings[self::USERNAME]) || empty($settings[self::PASSWORD])) {
-            throw new AuthorizationException(
-                sprintf('Authorization settings \'%s\' not found', $this->getId()),
-                AuthorizationException::AUTHORIZATION_SETTINGS_NOT_FOUND
-            );
+            return [];
         }
 
         $settings['readme'] = $this->getReadMe();
@@ -137,6 +140,13 @@ class Magento2Authorization extends AuthorizationAbstract implements Magento2Aut
         if (!$this->authorization) {
             $this->authorization = new Authorization($this->getId());
             $this->dm->persist($this->authorization);
+        }
+
+        if (empty($data['field1']) || empty($data['field2']) || empty($data['field3'])) {
+            throw new AuthorizationException(
+                sprintf('Authorization settings \'%s\' not found', $this->getId()),
+                AuthorizationException::AUTHORIZATION_SETTINGS_NOT_FOUND
+            );
         }
 
         $this->authorization->setSettings([
@@ -160,10 +170,17 @@ class Magento2Authorization extends AuthorizationAbstract implements Magento2Aut
 
     /**
      * @return array
+     * @throws AuthorizationException
      */
     private function authorize(): array
     {
         $settings = $this->getSettings();
+        if (empty($settings[self::URL]) || empty($settings[self::USERNAME]) || empty($settings[self::PASSWORD])) {
+            throw new AuthorizationException(
+                sprintf('Authorization settings \'%s\' not found', $this->getId()),
+                AuthorizationException::AUTHORIZATION_SETTINGS_NOT_FOUND
+            );
+        }
 
         $dto = (new RequestDto('POST', new Uri($this->getAuthorizationUrl())))
             ->setHeaders([
