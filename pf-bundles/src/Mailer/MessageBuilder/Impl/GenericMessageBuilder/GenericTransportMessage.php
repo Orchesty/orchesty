@@ -50,6 +50,16 @@ class GenericTransportMessage implements TransportMessageInterface
     private $dataContent;
 
     /**
+     * @var GenericContentAttachment[]
+     */
+    private $contentAttachments = [];
+
+    /**
+     * @var GenericFsAttachment[]
+     */
+    private $fileStorageAttachments = [];
+
+    /**
      * GenericTransportMessage constructor.
      *
      * @param string      $from
@@ -137,6 +147,38 @@ class GenericTransportMessage implements TransportMessageInterface
     public function setContent(string $content): void
     {
         $this->content = $content;
+    }
+
+    /**
+     * @return GenericContentAttachment[]
+     */
+    public function getContentAttachments(): array
+    {
+        return $this->contentAttachments;
+    }
+
+    /**
+     * @param GenericContentAttachment $contentAttachment
+     */
+    public function addContentAttachment(GenericContentAttachment $contentAttachment): void
+    {
+        $this->contentAttachments[] = $contentAttachment;
+    }
+
+    /**
+     * @return GenericFsAttachment[]
+     */
+    public function getFileStorageAttachments(): array
+    {
+        return $this->fileStorageAttachments;
+    }
+
+    /**
+     * @param GenericFsAttachment $fileStorageAttachment
+     */
+    public function addFileStorageAttachment(GenericFsAttachment $fileStorageAttachment): void
+    {
+        $this->fileStorageAttachments[] = $fileStorageAttachment;
     }
 
 }

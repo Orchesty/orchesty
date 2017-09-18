@@ -9,6 +9,9 @@
 
 namespace Hanaboso\PipesFramework\Mailer\Transport;
 
+use Hanaboso\PipesFramework\Mailer\MessageBuilder\Impl\GenericMessageBuilder\GenericContentAttachment;
+use Hanaboso\PipesFramework\Mailer\MessageBuilder\Impl\GenericMessageBuilder\GenericFsAttachment;
+
 /**
  * Interface TransportMessageInterface
  *
@@ -58,5 +61,25 @@ interface TransportMessageInterface
      * @return null|string
      */
     public function getTemplate(): ?string;
+
+    /**
+     * @return GenericContentAttachment[]
+     */
+    public function getContentAttachments(): array;
+
+    /**
+     * @param GenericContentAttachment $contentAttachment
+     */
+    public function addContentAttachment(GenericContentAttachment $contentAttachment): void;
+
+    /**
+     * @return GenericFsAttachment[]
+     */
+    public function getFileStorageAttachments(): array;
+
+    /**
+     * @param GenericFsAttachment $fileStorageAttachment
+     */
+    public function addFileStorageAttachment(GenericFsAttachment $fileStorageAttachment): void;
 
 }
