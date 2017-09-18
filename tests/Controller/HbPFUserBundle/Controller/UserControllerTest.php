@@ -44,12 +44,7 @@ class UserControllerTest extends ControllerTestCaseAbstract
             ->setPassword($this->encoder->encodePassword('passw0rd', ''));
         $this->persistAndFlush($user);
 
-        $response = $this->sendPost('/api/user/login', [
-            'email'    => $user->getEmail(),
-            'password' => 'passw0rd',
-        ]);
-
-        $response = $this->sendPost('/api/user/login', [
+        $response = $this->sendPost('api/gateway/user/login', [
             'email'    => $user->getEmail(),
             'password' => 'passw0rd',
         ]);
@@ -69,7 +64,7 @@ class UserControllerTest extends ControllerTestCaseAbstract
             ->setPassword($this->encoder->encodePassword('passw0rd', ''));
         $this->persistAndFlush($user);
 
-        $response = $this->sendPost('/api/user/login', [
+        $response = $this->sendPost('/api/gateway/user/login', [
             'email' => '',
         ]);
 
@@ -88,7 +83,7 @@ class UserControllerTest extends ControllerTestCaseAbstract
             ->setPassword($this->encoder->encodePassword('passw0rd', ''));
         $this->persistAndFlush($user);
 
-        $response = $this->sendPost('/api/user/login', [
+        $response = $this->sendPost('/api/gateway/user/login', [
             'email'    => $user->getEmail(),
             'passw0rd' => '',
         ]);
@@ -105,7 +100,7 @@ class UserControllerTest extends ControllerTestCaseAbstract
     {
         $this->loginUser('email@example.com', 'passw0rd');
 
-        $response = $this->sendPost('/api/user/logout', []);
+        $response = $this->sendPost('/api/gateway/user/logout', []);
 
         $this->assertEquals(200, $response->status);
     }
@@ -115,7 +110,7 @@ class UserControllerTest extends ControllerTestCaseAbstract
      */
     public function testLogoutNotLogged(): void
     {
-        $response = $this->sendPost('/api/user/logout', []);
+        $response = $this->sendPost('/api/gateway/user/logout', []);
 
         $this->assertEquals(500, $response->status);
         $this->assertEquals(SecurityManagerException::class, $response->content->type);
@@ -127,7 +122,7 @@ class UserControllerTest extends ControllerTestCaseAbstract
      */
     public function testRegister(): void
     {
-        $response = $this->sendPost('/api/user/register', [
+        $response = $this->sendPost('/api/gateway/user/register', [
             'email' => 'email@example.com',
         ]);
 
@@ -144,7 +139,7 @@ class UserControllerTest extends ControllerTestCaseAbstract
             ->setPassword($this->encoder->encodePassword('passw0rd', ''));
         $this->persistAndFlush($user);
 
-        $response = $this->sendPost('/api/user/register', [
+        $response = $this->sendPost('/api/gateway/user/register', [
             'email' => 'email@example.com',
         ]);
 
@@ -164,7 +159,7 @@ class UserControllerTest extends ControllerTestCaseAbstract
         $token = (new Token())->setTmpUser($user);
         $this->persistAndFlush($token);
 
-        $response = $this->sendPost(sprintf('/api/user/%s/activate', $token->getId()), []);
+        $response = $this->sendPost(sprintf('/api/gateway/user/%s/activate', $token->getId()), []);
 
         $this->assertEquals(200, $response->status);
     }
@@ -180,7 +175,7 @@ class UserControllerTest extends ControllerTestCaseAbstract
         $token = (new Token())->setTmpUser($user);
         $this->persistAndFlush($token);
 
-        $response = $this->sendPost(sprintf('/api/user/%s/activate', Strings::substring($token->getId(), 1)), []);
+        $response = $this->sendPost(sprintf('/api/gateway/user/%s/activate', Strings::substring($token->getId(), 1)), []);
 
         $this->assertEquals(500, $response->status);
         $this->assertEquals(TokenManagerException::class, $response->content->type);
@@ -200,7 +195,7 @@ class UserControllerTest extends ControllerTestCaseAbstract
         $token = (new Token())->setUser($user);
         $this->persistAndFlush($token);
 
-        $response = $this->sendPost(sprintf('/api/user/%s/set_password', $token->getId()), []);
+        $response = $this->sendPost(sprintf('/api/gateway/user/%s/set_password', $token->getId()), []);
 
         $this->assertEquals(200, $response->status);
     }
@@ -218,7 +213,7 @@ class UserControllerTest extends ControllerTestCaseAbstract
         $token = (new Token())->setUser($user);
         $this->persistAndFlush($token);
 
-        $response = $this->sendPost(sprintf('/api/user/%s/set_password', Strings::substring($token->getId(), 1)), []);
+        $response = $this->sendPost(sprintf('/api/gateway/user/%s/set_password', Strings::substring($token->getId(), 1)), []);
 
         $this->assertEquals(500, $response->status);
         $this->assertEquals(TokenManagerException::class, $response->content->type);
@@ -231,7 +226,7 @@ class UserControllerTest extends ControllerTestCaseAbstract
     public function testChangePassword(): void
     {
         $user     = $this->loginUser('email@example.com', 'passw0rd');
-        $response = $this->sendPost('/api/user/change_password', ['password' => 'anotherPassw0rd']);
+        $response = $this->sendPost('/api/gateway/user/change_password', ['password' => 'anotherPassw0rd']);
 
         $this->dm->clear();
         $existingUser = $this->dm->getRepository(User::class)->find($user->getId());
@@ -245,7 +240,7 @@ class UserControllerTest extends ControllerTestCaseAbstract
      */
     public function testChangePasswordNotLogged(): void
     {
-        $response = $this->sendPost('/api/user/change_password', ['password' => 'anotherPassw0rd']);
+        $response = $this->sendPost('/api/gateway/user/change_password', ['password' => 'anotherPassw0rd']);
 
         $this->assertEquals(403, $response->status);
     }
@@ -263,7 +258,7 @@ class UserControllerTest extends ControllerTestCaseAbstract
         $token = (new Token())->setUser($user);
         $this->persistAndFlush($token);
 
-        $response = $this->sendPost('/api/user/reset_password', [
+        $response = $this->sendPost('/api/gateway/user/reset_password', [
             'email' => $user->getEmail(),
         ]);
 
@@ -283,7 +278,7 @@ class UserControllerTest extends ControllerTestCaseAbstract
         $token = (new Token())->setUser($user);
         $this->persistAndFlush($token);
 
-        $response = $this->sendPost('/api/user/reset_password', [
+        $response = $this->sendPost('/api/gateway/user/reset_password', [
             'email' => '',
         ]);
 
@@ -319,7 +314,7 @@ class UserControllerTest extends ControllerTestCaseAbstract
         $rule->setGroup($group);
         $this->dm->flush();
 
-        $response = $this->sendDelete(sprintf('/api/user/%s/delete', $user->getId()));
+        $response = $this->sendDelete(sprintf('/api/gateway/user/%s/delete', $user->getId()));
 
         $this->assertEquals(200, $response->status);
         $this->assertEquals($user->getEmail(), $response->content->email);
@@ -333,7 +328,7 @@ class UserControllerTest extends ControllerTestCaseAbstract
     {
         $this->loginUser('email@example.com', 'passw0rd');
 
-        $response = $this->sendDelete('/api/user/0/delete');
+        $response = $this->sendDelete('/api/gateway/user/0/delete');
 
         $this->assertEquals(500, $response->status);
         $this->assertEquals(UserManagerException::class, $response->content->type);
@@ -362,7 +357,7 @@ class UserControllerTest extends ControllerTestCaseAbstract
         $rule->setGroup($group);
         $this->dm->flush();
 
-        $response = $this->sendDelete(sprintf('/api/user/%s/delete', $loggedUser->getId()));
+        $response = $this->sendDelete(sprintf('/api/gateway/user/%s/delete', $loggedUser->getId()));
 
         $this->assertEquals(500, $response->status);
         $this->assertEquals(UserManagerException::class, $response->content->type);
@@ -381,7 +376,7 @@ class UserControllerTest extends ControllerTestCaseAbstract
             ->setPassword('passw0rd');
         $this->persistAndFlush($user);
 
-        $response = $this->sendDelete(sprintf('/api/user/%s/delete', $user->getId()));
+        $response = $this->sendDelete(sprintf('/api/gateway/user/%s/delete', $user->getId()));
 
         $this->assertEquals(500, $response->status);
         $this->assertEquals(AclException::class, $response->content->type);

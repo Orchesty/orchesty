@@ -41,5 +41,4 @@ hb_pf_user:
 
 hb_pf_configurator:
     resource: '@HbPFConfiguratorBundle'
-    type:     annotation
-    prefix:   /api/gateway
+    type: annotation

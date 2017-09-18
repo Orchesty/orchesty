@@ -30,17 +30,7 @@ class AuthorizationController extends FOSRestController
     private $handler;
 
     /**
-     * AuthorizationController constructor.
-     *
-     * @param AuthorizationHandler $handler
-     */
-    function __construct(AuthorizationHandler $handler)
-    {
-        $this->handler = $handler;
-    }
-
-    /**
-     * @Route("/api/authorizations/{authorizationId}/authorize", defaults={}, requirements={"authorizationId": "\w+"})
+     * @Route("/authorizations/{authorizationId}/authorize", defaults={}, requirements={"authorizationId": "\w+"})
      * @Method({"POST", "OPTIONS"})
      *
      * @param Request $request
@@ -48,8 +38,9 @@ class AuthorizationController extends FOSRestController
      *
      * @return Response
      */
-    public function authorization(Request $request, string $authorizationId): Response
+    public function authorizationAction(Request $request, string $authorizationId): Response
     {
+        $this->construct();
         try {
             $this->handler->authorize($authorizationId);
             $response = new RedirectResponse($request->request->get('redirect_url'));
@@ -61,7 +52,7 @@ class AuthorizationController extends FOSRestController
     }
 
     /**
-     * @Route("/api/authorizations/{authorizationId}/save_token", defaults={}, requirements={"authorizationId": "\w+"})
+     * @Route("/authorizations/{authorizationId}/save_token", defaults={}, requirements={"authorizationId": "\w+"})
      * @Method({"POST", "OPTIONS"})
      *
      * @param Request $request
@@ -69,8 +60,9 @@ class AuthorizationController extends FOSRestController
      *
      * @return Response
      */
-    public function saveToken(Request $request, string $authorizationId): Response
+    public function saveTokenAction(Request $request, string $authorizationId): Response
     {
+        $this->construct();
         try {
             $this->handler->saveToken($request->request->all(), $authorizationId);
             $response = new RedirectResponse('http://frontendURL.com');
@@ -82,16 +74,27 @@ class AuthorizationController extends FOSRestController
     }
 
     /**
-     * @Route("/api/authorization/info")
+     * @Route("/authorization/info")
      * @Method({"GET", "OPTIONS"})
      *
      * @return Response
      */
-    public function getAuthorizationsInfo(): Response
+    public function getAuthorizationsInfoAction(): Response
     {
+        $this->construct();
         $data = $this->handler->getAuthInfo();
 
         return new JsonResponse($data, 200);
+    }
+
+    /**
+     *
+     */
+    private function construct(): void
+    {
+        if (!$this->handler) {
+            $this->handler = $this->container->get('hbpf.handler.authorization');
+        }
     }
 
 }
