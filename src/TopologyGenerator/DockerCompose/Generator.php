@@ -13,9 +13,7 @@ use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\Impl\CounterServiceBuilder;
 use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\Impl\NodeServiceBuilder;
-use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\Impl\PhpDevServiceBuilder;
 use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\Impl\ProbeServiceBuilder;
-use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\Impl\XmlParserServiceBuilder;
 use Hanaboso\PipesFramework\TopologyGenerator\Environment;
 use Hanaboso\PipesFramework\TopologyGenerator\GeneratorInterface;
 use Hanaboso\PipesFramework\TopologyGenerator\GeneratorUtils;
@@ -88,9 +86,12 @@ class Generator implements GeneratorInterface
             $nodeConfig['id']                 = GeneratorUtils::normalizeName($node->getId(), $node->getName());
             $nodeConfig['worker']['type']     = 'worker.http';
             $nodeConfig['worker']['settings'] = [
-                'method' => 'POST',
-                'url'    => $this->hostMapper->getUrl(new TypeEnum($node->getType()), $node->getName()),
-                'opts'   => [],
+                'host'         => $this->hostMapper->getHost(new TypeEnum($node->getType())),
+                'process_path' => $this->hostMapper->getRoute(new TypeEnum($node->getType()), $node->getName()),
+                'status_path'  => 'status',
+                'method'       => 'POST',
+                'secure'       => FALSE,
+                'opts'         => [],
             ];
 
             $nodeConfig['next'] = [];
@@ -127,28 +128,6 @@ class Generator implements GeneratorInterface
         foreach ($nodes as $node) {
             $builder = new NodeServiceBuilder($this->environment, self::REGISTRY, $this->network);
             $compose->addServices($builder->build($node));
-
-            if (HostMapper::isPhpType(new TypeEnum($node->getType()))) {
-                $builder       = new PhpDevServiceBuilder(
-                    $this->environment,
-                    $this->hostMapper,
-                    self::REGISTRY,
-                    $this->network
-                );
-                $phpDevService = $builder->build($node);
-                $compose->addServices($phpDevService);
-            }
-
-            if ($node->getType() === TypeEnum::XML_PARSER) {
-                $builder          = new XmlParserServiceBuilder(
-                    $this->environment,
-                    $this->hostMapper,
-                    self::REGISTRY,
-                    $this->network
-                );
-                $xmlParserService = $builder->build(new Node());
-                $compose->addServices($xmlParserService);
-            }
         }
 
         return $this->composeBuilder->build($compose);

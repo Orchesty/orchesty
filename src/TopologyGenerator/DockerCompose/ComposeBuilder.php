@@ -33,8 +33,8 @@ class ComposeBuilder
         $services = [];
         foreach ($compose->getServices() as $service) {
             $services[$service->getName()]['image'] = $service->getImage();
-            ($service->getWorkDir()) ? $services[$service->getName()]['working_dir'] = $service->getWorkDir() : NULL;
-            ($service->getUser()) ? $services[$service->getName()]['user'] = $service->getUser() : NULL;
+            ($service->getWorkDir()) ?: $services[$service->getName()]['working_dir'] = $service->getWorkDir();
+            ($service->getUser()) ?: $services[$service->getName()]['user'] = $service->getUser();
 
             foreach ($service->getEnvironments() as $key => $value) {
                 $services[$service->getName()]['environment'][$key] = $value;
@@ -56,7 +56,7 @@ class ComposeBuilder
                 $services[$service->getName()]['depends_on'][] = $dependOn;
             }
 
-            $services[$service->getName()]['command'] = $service->getCommand();
+            ($service->getWorkDir()) ?: $services[$service->getName()]['command'] = $service->getCommand();
         }
 
         $composeData = [

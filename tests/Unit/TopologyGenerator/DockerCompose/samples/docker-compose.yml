@@ -2,6 +2,8 @@ version: '2'
 services:
   probe:
     image: 'dkr.hanaboso.net/pipes/pipes/pf-typescript:dev'
+    working_dir: ''
+    user: ''
     environment:
       RABBITMQ_HOST: rabbitmq
       RABBITMQ_PORT: '5672'
@@ -17,6 +19,8 @@ services:
     command: './dist/src/bin/pipes.js start probe'
   counter:
     image: 'dkr.hanaboso.net/pipes/pipes/pf-typescript:dev'
+    working_dir: ''
+    user: ''
     environment:
       RABBITMQ_HOST: rabbitmq
       RABBITMQ_PORT: '5672'
@@ -30,6 +34,8 @@ services:
     command: './dist/src/bin/pipes.js start counter'
   1-magento2-customer:
     image: 'dkr.hanaboso.net/pipes/pipes/pf-typescript:dev'
+    working_dir: ''
+    user: ''
     environment:
       RABBITMQ_HOST: rabbitmq
       RABBITMQ_PORT: '5672'
@@ -41,21 +47,10 @@ services:
     networks:
       - demo_defualt
     command: './dist/src/bin/pipes.js start node --id 1-magento2-customer'
-  pipes-api:
-    image: 'dkr.hanaboso.net/pipes/pipes/php-dev:dev'
-    working_dir: /var/www/pipes/clients/demo/pipes-api
-    user: '${DEV_UID}:${DEV_GID}'
-    environment:
-      DEV_UID: '${DEV_UID}'
-      DEV_GID: '${DEV_GID}'
-    volumes:
-      - '../../../../:/var/www/pipes'
-      - '${SSH_AUTH_SOCK}:/ssh-agent'
-    networks:
-      - demo_defualt
-    command: ''
   2-xml-parser:
     image: 'dkr.hanaboso.net/pipes/pipes/pf-typescript:dev'
+    working_dir: ''
+    user: ''
     environment:
       RABBITMQ_HOST: rabbitmq
       RABBITMQ_PORT: '5672'
@@ -67,21 +62,10 @@ services:
     networks:
       - demo_defualt
     command: './dist/src/bin/pipes.js start node --id 2-xml-parser'
-  xml-parser:
-    image: 'dkr.hanaboso.net/pipes/pipes/python-xml-parser:prod'
-    environment:
-      PARSER_HOST: xml-parser
-      PARSER_PORT: '80'
-      PARSER_RELOADED: '1'
-      METRICS_HOST: metrics
-      METRICS_PORT: '5555'
-    ports:
-      - '8080:80'
-    networks:
-      - demo_defualt
-    command: ''
   3-mapper-1:
     image: 'dkr.hanaboso.net/pipes/pipes/pf-typescript:dev'
+    working_dir: ''
+    user: ''
     environment:
       RABBITMQ_HOST: rabbitmq
       RABBITMQ_PORT: '5672'
@@ -95,6 +79,8 @@ services:
     command: './dist/src/bin/pipes.js start node --id 3-mapper-1'
   4-mail:
     image: 'dkr.hanaboso.net/pipes/pipes/pf-typescript:dev'
+    working_dir: ''
+    user: ''
     environment:
       RABBITMQ_HOST: rabbitmq
       RABBITMQ_PORT: '5672'
@@ -108,6 +94,8 @@ services:
     command: './dist/src/bin/pipes.js start node --id 4-mail'
   5-ftp:
     image: 'dkr.hanaboso.net/pipes/pipes/pf-typescript:dev'
+    working_dir: ''
+    user: ''
     environment:
       RABBITMQ_HOST: rabbitmq
       RABBITMQ_PORT: '5672'
@@ -121,6 +109,8 @@ services:
     command: './dist/src/bin/pipes.js start node --id 5-ftp'
   6-api:
     image: 'dkr.hanaboso.net/pipes/pipes/pf-typescript:dev'
+    working_dir: ''
+    user: ''
     environment:
       RABBITMQ_HOST: rabbitmq
       RABBITMQ_PORT: '5672'
