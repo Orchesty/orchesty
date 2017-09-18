@@ -34,7 +34,7 @@ const testTopology: ITopologyConfigSkeleton = {
                 settings: {
                     host: "localhost",
                     method: "post",
-                    port: 3000,
+                    port: 3050,
                     process_path: "/httpworker1/",
                     status_path: "/status",
                     secure: false,
@@ -81,7 +81,7 @@ describe("Linear Topology test", () => {
             updated.val = updated.val + " modified";
             resp.status(200).send(JSON.stringify(updated));
         });
-        httpWorkerMock.listen(3000);
+        httpWorkerMock.listen(3050);
 
         const pip = new Pipes(testTopology);
 
