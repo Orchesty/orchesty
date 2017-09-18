@@ -4,6 +4,9 @@ namespace Hanaboso\PipesFramework\Connector\Ftp;
 
 use Hanaboso\PipesFramework\Connector\Ftp\Adapter\FtpAdapterInterface;
 use Nette\Utils\FileSystem;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use SplFileInfo;
 
 /**
@@ -11,13 +14,18 @@ use SplFileInfo;
  *
  * @package Hanaboso\PipesFramework\Ftp
  */
-class FtpService implements FtpServiceInterface
+class FtpService implements FtpServiceInterface, LoggerAwareInterface
 {
 
     /**
      * @var FtpAdapterInterface
      */
     protected $adapter;
+
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
 
     /**
      * FtpServiceAbstract constructor.
@@ -27,6 +35,19 @@ class FtpService implements FtpServiceInterface
     public function __construct(FtpAdapterInterface $adapter)
     {
         $this->adapter = $adapter;
+        $this->logger  = new NullLogger();
+    }
+
+    /**
+     * @param LoggerInterface $logger
+     *
+     * @return FtpService
+     */
+    public function setLogger(LoggerInterface $logger): FtpService
+    {
+        $this->logger = $logger;
+
+        return $this;
     }
 
     /**
