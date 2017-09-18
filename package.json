@@ -30,6 +30,7 @@
     "camunda-bpmn-moddle": "^0.12.0",
     "clean-webpack-plugin": "^0.1.16",
     "copy-webpack-plugin": "^4.0.1",
+    "cron-parser": "^2.4.1",
     "css-loader": "^0.28.5",
     "diagram-js": "^0.20.0",
     "file-loader": "^0.11.2",

@@ -17,6 +17,11 @@
           "name": "pipesType",
           "isAttr": true,
           "type": "String"
+        },
+        {
+          "name": "cronTime",
+          "isAttr": true,
+          "type": "String"
         }
       ]
     }

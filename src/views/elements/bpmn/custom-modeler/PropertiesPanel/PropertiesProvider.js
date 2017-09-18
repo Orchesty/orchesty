@@ -6,6 +6,7 @@ import linkProps from 'bpmn-js-properties-panel/lib/provider/bpmn/parts/LinkProp
 import idProps from 'bpmn-js-properties-panel/lib/provider/bpmn/parts/IdProps';
 import CustomNameProps from './parts/CustomNameProps';
 import ElementPipesTypeProps from './parts/PipesTypeProps';
+import CronTimeProps from './parts/CronTimeProps.js';
 
 function createGeneralTabGroups(element, bpmnFactory, elementRegistry, translate) {
   const generalGroup = {
@@ -18,6 +19,7 @@ function createGeneralTabGroups(element, bpmnFactory, elementRegistry, translate
   CustomNameProps(generalGroup, element, translate);
   processProps(generalGroup, element, translate);
   ElementPipesTypeProps(generalGroup, element, translate);
+  CronTimeProps(generalGroup, element, translate);
 
   const detailsGroup = {
     id: 'details',
