@@ -91,7 +91,10 @@ class Generator implements GeneratorInterface
                     '/%s',
                     $this->hostMapper->getRoute(new TypeEnum($node->getType()), $node->getName())
                 ),
-                'status_path'  => '/status',
+                'status_path'  => sprintf(
+                    '/%s/test',
+                    $this->hostMapper->getRoute(new TypeEnum($node->getType()), $node->getName())
+                ),
                 'method'       => 'POST',
                 'port'         => 80,
                 'secure'       => FALSE,
@@ -121,7 +124,7 @@ class Generator implements GeneratorInterface
 
         $compose->addNetwork($this->network);
 
-        $builder            = new ProbeServiceBuilder($this->environment, self::REGISTRY, $this->network);
+        $builder            = new ProbeServiceBuilder($this->environment, self::REGISTRY, $this->network, $topology);
         $nodeWatcherService = $builder->build(new Node());
         $compose->addServices($nodeWatcherService);
 

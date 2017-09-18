@@ -8,7 +8,11 @@
 
 namespace Hanaboso\PipesFramework\Commons\StartingPoint;
 
+use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\StartingPoint\Exception\StartingPointException;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
+use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Nette\Utils\Strings;
@@ -31,13 +35,20 @@ class StartingPoint
     private $startingPointProducer;
 
     /**
+     * @var CurlManagerInterface
+     */
+    private $curlManager;
+
+    /**
      * StartingPoint constructor.
      *
      * @param StartingPointProducer $startingPointProducer
+     * @param CurlManagerInterface  $curlManager
      */
-    public function __construct(StartingPointProducer $startingPointProducer)
+    public function __construct(StartingPointProducer $startingPointProducer, CurlManagerInterface $curlManager)
     {
         $this->startingPointProducer = $startingPointProducer;
+        $this->curlManager           = $curlManager;
     }
 
     /**
@@ -170,6 +181,27 @@ class StartingPoint
             $this->createQueueName($topology, $node),
             $headers->getHeaders()
         );
+    }
+
+    /**
+     * @param Topology $topology
+     *
+     * @return array
+     * @throws StartingPointException
+     */
+    public function runTest(Topology $topology): array
+    {
+        $uri = sprintf('%s_probe:%s/status', $topology->getId(), 8007);
+
+        $requestDto = new RequestDto(CurlManager::METHOD_GET, new Uri($uri));
+
+        $responseDto = $this->curlManager->send($requestDto);
+
+        if ($responseDto->getStatusCode() === 200) {
+            return json_decode($responseDto->getBody(), TRUE);
+        } else {
+            throw new StartingPointException(sprintf('Request error: %s', $responseDto->getReasonPhrase()));
+        }
     }
 
 }

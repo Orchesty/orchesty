@@ -1,6 +1,6 @@
 version: '2'
 services:
-  probe:
+  1_probe:
     image: 'dkr.hanaboso.net/pipes/pipes/pf-typescript:dev'
     working_dir: ''
     user: ''
@@ -12,8 +12,6 @@ services:
       RABBITMQ_VHOST: /
     volumes:
       - './topology.json:/srv/app/topology.json'
-    ports:
-      - '8007:8007'
     networks:
       - demo_defualt
     command: './dist/src/bin/pipes.js start probe'
