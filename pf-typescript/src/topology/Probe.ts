@@ -1,15 +1,31 @@
 import * as express from "express";
-import logger from "lib-nodejs/dist/src/logger/Logger";
 import * as request from "request";
+import logger from "../logger/Logger";
 import { INodeConfig } from "./Configurator";
 
 const DEFAULT_HTTP_PORT = 8007;
 const HTTP_PROBE_PATH = "/status";
 const HTTP_TIMEOUT = 10000;
 
-export enum Status {
-    SUCCESS = 200,
-    ERROR = 503,
+interface IFailureInfo {
+    node: string;
+    url: string;
+    code: number;
+    body: string;
+    err: string;
+}
+
+interface IProbeNodeFailure {
+    node: string;
+    url: string;
+    code: number;
+    message: string;
+}
+
+export interface IProbeResult {
+    status: boolean;
+    message: string;
+    failed: IProbeNodeFailure[];
 }
 
 class Probe {
@@ -42,17 +58,19 @@ class Probe {
 
         app.get(HTTP_PROBE_PATH, (req, resp) => {
             this.checkTopology()
-                .then((res: {status: Status, message: string}) => {
+                .then((result: IProbeResult) => {
                     resp
                         .set("Accept", "application/json")
-                        .status(res.status)
-                        .send(res.message);
+                        .status(200)
+                        .send(JSON.stringify(result));
                 })
-                .catch((err: Error) => {
+                .catch((result: IProbeResult) => {
+                    result.status = false;
+                    result.message = "Timeout reached.";
                     resp
                         .set("Accept", "application/json")
-                        .status(Status.ERROR)
-                        .send(`Error: ${err}`);
+                        .status(503)
+                        .send(JSON.stringify(result));
                 });
         });
 
@@ -68,34 +86,36 @@ class Probe {
      * @return {Promise}
      * @private
      */
-    public checkTopology(): Promise<{status: Status, message: string}> {
-        return new Promise((resolve) => {
+    public checkTopology(): Promise<IProbeResult> {
+        return new Promise((resolve, reject) => {
             let resolved = false;
             let ready = 0;
             let failed = 0;
             let total = 0;
-            const failedInfo: Array<{ node: string, url: string, code: number, body: string, err: string }> = [];
+
+            const failedInfo: IFailureInfo[] = [];
 
             this.nodes.forEach((node: INodeConfig) => {
                 request(node.debug.url, (err, response, body) => {
                     total += 1;
 
-                    if (!err && response.statusCode && response.statusCode === Status.SUCCESS) {
+                    if (!err && response.statusCode && response.statusCode === 200) {
                         ready += 1;
                     } else {
                         failed += 1;
-                        failedInfo.push({ node: node.id, url: node.debug.url, code: response.statusCode, body, err });
+                        failedInfo.push({
+                            node: node.id,
+                            url: node.debug.url,
+                            code: response ? response.statusCode : 500,
+                            body,
+                            err,
+                        });
                     }
 
                     if (!resolved && this.nodes.length === total) {
                         resolved = true;
-                        if (total === ready) {
-                            resolve({ status: Status.SUCCESS, message: `All ${ready} nodes are ready.` });
-                        } else {
-                            let msg = `Topology status: ${ready}/${this.nodes.length} nodes ready.`;
-                            msg = `${msg} Failed: ${JSON.stringify(failedInfo)}`;
-                            resolve({ status: Status.ERROR, message: msg });
-                        }
+
+                        resolve(this.composeProbeResult(total, failedInfo));
                     }
                 });
             });
@@ -103,10 +123,28 @@ class Probe {
             setTimeout(() => {
                 if (!resolved) {
                     resolved = true;
-                    resolve({ status: Status.ERROR, message: "Timeout reached." });
+                    reject(this.composeProbeResult(total, failedInfo));
                 }
             }, HTTP_TIMEOUT);
         });
+    }
+
+    private composeProbeResult(total: number, failures: IFailureInfo[]): IProbeResult {
+        const failed: IProbeNodeFailure[] = [];
+        failures.forEach((f: IFailureInfo) => {
+            failed.push({
+                node: f.node,
+                url: f.url,
+                code: f.code,
+                message: f.err ? f.err : f.body,
+            });
+        });
+
+        return {
+            status: failures.length === 0,
+            message: `${total - failures.length}/${total} nodes ready.`,
+            failed,
+        };
     }
 
 }

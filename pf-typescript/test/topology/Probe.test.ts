@@ -4,7 +4,7 @@ import "mocha";
 import * as express from "express";
 import * as rp from "request-promise";
 import {default as Configurator, INodeConfig} from "../../src/topology/Configurator";
-import Probe from "../../src/topology/Probe";
+import Probe, {IProbeResult} from "../../src/topology/Probe";
 
 const topo = Configurator.createConfigFromSkeleton(
     {
@@ -14,18 +14,18 @@ const topo = Configurator.createConfigFromSkeleton(
                 id: "node1",
                 next: ["node2"],
                 debug: {
-                    port: 8001,
+                    port: 6001,
                     host: "localhost",
-                    url: "http://localhost:8001/status",
+                    url: "http://localhost:6001/status",
                 },
             },
             {
-                id: "node1",
+                id: "node2",
                 next: [],
                 debug: {
-                    port: 8002,
+                    port: 6002,
                     host: "localhost",
-                    url: "http://localhost:8002/status",
+                    url: "http://localhost:6002/status",
                 },
             },
         ],
@@ -42,9 +42,10 @@ describe("Probe", () => {
             .then(() => {
                 return rp("http://localhost:8005/status");
             })
-            .catch((err: any) => {
-                assert.equal(503, err.statusCode);
-                assert.include(err.message, "Topology status: 0 of 2 nodes ready.");
+            .then((resp: string) => {
+                const result: IProbeResult = JSON.parse(resp);
+                assert.isFalse(result.status);
+                assert.equal(result.message, "0/2 nodes ready.");
             });
     });
 
@@ -72,7 +73,9 @@ describe("Probe", () => {
                 return rp("http://localhost:8006/status");
             })
             .then((resp: string) => {
-                assert.include(resp, "All 2 nodes are ready");
+                const result: IProbeResult = JSON.parse(resp);
+                assert.equal(result.message, "2/2 nodes ready.");
+                assert.equal(result.failed.length, 0);
                 m1server.close();
                 m2server.close();
             });
@@ -82,14 +85,14 @@ describe("Probe", () => {
         // Node1 server mock
         const mock1 = express();
         mock1.get("/status", (req, resp) => {
-            resp.status(200).send();
+            resp.status(200).send("OK");
         });
         const m1server = mock1.listen(topo.nodes[0].debug.port);
 
         // Node2 server mock
         const mock2 = express();
         mock2.get("/status", (req, resp) => {
-            resp.status(500).send();
+            resp.status(500).send("Worker down");
         });
         const m2server = mock2.listen(topo.nodes[1].debug.port);
 
@@ -99,12 +102,18 @@ describe("Probe", () => {
         });
         return probe.start()
             .then(() => {
-                return rp("http://localhost:8006/status");
+                return rp("http://localhost:8007/status");
             })
-            .catch((err: any) => {
-                assert.equal(503, err.statusCode);
-                assert.include(err.message, "Topology status: 1 of 2 nodes ready.");
-                assert.include(err.message, "http://localhost:8002/status");
+            .then((resp: string) => {
+                const result: IProbeResult = JSON.parse(resp);
+                assert.equal(result.message, "1/2 nodes ready.");
+                assert.equal(result.failed.length, 1);
+                assert.deepEqual(result.failed[0], {
+                    node: topo.nodes[1].id,
+                    url: topo.nodes[1].debug.url,
+                    code: 500,
+                    message: "Worker down",
+                });
                 m1server.close();
                 m2server.close();
             });
