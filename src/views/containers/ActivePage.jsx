@@ -5,6 +5,7 @@ import Error404Page from '../pages/Error404Page';
 import DashboardPage from '../pages/DashboardPage';
 import TopologyListPage from '../pages/TopologyListPage';
 import SchemaPage from '../pages/SchemaPage';
+import AuthorizationListPage from '../pages/AuthorizationListPage';
 
 import './ActivePage.less';
 
@@ -18,6 +19,8 @@ class ActivePage extends React.Component {
         return <TopologyListPage pageKey={page.key} {...page.args}/>;
       case 'topology_schema':
         return <SchemaPage pageKey={page.key} {...page.args}/>;
+      case 'authorization_list':
+        return <AuthorizationListPage pageKey={page.key} {...page.args}/>;
       default:
         return <Error404Page />;
     }

@@ -14,7 +14,8 @@ class TopologyListPage extends React.Component {
   }
   
   componentWillMount(){
-    this.props.openTopologyList();
+   // this.props.openTopologyList();
+    this._sendActions();
   }
 
   _sendActions(){
@@ -27,10 +28,6 @@ class TopologyListPage extends React.Component {
       });
     }
     setActions(pageActions);
-  }
-
-  componentWillMount(){
-    this._sendActions();
   }
 
   render() {
