@@ -29,14 +29,21 @@ class FtpService implements FtpServiceInterface, LoggerAwareInterface
     private $logger;
 
     /**
+     * @var FtpConfig
+     */
+    private $ftpConfig;
+
+    /**
      * FtpServiceAbstract constructor.
      *
      * @param FtpAdapterInterface $adapter
+     * @param FtpConfig           $ftpConfig
      */
-    public function __construct(FtpAdapterInterface $adapter)
+    public function __construct(FtpAdapterInterface $adapter, FtpConfig $ftpConfig)
     {
-        $this->adapter = $adapter;
-        $this->logger  = new NullLogger();
+        $this->adapter   = $adapter;
+        $this->ftpConfig = $ftpConfig;
+        $this->logger    = new NullLogger();
     }
 
     /**
@@ -60,58 +67,6 @@ class FtpService implements FtpServiceInterface, LoggerAwareInterface
     }
 
     /**
-     * @param string $host
-     * @param bool   $ssl
-     * @param int    $port
-     * @param int    $timeout
-     *
-     * @throws FtpException
-     */
-    public function connect(string $host, bool $ssl = FALSE, int $port = 21, $timeout = 15): void
-    {
-        try {
-            $this->adapter->connect([
-                self::HOST    => trim($host),
-                self::PORT    => intval($port),
-                self::TIMEOUT => intval($timeout),
-                self::SSL     => boolval($ssl),
-            ]);
-        } catch (FtpException $e) {
-            $this->logger->error($e->getMessage());
-            throw $e;
-        }
-    }
-
-    /**
-     *
-     */
-    public function disconnect(): void
-    {
-        try {
-            $this->adapter->disconnect();
-        } catch (FtpException $e) {
-            $this->logger->error($e->getMessage());
-            throw $e;
-        }
-    }
-
-    /**
-     * @param string $username
-     * @param string $password
-     *
-     * @throws FtpException
-     */
-    public function login(string $username, string $password): void
-    {
-        try {
-            $this->adapter->login($username, $password);
-        } catch (FtpException $e) {
-            $this->logger->error($e->getMessage());
-            throw $e;
-        }
-    }
-
-    /**
      * @param string $remoteFile
      * @param string $content
      *
@@ -120,6 +75,9 @@ class FtpService implements FtpServiceInterface, LoggerAwareInterface
      */
     public function uploadFile(string $remoteFile, string $content): bool
     {
+        $this->connect();
+        $this->login();
+
         if (!$this->adapter->dirExists(dirname($remoteFile))) {
             $this->adapter->makeDirRecursive(dirname($remoteFile));
         }
@@ -135,6 +93,7 @@ class FtpService implements FtpServiceInterface, LoggerAwareInterface
             throw $e;
         } finally {
             FileSystem::delete($filename);
+            $this->disconnect();
         }
 
         return TRUE;
@@ -148,6 +107,9 @@ class FtpService implements FtpServiceInterface, LoggerAwareInterface
      */
     public function downloadFile(string $remoteFile): SplFileInfo
     {
+        $this->connect();
+        $this->login();
+
         $filename  = basename($remoteFile);
         $localFile = sys_get_temp_dir() . DIRECTORY_SEPARATOR . $filename;
 
@@ -157,6 +119,8 @@ class FtpService implements FtpServiceInterface, LoggerAwareInterface
         } catch (FtpException $e) {
             $this->logger->error($e->getMessage());
             throw $e;
+        } finally {
+            $this->disconnect();
         }
 
         return new SplFileInfo($localFile);
@@ -170,11 +134,15 @@ class FtpService implements FtpServiceInterface, LoggerAwareInterface
      */
     public function downloadFiles(string $dir): array
     {
+        $this->connect();
+        $this->login();
+
+        $downloaded = [];
+
         try {
             $list = $this->adapter->listDir($dir);
             $this->logger->info(sprintf('Downloading files from %s directory', $dir));
 
-            $downloaded = [];
             foreach ($list as $file) {
                 $downloaded[] = $this->downloadFile($file);
             }
@@ -183,9 +151,57 @@ class FtpService implements FtpServiceInterface, LoggerAwareInterface
         } catch (FtpException $e) {
             $this->logger->error($e->getMessage());
             throw $e;
+        } finally {
+            $this->disconnect();
         }
 
         return $downloaded;
+    }
+
+    /**************************************** HELPERS ****************************************/
+
+    /**
+     * @throws FtpException
+     */
+    private function connect(): void
+    {
+        try {
+            $this->adapter->connect([
+                self::HOST    => trim($this->ftpConfig->getHost()),
+                self::PORT    => intval($this->ftpConfig->getPort()),
+                self::TIMEOUT => intval($this->ftpConfig->getTimeout()),
+                self::SSL     => boolval($this->ftpConfig->isSsl()),
+            ]);
+        } catch (FtpException $e) {
+            $this->logger->error($e->getMessage());
+            throw $e;
+        }
+    }
+
+    /**
+     *
+     */
+    private function disconnect(): void
+    {
+        try {
+            $this->adapter->disconnect();
+        } catch (FtpException $e) {
+            $this->logger->error($e->getMessage());
+            throw $e;
+        }
+    }
+
+    /**
+     * @throws FtpException
+     */
+    private function login(): void
+    {
+        try {
+            $this->adapter->login($this->ftpConfig->getUsername(), $this->ftpConfig->getPassword());
+        } catch (FtpException $e) {
+            $this->logger->error($e->getMessage());
+            throw $e;
+        }
     }
 
 }
