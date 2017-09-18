@@ -87,9 +87,13 @@ class Generator implements GeneratorInterface
             $nodeConfig['worker']['type']     = 'worker.http';
             $nodeConfig['worker']['settings'] = [
                 'host'         => $this->hostMapper->getHost(new TypeEnum($node->getType())),
-                'process_path' => $this->hostMapper->getRoute(new TypeEnum($node->getType()), $node->getName()),
-                'status_path'  => 'status',
+                'process_path' => sprintf(
+                    '/%s',
+                    $this->hostMapper->getRoute(new TypeEnum($node->getType()), $node->getName())
+                ),
+                'status_path'  => '/status',
                 'method'       => 'POST',
+                'port'         => 80,
                 'secure'       => FALSE,
                 'opts'         => [],
             ];
