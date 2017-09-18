@@ -19,9 +19,9 @@ use Nette\Utils\Json;
 class Magento2Authorization extends AuthorizationAbstract implements Magento2AuthorizationInterface
 {
 
-    private const URL      = 'url';
-    private const USERNAME = 'username';
-    private const PASSWORD = 'password';
+    private const URL      = 'field1';
+    private const USERNAME = 'field2';
+    private const PASSWORD = 'field3';
     private const TOKEN    = 'token';
 
     /**
@@ -116,12 +116,12 @@ class Magento2Authorization extends AuthorizationAbstract implements Magento2Aut
     {
         $this->loadAuthorization();
         if (!$this->authorization) {
-            return [];
+            return ['readme' => $this->getReadMe()];
         }
 
         $settings = $this->authorization->getSettings();
         if (empty($settings[self::URL]) || empty($settings[self::USERNAME]) || empty($settings[self::PASSWORD])) {
-            return [];
+            return ['readme' => $this->getReadMe()];
         }
 
         $settings['readme'] = $this->getReadMe();
