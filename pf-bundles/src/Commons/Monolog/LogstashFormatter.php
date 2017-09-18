@@ -8,7 +8,11 @@
 
 namespace Hanaboso\PipesFramework\Commons\Monolog;
 
+use Exception;
+use InvalidArgumentException;
 use Monolog\Formatter\NormalizerFormatter;
+use SoapFault;
+use Throwable;
 
 /**
  * Class LogstashFormatter
@@ -75,6 +79,48 @@ class LogstashFormatter extends NormalizerFormatter
         }
 
         return $this->toJson($message) . "\n";
+    }
+
+    /**
+     * @param Exception|Throwable $e
+     *
+     * @return array
+     */
+    protected function normalizeException($e): array
+    {
+        // TODO 2.0 only check for Throwable
+        if (!$e instanceof Exception && !$e instanceof Throwable) {
+            throw new InvalidArgumentException('Exception/Throwable expected, got ' . gettype($e) . ' / ' . get_class($e));
+        }
+
+        $data = [
+            'class'   => get_class($e),
+            'message' => $e->getMessage(),
+            'code'    => $e->getCode(),
+            'file'    => $e->getFile() . ':' . $e->getLine(),
+        ];
+
+        if ($e instanceof SoapFault) {
+            if (isset($e->faultcode)) {
+                $data['faultcode'] = $e->faultcode;
+            }
+
+            if (isset($e->faultactor)) {
+                $data['faultactor'] = $e->faultactor;
+            }
+
+            if (isset($e->detail)) {
+                $data['detail'] = $e->detail;
+            }
+        }
+
+        $data['trace'] = $this->toJson($e->getTraceAsString());
+
+        if ($e->getPrevious()) {
+            $data['previous'] = $this->normalizeException($e->getPrevious());
+        }
+
+        return $data;
     }
 
 }
