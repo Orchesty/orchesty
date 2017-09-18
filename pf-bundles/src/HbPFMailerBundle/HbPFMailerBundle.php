@@ -35,7 +35,10 @@ class HbPFMailerBundle extends Bundle
         return $this->extension;
     }
 
-    public function build(ContainerBuilder $container)
+    /**
+     * @param ContainerBuilder $container
+     */
+    public function build(ContainerBuilder $container): void
     {
         $container->addCompilerPass(
             new HbPFMailerCompilerPass('hbpfmailer.default_value'),

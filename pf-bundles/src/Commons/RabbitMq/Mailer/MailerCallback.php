@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: pavel.severyn
@@ -78,11 +78,11 @@ class MailerCallback extends BaseCallbackAbstract
             return new CallbackStatus(CallbackStatus::RESEND);
         } catch (TransportException | Swift_TransportException $e) {
 
-        return new CallbackStatus(CallbackStatus::RESEND, $e->getMessage());
-    } catch (MessageBuilderException $e) {
+            return new CallbackStatus(CallbackStatus::RESEND, $e->getMessage());
+        } catch (MessageBuilderException $e) {
 
-        return new CallbackStatus(CallbackStatus::FAILED, $e->getMessage());
-    }
+            return new CallbackStatus(CallbackStatus::FAILED, $e->getMessage());
+        }
     }
 
 }

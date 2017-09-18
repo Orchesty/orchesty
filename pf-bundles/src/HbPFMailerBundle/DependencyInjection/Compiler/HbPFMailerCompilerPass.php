@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: sep
@@ -8,10 +8,16 @@
 
 namespace Hanaboso\PipesFramework\HbPFMailerBundle\DependencyInjection\Compiler;
 
+use InvalidArgumentException;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 
+/**
+ * Class HbPFMailerCompilerPass
+ *
+ * @package Hanaboso\PipesFramework\HbPFMailerBundle\DependencyInjection\Compiler
+ */
 class HbPFMailerCompilerPass implements CompilerPassInterface
 {
 
@@ -35,7 +41,7 @@ class HbPFMailerCompilerPass implements CompilerPassInterface
      *
      * @param ContainerBuilder $container
      */
-    public function process(ContainerBuilder $container)
+    public function process(ContainerBuilder $container): void
     {
         $config = $container->getParameter('hb_pf_mailer');
         if (!array_key_exists('default_values', $config)) {
