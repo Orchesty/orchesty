@@ -36,7 +36,7 @@ class FileStorageDto
      */
     function __construct(File $file, string $content)
     {
-        $this->file = $file;
+        $this->file    = $file;
         $this->content = $content;
     }
 
