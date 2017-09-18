@@ -117,4 +117,34 @@ class StartingPointHandlerTest extends TestCase
         $startingPointHandler->run('123', '1');
     }
 
+    /**
+     * @covers StartingPointHandler::getTopology()
+     * @covers StartingPointHandler::runTest()
+     */
+    public function testRunTest(): void
+    {
+        $dr = $this->createMock(DocumentRepository::class);
+        $dr->expects($this->at(0))->method('find')->willReturn(new Topology());
+
+        /** @var DocumentManager|\PHPUnit_Framework_MockObject_MockObject $dm */
+        $dm = $this->createMock(DocumentManager::class);
+        $dm->method('getRepository')->willReturn($dr);
+
+        $data = [
+            'status'  => TRUE,
+            'message' => '5/5 Nodes OK',
+            'failed'  => [],
+        ];
+
+        /** @var StartingPoint|\PHPUnit_Framework_MockObject_MockObject $startingPoint */
+        $startingPoint = $this->createMock(StartingPoint::class);
+        $startingPoint->method('runTest')->willReturn($data);
+
+        $startingPointHandler = new StartingPointHandler($dm, $startingPoint);
+
+        $result = $startingPointHandler->runTest('123');
+
+        $this->assertEquals($data, $result);
+    }
+
 }

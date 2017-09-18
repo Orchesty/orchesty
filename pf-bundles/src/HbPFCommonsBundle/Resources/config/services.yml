@@ -4,14 +4,6 @@ services:
         class: Hanaboso\PipesFramework\Commons\Redirect\Redirect
         arguments:
 
-    hbpf.topology_repository:
-        class: Hanaboso\PipesFramework\Commons\Topology\TopologyRepository
-        arguments:
-
-    hbpf.node_repository:
-        class: Hanaboso\PipesFramework\Commons\Node\NodeRepository
-        arguments:
-
     hbpf.file_storage.driver.mongo:
         class: Hanaboso\PipesFramework\Commons\FileStorage\Driver\MongoFileDriver
         arguments:
@@ -46,3 +38,4 @@ services:
         class: Hanaboso\PipesFramework\Commons\StartingPoint\StartingPoint
         arguments:
             - '@rabbit-mq.producer.starting_point'
+            - '@hbpf.transport.curl_manager'

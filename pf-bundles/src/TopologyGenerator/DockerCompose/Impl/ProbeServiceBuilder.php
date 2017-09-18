@@ -9,6 +9,7 @@
 namespace Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\Impl;
 
 use Hanaboso\PipesFramework\Configurator\Document\Node;
+use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\Service;
 use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\ServiceBuilderInterface;
 use Hanaboso\PipesFramework\TopologyGenerator\Environment;
@@ -37,6 +38,10 @@ class ProbeServiceBuilder implements ServiceBuilderInterface
      * @var string
      */
     private $network;
+    /**
+     * @var Topology
+     */
+    private $topology;
 
     /**
      * NodeServiceBuilder constructor.
@@ -44,12 +49,14 @@ class ProbeServiceBuilder implements ServiceBuilderInterface
      * @param Environment $environment
      * @param string      $registry
      * @param string      $network
+     * @param Topology    $topology
      */
-    public function __construct(Environment $environment, string $registry, string $network)
+    public function __construct(Environment $environment, string $registry, string $network, Topology $topology)
     {
         $this->environment = $environment;
         $this->registry    = $registry;
         $this->network     = $network;
+        $this->topology    = $topology;
     }
 
     /**
@@ -59,7 +66,7 @@ class ProbeServiceBuilder implements ServiceBuilderInterface
      */
     public function build(Node $node): Service
     {
-        $service = new Service('probe');
+        $service = new Service(sprintf('%s_probe', $this->topology->getId()));
         $service
             ->setImage($this->registry . '/' . self::IMAGE)
             ->addEnvironment(Environment::RABBITMQ_HOST, $this->environment->getRabbitMqHost())
@@ -68,7 +75,6 @@ class ProbeServiceBuilder implements ServiceBuilderInterface
             ->addEnvironment(Environment::RABBITMQ_PASS, $this->environment->getRabbitMqPass())
             ->addEnvironment(Environment::RABBITMQ_VHOST, $this->environment->getRabbitMqVHost())
             ->addVolume('./topology.json:/srv/app/topology.json')
-            ->addPort('8007:8007')
             ->setCommand('./dist/src/bin/pipes.js start probe')
             ->addNetwork($this->network);
 

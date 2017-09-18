@@ -12,6 +12,8 @@ use Bunny\Channel;
 use Hanaboso\PipesFramework\Commons\StartingPoint\Exception\StartingPointException;
 use Hanaboso\PipesFramework\Commons\StartingPoint\StartingPoint;
 use Hanaboso\PipesFramework\Commons\StartingPoint\StartingPointProducer;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
+use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\RabbitMqBundle\BunnyManager;
@@ -46,6 +48,11 @@ class StartingPointTest extends TestCase
     private $node;
 
     /**
+     * @var CurlManagerInterface|PHPUnit_Framework_MockObject_MockObject
+     */
+    private $curlManager;
+
+    /**
      *
      */
     public function setUp(): void
@@ -73,6 +80,8 @@ class StartingPointTest extends TestCase
             ->setName('magento2_customer')
             ->setTopology($this->topology->getId())
             ->setEnabled(TRUE);
+
+        $this->curlManager = $this->createMock(CurlManagerInterface::class);
     }
 
     /**
@@ -80,7 +89,7 @@ class StartingPointTest extends TestCase
      */
     public function testRun(): void
     {
-        $startingPoint = new StartingPoint($this->startingPointProducer);
+        $startingPoint = new StartingPoint($this->startingPointProducer, $this->curlManager);
         $startingPoint->run($this->topology, $this->node);
     }
 
@@ -89,7 +98,7 @@ class StartingPointTest extends TestCase
      */
     public function testRunWithRequest(): void
     {
-        $startingPoint = new StartingPoint($this->startingPointProducer);
+        $startingPoint = new StartingPoint($this->startingPointProducer, $this->curlManager);
         $startingPoint->runWithRequest(Request::createFromGlobals(), $this->topology, $this->node);
     }
 
@@ -102,7 +111,7 @@ class StartingPointTest extends TestCase
 
         $this->expectException(StartingPointException::class);
         $this->expectExceptionMessage('The node[id=1] does not belong to the topology[id=1].');
-        $startingPoint = new StartingPoint($this->startingPointProducer);
+        $startingPoint = new StartingPoint($this->startingPointProducer, $this->curlManager);
         $startingPoint->run($this->topology, $this->node);
     }
 
@@ -115,7 +124,7 @@ class StartingPointTest extends TestCase
 
         $this->expectException(StartingPointException::class);
         $this->expectExceptionMessage('The topology[id=1] does not enable.');
-        $startingPoint = new StartingPoint($this->startingPointProducer);
+        $startingPoint = new StartingPoint($this->startingPointProducer, $this->curlManager);
         $startingPoint->run($this->topology, $this->node);
     }
 
@@ -128,7 +137,7 @@ class StartingPointTest extends TestCase
 
         $this->expectException(StartingPointException::class);
         $this->expectExceptionMessage('The node[id=1] does not enable.');
-        $startingPoint = new StartingPoint($this->startingPointProducer);
+        $startingPoint = new StartingPoint($this->startingPointProducer, $this->curlManager);
         $startingPoint->run($this->topology, $this->node);
     }
 
@@ -137,7 +146,7 @@ class StartingPointTest extends TestCase
      */
     public function testCreateQueueName(): void
     {
-        $startingPoint = new StartingPoint($this->startingPointProducer);
+        $startingPoint = new StartingPoint($this->startingPointProducer, $this->curlManager);
         $name          = $startingPoint->createQueueName($this->topology, $this->node);
         $this->assertSame('pipes.1-topology.1-magento2-customer', $name);
     }
@@ -147,7 +156,7 @@ class StartingPointTest extends TestCase
      */
     public function testCreateHeaders(): void
     {
-        $startingPoint = new StartingPoint($this->startingPointProducer);
+        $startingPoint = new StartingPoint($this->startingPointProducer, $this->curlManager);
         $headers       = $startingPoint->createHeaders();
 
         $this->assertCount(2, $headers->getHeaders());
@@ -160,7 +169,7 @@ class StartingPointTest extends TestCase
      */
     public function testCreateBodyFromRequestXml(): void
     {
-        $startingPoint = new StartingPoint($this->startingPointProducer);
+        $startingPoint = new StartingPoint($this->startingPointProducer, $this->curlManager);
 
         $request = new Request([], [], [], [], [], [
             'CONTENT_TYPE' => 'application/xml',
@@ -192,7 +201,7 @@ class StartingPointTest extends TestCase
      */
     public function testCreateBodyFromRequestJson(): void
     {
-        $startingPoint = new StartingPoint($this->startingPointProducer);
+        $startingPoint = new StartingPoint($this->startingPointProducer, $this->curlManager);
 
         $request = new Request([], [], [], [], [], [
             'CONTENT_TYPE' => 'application/json',
@@ -218,7 +227,7 @@ class StartingPointTest extends TestCase
      */
     public function testCreateBodyFromRequestCsv(): void
     {
-        $startingPoint = new StartingPoint($this->startingPointProducer);
+        $startingPoint = new StartingPoint($this->startingPointProducer, $this->curlManager);
 
         $request = new Request([], [], [], [], [], [
             'CONTENT_TYPE' => 'text/csv',
@@ -241,7 +250,7 @@ class StartingPointTest extends TestCase
      */
     public function testCreateBody(): void
     {
-        $startingPoint = new StartingPoint($this->startingPointProducer);
+        $startingPoint = new StartingPoint($this->startingPointProducer, $this->curlManager);
         $body          = $startingPoint->createBody();
 
         $body = json_decode($body, TRUE);
@@ -250,6 +259,42 @@ class StartingPointTest extends TestCase
             "data"     => "",
             "settings" => "",
         ], $body);
+    }
+
+    /**
+     * @covers StartingPoint::runTest()
+     */
+    public function testRunTest(): void
+    {
+        $responseBody = json_encode([
+            'status'  => TRUE,
+            'message' => '5/5 node ok',
+            'failed'  => [],
+        ]);
+
+        $this->curlManager->method('send')->willReturn(
+            new ResponseDto(200, '', $responseBody, ['application/json'])
+        );
+
+        $startingPoint = new StartingPoint($this->startingPointProducer, $this->curlManager);
+        $body          = $startingPoint->runTest($this->topology);
+
+        $this->assertEquals(json_decode($responseBody, TRUE), $body);
+    }
+
+    /**
+     * @covers StartingPoint::runTest()
+     */
+    public function testRunTestBadRequest(): void
+    {
+        $this->curlManager->method('send')->willReturn(
+            new ResponseDto(400, 'Error', '', ['application/json'])
+        );
+
+        $startingPoint = new StartingPoint($this->startingPointProducer, $this->curlManager);
+        $this->expectException(StartingPointException::class);
+        $this->expectExceptionMessage('Request error: Error');
+        $startingPoint->runTest($this->topology);
     }
 
 }

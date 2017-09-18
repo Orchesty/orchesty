@@ -44,4 +44,35 @@ class StartingPointControllerTest extends ControllerTestCaseAbstract
         self::assertEquals([], json_decode($response->getContent(), TRUE));
     }
 
+    /**
+     * @covers ApiController::runTest
+     */
+    public function testRunTest(): void
+    {
+        $data = [
+            'status'  => TRUE,
+            'message' => '5/5 Nodes OK.',
+            'failed'  => [],
+        ];
+
+        $startingPointHandler = $this->createMock(StartingPointHandler::class);
+        $startingPointHandler->method('runTest')->willReturn($data);
+
+        $this->client->getContainer()->set('hbpf.handler.starting_point', $startingPointHandler);
+
+        $this->client->request(
+            'GET',
+            '/api/gateway/topologies/1/test',
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            ''
+        );
+
+        $response = $this->client->getResponse();
+
+        self::assertEquals(200, $response->getStatusCode());
+        self::assertEquals($data, json_decode($response->getContent(), TRUE));
+    }
+
 }

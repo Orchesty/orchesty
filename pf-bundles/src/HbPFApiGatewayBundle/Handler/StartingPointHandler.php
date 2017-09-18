@@ -98,4 +98,14 @@ class StartingPointHandler
         $this->startingPoint->run($this->getTopology($topologyId), $this->getNode($nodeId));
     }
 
+    /**
+     * @param string $topologyId
+     *
+     * @return array
+     */
+    public function runTest(string $topologyId): array
+    {
+        return $this->startingPoint->runTest($this->getTopology($topologyId));
+    }
+
 }

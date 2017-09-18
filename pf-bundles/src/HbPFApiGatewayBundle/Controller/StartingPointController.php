@@ -57,4 +57,19 @@ class StartingPointController extends FOSRestController
         return $this->handleView($this->view([], 200, []));
     }
 
+    /**
+     * @Route("/topologies/{topologyId}/test", defaults={}, requirements={"topologyId": "\w+"})
+     * @Method({"GET"})
+     *
+     * @param string $topologyId
+     *
+     * @return Response
+     */
+    public function testAction(string $topologyId): Response
+    {
+        $data = $this->startingPointHandler->runTest($topologyId);
+
+        return $this->handleView($this->view($data, 200, ['application/json']));
+    }
+
 }

@@ -36,7 +36,7 @@ class CustomNodeControllerTest extends ControllerTestCaseAbstract
     {
         $this->mockHandler('processTest');
 
-        $this->client->request('POST', '/api/custom_node/null/process/test', [], [], [], '');
+        $this->client->request('GET', '/api/custom_node/null/process/test', [], [], [], '');
 
         $response = $this->client->getResponse();
 
