@@ -31,7 +31,7 @@ class AuthorizationController extends FOSRestController
 
     /**
      * @Route("/authorizations/{authorizationId}/authorize", defaults={}, requirements={"authorizationId": "\w+"})
-     * @Method({"POST", "OPTIONS"})
+     * @Method({"GET", "POST", "OPTIONS"})
      *
      * @param Request $request
      * @param string  $authorizationId
