@@ -52,6 +52,46 @@ class AuthorizationController extends FOSRestController
     }
 
     /**
+     * @Route("/authorizations/{authorizationId}/settings", defaults={}, requirements={"authorizationId": "\w+"})
+     * @Method({"GET", "OPTIONS"})
+     *
+     * @param string $authorizationId
+     *
+     * @return Response
+     */
+    public function getSettingsAction(string $authorizationId): Response
+    {
+        try {
+            $response = new JsonResponse($this->handler->getSettings($authorizationId));
+        } catch (AuthorizationException $e) {
+            $response = new JsonResponse(ControllerUtils::createExceptionData($e), 500);
+        }
+
+        return $response;
+    }
+
+    /**
+     * @Route("/authorizations/{authorizationId}/save_settings", defaults={}, requirements={"authorizationId": "\w+"})
+     * @Method({"POST", "OPTIONS"})
+     *
+     * @param Request $request
+     * @param string  $authorizationId
+     *
+     * @return Response
+     */
+    public function saveSettingsAction(Request $request, string $authorizationId): Response
+    {
+        try {
+            $this->handler->saveSettings($request->request->all(), $authorizationId);
+            $response = new JsonResponse([]);
+        } catch (AuthorizationException $e) {
+            $response = new JsonResponse(ControllerUtils::createExceptionData($e), 500);
+        }
+
+        return $response;
+    }
+
+    /**
      * @Route("/authorizations/{authorizationId}/save_token", defaults={}, requirements={"authorizationId": "\w+"})
      * @Method({"POST", "OPTIONS"})
      *
@@ -77,14 +117,14 @@ class AuthorizationController extends FOSRestController
      * @Route("/authorization/info")
      * @Method({"GET", "OPTIONS"})
      *
+     * @param Request $request
+     *
      * @return Response
      */
-    public function getAuthorizationsInfoAction(): Response
+    public function getAuthorizationsInfoAction(Request $request): Response
     {
         $this->construct();
-        $data = $this->handler->getAuthInfo();
-
-        return new JsonResponse($data, 200);
+        return new JsonResponse($this->handler->getAuthInfo($request->getSchemeAndHttpHost()), 200);
     }
 
     /**

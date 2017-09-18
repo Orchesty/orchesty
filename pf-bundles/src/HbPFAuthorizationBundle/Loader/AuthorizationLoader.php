@@ -95,9 +95,11 @@ class AuthorizationLoader
     }
 
     /**
-     * @return string[]
+     * @param string $hostname
+     *
+     * @return array
      */
-    public function getAllAuthorizationsInfo(): array
+    public function getAllAuthorizationsInfo(string $hostname): array
     {
         $authorizations = $this->getInstalled();
         $res            = [];
@@ -105,7 +107,7 @@ class AuthorizationLoader
         foreach ($authorizations as $authorization) {
             $authorizationService = $this->getAuthorization($authorization);
 
-            $res[$authorization] = $authorizationService->getInfo();
+            $res[$authorization] = $authorizationService->getInfo($hostname);
         }
 
         return $res;

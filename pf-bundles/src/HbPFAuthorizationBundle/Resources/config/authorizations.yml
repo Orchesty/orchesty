@@ -8,9 +8,6 @@ services:
             - 'magento2.auth'
             - 'magento2 Authorization'
             - 'magento2 Authorization'
-            - 'url://magento2'
-            - 'username'
-            - 'password'
 
     hbpf.authorization.magento2_oauth:
         class: Hanaboso\PipesFramework\Authorization\Impl\Magento2\Magento2OAuthAuthorization
@@ -20,8 +17,5 @@ services:
             - 'magento2_oauth'
             - 'magento2 OAuth'
             - 'magento2 OAuth'
-            - 'url://magento2'
-            - 'api_key'
-            - 'secret_key'
         calls:
             - ['setLogger', ['@monolog.logger.authorization']]
