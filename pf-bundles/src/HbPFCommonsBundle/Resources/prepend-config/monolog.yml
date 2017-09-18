@@ -1,6 +1,6 @@
 monolog:
     use_microseconds: false
-    channels: [authorization, commons, connector, mailer, parser_table, user, rabbit-mq, test]
+    channels: [authorization, commons, connector, mailer, parser_table, user, rabbit-mq, test, stdout_handler]
     handlers:
         authorization:
             type: '%logger_handler%'
@@ -40,16 +40,16 @@ monolog:
             channels: rabbit-mq
 
         test:
-            type: group
-            members: [file_handler]
-            channels: test
+            type: service
+            id: udp_handler
 
         # Commons handlers
         stdout_handler:
             type:  stream
             path:  "php://stdout"
-            level: info
+            level: debug
             formatter: logstash_formatter
+            channels: stdout_handler
 
         syslog_handler:
             type: syslog
@@ -66,4 +66,18 @@ services:
         class: Hanaboso\PipesFramework\Commons\Monolog\LogstashFormatter
         arguments:
             - 'asdasd'
+
+    udp_sender:
+        class: Hanaboso\PipesFramework\Commons\Metrics\UDPSender
+        arguments:
+            - 'logstash'
+            - '5120'
+
+    udp_handler:
+        class: Hanaboso\PipesFramework\Commons\Monolog\UdpHandler
+        arguments:
+            - '@udp_sender'
+            - 'info'
+        calls:
+            - ['setFormatter', ['@logstash_formatter']]
 

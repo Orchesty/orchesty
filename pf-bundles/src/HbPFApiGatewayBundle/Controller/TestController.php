@@ -11,6 +11,7 @@ use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\HbPFApiGatewayBundle\Handler\StartingPointHandler;
 use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\GeneratorFactory;
+use Psr\Log\LoggerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -42,17 +43,25 @@ class TestController extends FOSRestController
     private $rootDir;
 
     /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    /**
      * TestController constructor.
      *
      * @param DocumentManager      $dm
      * @param StartingPointHandler $startingPointHandler
      * @param string               $rootDir
+     * @param LoggerInterface      $logger
      */
-    public function __construct(DocumentManager $dm, StartingPointHandler $startingPointHandler, string $rootDir)
+    public function __construct(DocumentManager $dm, StartingPointHandler $startingPointHandler, string $rootDir,
+                                LoggerInterface $logger)
     {
         $this->dm                   = $dm;
         $this->startingPointHandler = $startingPointHandler;
-        $this->rootDir = $rootDir . '/topology';
+        $this->rootDir              = $rootDir . '/topology';
+        $this->logger               = $logger;
     }
 
     /**
@@ -161,6 +170,22 @@ class TestController extends FOSRestController
         }
 
         $this->startingPointHandler->run($topology->getId(), $nodes[0]->getId());
+    }
+
+    /**
+     * @Route("/test/logger")
+     * @Method({"POST"})
+     *
+     * @return Response
+     */
+    public function runLogger(): Response
+    {
+        $this->logger->info('Test message', [
+            'node_id'        => '123',
+            'correlation_id' => '456',
+        ]);
+
+        return $this->handleView($this->view([], 200, []));
     }
 
 }

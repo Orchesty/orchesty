@@ -9,7 +9,8 @@ services:
         arguments:
             - '@doctrine.odm.mongodb.document_manager'
             - '@hbpf.handler.starting_point'
-            - '%kernel.project_dir%'
+            - "%kernel.project_dir%"
+            - "@monolog.logger.test"
 
     hbpf.api_gateway.controller.node:
         class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\NodeController
