@@ -101,8 +101,7 @@ class HttpWorker implements IWorker {
      */
     public isWorkerReady(): Promise<boolean> {
         return new Promise((resolve) => {
-            // Every http worker service must provide :80/status route
-            const reqParams = { method: this.settings.method, url: this.getUrl(this.settings.status_path)};
+            const reqParams = { method: "GET", url: this.getUrl(this.settings.status_path)};
 
             logger.info(`HttpWorker asking worker if is ready on ${reqParams.url}`, {node_id: this.settings.node_id});
 
@@ -156,8 +155,9 @@ class HttpWorker implements IWorker {
      */
     private getUrl(path: string): string {
         const protocol = this.settings.secure ? "https://" : "http://";
+        const port = this.settings.port || 80;
 
-        return `${protocol}${this.settings.host}:${this.settings.port}${path}`;
+        return `${protocol}${this.settings.host}:${port}${path}`;
     }
 
 }

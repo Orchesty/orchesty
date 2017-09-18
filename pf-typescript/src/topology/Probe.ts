@@ -3,7 +3,7 @@ import logger from "lib-nodejs/dist/src/logger/Logger";
 import * as request from "request";
 import { INodeConfig } from "./Configurator";
 
-const HTTP_PORT = 8007;
+const DEFAULT_HTTP_PORT = 8007;
 const HTTP_PROBE_PATH = "/status";
 const HTTP_TIMEOUT = 10000;
 
@@ -22,7 +22,7 @@ class Probe {
      * @param {number} port
      */
     constructor(port?: number) {
-        this.port = port || parseInt(process.env.HTTP_PORT, 10) || HTTP_PORT;
+        this.port = port || DEFAULT_HTTP_PORT;
         this.nodes = [];
     }
 
@@ -74,7 +74,7 @@ class Probe {
             let ready = 0;
             let failed = 0;
             let total = 0;
-            const failedUrls: Array<{ url: string, body: string, err: string }> = [];
+            const failedInfo: Array<{ node: string, url: string, code: number, body: string, err: string }> = [];
 
             this.nodes.forEach((node: INodeConfig) => {
                 request(node.debug.url, (err, response, body) => {
@@ -84,7 +84,7 @@ class Probe {
                         ready += 1;
                     } else {
                         failed += 1;
-                        failedUrls.push({ url: node.debug.url, body, err });
+                        failedInfo.push({ node: node.id, url: node.debug.url, code: response.statusCode, body, err });
                     }
 
                     if (!resolved && this.nodes.length === total) {
@@ -92,8 +92,8 @@ class Probe {
                         if (total === ready) {
                             resolve({ status: Status.SUCCESS, message: `All ${ready} nodes are ready.` });
                         } else {
-                            let msg = `Topology status: ${ready} of ${this.nodes.length} nodes ready.`;
-                            msg = `${msg} Failed: ${JSON.stringify(failedUrls)}`;
+                            let msg = `Topology status: ${ready}/${this.nodes.length} nodes ready.`;
+                            msg = `${msg} Failed: ${JSON.stringify(failedInfo)}`;
                             resolve({ status: Status.ERROR, message: msg });
                         }
                     }

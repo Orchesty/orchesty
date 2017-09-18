@@ -82,7 +82,7 @@ describe("HttpWorker", () => {
 
     it("should return that worker is ready when it is really ready", () => {
         const workerServer = express();
-        workerServer.post("/status", (req, resp) => {
+        workerServer.get("/status", (req, resp) => {
             resp.sendStatus(200);
         });
         workerServer.listen(4321);
