@@ -15,6 +15,7 @@ use Tests\KernelTestCaseAbstract;
  */
 class SoapManagerTest extends KernelTestCaseAbstract
 {
+
     /** @var SoapManager */
     private $soap;
 
