@@ -65,7 +65,8 @@ class UserControllerTest extends ControllerTestCaseAbstract
         $this->persistAndFlush($user);
 
         $response = $this->sendPost('/api/gateway/user/login', [
-            'email' => '',
+            'email'    => '',
+            'password' => '',
         ]);
 
         $this->assertEquals(500, $response->status);
@@ -85,7 +86,7 @@ class UserControllerTest extends ControllerTestCaseAbstract
 
         $response = $this->sendPost('/api/gateway/user/login', [
             'email'    => $user->getEmail(),
-            'passw0rd' => '',
+            'password' => '',
         ]);
 
         $this->assertEquals(500, $response->status);
@@ -175,7 +176,8 @@ class UserControllerTest extends ControllerTestCaseAbstract
         $token = (new Token())->setTmpUser($user);
         $this->persistAndFlush($token);
 
-        $response = $this->sendPost(sprintf('/api/gateway/user/%s/activate', Strings::substring($token->getId(), 1)), []);
+        $response = $this->sendPost(sprintf('/api/gateway/user/%s/activate', Strings::substring($token->getId(), 1)),
+            []);
 
         $this->assertEquals(500, $response->status);
         $this->assertEquals(TokenManagerException::class, $response->content->type);
@@ -195,7 +197,8 @@ class UserControllerTest extends ControllerTestCaseAbstract
         $token = (new Token())->setUser($user);
         $this->persistAndFlush($token);
 
-        $response = $this->sendPost(sprintf('/api/gateway/user/%s/set_password', $token->getId()), []);
+        $response = $this->sendPost(sprintf('/api/gateway/user/%s/set_password', $token->getId()),
+            ['password' => 'newPassword']);
 
         $this->assertEquals(200, $response->status);
     }
@@ -213,7 +216,8 @@ class UserControllerTest extends ControllerTestCaseAbstract
         $token = (new Token())->setUser($user);
         $this->persistAndFlush($token);
 
-        $response = $this->sendPost(sprintf('/api/gateway/user/%s/set_password', Strings::substring($token->getId(), 1)), []);
+        $response = $this->sendPost(sprintf('/api/gateway/user/%s/set_password',
+            Strings::substring($token->getId(), 1)), ['password' => 'newPassword']);
 
         $this->assertEquals(500, $response->status);
         $this->assertEquals(TokenManagerException::class, $response->content->type);

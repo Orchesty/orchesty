@@ -88,6 +88,9 @@ class Repeater implements LoggerAwareInterface
         $headers[self::DESTINATION_ROUTING_KEY] = $message->routingKey;
 
         if ($message->hasHeader(self::MAX_HOP_FIELD)) {
+            if (!isset($headers[self::CURRENT_HOP_FIELD])) {
+                $headers[self::CURRENT_HOP_FIELD] = 0;
+            }
             $headers[self::CURRENT_HOP_FIELD]++;
 
             if ($headers[self::CURRENT_HOP_FIELD] > $headers[self::MAX_HOP_FIELD]) {

@@ -175,10 +175,10 @@ class TopologyManager
                     if (!Arrays::isList($process)) {
                         $this->createNode(
                             $topology,
-                            $process['@id'],
+                            $process['@id'] ?? '',
                             $handler,
-                            $process['@name'],
-                            $process['@pipes:pipesType'],
+                            $process['@name'] ?? '',
+                            $process['@pipes:pipesType'] ?? '',
                             $nodes,
                             $embedNodes
                         );
@@ -186,10 +186,10 @@ class TopologyManager
                         foreach ($process as $innerProcess) {
                             $this->createNode(
                                 $topology,
-                                $innerProcess['@id'],
+                                $innerProcess['@id'] ?? '',
                                 $handler,
-                                $innerProcess['@name'],
-                                $innerProcess['@pipes:pipesType'],
+                                $innerProcess['@name'] ?? '',
+                                $innerProcess['@pipes:pipesType'] ?? '',
                                 $nodes,
                                 $embedNodes
                             );
