@@ -16,7 +16,7 @@ function CustomContextPadProvider(eventBus, contextPad, modeling, elementFactory
     let actions = cached(element);
 
     if (
-      (is(element, 'bpmn:Task') || is(element, 'bpmn:Event')) &&
+      (is(element, 'bpmn:Task') || is(element, 'bpmn:Event') || is(element, 'bpmn:Gateway')) &&
       element.businessObject.pipesType && element.businessObject.pipesType !== ''
     ) {
       delete actions["append.append-task"];
