@@ -53,6 +53,16 @@ export default {
     },
     createUrl: page => `/topology/${page.args.schemaId}/schema`
   },
+  topology_detail: {
+    id: 'topology_detail',
+    caption: 'Topology detail',
+    needAuth: true,
+    acceptUrl: (path, query) => {
+      const match = /\/topology\/(\w+)\/detail/g.exec(path);
+      return match && match[1] ? {args: {topologyId: match[1], activeTab: query.active_tab}} : false;
+    },
+    createUrl: page => ({path: `/topology/${page.args.topologyId}/detail`, query: {active_tab: page.args.activeTab}})
+  },
   authorization_list: {
     id: 'authorization_list',
     caption: 'Authorization list',
