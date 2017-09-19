@@ -26,17 +26,15 @@ class NodeListTable extends React.Component {
   }
 
   changeSort(newSort) {
-    const {listChangeSort, list} = this.props;
-    listChangeSort(list.id, newSort);
+    this.props.listChangeSort(newSort);
   }
 
   changePage(newPage) {
-    const {listChangePage, list} = this.props;
-    listChangePage(list.id, newPage);
+    this.props.listChangePage(newPage);
   }
 
   _renderHead(){
-    const {listChangeSort, withTopology} = this.props;
+    const {listChangeSort, withTopology, list: {sort}} = this.props;
     if (listChangeSort) {
       return (
         <tr>
@@ -102,7 +100,7 @@ class NodeListTable extends React.Component {
       <td colSpan={6}>No items</td>
     </tr>;
     return (
-      <div>
+      <div className="node-list-table">
         <table className="table table-hover">
           <thead>
             {this._renderHead()}

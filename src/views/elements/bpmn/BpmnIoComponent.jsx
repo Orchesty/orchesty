@@ -20,7 +20,7 @@ class BpmnIoComponent extends React.Component {
   }
 
   _sendActions(){
-    this.props.actions([
+    this.props.setActions([
       {
         caption: 'Save',
         action: this.saveBPMN.bind(this),
@@ -177,7 +177,7 @@ BpmnIoComponent.propTypes = {
   schema: PropTypes.string,
   onError: PropTypes.func.isRequired,
   onImport: PropTypes.func.isRequired,
-  actions: PropTypes.func.isRequired
+  setActions: PropTypes.func.isRequired
 };
 
 export default BpmnIoComponent;

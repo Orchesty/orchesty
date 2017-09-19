@@ -35,6 +35,8 @@ module.exports = {
     }),
     new CopyWebpackPlugin([{
       from: './src/index.html'
+    },{
+      from: './src/close-me.html'
     }])
   ],
   resolve: {

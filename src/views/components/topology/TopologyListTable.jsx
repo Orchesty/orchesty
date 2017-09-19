@@ -2,7 +2,6 @@ import React from 'react'
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 
-import * as topologyActions from '../../../actions/topologyActions';
 import * as applicationActions from '../../../actions/applicationActions';
 
 import StateComponent from '../../wrappers/StateComponent';
@@ -17,16 +16,25 @@ class TopologyListTable extends React.Component {
     super(props);
     this.changeSort = this.changeSort.bind(this);
     this.changePage = this.changePage.bind(this);
+    this._checkList(props);
+  }
+
+  _checkList(props){
+    if (!props.list){
+      props.needList();
+    }
+  }
+
+  componentWillReceiveProps(nextProps){
+    this._checkList(nextProps);
   }
 
   changeSort(newSort) {
-    const {topologyListChangeSort, list} = this.props;
-    topologyListChangeSort(list.id, newSort);
+    this.props.listChangeSort(newSort);
   }
-  
+
   changePage(newPage) {
-    const {topologyListChangePage, list} = this.props;
-    topologyListChangePage(list.id, newPage);
+    this.props.listChangePage(newPage);
   }
 
   toggleSelect(id, e) {
@@ -39,8 +47,22 @@ class TopologyListTable extends React.Component {
     }
   }
 
+  _renderHead(){
+    const {list: {sort}} = this.props;
+    return (
+      <tr>
+        <SortTh name="id" state={sort} onChangeSort={this.changeSort}>#</SortTh>
+        <SortTh name="status" state={sort} onChangeSort={this.changeSort}>Status</SortTh>
+        <SortTh name="name" state={sort} onChangeSort={this.changeSort}>Name</SortTh>
+        <SortTh name="description" state={sort} onChangeSort={this.changeSort}>Description</SortTh>
+        <SortTh name="enabled" state={sort} onChangeSort={this.changeSort}>Enabled</SortTh>
+        <th>Actions</th>
+      </tr>
+    );
+  }
+
   render() {
-    const {list, elements, openModal, clone, selectPage, selected, list: {sort, items}} = this.props;
+    const {list, elements, openModal, clone, selectPage, selected, list: {items}} = this.props;
 
     let rows = null;
     if (items){
@@ -93,17 +115,10 @@ class TopologyListTable extends React.Component {
     }
 
     return (
-      <div>
+      <div className="topology-list-table">
         <table className="table table-hover">
           <thead>
-          <tr>
-            <SortTh name="id" state={sort} onChangeSort={this.changeSort}>#</SortTh>
-            <SortTh name="status" state={sort} onChangeSort={this.changeSort}>Status</SortTh>
-            <SortTh name="name" state={sort} onChangeSort={this.changeSort}>Name</SortTh>
-            <SortTh name="description" state={sort} onChangeSort={this.changeSort}>Description</SortTh>
-            <SortTh name="enabled" state={sort} onChangeSort={this.changeSort}>Enabled</SortTh>
-            <th>Actions</th>
-          </tr>
+          {this._renderHead()}
           </thead>
           <tbody>
             {rows}
@@ -118,32 +133,26 @@ class TopologyListTable extends React.Component {
 TopologyListTable.propTypes = {
   list: PropTypes.object.isRequired,
   elements: PropTypes.object.isRequired,
-  topologyListChangeSort: PropTypes.func.isRequired,
-  topologyListChangePage: PropTypes.func.isRequired,
   openModal: PropTypes.func.isRequired,
   selectPage: PropTypes.func.isRequired,
-  setPageData: PropTypes.func.isRequired
+  setPageData: PropTypes.func.isRequired,
+  needList: PropTypes.func.isRequired,
+  selected: PropTypes.string,
+  listChangeSort: PropTypes.func,
+  listChangePage: PropTypes.func,
+  clone: PropTypes.func,
 };
 
 function mapStateToProps(state, ownProps) {
-  const {topology, application: {selectedPage}} = state;
-  const list = topology.lists[ownProps.listId];
+  const {application: {selectedPage}} = state;
   return {
-    list: list,
-    elements: topology.elements,
-    state: list && list.state,
     selected: selectedPage.data ? selectedPage.data.selected : null
   }
 }
 
 function mapActionsToProps(dispatch){
   return {
-    topologyListChangeSort: (id, sort) => dispatch(topologyActions.topologyListChangeSort(id, sort)),
-    topologyListChangePage: (id, page) => dispatch(topologyActions.topologyListChangePage(id, page)),
-    openModal: (id, data) => dispatch(applicationActions.openModal(id, data)),
-    selectPage: (key, args) => dispatch(applicationActions.selectPage(key, args)),
     setPageData: data => dispatch(applicationActions.setPageData(data)),
-    clone: id => dispatch(topologyActions.cloneTopology(id))
   }
 }
 

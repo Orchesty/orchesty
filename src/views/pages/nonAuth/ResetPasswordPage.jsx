@@ -59,7 +59,7 @@ class ResetPasswordPage extends React.Component {
         </form>
       );
     } else {
-      return <p>Cekej na mejl</p>;
+      return <p>Email has been send.</p>;
     }
   }
 }

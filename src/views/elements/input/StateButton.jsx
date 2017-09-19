@@ -14,11 +14,11 @@ const sizes = {
 };
 
 function StateButton(props){
-  const {type, color, size, state, children, ...passProps} = props;
+  const {type, color, size, state, children, disabled, ...passProps} = props;
   const px = sizes[size];
   const inner = state == stateType.LOADING ? <Loading className="loading-icon" type="spinningBubbles" color="#000000" width={px} height={px} delay={100} /> : null;
   return (
-    <button className={`btn btn-${color} btn-${size} state-button`} type={type} disabled={state == stateType.LOADING} {...passProps}>{inner}{children}</button>
+    <button className={`btn btn-${color} btn-${size} state-button`} type={type} disabled={disabled || state == stateType.LOADING} {...passProps}>{inner}{children}</button>
   )
 }
 

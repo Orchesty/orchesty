@@ -49,13 +49,13 @@ export default (state = initialState, action) => {
         showMenu: !state.showMenu
       });
     
-    case types.OPEN_MODAL:
+    case types.MODAL_OPEN:
       return Object.assign({}, state, {
         modal: action.id,
         modalData: action.data
       });
     
-    case types.CLOSE_MODAL:
+    case types.MODAL_CLOSE:
       return Object.assign({}, state, {
         modal: null
       });

@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import * as applicationActions from '../../actions/applicationActions';
 
 import TopologyEditModal from '../modals/TopologyEditModal';
+import AuthorizationSettingsEditModal from '../modals/AuthorizationSettingsEditModal';
 
 
 class ActiveModal extends React.Component {
@@ -21,6 +22,9 @@ class ActiveModal extends React.Component {
     switch (modal){
       case 'topology_edit':
         return <TopologyEditModal {...modalData} onCloseModal={this._close} />;
+
+      case 'authorization_settings_edit':
+        return <AuthorizationSettingsEditModal {...modalData} onCloseModal={this._close} />;
 
       default:
         return null;
