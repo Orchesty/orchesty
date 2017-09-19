@@ -49,7 +49,7 @@ class HttpWorker implements IWorker {
             Object.assign(reqParams, this.settings.opts);
 
             logger.info(
-                `Worker[type'http'] sent request to: ${reqParams.url}`,
+                `Worker[type='http'] sent request to: ${reqParams.url}`,
                 { node_id: this.settings.node_id, correlation_id: msg.getJobId() },
             );
 
@@ -57,7 +57,7 @@ class HttpWorker implements IWorker {
             request(reqParams, (err, response, body) => {
                 if (err) {
                     logger.warn(
-                        "Worker[type'http'] received response",
+                        "Worker[type='http'] received response",
                         { node_id: this.settings.node_id, correlation_id: msg.getJobId(), error: err },
                     );
                     msg.setResult({ status: ResultCode.HTTP_ERROR, message: err });
@@ -67,7 +67,7 @@ class HttpWorker implements IWorker {
 
                 if (!response.statusCode || response.statusCode !== 200) {
                     logger.warn(
-                        `Worker[type'http'] received response with statusCode="${response.statusCode}"`,
+                        `Worker[type='http'] received response with statusCode="${response.statusCode}"`,
                         { node_id: this.settings.node_id, correlation_id: msg.getJobId() },
                     );
                     msg.setResult(
@@ -82,7 +82,7 @@ class HttpWorker implements IWorker {
 
                 // Everything OK
                 logger.info(
-                    "Worker[type'http'] received response",
+                    "Worker[type='http'] received response",
                     { node_id: this.settings.node_id, correlation_id: msg.getJobId()},
                 );
 

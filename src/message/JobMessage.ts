@@ -206,6 +206,15 @@ class JobMessage implements IMessage {
     }
 
     /**
+     * Adds split message to existing collection of splits
+     *
+     * @param {JobMessage} message
+     */
+    public addSplit(message: JobMessage): void {
+        this.split.push(message);
+    }
+
+    /**
      * Returns the list of messages that should be forwarded to followers
      * @return {JobMessage[]}
      */
