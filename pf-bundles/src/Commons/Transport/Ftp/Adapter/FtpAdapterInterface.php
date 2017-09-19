@@ -66,7 +66,7 @@ interface FtpAdapterInterface
      * @return void
      * @throws FtpException
      */
-    public function makeDir($dir): void;
+    public function makeDir(string $dir): void;
 
     /**
      * @param string $dir
