@@ -43,18 +43,19 @@ class HbPFMailerCompilerPass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container): void
     {
-        $config = $container->getParameter('hb_pf_mailer');
-        if (!array_key_exists('default_values', $config)) {
+        $config = $container->getParameter('hbpf');
+        if (!array_key_exists('mailer', $config) || !array_key_exists('default_values', $config['mailer'])) {
             throw new InvalidArgumentException(
                 'Container doesn\'t have config parameter \'default_values\', HbPFMailerExtension probably haven\'t processed config.'
             );
         }
 
+        $mailerConfig = $config['mailer'];
         $defaultValue = new Definition('Hanaboso\PipesFramework\HbPFMailerBundle\DefaultValues\DefaultValues', [
-            $config['default_values']['from'],
-            $config['default_values']['subject'],
-            $config['default_values']['to'],
-            $config['default_values']['bcc'],
+            $mailerConfig['default_values']['from'],
+            $mailerConfig['default_values']['subject'],
+            $mailerConfig['default_values']['to'],
+            $mailerConfig['default_values']['bcc'],
         ]);
 
         $container->setDefinition($this->defaultValueServiceId, $defaultValue);

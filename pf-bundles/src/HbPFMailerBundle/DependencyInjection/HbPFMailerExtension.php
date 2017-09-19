@@ -22,7 +22,7 @@ class HbPFMailerExtension extends Extension implements PrependExtensionInterface
      */
     public function getAlias(): string
     {
-        return 'hb_pf_mailer';
+        return 'hbpf';
     }
 
     /**
