@@ -79,6 +79,7 @@ final class FtpServiceTest extends TestCase
         $adapter->method('downloadFile')->willReturn(TRUE);
 
         $service = new FtpService($adapter, $this->getFtpConfig());
+        /** @var SplFileInfo[] $result */
         $result  = $service->downloadFiles('abc');
 
         self::assertCount(2, $result);
