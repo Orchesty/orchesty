@@ -18,6 +18,8 @@ module.exports = {
   plugins: [
     new CopyWebpackPlugin([{
       from: './src/index.html'
+    },{
+      from: './src/close-me.html'
     }]),
     new webpack.NamedModulesPlugin()
   ],

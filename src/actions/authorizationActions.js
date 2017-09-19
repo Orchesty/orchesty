@@ -128,19 +128,19 @@ export function authorize(authorizationId, processId){
     processId && dispatch(processActions.startProcess(processId));
     const win = window.open(makeUrl(`/authorizations/${authorizationId}/authorize`), '_blank');
     win.focus();
-    
-    window.another = win;
+
     return new Promise((resolve) => {
-      win.onunload  = () => {
+      var intervalId = null;
+      intervalId = setInterval(() => {
         if (win.closed) {
-          console.log('closed');
+          clearInterval(intervalId);
           dispatch(needAuthorization(authorizationId, true)).then(response => {
             processId && dispatch(processActions.finishProcess(processId, response && response.is_authorized));
             return response;
           })
             .then(resolve);
         }
-      };
+      }, 333);
     });
   }
 }
