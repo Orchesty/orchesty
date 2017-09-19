@@ -67,5 +67,6 @@ rabbit-mq:
             max_messages: null
             max_seconds: null
             consumer_tag: 'abc'
+            callback: null
 
 

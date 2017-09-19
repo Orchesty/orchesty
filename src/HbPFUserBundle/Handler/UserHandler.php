@@ -10,6 +10,7 @@ use Hanaboso\PipesFramework\User\DatabaseManager\UserDatabaseManagerLocator;
 use Hanaboso\PipesFramework\User\Entity\UserInterface;
 use Hanaboso\PipesFramework\User\Model\User\UserManager;
 use Hanaboso\PipesFramework\User\Model\User\UserManagerException;
+use Hanaboso\PipesFramework\Utils\ControllerUtils;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -68,6 +69,8 @@ class UserHandler implements LogoutSuccessHandlerInterface, EventSubscriberInter
      */
     public function login(array $data): UserInterface
     {
+        ControllerUtils::checkParameters(['email', 'password'], $data);
+
         return $this->userManager->login($data);
     }
 
@@ -113,6 +116,8 @@ class UserHandler implements LogoutSuccessHandlerInterface, EventSubscriberInter
      */
     public function setPassword(string $id, array $data): array
     {
+        ControllerUtils::checkParameters(['password'], $data);
+
         $this->userManager->setPassword($id, $data);
 
         return [];
@@ -125,6 +130,8 @@ class UserHandler implements LogoutSuccessHandlerInterface, EventSubscriberInter
      */
     public function changePassword(array $data): array
     {
+        ControllerUtils::checkParameters(['password'], $data);
+
         $this->userManager->changePassword($data);
 
         return [];

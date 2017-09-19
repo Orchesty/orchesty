@@ -26,7 +26,7 @@ final class NodeRepositoryTest extends DatabaseTestCaseAbstract
 
         $result = $repo->getEventNodesByTopology('abc123');
 
-        self::assertEquals(NULL, $result[0]);
+        self::assertEmpty($result);
 
         $node1 = new Node();
         $node1->setName('name 1');
