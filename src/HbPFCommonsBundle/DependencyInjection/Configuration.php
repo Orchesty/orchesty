@@ -19,7 +19,8 @@ class Configuration implements ConfigurationInterface
     public function getConfigTreeBuilder(): TreeBuilder
     {
         $treeBuilder = new TreeBuilder();
-        $treeBuilder->root('hbpf');
+        $rootNode = $treeBuilder->root("hb_pf_mailer");
+        $rootNode->children()->scalarNode("default_values")->defaultValue("1");
 
         // Here you should define the parameters that are allowed to
         // configure your bundle. See the documentation linked above for

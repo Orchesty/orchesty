@@ -9,6 +9,10 @@
 
 namespace Hanaboso\PipesFramework\HbPFMailerBundle;
 
+use Hanaboso\PipesFramework\HbPFMailerBundle\DependencyInjection\Compiler\HbPFMailerCompilerPass;
+use Hanaboso\PipesFramework\HbPFMailerBundle\DependencyInjection\HbPFMailerExtension;
+use Symfony\Component\DependencyInjection\Compiler\PassConfig;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 /**
@@ -18,5 +22,28 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
  */
 class HbPFMailerBundle extends Bundle
 {
+
+    /**
+     * @return HbPFMailerExtension
+     */
+    public function getContainerExtension(): HbPFMailerExtension
+    {
+        if ($this->extension === NULL) {
+            $this->extension = new HbPFMailerExtension();
+        }
+
+        return $this->extension;
+    }
+
+    /**
+     * @param ContainerBuilder $container
+     */
+    public function build(ContainerBuilder $container): void
+    {
+        $container->addCompilerPass(
+            new HbPFMailerCompilerPass('hbpfmailer.default_value'),
+            PassConfig::TYPE_OPTIMIZE
+        );
+    }
 
 }
