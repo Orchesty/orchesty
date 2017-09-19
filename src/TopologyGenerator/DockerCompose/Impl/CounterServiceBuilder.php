@@ -21,7 +21,7 @@ use Hanaboso\PipesFramework\TopologyGenerator\Environment;
 class CounterServiceBuilder implements ServiceBuilderInterface
 {
 
-    private const IMAGE = 'pf-typescript:dev';
+    private const IMAGE = 'pf-bridge:dev';
 
     /**
      * @var Environment
