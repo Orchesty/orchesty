@@ -1,6 +1,6 @@
 monolog:
     use_microseconds: false
-    channels: [authorization, commons, connector, mailer, parser_table, user, rabbit-mq, test, stdout_handler]
+    channels: [authorization, commons, connector, ftp, mailer, parser_table, user, rabbit-mq, test, stdout_handler]
     handlers:
         authorization:
             type: '%logger_handler%'
@@ -15,6 +15,11 @@ monolog:
         connector:
             type: '%logger_handler%'
             path: '%kernel.logs_dir%/connector_%kernel.environment%.log'
+            level: info
+            max_files: 10
+        ftp:
+            type: '%logger_handler%'
+            path: '%kernel.logs_dir%/ftp_%kernel.environment%.log'
             level: info
             max_files: 10
         mailer:
