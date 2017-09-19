@@ -2,6 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types';
 
 import ToggleLocalMenu from '../menu/ToggleLocalMenu';
+import StateButton from '../input/StateButton';
 
 class ActionButton extends React.Component {
   constructor(props) {
@@ -53,7 +54,7 @@ class ActionButton extends React.Component {
         case 1:
           return (
             <div className="btn-group">
-              <button className={`btn btn-${size} btn-info`} type="button" aria-expanded="true" onClick={e => this.makeAction(e, items[0])} disabled={items[0].disabled}>{caption}</button>
+              <StateButton state={items[0].state} size={size} color="info" type="button" aria-expanded="true" onClick={e => this.makeAction(e, items[0])} disabled={items[0].disabled}>{caption}</StateButton>
             </div>
           );
 

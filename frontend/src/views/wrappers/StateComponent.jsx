@@ -11,6 +11,9 @@ export default WrappedComponent => {
   class StateComponent extends React.Component {
     constructor(props) {
       super(props);
+    }
+
+    componentWillMount(){
       const {state, notLoadedCallback} = this.props;
       if ((!state || state == stateType.NOT_LOADED) && notLoadedCallback) {
         notLoadedCallback();
