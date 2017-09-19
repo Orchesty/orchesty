@@ -6,6 +6,7 @@ use Hanaboso\PipesFramework\Commons\Transport\Ftp\Adapter\FtpAdapter;
 use Hanaboso\PipesFramework\Commons\Transport\Ftp\Adapter\SftpAdapter;
 use Hanaboso\PipesFramework\Commons\Transport\Ftp\Exception\FtpException;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Class FtpServiceFactory
@@ -34,17 +35,29 @@ class FtpServiceFactory
     private $logger;
 
     /**
+     * @var ContainerInterface
+     */
+    private $container;
+
+    /**
      * FtpServiceFactory constructor.
      *
-     * @param FtpAdapter      $ftpAdapter
-     * @param SftpAdapter     $sftpAdapter
-     * @param LoggerInterface $logger
+     * @param FtpAdapter         $ftpAdapter
+     * @param SftpAdapter        $sftpAdapter
+     * @param LoggerInterface    $logger
+     * @param ContainerInterface $container
      */
-    public function __construct(FtpAdapter $ftpAdapter, SftpAdapter $sftpAdapter, LoggerInterface $logger)
+    public function __construct(
+        FtpAdapter $ftpAdapter,
+        SftpAdapter $sftpAdapter,
+        LoggerInterface $logger,
+        ContainerInterface $container
+    )
     {
         $this->ftpAdapter  = $ftpAdapter;
         $this->sftpAdapter = $sftpAdapter;
         $this->logger      = $logger;
+        $this->container   = $container;
     }
 
     /**
@@ -57,10 +70,10 @@ class FtpServiceFactory
     {
         switch ($type) {
             case self::ADAPTER_FTP:
-                $service = new FtpService($this->ftpAdapter);
+                $service = new FtpService($this->ftpAdapter, $this->prepareConfig(self::ADAPTER_FTP));
                 break;
             case self::ADAPTER_SFTP:
-                $service = new FtpService($this->sftpAdapter);
+                $service = new FtpService($this->sftpAdapter, $this->prepareConfig(self::ADAPTER_SFTP));
                 break;
             default:
                 throw new FtpException(
@@ -72,6 +85,23 @@ class FtpServiceFactory
         $service->setLogger($this->logger);
 
         return $service;
+    }
+
+    /**
+     * @param string $prefix
+     *
+     * @return FtpConfig
+     */
+    private function prepareConfig(string $prefix): FtpConfig
+    {
+        return new FtpConfig(
+            $this->container->getParameter($prefix . '.host'),
+            $prefix == self::ADAPTER_FTP ? $this->container->getParameter($prefix . '.ssl') : FALSE,
+            $this->container->getParameter($prefix . '.port'),
+            $this->container->getParameter($prefix . '.timeout'),
+            $this->container->getParameter($prefix . '.user'),
+            $this->container->getParameter($prefix . '.password')
+        );
     }
 
 }

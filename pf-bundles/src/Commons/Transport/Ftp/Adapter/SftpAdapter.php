@@ -25,7 +25,7 @@ class SftpAdapter implements FtpAdapterInterface
      */
     public function connect(array $params): void
     {
-        $this->sftp = new SFTP($params['host'], $params['port']);
+        $this->sftp = new SFTP($params['host'], $params['port'], $params['timeout']);
 
         if (!$this->sftp instanceof SFTP) {
             throw new FtpException(
