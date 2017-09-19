@@ -1,0 +1,69 @@
+{
+  "name": "pipes",
+  "version": "1.0.0",
+  "description": "Hanaboso pipes and filters basic node skeleton implementation",
+  "main": "dist/src/bin/pipes.js",
+  "scripts": {
+    "build": "rm -f ./dist & ./node_modules/.bin/tsc",
+    "lint": "./node_modules/.bin/tslint ./src/**/*.ts ./test/**/*.ts",
+    "start": "node --use-strict ./dist/src/bin/pipes.js",
+    "test": "NODE_ENV=test ./node_modules/mocha/bin/mocha dist/test/ --recursive"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@bitbucket.org/HANABOSO/pipes.git"
+  },
+  "keywords": [
+    "Pipes",
+    "skeleton",
+    "node"
+  ],
+  "author": "Hanaboso s.r.o.",
+  "license": "ISC",
+  "homepage": "https://bitbucket.org/HANABOSO/pipes#readme",
+  "dependencies": {
+    "amqplib": "0.5.1",
+    "body-parser": "1.17.2",
+    "express": "4.14.1",
+    "lib-nodejs": "git+ssh://git@gitlab.hanaboso.net:hanaboso/lib-nodejs.git#master",
+    "mongoose": "4.11.10",
+    "moniker": "0.1.2",
+    "power-assert": "1.4.4",
+    "request": "2.79.0",
+    "request-promise": "4.2.1",
+    "uuid": "3.0.1",
+    "winston": "2.2.0",
+    "write-yaml": "0.2.2",
+    "yargs": "6.6.0"
+  },
+  "devDependencies": {
+    "@types/amqplib": "0.5.4",
+    "@types/body-parser": "^1.16.5",
+    "@types/chai": "^4.0.4",
+    "@types/core-js": "^0.9.43",
+    "@types/express": "^4.0.37",
+    "@types/mocha": "^2.2.43",
+    "@types/mongoose": "^4.7.21",
+    "@types/node": "^8.0.28",
+    "@types/power-assert": "^1.4.29",
+    "@types/request": "^2.0.3",
+    "@types/request-promise": "^4.1.37",
+    "@types/shuffle-array": "0.0.28",
+    "@types/uuid": "^3.4.2",
+    "@types/winston": "2.3.4",
+    "@types/yargs": "^8.0.2",
+    "chai": "^3.5.0",
+    "chai-files": "^1.4.0",
+    "chai-http": "^3.0.0",
+    "chai-spies": "^0.7.1",
+    "core-js": "^2.5.1",
+    "mocha": "^3.5.2",
+    "nock": "9.0.6",
+    "nodemon": "1.11.0",
+    "shuffle-array": "^1.0.1",
+    "ts-mockito": "^2.1.1",
+    "ts-node": "^3.3.0",
+    "tslint": "^5.7.0",
+    "typescript": "^2.5.2"
+  }
+}

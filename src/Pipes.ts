@@ -1,0 +1,118 @@
+import Container from "lib-nodejs/dist/src/container/Container";
+import DIContainer from "./DIContainer";
+import logger from "./logger/Logger";
+import Node from "./node/Node";
+import {default as Configurator, INodeConfig, ITopologyConfig, ITopologyConfigSkeleton} from "./topology/Configurator";
+import Counter from "./topology/counter/Counter";
+import Probe from "./topology/Probe";
+
+class Pipes {
+
+    public nodes: Container;
+
+    private topology: ITopologyConfig;
+    private dic: DIContainer;
+
+    constructor(topology: ITopologyConfig | ITopologyConfigSkeleton) {
+        this.nodes = new Container();
+        this.dic = new DIContainer();
+
+        this.topology = Configurator.createConfigFromSkeleton(topology);
+    }
+
+    /**
+     * Starts single node by its ID and opens it http probe server
+     *
+     * @param {string} nodeId
+     * @return {Promise<void>}
+     */
+    public startNode(nodeId: string): Promise<void> {
+        const node: Node = this.createNode(this.getNodeConfig(nodeId));
+
+        return node.startServer()
+            .then(() => {
+                return node.open();
+            })
+            .then(() => {
+                logger.info(`Node started`, { node_id: nodeId });
+            });
+    }
+
+    /**
+     * Starts topology counter
+     */
+    public startCounter(): Promise<void> {
+        const counter = new Counter(this.topology.counter, this.dic.get("amqp.connection"));
+
+        return counter.listen()
+            .then(() => {
+                logger.info(`Counter for topology "${this.getTopologyConfig().name}" is running.`);
+            });
+    }
+
+    /**
+     * Starts topology probe
+     *
+     * @param {number} port
+     */
+    public startProbe(port?: number): Promise<void> {
+        const probe = new Probe(port);
+
+        for (const nodeCfg of this.topology.nodes) {
+            probe.addNode(nodeCfg);
+        }
+
+        return probe.start()
+            .then(() => {
+                logger.info(`Probe of topology "${this.getTopologyConfig().name}" is running.`);
+            });
+    }
+
+    /**
+     * Return the real full topology config
+     *
+     * @return {ITopologyConfig}
+     */
+    public getTopologyConfig(): ITopologyConfig {
+        return this.topology;
+    }
+
+    /**
+     *
+     * @param {INodeConfig} nodeCfg
+     * @return {Node}
+     */
+    private createNode(nodeCfg: INodeConfig): Node {
+        const node = new Node(
+            nodeCfg.id,
+            this.dic.get(nodeCfg.worker.type)(nodeCfg.worker.settings),
+            this.dic.get(nodeCfg.faucet.type)(nodeCfg.faucet.settings),
+            this.dic.get(nodeCfg.drain.type)(nodeCfg.drain.settings),
+            nodeCfg.debug.port,
+            nodeCfg.initial,
+        );
+
+        this.nodes.set(nodeCfg.id, node);
+
+        return node;
+    }
+
+    /**
+     * Returns node config for particular node or throws error if node does not exist
+     *
+     * @param {string} nodeId
+     * @return {INodeConfig}
+     */
+    private getNodeConfig(nodeId: string): INodeConfig {
+        for (const nodeCfg of this.topology.nodes) {
+            if (nodeCfg.id === nodeId) {
+                return nodeCfg;
+            }
+        }
+
+        throw new Error(`Cannot get config for non-existing node "${nodeId}"`);
+    }
+
+}
+
+export default Pipes;

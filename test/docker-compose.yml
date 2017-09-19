@@ -1,0 +1,15 @@
+version: '2'
+services:
+  rabbitmq:
+    image: 'rabbitmq:management-alpine'
+  influxdb:
+    image: 'influxdb:latest'
+  test:
+      image: dkr.hanaboso.net/pipes/pipes/pf-bridge:dev
+      environment:
+        - RABBITMQ_HOST=rabbitmq
+        - METRICS_HOST=influxdb
+        - METRICS_PORT=8086
+      depends_on:
+        - rabbitmq
+      command: sleep infinity
