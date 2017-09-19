@@ -23,7 +23,7 @@ export function sortToQuery(sort, queries = {}){
   return queries;
 }
 
-function makeUrl(relUrl, queries){
+export function makeUrl(relUrl, queries){
   let queryUrl = '';
   if (queries) {
     queryUrl = '?' + Object.keys(queries)

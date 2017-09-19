@@ -26,11 +26,19 @@ class SortTh extends React.Component {
   }
 
   render() {
+    const {onChangeSort, children} = this.props;
     const sortType = this.getSortType();
     const icon = sortType ? (sortType == 'desc' ? <i className="fa fa-sort-amount-desc" /> : <i className="fa fa-sort-amount-asc" />) : false;
-    return (
-      <th className="sort-th" onClick={this._onClick}>{this.props.children} <div className="direction-icon">{icon} </div></th>
-    );
+    if (onChangeSort) {
+      return (
+        <th className="sort-th" onClick={this._onClick}>
+          {children}
+          <div className="direction-icon">{icon} </div>
+        </th>
+      );
+    } else {
+      return <th>{children}</th>
+    }
   }
 }
 

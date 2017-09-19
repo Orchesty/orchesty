@@ -52,5 +52,11 @@ export default {
       return match && match[1] ? {args: {schemaId: match[1]}} : false;
     },
     createUrl: page => `/topology/${page.args.schemaId}/schema`
-  }
+  },
+  authorization_list: {
+    id: 'authorization_list',
+    caption: 'Authorization list',
+    needAuth: true,
+    simpleRoute: '/authorizations'
+  },
 }
