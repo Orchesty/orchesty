@@ -14,3 +14,4 @@ services:
             - '@hbpf.ftp.ftp_adapter'
             - '@hbpf.ftp.sftp_adapter'
             - '@monolog.logger.ftp'
+            - '@service_container'
