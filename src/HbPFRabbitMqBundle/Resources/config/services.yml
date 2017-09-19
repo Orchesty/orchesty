@@ -5,3 +5,10 @@ parameters:
     rabbit-mq.command.setup: Hanaboso\PipesFramework\HbPFRabbitMqBundle\Command\SetupCommand
     rabbit-mq.command.consumer: Hanaboso\PipesFramework\HbPFRabbitMqBundle\Command\ConsumerCommand
     rabbit-mq.command.producer: Hanaboso\PipesFramework\HbPFRabbitMqBundle\Command\ProducerCommand
+
+services:
+    amq-async:
+        class: Hanaboso\PipesFramework\RabbitMqBundle\Command\AsyncConsumerCommand
+        arguments:
+            - "@service_container"
+        tags: [console.command]
