@@ -144,7 +144,7 @@ class FtpService implements FtpServiceInterface, LoggerAwareInterface
             $this->logger->info(sprintf('Downloading files from %s directory', $dir));
 
             foreach ($list as $file) {
-                $downloaded[] = $this->downloadFile($file);
+                $downloaded[] = $this->downloadFile(trim($dir, '/') . '/' . $file);
             }
 
             $this->logger->info('Downloading files finished successfully.');

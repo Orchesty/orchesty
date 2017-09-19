@@ -142,7 +142,7 @@ class FtpAdapter implements FtpAdapterInterface
      * @return void
      * @throws FtpException
      */
-    public function makeDir($dir): void
+    public function makeDir(string $dir): void
     {
         $res = @ftp_mkdir($this->getResource(), $dir);
         if ($res === FALSE) {

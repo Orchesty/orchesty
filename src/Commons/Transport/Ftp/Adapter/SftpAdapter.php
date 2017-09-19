@@ -3,7 +3,6 @@
 namespace Hanaboso\PipesFramework\Commons\Transport\Ftp\Adapter;
 
 use Hanaboso\PipesFramework\Commons\Transport\Ftp\Exception\FtpException;
-use phpseclib\Net\SFTP;
 
 /**
  * Class SftpAdapter
@@ -14,7 +13,7 @@ class SftpAdapter implements FtpAdapterInterface
 {
 
     /**
-     * @var SFTP|null
+     * @var resource|null
      */
     protected $sftp;
 
@@ -25,9 +24,10 @@ class SftpAdapter implements FtpAdapterInterface
      */
     public function connect(array $params): void
     {
-        $this->sftp = new SFTP($params['host'], $params['port'], $params['timeout']);
+        $connection = ssh2_connect($params['host'], $params['port']);
+        $this->sftp = ssh2_sftp($connection);
 
-        if (!$this->sftp instanceof SFTP) {
+        if (!is_resource($this->sftp)) {
             throw new FtpException(
                 sprintf('Sftp connection to host %s failed.', $params['host']),
                 FtpException::CONNECTION_FAILED
@@ -43,7 +43,7 @@ class SftpAdapter implements FtpAdapterInterface
      */
     public function login(string $username, string $password): void
     {
-        if (!$this->getResource()->login($username, $password)) {
+        if (!ssh2_auth_password($this->getResource(), $username, $password)) {
             throw new FtpException('Login failed.', FtpException::LOGIN_FAILED);
         }
     }
@@ -54,7 +54,6 @@ class SftpAdapter implements FtpAdapterInterface
     public function disconnect(): void
     {
         if ($this->getResource()) {
-            $this->getResource()->disconnect();
             $this->sftp = NULL;
         }
     }
@@ -67,7 +66,7 @@ class SftpAdapter implements FtpAdapterInterface
      */
     public function uploadFile(string $remoteFile, string $localFile): void
     {
-        if (!$this->getResource()->put($remoteFile, $localFile, SFTP::SOURCE_LOCAL_FILE)) {
+        if (!ssh2_scp_send($this->getResource(), $localFile, $remoteFile)) {
             throw new FtpException('File upload failed.', FtpException::FILE_UPLOAD_FAILED);
         }
     }
@@ -80,7 +79,7 @@ class SftpAdapter implements FtpAdapterInterface
      */
     public function downloadFile(string $remoteFile, string $localFile): void
     {
-        if ($this->getResource()->get($remoteFile, $localFile) === FALSE) {
+        if (!ssh2_scp_recv($this->getResource(), $remoteFile, $localFile)) {
             throw new FtpException('File download failed.', FtpException::FILE_DOWNLOAD_FAILED);
         }
     }
@@ -93,13 +92,20 @@ class SftpAdapter implements FtpAdapterInterface
      */
     public function listDir(string $dir): array
     {
-        $list = $this->getResource()->nlist($dir);
+        $list = $this->scanDir($dir);
 
         if (!$list) {
             throw new FtpException('Failed to list files in directory.', FtpException::FILES_LISTING_FAILED);
         }
 
-        return (array) $list;
+        $files = [];
+        foreach ($list as $item) {
+            if (!in_array($item, ['.', '..'])) {
+                $files[] = $item;
+            }
+        }
+
+        return $files;
     }
 
     /**
@@ -109,7 +115,7 @@ class SftpAdapter implements FtpAdapterInterface
      */
     public function dirExists(string $dir): bool
     {
-        return $this->getResource()->is_dir($dir);
+        return (bool) $this->scanDir($dir);
     }
 
     /**
@@ -118,9 +124,9 @@ class SftpAdapter implements FtpAdapterInterface
      * @return void
      * @throws FtpException
      */
-    public function makeDir($dir): void
+    public function makeDir(string $dir): void
     {
-        $mkdir = $this->getResource()->mkdir($dir);
+        $mkdir = mkdir($this->preparePath($dir));
 
         if (!$mkdir) {
             throw new FtpException(
@@ -138,28 +144,25 @@ class SftpAdapter implements FtpAdapterInterface
      */
     public function makeDirRecursive($dir): void
     {
-        $current = $this->getResource()->pwd();
-        $parts   = explode('/', trim($dir, '/'));
+        $mkdir = mkdir($this->preparePath($dir), 0777, TRUE);
 
-        foreach ($parts as $part) {
-            if (!$this->getResource()->chdir($part) && !$this->isFile($part)) {
-                $this->makeDir($part);
-                $this->getResource()->chdir($part);
-            }
+        if (!$mkdir) {
+            throw new FtpException(
+                sprintf('Unable to create directory %s', $dir),
+                FtpException::UNABLE_TO_CREATE_DIR
+            );
         }
-
-        $this->getResource()->chdir($current);
     }
 
     /**************************************** HELPERS ****************************************/
 
     /**
-     * @return SFTP
+     * @return resource
      * @throws FtpException
      */
-    private function getResource(): SFTP
+    private function getResource()
     {
-        if ($this->sftp && $this->sftp->isConnected()) {
+        if ($this->sftp) {
             return $this->sftp;
         }
 
@@ -173,7 +176,28 @@ class SftpAdapter implements FtpAdapterInterface
      */
     public function isFile($file): bool
     {
-        return $this->getResource()->is_file($file);
+        // todo ... stat() ?
+        //return $this->getResource()->is_file($file);
+    }
+
+    /**
+     * @param string $dir
+     *
+     * @return array|bool
+     */
+    private function scanDir(string $dir)
+    {
+        return @scandir($this->preparePath($dir));
+    }
+
+    /**
+     * @param string $dir
+     *
+     * @return string
+     */
+    private function preparePath(string $dir): string
+    {
+        return 'ssh2.sftp://' . $this->getResource() . '/' . trim($dir, '/');
     }
 
 }
