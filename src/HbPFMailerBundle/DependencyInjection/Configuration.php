@@ -19,12 +19,13 @@ class Configuration implements ConfigurationInterface
     public function getConfigTreeBuilder(): TreeBuilder
     {
         $treeBuilder = new TreeBuilder();
-        $rootNode    = $treeBuilder->root('hb_pf_mailer');
+        $rootNode    = $treeBuilder->root('hbpf');
 
-        $defaultNode = $rootNode->children()->arrayNode("default_values")->normalizeKeys(FALSE)->cannotBeEmpty()
-            ->isRequired();
+        $mailerNode =  $rootNode->children()->arrayNode('mailer');
+
+        $defaultNode = $mailerNode->children()->arrayNode("default_values")->normalizeKeys(FALSE)->cannotBeEmpty()->isRequired();
         $from        = $defaultNode->children()->arrayNode('from');
-        $from->children()->scalarNode('user_manager')->isRequired();
+        $from->children()->scalarNode('user_manager')->isRequired()->cannotBeEmpty();
 
         $subject = $defaultNode->children()->arrayNode('subject')->normalizeKeys(FALSE)->cannotBeEmpty()->isRequired();
         $subject->children()->scalarNode('user_manager')->isRequired();
