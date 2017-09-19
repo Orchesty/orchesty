@@ -17,6 +17,12 @@ use ReflectionProperty;
 final class SftpAdapterTest extends TestCase
 {
 
+    public function setUp()
+    {
+        $this->markTestSkipped();
+    }
+
+
     /**
      * @covers SftpAdapter::login()
      */
