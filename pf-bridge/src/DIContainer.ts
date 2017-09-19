@@ -6,6 +6,7 @@ import FollowersPublisher from "./node/drain/amqp/FollowersPublisher";
 import {default as AmqpDrain, IAmqpDrainSettings} from "./node/drain/AmqpDrain";
 import {default as AmqpFaucet, IAmqpFaucetSettings} from "./node/faucet/AmqpFaucet";
 import {default as HttpFaucet, IHttpFaucetSettings} from "./node/faucet/HttpFaucet";
+import AmqpRpcWorker, {IAmqpRpcWorkerSettings} from "./node/worker/AmqpRpcWorker";
 import AppenderWorker, {IAppenderWorkerSettings} from "./node/worker/AppenderWorker";
 import HttpWorker, {IHttpWorkerSettings} from "./node/worker/HttpWorker";
 import NullWorker from "./node/worker/NullWorker";
@@ -45,6 +46,9 @@ class DIContainer extends Container {
     }
 
     private setWorkers() {
+        this.set("worker.amqprpc", (settings: IAmqpRpcWorkerSettings) => {
+            return new AmqpRpcWorker(this.get("amqp.connection"), settings);
+        });
         this.set("worker.appender", (settings: IAppenderWorkerSettings) => {
             return new AppenderWorker(settings);
         });
