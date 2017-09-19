@@ -27,7 +27,7 @@ class AuthorizationListTable extends AbstractTable {
   }
 
   _renderRows() {
-    const {list, elements, editSettings, authorize} = this.props;
+    const {list, elements, editSettings, authorize, getAuthorizeProcessState} = this.props;
     return list && list.items ? list.items.map(id => {
       const item = elements[id];
       const menuItems = [];
@@ -41,6 +41,7 @@ class AuthorizationListTable extends AbstractTable {
         menuItems.push({
           caption: 'Authorize',
           disabled: !item.can_authorize,
+          state: getAuthorizeProcessState(item.name),
           action: () => {authorize(item.name)}
         });
       }
@@ -60,7 +61,8 @@ class AuthorizationListTable extends AbstractTable {
 AuthorizationListTable.propTypes = Object.assign({}, AbstractTable.propTypes, {
   elements: PropTypes.object.isRequired,
   editSettings: PropTypes.func,
-  authorize: PropTypes.func
+  authorize: PropTypes.func,
+  getAuthorizeProcessState: PropTypes.func
 });
 
 export default StateComponent(AuthorizationListTable);
