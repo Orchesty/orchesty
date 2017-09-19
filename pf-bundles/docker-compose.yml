@@ -11,6 +11,7 @@ services:
       - DEV_UID=${DEV_UID}
       - DEV_GID=${DEV_GID}
       - COMPOSER_HOME=/home/dev/.composer
+      - PHP_IDE_CONFIG=${PHP_IDE_CONFIG}
     depends_on:
       - mongo
       - rabbitmq
