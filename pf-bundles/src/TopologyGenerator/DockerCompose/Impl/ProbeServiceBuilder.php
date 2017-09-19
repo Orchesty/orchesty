@@ -22,7 +22,7 @@ use Hanaboso\PipesFramework\TopologyGenerator\Environment;
 class ProbeServiceBuilder implements ServiceBuilderInterface
 {
 
-    private const IMAGE = 'pf-typescript:dev';
+    private const IMAGE = 'pf-bridge:dev';
 
     /**
      * @var Environment

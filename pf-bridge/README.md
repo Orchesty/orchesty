@@ -1,6 +1,6 @@
 PIPES FRAMEWORK
 
-###How to build PF-typescript:
+###How to build PF-bridge:
 
 ####On linux:
 run the build.sh file

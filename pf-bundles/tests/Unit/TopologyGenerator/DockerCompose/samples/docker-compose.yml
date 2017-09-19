@@ -1,7 +1,7 @@
 version: '2'
 services:
   1_probe:
-    image: 'dkr.hanaboso.net/pipes/pipes/pf-typescript:dev'
+    image: 'dkr.hanaboso.net/pipes/pipes/pf-bridge:dev'
     working_dir: ''
     user: ''
     environment:
@@ -16,7 +16,7 @@ services:
       - demo_defualt
     command: './dist/src/bin/pipes.js start probe'
   counter:
-    image: 'dkr.hanaboso.net/pipes/pipes/pf-typescript:dev'
+    image: 'dkr.hanaboso.net/pipes/pipes/pf-bridge:dev'
     working_dir: ''
     user: ''
     environment:
@@ -31,7 +31,7 @@ services:
       - demo_defualt
     command: './dist/src/bin/pipes.js start counter'
   1-magento2-customer:
-    image: 'dkr.hanaboso.net/pipes/pipes/pf-typescript:dev'
+    image: 'dkr.hanaboso.net/pipes/pipes/pf-bridge:dev'
     working_dir: ''
     user: ''
     environment:
@@ -46,7 +46,7 @@ services:
       - demo_defualt
     command: './dist/src/bin/pipes.js start node --id 1-magento2-customer'
   2-xml-parser:
-    image: 'dkr.hanaboso.net/pipes/pipes/pf-typescript:dev'
+    image: 'dkr.hanaboso.net/pipes/pipes/pf-bridge:dev'
     working_dir: ''
     user: ''
     environment:
@@ -61,7 +61,7 @@ services:
       - demo_defualt
     command: './dist/src/bin/pipes.js start node --id 2-xml-parser'
   3-mapper-1:
-    image: 'dkr.hanaboso.net/pipes/pipes/pf-typescript:dev'
+    image: 'dkr.hanaboso.net/pipes/pipes/pf-bridge:dev'
     working_dir: ''
     user: ''
     environment:
@@ -76,7 +76,7 @@ services:
       - demo_defualt
     command: './dist/src/bin/pipes.js start node --id 3-mapper-1'
   4-mail:
-    image: 'dkr.hanaboso.net/pipes/pipes/pf-typescript:dev'
+    image: 'dkr.hanaboso.net/pipes/pipes/pf-bridge:dev'
     working_dir: ''
     user: ''
     environment:
@@ -91,7 +91,7 @@ services:
       - demo_defualt
     command: './dist/src/bin/pipes.js start node --id 4-mail'
   5-ftp:
-    image: 'dkr.hanaboso.net/pipes/pipes/pf-typescript:dev'
+    image: 'dkr.hanaboso.net/pipes/pipes/pf-bridge:dev'
     working_dir: ''
     user: ''
     environment:
@@ -106,7 +106,7 @@ services:
       - demo_defualt
     command: './dist/src/bin/pipes.js start node --id 5-ftp'
   6-api:
-    image: 'dkr.hanaboso.net/pipes/pipes/pf-typescript:dev'
+    image: 'dkr.hanaboso.net/pipes/pipes/pf-bridge:dev'
     working_dir: ''
     user: ''
     environment:

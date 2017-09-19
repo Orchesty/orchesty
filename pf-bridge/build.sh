@@ -14,7 +14,7 @@ rm -rf node_modules
 
 # Image build
 REGISTRY_PREFIX=dkr.hanaboso.net/pipes/pipes
-IMAGE=${REGISTRY_PREFIX}/pf-typescript:${TAG}
+IMAGE=${REGISTRY_PREFIX}/pf-bridge:${TAG}
 BUILD_IMAGE=${REGISTRY_PREFIX}/nodejs-build:dev
 
 docker pull ${BUILD_IMAGE}

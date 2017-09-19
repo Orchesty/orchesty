@@ -47,10 +47,10 @@ lib-sym3-test:
     - make composer-install
     - make test
 
-pf-typescript-test:
+pf-bridge-test:
   stage: stage3
   script:
-    - DIR=pf-typescript
+    - DIR=pf-bridge
     - skip_unmodified $DIR
     - ": TODO: modify this job to allow parallel execution!"
     - cd $REPO_ROOT/$DIR/test
@@ -67,10 +67,10 @@ frontend:
     - skip_unmodified $DIR
     - ${DIR}/docker/prod/build.sh ${CI_BUILD_REF_NAME}
 
-pf-typescript:
+pf-bridge:
   stage: stage2
   script:
-    - DIR=pf-typescript
+    - DIR=pf-bridge
     - skip_unmodified $DIR
     - ${DIR}/build.sh ${CI_BUILD_REF_NAME}
 
@@ -81,5 +81,5 @@ cleanup:
     - cd $REPO_ROOT/pf-bundles
     - make docker-down-clean
 
-    - cd $REPO_ROOT/pf-typescript/test
+    - cd $REPO_ROOT/pf-bridge/test
     - docker-compose down -v
