@@ -26,6 +26,10 @@ export const TEST_TYPE = "test";
 export const BATCH_END_TYPE = "batch_end";
 export const BATCH_ITEM_TYPE = "batch_item";
 
+/**
+ * TODO add waiting timeout
+ * TODO if in responses are messages with same sequenceId take the latest
+ */
 class AmqpRpcWorker implements IWorker {
 
     private publisher: Publisher;
@@ -209,8 +213,6 @@ class AmqpRpcWorker implements IWorker {
         );
 
         stored.message.addSplit(splitMsg);
-
-        // TODO - do I need to set to waiting array the new object or not?
     }
 
     /**
@@ -221,8 +223,7 @@ class AmqpRpcWorker implements IWorker {
         const stored: IWaiting = this.waiting.get(corrId);
         stored.resolveFn(stored.message);
 
-        // TODO - implement remove in container
-        // this.waiting.delete(corrId);
+        this.waiting.delete(corrId);
     }
 
 }
