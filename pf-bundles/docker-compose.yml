@@ -66,6 +66,24 @@ services:
       volumes:
        - mariadb:/var/lib/mysql
 
+  sftp:
+#      image: rlesouef/alpine-sftp
+      image: sjourdan/alpine-sshd
+      ports:
+          - '${DEV_IP}:2222:22'
+      environment:
+        - USER=foo
+        - PASSWORD=pass
+        # Should be the same as the volume mapping of app container
+        # - FOLDER=/data
+        # Optional: chroot
+        # - CHROOT=1
+#      volumes:
+#        - /var/run/docker.sock:/var/run/docker.sock
+#          - ./tests/Manual/upload:/home/foo/upload
+#          - ./tests/Manual/download:/home/foo/download
+#      command: foo:pass:${DEV_UID}
+
 volumes:
   mongo: {}
   mariadb: {}

@@ -3,6 +3,7 @@
 namespace Hanaboso\PipesFramework\Commons\Transport\Ftp\Adapter;
 
 use Hanaboso\PipesFramework\Commons\Transport\Ftp\Exception\FtpException;
+use Hanaboso\PipesFramework\Commons\Transport\Ftp\FtpConfig;
 
 /**
  * Class SftpAdapter
@@ -13,39 +14,51 @@ class SftpAdapter implements FtpAdapterInterface
 {
 
     /**
+     * @var resource|bool
+     */
+    protected $connection;
+
+    /**
      * @var resource|null
      */
     protected $sftp;
 
     /**
-     * @param array $params
+     * @param FtpConfig $ftpConfig
      *
      * @throws FtpException
      */
-    public function connect(array $params): void
+    public function connect(FtpConfig $ftpConfig): void
     {
-        $connection = ssh2_connect($params['host'], $params['port']);
-        $this->sftp = ssh2_sftp($connection);
+        $this->connection = @ssh2_connect($ftpConfig->getHost(), $ftpConfig->getPort());
 
-        if (!is_resource($this->sftp)) {
+        if (!is_resource($this->connection)) {
             throw new FtpException(
-                sprintf('Sftp connection to host %s failed.', $params['host']),
+                sprintf('Sftp connection to host %s failed.', $ftpConfig->getHost()),
                 FtpException::CONNECTION_FAILED
             );
         }
     }
 
     /**
-     * @param string $username
-     * @param string $password
+     * @param FtpConfig $ftpConfig
      *
      * @throws FtpException
      */
-    public function login(string $username, string $password): void
+    public function login(FtpConfig $ftpConfig): void
     {
-        if (!ssh2_auth_password($this->getResource(), $username, $password)) {
+        if (!@ssh2_auth_password($this->connection, $ftpConfig->getUsername(), $ftpConfig->getPassword())) {
             throw new FtpException('Login failed.', FtpException::LOGIN_FAILED);
         }
+
+//        $this->sftp = @ssh2_sftp($this->connection);
+//
+//        if (!is_resource($this->sftp)) {
+//            throw new FtpException(
+//                'Failed creating SFTP subsystem from connection.',
+//                FtpException::CREATING_SUBSYSTEM_FAILED
+//            );
+//        }
     }
 
     /**
@@ -66,7 +79,7 @@ class SftpAdapter implements FtpAdapterInterface
      */
     public function uploadFile(string $remoteFile, string $localFile): void
     {
-        if (!ssh2_scp_send($this->getResource(), $localFile, $remoteFile)) {
+        if (!ssh2_scp_send($this->getConnection(), $localFile, $remoteFile, 0644)) {
             throw new FtpException('File upload failed.', FtpException::FILE_UPLOAD_FAILED);
         }
     }
@@ -79,7 +92,7 @@ class SftpAdapter implements FtpAdapterInterface
      */
     public function downloadFile(string $remoteFile, string $localFile): void
     {
-        if (!ssh2_scp_recv($this->getResource(), $remoteFile, $localFile)) {
+        if (!ssh2_scp_recv($this->getConnection(), $remoteFile, $localFile)) {
             throw new FtpException('File download failed.', FtpException::FILE_DOWNLOAD_FAILED);
         }
     }
@@ -167,6 +180,14 @@ class SftpAdapter implements FtpAdapterInterface
         }
 
         throw new FtpException('Connection to Ftp server not established.', FtpException::CONNECTION_NOT_ESTABLISHED);
+    }
+
+    /**
+     * @return bool|resource
+     */
+    private function getConnection()
+    {
+        return $this->connection;
     }
 
     /**

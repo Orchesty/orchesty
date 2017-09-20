@@ -166,12 +166,7 @@ class FtpService implements FtpServiceInterface, LoggerAwareInterface
     private function connect(): void
     {
         try {
-            $this->adapter->connect([
-                self::HOST    => trim($this->ftpConfig->getHost()),
-                self::PORT    => intval($this->ftpConfig->getPort()),
-                self::TIMEOUT => intval($this->ftpConfig->getTimeout()),
-                self::SSL     => boolval($this->ftpConfig->isSsl()),
-            ]);
+            $this->adapter->connect($this->ftpConfig);
         } catch (FtpException $e) {
             $this->logger->error($e->getMessage());
             throw $e;
@@ -197,7 +192,7 @@ class FtpService implements FtpServiceInterface, LoggerAwareInterface
     private function login(): void
     {
         try {
-            $this->adapter->login($this->ftpConfig->getUsername(), $this->ftpConfig->getPassword());
+            $this->adapter->login($this->ftpConfig);
         } catch (FtpException $e) {
             $this->logger->error($e->getMessage());
             throw $e;
