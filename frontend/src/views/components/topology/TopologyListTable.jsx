@@ -54,6 +54,7 @@ class TopologyListTable extends React.Component {
         <SortTh name="id" state={sort} onChangeSort={this.changeSort}>#</SortTh>
         <SortTh name="status" state={sort} onChangeSort={this.changeSort}>Status</SortTh>
         <SortTh name="name" state={sort} onChangeSort={this.changeSort}>Name</SortTh>
+        <SortTh name="version" state={sort} onChangeSort={this.changeSort}>Version</SortTh>
         <SortTh name="description" state={sort} onChangeSort={this.changeSort}>Description</SortTh>
         <SortTh name="enabled" state={sort} onChangeSort={this.changeSort}>Enabled</SortTh>
         <th>Actions</th>
@@ -87,6 +88,7 @@ class TopologyListTable extends React.Component {
               <td>{item._id}</td>
               <td>{item.status}</td>
               <td>{item.name}</td>
+              <td>{item.version}</td>
               <td>{item.descr}</td>
               <td><BoolValue value={item.enabled}/></td>
               <td><ActionButtonPanel items={menuItems} right={true} size="sm" /></td>
