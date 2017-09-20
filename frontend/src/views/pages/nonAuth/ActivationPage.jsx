@@ -3,12 +3,12 @@ import {Field, reduxForm} from 'redux-form'
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 
-import * as authActions from '../../../actions/authActions';
-import * as applicationActions from '../../../actions/applicationActions';
+import * as authActions from 'actions/authActions';
+import * as applicationActions from 'actions/applicationActions';
 
-import TextInput from '../../elements/input/TextInput';
-import NonAuthPage from '../../wrappers/NonAuthPage';
-import StateButton from '../../elements/input/StateButton';
+import TextInput from 'elements/input/TextInput';
+import NonAuthPage from 'wrappers/NonAuthPage';
+import StateButton from 'elements/input/StateButton';
 
 const processId = 'activation';
 

@@ -3,10 +3,10 @@ import PropTypes from 'prop-types';
 
 import AbstractTable from '../AbstractTable';
 
-import StateComponent from '../../wrappers/StateComponent';
-import SortTh from '../../elements/table/SortTh';
-import BoolValue from '../../elements/BoolValue';
-import ActionButtonPanel from '../../elements/actions/ActionButtonPanel';
+import StateComponent from 'wrappers/StateComponent';
+import SortTh from 'elements/table/SortTh';
+import BoolValue from 'elements/BoolValue';
+import ActionButtonPanel from 'elements/actions/ActionButtonPanel';
 
 class AuthorizationListTable extends AbstractTable {
   constructor(props) {

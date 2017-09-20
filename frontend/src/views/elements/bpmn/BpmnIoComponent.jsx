@@ -10,7 +10,7 @@ import './custom-modeler/assets/elements.css';
 import emptySchema from './empty-schema.bpmn';
 
 import CustomBPMNModeler from './custom-modeler';
-import download from '../../../utils/download';
+import download from 'utils/download';
 
 class BpmnIoComponent extends React.Component {
   constructor(props){

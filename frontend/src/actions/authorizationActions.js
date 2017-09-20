@@ -1,12 +1,11 @@
-import * as types from '../actionTypes';
+import * as types from 'rootApp/actionTypes';
 import listFactory from './factories/listFactory';
-import {stateType} from '../types';
-import serverRequest ,{sortToQuery, makeUrl} from '../services/apiGatewayServer';
+import serverRequest ,{sortToQuery, makeUrl} from 'services/apiGatewayServer';
 import * as processActions from './processActions';
 import * as notificationActions from './notificationActions';
 
-import params from '../config/params';
-import objectEquals from '../utils/objectEquals';
+import config from 'rootApp/config';
+import objectEquals from 'utils/objectEquals';
 
 const {createPaginationList, listLoading, listError, listReceive, listDelete, listChangePage} = listFactory('AUTHORIZATION/LIST/');
 
@@ -56,7 +55,7 @@ function loadSettings(authorizationId, processId){
   }
 }
 
-export function needAuthorizationList(listId, pageSize = params.defaultPageSize) {
+export function needAuthorizationList(listId, pageSize = config.params.defaultPageSize) {
   return (dispatch, getState) => {
     const list = getState().authorization.lists[listId];
     if (!list) {

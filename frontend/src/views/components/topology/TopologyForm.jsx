@@ -3,9 +3,9 @@ import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import {Field, reduxForm} from 'redux-form'
 
-import * as topologyActions from '../../../actions/topologyActions';
+import * as topologyActions from 'actions/topologyActions';
 
-import {FormTextInput, FormCheckboxInput} from '../../elements/formInputs';
+import {FormTextInput, FormCheckboxInput} from 'elements/formInputs';
 
 class TopologyForm extends React.Component {
   constructor(props) {

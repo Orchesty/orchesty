@@ -1,4 +1,4 @@
-import FormElement from '../wrappers/FormElement';
+import FormElement from 'wrappers/FormElement';
 
 import TextInput from './input/TextInput';
 import CheckboxInput from './input/CheckboxInput';

@@ -2,15 +2,14 @@ import { createStore, applyMiddleware } from 'redux';
 import thunkMiddleware from 'redux-thunk';
 import * as storage from 'redux-storage'
 import storageFilter from 'redux-storage-decorator-filter';
-import { composeWithDevTools } from 'redux-devtools-extension';
 import createEngine from 'redux-storage-engine-localstorage';
 
-import * as router from './services/router';
+import * as router from 'services/router';
 
-import rootReducer from './reducers/index';
+import rootReducer from 'reducers/index';
 import * as types from './actionTypes';
 
-export default function (initialState) {
+export default function (initialState, composeWithDevTools) {
   const reducer = storage.reducer(rootReducer);
   const engine = createEngine('pipes');
   const decoratedEngine = storageFilter(engine, [
@@ -22,8 +21,12 @@ export default function (initialState) {
   ]);
 
   const middlewares = [thunkMiddleware, storageMiddleware];
+  let appliedMiddlewares = applyMiddleware(...middlewares);
+  if (composeWithDevTools){
+    appliedMiddlewares = composeWithDevTools(appliedMiddlewares);
+  }
 
-  const createStoreWithMiddleware = composeWithDevTools(applyMiddleware(...middlewares))(createStore);
+  const createStoreWithMiddleware = appliedMiddlewares(createStore);
 
   const store = createStoreWithMiddleware(reducer, initialState);
 

@@ -1,7 +1,7 @@
-import * as types from '../actionTypes';
+import * as types from 'rootApp/actionTypes';
 import listFactory from './factories/listFactory';
-import {stateType} from '../types';
-import serverRequest from '../services/apiGatewayServer';
+import {stateType} from 'rootApp/types';
+import serverRequest from 'services/apiGatewayServer';
 import * as notificationActions from './notificationActions';
 
 const {createRelationList, listLoading, listError, listReceive} = listFactory('NODE/LIST/');
