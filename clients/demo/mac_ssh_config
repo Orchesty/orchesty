@@ -4,21 +4,20 @@ Host mac_dsync-dev
   User docker
   IdentityFile ~/.docker/machine/machines/docker-pa/id_rsa
   LocalForward 127.0.0.66:80 127.0.0.66:80
-  LocalForward 127.0.0.66:2222 127.0.0.66:2222
   LocalForward 127.0.0.66:3000 127.0.0.66:3000
-  LocalForward 127.0.0.66:3306 127.0.0.66:3306
-  LocalForward 127.0.0.66:4444 127.0.0.66:4444
-  LocalForward 127.0.0.66:5672 127.0.0.66:5672
-  LocalForward 127.0.0.66:6379 127.0.0.66:6379
-  LocalForward 127.0.0.66:8081 127.0.0.66:8081
-  LocalForward 127.0.0.66:8082 127.0.0.66:8082
+  LocalForward 127.0.0.66:5000 127.0.0.66:5000
+  LocalForward 127.0.0.66:5044 127.0.0.66:5044
+  LocalForward 127.0.0.66:5601 127.0.0.66:5601
+  LocalForward 127.0.0.66:8025 127.0.0.66:8025
+  LocalForward 127.0.0.66:8007 127.0.0.66:8007
+  LocalForward 127.0.0.66:8080 127.0.0.66:8080
   LocalForward 127.0.0.66:8083 127.0.0.66:8083
-  LocalForward 127.0.0.66:8084 127.0.0.66:8084
-  LocalForward 127.0.0.66:8085 127.0.0.66:8085
   LocalForward 127.0.0.66:8086 127.0.0.66:8086
   LocalForward 127.0.0.66:8087 127.0.0.66:8087
   LocalForward 127.0.0.66:8088 127.0.0.66:8088
   LocalForward 127.0.0.66:8089 127.0.0.66:8089
+  LocalForward 127.0.0.66:8090 127.0.0.66:8090
+  LocalForward 127.0.0.66:9200 127.0.0.66:9200
+  LocalForward 127.0.0.66:9600 127.0.0.66:9600
   LocalForward 127.0.0.66:15672 127.0.0.66:15672
-  LocalForward 127.0.0.66:15673 127.0.0.66:15673
   LocalForward 127.0.0.66:27017 127.0.0.66:27017
