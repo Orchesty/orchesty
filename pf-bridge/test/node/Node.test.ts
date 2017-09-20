@@ -24,7 +24,7 @@ describe("Node", () => {
             worker,
             faucetInstance,
             drain,
-            5000,
+            5002,
             true,
         );
 
@@ -33,7 +33,7 @@ describe("Node", () => {
                 return node.startServer();
             })
             .then(() => {
-                return rp("http://localhost:5000/status");
+                return rp("http://localhost:5002/status");
             })
             .then((resp: string) => {
                 assert.equal(resp, "Bridge and worker are both ready.");

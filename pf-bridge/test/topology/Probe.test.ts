@@ -49,7 +49,7 @@ describe("Probe", () => {
             });
     });
 
-    it("should satet that all nodes are running", () => {
+    it("should state that all nodes are running", () => {
         // Node1 server mock
         const mock1 = express();
         mock1.get("/status", (req, resp) => {
@@ -96,13 +96,13 @@ describe("Probe", () => {
         });
         const m2server = mock2.listen(topo.nodes[1].debug.port);
 
-        const probe = new Probe(8007);
+        const probe = new Probe(8008);
         topo.nodes.forEach((node: INodeConfig) => {
             probe.addNode(node);
         });
         return probe.start()
             .then(() => {
-                return rp("http://localhost:8007/status");
+                return rp("http://localhost:8008/status");
             })
             .then((resp: string) => {
                 const result: IProbeResult = JSON.parse(resp);
