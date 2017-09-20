@@ -9,6 +9,20 @@ export interface ILogContext {
     error?: Error;
 }
 
+interface ILoggerFormat {
+    timestamp: number;
+    hostname: string;
+    type: string;
+    severity: string;
+    message: string;
+    node_id?: string;
+    correlation_id?: string;
+    stacktrace?: {
+        message: string,
+        trace?: string,
+    };
+}
+
 class Logger {
 
     /**
@@ -19,16 +33,17 @@ class Logger {
      * @return {string}
      */
     private static format(severity: string, message: string, context?: ILogContext): string {
-        const line = {
+        const line: ILoggerFormat = {
             timestamp: Date.now(),
             hostname: os.hostname(),
             type: process.env.PIPES_NODE_TYPE || "pipes_node",
             severity: `${severity}`.toUpperCase(),
             message: message.replace( /\s\s+/g, " "),
-            node_id: "",
-            correlation_id: "",
-            stacktrace: {},
         };
+
+        if (context.node_id) {
+            line.node_id = context.node_id;
+        }
 
         if (context.correlation_id) {
             line.correlation_id = context.correlation_id;
