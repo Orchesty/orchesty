@@ -10,5 +10,4 @@ rabbit-mq:
 
 imports:
     - { resource: rabbit-mq/repeater.yml }
-    - { resource: rabbit-mq/starting-point.yml }
     - { resource: rabbit-mq/mailer.yml }
