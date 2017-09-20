@@ -1,0 +1,21 @@
+# This file is auto-generated during the composer install
+parameters:
+    database_host: cleverconnectors_mongo_1
+    database_port: null
+    database_name: clever-connectors
+    database_user: root
+    database_password: root
+    mailer_transport: smtp
+    mailer_host: 127.0.0.1
+    mailer_user: null
+    mailer_password: null
+    locale: en
+    secret: ThisTokenIsNotSoSecretChangeIt
+    logger_handler: syslog
+    request_listener.http_port: 80
+    request_listener.https_port: 80
+    rabbitmq.host: rabbitmq
+    rabbitmq.port: 5672
+    rabbitmq.vhost: /
+    rabbitmq.user: guest
+    rabbitmq.password: guest
