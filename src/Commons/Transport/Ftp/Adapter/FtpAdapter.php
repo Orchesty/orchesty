@@ -3,7 +3,7 @@
 namespace Hanaboso\PipesFramework\Commons\Transport\Ftp\Adapter;
 
 use Hanaboso\PipesFramework\Commons\Transport\Ftp\Exception\FtpException;
-use Hanaboso\PipesFramework\Commons\Transport\Ftp\FtpServiceInterface;
+use Hanaboso\PipesFramework\Commons\Transport\Ftp\FtpConfig;
 
 /**
  * Class FtpAdapter
@@ -19,24 +19,16 @@ class FtpAdapter implements FtpAdapterInterface
     private $ftp;
 
     /**
-     * @param array $params
+     * @param FtpConfig $ftpConfig
      *
      * @throws FtpException
      */
-    public function connect(array $params): void
+    public function connect(FtpConfig $ftpConfig): void
     {
-        if ($params[FtpServiceInterface::SSL]) {
-            $this->ftp = @ftp_ssl_connect(
-                $params[FtpServiceInterface::HOST],
-                $params[FtpServiceInterface::PORT],
-                $params[FtpServiceInterface::TIMEOUT]
-            );
+        if ($ftpConfig->isSsl()) {
+            $this->ftp = @ftp_ssl_connect($ftpConfig->getHost(), $ftpConfig->getPort(), $ftpConfig->getTimeout());
         } else {
-            $this->ftp = @ftp_connect(
-                $params[FtpServiceInterface::HOST],
-                $params[FtpServiceInterface::PORT],
-                $params[FtpServiceInterface::TIMEOUT]
-            );
+            $this->ftp = @ftp_connect($ftpConfig->getHost(), $ftpConfig->getPort(), $ftpConfig->getTimeout());
         }
 
         if (!is_resource($this->ftp)) {
@@ -58,14 +50,13 @@ class FtpAdapter implements FtpAdapterInterface
     }
 
     /**
-     * @param string $username
-     * @param string $password
+     * @param FtpConfig $ftpConfig
      *
      * @throws FtpException
      */
-    public function login(string $username, string $password): void
+    public function login(FtpConfig $ftpConfig): void
     {
-        $res = @ftp_login($this->getResource(), $username, $password);
+        $res = @ftp_login($this->getResource(), $ftpConfig->getUsername(), $ftpConfig->getPassword());
 
         if ($res === FALSE) {
             throw new FtpException('Login failed.', FtpException::LOGIN_FAILED);
