@@ -35,5 +35,6 @@ docker run --rm \
   ${BUILD_IMAGE} \
   bash -c "socat UNIX-LISTEN:/tmp/ssh-agent,reuseaddr,fork TCP:${SSH_AUTH_HOST}:2214 & sleep .2 && ssh-add -l && npm install && npm run build"
 
-docker build -f docker/build/Dockerfile -t ${IMAGE} .
+cd docker/build
+docker build -t ${IMAGE} .
 docker push ${IMAGE}
