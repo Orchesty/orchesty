@@ -2,7 +2,7 @@ import entryFactory from 'bpmn-js-properties-panel/lib/factory/EntryFactory';
 import { is } from 'bpmn-js/lib/util/ModelUtil';
 
 export default function (group, element, translate) {
-  if (!is(element, 'bpmn:Task') && !is(element, 'bpmn:Event')) {
+  if (!is(element, 'bpmn:Task') && !is(element, 'bpmn:Event') && !is(element, 'bpmn:Gateway')) {
     return;
   }
 
