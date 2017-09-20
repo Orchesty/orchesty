@@ -19,9 +19,11 @@ docker-down-clean: .env
 #Composer
 
 composer-install:
+	$(DEC) global require hirak/prestissimo
 	$(DEC) install --ignore-platform-reqs
 
 composer-update:
+	$(DEC) global require hirak/prestissimo
 	$(DEC) update --ignore-platform-reqs
 
 composer-outdated:
