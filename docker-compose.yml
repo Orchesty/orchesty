@@ -15,9 +15,11 @@ services:
     depends_on:
       - mongo
       - rabbitmq
+      - smtp
     links:
       - mongo
       - rabbitmq
+      - smtp
 
   nginx:
     image: nginx
@@ -44,12 +46,12 @@ services:
         - mongo:/data/db
 
   rabbitmq:
-    image: 'rabbitmq:management-alpine'
+    image: rabbitmq:management-alpine
     volumes:
        - rabbit-mq:/var/lib/rabbitmq
     ports:
-      - '${DEV_IP}:15672:15672'
-      - '${DEV_IP}:5672:5672'
+      - ${DEV_IP}:15672:15672
+      - ${DEV_IP}:5672:5672
     environment:
       - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
       - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}

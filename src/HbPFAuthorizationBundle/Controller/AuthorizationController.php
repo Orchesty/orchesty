@@ -105,7 +105,7 @@ class AuthorizationController extends FOSRestController
         $this->construct();
         try {
             $this->handler->saveToken($request->request->all(), $authorizationId);
-            $response = new RedirectResponse('http://frontendURL.com');
+            $response = new RedirectResponse($this->container->getParameter('frontend_host'). '/close-me.html');
         } catch (AuthorizationException $e) {
             $response = new JsonResponse(ControllerUtils::createExceptionData($e), 500);
         }

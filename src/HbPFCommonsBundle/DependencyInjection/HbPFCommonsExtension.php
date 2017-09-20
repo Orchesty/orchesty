@@ -50,7 +50,6 @@ class HbPFCommonsExtension extends Extension implements PrependExtensionInterfac
         $loader->load('handlers.yml');
         $loader->load('services.yml');
         $loader->load('transport.yml');
-        $loader->load('commands.yml');
         $loader->load('ftp.yml');
     }
 

@@ -6,7 +6,7 @@
  * Time: 9:00 AM
  */
 
-namespace Hanaboso\PipesFramework\Commons\Command;
+namespace Hanaboso\PipesFramework\HbPFApiGatewayBundle\Command;
 
 use Hanaboso\PipesFramework\HbPFApiGatewayBundle\Handler\StartingPointHandler;
 use Symfony\Component\Console\Command\Command;
@@ -17,7 +17,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * Class RunTopologyCommand
  *
- * @package Hanaboso\PipesFramework\Commons\Command
+ * @package Hanaboso\PipesFramework\HbPFApiGatewayBundle\Command
  */
 class RunTopologyCommand extends Command
 {
