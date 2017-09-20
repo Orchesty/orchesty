@@ -1,18 +1,20 @@
 var path = require('path');
 var webpack = require('webpack');
+const merge = require('webpack-merge');
+const common = require('./webpack.config.common.js');
 
-var CopyWebpackPlugin = require('copy-webpack-plugin');
 var CleanWebpackPlugin = require('clean-webpack-plugin');
 
 
-module.exports = {
+module.exports = merge(common, {
   entry: [
     'babel-polyfill',
-    './src/main.jsx' // Your appʼs entry point
+    './src/main_prod.jsx' // Your appʼs entry point
   ],
   output: {
     path: path.join(__dirname, 'dist'),
-    filename: "bundle.js"
+    filename: "bundle.js",
+    publicPath: '/'
   },
   plugins: [
     new CleanWebpackPlugin('dist'),
@@ -24,24 +26,20 @@ module.exports = {
     new webpack.optimize.UglifyJsPlugin({
       beautify: false,
       mangle: {
-        screw_ie8: true,
-        keep_fnames: true
+        screw_ie8: false,
+        keep_fnames: false
       },
       compress: {
-        screw_ie8: true,
+        screw_ie8: false,
         warnings: false
       },
       comments: false
-    }),
-    new CopyWebpackPlugin([{
-      from: './src/index.html'
-    },{
-      from: './src/close-me.html'
-    }])
+    })
   ],
   resolve: {
-    // require files in app without specifying extensions
-    extensions: ['.js', '.jsx']
+    alias: {
+      'config-env': path.join(__dirname, 'src', 'config', 'prod')
+    }
   },
   module: {
     loaders: [
@@ -49,28 +47,7 @@ module.exports = {
         test: /\.jsx?$/,
         exclude: /node_modules/,
         loaders: ['babel-loader?presets[]=react,presets[]=es2015,presets[]=es2016,presets[]=es2017']
-      },
-      {
-        test: /\.css$/,
-        loaders: ['style-loader', 'css-loader']
-      },
-      {
-        test: /\.less$/,
-        loaders: ['style-loader', 'css-loader', 'less-loader']
-      },
-      {
-        test: /\.(png|jpg)$/,
-        loader: 'url-loader?name=files/[hash].[ext]&limit=16384'
-      },
-      {
-        test: /\.(xml|bpmn)$/,
-        loader: 'raw-loader'
-      },
-      { test: /\.woff(\?.*)?$/,  loader: "url-loader?name=files/[hash].[ext]&limit=1000" },
-      { test: /\.woff2(\?.*)?$/, loader: "url-loader?name=files/[hash].[ext]&limit=1000" },
-      { test: /\.ttf(\?.*)?$/,   loader: "url-loader?name=files/[hash].[ext]&limit=1000" },
-      { test: /\.eot(\?.*)?$/,   loader: "file-loader?name=files/[hash].[ext]&limit=1000" },
-      { test: /\.svg(\?.*)?$/,   loader: "url-loader?name=files/[hash].[ext]&limit=1000" }
+      }
     ]
   }
-};
+});

@@ -1,6 +1,6 @@
-import * as types from '../actionTypes';
+import * as types from 'rootApp/actionTypes';
 
-import params from '../config/params';
+import config from 'rootApp/config';
 
 function incrementId(){
   return {
@@ -26,7 +26,7 @@ function setNotificationTimeout(id, timeout){
   return dispatch => setTimeout(() => { dispatch(notificationTimeout(id)) }, timeout);
 }
 
-export function addNotification(type, message, timeout = params.notificationTimeout) {
+export function addNotification(type, message, timeout = config.params.notificationTimeout) {
   return (dispatch, getState) => {
     dispatch(incrementId());
     const {notification} = getState();

@@ -2,7 +2,7 @@ import React from 'react';
 import Loading from 'react-loading';
 import PropTypes from 'prop-types';
 
-import {stateType} from '../../../types';
+import {stateType} from 'rootApp/types';
 
 import './StateButton.less';
 

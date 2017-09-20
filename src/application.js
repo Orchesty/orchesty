@@ -1,4 +1,4 @@
-import download from './utils/download';
+import download from 'utils/download';
 
 class Application{
   constructor(store){

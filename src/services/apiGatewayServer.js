@@ -1,6 +1,6 @@
-import config from '../config/params';
+import config from 'rootApp/config';
 
-import * as notificationActions from '../actions/notificationActions';
+import * as notificationActions from 'actions/notificationActions';
 
 function check(dispatch, response) {
   if (response.ok){
@@ -31,7 +31,7 @@ export function makeUrl(relUrl, queries){
         .join('&');
   }
   
-  return config.apiUrl + relUrl + queryUrl;
+  return config.params.apiUrl + relUrl + queryUrl;
 }
 
 export function rawRequest(dispatch, method, relUrl, queries, options){

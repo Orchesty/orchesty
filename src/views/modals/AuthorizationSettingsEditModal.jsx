@@ -2,9 +2,9 @@ import React from 'react'
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 
-import {stateType} from '../../types';
-import AuthorizationSettingsForm from '../components/authorization/AuthorizationSettingsForm';
-import StateButton from '../elements/input/StateButton';
+import {stateType} from 'rootApp/types';
+import AuthorizationSettingsForm from 'components/authorization/AuthorizationSettingsForm';
+import StateButton from 'elements/input/StateButton';
 
 class AuthorizationSettingsEditModal extends React.Component {
   constructor(props) {

@@ -1,10 +1,9 @@
-import * as types from '../actionTypes';
+import * as types from 'rootApp/actionTypes';
 import listFactory from './factories/listFactory';
-import serverRequest, {sortToQuery, rawRequest, rawRequestJSONReceive} from '../services/apiGatewayServer';
-import {listType} from '../types';
-import objectEquals from '../utils/objectEquals';
+import serverRequest, {sortToQuery, rawRequest, rawRequestJSONReceive} from 'services/apiGatewayServer';
+import objectEquals from 'utils/objectEquals';
 
-import params from '../config/params';
+import config from 'rootApp/config';
 import * as notificationActions from './notificationActions';
 
 const {createPaginationList, listLoading, listError, listReceive, listDelete, listChangeSort, listChangePage} = listFactory('TOPOLOGY/LIST/');
@@ -41,7 +40,7 @@ function loadList(id, loadingState = true){
   }
 }
 
-export function needTopologyList(listId, pageSize = params.defaultPageSize) {
+export function needTopologyList(listId, pageSize = config.params.defaultPageSize) {
   return (dispatch, getState) => {
     const list = getState().topology.lists[listId];
     if (!list) {

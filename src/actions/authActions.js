@@ -1,8 +1,8 @@
-import * as types from '../actionTypes';
+import * as types from 'rootApp/actionTypes';
 import * as applicationActions from './applicationActions';
 import * as notificationActions from './notificationActions';
 import * as processActions from './processActions';
-import serverRequest from '../services/apiGatewayServer';
+import serverRequest from 'services/apiGatewayServer';
 
 
 function userLogged(data){

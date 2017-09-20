@@ -1,7 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux';
 
-import * as applicationActions from '../../actions/applicationActions';
+import * as applicationActions from 'actions/applicationActions';
 
 class TopNavigation extends React.Component {
   constructor(props) {

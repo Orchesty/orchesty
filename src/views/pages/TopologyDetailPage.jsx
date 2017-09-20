@@ -2,10 +2,10 @@ import React from 'react'
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 
-import * as applicationActions from '../../actions/applicationActions';
+import * as applicationActions from 'actions/applicationActions';
 
-import Page from '../wrappers/Page';
-import TopologyDetail from '../components/topology/TopologyDetail';
+import Page from 'wrappers/Page';
+import TopologyDetail from 'components/topology/TopologyDetail';
 
 function mapActionsToProps(dispatch, ownProps){
   return {

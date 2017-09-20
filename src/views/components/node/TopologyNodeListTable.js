@@ -1,6 +1,6 @@
 import {connect} from 'react-redux';
 
-import * as nodeActions from '../../../actions/nodeActions';
+import * as nodeActions from 'actions/nodeActions';
 
 import NodeListTable from './NodeListTable';
 

@@ -1,4 +1,4 @@
-import * as types from '../actionTypes';
+import * as types from 'rootApp/actionTypes';
 
 export function toggleMainSubMenu(id){
   return {

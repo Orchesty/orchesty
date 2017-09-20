@@ -1,5 +1,5 @@
-import * as types from '../actionTypes';
-import {stateType} from '../types';
+import * as types from 'rootApp/actionTypes';
+import {stateType} from 'rootApp/types';
 
 export function startProcess(id) {
   return {

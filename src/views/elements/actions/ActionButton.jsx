@@ -1,8 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types';
 
-import ToggleLocalMenu from '../menu/ToggleLocalMenu';
-import StateButton from '../input/StateButton';
+import ToggleLocalMenu from 'elements/menu/ToggleLocalMenu';
+import StateButton from 'elements/input/StateButton';
 
 class ActionButton extends React.Component {
   constructor(props) {

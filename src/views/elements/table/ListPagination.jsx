@@ -1,7 +1,7 @@
 import React from 'react'
 import ReactPaginate from 'react-paginate';
 
-import {stateType, listType} from '../../../types';
+import {stateType, listType} from 'rootApp/types';
 
 import './ListPagination.less';
 

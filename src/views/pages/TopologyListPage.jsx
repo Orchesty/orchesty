@@ -2,11 +2,11 @@ import React from 'react'
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 
-import * as topologyActions from '../../actions/topologyActions';
-import * as applicationActions from '../../actions/applicationActions';
+import * as topologyActions from 'actions/topologyActions';
+import * as applicationActions from 'actions/applicationActions';
 
-import Page from '../wrappers/Page';
-import TopologyListTable from '../components/topology/TopologyListTable';
+import Page from 'wrappers/Page';
+import TopologyListTable from 'components/topology/TopologyListTable';
 
 class TopologyListPage extends React.Component {
   constructor(props) {

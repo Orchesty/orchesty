@@ -3,10 +3,10 @@ import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import {Field, reduxForm} from 'redux-form';
 
-import * as authorizationActions from '../../../actions/authorizationActions';
+import * as authorizationActions from 'actions/authorizationActions';
 
-import {FormTextInput} from '../../elements/formInputs';
-import StateComponent from '../../wrappers/StateComponent';
+import {FormTextInput} from 'elements/formInputs';
+import StateComponent from 'wrappers/StateComponent';
 
 
 class AuthorizationSettingsForm extends React.Component {

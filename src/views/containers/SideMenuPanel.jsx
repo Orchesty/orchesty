@@ -1,9 +1,9 @@
 import React from 'react'
 import { connect } from 'react-redux';
 
-import * as applicationActions from '../../actions/applicationActions';
+import * as applicationActions from 'actions/applicationActions';
 
-import MenuCategory from '../elements/mainMenu/MenuCategory';
+import MenuCategory from 'elements/mainMenu/MenuCategory';
 
 class SideMenuPanel extends React.Component {
   constructor(props) {
