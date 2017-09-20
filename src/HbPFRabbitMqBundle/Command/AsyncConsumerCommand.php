@@ -51,9 +51,27 @@ class AsyncConsumerCommand extends Command
      */
     protected function configure(): void
     {
-        $this
-            ->setDescription("Starts async consumer.");
+        $this->setDescription("Starts async consumer.");
     }
+
+	/**
+	 * @param string $method
+	 * @param string $url
+	 *
+	 * @return Promise
+	 */
+    protected function fetchData(string $method, string $url): Promise {
+    	return new Promise(function (callable $resolve, callable $reject) use ($method, $url) {
+    		$guzzle = new GuzzleClient();
+			$response = $guzzle->request($method, $url);
+
+			if ($response->getStatusCode() === 200) {
+				$resolve($response);
+			} else {
+				$reject($response);
+			}
+		});
+	}
 
     /**
      * @param InputInterface  $input
@@ -71,57 +89,53 @@ class AsyncConsumerCommand extends Command
             'pass'  => 'guest',
         ];
 
-        $saleForce = (new Promise(function (callable $resolve, callable $reject) {
-            $client = new GuzzleClient();
+        $salesForce = $this->fetchData('GET', 'http://jsonplaceholder.typicode.com/posts')
+			->then(
+				function (Response $response) {
+					return ['message' => json_decode($response->getBody()->getContents())];
+				},
+				function (Response $response) {
+					throw new Exception($response->getReasonPhrase());
+				}
+			);
 
-            $response = $client->request('GET', 'http://jsonplaceholder.typicode.com/posts');
-
-            if ($response->getStatusCode() === 200) {
-                $resolve($response);
-            } else {
-                $reject($response);
-            }
-
-        }))->then(function (Response $response) {
-            return ['message' => json_decode($response->getBody()->getContents())];
-        }, function (Response $response) {
-            throw new Exception($response->getReasonPhrase());
-        });
-
-        $connectorStrategy = function ($data, $sendReply) use ($saleForce) {
+        $connectorStrategy = function ($data, $sendReply) use ($salesForce) {
             switch ($data['type']) {
                 case 'known_number':
                     // call first request
-                    return [$saleForce->then($sendReply), $saleForce->then($sendReply)];
+                    return [$salesForce->then($sendReply), $salesForce->then($sendReply)];
                     break;
                 case 'unknown_number':
-                    return [$saleForce];
+                    return [$salesForce];
                     break;
                 default:
                     throw new Exception('dasdasd');
             }
         };
 
-        (new Client($eventLoop, $options))
-            ->connect()
-            ->otherwise(function (Exception $e) {
-                // Log bad connection
-                var_dump($e->getMessage());
-            })
+        $bunny = new Client($eventLoop, $options);
+        $bunny->connect()
             ->then(function (Client $client) {
                 return $client->channel();
-            })->then(function (Channel $channel) {
-                return $channel->queueDeclare('queue_name')->then(function () use ($channel) {
-                    return $channel;
-                });
+            })
+			->then(function (Channel $channel) {
+                return $channel
+					->queueDeclare('queue_name')
+					->then(function () use ($channel) {
+                    	return $channel;
+                	});
             })
             ->then(function (Channel $channel) {
-                return $channel->qos(0, 5)->then(function () use ($channel) {
-                    return $channel;
-                });
-            })->then(function (Channel $channel) use ($connectorStrategy) {
+                return $channel->qos(0, 5)
+					->then(function () use ($channel) {
+                    	return $channel;
+                	});
+            })
+			->then(function (Channel $channel) use ($connectorStrategy) {
                 $channel->consume(
                     function (Message $message, Channel $channel, Client $client) use ($connectorStrategy) {
+
+
 
                         $info = [
                             'connector' => 'salesforce',
@@ -132,30 +146,48 @@ class AsyncConsumerCommand extends Command
 
                         $reply = function (array $data) use ($channel, $message) {
 
-                            $channel->queueDeclare('reply')->then(function () use ($channel, $message, $data) {
-                                $channel->publish(json_encode($data), [
-                                    'correlation-id' => $message->getHeader('correlation-id'),
-                                    'type'           => 'batch_item',
-                                ], '', 'reply');
-                            });
-
+                            $channel->queueDeclare('reply')
+								->then(function () use ($channel, $message, $data) {
+									$channel->publish(
+										json_encode($data),
+										[
+											'correlation-id' => $message->getHeader('correlation-id'),
+											'type'           => 'batch_item',
+										],
+										'',
+										'reply'
+									);
+                            	});
                         };
 
                         all([$connectorStrategy($info, $reply)])
                             ->then(function () use ($channel, $message) {
                                 // spunt
-                                $channel->queueDeclare('reply')->then(function () use ($channel, $message) {
-                                    $channel->publish('', [
-                                        'correlation-id' => $message->getHeader('correlation-id'),
-                                        'type'           => 'batch_total',
-                                    ], '', 'reply');
-                                })->then(function () use ($channel, $message) {
-                                    $channel->ack($message);
-                                });
-                            })->cancel();
-                    }, 'queue_name'
+                                $channel->queueDeclare('reply')
+									->then(function () use ($channel, $message) {
+                                    	$channel->publish(
+                                    		'',
+											[
+                                        		'correlation-id' => $message->getHeader('correlation-id'),
+                                        		'type'           => 'batch_total',
+                                    		],
+											'',
+											'reply'
+										);
+                                	})
+									->then(function () use ($channel, $message) {
+                                    	$channel->ack($message);
+                                	});
+                            })
+							->cancel();
+                    },
+					'queue_name'
                 );
-            });
+            })
+			->otherwise(function (Exception $e) {
+				// Log bad connection
+				var_dump("Error", $e->getMessage());
+			});
 
         $eventLoop->run();
 
