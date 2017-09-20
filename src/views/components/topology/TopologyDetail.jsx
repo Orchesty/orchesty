@@ -36,7 +36,9 @@ class TopologyDetail extends React.Component {
       <div className="topology-detail">
         <TabBar items={tabItems} active={activeIndex} onChangeTab={this.changeTab} />
         {activeTab == 'nodes' && <TopologyNodeListTable topologyId={topologyId} />}
-        {activeTab == 'schema' && <TopologySchema schemaId={topologyId} setActions={setActions} onChangeTopology={onChangeTopology} /> }
+        <div className={'schema-wrapper' + (activeTab != 'schema' ? ' hidden' : '')}>
+          <TopologySchema schemaId={topologyId} setActions={setActions} onChangeTopology={onChangeTopology} />
+        </div>
       </div>
     );
   }
