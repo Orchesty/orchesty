@@ -29,7 +29,6 @@ class HbPFCommonsExtension extends Extension implements PrependExtensionInterfac
         $loader->load('doctrine_mysql.yml');
         $loader->load('monolog.yml');
         $loader->load('fos_rest.yml');
-        $loader->load('rabbit-mq.yml');
         $loader->load('sensio_framework_extra.yml');
 
         $container->setParameter('src_dir', __DIR__ . '/../..');
