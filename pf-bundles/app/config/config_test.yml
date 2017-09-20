@@ -15,7 +15,6 @@ imports:
 ## Import params
     - { resource: parameters.yml }
     - { resource: security.yml }
-    - { resource: rabbit-mq.yml }
 
 framework:
     #esi: ~
