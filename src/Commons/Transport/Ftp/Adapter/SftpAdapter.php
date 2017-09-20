@@ -176,8 +176,7 @@ class SftpAdapter implements FtpAdapterInterface
      */
     public function isFile($file): bool
     {
-        // todo ... stat() ?
-        //return $this->getResource()->is_file($file);
+        return is_file($this->preparePath($file));
     }
 
     /**
@@ -191,13 +190,13 @@ class SftpAdapter implements FtpAdapterInterface
     }
 
     /**
-     * @param string $dir
+     * @param string $path
      *
      * @return string
      */
-    private function preparePath(string $dir): string
+    private function preparePath(string $path): string
     {
-        return 'ssh2.sftp://' . $this->getResource() . '/' . trim($dir, '/');
+        return 'ssh2.sftp://' . $this->getResource() . '/' . trim($path, '/');
     }
 
 }
