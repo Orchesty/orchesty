@@ -8,7 +8,7 @@
 
 namespace Hanaboso\PipesFramework\HbPFApiGatewayBundle\Command;
 
-use Hanaboso\PipesFramework\HbPFApiGatewayBundle\Handler\StartingPointHandler;
+use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\StartingPointHandler;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;

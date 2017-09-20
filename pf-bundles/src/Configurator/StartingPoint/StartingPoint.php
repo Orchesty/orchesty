@@ -6,15 +6,15 @@
  * Time: 12:07 PM
  */
 
-namespace Hanaboso\PipesFramework\Commons\StartingPoint;
+namespace Hanaboso\PipesFramework\Configurator\StartingPoint;
 
 use GuzzleHttp\Psr7\Uri;
-use Hanaboso\PipesFramework\Commons\StartingPoint\Exception\StartingPointException;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
+use Hanaboso\PipesFramework\Configurator\Exception\StartingPointException;
 use Nette\Utils\Strings;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\HttpFoundation\Request;
@@ -22,7 +22,7 @@ use Symfony\Component\HttpFoundation\Request;
 /**
  * Class StartingPoint
  *
- * @package Hanaboso\PipesFramework\Commons
+ * @package Hanaboso\PipesFramework\Configurator\StartingPoint
  */
 class StartingPoint
 {

@@ -6,15 +6,15 @@
  * Time: 12:10 PM
  */
 
-namespace Tests\Controller\HbPFApiGatewayBundle\Controller;
+namespace Tests\Controller\HbPFConfiguratorBundle\Controller;
 
-use Hanaboso\PipesFramework\HbPFApiGatewayBundle\Handler\StartingPointHandler;
+use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\StartingPointHandler;
 use Tests\ControllerTestCaseAbstract;
 
 /**
  * Class StartingPointControllerTest
  *
- * @package Tests\Controller\HbPFApiGatewayBundle\Controller
+ * @package Tests\Controller\HbPFConfiguratorBundle\Controller
  */
 class StartingPointControllerTest extends ControllerTestCaseAbstract
 {
