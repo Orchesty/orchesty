@@ -1,4 +1,5 @@
 .docker-volumes
+.env
 /.web-server-pid
 /build/
 /phpunit.xml
