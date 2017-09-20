@@ -5,6 +5,7 @@ import ReactDOM from 'react-dom';
 import 'diagram-js/assets/diagram-js.css';
 import 'bpmn-js/assets/bpmn-font/css/bpmn-embedded.css';
 import './BpmnIoComponent.less';
+import './custom-modeler/assets/elements.css';
 
 import emptySchema from './empty-schema.bpmn';
 

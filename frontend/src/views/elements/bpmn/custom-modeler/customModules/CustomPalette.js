@@ -119,17 +119,27 @@ PaletteProvider.prototype.getPaletteEntries = function() {
       group: 'events',
       separator: true
     },
+    'create.generic': createAction(
+      'bpmn:Task', 'activity', 'bpmn-icon-task-none', 'Generic', { pipesType: 'generic'}
+    ),
     'create.connector': createAction(
       'bpmn:Task', 'activity', 'bpmn-icon-service-task', 'Connector', { pipesType: 'connector'}
-    ),
-    'create.mapper': createAction(
-      'bpmn:Task', 'activity', 'bpmn-icon-business-rule-task', 'Mapper', { pipesType: 'mapper'}
     ),
     'create.parser': createAction(
       'bpmn:Task', 'activity', 'bpmn-icon-script-task', 'Parser', { pipesType: 'parser'}
     ),
+    'create.batch': createAction(
+      'bpmn:Task', 'activity', 'bpmn-icon-pipes-batch', 'Batch', { pipesType: 'batch'}
+    ),
     'create.splitter': createAction(
-      'bpmn:Task', 'activity', 'bpmn-icon-task', 'Splitter', { pipesType: 'splitter'}
+      'bpmn:Task', 'activity', 'bpmn-icon-pipes-splitter', 'Splitter', { pipesType: 'splitter'}
+    ),
+    'task-separator': {
+      group: 'activity',
+      separator: true
+    },
+    'create.exclusive-gateway': createAction(
+      'bpmn:ExclusiveGateway', 'gateway', 'bpmn-icon-gateway-xor', 'Gateway', { pipesType: 'gateway'}
     ),
   });
 
