@@ -59,11 +59,7 @@ class LogstashFormatter extends NormalizerFormatter
         }
 
         if (isset($record['level_name'])) {
-            $message['severity_code'] = $record['level_name'];
-        }
-
-        if (isset($record['level'])) {
-            $message['severity'] = $record['level'];
+            $message['severity'] = $record['level_name'];
         }
 
         if (isset($record['context']['exception'])) {

@@ -48,7 +48,8 @@ class AppKernel extends Kernel
             new HbPFConnectorBundle(),
             new HbPFMapperBundle(),
             new HbPFApiGatewayBundle(),
-            new HbPFCustomNodeBundle()
+            new HbPFCustomNodeBundle(),
+            new HbPFMailerBundle(),
         ];
 
         if (in_array($this->getEnvironment(), ['dev', 'test'], TRUE)) {

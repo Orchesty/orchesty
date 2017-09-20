@@ -42,8 +42,7 @@ class LogstashFormatterTest extends TestCase
         $message = $this->logstashFormatter->format([
             'message'    => 'Test message',
             'context'    => [],
-            'level'      => 'INFO',
-            'level_name' => 200,
+            'level_name' => 'INFO',
             'channel'    => 'test',
         ]);
 
@@ -56,7 +55,6 @@ class LogstashFormatterTest extends TestCase
             'message'       => 'Test message',
             'channel'       => 'test',
             'severity'      => 'INFO',
-            'severity_code' => 200,
         ], $message);
     }
 
@@ -71,8 +69,7 @@ class LogstashFormatterTest extends TestCase
                 'correlation_id' => '123',
                 'node_id'        => '456',
             ],
-            'level'      => 'INFO',
-            'level_name' => 200,
+            'level_name' => 'INFO',
             'channel'    => 'test',
         ]);
 
@@ -85,7 +82,6 @@ class LogstashFormatterTest extends TestCase
             'message'        => 'Test message',
             'channel'        => 'test',
             'severity'       => 'INFO',
-            'severity_code'  => '200',
             'correlation_id' => '123',
             'node_id'        => '456',
         ], $message);
@@ -101,8 +97,7 @@ class LogstashFormatterTest extends TestCase
             'context'    => [
                 'exception' => new Exception('Default exception'),
             ],
-            'level'      => 'INFO',
-            'level_name' => 200,
+            'level_name' => 'INFO',
             'channel'    => 'test',
         ]);
 
@@ -115,12 +110,11 @@ class LogstashFormatterTest extends TestCase
             'message'       => 'Test message',
             'channel'       => 'test',
             'severity'      => 'INFO',
-            'severity_code' => '200',
             'stacktrace'    => [
                 'class'   => 'Exception',
                 'message' => 'Default exception',
                 'code'    => 0,
-                'file'    => '/srv/project/tests/Unit/Commons/Monolog/LogstashFormatterTest.php:102',
+                'file'    => '/srv/project/tests/Unit/Commons/Monolog/LogstashFormatterTest.php:98',
                 'trace'   => '',
             ],
         ], $message);
@@ -138,8 +132,7 @@ class LogstashFormatterTest extends TestCase
                 'node_id'        => '456',
                 'exception'      => new Exception('Default exception'),
             ],
-            'level'      => 'INFO',
-            'level_name' => 200,
+            'level_name' => 'INFO',
             'channel'    => 'test',
         ]);
 
@@ -152,12 +145,11 @@ class LogstashFormatterTest extends TestCase
             'message'        => 'Test message',
             'channel'        => 'test',
             'severity'       => 'INFO',
-            'severity_code'  => '200',
             'stacktrace'     => [
                 'class'   => 'Exception',
                 'message' => 'Default exception',
                 'code'    => 0,
-                'file'    => '/srv/project/tests/Unit/Commons/Monolog/LogstashFormatterTest.php:139',
+                'file'    => '/srv/project/tests/Unit/Commons/Monolog/LogstashFormatterTest.php:133',
                 'trace'   => '',
             ],
             'correlation_id' => '123',
