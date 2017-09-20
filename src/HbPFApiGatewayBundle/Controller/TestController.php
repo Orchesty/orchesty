@@ -3,6 +3,7 @@
 namespace Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Exception;
 use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Controller\FOSRestController;
 use Hanaboso\PipesFramework\Commons\Enum\TypeEnum;
@@ -184,6 +185,27 @@ class TestController extends FOSRestController
             'node_id'        => '123',
             'correlation_id' => '456',
         ]);
+
+        return $this->handleView($this->view([], 200, []));
+    }
+
+    /**
+     * @Route("/test/logger/error")
+     * @Method({"POST"})
+     *
+     * @return Response
+     */
+    public function runError(): Response
+    {
+        try {
+            throw new Exception('Error');
+        } catch (Exception $e) {
+            $this->logger->error('Test message', [
+                'node_id'        => '123',
+                'correlation_id' => '456',
+                'exception'      => $e,
+            ]);
+        }
 
         return $this->handleView($this->view([], 200, []));
     }
