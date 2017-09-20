@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
- * User: sep
+ * User: Pavel Seveyn
  * Date: 22.8.17
  * Time: 8:57
  */
@@ -15,6 +15,7 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
+use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
 /**
@@ -22,7 +23,7 @@ use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
  *
  * @package Hanaboso\PipesFramework\RabbitMqBundle\DependencyInjection
  */
-class RabbitMqExtension extends Extension implements ConfigurationInterface
+class RabbitMqExtension extends Extension implements ConfigurationInterface, PrependExtensionInterface
 {
 
     /**
@@ -139,6 +140,17 @@ class RabbitMqExtension extends Extension implements ConfigurationInterface
         $loader->load('services.yml');
 
         $container->setParameter("rabbit-mq", $this->processConfiguration($this, $configs));
+    }
+
+    /**
+     * Allow an extension to prepend the extension configurations.
+     *
+     * @param ContainerBuilder $container
+     */
+    public function prepend(ContainerBuilder $container): void
+    {
+        $loader = new YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/prepend-config'));
+        $loader->load('rabbit-mq.yml');
     }
 
 }
