@@ -6,19 +6,19 @@
  * Time: 12:07 PM
  */
 
-namespace Hanaboso\PipesFramework\HbPFApiGatewayBundle\Handler;
+namespace Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Exception;
-use Hanaboso\PipesFramework\Commons\StartingPoint\StartingPoint;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
+use Hanaboso\PipesFramework\Configurator\StartingPoint\StartingPoint;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class StartingPointHandler
  *
- * @package Hanaboso\PipesFramework\HbPFApiGatewayBundle\Handler
+ * @package Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler
  */
 class StartingPointHandler
 {

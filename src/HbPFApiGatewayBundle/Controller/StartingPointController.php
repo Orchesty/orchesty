@@ -10,9 +10,7 @@ namespace Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller;
 
 use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Controller\FOSRestController;
-use Hanaboso\PipesFramework\HbPFApiGatewayBundle\Handler\StartingPointHandler;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -26,35 +24,18 @@ class StartingPointController extends FOSRestController
 {
 
     /**
-     * @var StartingPointHandler
-     */
-    private $startingPointHandler;
-
-    /**
-     * StartingPointController constructor.
-     *
-     * @param StartingPointHandler $startingPointHandler
-     */
-    public function __construct(StartingPointHandler $startingPointHandler)
-    {
-        $this->startingPointHandler = $startingPointHandler;
-    }
-
-    /**
      * @Route("/topologies/{topologyId}/nodes/{nodeId}/run", defaults={}, requirements={"topologyId": "\w+", "nodeId": "\w+"})
      * @Method({"POST"})
      *
-     * @param Request $request
-     * @param string  $topologyId
-     * @param string  $nodeId
+     * @param string $topologyId
+     * @param string $nodeId
      *
      * @return Response
      */
-    public function runAction(Request $request, string $topologyId, string $nodeId): Response
+    public function runAction(string $topologyId, string $nodeId): Response
     {
-        $this->startingPointHandler->runWithRequest($request, $topologyId, $nodeId);
-
-        return $this->handleView($this->view([], 200, []));
+        return $this->forward('HbPFConfiguratorBundle:StartingPoint:run',
+            ['topologyId' => $topologyId, 'nodeId' => $nodeId]);
     }
 
     /**
@@ -67,9 +48,7 @@ class StartingPointController extends FOSRestController
      */
     public function testAction(string $topologyId): Response
     {
-        $data = $this->startingPointHandler->runTest($topologyId);
-
-        return $this->handleView($this->view($data, 200, ['application/json']));
+        return $this->forward('HbPFConfiguratorBundle:StartingPoint:test', ['topologyId' => $topologyId]);
     }
 
 }

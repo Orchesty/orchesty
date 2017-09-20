@@ -6,12 +6,12 @@
  * Time: 3:44 PM
  */
 
-namespace Hanaboso\PipesFramework\Commons\StartingPoint;
+namespace Hanaboso\PipesFramework\Configurator\StartingPoint;
 
 /**
  * Class Headers
  *
- * @package Hanaboso\PipesFramework\Commons\StartingPoint
+ * @package Hanaboso\PipesFramework\Configurator\StartingPoint
  */
 class Headers
 {

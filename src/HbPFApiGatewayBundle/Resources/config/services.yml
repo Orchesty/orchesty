@@ -1,13 +1,1 @@
 services:
-    hbpf.handler.starting_point:
-        class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Handler\StartingPointHandler
-        arguments:
-            - '@doctrine.odm.mongodb.document_manager'
-            - '@hbpf.starting_point.starting_point'
-
-    # Starting point
-    hbpf.starting_point.starting_point:
-        class: Hanaboso\PipesFramework\Commons\StartingPoint\StartingPoint
-        arguments:
-            - '@rabbit-mq.producer.starting_point'
-            - '@hbpf.transport.curl_manager'

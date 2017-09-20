@@ -6,14 +6,14 @@
  * Time: 1:23 PM
  */
 
-namespace Hanaboso\PipesFramework\Commons\StartingPoint;
+namespace Hanaboso\PipesFramework\Configurator\StartingPoint;
 
 use Hanaboso\PipesFramework\RabbitMqBundle\Producer\AbstractProducer;
 
 /**
  * Class StartingPointProducer
  *
- * @package Commons\StartingPoint
+ * @package Hanaboso\PipesFramework\Configurator\StartingPoint
  */
 class StartingPointProducer extends AbstractProducer
 {

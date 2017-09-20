@@ -1,0 +1,5 @@
+rabbit-mq:
+    producers:
+        starting_point:
+            class: Hanaboso\PipesFramework\Configurator\StartingPoint\StartingPointProducer
+            content_type: text/plain
