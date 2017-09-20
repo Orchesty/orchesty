@@ -1,0 +1,19 @@
+@font-face {
+    font-family: 'pipes';
+    src:  url('fonts/pipes.eot?o57c81');
+    src:  url('fonts/pipes.eot?o57c81#iefix') format('embedded-opentype'),
+    url('fonts/pipes.ttf?o57c81') format('truetype'),
+    url('fonts/pipes.woff?o57c81') format('woff'),
+    url('fonts/pipes.svg?o57c81#icomoon') format('svg');
+    font-style: normal;
+}
+
+.bpmn-icon-pipes-splitter:before {
+    font-family: 'pipes';
+    content: "\e900";
+}
+
+.bpmn-icon-pipes-batch:before {
+    font-family: 'pipes';
+    content: "\e901";
+}

@@ -1,5 +1,29 @@
-Přidání nového formulářového prvku do panelu
+Přidání nového prvku
+
+Bukud nám vyhovuje použití již implementovaného typu prvku (bpmn:Event, bpmn:Task, bpmn:Gateway), máme řešení
+jednoduché. Stačí přidat novou položku do src/views/elements/bpmn/custom-modeler/customModules/CustomPalette.js.
+Případně přidat novou ikonu.
+
+
+Nová ikona pro prvek
+
+a) Panel
+  1) Do https://icomoon.io/app si načíst node_modules/bpmn-js/assets/bpmn-font/font/bpmn.svg
+  2) Např pro task vyexportovat ikonu "task-none" do SVG
+  3) Otevřít v http://editor.method.ac/ a přidat vlastní tvar
+  4) Uložit a znovu načíst v https://icomoon.io/app
+  5) Do https://icomoon.io/app načíst i existující src/views/elements/bpmn/custom-modeler/assets/fonts/pipes.svg
+  6) Vyexportovat stávající font s novým prvkem
+  7) Nahrát zpět do src/views/elements/bpmn/custom-modeler/assets/fonts
+  8) Přidat nový znak do src/views/elements/bpmn/custom-modeler/assets/elements.css
+
+b) Canvas
+  1) Přidat zdroj SVG do src/views/elements/bpmn/custom-modeler/customModules/CustomRenderer.js jako např. batch nebo splitter.
+
+
+Přidání nového konfiguračního inputu do panelu
 
 1) Přidat definici do /PropertiesPanel/parts
 2) Načíst v /PropertiesPanel/PropertiesProvider.js a přidat do skupiny.
 3) Přidat definici do /descriptors/pipes.json. Objekt properties.
+
