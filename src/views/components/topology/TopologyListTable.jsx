@@ -70,6 +70,10 @@ class TopologyListTable extends React.Component {
           const item = elements[id];
           const menuItems = [
             {
+              caption: 'Detail',
+              action: () => {selectPage('topology_detail', {topologyId: id});}
+            },
+            {
               caption: 'Edit',
               action: () => {openModal('topology_edit', {topologyId: id});}
             },
