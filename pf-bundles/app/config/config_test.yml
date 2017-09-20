@@ -36,8 +36,8 @@ framework:
         strict_requirements: ~
 
 swiftmailer:
-    transport: 'smtp'
-    host:      'smtp'
-    port:       '1025'
-    username:  ''
-    password:  ''
+    transport: null
+    host: smtp
+    port: 1025
+    username: ''
+    password: ''

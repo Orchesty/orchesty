@@ -31,3 +31,5 @@ parameters:
     sftp.timeout: 15
     sftp.user: ''
     sftp.password: ''
+
+    frontend_host: 127.0.0.1
