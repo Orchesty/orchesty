@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import Error404Page from '../pages/Error404Page';
 import DashboardPage from '../pages/DashboardPage';
 import TopologyListPage from '../pages/TopologyListPage';
+import TopologyDetailPage from '../pages/TopologyDetailPage';
 import SchemaPage from '../pages/SchemaPage';
 import AuthorizationListPage from '../pages/AuthorizationListPage';
 
@@ -17,6 +18,8 @@ class ActivePage extends React.Component {
         return <DashboardPage pageKey={page.key} {...page.args}/>;
       case 'topology_list':
         return <TopologyListPage pageKey={page.key} {...page.args}/>;
+      case 'topology_detail':
+        return <TopologyDetailPage pageKey={page.key} {...page.args}/>;
       case 'topology_schema':
         return <SchemaPage pageKey={page.key} {...page.args}/>;
       case 'authorization_list':

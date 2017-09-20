@@ -51,6 +51,32 @@ class BpmnIoComponent extends React.Component {
     this._sendActions();
   }
 
+  componentDidMount() {
+    const parent = ReactDOM.findDOMNode(this);
+    this._modeler = new CustomBPMNModeler({
+      propertiesPanel: {
+        parent: parent.childNodes[1]
+      },
+    });
+    this._modeler.attachTo(parent.childNodes[0]);
+    this.loadXML();
+    this._modeler.get('eventBus').on('commandStack.changed', e => {this.changed()});
+
+    parent.childNodes[2].addEventListener('change', e => {
+      const reader = new FileReader();
+      const file = e.target.files[0];
+      reader.onload = response => {
+        this.openBPMN({file, content: response.target.result});
+      };
+      reader.readAsText(file);
+    })
+  }
+
+  componentWillUnmount() {
+    this.props.setActions(null);
+    this._modeler.detach();
+  }
+
   changed(){
     if (!this._changed){
       this._changed = true;
@@ -130,31 +156,6 @@ class BpmnIoComponent extends React.Component {
         height: window.innerHeight - this._self.getBoundingClientRect().top - window.scrollX - 10
       });
     }
-  }
-
-  componentDidMount() {
-    const parent = ReactDOM.findDOMNode(this);
-    this._modeler = new CustomBPMNModeler({
-      propertiesPanel: {
-        parent: parent.childNodes[1]
-      },
-    });
-    this._modeler.attachTo(parent.childNodes[0]);
-    this.loadXML();
-    this._modeler.get('eventBus').on('commandStack.changed', e => {this.changed()});
-
-    parent.childNodes[2].addEventListener('change', e => {
-      const reader = new FileReader();
-      const file = e.target.files[0];
-      reader.onload = response => {
-        this.openBPMN({file, content: response.target.result});
-      };
-      reader.readAsText(file);
-    })
-  }
-
-  componentWillUnmount() {
-    this._modeler.detach();
   }
 
   setSelf(self) {

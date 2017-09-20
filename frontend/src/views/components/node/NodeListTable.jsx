@@ -10,8 +10,6 @@ import ActionButton from '../../elements/actions/ActionButton';
 class NodeListTable extends React.Component {
   constructor(props) {
     super(props);
-    this.changeSort = this.changeSort.bind(this);
-    this.changePage = this.changePage.bind(this);
     this._checkList(props);
   }
 
@@ -25,49 +23,28 @@ class NodeListTable extends React.Component {
     this._checkList(nextProps);
   }
 
-  changeSort(newSort) {
-    this.props.listChangeSort(newSort);
-  }
-
-  changePage(newPage) {
-    this.props.listChangePage(newPage);
-  }
-
   _renderHead(){
     const {listChangeSort, withTopology, list: {sort}} = this.props;
-    if (listChangeSort) {
-      return (
-        <tr>
-          <SortTh name="id" state={sort} onChangeSort={this.changeSort}>#</SortTh>
-          {withTopology && <th>Topology</th>}
-          <th>Type</th>
-          <SortTh name="name" state={sort} onChangeSort={this.changeSort}>Name</SortTh>
-          <th>Service</th>
-          <SortTh name="enabled" state={sort} onChangeSort={this.changeSort}>Enabled</SortTh>
-          <th>Actions</th>
-        </tr>
-      );
-    } else {
-      return (
-        <tr>
-          <th>#</th>
-          {withTopology && <th>Topology</th>}
-          <th>Type</th>
-          <th>Name</th>
-          <th>Service</th>
-          <th>Enabled</th>
-          <th>Actions</th>
-        </tr>
-      );
-    }
+    return (
+      <tr>
+        <SortTh name="id" state={sort} onChangeSort={listChangeSort}>#</SortTh>
+        {withTopology && <th>Topology</th>}
+        <SortTh name="name" state={sort} onChangeSort={listChangeSort}>Name</SortTh>
+        <th>Type</th>
+        <th>Handler</th>
+        <th>Service</th>
+        <SortTh name="enabled" state={sort} onChangeSort={listChangeSort}>Enabled</SortTh>
+        <th>Actions</th>
+      </tr>
+    );
   }
 
   render() {
-    const {list, elements, withTopology, updateNode, runNode, onlyEvents} = this.props;
+    const {list, elements, withTopology, updateNode, runNode, onlyEvents, listChangePage} = this.props;
     const rows = list && list.items ? list.items.map(id => {
       const item = elements[id];
-      if (!onlyEvents || item.type == 'event') {
-        const menuItems = item.type == 'event' ? [
+      if (!onlyEvents || item.handler == 'event') {
+        const menuItems = item.handler == 'event' ? [
           {
             caption: 'Run',
             action: () => {
@@ -86,8 +63,9 @@ class NodeListTable extends React.Component {
           <tr key={item._id}>
             <td>{item._id}</td>
             {withTopology && <td>{item.topology_id}</td>}
-            <td>{item.type}</td>
             <td>{item.name}</td>
+            <td>{item.type}</td>
+            <td>{item.handler}</td>
             <td>{item.service}</td>
             <td><BoolValue value={item.enabled}/></td>
             <td><ActionButton item={menuItems} right={true}/></td>
@@ -109,7 +87,7 @@ class NodeListTable extends React.Component {
             {rows}
           </tbody>
         </table>
-        <ListPagination list={list} onPageChange={this.changePage} />
+        <ListPagination list={list} onPageChange={listChangePage} />
       </div>
     );
   }
