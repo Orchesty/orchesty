@@ -11,6 +11,9 @@ export const TOGGLE_MAIN_MENU = 'TOGGLE_MAIN_MENU';
 export const PROCESS_SET_STATE = 'PROCESS_SET_STATE';
 export const PROCESS_CLEAR = 'PROCESS_CLEAR';
 
+// Server
+export const SERVER_API_GATEWAY_CHANGE = 'SERVER_API_GATEWAY_CHANGE';
+
 // Authorization
 export const USER_LOGGED = 'USER_LOGGED';
 export const USER_LOGOUT = 'USER_LOGOUT';

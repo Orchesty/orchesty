@@ -1,4 +1,5 @@
 import download from 'utils/download';
+import * as serverActions from 'actions/serverActions';
 
 class Application{
   constructor(store){
@@ -80,6 +81,15 @@ class Application{
     input.addEventListener('change', (e) => this._openFileAndPlay(elemDiv, e.target.files[0], speed, callback));
     elemDiv.appendChild(input);
     document.body.appendChild(elemDiv);
+  }
+
+  changeServer(serverId, callback){
+    this._store.dispatch(serverActions.changeApiGatewayServer(serverId)).then(response => {
+      if (typeof callback == 'function'){
+        callback(response);
+      }
+      return response;
+    })
   }
 }
 

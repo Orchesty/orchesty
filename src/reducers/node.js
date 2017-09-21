@@ -45,6 +45,9 @@ function reducer(state, action){
 }
 
 export default (state = initialState, action) => {
+  if (action.type == types.USER_LOGOUT){
+    return initialState;
+  }
   let newState = reducer(state, action);
   if (action.type.startsWith(listPrefix)){
     const lists = listsReducer(state.lists, Object.assign({}, action, {type: action.type.substring(listPrefixLength)}), getElementId);

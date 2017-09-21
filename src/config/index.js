@@ -1,13 +1,17 @@
+import deepmerge from 'deepmerge';
+
 import commonParams from 'config-common/params';
 import envParams from 'config-env/params';
 import commonPages from 'config-common/pages';
 import envPages from 'config-env/pages';
 import commonMainMenu from 'config-common/mainMenu.json';
 import envMainMenu from 'config-env/mainMenu.json';
-
+import commonServers from 'config-common/servers';
+import envServers from 'config-env/servers';
 
 export default {
-  params: Object.assign({}, commonParams, envParams),
-  pages: Object.assign({}, commonPages, envPages),
-  mainMenu: [...commonMainMenu, ...envMainMenu]
+  params: deepmerge(commonParams, envParams),
+  pages: deepmerge(commonPages, envPages),
+  mainMenu: [...commonMainMenu, ...envMainMenu],
+  servers: deepmerge(commonServers, envServers)
 };

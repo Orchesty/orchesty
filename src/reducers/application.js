@@ -59,6 +59,12 @@ export default (state = initialState, action) => {
       return Object.assign({}, state, {
         modal: null
       });
+
+    case types.USER_LOGOUT:
+      return Object.assign({}, state, {
+        modal: null,
+        modalData: null
+      });
     
     default:
       return state;

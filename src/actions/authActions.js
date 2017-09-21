@@ -34,17 +34,22 @@ export function login(data, processId) {
 }
 
 export function logout(processId) {
-  return dispatch => {
-    processId && dispatch(processActions.startProcess(processId));
-    return serverRequest(dispatch, 'POST', '/user/logout').then(response => {
-      processId && dispatch(processActions.finishProcess(processId, response));
-      if (response){
-        dispatch(applicationActions.selectPage('login'));
-        dispatch(userLogout());
-      }
+  return (dispatch, getState) => {
+    if (getState().auth.user) {
+      processId && dispatch(processActions.startProcess(processId));
+      return serverRequest(dispatch, 'POST', '/user/logout').then(response => {
+        processId && dispatch(processActions.finishProcess(processId, response));
+        if (response) {
+          dispatch(applicationActions.selectPage('login'));
+          dispatch(userLogout());
+        }
 
-      return response;
-    });
+        return response;
+      });
+    } else {
+      processId && dispatch(processActions.finishProcess(processId, true));
+      return Promise.resolve(true);
+    }
   }
 }
 
