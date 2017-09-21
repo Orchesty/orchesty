@@ -78,6 +78,12 @@ doctrine_mongodb:
     default_database: '%database_name%'
     document_managers:
         default:
+            mappings:
+                CCDocument:
+                    type: annotation
+                    is_bundle: false
+                    dir: "%kernel.root_dir%/../src/AppBundle/Document"
+                    prefix: CleverConnectors\AppBundle\Document
 
 # Swiftmailer Configuration
 swiftmailer:
