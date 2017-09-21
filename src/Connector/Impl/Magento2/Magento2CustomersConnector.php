@@ -9,7 +9,6 @@
 
 namespace Hanaboso\PipesFramework\Connector\Impl\Magento2;
 
-use Hanaboso\PipesFramework\Commons\Message\MessageInterface;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
 
@@ -22,17 +21,18 @@ class Magento2CustomersConnector extends Magento2Base
 {
 
     /**
-     * @param MessageInterface $message
+     * @param array $data
      *
-     * @return MessageInterface
+     * @return ProcessDto
      */
-    public function processData(MessageInterface $message): MessageInterface
+    public function processAction(array $data): ProcessDto
     {
         $data = $this->processRequest('GET', '/rest/V1/customers/1');
 
-        $message->setData($data);
+        $dto = new ProcessDto();
+        $dto->setData(json_decode($data, TRUE));
 
-        return $message;
+        return $dto;
     }
 
     /**

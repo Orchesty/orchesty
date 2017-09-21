@@ -43,7 +43,7 @@ class ConnectorController extends FOSRestController
     }
 
     /**
-     * @Route("/api/connector/{id}", defaults={}, requirements={"id": "[\w-]+"})
+     * @Route("/api/connector/{id}/webhook", defaults={}, requirements={"id": "[\w-]+"})
      * @Method({"POST", "OPTIONS"})
      *
      * @param string  $id
@@ -55,6 +55,27 @@ class ConnectorController extends FOSRestController
     {
         try {
             $data     = $this->handler->processEvent($id, $request->request->all());
+            $response = new JsonResponse($data, 200);
+        } catch (ConnectorException $e) {
+            $response = new JsonResponse(ControllerUtils::createExceptionData($e), 500);
+        }
+
+        return $response;
+    }
+
+    /**
+     * @Route("/api/connector/{id}/action", defaults={}, requirements={"id": "[\w-]+"})
+     * @Method({"POST", "OPTIONS"})
+     *
+     * @param string  $id
+     * @param Request $request
+     *
+     * @return JsonResponse
+     */
+    public function processAction(string $id, Request $request): JsonResponse
+    {
+        try {
+            $data     = $this->handler->processAction($id, $request->request->all());
             $response = new JsonResponse($data, 200);
         } catch (ConnectorException $e) {
             $response = new JsonResponse(ControllerUtils::createExceptionData($e), 500);
