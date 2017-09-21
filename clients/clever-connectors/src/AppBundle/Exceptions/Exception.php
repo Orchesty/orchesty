@@ -9,7 +9,7 @@ use Exception as PhpException;
  *
  * @package CleverConnectors\AppBundle\Exceptions
  */
-abstract class Exception extends PhpException
+class Exception extends PhpException
 {
 
 }
