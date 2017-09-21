@@ -1,10 +1,10 @@
 import React from 'react'
 import { connect } from 'react-redux';
 
-import * as notificationActions from '../../actions/notificationActions';
+import * as notificationActions from 'actions/notificationActions';
 
-import ToasterItem from '../elements/toaster/ToasterItem';
-import EmptyToasterItem from '../elements/toaster/EmptyToasterItem';
+import ToasterItem from 'elements/toaster/ToasterItem';
+import EmptyToasterItem from 'elements/toaster/EmptyToasterItem';
 
 import './Toaster.less';
 

@@ -1,6 +1,10 @@
-import config from '../config/params';
+import config from 'rootApp/config';
 
-import * as notificationActions from '../actions/notificationActions';
+import * as notificationActions from 'actions/notificationActions';
+
+var unsubscribe = null;
+var apiGatewayServer = null;
+var apiGatewayServerKey = null;
 
 function check(dispatch, response) {
   if (response.ok){
@@ -14,6 +18,21 @@ function check(dispatch, response) {
         dispatch(notificationActions.addNotification('error', `Error in server request: ${response.status} - ${response.statusText}`));
       });
   }
+}
+
+function refreshFromStore(store){
+  const state = store.getState();
+  if (state.server.apiGateway !== apiGatewayServerKey){
+    apiGatewayServerKey = state.server.apiGateway;
+    apiGatewayServer = config.servers.apiGateway.servers[apiGatewayServerKey];
+  }
+}
+
+export function init(store){
+  refreshFromStore(store);
+  unsubscribe = store.subscribe(() => {
+    refreshFromStore(store);
+  });
 }
 
 export function sortToQuery(sort, queries = {}){
@@ -31,7 +50,7 @@ export function makeUrl(relUrl, queries){
         .join('&');
   }
   
-  return config.apiUrl + relUrl + queryUrl;
+  return apiGatewayServer.url + relUrl + queryUrl;
 }
 
 export function rawRequest(dispatch, method, relUrl, queries, options){

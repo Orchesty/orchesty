@@ -1,10 +1,10 @@
 import React from 'react'
 
-import {stateType} from '../../types';
+import {stateType} from 'rootApp/types';
 
-import ErrorState from '../elements/state/ErrorState';
-import LoadingState from '../elements/state/LoadingState';
-import NotLoadedState from '../elements/state/NotLoadedState';
+import ErrorState from 'elements/state/ErrorState';
+import LoadingState from 'elements/state/LoadingState';
+import NotLoadedState from 'elements/state/NotLoadedState';
 
 export default WrappedComponent => {
 

@@ -1,8 +1,8 @@
 import * as qs from 'query-string'
 
-import pages from '../config/pages';
-import * as applicationActions from '../actions/applicationActions';
-import objectEquals from '../utils/objectEquals';
+import config from 'rootApp/config';
+import * as applicationActions from 'actions/applicationActions';
+import objectEquals from 'utils/objectEquals';
 
 var unsubscribe = null;
 var prevSelectedPage = null;
@@ -12,9 +12,9 @@ var routerAction = false;
 function processUrl(store, path, query){
   let pageKey = '';
   let pageData = null;
-  for (const key in pages) {
-    if (pages.hasOwnProperty(key)) {
-      let test = pages[key].acceptUrl || pages[key].simpleRoute;
+  for (const key in config.pages) {
+    if (config.pages.hasOwnProperty(key)) {
+      let test = config.pages[key].acceptUrl || config.pages[key].simpleRoute;
       if (typeof test == 'string') {
         if (test == path) {
           pageKey = key;
@@ -45,8 +45,8 @@ function processUrl(store, path, query){
 
 function refreshUrlHistory(selectedPage){
   if (!routerAction) {
-    if (selectedPage && selectedPage.key && pages[selectedPage.key]) {
-      const page = pages[selectedPage.key];
+    if (selectedPage && selectedPage.key && config.pages[selectedPage.key]) {
+      const page = config.pages[selectedPage.key];
       let url = null;
       let create = page.createUrl || page.simpleRoute;
       if (typeof create == 'string') {

@@ -1,11 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import ListPagination from '../../elements/table/ListPagination';
-import SortTh from '../../elements/table/SortTh';
-import StateComponent from '../../wrappers/StateComponent';
-import BoolValue from '../../elements/BoolValue';
-import ActionButton from '../../elements/actions/ActionButton';
+import ListPagination from 'elements/table/ListPagination';
+import SortTh from 'elements/table/SortTh';
+import StateComponent from 'wrappers/StateComponent';
+import BoolValue from 'elements/BoolValue';
+import ActionButton from 'elements/actions/ActionButton';
 
 class NodeListTable extends React.Component {
   constructor(props) {

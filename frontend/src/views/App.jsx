@@ -1,6 +1,6 @@
 import React from 'react'
 import { connect } from 'react-redux';
-import pages from '../config/pages';
+import config from '../config';
 import * as applicationActions from '../actions/applicationActions';
 
 
@@ -9,17 +9,17 @@ import './vendor/font-awesome/css/font-awesome.css';
 import './vendor/iCheck/skins/flat/green.css';
 import './custom.css';
 
-import LeftSidePanel from './containers/LeftSidePanel';
-import TopNavigation from './containers/TopNavigation';
-import ActivePage from './containers/ActivePage';
-import Toaster from './containers/Toaster';
-import ActiveModal from './containers/ActiveModal';
-import LoginPage from './pages/nonAuth/LoginPage';
-import RegistrationPage from './pages/nonAuth/RegistrationPage';
-import ResetPasswordPage from './pages/nonAuth/ResetPasswordPage';
-import SetPasswordPage from './pages/nonAuth/SetPasswordPage';
-import ActivationPage from './pages/nonAuth/ActivationPage';
-import Error404Page from './pages/nonAuth/Error404Page';
+import LeftSidePanel from 'containers/LeftSidePanel';
+import TopNavigation from 'containers/TopNavigation';
+import ActivePage from 'containers/ActivePage';
+import Toaster from 'containers/Toaster';
+import ActiveModal from 'containers/ActiveModal';
+import LoginPage from 'pages/nonAuth/LoginPage';
+import RegistrationPage from 'pages/nonAuth/RegistrationPage';
+import ResetPasswordPage from 'pages/nonAuth/ResetPasswordPage';
+import SetPasswordPage from 'pages/nonAuth/SetPasswordPage';
+import ActivationPage from 'pages/nonAuth/ActivationPage';
+import Error404Page from 'pages/nonAuth/Error404Page';
 
 import './App.less';
 
@@ -31,7 +31,7 @@ class App extends React.Component {
   
   render() {
     const {showMenu, isLogged, page, selectPage} = this.props;
-    const pageDef = pages[page.key];
+    const pageDef = config.pages[page.key];
     if (!isLogged && pageDef && pageDef.needAuth){
       selectPage('login');
       return null;

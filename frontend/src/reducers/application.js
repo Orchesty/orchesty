@@ -1,10 +1,10 @@
-import * as types from '../actionTypes';
-import objectEquals from '../utils/objectEquals';
-import mainMenu from '../config/mainMenu.json';
+import * as types from 'rootApp/actionTypes';
+import objectEquals from 'utils/objectEquals';
+import config from 'rootApp/config';
 
 
 const initialState = {
-  mainMenu: mainMenu,
+  mainMenu: config.mainMenu,
   selectedPage: {
     key: 'dashboard',
     args: null,
@@ -58,6 +58,12 @@ export default (state = initialState, action) => {
     case types.MODAL_CLOSE:
       return Object.assign({}, state, {
         modal: null
+      });
+
+    case types.USER_LOGOUT:
+      return Object.assign({}, state, {
+        modal: null,
+        modalData: null
       });
     
     default:
