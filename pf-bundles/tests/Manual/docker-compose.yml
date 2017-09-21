@@ -1,0 +1,22 @@
+version: '2'
+services:
+
+  sftp:
+      image: dkr.hanaboso.net/hanaboso/test-ftp-sftp/image
+      ports:
+        - "2121:21"
+        - "2222:22"
+        - "30000-30100:30000-30100"
+      stdin_open: true
+      tty: true
+      restart: always
+      networks:
+        - pfbundles_default
+
+#networks:
+#  default:
+#    external: true
+
+networks:
+  pfbundles_default:
+    external: true
