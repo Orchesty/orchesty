@@ -1,9 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types';
-import {connect} from 'react-redux';
 
-import TabBar from '../../elements/tab/TabBar';
-import TopologyNodeListTable from '../node/TopologyNodeListTable';
+import TabBar from 'elements/tab/TabBar';
+import TopologyNodeListTable from 'components/node/TopologyNodeListTable';
 import TopologySchema from './TopologySchema';
 
 import './TopologyDetail.less';

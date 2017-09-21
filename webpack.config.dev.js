@@ -1,14 +1,15 @@
 var path = require('path');
 var webpack = require('webpack');
-var CopyWebpackPlugin = require('copy-webpack-plugin');
+const merge = require('webpack-merge');
+const common = require('./webpack.config.common.js');
 
-module.exports = {
+module.exports = merge(common, {
   devtool: 'source-map',
   entry: [
     'react-hot-loader/patch',
     'webpack-dev-server/client?http://localhost:8080',
     'webpack/hot/only-dev-server',
-    './src/main.jsx'
+    './src/main_dev.jsx'
   ],
   output: {
     path: path.join(__dirname, 'dist'),
@@ -16,15 +17,12 @@ module.exports = {
     publicPath: '/'
   },
   plugins: [
-    new CopyWebpackPlugin([{
-      from: './src/index.html'
-    },{
-      from: './src/close-me.html'
-    }]),
     new webpack.NamedModulesPlugin()
   ],
   resolve: {
-    extensions: ['.js', '.jsx']
+    alias: {
+      'config-env': path.join(__dirname, 'src', 'config', 'dev')
+    }
   },
   module: {
     loaders: [
@@ -32,28 +30,7 @@ module.exports = {
         test: /\.jsx?$/,
         exclude: /node_modules/,
         loaders: ['react-hot-loader/webpack', 'babel-loader?presets[]=react,presets[]=es2015,presets[]=es2016,presets[]=es2017']
-      },
-      {
-        test: /\.css$/,
-        loaders: ['style-loader', 'css-loader']
-      },
-      {
-        test: /\.less$/,
-        loaders: ['style-loader', 'css-loader', 'less-loader']
-      },
-      { 
-        test: /\.(png|jpg)$/, 
-        loader: 'url-loader?name=files/[hash].[ext]&limit=16384'
-      },
-      {
-        test: /\.(xml|bpmn)$/,
-        loader: 'raw-loader'
-      },
-      { test: /\.woff(\?.*)?$/,  loader: "url-loader?name=files/[hash].[ext]&limit=1000" },
-      { test: /\.woff2(\?.*)?$/, loader: "url-loader?name=files/[hash].[ext]&limit=1000" },
-      { test: /\.ttf(\?.*)?$/,   loader: "url-loader?name=files/[hash].[ext]&limit=1000" },
-      { test: /\.eot(\?.*)?$/,   loader: "file-loader?name=files/[hash].[ext]&limit=1000" },
-      { test: /\.svg(\?.*)?$/,   loader: "url-loader?name=files/[hash].[ext]&limit=1000" }
+      }
     ]
   },
   devServer: {
@@ -63,4 +40,4 @@ module.exports = {
       index: '/'
     }
   }
-};
+});

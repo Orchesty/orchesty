@@ -1,11 +1,11 @@
 import React from 'react'
 import {connect} from 'react-redux';
 
-import * as authorizationActions from '../../actions/authorizationActions';
-import * as applicationActions from '../../actions/applicationActions';
+import * as authorizationActions from 'actions/authorizationActions';
+import * as applicationActions from 'actions/applicationActions';
 
-import AuthorizationListTable from '../components/authorization/AuthorizationListTable';
-import Page from '../wrappers/Page';
+import AuthorizationListTable from 'components/authorization/AuthorizationListTable';
+import Page from 'wrappers/Page';
 
 
 function mapStateToProps(state, ownProps){

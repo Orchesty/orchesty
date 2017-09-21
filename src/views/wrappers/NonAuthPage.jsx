@@ -1,5 +1,7 @@
 import React from 'react'
 
+import SelectServer from 'components/server/SelectServer';
+
 import './NonAuthPage.less';
 
 export default (WrappedComponent) => {
@@ -16,6 +18,7 @@ export default (WrappedComponent) => {
             <div className="animate form login_form">
               <section className="login_content">
                 <WrappedComponent {...this.props} />
+                <SelectServer/>
               </section>
             </div>
           </div>

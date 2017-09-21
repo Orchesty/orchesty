@@ -3,13 +3,13 @@ import {Field, reduxForm} from 'redux-form'
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
-import {stateType} from '../../../types';
-import * as authActions from '../../../actions/authActions';
-import * as applicationActions from '../../../actions/applicationActions';
+import {stateType} from 'rootApp/types';
+import * as authActions from 'actions/authActions';
+import * as applicationActions from 'actions/applicationActions';
 
-import TextInput from '../../elements/input/TextInput';
-import NonAuthPage from '../../wrappers/NonAuthPage';
-import StateButton from '../../elements/input/StateButton';
+import TextInput from 'elements/input/TextInput';
+import NonAuthPage from 'wrappers/NonAuthPage';
+import StateButton from 'elements/input/StateButton';
 
 const processId = 'reset-password';
 

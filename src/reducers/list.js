@@ -1,5 +1,5 @@
-import * as types from '../baseActionTypes';
-import {stateType, listType} from '../types';
+import * as types from 'rootApp/baseActionTypes';
+import {stateType, listType} from 'rootApp/types';
 
 function listReducer(state, action, getElementId){
   switch (action.type){

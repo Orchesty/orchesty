@@ -1,6 +1,6 @@
 import React from 'react'
 
-import ActionButtonPanel from '../elements/actions/ActionButtonPanel';
+import ActionButtonPanel from 'elements/actions/ActionButtonPanel';
 
 export default (WrappedComponent, PageHeader) => {
   

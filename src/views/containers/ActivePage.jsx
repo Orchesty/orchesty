@@ -1,12 +1,12 @@
 import React from 'react'
 import { connect } from 'react-redux';
 
-import Error404Page from '../pages/Error404Page';
-import DashboardPage from '../pages/DashboardPage';
-import TopologyListPage from '../pages/TopologyListPage';
-import TopologyDetailPage from '../pages/TopologyDetailPage';
-import SchemaPage from '../pages/SchemaPage';
-import AuthorizationListPage from '../pages/AuthorizationListPage';
+import Error404Page from 'pages/Error404Page';
+import DashboardPage from 'pages/DashboardPage';
+import TopologyListPage from 'pages/TopologyListPage';
+import TopologyDetailPage from 'pages/TopologyDetailPage';
+import SchemaPage from 'pages/SchemaPage';
+import AuthorizationListPage from 'pages/AuthorizationListPage';
 
 import './ActivePage.less';
 
