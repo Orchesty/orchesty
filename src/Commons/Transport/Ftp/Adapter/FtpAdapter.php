@@ -61,6 +61,8 @@ class FtpAdapter implements FtpAdapterInterface
         if ($res === FALSE) {
             throw new FtpException('Login failed.', FtpException::LOGIN_FAILED);
         }
+
+        ftp_pasv($this->getResource(), TRUE);
     }
 
     /**
@@ -71,7 +73,7 @@ class FtpAdapter implements FtpAdapterInterface
      */
     public function uploadFile(string $remoteFile, string $localFile): void
     {
-        $res = @ftp_put($this->getResource(), $remoteFile, $localFile, FTP_BINARY);
+        $res = ftp_put($this->getResource(), $remoteFile, $localFile, FTP_BINARY);
 
         if ($res === FALSE) {
             throw new FtpException('File upload failed.', FtpException::FILE_UPLOAD_FAILED);
@@ -86,7 +88,7 @@ class FtpAdapter implements FtpAdapterInterface
      */
     public function downloadFile(string $remoteFile, string $localFile): void
     {
-        $res = @ftp_get($this->getResource(), $localFile, $remoteFile, FTP_BINARY);
+        $res = ftp_get($this->getResource(), $localFile, $remoteFile, FTP_BINARY);
 
         if ($res === FALSE) {
             throw new FtpException('File download failed.', FtpException::FILE_DOWNLOAD_FAILED);
@@ -163,6 +165,20 @@ class FtpAdapter implements FtpAdapterInterface
         }
 
         ftp_chdir($this->getResource(), $current);
+    }
+
+    /**
+     * @param string $file
+     *
+     * @throws FtpException
+     */
+    public function remove(string $file): void
+    {
+        if (!@ftp_delete($this->getResource(), $file)) {
+            throw new FtpException(
+                sprintf('Unable to delete file or folder "%s"', $file)
+            );
+        }
     }
 
     /**************************************** HELPERS ****************************************/

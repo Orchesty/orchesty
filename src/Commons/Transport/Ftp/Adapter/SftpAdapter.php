@@ -4,6 +4,7 @@ namespace Hanaboso\PipesFramework\Commons\Transport\Ftp\Adapter;
 
 use Hanaboso\PipesFramework\Commons\Transport\Ftp\Exception\FtpException;
 use Hanaboso\PipesFramework\Commons\Transport\Ftp\FtpConfig;
+use phpseclib\Net\SFTP;
 
 /**
  * Class SftpAdapter
@@ -14,12 +15,7 @@ class SftpAdapter implements FtpAdapterInterface
 {
 
     /**
-     * @var resource|bool
-     */
-    protected $connection;
-
-    /**
-     * @var resource|null
+     * @var SFTP|null
      */
     protected $sftp;
 
@@ -30,9 +26,9 @@ class SftpAdapter implements FtpAdapterInterface
      */
     public function connect(FtpConfig $ftpConfig): void
     {
-        $this->connection = @ssh2_connect($ftpConfig->getHost(), $ftpConfig->getPort());
+        $this->sftp = new SFTP($ftpConfig->getHost(), $ftpConfig->getPort(), $ftpConfig->getTimeout());
 
-        if (!is_resource($this->connection)) {
+        if (!$this->sftp instanceof SFTP) {
             throw new FtpException(
                 sprintf('Sftp connection to host %s failed.', $ftpConfig->getHost()),
                 FtpException::CONNECTION_FAILED
@@ -47,18 +43,9 @@ class SftpAdapter implements FtpAdapterInterface
      */
     public function login(FtpConfig $ftpConfig): void
     {
-        if (!@ssh2_auth_password($this->connection, $ftpConfig->getUsername(), $ftpConfig->getPassword())) {
+        if (!$this->sftp || !$this->sftp->login($ftpConfig->getUsername(), $ftpConfig->getPassword())) {
             throw new FtpException('Login failed.', FtpException::LOGIN_FAILED);
         }
-
-//        $this->sftp = @ssh2_sftp($this->connection);
-//
-//        if (!is_resource($this->sftp)) {
-//            throw new FtpException(
-//                'Failed creating SFTP subsystem from connection.',
-//                FtpException::CREATING_SUBSYSTEM_FAILED
-//            );
-//        }
     }
 
     /**
@@ -79,7 +66,7 @@ class SftpAdapter implements FtpAdapterInterface
      */
     public function uploadFile(string $remoteFile, string $localFile): void
     {
-        if (!ssh2_scp_send($this->getConnection(), $localFile, $remoteFile, 0644)) {
+        if (!$this->getResource()->put($remoteFile, $localFile, SFTP::SOURCE_LOCAL_FILE)) {
             throw new FtpException('File upload failed.', FtpException::FILE_UPLOAD_FAILED);
         }
     }
@@ -92,7 +79,7 @@ class SftpAdapter implements FtpAdapterInterface
      */
     public function downloadFile(string $remoteFile, string $localFile): void
     {
-        if (!ssh2_scp_recv($this->getConnection(), $remoteFile, $localFile)) {
+        if ($this->getResource()->get($remoteFile, $localFile) === FALSE) {
             throw new FtpException('File download failed.', FtpException::FILE_DOWNLOAD_FAILED);
         }
     }
@@ -105,7 +92,7 @@ class SftpAdapter implements FtpAdapterInterface
      */
     public function listDir(string $dir): array
     {
-        $list = $this->scanDir($dir);
+        $list = $this->getResource()->nlist($dir);
 
         if (!$list) {
             throw new FtpException('Failed to list files in directory.', FtpException::FILES_LISTING_FAILED);
@@ -128,7 +115,7 @@ class SftpAdapter implements FtpAdapterInterface
      */
     public function dirExists(string $dir): bool
     {
-        return (bool) $this->scanDir($dir);
+        return $this->getResource()->is_dir($dir);
     }
 
     /**
@@ -139,7 +126,7 @@ class SftpAdapter implements FtpAdapterInterface
      */
     public function makeDir(string $dir): void
     {
-        $mkdir = mkdir($this->preparePath($dir));
+        $mkdir = $this->getResource()->mkdir($dir);
 
         if (!$mkdir) {
             throw new FtpException(
@@ -157,12 +144,29 @@ class SftpAdapter implements FtpAdapterInterface
      */
     public function makeDirRecursive($dir): void
     {
-        $mkdir = mkdir($this->preparePath($dir), 0777, TRUE);
+        $current = $this->getResource()->pwd();
+        $parts   = explode('/', trim($dir, '/'));
 
-        if (!$mkdir) {
+        foreach ($parts as $part) {
+            if (!$this->getResource()->chdir($part) && !$this->isFile($part)) {
+                $this->makeDir($part);
+                $this->getResource()->chdir($part);
+            }
+        }
+
+        $this->getResource()->chdir($current);
+    }
+
+    /**
+     * @param string $file
+     *
+     * @throws FtpException
+     */
+    public function remove(string $file): void
+    {
+        if (!$this->getResource()->delete($file, FALSE)) {
             throw new FtpException(
-                sprintf('Unable to create directory %s', $dir),
-                FtpException::UNABLE_TO_CREATE_DIR
+                sprintf('Unable to delete file or folder "%s"', $file)
             );
         }
     }
@@ -170,24 +174,16 @@ class SftpAdapter implements FtpAdapterInterface
     /**************************************** HELPERS ****************************************/
 
     /**
-     * @return resource
+     * @return SFTP
      * @throws FtpException
      */
-    private function getResource()
+    private function getResource(): SFTP
     {
-        if ($this->sftp) {
+        if ($this->sftp && $this->sftp->isConnected()) {
             return $this->sftp;
         }
 
         throw new FtpException('Connection to Ftp server not established.', FtpException::CONNECTION_NOT_ESTABLISHED);
-    }
-
-    /**
-     * @return bool|resource
-     */
-    private function getConnection()
-    {
-        return $this->connection;
     }
 
     /**
@@ -197,27 +193,7 @@ class SftpAdapter implements FtpAdapterInterface
      */
     public function isFile($file): bool
     {
-        return is_file($this->preparePath($file));
-    }
-
-    /**
-     * @param string $dir
-     *
-     * @return array|bool
-     */
-    private function scanDir(string $dir)
-    {
-        return @scandir($this->preparePath($dir));
-    }
-
-    /**
-     * @param string $path
-     *
-     * @return string
-     */
-    private function preparePath(string $path): string
-    {
-        return 'ssh2.sftp://' . $this->getResource() . '/' . trim($path, '/');
+        return $this->getResource()->is_file($file);
     }
 
 }

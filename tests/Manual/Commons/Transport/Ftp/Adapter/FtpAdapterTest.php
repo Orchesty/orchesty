@@ -2,21 +2,21 @@
 
 namespace Tests\Manual\Commons\Transport\Ftp\Adapter;
 
-use Hanaboso\PipesFramework\Commons\Transport\Ftp\Adapter\SftpAdapter;
+use Hanaboso\PipesFramework\Commons\Transport\Ftp\Adapter\FtpAdapter;
 use Hanaboso\PipesFramework\Commons\Transport\Ftp\Exception\FtpException;
 use Hanaboso\PipesFramework\Commons\Transport\Ftp\FtpConfig;
 use Tests\KernelTestCaseAbstract;
 
 /**
- * Class SftpAdapterTest
+ * Class FtpAdapterTest
  *
- * @package Tests\Manual\Commons\Transport\Ftp\Adapter
+ * @package Manual\Commons\Transport\Ftp\Adapter
  */
-final class SftpAdapterTest extends KernelTestCaseAbstract
+final class FtpAdapterTest extends KernelTestCaseAbstract
 {
 
     /**
-     * @var SftpAdapter
+     * @var FtpAdapter
      */
     private $adapter;
 
@@ -35,70 +35,70 @@ final class SftpAdapterTest extends KernelTestCaseAbstract
         $this->ftpConfig = new FtpConfig(
             'sftp',
             FALSE,
-            22,
+            21,
             15,
-            'sftpuser',
-            'sftp'
+            'ftpuser',
+            'ftp'
         );
 
-        $this->adapter = new SftpAdapter();
+        $this->adapter = new FtpAdapter();
         $this->adapter->connect($this->ftpConfig);
         $this->adapter->login($this->ftpConfig);
     }
 
     /**
-     * @covers SftpAdapter::connect()
+     * @covers FtpAdapter::connect()
      */
     public function testConnect(): void
     {
-        $sftpAdapter = new SftpAdapter();
-        $sftpAdapter->connect($this->ftpConfig);
+        $ftpAdapter = new FtpAdapter();
+        $ftpAdapter->connect($this->ftpConfig);
     }
 
     /**
-     * @covers SftpAdapter::login()
+     * @covers FtpAdapter::login()
      */
     public function testLogin(): void
     {
-        $sftpAdapter = new SftpAdapter();
-        $sftpAdapter->connect($this->ftpConfig);
-        $sftpAdapter->login($this->ftpConfig);
+        $ftpAdapter = new FtpAdapter();
+        $ftpAdapter->connect($this->ftpConfig);
+        $ftpAdapter->login($this->ftpConfig);
     }
 
     /**
-     * @covers SftpAdapter::login()
+     * @covers FtpAdapter::login()
      */
     public function testLoginFail(): void
     {
         self::expectException(FtpException::class);
         self::expectExceptionCode(FtpException::LOGIN_FAILED);
 
-        $sftpAdapter = new SftpAdapter();
-        $sftpAdapter->connect($this->ftpConfig);
-        $sftpAdapter->login(new FtpConfig('abc', FALSE, 22, 15, 'abc', 'abc'));
+        $ftpAdapter = new FtpAdapter();
+        $ftpAdapter->connect($this->ftpConfig);
+        $ftpAdapter->login(new FtpConfig('abc', FALSE, 22, 15, 'abc', 'abc'));
     }
 
     /**
-     * @covers SftpAdapter::disconnect()
+     * @covers FtpAdapter::disconnect()
      */
     public function testDisconnect(): void
     {
-        $sftpAdapter = new SftpAdapter();
-        $sftpAdapter->connect($this->ftpConfig);
-        $sftpAdapter->login($this->ftpConfig);
-        $sftpAdapter->disconnect();
+        $ftpAdapter = new FtpAdapter();
+        $ftpAdapter->connect($this->ftpConfig);
+        $ftpAdapter->login($this->ftpConfig);
+        $ftpAdapter->disconnect();
     }
 
     /**
-     * @covers SftpAdapter::disconnect()
+     * @covers FtpAdapter::disconnect()
      */
     public function testDisconnectFail(): void
     {
         self::expectException(FtpException::class);
         self::expectExceptionCode(FtpException::CONNECTION_NOT_ESTABLISHED);
 
-        $sftpAdapter = new SftpAdapter();
-        $sftpAdapter->disconnect();
+        $ftpAdapter = new FtpAdapter();
+        $ftpAdapter->disconnect();
     }
 
     /**
@@ -107,9 +107,9 @@ final class SftpAdapterTest extends KernelTestCaseAbstract
      */
     public function testUploadDownload(): void
     {
-        $remoteFile        = '/home/sftpuser/remote-sftp-upload.txt';
-        $localFile         = '/tmp/local-sftp-upload.txt';
-        $localFileDownload = '/tmp/local-sftp-download.txt';
+        $remoteFile        = './remote-ftp-upload.txt';
+        $localFile         = '/tmp/local-ftp-upload.txt';
+        $localFileDownload = '/tmp/local-ftp-download.txt';
 
         // create local file
         file_put_contents($localFile, 'hello');
@@ -120,10 +120,10 @@ final class SftpAdapterTest extends KernelTestCaseAbstract
 
         self::assertTrue(file_exists($localFileDownload));
 
-        $files = $this->adapter->listDir('/home/sftpuser');
+        $files = $this->adapter->listDir('.');
 
         self::assertCount(1, $files);
-        self::assertEquals('remote-sftp-upload.txt', $files[0]);
+        self::assertEquals('remote-ftp-upload.txt', $files[0]);
 
         // remove created files
         unlink($localFile);
