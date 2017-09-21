@@ -9,6 +9,7 @@ import node from './node';
 import authorization from './authorization';
 import auth from './auth';
 import process from './process';
+import server from './server';
 
 const rootReducer = combineReducers({
   application,
@@ -18,6 +19,7 @@ const rootReducer = combineReducers({
   node,
   authorization,
   process,
+  server,
   form
 });
 
