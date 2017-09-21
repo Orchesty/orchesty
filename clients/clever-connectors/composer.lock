@@ -1713,11 +1713,11 @@
         },
         {
             "name": "hanaboso/pipes-framework",
-            "version": "1.0.0",
+            "version": "1.0.3",
             "dist": {
                 "type": "path",
                 "url": "../../pf-bundles",
-                "reference": "4fcfa7e2ac8ab0b15f55d4bdf72f30baa75512f4",
+                "reference": "8a860d8fe4cdea42b523b5d4fedc7c4e380a3e61",
                 "shasum": null
             },
             "require": {
