@@ -146,17 +146,17 @@ class Generator implements GeneratorInterface
      */
     public function generate(Topology $topology, iterable $nodes): void
     {
-        if (!is_dir($this->getTopologyDir($topology))) {
-            mkdir($this->getTopologyDir($topology));
+        if (!is_dir(self::getTopologyDir($topology, $this->targetDir))) {
+            mkdir(self::getTopologyDir($topology, $this->targetDir));
         }
 
         file_put_contents(
-            $this->getTopologyDir($topology) . '/topology.json',
+            self::getTopologyDir($topology, $this->targetDir) . '/topology.json',
             $this->createTopologyConfig($topology, $nodes)
         );
 
         file_put_contents(
-            $this->getTopologyDir($topology) . '/docker-compose.yml',
+            self::getTopologyDir($topology, $this->targetDir) . '/docker-compose.yml',
             $this->createCompose($topology, $nodes)
         );
     }
@@ -164,13 +164,15 @@ class Generator implements GeneratorInterface
     /**
      * @param Topology $topology
      *
+     * @param string   $targetDir
+     *
      * @return string
      */
-    protected function getTopologyDir(Topology $topology): string
+    public static function getTopologyDir(Topology $topology, string $targetDir): string
     {
         return sprintf(
             '%s/%s',
-            $this->targetDir,
+            $targetDir,
             GeneratorUtils::normalizeName($topology->getId(), $topology->getName())
         );
     }

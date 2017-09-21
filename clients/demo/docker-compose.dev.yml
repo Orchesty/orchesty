@@ -25,6 +25,22 @@ services:
           - mongo
           - rabbitmq
 
+    # Services
+    generator-api-fpm:
+        image: dkr.hanaboso.net/pipes/pipes/php-dev:dev
+        user: ${DEV_UID}:${DEV_GID}
+        working_dir: /var/www/pipes/clients/demo/pipes-api
+        environment:
+          DEV_UID: ${DEV_UID}
+          DEV_GID: ${DEV_GID}
+          GENERATOR_PATH: ${GENERATOR_PATH}
+        volumes:
+          - ../../:/var/www/pipes
+          - ${SSH_AUTH_SOCK}:/ssh-agent
+          - generator:/var/www/pipes/clients/demo/pipes-api/${GENERATOR_PATH}
+        depends_on:
+          - mongo
+
     xml-parser-api:
         image: 'dkr.hanaboso.net/pipes/pipes/python-xml-parser:prod'
         environment:
