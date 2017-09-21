@@ -39,7 +39,6 @@ services:
 
   mongo:
       image: mongo:latest
-      container_name: mongo
       ports:
         - ${DEV_IP}:27017:27017
       volumes:
