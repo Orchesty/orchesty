@@ -1,0 +1,10 @@
+services:
+    systems.loader:
+        class: CleverConnectors\AppBundle\Model\Systems\SystemLoader
+        arguments:
+            - '@service_container'
+
+    systems.null:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\NullSystem
+        arguments:
+        tags: ['system']

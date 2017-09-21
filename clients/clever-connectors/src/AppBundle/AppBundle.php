@@ -2,6 +2,10 @@
 
 namespace CleverConnectors\AppBundle;
 
+use CleverConnectors\AppBundle\Model\Systems\SystemCompilerPass;
+use Symfony\Component\Config\FileLocator;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 /**
@@ -11,5 +15,15 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
  */
 class AppBundle extends Bundle
 {
+
+    /**
+     * @param ContainerBuilder $container
+     */
+    public function build(ContainerBuilder $container): void
+    {
+        parent::build($container);
+        (new YamlFileLoader($container, new FileLocator(__DIR__ . '/Resources/config')))->load('parameters.yml');
+        $container->addCompilerPass(new SystemCompilerPass($container->getParameter('systems.tags')));
+    }
 
 }
