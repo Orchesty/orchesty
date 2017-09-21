@@ -90,9 +90,4 @@ doctrine_mongodb:
                     is_bundle: false
                     dir: "%src_dir%/Commons/FileStorage/Document"
                     prefix: Hanaboso\PipesFramework\Commons\FileStorage\Document
-                ConfiguratorDocument:
-                    type: annotation
-                    is_bundle: false
-                    dir: "%src_dir%/Configurator/Document"
-                    prefix: Hanaboso\PipesFramework\Configurator\Document
             metadata_cache_driver: array

@@ -30,6 +30,7 @@ class HbPFConfiguratorExtension extends Extension implements PrependExtensionInt
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/prepend-config'));
         $loader->load('starting-point.yml');
+        $loader->load('doctrine_mongo.yml');
 
         $container->setParameter('src_dir', __DIR__ . '/../..');
     }

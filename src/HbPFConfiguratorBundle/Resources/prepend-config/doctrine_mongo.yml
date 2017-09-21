@@ -1,0 +1,9 @@
+doctrine_mongodb:
+    document_managers:
+        default:
+            mappings:
+                ConfiguratorDocument:
+                    type: annotation
+                    is_bundle: false
+                    dir: "%src_dir%/Configurator/Document"
+                    prefix: Hanaboso\PipesFramework\Configurator\Document
