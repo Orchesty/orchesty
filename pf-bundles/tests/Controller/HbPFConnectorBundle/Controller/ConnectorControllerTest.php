@@ -21,7 +21,22 @@ class ConnectorControllerTest extends ControllerTestCaseAbstract
     {
         $this->mockHandler('processEvent');
 
-        $this->client->request('POST', '/api/connector/magento', [], [], [], '{}');
+        $this->client->request('POST', '/api/connector/magento/webhook', [], [], [], '{}');
+
+        $response = $this->client->getResponse();
+
+        self::assertEquals(200, $response->getStatusCode());
+        self::assertEquals(['test' => 'test'], json_decode($response->getContent(), TRUE));
+    }
+
+    /**
+     * @covers ConnectorController::processEvent()
+     */
+    public function testProcessAction(): void
+    {
+        $this->mockHandler('processAction');
+
+        $this->client->request('POST', '/api/connector/magento/action', [], [], [], '{}');
 
         $response = $this->client->getResponse();
 

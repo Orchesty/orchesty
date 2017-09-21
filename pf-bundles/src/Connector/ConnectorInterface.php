@@ -32,4 +32,12 @@ interface ConnectorInterface
      */
     public function processEvent(array $data): ProcessDto;
 
+    /**
+     * @param array $data
+     *
+     * @return ProcessDto
+     * @throws ConnectException
+     */
+    public function processAction(array $data): ProcessDto;
+
 }

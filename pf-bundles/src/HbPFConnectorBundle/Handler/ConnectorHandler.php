@@ -57,4 +57,19 @@ class ConnectorHandler
         return $res;
     }
 
+    /**
+     * @param string   $id
+     * @param string[] $data
+     *
+     * @return string[]
+     */
+    public function processAction(string $id, array $data): array
+    {
+        /** @var ConnectorInterface $conn */
+        $conn = $this->loader->getConnector($id);
+        $res  = $this->connManager->processEvent($conn, $data);
+
+        return $res;
+    }
+
 }
