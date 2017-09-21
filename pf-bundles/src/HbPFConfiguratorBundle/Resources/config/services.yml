@@ -1,1 +1,7 @@
 services:
+    # Starting point
+    hbpf.starting_point.starting_point:
+        class: Hanaboso\PipesFramework\Configurator\StartingPoint\StartingPoint
+        arguments:
+            - '@rabbit-mq.producer.starting_point'
+            - '@hbpf.transport.curl_manager'

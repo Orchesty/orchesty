@@ -6,9 +6,9 @@
  * Time: 9:00 AM
  */
 
-namespace Hanaboso\PipesFramework\HbPFApiGatewayBundle\Command;
+namespace Hanaboso\PipesFramework\HbPFConfiguratorBundle\Command;
 
-use Hanaboso\PipesFramework\HbPFApiGatewayBundle\Handler\StartingPointHandler;
+use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\StartingPointHandler;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;

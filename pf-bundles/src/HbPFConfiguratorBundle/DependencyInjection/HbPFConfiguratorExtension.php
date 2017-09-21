@@ -27,6 +27,11 @@ class HbPFConfiguratorExtension extends Extension implements PrependExtensionInt
         if (!$container->hasExtension('hb_pf_commons')) {
             throw new RuntimeException('You must register HbPFCommonsBundle before.');
         };
+
+        $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/prepend-config'));
+        $loader->load('starting-point.yml');
+
+        $container->setParameter('src_dir', __DIR__ . '/../..');
     }
 
     /**
@@ -43,6 +48,7 @@ class HbPFConfiguratorExtension extends Extension implements PrependExtensionInt
         $this->processConfiguration($configuration, $configs);
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
+        $loader->load('commands.yml');
         $loader->load('controllers.yml');
         $loader->load('handlers.yml');
         $loader->load('managers.yml');

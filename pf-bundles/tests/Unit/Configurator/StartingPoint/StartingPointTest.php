@@ -6,16 +6,16 @@
  * Time: 2:59 PM
  */
 
-namespace Tests\Unit\Commons\StartingPoint;
+namespace Tests\Unit\Configurator\StartingPoint;
 
 use Bunny\Channel;
-use Hanaboso\PipesFramework\Commons\StartingPoint\Exception\StartingPointException;
-use Hanaboso\PipesFramework\Commons\StartingPoint\StartingPoint;
-use Hanaboso\PipesFramework\Commons\StartingPoint\StartingPointProducer;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
+use Hanaboso\PipesFramework\Configurator\Exception\StartingPointException;
+use Hanaboso\PipesFramework\Configurator\StartingPoint\StartingPoint;
+use Hanaboso\PipesFramework\Configurator\StartingPoint\StartingPointProducer;
 use Hanaboso\PipesFramework\RabbitMqBundle\BunnyManager;
 use PHPUnit\Framework\TestCase;
 use PHPUnit_Framework_MockObject_MockObject;
@@ -25,7 +25,7 @@ use Tests\PrivateTrait;
 /**
  * Class StartingPointTest
  *
- * @package Tests\Unit\Commons\StartingPoint
+ * @package Tests\Unit\Configurator\StartingPoint
  */
 class StartingPointTest extends TestCase
 {

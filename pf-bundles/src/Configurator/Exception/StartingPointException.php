@@ -6,14 +6,14 @@
  * Time: 3:32 PM
  */
 
-namespace Hanaboso\PipesFramework\Commons\StartingPoint\Exception;
+namespace Hanaboso\PipesFramework\Configurator\Exception;
 
 use Exception;
 
 /**
  * Class StartingPointException
  *
- * @package Hanaboso\PipesFramework\Commons\StartingPoint\Exception
+ * @package Hanaboso\PipesFramework\Configurator\Exception
  */
 class StartingPointException extends Exception
 {

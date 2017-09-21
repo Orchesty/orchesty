@@ -1,9 +1,4 @@
 services:
-    hbpf.api_gateway.controller.starting_point:
-        class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\StartingPointController
-        arguments:
-            - '@hbpf.handler.starting_point'
-
     hbpf.api_gateway.controller.test:
         class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\TestController
         arguments:
@@ -26,4 +21,8 @@ services:
 
     hbpf.api_gateway.controller.authorization:
         class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\AuthorizationController
+        arguments:
+
+    hbpf.api_gateway.controller.starting_point:
+        class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\StartingPointController
         arguments:

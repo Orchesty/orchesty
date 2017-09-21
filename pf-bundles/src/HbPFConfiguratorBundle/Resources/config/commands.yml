@@ -1,6 +1,6 @@
 services:
     hbpf.command.run_topology:
-        class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Command\RunTopologyCommand
+        class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Command\RunTopologyCommand
         arguments:
             - '@hbpf.handler.starting_point'
         tags:

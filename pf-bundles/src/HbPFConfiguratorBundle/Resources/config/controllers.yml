@@ -6,3 +6,7 @@ services:
     hbpf.configurator.controller.node:
         class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\NodeController
         arguments:
+
+    hbpf.controller.starting_point:
+        class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\StartingPointController
+        arguments:
