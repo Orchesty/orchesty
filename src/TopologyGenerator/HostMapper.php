@@ -46,19 +46,19 @@ class HostMapper
     {
         switch ($enum->getValue()) {
             case TypeEnum::CONNECTOR:
-                return 'pipes-api';
+                return 'connector-api';
             case TypeEnum::MAPPER:
-                return 'pipes-api';
+                return 'mapper-api';
             case TypeEnum::XML_PARSER:
-                return 'xml-parser';
+                return 'xml-parser-api';
             case TypeEnum::API:
-                return 'pipes-api';
+                return 'monolith-api';
             case TypeEnum::FTP:
-                return 'pipes-api';
+                return 'ftp-api';
             case TypeEnum::EMAIL:
-                return 'pipes-api';
+                return 'mailer-api';
             case TypeEnum::CUSTOM:
-                return 'frontend';
+                return 'monolith-api';
             default:
                 throw new InvalidArgumentException(sprintf('Type "%s" does not exist.', $enum->getValue()));
                 break;

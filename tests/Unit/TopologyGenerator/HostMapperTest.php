@@ -39,9 +39,9 @@ class HostMapperTest extends TestCase
     public function getHostProvider(): array
     {
         return [
-            [TypeEnum::XML_PARSER, 'xml-parser'],
-            [TypeEnum::MAPPER, 'pipes-api'],
-            [TypeEnum::CONNECTOR, 'pipes-api'],
+            [TypeEnum::XML_PARSER, 'xml-parser-api'],
+            [TypeEnum::MAPPER, 'mapper-api'],
+            [TypeEnum::CONNECTOR, 'connector-api'],
         ];
     }
 
@@ -76,7 +76,7 @@ class HostMapperTest extends TestCase
     public function testGetUrl(): void
     {
         $hostMapper = new HostMapper();
-        $this->assertSame('http://pipes-api/api/mapper/1', $hostMapper->getUrl(new TypeEnum('mapper'), '1'));
+        $this->assertSame('http://mapper-api/api/mapper/1', $hostMapper->getUrl(new TypeEnum('mapper'), '1'));
     }
 
 }
