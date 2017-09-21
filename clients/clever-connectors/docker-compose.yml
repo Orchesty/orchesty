@@ -68,7 +68,7 @@ services:
         ports:
           - ${DEV_IP}:15672:15672
         volumes:
-          - ./.docker-volumes/rabbitmq:/var/lib/rabbitmq
+          - rabbit-mq:/var/lib/rabbitmq
 
     # Storage
     mongo:
@@ -76,7 +76,7 @@ services:
         ports:
           - ${DEV_IP}:27017:27017
         volumes:
-          - ./.docker-volumes/mongodb:/data/db
+          - mongo:/data/db
 
 volumes:
   mongo: {}
