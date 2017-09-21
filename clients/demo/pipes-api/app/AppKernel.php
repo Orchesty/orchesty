@@ -7,6 +7,7 @@ use FOS\RestBundle\FOSRestBundle;
 use Hanaboso\PipesFramework\HbPFApiGatewayBundle\HbPFApiGatewayBundle;
 use Hanaboso\PipesFramework\HbPFAuthorizationBundle\HbPFAuthorizationBundle;
 use Hanaboso\PipesFramework\HbPFCommonsBundle\HbPFCommonsBundle;
+use Hanaboso\PipesFramework\HbPFConfiguratorBundle\HbPFConfiguratorBundle;
 use Hanaboso\PipesFramework\HbPFConnectorBundle\HbPFConnectorBundle;
 use Hanaboso\PipesFramework\HbPFCustomNodeBundle\HbPFCustomNodeBundle;
 use Hanaboso\PipesFramework\HbPFMailerBundle\HbPFMailerBundle;
@@ -50,6 +51,7 @@ class AppKernel extends Kernel
             new HbPFApiGatewayBundle(),
             new HbPFCustomNodeBundle(),
             new HbPFMailerBundle(),
+            new HbPFConfiguratorBundle(),
         ];
 
         if (in_array($this->getEnvironment(), ['dev', 'test'], TRUE)) {
