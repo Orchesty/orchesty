@@ -7,6 +7,7 @@ stages:
 before_script:
   - . build/lib/gitlab-ci-helpers.sh
   - export REPO_ROOT=$(pwd)
+  - export COMPOSE_PROJECT_NAME="p${CI_PIPELINE_ID}"
   - eval $(ssh-agent)
   - ssh-add ~/.ssh/bob_the_builder_hanaboso
 
@@ -73,6 +74,16 @@ pf-bridge:
     - DIR=pf-bridge
     - skip_unmodified $DIR
     - ${DIR}/build.sh ${CI_BUILD_REF_NAME}
+
+demo-stage:
+  stage: stage3
+  when: manual
+  script:
+    - rsync -a --delete --exclude '.git' ./ ~/pipes_demo
+    - cd ~/pipes_demo/clients/demo
+    - export COMPOSE_PROJECT_NAME=pipes_demo
+    - export NPM_INSTALL="yes"
+    - make ci-yml docker-pull-dev init-dev DEV_YML=docker-compose.ci.yml
 
 cleanup:
   stage: cleanup

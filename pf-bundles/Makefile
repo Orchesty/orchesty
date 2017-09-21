@@ -68,7 +68,7 @@ phpmanual-tests:
 phpmanual-down:
 	cd tests/Manual; $(MAKE) docker-down-clean;
 
-test: docker-up-force composer-install codesniffer phpstan clear-cache phpunit phpcontroller phpintergration phpmanual-up phpmanual-tests
+test: docker-up-force composer-install codesniffer phpstan clear-cache phpunit phpcontroller phpintergration
 
 #Other
 

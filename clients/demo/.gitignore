@@ -1,3 +1,4 @@
 .docker-volumes
 .env
 pipes-api/topology/topology.txt
+docker-compose.ci.yml

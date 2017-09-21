@@ -5,8 +5,8 @@ version: '2'
 services:
     # Nodes
 
-    # Services
-    pipes-api:
+    # PHP Services monolith
+    monolith-fpm:
         image: dkr.hanaboso.net/pipes/pipes/php-dev:dev
         user: ${DEV_UID}:${DEV_GID}
         working_dir: /var/www/pipes/clients/demo/pipes-api
@@ -16,11 +16,16 @@ services:
         volumes:
           - ../../:/var/www/pipes
           - ${SSH_AUTH_SOCK}:/ssh-agent
+        networks:
+          default:
+            aliases:
+              # remove when real topology-fpm is implemented
+              - topology-fpm
         depends_on:
           - mongo
           - rabbitmq
 
-    xml-parser:
+    xml-parser-api:
         image: 'dkr.hanaboso.net/pipes/pipes/python-xml-parser:prod'
         environment:
           PARSER_HOST: xml-parser
@@ -31,39 +36,34 @@ services:
         ports:
           - ${DEV_IP}:8080:80
 
-    # Backend
-    app:
-        image: dkr.hanaboso.net/pipes/pipes/php-dev:dev
-        user: ${DEV_UID}:${DEV_GID}
-        working_dir: /var/www/pipes/clients/demo/pipes-api
-        environment:
-          DEV_UID: ${DEV_UID}
-          DEV_GID: ${DEV_GID}
-        volumes:
-          - ../../:/var/www/pipes
-          - ${SSH_AUTH_SOCK}:/ssh-agent
-        depends_on:
-          - mongo
-          - rabbitmq
-
     # Frontend
     frontend:
-        image: dkr.hanaboso.net/pipes/pipes/nodejs-build:dev
+        image: dkr.hanaboso.net/pipes/pipes/nodejs-build:ci  # CHANGE BEFORE MERGE!!!!
         user: ${DEV_UID}:${DEV_GID}
         working_dir: /var/www/pipes/frontend
         environment:
           DEV_UID: ${DEV_UID}
           DEV_GID: ${DEV_GID}
           PHP_WEBROOT: /var/www/pipes/clients/demo/pipes-api/web
+          NPM_INSTALL: ${NPM_INSTALL}
+          NPM_START: "yes" # webpackserver
         ports:
           - ${DEV_IP}:80:80
           #- ${DEV_IP}:81:8080
         volumes:
           - ../../:/var/www/pipes
           - ${SSH_AUTH_SOCK}:/ssh-agent
+        networks:
+          default:
+            aliases:
+              - connector-api
+              - mailer-api
+              - ftp-api
+              - mapper-api
+              - monolith-api
+              - topology-api
         depends_on:
-          - app
-        #command: bash -c "npm install && npm start"
+          - monolith-fpm
 
     # RabbitMQ
     rabbitmq:
@@ -71,7 +71,7 @@ services:
         ports:
           - ${DEV_IP}:15672:15672
         volumes:
-          - ./.docker-volumes/rabbitmq:/var/lib/rabbitmq
+          - rabbitmq:/var/lib/rabbitmq
 
     # Storage
     mongo:
@@ -79,7 +79,7 @@ services:
         ports:
           - ${DEV_IP}:27017:27017
         volumes:
-          - ./.docker-volumes/mongodb:/data/db
+          - mongodb:/data/db
 
     # ELK
     elasticsearch:
@@ -96,6 +96,7 @@ services:
 
     logstash:
         image: docker.elastic.co/logstash/logstash:5.6.0
+        command: --log.level debug
         volumes:
           - ./logstash.conf:/usr/share/logstash/pipeline/logstash.conf
 
@@ -108,9 +109,7 @@ services:
         ports:
           - ${DEV_IP}:3000:3000
         volumes:
-          - ./.docker-volumes/grafana-data:/var/lib/grafana
-          - ./.docker-volumes/grafana-plugins:/var/lib/grafana/plugins
-          - ./.docker-volumes/grafana-logs:/var/log/grafana
+          - grafana:/var/lib/grafana
 
     influxdb:
         image: influxdb:1.2-alpine
@@ -119,7 +118,7 @@ services:
           - ${DEV_IP}:8086:8086
           - ${DEV_IP}:8089:8089/udp
         volumes:
-          - ./.docker-volumes/influxdb-data:/var/lib/influxdb
+          - influxdb:/var/lib/influxdb
           - ./influxdb.conf:/etc/influxdb/influxdb.conf
 
     # Fake Services
@@ -172,3 +171,7 @@ services:
 
 volumes:
   elasticsearch: {}
+  grafana: {}
+  influxdb: {}
+  mongodb: {}
+  rabbitmq: {}
