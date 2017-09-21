@@ -4,6 +4,12 @@ services:
         arguments:
             - '@service_container'
 
+    systems.manager:
+        class: CleverConnectors\AppBundle\Model\Systems\SystemManager
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@systems.loader'
+
     systems.null:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\NullSystem
         arguments:

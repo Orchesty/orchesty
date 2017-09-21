@@ -77,7 +77,7 @@ class SystemLoader
      * @return SystemInterface[]
      * @throws SystemException
      */
-    public function getSystemsWithTagSystem(string $tag): array
+    public function getSystems(string $tag): array
     {
         $systems  = [];
         $property = sprintf('systemsWithTag%s', Strings::firstUpper($tag));

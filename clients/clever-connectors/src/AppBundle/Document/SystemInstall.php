@@ -11,7 +11,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
  *
  * @package CleverConnectors\AppBundle\Document
  *
- * @ODM\Document(repositryClass="CleverConnectors\AppBundle\Repository\SystemInstallRepository")
+ * @ODM\Document(repositoryClass="CleverConnectors\AppBundle\Repository\SystemInstallRepository")
  */
 class SystemInstall
 {
@@ -53,6 +53,14 @@ class SystemInstall
      * @ODM\Field(type="date")
      */
     protected $created;
+
+    /**
+     * SystemInstall constructor.
+     */
+    public function __construct()
+    {
+        $this->created = new DateTime();
+    }
 
     /**
      * @return string

@@ -53,7 +53,7 @@ class SystemLoaderTest extends KernelTestCaseAbstract
      */
     public function testGetSystems(): void
     {
-        $systems = $this->loader->getSystemsWithTagSystem('system');
+        $systems = $this->loader->getSystems('system');
 
         $this->assertNotEmpty($systems);
         $this->assertInstanceOf(NullSystem::class, $systems[0]);
@@ -67,7 +67,7 @@ class SystemLoaderTest extends KernelTestCaseAbstract
         $this->expectException(SystemException::class);
         $this->expectExceptionCode(SystemException::SYSTEM_PROPERTY_NOT_FOUND);
 
-        $this->loader->getSystemsWithTagSystem('unknown');
+        $this->loader->getSystems('unknown');
     }
 
 }
