@@ -10,3 +10,11 @@ services:
     hbpf.controller.starting_point:
         class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\StartingPointController
         arguments:
+
+    hbpf.api_gateway.controller.test:
+        class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TestController
+        arguments:
+            - '@doctrine.odm.mongodb.document_manager'
+            - '@hbpf.handler.starting_point'
+            - "%kernel.project_dir%"
+            - "@monolog.logger.test"

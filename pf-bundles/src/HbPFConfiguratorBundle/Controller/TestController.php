@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller;
+namespace Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Exception;
@@ -17,9 +17,9 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Class ApiController
+ * Class TestController
  *
- * @package Hanaboso\PipesFramework\HbPFCommonsBundle\Controller
+ * @package Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller
  *
  * @Route(service="hbpf.api_gateway.controller.test")
  */
