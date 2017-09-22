@@ -62,9 +62,9 @@ final class AuthorizationControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers AuthorizationController::getAuthorizationsInfo()
+     * @covers AuthorizationController::getAuthorizations()
      */
-    public function testGetAuthorizationsInfo(): void
+    public function testGetAuthorizations(): void
     {
         $returnValue = [
             'name'          => 'name',
