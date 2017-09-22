@@ -10,16 +10,16 @@ use Hanaboso\PipesFramework\Acl\Dto\GroupDto;
 use Hanaboso\PipesFramework\Acl\Entity\GroupInterface;
 use Hanaboso\PipesFramework\Acl\Entity\RuleInterface;
 use Hanaboso\PipesFramework\Acl\Enum\ActionEnum;
-use Hanaboso\PipesFramework\Acl\Enum\ResourceEnum;
 use Hanaboso\PipesFramework\Acl\Exception\AclException;
 use Hanaboso\PipesFramework\Acl\Factory\MaskFactory;
 use Hanaboso\PipesFramework\Acl\Factory\RuleFactory;
 use Hanaboso\PipesFramework\Acl\Provider\Impl\DatabaseProvider;
 use Hanaboso\PipesFramework\Acl\Repository\Document\GroupRepository as DocumentGroupRepository;
 use Hanaboso\PipesFramework\Acl\Repository\Entity\GroupRepository as EntityGroupRepository;
-use Hanaboso\PipesFramework\HbPFAclBundle\Provider\ResourceProvider;
+use Hanaboso\PipesFramework\HbPFUserBundle\Provider\ResourceProvider;
 use Hanaboso\PipesFramework\User\DatabaseManager\UserDatabaseManagerLocator;
 use Hanaboso\PipesFramework\User\Entity\UserInterface;
+use Hanaboso\PipesFramework\User\Enum\ResourceEnum;
 use Hanaboso\PipesFramework\User\Model\User\Event\UserEvent;
 use ReflectionClass;
 use ReflectionProperty;
@@ -234,7 +234,7 @@ class AccessManager implements EventSubscriberInterface
             && property_exists($object, 'owner')
         ) {
             if ($user->getId() !== (is_string($object->getOwner())
-                ? $object->getOwner() : $object->getOwner()->getId())
+                    ? $object->getOwner() : $object->getOwner()->getId())
             ) {
                 $this->throwPermissionException('User has no permission from given object and action.');
             }

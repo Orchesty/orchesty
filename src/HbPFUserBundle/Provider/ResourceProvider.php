@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace Hanaboso\PipesFramework\HbPFAclBundle\Provider;
+namespace Hanaboso\PipesFramework\HbPFUserBundle\Provider;
 
-use Hanaboso\PipesFramework\HbPFAclBundle\Exception\AclException;
+use Hanaboso\PipesFramework\HbPFUserBundle\Exception\UserException;
 
 /**
  * Class ResourceProvider
@@ -22,16 +22,16 @@ class ResourceProvider
      *
      * @param array $rules
      *
-     * @throws AclException
+     * @throws UserException
      */
     public function __construct(array $rules)
     {
         if (!isset($rules['resources'])) {
-            throw new AclException('ACL resources not exist', AclException::ACL_NOT_EXIST);
+            throw new UserException('Resources not exist', UserException::RULESET_NOT_EXIST);
         }
 
         if (!is_array($rules['resources'])) {
-            throw new AclException('ACL resources not array', AclException::ACL_NOT_ARRAY);
+            throw new UserException('Resources not array', UserException::RULESET_NOT_EXIST);
         }
 
         $this->resources = $rules['resources'];
@@ -59,14 +59,14 @@ class ResourceProvider
      * @param string $key
      *
      * @return string
-     * @throws AclException
+     * @throws UserException
      */
     public function getResource(string $key): string
     {
         if (!isset($this->resources[$key])) {
-            throw new AclException(
-                sprintf('ACL resource \'%s\' not exist', $key),
-                AclException::RESOURCE_NOT_EXIST
+            throw new UserException(
+                sprintf('Resource \'%s\' not exist', $key),
+                UserException::RESOURCE_NOT_EXIST
             );
         }
 

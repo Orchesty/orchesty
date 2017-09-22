@@ -1,13 +1,13 @@
 <?php declare(strict_types=1);
 
-namespace Hanaboso\PipesFramework\Acl\Enum;
+namespace Hanaboso\PipesFramework\User\Enum;
 
 use Hanaboso\PipesFramework\Commons\Enum\EnumAbstract;
 
 /**
  * Class ResourceEnum
  *
- * @package Hanaboso\PipesFramework\Acl\Enum
+ * @package Hanaboso\PipesFramework\User\Enum
  */
 class ResourceEnum extends EnumAbstract
 {
