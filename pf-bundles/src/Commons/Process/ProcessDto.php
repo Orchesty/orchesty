@@ -13,30 +13,55 @@ namespace Hanaboso\PipesFramework\Commons\Process;
  *
  * @package Hanaboso\PipesFramework\Commons\Process
  */
-class ProcessDto
+final class ProcessDto
 {
 
     /**
-     * @var string[]
+     * @var string
      */
     private $data;
 
     /**
-     * @return string[]
+     * @var array
      */
-    public function getData(): array
+    private $headers;
+
+    /**
+     * @return string
+     */
+    public function getData(): string
     {
         return $this->data;
     }
 
     /**
-     * @param string[] $data
+     * @param string $data
      *
      * @return ProcessDto
      */
-    public function setData(array $data): ProcessDto
+    public function setData(string $data): ProcessDto
     {
         $this->data = $data;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getHeaders(): array
+    {
+        return $this->headers;
+    }
+
+    /**
+     * @param array $headers
+     *
+     * @return ProcessDto
+     */
+    public function setHeaders(array $headers): ProcessDto
+    {
+        $this->headers = $headers;
 
         return $this;
     }

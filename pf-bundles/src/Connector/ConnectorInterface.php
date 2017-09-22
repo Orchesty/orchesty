@@ -25,19 +25,19 @@ interface ConnectorInterface
     public function getId(): string;
 
     /**
-     * @param string[] $data
-     *
-     * @return ProcessDto|void
-     * @throws ConnectException
-     */
-    public function processEvent(array $data): ProcessDto;
-
-    /**
-     * @param array $data
+     * @param ProcessDto $dto
      *
      * @return ProcessDto
      * @throws ConnectException
      */
-    public function processAction(array $data): ProcessDto;
+    public function processEvent(ProcessDto $dto): ProcessDto;
+
+    /**
+     * @param ProcessDto $dto
+     *
+     * @return ProcessDto
+     * @throws ConnectException
+     */
+    public function processAction(ProcessDto $dto): ProcessDto;
 
 }

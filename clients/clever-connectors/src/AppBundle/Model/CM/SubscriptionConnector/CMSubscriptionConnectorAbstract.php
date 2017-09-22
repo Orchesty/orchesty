@@ -23,12 +23,12 @@ abstract class CMSubscriptionConnectorAbstract extends CMAuthorization implement
 {
 
     /**
-     * @param array $data
+     * @param ProcessDto $dto
      *
      * @return ProcessDto|void
      * @throws Exception
      */
-    public function processEvent(array $data): ProcessDto
+    public function processEvent(ProcessDto $dto): ProcessDto
     {
         throw new Exception('CMSubscriptionConnector has no support for webhooks!');
     }
