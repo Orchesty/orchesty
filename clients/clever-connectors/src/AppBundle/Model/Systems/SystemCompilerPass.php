@@ -16,28 +16,6 @@ class SystemCompilerPass implements CompilerPassInterface
 {
 
     /**
-     * @var string[]
-     */
-    private $tags;
-
-    /**
-     * @var bool
-     */
-    private $isProduction;
-
-    /**
-     * SystemCompilerPass constructor.
-     *
-     * @param string[] $tags
-     * @param bool     $isProduction
-     */
-    public function __construct(array $tags, bool $isProduction)
-    {
-        $this->tags         = $tags;
-        $this->isProduction = $isProduction;
-    }
-
-    /**
      * @param ContainerBuilder $container
      *
      * @throws SystemException
@@ -45,14 +23,19 @@ class SystemCompilerPass implements CompilerPassInterface
     public function process(ContainerBuilder $container): void
     {
         $loader = $container->findDefinition('systems.loader');
-        foreach ($this->tags as $tag) {
-            $method = sprintf('setSystemsWithTag%s', implode('', array_map(function (string $part) {
-                return Strings::firstUpper($part);
-            }, explode('.', $tag))));
+        foreach ($container->getParameter('systems.tags') as $tagWithPercentage) {
+            $tagWithoutPercentage = $container->getParameter(Strings::substring($tagWithPercentage, 1, -1));
+
+            $method = sprintf(
+                'setSystemsWithTag%s',
+                $this->replaceDotsAndUnderscoresWithCapitalLetters($tagWithoutPercentage)
+            );
+
             if (method_exists(SystemLoader::class, $method)) {
-                $services = $container->findTaggedServiceIds($tag);
-                if ($this->isProduction) {
-                    $developmentServices = $container->findTaggedServiceIds('systems.dev');
+                $services = $container->findTaggedServiceIds($tagWithPercentage);
+                if ($container->getParameter('kernel.environment') === 'prod') {
+                    $developmentTag      = sprintf('%%%s%%', $container->getParameter('systems.dev'));
+                    $developmentServices = $container->findTaggedServiceIds($developmentTag);
                     foreach ($services as $key => $service) {
                         if (in_array($service, $developmentServices, TRUE)) {
                             unset($services[$key]);
@@ -67,6 +50,18 @@ class SystemCompilerPass implements CompilerPassInterface
                 );
             }
         }
+    }
+
+    /**
+     * @param string $string
+     *
+     * @return string
+     */
+    private function replaceDotsAndUnderscoresWithCapitalLetters(string $string): string
+    {
+        return Strings::replace($string, '#(\.\w|_\w)#', function ($matches) {
+            return Strings::firstUpper(Strings::substring($matches[0], 1));
+        });
     }
 
 }

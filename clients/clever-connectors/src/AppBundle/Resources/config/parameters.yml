@@ -1,5 +1,10 @@
 parameters:
+    systems: 'systems'
+    systems.dev: 'systems.dev'
+    systems.user.some_user: 'systems.user.some_user'
+    systems.group.some_group: 'systems.group.some_group'
+
     systems.tags:
-        - 'systems'
-        - 'systems.user.someUser'
-        - 'systems.group.someGroup'
+        - '%systems%'
+        - '%systems.user.some_user%'
+        - '%systems.group.some_group%'

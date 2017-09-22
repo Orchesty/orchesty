@@ -13,17 +13,17 @@ services:
     systems.null.user:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\NullSystem
         arguments:
-        tags: ['systems', 'systems.dev', 'systems.user.someUser']
+        tags: ['%systems%', '%systems.dev%', '%systems.user.some_user%']
 
     systems.null.group:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\NullSystem
         arguments:
-        tags: ['systems', 'systems.dev', 'systems.group.someGroup']
+        tags: ['%systems%', '%systems.dev%', '%systems.group.some_group%']
 
     systems.null.user.group:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\NullSystem
         arguments:
-        tags: ['systems', 'systems.dev', 'systems.user.someUser', 'systems.group.someGroup']
+        tags: ['%systems%', '%systems.dev%', '%systems.user.some_user%', '%systems.group.some_group%']
 
     manager.webhook:
         class: CleverConnectors\AppBundle\Model\WebhookManager

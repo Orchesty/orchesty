@@ -23,9 +23,7 @@ class AppBundle extends Bundle
     {
         parent::build($container);
         (new YamlFileLoader($container, new FileLocator(__DIR__ . '/Resources/config')))->load('parameters.yml');
-        $container->addCompilerPass(new SystemCompilerPass(
-            $container->getParameter('systems.tags'), $container->getParameter('kernel.environment') === 'prod'
-        ));
+        $container->addCompilerPass(new SystemCompilerPass());
     }
 
 }
