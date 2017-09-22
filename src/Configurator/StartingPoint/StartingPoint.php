@@ -134,11 +134,13 @@ class StartingPoint
     }
 
     /**
+     * @param null|string $param
+     *
      * @return string
      */
-    public function createBody(): string
+    public function createBody(?string $param = NULL): string
     {
-        return sprintf(self::CONTENT, '""');
+        return sprintf(self::CONTENT, $param ?? '""');
     }
 
     /**
@@ -152,12 +154,13 @@ class StartingPoint
     }
 
     /**
-     * @param Topology $topology
-     * @param Node     $node
+     * @param Topology    $topology
+     * @param Node        $node
+     * @param null|string $param
      */
-    public function run(Topology $topology, Node $node): void
+    public function run(Topology $topology, Node $node, ?string $param = NULL): void
     {
-        $this->runTopology($topology, $node, $this->createHeaders(), $this->createBody());
+        $this->runTopology($topology, $node, $this->createHeaders(), $this->createBody($param));
     }
 
     /**
