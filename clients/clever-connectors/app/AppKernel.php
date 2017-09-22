@@ -6,6 +6,7 @@ use Doctrine\Bundle\MongoDBBundle\DoctrineMongoDBBundle;
 use FOS\RestBundle\FOSRestBundle;
 use Hanaboso\PipesFramework\HbPFApiGatewayBundle\HbPFApiGatewayBundle;
 use Hanaboso\PipesFramework\HbPFCommonsBundle\HbPFCommonsBundle;
+use Hanaboso\PipesFramework\HbPFConfiguratorBundle\HbPFConfiguratorBundle;
 use Hanaboso\PipesFramework\HbPFMailerBundle\HbPFMailerBundle;
 use Hanaboso\PipesFramework\RabbitMqBundle\RabbitMqBundle;
 use JMS\SerializerBundle\JMSSerializerBundle;
@@ -47,6 +48,7 @@ class AppKernel extends Kernel
             new HbPFApiGatewayBundle(),
             new HbPFCommonsBundle(),
             new HbPFMailerBundle(),
+            new HbPFConfiguratorBundle()
         ];
 
         if (in_array($this->getEnvironment(), ['dev', 'test'], TRUE)) {
