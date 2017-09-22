@@ -33,7 +33,13 @@ use function React\Promise\all;
 class AsyncConsumerCommand extends Command
 {
 
+
     public const INPUT_QUEUE = 'input_queue';
+
+    /**
+     * @var int
+     */
+    private $timer = 1;
 
     /**
      * @var ContainerInterface
@@ -91,10 +97,32 @@ class AsyncConsumerCommand extends Command
 
     }
 
-    private function consecutiveWait()
+    /**
+     *
+     */
+    private function consecutiveWait(): void
     {
-        // TODO - set wait dynamically 1...2...4...8...16s
-        sleep(2);
+        sleep($this->timer);
+    }
+
+    /**
+     *
+     */
+    private function resetConsecutiveTimer()
+    {
+        $this->timer = 1;
+    }
+
+    /**
+     * @return int
+     */
+    private function increaseConsecutiveTimer()
+    {
+        if ($this->timer < 10) {
+            $this->timer = $this->timer * 2;
+        }
+
+        return $this->timer;
     }
 
     private function startLoop()
@@ -131,6 +159,8 @@ class AsyncConsumerCommand extends Command
         $bunny
             ->connect()
             ->then(function (Client $client) {
+                $this->resetConsecutiveTimer();
+
                 return $client->channel();
             })
             ->then(function (Channel $channel) {
@@ -156,6 +186,7 @@ class AsyncConsumerCommand extends Command
                 $eventLoop->stop();
 
                 $this->consecutiveWait();
+                $this->increaseConsecutiveTimer();
                 $this->startLoop();
             });
     }
