@@ -2,6 +2,7 @@
 
 namespace Tests\Controller\HbPFConnectorBundle\Controller;
 
+use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\HbPFConnectorBundle\Controller\ConnectorController;
 use Hanaboso\PipesFramework\HbPFConnectorBundle\Handler\ConnectorHandler;
 use Tests\ControllerTestCaseAbstract;
@@ -30,7 +31,7 @@ class ConnectorControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers ConnectorController::processEvent()
+     * @covers ConnectorController::processAction()
      */
     public function testProcessAction(): void
     {
@@ -53,7 +54,11 @@ class ConnectorControllerTest extends ControllerTestCaseAbstract
             ->disableOriginalConstructor()
             ->getMock();
 
-        $handler->method($method)->willReturn(['test' => 'test']);
+        $dto = new ProcessDto();
+        $dto
+            ->setData(json_encode(['test' => 'test']))
+            ->setHeaders([]);
+        $handler->method($method)->willReturn($dto);
 
         $this->client->getContainer()->set('hbpf.handler.connector', $handler);
     }

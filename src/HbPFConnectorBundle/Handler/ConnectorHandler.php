@@ -8,9 +8,11 @@
 
 namespace Hanaboso\PipesFramework\HbPFConnectorBundle\Handler;
 
+use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Model\ConnectorManager;
 use Hanaboso\PipesFramework\HbPFConnectorBundle\Loader\ConnectorLoader;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class ConnectorHandler
@@ -43,31 +45,31 @@ class ConnectorHandler
     }
 
     /**
-     * @param string   $id
-     * @param string[] $data
+     * @param string  $id
+     * @param Request $request
      *
-     * @return string[]
+     * @return ProcessDto
      */
-    public function processEvent(string $id, array $data): array
+    public function processEvent(string $id, Request $request): ProcessDto
     {
         /** @var ConnectorInterface $conn */
         $conn = $this->loader->getConnector($id);
-        $res  = $this->connManager->processEvent($conn, $data);
+        $res  = $this->connManager->processEvent($conn, $request);
 
         return $res;
     }
 
     /**
-     * @param string   $id
-     * @param string[] $data
+     * @param string  $id
+     * @param Request $request
      *
-     * @return string[]
+     * @return ProcessDto
      */
-    public function processAction(string $id, array $data): array
+    public function processAction(string $id, Request $request): ProcessDto
     {
         /** @var ConnectorInterface $conn */
         $conn = $this->loader->getConnector($id);
-        $res  = $this->connManager->processEvent($conn, $data);
+        $res  = $this->connManager->processAction($conn, $request);
 
         return $res;
     }

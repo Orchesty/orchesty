@@ -14,11 +14,11 @@ class Magento2ModulesConnector extends Magento2Base
 {
 
     /**
-     * @param array $data
+     * @param ProcessDto $dto
      *
      * @return ProcessDto
      */
-    public function processAction(array $data): ProcessDto
+    public function processAction(ProcessDto $dto): ProcessDto
     {
         $data = $this->processRequest('GET', '/rest/V1/modules');
 
@@ -29,12 +29,12 @@ class Magento2ModulesConnector extends Magento2Base
     }
 
     /**
-     * @param array $data
+     * @param ProcessDto $dto
      *
      * @return ProcessDto|void
      * @throws ConnectorException
      */
-    public function processEvent(array $data): ProcessDto
+    public function processEvent(ProcessDto $dto): ProcessDto
     {
         throw new ConnectorException(
             'Connector doesn\'n have process event',

@@ -8,7 +8,9 @@
 
 namespace Hanaboso\PipesFramework\Connector\Model;
 
+use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class ConnectorManager
@@ -20,15 +22,34 @@ class ConnectorManager
 
     /**
      * @param ConnectorInterface $conn
-     * @param array              $data
+     * @param Request            $request
      *
-     * @return string[]
+     * @return ProcessDto
      */
-    public function processEvent(ConnectorInterface $conn, array $data): array
+    public function processEvent(ConnectorInterface $conn, Request $request): ProcessDto
     {
-        $dto = $conn->processEvent($data);
+        $dto = new ProcessDto();
+        $dto
+            ->setData((string) $request->getContent())
+            ->setHeaders($request->headers->all());
 
-        return $dto->getData();
+        return $conn->processEvent($dto);
+    }
+
+    /**
+     * @param ConnectorInterface $conn
+     * @param Request            $request
+     *
+     * @return ProcessDto
+     */
+    public function processAction(ConnectorInterface $conn, Request $request): ProcessDto
+    {
+        $dto = new ProcessDto();
+        $dto
+            ->setData((string) $request->getContent())
+            ->setHeaders($request->headers->all());
+
+        return $conn->processAction($dto);
     }
 
 }
