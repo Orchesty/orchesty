@@ -1,7 +1,7 @@
 hb_pf_api_gateway:
     resource: '@HbPFApiGatewayBundle'
     type:     annotation
-    prefix:   /api/gateway
+    prefix:   /api
 
 hb_pf_authorization:
     resource: "@HbPFAuthorizationBundle"

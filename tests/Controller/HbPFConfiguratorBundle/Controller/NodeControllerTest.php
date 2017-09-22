@@ -23,7 +23,7 @@ final class NodeControllerTest extends ControllerTestCaseAbstract
 
         $this->prepareNodeHandlerMock('getNodes', $returnValue);
 
-        $this->client->request('GET', '/api/gateway/topologies/abc123/nodes', [], [], []);
+        $this->client->request('GET', '/api/topologies/abc123/nodes', [], [], []);
 
         /** @var JsonResponse $response */
         $response = $this->client->getResponse();
@@ -42,7 +42,7 @@ final class NodeControllerTest extends ControllerTestCaseAbstract
 
         $this->prepareNodeHandlerMock('getNode', $returnValue);
 
-        $this->client->request('GET', '/api/gateway/nodes/abc123', [], [], []);
+        $this->client->request('GET', '/api/nodes/abc123', [], [], []);
 
         /** @var JsonResponse $response */
         $response = $this->client->getResponse();
@@ -61,7 +61,7 @@ final class NodeControllerTest extends ControllerTestCaseAbstract
 
         $this->prepareNodeHandlerMock('updateNode', $returnValue);
 
-        $this->client->request('PATCH', '/api/gateway/nodes/abc123', [], [], []);
+        $this->client->request('PATCH', '/api/nodes/abc123', [], [], []);
 
         /** @var JsonResponse $response */
         $response = $this->client->getResponse();
