@@ -8,3 +8,5 @@ parameters:
         - '%systems%'
         - '%systems.user.some_user%'
         - '%systems.group.some_group%'
+
+    webhook.domain: 'http://localhost'

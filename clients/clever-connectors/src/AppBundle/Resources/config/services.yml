@@ -9,6 +9,7 @@ services:
         arguments:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@systems.loader'
+            - '@manager.webhook'
 
     systems.null.user:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\NullSystem
@@ -30,6 +31,7 @@ services:
         arguments:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.transport.curl_manager'
+            - '%webhook.domain%'
         calls:
             - ['setLogger', ['@monolog.logger.commons']]
 

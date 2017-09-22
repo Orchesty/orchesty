@@ -3,7 +3,9 @@
 namespace CleverConnectors\AppBundle\Model\Systems;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Enum\SystemTypeEnum;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
+use CleverConnectors\AppBundle\Model\WebhookManager;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentRepository;
@@ -32,16 +34,23 @@ class SystemManager
     private $systemRepository;
 
     /**
+     * @var WebhookManager
+     */
+    private $webhookManager;
+
+    /**
      * SystemManager constructor.
      *
      * @param DocumentManager $dm
      * @param SystemLoader    $systemLoader
+     * @param WebhookManager  $webhookManager
      */
-    public function __construct(DocumentManager $dm, SystemLoader $systemLoader)
+    public function __construct(DocumentManager $dm, SystemLoader $systemLoader, WebhookManager $webhookManager)
     {
         $this->dm               = $dm;
         $this->systemLoader     = $systemLoader;
         $this->systemRepository = $dm->getRepository(SystemInstall::class);
+        $this->webhookManager   = $webhookManager;
     }
 
     /**
@@ -91,13 +100,19 @@ class SystemManager
      */
     public function installSystem(string $user, string $system, string $token): SystemInstall
     {
-        $this->systemLoader->getSystem($system);
+        $systemService = $this->systemLoader->getSystem($system);
 
         $systemInstall = (new SystemInstall())
             ->setUser($user)
             ->setSystem($system)
             ->setToken($token)
             ->setSynchronized(FALSE);
+
+        if ($systemService->getType() === SystemTypeEnum::WEBHOOK) {
+            /** @var WebhookSystemInterface $webhookSystem */
+            $webhookSystem = $systemService;
+            $this->webhookManager->subscribe($webhookSystem, $user, $token);
+        }
 
         $this->dm->persist($systemInstall);
         $this->dm->flush();
@@ -121,6 +136,13 @@ class SystemManager
                 sprintf('System \'%s\' or user \'%s\' not found', $system, $user),
                 SystemException::SYSTEM_OR_USER_NOT_FOUND
             );
+        }
+
+        $systemService = $this->systemLoader->getSystem($system);
+        if ($systemService->getType() === SystemTypeEnum::WEBHOOK) {
+            /** @var WebhookSystemInterface $webhookSystem */
+            $webhookSystem = $systemService;
+            $this->webhookManager->unsubscribe($webhookSystem, $user);
         }
 
         $this->dm->remove($systemInstall);

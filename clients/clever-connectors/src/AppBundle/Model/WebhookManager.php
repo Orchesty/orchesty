@@ -36,37 +36,43 @@ class WebhookManager implements LoggerAwareInterface
     private $logger;
 
     /**
+     * @var string
+     */
+    private $domain;
+
+    /**
      * WebhookManager constructor.
      *
      * @param DocumentManager $dm
      * @param CurlManager     $curl
+     * @param string          $domain
      */
-    function __construct(DocumentManager $dm, CurlManager $curl)
+    function __construct(DocumentManager $dm, CurlManager $curl, string $domain)
     {
         $this->dm     = $dm;
         $this->curl   = $curl;
         $this->logger = new NullLogger();
+        $this->domain = $domain;
     }
 
     /**
      * @param WebhookSystemInterface $system
      * @param string                 $userId
      * @param string                 $token
-     * @param string                 $domain
      *
      * @return string[]
      */
-    public function subscribe(WebhookSystemInterface $system, string $userId, string $token, string $domain): array
+    public function subscribe(WebhookSystemInterface $system, string $userId, string $token): array
     {
         $ids = [];
         /** @var WebhookSubscribes $sub */
         foreach ($system->getWebhookSubscribes() as $sub) {
-            $url = $this->getWebhookUrl($domain, $userId, $token, $sub->getNodeName(), $sub->getTopologyName());
+            $url = $this->getWebhookUrl($this->domain, $userId, $token, $sub->getNodeName(), $sub->getTopologyName());
 
             $req = $system->getSubscribeRequest($url);
             try {
-                $res   = $this->curl->send($req);
-                $id    = $system->getWebhookId($res);
+                $res = $this->curl->send($req);
+                $id  = $system->getWebhookId($res);
             } catch (Exception $e) {
                 $this->logger->error(sprintf('Webhook (nodeName, topologyName, system) [%s, %s, %s] failed to subscribe.',
                     $sub->getNodeName(), $sub->getTopologyName(), $system->getKey()), ['exception' => $e]);
@@ -110,11 +116,17 @@ class WebhookManager implements LoggerAwareInterface
                 if ($res->getStatusCode() == 200) {
                     $this->dm->remove($sub);
                 } else {
-                    $this->logger->error(sprintf('Webhook [%s] failed to unsubscribe.', $sub->getId()), ['exception' => $res->getBody()]);
+                    $this->logger->error(
+                        sprintf('Webhook [%s] failed to unsubscribe.', $sub->getId()),
+                        ['exception' => $res->getBody()]
+                    );
                     $sub->setUnsubscribeFailed(TRUE);
                 }
             } catch (Exception $e) {
-                $this->logger->error(sprintf('Webhook [%s] failed to unsubscribe.', $sub->getId()), ['exception' => $e]);
+                $this->logger->error(
+                    sprintf('Webhook [%s] failed to unsubscribe.', $sub->getId()),
+                    ['exception' => $e]
+                );
                 $sub->setUnsubscribeFailed(TRUE);
             }
         }
@@ -125,11 +137,10 @@ class WebhookManager implements LoggerAwareInterface
      * @param WebhookSystemInterface $system
      * @param string                 $userId
      * @param string                 $token
-     * @param string                 $domain
      */
-    public function update(WebhookSystemInterface $system, string $userId, string $token, string $domain): void
+    public function update(WebhookSystemInterface $system, string $userId, string $token): void
     {
-        $ids = $this->subscribe($system, $userId, $token, $domain);
+        $ids = $this->subscribe($system, $userId, $token);
         $this->unsubscribe($system, $userId, $ids);
     }
 
