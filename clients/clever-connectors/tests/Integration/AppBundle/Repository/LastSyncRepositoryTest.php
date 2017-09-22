@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Integration\Repository;
+namespace Tests\Integration\AppBundle\Repository;
 
 use CleverConnectors\AppBundle\Document\LastSync;
 use CleverConnectors\AppBundle\Repository\LastSyncRepository;
@@ -10,7 +10,7 @@ use Tests\DatabaseTestCaseAbstract;
 /**
  * Class LastSyncRepositoryTest
  *
- * @package Tests\Integration\Repository
+ * @package Tests\Integration\AppBundle\Repository
  */
 class LastSyncRepositoryTest extends DatabaseTestCaseAbstract
 {

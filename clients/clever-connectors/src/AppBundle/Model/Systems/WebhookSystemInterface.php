@@ -2,15 +2,15 @@
 
 namespace CleverConnectors\AppBundle\Model\Systems;
 
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 
 /**
  * Interface WebhookSystemInterface
  *
  * @package CleverConnectors\AppBundle\Model\Systems
  */
-interface WebhookSystemInterface
+interface WebhookSystemInterface extends SystemInterface
 {
 
     /**
@@ -21,27 +21,29 @@ interface WebhookSystemInterface
     /**
      * @param string $url
      *
-     * @return Request
+     * @return RequestDto
      */
-    public function getSubscribeRequest(string $url): Request;
+    public function getSubscribeRequest(string $url): RequestDto;
 
     /**
      * @param string $id
      *
-     * @return Request
+     * @return RequestDto
      */
-    public function getUnsubscribeRequest(string $id): Request;
+    public function getUnsubscribeRequest(string $id): RequestDto;
 
     /**
-     * @param Response $response
+     * @param ResponseDto $response
      *
      * @return string
      */
-    public function getWebhookId(Response $response): string;
+    public function getWebhookId(ResponseDto $response): string;
 
     /**
-     * @return self
+     * @param WebhookSubscribes $sub
+     *
+     * @return WebhookSystemInterface
      */
-    public function addWebhookSubscribes(): self;
+    public function addWebhookSubscribes(WebhookSubscribes $sub): WebhookSystemInterface;
 
 }

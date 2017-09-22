@@ -54,6 +54,13 @@ class Webhook
     private $unsubscribeFailed;
 
     /**
+     * @var string|null
+     *
+     * @ODM\Field(type="string", nullable=true)
+     */
+    private $webhookId;
+
+    /**
      * @return string
      */
     public function getUser(): string
@@ -149,6 +156,26 @@ class Webhook
     public function setUnsubscribeFailed(bool $unsubscribeFailed): Webhook
     {
         $this->unsubscribeFailed = $unsubscribeFailed;
+
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getWebhookId(): ?string
+    {
+        return $this->webhookId;
+    }
+
+    /**
+     * @param string|null $webhookId
+     *
+     * @return Webhook
+     */
+    public function setWebhookId(?string $webhookId): Webhook
+    {
+        $this->webhookId = $webhookId;
 
         return $this;
     }

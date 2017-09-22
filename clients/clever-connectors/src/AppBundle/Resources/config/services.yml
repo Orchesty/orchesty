@@ -8,3 +8,11 @@ services:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\NullSystem
         arguments:
         tags: ['system']
+
+    manager.webhook:
+        class: CleverConnectors\AppBundle\Model\WebhookManager
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.transport.curl_manager'
+        calls:
+            - ['setLogger', ['@monolog.logger.commons']]
