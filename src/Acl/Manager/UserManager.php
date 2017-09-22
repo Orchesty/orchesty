@@ -3,7 +3,7 @@
 namespace Hanaboso\PipesFramework\Acl\Manager;
 
 use Hanaboso\PipesFramework\Acl\Enum\ActionEnum;
-use Hanaboso\PipesFramework\Acl\Enum\ResourceEnum;
+use Hanaboso\PipesFramework\User\Enum\ResourceEnum;
 use Hanaboso\PipesFramework\User\Model\User\Event\UserEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 

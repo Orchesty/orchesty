@@ -5,13 +5,13 @@ namespace Hanaboso\PipesFramework\Acl\Provider\Impl;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ORM\EntityManager;
 use Hanaboso\PipesFramework\Acl\Entity\RuleInterface;
-use Hanaboso\PipesFramework\Acl\Enum\ResourceEnum;
 use Hanaboso\PipesFramework\Acl\Provider\ProviderInterface;
 use Hanaboso\PipesFramework\Acl\Repository\document\GroupRepository as OdmRepo;
 use Hanaboso\PipesFramework\Acl\Repository\Entity\GroupRepository as OrmRepo;
-use Hanaboso\PipesFramework\HbPFAclBundle\Provider\ResourceProvider;
+use Hanaboso\PipesFramework\HbPFUserBundle\Provider\ResourceProvider;
 use Hanaboso\PipesFramework\User\DatabaseManager\UserDatabaseManagerLocator;
 use Hanaboso\PipesFramework\User\Entity\UserInterface;
+use Hanaboso\PipesFramework\User\Enum\ResourceEnum;
 
 /**
  * Class DatabaseProvider
