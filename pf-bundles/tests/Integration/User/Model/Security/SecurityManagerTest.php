@@ -45,7 +45,7 @@ class SecurityManagerTest extends DatabaseTestCaseAbstract
             $encodeFactory,
             $this->session,
             $this->container->get('security.token_storage'),
-            $this->container->get('hbpf.acl.provider.resource')
+            $this->container->get('hbpf.user.provider.resource')
         );
         $this->userRepository  = $this->dm->getRepository(User::class);
     }

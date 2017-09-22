@@ -2,8 +2,8 @@
 
 namespace Tests\Unit\HbPFAclBundle\Provider;
 
-use Hanaboso\PipesFramework\HbPFAclBundle\Exception\AclException;
-use Hanaboso\PipesFramework\HbPFAclBundle\Provider\ResourceProvider;
+use Hanaboso\PipesFramework\HbPFUserBundle\Exception\UserException;
+use Hanaboso\PipesFramework\HbPFUserBundle\Provider\ResourceProvider;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 
@@ -38,8 +38,8 @@ class ResourceProviderTest extends TestCase
      */
     public function testGetResourcesMissing(): void
     {
-        $this->expectException(AclException::class);
-        $this->expectExceptionCode(AclException::ACL_NOT_EXIST);
+        $this->expectException(UserException::class);
+        $this->expectExceptionCode(UserException::RULESET_NOT_EXIST);
 
         new ResourceProvider([]);
     }
@@ -49,8 +49,8 @@ class ResourceProviderTest extends TestCase
      */
     public function testGetResourcesNotArray(): void
     {
-        $this->expectException(AclException::class);
-        $this->expectExceptionCode(AclException::ACL_NOT_ARRAY);
+        $this->expectException(UserException::class);
+        $this->expectExceptionCode(UserException::RULESET_NOT_EXIST);
 
         new ResourceProvider(['resources' => new stdClass()]);
     }
@@ -89,8 +89,8 @@ class ResourceProviderTest extends TestCase
      */
     public function testGetResourceMissing(): void
     {
-        $this->expectException(AclException::class);
-        $this->expectExceptionCode(AclException::RESOURCE_NOT_EXIST);
+        $this->expectException(UserException::class);
+        $this->expectExceptionCode(UserException::RESOURCE_NOT_EXIST);
 
         (new ResourceProvider([
             'resources' => [

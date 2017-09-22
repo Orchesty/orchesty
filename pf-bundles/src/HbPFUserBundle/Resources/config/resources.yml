@@ -1,5 +1,5 @@
 parameters:
-    acl_res:
+    db_res:
         resources:
             # Add new resources to ResourceEnum class
             group: Hanaboso\PipesFramework\Acl\Document\Group

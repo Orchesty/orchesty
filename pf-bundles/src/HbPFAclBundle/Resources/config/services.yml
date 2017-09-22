@@ -3,12 +3,7 @@ services:
         class: Hanaboso\PipesFramework\Acl\Provider\Impl\DatabaseProvider
         arguments:
             - '@hbpf.database_manager_locator.user'
-            - '@hbpf.acl.provider.resource'
-
-    hbpf.acl.provider.resource:
-        class: Hanaboso\PipesFramework\HbPFAclBundle\Provider\ResourceProvider
-        arguments:
-            - '%acl_res%'
+            - '@hbpf.user.provider.resource'
 
     hbpf.factory.rule:
         class: Hanaboso\PipesFramework\Acl\Factory\RuleFactory
@@ -23,7 +18,7 @@ services:
             - '@hbpf.database_manager_locator.user'
             - '@hbpf.factory.rule'
             - '@hbpf.acl.provider.database'
-            - '@hbpf.acl.provider.resource'
+            - '@hbpf.user.provider.resource'
             - '%resource_enum%'
         tags:
             - { name: kernel.event_subscriber }
