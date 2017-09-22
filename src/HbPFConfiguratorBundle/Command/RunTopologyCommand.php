@@ -49,9 +49,10 @@ class RunTopologyCommand extends Command
         $this
             ->setName(self::CMD_NAME)
             ->setDescription('Runs the topology.')
-            ->addArgument('topology_id', InputArgument::REQUIRED, 'topology_id')
-            ->addArgument('node_id', InputArgument::REQUIRED, 'node_id')
-            ->setHelp('topology_run: [topology_id] [node_id]');
+            ->addArgument('topology_name', InputArgument::REQUIRED, 'topology_name')
+            ->addArgument('node_name', InputArgument::REQUIRED, 'node_name')
+            ->addArgument('param', InputArgument::OPTIONAL, 'param')
+            ->setHelp('topology_run: [topology_id] [node_id] [param]');
     }
 
     /**
@@ -61,8 +62,9 @@ class RunTopologyCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): void
     {
         $this->handler->run(
-            $input->getOption('topology_id'),
-            $input->getOption('node_id')
+            $input->getOption('topology_name'),
+            $input->getOption('node_name'),
+            $input->getOption('param')
         );
     }
 

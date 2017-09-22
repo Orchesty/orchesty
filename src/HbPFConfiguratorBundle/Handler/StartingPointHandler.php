@@ -46,34 +46,38 @@ class StartingPointHandler
     }
 
     /**
-     * @param string $topologyId
+     * @param string $topologyName
      *
-     * @return Topology
+     * @return Topology[]
      * @throws Exception
      */
-    public function getTopology(string $topologyId): Topology
+    public function getTopologies(string $topologyName): array
     {
-        $topology = $this->dm->getRepository(Topology::class)->find($topologyId);
+        $topologies = $this->dm->getRepository(Topology::class)->findBy(['name' => $topologyName, 'enabled' => TRUE]);
 
-        if (!$topology) {
-            throw new Exception(sprintf('The topology[id=%s] does not exist.', $topologyId));
+        if (empty($topologies)) {
+            throw new Exception(sprintf('The topology[name=%s] does not exist.', $topologyName));
         }
 
-        return $topology;
+        return $topologies;
     }
 
     /**
-     * @param string $nodeId
+     * @param string $nodeName
+     * @param string $topologyId
      *
      * @return Node
      * @throws Exception
      */
-    public function getNode(string $nodeId): Node
+    public function getNode(string $nodeName, string $topologyId): Node
     {
-        $node = $this->dm->getRepository(Node::class)->find($nodeId);
+        $node = $this->dm->getRepository(Node::class)->findOneBy([
+            'name'     => $nodeName,
+            'topology' => $topologyId,
+        ]);
 
-        if (!$node) {
-            throw new Exception(sprintf('The node[id=%s] does not exist.', $nodeId));
+        if (empty($node)) {
+            throw new Exception(sprintf('The node[name=%s] does not exist.', $nodeName));
         }
 
         return $node;
@@ -81,31 +85,44 @@ class StartingPointHandler
 
     /**
      * @param Request $request
-     * @param string  $topologyId
-     * @param string  $nodeId
+     * @param string  $topologyName
+     * @param string  $nodeName
      */
-    public function runWithRequest(Request $request, string $topologyId, string $nodeId): void
+    public function runWithRequest(Request $request, string $topologyName, string $nodeName): void
     {
-        $this->startingPoint->runWithRequest($request, $this->getTopology($topologyId), $this->getNode($nodeId));
+        $tops = $this->getTopologies($topologyName);
+        foreach ($tops as $top) {
+            $this->startingPoint->runWithRequest($request, $top, $this->getNode($nodeName, $top->getId()));
+        }
     }
 
     /**
-     * @param string $topologyId
-     * @param string $nodeId
+     * @param string      $topologyName
+     * @param string      $nodeName
+     * @param string|null $param
      */
-    public function run(string $topologyId, string $nodeId): void
+    public function run(string $topologyName, string $nodeName, ?string $param = NULL): void
     {
-        $this->startingPoint->run($this->getTopology($topologyId), $this->getNode($nodeId));
+        $tops = $this->getTopologies($topologyName);
+        foreach ($tops as $top) {
+            $this->startingPoint->run($top, $this->getNode($nodeName, $top->getId()), $param);
+        }
     }
 
     /**
-     * @param string $topologyId
+     * @param string $topologyName
      *
      * @return array
      */
-    public function runTest(string $topologyId): array
+    public function runTest(string $topologyName): array
     {
-        return $this->startingPoint->runTest($this->getTopology($topologyId));
+        $res  = [];
+        $tops = $this->getTopologies($topologyName);
+        foreach ($tops as $top) {
+            $res[] = $this->startingPoint->runTest($top);
+        }
+
+        return $res;
     }
 
 }

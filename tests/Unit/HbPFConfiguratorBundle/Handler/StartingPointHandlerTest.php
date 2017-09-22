@@ -17,6 +17,7 @@ use Hanaboso\PipesFramework\Configurator\StartingPoint\StartingPoint;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\StartingPointHandler;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
+use Tests\PrivateTrait;
 
 /**
  * Class StartingPointHandlerTest
@@ -26,13 +27,15 @@ use Symfony\Component\HttpFoundation\Request;
 class StartingPointHandlerTest extends TestCase
 {
 
+    use PrivateTrait;
+
     /**
      * @covers StartingPointHandler::getTopology()
      */
     public function testGetTopologyException(): void
     {
         $dr = $this->createMock(DocumentRepository::class);
-        $dr->expects($this->at(0))->method('find')->willReturn(NULL);
+        $dr->expects($this->at(0))->method('findBy')->willReturn(NULL);
 
         /** @var DocumentManager|\PHPUnit_Framework_MockObject_MockObject $dm */
         $dm = $this->createMock(DocumentManager::class);
@@ -44,7 +47,7 @@ class StartingPointHandlerTest extends TestCase
         $startingPointHandler = new StartingPointHandler($dm, $startingPoint);
 
         $this->expectException(Exception::class);
-        $this->expectExceptionMessage('The topology[id=123] does not exist.');
+        $this->expectExceptionMessage('The topology[name=123] does not exist.');
         $startingPointHandler->runWithRequest(Request::createFromGlobals(), '123', '1');
     }
 
@@ -53,9 +56,11 @@ class StartingPointHandlerTest extends TestCase
      */
     public function testGetNodeException(): void
     {
+        $top = new Topology();
+        $this->setProperty($top, 'id', '');
         $dr = $this->createMock(DocumentRepository::class);
-        $dr->expects($this->at(0))->method('find')->willReturn(new Topology());
-        $dr->expects($this->at(1))->method('find')->willReturn(NULL);
+        $dr->expects($this->at(0))->method('findBy')->willReturn([$top]);
+        $dr->expects($this->at(1))->method('findOneBy')->willReturn(NULL);
 
         /** @var DocumentManager|\PHPUnit_Framework_MockObject_MockObject $dm */
         $dm = $this->createMock(DocumentManager::class);
@@ -67,7 +72,7 @@ class StartingPointHandlerTest extends TestCase
         $startingPointHandler = new StartingPointHandler($dm, $startingPoint);
 
         $this->expectException(Exception::class);
-        $this->expectExceptionMessage('The node[id=1] does not exist.');
+        $this->expectExceptionMessage('The node[name=1] does not exist.');
         $startingPointHandler->runWithRequest(Request::createFromGlobals(), '123', '1');
     }
 
@@ -78,9 +83,11 @@ class StartingPointHandlerTest extends TestCase
      */
     public function testRunWithRequest(): void
     {
+        $top = new Topology();
+        $this->setProperty($top, 'id', '');
         $dr = $this->createMock(DocumentRepository::class);
-        $dr->expects($this->at(0))->method('find')->willReturn(new Topology());
-        $dr->expects($this->at(1))->method('find')->willReturn(new Node());
+        $dr->expects($this->at(0))->method('findBy')->willReturn([$top]);
+        $dr->expects($this->at(1))->method('findOneBy')->willReturn((new Node()));
 
         /** @var DocumentManager|\PHPUnit_Framework_MockObject_MockObject $dm */
         $dm = $this->createMock(DocumentManager::class);
@@ -101,9 +108,11 @@ class StartingPointHandlerTest extends TestCase
      */
     public function testRun(): void
     {
+        $top = new Topology();
+        $this->setProperty($top, 'id', '');
         $dr = $this->createMock(DocumentRepository::class);
-        $dr->expects($this->at(0))->method('find')->willReturn(new Topology());
-        $dr->expects($this->at(1))->method('find')->willReturn(new Node());
+        $dr->expects($this->at(0))->method('findBy')->willReturn([$top]);
+        $dr->expects($this->at(1))->method('findOneBy')->willReturn(new Node());
 
         /** @var DocumentManager|\PHPUnit_Framework_MockObject_MockObject $dm */
         $dm = $this->createMock(DocumentManager::class);
@@ -123,8 +132,10 @@ class StartingPointHandlerTest extends TestCase
      */
     public function testRunTest(): void
     {
+        $top = new Topology();
+        $this->setProperty($top, 'id', '');
         $dr = $this->createMock(DocumentRepository::class);
-        $dr->expects($this->at(0))->method('find')->willReturn(new Topology());
+        $dr->expects($this->at(0))->method('findBy')->willReturn([$top]);
 
         /** @var DocumentManager|\PHPUnit_Framework_MockObject_MockObject $dm */
         $dm = $this->createMock(DocumentManager::class);
@@ -144,7 +155,7 @@ class StartingPointHandlerTest extends TestCase
 
         $result = $startingPointHandler->runTest('123');
 
-        $this->assertEquals($data, $result);
+        $this->assertEquals($data, $result[0]);
     }
 
 }
