@@ -1,8 +1,13 @@
 services:
-    systems.loader:
-        class: CleverConnectors\AppBundle\Model\Systems\SystemLoader
+    systems.controller:
+        class: CleverConnectors\AppBundle\Controller\SystemController
         arguments:
-            - '@service_container'
+            - '@systems.handler'
+
+    systems.handler:
+        class: CleverConnectors\AppBundle\Handler\SystemHandler
+        arguments:
+            - '@systems.manager'
 
     systems.manager:
         class: CleverConnectors\AppBundle\Model\Systems\SystemManager
@@ -10,6 +15,11 @@ services:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@systems.loader'
             - '@manager.webhook'
+
+    systems.loader:
+        class: CleverConnectors\AppBundle\Model\Systems\SystemLoader
+        arguments:
+            - '@service_container'
 
     systems.null.user:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\NullSystem
