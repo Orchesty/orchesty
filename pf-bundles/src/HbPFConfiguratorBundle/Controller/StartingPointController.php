@@ -31,19 +31,19 @@ class StartingPointController extends FOSRestController
     private $handler;
 
     /**
-     * @Route("/topologies/{topologyId}/nodes/{nodeId}/run", defaults={}, requirements={"topologyId": "\w+", "nodeId": "\w+"})
+     * @Route("/topologies/{topologyName}/nodes/{nodeName}/run", defaults={}, requirements={"topologyName": "\w+", "nodeName": "\w+"})
      * @Method({"POST"})
      *
      * @param Request $request
-     * @param string  $topologyId
-     * @param string  $nodeId
+     * @param string  $topologyName
+     * @param string  $nodeName
      *
      * @return Response
      */
-    public function runAction(Request $request, string $topologyId, string $nodeId): Response
+    public function runAction(Request $request, string $topologyName, string $nodeName): Response
     {
         $this->construct();
-        $this->handler->runWithRequest($request, $topologyId, $nodeId);
+        $this->handler->runWithRequest($request, $topologyName, $nodeName);
 
         return $this->handleView($this->view([], 200, []));
     }
