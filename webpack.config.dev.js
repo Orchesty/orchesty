@@ -14,7 +14,7 @@ module.exports = merge(common, {
   output: {
     path: path.join(__dirname, 'dist'),
     filename: 'bundle.js',
-    publicPath: '/'
+    publicPath: '/ui/'
   },
   plugins: [
     new webpack.NamedModulesPlugin()
@@ -37,7 +37,7 @@ module.exports = merge(common, {
     hot: true,
     inline: true,
     historyApiFallback: {
-      index: '/'
+      index: '/ui/'
     }
   }
 });
