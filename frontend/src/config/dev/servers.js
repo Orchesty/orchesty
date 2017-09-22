@@ -7,7 +7,7 @@ export default {
         caption: 'Apiary'
       },
       dev_docker: {
-        url: 'http://127.0.0.6/api/gateway',
+        url: 'http://127.0.0.66/api/gateway',
         caption: 'Dev - docker'
       },
       cerv_localhost: {
