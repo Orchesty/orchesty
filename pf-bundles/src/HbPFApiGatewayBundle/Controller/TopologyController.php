@@ -96,7 +96,7 @@ class TopologyController extends FOSRestController
 
     /**
      * @Route("/topologies/{id}/publish", defaults={}, requirements={"id": "\w+"})
-     * @Method({"GET", "OPTIONS"})
+     * @Method({"POST", "OPTIONS"})
      *
      * @param string $id
      *
@@ -109,7 +109,7 @@ class TopologyController extends FOSRestController
 
     /**
      * @Route("/topologies/{id}/clone", defaults={}, requirements={"id": "\w+"})
-     * @Method({"GET", "OPTIONS"})
+     * @Method({"POST", "OPTIONS"})
      *
      * @param string $id
      *

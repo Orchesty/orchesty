@@ -46,14 +46,14 @@ class AuthorizationController extends FOSRestController
     }
 
     /**
-     * @Route("/authorization/info")
+     * @Route("/authorizations")
      * @Method({"GET", "OPTIONS"})
      *
      * @return Response
      */
-    public function getAuthorizationsInfoAction(): Response
+    public function getAuthorizationsAction(): Response
     {
-        return $this->forward('HbPFAuthorizationBundle:Authorization:getAuthorizationsInfo');
+        return $this->forward('HbPFAuthorizationBundle:Authorization:getAuthorizations');
     }
 
 }

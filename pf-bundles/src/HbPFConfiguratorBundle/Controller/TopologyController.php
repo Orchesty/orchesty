@@ -39,8 +39,8 @@ class TopologyController extends FOSRestController
     {
         $this->construct();
         $data = $this->topologyHandler->getTopologies(
-            $query->get('limit'),
-            $query->get('offset'),
+			(int)$query->get('limit'),
+			(int)$query->get('offset'),
             $query->get('order_by')
         );
 
@@ -159,7 +159,7 @@ class TopologyController extends FOSRestController
 
     /**
      * @Route("/topologies/{id}/publish", defaults={}, requirements={"id": "\w+"})
-     * @Method({"GET", "OPTIONS"})
+     * @Method({"POST", "OPTIONS"})
      *
      * @param string $id
      *
@@ -175,7 +175,7 @@ class TopologyController extends FOSRestController
 
     /**
      * @Route("/topologies/{id}/clone", defaults={}, requirements={"id": "\w+"})
-     * @Method({"GET", "OPTIONS"})
+     * @Method({"POST", "OPTIONS"})
      *
      * @param string $id
      *
