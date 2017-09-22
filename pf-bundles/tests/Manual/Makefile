@@ -4,13 +4,13 @@ DC=docker-compose
 DE=docker-compose exec -T sftp
 
 # Docker
-docker-up: .env
+docker-up:
 	$(DC) pull
 	$(DC) up -d
 
-docker-up-force: .env
+docker-up-force:
 	$(DC) pull
 	$(DC) up -d --force-recreate
 
-docker-down-clean: .env
+docker-down-clean:
 	$(DC) down -v
