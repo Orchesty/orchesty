@@ -24,7 +24,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
     {
         $topologies = $this->createTopologies(4);
 
-        $response = $this->sendGet('/api/gateway/topologies?limit=2&offset=1&order_by=name-');
+        $response = $this->sendGet('/api/topologies?limit=2&offset=1&order_by=name-');
 
         self::assertEquals(200, $response->status);
         self::assertEquals(1, $response->content->offset);
@@ -43,7 +43,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
     {
         $topology = $this->createTopologies()[0];
 
-        $response = $this->sendGet(sprintf('/api/gateway/topologies/%s', $topology->getId()));
+        $response = $this->sendGet(sprintf('/api/topologies/%s', $topology->getId()));
 
         self::assertEquals(200, $response->status);
         self::assertTopology($topology, $response->content);
@@ -54,7 +54,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
      */
     public function testGetTopologyNotFound(): void
     {
-        $response = $this->sendGet('/api/gateway/topologies/999');
+        $response = $this->sendGet('/api/topologies/999');
 
         self::assertEquals(500, $response->status);
         self::assertEquals(TopologyException::class, $response->content->type);
@@ -66,7 +66,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
      */
     public function testCreateTopology(): void
     {
-        $response = $this->sendPost('/api/gateway/topologies', [
+        $response = $this->sendPost('/api/topologies', [
             'name'    => 'Topology',
             'descr'   => 'Topology',
             'enabled' => TRUE,
@@ -88,7 +88,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
             ->setDescr('Topology');
         $this->persistAndFlush($topology);
 
-        $response = $this->sendPut(sprintf('/api/gateway/topologies/%s', $topology->getId()), [
+        $response = $this->sendPut(sprintf('/api/topologies/%s', $topology->getId()), [
             'name'    => 'Topology 2',
             'descr'   => 'Topology 2',
             'enabled' => TRUE,
@@ -105,7 +105,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
      */
     public function testUpdateTopologyNotFound(): void
     {
-        $response = $this->sendPut(sprintf('/api/gateway/topologies/999'), [
+        $response = $this->sendPut(sprintf('/api/topologies/999'), [
             'name'    => 'Topology 2',
             'descr'   => 'Topology 2',
             'enabled' => TRUE,
@@ -125,7 +125,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
 
         $this->client->request(
             'GET',
-            sprintf('/api/gateway/topologies/%s/schema.bpmn', $topology->getId())
+            sprintf('/api/topologies/%s/schema.bpmn', $topology->getId())
         );
 
         $response = $this->client->getResponse();
@@ -145,7 +145,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
     {
         $this->client->request(
             'GET',
-            '/api/gateway/topologies/999/schema.bpmn'
+            '/api/topologies/999/schema.bpmn'
         );
 
         $response = $this->client->getResponse();
@@ -172,7 +172,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
 
         $this->client->request(
             'PUT',
-            sprintf('/api/gateway/topologies/%s/schema.bpmn', $topology->getId()),
+            sprintf('/api/topologies/%s/schema.bpmn', $topology->getId()),
             [],
             [],
             [
@@ -198,7 +198,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
     {
         $this->client->request(
             'PUT',
-            '/api/gateway/topologies/999/schema.bpmn',
+            '/api/topologies/999/schema.bpmn',
             [],
             [],
             [
@@ -232,7 +232,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
 
         $this->client->request(
             'PUT',
-            sprintf('/api/gateway/topologies/%s/schema.bpmn', $topology->getId()),
+            sprintf('/api/topologies/%s/schema.bpmn', $topology->getId()),
             [],
             [],
             [
@@ -264,7 +264,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
 
         $this->client->request(
             'PUT',
-            sprintf('/api/gateway/topologies/%s/schema.bpmn', $topology->getId()),
+            sprintf('/api/topologies/%s/schema.bpmn', $topology->getId()),
             [],
             [],
             [
@@ -296,7 +296,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
 
         $this->client->request(
             'PUT',
-            sprintf('/api/gateway/topologies/%s/schema.bpmn', $topology->getId()),
+            sprintf('/api/topologies/%s/schema.bpmn', $topology->getId()),
             [],
             [],
             [
@@ -329,7 +329,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
 
         $this->client->request(
             'PUT',
-            sprintf('/api/gateway/topologies/%s/schema.bpmn', $topology->getId()),
+            sprintf('/api/topologies/%s/schema.bpmn', $topology->getId()),
             [],
             [],
             [
@@ -341,7 +341,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
 
         $this->client->request(
             'GET',
-            sprintf('/api/gateway/topologies/%s/schema.bpmn', $topology->getId())
+            sprintf('/api/topologies/%s/schema.bpmn', $topology->getId())
         );
 
         $response = $this->client->getResponse();
@@ -363,7 +363,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
 
         $this->client->request(
             'GET',
-            '/api/gateway/topologies/999/delete',
+            '/api/topologies/999/delete',
             [],
             [],
             [
