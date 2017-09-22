@@ -56,13 +56,15 @@ phpstan:
 phpunit:
 	$(DE) ./vendor/bin/phpunit -c phpunit.xml.dist --colors --stderr tests/Unit
 
-phpcontroller: #database-create
-	$(DE) ./vendor/bin/phpunit -c phpunit.xml.dist --colors --stderr tests/Controller
-
 phpintergration: #database-create
 	$(DE) ./vendor/bin/phpunit -c phpunit.xml.dist --colors --stderr tests/Integration
 
-test: docker-up-force composer-install codesniffer phpstan clear-cache phpunit phpcontroller phpintergration
+phpcontroller: #database-create
+	$(DE) ./vendor/bin/phpunit -c phpunit.xml.dist --colors --stderr tests/Controller
+
+test: docker-up-force composer-install codesniffer phpstan clear-cache phpunit phpintergration phpcontroller
+
+fasttest: codesniffer phpstan clear-cache phpunit phpintergration phpcontroller
 
 #Other
 

@@ -45,13 +45,24 @@ class SystemManager
     }
 
     /**
-     * @param string $group
+     * @param string $key
+     *
+     * @return SystemInterface
+     */
+    public function getSystem(string $key): SystemInterface
+    {
+        return $this->systemLoader->getSystem($key);
+    }
+
+    /**
+     * @param string|null $user
+     * @param string|null $group
      *
      * @return SystemInterface[]
      */
-    public function getSystems(string $group): array
+    public function getSystems(?string $user = NULL, ?string $group = NULL): array
     {
-        return $this->systemLoader->getSystems($group);
+        return $this->systemLoader->getSystems($user, $group);
     }
 
     /**
@@ -107,8 +118,8 @@ class SystemManager
 
         if (!$systemInstall) {
             throw new SystemException(
-                sprintf('System \'%s\' not found', $system),
-                SystemException::SYSTEM_NOT_FOUND
+                sprintf('System \'%s\' or user \'%s\' not found', $system, $user),
+                SystemException::SYSTEM_OR_USER_NOT_FOUND
             );
         }
 
@@ -133,8 +144,8 @@ class SystemManager
 
         if (!$systemInstall) {
             throw new SystemException(
-                sprintf('System \'%s\' not found', $system),
-                SystemException::SYSTEM_NOT_FOUND
+                sprintf('System \'%s\' or user \'%s\' not found', $system, $user),
+                SystemException::SYSTEM_OR_USER_NOT_FOUND
             );
         }
 
@@ -158,7 +169,6 @@ class SystemManager
         $systems = $this->systemRepository->findBy(['system' => $system, 'synchronized' => $synchronized]);
 
         foreach ($systems as $systemInstall) {
-
             $users[] = $systemInstall->getUser();
         }
 

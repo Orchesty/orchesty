@@ -1,2 +1,5 @@
 parameters:
-    systems.tags: [ 'system' ]
+    systems.tags:
+        - 'systems'
+        - 'systems.user.someUser'
+        - 'systems.group.someGroup'

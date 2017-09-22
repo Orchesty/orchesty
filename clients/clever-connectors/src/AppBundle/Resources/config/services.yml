@@ -10,10 +10,20 @@ services:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@systems.loader'
 
-    systems.null:
+    systems.null.user:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\NullSystem
         arguments:
-        tags: ['system']
+        tags: ['systems', 'systems.dev', 'systems.user.someUser']
+
+    systems.null.group:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\NullSystem
+        arguments:
+        tags: ['systems', 'systems.dev', 'systems.group.someGroup']
+
+    systems.null.user.group:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\NullSystem
+        arguments:
+        tags: ['systems', 'systems.dev', 'systems.user.someUser', 'systems.group.someGroup']
 
     manager.webhook:
         class: CleverConnectors\AppBundle\Model\WebhookManager

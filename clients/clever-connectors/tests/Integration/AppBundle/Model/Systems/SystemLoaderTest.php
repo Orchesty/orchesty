@@ -34,7 +34,9 @@ class SystemLoaderTest extends KernelTestCaseAbstract
      */
     public function testGetSystem(): void
     {
-        $this->assertInstanceOf(NullSystem::class, $this->loader->getSystem('null'));
+        $this->assertInstanceOf(NullSystem::class, $this->loader->getSystem('null.user'));
+        $this->assertInstanceOf(NullSystem::class, $this->loader->getSystem('null.group'));
+        $this->assertInstanceOf(NullSystem::class, $this->loader->getSystem('null.user.group'));
     }
 
     /**
@@ -51,23 +53,55 @@ class SystemLoaderTest extends KernelTestCaseAbstract
     /**
      *
      */
-    public function testGetSystems(): void
+    public function testGetSystemsByUser(): void
     {
-        $systems = $this->loader->getSystems('system');
-
-        $this->assertNotEmpty($systems);
-        $this->assertInstanceOf(NullSystem::class, $systems[0]);
+        $this->assertEquals(2, count($this->loader->getSystems('someUser')));
     }
 
     /**
      *
      */
-    public function testGetSystemsNotFound(): void
+    public function testGetSystemsByUserNotFound(): void
     {
         $this->expectException(SystemException::class);
         $this->expectExceptionCode(SystemException::SYSTEM_PROPERTY_NOT_FOUND);
 
         $this->loader->getSystems('unknown');
+    }
+
+    /**
+     *
+     */
+    public function testGetSystemsByGroup(): void
+    {
+        $this->assertEquals(2, count($this->loader->getSystems(NULL, 'someGroup')));
+    }
+
+    /**
+     *
+     */
+    public function testGetSystemsByGroupNotFound(): void
+    {
+        $this->expectException(SystemException::class);
+        $this->expectExceptionCode(SystemException::SYSTEM_PROPERTY_NOT_FOUND);
+
+        $this->loader->getSystems(NULL, 'unknown');
+    }
+
+    /**
+     *
+     */
+    public function testGetSystemsByUserAndGroup(): void
+    {
+        $this->assertEquals(1, count($this->loader->getSystems('someUser', 'someGroup')));
+    }
+
+    /**
+     *
+     */
+    public function testGetSystemsBySystems(): void
+    {
+        $this->assertEquals(3, count($this->loader->getSystems()));
     }
 
 }
