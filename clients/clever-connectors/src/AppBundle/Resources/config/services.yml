@@ -16,3 +16,15 @@ services:
             - '@hbpf.transport.curl_manager'
         calls:
             - ['setLogger', ['@monolog.logger.commons']]
+
+    cc.controller.webhook:
+        class: CleverConnectors\AppBundle\Controller\WebhookController
+        arguments:
+            - '@hbpf.handler.starting_point'
+
+    listener.controller.security:
+        class: CleverConnectors\AppBundle\Listeners\WebhookSecurityListener
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.transport.curl_manager'
+        tags: ['kernel.event_subscriber']
