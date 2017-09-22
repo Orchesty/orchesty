@@ -120,4 +120,17 @@ class NullSystem implements WebhookSystemInterface
         return $this;
     }
 
+    /**
+     * @return array
+     */
+    public function toArray(): array
+    {
+        return [
+            'type'        => $this->getType(),
+            'key'         => $this->getKey(),
+            'name'        => $this->getName(),
+            'description' => $this->getDescription(),
+        ];
+    }
+
 }

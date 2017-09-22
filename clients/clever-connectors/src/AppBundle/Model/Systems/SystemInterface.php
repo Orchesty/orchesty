@@ -35,4 +35,9 @@ interface SystemInterface
      */
     public function getLogo(): string;
 
+    /**
+     * @return array
+     */
+    public function toArray(): array;
+
 }

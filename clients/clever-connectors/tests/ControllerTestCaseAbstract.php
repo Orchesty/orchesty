@@ -63,13 +63,14 @@ class ControllerTestCaseAbstract extends WebTestCase
     }
 
     /**
-     * @param string $url
+     * @param string     $url
+     * @param array|null $parameters
      *
      * @return stdClass
      */
-    protected function sendGet(string $url): stdClass
+    protected function sendGet(string $url, ?array $parameters = []): stdClass
     {
-        $this->client->request('GET', $url);
+        $this->client->request('GET', $url, $parameters);
         $response = $this->client->getResponse();
 
         return (object) [
