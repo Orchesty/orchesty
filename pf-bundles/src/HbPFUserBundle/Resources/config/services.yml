@@ -4,7 +4,7 @@ services:
         arguments:
             - '@hbpf.database_manager_locator.user'
             - '@hbpf.user.manager.user'
-            - '@hbpf.acl.provider.resource'
+            - '@hbpf.user.provider.resource'
         tags:
             - { name: kernel.event_subscriber }
 
@@ -17,7 +17,7 @@ services:
         class: Hanaboso\PipesFramework\User\Model\Token\TokenManager
         arguments:
            - '@hbpf.database_manager_locator.user'
-           - '@hbpf.acl.provider.resource'
+           - '@hbpf.user.provider.resource'
 
     hbpf.user.manager.user:
         class: Hanaboso\PipesFramework\User\Model\User\UserManager
@@ -27,7 +27,7 @@ services:
             - '@hbpf.user.manager.token'
             - '@security.encoder_factory.generic'
             - '@event_dispatcher'
-            - '@hbpf.acl.provider.resource'
+            - '@hbpf.user.provider.resource'
             - "@rabbit-mq.producer.pf-mailer"
 
     hbpf.user.manager.security:
@@ -37,7 +37,7 @@ services:
             - '@security.encoder_factory'
             - '@hbpf.user.session'
             - '@security.token_storage'
-            - '@hbpf.acl.provider.resource'
+            - '@hbpf.user.provider.resource'
 
     hbpf.database_manager_locator.user:
         class: Hanaboso\PipesFramework\User\DatabaseManager\UserDatabaseManagerLocator
@@ -45,3 +45,8 @@ services:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@doctrine.orm.default_entity_manager'
             - '%database_type%'
+
+    hbpf.user.provider.resource:
+        class: Hanaboso\PipesFramework\HbPFUserBundle\Provider\ResourceProvider
+        arguments:
+            - '%db_res%'

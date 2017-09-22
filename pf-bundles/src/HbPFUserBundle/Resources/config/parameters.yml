@@ -1,4 +1,5 @@
 parameters:
+    resource_enum: Hanaboso\PipesFramework\User\Enum\ResourceEnum
     database_type:
         - 'ODM'
 #        ODM | ORM

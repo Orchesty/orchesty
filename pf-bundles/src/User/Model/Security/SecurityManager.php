@@ -2,10 +2,10 @@
 
 namespace Hanaboso\PipesFramework\User\Model\Security;
 
-use Hanaboso\PipesFramework\Acl\Enum\ResourceEnum;
-use Hanaboso\PipesFramework\HbPFAclBundle\Provider\ResourceProvider;
+use Hanaboso\PipesFramework\HbPFUserBundle\Provider\ResourceProvider;
 use Hanaboso\PipesFramework\User\DatabaseManager\UserDatabaseManagerLocator;
 use Hanaboso\PipesFramework\User\Entity\UserInterface;
+use Hanaboso\PipesFramework\User\Enum\ResourceEnum;
 use Hanaboso\PipesFramework\User\Model\Token;
 use Hanaboso\PipesFramework\User\Repository\Document\UserRepository as OdmRepo;
 use Hanaboso\PipesFramework\User\Repository\Entity\UserRepository as OrmRepo;

@@ -3,7 +3,7 @@ services:
         class: Hanaboso\PipesFramework\HbPFUserBundle\Command\ChangePasswordCommand
         arguments:
             - '@hbpf.database_manager_locator.user'
-            - '@hbpf.acl.provider.resource'
+            - '@hbpf.user.provider.resource'
             - '@security.encoder_factory.generic'
         tags:
             -  { name: console.command }
