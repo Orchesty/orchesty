@@ -3,6 +3,7 @@
 namespace Hanaboso\PipesFramework\Commons\Transport\Ftp\Adapter;
 
 use Hanaboso\PipesFramework\Commons\Transport\Ftp\Exception\FtpException;
+use Hanaboso\PipesFramework\Commons\Transport\Ftp\FtpConfig;
 use phpseclib\Net\SFTP;
 
 /**
@@ -19,31 +20,30 @@ class SftpAdapter implements FtpAdapterInterface
     protected $sftp;
 
     /**
-     * @param array $params
+     * @param FtpConfig $ftpConfig
      *
      * @throws FtpException
      */
-    public function connect(array $params): void
+    public function connect(FtpConfig $ftpConfig): void
     {
-        $this->sftp = new SFTP($params['host'], $params['port'], $params['timeout']);
+        $this->sftp = new SFTP($ftpConfig->getHost(), $ftpConfig->getPort(), $ftpConfig->getTimeout());
 
         if (!$this->sftp instanceof SFTP) {
             throw new FtpException(
-                sprintf('Sftp connection to host %s failed.', $params['host']),
+                sprintf('Sftp connection to host %s failed.', $ftpConfig->getHost()),
                 FtpException::CONNECTION_FAILED
             );
         }
     }
 
     /**
-     * @param string $username
-     * @param string $password
+     * @param FtpConfig $ftpConfig
      *
      * @throws FtpException
      */
-    public function login(string $username, string $password): void
+    public function login(FtpConfig $ftpConfig): void
     {
-        if (!$this->getResource()->login($username, $password)) {
+        if (!$this->sftp || !$this->sftp->login($ftpConfig->getUsername(), $ftpConfig->getPassword())) {
             throw new FtpException('Login failed.', FtpException::LOGIN_FAILED);
         }
     }
@@ -54,7 +54,6 @@ class SftpAdapter implements FtpAdapterInterface
     public function disconnect(): void
     {
         if ($this->getResource()) {
-            $this->getResource()->disconnect();
             $this->sftp = NULL;
         }
     }
@@ -99,7 +98,14 @@ class SftpAdapter implements FtpAdapterInterface
             throw new FtpException('Failed to list files in directory.', FtpException::FILES_LISTING_FAILED);
         }
 
-        return (array) $list;
+        $files = [];
+        foreach ($list as $item) {
+            if (!in_array($item, ['.', '..'])) {
+                $files[] = $item;
+            }
+        }
+
+        return $files;
     }
 
     /**
@@ -118,7 +124,7 @@ class SftpAdapter implements FtpAdapterInterface
      * @return void
      * @throws FtpException
      */
-    public function makeDir($dir): void
+    public function makeDir(string $dir): void
     {
         $mkdir = $this->getResource()->mkdir($dir);
 
@@ -149,6 +155,20 @@ class SftpAdapter implements FtpAdapterInterface
         }
 
         $this->getResource()->chdir($current);
+    }
+
+    /**
+     * @param string $file
+     *
+     * @throws FtpException
+     */
+    public function remove(string $file): void
+    {
+        if (!$this->getResource()->delete($file, FALSE)) {
+            throw new FtpException(
+                sprintf('Unable to delete file or folder "%s"', $file)
+            );
+        }
     }
 
     /**************************************** HELPERS ****************************************/

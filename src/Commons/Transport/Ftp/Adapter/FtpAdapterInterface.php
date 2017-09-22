@@ -3,6 +3,7 @@
 namespace Hanaboso\PipesFramework\Commons\Transport\Ftp\Adapter;
 
 use Hanaboso\PipesFramework\Commons\Transport\Ftp\Exception\FtpException;
+use Hanaboso\PipesFramework\Commons\Transport\Ftp\FtpConfig;
 
 /**
  * Interface FtpAdapterInterface
@@ -13,9 +14,9 @@ interface FtpAdapterInterface
 {
 
     /**
-     * @param array $params
+     * @param FtpConfig $ftpConfig
      */
-    public function connect(array $params): void;
+    public function connect(FtpConfig $ftpConfig): void;
 
     /**
      *
@@ -23,12 +24,9 @@ interface FtpAdapterInterface
     public function disconnect(): void;
 
     /**
-     * @param string $username
-     * @param string $password
-     *
-     * @throws FtpException
+     * @param FtpConfig $ftpConfig
      */
-    public function login(string $username, string $password): void;
+    public function login(FtpConfig $ftpConfig): void;
 
     /**
      * @param string $remoteFile
@@ -66,7 +64,7 @@ interface FtpAdapterInterface
      * @return void
      * @throws FtpException
      */
-    public function makeDir($dir): void;
+    public function makeDir(string $dir): void;
 
     /**
      * @param string $dir
