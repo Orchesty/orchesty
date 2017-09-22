@@ -13,7 +13,7 @@ docker-up-force: .env
 	$(DC) pull
 	$(DC) up -d --force-recreate
 
-docker-down-clean: .env
+docker-down-clean: .env phpmanual-down
 	$(DC) down -v
 
 #Composer
@@ -59,7 +59,16 @@ phpcontroller:
 phpintergration: database-create
 	$(DE) ./vendor/bin/phpunit -c phpunit.xml.dist --colors --stderr tests/Integration/
 
-test: docker-up-force composer-install codesniffer phpstan clear-cache phpunit phpcontroller phpintergration
+phpmanual-up:
+	cd tests/Manual; $(MAKE) docker-up-force;
+
+phpmanual-tests:
+	$(DE) ./vendor/bin/phpunit -c phpunit.xml.dist --colors --stderr tests/Manual/
+
+phpmanual-down:
+	cd tests/Manual; $(MAKE) docker-down-clean;
+
+test: docker-up-force composer-install codesniffer phpstan clear-cache phpunit phpcontroller phpintergration phpmanual-up phpmanual-tests
 
 #Other
 
