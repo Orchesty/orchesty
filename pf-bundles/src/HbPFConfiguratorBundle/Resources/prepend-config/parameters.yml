@@ -1,0 +1,3 @@
+parameters:
+    generator_path: %env(GENERATOR_PATH)%
+    env(GENERATOR_PATH): %kernel.project_dir%/topology

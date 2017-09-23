@@ -16,3 +16,10 @@ services:
         arguments:
             - "@doctrine.odm.mongodb.document_manager"
             - '@hbpf.starting_point.starting_point'
+
+    hbpf.handler.generator_handler:
+        class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\GeneratorHandler
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '%generator_path%'
+            - 'demo_topology'

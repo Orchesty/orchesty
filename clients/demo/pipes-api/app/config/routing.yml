@@ -22,3 +22,7 @@ hb_pf_connector:
 hb_pf_cutom_node:
     resource: "@HbPFCustomNodeBundle/Controller"
     type: annotation
+
+hb_pf_configurator:
+    resource: "@HbPFConfiguratorBundle/Controller"
+    type: annotation

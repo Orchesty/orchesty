@@ -18,3 +18,9 @@ services:
             - '@hbpf.handler.starting_point'
             - "%kernel.project_dir%"
             - "@monolog.logger.test"
+
+    hbpf.configurator.generator_controller:
+        class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\GeneratorController
+        arguments:
+            - '@hbpf.handler.generator_handler'
+            - '@monolog.logger.security'

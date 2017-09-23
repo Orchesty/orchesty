@@ -40,6 +40,8 @@ class HbPFMailerExtension extends Extension implements PrependExtensionInterface
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/prepend-config'));
         $loader->load('hb_pf_mailer.yml');
+
+        $container->setParameter('src_dir', __DIR__ . '/../..');
     }
 
     /**
