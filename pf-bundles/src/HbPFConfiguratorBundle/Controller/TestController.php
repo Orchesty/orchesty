@@ -36,7 +36,7 @@ class TestController extends FOSRestController
     /**
      * @var StartingPointHandler
      */
-    private $startingPointHandler;
+    protected $startingPointHandler;
 
     /**
      * @var string
@@ -168,8 +168,7 @@ class TestController extends FOSRestController
 
             $generator->generate($topology, $nodes);
         }
-
-//        $this->startingPointHandler->run($topology->getId(), $nodes[0]->getId());
+        //        $this->startingPointHandler->run($topology->getId(), $nodes[0]->getId());
     }
 
     /**

@@ -9,7 +9,6 @@
 namespace Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\DocumentRepository;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\Generator;
@@ -70,20 +69,20 @@ class GeneratorHandler
             'topology' => $topologyId,
         ]);
 
-        if (!$nodes) {
+        if (!is_array($nodes) || empty($nodes)) {
             return FALSE;
+        } else {
+            $this->generate($topology, $nodes);
         }
-
-        $this->generate($topology, $nodes);
 
         return TRUE;
     }
 
     /**
      * @param Topology $topology
-     * @param Node     $nodes
+     * @param Node[]   $nodes
      */
-    protected function generate(Topology $topology, Node $nodes): void
+    protected function generate(Topology $topology, array $nodes): void
     {
         $dstTopologyDirectory = Generator::getTopologyDir($topology, $this->dstDirectory);
 

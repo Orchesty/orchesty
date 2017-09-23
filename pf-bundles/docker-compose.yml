@@ -7,11 +7,13 @@ services:
       - ./:/srv/project
       - ../:/srv/libs
       - ${SSH_AUTH_SOCK}:/tmp/bound-ssh-agent
+      - topology-generator:${GENERATOR_PATH}
     environment:
       - DEV_UID=${DEV_UID}
       - DEV_GID=${DEV_GID}
       - COMPOSER_HOME=/home/dev/.composer
       - PHP_IDE_CONFIG=${PHP_IDE_CONFIG}
+      - topology-generator:${GENERATOR_PATH}
     depends_on:
       - mongo
       - rabbitmq
@@ -70,3 +72,5 @@ volumes:
   mongo: {}
   mariadb: {}
   rabbit-mq: {}
+  topology-generator:
+    external: true
