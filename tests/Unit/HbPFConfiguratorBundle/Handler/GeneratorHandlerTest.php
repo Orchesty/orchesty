@@ -26,18 +26,25 @@ class GeneratorHandlerTest extends TestCase
     /**
      * @covers GeneratorHandler::generateTopology()
      */
-    public function testGenerateTopologyOnExists()
+    public function testGenerateTopologyOnExists(): void
     {
+        /** @var DocumentRepository|PHPUnit_Framework_MockObject_MockObject $repositoryTopology */
         $repositoryTopology = $this->createMock(DocumentRepository::class);
         $repositoryTopology->expects($this->at(0))->method('find')->willReturn(new Topology());
 
+        /** @var DocumentRepository|PHPUnit_Framework_MockObject_MockObject $repositoryNode */
         $repositoryNode = $this->createMock(DocumentRepository::class);
-        $repositoryNode->expects($this->at(0))->method('findBy')->willReturn(new Node());
+        $repositoryNode->expects($this->at(0))->method('findBy')->willReturn([new Node()]);
 
         /** @var DocumentManager|\PHPUnit_Framework_MockObject_MockObject $dm */
         $dm = $this->createMock(DocumentManager::class);
         $dm->method('getRepository')->willReturnCallback(
-            function ($class) use ($repositoryTopology, $repositoryNode): DocumentRepository {
+        /**
+         * @param $class
+         *
+         * @return DocumentRepository|null
+         */
+            function ($class) use ($repositoryTopology, $repositoryNode): ?DocumentRepository {
                 if ($class == Topology::class) {
 
                     return $repositoryTopology;
@@ -45,14 +52,17 @@ class GeneratorHandlerTest extends TestCase
 
                     return $repositoryNode;
                 }
+
+                return NULL;
             });
 
-        /** @var PHPUnit_Framework_MockObject_MockObject $handler */
+        /** @var GeneratorHandler|PHPUnit_Framework_MockObject_MockObject $handler */
         $handler = $this->getMockBuilder(GeneratorHandler::class)
             ->setConstructorArgs([$dm, '/srv/directory', 'demo_network'])
             ->setMethods(['generate'])
             ->getMock();
 
+        /** @var PHPUnit_Framework_MockObject_MockObject $handler */
         $handler->expects($this->once())->method('generate');
 
         /** @var GeneratorHandler $handler */
@@ -62,11 +72,13 @@ class GeneratorHandlerTest extends TestCase
     /**
      * @covers GeneratorHandler::generateTopology()
      */
-    public function testGenerateTopologyNonExists()
+    public function testGenerateTopologyNonExists(): void
     {
+        /** @var DocumentRepository|PHPUnit_Framework_MockObject_MockObject $repositoryTopology */
         $repositoryTopology = $this->createMock(DocumentRepository::class);
         $repositoryTopology->expects($this->at(0))->method('find')->willReturn(new Topology());
 
+        /** @var DocumentRepository|PHPUnit_Framework_MockObject_MockObject $repositoryNode */
         $repositoryNode = $this->createMock(DocumentRepository::class);
         $repositoryNode->expects($this->at(0))->method('findBy')->willReturn(NULL);
 
@@ -83,7 +95,7 @@ class GeneratorHandlerTest extends TestCase
                 }
             });
 
-        /** @var PHPUnit_Framework_MockObject_MockObject $handler */
+        /** @var GeneratorHandler|PHPUnit_Framework_MockObject_MockObject $handler */
         $handler = $this->getMockBuilder(GeneratorHandler::class)
             ->setConstructorArgs([$dm, '/srv/directory', 'demo_network'])
             ->setMethods(['generate'])
