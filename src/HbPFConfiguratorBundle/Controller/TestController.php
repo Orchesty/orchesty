@@ -67,7 +67,7 @@ class TestController extends FOSRestController
 
     /**
      * @Route("/test/topology/generate")
-     * @Method({"POST"})
+     * @Method({"POST", "GET"})
      *
      *
      * @return Response
@@ -95,7 +95,6 @@ class TestController extends FOSRestController
 
             $generatorFactory = new GeneratorFactory($this->rootDir, 'demo_default');
             $generator        = $generatorFactory->create();
-
             $generator->generate($topology, $nodes);
         } else {
             $topology = new Topology();
@@ -170,7 +169,7 @@ class TestController extends FOSRestController
             $generator->generate($topology, $nodes);
         }
 
-        $this->startingPointHandler->run($topology->getId(), $nodes[0]->getId());
+//        $this->startingPointHandler->run($topology->getId(), $nodes[0]->getId());
     }
 
     /**

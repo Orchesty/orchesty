@@ -6,11 +6,11 @@
  * Time: 8:32
  */
 
-namespace Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller;
+namespace Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller;
 
 use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Controller\FOSRestController;
-use Hanaboso\PipesFramework\HbPFApiGatewayBundle\Handler\GeneratorHandler;
+use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\GeneratorHandler;
 use Psr\Log\LoggerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Response;
@@ -20,7 +20,7 @@ use Symfony\Component\HttpFoundation\Response;
  *
  * @package Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller
  *
- * * @Route(service="hbpf.api_gateway.controller.generator")
+ * * @Route(service="hbpf.configurator.generator_controller")
  */
 class GeneratorController extends FOSRestController
 {
@@ -51,14 +51,14 @@ class GeneratorController extends FOSRestController
     }
 
     /**
-     * @Route("/topology/generate/topology/{id}")
-     * @Method({ "GET"})
+     * @Route("/topology/generate/{id}")
+     * @Method({"GET"})
      *
      * @param string $id
      *
      * @return Response
      */
-    public function runAction(string $id): Response
+    public function generateAction(string $id): Response
     {
         $result     = $this->generatorHandler->generateTopology($id);
         $statusCode = $result ? 200 : 400;
