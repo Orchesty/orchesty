@@ -37,7 +37,7 @@ class MapperController extends FOSRestController
     }
 
     /**
-     * @Route("/api/mapper/{id}/process", requirements={"id": "\w+"})
+     * @Route("/mapper/{id}/process", requirements={"id": "\w+"})
      * @Method({"POST", "OPTIONS"})
      *
      * @param Request $request
@@ -58,7 +58,7 @@ class MapperController extends FOSRestController
     }
 
     /**
-     * @Route("/api/mapper/{id}/process/test", requirements={"id": "\w+"})
+     * @Route("/mapper/{id}/process/test", requirements={"id": "\w+"})
      * @Method({"POST", "OPTIONS"})
      *
      * @param Request $request

@@ -19,7 +19,7 @@ class ApiControllerTest extends ControllerTestCaseAbstract
      */
     public function testSend(): void
     {
-        $response = $this->sendPost('/api/mailer/generic/send', [
+        $response = $this->sendPost('/mailer/generic/send', [
             'from'    => 'email@example.com',
             'to'      => 'email@example.com',
             'subject' => 'Subject',
@@ -35,7 +35,7 @@ class ApiControllerTest extends ControllerTestCaseAbstract
      */
     public function testSendInvalidData(): void
     {
-        $response = $this->sendPost('/api/mailer/generic/send', [
+        $response = $this->sendPost('/mailer/generic/send', [
             'from'    => '',
             'to'      => '',
             'subject' => '',
@@ -52,7 +52,7 @@ class ApiControllerTest extends ControllerTestCaseAbstract
      */
     public function testSendNotFoundMailer(): void
     {
-        $response = $this->sendPost('/api/mailer/unknown/send', []);
+        $response = $this->sendPost('/mailer/unknown/send', []);
 
         $this->assertEquals(500, $response->status);
         $this->assertEquals(MailerException::class, $response->content->type);
@@ -64,7 +64,7 @@ class ApiControllerTest extends ControllerTestCaseAbstract
      */
     public function testSendTest(): void
     {
-        $response = $this->sendPost('/api/mailer/generic/send/test', [
+        $response = $this->sendPost('/mailer/generic/send/test', [
             'from'    => 'email@example.com',
             'to'      => 'email@example.com',
             'subject' => 'Subject',
@@ -80,7 +80,7 @@ class ApiControllerTest extends ControllerTestCaseAbstract
      */
     public function testSendTestInvalidData(): void
     {
-        $response = $this->sendPost('/api/mailer/generic/send', [
+        $response = $this->sendPost('/mailer/generic/send', [
             'from'    => '',
             'to'      => '',
             'subject' => '',
@@ -97,7 +97,7 @@ class ApiControllerTest extends ControllerTestCaseAbstract
      */
     public function testSendTestNotFoundMailer(): void
     {
-        $response = $this->sendPost('/api/mailer/unknown/send', []);
+        $response = $this->sendPost('/mailer/unknown/send', []);
 
         $this->assertEquals(500, $response->status);
         $this->assertEquals(MailerException::class, $response->content->type);

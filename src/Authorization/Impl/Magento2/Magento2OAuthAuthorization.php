@@ -208,7 +208,7 @@ class Magento2OAuthAuthorization extends OAuthAuthorizationAbstract implements M
     public function getInfo(string $hostname): array
     {
         $info                 = parent::getInfo($hostname);
-        $info['redirect_url'] = sprintf('%s/api/authorizations/%s/save_token', $hostname, $this->getId());
+        $info['redirect_url'] = sprintf('%s/authorizations/%s/save_token', $hostname, $this->getId());
 
         return $info;
     }

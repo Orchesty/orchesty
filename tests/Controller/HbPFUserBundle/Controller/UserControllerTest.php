@@ -44,7 +44,7 @@ class UserControllerTest extends ControllerTestCaseAbstract
             ->setPassword($this->encoder->encodePassword('passw0rd', ''));
         $this->persistAndFlush($user);
 
-        $response = $this->sendPost('api/user/login', [
+        $response = $this->sendPost('/api/user/login', [
             'email'    => $user->getEmail(),
             'password' => 'passw0rd',
         ]);

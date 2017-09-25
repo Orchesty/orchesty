@@ -43,7 +43,7 @@ class JoinerController extends FOSRestController
     }
 
     /**
-     * @Route("/api/joiner/{joinerId}/join", defaults={}, requirements={"joinerId": "\w+"})
+     * @Route("/joiner/{joinerId}/join", defaults={}, requirements={"joinerId": "\w+"})
      * @Method({"POST", "OPTIONS"})
      *
      * @param Request $request
@@ -64,7 +64,7 @@ class JoinerController extends FOSRestController
     }
 
     /**
-     * @Route("/api/joiner/{joinerId}/join/test", defaults={}, requirements={"joinerId": "\w+"})
+     * @Route("/joiner/{joinerId}/join/test", defaults={}, requirements={"joinerId": "\w+"})
      * @Method({"POST", "OPTIONS"})
      *
      * @param Request $request
