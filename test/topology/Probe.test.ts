@@ -75,7 +75,7 @@ describe("Probe", () => {
             .then((resp: string) => {
                 const result: IProbeResult = JSON.parse(resp);
                 assert.equal(result.message, "2/2 nodes ready.");
-                assert.equal(result.failed.length, 0);
+                assert.equal(result.nodes.length, 2);
                 m1server.close();
                 m2server.close();
             });
@@ -107,13 +107,24 @@ describe("Probe", () => {
             .then((resp: string) => {
                 const result: IProbeResult = JSON.parse(resp);
                 assert.equal(result.message, "1/2 nodes ready.");
-                assert.equal(result.failed.length, 1);
-                assert.deepEqual(result.failed[0], {
-                    node: topo.nodes[1].id,
-                    url: topo.nodes[1].debug.url,
-                    code: 500,
-                    message: "Worker down",
-                });
+                assert.equal(result.nodes.length, 2);
+                assert.sameDeepMembers(
+                    result.nodes,
+                    [
+                        {
+                            node: topo.nodes[1].id,
+                            url: topo.nodes[1].debug.url,
+                            code: 500,
+                            message: "Worker down",
+                        },
+                        {
+                            node: topo.nodes[0].id,
+                            url: topo.nodes[0].debug.url,
+                            code: 200,
+                            message: "OK",
+                        },
+                    ],
+                );
                 m1server.close();
                 m2server.close();
             });

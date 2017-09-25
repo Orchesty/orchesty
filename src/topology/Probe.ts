@@ -7,7 +7,7 @@ const DEFAULT_HTTP_PORT = 8007;
 const HTTP_PROBE_PATH = "/status";
 const HTTP_TIMEOUT = 10000;
 
-interface IFailureInfo {
+interface INodeInfo {
     node: string;
     url: string;
     code: number;
@@ -15,7 +15,7 @@ interface IFailureInfo {
     err: string;
 }
 
-interface IProbeNodeFailure {
+interface IProbeNodeResult {
     node: string;
     url: string;
     code: number;
@@ -25,7 +25,7 @@ interface IProbeNodeFailure {
 export interface IProbeResult {
     status: boolean;
     message: string;
-    failed: IProbeNodeFailure[];
+    nodes: IProbeNodeResult[];
 }
 
 class Probe {
@@ -93,7 +93,7 @@ class Probe {
             let failed = 0;
             let total = 0;
 
-            const failedInfo: IFailureInfo[] = [];
+            const nodesInfo: INodeInfo[] = [];
 
             this.nodes.forEach((node: INodeConfig) => {
                 request(node.debug.url, (err, response, body) => {
@@ -103,19 +103,19 @@ class Probe {
                         ready += 1;
                     } else {
                         failed += 1;
-                        failedInfo.push({
-                            node: node.id,
-                            url: node.debug.url,
-                            code: response ? response.statusCode : 500,
-                            body,
-                            err,
-                        });
                     }
+
+                    nodesInfo.push({
+                        node: node.id,
+                        url: node.debug.url,
+                        code: response ? response.statusCode : 500,
+                        body,
+                        err,
+                    });
 
                     if (!resolved && this.nodes.length === total) {
                         resolved = true;
-
-                        resolve(this.composeProbeResult(total, failedInfo));
+                        resolve(this.composeProbeResult(total, ready, nodesInfo));
                     }
                 });
             });
@@ -123,27 +123,27 @@ class Probe {
             setTimeout(() => {
                 if (!resolved) {
                     resolved = true;
-                    reject(this.composeProbeResult(total, failedInfo));
+                    reject(this.composeProbeResult(total, ready, nodesInfo));
                 }
             }, HTTP_TIMEOUT);
         });
     }
 
-    private composeProbeResult(total: number, failures: IFailureInfo[]): IProbeResult {
-        const failed: IProbeNodeFailure[] = [];
-        failures.forEach((f: IFailureInfo) => {
-            failed.push({
-                node: f.node,
-                url: f.url,
-                code: f.code,
-                message: f.err ? f.err : f.body,
+    private composeProbeResult(total: number, success: number, nodesInfo: INodeInfo[]): IProbeResult {
+        const nodes: IProbeNodeResult[] = [];
+        nodesInfo.forEach((n: INodeInfo) => {
+            nodes.push({
+                node: n.node,
+                url: n.url,
+                code: n.code,
+                message: n.err ? n.err : n.body,
             });
         });
 
         return {
-            status: failures.length === 0,
-            message: `${total - failures.length}/${total} nodes ready.`,
-            failed,
+            status: success === total,
+            message: `${success}/${total} nodes ready.`,
+            nodes,
         };
     }
 

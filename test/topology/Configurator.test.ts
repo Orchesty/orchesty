@@ -34,7 +34,7 @@ const expectedTopo: ITopologyConfig = {
                 options: {},
                 type: "direct",
             },
-            routing_key: "job_done",
+            routing_key: "process_finished",
         },
         sub: {
             queue: {
