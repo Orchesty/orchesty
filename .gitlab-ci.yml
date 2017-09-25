@@ -91,7 +91,7 @@ demo-stage:
 # Client: Clever Monitor
 
 cm-git:
-  stage: stage1
+  stage: stage3
   only:
     - dev
     - cm-git-test
