@@ -1,4 +1,4 @@
-[
+export default [
   {
     "id": "test_sub_menu",
     "type": "sub",
@@ -19,4 +19,4 @@
       }
     ]
   }
-]
+];

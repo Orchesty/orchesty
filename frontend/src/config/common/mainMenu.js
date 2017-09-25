@@ -1,4 +1,4 @@
-[
+export default [
   {
     "id": "dashboard",
     "type": "item",
@@ -20,4 +20,4 @@
     "caption": "Authorizations",
     "page": "authorization_list"
   }
-]
+];
