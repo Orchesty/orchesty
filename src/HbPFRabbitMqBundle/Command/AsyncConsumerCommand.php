@@ -193,7 +193,7 @@ class AsyncConsumerCommand extends Command
                 $this->resetConsecutiveTimer();
 
                 return $client->channel();
-            }, function (Exception $e) use ($loop, $consumer) {
+            }, function (Exception $e) use ($loop, $consumer): void {
                 echo 'Can not connect to rabbitmq.' . $e->getMessage() . PHP_EOL;
 
                 $loop->stop();
