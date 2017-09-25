@@ -27,7 +27,7 @@ class BaseConsumerAbstractTest extends TestCase
 
     /**
      * @dataProvider setCallback
-     * @covers       BaseConsumerAbstract::setCallback()
+     * @covers       BaseConsumerBaseAbstract::setCallback()
      *
      * @param callable    $callback
      * @param null|string $exception
@@ -46,10 +46,10 @@ class BaseConsumerAbstractTest extends TestCase
 
     /**
      * @dataProvider handleMessage
-     * @covers       BaseConsumerAbstract::handleMessage()
+     * @covers       BaseConsumerBaseAbstract::handleMessage()
      *
      * @param BaseConsumerAbstract $baseConsumer
-     * @param null|string          $exception
+     * @param null|string              $exception
      *
      * @return void
      */
