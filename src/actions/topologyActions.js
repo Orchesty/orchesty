@@ -5,6 +5,7 @@ import objectEquals from 'utils/objectEquals';
 
 import config from 'rootApp/config';
 import * as notificationActions from './notificationActions';
+import * as processActions from './processActions';
 
 const {createPaginationList, listLoading, listError, listReceive, listDelete, listChangeSort, listChangePage} = listFactory('TOPOLOGY/LIST/');
 
@@ -18,6 +19,14 @@ function receive(data){
 function receiveSchema(id, data){
   return {
     type: types.TOPOLOGY_RECEIVE_SCHEMA,
+    id,
+    data
+  }
+}
+
+function receiveTest(id, data){
+  return {
+    type: types.TOPOLOGY_RECEIVE_TEST,
     id,
     data
   }
@@ -148,6 +157,20 @@ export function saveTopologySchema(id, schema){
           dispatch(receive(response));
         }
         return response;
+    })
+  }
+}
+
+export function testTopology(id, processId, silent = false){
+  return dispatch => {
+    processId && dispatch(processActions.startProcess(processId));
+    return serverRequest(dispatch, 'POST', `/topologies/${id}/test`).then(response => {
+      processId && dispatch(processActions.finishProcess(processId, response));
+      if (response){
+        dispatch(receiveTest(id, response));
+      }
+
+      return response;
     })
   }
 }
