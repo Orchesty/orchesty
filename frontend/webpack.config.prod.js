@@ -5,7 +5,7 @@ const common = require('./webpack.config.common.js');
 
 var CleanWebpackPlugin = require('clean-webpack-plugin');
 
-const configFile = path.join(__dirname, 'src', 'config', 'prod');
+const configPath = path.join(__dirname, 'src', 'config', 'prod');
 
 console.log('App config file:', configPath);
 
@@ -17,7 +17,7 @@ module.exports = merge(common, {
   output: {
     path: path.join(__dirname, 'dist'),
     filename: "bundle.js",
-    publicPath: '/'
+    publicPath: '/ui/'
   },
   plugins: [
     new CleanWebpackPlugin('dist'),
@@ -41,7 +41,7 @@ module.exports = merge(common, {
   ],
   resolve: {
     alias: {
-      'config-env': configFile
+      'config-env': configPath
     }
   },
   module: {
