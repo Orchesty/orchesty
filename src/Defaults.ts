@@ -109,7 +109,7 @@ class Defaults {
                 },
             },
             pub: {
-                routing_key: "job_done",
+                routing_key: "process_finished",
                 exchange: {
                     name: `pipes.${topoName}.events`,
                     type: "direct",
