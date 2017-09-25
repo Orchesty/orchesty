@@ -33,17 +33,7 @@ class ConnectorController extends FOSRestController
     private $handler;
 
     /**
-     * ConnectorController constructor.
-     *
-     * @param ConnectorHandler $handler
-     */
-    function __construct(ConnectorHandler $handler)
-    {
-        $this->handler = $handler;
-    }
-
-    /**
-     * @Route("/api/connector/{id}/webhook", defaults={}, requirements={"id": "[\w-]+"})
+     * @Route("/connector/{id}/webhook", defaults={}, requirements={"id": "[\w-]+"})
      * @Method({"POST", "OPTIONS"})
      *
      * @param string  $id
@@ -51,8 +41,10 @@ class ConnectorController extends FOSRestController
      *
      * @return JsonResponse
      */
-    public function processEvent(string $id, Request $request): JsonResponse
+    public function processEventAction(string $id, Request $request): JsonResponse
     {
+        $this->construct();
+
         try {
             $data     = $this->handler->processEvent($id, $request);
             $response = new JsonResponse($data->getData(), 200, $data->getHeaders(), TRUE);
@@ -64,7 +56,7 @@ class ConnectorController extends FOSRestController
     }
 
     /**
-     * @Route("/api/connector/{id}/action", defaults={}, requirements={"id": "[\w-]+"})
+     * @Route("/connector/{id}/action", defaults={}, requirements={"id": "[\w-]+"})
      * @Method({"POST", "OPTIONS"})
      *
      * @param string  $id
@@ -72,8 +64,10 @@ class ConnectorController extends FOSRestController
      *
      * @return JsonResponse
      */
-    public function processAction(string $id, Request $request): JsonResponse
+    public function processActionAction(string $id, Request $request): JsonResponse
     {
+        $this->construct();
+
         try {
             $data     = $this->handler->processAction($id, $request);
             $response = new JsonResponse($data->getData(), 200, $data->getHeaders(), TRUE);
@@ -82,6 +76,16 @@ class ConnectorController extends FOSRestController
         }
 
         return $response;
+    }
+
+    /**
+     *
+     */
+    private function construct(): void
+    {
+        if (!$this->handler) {
+            $this->handler = $this->container->get('hbpf.handler.connector');
+        }
     }
 
 }
