@@ -8,7 +8,7 @@
 
 namespace Tests\Unit\RabbitMq\Base;
 
-use Hanaboso\PipesFramework\RabbitMq\Base\AbstractConsumer;
+use Hanaboso\PipesFramework\RabbitMq\Base\BaseConsumerAbstract;
 use Hanaboso\PipesFramework\RabbitMq\Serializers\JsonSerializer;
 use Tests\KernelTestCaseAbstract;
 
@@ -25,8 +25,8 @@ class AbstractConsumerTest extends KernelTestCaseAbstract
      */
     public function testEmptyConsumer(): void
     {
-        /** @var AbstractConsumer $consumer */
-        $consumer = $this->getMockForAbstractClass(AbstractConsumer::class);
+        /** @var BaseConsumerAbstract $consumer */
+        $consumer = $this->getMockForAbstractClass(BaseConsumerAbstract::class);
 
         $this->assertEquals('', $consumer->getExchange());
         $this->assertEquals('', $consumer->getRoutingKey());
@@ -37,8 +37,8 @@ class AbstractConsumerTest extends KernelTestCaseAbstract
         $this->assertFalse($consumer->isExclusive());
         $this->assertFalse($consumer->isNowait());
         $this->assertEquals([], $consumer->getArguments());
-        $this->assertNull($consumer->getPrefetchCount());
-        $this->assertNull($consumer->getPrefetchSize());
+        $this->assertEquals(1, $consumer->getPrefetchCount());
+        $this->assertEquals(0, $consumer->getPrefetchSize());
         $this->assertNull($consumer->getSerializer());
         $this->assertNull($consumer->getSetUpMethod());
         $this->assertNull($consumer->getTickMethod());
@@ -52,8 +52,8 @@ class AbstractConsumerTest extends KernelTestCaseAbstract
      */
     public function testFilledConsumer(): void
     {
-        /** @var AbstractConsumer $consumer */
-        $consumer = $this->getMockForAbstractClass(AbstractConsumer::class, [
+        /** @var BaseConsumerAbstract $consumer */
+        $consumer = $this->getMockForAbstractClass(BaseConsumerAbstract::class, [
             'foo',
             '*',
             'queue_foo',

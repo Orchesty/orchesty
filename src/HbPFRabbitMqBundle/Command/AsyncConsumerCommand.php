@@ -11,16 +11,15 @@ namespace Hanaboso\PipesFramework\HbPFRabbitMqBundle\Command;
 use Bunny\Async\Client;
 use Bunny\Channel;
 use Bunny\Message;
-use Clue\React\Buzz\Browser;
 use Exception;
-use GuzzleHttp\Client as GuzzleClient;
-use GuzzleHttp\Psr7\Response;
-use Psr\Container\ContainerInterface;
+use Hanaboso\PipesFramework\RabbitMq\Base\AsyncConsumerAbstract;
+use InvalidArgumentException;
 use React\EventLoop\Factory;
 use React\EventLoop\LoopInterface;
 use React\Promise\Promise;
 use React\Promise\PromiseInterface;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use function React\Promise\all;
@@ -33,7 +32,6 @@ use function React\Promise\all;
 class AsyncConsumerCommand extends Command
 {
 
-
     public const INPUT_QUEUE = 'input_queue';
 
     /**
@@ -42,19 +40,26 @@ class AsyncConsumerCommand extends Command
     private $timer = 1;
 
     /**
-     * @var ContainerInterface
+     * @var array
      */
-    private $container;
+    private $asyncConsumers;
+
+    /**
+     * @var array
+     */
+    private $config;
 
     /**
      * AsyncConsumerCommand constructor.
      *
-     * @param ContainerInterface $container
+     * @param array $asyncConsumers
+     * @param array $config
      */
-    public function __construct(ContainerInterface $container)
+    public function __construct(array $asyncConsumers, array $config)
     {
-        parent::__construct('amq:async');
-        $this->container = $container;
+        parent::__construct('rabbit-mq:async-consumer');
+        $this->asyncConsumers = $asyncConsumers;
+        $this->config         = $config;
     }
 
     /**
@@ -62,27 +67,9 @@ class AsyncConsumerCommand extends Command
      */
     protected function configure(): void
     {
-        $this->setDescription("Starts async consumer.");
-    }
-
-    /**
-     * @param string $method
-     * @param string $url
-     *
-     * @return Promise
-     */
-    protected function fetchData(string $method, string $url): Promise
-    {
-        return new Promise(function (callable $resolve, callable $reject) use ($method, $url) {
-            $guzzle   = new GuzzleClient();
-            $response = $guzzle->request($method, $url);
-
-            if ($response->getStatusCode() === 200) {
-                $resolve($response);
-            } else {
-                $reject($response);
-            }
-        });
+        $this
+            ->setDescription("Starts async consumer.")
+            ->addArgument("consumer-name", InputArgument::REQUIRED, "Name of consumer.");
     }
 
     /**
@@ -93,8 +80,55 @@ class AsyncConsumerCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output): void
     {
-        $this->startLoop();
+        $consumerName = strtolower($input->getArgument("consumer-name"));
 
+        if (!isset($this->asyncConsumers[$consumerName])) {
+            throw new InvalidArgumentException(sprintf('Consumer \'%s\' doesn\'t exists.', $consumerName));
+        }
+
+        $this->startLoop($this->asyncConsumers[$consumerName]);
+    }
+
+    /**
+     * @param Channel               $channel
+     * @param AsyncConsumerAbstract $asyncConsumer
+     *
+     * @return PromiseInterface
+     */
+    protected function setup(Channel $channel, AsyncConsumerAbstract $asyncConsumer): PromiseInterface
+    {
+        return all([
+            $channel->queueDeclare($asyncConsumer->getQueue()),
+            $channel->qos($asyncConsumer->getPrefetchSize(), $asyncConsumer->getPrefetchCount()),
+            $this->getChannelPromise($channel),
+        ]);
+    }
+
+    /**
+     * @param Channel $channel
+     *
+     * @return Promise
+     */
+    private function getChannelPromise(Channel $channel): Promise
+    {
+        return new Promise(function ($resolve) use ($channel): void {
+            $resolve($channel);
+        });
+    }
+
+    /**
+     * @return array
+     */
+    protected function getOptions(): array
+    {
+        return [
+            'host'      => $this->config['host'],
+            'vhost'     => $this->config['vhost'],
+            'user'      => $this->config['user'],
+            'password'  => $this->config['password'],
+            'port'      => $this->config['port'],
+            'heartbeat' => $this->config['heartbeat'],
+        ];
     }
 
     /**
@@ -108,7 +142,7 @@ class AsyncConsumerCommand extends Command
     /**
      *
      */
-    private function resetConsecutiveTimer()
+    private function resetConsecutiveTimer(): void
     {
         $this->timer = 1;
     }
@@ -116,7 +150,7 @@ class AsyncConsumerCommand extends Command
     /**
      * @return int
      */
-    private function increaseConsecutiveTimer()
+    private function increaseConsecutiveTimer(): int
     {
         if ($this->timer < 10) {
             $this->timer = $this->timer * 2;
@@ -125,177 +159,76 @@ class AsyncConsumerCommand extends Command
         return $this->timer;
     }
 
-    private function startLoop()
+    /**
+     * @param AsyncConsumerAbstract $consumerAbstract
+     */
+    private function startLoop(AsyncConsumerAbstract $consumerAbstract): void
     {
         $eventLoop = Factory::create();
 
-        $this->runAsyncConsumer($eventLoop);
+        $this->runAsyncConsumer($eventLoop, $consumerAbstract);
 
         try {
             $eventLoop->run();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             var_dump("Loop crashed.", $e->getMessage());
 
             $this->consecutiveWait();
-            $this->startLoop();
+            $this->startLoop($consumerAbstract);
         }
     }
 
-    private function runAsyncConsumer(LoopInterface $eventLoop): void
+    /**
+     * @param LoopInterface         $loop
+     * @param AsyncConsumerAbstract $consumer
+     */
+    private function runAsyncConsumer(LoopInterface $loop, AsyncConsumerAbstract $consumer): void
     {
-        $options = [
-            'host'  => 'rabbitmq',
-            'vhost' => '/',
-            'user'  => 'guest',
-            'pass'  => 'guest',
-        ];
+        echo 'Connecting ...' . PHP_EOL;
 
-        // TODO - use separate channels for publisher/consumer
-
-        var_dump("Connecting...");
-
-        $browser = new Browser($eventLoop);
-        $bunny   = new Client($eventLoop, $options);
+        $bunny = new Client($loop, $this->getOptions());
         $bunny
             ->connect()
             ->then(function (Client $client) {
                 $this->resetConsecutiveTimer();
 
                 return $client->channel();
-            })
-            ->then(function (Channel $channel) {
-                return $this->prepareConsumer($channel);
-            })
-            ->then(function (array $all) use ($browser) {
-                /** @var Channel $channel */
-                $channel = $all[2];
+            }, function (Exception $e) use ($loop, $consumer) {
+                echo 'Can not connect to rabbitmq.' . $e->getMessage() . PHP_EOL;
 
-                var_dump('before consume');
-
-                $channel->consume(
-                    function (Message $message, Channel $channel, Client $client) use ($browser) {
-                        // TODO - handleMessage shouldn't need channel (publishing will be via different channel),
-                        // TODO - handleMessage should return promise and message should be acked/nacked here
-                        return $this->handleMessage($message, $channel, $browser);
-                    },
-                    self::INPUT_QUEUE
-                );
-            })
-            ->otherwise(function (Exception $e) use ($eventLoop) {
-                var_dump('Cannot connect to rabbitmq.', $e->getMessage());
-                $eventLoop->stop();
-
+                $loop->stop();
                 $this->consecutiveWait();
                 $this->increaseConsecutiveTimer();
-                $this->startLoop();
+                $this->startLoop($consumer);
+            })
+            ->then(function (Channel $channel) use ($consumer) {
+                return $this->setup($channel, $consumer);
+            })
+            ->then(function (array $all) use ($loop, $consumer): void {
+
+                echo 'Before consume' . PHP_EOL;
+
+                $channel = $all[2];
+
+                $channel->consume(
+                    function (Message $message, Channel $channel, Client $client) use ($loop, $consumer
+                    ): PromiseInterface {
+
+                        echo 'Message received.' . PHP_EOL;
+
+                        return $consumer
+                            ->processMessage($message, $channel, $client, $loop)
+                            ->then(function () use ($channel, $message): void {
+                                echo 'Message ACK.' . PHP_EOL;
+                                $channel->ack($message);
+                            })->otherwise(function () use ($channel, $message): void {
+                                echo 'Message NACK.' . PHP_EOL;
+                                $channel->nack($message);
+                            });
+                    },
+                    $consumer->getQueue()
+                );
             });
-    }
-
-    private function handleMessage(Message $message, Channel $channel, Browser $browser): PromiseInterface
-    {
-
-        var_dump("Message received " . $message->content);
-
-        $info = [
-            'connector' => 'salesforce',
-            'type'      => 'known_number',
-            'from'      => '',
-            'to'        => '',
-        ];
-
-        $reply = function (array $data) use ($channel, $message) {
-
-            $channel->queueDeclare('reply')
-                ->then(function () use ($channel, $message, $data) {
-                    return $channel->publish(
-                        json_encode($data),
-                        [
-                            'correlation-id' => $message->getHeader('correlation-id'),
-                            'type'           => 'batch_item',
-                        ],
-                        '',
-                        'reply'
-                    );
-                })
-                ->then(function () {
-                    var_dump("batch_item published");
-                });
-        };
-
-        $connManager = new ConnectorManager();
-
-        return $connManager->run($browser, $reply)->then(function () use ($channel, $message) {
-            // todo - refactor using separate publisher on separate channel
-            // spunt
-            $channel->queueDeclare('reply')
-                ->then(function () use ($channel, $message) {
-                    $channel->publish(
-                        '',
-                        [
-                            'correlation-id' => $message->getHeader('correlation-id'),
-                            'type'           => 'batch_total',
-                        ],
-                        '',
-                        'reply'
-                    );
-                })
-                ->then(function () use ($channel, $message) {
-                    var_dump('spunt published');
-                    $channel->ack($message);
-                });
-        });
-    }
-
-    private function connectorStrategy($data, $sendReply)
-    {
-        switch ($data['type']) {
-            case 'known_number':
-                // call first request
-                return [
-                    $this->fetchSalesForceData()->then($sendReply),
-                    $this->fetchSalesForceData()->then($sendReply),
-                ];
-                break;
-            case 'unknown_number':
-                return [$this->fetchSalesForceData()->then($sendReply)];
-                break;
-            default:
-                throw new Exception('dasdasd');
-        }
-    }
-
-    private function fetchSalesForceData()
-    {
-        return $this->fetchData('GET', 'http://jsonplaceholder.typicode.com/posts')
-            ->then(
-                function (Response $response) {
-                    return ['message' => json_decode($response->getBody()->getContents())];
-                },
-                function (Response $response) {
-                    throw new Exception($response->getReasonPhrase());
-                }
-            );
-    }
-
-    private function prepareConsumer(Channel $channel): PromiseInterface
-    {
-        return all([
-            $channel->queueDeclare(self::INPUT_QUEUE),
-            $channel->qos(0, 5),
-            $this->getChannelPromise($channel),
-        ]);
-    }
-
-    private function preparePublisher(Channel $channel, string $outputQueue): PromiseInterface
-    {
-        return $channel->queueDeclare($outputQueue);
-    }
-
-    private function getChannelPromise(Channel $channel)
-    {
-        return new Promise(function ($resolve) use ($channel) {
-            $resolve($channel);
-        });
     }
 
 }

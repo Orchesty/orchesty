@@ -69,4 +69,22 @@ rabbit-mq:
             consumer_tag: 'abc'
             callback: null
 
+    async_consumers:
+        demo:
+            class: Hanaboso\PipesFramework\Commons\RabbitMq\Demo\DemoConsumer
+            exchange: foo
+            routing_key: '*'
+            queue: demo
+            no_local: false
+            no_ack: false
+            exclusive: false
+            nowait: false
+            arguments:
+                 arg: 1
+            prefetch_count: null
+            prefetch_size: null
+            serializer: Commons\RabbitMq\Demo\DemoSerializer
+            consumer_tag: 'abc'
+            callback: null
+
 
