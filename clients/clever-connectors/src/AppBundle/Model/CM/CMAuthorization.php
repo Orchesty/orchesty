@@ -24,10 +24,11 @@ abstract class CMAuthorization
      *
      * @return array
      */
-    protected function getAuthorizationHeaders(string $user, string $token, ?array $headers = []): array
+    protected function getAuthorizationHeaders(string $user, string $token, array $headers = []): array
     {
-        $headers['Accept']    = 'application/json';
-        $headers['X-Api-Key'] = sprintf('%s:%s', $user, $token);
+        $headers['Accept']       = 'application/json';
+        $headers['Content-type'] = 'application/json';
+        $headers['X-Api-Key']    = sprintf('%s:%s', $user, $token);
 
         return $headers;
     }
