@@ -71,3 +71,10 @@ services:
         calls:
             - ['setLogger', ['@monolog.logger.commons']]
 
+    hbpf.connector.cleverconnectors-subscriptions-delete:
+        class: CleverConnectors\AppBundle\Model\CM\SubscriptionConnector\CMDeleteSubscriptionConnector
+        arguments:
+            - '@hbpf.transport.curl_manager'
+        calls:
+            - ['setLogger', ['@monolog.logger.commons']]
+
