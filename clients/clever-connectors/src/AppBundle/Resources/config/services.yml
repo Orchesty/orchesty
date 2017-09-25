@@ -64,3 +64,10 @@ services:
         calls:
             - ['setLogger', ['@monolog.logger.commons']]
 
+    hbpf.connector.cleverconnectors-subscriptions-update:
+        class: CleverConnectors\AppBundle\Model\CM\SubscriptionConnector\CMUpdateSubscriptionConnector
+        arguments:
+            - '@hbpf.transport.curl_manager'
+        calls:
+            - ['setLogger', ['@monolog.logger.commons']]
+
