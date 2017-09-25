@@ -18,3 +18,7 @@ services:
     hbpf.api_gateway.controller.starting_point:
         class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\StartingPointController
         arguments:
+
+    hbpf.api_gateway.controller.connector:
+        class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ConnectorController
+        arguments:
