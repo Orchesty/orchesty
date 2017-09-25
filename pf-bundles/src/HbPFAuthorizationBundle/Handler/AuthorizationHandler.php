@@ -89,12 +89,13 @@ class AuthorizationHandler
     public function getAuthInfo(string $hostname): array
     {
         $keys = $this->loader->getAllAuthorizationsInfo($hostname);
-		$data = [
-			'items' => $keys,
-			'total' => count($keys),
-			'count' => count($keys),
-			'offset' => 0
-		];
+        $data = [
+            'items'  => $keys,
+            'total'  => count($keys),
+            'count'  => count($keys),
+            'offset' => 0,
+        ];
+
         return $data;
     }
 
