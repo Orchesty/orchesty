@@ -75,6 +75,9 @@ pf-bridge:
     - skip_unmodified $DIR
     - ${DIR}/build.sh ${CI_BUILD_REF_NAME}
 
+
+# Client: demo
+
 demo-stage:
   stage: stage3
   when: manual
@@ -84,6 +87,19 @@ demo-stage:
     - export COMPOSE_PROJECT_NAME=pipes_demo
     - export NPM_INSTALL="yes"
     - make ci-yml docker-pull-dev init-dev DEV_YML=docker-compose.ci.yml
+
+# Client: Clever Monitor
+
+cm-git:
+  stage: stage1
+  only:
+    - dev
+    - cm-git-test
+  script:
+    - ssh-add ~/.ssh/bob_the_builder_clevermon
+    - clients/clever-connectors/bin/cm-git-sync.sh
+
+###
 
 cleanup:
   stage: cleanup
