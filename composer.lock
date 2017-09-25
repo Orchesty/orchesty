@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "17cc916bf456204b73a5fa0610538009",
+    "content-hash": "0db6d27bf9d683cc66f53cc00ef0f6fb",
     "packages": [
         {
             "name": "alcaeus/mongo-php-adapter",
-            "version": "1.1.2",
+            "version": "1.1.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/alcaeus/mongo-php-adapter.git",
-                "reference": "052cd5d1f0698b96993d8b1b613ff9c6d25b912f"
+                "reference": "9f42213a51e12c0fc1ce4773840c34d8ab3afd6f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/alcaeus/mongo-php-adapter/zipball/052cd5d1f0698b96993d8b1b613ff9c6d25b912f",
-                "reference": "052cd5d1f0698b96993d8b1b613ff9c6d25b912f",
+                "url": "https://api.github.com/repos/alcaeus/mongo-php-adapter/zipball/9f42213a51e12c0fc1ce4773840c34d8ab3afd6f",
+                "reference": "9f42213a51e12c0fc1ce4773840c34d8ab3afd6f",
                 "shasum": ""
             },
             "require": {
@@ -68,7 +68,7 @@
                 "database",
                 "mongodb"
             ],
-            "time": "2017-08-04T16:13:33+00:00"
+            "time": "2017-09-24T11:32:02+00:00"
         },
         {
             "name": "bunny/bunny",
@@ -1111,16 +1111,16 @@
         },
         {
             "name": "doctrine/mongodb-odm-bundle",
-            "version": "3.3.0",
+            "version": "3.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/DoctrineMongoDBBundle.git",
-                "reference": "ea77a22f350022de1baa053f95b2d0ecb1e71246"
+                "reference": "78469df83b198d3fa0215027e2c9d396dfc4980c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/DoctrineMongoDBBundle/zipball/ea77a22f350022de1baa053f95b2d0ecb1e71246",
-                "reference": "ea77a22f350022de1baa053f95b2d0ecb1e71246",
+                "url": "https://api.github.com/repos/doctrine/DoctrineMongoDBBundle/zipball/78469df83b198d3fa0215027e2c9d396dfc4980c",
+                "reference": "78469df83b198d3fa0215027e2c9d396dfc4980c",
                 "shasum": ""
             },
             "require": {
@@ -1128,19 +1128,19 @@
                 "doctrine/mongodb-odm": "^1.1",
                 "php": "^5.6 || ^7.0",
                 "psr/log": "^1.0",
-                "symfony/config": "^2.7 || ^3.0",
-                "symfony/console": "^2.7 || ^3.0",
-                "symfony/dependency-injection": "^2.7 || ^3.0",
-                "symfony/doctrine-bridge": "^2.7 || ^3.0",
-                "symfony/framework-bundle": "^2.7 || ^3.0",
-                "symfony/options-resolver": "^2.7 || ^3.0"
+                "symfony/config": "^2.7 || ^3.0 || ^4.0",
+                "symfony/console": "^2.7 || ^3.0 || ^4.0",
+                "symfony/dependency-injection": "^2.7 || ^3.0 || ^4.0",
+                "symfony/doctrine-bridge": "^2.7 || ^3.0 || ^4.0",
+                "symfony/framework-bundle": "^2.7 || ^3.0 || ^4.0",
+                "symfony/options-resolver": "^2.7 || ^3.0 || ^4.0"
             },
             "require-dev": {
                 "doctrine/data-fixtures": "@dev",
                 "phpunit/phpunit": "^5.6",
-                "symfony/form": "^2.7 || ^3.0",
-                "symfony/phpunit-bridge": "^2.7 || ^3.0",
-                "symfony/yaml": "^2.7 || ^3.0"
+                "symfony/form": "^2.7 || ^3.0 || ^4.0",
+                "symfony/phpunit-bridge": "^2.7 || ^3.0 || ^4.0",
+                "symfony/yaml": "^2.7 || ^3.0 || ^4.0"
             },
             "suggest": {
                 "doctrine/data-fixtures": "Load data fixtures"
@@ -1181,7 +1181,7 @@
                 "persistence",
                 "symfony"
             ],
-            "time": "2017-04-28T13:06:06+00:00"
+            "time": "2017-09-24T11:19:19+00:00"
         },
         {
             "name": "doctrine/orm",
@@ -2100,16 +2100,16 @@
         },
         {
             "name": "paragonie/constant_time_encoding",
-            "version": "v2.1.1",
+            "version": "v2.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/paragonie/constant_time_encoding.git",
-                "reference": "867933efd663a5825a7f00a5b8738b41a3b08e7d"
+                "reference": "9e7d88e6e4015c2f06a3fa22f06e1d5faa77e6c4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/paragonie/constant_time_encoding/zipball/867933efd663a5825a7f00a5b8738b41a3b08e7d",
-                "reference": "867933efd663a5825a7f00a5b8738b41a3b08e7d",
+                "url": "https://api.github.com/repos/paragonie/constant_time_encoding/zipball/9e7d88e6e4015c2f06a3fa22f06e1d5faa77e6c4",
+                "reference": "9e7d88e6e4015c2f06a3fa22f06e1d5faa77e6c4",
                 "shasum": ""
             },
             "require": {
@@ -2158,7 +2158,7 @@
                 "hex2bin",
                 "rfc4648"
             ],
-            "time": "2017-09-16T21:00:37+00:00"
+            "time": "2017-09-22T14:55:37+00:00"
         },
         {
             "name": "paragonie/halite",
@@ -2767,16 +2767,16 @@
         },
         {
             "name": "ramsey/uuid",
-            "version": "3.7.0",
+            "version": "3.7.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ramsey/uuid.git",
-                "reference": "0ef23d1b10cf1bc576e9d865a7e9c47982c5715e"
+                "reference": "45cffe822057a09e05f7bd09ec5fb88eeecd2334"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ramsey/uuid/zipball/0ef23d1b10cf1bc576e9d865a7e9c47982c5715e",
-                "reference": "0ef23d1b10cf1bc576e9d865a7e9c47982c5715e",
+                "url": "https://api.github.com/repos/ramsey/uuid/zipball/45cffe822057a09e05f7bd09ec5fb88eeecd2334",
+                "reference": "45cffe822057a09e05f7bd09ec5fb88eeecd2334",
                 "shasum": ""
             },
             "require": {
@@ -2845,7 +2845,7 @@
                 "identifier",
                 "uuid"
             ],
-            "time": "2017-08-04T13:39:04+00:00"
+            "time": "2017-09-22T20:46:04+00:00"
         },
         {
             "name": "react/event-loop",
@@ -6546,16 +6546,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "6.3.0",
+            "version": "6.3.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "9501bab711403a1ab5b8378a8adb4ec3db3debdb"
+                "reference": "c0ff817b36a827e64bf5f57bc72278150cf30a77"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/9501bab711403a1ab5b8378a8adb4ec3db3debdb",
-                "reference": "9501bab711403a1ab5b8378a8adb4ec3db3debdb",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/c0ff817b36a827e64bf5f57bc72278150cf30a77",
+                "reference": "c0ff817b36a827e64bf5f57bc72278150cf30a77",
                 "shasum": ""
             },
             "require": {
@@ -6626,7 +6626,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2017-08-04T05:20:39+00:00"
+            "time": "2017-09-24T07:25:54+00:00"
         },
         {
             "name": "phpunit/phpunit-mock-objects",
