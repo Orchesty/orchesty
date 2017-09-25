@@ -61,7 +61,8 @@ function mapActionsToProps(dispatch, ownProps){
     listChangePage: (page) => dispatch(topologyActions.topologyListChangePage(ownProps.pageKey, page)),
     openModal: (id, data) => dispatch(applicationActions.openModal(id, data)),
     selectPage: (key, args) => dispatch(applicationActions.selectPage(key, args)),
-    clone: id => dispatch(topologyActions.cloneTopology(id))
+    clone: id => dispatch(topologyActions.cloneTopology(id)),
+    publish: id => dispatch(topologyActions.publishTopology(id))
   }
 }
 
