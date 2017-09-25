@@ -110,6 +110,28 @@ class TopologyManagerTest extends DatabaseTestCaseAbstract
     /**
      *
      */
+    public function testCloneTopologyWithoutBpmn(): void
+    {
+        $top = new Topology();
+        $top
+            ->setName('name')
+            ->setVisibility(TopologyStatusEnum::PUBLIC)
+            ->setEnabled(FALSE)
+            ->setDescr('desc');
+
+        /** @var Topology $res */
+        $res = $this->container->get('hbpf.configurator.manager.topology')->cloneTopology($top);
+
+        self::assertEquals($top->getName(), $res->getName());
+        self::assertEquals($top->getVersion() + 1, $res->getVersion());
+        self::assertEquals($top->getDescr(), $res->getDescr());
+        self::assertEquals(TopologyStatusEnum::DRAFT, $res->getVisibility());
+        self::assertEquals($top->isEnabled(), $res->isEnabled());
+    }
+
+    /**
+     *
+     */
     public function testSaveTopologySchema(): void
     {
         $topology = (new Topology())
