@@ -23,6 +23,23 @@ class TopologyManagerTest extends DatabaseTestCaseAbstract
     /**
      *
      */
+    public function testNameAndVersionTopology(): void
+    {
+        $manager = $this->container->get('hbpf.configurator.manager.topology');
+
+        self::assertEquals(1, $manager->createTopology(['name' => 'Topology'])->getVersion());
+        self::assertEquals(2, $manager->createTopology(['name' => 'Topology'])->getVersion());
+        self::assertEquals(3, $manager->createTopology(['name' => 'Topology'])->getVersion());
+
+        $topology = $manager->createTopology(['name' => 'AnotherTopology']);
+        self::assertEquals(1, $topology->getVersion());
+        self::assertEquals(4, $manager->updateTopology($topology, ['name' => 'Topology'])->getVersion());
+        self::assertEquals(4, $manager->updateTopology($topology, ['enabled' => FALSE])->getVersion());
+    }
+
+    /**
+     *
+     */
     public function testUpdateTopology(): void
     {
         $top = new Topology();
@@ -83,7 +100,8 @@ class TopologyManagerTest extends DatabaseTestCaseAbstract
         /** @var Topology $res */
         $res = $this->container->get('hbpf.configurator.manager.topology')->cloneTopology($top);
 
-        self::assertEquals($top->getName() . ' - copy', $res->getName());
+        self::assertEquals($top->getName(), $res->getName());
+        self::assertEquals($top->getVersion() + 1, $res->getVersion());
         self::assertEquals($top->getDescr(), $res->getDescr());
         self::assertEquals(TopologyStatusEnum::DRAFT, $res->getVisibility());
         self::assertEquals($top->isEnabled(), $res->isEnabled());

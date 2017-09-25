@@ -111,9 +111,9 @@ class TopologyManager
      */
     public function cloneTopology(Topology $topology): Topology
     {
-        $res = new Topology();
-        $res
-            ->setName($topology->getName() . ' - copy')
+        $res = (new Topology())
+            ->setName($topology->getName())
+            ->setVersion($topology->getVersion() + 1)
             ->setDescr($topology->getDescr())
             ->setEnabled($topology->isEnabled())
             ->setBpmn($topology->getBpmn())
@@ -274,8 +274,14 @@ class TopologyManager
      */
     private function setTopologyData(Topology $topology, array $data): Topology
     {
+        $data = $this->checkTopologyNameAndVersion($data);
+
         if (isset($data['name'])) {
             $topology->setName($data['name']);
+        }
+
+        if (isset($data['version'])) {
+            $topology->setVersion($data['version']);
         }
 
         if (isset($data['descr'])) {
@@ -295,6 +301,28 @@ class TopologyManager
         }
 
         return $topology;
+    }
+
+    /**
+     * @param array $data
+     *
+     * @return array
+     */
+    private function checkTopologyNameAndVersion(array $data): array
+    {
+        if (isset($data['name'])) {
+            /** @var Topology[] $topologies */
+            $topologies = $this->dm->getRepository(Topology::class)->findBy(
+                ['name' => $data['name']],
+                ['version' => 'DESC']
+            );
+
+            if ($topologies) {
+                $data['version'] = $topologies[0]->getVersion() + 1;
+            }
+        }
+
+        return $data;
     }
 
 }

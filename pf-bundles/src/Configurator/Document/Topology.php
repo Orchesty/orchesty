@@ -12,7 +12,12 @@ use Nette\Utils\Json;
 /**
  * Class Topology
  *
- * @MongoDB\Document(repositoryClass="Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository")
+ * @MongoDB\Document(
+ *     repositoryClass="Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository",
+ *     indexes={
+ *         @MongoDB\Index(keys={"name": "asc", "version": "asc"}, unique="true")
+ *     }
+ * )
  *
  * @package Hanaboso\PipesFramework\Configurator\Document
  */
@@ -27,6 +32,13 @@ class Topology
      * @MongoDB\Field(type="string")
      */
     protected $name;
+
+    /**
+     * @var int
+     *
+     * @MongoDB\Field(type="int", options={"default":"1"})
+     */
+    protected $version;
 
     /**
      * @var string
@@ -77,6 +89,7 @@ class Topology
     {
         $this->visibility = TopologyStatusEnum::DRAFT;
         $this->status     = StatusEnum::NEW;
+        $this->version    = 1;
     }
 
     /**
@@ -95,6 +108,26 @@ class Topology
     public function setName(string $name): Topology
     {
         $this->name = $name;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getVersion(): int
+    {
+        return $this->version;
+    }
+
+    /**
+     * @param int $version
+     *
+     * @return Topology
+     */
+    public function setVersion(int $version): Topology
+    {
+        $this->version = $version;
 
         return $this;
     }
