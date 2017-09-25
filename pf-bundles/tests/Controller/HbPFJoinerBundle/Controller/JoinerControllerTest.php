@@ -31,7 +31,7 @@ final class JoinerControllerTest extends ControllerTestCaseAbstract
         ];
         $this->prepareJoinerHandlerMock('processJoiner', $params);
 
-        $this->client->request('POST', '/api/joiner/null/join', [], [], [], '{"test":1}');
+        $this->client->request('POST', '/joiner/null/join', [], [], [], '{"test":1}');
 
         $response = $this->client->getResponse();
 
@@ -50,7 +50,7 @@ final class JoinerControllerTest extends ControllerTestCaseAbstract
         ];
         $this->prepareJoinerHandlerMock('processJoinerTest', $params);
 
-        $this->client->request('POST', '/api/joiner/null/join/test', [], [], [], '{"test":1}');
+        $this->client->request('POST', '/joiner/null/join/test', [], [], [], '{"test":1}');
 
         $response = $this->client->getResponse();
 

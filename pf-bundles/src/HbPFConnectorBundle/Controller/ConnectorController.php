@@ -43,7 +43,7 @@ class ConnectorController extends FOSRestController
     }
 
     /**
-     * @Route("/api/connector/{id}/webhook", defaults={}, requirements={"id": "[\w-]+"})
+     * @Route("/connector/{id}/webhook", defaults={}, requirements={"id": "[\w-]+"})
      * @Method({"POST", "OPTIONS"})
      *
      * @param string  $id
@@ -64,7 +64,7 @@ class ConnectorController extends FOSRestController
     }
 
     /**
-     * @Route("/api/connector/{id}/action", defaults={}, requirements={"id": "[\w-]+"})
+     * @Route("/connector/{id}/action", defaults={}, requirements={"id": "[\w-]+"})
      * @Method({"POST", "OPTIONS"})
      *
      * @param string  $id

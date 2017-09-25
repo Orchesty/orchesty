@@ -39,7 +39,7 @@ class ApiController extends FOSRestController
     }
 
     /**
-     * @Route("/api/parser/{type}/to/json", requirements={"type": "\w+"})
+     * @Route("/parser/{type}/to/json", requirements={"type": "\w+"})
      * @Method("POST")
      *
      * @param Request $request
@@ -57,7 +57,7 @@ class ApiController extends FOSRestController
     }
 
     /**
-     * @Route("/api/parser/{type}/to/json/test", requirements={"type": "\w+"})
+     * @Route("/parser/{type}/to/json/test", requirements={"type": "\w+"})
      * @Method("POST")
      *
      * @return JsonResponse
@@ -73,7 +73,7 @@ class ApiController extends FOSRestController
     }
 
     /**
-     * @Route("/api/parser/json/to/{type}", requirements={"type": "\w+"})
+     * @Route("/parser/json/to/{type}", requirements={"type": "\w+"})
      * @Method("POST")
      *
      * @param Request $request
@@ -91,7 +91,7 @@ class ApiController extends FOSRestController
     }
 
     /**
-     * @Route("/api/parser/json/to/{type}/test", requirements={"type": "\w+"})
+     * @Route("/parser/json/to/{type}/test", requirements={"type": "\w+"})
      * @Method("POST")
      *
      * @param string $type

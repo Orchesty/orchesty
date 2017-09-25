@@ -40,7 +40,7 @@ class ApiController extends FOSRestController
     }
 
     /**
-     * @Route("/api/mailer/{handlerId}/send", defaults={}, requirements={"_format"="json|xml"})
+     * @Route("/mailer/{handlerId}/send", defaults={}, requirements={"_format"="json|xml"})
      * @Method({"POST", "OPTIONS"})
      *
      * @param Request $request
@@ -60,7 +60,7 @@ class ApiController extends FOSRestController
     }
 
     /**
-     * @Route("/api/mailer/{handlerId}/send/test", defaults={}, requirements={"_format"="json|xml"})
+     * @Route("/mailer/{handlerId}/send/test", defaults={}, requirements={"_format"="json|xml"})
      *
      * @param Request $request
      * @param string  $handlerId

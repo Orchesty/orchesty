@@ -21,7 +21,7 @@ final class MapperControllerTest extends ControllerTestCaseAbstract
     {
         $this->prepareMapperHandlerMock('processTest', []);
 
-        $this->client->request('POST', '/api/mapper/null/process/test', [], [], [], '{"test":1}');
+        $this->client->request('POST', '/mapper/null/process/test', [], [], [], '{"test":1}');
 
         $response = $this->client->getResponse();
 
@@ -36,7 +36,7 @@ final class MapperControllerTest extends ControllerTestCaseAbstract
         $params = ['abc' => 'def'];
         $this->prepareMapperHandlerMock('process', $params);
 
-        $this->client->request('POST', '/api/mapper/null/process', $params, [], [], '{"test":1}');
+        $this->client->request('POST', '/mapper/null/process', $params, [], [], '{"test":1}');
 
         $response = $this->client->getResponse();
 

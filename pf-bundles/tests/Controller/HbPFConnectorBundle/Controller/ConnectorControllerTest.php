@@ -22,7 +22,7 @@ class ConnectorControllerTest extends ControllerTestCaseAbstract
     {
         $this->mockHandler('processEvent');
 
-        $this->client->request('POST', '/api/connector/magento/webhook', [], [], [], '{}');
+        $this->client->request('POST', '/connector/magento/webhook', [], [], [], '{}');
 
         $response = $this->client->getResponse();
 
@@ -37,7 +37,7 @@ class ConnectorControllerTest extends ControllerTestCaseAbstract
     {
         $this->mockHandler('processAction');
 
-        $this->client->request('POST', '/api/connector/magento/action', [], [], [], '{}');
+        $this->client->request('POST', '/connector/magento/action', [], [], [], '{}');
 
         $response = $this->client->getResponse();
 
