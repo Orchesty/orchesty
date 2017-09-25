@@ -225,7 +225,7 @@ class Topology
      */
     public function getBpmn(): array
     {
-        return Json::decode($this->bpmn, Json::FORCE_ARRAY);
+        return $this->bpmn ? Json::decode($this->bpmn, Json::FORCE_ARRAY) : [];
     }
 
     /**
