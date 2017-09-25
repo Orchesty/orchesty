@@ -48,13 +48,13 @@ class TopologyHandler
     }
 
     /**
-     * @param null $limit
-     * @param null $offset
+     * @param int  $limit
+     * @param int  $offset
      * @param null $orderBy
      *
      * @return array
      */
-    public function getTopologies($limit = NULL, $offset = NULL, $orderBy = NULL): array
+    public function getTopologies(?int $limit = NULL, ?int $offset = NULL, $orderBy = NULL): array
     {
         $sort       = UriParams::parseOrderBy($orderBy);
         $topologies = $this->topologyRepository->findBy([], $sort, $limit, $offset);

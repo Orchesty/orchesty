@@ -38,9 +38,11 @@ class TopologyController extends FOSRestController
     public function getTopologiesAction($query): Response
     {
         $this->construct();
-        $data = $this->topologyHandler->getTopologies(
-			(int)$query->get('limit'),
-			(int)$query->get('offset'),
+        $limit  = $query->get('limit');
+        $offset = $query->get('offset');
+        $data   = $this->topologyHandler->getTopologies(
+            isset($limit) ? (int) $limit : NULL,
+            isset($offset) ? (int) $offset : NULL,
             $query->get('order_by')
         );
 
