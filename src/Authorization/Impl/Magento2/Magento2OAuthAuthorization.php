@@ -14,6 +14,7 @@ use Hanaboso\PipesFramework\Authorization\Base\OAuthAuthorizationAbstract;
 use Hanaboso\PipesFramework\Authorization\Document\Authorization;
 use Hanaboso\PipesFramework\Authorization\Exception\AuthorizationException;
 use Hanaboso\PipesFramework\Authorization\Provider\Dto\OAuth1Dto;
+use Hanaboso\PipesFramework\Authorization\Provider\Dto\OAuth1DtoInterface;
 use Hanaboso\PipesFramework\Authorization\Provider\OAuth1Provider;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
@@ -42,6 +43,11 @@ class Magento2OAuthAuthorization extends OAuthAuthorizationAbstract implements M
     private $logger;
 
     /**
+     * @var string
+     */
+    private $backendUrl;
+
+    /**
      * Magento2OAuthAuthorization constructor.
      *
      * @param DocumentManager $dm
@@ -49,18 +55,21 @@ class Magento2OAuthAuthorization extends OAuthAuthorizationAbstract implements M
      * @param string          $id
      * @param string          $name
      * @param string          $description
+     * @param string          $backendUrl
      */
     public function __construct(
         DocumentManager $dm,
         OAuth1Provider $auth1Provider,
         string $id,
         string $name,
-        string $description
+        string $description,
+        string $backendUrl
     )
     {
         parent::__construct($id, $name, $description, $dm);
         $this->auth1Provider = $auth1Provider;
         $this->logger        = new NullLogger();
+        $this->backendUrl    = $backendUrl;
     }
 
     /**
@@ -223,6 +232,8 @@ class Magento2OAuthAuthorization extends OAuthAuthorizationAbstract implements M
             $this->buildDto(),
             $this->getRequestTokenUrl(),
             $this->getAuthorizationUrl(),
+            $this->getRedirectUrl(),
+            $this->saveOAuthStuffs(),
             []
         );
     }
@@ -274,9 +285,32 @@ class Magento2OAuthAuthorization extends OAuthAuthorizationAbstract implements M
     /**
      * @return string
      */
+    private function getRedirectUrl(): string
+    {
+        return sprintf('%s/authorizations/magento2_oauth/save_token', $this->backendUrl);
+    }
+
+    /**
+     * @return string
+     */
     private function getRequestTokenUrl(): string
     {
         return sprintf('%s/oauth/initiate', $this->getSettings()[self::URL]);
+    }
+
+    /**
+     * @return callable
+     */
+    private function saveOAuthStuffs(): callable
+    {
+        return function (DocumentManager $dm, OAuth1DtoInterface $dto, array $data): void {
+            $dto->getAuthorization()->setToken(
+                array_merge($dto->getToken(), $data)
+            );
+
+            $dm->persist($dto->getAuthorization());
+            $dm->flush($dto->getAuthorization());
+        };
     }
 
 }

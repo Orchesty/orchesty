@@ -281,6 +281,7 @@ final class Magento2OAuthAuthorizationTest extends KernelTestCaseAbstract
                 'magento2.oauth',
                 'Magento name',
                 'Magento dsc',
+                '127.0.0.4',
             ])->getMock();
 
         $this->setProperty($authorization, 'authorization', $innerAuthorization);

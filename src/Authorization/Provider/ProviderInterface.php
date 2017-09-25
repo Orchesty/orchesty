@@ -10,7 +10,7 @@
 namespace Hanaboso\PipesFramework\Authorization\Provider;
 
 use Hanaboso\PipesFramework\Authorization\Exception\AuthorizationException;
-use Hanaboso\PipesFramework\Authorization\Provider\Dto\OAuth1Dto;
+use Hanaboso\PipesFramework\Authorization\Provider\Dto\OAuth1DtoInterface;
 
 /**
  * Interface ProviderInterface
@@ -21,33 +21,42 @@ interface ProviderInterface
 {
 
     /**
-     * @param OAuth1Dto $dto
-     * @param string    $tokenUrl
-     * @param string    $authorizeUrl
-     * @param array     $scopes
+     * @param OAuth1DtoInterface $dto
+     * @param string             $tokenUrl
+     * @param string             $authorizeUrl
+     * @param string             $redirectUrl
+     * @param callable           $saveOauthStuffs
+     * @param array              $scopes
      *
      * @throws AuthorizationException
      */
-    public function authorize(OAuth1Dto $dto, string $tokenUrl, string $authorizeUrl, array $scopes = []): void;
+    public function authorize(
+        OAuth1DtoInterface $dto,
+        string $tokenUrl,
+        string $authorizeUrl,
+        string $redirectUrl,
+        callable $saveOauthStuffs,
+        array $scopes = []
+    ): void;
 
     /**
-     * @param OAuth1Dto $dto
-     * @param array     $request
-     * @param string    $accessTokenUrl
+     * @param OAuth1DtoInterface $dto
+     * @param array              $request
+     * @param string             $accessTokenUrl
      *
      * @return array
      * @throws AuthorizationException
      */
-    public function getAccessToken(OAuth1Dto $dto, array $request, string $accessTokenUrl): array;
+    public function getAccessToken(OAuth1DtoInterface $dto, array $request, string $accessTokenUrl): array;
 
     /**
-     * @param OAuth1Dto $dto
-     * @param string    $method
-     * @param string    $url
+     * @param OAuth1DtoInterface $dto
+     * @param string             $method
+     * @param string             $url
      *
      * @return string
      * @throws AuthorizationException
      */
-    public function getAuthorizeHeader(OAuth1Dto $dto, string $method, string $url): string;
+    public function getAuthorizeHeader(OAuth1DtoInterface $dto, string $method, string $url): string;
 
 }

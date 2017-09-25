@@ -47,7 +47,8 @@ final class OAuth1ProviderTest extends TestCase
             $this->expectExceptionCode(AuthorizationException::AUTHORIZATION_OAUTH1_ERROR);
         }
 
-        $provider->authorize($dto, 'token/url', 'authorize/url');
+        $provider->authorize($dto, 'token/url', 'authorize/url', '127.0.0.4', function (): void {
+        }, []);
     }
 
     /**
@@ -57,7 +58,10 @@ final class OAuth1ProviderTest extends TestCase
     {
         return [
             [[], '', TRUE],
-            [['oauth_token' => 'token', 'oauth_token_secret' => 'secret'], 'authorize/url?oauth_token=token', FALSE],
+            [
+                ['oauth_token' => 'token', 'oauth_token_secret' => 'secret'],
+                'authorize/url?oauth_callback=127.0.0.4&oauth_token=token', FALSE,
+            ],
         ];
     }
 
