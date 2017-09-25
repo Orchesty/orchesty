@@ -1,5 +1,6 @@
 export default {
   notificationTimeout: 6000,
-  defaultPageSize: 5,
-  allowChangeServer: false
+  defaultPageSize: 20,
+  allowChangeServer: false,
+  urlPrefix: null
 }

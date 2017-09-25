@@ -60,6 +60,7 @@ function mapActionsToProps(dispatch, ownProps){
     listChangeSort: (sort) => dispatch(topologyActions.topologyListChangeSort(ownProps.pageKey, sort)),
     listChangePage: (page) => dispatch(topologyActions.topologyListChangePage(ownProps.pageKey, page)),
     openModal: (id, data) => dispatch(applicationActions.openModal(id, data)),
+    openNewTopology: () => dispatch(applicationActions.openModal('topology_edit', {addNew: true})),
     selectPage: (key, args) => dispatch(applicationActions.selectPage(key, args)),
     clone: id => dispatch(topologyActions.cloneTopology(id))
   }

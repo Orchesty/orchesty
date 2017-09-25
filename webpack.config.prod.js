@@ -5,6 +5,9 @@ const common = require('./webpack.config.common.js');
 
 var CleanWebpackPlugin = require('clean-webpack-plugin');
 
+const configFile = path.join(__dirname, 'src', 'config', 'prod');
+
+console.log('App config file:', configPath);
 
 module.exports = merge(common, {
   entry: [
@@ -38,7 +41,7 @@ module.exports = merge(common, {
   ],
   resolve: {
     alias: {
-      'config-env': path.join(__dirname, 'src', 'config', 'prod')
+      'config-env': configFile
     }
   },
   module: {

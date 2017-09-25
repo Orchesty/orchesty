@@ -64,6 +64,9 @@ function refreshUrlHistory(selectedPage){
         if (typeof url != 'string') {
           throw new Error('router.refreshUrlHistory: Url must be string.');
         }
+        if (config.params.urlPrefix){
+          url = config.params.urlPrefix + url;
+        }
         historyIndex++;
         history.pushState(historyIndex, title, url);
       }
@@ -72,7 +75,14 @@ function refreshUrlHistory(selectedPage){
 }
 
 export function init (store){
-  const path = window.location.pathname;
+  let path = window.location.pathname;
+  if (config.params.urlPrefix){
+    if (path.startsWith(config.params.urlPrefix)) {
+      path = path.substring(config.params.urlPrefix.length);
+    } else {
+      path = null;
+    }
+  }
   processUrl(store, path, qs.parse(window.location.search));
 
   prevSelectedPage = store.getState().application.selectedPage;

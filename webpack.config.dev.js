@@ -1,7 +1,15 @@
-var path = require('path');
-var webpack = require('webpack');
+const path = require('path');
+const fs = require('fs');
+const webpack = require('webpack');
 const merge = require('webpack-merge');
 const common = require('./webpack.config.common.js');
+
+let configPath = path.join(__dirname, 'src', 'config', 'local');
+if (!fs.existsSync(configPath)){
+  configPath = path.join(__dirname, 'src', 'config', 'dev');
+}
+
+console.log('App config file:', configPath);
 
 module.exports = merge(common, {
   devtool: 'source-map',
@@ -21,7 +29,7 @@ module.exports = merge(common, {
   ],
   resolve: {
     alias: {
-      'config-env': path.join(__dirname, 'src', 'config', 'dev')
+      'config-env': configPath
     }
   },
   module: {
