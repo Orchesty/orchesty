@@ -7,7 +7,8 @@ const listPrefixLength = listPrefix.length;
 const initialState = {
   elements: {},
   lists: {},
-  schemas: {}
+  schemas: {},
+  tests: {}
 };
 
 function getElementId(element){
