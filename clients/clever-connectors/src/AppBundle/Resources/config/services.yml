@@ -56,3 +56,11 @@ services:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.transport.curl_manager'
         tags: ['kernel.event_subscriber']
+
+    hbpf.connector.cleverconnectors-subscriptions-create:
+        class: CleverConnectors\AppBundle\Model\CM\SubscriptionConnector\CMCreateSubscriptionConnector
+        arguments:
+            - '@hbpf.transport.curl_manager'
+        calls:
+            - ['setLogger', ['@monolog.logger.commons']]
+
