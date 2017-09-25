@@ -23,5 +23,6 @@ class ConnectorException extends PipesFrameworkException
 
     public const CONNECTOR_SERVICE_NOT_FOUND           = self::OFFSET + 1;
     public const CONNECTOR_DOES_NOT_HAVE_PROCESS_EVENT = self::OFFSET + 2;
+    public const CONNECTOR_FAILED_TO_PROCESS           = self::OFFSET + 3;
 
 }
