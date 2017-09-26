@@ -16,13 +16,14 @@ use Hanaboso\PipesFramework\RabbitMq\Base\AsyncConsumerAbstract;
 use InvalidArgumentException;
 use React\EventLoop\Factory;
 use React\EventLoop\LoopInterface;
-use React\Promise\Promise;
+use React\Promise\FulfilledPromise;
 use React\Promise\PromiseInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use function React\Promise\all;
+use function React\Promise\resolve;
 
 /**
  * Class AsyncConsumerCommand
@@ -32,12 +33,10 @@ use function React\Promise\all;
 class AsyncConsumerCommand extends Command
 {
 
-    public const INPUT_QUEUE = 'input_queue';
-
     /**
      * @var int
      */
-    private $timer = 1;
+    private $timer = 2;
 
     /**
      * @var array
@@ -90,30 +89,27 @@ class AsyncConsumerCommand extends Command
     }
 
     /**
-     * @param Channel               $channel
-     * @param AsyncConsumerAbstract $asyncConsumer
      *
-     * @return PromiseInterface
      */
-    protected function setup(Channel $channel, AsyncConsumerAbstract $asyncConsumer): PromiseInterface
+    private function wait(): void
     {
-        return all([
-            $channel->queueDeclare($asyncConsumer->getQueue()),
-            $channel->qos($asyncConsumer->getPrefetchSize(), $asyncConsumer->getPrefetchCount()),
-            $this->getChannelPromise($channel),
-        ]);
+        sleep($this->timer);
+
+        if ($this->timer < 10) {
+            $this->timer = $this->timer + 2;
+
+            if ($this->timer > 10) {
+                $this->timer = 10;
+            }
+        }
     }
 
     /**
-     * @param Channel $channel
      *
-     * @return Promise
      */
-    private function getChannelPromise(Channel $channel): Promise
+    private function clearTimer(): void
     {
-        return new Promise(function ($resolve) use ($channel): void {
-            $resolve($channel);
-        });
+        $this->timer = 2;
     }
 
     /**
@@ -132,50 +128,71 @@ class AsyncConsumerCommand extends Command
     }
 
     /**
-     *
+     * @param AsyncConsumerAbstract $consumer
      */
-    private function consecutiveWait(): void
-    {
-        sleep($this->timer);
-    }
-
-    /**
-     *
-     */
-    private function resetConsecutiveTimer(): void
-    {
-        $this->timer = 1;
-    }
-
-    /**
-     * @return int
-     */
-    private function increaseConsecutiveTimer(): int
-    {
-        if ($this->timer < 10) {
-            $this->timer = $this->timer * 2;
-        }
-
-        return $this->timer;
-    }
-
-    /**
-     * @param AsyncConsumerAbstract $consumerAbstract
-     */
-    private function startLoop(AsyncConsumerAbstract $consumerAbstract): void
+    private function startLoop(AsyncConsumerAbstract $consumer): void
     {
         $eventLoop = Factory::create();
 
-        $this->runAsyncConsumer($eventLoop, $consumerAbstract);
+        $this->runAsyncConsumer($eventLoop, $consumer);
 
         try {
             $eventLoop->run();
         } catch (Exception $e) {
-            var_dump("Loop crashed.", $e->getMessage());
+            echo 'Loop crashed: ' . $e->getMessage() . PHP_EOL;
 
-            $this->consecutiveWait();
-            $this->startLoop($consumerAbstract);
+            $this->restart($eventLoop, $consumer);
         }
+    }
+
+    /**
+     * @param LoopInterface         $loop
+     * @param AsyncConsumerAbstract $consumer
+     */
+    public function restart(LoopInterface $loop, AsyncConsumerAbstract $consumer): void
+    {
+        $loop->stop();
+        $this->wait();
+        $this->startLoop($consumer);
+    }
+
+    /**
+     * @param LoopInterface         $loop
+     * @param AsyncConsumerAbstract $consumer
+     *
+     * @return PromiseInterface
+     */
+    public function connection(LoopInterface $loop, AsyncConsumerAbstract $consumer): PromiseInterface
+    {
+        $bunny = new Client($loop, $this->getOptions());
+
+        return $bunny
+            ->connect()
+            ->then(function (Client $client) {
+                $this->clearTimer();
+
+                return $client->channel();
+            }, function (Exception $e) use ($loop, $consumer): void {
+                echo 'Can not connect to rabbitmq.' . $e->getMessage() . PHP_EOL;
+
+                $this->restart($loop, $consumer);
+            });
+    }
+
+    /**
+     * @param Channel               $channel
+     * @param AsyncConsumerAbstract $asyncConsumer
+     *
+     * @return PromiseInterface
+     */
+    protected function setup(Channel $channel, AsyncConsumerAbstract $asyncConsumer): PromiseInterface
+    {
+        return all([
+            $channel->queueDeclare($asyncConsumer->getQueue()),
+            $channel->qos($asyncConsumer->getPrefetchSize(), $asyncConsumer->getPrefetchCount()),
+        ])->then(function () use ($channel): FulfilledPromise {
+            return resolve($channel);
+        });
     }
 
     /**
@@ -186,29 +203,14 @@ class AsyncConsumerCommand extends Command
     {
         echo 'Connecting ...' . PHP_EOL;
 
-        $bunny = new Client($loop, $this->getOptions());
-        $bunny
-            ->connect()
-            ->then(function (Client $client) {
-                $this->resetConsecutiveTimer();
-
-                return $client->channel();
-            }, function (Exception $e) use ($loop, $consumer): void {
-                echo 'Can not connect to rabbitmq.' . $e->getMessage() . PHP_EOL;
-
-                $loop->stop();
-                $this->consecutiveWait();
-                $this->increaseConsecutiveTimer();
-                $this->startLoop($consumer);
-            })
+        $this
+            ->connection($loop, $consumer)
             ->then(function (Channel $channel) use ($consumer) {
                 return $this->setup($channel, $consumer);
             })
-            ->then(function (array $all) use ($loop, $consumer): void {
+            ->then(function (Channel $channel) use ($loop, $consumer): void {
 
                 echo 'Before consume' . PHP_EOL;
-
-                $channel = $all[2];
 
                 $channel->consume(
                     function (Message $message, Channel $channel, Client $client) use ($loop, $consumer
@@ -221,9 +223,10 @@ class AsyncConsumerCommand extends Command
                             ->then(function () use ($channel, $message): void {
                                 echo 'Message ACK.' . PHP_EOL;
                                 $channel->ack($message);
-                            })->otherwise(function () use ($channel, $message): void {
+                            }, function (Exception $e) use ($channel, $message): void {
+                                echo 'Message error: ' . $e->getMessage() . PHP_EOL;
                                 echo 'Message NACK.' . PHP_EOL;
-                                $channel->nack($message);
+                                $channel->nack($message, FALSE, FALSE);
                             });
                     },
                     $consumer->getQueue()

@@ -12,7 +12,7 @@ use Bunny\Async\Client;
 use Bunny\Channel;
 use Bunny\Message;
 use React\EventLoop\LoopInterface;
-use React\Promise\Promise;
+use React\Promise\PromiseInterface;
 
 /**
  * Interface AsyncCallbackInterface
@@ -30,6 +30,6 @@ interface AsyncCallbackInterface
      *
      * @return mixed
      */
-    public function processMessage(Message $message, Channel $channel, Client $client, LoopInterface $loop): Promise;
+    public function processMessage(Message $message, Channel $channel, Client $client, LoopInterface $loop): PromiseInterface;
 
 }
