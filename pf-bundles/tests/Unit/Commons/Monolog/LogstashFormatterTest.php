@@ -49,12 +49,12 @@ class LogstashFormatterTest extends TestCase
         $message = $this->correctMessage(json_decode($message, TRUE));
 
         $this->assertEquals([
-            'timestamp'     => 1505381163375,
-            'hostname'      => 'localhost',
-            'type'          => 'test-service',
-            'message'       => 'Test message',
-            'channel'       => 'test',
-            'severity'      => 'INFO',
+            'timestamp' => 1505381163375,
+            'hostname'  => 'localhost',
+            'type'      => 'test-service',
+            'message'   => 'Test message',
+            'channel'   => 'test',
+            'severity'  => 'INFO',
         ], $message);
     }
 
@@ -104,13 +104,13 @@ class LogstashFormatterTest extends TestCase
         $message = $this->correctMessage(json_decode($message, TRUE));
 
         $this->assertEquals([
-            'timestamp'     => 1505381163375,
-            'hostname'      => 'localhost',
-            'type'          => 'test-service',
-            'message'       => 'Test message',
-            'channel'       => 'test',
-            'severity'      => 'INFO',
-            'stacktrace'    => [
+            'timestamp'  => 1505381163375,
+            'hostname'   => 'localhost',
+            'type'       => 'test-service',
+            'message'    => 'Test message',
+            'channel'    => 'test',
+            'severity'   => 'INFO',
+            'stacktrace' => [
                 'class'   => 'Exception',
                 'message' => 'Default exception',
                 'code'    => 0,
@@ -172,6 +172,34 @@ class LogstashFormatterTest extends TestCase
         }
 
         return $message;
+    }
+
+    /**
+     * @covers LogstashFormatter::format()
+     */
+    public function testContext(): void
+    {
+        $message = $this->logstashFormatter->format([
+            'message'    => 'Test message',
+            'context'    => [
+                'type'          => 'starting_point',
+                'topology_name' => 'topology_1',
+            ],
+            'level_name' => 'INFO',
+            'channel'    => 'test',
+        ]);
+
+        $message = $this->correctMessage(json_decode($message, TRUE));
+
+        $this->assertEquals([
+            'timestamp'     => 1505381163375,
+            'hostname'      => 'localhost',
+            'type'          => 'starting_point',
+            'message'       => 'Test message',
+            'channel'       => 'test',
+            'severity'      => 'INFO',
+            'topology_name' => 'topology_1',
+        ], $message);
     }
 
 }
