@@ -8,6 +8,7 @@
 
 namespace Tests\Unit\RabbitMq\Base;
 
+use Bunny\Channel;
 use Bunny\Message;
 use Hanaboso\PipesFramework\RabbitMq\Base\BaseCallbackAbstract;
 use Hanaboso\PipesFramework\RabbitMq\CallbackStatus;
@@ -45,7 +46,15 @@ class BaseCallbackAbstractTest extends TestCase
         }
         $message = new Message('', '', FALSE, 'test', 'key', [], '{"1":2}');
 
-        $result = $baseCallback->handleMessage($message->content, $message);
+        $channel = $this->getMockBuilder(Channel::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $channel
+            ->method('ack')
+            ->willReturn(TRUE);
+
+        $result = $baseCallback->handleMessage($message->content, $message, $channel);
         $this->assertEquals($result->getStatus(), $callbackStatus);
     }
 

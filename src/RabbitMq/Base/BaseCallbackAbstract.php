@@ -8,6 +8,7 @@
 
 namespace Hanaboso\PipesFramework\RabbitMq\Base;
 
+use Bunny\Channel;
 use Bunny\Message;
 use Hanaboso\PipesFramework\HbPFRabbitMqBundle\DebugMessageTrait;
 use Hanaboso\PipesFramework\RabbitMq\CallbackStatus;
@@ -48,11 +49,12 @@ abstract class BaseCallbackAbstract implements LoggerAwareInterface
     /**
      * @param mixed   $data
      * @param Message $message
+     * @param Channel $channel
      *
      * @return CallbackStatus
      * @throws RabbitMqException
      */
-    final public function handleMessage($data, Message $message): CallbackStatus
+    final public function handleMessage($data, Message $message, Channel $channel): CallbackStatus
     {
         $result         = $this->handle($data, $message);
         $prepareMessage = $this->prepareMessage(
@@ -67,6 +69,7 @@ abstract class BaseCallbackAbstract implements LoggerAwareInterface
 
         switch ($result->getStatus()) {
             case CallbackStatus::SUCCESS:
+                $channel->ack($message);
                 //TODO: what else
                 break;
             case CallbackStatus::FAILED:
@@ -79,6 +82,7 @@ abstract class BaseCallbackAbstract implements LoggerAwareInterface
 
                     $this->getRepeater()->add($message);
                 }
+                $channel->ack($message);
                 break;
             default:
                 $this->logger->error('BaseCallback::handleMessage', $prepareMessage);

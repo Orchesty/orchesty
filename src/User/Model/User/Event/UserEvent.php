@@ -48,7 +48,7 @@ class UserEvent extends Event
     {
         $this->user       = $user;
         $this->loggedUser = $loggedUser;
-        $this->tmpUser = $tmpUser;
+        $this->tmpUser    = $tmpUser;
     }
 
     /**
