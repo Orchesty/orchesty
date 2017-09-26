@@ -8,7 +8,7 @@ use Hanaboso\PipesFramework\HbPFApiGatewayBundle\HbPFApiGatewayBundle;
 use Hanaboso\PipesFramework\HbPFCommonsBundle\HbPFCommonsBundle;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\HbPFConfiguratorBundle;
 use Hanaboso\PipesFramework\HbPFMailerBundle\HbPFMailerBundle;
-use Hanaboso\PipesFramework\RabbitMqBundle\RabbitMqBundle;
+use Hanaboso\PipesFramework\HbPFRabbitMqBundle\HbPFRabbitMqBundle;
 use JMS\SerializerBundle\JMSSerializerBundle;
 use Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
@@ -43,12 +43,12 @@ class AppKernel extends Kernel
             new DoctrineMongoDBBundle(),
             new FOSRestBundle(),
             new JMSSerializerBundle(),
-            new RabbitMqBundle(),
+            new HbPFRabbitMqBundle(),
 
             new HbPFApiGatewayBundle(),
             new HbPFCommonsBundle(),
             new HbPFMailerBundle(),
-            new HbPFConfiguratorBundle()
+            new HbPFConfiguratorBundle(),
         ];
 
         if (in_array($this->getEnvironment(), ['dev', 'test'], TRUE)) {

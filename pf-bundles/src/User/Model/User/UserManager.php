@@ -5,7 +5,7 @@ namespace Hanaboso\PipesFramework\User\Model\User;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ORM\EntityManager;
 use Hanaboso\PipesFramework\HbPFUserBundle\Provider\ResourceProvider;
-use Hanaboso\PipesFramework\RabbitMqBundle\Producer\AbstractProducer;
+use Hanaboso\PipesFramework\RabbitMq\Base\AbstractProducer;
 use Hanaboso\PipesFramework\User\DatabaseManager\UserDatabaseManagerLocator;
 use Hanaboso\PipesFramework\User\Document\User as OdmUser;
 use Hanaboso\PipesFramework\User\Entity\TmpUserInterface;
