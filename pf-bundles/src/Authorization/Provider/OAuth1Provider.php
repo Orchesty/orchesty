@@ -12,6 +12,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Exception;
 use Hanaboso\PipesFramework\Authorization\Exception\AuthorizationException;
 use Hanaboso\PipesFramework\Authorization\Provider\Dto\OAuth1DtoInterface;
+use Hanaboso\PipesFramework\Authorization\Utils\ScopeFormater;
 use Hanaboso\PipesFramework\Commons\Redirect\RedirectInterface;
 use OAuth;
 use Psr\Log\LoggerAwareInterface;
@@ -23,7 +24,7 @@ use Psr\Log\NullLogger;
  *
  * @package Hanaboso\PipesFramework\Authorization\Provider
  */
-class OAuth1Provider implements ProviderInterface, LoggerAwareInterface
+class OAuth1Provider implements OAuth1ProviderInterface, LoggerAwareInterface
 {
 
     public const OAUTH_TOKEN        = 'oauth_token';
@@ -200,25 +201,8 @@ class OAuth1Provider implements ProviderInterface, LoggerAwareInterface
             $authorizeUrl,
             $redirectUrl,
             $oauthToken,
-            $this->getScopes($scopes)
+            ScopeFormater::getScopes($scopes)
         );
-    }
-
-    /**
-     * @param array $scopes
-     *
-     * @return string
-     */
-    private function getScopes(array $scopes): string
-    {
-        if (empty($scopes)) {
-
-            return '';
-        }
-
-        $scope = implode(',', $scopes);
-
-        return sprintf('&scope=%s', $scope);
     }
 
     /**
