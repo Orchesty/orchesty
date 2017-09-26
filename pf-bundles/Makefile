@@ -13,7 +13,7 @@ docker-up-force: .env
 	$(DC) pull
 	$(DC) up -d --force-recreate
 
-docker-down-clean: .env phpmanual-down
+docker-down-clean: .env
 	$(DC) down -v
 
 #Composer
@@ -69,6 +69,10 @@ phpmanual-down:
 	cd tests/Manual; $(MAKE) docker-down-clean;
 
 test: docker-up-force composer-install codesniffer phpstan clear-cache phpunit phpcontroller phpintergration
+
+docker-compose.ci.yml:
+	# Comment out any port forwarding
+	sed -r 's/^(\s+ports:)$$/#\1/g; s/^(\s+- \$$\{DEV_IP\}.*)$$/#\1/g' docker-compose.yml > docker-compose.ci.yml
 
 #Other
 

@@ -7,7 +7,6 @@ stages:
 before_script:
   - . build/lib/gitlab-ci-helpers.sh
   - export REPO_ROOT=$(pwd)
-  - export COMPOSE_PROJECT_NAME="p${CI_PIPELINE_ID}"
   - eval $(ssh-agent)
   - ssh-add ~/.ssh/bob_the_builder_hanaboso
 
@@ -37,24 +36,23 @@ njs-build-image:
     - master
     - ci
 
-lib-sym3-test:
+pf-bundles-test:
   stage: stage2
   script:
     - DIR=pf-bundles
     - skip_unmodified $DIR
-    - ": TODO: modify this job to allow parallel execution!"
     - cd $REPO_ROOT/$DIR
-    - make docker-up-force
-    - make composer-install
-    - make test
+    - export COMPOSE_PROJECT_NAME="p${CI_PIPELINE_ID}-bundles" # CLEANUP bundles
+    - export COMPOSE_FILE=docker-compose.ci.yml                # CLEANUP bundles
+    - make ${COMPOSE_FILE} docker-up-force composer-install test
 
 pf-bridge-test:
   stage: stage3
   script:
     - DIR=pf-bridge
     - skip_unmodified $DIR
-    - ": TODO: modify this job to allow parallel execution!"
     - cd $REPO_ROOT/$DIR/test
+    - export COMPOSE_PROJECT_NAME="p${CI_PIPELINE_ID}-bridge"  # CLEANUP bridge
     - export RABBITMQ_HOST=rabbitmq
     - export METRICS_HOST=influxdb
     - docker-compose up -d
@@ -105,8 +103,15 @@ cleanup:
   stage: cleanup
   when: always
   script:
-    - cd $REPO_ROOT/pf-bundles
-    - make docker-down-clean
+    - ": TODO: we should do cleanups also in the end of every job that needs them,"
+    - ":       this shhould be only the last resort when a job fails"
 
+    - ": bundles"
+    - cd $REPO_ROOT/pf-bundles
+    - export COMPOSE_PROJECT_NAME=p${CI_PIPELINE_ID}-bundles
+    - export COMPOSE_FILE=docker-compose.ci.yml
+    - make ${COMPOSE_FILE} docker-down-clean || echo "bundles cleanup phase failed"
+
+    - ": bridge"
     - cd $REPO_ROOT/pf-bridge/test
-    - docker-compose down -v
+    - docker-compose -p p${CI_PIPELINE_ID}-bridge down -v || echo "bridge cleanup phase failed"
