@@ -1,0 +1,18 @@
+# STATUS SERVICE
+rabbit-mq:
+
+    consumers:
+        status-service:
+            class: Hanaboso\PipesFramework\Configurator\StatusService\StatusServiceConsumer
+            queue: pipes.results
+            serializer: Hanaboso\PipesFramework\RabbitMq\Serializers\JsonSerializer
+            callback: hanaboso.pipes_framework.commons.status_service.status_service_callback
+
+services:
+    # callback for status service
+    hanaboso.pipes_framework.commons.status_service.status_service_callback:
+        class: Hanaboso\PipesFramework\Configurator\StatusService\StatusServiceCallback
+        arguments:
+            - '@event_dispatcher'
+        calls:
+            - [setRepeater, ['@hanaboso.pipes_framework.commons.rabbit_mq.repeater.repeater']]
