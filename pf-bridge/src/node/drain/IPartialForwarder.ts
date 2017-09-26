@@ -1,10 +1,10 @@
 import JobMessage from "../../message/JobMessage";
 
-export type ForwardSingleSplitFn = (msg: JobMessage) => Promise<void>;
+export type ForwardPartFn = (msg: JobMessage) => Promise<void>;
 
 interface IPartialForwarder {
 
-    forwardSingleSplit: ForwardSingleSplitFn;
+    forwardPart: ForwardPartFn;
 
 }
 

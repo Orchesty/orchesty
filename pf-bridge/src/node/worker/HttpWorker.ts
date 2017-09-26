@@ -22,7 +22,7 @@ export interface IHttpWorkerRequestParams {
     gzip?: boolean;
     body?: string;
     headers: {
-        correlation__id: string,
+        correlation_id: string,
         job_id: string,
         sequence_id: number,
         reply_to_url?: string,

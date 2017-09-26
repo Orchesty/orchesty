@@ -34,7 +34,7 @@ const topo = Configurator.createConfigFromSkeleton(
 
 describe("Probe", () => {
     it("should return that none of nodes is running", () => {
-        const probe = new Probe(8005);
+        const probe = new Probe("topoId", 8005);
         topo.nodes.forEach((node: INodeConfig) => {
              probe.addNode(node);
         });
@@ -64,7 +64,7 @@ describe("Probe", () => {
         });
         const m2server = mock2.listen(topo.nodes[1].debug.port);
 
-        const probe = new Probe(8006);
+        const probe = new Probe("topoId", 8006);
         topo.nodes.forEach((node: INodeConfig) => {
             probe.addNode(node);
         });
@@ -96,7 +96,7 @@ describe("Probe", () => {
         });
         const m2server = mock2.listen(topo.nodes[1].debug.port);
 
-        const probe = new Probe(8008);
+        const probe = new Probe("topoId", 8008);
         topo.nodes.forEach((node: INodeConfig) => {
             probe.addNode(node);
         });
@@ -116,12 +116,14 @@ describe("Probe", () => {
                             url: topo.nodes[1].debug.url,
                             code: 500,
                             message: "Worker down",
+                            status: false,
                         },
                         {
                             node: topo.nodes[0].id,
                             url: topo.nodes[0].debug.url,
                             code: 200,
                             message: "OK",
+                            status: true,
                         },
                     ],
                 );

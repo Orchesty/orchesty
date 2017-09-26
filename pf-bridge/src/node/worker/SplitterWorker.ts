@@ -127,7 +127,7 @@ class SplitterWorker implements IWorker {
                 { status: ResultCode.SUCCESS, message: `Split ${i}/${content.data.length}.`},
             );
 
-            splitPromises.push(this.partialForwarder.forwardSingleSplit(splitMsg));
+            splitPromises.push(this.partialForwarder.forwardPart(splitMsg));
 
             i++;
         });

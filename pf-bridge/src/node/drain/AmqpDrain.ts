@@ -90,7 +90,7 @@ class AmqpDrain extends ADrain implements IDrain, IPartialForwarder {
      * @param {JobMessage} message
      * @return {Promise<boolean>}
      */
-    public forwardSingleSplit(message: JobMessage): Promise<void> {
+    public forwardPart(message: JobMessage): Promise<void> {
         return this.followersPublisher.send(message);
     }
 

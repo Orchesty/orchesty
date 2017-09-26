@@ -53,6 +53,7 @@ describe("AmqpRpcWorker", () => {
     });
 
     it("should send 1 message to external worker and receive multiple", () => {
+        const forwarded: JobMessage[] = [];
         const settings: IAmqpRpcWorkerSettings = {
             node_id: "amqp_rpc_node_multiple",
             publish_queue: {
@@ -109,6 +110,7 @@ describe("AmqpRpcWorker", () => {
         return externalWorkerMock.consume(settings.publish_queue.name, {})
             .then(() => {
                 const jobMsg = new JobMessage(
+                    "amqp.worker.correlation_id",
                     "amqp.worker.job_message",
                     1,
                     {},
@@ -119,16 +121,17 @@ describe("AmqpRpcWorker", () => {
             })
             .then((outMsg: JobMessage) => {
                 assert.instanceOf(outMsg, JobMessage);
-                assert.lengthOf(outMsg.getSplit(), 5);
+                assert.equal(outMsg.getMultiplier(), 5);
+                assert.isFalse(outMsg.getForwardSelf());
 
-                let i = 1;
-                outMsg.getSplit().forEach((splitMsg: JobMessage) => {
-                    assert.equal(i, splitMsg.getSequenceId());
-
-                    const body = JSON.parse(splitMsg.getContent());
-                    assert.equal(i, parseInt(body.data, 10));
-                    i++;
-                });
+                // let i = 1;
+                // outMsg.getSplit().forEach((splitMsg: JobMessage) => {
+                //     assert.equal(i, splitMsg.getSequenceId());
+                //
+                //     const body = JSON.parse(splitMsg.getContent());
+                //     assert.equal(i, parseInt(body.data, 10));
+                //     i++;
+                // });
             });
     });
 });

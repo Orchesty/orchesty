@@ -124,6 +124,8 @@ class AmqpRpcWorker implements IWorker {
 
         // resolve function will be called with the last received result message
         return new Promise((resolve) => {
+            msg.setMultiplier(0);
+            msg.setForwardSelf(false);
             const w: IWaiting = { resolveFn: resolve, message: msg, sequence: 0 };
             this.waiting.set(msg.getJobId(), w);
         });
@@ -214,6 +216,7 @@ class AmqpRpcWorker implements IWorker {
         const newContent = JSON.parse(resultMsg.content.toString());
 
         const splitMsg = new JobMessage(
+            stored.message.getCorrelationId(),
             stored.message.getJobId(),
             stored.sequence,
             JSON.parse(JSON.stringify(stored.message.getHeaders())), // simple object cloning,
@@ -221,7 +224,9 @@ class AmqpRpcWorker implements IWorker {
             { status: ResultCode.SUCCESS, message: `Part ${stored.sequence}` },
         );
 
-        stored.message.addSplit(splitMsg);
+        stored.message.setMultiplier(stored.message.getMultiplier() + 1);
+        // TODO - forward partially
+        // stored.message.addSplit(splitMsg);
     }
 
     /**

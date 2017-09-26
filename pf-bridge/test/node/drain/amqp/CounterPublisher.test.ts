@@ -59,6 +59,7 @@ describe("CounterPublisher", () => {
         const msgBody = JSON.stringify({data: "test", settings: {}});
         const msg: JobMessage = new JobMessage(
             msgJobId,
+            msgJobId,
             msgSeqId,
             msgHeaders,
             msgBody,
@@ -137,6 +138,7 @@ describe("CounterPublisher", () => {
         consumer.consume(settings.counter_event.queue.name, {})
             .then(() => {
                 const msg: JobMessage = new JobMessage(
+                    msgJobId,
                     msgJobId,
                     msgSeqId,
                     msgHeaders,
