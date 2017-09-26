@@ -51,7 +51,7 @@ class GeneratorController extends FOSRestController
     }
 
     /**
-     * @Route("/topology/generate/{id}")
+     * @Route("/api/topology/generate/{id}")
      * @Method({"GET"})
      *
      * @param string $id
