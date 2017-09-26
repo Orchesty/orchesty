@@ -14,7 +14,7 @@
   },
   "require": {
     "alcaeus/mongo-php-adapter": "^1.1",
-    "bunny/bunny": "~0.2.4",
+    "bunny/bunny": "^0.2",
     "doctrine/doctrine-bundle": "^1.7",
     "doctrine/doctrine-fixtures-bundle": "^2.3",
     "doctrine/mongodb": "^1.6",
@@ -24,6 +24,7 @@
     "friendsofsymfony/rest-bundle": "^2.2",
     "guzzlehttp/guzzle": "^6.3.0",
     "jms-serializer/serializer-bundle": "^1.1",
+    "league/oauth2-client": "^2.2",
     "paragonie/halite": "^3.2",
     "phpoffice/phpspreadsheet": "@dev",
     "symfony/browser-kit": "^3.3",

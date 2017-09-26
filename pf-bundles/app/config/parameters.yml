@@ -33,3 +33,4 @@ parameters:
     sftp.password: ''
 
     frontend_host: 127.0.0.1
+    backend_host: 127.0.0.2

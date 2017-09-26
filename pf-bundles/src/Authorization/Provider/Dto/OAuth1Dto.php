@@ -16,7 +16,7 @@ use Hanaboso\PipesFramework\Authorization\Document\Authorization;
  *
  * @package Hanaboso\PipesFramework\Authorization\Provider\Dto
  */
-final class OAuth1Dto
+final class OAuth1Dto implements OAuth1DtoInterface
 {
 
     /**
@@ -106,6 +106,14 @@ final class OAuth1Dto
     public function getAuthorization(): Authorization
     {
         return $this->authorization;
+    }
+
+    /**
+     * @return array
+     */
+    public function getToken(): array
+    {
+        return $this->authorization ? $this->authorization->getToken() : [];
     }
 
 }
