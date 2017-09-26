@@ -188,9 +188,10 @@ class TopologyHandler
             '_id'        => $topology->getId(),
             'name'       => $topology->getName(),
             'descr'      => $topology->getDescr(),
-            'enabled'    => $topology->isEnabled(),
-            'visibility' => $topology->getVisibility(),
             'status'     => $topology->getStatus(),
+            'visibility' => $topology->getVisibility(),
+            'version'    => $topology->getVersion(),
+            'enabled'    => $topology->isEnabled(),
         ];
     }
 
