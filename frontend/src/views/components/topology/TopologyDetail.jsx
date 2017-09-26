@@ -22,6 +22,25 @@ class TopologyDetail extends React.Component {
   constructor(props) {
     super(props);
     this.changeTab = this.changeTab.bind(this);
+    this._actions = {
+      nodes: null,
+      schema: null
+    }
+  }
+
+  setActions(tab, actions){
+    const {activeTab, setActions} = this.props;
+    this._actions[tab] = actions;
+    if (tab == activeTab){
+      setActions(actions);
+    }
+  }
+
+  componentWillReceiveProps(nextProps){
+    const {activeTab, setActions} = this.props;
+    if (activeTab != nextProps.activeTab){
+      setActions(this._actions[nextProps.activeTab]);
+    }
   }
 
   changeTab(tab, index){
@@ -31,12 +50,13 @@ class TopologyDetail extends React.Component {
   render() {
     const {topologyId, activeTab, setActions, onChangeTopology} = this.props;
     let activeIndex = tabItems.findIndex(tab => activeTab == tab.id);
+    const schemaVisible = activeTab == 'schema';
     return (
       <div className="topology-detail">
-        <TabBar items={tabItems} active={activeIndex} onChangeTab={this.changeTab} />
-        {activeTab == 'nodes' && <TopologyNodeListTable topologyId={topologyId} />}
-        <div className={'schema-wrapper' + (activeTab != 'schema' ? ' hidden' : '')}>
-          <TopologySchema schemaId={topologyId} setActions={setActions} onChangeTopology={onChangeTopology} />
+        <TabBar items={tabItems} active={activeIndex} onChangeTab={this.changeTab}/>
+        {activeTab == 'nodes' && <TopologyNodeListTable topologyId={topologyId} setActions={this.setActions.bind(this, 'nodes')}/>}
+        <div className={'schema-wrapper' + ( schemaVisible ? '' : ' hidden')}>
+          <TopologySchema schemaId={topologyId} setActions={this.setActions.bind(this, 'schema')} onChangeTopology={onChangeTopology} visible={schemaVisible} />
         </div>
       </div>
     );
@@ -50,7 +70,9 @@ TopologyDetail.defaultProps = {
 TopologyDetail.propTypes = {
   topologyId: PropTypes.string.isRequired,
   activeTab: PropTypes.oneOf(tabItems.map(tab => tab.id)).isRequired,
-  onChangeTab: PropTypes.func.isRequired
+  onChangeTab: PropTypes.func.isRequired,
+  setActions: PropTypes.func.isRequired,
+  onChangeTopology: PropTypes.func.isRequired
 };
 
 export default TopologyDetail;

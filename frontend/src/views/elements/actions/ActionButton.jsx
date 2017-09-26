@@ -1,5 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types';
+import {connect} from 'react-redux';
 
 import ToggleLocalMenu from 'elements/menu/ToggleLocalMenu';
 import StateButton from 'elements/input/StateButton';
@@ -52,9 +53,10 @@ class ActionButton extends React.Component {
           return null;
 
         case 1:
+          const state = this.props.hasOwnProperty('state') ? this.props.state : items[0].state;
           return (
             <div className="btn-group">
-              <StateButton state={items[0].state} size={size} color="info" type="button" aria-expanded="true" onClick={e => this.makeAction(e, items[0])} disabled={items[0].disabled}>{caption}</StateButton>
+              <StateButton state={state} size={size} color="info" type="button" aria-expanded="true" onClick={e => this.makeAction(e, items[0])} disabled={items[0].disabled}>{caption}</StateButton>
             </div>
           );
 
@@ -80,7 +82,19 @@ ActionButton.defaultProps = {
 ActionButton.propTypes = {
   item: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
   size: PropTypes.string,
-  right: PropTypes.bool
+  right: PropTypes.bool,
+  state: PropTypes.string
 };
 
-export default ActionButton;
+function mapStateToProps(state, ownProps) {
+  if (ownProps.item && ownProps.item.processId){
+    const {process} = state;
+    return {
+      state: process[ownProps.item.processId]
+    }
+  } else {
+    return {};
+  }
+}
+
+export default connect(mapStateToProps)(ActionButton);
