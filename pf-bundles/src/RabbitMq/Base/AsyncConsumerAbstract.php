@@ -14,7 +14,7 @@ use Bunny\Message;
 use Hanaboso\PipesFramework\RabbitMq\Base\AsyncCallbackInterface;
 use Hanaboso\PipesFramework\RabbitMq\Base\ConsumerAbstract;
 use React\EventLoop\LoopInterface;
-use React\Promise\Promise;
+use React\Promise\PromiseInterface;
 
 /**
  * Class AsyncConsumerAbstract
@@ -47,9 +47,9 @@ abstract class AsyncConsumerAbstract extends ConsumerAbstract
      * @param Client        $client
      * @param LoopInterface $loop
      *
-     * @return Promise
+     * @return PromiseInterface
      */
-    public function processMessage(Message $message, Channel $channel, Client $client, LoopInterface $loop): Promise
+    public function processMessage(Message $message, Channel $channel, Client $client, LoopInterface $loop): PromiseInterface
     {
         return $this->callback->processMessage($message, $channel, $client, $loop);
     }
