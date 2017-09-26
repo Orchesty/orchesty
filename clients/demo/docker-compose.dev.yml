@@ -37,7 +37,7 @@ services:
         volumes:
           - ../../:/var/www/pipes
           - ${SSH_AUTH_SOCK}:/ssh-agent
-          - topology-generator:${GENERATOR_PATH}
+          - ./../topology:${GENERATOR_PATH}
         networks:
           default:
             aliases:
