@@ -22,9 +22,9 @@ export interface IHttpWorkerRequestParams {
     gzip?: boolean;
     body?: string;
     headers: {
+        correlation__id: string,
         job_id: string,
         sequence_id: number,
-        message_id: string,
         reply_to_url?: string,
         reply_to_method?: string,
     };
@@ -57,7 +57,8 @@ class HttpWorker implements IWorker {
             request(reqParams, (err, response, body) => {
                 if (err) {
                     logger.warn(
-                        "Worker[type='http'] received response",
+                        `Worker[type='http'] did not received response. \
+                         Request params: ${JSON.stringify(reqParams)}. Body: ${JSON.stringify(body)}`,
                         { node_id: this.settings.node_id, correlation_id: msg.getJobId(), error: err },
                     );
                     msg.setResult({ status: ResultCode.HTTP_ERROR, message: err });
@@ -141,9 +142,9 @@ class HttpWorker implements IWorker {
             url: this.getUrl(this.settings.process_path),
             json: JSON.parse(inMsg.getContent()),
             headers: {
+                correlation_id: inMsg.getCorrelationId(),
                 job_id: inMsg.getJobId(),
                 sequence_id: inMsg.getSequenceId(),
-                message_id: inMsg.getUuid(),
             },
         };
     }

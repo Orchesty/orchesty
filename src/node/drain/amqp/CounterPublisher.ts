@@ -47,7 +47,7 @@ class CounterPublisher extends Publisher {
             message.getResult().status, // 0 OK, >0 NOK
             message.getResult().message,
             this.settings.followers.length,
-            message.getSplit().length,
+            message.getMultiplier(),
         );
 
         const opts: Options.Publish = {
