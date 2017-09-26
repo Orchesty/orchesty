@@ -26,7 +26,7 @@ services:
           - rabbitmq
 
     # Services
-    generator-api-fpm:
+    topology-fpm:
         image: dkr.hanaboso.net/pipes/pipes/php-dev:dev
         user: ${DEV_UID}:${DEV_GID}
         working_dir: /var/www/pipes/clients/demo/pipes-api
@@ -37,7 +37,12 @@ services:
         volumes:
           - ../../:/var/www/pipes
           - ${SSH_AUTH_SOCK}:/ssh-agent
-          - generator:/var/www/pipes/clients/demo/pipes-api/${GENERATOR_PATH}
+          - topology-generator:${GENERATOR_PATH}
+        networks:
+          default:
+            aliases:
+              # remove when real topology-fpm is implemented
+              - topology-fpm
         depends_on:
           - mongo
 
@@ -80,6 +85,7 @@ services:
               - topology-api
         depends_on:
           - monolith-fpm
+          - topology-fpm
 
     # RabbitMQ
     rabbitmq:
