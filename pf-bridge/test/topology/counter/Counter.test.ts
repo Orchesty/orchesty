@@ -13,8 +13,13 @@ import {default as Counter, ICounterJobInfo} from "../../../src/topology/counter
 
 const conn = new Connection(amqpConnectionOptions);
 const counterSettings = {
+    topology: "topoId",
     sub: {queue: {name: "test_counter_sub_q", prefetch: 1, options: {}}},
-    pub: {exchange: {name: "test_counter_pub_e", type: "direct", options: {}}, routing_key: "pub_rk"},
+    pub: {
+        exchange: {name: "test_counter_pub_e", type: "direct", options: {}},
+        queue: {name: "test_counter_pub_q", options: {}},
+        routing_key: "pub_rk",
+    },
 };
 const testOutputQueue = {
     name: "test_counter_output",

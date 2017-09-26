@@ -28,8 +28,10 @@ const testTopology: ITopologyConfigSkeleton = {
             id: "node-b",
             resequencer: true,
             worker: {
-                type: "worker.splitter",
-                settings: {},
+                type: "splitter.json",
+                settings: {
+                    node_id: "node-b",
+                },
             },
             debug: {
                 port: 4102,
@@ -69,7 +71,7 @@ describe("Linear topology with splitter test", () => {
             ],
             settings: {},
         };
-        const msgHeaders = { headers: { job_id: "test", sequence_id: 1 } };
+        const msgHeaders = { headers: { correlation_id: "corrid", job_id: "test", sequence_id: 1 } };
 
         const pip = new Pipes(testTopology);
 

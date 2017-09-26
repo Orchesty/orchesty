@@ -1,7 +1,7 @@
 import * as express from "express";
 import * as request from "request";
 import logger from "../logger/Logger";
-import { INodeConfig } from "./Configurator";
+import {INodeConfig} from "./Configurator";
 
 const DEFAULT_HTTP_PORT = 8007;
 const HTTP_PROBE_PATH = "/status";
@@ -17,12 +17,14 @@ interface INodeInfo {
 
 interface IProbeNodeResult {
     node: string;
+    status: boolean;
     url: string;
     code: number;
     message: string;
 }
 
 export interface IProbeResult {
+    id: string;
     status: boolean;
     message: string;
     nodes: IProbeNodeResult[];
@@ -31,13 +33,16 @@ export interface IProbeResult {
 class Probe {
 
     private port: number;
+    private topologyId: string;
     private nodes: INodeConfig[];
 
     /**
      *
+     * @param {string} topologyId
      * @param {number} port
      */
-    constructor(port?: number) {
+    constructor(topologyId: string, port?: number) {
+        this.topologyId = topologyId;
         this.port = port || DEFAULT_HTTP_PORT;
         this.nodes = [];
     }
@@ -129,11 +134,19 @@ class Probe {
         });
     }
 
+    /**
+     *
+     * @param {number} total
+     * @param {number} success
+     * @param {INodeInfo[]} nodesInfo
+     * @return {IProbeResult}
+     */
     private composeProbeResult(total: number, success: number, nodesInfo: INodeInfo[]): IProbeResult {
         const nodes: IProbeNodeResult[] = [];
         nodesInfo.forEach((n: INodeInfo) => {
             nodes.push({
                 node: n.node,
+                status: n.code === 200,
                 url: n.url,
                 code: n.code,
                 message: n.err ? n.err : n.body,
@@ -141,6 +154,7 @@ class Probe {
         });
 
         return {
+            id: this.topologyId,
             status: success === total,
             message: `${success}/${total} nodes ready.`,
             nodes,

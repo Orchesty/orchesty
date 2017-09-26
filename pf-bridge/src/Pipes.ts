@@ -1,7 +1,10 @@
 import Container from "lib-nodejs/dist/src/container/Container";
 import DIContainer from "./DIContainer";
 import logger from "./logger/Logger";
+import IDrain from "./node/drain/IDrain";
+import IFaucet from "./node/faucet/IFaucet";
 import Node from "./node/Node";
+import IWorker from "./node/worker/IWorker";
 import {default as Configurator, INodeConfig, ITopologyConfig, ITopologyConfigSkeleton} from "./topology/Configurator";
 import Counter from "./topology/counter/Counter";
 import Probe from "./topology/Probe";
@@ -56,7 +59,7 @@ class Pipes {
      * @param {number} port
      */
     public startProbe(port?: number): Promise<void> {
-        const probe = new Probe(port);
+        const probe = new Probe(this.topology.name, port);
 
         for (const nodeCfg of this.topology.nodes) {
             probe.addNode(nodeCfg);
@@ -83,11 +86,19 @@ class Pipes {
      * @return {Node}
      */
     private createNode(nodeCfg: INodeConfig): Node {
+        const faucet: IFaucet = this.dic.get(nodeCfg.faucet.type)(nodeCfg.faucet.settings);
+        const drain: IDrain = this.dic.get(nodeCfg.drain.type)(nodeCfg.drain.settings);
+
+        const splitterPrefix = "splitter";
+        const worker: IWorker = (nodeCfg.worker.type.substring(0, splitterPrefix.length) === splitterPrefix) ?
+            this.dic.get(nodeCfg.worker.type)(nodeCfg.worker.settings, drain) :
+            this.dic.get(nodeCfg.worker.type)(nodeCfg.worker.settings);
+
         const node = new Node(
             nodeCfg.id,
-            this.dic.get(nodeCfg.worker.type)(nodeCfg.worker.settings),
-            this.dic.get(nodeCfg.faucet.type)(nodeCfg.faucet.settings),
-            this.dic.get(nodeCfg.drain.type)(nodeCfg.drain.settings),
+            worker,
+            faucet,
+            drain,
             nodeCfg.debug.port,
             nodeCfg.initial,
         );

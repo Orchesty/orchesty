@@ -25,7 +25,8 @@ describe("HttpFaucet", () => {
                     method: "post",
                     uri: "http://localhost:6038/",
                     headers: {
-                        job_id: "A23B23",
+                        correlation_id: "corrid",
+                        process_id: "A23B23",
                         sequence_id: 1,
                     },
                 };
