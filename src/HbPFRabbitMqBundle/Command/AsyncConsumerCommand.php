@@ -12,8 +12,12 @@ use Bunny\Async\Client;
 use Bunny\Channel;
 use Bunny\Message;
 use Exception;
+use Hanaboso\PipesFramework\HbPFRabbitMqBundle\DebugMessageTrait;
 use Hanaboso\PipesFramework\RabbitMq\Base\AsyncConsumerAbstract;
 use InvalidArgumentException;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use React\EventLoop\Factory;
 use React\EventLoop\LoopInterface;
 use React\Promise\FulfilledPromise;
@@ -30,8 +34,10 @@ use function React\Promise\resolve;
  *
  * @package Hanaboso\PipesFramework\RabbitMqBundle\Command
  */
-class AsyncConsumerCommand extends Command
+class AsyncConsumerCommand extends Command implements LoggerAwareInterface
 {
+
+    use DebugMessageTrait;
 
     /**
      * @var int
@@ -49,6 +55,11 @@ class AsyncConsumerCommand extends Command
     private $config;
 
     /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    /**
      * AsyncConsumerCommand constructor.
      *
      * @param array $asyncConsumers
@@ -59,6 +70,15 @@ class AsyncConsumerCommand extends Command
         parent::__construct('rabbit-mq:async-consumer');
         $this->asyncConsumers = $asyncConsumers;
         $this->config         = $config;
+        $this->logger         = new NullLogger();
+    }
+
+    /**
+     * @param LoggerInterface $logger
+     */
+    public function setLogger(LoggerInterface $logger): void
+    {
+        $this->logger = $logger;
     }
 
     /**
@@ -139,7 +159,7 @@ class AsyncConsumerCommand extends Command
         try {
             $eventLoop->run();
         } catch (Exception $e) {
-            echo 'Loop crashed: ' . $e->getMessage() . PHP_EOL;
+            $this->logger->error(sprintf('Loop crashed: %s', $e->getMessage()), ['exception' => $e]);
 
             $this->restart($eventLoop, $consumer);
         }
@@ -173,7 +193,7 @@ class AsyncConsumerCommand extends Command
 
                 return $client->channel();
             }, function (Exception $e) use ($loop, $consumer): void {
-                echo 'Can not connect to rabbitmq.' . $e->getMessage() . PHP_EOL;
+                $this->logger->error(sprintf('RabbitMq connection error: %s', $e->getMessage()), ['exception' => $e]);
 
                 $this->restart($loop, $consumer);
             });
@@ -187,6 +207,8 @@ class AsyncConsumerCommand extends Command
      */
     protected function setup(Channel $channel, AsyncConsumerAbstract $asyncConsumer): PromiseInterface
     {
+        $this->logger->info('RabbitMq setup');
+
         return all([
             $channel->queueDeclare($asyncConsumer->getQueue()),
             $channel->qos($asyncConsumer->getPrefetchSize(), $asyncConsumer->getPrefetchCount()),
@@ -201,7 +223,7 @@ class AsyncConsumerCommand extends Command
      */
     private function runAsyncConsumer(LoopInterface $loop, AsyncConsumerAbstract $consumer): void
     {
-        echo 'Connecting ...' . PHP_EOL;
+        $this->logger->info(sprintf('Connected to %s', $this->config['host']));
 
         $this
             ->connection($loop, $consumer)
@@ -209,23 +231,23 @@ class AsyncConsumerCommand extends Command
                 return $this->setup($channel, $consumer);
             })
             ->then(function (Channel $channel) use ($loop, $consumer): void {
-
-                echo 'Before consume' . PHP_EOL;
-
                 $channel->consume(
                     function (Message $message, Channel $channel, Client $client) use ($loop, $consumer
                     ): PromiseInterface {
 
-                        echo 'Message received.' . PHP_EOL;
+                        $this->logger->info('Message received', $this->prepareBunnyMessage($message));
 
                         return $consumer
                             ->processMessage($message, $channel, $client, $loop)
                             ->then(function () use ($channel, $message): void {
-                                echo 'Message ACK.' . PHP_EOL;
+                                $this->logger->info('Message ACK', $this->prepareBunnyMessage($message));
                                 $channel->ack($message);
                             }, function (Exception $e) use ($channel, $message): void {
-                                echo 'Message error: ' . $e->getMessage() . PHP_EOL;
-                                echo 'Message NACK.' . PHP_EOL;
+                                $this->logger->error(
+                                    sprintf('Message process error: %s', $e->getMessage()),
+                                    $this->prepareBunnyMessage($message)
+                                );
+                                $this->logger->info('Message NACK', $this->prepareBunnyMessage($message));
                                 $channel->nack($message, FALSE, FALSE);
                             });
                     },

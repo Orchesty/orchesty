@@ -277,11 +277,15 @@ class RabbitMqCompilerPass implements CompilerPassInterface
                 $consumers,
             ]));
 
-        $container->setDefinition($this->asyncConsumerCommandServiceId,
-            new Definition('%rabbit-mq.command.async-consumer%', [
-                $asyncConsumers,
-                $config,
-            ]));
+        // ASYNC CONSUMER COMMAND
+        $asyncConsumerCommand = new Definition('%rabbit-mq.command.async-consumer%', [
+            $asyncConsumers,
+            $config,
+        ]);
+        $asyncConsumerCommand->addMethodCall('setLogger', [
+            new Reference('monolog.logger.rabbit-mq', ContainerInterface::IGNORE_ON_INVALID_REFERENCE),
+        ]);
+        $container->setDefinition($this->asyncConsumerCommandServiceId, $asyncConsumerCommand);
 
         //        $container->setDefinition($this->producerCommandServiceId,
         //            new Definition('%rabbit-mq.command.producer%', [
