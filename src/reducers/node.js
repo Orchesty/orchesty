@@ -6,7 +6,8 @@ const listPrefixLength = listPrefix.length;
 
 const initialState = {
   elements: {},
-  lists: {}
+  lists: {},
+  tests: {}
 };
 
 function getElementId(element){
@@ -37,6 +38,20 @@ function reducer(state, action){
     case types.NODE_RECEIVE:
       return Object.assign({}, state, {
         elements: addElement(state.elements, action.data)
+      });
+
+    case types.TOPOLOGY_RECEIVE_TEST:
+      const newTests = {};
+      action.data.nodes.forEach(item => {newTests[item.node] = item});
+      return Object.assign({}, state, {
+        tests: Object.assign({}, state.tests, newTests)
+      });
+
+    case types.TOPOLOGY_RESET_TEST:
+      const rNewTests = Object.assign({}, state.tests);
+      action.nodes.forEach(nodeId => {delete rNewTests[nodeId]});
+      return Object.assign({}, state, {
+        tests: rNewTests
       });
 
     default:
