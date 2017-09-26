@@ -64,14 +64,23 @@ class LogstashFormatter extends NormalizerFormatter
 
         if (isset($record['context']['exception'])) {
             $message['stacktrace'] = $record['context']['exception'];
+            unset($record['context']['exception']);
         }
 
         if (isset($record['context']['correlation_id'])) {
             $message['correlation_id'] = $record['context']['correlation_id'];
+            unset($record['context']['correlation_id']);
         }
 
         if (isset($record['context']['node_id'])) {
             $message['node_id'] = $record['context']['node_id'];
+            unset($record['context']['node_id']);
+        }
+
+        if (!empty($record['context'])) {
+            foreach ($record['context'] as $key => $val) {
+                $message[$key] = $val;
+            }
         }
 
         return $this->toJson($message) . "\n";

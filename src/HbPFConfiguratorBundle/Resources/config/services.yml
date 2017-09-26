@@ -5,3 +5,5 @@ services:
         arguments:
             - '@rabbit-mq.producer.starting_point'
             - '@hbpf.transport.curl_manager'
+        calls:
+            - ['setLogger', ['@monolog.logger']]

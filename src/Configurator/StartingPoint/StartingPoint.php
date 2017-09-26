@@ -16,6 +16,9 @@ use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Exception\StartingPointException;
 use Nette\Utils\Strings;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -24,7 +27,7 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * @package Hanaboso\PipesFramework\Configurator\StartingPoint
  */
-class StartingPoint
+class StartingPoint implements LoggerAwareInterface
 {
 
     private const CONTENT = '{"data":%s, "settings": ""}';
@@ -40,6 +43,11 @@ class StartingPoint
     private $curlManager;
 
     /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    /**
      * StartingPoint constructor.
      *
      * @param StartingPointProducer $startingPointProducer
@@ -49,6 +57,15 @@ class StartingPoint
     {
         $this->startingPointProducer = $startingPointProducer;
         $this->curlManager           = $curlManager;
+        $this->logger                = new NullLogger();
+    }
+
+    /**
+     * @param LoggerInterface $logger
+     */
+    public function setLogger(LoggerInterface $logger): void
+    {
+        $this->logger = $logger;
     }
 
     /**
@@ -113,7 +130,8 @@ class StartingPoint
     {
         $headers = new Headers();
         $headers
-            ->addHeader('job_id', Uuid::uuid4()->toString())
+            ->addHeader('process_id', Uuid::uuid4()->toString())
+            ->addHeader('correlation_id', Uuid::uuid4()->toString())
             ->addHeader('sequence_id', '1');
 
         return $headers;
@@ -179,11 +197,21 @@ class StartingPoint
             ->getChannel()
             ->queueDeclare($this->createQueueName($topology, $node), FALSE, TRUE);
 
+        $headers = $headers->getHeaders();
         $this->startingPointProducer->publish(
             $content,
             $this->createQueueName($topology, $node),
-            $headers->getHeaders()
+            $headers
         );
+        $this->logger->info('Starting point message', [
+            'correlation_id' => $headers['correlation_id'],
+            'process_id'     => $headers['process_id'],
+            'node_id'        => $node->getId(),
+            'node_name'      => $node->getName(),
+            'topology_id'    => $topology->getId(),
+            'topology_name'  => $topology->getName(),
+            'type'           => 'starting_point',
+        ]);
     }
 
     /**
