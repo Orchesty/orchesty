@@ -48,6 +48,22 @@ function reducer(state = initialState, action){
         })
       });
 
+    case types.TOPOLOGY_RECEIVE_TEST:
+      return Object.assign({}, state, {
+        tests: Object.assign({}, state.tests, {
+          [action.data.id]: Object.assign({}, action.data, {
+            nodes: action.data.nodes.map(item => item.node)
+          })
+        })
+      });
+
+    case types.TOPOLOGY_RESET_TEST:
+      const newTests = Object.assign({}, state.tests);
+      delete newTests[action.id];
+      return Object.assign({}, state, {
+        tests: newTests
+      });
+
     default:
       return state;
   }
