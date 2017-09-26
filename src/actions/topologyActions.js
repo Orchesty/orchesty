@@ -112,7 +112,24 @@ export function cloneTopology(id, silent = false){
         if (response){
           if (!silent){
             dispatch(notificationActions.addSuccess('Node was cloned successfully.'));
-          }dispatch(receive(response));
+          }
+          dispatch(receive(response));
+        }
+        return response;
+      }
+    )
+  }
+}
+
+export function publishTopology(id, silent = false){
+  return dispatch => {
+    return serverRequest(dispatch, 'POST', `/topologies/${id}/publish`).then(
+      response => {
+        if (response){
+          if (!silent){
+            dispatch(notificationActions.addSuccess('Node was published successfully.'));
+          }
+          dispatch(receive(response));
         }
         return response;
       }
