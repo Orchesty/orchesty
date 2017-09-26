@@ -23,6 +23,7 @@ interface IWaiting {
 }
 
 export const TEST_TYPE = "test";
+export const BATCH_REQUEST_TYPE = "batch";
 export const BATCH_END_TYPE = "batch_end";
 export const BATCH_ITEM_TYPE = "batch_item";
 
@@ -100,7 +101,10 @@ class AmqpRpcWorker implements IWorker {
             {
                 replyTo: this.resultsQueue.name,
                 correlationId: msg.getJobId(),
-                headers: msg.getHeaders(),
+                type: BATCH_REQUEST_TYPE,
+                headers: {
+                    node_id: this.settings.node_id,
+                },
             },
         );
 
@@ -120,8 +124,6 @@ class AmqpRpcWorker implements IWorker {
 
         // resolve function will be called with the last received result message
         return new Promise((resolve) => {
-            // remove self-reference from split list
-            msg.setSplit([]);
             const w: IWaiting = { resolveFn: resolve, message: msg, sequence: 0 };
             this.waiting.set(msg.getJobId(), w);
         });
@@ -144,14 +146,21 @@ class AmqpRpcWorker implements IWorker {
                 }
             };
 
-            const jobMsg = new JobMessage(testId, 1, {}, "");
+            const jobMsg = new JobMessage(testId, testId, 1, {}, "");
             const t: IWaiting = { resolveFn: resolveTestFn, message: jobMsg, sequence: 0 };
             this.waiting.set(testId, t);
 
             this.publisher.sendToQueue(
                 this.settings.publish_queue.name,
                 new Buffer("isWorkerReady test message"),
-                { type: TEST_TYPE, correlationId: testId, replyTo: this.resultsQueue.name },
+                {
+                    type: TEST_TYPE,
+                    correlationId: testId,
+                    replyTo: this.resultsQueue.name,
+                    headers: {
+                        node_id: this.settings.node_id,
+                    },
+                },
             );
         });
     }

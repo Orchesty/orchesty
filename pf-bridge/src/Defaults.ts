@@ -101,6 +101,7 @@ class Defaults {
      */
     public static getCounterDefaultSettings(topoName: string): ICounterSettings {
         return {
+            topology: topoName,
             sub: {
                 queue: {
                     name: `pipes.${topoName}.counter`,
@@ -113,6 +114,10 @@ class Defaults {
                 exchange: {
                     name: `pipes.${topoName}.events`,
                     type: "direct",
+                    options: {},
+                },
+                queue: {
+                    name: "pipes.results",
                     options: {},
                 },
             },

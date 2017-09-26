@@ -61,13 +61,12 @@ class FollowersPublisher extends Publisher {
             return Promise.resolve();
         }
 
-        const sendPromises = this.sendAll(message);
+        const sent = this.sendToAllFollowers(message);
 
-        return Promise.all(sendPromises)
+        return Promise.all(sent)
             .then(() => {
                 logger.info(
-                    `AmqpDrain forwarded ${sendPromises.length}x message.\
-                    Followers: ${this.settings.followers.length}, Split ${message.getSplit().length}.`,
+                    `AmqpDrain forwarded ${sent.length}x message. Followers: ${this.settings.followers.length}`,
                     { node_id: this.settings.node_id, correlation_id: message.getJobId() },
                 );
             });
@@ -79,29 +78,28 @@ class FollowersPublisher extends Publisher {
      * @param {JobMessage} message
      * @return {Array<Promise<void>>}
      */
-    private sendAll(message: JobMessage): Array<Promise<void>> {
+    private sendToAllFollowers(message: JobMessage): Array<Promise<void>> {
+        if (!message.getForwardSelf()) {
+            return [Promise.resolve()];
+        }
+
         const promises: Array<Promise<void>> = [];
+        const options: Options.Publish = {
+            headers: message.getHeaders(),
+            type: "job_message",
+            timestamp: Date.now(),
+            appId: this.settings.node_id,
+        };
 
-        // Original message could have been split into partial messages
-        for (const splitMsg of message.getSplit()) {
-            const options: Options.Publish = {
-                headers: splitMsg.getHeaders(),
-                type: "job_message",
-                messageId: splitMsg.getUuid(),
-                timestamp: Date.now(),
-                appId: this.settings.node_id,
-            };
-
-            for (const follower of this.settings.followers) {
-                promises.push(
-                    this.publish(
-                        follower.exchange.name,
-                        follower.routing_key,
-                        new Buffer(splitMsg.getContent()),
-                        options,
-                    ),
-                );
-            }
+        for (const follower of this.settings.followers) {
+            promises.push(
+                this.publish(
+                    follower.exchange.name,
+                    follower.routing_key,
+                    new Buffer(message.getContent()),
+                    options,
+                ),
+            );
         }
 
         return promises;
