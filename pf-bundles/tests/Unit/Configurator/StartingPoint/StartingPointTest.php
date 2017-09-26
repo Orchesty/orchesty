@@ -16,7 +16,7 @@ use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Exception\StartingPointException;
 use Hanaboso\PipesFramework\Configurator\StartingPoint\StartingPoint;
 use Hanaboso\PipesFramework\Configurator\StartingPoint\StartingPointProducer;
-use Hanaboso\PipesFramework\RabbitMqBundle\BunnyManager;
+use Hanaboso\PipesFramework\RabbitMq\BunnyManager;
 use PHPUnit\Framework\TestCase;
 use PHPUnit_Framework_MockObject_MockObject;
 use Symfony\Component\HttpFoundation\Request;
