@@ -16,6 +16,7 @@ use Hanaboso\PipesFramework\HbPFTableParserBundle\HbPFTableParserBundle;
 use Hanaboso\PipesFramework\HbPFUserBundle\HbPFUserBundle;
 use Hanaboso\PipesFramework\RabbitMqBundle\RabbitMqBundle;
 use JMS\SerializerBundle\JMSSerializerBundle;
+use Nelmio\CorsBundle\NelmioCorsBundle;
 use Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\MonologBundle\MonologBundle;
@@ -41,6 +42,7 @@ class AppKernel extends Kernel
             new FOSRestBundle(),
             new JMSSerializerBundle(),
             new DoctrineMongoDBBundle(),
+			new NelmioCorsBundle(),
 
             new AppBundle(),
             new HbPFAuthorizationBundle(),
@@ -51,7 +53,8 @@ class AppKernel extends Kernel
             new HbPFApiGatewayBundle(),
             new HbPFCustomNodeBundle(),
             new HbPFMailerBundle(),
-            new HbPFConfiguratorBundle(),
+			new HbPFConfiguratorBundle(),
+			new HbPFUserBundle()
         ];
 
         if (in_array($this->getEnvironment(), ['dev', 'test'], TRUE)) {

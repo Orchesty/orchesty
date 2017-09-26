@@ -11,10 +11,6 @@ hb_pf_authorization:
     resource: "@HbPFAuthorizationBundle/Controller"
     type: annotation
 
-hb_pf_commons:
-    resource: "@HbPFCommonsBundle/Controller"
-    type: annotation
-
 hb_pf_mapper:
     resource: "@HbPFMapperBundle/Controller"
     type: annotation

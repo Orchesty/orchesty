@@ -62,9 +62,9 @@ final class AuthorizationControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers AuthorizationController::getAuthorizationsInfo()
+     * @covers AuthorizationController::getAuthorizations()
      */
-    public function testGetAuthorizationsInfo(): void
+    public function testGetAuthorizations(): void
     {
         $returnValue = [
             'name'          => 'name',
@@ -75,7 +75,7 @@ final class AuthorizationControllerTest extends ControllerTestCaseAbstract
 
         $this->prepareAuthorizationHandlerMock('getAuthInfo', $returnValue);
 
-        $this->client->request('GET', '/api/authorization/info', [], [], [], '{"test":1}');
+        $this->client->request('GET', '/api/authorizations', [], [], [], '{"test":1}');
 
         $response = $this->client->getResponse();
         $content  = json_decode($response->getContent(), TRUE);

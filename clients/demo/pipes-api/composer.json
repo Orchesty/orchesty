@@ -23,16 +23,17 @@
         "php": ">=7.0",
         "doctrine/doctrine-bundle": "^1.7",
         "doctrine/orm": "^2.5",
+        "hanaboso/pipes-framework": "^1.0",
         "incenteev/composer-parameter-handler": "^2.1",
+        "nelmio/cors-bundle": "^1.5",
+        "phpoffice/phpspreadsheet": "@dev",
         "sensio/distribution-bundle": "^5.0",
         "sensio/framework-extra-bundle": "^3.0",
         "symfony/monolog-bundle": "^3.0",
         "symfony/polyfill-apcu": "^1.5",
         "symfony/swiftmailer-bundle": "^3.0",
         "symfony/symfony": "^3.3",
-        "twig/twig": "^2.4",
-        "hanaboso/pipes-framework": "^1.0",
-        "phpoffice/phpspreadsheet": "@dev"
+        "twig/twig": "^2.4"
     },
     "require-dev": {
         "sensio/generator-bundle": "^3.1",
