@@ -10,6 +10,7 @@ import CounterConsumer from "./CounterConsumer";
 const ID_DELIMITER = ".";
 
 export interface ICounterSettings {
+    topology: string;
     sub: {
         queue: {
             name: string,
@@ -24,6 +25,10 @@ export interface ICounterSettings {
             type: string,
             options: {},
         },
+        queue: {
+            name: string,
+            options: {},
+        },
     };
 }
 
@@ -34,6 +39,7 @@ interface ICounterLog {
 }
 
 export interface ICounterJobInfo {
+    topology: string;
     id: string;
     total: number;
     ok: number;
@@ -62,12 +68,14 @@ export default class Counter {
 
     /**
      *
+     * @param {string} topology
      * @param {string} id
      * @return {ICounterJobInfo}
      * @private
      */
-    private static createJob(id: string): ICounterJobInfo {
+    private static createJob(topology: string, id: string): ICounterJobInfo {
         return {
+            topology,
             id,
             total: 1,
             ok: 0,
@@ -173,7 +181,14 @@ export default class Counter {
     private preparePublisher() {
         const prepareFn: any = (ch: Channel) => {
             const pubExSett = this.settings.pub.exchange;
-            return ch.assertExchange(pubExSett.name, pubExSett.type, pubExSett.options);
+            const pubQSett = this.settings.pub.queue;
+
+            return Promise.all([
+                ch.assertExchange(pubExSett.name, pubExSett.type, pubExSett.options),
+                ch.assertQueue(pubQSett.name, pubQSett.options),
+            ]).then(() => {
+                return ch.bindQueue(pubQSett.name, pubExSett.name, this.settings.pub.routing_key);
+            });
         };
 
         this.publisher = new Publisher(this.connection, prepareFn);
@@ -233,7 +248,7 @@ export default class Counter {
         if (job) {
             job = Counter.updateJob(job, status, following, multiplier, log);
         } else {
-            job = Counter.createJob(jobId);
+            job = Counter.createJob(this.settings.topology, jobId);
             job = Counter.updateJob(job, status, following, multiplier, log);
         }
 

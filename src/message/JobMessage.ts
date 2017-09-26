@@ -1,5 +1,4 @@
 import TimeUtils from "lib-nodejs/dist/src/utils/TimeUtils";
-import * as uuid from "uuid/v1";
 import IMessage from "./IMessage";
 import { ResultCode } from "./ResultCode";
 
@@ -13,30 +12,40 @@ export interface IResult {
  */
 class JobMessage implements IMessage {
 
-    private msgUuid: string;
-
     // timestamps
     private receivedTime: number;
     private processedTime: number;
     private publishedTime: number;
 
-    private split: JobMessage[];
+    private multiplier: number;
+    private forwardSelf: boolean;
 
     /**
      *
+     * @param correlationId
      * @param {string} jobId
      * @param {number} sequenceId
      * @param {Object} headers
      * @param {string} content
      * @param result
+     *
+     * AMQP Message Mandatory headers
+     *  - correlation_id
+     *  - process_id
+     *  - sequenceId
+     *
      */
     constructor(
+        private correlationId: string,
         private jobId: string,
         private sequenceId: number,
         private headers: { [key: string]: string },
         private content: string,
         private result?: IResult,
     ) {
+        if (!correlationId) {
+            throw new Error("Invalid correlationId.");
+        }
         if (!jobId) {
             throw new Error("Invalid jobId.");
         }
@@ -44,23 +53,25 @@ class JobMessage implements IMessage {
             throw new Error("Invalid sequenceId.");
         }
 
-        this.msgUuid = `${jobId}-${sequenceId}-${uuid()}`;
         this.receivedTime = TimeUtils.nowMili();
 
         delete headers.job_id;
         delete headers.sequence_id;
+        delete headers.correlation_id;
+
         this.headers = headers;
         this.content = content;
 
-        this.split = [this];
+        this.multiplier = 1;
+        this.forwardSelf = true;
     }
 
     /**
      *
      * @return {string}
      */
-    public getUuid(): string {
-        return this.msgUuid;
+    public getCorrelationId(): string {
+        return this.correlationId;
     }
 
     /**
@@ -94,6 +105,8 @@ class JobMessage implements IMessage {
      */
     public getHeaders(): { [key: string]: string } {
         const h = this.headers;
+
+        h.correlation_id = this.getCorrelationId();
         h.job_id = this.getJobId();
         h.sequence_id = `${this.getSequenceId()}`;
 
@@ -142,25 +155,34 @@ class JobMessage implements IMessage {
 
     /**
      *
-     * @param key
-     * @param value
+     * @param {number} count
      */
-    public addHeader(key: string, value: string): void {
-        this.headers[key] = value;
+    public setMultiplier(count: number): void {
+        this.multiplier = count;
     }
 
     /**
-     * Sets timestamp when message was received to node
-     */
-    public setReceivedTime(timestamp: number): void {
-        this.receivedTime = timestamp;
-    }
-
-    /**
+     *
      * @return {number}
      */
-    public getReceivedTime(): number {
-        return this.receivedTime;
+    public getMultiplier(): number {
+        return this.multiplier;
+    }
+
+    /**
+     *
+     * @param {boolean} forward
+     */
+    public setForwardSelf(forward: boolean) {
+        this.forwardSelf = forward;
+    }
+
+    /**
+     *
+     * @return {boolean}
+     */
+    public getForwardSelf(): boolean {
+        return this.forwardSelf;
     }
 
     /**
@@ -196,31 +218,6 @@ class JobMessage implements IMessage {
         return 0;
     }
 
-    /**
-     * Allows to change the list of messages that should be forwarded to following nodes
-     *
-     * @param {JobMessage[]} messages
-     */
-    public setSplit(messages: JobMessage[]) {
-        this.split = messages;
-    }
-
-    /**
-     * Adds split message to existing collection of splits
-     *
-     * @param {JobMessage} message
-     */
-    public addSplit(message: JobMessage): void {
-        this.split.push(message);
-    }
-
-    /**
-     * Returns the list of messages that should be forwarded to followers
-     * @return {JobMessage[]}
-     */
-    public getSplit(): JobMessage[] {
-        return this.split;
-    }
 }
 
 export default JobMessage;

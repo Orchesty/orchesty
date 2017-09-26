@@ -12,6 +12,8 @@ import HttpWorker, {IHttpWorkerSettings} from "./node/worker/HttpWorker";
 import NullWorker from "./node/worker/NullWorker";
 import SplitterWorker, {ISplitterWorkerSettings} from "./node/worker/SplitterWorker";
 import UppercaseWorker from "./node/worker/UppercaseWorker";
+import IPartialForwarder from "./node/drain/IPartialForwarder";
+import Defaults from "./Defaults";
 
 class DIContainer extends Container {
 
@@ -21,6 +23,7 @@ class DIContainer extends Container {
         this.setFaucets();
         this.setDrains();
         this.setWorkers();
+        this.setSplitterWorkers();
     }
 
     private setServices() {
@@ -46,9 +49,6 @@ class DIContainer extends Container {
     }
 
     private setWorkers() {
-        this.set("worker.amqprpc", (settings: IAmqpRpcWorkerSettings) => {
-            return new AmqpRpcWorker(this.get("amqp.connection"), settings);
-        });
         this.set("worker.appender", (settings: IAppenderWorkerSettings) => {
             return new AppenderWorker(settings);
         });
@@ -58,11 +58,17 @@ class DIContainer extends Container {
         this.set("worker.null", (settings: {}) => {
             return new NullWorker();
         });
-        this.set("worker.splitter", (settings: ISplitterWorkerSettings) => {
-            return new SplitterWorker(settings);
-        });
         this.set("worker.uppercase", (settings: {}) => {
             return new UppercaseWorker();
+        });
+    }
+
+    private setSplitterWorkers() {
+        this.set("splitter.amqprpc", (settings: IAmqpRpcWorkerSettings) => {
+            return new AmqpRpcWorker(this.get("amqp.connection"), settings);
+        });
+        this.set("splitter.json", (settings: ISplitterWorkerSettings, partialForwarder: IPartialForwarder) => {
+            return new SplitterWorker(settings, partialForwarder);
         });
     }
 

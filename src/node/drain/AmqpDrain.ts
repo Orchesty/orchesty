@@ -4,6 +4,7 @@ import ADrain from "./ADrain";
 import CounterPublisher from "./amqp/CounterPublisher";
 import FollowersPublisher from "./amqp/FollowersPublisher";
 import IDrain from "./IDrain";
+import IPartialForwarder from "./IPartialForwarder";
 
 export interface IFollower {
     node_id: string;
@@ -34,7 +35,7 @@ export interface IAmqpDrainSettings {
 /**
  * Drain is responsible for passing messages to following node and for informing counter
  */
-class AmqpDrain extends ADrain implements IDrain {
+class AmqpDrain extends ADrain implements IDrain, IPartialForwarder {
 
     /**
      *
@@ -52,6 +53,9 @@ class AmqpDrain extends ADrain implements IDrain {
     }
 
     /**
+     *
+     * Forwards all buffered messages including their split messages if they have them to following node
+     * and sends counter message with result
      *
      * @param {JobMessage} message
      */
@@ -77,6 +81,17 @@ class AmqpDrain extends ADrain implements IDrain {
                     });
             });
         });
+    }
+
+    /**
+     * Allows caller to forward single split messages transparently as he wishes
+     * Does not send result to counter
+     *
+     * @param {JobMessage} message
+     * @return {Promise<boolean>}
+     */
+    public forwardPart(message: JobMessage): Promise<void> {
+        return this.followersPublisher.send(message);
     }
 
 }

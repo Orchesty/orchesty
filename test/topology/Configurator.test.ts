@@ -28,11 +28,16 @@ const testTopo: ITopologyConfigSkeleton = {
 
 const expectedTopo: ITopologyConfig = {
     counter: {
+        topology: "test-topo",
         pub: {
             exchange: {
                 name: "pipes.test-topo.events",
                 options: {},
                 type: "direct",
+            },
+            queue: {
+                name: "pipes.results",
+                options: {},
             },
             routing_key: "process_finished",
         },

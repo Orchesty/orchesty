@@ -71,7 +71,7 @@ const firstQueue = `pipes.${testTopology.name}.${testTopology.nodes[0].id}`;
 describe("Linear Topology test", () => {
     it("complete flow of messages till the end", (done) => {
         const msgTestContent = { val: "test content" };
-        const msgHeaders = { headers: { job_id: "test", sequence_id: 1 } };
+        const msgHeaders = { headers: { correlation_id: "corrid", job_id: "test", sequence_id: 1 } };
 
         const httpWorkerMock = express();
         httpWorkerMock.use(bodyParser.json());
