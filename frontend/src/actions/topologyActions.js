@@ -24,11 +24,18 @@ function receiveSchema(id, data){
   }
 }
 
-function receiveTest(id, data){
+function receiveTest(data){
   return {
     type: types.TOPOLOGY_RECEIVE_TEST,
-    id,
     data
+  }
+}
+
+function resetTest(id, nodes){
+  return {
+    type: types.TOPOLOGY_RESET_TEST,
+    id,
+    nodes
   }
 }
 
@@ -162,12 +169,16 @@ export function saveTopologySchema(id, schema){
 }
 
 export function testTopology(id, processId, silent = false){
-  return dispatch => {
+  return (dispatch, getState) => {
+    const tests = getState().topology.tests;
+    if (tests[id]){
+      dispatch(resetTest(id, tests[id].nodes));
+    }
     processId && dispatch(processActions.startProcess(processId));
-    return serverRequest(dispatch, 'POST', `/topologies/${id}/test`).then(response => {
+    return serverRequest(dispatch, 'GET', `/topologies/${id}/test`).then(response => {
       processId && dispatch(processActions.finishProcess(processId, response));
       if (response){
-        dispatch(receiveTest(id, response));
+        dispatch(receiveTest(response));
       }
 
       return response;

@@ -24,7 +24,7 @@ class NodeListTable extends React.Component {
   }
 
   _renderHead(){
-    const {listChangeSort, withTopology, list: {sort}} = this.props;
+    const {listChangeSort, withTopology, withNodeTest, list: {sort}} = this.props;
     return (
       <tr>
         <SortTh name="id" state={sort} onChangeSort={listChangeSort}>#</SortTh>
@@ -34,13 +34,14 @@ class NodeListTable extends React.Component {
         <th>Handler</th>
         <th>Service</th>
         <SortTh name="enabled" state={sort} onChangeSort={listChangeSort}>Enabled</SortTh>
+        {withNodeTest && <th>Ping test</th>}
         <th>Actions</th>
       </tr>
     );
   }
 
   render() {
-    const {list, elements, withTopology, updateNode, runNode, onlyEvents, listChangePage} = this.props;
+    const {list, elements, withTopology, updateNode, runNode, onlyEvents, listChangePage, withNodeTest, tests} = this.props;
     const rows = list && list.items ? list.items.map(id => {
       const item = elements[id];
       if (!onlyEvents || item.handler == 'event') {
@@ -58,6 +59,7 @@ class NodeListTable extends React.Component {
             }
           }
         ] : null;
+        const test = withNodeTest && tests[item._id] ? tests[item._id].code == 200 : null;
 
         return (
           <tr key={item._id}>
@@ -68,6 +70,7 @@ class NodeListTable extends React.Component {
             <td>{item.handler}</td>
             <td>{item.service}</td>
             <td><BoolValue value={item.enabled}/></td>
+            {withNodeTest && <td>{test !== null ? <BoolValue color value={test}/> : '-'}</td>}
             <td><ActionButton item={menuItems} right={true}/></td>
           </tr>
         )
@@ -95,13 +98,16 @@ class NodeListTable extends React.Component {
 
 NodeListTable.defaultProps = {
   withTopology: true,
-  onlyEvents: false
+  onlyEvents: false,
+  withNodeTest: false
 };
 
 NodeListTable.propTypes = {
   list: PropTypes.object,
   elements: PropTypes.object.isRequired,
+  tests: PropTypes.object,
   withTopology: PropTypes.bool.isRequired,
+  withNodeTest: PropTypes.bool.isRequired,
   onlyEvents: PropTypes.bool.isRequired,
   needList: PropTypes.func.isRequired,
   listChangeSort: PropTypes.func,
