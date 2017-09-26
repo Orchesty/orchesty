@@ -13,11 +13,11 @@ use Hanaboso\PipesFramework\Authorization\Exception\AuthorizationException;
 use Hanaboso\PipesFramework\Authorization\Provider\Dto\OAuth1DtoInterface;
 
 /**
- * Interface ProviderInterface
+ * Interface OAuth1ProviderInterface
  *
  * @package Hanaboso\PipesFramework\Authorization\Provider
  */
-interface ProviderInterface
+interface OAuth1ProviderInterface
 {
 
     /**

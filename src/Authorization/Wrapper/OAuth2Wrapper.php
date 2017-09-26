@@ -1,0 +1,60 @@
+<?php declare(strict_types=1);
+
+/**
+ * Created by PhpStorm.
+ * User: radek.jirsa
+ * Date: 26.9.17
+ * Time: 8:59
+ */
+
+namespace Hanaboso\PipesFramework\Authorization\Wrapper;
+
+use Exception;
+use Hanaboso\PipesFramework\Authorization\Exception\AuthorizationException;
+use League\OAuth2\Client\Provider\GenericProvider;
+use Psr\Http\Message\RequestInterface;
+
+/**
+ * Class OAuth2Wrapper
+ *
+ * @package Hanaboso\PipesFramework\Authorization\Wrapper
+ */
+class OAuth2Wrapper extends GenericProvider
+{
+
+    /**
+     * OAuth2Wrapper constructor.
+     *
+     * @param array $options
+     * @param array $collaborators
+     */
+    public function __construct(array $options = [], array $collaborators = [])
+    {
+        parent::__construct($options, $collaborators);
+    }
+
+    /**
+     * @param RequestInterface $request
+     *
+     * @return array
+     * @throws AuthorizationException
+     */
+    public function getParsedResponse(RequestInterface $request): array
+    {
+        try {
+            $res = parent::getParsedResponse($request);
+        } catch (Exception $e) {
+            $res = $e->getMessage();
+        }
+
+        if (!is_array($res)) {
+            throw new AuthorizationException(
+                $res,
+                AuthorizationException::AUTHORIZATION_RESPONSE_ARRAY_EXPECTED
+            );
+        }
+
+        return $res;
+    }
+
+}
