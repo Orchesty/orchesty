@@ -105,6 +105,8 @@ class JobMessage implements IMessage {
      */
     public getHeaders(): { [key: string]: string } {
         const h = this.headers;
+
+        h.correlation_id = this.getCorrelationId();
         h.job_id = this.getJobId();
         h.sequence_id = `${this.getSequenceId()}`;
 

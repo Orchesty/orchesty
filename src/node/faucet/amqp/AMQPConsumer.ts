@@ -26,6 +26,7 @@ class Consumer extends BasicConsumer {
         let inMsg: JobMessage;
         try {
             inMsg = new JobMessage(
+                amqMsg.properties.headers.correlation_id,
                 amqMsg.properties.headers.job_id,
                 amqMsg.properties.headers.sequence_id,
                 amqMsg.properties.headers,

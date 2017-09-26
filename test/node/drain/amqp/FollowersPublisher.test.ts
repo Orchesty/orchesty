@@ -112,6 +112,7 @@ describe("FollowersPublisher", () => {
             .then(() => {
                 const msg: JobMessage = new JobMessage(
                     msgJobId,
+                    msgJobId,
                     msgSeqId,
                     msgHeaders,
                     JSON.stringify(msgBody),

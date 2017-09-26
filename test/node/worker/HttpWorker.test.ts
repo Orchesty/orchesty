@@ -21,7 +21,7 @@ httpServer.listen(4020);
 
 describe("HttpWorker", () => {
     it("should convert JobMessage to http request and receives response and sets message result", () => {
-        const msg = new JobMessage("123", 1, {}, JSON.stringify({ val: "original" }));
+        const msg = new JobMessage("123", "123", 1, {}, JSON.stringify({ val: "original" }));
         const worker = new HttpWorker({
             node_id: "someId",
             host: "localhost",
@@ -41,7 +41,7 @@ describe("HttpWorker", () => {
     });
 
     it("should return original message content when server responds with error", () => {
-        const msg = new JobMessage("123", 1, {}, JSON.stringify({ val: "original" }));
+        const msg = new JobMessage("123", "123", 1, {}, JSON.stringify({ val: "original" }));
         const worker = new HttpWorker({
             node_id: "someId",
             host: "localhost",
@@ -61,7 +61,7 @@ describe("HttpWorker", () => {
     });
 
     it("should return original message content when process_path does not exist", () => {
-        const msg = new JobMessage("123", 1, {}, JSON.stringify({ val: "original" }));
+        const msg = new JobMessage("123", "123", 1, {}, JSON.stringify({ val: "original" }));
         const worker = new HttpWorker({
             node_id: "someId",
             host: "localhost",
