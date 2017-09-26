@@ -10,9 +10,9 @@ namespace Hanaboso\PipesFramework\Authorization\Provider;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Exception;
-use Hanaboso\PipesFramework\Authorization\Document\Authorization;
 use Hanaboso\PipesFramework\Authorization\Exception\AuthorizationException;
-use Hanaboso\PipesFramework\Authorization\Provider\Dto\OAuth1Dto;
+use Hanaboso\PipesFramework\Authorization\Provider\Dto\OAuth1DtoInterface;
+use Hanaboso\PipesFramework\Authorization\Utils\ScopeFormater;
 use Hanaboso\PipesFramework\Commons\Redirect\RedirectInterface;
 use OAuth;
 use Psr\Log\LoggerAwareInterface;
@@ -24,7 +24,7 @@ use Psr\Log\NullLogger;
  *
  * @package Hanaboso\PipesFramework\Authorization\Provider
  */
-class OAuth1Provider implements ProviderInterface, LoggerAwareInterface
+class OAuth1Provider implements OAuth1ProviderInterface, LoggerAwareInterface
 {
 
     public const OAUTH_TOKEN        = 'oauth_token';
@@ -73,14 +73,23 @@ class OAuth1Provider implements ProviderInterface, LoggerAwareInterface
     }
 
     /**
-     * @param OAuth1Dto $dto
-     * @param string    $tokenUrl
-     * @param string    $authorizeUrl
-     * @param array     $scopes
+     * @param OAuth1DtoInterface $dto
+     * @param string             $tokenUrl
+     * @param string             $authorizeUrl
+     * @param string             $redirectUrl
+     * @param callable           $saveOauthStuffs
+     * @param array              $scopes
      *
      * @throws AuthorizationException
      */
-    public function authorize(OAuth1Dto $dto, string $tokenUrl, string $authorizeUrl, array $scopes = []): void
+    public function authorize(
+        OAuth1DtoInterface $dto,
+        string $tokenUrl,
+        string $authorizeUrl,
+        string $redirectUrl,
+        callable $saveOauthStuffs,
+        array $scopes = []
+    ): void
     {
         $client       = $this->createClient($dto);
         $requestToken = [];
@@ -92,33 +101,34 @@ class OAuth1Provider implements ProviderInterface, LoggerAwareInterface
         }
 
         $this->tokenAndSecretChecker($requestToken);
-        $this->saveOAuthStuffs($dto->getAuthorization(), $requestToken);
 
-        $authorizeUrl = $this->getAuthorizeUrl($authorizeUrl, $requestToken[self::OAUTH_TOKEN], $scopes);
+        $saveOauthStuffs($this->dm, $dto, $requestToken);
+
+        $authorizeUrl = $this->getAuthorizeUrl($authorizeUrl, $redirectUrl, $requestToken[self::OAUTH_TOKEN], $scopes);
 
         $this->redirect->make($authorizeUrl);
     }
 
     /**
-     * @param OAuth1Dto $dto
-     * @param array     $request
-     * @param string    $accessTokenUrl
+     * @param OAuth1DtoInterface $dto
+     * @param array              $request
+     * @param string             $accessTokenUrl
      *
      * @return array
      * @throws AuthorizationException
      */
-    public function getAccessToken(OAuth1Dto $dto, array $request, string $accessTokenUrl): array
+    public function getAccessToken(OAuth1DtoInterface $dto, array $request, string $accessTokenUrl): array
     {
         if (!array_key_exists(self::OAUTH_VERIFIER, $request)) {
             $this->throwException(sprintf('OAuth error: Data "%s" is missing.', self::OAUTH_VERIFIER));
         }
 
-        $this->tokenAndSecretChecker($dto->getAuthorization()->getToken());
+        $this->tokenAndSecretChecker($dto->getToken());
 
         $client = $this->createClient($dto);
         $client->setToken(
-            $dto->getAuthorization()->getToken()[self::OAUTH_TOKEN],
-            $dto->getAuthorization()->getToken()[self::OAUTH_TOKEN_SECRET]
+            $dto->getToken()[self::OAUTH_TOKEN],
+            $dto->getToken()[self::OAUTH_TOKEN_SECRET]
         );
 
         $token = [];
@@ -132,21 +142,21 @@ class OAuth1Provider implements ProviderInterface, LoggerAwareInterface
     }
 
     /**
-     * @param OAuth1Dto $dto
-     * @param string    $method
-     * @param string    $url
+     * @param OAuth1DtoInterface $dto
+     * @param string             $method
+     * @param string             $url
      *
      * @return string
      * @throws AuthorizationException
      */
-    public function getAuthorizeHeader(OAuth1Dto $dto, string $method, string $url): string
+    public function getAuthorizeHeader(OAuth1DtoInterface $dto, string $method, string $url): string
     {
-        $this->tokenAndSecretChecker($dto->getAuthorization()->getToken());
+        $this->tokenAndSecretChecker($dto->getToken());
 
         $client = $this->createClient($dto);
         $client->setToken(
-            $dto->getAuthorization()->getToken()[self::OAUTH_TOKEN],
-            $dto->getAuthorization()->getToken()[self::OAUTH_TOKEN_SECRET]
+            $dto->getToken()[self::OAUTH_TOKEN],
+            $dto->getToken()[self::OAUTH_TOKEN_SECRET]
         );
 
         return $client->getRequestHeader($method, $url);
@@ -157,11 +167,11 @@ class OAuth1Provider implements ProviderInterface, LoggerAwareInterface
      */
 
     /**
-     * @param OAuth1Dto $dto
+     * @param OAuth1DtoInterface $dto
      *
      * @return OAuth
      */
-    protected function createClient(OAuth1Dto $dto): OAuth
+    protected function createClient(OAuth1DtoInterface $dto): OAuth
     {
         return new OAuth(
             $dto->getConsumerKey(),
@@ -172,46 +182,27 @@ class OAuth1Provider implements ProviderInterface, LoggerAwareInterface
     }
 
     /**
-     * @param Authorization $authorization
-     * @param array         $data
-     */
-    private function saveOAuthStuffs(Authorization $authorization, array $data): void
-    {
-        $authorization->setToken(
-            array_merge($authorization->getToken(), $data)
-        );
-
-        $this->dm->persist($authorization);
-        $this->dm->flush($authorization);
-    }
-
-    /**
      * @param string $authorizeUrl
+     * @param string $redirectUrl
      * @param string $oauthToken
      * @param array  $scopes
      *
      * @return string
      */
-    private function getAuthorizeUrl(string $authorizeUrl, string $oauthToken, array $scopes): string
+    private function getAuthorizeUrl(
+        string $authorizeUrl,
+        string $redirectUrl,
+        string $oauthToken,
+        array $scopes
+    ): string
     {
-        return sprintf('%s?oauth_token=%s%s', $authorizeUrl, $oauthToken, $this->getScopes($scopes));
-    }
-
-    /**
-     * @param array $scopes
-     *
-     * @return string
-     */
-    private function getScopes(array $scopes): string
-    {
-        if (empty($scopes)) {
-
-            return '';
-        }
-
-        $scope = implode(',', $scopes);
-
-        return sprintf('&scope=%s', $scope);
+        return sprintf(
+            '%s?oauth_callback=%s&oauth_token=%s%s',
+            $authorizeUrl,
+            $redirectUrl,
+            $oauthToken,
+            ScopeFormater::getScopes($scopes)
+        );
     }
 
     /**

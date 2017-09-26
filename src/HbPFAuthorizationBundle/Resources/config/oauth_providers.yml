@@ -6,3 +6,10 @@ services:
             - '@hbpf.redirect'
         calls:
             - ['setLogger', ['@monolog.logger.authorization']]
+
+    hbpf.providers.oauth2_provider:
+        class: Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider
+        arguments:
+            - '@hbpf.redirect'
+        calls:
+            - ['setLogger', ['@monolog.logger.authorization']]

@@ -17,5 +17,6 @@ services:
             - 'magento2_oauth'
             - 'magento2 OAuth'
             - 'magento2 OAuth'
+            - '%backend_host%'
         calls:
             - ['setLogger', ['@monolog.logger.authorization']]
