@@ -6,7 +6,7 @@
  * Time: 12:57
  */
 
-namespace Hanaboso\PipesFramework\RabbitMq\Base;
+namespace Hanaboso\PipesFramework\RabbitMq\Consumer;
 
 use Bunny\Channel;
 use Bunny\Client;
@@ -18,7 +18,7 @@ use Psr\Log\LoggerAwareInterface;
  *
  * @package RabbitMqBundle\Consumer
  */
-abstract class Base2ConsumerAbstract extends ConsumerAbstract implements LoggerAwareInterface
+abstract class SyncConsumerAbstract extends ConsumerAbstract implements LoggerAwareInterface
 {
 
     /**

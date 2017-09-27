@@ -8,7 +8,7 @@
 
 namespace Hanaboso\PipesFramework\Configurator\StartingPoint;
 
-use Hanaboso\PipesFramework\RabbitMq\Base\AbstractProducer;
+use Hanaboso\PipesFramework\RabbitMq\Producer\AbstractProducer;
 
 /**
  * Class StartingPointProducer

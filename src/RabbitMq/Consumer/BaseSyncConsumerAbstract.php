@@ -6,7 +6,7 @@
  * Time: 10:28
  */
 
-namespace Hanaboso\PipesFramework\RabbitMq\Base;
+namespace Hanaboso\PipesFramework\RabbitMq\Consumer;
 
 use Bunny\Channel;
 use Bunny\Client;
@@ -19,7 +19,7 @@ use Hanaboso\PipesFramework\RabbitMq\Exception\RabbitMqException;
  *
  * @package Hanaboso\PipesFramework\RabbitMq\Base
  */
-abstract class BaseConsumerAbstract extends Base2ConsumerAbstract
+abstract class BaseSyncConsumerAbstract extends SyncConsumerAbstract
 {
 
     /**
@@ -59,9 +59,9 @@ abstract class BaseConsumerAbstract extends Base2ConsumerAbstract
     /**
      * @param callable $callback
      *
-     * @return BaseConsumerAbstract
+     * @return BaseSyncConsumerAbstract
      */
-    public function setCallback(callable $callback): BaseConsumerAbstract
+    public function setCallback(callable $callback): BaseSyncConsumerAbstract
     {
         $this->callback = $callback;
 

@@ -6,14 +6,14 @@
  * Time: 22:01
  */
 
-namespace Tests\Unit\RabbitMq\Base;
+namespace Tests\Unit\RabbitMq\Consumer;
 
 use Bunny\Channel;
 use Bunny\Message;
-use Hanaboso\PipesFramework\RabbitMq\Base\BaseCallbackAbstract;
 use Hanaboso\PipesFramework\RabbitMq\CallbackStatus;
+use Hanaboso\PipesFramework\RabbitMq\Consumer\SyncCallbackAbstract;
 use Hanaboso\PipesFramework\RabbitMq\Exception\RabbitMqException;
-use Hanaboso\PipesFramework\RabbitMq\Repeater\Repeater;
+use Hanaboso\PipesFramework\RabbitMq\Impl\Repeater\Repeater;
 use PHPUnit\Framework\TestCase;
 use PHPUnit_Framework_MockObject_MockObject;
 
@@ -22,21 +22,21 @@ use PHPUnit_Framework_MockObject_MockObject;
  *
  * @package Tests\Unit\RabbitMq\Base
  */
-class BaseCallbackAbstractTest extends TestCase
+class SyncCallbackAbstractTest extends TestCase
 {
 
     /**
      * @dataProvider handleMessage
-     * @covers       BaseCallbackAbstract::handleMessage()
+     * @covers       SyncCallbackAbstract::handleMessage()
      *
-     * @param BaseCallbackAbstract $baseCallback
+     * @param SyncCallbackAbstract $baseCallback
      * @param string|null          $exception
      * @param int|null             $callbackStatus
      *
      * @return void
      */
     public function testHandleMessage(
-        BaseCallbackAbstract $baseCallback,
+        SyncCallbackAbstract $baseCallback,
         ?string $exception,
         ?int $callbackStatus
     ): void
@@ -91,12 +91,12 @@ class BaseCallbackAbstractTest extends TestCase
      * @param Repeater|null $repeater
      * @param int|null      $callbackStatus
      *
-     * @return BaseCallbackAbstract
+     * @return SyncCallbackAbstract
      */
-    public function getBaseCallback(?Repeater $repeater = NULL, ?int $callbackStatus = NULL): BaseCallbackAbstract
+    public function getBaseCallback(?Repeater $repeater = NULL, ?int $callbackStatus = NULL): SyncCallbackAbstract
     {
-        /** @var BaseCallbackAbstract $baseConsumer */
-        $baseCallback = new class($callbackStatus) extends BaseCallbackAbstract
+        /** @var SyncCallbackAbstract $baseConsumer */
+        $baseCallback = new class($callbackStatus) extends SyncCallbackAbstract
         {
 
             /** @var int|null */

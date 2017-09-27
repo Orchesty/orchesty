@@ -6,7 +6,7 @@
  * Time: 11:10
  */
 
-namespace Hanaboso\PipesFramework\RabbitMq\Base;
+namespace Hanaboso\PipesFramework\RabbitMq\Consumer;
 
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;

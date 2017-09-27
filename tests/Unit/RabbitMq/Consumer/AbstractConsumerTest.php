@@ -6,9 +6,9 @@
  * Time: 15:58
  */
 
-namespace Tests\Unit\RabbitMq\Base;
+namespace Tests\Unit\RabbitMq\Consumer;
 
-use Hanaboso\PipesFramework\RabbitMq\Base\BaseConsumerAbstract;
+use Hanaboso\PipesFramework\RabbitMq\Consumer\BaseSyncConsumerAbstract;
 use Hanaboso\PipesFramework\RabbitMq\Serializers\JsonSerializer;
 use Tests\KernelTestCaseAbstract;
 
@@ -25,8 +25,8 @@ class AbstractConsumerTest extends KernelTestCaseAbstract
      */
     public function testEmptyConsumer(): void
     {
-        /** @var BaseConsumerAbstract $consumer */
-        $consumer = $this->getMockForAbstractClass(BaseConsumerAbstract::class);
+        /** @var BaseSyncConsumerAbstract $consumer */
+        $consumer = $this->getMockForAbstractClass(BaseSyncConsumerAbstract::class);
 
         $this->assertEquals('', $consumer->getExchange());
         $this->assertEquals('', $consumer->getRoutingKey());
@@ -52,8 +52,8 @@ class AbstractConsumerTest extends KernelTestCaseAbstract
      */
     public function testFilledConsumer(): void
     {
-        /** @var BaseConsumerAbstract $consumer */
-        $consumer = $this->getMockForAbstractClass(BaseConsumerAbstract::class, [
+        /** @var BaseSyncConsumerAbstract $consumer */
+        $consumer = $this->getMockForAbstractClass(BaseSyncConsumerAbstract::class, [
             'foo',
             '*',
             'queue_foo',

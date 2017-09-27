@@ -6,18 +6,18 @@
  * Time: 14:25
  */
 
-namespace Hanaboso\PipesFramework\RabbitMq\Demo;
+namespace Hanaboso\PipesFramework\RabbitMq\Impl\Demo;
 
 use Bunny\Message;
-use Hanaboso\PipesFramework\RabbitMq\Base\BaseCallbackAbstract;
 use Hanaboso\PipesFramework\RabbitMq\CallbackStatus;
+use Hanaboso\PipesFramework\RabbitMq\Consumer\SyncCallbackAbstract;
 
 /**
  * Class DemoCallback
  *
  * @package Hanaboso\PipesFramework\RabbitMq\Demo
  */
-class DemoCallback extends BaseCallbackAbstract
+class DemoCallback extends SyncCallbackAbstract
 {
 
     /**

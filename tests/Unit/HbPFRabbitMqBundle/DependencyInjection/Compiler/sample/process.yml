@@ -37,7 +37,7 @@ rabbit-mq:
 
     producers:
         demo:
-            class: Hanaboso\PipesFramework\RabbitMq\Demo\DemoProducer
+            class: Hanaboso\PipesFramework\RabbitMq\Impl\Demo\DemoProducer
             exchange: demo
             serializer: Commons\RabbitMq\Demo\DemoSerializer
             routing_key: demo
@@ -48,7 +48,7 @@ rabbit-mq:
 
     consumers:
         demo:
-            class: Hanaboso\PipesFramework\RabbitMq\Demo\DemoConsumer
+            class: Hanaboso\PipesFramework\RabbitMq\Impl\Demo\DemoConsumer
             exchange: foo
             routing_key: '*'
             queue: demo
@@ -71,7 +71,7 @@ rabbit-mq:
 
     async_consumers:
         demo:
-            class: Hanaboso\PipesFramework\RabbitMq\Demo\DemoConsumer
+            class: Hanaboso\PipesFramework\RabbitMq\Impl\Demo\DemoConsumer
             exchange: foo
             routing_key: '*'
             queue: demo
