@@ -10,7 +10,9 @@ function skip_unmodified {
   NORMALIZED_DIR="$(echo -n ${DIR} | sed 's|/|_|g; s|-|_|g; s|\.|_|g' | tr '[a-z]' '[A-Z]')"
 
   # Resolve current change time, historical change time and state file path
-  CT_DIR="${HOME}/changetracking/${CI_PROJECT_PATH}/${CI_COMMIT_REF_NAME}"
+  # note: ${CI_JOB_NAME} was added because some pipelines call the check for the same directory
+  #       multiple times in one pipeline and the first check was affecting the consecutive ones
+  CT_DIR="${HOME}/changetracking/${CI_PROJECT_PATH}/${CI_COMMIT_REF_NAME}--${CI_JOB_NAME}"
   CT_FILE="${CT_DIR}/TS_${NORMALIZED_DIR}"
   mkdir -p $CT_DIR
   [ -f "$CT_FILE" ] || echo 0 > $CT_FILE
