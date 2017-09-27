@@ -18,7 +18,7 @@ use InvalidArgumentException;
 /**
  * Class GeneratorHandler
  *
- * @package Hanaboso\PipesFramework\HbPFApiGatewayBundle\Handler
+ * @package Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler
  */
 class GeneratorHandler
 {
