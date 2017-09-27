@@ -8,6 +8,8 @@
 
 namespace Hanaboso\PipesFramework\HbPFRabbitMqBundle;
 
+use Bunny\Message;
+
 /**
  * Trait DebugMessageTrait
  *
@@ -31,17 +33,17 @@ trait DebugMessageTrait
         ?array $headers = []
     ): array
     {
-        $message = [];
+        $context = [];
         if ($string) {
-            $message['message'] = $string;
+            $context['message'] = $string;
         }
 
         if ($exchange) {
-            $message['exchange'] = $exchange;
+            $context['exchange'] = $exchange;
         }
 
         if ($routingKey) {
-            $message['routing_key'] = $routingKey;
+            $context['routing_key'] = $routingKey;
         }
 
         if (!empty($headers)) {
@@ -49,10 +51,20 @@ trait DebugMessageTrait
             foreach ($headers as $key => $value) {
                 $result[] = sprintf('%s=%s', $key, $value);
             }
-            $message['headers'] = implode('@', $result);
+            $context['headers'] = implode('@', $result);
         }
 
-        return $message;
+        return $context;
+    }
+
+    /**
+     * @param Message $message
+     *
+     * @return array
+     */
+    public function prepareBunnyMessage(Message $message): array
+    {
+        return $this->prepareMessage($message->content, $message->exchange, $message->routingKey, $message->headers);
     }
 
 }

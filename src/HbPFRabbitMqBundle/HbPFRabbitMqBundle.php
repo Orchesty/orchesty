@@ -51,6 +51,7 @@ class HbPFRabbitMqBundle extends Bundle
                 "rabbit-mq.channel",
                 "command.rabbit-mq.setup",
                 "command.rabbit-mq.consumer",
+                "command.rabbit-mq.async-consumer",
                 "command.rabbit-mq.producer"
             ),
             PassConfig::TYPE_OPTIMIZE
@@ -68,6 +69,7 @@ class HbPFRabbitMqBundle extends Bundle
         $commands = [
             $this->container->get("command.rabbit-mq.setup"),
             $this->container->get("command.rabbit-mq.consumer"),
+            $this->container->get("command.rabbit-mq.async-consumer"),
         ];
 
         foreach ($commands as $command) {

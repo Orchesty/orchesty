@@ -10,6 +10,7 @@ namespace Hanaboso\PipesFramework\HbPFRabbitMqBundle\DependencyInjection;
 
 use InvalidArgumentException;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
+use Symfony\Component\Config\Definition\Builder\NodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\Config\FileLocator;
@@ -45,6 +46,23 @@ class RabbitMqExtension extends Extension implements ConfigurationInterface, Pre
 
         $rootNode = $treeBuilder->root("rabbit-mq");
 
+        $rootNode = $this->getConnectionConfig($rootNode);
+        $rootNode = $this->getExchangesConfig($rootNode);
+        $rootNode = $this->getQueuesConfig($rootNode);
+        $rootNode = $this->getProducersConfig($rootNode);
+        $rootNode = $this->getConsumersConfig($rootNode);
+        $rootNode = $this->getAsyncConsumersConfig($rootNode);
+
+        return $treeBuilder;
+    }
+
+    /**
+     * @param ArrayNodeDefinition|NodeDefinition $rootNode
+     *
+     * @return ArrayNodeDefinition|NodeDefinition
+     */
+    public function getConnectionConfig(ArrayNodeDefinition $rootNode): ArrayNodeDefinition
+    {
         $rootNode->children()->scalarNode("host")->defaultValue("127.0.0.1");
         $rootNode->children()->scalarNode("port")->defaultValue(5672);
         $rootNode->children()->scalarNode("vhost")->defaultValue("/");
@@ -52,6 +70,18 @@ class RabbitMqExtension extends Extension implements ConfigurationInterface, Pre
         $rootNode->children()->scalarNode("password")->defaultValue("guest");
         $rootNode->children()->scalarNode("heartbeat")->defaultValue(60);
 
+        return $rootNode;
+    }
+
+    // Sync config
+
+    /**
+     * @param ArrayNodeDefinition|NodeDefinition $rootNode
+     *
+     * @return ArrayNodeDefinition|NodeDefinition
+     */
+    public function getExchangesConfig(ArrayNodeDefinition $rootNode): ArrayNodeDefinition
+    {
         /** @var ArrayNodeDefinition $exchangesNode */
         $exchangesNode = $rootNode->children()->arrayNode("exchanges")->useAttributeAsKey('key')->normalizeKeys(FALSE)
             ->defaultValue([])->prototype("array");
@@ -69,6 +99,16 @@ class RabbitMqExtension extends Extension implements ConfigurationInterface, Pre
         $exchangesBindingsNode->children()->arrayNode("arguments")->normalizeKeys(FALSE)->prototype("scalar")
             ->defaultValue([]);
 
+        return $rootNode;
+    }
+
+    /**
+     * @param ArrayNodeDefinition|NodeDefinition $rootNode
+     *
+     * @return ArrayNodeDefinition|NodeDefinition
+     */
+    public function getQueuesConfig(ArrayNodeDefinition $rootNode): ArrayNodeDefinition
+    {
         /** @var ArrayNodeDefinition $queuesNode */
         $queuesNode = $rootNode->children()->arrayNode('queues')->useAttributeAsKey('key')->normalizeKeys(FALSE)
             ->defaultValue([])
@@ -86,6 +126,17 @@ class RabbitMqExtension extends Extension implements ConfigurationInterface, Pre
         $queuesBindingsNode->children()->arrayNode("arguments")->normalizeKeys(FALSE)->prototype("scalar")
             ->defaultValue([]);
 
+        return $rootNode;
+    }
+
+    /**
+     * @param ArrayNodeDefinition|NodeDefinition $rootNode
+     *
+     * @return ArrayNodeDefinition|NodeDefinition
+     */
+    public function getProducersConfig(ArrayNodeDefinition $rootNode): ArrayNodeDefinition
+    {
+        /** @var ArrayNodeDefinition $producersNode */
         $producersNode = $rootNode->children()->arrayNode('producers')->useAttributeAsKey('key')->normalizeKeys(FALSE)
             ->defaultValue([])
             ->prototype('array');
@@ -98,6 +149,17 @@ class RabbitMqExtension extends Extension implements ConfigurationInterface, Pre
         $producersNode->children()->scalarNode('before_method')->defaultNull();
         $producersNode->children()->scalarNode('content_type')->defaultValue('application/json');
 
+        return $rootNode;
+    }
+
+    /**
+     * @param ArrayNodeDefinition|NodeDefinition $rootNode
+     *
+     * @return ArrayNodeDefinition|NodeDefinition
+     */
+    public function getConsumersConfig(ArrayNodeDefinition $rootNode): ArrayNodeDefinition
+    {
+        /** @var ArrayNodeDefinition $consumersNode */
         $consumersNode = $rootNode->children()->arrayNode('consumers')->useAttributeAsKey('key')->normalizeKeys(FALSE)
             ->defaultValue([])
             ->prototype('array');
@@ -105,7 +167,7 @@ class RabbitMqExtension extends Extension implements ConfigurationInterface, Pre
         $consumersNode->children()->scalarNode('queue')->isRequired();
         $consumersNode->children()->scalarNode('serializer')->isRequired();
         $consumersNode->children()->scalarNode('callback')->isRequired();
-        $consumersNode->children()->scalarNode('exchange')->defaultValue(NULL);
+        $consumersNode->children()->scalarNode('exchange')->defaultValue('');
         $consumersNode->children()->scalarNode('routing_key')->defaultValue('');
         $consumersNode->children()->scalarNode('consumer_tag')->defaultValue('');
         $consumersNode->children()->booleanNode('no_local')->defaultFalse();
@@ -122,7 +184,39 @@ class RabbitMqExtension extends Extension implements ConfigurationInterface, Pre
         $consumersNode->children()->scalarNode('max_seconds')->defaultValue(NULL);
         $consumersNode->children()->arrayNode("arguments")->normalizeKeys(FALSE)->prototype("scalar")->defaultValue([]);
 
-        return $treeBuilder;
+        return $rootNode;
+    }
+
+    // ASYNC CONFIG
+
+    /**
+     * @param ArrayNodeDefinition|NodeDefinition $rootNode
+     *
+     * @return ArrayNodeDefinition|NodeDefinition
+     */
+    public function getAsyncConsumersConfig(ArrayNodeDefinition $rootNode): ArrayNodeDefinition
+    {
+        /** @var ArrayNodeDefinition $consumersNode */
+        $consumersNode = $rootNode->children()->arrayNode('async_consumers')->useAttributeAsKey('key')
+            ->normalizeKeys(FALSE)
+            ->defaultValue([])
+            ->prototype('array');
+        $consumersNode->children()->scalarNode('class')->isRequired();
+        $consumersNode->children()->scalarNode('queue')->isRequired();
+        $consumersNode->children()->scalarNode('serializer')->isRequired();
+        $consumersNode->children()->scalarNode('callback')->isRequired();
+        $consumersNode->children()->scalarNode('exchange')->defaultValue('');
+        $consumersNode->children()->scalarNode('routing_key')->defaultValue('');
+        $consumersNode->children()->scalarNode('consumer_tag')->defaultValue('');
+        $consumersNode->children()->booleanNode('no_local')->defaultFalse();
+        $consumersNode->children()->booleanNode('no_ack')->defaultFalse();
+        $consumersNode->children()->booleanNode('exclusive')->defaultFalse();
+        $consumersNode->children()->booleanNode('nowait')->defaultFalse();
+        $consumersNode->children()->scalarNode('prefetch_count')->defaultValue(1);
+        $consumersNode->children()->scalarNode('prefetch_size')->defaultValue(0);
+        $consumersNode->children()->arrayNode("arguments")->normalizeKeys(FALSE)->prototype("scalar")->defaultValue([]);
+
+        return $rootNode;
     }
 
     /**

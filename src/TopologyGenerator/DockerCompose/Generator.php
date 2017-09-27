@@ -79,7 +79,7 @@ class Generator implements GeneratorInterface
      */
     public function createTopologyConfig(Topology $topology, iterable $nodes): string
     {
-        $config['name'] = GeneratorUtils::normalizeName($topology->getId(), $topology->getName());
+        $config['id'] = GeneratorUtils::normalizeName($topology->getId(), $topology->getName());
 
         foreach ($nodes as $node) {
 

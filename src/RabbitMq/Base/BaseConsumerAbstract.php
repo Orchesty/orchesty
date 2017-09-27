@@ -19,7 +19,7 @@ use Hanaboso\PipesFramework\RabbitMq\Exception\RabbitMqException;
  *
  * @package Hanaboso\PipesFramework\RabbitMq\Base
  */
-abstract class BaseConsumerAbstract extends AbstractConsumer
+abstract class BaseConsumerAbstract extends Base2ConsumerAbstract
 {
 
     /**
