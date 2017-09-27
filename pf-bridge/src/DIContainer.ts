@@ -63,11 +63,11 @@ class DIContainer extends Container {
     }
 
     private setSplitterWorkers() {
-        this.set("splitter.amqprpc", (settings: IAmqpRpcWorkerSettings) => {
-            return new AmqpRpcWorker(this.get("amqp.connection"), settings);
+        this.set("splitter.amqprpc", (settings: IAmqpRpcWorkerSettings, forwarder: IPartialForwarder) => {
+            return new AmqpRpcWorker(this.get("amqp.connection"), settings, forwarder);
         });
-        this.set("splitter.json", (settings: ISplitterWorkerSettings, partialForwarder: IPartialForwarder) => {
-            return new SplitterWorker(settings, partialForwarder);
+        this.set("splitter.json", (settings: ISplitterWorkerSettings, forwarder: IPartialForwarder) => {
+            return new SplitterWorker(settings, forwarder;
         });
     }
 
