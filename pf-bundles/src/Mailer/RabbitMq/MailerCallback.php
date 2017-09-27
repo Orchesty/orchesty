@@ -14,8 +14,8 @@ use Hanaboso\PipesFramework\Mailer\Mailer;
 use Hanaboso\PipesFramework\Mailer\MessageBuilder\Impl\GenericMessageBuilder;
 use Hanaboso\PipesFramework\Mailer\MessageBuilder\MessageBuilderException;
 use Hanaboso\PipesFramework\Mailer\Transport\TransportException;
-use Hanaboso\PipesFramework\RabbitMq\Base\BaseCallbackAbstract;
 use Hanaboso\PipesFramework\RabbitMq\CallbackStatus;
+use Hanaboso\PipesFramework\RabbitMq\Consumer\SyncCallbackAbstract;
 use Swift_TransportException;
 
 /**
@@ -23,7 +23,7 @@ use Swift_TransportException;
  *
  * @package Hanaboso\PipesFramework\Mailer\RabbitMq
  */
-class MailerCallback extends BaseCallbackAbstract
+class MailerCallback extends SyncCallbackAbstract
 {
 
     /**

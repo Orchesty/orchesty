@@ -24,14 +24,14 @@ rabbit-mq:
 
     producers:
         repeater:
-            class: Hanaboso\PipesFramework\RabbitMq\Repeater\RepeaterProducer
+            class: Hanaboso\PipesFramework\RabbitMq\Impl\Repeater\RepeaterProducer
             exchange: repeater
             serializer: Hanaboso\PipesFramework\RabbitMq\Serializers\JsonSerializer
             routing_key: repeater
 
     consumers:
         repeater:
-            class: Hanaboso\PipesFramework\RabbitMq\Repeater\RepeaterConsumer
+            class: Hanaboso\PipesFramework\RabbitMq\Impl\Repeater\RepeaterConsumer
             routing_key: repeater
             queue: repeater
             serializer: Hanaboso\PipesFramework\RabbitMq\Serializers\JsonSerializer
@@ -41,12 +41,12 @@ rabbit-mq:
 services:
     # callback for repeater
     hanaboso.pipes_framework.commons.repeater.repeater_callback:
-        class: Hanaboso\PipesFramework\RabbitMq\Repeater\RepeaterCallback
+        class: Hanaboso\PipesFramework\RabbitMq\Impl\Repeater\RepeaterCallback
         arguments:
             - '@rabbit-mq.producer.repeater'
         calls:
             - [setRepeater, ['@hanaboso.pipes_framework.commons.rabbit_mq.repeater.repeater']]
 
     hanaboso.pipes_framework.commons.rabbit_mq.repeater.repeater:
-        class: Hanaboso\PipesFramework\RabbitMq\Repeater\Repeater
+        class: Hanaboso\PipesFramework\RabbitMq\Impl\Repeater\Repeater
         arguments: ['@rabbit-mq.producer.repeater', '3']

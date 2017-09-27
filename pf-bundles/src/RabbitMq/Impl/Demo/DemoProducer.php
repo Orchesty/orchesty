@@ -6,9 +6,9 @@
  * Time: 13:45
  */
 
-namespace Hanaboso\PipesFramework\RabbitMq\Demo;
+namespace Hanaboso\PipesFramework\RabbitMq\Impl\Demo;
 
-use Hanaboso\PipesFramework\RabbitMq\Base\AbstractProducer;
+use Hanaboso\PipesFramework\RabbitMq\Producer\AbstractProducer;
 
 /**
  * Class DemoProducer

@@ -10,8 +10,8 @@ use Bunny\Protocol\MethodBasicQosOkFrame;
 use Bunny\Protocol\MethodQueueBindOkFrame;
 use Bunny\Protocol\MethodQueueDeclareOkFrame;
 use Hanaboso\PipesFramework\HbPFRabbitMqBundle\ContentTypes;
-use Hanaboso\PipesFramework\RabbitMq\Base\BaseConsumerAbstract;
 use Hanaboso\PipesFramework\RabbitMq\BunnyManager;
+use Hanaboso\PipesFramework\RabbitMq\Consumer\BaseSyncConsumerAbstract;
 use Hanaboso\PipesFramework\RabbitMq\Serializers\IMessageSerializer;
 use InvalidArgumentException;
 use Symfony\Component\Console\Command\Command;
@@ -35,7 +35,7 @@ class ConsumerCommand extends Command
     /** @var BunnyManager */
     protected $manager;
 
-    /** @var BaseConsumerAbstract[][] */
+    /** @var BaseSyncConsumerAbstract[][] */
     protected $consumers;
 
     /** @var int */
@@ -87,7 +87,7 @@ class ConsumerCommand extends Command
 
         $channel = $this->manager->getChannel();
 
-        /** @var BaseConsumerAbstract $consumer */
+        /** @var BaseSyncConsumerAbstract $consumer */
         $consumer     = $this->consumers[$consumerName];
         $maxMessages  = PHP_INT_MAX;
         $maxSeconds   = PHP_INT_MAX;
@@ -203,16 +203,16 @@ class ConsumerCommand extends Command
     }
 
     /**
-     * @param BaseConsumerAbstract    $consumer
-     * @param null|IMessageSerializer $serializer
-     * @param Message                 $message
-     * @param Channel                 $channel
-     * @param Client                  $client
+     * @param BaseSyncConsumerAbstract $consumer
+     * @param null|IMessageSerializer  $serializer
+     * @param Message                  $message
+     * @param Channel                  $channel
+     * @param Client                   $client
      *
      * @return void
      */
     public function handleMessage(
-        BaseConsumerAbstract $consumer,
+        BaseSyncConsumerAbstract $consumer,
         $serializer = NULL,
         Message $message,
         Channel $channel,

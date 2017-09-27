@@ -6,7 +6,7 @@
  * Time: 16:46
  */
 
-namespace Hanaboso\PipesFramework\RabbitMq\AsyncDemo;
+namespace Hanaboso\PipesFramework\RabbitMq\Impl\AsyncDemo;
 
 use Bunny\Async\Client;
 use Bunny\Channel;
@@ -14,7 +14,7 @@ use Bunny\Message;
 use Clue\React\Buzz\Browser;
 use Exception;
 use GuzzleHttp\Psr7\Request;
-use Hanaboso\PipesFramework\RabbitMq\Base\AsyncCallbackInterface;
+use Hanaboso\PipesFramework\RabbitMq\Consumer\AsyncCallbackInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use React\EventLoop\LoopInterface;

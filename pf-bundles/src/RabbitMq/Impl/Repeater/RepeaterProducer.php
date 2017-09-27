@@ -6,9 +6,9 @@
  * Time: 13:43
  */
 
-namespace Hanaboso\PipesFramework\RabbitMq\Repeater;
+namespace Hanaboso\PipesFramework\RabbitMq\Impl\Repeater;
 
-use Hanaboso\PipesFramework\RabbitMq\Base\AbstractProducer;
+use Hanaboso\PipesFramework\RabbitMq\Producer\AbstractProducer;
 
 /**
  * Class RepeaterProducer

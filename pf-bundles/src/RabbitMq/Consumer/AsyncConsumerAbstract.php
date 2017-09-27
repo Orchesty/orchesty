@@ -6,7 +6,7 @@
  * Time: 11:09
  */
 
-namespace Hanaboso\PipesFramework\RabbitMq\Base;
+namespace Hanaboso\PipesFramework\RabbitMq\Consumer;
 
 use Bunny\Async\Client;
 use Bunny\Channel;

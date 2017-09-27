@@ -6,20 +6,20 @@
  * Time: 11:28
  */
 
-namespace Hanaboso\PipesFramework\RabbitMq\Repeater;
+namespace Hanaboso\PipesFramework\RabbitMq\Impl\Repeater;
 
 use Bunny\Message;
 use Hanaboso\PipesFramework\HbPFRabbitMqBundle\DebugMessageTrait;
-use Hanaboso\PipesFramework\RabbitMq\Base\AbstractProducer;
-use Hanaboso\PipesFramework\RabbitMq\Base\BaseCallbackAbstract;
 use Hanaboso\PipesFramework\RabbitMq\CallbackStatus;
+use Hanaboso\PipesFramework\RabbitMq\Consumer\SyncCallbackAbstract;
+use Hanaboso\PipesFramework\RabbitMq\Producer\AbstractProducer;
 
 /**
  * Class RepeaterCallback
  *
  * @package Hanaboso\PipesFramework\RabbitMq\Repeater
  */
-class RepeaterCallback extends BaseCallbackAbstract
+class RepeaterCallback extends SyncCallbackAbstract
 {
 
     use DebugMessageTrait;

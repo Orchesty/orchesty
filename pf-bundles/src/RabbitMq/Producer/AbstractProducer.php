@@ -6,7 +6,7 @@
  * Time: 12:42
  */
 
-namespace Hanaboso\PipesFramework\RabbitMq\Base;
+namespace Hanaboso\PipesFramework\RabbitMq\Producer;
 
 use Bunny\Exception\BunnyException;
 use Hanaboso\PipesFramework\HbPFRabbitMqBundle\ContentTypes;
