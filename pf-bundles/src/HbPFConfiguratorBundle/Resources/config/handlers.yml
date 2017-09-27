@@ -22,4 +22,4 @@ services:
         arguments:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '%generator_path%'
-            - 'demo_topology'
+            - '%docker_network%'
