@@ -40,6 +40,7 @@ class RabbitMqCompilerPassTest extends KernelTestCaseAbstract
             "rabbit-mq.channel",
             "command.rabbit-mq.setup",
             "command.rabbit-mq.consumer",
+            "command.rabbit-mq.async-consumer",
             "command.rabbit-mq.producer"
         );
     }
@@ -80,6 +81,7 @@ class RabbitMqCompilerPassTest extends KernelTestCaseAbstract
             'rabbit-mq.channel',
             'command.rabbit-mq.setup',
             'command.rabbit-mq.consumer',
+            'command.rabbit-mq.async-consumer',
         ], array_keys($container->getDefinitions()));
     }
 

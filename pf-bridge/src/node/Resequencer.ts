@@ -34,12 +34,12 @@ class Resequencer {
      * @return JobMessage[]
      */
     public getMessages(msg: JobMessage): JobMessage[] {
-        const buf = this.getBuffer(msg.getJobId());
+        const buf = this.getBuffer(msg.getProcessId());
 
         if (msg.getSequenceId() < buf.waitingFor) {
-            let warn = `Resequencer has already processed seqId ${msg.getSequenceId()} of job "${msg.getJobId()}."`;
+            let warn = `Resequencer already processed seqId ${msg.getSequenceId()} of job "${msg.getProcessId()}."`;
             warn += " This is possible message duplicate and will be ignored.";
-            logger.warn(warn, { node_id: this.nodeId, correlation_id: msg.getJobId()});
+            logger.warn(warn, logger.ctxFromMsg(msg));
             return [];
         }
 
@@ -55,19 +55,19 @@ class Resequencer {
     /**
      * Returns existing buffer or creates new one
      *
-     * @param {string} jobId
+     * @param {string} processId
      * @return {JobMessage[]}
      */
-    private getBuffer(jobId: string): IBufferType {
-        if (!this.buffer[jobId]) {
-            this.buffer[jobId] = {
+    private getBuffer(processId: string): IBufferType {
+        if (!this.buffer[processId]) {
+            this.buffer[processId] = {
                 messages: {},
                 waitingFor: 1,
-                timeout: setTimeout(() => { delete this.buffer[jobId]; }, this.bufferTtl),
+                timeout: setTimeout(() => { delete this.buffer[processId]; }, this.bufferTtl),
             };
         }
 
-        return this.buffer[jobId];
+        return this.buffer[processId];
     }
 
     /**
@@ -90,7 +90,7 @@ class Resequencer {
             buffer.waitingFor += 1;
 
             clearTimeout(buffer.timeout);
-            buffer.timeout = setTimeout(() => { delete this.buffer[msg.getJobId()]; }, this.bufferTtl);
+            buffer.timeout = setTimeout(() => { delete this.buffer[msg.getProcessId()]; }, this.bufferTtl);
         }
 
         return out;

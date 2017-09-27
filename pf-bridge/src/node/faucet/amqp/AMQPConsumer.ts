@@ -26,8 +26,10 @@ class Consumer extends BasicConsumer {
         let inMsg: JobMessage;
         try {
             inMsg = new JobMessage(
+                this.nodeId,
                 amqMsg.properties.headers.correlation_id,
-                amqMsg.properties.headers.job_id,
+                amqMsg.properties.headers.process_id,
+                amqMsg.properties.headers.parent_id,
                 amqMsg.properties.headers.sequence_id,
                 amqMsg.properties.headers,
                 amqMsg.content.toString(),
@@ -43,7 +45,7 @@ class Consumer extends BasicConsumer {
                 channel.ack(amqMsg);
             })
             .catch((error: Error) => {
-                logger.error(`AmqpFaucet requeue message`, {node_id: this.nodeId, error});
+                logger.error(`AmqpFaucet requeue message`, logger.ctxFromMsg(inMsg, error));
                 channel.nack(amqMsg); // requeue due to processing error
             });
     }

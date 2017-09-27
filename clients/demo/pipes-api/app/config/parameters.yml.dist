@@ -24,3 +24,5 @@ parameters:
     rabbitmq.vhost: /
     rabbitmq.user: guest
     rabbitmq.password: guest
+
+    backend_host: 127.0.0.76

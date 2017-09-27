@@ -10,7 +10,7 @@ use Bunny\Protocol\MethodBasicQosOkFrame;
 use Bunny\Protocol\MethodQueueBindOkFrame;
 use Bunny\Protocol\MethodQueueDeclareOkFrame;
 use Hanaboso\PipesFramework\HbPFRabbitMqBundle\ContentTypes;
-use Hanaboso\PipesFramework\RabbitMq\Base\AbstractConsumer;
+use Hanaboso\PipesFramework\RabbitMq\Base\BaseConsumerAbstract;
 use Hanaboso\PipesFramework\RabbitMq\BunnyManager;
 use Hanaboso\PipesFramework\RabbitMq\Serializers\IMessageSerializer;
 use InvalidArgumentException;
@@ -35,7 +35,7 @@ class ConsumerCommand extends Command
     /** @var BunnyManager */
     protected $manager;
 
-    /** @var AbstractConsumer[][] */
+    /** @var BaseConsumerAbstract[][] */
     protected $consumers;
 
     /** @var int */
@@ -87,7 +87,7 @@ class ConsumerCommand extends Command
 
         $channel = $this->manager->getChannel();
 
-        /** @var AbstractConsumer $consumer */
+        /** @var BaseConsumerAbstract $consumer */
         $consumer     = $this->consumers[$consumerName];
         $maxMessages  = PHP_INT_MAX;
         $maxSeconds   = PHP_INT_MAX;
@@ -203,7 +203,7 @@ class ConsumerCommand extends Command
     }
 
     /**
-     * @param AbstractConsumer        $consumer
+     * @param BaseConsumerAbstract    $consumer
      * @param null|IMessageSerializer $serializer
      * @param Message                 $message
      * @param Channel                 $channel
@@ -212,7 +212,7 @@ class ConsumerCommand extends Command
      * @return void
      */
     public function handleMessage(
-        AbstractConsumer $consumer,
+        BaseConsumerAbstract $consumer,
         $serializer = NULL,
         Message $message,
         Channel $channel,
