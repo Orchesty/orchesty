@@ -108,6 +108,7 @@ describe("Probe", () => {
                 const result: IProbeResult = JSON.parse(resp);
                 assert.equal(result.message, "1/2 nodes ready.");
                 assert.equal(result.nodes.length, 2);
+                assert.isFalse(result.status);
                 assert.sameDeepMembers(
                     result.nodes,
                     [
