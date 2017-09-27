@@ -11,8 +11,6 @@ namespace Hanaboso\PipesFramework\RabbitMq\Base;
 use Bunny\Async\Client;
 use Bunny\Channel;
 use Bunny\Message;
-use Hanaboso\PipesFramework\RabbitMq\Base\AsyncCallbackInterface;
-use Hanaboso\PipesFramework\RabbitMq\Base\ConsumerAbstract;
 use React\EventLoop\LoopInterface;
 use React\Promise\PromiseInterface;
 

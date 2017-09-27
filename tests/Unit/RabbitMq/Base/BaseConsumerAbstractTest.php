@@ -49,7 +49,7 @@ class BaseConsumerAbstractTest extends TestCase
      * @covers       BaseConsumerBaseAbstract::handleMessage()
      *
      * @param BaseConsumerAbstract $baseConsumer
-     * @param null|string              $exception
+     * @param null|string          $exception
      *
      * @return void
      */

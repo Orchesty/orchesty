@@ -11,7 +11,6 @@ namespace Hanaboso\PipesFramework\RabbitMq\Base;
 use Bunny\Channel;
 use Bunny\Client;
 use Bunny\Message;
-use Hanaboso\PipesFramework\RabbitMq\Base\ConsumerAbstract;
 use Psr\Log\LoggerAwareInterface;
 
 /**
