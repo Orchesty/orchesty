@@ -67,7 +67,7 @@ class DIContainer extends Container {
             return new AmqpRpcWorker(this.get("amqp.connection"), settings, forwarder);
         });
         this.set("splitter.json", (settings: ISplitterWorkerSettings, forwarder: IPartialForwarder) => {
-            return new SplitterWorker(settings, forwarder;
+            return new SplitterWorker(settings, forwarder);
         });
     }
 
