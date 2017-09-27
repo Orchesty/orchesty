@@ -58,8 +58,10 @@ describe("CounterPublisher", () => {
         const msgHeaders = { job_id: msgJobId, sequence_id: msgSeqId.toString()};
         const msgBody = JSON.stringify({data: "test", settings: {}});
         const msg: JobMessage = new JobMessage(
+            "nodeId",
+            "corrId",
             msgJobId,
-            msgJobId,
+            "",
             msgSeqId,
             msgHeaders,
             msgBody,
@@ -76,7 +78,12 @@ describe("CounterPublisher", () => {
                 assert.deepEqual(
                     opts,
                     {
-                        headers: { job_id: "123", node_id: settings.node_id},
+                        headers: {
+                            correlation_id: "corrId",
+                            process_id: msgJobId,
+                            node_id: settings.node_id,
+                            parent_id: "",
+                        },
                         type: "counter_message",
                         appId: settings.node_id,
                         messageId: "fakeId",
@@ -138,8 +145,10 @@ describe("CounterPublisher", () => {
         consumer.consume(settings.counter_event.queue.name, {})
             .then(() => {
                 const msg: JobMessage = new JobMessage(
+                    "nodeId",
+                    "corrId",
                     msgJobId,
-                    msgJobId,
+                    "",
                     msgSeqId,
                     msgHeaders,
                     JSON.stringify(msgBody),

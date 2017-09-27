@@ -9,7 +9,7 @@ import Publisher from "lib-nodejs/dist/src/rabbitmq/Publisher";
 import SimpleConsumer from "lib-nodejs/dist/src/rabbitmq/SimpleConsumer";
 import {amqpConnectionOptions} from "../../../src/config";
 import {ResultCode} from "../../../src/message/ResultCode";
-import {default as Counter, ICounterJobInfo} from "../../../src/topology/counter/Counter";
+import {default as Counter, ICounterProcessInfo} from "../../../src/topology/counter/Counter";
 
 const conn = new Connection(amqpConnectionOptions);
 const counterSettings = {
@@ -46,8 +46,10 @@ describe("Counter", () => {
                 },
                 {
                     headers: {
-                        job_id: "test_job_123",
+                        process_id: "test_job_123",
                         node_id: "test_node_1",
+                        correlation_id: "corrid1",
+                        parent_id: "",
                     },
                 },
             ],
@@ -64,8 +66,10 @@ describe("Counter", () => {
                 },
                 {
                     headers: {
-                        job_id: "test_job_123",
+                        process_id: "test_job_123",
                         node_id: "test_node_2",
+                        correlation_id: "corrid1",
+                        parent_id: "",
                     },
                 },
             ],
@@ -82,8 +86,10 @@ describe("Counter", () => {
                 },
                 {
                     headers: {
-                        job_id: "test_job_123",
+                        process_id: "test_job_123",
                         node_id: "test_node_3",
+                        correlation_id: "corrid1",
+                        parent_id: "",
                     },
                 },
             ],
@@ -104,8 +110,10 @@ describe("Counter", () => {
                 },
                 {
                     headers: {
-                        job_id: "test_job_456",
+                        process_id: "test_job_456",
                         node_id: "test_node_1",
+                        correlation_id: "corrid1",
+                        parent_id: "",
                     },
                 },
             ],
@@ -122,8 +130,10 @@ describe("Counter", () => {
                 },
                 {
                     headers: {
-                        job_id: "test_job_456",
+                        process_id: "test_job_456",
                         node_id: "test_node_2",
+                        correlation_id: "corrid1",
+                        parent_id: "",
                     },
                 },
             ],
@@ -140,8 +150,10 @@ describe("Counter", () => {
                 },
                 {
                     headers: {
-                        job_id: "test_job_456",
+                        process_id: "test_job_456",
                         node_id: "test_node_2",
+                        correlation_id: "corrid1",
+                        parent_id: "",
                     },
                 },
             ],
@@ -165,8 +177,10 @@ describe("Counter", () => {
                 },
                 {
                     headers: {
-                        job_id: "test_job_789",
+                        process_id: "test_job_789",
                         node_id: "test_node_1",
+                        correlation_id: "corrid1",
+                        parent_id: "",
                     },
                 },
             ],
@@ -183,8 +197,10 @@ describe("Counter", () => {
                 },
                 {
                     headers: {
-                        job_id: "test_job_789",
+                        process_id: "test_job_789",
                         node_id: "test_node_2",
+                        correlation_id: "corrid1",
+                        parent_id: "",
                     },
                 },
             ],
@@ -201,8 +217,10 @@ describe("Counter", () => {
                 },
                 {
                     headers: {
-                        job_id: "test_job_789",
+                        process_id: "test_job_789",
                         node_id: "test_node_3",
+                        correlation_id: "corrid1",
+                        parent_id: "",
                     },
                 },
             ],
@@ -219,15 +237,17 @@ describe("Counter", () => {
                 },
                 {
                     headers: {
-                        job_id: "test_job_789",
+                        process_id: "test_job_789",
                         node_id: "test_node_4",
+                        correlation_id: "corrid1",
+                        parent_id: "",
                     },
                 },
             ],
         ];
 
         let resultsReceived = 0;
-        const evaluateTest = (info: ICounterJobInfo) => {
+        const evaluateTest = (info: ICounterProcessInfo) => {
             logger.info("Result message received", info);
 
             switch (info.id) {
@@ -288,7 +308,7 @@ describe("Counter", () => {
         };
         // In this moment test can be evaluated
         const handleMessage = (msg: Message) => {
-            const result: ICounterJobInfo = JSON.parse(msg.content.toString());
+            const result: ICounterProcessInfo = JSON.parse(msg.content.toString());
             evaluateTest(result);
         };
         const consumer = new SimpleConsumer(conn, prepareConsumer, handleMessage);

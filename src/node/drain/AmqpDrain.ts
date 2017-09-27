@@ -72,10 +72,7 @@ class AmqpDrain extends ADrain implements IDrain, IPartialForwarder {
                         resolve(bufMsg);
                     })
                     .catch((err: Error) => {
-                        logger.error(
-                            "AmqpDrain could not forward message",
-                            { node_id: this.settings.node_id, correlation_id: message.getJobId(), error: err },
-                        );
+                        logger.error("AmqpDrain could not forward message", logger.ctxFromMsg(message, err));
 
                         resolve(bufMsg);
                     });

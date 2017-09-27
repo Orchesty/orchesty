@@ -10,7 +10,7 @@ describe("HttpFaucet", () => {
     it("should handle http request", () => {
         const check = (msg: JobMessage) => {
             assert.equal(msg.getSequenceId(), 1);
-            assert.equal(msg.getJobId(), "A23B23");
+            assert.equal(msg.getProcessId(), "A23B23");
         };
         const faucet = new HttpFaucet({port: 6038, node_id: "someId"});
 

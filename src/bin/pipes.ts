@@ -2,7 +2,6 @@
 
 import * as fs from "fs";
 import * as yargs from "yargs";
-import logger from "../logger/Logger";
 import Pipes from "../Pipes";
 
 const topologyConfig = JSON.parse(fs.readFileSync("topology.json", "utf8"));
@@ -29,7 +28,6 @@ switch (argv.service) {
         pipes.startProbe();
         break;
     case "node":
-        logger.info("Starting node", { node_id: argv.id });
         pipes.startNode(argv.id);
         break;
     default:

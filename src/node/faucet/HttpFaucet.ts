@@ -8,6 +8,7 @@ export interface IValidHttpRequest {
     headers: {
         correlation_id: string,
         process_id: string,
+        parent_id: string,
         sequence_id: string,
     };
     body: {
@@ -73,8 +74,10 @@ class HttpFaucet implements IFaucet {
         try {
             const body = JSON.stringify(req.body);
             inMsg = new JobMessage(
+                this.settings.node_id,
                 req.headers.correlation_id,
                 req.headers.process_id,
+                req.headers.parent_id,
                 parseInt(req.headers.sequence_id, 10),
                 req.headers,
                 body,

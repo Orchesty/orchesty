@@ -106,7 +106,7 @@ class AmqpRpcWorker implements IWorker {
             new Buffer(msg.getContent()),
             {
                 replyTo: this.resultsQueue.name,
-                correlationId: msg.getJobId(),
+                correlationId: msg.getProcessId(),
                 type: BATCH_REQUEST_TYPE,
                 headers: {
                     node_id: this.settings.node_id,
@@ -114,15 +114,15 @@ class AmqpRpcWorker implements IWorker {
             },
         );
 
-        if (this.waiting.has(msg.getJobId())) {
+        if (this.waiting.has(msg.getProcessId())) {
             logger.error(
                 `Worker[type'amqprpc'] is already waiting for results with same id.`,
-                { node_id: this.settings.node_id, correlation_id: msg.getJobId() },
+                logger.ctxFromMsg(msg),
             );
 
             msg.setResult({
                 status: ResultCode.MESSAGE_ALREADY_BEING_PROCESSED,
-                message: `Message[id=${msg.getJobId()}] is already being processed.`,
+                message: `Message[id=${msg.getProcessId()}] is already being processed.`,
             });
 
             return Promise.resolve(msg);
@@ -135,7 +135,7 @@ class AmqpRpcWorker implements IWorker {
             msg.setMultiplier(0);
 
             const w: IWaiting = { resolveFn: resolve, message: msg, sequence: 0 };
-            this.waiting.set(msg.getJobId(), w);
+            this.waiting.set(msg.getProcessId(), w);
         });
 
     }
@@ -149,14 +149,14 @@ class AmqpRpcWorker implements IWorker {
             const testId = "worker.amqprpc.test";
 
             const resolveTestFn = (msg: JobMessage) => {
-                if (msg.getJobId() === testId) {
+                if (msg.getProcessId() === testId) {
                     resolve(true);
                 } else {
                     resolve(false);
                 }
             };
 
-            const jobMsg = new JobMessage(testId, testId, 1, {}, "");
+            const jobMsg = new JobMessage(this.settings.node_id, testId, testId, "", 1, {}, "");
             const t: IWaiting = { resolveFn: resolveTestFn, message: jobMsg, sequence: 0 };
             this.waiting.set(testId, t);
 
@@ -224,11 +224,14 @@ class AmqpRpcWorker implements IWorker {
         const newContent = JSON.parse(resultMsg.content.toString());
 
         const splitMsg = new JobMessage(
+            this.settings.node_id,
             stored.message.getCorrelationId(),
-            stored.message.getJobId(),
+            stored.message.getProcessId(),
+            stored.message.getParentId(),
             stored.sequence,
             JSON.parse(JSON.stringify(stored.message.getHeaders())), // simple object cloning,
             JSON.stringify({ data: newContent.data, settings: origContent.settings}),
+
             { status: ResultCode.SUCCESS, message: `Part ${stored.sequence}` },
         );
 
@@ -236,10 +239,7 @@ class AmqpRpcWorker implements IWorker {
 
         this.partialForwarder.forwardPart(splitMsg)
             .catch(() => {
-                logger.warn(
-                    `Worker[type='amqprpc'] partial forward failed.`,
-                    { node_id: this.settings.node_id, correlation_id: splitMsg.getCorrelationId() },
-                );
+                logger.warn(`Worker[type='amqprpc'] partial forward failed.`, logger.ctxFromMsg(splitMsg));
             });
     }
 

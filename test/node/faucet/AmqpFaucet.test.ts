@@ -37,7 +37,7 @@ describe("AmqpFaucet", () => {
     it("should start consumption on open", () => {
         const check = (msg: JobMessage) => {
             assert.equal(msg.getSequenceId(), 999);
-            assert.equal(msg.getJobId(), "a23");
+            assert.equal(msg.getProcessId(), "a23");
         };
         const faucet = new AmqpFaucet(settings, conn);
 

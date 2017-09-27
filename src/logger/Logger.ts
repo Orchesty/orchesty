@@ -1,13 +1,15 @@
 import Sender from "lib-nodejs/dist/src/udp/Sender";
 import * as os from "os";
 import {loggerOptions} from "../config";
+import JobMessage from "../message/JobMessage";
 import {default as winston} from "./Winston";
 
 export interface ILogContext {
     node_id?: string;
     correlation_id?: string;
     process_id?: string;
-    sequence_id?: string;
+    parent_id?: string;
+    sequence_id?: number;
     error?: Error;
 }
 
@@ -111,6 +113,28 @@ class Logger {
      */
     public error(message: string, context?: ILogContext): void {
         this.log("error", message, context ? context : {});
+    }
+
+    /**
+     *
+     * @param {JobMessage} msg
+     * @param {Error} err
+     * @return {ILogContext}
+     */
+    public ctxFromMsg(msg: JobMessage, err?: Error): ILogContext {
+        const ctx: ILogContext = {
+            node_id: msg.getNodeId(),
+            correlation_id: msg.getCorrelationId(),
+            process_id: msg.getProcessId(),
+            parent_id: msg.getParentId(),
+            sequence_id: msg.getSequenceId(),
+        };
+
+        if (err) {
+            ctx.error = err;
+        }
+
+        return ctx;
     }
 
     /**

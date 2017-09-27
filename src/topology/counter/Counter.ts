@@ -1,9 +1,8 @@
 import { Channel, Message } from "amqplib";
 import Connection from "lib-nodejs/dist/src/rabbitmq/Connection";
 import Publisher from "lib-nodejs/dist/src/rabbitmq/Publisher";
-import * as assert from "power-assert";
 import logger from "../../logger/Logger";
-import { ICounterMessageContent } from "../../message/CounterMessage";
+import {default as CounterMessage, ICounterMessageContent, ICounterMessageHeaders} from "../../message/CounterMessage";
 import { ResultCode } from "../../message/ResultCode";
 import CounterConsumer from "./CounterConsumer";
 
@@ -38,7 +37,7 @@ interface ICounterLog {
     message: string;
 }
 
-export interface ICounterJobInfo {
+export interface ICounterProcessInfo {
     topology: string;
     id: string;
     total: number;
@@ -59,7 +58,7 @@ export default class Counter {
      * @return {string}
      * @private
      */
-    private static getTopJobId(id: string) {
+    private static getMostTopProcessId(id: string) {
         const stringId = `${id}`;
         const parts = stringId.split(ID_DELIMITER, 1);
 
@@ -70,10 +69,10 @@ export default class Counter {
      *
      * @param {string} topology
      * @param {string} id
-     * @return {ICounterJobInfo}
+     * @return {ICounterProcessInfo}
      * @private
      */
-    private static createJob(topology: string, id: string): ICounterJobInfo {
+    private static createJob(topology: string, id: string): ICounterProcessInfo {
         return {
             topology,
             id,
@@ -86,50 +85,50 @@ export default class Counter {
 
     /**
      *
-     * @param {ICounterJobInfo} job
+     * @param {ICounterProcessInfo} processInfo
      * @param {ResultCode} result
      * @param {number} following
      * @param {number} multiplier
      * @param {ICounterLog} log
-     * @return {ICounterJobInfo}
+     * @return {ICounterProcessInfo}
      */
     private static updateJob(
-        job: ICounterJobInfo,
+        processInfo: ICounterProcessInfo,
         result: ResultCode,
         following: number = 0,
         multiplier: number = 1,
         log?: ICounterLog,
-    ) {
+    ): ICounterProcessInfo {
         if (result === ResultCode.SUCCESS) {
-            job.ok += 1;
+            processInfo.ok += 1;
         } else {
-            job.nok += 1;
+            processInfo.nok += 1;
         }
 
-        job.total += multiplier * following;
+        processInfo.total += multiplier * following;
 
         if (log) {
-            job.messages.push(log);
+            processInfo.messages.push(log);
         }
 
-        return job;
+        return processInfo;
     }
 
     /**
      * Returns true if process is completely finished
      *
-     * @param {ICounterJobInfo} job
+     * @param {ICounterProcessInfo} job
      * @return {boolean}
      * @private
      */
-    private static isJobFinished(job: ICounterJobInfo) {
+    private static isProcessFinished(job: ICounterProcessInfo) {
         if (job.nok + job.ok === job.total) {
             return true;
         }
         return false;
     }
 
-    private jobs: { [key: string]: ICounterJobInfo };
+    private processes: { [key: string]: ICounterProcessInfo };
     private settings: any;
     private connection: Connection;
     private publisher: Publisher;
@@ -141,7 +140,7 @@ export default class Counter {
      * @param connection
      */
     constructor(settings: ICounterSettings, connection: Connection) {
-        this.jobs = {};
+        this.processes = {};
         this.settings = settings;
         this.connection = connection;
         this.prepareConsumer();
@@ -201,28 +200,37 @@ export default class Counter {
      * @return {boolean}
      */
     private handleMessage(msg: Message): void {
-        let headers: {job_id: string, node_id: string} = null;
-        let content: ICounterMessageContent = null;
+        let headers: ICounterMessageHeaders = null;
+        let content: any;
 
         try {
             headers = msg.properties.headers;
-            assert(headers.job_id, 'Missing "job_id" header field.');
-            assert(headers.node_id, 'Missing "node_id" header field.');
-
             content = JSON.parse(msg.content.toString());
 
-            const jobId = Counter.getTopJobId(headers.job_id);
-            const node = headers.node_id;
+            const processId = Counter.getMostTopProcessId(headers.process_id);
             const resultCode = content.result.code;
-            const following = content.route.following;
-            const multiplier = content.route.multiplier;
-            const log: ICounterLog = { resultCode, node, message: content.result.message };
 
-            logger.info("Counter message received", { node_id: "counter", correlation_id: jobId });
+            const cm = new CounterMessage(
+                headers.node_id,
+                headers.correlation_id,
+                processId,
+                headers.parent_id,
+                resultCode,
+                content.result.message,
+                parseInt(content.route.following, 10),
+                parseInt(content.route.multiplier, 10),
+            );
 
-            this.handleJob(jobId, resultCode, following, multiplier, log);
+            logger.info(`Counter message received with status: "${resultCode}"`, {
+                node_id: cm.getNodeId(),
+                correlation_id: cm.getCorrelationId(),
+                process_id: cm.getProcessId(),
+                parent_id: cm.getParentId(),
+            });
+
+            this.handleCounterMessage(cm);
         } catch (e) {
-            logger.error("Invalid counter message.", { node_id: "counter", error: e });
+            logger.error("Invalid counter message.", { error: e });
         }
 
         return;
@@ -230,52 +238,44 @@ export default class Counter {
 
     /**
      *
-     * @param {string} jobId
-     * @param {number} status
-     * @param {number} following
-     * @param {number} multiplier
-     * @param {ICounterLog} log
-     * @return {ICounterJobInfo}
+     * @param {CounterMessage} cm
+     * @return {ICounterProcessInfo}
      */
-    private handleJob(
-        jobId: string,
-        status: number,
-        following: number,
-        multiplier: number,
-        log: ICounterLog,
-    ): ICounterJobInfo {
-        let job = this.jobs[jobId] ? this.jobs[jobId] : null;
-        if (job) {
-            job = Counter.updateJob(job, status, following, multiplier, log);
-        } else {
-            job = Counter.createJob(this.settings.topology, jobId);
-            job = Counter.updateJob(job, status, following, multiplier, log);
+    private handleCounterMessage(cm: CounterMessage): ICounterProcessInfo {
+        const log: ICounterLog = { node: cm.getNodeId(), resultCode: cm.getResultCode(), message: cm.getResultMsg()};
+
+        let proc: ICounterProcessInfo = this.processes[cm.getProcessId()] ? this.processes[cm.getProcessId()] : null;
+
+        if (!proc) {
+            proc = Counter.createJob(this.settings.topology, cm.getProcessId());
         }
 
-        if (Counter.isJobFinished(job)) {
-            this.onJobFinished(this.jobs[jobId]);
-            delete this.jobs[jobId];
+        proc = Counter.updateJob(proc, cm.getResultCode(), cm.getFollowing(), cm.getMultiplier(), log);
+
+        if (Counter.isProcessFinished(proc)) {
+            this.onJobFinished(this.processes[cm.getProcessId()]);
+            delete this.processes[cm.getProcessId()];
         } else {
             // save job
-            this.jobs[jobId] = job;
+            this.processes[cm.getProcessId()] = proc;
         }
 
-        return job;
+        return proc;
     }
 
     /**
      * Publish message informing that job is completed
      *
-     * @param job
+     * @param process
      */
-    private onJobFinished(job: ICounterJobInfo): void {
+    private onJobFinished(process: ICounterProcessInfo): void {
         const e = this.settings.pub.exchange;
         const rKey = this.settings.pub.routing_key;
-        this.publisher.publish(e.name, rKey, new Buffer(JSON.stringify(job)), {})
+        this.publisher.publish(e.name, rKey, new Buffer(JSON.stringify(process)), {})
             .then(() => {
                 logger.info(
                     "Counter job evaluated as finished",
-                    { node_id: "counter", correlation_id: job.id },
+                    { node_id: "counter", correlation_id: process.id },
                 );
             });
     }

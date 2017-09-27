@@ -124,8 +124,10 @@ describe("AmqpRpcWorker", () => {
         return externalWorkerMock.consume(settings.publish_queue.name, {})
             .then(() => {
                 const jobMsg = new JobMessage(
+                    "amqp.worker.node_id",
                     "amqp.worker.correlation_id",
-                    "amqp.worker.job_message",
+                    "amqp.worker.process_id",
+                    "",
                     1,
                     {},
                     JSON.stringify({ settings: {}, data: "test" }),

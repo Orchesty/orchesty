@@ -67,8 +67,8 @@ class SplitterWorker implements IWorker {
 
                 logger.info(
                     `Worker[type"splitter"] split message. \
-                        Status="${msg.getResult().status}" message="${msg.getResult().message}"]`,
-                    {node_id: this.settings.node_id, correlation_id: msg.getJobId()},
+                    Status="${msg.getResult().status}" message="${msg.getResult().message}"]`,
+                    logger.ctxFromMsg(msg),
                 );
 
                 return msg;
@@ -99,7 +99,7 @@ class SplitterWorker implements IWorker {
 
         logger.warn(
             `Worker[type'splitter'] could not parse json message. ${msg.getResult().message}`,
-            {node_id: this.settings.node_id, correlation_id: msg.getJobId(), error: err},
+            logger.ctxFromMsg(msg, err),
         );
     }
 
@@ -119,8 +119,10 @@ class SplitterWorker implements IWorker {
                 settings: content.settings,
             };
             const splitMsg = new JobMessage(
+                this.settings.node_id,
                 msg.getCorrelationId(),
-                msg.getJobId(),
+                msg.getProcessId(),
+                msg.getParentId(),
                 i,
                 JSON.parse(JSON.stringify(msg.getHeaders())), // simple object cloning
                 JSON.stringify(splitContent),

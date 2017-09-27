@@ -111,8 +111,10 @@ describe("FollowersPublisher", () => {
         consumer.consume(outputQueue, {})
             .then(() => {
                 const msg: JobMessage = new JobMessage(
+                    "nodeId",
+                    "corrId",
                     msgJobId,
-                    msgJobId,
+                    "",
                     msgSeqId,
                     msgHeaders,
                     JSON.stringify(msgBody),

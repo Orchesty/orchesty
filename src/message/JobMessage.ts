@@ -22,48 +22,59 @@ class JobMessage implements IMessage {
 
     /**
      *
-     * @param correlationId
-     * @param {string} jobId
+     * @param {string} nodeId
+     * @param {string} correlationId
+     * @param {string} processId
      * @param {number} sequenceId
      * @param {Object} headers
      * @param {string} content
-     * @param result
+     * @param {string} parentId
+     * @param {IResult} result
      *
      * AMQP Message Mandatory headers
      *  - correlation_id
      *  - process_id
-     *  - sequenceId
+     *  - sequence_id
+     *  - parent_id
      *
      */
     constructor(
+        private nodeId: string,
         private correlationId: string,
-        private jobId: string,
+        private processId: string,
+        private parentId: string,
         private sequenceId: number,
         private headers: { [key: string]: string },
         private content: string,
         private result?: IResult,
     ) {
-        if (!correlationId) {
-            throw new Error("Invalid correlationId.");
+        if (!nodeId || nodeId === "") {
+            throw new Error(`Invalid nodeId. "${nodeId}"`);
         }
-        if (!jobId) {
-            throw new Error("Invalid jobId.");
+        if (!correlationId || correlationId === "") {
+            throw new Error(`Invalid correlationId. "${correlationId}"`);
         }
-        if (!sequenceId) {
-            throw new Error("Invalid sequenceId.");
+        if (!processId || processId === "") {
+            throw new Error(`Invalid processId. "${processId}"`);
+        }
+        if (!sequenceId || sequenceId < 1) {
+            throw new Error(`Invalid sequenceId. "${sequenceId}"`);
         }
 
         this.receivedTime = TimeUtils.nowMili();
-
-        delete headers.job_id;
-        delete headers.sequence_id;
-        delete headers.correlation_id;
-
-        this.headers = headers;
-        this.content = content;
-
         this.multiplier = 1;
         this.forwardSelf = true;
+
+        this.setHeaders(headers);
+        this.content = content;
+    }
+
+    /**
+     *
+     * @return {string}
+     */
+    public getNodeId(): string {
+        return this.nodeId;
     }
 
     /**
@@ -75,11 +86,18 @@ class JobMessage implements IMessage {
     }
 
     /**
+     * @return {string}
+     */
+    public getProcessId(): string {
+        return this.processId;
+    }
+
+    /**
      *
      * @return {string}
      */
-    public getJobId(): string {
-        return this.jobId;
+    public getParentId(): string {
+        return this.parentId;
     }
 
     /**
@@ -100,6 +118,7 @@ class JobMessage implements IMessage {
     }
 
     /**
+     * Returns custom headers amended by system headers
      *
      * @return {*}
      */
@@ -107,10 +126,25 @@ class JobMessage implements IMessage {
         const h = this.headers;
 
         h.correlation_id = this.getCorrelationId();
-        h.job_id = this.getJobId();
+        h.process_id = this.getProcessId();
+        h.parent_id = this.getParentId();
         h.sequence_id = `${this.getSequenceId()}`;
 
         return h;
+    }
+
+    /**
+     * Cleans headers from system headers and set them to header field
+     *
+     * @param {{[p: string]: string}} headers
+     */
+    public setHeaders(headers: { [key: string]: string }): void {
+        delete headers.correlation_id;
+        delete headers.process_id;
+        delete headers.parent_id;
+        delete headers.sequence_id;
+
+        this.headers = headers;
     }
 
     /**

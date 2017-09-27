@@ -55,7 +55,7 @@ class FollowersPublisher extends Publisher {
             logger.warn(
                 `AmqpDrain will not forward message[", \
                 status="${message.getResult().status}, message="${message.getResult().message}"].`,
-                {node_id: this.settings.node_id, correlation_id: message.getJobId()},
+                logger.ctxFromMsg(message),
             );
 
             return Promise.resolve();
@@ -67,7 +67,7 @@ class FollowersPublisher extends Publisher {
             .then(() => {
                 logger.info(
                     `AmqpDrain forwarded ${sent.length}x message. Followers: ${this.settings.followers.length}`,
-                    { node_id: this.settings.node_id, correlation_id: message.getJobId() },
+                    logger.ctxFromMsg(message),
                 );
             });
     }

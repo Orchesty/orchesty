@@ -23,7 +23,8 @@ export interface IHttpWorkerRequestParams {
     body?: string;
     headers: {
         correlation_id: string,
-        job_id: string,
+        process_id: string,
+        parent_id: string,
         sequence_id: number,
         reply_to_url?: string,
         reply_to_method?: string,
@@ -48,10 +49,7 @@ class HttpWorker implements IWorker {
         return new Promise((resolve) => {
             Object.assign(reqParams, this.settings.opts);
 
-            logger.info(
-                `Worker[type='http'] sent request to: ${reqParams.url}`,
-                { node_id: this.settings.node_id, correlation_id: msg.getJobId() },
-            );
+            logger.info(`Worker[type='http'] sent request to: ${reqParams.url}`, logger.ctxFromMsg(msg));
 
             // Make http request and wait for response
             request(reqParams, (err, response, body) => {
@@ -59,7 +57,7 @@ class HttpWorker implements IWorker {
                     logger.warn(
                         `Worker[type='http'] did not received response. \
                          Request params: ${JSON.stringify(reqParams)}. Body: ${JSON.stringify(body)}`,
-                        { node_id: this.settings.node_id, correlation_id: msg.getJobId(), error: err },
+                        logger.ctxFromMsg(msg, err),
                     );
                     msg.setResult({ status: ResultCode.HTTP_ERROR, message: err });
 
@@ -69,7 +67,7 @@ class HttpWorker implements IWorker {
                 if (!response.statusCode || response.statusCode !== 200) {
                     logger.warn(
                         `Worker[type='http'] received response with statusCode="${response.statusCode}"`,
-                        { node_id: this.settings.node_id, correlation_id: msg.getJobId() },
+                        logger.ctxFromMsg(msg, err),
                     );
                     msg.setResult(
                         {
@@ -82,10 +80,7 @@ class HttpWorker implements IWorker {
                 }
 
                 // Everything OK
-                logger.info(
-                    "Worker[type='http'] received response",
-                    { node_id: this.settings.node_id, correlation_id: msg.getJobId()},
-                );
+                logger.info("Worker[type='http'] received response", logger.ctxFromMsg(msg, err));
 
                 msg.setResult({ status: ResultCode.SUCCESS, message: "Http worker OK." });
                 msg.setContent(JSON.stringify(body));
@@ -108,9 +103,7 @@ class HttpWorker implements IWorker {
 
             request(reqParams, (err, response) => {
                 if (err) {
-                    logger.warn(
-                        "HttpWorker worker not ready.", { node_id: this.settings.node_id, error: err },
-                    );
+                    logger.warn("HttpWorker worker not ready.", { node_id: this.settings.node_id, error: err });
 
                     return resolve(false);
                 }
@@ -143,7 +136,8 @@ class HttpWorker implements IWorker {
             json: JSON.parse(inMsg.getContent()),
             headers: {
                 correlation_id: inMsg.getCorrelationId(),
-                job_id: inMsg.getJobId(),
+                process_id: inMsg.getProcessId(),
+                parent_id: inMsg.getParentId(),
                 sequence_id: inMsg.getSequenceId(),
             },
         };

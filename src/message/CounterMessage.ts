@@ -1,10 +1,11 @@
-import * as uuid from "uuid/v1";
 import IMessage from "./IMessage";
 import { ResultCode } from "./ResultCode";
 
 export interface ICounterMessageHeaders {
-    job_id: string;
     node_id: string;
+    correlation_id: string;
+    process_id: string;
+    parent_id: string;
 }
 
 export interface ICounterMessageContent {
@@ -14,38 +15,102 @@ export interface ICounterMessageContent {
 
 class CounterMessage implements IMessage {
 
-    private jobId: string;
     private nodeId: string;
+    private correlationId: string;
+    private processId: string;
+    private parentId: string;
     private resultCode: number;
     private resultMsg: string;
     private following: number;
     private multiplier: number;
-    private msgUuid: string;
 
     /**
      *
-     * @param {string} jobId
+     * @param {string} processId
      * @param {string} nodeId
+     * @param {string} correlationId
+     * @param {string} parentId
      * @param {number} resultCode
      * @param {string} resultMsg
      * @param {number} following
      * @param {number} multiplier
      */
     constructor(
-        jobId: string,
         nodeId: string,
-        resultCode = ResultCode.SUCCESS,
-        resultMsg = "",
-        following = 0,
-        multiplier = 1,
+        correlationId: string,
+        processId: string,
+        parentId: string,
+        resultCode: ResultCode,
+        resultMsg: string = "",
+        following: number = 0,
+        multiplier: number = 1,
     ) {
-        this.jobId = jobId;
+        if (!nodeId || nodeId === "") {
+            throw new Error(`Invalid counter message nodeId: ${nodeId}`);
+        }
+        if (!correlationId || correlationId === "") {
+            throw new Error(`Invalid counter message correlationId: ${correlationId}`);
+        }
+        if (!processId || processId === "") {
+            throw new Error(`Invalid counter message processId: ${processId}`);
+        }
+
         this.nodeId = nodeId;
+        this.correlationId = correlationId;
+        this.processId = processId;
+        this.parentId = parentId;
         this.resultCode = resultCode;
         this.resultMsg = resultMsg;
         this.following = following;
         this.multiplier = multiplier;
-        this.msgUuid = uuid();
+    }
+
+    /**
+     *
+     * @return {string}
+     */
+    public getNodeId(): string {
+        return this.nodeId;
+    }
+
+    /**
+     *
+     * @return {string}
+     */
+    public getCorrelationId(): string {
+        return this.correlationId;
+    }
+
+    /**
+     *
+     * @return {string}
+     */
+    public getProcessId(): string {
+        return this.processId;
+    }
+
+    /**
+     *
+     * @return {string}
+     */
+    public getParentId(): string {
+        return this.parentId;
+    }
+
+    /**
+     *
+     * @return {number}
+     */
+    public getFollowing(): number {
+        return this.following;
+    }
+
+    /**
+     *
+     * @return {number}
+     */
+    public getMultiplier(): number {
+        return this.multiplier;
     }
 
     /**
@@ -54,9 +119,27 @@ class CounterMessage implements IMessage {
      */
     public getHeaders(): ICounterMessageHeaders {
         return {
-            job_id: this.jobId,
-            node_id: this.nodeId,
+            node_id: this.getNodeId(),
+            correlation_id: this.getCorrelationId(),
+            process_id: this.getProcessId(),
+            parent_id: this.getParentId(),
         };
+    }
+
+    /**
+     *
+     * @return {string}
+     */
+    public getResultMsg(): string {
+        return this.resultMsg;
+    }
+
+    /**
+     *
+     * @return {ResultCode}
+     */
+    public getResultCode(): ResultCode {
+        return this.resultCode;
     }
 
     /**
@@ -75,14 +158,6 @@ class CounterMessage implements IMessage {
         };
 
         return JSON.stringify(content);
-    }
-
-    /**
-     *
-     * @return {string}
-     */
-    public getUuid(): string {
-        return this.msgUuid;
     }
 
 }
