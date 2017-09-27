@@ -8,6 +8,7 @@
 
 namespace Hanaboso\PipesFramework\HbPFCustomNodeBundle\Handler;
 
+use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\HbPFCustomNodeBundle\Exception\CustomNodeException;
 use Hanaboso\PipesFramework\HbPFCustomNodeBundle\Loader\CustomNodeLoader;
 
@@ -37,15 +38,19 @@ class CustomNodeHandler
     /**
      * @param string $nodeId
      * @param array  $data
+     * @param array  $headers
      *
-     * @return array
+     * @return ProcessDto
      */
-    public function process(string $nodeId, array $data): array
+    public function process(string $nodeId, array $data, array $headers): ProcessDto
     {
-        $node = $this->loader->get($nodeId);
-        $res  = $node->process($data);
+        $dto = (new ProcessDto())
+            ->setData(json_encode($data))
+            ->setHeaders($headers);
 
-        return $res;
+        $node = $this->loader->get($nodeId);
+
+        return $node->process($dto);
     }
 
     /**
