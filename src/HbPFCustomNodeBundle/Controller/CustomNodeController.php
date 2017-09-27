@@ -54,7 +54,7 @@ class CustomNodeController extends FOSRestController
     public function sendAction(Request $request, string $nodeId): JsonResponse
     {
         try {
-            $result   = $this->handler->process($nodeId, $request->request->all(), $request->headers->all());
+            $result   = $this->handler->process($nodeId, (string) $request->getContent(), $request->headers->all());
             $response = new JsonResponse($result->getData(), 200, $result->getHeaders(), TRUE);
         } catch (CustomNodeException $e) {
             $response = new JsonResponse(ControllerUtils::createExceptionData($e), 500);

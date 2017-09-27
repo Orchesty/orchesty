@@ -37,15 +37,15 @@ class CustomNodeHandler
 
     /**
      * @param string $nodeId
-     * @param array  $data
+     * @param string $data
      * @param array  $headers
      *
      * @return ProcessDto
      */
-    public function process(string $nodeId, array $data, array $headers): ProcessDto
+    public function process(string $nodeId, $data, array $headers): ProcessDto
     {
         $dto = (new ProcessDto())
-            ->setData(json_encode($data))
+            ->setData($data)
             ->setHeaders($headers);
 
         $node = $this->loader->get($nodeId);
