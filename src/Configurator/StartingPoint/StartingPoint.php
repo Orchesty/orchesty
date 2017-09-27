@@ -131,6 +131,7 @@ class StartingPoint implements LoggerAwareInterface
         $headers = new Headers();
         $headers
             ->addHeader('process_id', Uuid::uuid4()->toString())
+            ->addHeader('parent_id', '')
             ->addHeader('correlation_id', Uuid::uuid4()->toString())
             ->addHeader('sequence_id', '1');
 
@@ -206,6 +207,7 @@ class StartingPoint implements LoggerAwareInterface
         $this->logger->info('Starting point message', [
             'correlation_id' => $headers['correlation_id'],
             'process_id'     => $headers['process_id'],
+            'parent_id'      => $headers['parent_id'],
             'node_id'        => $node->getId(),
             'node_name'      => $node->getName(),
             'topology_id'    => $topology->getId(),
