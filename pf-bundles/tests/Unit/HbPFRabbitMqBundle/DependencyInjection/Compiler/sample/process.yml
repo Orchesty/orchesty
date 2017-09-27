@@ -71,7 +71,7 @@ rabbit-mq:
 
     async_consumers:
         demo:
-            class: Hanaboso\PipesFramework\Commons\RabbitMq\Demo\DemoConsumer
+            class: Hanaboso\PipesFramework\RabbitMq\Demo\DemoConsumer
             exchange: foo
             routing_key: '*'
             queue: demo

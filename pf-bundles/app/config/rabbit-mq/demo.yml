@@ -14,14 +14,14 @@ rabbit-mq:
 
     producers:
         demo:
-            class: Hanaboso\PipesFramework\Commons\RabbitMq\Demo\DemoProducer
+            class: Hanaboso\PipesFramework\RabbitMq\Demo\DemoProducer
             exchange: pipes_exchange
             serializer: Hanaboso\PipesFramework\RabbitMqBundle\Serializers\JsonSerializer
             routing_key: demo
 
     consumers:
         demo:
-            class: Hanaboso\PipesFramework\Commons\RabbitMq\Demo\DemoConsumer
+            class: Hanaboso\PipesFramework\RabbitMq\Demo\DemoConsumer
             routing_key: demo
             queue: demo_queue
             serializer: Hanaboso\PipesFramework\RabbitMqBundle\Serializers\JsonSerializer
@@ -29,7 +29,7 @@ rabbit-mq:
 
     async_consumers:
         async-demo:
-            class: Hanaboso\PipesFramework\Commons\RabbitMq\AsyncDemo\DemoConsumer
+            class: Hanaboso\PipesFramework\RabbitMq\AsyncDemo\DemoConsumer
             queue: async-demo
             serializer:
             callback: hanaboso.pipes_framework.commons.rabbit_mq.async_demo.demo_callback
@@ -37,11 +37,11 @@ rabbit-mq:
 
 services:
     hanaboso.pipes_framework.commons.rabbit_mq.demo.demo_callback:
-        class: Hanaboso\PipesFramework\Commons\RabbitMq\Demo\DemoCallback
+        class: Hanaboso\PipesFramework\RabbitMq\Demo\DemoCallback
         arguments:
             - '@monolog.logger.rabbit-mq'
         calls:
             - [setRepeater, ['@hanaboso.pipes_framework.commons.rabbit_mq.repeater.repeater']]
 
     hanaboso.pipes_framework.commons.rabbit_mq.async_demo.demo_callback:
-        class: Hanaboso\PipesFramework\Commons\RabbitMq\AsyncDemo\DemoCallback
+        class: Hanaboso\PipesFramework\RabbitMq\AsyncDemo\DemoCallback

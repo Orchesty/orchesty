@@ -1,8 +1,8 @@
 parameters:
-    rabbit-mq.bunny-manager: Hanaboso\PipesFramework\RabbitMqBundle\BunnyManager
+    rabbit-mq.bunny-manager: Hanaboso\PipesFramework\RabbitMq\BunnyManager
     rabbit-mq.bunny-channel: Bunny\Channel
     rabbit-mq.bunny-client: Bunny\Client
-    rabbit-mq.command.setup: Hanaboso\PipesFramework\RabbitMqBundle\Command\SetupCommand
-    rabbit-mq.command.consumer: Hanaboso\PipesFramework\RabbitMqBundle\Command\ConsumerCommand
-    rabbit-mq.command.async-consumer: Hanaboso\PipesFramework\RabbitMqBundle\Command\AsyncConsumerCommand
-    rabbit-mq.command.producer: Hanaboso\PipesFramework\RabbitMqBundle\Command\ProducerCommand
+    rabbit-mq.command.setup: Hanaboso\PipesFramework\HbPFRabbitMqBundle\Command\SetupCommand
+    rabbit-mq.command.consumer: Hanaboso\PipesFramework\HbPFRabbitMqBundle\Command\ConsumerCommand
+    rabbit-mq.command.async-consumer: Hanaboso\PipesFramework\HbPFRabbitMqBundle\Command\AsyncConsumerCommand
+    rabbit-mq.command.producer: Hanaboso\PipesFramework\HbPFRabbitMqBundle\Command\ProducerCommand
