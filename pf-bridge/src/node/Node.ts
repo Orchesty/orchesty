@@ -80,7 +80,7 @@ class Node {
 
         return new Promise((resolve) => {
             app.listen(this.debugPort, () => {
-                logger.debug(`Node provides ${ROUTE_STATUS} on:${this.debugPort}`, { node_id: this.id });
+                logger.info(`Node provides ${ROUTE_STATUS} on:${this.debugPort}`, { node_id: this.id });
                 resolve();
             });
         });
@@ -96,7 +96,7 @@ class Node {
         this.nodeStatus = NODE_STATUS.READY;
 
         const processFn = (msgIn: JobMessage): Promise<JobMessage> => {
-            logger.info(`Message received.`, { node_id: this.id, correlation_id: msgIn.getJobId() });
+            logger.info(`Message received.`, logger.ctxFromMsg(msgIn));
 
             return this.worker.processData(msgIn)
                 .then((msgOut: JobMessage) => {
@@ -110,10 +110,7 @@ class Node {
                     return forwarded;
                 })
                 .catch((err: any) => {
-                    logger.error(
-                        `Node process failed.`,
-                        { node_id: this.id, correlation_id: msgIn.getJobId(), error: err},
-                    );
+                    logger.error(`Node process failed.`, logger.ctxFromMsg(msgIn, err));
 
                     return msgIn;
                 });
@@ -133,12 +130,12 @@ class Node {
         logger.info(
             `Node worker result["status="${msg.getResult().status}", message="${msg.getResult().message}". \
             process_duration="${msg.getProcessDuration()}"].`,
-            { node_id: this.id, correlation_id: msg.getJobId()},
+            logger.ctxFromMsg(msg),
         );
 
         this.metrics.send({node_process_duration: msg.getProcessDuration()})
             .catch((err) => {
-                logger.warn("Unable to send metrics", { node_id: this.id, correlation_id: msg.getJobId(), error: err});
+                logger.warn("Unable to send metrics", logger.ctxFromMsg(msg, err));
             });
     }
 
@@ -149,7 +146,7 @@ class Node {
     private sendTotalDurationMetric(msg: JobMessage): void {
         this.metrics.send({node_total_duration: msg.getTotalDuration()})
             .catch((err) => {
-                logger.warn("Unable to send metrics", { node_id: this.id, correlation_id: msg.getJobId(), error: err});
+                logger.warn("Unable to send metrics", logger.ctxFromMsg(msg, err));
             });
     }
 

@@ -12,7 +12,7 @@ const settings: ISplitterWorkerSettings = {
 
 describe("Splitter worker", () => {
     it("should fail when invalid JSON content format", () => {
-        const msg = new JobMessage("123", "123", 1, {}, JSON.stringify("{foo : 1, }"));
+        const msg = new JobMessage("nid", "123", "123", "", 1, {}, JSON.stringify("{foo : 1, }"));
         const partialForwarder: IPartialForwarder = {
             forwardPart: () => Promise.resolve(),
         };
@@ -25,7 +25,7 @@ describe("Splitter worker", () => {
     });
 
     it("should fail when JSON content is not array with some element", () => {
-        const msg = new JobMessage("123", "123", 1, {}, JSON.stringify({data: [], settings: {}}));
+        const msg = new JobMessage("nid", "123", "123", "", 1, {}, JSON.stringify({data: [], settings: {}}));
         const partialForwarder: IPartialForwarder = {
             forwardPart: () => Promise.resolve(),
         };
@@ -49,7 +49,7 @@ describe("Splitter worker", () => {
                 some: "thing",
             },
         };
-        const msg = new JobMessage("123", "123", 1, {}, JSON.stringify(content));
+        const msg = new JobMessage("nid", "123", "123", "", 1, {}, JSON.stringify(content));
         const partialForwarder: IPartialForwarder = {
             forwardPart: (forwardedMsg: JobMessage) => {
                 forwarded.push(forwardedMsg);

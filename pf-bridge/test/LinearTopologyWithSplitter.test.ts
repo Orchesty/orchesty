@@ -8,11 +8,11 @@ import SimpleConsumer from "lib-nodejs/dist/src/rabbitmq/SimpleConsumer";
 import * as config from "../src/config";
 import {ResultCode} from "../src/message/ResultCode";
 import {ITopologyConfigSkeleton} from "../src/topology/Configurator";
-import {ICounterJobInfo} from "../src/topology/counter/Counter";
+import {ICounterProcessInfo} from "../src/topology/counter/Counter";
 import Pipes from "./../src/Pipes";
 
 const testTopology: ITopologyConfigSkeleton = {
-    name: "linear-topo-with-splitter",
+    id: "linear-topo-with-splitter",
     nodes: [
         {
             id: "node-a",
@@ -58,7 +58,7 @@ const testTopology: ITopologyConfigSkeleton = {
 };
 
 const amqpConn = new Connection(config.amqpConnectionOptions);
-const firstQueue = `pipes.${testTopology.name}.${testTopology.nodes[0].id}`;
+const firstQueue = `pipes.${testTopology.id}.${testTopology.nodes[0].id}`;
 
 describe("Linear topology with splitter test", () => {
     it("complete flow of messages till the end", (done) => {
@@ -71,7 +71,7 @@ describe("Linear topology with splitter test", () => {
             ],
             settings: {},
         };
-        const msgHeaders = { headers: { correlation_id: "corrid", job_id: "test", sequence_id: 1 } };
+        const msgHeaders = { headers: { correlation_id: "corrid", process_id: "test", parent_id: "", sequence_id: 1 } };
 
         const pip = new Pipes(testTopology);
 
@@ -110,8 +110,8 @@ describe("Linear topology with splitter test", () => {
                 },
                 (msg: Message) => {
                     // In this fn we evaluate expected incoming message and state if test is OK or failed
-                    const data: ICounterJobInfo = JSON.parse(msg.content.toString());
-                    assert.equal(data.id, msgHeaders.headers.job_id);
+                    const data: ICounterProcessInfo = JSON.parse(msg.content.toString());
+                    assert.equal(data.id, msgHeaders.headers.process_id);
                     assert.equal(data.total, 6);
                     assert.equal(data.ok, 6);
                     assert.equal(data.nok, 0);

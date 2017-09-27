@@ -42,8 +42,10 @@ class CounterPublisher extends Publisher {
      */
     public send(message: JobMessage): Promise<void> {
         const resMsg = new CounterMessage(
-            message.getJobId(),
             this.settings.node_id,
+            message.getCorrelationId(),
+            message.getProcessId(),
+            message.getParentId(),
             message.getResult().status, // 0 OK, >0 NOK
             message.getResult().message,
             this.settings.followers.length,
@@ -53,7 +55,6 @@ class CounterPublisher extends Publisher {
         const opts: Options.Publish = {
             headers: resMsg.getHeaders(),
             type: "counter_message",
-            messageId: resMsg.getUuid(),
             timestamp: Date.now(),
             appId: this.settings.node_id,
         };
