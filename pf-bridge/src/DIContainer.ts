@@ -4,6 +4,7 @@ import {amqpConnectionOptions} from "./config";
 import CounterPublisher from "./node/drain/amqp/CounterPublisher";
 import FollowersPublisher from "./node/drain/amqp/FollowersPublisher";
 import {default as AmqpDrain, IAmqpDrainSettings} from "./node/drain/AmqpDrain";
+import IPartialForwarder from "./node/drain/IPartialForwarder";
 import {default as AmqpFaucet, IAmqpFaucetSettings} from "./node/faucet/AmqpFaucet";
 import {default as HttpFaucet, IHttpFaucetSettings} from "./node/faucet/HttpFaucet";
 import AmqpRpcWorker, {IAmqpRpcWorkerSettings} from "./node/worker/AmqpRpcWorker";
@@ -12,8 +13,6 @@ import HttpWorker, {IHttpWorkerSettings} from "./node/worker/HttpWorker";
 import NullWorker from "./node/worker/NullWorker";
 import SplitterWorker, {ISplitterWorkerSettings} from "./node/worker/SplitterWorker";
 import UppercaseWorker from "./node/worker/UppercaseWorker";
-import IPartialForwarder from "./node/drain/IPartialForwarder";
-import Defaults from "./Defaults";
 
 class DIContainer extends Container {
 

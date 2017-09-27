@@ -6,6 +6,7 @@ import SimpleConsumer from "lib-nodejs/dist/src/rabbitmq/SimpleConsumer";
 import logger from "../../logger/Logger";
 import JobMessage from "../../message/JobMessage";
 import {ResultCode} from "../../message/ResultCode";
+import IPartialForwarder from "../drain/IPartialForwarder";
 import IWorker from "./IWorker";
 
 export interface IAmqpRpcWorkerSettings {
@@ -43,8 +44,13 @@ class AmqpRpcWorker implements IWorker {
      *
      * @param {AMQPConnection} connection
      * @param {IAmqpRpcWorkerSettings} settings
+     * @param {IPartialForwarder} partialForwarder
      */
-    constructor(private connection: Connection, private settings: IAmqpRpcWorkerSettings) {
+    constructor(
+        private connection: Connection,
+        private settings: IAmqpRpcWorkerSettings,
+        private partialForwarder: IPartialForwarder,
+    ) {
         this.waiting = new Container();
         this.resultsQueue = {
             name: `${settings.publish_queue.name}_reply`,
@@ -122,10 +128,12 @@ class AmqpRpcWorker implements IWorker {
             return Promise.resolve(msg);
         }
 
-        // resolve function will be called with the last received result message
+        // resolve will be done with the last received result message
         return new Promise((resolve) => {
-            msg.setMultiplier(0);
+            // Set the original message not to be re-sent itself via classic Drain
             msg.setForwardSelf(false);
+            msg.setMultiplier(0);
+
             const w: IWaiting = { resolveFn: resolve, message: msg, sequence: 0 };
             this.waiting.set(msg.getJobId(), w);
         });
@@ -208,7 +216,7 @@ class AmqpRpcWorker implements IWorker {
      * @param {string} corrId
      * @param {Message} resultMsg
      */
-    private updateWaiting(corrId: string, resultMsg: Message) {
+    private updateWaiting(corrId: string, resultMsg: Message): void {
         const stored: IWaiting = this.waiting.get(corrId);
         stored.sequence++;
 
@@ -225,15 +233,21 @@ class AmqpRpcWorker implements IWorker {
         );
 
         stored.message.setMultiplier(stored.message.getMultiplier() + 1);
-        // TODO - forward partially
-        // stored.message.addSplit(splitMsg);
+
+        this.partialForwarder.forwardPart(splitMsg)
+            .catch(() => {
+                logger.warn(
+                    `Worker[type='amqprpc'] partial forward failed.`,
+                    { node_id: this.settings.node_id, correlation_id: splitMsg.getCorrelationId() },
+                );
+            });
     }
 
     /**
      * Resolves the stored promise with populated message
      * @param {string} corrId
      */
-    private resolveWaiting(corrId: string) {
+    private resolveWaiting(corrId: string): void {
         const stored: IWaiting = this.waiting.get(corrId);
         stored.resolveFn(stored.message);
 
