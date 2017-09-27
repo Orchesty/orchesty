@@ -86,6 +86,7 @@ class HbPFRabbitMqBundleTest extends KernelTestCaseAbstract
             if (in_array($id, [
                     "command.rabbit-mq.setup",
                     "command.rabbit-mq.consumer",
+                    'command.rabbit-mq.async-consumer',
                 ]
             )) {
                 return new Command($id);

@@ -57,6 +57,11 @@ class RabbitMqCompilerPass implements CompilerPassInterface
     /**
      * @var string
      */
+    private $asyncConsumerCommandServiceId;
+
+    /**
+     * @var string
+     */
     private $producerCommandServiceId;
 
     /**
@@ -68,6 +73,7 @@ class RabbitMqCompilerPass implements CompilerPassInterface
      * @param string $channelServiceId
      * @param string $setupCommandServiceId
      * @param string $consumerCommandServiceId
+     * @param string $asyncConsumerCommandServiceId
      * @param string $producerCommandServiceId
      */
     public function __construct(
@@ -77,17 +83,19 @@ class RabbitMqCompilerPass implements CompilerPassInterface
         string $channelServiceId,
         string $setupCommandServiceId,
         string $consumerCommandServiceId,
+        string $asyncConsumerCommandServiceId,
         string $producerCommandServiceId
     )
     {
 
-        $this->configKey                = $configKey;
-        $this->clientServiceId          = $clientServiceId;
-        $this->managerServiceId         = $managerServiceId;
-        $this->channelServiceId         = $channelServiceId;
-        $this->setupCommandServiceId    = $setupCommandServiceId;
-        $this->consumerCommandServiceId = $consumerCommandServiceId;
-        $this->producerCommandServiceId = $producerCommandServiceId;
+        $this->configKey                     = $configKey;
+        $this->clientServiceId               = $clientServiceId;
+        $this->managerServiceId              = $managerServiceId;
+        $this->channelServiceId              = $channelServiceId;
+        $this->setupCommandServiceId         = $setupCommandServiceId;
+        $this->consumerCommandServiceId      = $consumerCommandServiceId;
+        $this->asyncConsumerCommandServiceId = $asyncConsumerCommandServiceId;
+        $this->producerCommandServiceId      = $producerCommandServiceId;
     }
 
     /**
@@ -108,9 +116,10 @@ class RabbitMqCompilerPass implements CompilerPassInterface
             );
         }
 
-        $config    = $container->getParameter($this->configKey);
-        $consumers = [];
-        $producers = [];
+        $config         = $container->getParameter($this->configKey);
+        $consumers      = [];
+        $asyncConsumers = [];
+        $producers      = [];
 
         if (!array_key_exists('producers', $config)) {
             throw new InvalidArgumentException(
@@ -190,6 +199,42 @@ class RabbitMqCompilerPass implements CompilerPassInterface
             $container->setDefinition($serviceName, $definition);
         }
 
+        if (!array_key_exists('async_consumers', $config)) {
+            throw new InvalidArgumentException(
+                'Container doesn\'t have config parameter \'async consumers\', RabbitMqBunnyExtension probably haven\'t processed config.'
+            );
+        }
+
+        foreach ($config['async_consumers'] as $key => $value) {
+            $definition = new Definition($value['class'], [
+                $value['exchange'],
+                $value['routing_key'],
+                $value['queue'],
+                $value['consumer_tag'],
+                $value['no_local'],
+                $value['no_ack'],
+                $value['exclusive'],
+                $value['nowait'],
+                $value['arguments'],
+                $value['prefetch_count'],
+                $value['prefetch_size'],
+                $value['serializer'],
+            ]);
+
+            if (array_key_exists(LoggerAwareInterface::class, class_implements($value['class']))) {
+                $definition->addMethodCall('setLogger', [
+                    new Reference('monolog.logger.rabbit-mq', ContainerInterface::IGNORE_ON_INVALID_REFERENCE),
+                ]);
+            }
+
+            $definition->addMethodCall('setCallback', [new Reference($value['callback'])]);
+
+            $asyncConsumers[$key] = $definition;
+
+            $serviceName = sprintf('rabbit-mq.consumer.%s', $key);
+            $container->setDefinition($serviceName, $definition);
+        }
+
         /**
          * Connection definition
          */
@@ -231,6 +276,16 @@ class RabbitMqCompilerPass implements CompilerPassInterface
                 new Reference($this->managerServiceId),
                 $consumers,
             ]));
+
+        // ASYNC CONSUMER COMMAND
+        $asyncConsumerCommand = new Definition('%rabbit-mq.command.async-consumer%', [
+            $asyncConsumers,
+            $config,
+        ]);
+        $asyncConsumerCommand->addMethodCall('setLogger', [
+            new Reference('monolog.logger.rabbit-mq', ContainerInterface::IGNORE_ON_INVALID_REFERENCE),
+        ]);
+        $container->setDefinition($this->asyncConsumerCommandServiceId, $asyncConsumerCommand);
 
         //        $container->setDefinition($this->producerCommandServiceId,
         //            new Definition('%rabbit-mq.command.producer%', [
@@ -286,6 +341,14 @@ class RabbitMqCompilerPass implements CompilerPassInterface
     public function getConsumerCommandServiceId(): string
     {
         return $this->consumerCommandServiceId;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAsyncConsumerCommandServiceId(): string
+    {
+        return $this->asyncConsumerCommandServiceId;
     }
 
     /**

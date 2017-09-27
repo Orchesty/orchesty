@@ -149,7 +149,10 @@ class AbstractProducer implements LoggerAwareInterface
     {
         if (!$this->getSerializer()) {
             $this->getLogger()
-                ->warning('Could not create meta class %s.', $this->prepareMessage($this->serializerClassName));
+                ->warning(
+                    sprintf('Could not create meta class %s.', $this->serializerClassName),
+                    $this->prepareMessage($message)
+                );
             throw new BunnyException(
                 sprintf('Could not create meta class %s.', $this->serializerClassName)
             );
