@@ -1,4 +1,7 @@
-PIPES FRAMEWORK
+PIPES FRAMEWORK BRIDGE
+
+Is a basic platform of which Node consists of.
+
 
 ###How to build PF-bridge:
 
