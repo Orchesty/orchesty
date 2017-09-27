@@ -95,7 +95,7 @@ stage-cm:
   when: manual
   script:
     - rsync -a --delete --exclude '.git' ./ ~/stage_cm
-    - cd ~/cm_demo/clients/clever-connectors
+    - cd ~/stage_cm/clients/clever-connectors
     - export COMPOSE_PROJECT_NAME=stage_cm
     - export NPM_INSTALL="yes"
     - make ci-yml docker-pull-dev init-dev DEV_YML=docker-compose.ci.yml
