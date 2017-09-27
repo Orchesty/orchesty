@@ -66,23 +66,24 @@ class TestController extends FOSRestController
     }
 
     /**
-     * @Route("/test/topology/generate")
-     * @Method({"POST", "GET"})
+     * @Route("/test/topology/generate/{network}")
+     * @Method({"GET"})
      *
+     * @param string $network
      *
      * @return Response
      */
-    public function runAction(): Response
+    public function runAction(string $network = 'demo_default'): Response
     {
-        $this->generateTopology();
+        $this->generateTopology($network);
 
         return $this->handleView($this->view([], 200, []));
     }
 
     /**
-     *
+     * @param string $network
      */
-    public function generateTopology(): void
+    public function generateTopology(string $network): void
     {
         if (file_exists($this->rootDir . '/' . self::FILE_NAME)) {
             $topologyId = file_get_contents($this->rootDir . '/' . self::FILE_NAME);
