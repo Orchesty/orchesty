@@ -6,13 +6,13 @@
  * Time: 17:04
  */
 
-namespace Tests\Unit\RabbitMq\Base;
+namespace Tests\Unit\RabbitMq\Producer;
 
 use Bunny\Channel;
 use Bunny\Exception\BunnyException;
 use Hanaboso\PipesFramework\HbPFRabbitMqBundle\ContentTypes;
-use Hanaboso\PipesFramework\RabbitMq\Base\AbstractProducer;
 use Hanaboso\PipesFramework\RabbitMq\BunnyManager;
+use Hanaboso\PipesFramework\RabbitMq\Producer\AbstractProducer;
 use Hanaboso\PipesFramework\RabbitMq\Serializers\JsonSerializer;
 use PHPUnit_Framework_MockObject_MockObject;
 use Tests\KernelTestCaseAbstract;

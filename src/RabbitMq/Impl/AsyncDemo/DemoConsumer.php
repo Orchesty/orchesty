@@ -6,9 +6,9 @@
  * Time: 13:33
  */
 
-namespace Hanaboso\PipesFramework\RabbitMq\AsyncDemo;
+namespace Hanaboso\PipesFramework\RabbitMq\Impl\AsyncDemo;
 
-use Hanaboso\PipesFramework\RabbitMq\Base\AsyncConsumerAbstract;
+use Hanaboso\PipesFramework\RabbitMq\Consumer\AsyncConsumerAbstract;
 
 /**
  * Class AsyncDemoConsumer

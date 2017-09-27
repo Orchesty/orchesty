@@ -2,14 +2,14 @@
 
 namespace Hanaboso\PipesFramework\Configurator\StatusService;
 
-use Hanaboso\PipesFramework\RabbitMq\Base\BaseConsumerAbstract;
+use Hanaboso\PipesFramework\RabbitMq\Consumer\BaseSyncConsumerAbstract;
 
 /**
  * Class StatusServiceConsumer
  *
  * @package Hanaboso\PipesFramework\Configurator\StatusService
  */
-class StatusServiceConsumer extends BaseConsumerAbstract
+class StatusServiceConsumer extends BaseSyncConsumerAbstract
 {
 
 }

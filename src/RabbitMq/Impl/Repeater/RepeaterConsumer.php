@@ -6,16 +6,16 @@
  * Time: 13:42
  */
 
-namespace Hanaboso\PipesFramework\RabbitMq\Repeater;
+namespace Hanaboso\PipesFramework\RabbitMq\Impl\Repeater;
 
-use Hanaboso\PipesFramework\RabbitMq\Base\BaseConsumerAbstract;
+use Hanaboso\PipesFramework\RabbitMq\Consumer\BaseSyncConsumerAbstract;
 
 /**
  * Class RepeaterConsumer
  *
  * @package Hanaboso\PipesFramework\RabbitMq\Repeater
  */
-class RepeaterConsumer extends BaseConsumerAbstract
+class RepeaterConsumer extends BaseSyncConsumerAbstract
 {
 
 }

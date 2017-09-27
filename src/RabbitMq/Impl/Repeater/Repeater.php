@@ -6,10 +6,10 @@
  * Time: 9:09
  */
 
-namespace Hanaboso\PipesFramework\RabbitMq\Repeater;
+namespace Hanaboso\PipesFramework\RabbitMq\Impl\Repeater;
 
 use Bunny\Message;
-use Hanaboso\PipesFramework\RabbitMq\Base\AbstractProducer;
+use Hanaboso\PipesFramework\RabbitMq\Producer\AbstractProducer;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -58,15 +58,15 @@ class Repeater implements LoggerAwareInterface
     protected $logger;
 
     /**
-     * @var AbstractProducer
+     * @var \Hanaboso\PipesFramework\RabbitMq\Producer\AbstractProducer
      */
     private $producer;
 
     /**
      * Repeater constructor.
      *
-     * @param AbstractProducer $producer
-     * @param int              $hopLimit
+     * @param \Hanaboso\PipesFramework\RabbitMq\Producer\AbstractProducer $producer
+     * @param int                                                         $hopLimit
      */
     public function __construct(AbstractProducer $producer, int $hopLimit = 3)
     {

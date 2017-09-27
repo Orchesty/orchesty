@@ -4,8 +4,8 @@ namespace Hanaboso\PipesFramework\Configurator\StatusService;
 
 use Bunny\Message;
 use Hanaboso\PipesFramework\Configurator\Event\ProcessStatusEvent;
-use Hanaboso\PipesFramework\RabbitMq\Base\BaseCallbackAbstract;
 use Hanaboso\PipesFramework\RabbitMq\CallbackStatus;
+use Hanaboso\PipesFramework\RabbitMq\Consumer\SyncCallbackAbstract;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
@@ -13,7 +13,7 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
  *
  * @package Hanaboso\PipesFramework\Configurator\StatusService
  */
-class StatusServiceCallback extends BaseCallbackAbstract
+class StatusServiceCallback extends SyncCallbackAbstract
 {
 
     /**

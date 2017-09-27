@@ -8,14 +8,14 @@
 
 namespace Hanaboso\PipesFramework\Mailer\RabbitMq;
 
-use Hanaboso\PipesFramework\RabbitMq\Base\BaseConsumerAbstract;
+use Hanaboso\PipesFramework\RabbitMq\Consumer\BaseSyncConsumerAbstract;
 
 /**
  * Class MailerConsumer
  *
  * @package Hanaboso\PipesFramework\Mailer\RabbitMq
  */
-class MailerConsumer extends BaseConsumerAbstract
+class MailerConsumer extends BaseSyncConsumerAbstract
 {
 
 }

@@ -6,13 +6,13 @@
  * Time: 20:37
  */
 
-namespace Tests\Unit\RabbitMq\Base;
+namespace Tests\Unit\RabbitMq\Consumer;
 
 use Bunny\Channel;
 use Bunny\Client;
 use Bunny\Message;
-use Hanaboso\PipesFramework\RabbitMq\Base\BaseConsumerAbstract;
 use Hanaboso\PipesFramework\RabbitMq\CallbackStatus;
+use Hanaboso\PipesFramework\RabbitMq\Consumer\BaseSyncConsumerAbstract;
 use Hanaboso\PipesFramework\RabbitMq\Exception\RabbitMqException;
 use PHPUnit\Framework\TestCase;
 use TypeError;
@@ -22,7 +22,7 @@ use TypeError;
  *
  * @package Tests\Unit\RabbitMq\Base
  */
-class BaseConsumerAbstractTest extends TestCase
+class BaseSyncConsumerAbstractTest extends TestCase
 {
 
     /**
@@ -48,12 +48,12 @@ class BaseConsumerAbstractTest extends TestCase
      * @dataProvider handleMessage
      * @covers       BaseConsumerBaseAbstract::handleMessage()
      *
-     * @param BaseConsumerAbstract $baseConsumer
-     * @param null|string          $exception
+     * @param BaseSyncConsumerAbstract $baseConsumer
+     * @param null|string              $exception
      *
      * @return void
      */
-    public function testHandleMessage(BaseConsumerAbstract $baseConsumer, ?string $exception = NULL): void
+    public function testHandleMessage(BaseSyncConsumerAbstract $baseConsumer, ?string $exception = NULL): void
     {
         $message = $this->getMockBuilder(Message::class)->disableOriginalConstructor()->getMock();
         $channel = $this->getMockBuilder(Channel::class)->disableOriginalConstructor()->getMock();
@@ -114,12 +114,12 @@ class BaseConsumerAbstractTest extends TestCase
     /**
      * @param callable|null $callback
      *
-     * @return BaseConsumerAbstract
+     * @return BaseSyncConsumerAbstract
      */
-    public function getBaseConsumer(?callable $callback = NULL): BaseConsumerAbstract
+    public function getBaseConsumer(?callable $callback = NULL): BaseSyncConsumerAbstract
     {
-        /** @var BaseConsumerAbstract $baseConsumer */
-        $baseConsumer = new class() extends BaseConsumerAbstract
+        /** @var BaseSyncConsumerAbstract $baseConsumer */
+        $baseConsumer = new class() extends BaseSyncConsumerAbstract
         {
 
         };

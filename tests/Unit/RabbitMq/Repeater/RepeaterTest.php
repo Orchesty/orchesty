@@ -9,8 +9,8 @@
 namespace Tests\Unit\RabbitMq\Repeater;
 
 use Bunny\Message;
-use Hanaboso\PipesFramework\RabbitMq\Base\AbstractProducer;
-use Hanaboso\PipesFramework\RabbitMq\Repeater\Repeater;
+use Hanaboso\PipesFramework\RabbitMq\Impl\Repeater\Repeater;
+use Hanaboso\PipesFramework\RabbitMq\Producer\AbstractProducer;
 use PHPUnit\Framework\TestCase;
 
 /**

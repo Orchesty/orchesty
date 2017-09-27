@@ -6,14 +6,14 @@
  * Time: 11:26
  */
 
-namespace Hanaboso\PipesFramework\RabbitMq\Base;
+namespace Hanaboso\PipesFramework\RabbitMq\Consumer;
 
 use Bunny\Channel;
 use Bunny\Message;
 use Hanaboso\PipesFramework\HbPFRabbitMqBundle\DebugMessageTrait;
 use Hanaboso\PipesFramework\RabbitMq\CallbackStatus;
 use Hanaboso\PipesFramework\RabbitMq\Exception\RabbitMqException;
-use Hanaboso\PipesFramework\RabbitMq\Repeater\Repeater;
+use Hanaboso\PipesFramework\RabbitMq\Impl\Repeater\Repeater;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -23,7 +23,7 @@ use Psr\Log\NullLogger;
  *
  * @package Hanaboso\PipesFramework\RabbitMq\Base
  */
-abstract class BaseCallbackAbstract implements LoggerAwareInterface
+abstract class SyncCallbackAbstract implements LoggerAwareInterface
 {
 
     use DebugMessageTrait;
@@ -106,9 +106,9 @@ abstract class BaseCallbackAbstract implements LoggerAwareInterface
     /**
      * @param Repeater $repeater
      *
-     * @return BaseCallbackAbstract
+     * @return SyncCallbackAbstract
      */
-    public function setRepeater(Repeater $repeater): BaseCallbackAbstract
+    public function setRepeater(Repeater $repeater): SyncCallbackAbstract
     {
         $this->repeater = $repeater;
 
