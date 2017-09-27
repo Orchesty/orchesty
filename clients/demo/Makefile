@@ -22,8 +22,6 @@ init-dev: .env
 	$(DC_DEV) up -d --force-recreate --remove-orphans
 	$(DE_DEV) monolith-fpm composer global require hirak/prestissimo
 	$(DE_DEV) monolith-fpm composer install --ignore-platform-reqs
-	#$(DE_DEV) magento install-sampledata
-	$(DE_DEV) magento install-magento
 
 destroy-dev:
 	$(DC_DEV) down -v
