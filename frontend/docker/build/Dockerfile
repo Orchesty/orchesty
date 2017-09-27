@@ -1,7 +1,7 @@
 FROM node:8
 
 RUN apt-get update && \
-    apt-get install -y --force-yes sudo socat nginx-extras && \
+    apt-get install -y --force-yes sudo socat netcat nginx-extras && \
     apt-get clean
 
 # SSH agent socket should be mounted here from the host
