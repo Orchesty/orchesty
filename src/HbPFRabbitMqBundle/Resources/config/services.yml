@@ -4,4 +4,5 @@ parameters:
     rabbit-mq.bunny-client: Bunny\Client
     rabbit-mq.command.setup: Hanaboso\PipesFramework\HbPFRabbitMqBundle\Command\SetupCommand
     rabbit-mq.command.consumer: Hanaboso\PipesFramework\HbPFRabbitMqBundle\Command\ConsumerCommand
+    rabbit-mq.command.async-consumer: Hanaboso\PipesFramework\HbPFRabbitMqBundle\Command\AsyncConsumerCommand
     rabbit-mq.command.producer: Hanaboso\PipesFramework\HbPFRabbitMqBundle\Command\ProducerCommand

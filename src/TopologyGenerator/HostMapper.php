@@ -93,7 +93,7 @@ class HostMapper
                 $route = 'api/mailer/{service_id}';
                 break;
             case TypeEnum::CUSTOM:
-                $route = 'api/custom_node/{service_id}/process';
+                $route = '/{service_id}/process';
                 break;
             default:
                 throw new InvalidArgumentException(sprintf('Type "%s" does not exist.', $enum->getValue()));
