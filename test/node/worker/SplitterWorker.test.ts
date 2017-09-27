@@ -3,26 +3,15 @@ import "mocha";
 
 import JobMessage from "../../../src/message/JobMessage";
 import {ResultCode} from "../../../src/message/ResultCode";
-import SplitterWorker, {ISplitterWorkerSettings} from "../../../src/node/worker/SplitterWorker";
 import IPartialForwarder from "../../../src/node/drain/IPartialForwarder";
+import SplitterWorker, {ISplitterWorkerSettings} from "../../../src/node/worker/SplitterWorker";
 
 const settings: ISplitterWorkerSettings = {
     node_id: "someId",
-    partial_forwarder: {
-        node_id: "someId",
-        counter_event: {
-            queue: {
-                name: `pf..counter`,
-                options: {},
-            },
-        },
-        followers: [],
-        resequencer: false,
-    },
 };
 
 describe("Splitter worker", () => {
-    it("should fail when cannot JSON parse content", () => {
+    it("should fail when invalid JSON content format", () => {
         const msg = new JobMessage("123", "123", 1, {}, JSON.stringify("{foo : 1, }"));
         const partialForwarder: IPartialForwarder = {
             forwardPart: () => Promise.resolve(),
@@ -49,7 +38,7 @@ describe("Splitter worker", () => {
     });
 
     it("should split message", () => {
-        let forwarded: JobMessage[] = [];
+        const forwarded: JobMessage[] = [];
         const content = {
             data: [
                 { foo: "bar" },
@@ -62,8 +51,8 @@ describe("Splitter worker", () => {
         };
         const msg = new JobMessage("123", "123", 1, {}, JSON.stringify(content));
         const partialForwarder: IPartialForwarder = {
-            forwardPart: (msg: JobMessage) => {
-                forwarded.push(msg);
+            forwardPart: (forwardedMsg: JobMessage) => {
+                forwarded.push(forwardedMsg);
                 return Promise.resolve();
             },
         };

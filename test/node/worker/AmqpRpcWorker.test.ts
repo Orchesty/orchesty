@@ -7,6 +7,7 @@ import Publisher from "lib-nodejs/dist/src/rabbitmq/Publisher";
 import SimpleConsumer from "lib-nodejs/dist/src/rabbitmq/SimpleConsumer";
 import {amqpConnectionOptions} from "../../../src/config";
 import JobMessage from "../../../src/message/JobMessage";
+import IPartialForwarder from "../../../src/node/drain/IPartialForwarder";
 import AmqpRpcWorker, {IAmqpRpcWorkerSettings} from "../../../src/node/worker/AmqpRpcWorker";
 import {BATCH_END_TYPE, BATCH_ITEM_TYPE} from "../../../src/node/worker/AmqpRpcWorker";
 
@@ -14,6 +15,7 @@ const conn = new Connection(amqpConnectionOptions);
 
 describe("AmqpRpcWorker", () => {
     it("should check if worker is ready by sending rpc message", () => {
+        const forwarded: JobMessage[] = [];
         const settings: IAmqpRpcWorkerSettings = {
             node_id: "amqp_rpc_node_test",
             publish_queue: {
@@ -21,7 +23,13 @@ describe("AmqpRpcWorker", () => {
                 options: {},
             },
         };
-        const rpcWorker = new AmqpRpcWorker(conn, settings);
+        const partialForwarder: IPartialForwarder = {
+            forwardPart: (jm: JobMessage) => {
+                forwarded.push(jm);
+                return Promise.resolve();
+            },
+        };
+        const rpcWorker = new AmqpRpcWorker(conn, settings, partialForwarder);
 
         const publisher = new Publisher(conn, (ch: Channel) =>  Promise.resolve() );
         const externalWorkerMock = new SimpleConsumer(
@@ -61,7 +69,13 @@ describe("AmqpRpcWorker", () => {
                 options: {},
             },
         };
-        const rpcWorker = new AmqpRpcWorker(conn, settings);
+        const partialForwarder: IPartialForwarder = {
+            forwardPart: (jm: JobMessage) => {
+                forwarded.push(jm);
+                return Promise.resolve();
+            },
+        };
+        const rpcWorker = new AmqpRpcWorker(conn, settings, partialForwarder);
         const publisher = new Publisher(conn, (ch: Channel) =>  Promise.resolve() );
         const externalWorkerMock = new SimpleConsumer(
             conn,
@@ -124,14 +138,14 @@ describe("AmqpRpcWorker", () => {
                 assert.equal(outMsg.getMultiplier(), 5);
                 assert.isFalse(outMsg.getForwardSelf());
 
-                // let i = 1;
-                // outMsg.getSplit().forEach((splitMsg: JobMessage) => {
-                //     assert.equal(i, splitMsg.getSequenceId());
-                //
-                //     const body = JSON.parse(splitMsg.getContent());
-                //     assert.equal(i, parseInt(body.data, 10));
-                //     i++;
-                // });
+                let i = 1;
+                forwarded.forEach((splitMsg: JobMessage) => {
+                    assert.equal(i, splitMsg.getSequenceId());
+
+                    const body = JSON.parse(splitMsg.getContent());
+                    assert.equal(i, parseInt(body.data, 10));
+                    i++;
+                });
             });
     });
 });

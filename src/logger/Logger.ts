@@ -6,6 +6,8 @@ import {default as winston} from "./Winston";
 export interface ILogContext {
     node_id?: string;
     correlation_id?: string;
+    process_id?: string;
+    sequence_id?: string;
     error?: Error;
 }
 
