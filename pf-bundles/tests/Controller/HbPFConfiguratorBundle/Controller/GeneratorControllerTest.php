@@ -31,7 +31,7 @@ class GeneratorControllerTest extends ControllerTestCaseAbstract
 
         $this->client->request(
             'GET',
-            '/topology/generate/123ABC',
+            '/api/topology/generate/123ABC',
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
@@ -55,7 +55,7 @@ class GeneratorControllerTest extends ControllerTestCaseAbstract
 
         $this->client->request(
             'GET',
-            '/topology/generate/123ABC',
+            '/api/topology/generate/123ABC',
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
