@@ -12,7 +12,7 @@ import {ICounterProcessInfo} from "../src/topology/counter/Counter";
 import Pipes from "./../src/Pipes";
 
 const testTopology: ITopologyConfigSkeleton = {
-    name: "linear-topo-with-splitter",
+    id: "linear-topo-with-splitter",
     nodes: [
         {
             id: "node-a",
@@ -58,7 +58,7 @@ const testTopology: ITopologyConfigSkeleton = {
 };
 
 const amqpConn = new Connection(config.amqpConnectionOptions);
-const firstQueue = `pipes.${testTopology.name}.${testTopology.nodes[0].id}`;
+const firstQueue = `pipes.${testTopology.id}.${testTopology.nodes[0].id}`;
 
 describe("Linear topology with splitter test", () => {
     it("complete flow of messages till the end", (done) => {

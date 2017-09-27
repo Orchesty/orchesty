@@ -14,7 +14,7 @@ import {ICounterProcessInfo} from "../src/topology/counter/Counter";
 import Pipes from "./../src/Pipes";
 
 const testTopology: ITopologyConfigSkeleton = {
-    name: "linear-topo",
+    id: "linear-topo",
     nodes: [
         {
             id: "first",
@@ -66,7 +66,7 @@ const testTopology: ITopologyConfigSkeleton = {
 };
 
 const amqpConn = new Connection(config.amqpConnectionOptions);
-const firstQueue = `pipes.${testTopology.name}.${testTopology.nodes[0].id}`;
+const firstQueue = `pipes.${testTopology.id}.${testTopology.nodes[0].id}`;
 
 describe("Linear Topology test", () => {
     it("complete flow of messages till the end", (done) => {
