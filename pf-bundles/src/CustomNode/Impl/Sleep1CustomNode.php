@@ -6,11 +6,11 @@ use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
 
 /**
- * Class NullCustomNode
+ * Class Sleep1CustomNode
  *
  * @package Hanaboso\PipesFramework\CustomNode\Impl
  */
-class NullCustomNode implements CustomNodeInterface
+class Sleep1CustomNode implements CustomNodeInterface
 {
 
     /**
@@ -20,6 +20,8 @@ class NullCustomNode implements CustomNodeInterface
      */
     public function process(ProcessDto $dto): ProcessDto
     {
+        sleep(1);
+
         return $dto;
     }
 
