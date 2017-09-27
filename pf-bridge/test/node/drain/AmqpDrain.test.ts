@@ -41,7 +41,9 @@ describe("AmqpDrain", () => {
         followPub.send = (jm: JobMessage) => Promise.resolve();
         const drain = new AmqpDrain(settings, counterPub, followPub);
 
-        const msg: JobMessage = new JobMessage("123", "123", 1, {}, JSON.stringify({data: "test", settings: {}}));
+        const msg: JobMessage = new JobMessage(
+            "nid", "123", "123", "", 1, {}, JSON.stringify({data: "test", settings: {}}),
+        );
 
         return drain.forward(msg)
             .then((result: JobMessage) => {
