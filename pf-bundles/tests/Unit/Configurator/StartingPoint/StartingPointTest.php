@@ -159,8 +159,9 @@ class StartingPointTest extends TestCase
         $startingPoint = new StartingPoint($this->startingPointProducer, $this->curlManager);
         $headers       = $startingPoint->createHeaders();
 
-        $this->assertCount(3, $headers->getHeaders());
+        $this->assertCount(4, $headers->getHeaders());
         $this->assertArrayHasKey('process_id', $headers->getHeaders());
+        $this->assertArrayHasKey('parent_id', $headers->getHeaders());
         $this->assertArrayHasKey('correlation_id', $headers->getHeaders());
         $this->assertArrayHasKey('sequence_id', $headers->getHeaders());
     }
