@@ -94,7 +94,7 @@ class TestController extends FOSRestController
                 'topology' => $topologyId,
             ]);
 
-            $generatorFactory = new GeneratorFactory($this->rootDir, 'demo_default');
+            $generatorFactory = new GeneratorFactory($this->rootDir, $network);
             $generator        = $generatorFactory->create();
             $generator->generate($topology, $nodes);
         } else {
@@ -164,7 +164,7 @@ class TestController extends FOSRestController
 
             file_put_contents($this->rootDir . '/' . self::FILE_NAME, $topology->getId());
 
-            $generatorFactory = new GeneratorFactory($this->rootDir, 'demo_default');
+            $generatorFactory = new GeneratorFactory($this->rootDir, $network);
             $generator        = $generatorFactory->create();
 
             $generator->generate($topology, $nodes);
