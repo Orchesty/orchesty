@@ -9,13 +9,13 @@ import { ICounterSettings} from "./topology/counter/Counter";
 
 class Defaults {
 
-    public static getNodeConfigDefaults(topoName: string, node: INodeConfigSkeleton): INodeConfig {
+    public static getNodeConfigDefaults(topoId: string, node: INodeConfigSkeleton): INodeConfig {
         return {
             id: node.id,
             next: [],
             worker: Defaults.getDefaultWorkerConfig(),
-            faucet: Defaults.getDefaultFaucetConfig(topoName, node),
-            drain: Defaults.getDefaultDrainConfig(topoName, node),
+            faucet: Defaults.getDefaultFaucetConfig(topoId, node),
+            drain: Defaults.getDefaultDrainConfig(topoId, node),
             resequencer: false,
             debug: {
                 port: 8007,
@@ -39,19 +39,19 @@ class Defaults {
 
     /**
      *
-     * @param {string} topoName
+     * @param {string} topoId
      * @param {INodeConfigSkeleton} node
      * @return {IFaucetConfig}
      */
-    public static getDefaultFaucetConfig(topoName: string, node: INodeConfigSkeleton): IFaucetConfig {
+    public static getDefaultFaucetConfig(topoId: string, node: INodeConfigSkeleton): IFaucetConfig {
         const type = "faucet.amqp";
         const settings: IAmqpFaucetSettings = {
             node_id: node.id,
-            exchange: { name: `pipes.${topoName}.events`, type: "direct", options: {} },
-            queue: { name: `pipes.${topoName}.${node.id}`, options: {} },
+            exchange: { name: `pipes.${topoId}.events`, type: "direct", options: {} },
+            queue: { name: `pipes.${topoId}.${node.id}`, options: {} },
             prefetch: 10000,
             dead_letter_exchange: { name: "pipes.dead-letter", type: "direct", options: {} },
-            routing_key: `${topoName}.${node.id}`,
+            routing_key: `${topoId}.${node.id}`,
         };
 
         return { type, settings };
@@ -59,17 +59,17 @@ class Defaults {
 
     /**
      *
-     * @param {string} topoName
+     * @param {string} topoId
      * @param {INodeConfigSkeleton} node
      * @return {IDrainConfig}
      */
-    public static getDefaultDrainConfig(topoName: string, node: INodeConfigSkeleton): IDrainConfig {
+    public static getDefaultDrainConfig(topoId: string, node: INodeConfigSkeleton): IDrainConfig {
         const type = "drain.amqp";
         const settings: IAmqpDrainSettings = {
             node_id: node.id,
             counter_event: {
                 queue: {
-                    name: `pipes.${topoName}.counter`,
+                    name: `pipes.${topoId}.counter`,
                     options: {},
                 },
             },
@@ -77,15 +77,15 @@ class Defaults {
                 return {
                     node_id: nextNode,
                     exchange: {
-                        name: `pipes.${topoName}.events`,
+                        name: `pipes.${topoId}.events`,
                         type: "direct",
                         options: {},
                     },
                     queue: {
-                        name: `pipes.${topoName}.${nextNode}`,
+                        name: `pipes.${topoId}.${nextNode}`,
                         options: {},
                     },
-                    routing_key: `${topoName}.${nextNode}`,
+                    routing_key: `${topoId}.${nextNode}`,
                 };
             }),
             resequencer: true,
@@ -96,15 +96,15 @@ class Defaults {
 
     /**
      *
-     * @param {string} topoName
+     * @param {string} topoId
      * @return {ICounterSettings}
      */
-    public static getCounterDefaultSettings(topoName: string): ICounterSettings {
+    public static getCounterDefaultSettings(topoId: string): ICounterSettings {
         return {
-            topology: topoName,
+            topology: topoId,
             sub: {
                 queue: {
-                    name: `pipes.${topoName}.counter`,
+                    name: `pipes.${topoId}.counter`,
                     prefetch: 1,
                     options: {},
                 },
@@ -112,7 +112,7 @@ class Defaults {
             pub: {
                 routing_key: "process_finished",
                 exchange: {
-                    name: `pipes.${topoName}.events`,
+                    name: `pipes.${topoId}.events`,
                     type: "direct",
                     options: {},
                 },

@@ -48,13 +48,13 @@ export interface INodeConfig {
 }
 
 export interface ITopologyConfigSkeleton {
-    name: string;
+    id: string;
     nodes: INodeConfigSkeleton[];
     counter?: ICounterSettings;
 }
 
 export interface ITopologyConfig {
-    name: string;
+    id: string;
     nodes: INodeConfig[];
     counter: ICounterSettings;
 }
@@ -76,30 +76,30 @@ class Configurator {
 
         let i = 0;
         topologySkeleton.nodes.forEach((nodeSkeleton: INodeConfigSkeleton) => {
-            nodes.push(Configurator.createNodeConfig(topologySkeleton.name, nodeSkeleton, i === 0));
+            nodes.push(Configurator.createNodeConfig(topologySkeleton.id, nodeSkeleton, i === 0));
             i++;
         });
 
         return {
-            name: topologySkeleton.name,
+            id: topologySkeleton.id,
             nodes,
-            counter: topologySkeleton.counter || Defaults.getCounterDefaultSettings(topologySkeleton.name),
+            counter: topologySkeleton.counter || Defaults.getCounterDefaultSettings(topologySkeleton.id),
         };
     }
 
     /**
      *
-     * @param {string} topoName
+     * @param {string} topoId
      * @param {INodeConfigSkeleton} nodeSkeleton
      * @param {boolean} isInitial
      * @return {INodeConfig}
      */
     private static createNodeConfig(
-        topoName: string,
+        topoId: string,
         nodeSkeleton: INodeConfigSkeleton,
         isInitial: boolean = false,
     ): INodeConfig {
-        const defNode: INodeConfig = Defaults.getNodeConfigDefaults(topoName, nodeSkeleton);
+        const defNode: INodeConfig = Defaults.getNodeConfigDefaults(topoId, nodeSkeleton);
 
         const faucetSettings = nodeSkeleton.faucet || defNode.faucet;
         faucetSettings.settings.node_id = nodeSkeleton.id;

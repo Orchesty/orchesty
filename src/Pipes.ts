@@ -49,7 +49,7 @@ class Pipes {
 
         return counter.listen()
             .then(() => {
-                logger.info(`Counter for topology "${this.getTopologyConfig().name}" is running.`);
+                logger.info(`Counter for topology "${this.getTopologyConfig().id}" is running.`);
             });
     }
 
@@ -59,7 +59,7 @@ class Pipes {
      * @param {number} port
      */
     public startProbe(port?: number): Promise<void> {
-        const probe = new Probe(this.topology.name, port);
+        const probe = new Probe(this.topology.id, port);
 
         for (const nodeCfg of this.topology.nodes) {
             probe.addNode(nodeCfg);
@@ -67,7 +67,7 @@ class Pipes {
 
         return probe.start()
             .then(() => {
-                logger.info(`Probe of topology "${this.getTopologyConfig().name}" is running.`);
+                logger.info(`Probe of topology "${this.getTopologyConfig().id}" is running.`);
             });
     }
 

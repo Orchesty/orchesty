@@ -4,7 +4,7 @@ import "mocha";
 import Configurator, {ITopologyConfig, ITopologyConfigSkeleton} from "../../src/topology/Configurator";
 
 const testTopo: ITopologyConfigSkeleton = {
-    name: "test-topo",
+    id: "test-topo",
     nodes: [
         {
             id: "node_a",
@@ -49,7 +49,7 @@ const expectedTopo: ITopologyConfig = {
             },
         },
     },
-    name: "test-topo",
+    id: "test-topo",
     nodes: [
         {
             debug: {

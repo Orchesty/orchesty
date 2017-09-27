@@ -8,7 +8,7 @@ import Probe, {IProbeResult} from "../../src/topology/Probe";
 
 const topo = Configurator.createConfigFromSkeleton(
     {
-        name: "probe-test",
+        id: "probe-test",
         nodes: [
             {
                 id: "node1",
