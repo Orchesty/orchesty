@@ -10,9 +10,9 @@ namespace Tests\Unit\RabbitMq\Repeater;
 
 use Bunny\Message;
 use Hanaboso\PipesFramework\RabbitMq\CallbackStatus;
-use Hanaboso\PipesFramework\RabbitMq\Repeater\Repeater;
-use Hanaboso\PipesFramework\RabbitMq\Repeater\RepeaterCallback;
-use Hanaboso\PipesFramework\RabbitMq\Repeater\RepeaterProducer;
+use Hanaboso\PipesFramework\RabbitMq\Impl\Repeater\Repeater;
+use Hanaboso\PipesFramework\RabbitMq\Impl\Repeater\RepeaterCallback;
+use Hanaboso\PipesFramework\RabbitMq\Impl\Repeater\RepeaterProducer;
 use PHPUnit\Framework\TestCase;
 
 /**

@@ -8,7 +8,7 @@
 
 namespace Hanaboso\PipesFramework\Mailer\RabbitMq;
 
-use Hanaboso\PipesFramework\RabbitMq\Base\AbstractProducer;
+use Hanaboso\PipesFramework\RabbitMq\Producer\AbstractProducer;
 
 /**
  * Class MailerProducer

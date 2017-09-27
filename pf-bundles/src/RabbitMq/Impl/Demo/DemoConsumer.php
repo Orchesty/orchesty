@@ -6,16 +6,16 @@
  * Time: 13:46
  */
 
-namespace Hanaboso\PipesFramework\RabbitMq\Demo;
+namespace Hanaboso\PipesFramework\RabbitMq\Impl\Demo;
 
-use Hanaboso\PipesFramework\RabbitMq\Base\BaseConsumerAbstract;
+use Hanaboso\PipesFramework\RabbitMq\Consumer\BaseSyncConsumerAbstract;
 
 /**
  * Class DemoConsumer
  *
  * @package Hanaboso\PipesFramework\RabbitMq\Demo
  */
-class DemoConsumer extends BaseConsumerAbstract
+class DemoConsumer extends BaseSyncConsumerAbstract
 {
 
 }
