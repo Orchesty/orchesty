@@ -1,84 +1,12 @@
-.PHONY: docker-up .env docker-up-force docker-down-clean test codesniffer phpstan phpunit
+.PHONY: init-dev init-prod .env generate
 
-DC=docker-compose
-DE=docker-compose exec -T cm-api
-DEC=docker-compose exec -T cm-api composer
+DEV_YML?="docker-compose.dev.yml"
 
-# Docker
-docker-up: .env
-	$(DC) pull
-	$(DC) up -d
+DC_DEV=docker-compose -f $(DEV_YML)
+DE_DEV=docker-compose -f $(DEV_YML) exec -T
+DC_PROD=docker-compose -f docker-compose.prod.yml
+DE_PROD=docker-compose -f docker-compose.prod.yml exec -T
 
-docker-up-force: .env
-	$(DC) pull
-	$(DC) up -d --force-recreate
-
-docker-down-clean: .env
-	$(DC) down -v
-
-#Composer
-
-composer-install:
-	$(DEC) global require hirak/prestissimo
-	$(DEC) install --ignore-platform-reqs
-
-composer-update:
-	$(DEC) global require hirak/prestissimo
-	$(DEC) update --ignore-platform-reqs
-
-composer-outdated:
-	$(DEC) outdated
-
-composer-require:
-	$(DEC) require ${package}
-
-composer-require-dev:
-	$(DEC) require --dev ${package}
-
-composer-clear-cache:
-	$(DEC) clear-cache
-
-composer-deploy:
-	$(DEC) update --prefer-dist --no-dev -o
-
-# App
-init: .env docker-up-force composer-install
-
-#CI
-
-codesniffer:
-	$(DE) ./vendor/bin/phpcs --standard=./ruleset.xml --colors -p src/ tests/
-
-phpstan:
-	$(DE) ./vendor/bin/phpstan analyse -l 7 src/
-	$(DE) ./vendor/bin/phpstan analyse -l 4 tests/
-
-phpunit:
-	$(DE) ./vendor/bin/phpunit -c phpunit.xml.dist --colors --stderr tests/Unit
-
-phpintergration: #database-create
-	$(DE) ./vendor/bin/phpunit -c phpunit.xml.dist --colors --stderr tests/Integration
-
-phpcontroller: #database-create
-	$(DE) ./vendor/bin/phpunit -c phpunit.xml.dist --colors --stderr tests/Controller
-
-test: docker-up-force composer-install codesniffer phpstan clear-cache phpunit phpintergration phpcontroller
-
-fasttest: codesniffer phpstan clear-cache phpunit phpintergration phpcontroller
-
-#Other
-
-console:
-	$(DE) php bin/console ${command}
-
-clear-cache:
-	$(DE) sudo rm -rf app/cache
-
-database-create:
-	$(DE) php bin/console doctrine:database:drop --force || true
-	$(DE) php bin/console doctrine:database:create
-	$(DE) php bin/console doctrine:schema:create
-	$(DE) php bin/console doctrine:fixtures:load --append
 
 .env:
 	@if ! [ -f .env ]; then \
@@ -86,3 +14,31 @@ database-create:
 			-e "s/{DEV_GID}/$(shell id -u)/g" \
 			.env.dist >> .env; \
 	fi;
+
+docker-pull-dev:
+	$(DC_DEV) pull
+
+init-dev: .env
+	$(DC_DEV) up -d --force-recreate --remove-orphans
+	$(DE_DEV) monolith-fpm composer global require hirak/prestissimo
+	$(DE_DEV) monolith-fpm composer install --ignore-platform-reqs
+	#$(DE_DEV) magento install-sampledata
+	$(DE_DEV) magento install-magento
+
+destroy-dev:
+	$(DC_DEV) down -v
+
+composer-update-dev:
+	$(DE_DEV) monolith-fpm composer global require hirak/prestissimo
+	$(DE_DEV) monolith-fpm composer update --ignore-platform-reqs
+
+init-prod: .env
+	$(DC_PROD) up -d --force-recreate
+	$(DE_PROD) monolith-fpm composer install --no-dev --optimize-autoloader --ignore-platform-reqs
+
+ci-yml:
+	# Comment out any port forwarding
+	sed -r 's/^(\s+ports:)$$/#\1/g; s/^(\s+- \$$\{DEV_IP\}.*)$$/#\1/g' docker-compose.dev.yml > docker-compose.ci.yml
+
+generate:
+	curl -X POST -H content-type=application/json http://127.0.0.66/api/gateway/test/topology/generate

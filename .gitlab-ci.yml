@@ -78,19 +78,29 @@ pf-bridge:
 
 # Client: demo
 
-demo-stage:
+stage-demo:
   stage: stage3
   when: manual
   script:
-    - rsync -a --delete --exclude '.git' ./ ~/pipes_demo
-    - cd ~/pipes_demo/clients/demo
-    - export COMPOSE_PROJECT_NAME=pipes_demo
+    - rsync -a --delete --exclude '.git' ./ ~/stage_demo
+    - cd ~/stage_demo/clients/demo
+    - export COMPOSE_PROJECT_NAME=stage_demo
     - export NPM_INSTALL="yes"
     - make ci-yml docker-pull-dev init-dev DEV_YML=docker-compose.ci.yml
 
 # Client: Clever Monitor
 
-cm-git:
+stage-cm:
+  stage: stage3
+  when: manual
+  script:
+    - rsync -a --delete --exclude '.git' ./ ~/stage_cm
+    - cd ~/cm_demo/clients/clever-connectors
+    - export COMPOSE_PROJECT_NAME=stage_cm
+    - export NPM_INSTALL="yes"
+    - make ci-yml docker-pull-dev init-dev DEV_YML=docker-compose.ci.yml
+
+git-cm:
   stage: stage3
   only:
     - dev
