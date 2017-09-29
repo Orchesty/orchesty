@@ -55,6 +55,13 @@ class SystemInstall
     protected $created;
 
     /**
+     * @var Settings
+     *
+     * @ODM\EmbedOne(targetDocument="Settings")
+     */
+    protected $settings;
+
+    /**
      * SystemInstall constructor.
      */
     public function __construct()
@@ -160,6 +167,24 @@ class SystemInstall
         $this->created = $created;
 
         return $this;
+    }
+
+    /**
+     * @return Settings
+     */
+    public function getSettings(): Settings
+    {
+        return $this->settings;
+    }
+
+    /**
+     * @param Settings $settings
+     *
+     * @return void
+     */
+    public function setSettings(Settings $settings): void
+    {
+        $this->settings = $settings;
     }
 
 }
