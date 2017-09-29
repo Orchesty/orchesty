@@ -57,13 +57,13 @@ services:
 
     # Frontend
     frontend:
-        image: dkr.hanaboso.net/pipes/pipes/nodejs-build:ci  # CHANGE BEFORE MERGE!!!!
+        image: dkr.hanaboso.net/pipes/pipes/nodejs-build:dev
         user: ${DEV_UID}:${DEV_GID}
         working_dir: /var/www/pipes/frontend
         environment:
           DEV_UID: ${DEV_UID}
           DEV_GID: ${DEV_GID}
-          PHP_WEBROOT: /var/www/pipes/clients/demo/pipes-api/web
+          PHP_WEBROOT: /var/www/pipes/clients/clever-connectors/pipes-api/web
           NPM_INSTALL: ${NPM_INSTALL}
           NPM_START: "yes" # webpackserver
         ports:
