@@ -2,6 +2,7 @@
 
 namespace Tests\Controller\HbPfCustomNodeBundle\Controller;
 
+use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\HbPFCustomNodeBundle\Controller\CustomNodeController;
 use Hanaboso\PipesFramework\HbPFCustomNodeBundle\Handler\CustomNodeHandler;
 use Tests\ControllerTestCaseAbstract;
@@ -21,7 +22,7 @@ class CustomNodeControllerTest extends ControllerTestCaseAbstract
     {
         $this->mockHandler('process');
 
-        $this->client->request('POST', '/custom_node/null/process', [], [], [], ['test' => 'test']);
+        $this->client->request('POST', '/custom_node/null/process', [], [], [], json_encode(['test' => 'test']));
 
         $response = $this->client->getResponse();
 
@@ -53,7 +54,12 @@ class CustomNodeControllerTest extends ControllerTestCaseAbstract
             ->disableOriginalConstructor()
             ->getMock();
 
-        $joinerHandlerMock->method($methodName)->willReturn(['test' => 'test']);
+        $dto = new ProcessDto();
+        $dto
+            ->setHeaders(['test' => 'test'])
+            ->setData(json_encode(['test' => 'test']));
+
+        $joinerHandlerMock->method($methodName)->willReturn($dto);
 
         $this->client->getContainer()->set('hbpf.handler.custom_node', $joinerHandlerMock);
     }
