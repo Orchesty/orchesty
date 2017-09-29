@@ -31,14 +31,14 @@ class LastSync
      *
      * @ODM\Field(type="string")
      */
-    protected $topology;
+    protected $topologyName;
 
     /**
      * @var string
      *
      * @ODM\Field(type="string")
      */
-    protected $node;
+    protected $nodeName;
 
     /**
      * @var DateTime
@@ -70,19 +70,19 @@ class LastSync
     /**
      * @return string
      */
-    public function getTopology(): string
+    public function getTopologyName(): string
     {
-        return $this->topology;
+        return $this->topologyName;
     }
 
     /**
-     * @param string $topology
+     * @param string $topologyName
      *
      * @return LastSync
      */
-    public function setTopology(string $topology): LastSync
+    public function setTopologyName(string $topologyName): LastSync
     {
-        $this->topology = $topology;
+        $this->topologyName = $topologyName;
 
         return $this;
     }
@@ -90,19 +90,19 @@ class LastSync
     /**
      * @return string
      */
-    public function getNode(): string
+    public function getNodeName(): string
     {
-        return $this->node;
+        return $this->nodeName;
     }
 
     /**
-     * @param string $node
+     * @param string $nodeName
      *
      * @return LastSync
      */
-    public function setNode(string $node): LastSync
+    public function setNodeName(string $nodeName): LastSync
     {
-        $this->node = $node;
+        $this->nodeName = $nodeName;
 
         return $this;
     }

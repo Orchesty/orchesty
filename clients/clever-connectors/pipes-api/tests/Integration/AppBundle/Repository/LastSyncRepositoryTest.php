@@ -23,14 +23,14 @@ class LastSyncRepositoryTest extends DatabaseTestCaseAbstract
         $sync = new LastSync();
         $sync
             ->setUser('userId')
-            ->setTopology('topologyId')
-            ->setNode('nodeId')
+            ->setTopologyName('topologyName')
+            ->setNodeName('nodeName')
             ->setTimestamp(new DateTime('now'));
         $sync2 = new LastSync();
         $sync2
             ->setUser('userId')
-            ->setTopology('topologyId')
-            ->setNode('nodeId')
+            ->setTopologyName('topologyName')
+            ->setNodeName('nodeName')
             ->setTimestamp(new DateTime('-1 hours'));
 
         $this->dm->persist($sync);
@@ -41,7 +41,7 @@ class LastSyncRepositoryTest extends DatabaseTestCaseAbstract
         /** @var LastSyncRepository $repo */
         $repo = $this->dm->getRepository(LastSync::class);
         /** @var DateTime $res */
-        $res = $repo->getLastSyncTime('userId', 'topologyId', 'nodeId');
+        $res = $repo->getLastSyncTime('userId', 'topologyName', 'nodeName');
 
         $this->assertInstanceOf(DateTime::class, $res);
         self::assertEquals($sync->getTimestamp(), $res);

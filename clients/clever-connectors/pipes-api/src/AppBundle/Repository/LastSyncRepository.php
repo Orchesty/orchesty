@@ -14,19 +14,19 @@ class LastSyncRepository extends DocumentRepository
 
     /**
      * @param string $userId
-     * @param string $topologyId
-     * @param string $nodeId
+     * @param string $topologyName
+     * @param string $nodeName
      *
      * @return DateTime
      */
-    public function getLastSyncTime(string $userId, string $topologyId, string $nodeId): DateTime
+    public function getLastSyncTime(string $userId, string $topologyName, string $nodeName): DateTime
     {
         /** @var LastSync $res */
         $res = $this->createQueryBuilder()
             ->select('timestamp')
             ->field('user')->equals($userId)
-            ->field('topology')->equals($topologyId)
-            ->field('node')->equals($nodeId)
+            ->field('topologyName')->equals($topologyName)
+            ->field('nodeName')->equals($nodeName)
             ->sort('timestamp', 'DESC')
             ->getQuery()
             ->getSingleResult();
