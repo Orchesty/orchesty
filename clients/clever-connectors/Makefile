@@ -42,3 +42,6 @@ ci-yml:
 
 generate:
 	curl -X POST -H content-type=application/json http://127.0.0.66/api/gateway/test/topology/generate
+
+cache-clear:
+	$(DE_DEV) monolith-fpm bin/console cache:clear
