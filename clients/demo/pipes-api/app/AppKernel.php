@@ -25,6 +25,9 @@ use Symfony\Bundle\TwigBundle\TwigBundle;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\HttpKernel\Kernel;
 
+/**
+ * Class AppKernel
+ */
 class AppKernel extends Kernel
 {
 

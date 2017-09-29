@@ -1,3 +1,28 @@
 app:
     resource: '@AppBundle/Controller/'
     type: annotation
+
+hb_pf_api_gateway:
+    resource: '@HbPFApiGatewayBundle/Controller'
+    type:     annotation
+    prefix:   /api/gateway
+
+hb_pf_authorization:
+    resource: "@HbPFAuthorizationBundle/Controller"
+    type: annotation
+
+hb_pf_mapper:
+    resource: "@HbPFMapperBundle/Controller"
+    type: annotation
+
+hb_pf_connector:
+    resource: "@HbPFConnectorBundle/Controller"
+    type: annotation
+
+hb_pf_cutom_node:
+    resource: "@HbPFCustomNodeBundle/Controller"
+    type: annotation
+
+hb_pf_configurator:
+    resource: "@HbPFConfiguratorBundle/Controller"
+    type: annotation

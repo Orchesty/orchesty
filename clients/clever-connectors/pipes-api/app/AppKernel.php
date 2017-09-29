@@ -5,11 +5,17 @@ use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
 use Doctrine\Bundle\MongoDBBundle\DoctrineMongoDBBundle;
 use FOS\RestBundle\FOSRestBundle;
 use Hanaboso\PipesFramework\HbPFApiGatewayBundle\HbPFApiGatewayBundle;
+use Hanaboso\PipesFramework\HbPFAuthorizationBundle\HbPFAuthorizationBundle;
 use Hanaboso\PipesFramework\HbPFCommonsBundle\HbPFCommonsBundle;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\HbPFConfiguratorBundle;
+use Hanaboso\PipesFramework\HbPFConnectorBundle\HbPFConnectorBundle;
+use Hanaboso\PipesFramework\HbPFCustomNodeBundle\HbPFCustomNodeBundle;
 use Hanaboso\PipesFramework\HbPFMailerBundle\HbPFMailerBundle;
+use Hanaboso\PipesFramework\HbPFMapperBundle\HbPFMapperBundle;
 use Hanaboso\PipesFramework\HbPFRabbitMqBundle\HbPFRabbitMqBundle;
+use Hanaboso\PipesFramework\HbPFUserBundle\HbPFUserBundle;
 use JMS\SerializerBundle\JMSSerializerBundle;
+use Nelmio\CorsBundle\NelmioCorsBundle;
 use Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\MonologBundle\MonologBundle;
@@ -31,24 +37,29 @@ class AppKernel extends Kernel
     public function registerBundles()
     {
         $bundles = [
-            new AppBundle(),
-            new DoctrineBundle(),
             new FrameworkBundle(),
-            new MonologBundle(),
             new SecurityBundle(),
-            new SensioFrameworkExtraBundle(),
-            new SwiftmailerBundle(),
             new TwigBundle(),
-
-            new DoctrineMongoDBBundle(),
+            new MonologBundle(),
+            new SwiftmailerBundle(),
+            new DoctrineBundle(),
+            new SensioFrameworkExtraBundle(),
             new FOSRestBundle(),
             new JMSSerializerBundle(),
-            new HbPFRabbitMqBundle(),
+            new DoctrineMongoDBBundle(),
+            new NelmioCorsBundle(),
 
-            new HbPFApiGatewayBundle(),
+            new AppBundle(),
+            new HbPFAuthorizationBundle(),
             new HbPFCommonsBundle(),
+            new HbPFRabbitMqBundle(),
+            new HbPFConnectorBundle(),
+            new HbPFMapperBundle(),
+            new HbPFApiGatewayBundle(),
+            new HbPFCustomNodeBundle(),
             new HbPFMailerBundle(),
             new HbPFConfiguratorBundle(),
+            new HbPFUserBundle(),
         ];
 
         if (in_array($this->getEnvironment(), ['dev', 'test'], TRUE)) {
@@ -84,4 +95,5 @@ class AppKernel extends Kernel
     {
         $loader->load($this->getRootDir() . '/config/config_' . $this->getEnvironment() . '.yml');
     }
+
 }
