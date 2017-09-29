@@ -9,7 +9,7 @@ services:
     monolith-fpm:
         image: dkr.hanaboso.net/pipes/pipes/php-dev:dev
         user: ${DEV_UID}:${DEV_GID}
-        working_dir: /var/www/pipes/clients/demo/pipes-api
+        working_dir: /var/www/pipes/clients/clever-connectors/pipes-api
         environment:
           DEV_UID: ${DEV_UID}
           DEV_GID: ${DEV_GID}
@@ -17,13 +17,30 @@ services:
           - ../../:/var/www/pipes
           - ${SSH_AUTH_SOCK}:/ssh-agent
         networks:
-          default:
-            aliases:
-              # remove when real topology-fpm is implemented
-              - topology-fpm
+          - cmdemo_default
+
         depends_on:
           - mongo
           - rabbitmq
+
+    # Services
+    topology-fpm:
+        image: dkr.hanaboso.net/pipes/pipes/php-dev:dev
+        user: ${DEV_UID}:${DEV_GID}
+        working_dir: /var/www/pipes/clients/clever-connectors/pipes-api
+        environment:
+          DEV_UID: ${DEV_UID}
+          DEV_GID: ${DEV_GID}
+          GENERATOR_PATH: ${GENERATOR_PATH}
+          DOCKER_NETWORK: ${DOCKER_NETWORK}
+        volumes:
+          - ../../:/var/www/pipes
+          - ${SSH_AUTH_SOCK}:/ssh-agent
+          - ./../topology:${GENERATOR_PATH}
+        depends_on:
+          - mongo
+        networks:
+          - cmdemo_default
 
     xml-parser-api:
         image: 'dkr.hanaboso.net/pipes/pipes/python-xml-parser:prod'
@@ -35,6 +52,8 @@ services:
           METRICS_PORT: '5555'
         ports:
           - ${DEV_IP}:8080:80
+        networks:
+          - cmdemo_default
 
     # Frontend
     frontend:
@@ -54,7 +73,7 @@ services:
           - ../../:/var/www/pipes
           - ${SSH_AUTH_SOCK}:/ssh-agent
         networks:
-          default:
+          cmdemo_default:
             aliases:
               - connector-api
               - mailer-api
@@ -72,6 +91,8 @@ services:
           - ${DEV_IP}:15672:15672
         volumes:
           - rabbitmq:/var/lib/rabbitmq
+        networks:
+          - cmdemo_default
 
     # Storage
     mongo:
@@ -80,6 +101,8 @@ services:
           - ${DEV_IP}:27017:27017
         volumes:
           - mongodb:/data/db
+        networks:
+          - cmdemo_default
 
     # ELK
     elasticsearch:
@@ -90,18 +113,24 @@ services:
           - ${DEV_IP}:9200:9200
         volumes:
           - elasticsearch:/usr/share/elasticsearch/data
+        networks:
+          - cmdemo_default
 
     kibana:
         image: docker.elastic.co/kibana/kibana:5.6.0
         command: sh -c 'bin/kibana-plugin remove x-pack; /usr/local/bin/kibana-docker'
         ports:
           - ${DEV_IP}:5601:5601
+        networks:
+          - cmdemo_default
 
     logstash:
         image: docker.elastic.co/logstash/logstash:5.6.0
         command: --log.level debug
         volumes:
           - ./logstash.conf:/usr/share/logstash/pipeline/logstash.conf
+        networks:
+          - cmdemo_default
 
     # Metrics
     grafana:
@@ -113,6 +142,8 @@ services:
           - ${DEV_IP}:3000:3000
         volumes:
           - grafana:/var/lib/grafana
+        networks:
+          - cmdemo_default
 
     influxdb:
         image: influxdb:1.2-alpine
@@ -123,13 +154,16 @@ services:
         volumes:
           - influxdb:/var/lib/influxdb
           - ./influxdb.conf:/etc/influxdb/influxdb.conf
+        networks:
+          - cmdemo_default
 
     # Fake Services
     mailhog:
         image: mailhog/mailhog
         ports:
           - ${DEV_IP}:8025:8025
-
+        networks:
+          - cmdemo_default
     magento:
         image: alexcheng/magento2
         environment:
@@ -149,28 +183,38 @@ services:
           MAGENTO_ADMIN_PASSWORD: magentorocks1
         ports:
           - ${DEV_IP}:8090:80
+        networks:
+          - cmdemo_default
 
     magento-mysql:
         image: mariadb
         environment:
           MYSQL_ROOT_PASSWORD: root
           MYSQL_DATABASE: magento
+        networks:
+          - cmdemo_default
 
     requestbin:
         image: agaveapi/requestbin:master
         ports:
           - ${DEV_IP}:5000:5000
+        networks:
+          - cmdemo_default
 
     # Fake API editor
     swagger-ui:
-            image: swaggerapi/swagger-ui
-            ports:
+      image: swaggerapi/swagger-ui
+      ports:
               - ${DEV_IP}:8087:8080
+      networks:
+        - cmdemo_default
 
     swagger-editor:
         image: swaggerapi/swagger-editor
         ports:
           - ${DEV_IP}:8088:8080
+        networks:
+          - cmdemo_default
 
 volumes:
   elasticsearch: {}
@@ -178,3 +222,7 @@ volumes:
   influxdb: {}
   mongodb: {}
   rabbitmq: {}
+
+networks:
+  cmdemo_default:
+    external: true
