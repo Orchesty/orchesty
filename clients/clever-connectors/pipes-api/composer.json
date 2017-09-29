@@ -75,14 +75,14 @@
   "repositories": [
     {
       "type": "path",
-      "url": "../../php-check-utils",
+      "url": "../../../php-check-utils",
       "options": {
         "symlink": false
       }
     },
     {
       "type": "path",
-      "url": "../../pf-bundles",
+      "url": "../../../pf-bundles",
       "options": {
         "symlink": true
       }

@@ -6,12 +6,12 @@ services:
     cm-api:
         image: dkr.hanaboso.net/pipes/pipes/php-dev:dev
         user: ${DEV_UID}:${DEV_GID}
-        working_dir: /var/www/pipes/clients/clever-connectors
+        working_dir: /var/www/pipes/clients/clever-connectors/pipes-api
         environment:
           DEV_UID: ${DEV_UID}
           DEV_GID: ${DEV_GID}
         volumes:
-          - ../../:/var/www/pipes
+          - ../../../:/var/www/pipes
           - ${SSH_AUTH_SOCK}:/ssh-agent
         depends_on:
           - mongo
@@ -30,7 +30,7 @@ services:
           - ${DEV_IP}:80:80
           #- ${DEV_IP}:81:8080
         volumes:
-          - ../../:/var/www/pipes
+          - ../../../:/var/www/pipes
           - ${SSH_AUTH_SOCK}:/ssh-agent
         depends_on:
           - cm-api
@@ -40,12 +40,12 @@ services:
     app:
         image: dkr.hanaboso.net/pipes/pipes/php-dev:dev
         user: ${DEV_UID}:${DEV_GID}
-        working_dir: /var/www/pipes/clients/clever-connectors
+        working_dir: /var/www/pipes/clients/clever-connectors/pipes-api
         environment:
           DEV_UID: ${DEV_UID}
           DEV_GID: ${DEV_GID}
         volumes:
-          - ../../:/var/www/pipes
+          - ../../../:/var/www/pipes
           - ${SSH_AUTH_SOCK}:/ssh-agent
         depends_on:
           - mongo

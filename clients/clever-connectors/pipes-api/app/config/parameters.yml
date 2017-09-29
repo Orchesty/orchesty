@@ -1,6 +1,6 @@
 # This file is auto-generated during the composer install
 parameters:
-    database_host: cleverconnectors_mongo_1
+    database_host: mongo
     database_port: null
     database_name: clever-connectors
     database_user: root
