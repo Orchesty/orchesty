@@ -105,35 +105,35 @@ class TestController extends FOSRestController
 
             $node1 = new Node();
             $node1
-                ->setName('null')
+                ->setName('microsleep100000')
                 ->setType(TypeEnum::CUSTOM)
                 ->setTopology($topology->getId());
             $this->dm->persist($node1);
 
             $node2 = new Node();
             $node2
-                ->setName('null')
+                ->setName('microsleep200000')
                 ->setType(TypeEnum::CUSTOM)
                 ->setTopology($topology->getId());
             $this->dm->persist($node2);
 
             $node3 = new Node();
             $node3
-                ->setName('null')
+                ->setName('microsleep500000')
                 ->setType(TypeEnum::CUSTOM)
                 ->setTopology($topology->getId());
             $this->dm->persist($node3);
 
             $node4 = new Node();
             $node4
-                ->setName('null')
+                ->setName('microsleep700000')
                 ->setType(TypeEnum::CUSTOM)
                 ->setTopology($topology->getId());
             $this->dm->persist($node4);
 
             $node5 = new Node();
             $node5
-                ->setName('null')
+                ->setName('sleep1')
                 ->setType(TypeEnum::CUSTOM)
                 ->setTopology($topology->getId());
             $this->dm->persist($node5);
