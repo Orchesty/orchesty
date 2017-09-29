@@ -7,3 +7,23 @@ services:
     hbpf.custom_node.null:
         class: Hanaboso\PipesFramework\CustomNode\Impl\NullCustomNode
         arguments:
+
+    hbpf.custom_node.sleep1:
+        class: Hanaboso\PipesFramework\CustomNode\Impl\Sleep1CustomNode
+        arguments:
+
+    hbpf.custom_node.microsleep100000:
+        class: Hanaboso\PipesFramework\CustomNode\Impl\Sleep01CustomNode
+        arguments:
+
+    hbpf.custom_node.microsleep200000:
+        class: Hanaboso\PipesFramework\CustomNode\Impl\Sleep02CustomNode
+        arguments:
+
+    hbpf.custom_node.microsleep500000:
+        class: Hanaboso\PipesFramework\CustomNode\Impl\Sleep05CustomNode
+        arguments:
+
+    hbpf.custom_node.microsleep700000:
+        class: Hanaboso\PipesFramework\CustomNode\Impl\Sleep07CustomNode
+        arguments:

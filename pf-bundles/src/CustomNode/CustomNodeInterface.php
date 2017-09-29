@@ -2,6 +2,8 @@
 
 namespace Hanaboso\PipesFramework\CustomNode;
 
+use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+
 /**
  * Interface CustomNodeInterface
  *
@@ -11,10 +13,10 @@ interface CustomNodeInterface
 {
 
     /**
-     * @param array $data
+     * @param ProcessDto $dto
      *
-     * @return string[]
+     * @return ProcessDto
      */
-    public function process(array $data): array;
+    public function process(ProcessDto $dto): ProcessDto;
 
 }
