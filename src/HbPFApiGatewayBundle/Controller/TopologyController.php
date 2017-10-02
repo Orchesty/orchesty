@@ -45,7 +45,7 @@ class TopologyController extends FOSRestController
     }
 
     /**
-     * @Route("/topologies", requirements={"id": "\w+"})
+     * @Route("/topologies")
      * @Method({"POST"})
      *
      * @return Response

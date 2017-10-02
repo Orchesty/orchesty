@@ -97,6 +97,10 @@ class TopologyManagerTest extends DatabaseTestCaseAbstract
             ->setBpmn(['asd'])
             ->setRawBpmn('asd');
 
+        $this->dm->persist($top);
+        $this->dm->flush($top);
+        $this->dm->clear();
+
         /** @var Topology $res */
         $res = $this->container->get('hbpf.configurator.manager.topology')->cloneTopology($top);
 
@@ -118,6 +122,10 @@ class TopologyManagerTest extends DatabaseTestCaseAbstract
             ->setVisibility(TopologyStatusEnum::PUBLIC)
             ->setEnabled(FALSE)
             ->setDescr('desc');
+
+        $this->dm->persist($top);
+        $this->dm->flush($top);
+        $this->dm->clear();
 
         /** @var Topology $res */
         $res = $this->container->get('hbpf.configurator.manager.topology')->cloneTopology($top);
