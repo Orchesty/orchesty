@@ -21,31 +21,20 @@ use ParagonIE\Halite\Symmetric\EncryptionKey;
 class CryptService implements CryptInterface
 {
 
-    /**
-     * @var string
-     */
-    private $key;
+    public const PREFIX = '00_';
 
-    /**
-     * CryptService constructor.
-     *
-     * @param string $key
-     */
-    public function __construct(string $key)
-    {
-        $this->key = $key;
-    }
+    private const SECRET_KEY = '31400300e703474eae51cc556068614dbd2b14aff0b40e1b6e2311674180245fa653be204bc4f78b400c86daf9629fac76eda2d05e5f52cce7581257c5fbd44a18cf1060afaf19b8ee8c1dca7a95f302907cfa3ace6375bc8abcd4b935bad8594565b9b6';
 
     /**
      * @param mixed $data
      *
      * @return string
      */
-    public function encrypt($data): string
+    public static function encrypt($data): string
     {
         $hiddenString = new HiddenString(serialize($data));
 
-        return CryptServiceProvider::DEFAULT . Crypto::encrypt($hiddenString, $this->buildEncryptionKey());
+        return self::PREFIX . Crypto::encrypt($hiddenString, self::buildEncryptionKey());
     }
 
     /**
@@ -54,13 +43,13 @@ class CryptService implements CryptInterface
      * @return mixed
      * @throws CryptException
      */
-    public function decrypt(string $hash)
+    public static function decrypt(string $hash)
     {
-        if (strpos($hash, CryptServiceProvider::DEFAULT) !== 0) {
+        if (strpos($hash, self::PREFIX) !== 0) {
             throw new CryptException('Unknown prefix in hash.', CryptException::UNKNOWN_PREFIX);
         }
 
-        $hiddenString = Crypto::decrypt(substr($hash, 3), $this->buildEncryptionKey());
+        $hiddenString = Crypto::decrypt(substr($hash, strlen(self::PREFIX)), self::buildEncryptionKey());
 
         return unserialize($hiddenString->getString());
     }
@@ -68,9 +57,9 @@ class CryptService implements CryptInterface
     /**
      * @return EncryptionKey
      */
-    private function buildEncryptionKey(): EncryptionKey
+    private static function buildEncryptionKey(): EncryptionKey
     {
-        $hiddenString = new HiddenString(KeyFactory::getKeyDataFromString(hex2bin($this->key)));
+        $hiddenString = new HiddenString(KeyFactory::getKeyDataFromString(hex2bin(self::SECRET_KEY)));
 
         return new EncryptionKey($hiddenString);
     }

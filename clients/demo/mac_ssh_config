@@ -21,3 +21,5 @@ Host mac_dsync-dev
   LocalForward 127.0.0.66:9600 127.0.0.66:9600
   LocalForward 127.0.0.66:15672 127.0.0.66:15672
   LocalForward 127.0.0.66:27017 127.0.0.66:27017
+
+  LocalForward 127.0.0.2:27017 127.0.0.2:27017
