@@ -15,13 +15,13 @@ interface CryptInterface
      *
      * @return string
      */
-    public function encrypt($data): string;
+    public static function encrypt($data): string;
 
     /**
      * @param string $data
      *
      * @return mixed
      */
-    public function decrypt(string $data);
+    public static function decrypt(string $data);
 
 }

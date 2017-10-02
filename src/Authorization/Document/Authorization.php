@@ -9,6 +9,7 @@
 namespace Hanaboso\PipesFramework\Authorization\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Hanaboso\PipesFramework\Commons\Crypt\CryptManager;
 use Hanaboso\PipesFramework\Commons\Traits\Document\IdTrait;
 
 /**
@@ -17,6 +18,8 @@ use Hanaboso\PipesFramework\Commons\Traits\Document\IdTrait;
  * @package Hanaboso\PipesFramework\Authorization\Document
  *
  * @ODM\Document(repositoryClass="Hanaboso\PipesFramework\Authorization\Repository\AuthorizationRepository")
+ *
+ * @ODM\HasLifecycleCallbacks()
  */
 class Authorization
 {
@@ -158,6 +161,22 @@ class Authorization
         $this->encryptedSettings = $encryptedSettings;
 
         return $this;
+    }
+
+    /**
+     * @ODM\PreFlush
+     */
+    public function preFlushEncrypt(): void {
+        $this->encryptedToken = CryptManager::encrypt($this->token);
+        $this->encryptedSettings = CryptManager::encrypt($this->settings);
+    }
+
+    /**
+     * @ODM\PostLoad
+     */
+    public function postLoadEncrypt(): void {
+        $this->token = CryptManager::decrypt($this->encryptedToken);
+        $this->settings = CryptManager::decrypt($this->encryptedSettings);
     }
 
 }

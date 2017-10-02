@@ -5,14 +5,6 @@ services:
             - '@service_container'
             - '@doctrine_mongodb.odm.default_document_manager'
 
-    hbpf.listener.authorization:
-        class: Hanaboso\PipesFramework\Authorization\DocumentListener\DocumentListener
-        arguments:
-        - '@hbpf.crypt.crypt_manager'
-        tags:
-        - { name: doctrine_mongodb.odm.event_listener, event: preFlush, method: preFlush }
-        - { name: doctrine_mongodb.odm.event_listener, event: postLoad, method: postLoad }
-
     hbpf.handler.authorization:
         class: Hanaboso\PipesFramework\HbPFAuthorizationBundle\Handler\AuthorizationHandler
         arguments:

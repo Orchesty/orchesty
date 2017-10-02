@@ -56,7 +56,7 @@ phpunit:
 phpcontroller:
 	$(DE) ./vendor/bin/phpunit -c phpunit.xml.dist --colors --stderr tests/Controller
 
-phpintergration: database-create
+phpintegration: database-create
 	$(DE) ./vendor/bin/phpunit -c phpunit.xml.dist --colors --stderr tests/Integration/
 
 phpmanual-up:
@@ -68,7 +68,7 @@ phpmanual-tests:
 phpmanual-down:
 	cd tests/Manual; $(MAKE) docker-down-clean;
 
-test: docker-up-force composer-install codesniffer phpstan clear-cache phpunit phpcontroller phpintergration
+test: docker-up-force composer-install codesniffer phpstan clear-cache phpunit phpcontroller phpintegration
 
 docker-compose.ci.yml:
 	# Comment out any port forwarding
