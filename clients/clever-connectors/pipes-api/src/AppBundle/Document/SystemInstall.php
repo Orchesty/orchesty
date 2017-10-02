@@ -55,11 +55,16 @@ class SystemInstall
     protected $created;
 
     /**
-     * @var Settings
+     * @var string
      *
-     * @ODM\EmbedOne(targetDocument="Settings")
+     * @ODM\Field(type="string")
      */
-    protected $settings;
+    protected $encryptedSettings = '';
+
+    /**
+     * @var array
+     */
+    protected $settings = [];
 
     /**
      * SystemInstall constructor.
@@ -170,21 +175,43 @@ class SystemInstall
     }
 
     /**
-     * @return Settings
+     * @return array
      */
-    public function getSettings(): Settings
+    public function getSettings(): array
     {
         return $this->settings;
     }
 
     /**
-     * @param Settings $settings
+     * @param array $settings
      *
-     * @return void
+     * @return SystemInstall
      */
-    public function setSettings(Settings $settings): void
+    public function setSettings(array $settings): SystemInstall
     {
         $this->settings = $settings;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getEncryptedSettings(): string
+    {
+        return $this->encryptedSettings;
+    }
+
+    /**
+     * @param string $encryptedSettings
+     *
+     * @return SystemInstall
+     */
+    public function setEncryptedSettings(string $encryptedSettings): SystemInstall
+    {
+        $this->encryptedSettings = $encryptedSettings;
+
+        return $this;
     }
 
 }

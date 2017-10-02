@@ -9,7 +9,6 @@
 
 namespace CleverConnectors\AppBundle\Listeners;
 
-use CleverConnectors\AppBundle\Document\Settings;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
 use Doctrine\ODM\MongoDB\Event\PreFlushEventArgs;
@@ -53,16 +52,8 @@ class DocumentListener
 
             /** @var SystemInstall $document */
             foreach ($documents as $document) {
-                if ($this->isSettings($document)) {
-                    $raw = $document->getSettings();
-                    $encrypted = new Settings(
-                        $this->cryptManager->encrypt($raw->getUsername()),
-                        $this->cryptManager->encrypt($raw->getPassword()),
-                        $this->cryptManager->encrypt($raw->getAccessToken()),
-                        $raw->getRedirectUrl()
-                    );
-
-                    $document->setSettings($encrypted);
+                if ($this->isSystemInstall($document)) {
+                    $document->setEncryptedSettings($this->cryptManager->encrypt($document->getSettings()));
                 }
             }
         }
@@ -76,16 +67,8 @@ class DocumentListener
         $document = $event->getDocument();
 
         /** @var SystemInstall $document */
-        if ($this->isSettings($document)) {
-            $encrypted = $document->getSettings();
-            $raw = new Settings(
-                $this->cryptManager->decrypt($encrypted->getUsername()),
-                $this->cryptManager->decrypt($encrypted->getPassword()),
-                $this->cryptManager->decrypt($encrypted->getAccessToken()),
-                $encrypted->getRedirectUrl()
-            );
-
-            $document->setSettings($raw);
+        if ($this->isSystemInstall($document)) {
+            $document->setSettings($this->cryptManager->decrypt($document->getEncryptedSettings()));
         }
     }
 
@@ -94,9 +77,9 @@ class DocumentListener
      *
      * @return bool
      */
-    private function isSettings($document): bool
+    private function isSystemInstall($document): bool
     {
-        return $document instanceof Settings;
+        return $document instanceof SystemInstall;
     }
 
 }

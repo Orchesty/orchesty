@@ -78,3 +78,11 @@ services:
         calls:
             - ['setLogger', ['@monolog.logger.commons']]
 
+    hbpf.listener.system_install:
+        class: CleverConnectors\AppBundle\Listeners\DocumentListener
+        arguments:
+        - '@hbpf.crypt.crypt_manager'
+        tags:
+        - { name: doctrine_mongodb.odm.event_listener, event: preFlush, method: preFlush }
+        - { name: doctrine_mongodb.odm.event_listener, event: postLoad, method: postLoad }
+
