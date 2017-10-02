@@ -3,6 +3,7 @@
 namespace Hanaboso\PipesFramework\Configurator\Model;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\DocumentRepository;
 use Hanaboso\PipesFramework\Commons\DatabaseManager\DatabaseManagerLocator;
 use Hanaboso\PipesFramework\Commons\Enum\HandlerEnum;
 use Hanaboso\PipesFramework\Commons\Enum\TopologyStatusEnum;
@@ -12,6 +13,7 @@ use Hanaboso\PipesFramework\Configurator\Document\Embed\EmbedNode;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
+use Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository;
 use Nette\Utils\Arrays;
 use Nette\Utils\Strings;
 
@@ -29,13 +31,19 @@ class TopologyManager
     private $dm;
 
     /**
+     * @var TopologyRepository|DocumentRepository
+     */
+    private $topologyRepository;
+
+    /**
      * TopologyManager constructor.
      *
      * @param DatabaseManagerLocator $dml
      */
     function __construct(DatabaseManagerLocator $dml)
     {
-        $this->dm = $dml->getDm();
+        $this->dm                 = $dml->getDm();
+        $this->topologyRepository = $this->dm->getRepository(Topology::class);
     }
 
     /**
@@ -111,9 +119,10 @@ class TopologyManager
      */
     public function cloneTopology(Topology $topology): Topology
     {
-        $res = (new Topology())
+        $version = $this->topologyRepository->getMaxVersion($topology->getName());
+        $res     = (new Topology())
             ->setName($topology->getName())
-            ->setVersion($topology->getVersion() + 1)
+            ->setVersion($version + 1)
             ->setDescr($topology->getDescr())
             ->setEnabled($topology->isEnabled())
             ->setBpmn($topology->getBpmn())
@@ -199,6 +208,11 @@ class TopologyManager
             }
 
             if (isset($data['bpmn:process']['bpmn:sequenceFlow'])) {
+                if (!isset($data['bpmn:process']['bpmn:sequenceFlow'][0])) {
+                    $tmp = $data['bpmn:process']['bpmn:sequenceFlow'];
+                    unset($data['bpmn:process']['bpmn:sequenceFlow']);
+                    $data['bpmn:process']['bpmn:sequenceFlow'][0] = $tmp;
+                }
                 foreach ($data['bpmn:process']['bpmn:sequenceFlow'] as $link) {
                     if (isset($nodes[$link['@sourceRef']]) && isset($embedNodes[$link['@targetRef']])) {
                         $nodes[$link['@sourceRef']]->addNext($embedNodes[$link['@targetRef']]);
