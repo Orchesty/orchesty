@@ -43,6 +43,7 @@ composer-deploy:
 
 # App
 init: .env docker-up-force composer-install
+	$(DE) bin/console doctrine:mongodb:schema:create
 
 #CI
 
