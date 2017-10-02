@@ -111,7 +111,7 @@ describe("Linear topology with splitter test", () => {
                 (msg: Message) => {
                     // In this fn we evaluate expected incoming message and state if test is OK or failed
                     const data: ICounterProcessInfo = JSON.parse(msg.content.toString());
-                    assert.equal(data.id, msgHeaders.headers.process_id);
+                    assert.equal(data.process_id, msgHeaders.headers.process_id);
                     assert.equal(data.total, 6);
                     assert.equal(data.ok, 6);
                     assert.equal(data.nok, 0);

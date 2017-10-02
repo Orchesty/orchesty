@@ -1,6 +1,5 @@
 import * as express from "express";
-import Metrics from "lib-nodejs/dist/src/metrics/Metrics";
-import {metricsOptions} from "../config";
+import IMetrics from "lib-nodejs/dist/src/metrics/IMetrics";
 import logger from "../logger/Logger";
 import JobMessage from "../message/JobMessage";
 import IDrain from "./drain/IDrain";
@@ -32,7 +31,7 @@ class Node {
     private debugPort: number;
     private isInitial: boolean;
     private nodeStatus: NODE_STATUS;
-    private metrics: Metrics;
+    private metrics: IMetrics;
 
     constructor(
         id: string,
@@ -40,6 +39,7 @@ class Node {
         faucet: IFaucet,
         drain: IDrain,
         debugPort: number,
+        metrics: IMetrics,
         isInitial: boolean = false,
     ) {
         this.id = id;
@@ -50,7 +50,7 @@ class Node {
         this.isInitial = isInitial;
 
         this.nodeStatus = NODE_STATUS.BRIDGE_NOT_READY;
-        this.metrics = new Metrics(metricsOptions.measurement, id, id, metricsOptions.server, metricsOptions.port);
+        this.metrics = metrics;
     }
 
     /**
@@ -146,7 +146,7 @@ class Node {
     private sendTotalDurationMetric(msg: JobMessage): void {
         this.metrics.send({node_total_duration: msg.getTotalDuration()})
             .catch((err) => {
-                logger.warn("Unable to send metrics", logger.ctxFromMsg(msg, err));
+                logger.warn("Unable to send node metrics", logger.ctxFromMsg(msg, err));
             });
     }
 
