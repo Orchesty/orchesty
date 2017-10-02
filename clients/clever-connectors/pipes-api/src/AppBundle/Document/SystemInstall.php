@@ -55,6 +55,18 @@ class SystemInstall
     protected $created;
 
     /**
+     * @var string
+     *
+     * @ODM\Field(type="string")
+     */
+    protected $encryptedSettings = '';
+
+    /**
+     * @var array
+     */
+    protected $settings = [];
+
+    /**
      * SystemInstall constructor.
      */
     public function __construct()
@@ -158,6 +170,46 @@ class SystemInstall
     public function setCreated(DateTime $created): SystemInstall
     {
         $this->created = $created;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getSettings(): array
+    {
+        return $this->settings;
+    }
+
+    /**
+     * @param array $settings
+     *
+     * @return SystemInstall
+     */
+    public function setSettings(array $settings): SystemInstall
+    {
+        $this->settings = $settings;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getEncryptedSettings(): string
+    {
+        return $this->encryptedSettings;
+    }
+
+    /**
+     * @param string $encryptedSettings
+     *
+     * @return SystemInstall
+     */
+    public function setEncryptedSettings(string $encryptedSettings): SystemInstall
+    {
+        $this->encryptedSettings = $encryptedSettings;
 
         return $this;
     }
