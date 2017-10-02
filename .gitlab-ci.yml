@@ -87,7 +87,7 @@ stage-demo:
     - cd ~/stage_demo/clients/demo
     - export COMPOSE_PROJECT_NAME=stage_demo
     - export NPM_INSTALL="yes"
-    - make ci-yml docker-pull-dev init-dev DEV_YML=docker-compose.ci.yml
+    - make docker-pull-dev init-dev DEV_YML=docker-compose.ci.yml
 
 # Client: Clever Monitor
 
@@ -99,7 +99,7 @@ stage-cm:
     - cd ~/stage_cm/clients/clever-connectors
     - export COMPOSE_PROJECT_NAME=stage_cm
     - export NPM_INSTALL="yes"
-    - make ci-yml docker-pull-dev init-dev DEV_YML=docker-compose.ci.yml
+    - make docker-compose.ci.yml docker-pull-dev init-dev DEV_YML=docker-compose.ci.yml
 
 git-cm:
   stage: stage3

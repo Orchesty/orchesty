@@ -55,8 +55,8 @@ services:
         networks:
           - cmdemo_default
 
-    # Frontend
     frontend:
+    ## BEGIN DEV
         image: dkr.hanaboso.net/pipes/pipes/nodejs-build:dev
         user: ${DEV_UID}:${DEV_GID}
         working_dir: /var/www/pipes/frontend
@@ -72,6 +72,14 @@ services:
         volumes:
           - ../../:/var/www/pipes
           - ${SSH_AUTH_SOCK}:/ssh-agent
+    ## END DEV
+    ## BEGIN STAGE
+    #    image: dkr.hanaboso.net/pipes/pipes/frontend:dev
+    #    environment:
+    #      BACKEND_URL: https://cleverconn.stage.hanaboso.net
+    #      PHP_APP_INDEX: app_dev.php
+    #      PHP_WEBROOT: /var/www/pipes/clients/clever-connectors/pipes-api/web
+    ## END STAGE
         networks:
           cmdemo_default:
             aliases:
