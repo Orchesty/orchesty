@@ -71,10 +71,23 @@ class AccessManagerTest extends DatabaseTestCaseAbstract
      * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::hasRight()
      * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::selectRule()
      */
-    public function testWritePermissionRead(): void
+    public function testReadPermission(): void
     {
-        $user = $this->createUser('nullPer');
-        $this->createRule($user, 1, 'group', 2);
+        $user = $this->createUser('readPer');
+        $this->createRule($user, 3, 'group', 2);
+        self::assertTrue($this->container->get('hbpf.access.manager')->isAllowed('read', 'group', $user, NULL));
+    }
+
+    /**
+     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::isAllowed()
+     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::checkParams()
+     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::hasRight()
+     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::selectRule()
+     */
+    public function testReadPermissionNotAllowed(): void
+    {
+        $user = $this->createUser('nullReadPer');
+        $this->createRule($user, 3, 'group', 1);
         $this->expect();
         $this->container->get('hbpf.access.manager')->isAllowed('read', 'group', $user, NULL);
     }
@@ -85,9 +98,22 @@ class AccessManagerTest extends DatabaseTestCaseAbstract
      * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::hasRight()
      * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::selectRule()
      */
+    public function testWritePermission(): void
+    {
+        $user = $this->createUser('writePer');
+        $this->createRule($user, 2, 'group', 1);
+        self::assertTrue($res = $this->container->get('hbpf.access.manager')->isAllowed('write', 'group', $user, NULL));
+    }
+
+    /**
+     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::isAllowed()
+     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::checkParams()
+     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::hasRight()
+     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::selectRule()
+     */
     public function testWritePermissionNotAllowed(): void
     {
-        $user = $this->createUser('nullPer');
+        $user = $this->createUser('nullWritePer');
         $this->createRule($user, 1, 'group', 2);
         $this->expect();
         $this->container->get('hbpf.access.manager')->isAllowed('write', 'group', $user, NULL);
@@ -99,12 +125,25 @@ class AccessManagerTest extends DatabaseTestCaseAbstract
      * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::hasRight()
      * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::selectRule()
      */
-    public function testWritePermission(): void
+    public function testDeletePermission(): void
     {
-        $user = $this->createUser('nullPer');
-        $this->createRule($user, 2, 'group', 1);
-        $res = $this->container->get('hbpf.access.manager')->isAllowed('write', 'group', $user, NULL);
-        self::assertEquals(TRUE, $res);
+        $user = $this->createUser('deletePer');
+        $this->createRule($user, 6, 'group', 2);
+        self::assertTrue($this->container->get('hbpf.access.manager')->isAllowed('delete', 'group', $user, NULL));
+    }
+
+    /**
+     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::isAllowed()
+     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::checkParams()
+     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::hasRight()
+     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::selectRule()
+     */
+    public function testDeletePermissionNotAllowed(): void
+    {
+        $user = $this->createUser('nullDeletePer');
+        $this->createRule($user, 6, 'group', 1);
+        $this->expect();
+        $this->container->get('hbpf.access.manager')->isAllowed('delete', 'group', $user, NULL);
     }
 
     /**

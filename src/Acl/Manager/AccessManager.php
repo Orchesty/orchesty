@@ -174,6 +174,26 @@ class AccessManager implements EventSubscriberInterface
     }
 
     /**
+     * Possible ways of use:
+     * $act -> desired action (from ActionEnum)
+     * $res -> desired resource (from ResourceEnum)
+     * $user -> current user asking for permission
+     *
+     * $object:
+     *  - NULL -> check if $user has permission for Write or GroupPermission for Read & Delete
+     *      isAllowed(ActionEnum::READ, ResourceEnum::Node, $loggedUser);
+     *      returns TRUE if allowed or throws an exception
+     *
+     *  - string -> id of desired entity
+     *      isAllowed(ActionEnum::READ, ResourceEnum::Node, $loggedUser, '1258');
+     *      returns desired entity if found and user has permission for asked action or throws an exception
+     *
+     *  - object -> check permission for given entity
+     *      isAllowed(ActionEnum::READ, ResourceEnum::Node, $loggedUser, $something);
+     *      returns back given object or throws an exception
+     *
+     *  - other formats like array or int will only throws an exception
+     *
      * @param string        $act
      * @param string        $res
      * @param UserInterface $user
@@ -199,11 +219,12 @@ class AccessManager implements EventSubscriberInterface
 
         } else if (is_null($object)) {
 
-            if ($act !== ActionEnum::WRITE) {
-                $this->throwPermissionException('Without given entity or it\'s id only Write permission is allowed.');
+            if ($act != ActionEnum::WRITE && $rule->getPropertyMask() !== 2) {
+                $this->throwPermissionException('For given action no group permission or non at all for write action.');
             }
 
             return TRUE;
+
         } else {
             $this->throwPermissionException('Given object should be entity or it\'s id or null in case of write permission.');
         }
