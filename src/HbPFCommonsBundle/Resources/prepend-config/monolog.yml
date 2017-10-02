@@ -38,8 +38,8 @@ monolog:
             level: info
             max_files: 10
         rabbit-mq:
-            type: '%logger_handler%'
-            path: '%kernel.logs_dir%/rabbit-mq_%kernel.environment%.log'
+            type: 'stream'
+            path: 'php://stdout'
             level: info
             max_files: 10
             channels: rabbit-mq
