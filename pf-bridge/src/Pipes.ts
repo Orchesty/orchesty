@@ -1,4 +1,7 @@
 import Container from "lib-nodejs/dist/src/container/Container";
+import Metrics from "lib-nodejs/dist/src/metrics/Metrics";
+import * as os from "os";
+import {metricsOptions} from "./config";
 import DIContainer from "./DIContainer";
 import logger from "./logger/Logger";
 import IDrain from "./node/drain/IDrain";
@@ -45,7 +48,14 @@ class Pipes {
      * Starts topology counter
      */
     public startCounter(): Promise<void> {
-        const counter = new Counter(this.topology.counter, this.dic.get("amqp.connection"));
+        const metrics = new Metrics(
+            metricsOptions.node_measurement,
+            `${this.topology.id}_counter`,
+            os.hostname(),
+            metricsOptions.server,
+            metricsOptions.port,
+        );
+        const counter = new Counter(this.topology.counter, this.dic.get("amqp.connection"), metrics);
 
         return counter.listen()
             .then(() => {
@@ -86,6 +96,8 @@ class Pipes {
      * @return {Node}
      */
     private createNode(nodeCfg: INodeConfig): Node {
+        const id = nodeCfg.id;
+
         const faucet: IFaucet = this.dic.get(nodeCfg.faucet.type)(nodeCfg.faucet.settings);
         const drain: IDrain = this.dic.get(nodeCfg.drain.type)(nodeCfg.drain.settings);
 
@@ -94,12 +106,21 @@ class Pipes {
             this.dic.get(nodeCfg.worker.type)(nodeCfg.worker.settings, drain) :
             this.dic.get(nodeCfg.worker.type)(nodeCfg.worker.settings);
 
+        const metrics = new Metrics(
+            metricsOptions.node_measurement,
+            id,
+            os.hostname(),
+            metricsOptions.server,
+            metricsOptions.port,
+        );
+
         const node = new Node(
-            nodeCfg.id,
+            id,
             worker,
             faucet,
             drain,
             nodeCfg.debug.port,
+            metrics,
             nodeCfg.initial,
         );
 

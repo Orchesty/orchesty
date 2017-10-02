@@ -1,8 +1,9 @@
 import { Channel, Message } from "amqplib";
+import IMetrics from "lib-nodejs/dist/src/metrics/IMetrics";
 import Connection from "lib-nodejs/dist/src/rabbitmq/Connection";
 import Publisher from "lib-nodejs/dist/src/rabbitmq/Publisher";
 import logger from "../../logger/Logger";
-import {default as CounterMessage, ICounterMessageContent, ICounterMessageHeaders} from "../../message/CounterMessage";
+import {default as CounterMessage, ICounterMessageHeaders} from "../../message/CounterMessage";
 import { ResultCode } from "../../message/ResultCode";
 import CounterConsumer from "./CounterConsumer";
 
@@ -39,15 +40,18 @@ interface ICounterLog {
 
 export interface ICounterProcessInfo {
     topology: string;
-    id: string;
+    correlation_id: string;
+    process_id: string;
     total: number;
     ok: number;
     nok: number;
     messages: ICounterLog[];
+    start_timestamp: number;
+    end_timestamp: number;
 }
 
 /**
- * Topology component that receives signals(messages) and watches if some process run throught whole topology
+ * Topology component that receives signals(messages) and watches if some process run through whole topology
  * If yes, it sends process finished message
  */
 export default class Counter {
@@ -68,48 +72,40 @@ export default class Counter {
     /**
      *
      * @param {string} topology
-     * @param {string} id
+     * @param {CounterMessage} cm
      * @return {ICounterProcessInfo}
-     * @private
      */
-    private static createJob(topology: string, id: string): ICounterProcessInfo {
+    private static createProcessInfo(topology: string, cm: CounterMessage): ICounterProcessInfo {
         return {
             topology,
-            id,
+            correlation_id: cm.getCorrelationId(),
+            process_id: cm.getProcessId(),
             total: 1,
             ok: 0,
             nok: 0,
             messages: [],
+            start_timestamp: Date.now(),
+            end_timestamp: 0,
         };
     }
 
     /**
      *
      * @param {ICounterProcessInfo} processInfo
-     * @param {ResultCode} result
-     * @param {number} following
-     * @param {number} multiplier
-     * @param {ICounterLog} log
+     * @param {CounterMessage} cm
      * @return {ICounterProcessInfo}
      */
-    private static updateJob(
-        processInfo: ICounterProcessInfo,
-        result: ResultCode,
-        following: number = 0,
-        multiplier: number = 1,
-        log?: ICounterLog,
-    ): ICounterProcessInfo {
-        if (result === ResultCode.SUCCESS) {
+    private static updateProcessInfo(processInfo: ICounterProcessInfo, cm: CounterMessage): ICounterProcessInfo {
+        if (cm.getResultCode() === ResultCode.SUCCESS) {
             processInfo.ok += 1;
         } else {
             processInfo.nok += 1;
         }
 
-        processInfo.total += multiplier * following;
+        processInfo.total += cm.getMultiplier() * cm.getFollowing();
 
-        if (log) {
-            processInfo.messages.push(log);
-        }
+        const log: ICounterLog = { node: cm.getNodeId(), resultCode: cm.getResultCode(), message: cm.getResultMsg()};
+        processInfo.messages.push(log);
 
         return processInfo;
     }
@@ -133,16 +129,19 @@ export default class Counter {
     private connection: Connection;
     private publisher: Publisher;
     private consumer: CounterConsumer;
+    private metrics: IMetrics;
 
     /**
      *
      * @param settings
      * @param connection
+     * @param metrics
      */
-    constructor(settings: ICounterSettings, connection: Connection) {
+    constructor(settings: ICounterSettings, connection: Connection, metrics: IMetrics) {
         this.processes = {};
         this.settings = settings;
         this.connection = connection;
+        this.metrics = metrics;
         this.prepareConsumer();
         this.preparePublisher();
     }
@@ -228,7 +227,7 @@ export default class Counter {
                 parent_id: cm.getParentId(),
             });
 
-            this.handleCounterMessage(cm);
+            this.updateProcessInfo(cm);
         } catch (e) {
             logger.error("Invalid counter message.", { error: e });
         }
@@ -241,19 +240,18 @@ export default class Counter {
      * @param {CounterMessage} cm
      * @return {ICounterProcessInfo}
      */
-    private handleCounterMessage(cm: CounterMessage): ICounterProcessInfo {
-        const log: ICounterLog = { node: cm.getNodeId(), resultCode: cm.getResultCode(), message: cm.getResultMsg()};
-
+    private updateProcessInfo(cm: CounterMessage): ICounterProcessInfo {
         let proc: ICounterProcessInfo = this.processes[cm.getProcessId()] ? this.processes[cm.getProcessId()] : null;
 
         if (!proc) {
-            proc = Counter.createJob(this.settings.topology, cm.getProcessId());
+            proc = Counter.createProcessInfo(this.settings.topology, cm);
         }
 
-        proc = Counter.updateJob(proc, cm.getResultCode(), cm.getFollowing(), cm.getMultiplier(), log);
+        proc = Counter.updateProcessInfo(proc, cm);
 
         if (Counter.isProcessFinished(proc)) {
-            this.onJobFinished(this.processes[cm.getProcessId()]);
+            proc.end_timestamp = Date.now();
+            this.onJobFinished(proc);
             delete this.processes[cm.getProcessId()];
         } else {
             // save job
@@ -271,12 +269,30 @@ export default class Counter {
     private onJobFinished(process: ICounterProcessInfo): void {
         const e = this.settings.pub.exchange;
         const rKey = this.settings.pub.routing_key;
+
+        if (!process) {
+            logger.warn(`Counter onJobFinished received invalid process info data: "${process}"`);
+            return;
+        }
+
         this.publisher.publish(e.name, rKey, new Buffer(JSON.stringify(process)), {})
             .then(() => {
                 logger.info(
                     "Counter job evaluated as finished",
-                    { node_id: "counter", correlation_id: process.id },
+                    { node_id: "counter", correlation_id: process.correlation_id, process_id: process.process_id },
                 );
+
+                const duration = process.end_timestamp - process.start_timestamp;
+
+                this.metrics.send({process_total_duration: duration})
+                    .catch((err) => {
+                        logger.warn("Unable to send counter metrics.", {
+                            error: err,
+                            node_id: "counter",
+                            correlation_id: process.correlation_id,
+                            process_id: process.process_id,
+                        });
+                    });
             });
     }
 

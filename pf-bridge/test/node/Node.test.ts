@@ -10,6 +10,10 @@ import HttpFaucet from "../../src/node/faucet/HttpFaucet";
 import Node from "../../src/node/Node";
 import UppercaseWorker from "../../src/node/worker/UppercaseWorker";
 
+const metricsMock = {
+    send: () => Promise.resolve("sent"),
+};
+
 describe("Node", () => {
     it("prepare and start and open node, when worker is ready", () => {
         const worker = mock.mock(UppercaseWorker);
@@ -25,6 +29,7 @@ describe("Node", () => {
             faucetInstance,
             drain,
             5002,
+            metricsMock,
             true,
         );
 
@@ -53,6 +58,7 @@ describe("Node", () => {
             faucetInstance,
             drain,
             5001,
+            metricsMock,
             true,
         );
 

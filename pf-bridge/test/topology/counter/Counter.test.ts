@@ -26,6 +26,10 @@ const testOutputQueue = {
     options: {},
 };
 
+const metricsMock = {
+    send: () => Promise.resolve("sent"),
+};
+
 describe("Counter", () => {
     it("should receive messages and count them properly when all succeeded", (done) => {
         const events: Array<[{}, {}]> = [
@@ -250,7 +254,7 @@ describe("Counter", () => {
         const evaluateTest = (info: ICounterProcessInfo) => {
             logger.info("Result message received", info);
 
-            switch (info.id) {
+            switch (info.process_id) {
                 case "test_job_123":
                     assert.equal(info.total, 3);
                     assert.equal(info.ok, 3);
@@ -267,7 +271,7 @@ describe("Counter", () => {
                     assert.equal(info.nok, 0);
                     break;
                 default:
-                    throw new Error(`Unexpected result for job_id: ${info.id}`);
+                    throw new Error(`Unexpected result for job_id: ${info.process_id}`);
             }
 
             resultsReceived++;
@@ -314,7 +318,7 @@ describe("Counter", () => {
         const consumer = new SimpleConsumer(conn, prepareConsumer, handleMessage);
         consumer.consume(testOutputQueue.name, testOutputQueue.options);
 
-        const counter = new Counter(counterSettings, conn);
+        const counter = new Counter(counterSettings, conn, metricsMock);
         counter.listen()
             .then(() => {
                 const promises: Array<Promise<any>> = [];
