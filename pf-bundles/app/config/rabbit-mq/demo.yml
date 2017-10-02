@@ -43,5 +43,12 @@ services:
         calls:
             - [setRepeater, ['@hanaboso.pipes_framework.commons.rabbit_mq.repeater.repeater']]
 
-    hanaboso.pipes_framework.commons.rabbit_mq.async_demo.demo_callback:
+    hanaboso.pipes_framework.commons.rabbit_mq.async_demo.batch_demo_callback:
         class: Hanaboso\PipesFramework\RabbitMq\Impl\AsyncDemo\DemoCallback
+
+    hanaboso.pipes_framework.commons.rabbit_mq.async_demo.demo_callback:
+        class: Hanaboso\PipesFramework\RabbitMq\Impl\Batch\BatchCallback
+        arguments:
+            - '@hanaboso.pipes_framework.commons.rabbit_mq.async_demo.batch_demo_callback'
+        calls:
+            - [setLogger, ['@monolog.logger.rabbit-mq']]
