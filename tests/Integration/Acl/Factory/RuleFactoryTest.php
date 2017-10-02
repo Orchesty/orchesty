@@ -56,7 +56,7 @@ class RuleFactoryTest extends DatabaseTestCaseAbstract
         ]);
 
         self::assertCount(2, $res);
-        self::assertEquals(7, $res[0]->getActionMask());
+        self::assertEquals(3, $res[0]->getActionMask());
         self::assertEquals(3, $res[1]->getActionMask());
     }
 

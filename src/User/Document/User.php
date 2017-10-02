@@ -104,7 +104,6 @@ class User extends UserAbstract
         return [
             'id'       => $this->getId(),
             'email'    => $this->getEmail(),
-            'password' => $this->getPassword(),
         ];
     }
 

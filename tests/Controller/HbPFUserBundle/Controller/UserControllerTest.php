@@ -51,7 +51,6 @@ class UserControllerTest extends ControllerTestCaseAbstract
 
         $this->assertEquals(200, $response->status);
         $this->assertEquals($user->getEmail(), $response->content->email);
-        $this->assertEquals($user->getPassword(), $response->content->password);
     }
 
     /**
@@ -322,7 +321,6 @@ class UserControllerTest extends ControllerTestCaseAbstract
 
         $this->assertEquals(200, $response->status);
         $this->assertEquals($user->getEmail(), $response->content->email);
-        $this->assertEquals($user->getPassword(), $response->content->password);
     }
 
     /**
