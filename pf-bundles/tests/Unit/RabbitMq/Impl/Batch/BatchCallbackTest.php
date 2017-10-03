@@ -62,13 +62,14 @@ class BatchCallbackTest extends TestCase
         $batchAction = $this->createMock(BatchActionInterface::class);
         /** @var Channel|PHPUnit_Framework_MockObject_MockObject $channel */
         $channel = $this->createMock(Channel::class);
+        $channel->method('publish')->willReturn(resolve());
         /** @var Client|PHPUnit_Framework_MockObject_MockObject $client */
         $client   = $this->createMock(Client::class);
         $callback = new BatchCallback($batchAction);
 
         $callback
             ->processMessage($this->createMessage($headers), $channel, $client, $loop)
-            ->then(NULL, function (Exception $e) use ($loop, $message): void {
+            ->then(NULL, function ($e) use ($loop, $message): void {
                 $this->assertInstanceOf(InvalidArgumentException::class, $e);
                 $this->assertSame($message, $e->getMessage());
                 $loop->stop();
