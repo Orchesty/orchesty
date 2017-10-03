@@ -67,7 +67,7 @@ services:
           NPM_START: "yes" # webpackserver
         ports:
           - ${DEV_IP}:80:80
-          #- ${DEV_IP}:81:8080
+          - ${DEV_IP}:81:8080
         volumes:
           - ../../:/var/www/pipes
           - ${SSH_AUTH_SOCK}:/ssh-agent

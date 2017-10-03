@@ -68,7 +68,7 @@ services:
           NPM_START: "yes" # webpackserver
         ports:
           - ${DEV_IP}:80:80
-          #- ${DEV_IP}:81:8080
+          - ${DEV_IP}:81:8080
         volumes:
           - ../../:/var/www/pipes
           - ${SSH_AUTH_SOCK}:/ssh-agent
@@ -170,35 +170,6 @@ services:
         image: mailhog/mailhog
         ports:
           - ${DEV_IP}:8025:8025
-        networks:
-          - cmdemo_default
-    magento:
-        image: alexcheng/magento2
-        environment:
-          MYSQL_HOST: magento-mysql
-          MYSQL_ROOT_PASSWORD: root
-          MYSQL_USER: root
-          MYSQL_PASSWORD: root
-          MYSQL_DATABASE: magento
-          MAGENTO_LOCALE: en_GB
-          MAGENTO_TIMEZONE: Pacific/Auckland
-          MAGENTO_DEFAULT_CURRENCY: NZD
-          MAGENTO_URL: http://${DEV_IP}:8090
-          MAGENTO_ADMIN_FIRSTNAME: Admin
-          MAGENTO_ADMIN_LASTNAME: MyStore
-          MAGENTO_ADMIN_EMAIL: amdin@example.com
-          MAGENTO_ADMIN_USERNAME: admin
-          MAGENTO_ADMIN_PASSWORD: magentorocks1
-        ports:
-          - ${DEV_IP}:8090:80
-        networks:
-          - cmdemo_default
-
-    magento-mysql:
-        image: mariadb
-        environment:
-          MYSQL_ROOT_PASSWORD: root
-          MYSQL_DATABASE: magento
         networks:
           - cmdemo_default
 
