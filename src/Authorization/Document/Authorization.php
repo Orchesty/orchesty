@@ -34,28 +34,18 @@ class Authorization
     private $authorizationKey;
 
     /**
-     * @var string[]
+     * @var mixed
+     *
+     * @ODM\Field(type="string")
      */
     private $token = [];
 
     /**
-     * @var string
+     * @var mixed
      *
      * @ODM\Field(type="string")
-     */
-    private $encryptedToken = '';
-
-    /**
-     * @var string[]
      */
     private $settings = [];
-
-    /**
-     * @var string
-     *
-     * @ODM\Field(type="string")
-     */
-    private $encryptedSettings = '';
 
     /**
      * Authorization constructor.
@@ -80,7 +70,7 @@ class Authorization
      *
      * @return Authorization
      */
-    public function setToken($token): Authorization
+    public function setToken(array $token): Authorization
     {
         $this->token = $token;
 
@@ -108,22 +98,6 @@ class Authorization
     }
 
     /**
-     * @return string
-     */
-    public function getEncryptedToken(): string
-    {
-        return $this->encryptedToken;
-    }
-
-    /**
-     * @param string $encryptedToken
-     */
-    public function setEncryptedToken(string $encryptedToken): void
-    {
-        $this->encryptedToken = $encryptedToken;
-    }
-
-    /**
      * @return string[]
      */
     public function getSettings(): array
@@ -144,39 +118,19 @@ class Authorization
     }
 
     /**
-     * @return string
-     */
-    public function getEncryptedSettings(): string
-    {
-        return $this->encryptedSettings;
-    }
-
-    /**
-     * @param string $encryptedSettings
-     *
-     * @return Authorization
-     */
-    public function setEncryptedSettings(string $encryptedSettings): Authorization
-    {
-        $this->encryptedSettings = $encryptedSettings;
-
-        return $this;
-    }
-
-    /**
      * @ODM\PreFlush
      */
     public function preFlushEncrypt(): void {
-        $this->encryptedToken = CryptManager::encrypt($this->token);
-        $this->encryptedSettings = CryptManager::encrypt($this->settings);
+        $this->token = CryptManager::encrypt($this->token);
+        $this->settings = CryptManager::encrypt($this->settings);
     }
 
     /**
      * @ODM\PostLoad
      */
     public function postLoadEncrypt(): void {
-        $this->token = CryptManager::decrypt($this->encryptedToken);
-        $this->settings = CryptManager::decrypt($this->encryptedSettings);
+        $this->token = CryptManager::decrypt($this->token);
+        $this->settings = CryptManager::decrypt($this->settings);
     }
 
 }
