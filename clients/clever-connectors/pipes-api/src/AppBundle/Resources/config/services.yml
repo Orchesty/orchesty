@@ -77,3 +77,6 @@ services:
             - '@hbpf.transport.curl_manager'
         calls:
             - ['setLogger', ['@monolog.logger.commons']]
+
+    hbpf.connector.cleverconnectors-forward-connector:
+        class: CleverConnectors\AppBundle\Model\CM\TestForwardConnector\CMTestForwardConnector

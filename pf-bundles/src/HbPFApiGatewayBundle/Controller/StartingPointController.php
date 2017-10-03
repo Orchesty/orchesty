@@ -24,7 +24,7 @@ class StartingPointController extends FOSRestController
 {
 
     /**
-     * @Route("/topologies/{topologyName}/nodes/{nodeName}/run", defaults={}, requirements={"topologyName": "\w+", "nodeName": "\w+"})
+     * @Route("/topologies/{topologyName}/nodes/{nodeName}/run", defaults={}, requirements={"topologyName": "\w+", "nodeName": "[\w-\.]+"})
      * @Method({"POST"})
      *
      * @param string $topologyName

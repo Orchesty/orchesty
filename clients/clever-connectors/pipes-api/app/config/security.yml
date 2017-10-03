@@ -13,7 +13,7 @@ security:
 
     firewalls:
         unsecured_areas:
-            pattern: ^/(api/user/login|api/user/logout|api/user/\w+/activate|/api/user/\w+/set_password|/api/user/reset_password|webhook/*)
+            pattern: ^/(api/user/login|api/user/logout|api/user/\w+/activate|api/user/\w+/set_password|api/user/reset_password|webhook/*|api/topologies/*|topologies/*)
             security: false
         secured_area:
             pattern: ^/
