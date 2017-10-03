@@ -56,14 +56,7 @@ class LoginPage extends React.Component {
           <p className="change_link">New to site?
             <a href="#" className="to_register" onClick={this.registrationClick}> Create Account </a>
           </p>
-
           <div className="clearfix" />
-          <br />
-
-          <div>
-            <h1 className="no-line"><i className="fa fa-paw" /> Gentelella Alela!</h1>
-            <p>©2016 All Rights Reserved. Gentelella Alela! is a Bootstrap 3 template. Privacy and Terms</p>
-          </div>
         </div>
       </form>
     );

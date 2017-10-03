@@ -74,15 +74,21 @@ function refreshUrlHistory(selectedPage){
   }
 }
 
-export function init (store){
-  let path = window.location.pathname;
+function getClearUrl(rawUrl){
   if (config.params.urlPrefix){
-    if (path.startsWith(config.params.urlPrefix)) {
-      path = path.substring(config.params.urlPrefix.length);
+    if (rawUrl.startsWith(config.params.urlPrefix)) {
+      return rawUrl.substring(config.params.urlPrefix.length);
     } else {
-      path = null;
+      return null;
     }
+  } else {
+    return rawUrl;
   }
+}
+
+export function init (store){
+  let path = getClearUrl(window.location.pathname);
+
   processUrl(store, path, qs.parse(window.location.search));
 
   prevSelectedPage = store.getState().application.selectedPage;
@@ -98,6 +104,6 @@ export function init (store){
 
   window.onpopstate = e => {
     historyIndex = e.state || 0;
-    processUrl(store, window.location.pathname, qs.parse(window.location.search));
+    processUrl(store, getClearUrl(window.location.pathname), qs.parse(window.location.search));
   }
 }

@@ -1,6 +1,8 @@
 import download from 'utils/download';
 import * as serverActions from 'actions/serverActions';
 
+import config from 'rootApp/config';
+
 class Application{
   constructor(store){
     this._store = store;
@@ -10,6 +12,14 @@ class Application{
 
   downloadState(){
     download(JSON.stringify(this._store.getState()), 'state.json', 'application/json');
+  }
+
+  downloadConfig(){
+    download(JSON.stringify(config), 'config.json', 'application/json');
+  }
+
+  logConfig(){
+    console.log(config);
   }
 
   _createRec(){
