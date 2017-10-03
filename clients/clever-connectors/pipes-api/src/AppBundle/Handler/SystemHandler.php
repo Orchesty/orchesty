@@ -65,7 +65,12 @@ class SystemHandler
         $systems = [];
 
         foreach ($this->manager->getUserSystems($user) as $innerSystem) {
-            $systems[] = $innerSystem->toArray();
+            $systems[] = array_merge(
+                $innerSystem->toArray(),
+                [
+                    'authorized' => $innerSystem->isAuthorized(),
+                ]
+            );
         }
 
         return $systems;

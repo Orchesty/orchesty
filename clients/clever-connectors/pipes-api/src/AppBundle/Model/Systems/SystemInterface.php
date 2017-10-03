@@ -2,12 +2,14 @@
 
 namespace CleverConnectors\AppBundle\Model\Systems;
 
+use Hanaboso\PipesFramework\Authorization\Base\AuthorizationInterface;
+
 /**
  * Interface SystemInterface
  *
  * @package CleverConnectors\AppBundle\Model\Systems
  */
-interface SystemInterface
+interface SystemInterface extends AuthorizationInterface
 {
 
     /**

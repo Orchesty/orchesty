@@ -2,9 +2,11 @@
 
 namespace CleverConnectors\AppBundle\Model\Systems\Impl;
 
+use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\SystemTypeEnum;
 use CleverConnectors\AppBundle\Model\Systems\WebhookSubscribes;
 use CleverConnectors\AppBundle\Model\Systems\WebhookSystemInterface;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
@@ -18,15 +20,23 @@ class NullSystem implements WebhookSystemInterface
 {
 
     /**
+     * @var DocumentManager
+     */
+    private $dm;
+
+    /**
      * @var WebhookSubscribes[]
      */
     private $subs;
 
     /**
      * NullSystem constructor.
+     *
+     * @param DocumentManager $dm
      */
-    function __construct()
+    function __construct(DocumentManager $dm)
     {
+        $this->dm     = $dm;
         $this->subs[] = new WebhookSubscribes('node', 'top', 'uriReg', 'uriUnreg');
     }
 
@@ -130,7 +140,92 @@ class NullSystem implements WebhookSystemInterface
             'key'         => $this->getKey(),
             'name'        => $this->getName(),
             'description' => $this->getDescription(),
+            'authType'    => $this->getAuthorizationType(),
         ];
+    }
+
+    /**
+     * @return string
+     */
+    public function getId(): string
+    {
+        return '';
+    }
+
+    /**
+     * @return string
+     */
+    public function getAuthorizationType(): string
+    {
+        return self::BASIC;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isAuthorized(): bool
+    {
+        $systemInstall = $this->getSystemInstall();
+        if ($systemInstall && $systemInstall->getSettings()) {
+            return TRUE;
+        }
+
+        return FALSE;
+    }
+
+    /**
+     * @param string $method
+     * @param string $url
+     *
+     * @return array
+     */
+    public function getHeaders(string $method, string $url): array
+    {
+        return [];
+    }
+
+    /**
+     * @param string $hostname
+     *
+     * @return string []
+     */
+    public function getInfo(string $hostname): array
+    {
+        return [];
+    }
+
+    /**
+     * @return array
+     */
+    public function getSettings(): array
+    {
+        return [];
+    }
+
+    /**
+     * @param string[] $data
+     */
+    public function saveSettings(array $data): void
+    {
+        count($data);
+    }
+
+    /**
+     * @return string
+     */
+    public function getReadMe(): string
+    {
+        return '';
+    }
+
+    /**
+     * @return SystemInstall|null
+     */
+    private function getSystemInstall(): ?SystemInstall
+    {
+        return $this->dm->getRepository(SystemInstall::class)->findOneBy([
+            'system' => $this->getKey(),
+        ]);
     }
 
 }
