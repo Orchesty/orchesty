@@ -32,3 +32,14 @@ services:
         arguments:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@doctrine.orm.default_entity_manager'
+
+    hbpf.progress_counter.progress_counter_service:
+        class: Hanaboso\PipesFramework\Commons\ProgressCounter\ProgressCounterService
+        arguments:
+            - '@snc_redis.default'
+
+    hbpf.progress_counter.listener.progress_counter_listener:
+        class: Hanaboso\PipesFramework\Commons\ProgressCounter\Listener\ProgressCounterListener
+        arguments: ['@hbpf.progress_counter.progress_counter_service']
+        tags:
+            - { name: kernel.event_subscriber }
