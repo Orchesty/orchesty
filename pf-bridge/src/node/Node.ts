@@ -128,7 +128,7 @@ class Node {
      */
     private sendProcessDurationMetric(msg: JobMessage): void {
         logger.info(
-            `Node worker result["status="${msg.getResult().status}", message="${msg.getResult().message}". \
+            `Node worker result["status="${msg.getResult().code}", message="${msg.getResult().message}". \
             process_duration="${msg.getProcessDuration()}"].`,
             logger.ctxFromMsg(msg),
         );

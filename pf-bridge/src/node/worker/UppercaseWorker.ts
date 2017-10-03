@@ -9,7 +9,7 @@ class UppercaseWorker implements IWorker {
 
     public processData(msg: JobMessage): Promise<JobMessage> {
         msg.setContent(msg.getContent().toUpperCase());
-        msg.setResult({status: ResultCode.SUCCESS, message: "Uppercase worker OK"});
+        msg.setResult({code: ResultCode.SUCCESS, message: "Uppercase worker OK"});
 
         return Promise.resolve(msg);
     }
