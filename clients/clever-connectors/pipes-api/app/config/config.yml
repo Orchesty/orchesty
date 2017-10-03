@@ -85,6 +85,11 @@ doctrine_mongodb:
                     is_bundle: false
                     dir: "%kernel.root_dir%/../src/AppBundle/Document"
                     prefix: CleverConnectors\AppBundle\Document
+                UserDocument:
+                    type: annotation
+                    is_bundle: false
+                    dir: "%src_dir%/User/Document"
+                    prefix: Hanaboso\PipesFramework\User\Document
 
 # Swiftmailer Configuration
 swiftmailer:
