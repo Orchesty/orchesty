@@ -1,7 +1,7 @@
 import Container from "lib-nodejs/dist/src/container/Container";
 import Metrics from "lib-nodejs/dist/src/metrics/Metrics";
 import * as os from "os";
-import {metricsOptions} from "./config";
+import {metricsOptions, mongoStorageOptions, repeaterOptions} from "./config";
 import DIContainer from "./DIContainer";
 import logger from "./logger/Logger";
 import IDrain from "./node/drain/IDrain";
@@ -11,6 +11,8 @@ import IWorker from "./node/worker/IWorker";
 import {default as Configurator, INodeConfig, ITopologyConfig, ITopologyConfigSkeleton} from "./topology/Configurator";
 import Counter from "./topology/counter/Counter";
 import Probe from "./topology/Probe";
+import Repeater from "./repeater/Repeater";
+import MongoMessageStorage from "./repeater/MongoMessageStorage";
 
 class Pipes {
 
@@ -79,6 +81,16 @@ class Pipes {
             .then(() => {
                 logger.info(`Probe of topology "${this.getTopologyConfig().id}" is running.`);
             });
+    }
+
+    /**
+     * Creates and starts repeater service
+     */
+    public startRepeater(): void {
+        const storage = new MongoMessageStorage(mongoStorageOptions);
+        const repeater = new Repeater(repeaterOptions, this.dic.get("amqp.connection"), storage);
+
+        repeater.run();
     }
 
     /**
