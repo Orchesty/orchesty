@@ -158,6 +158,15 @@ class BatchCallback implements AsyncCallbackInterface, LoggerAwareInterface
                             ))
                         );
                 }
+            })->otherwise(function ($e) use ($channel, $message) {
+                return $this->batchErrorCallback($channel, $message, 2001, [
+                    'result_code'    => 2001,
+                    'result_status'  => "UNKNOWN_ERROR",
+                    'result_message' => $e->getMessage(),
+                    'result_detail'  => "",
+                ])->then(function () use ($e) {
+                    return reject($e);
+                });
             });
     }
 
@@ -259,6 +268,31 @@ class BatchCallback implements AsyncCallbackInterface, LoggerAwareInterface
             $message->getHeader('reply-to')
         )->then(function (): void {
             $this->logger->info('Published batch total');
+        });
+    }
+
+    /**
+     * @param Channel $channel
+     * @param Message $message
+     *
+     * @param int     $resultCode
+     * @param array   $body
+     *
+     * @return PromiseInterface
+     */
+    private function batchErrorCallback(Channel $channel, Message $message, int $resultCode,
+                                        array $body): PromiseInterface
+    {
+        return $channel->publish(
+            json_encode($body),
+            array_merge($this->getHeaders($message), [
+                self::TYPE        => 'batch_total',
+                self::RESULT_CODE => $resultCode,
+            ]),
+            '',
+            $message->getHeader('reply-to')
+        )->then(function (): void {
+            $this->logger->info('Published batch error total');
         });
     }
 
