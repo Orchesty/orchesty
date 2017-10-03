@@ -13,6 +13,7 @@ use Bunny\Channel;
 use Bunny\Message;
 use Exception;
 use Hanaboso\PipesFramework\RabbitMq\Consumer\AsyncCallbackInterface;
+use InvalidArgumentException;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -35,7 +36,11 @@ class BatchCallback implements AsyncCallbackInterface, LoggerAwareInterface
     private const CORRELATION_ID = 'correlation-id';
 
     // Headers
-    private const NODE_ID = 'node_id';
+    private const NODE_ID     = 'node_id';
+    private const PROCESS_ID  = 'process_id';
+    private const PARENT_ID   = 'parent_id';
+    private const SEQUENCE_ID = 'sequence_id';
+    private const RESULT_CODE = 'result_code';
 
     /**
      * @var BatchActionInterface
@@ -71,19 +76,33 @@ class BatchCallback implements AsyncCallbackInterface, LoggerAwareInterface
      *
      * @return PromiseInterface
      */
-    protected function validate(Message $message): PromiseInterface
+    private function validate(Message $message): PromiseInterface
     {
         if ($this->isEmpty($message->getHeader(self::REPLY_TO))) {
-            return reject(new Exception(sprintf('Missing "%s" in the message header.', self::REPLY_TO)));
+            return reject(new InvalidArgumentException(
+                sprintf('Missing "%s" in the message header.', self::REPLY_TO)
+            ));
         }
         if ($this->isEmpty($message->getHeader(self::TYPE))) {
-            return reject(new Exception(sprintf('Missing "%s" in the message header.', self::TYPE)));
+            return reject(new InvalidArgumentException(
+                    sprintf('Missing "%s" in the message header.', self::TYPE)
+                )
+            );
         }
         if ($this->isEmpty($message->getHeader(self::NODE_ID))) {
-            return reject(new Exception(sprintf('Missing "%s" in the message header.', self::NODE_ID)));
+            return reject(new InvalidArgumentException(
+                sprintf('Missing "%s" in the message header.', self::NODE_ID)
+            ));
         }
         if ($this->isEmpty($message->getHeader(self::CORRELATION_ID))) {
-            return reject(new Exception(sprintf('Missing "%s" in the message header.', self::CORRELATION_ID)));
+            return reject(new InvalidArgumentException(
+                sprintf('Missing "%s" in the message header.', self::CORRELATION_ID)
+            ));
+        }
+        if ($this->isEmpty($message->getHeader(self::PROCESS_ID))) {
+            return reject(new InvalidArgumentException(
+                sprintf('Missing "%s" in the message header.', self::PROCESS_ID)
+            ));
         }
 
         return resolve();
@@ -94,7 +113,7 @@ class BatchCallback implements AsyncCallbackInterface, LoggerAwareInterface
      *
      * @return bool
      */
-    protected function isEmpty(?string $value): bool
+    private function isEmpty(?string $value): bool
     {
         return $value === '' || $value === NULL;
     }
@@ -132,7 +151,12 @@ class BatchCallback implements AsyncCallbackInterface, LoggerAwareInterface
                         return $this->batchAction($message, $channel, $loop);
                         break;
                     default:
-                        return reject(new Exception());
+                        return reject(
+                            new InvalidArgumentException(sprintf(
+                                'Unsupported type "%s".',
+                                $message->getHeader(self::TYPE)
+                            ))
+                        );
                 }
             });
     }
@@ -142,11 +166,13 @@ class BatchCallback implements AsyncCallbackInterface, LoggerAwareInterface
      *
      * @return array
      */
-    public function getHeaders(Message $message): array
+    private function getHeaders(Message $message): array
     {
         return [
-            'correlation-id' => $message->getHeader(self::CORRELATION_ID),
-            'node_id'        => $message->getHeader(self::NODE_ID),
+            self::CORRELATION_ID => $message->getHeader(self::CORRELATION_ID),
+            self::NODE_ID        => $message->getHeader(self::NODE_ID),
+            self::PROCESS_ID     => $message->getHeader(self::PROCESS_ID),
+            self::PARENT_ID      => $message->getHeader(self::PARENT_ID),
         ];
     }
 
@@ -156,12 +182,13 @@ class BatchCallback implements AsyncCallbackInterface, LoggerAwareInterface
      *
      * @return bool|int|PromiseInterface
      */
-    public function testAction(Channel $channel, Message $message): PromiseInterface
+    private function testAction(Channel $channel, Message $message): PromiseInterface
     {
         return $channel->publish(
             '',
             array_merge($this->getHeaders($message), [
-                'type' => 'test',
+                self::TYPE        => 'test',
+                self::RESULT_CODE => 0,
             ]),
             '',
             $message->getHeader('reply-to')
@@ -176,7 +203,7 @@ class BatchCallback implements AsyncCallbackInterface, LoggerAwareInterface
      * @return PromiseInterface
      * @internal param Channel $channel
      */
-    public function batchAction(Message $message, Channel $channel, LoopInterface $loop): PromiseInterface
+    private function batchAction(Message $message, Channel $channel, LoopInterface $loop): PromiseInterface
     {
         $itemCallBack = function (array $data) use ($message, $channel) {
             return $this->itemCallback($channel, $message, $data);
@@ -201,7 +228,9 @@ class BatchCallback implements AsyncCallbackInterface, LoggerAwareInterface
         return $channel->publish(
             json_encode($data),
             array_merge($this->getHeaders($message), [
-                'type' => 'batch_item',
+                self::TYPE        => 'batch_item',
+                self::SEQUENCE_ID => $data['id'],
+                self::RESULT_CODE => 0,
             ]),
             '',
             $message->getHeader('reply-to')
@@ -223,7 +252,8 @@ class BatchCallback implements AsyncCallbackInterface, LoggerAwareInterface
         return $channel->publish(
             '',
             array_merge($this->getHeaders($message), [
-                'type' => 'batch_total',
+                self::TYPE        => 'batch_total',
+                self::RESULT_CODE => 0,
             ]),
             '',
             $message->getHeader('reply-to')
