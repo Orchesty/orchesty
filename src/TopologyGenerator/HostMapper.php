@@ -57,6 +57,8 @@ class HostMapper
                 return 'ftp-api';
             case TypeEnum::EMAIL:
                 return 'mailer-api';
+            case TypeEnum::WEBHOOK:
+                return 'monolith-api';
             case TypeEnum::CUSTOM:
                 return 'monolith-api';
             default:
@@ -75,7 +77,10 @@ class HostMapper
     {
         switch ($enum->getValue()) {
             case TypeEnum::CONNECTOR:
-                $route = 'api/connector/{service_id}';
+                $route = 'api/connector/{service_id}/action';
+                break;
+            case TypeEnum::WEBHOOK:
+                $route = 'api/connector/{service_id}/webhook';
                 break;
             case TypeEnum::MAPPER:
                 $route = 'api/mapper/{service_id}';
@@ -93,7 +98,7 @@ class HostMapper
                 $route = 'api/mailer/{service_id}';
                 break;
             case TypeEnum::CUSTOM:
-                $route = 'custom_node/{service_id}/process';
+                $route = 'api/custom_node/{service_id}/process';
                 break;
             default:
                 throw new InvalidArgumentException(sprintf('Type "%s" does not exist.', $enum->getValue()));
