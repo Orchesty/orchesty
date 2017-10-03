@@ -8,11 +8,6 @@ services:
         tags:
             - { name: kernel.event_subscriber }
 
-    hbpf.user.session:
-        class: Symfony\Component\HttpFoundation\Session\Session
-        arguments:
-            - '@session.storage.mock_file'
-
     hbpf.user.manager.token:
         class: Hanaboso\PipesFramework\User\Model\Token\TokenManager
         arguments:
@@ -35,7 +30,7 @@ services:
         arguments:
             - '@hbpf.database_manager_locator.user'
             - '@security.encoder_factory'
-            - '@hbpf.user.session'
+            - '@session'
             - '@security.token_storage'
             - '@hbpf.user.provider.resource'
 

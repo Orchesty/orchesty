@@ -4,4 +4,4 @@ sensio_framework_extra:
         auto_convert: false
 
     view:
-        annotations: false
+        annotations: true
