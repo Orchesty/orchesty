@@ -43,7 +43,6 @@ composer-deploy:
 
 # App
 init: .env docker-up-force composer-install
-	$(DE) bin/console doctrine:mongodb:schema:create
 
 #CI
 
@@ -74,6 +73,9 @@ console:
 
 clear-cache:
 	$(DE) sudo rm -rf app/cache
+
+create-schema:
+	$(DE) bin/console doctrine:mongodb:schema:create
 
 database-create:
 	$(DE) php bin/console doctrine:database:drop --force || true
