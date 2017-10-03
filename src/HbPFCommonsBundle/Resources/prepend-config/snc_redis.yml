@@ -1,0 +1,11 @@
+parameters:
+    redis_client_host.default: redis
+    redis_client_port.default: 6379
+
+snc_redis:
+    clients:
+        default:
+            type: predis
+            alias: default
+            dsn: "redis://%redis_client_host.default%/1"
+            logging: false
