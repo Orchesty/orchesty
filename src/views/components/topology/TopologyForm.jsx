@@ -3,9 +3,10 @@ import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import {Field, reduxForm} from 'redux-form'
 
+import {isInteger} from "utils/validations";
 import * as topologyActions from 'actions/topologyActions';
 
-import {FormTextInput, FormCheckboxInput} from 'elements/formInputs';
+import {FormTextInput, FormCheckboxInput, FormNumberInput} from 'elements/formInputs';
 
 class TopologyForm extends React.Component {
   constructor(props) {
@@ -33,7 +34,7 @@ class TopologyForm extends React.Component {
     if (onProcessing){
       onProcessing(true);
     }
-    this.props.commitAction({name, descr, version, enabled: Boolean(enabled)}).then(
+    this.props.commitAction({name, descr, version: parseInt(version, 10), enabled: Boolean(enabled)}).then(
       response => {
         const {onSuccess, onProcessing} = this.props;
         if (typeof onProcessing == 'function'){
@@ -56,7 +57,7 @@ class TopologyForm extends React.Component {
         {!addNew && <Field name="_id" component={FormTextInput} label="Id" readOnly/>}
         <Field name="name" component={FormTextInput} label="Name" />
         <Field name="descr" component={FormTextInput} label="Description" />
-        <Field name="version" component={FormTextInput} label="Version" />
+        <Field name="version" component={FormNumberInput} label="Version" step="1" />
         <Field name="enabled" component={FormCheckboxInput} label="Enabled" />
         <button ref={this.setButton} className="hidden" />
       </form>
@@ -80,6 +81,8 @@ function validate(values){
   }
   if (!values.version) {
     errors.version = 'Version is required';
+  } else if (!isInteger(values.version)){
+    errors.version = 'Version must be integer';
   }
 
   return errors;

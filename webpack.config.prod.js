@@ -1,11 +1,15 @@
 var path = require('path');
 var webpack = require('webpack');
+const fs = require('fs');
 const merge = require('webpack-merge');
 const common = require('./webpack.config.common.js');
 
 var CleanWebpackPlugin = require('clean-webpack-plugin');
 
-const configPath = path.join(__dirname, 'src', 'config', 'prod');
+let configPath = path.join(__dirname, 'src', 'config', 'local');
+if (!fs.existsSync(configPath)){
+  configPath = path.join(__dirname, 'src', 'config', 'prod');
+}
 
 console.log('App config file:', configPath);
 

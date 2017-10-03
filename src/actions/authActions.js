@@ -39,10 +39,8 @@ export function logout(processId) {
       processId && dispatch(processActions.startProcess(processId));
       return serverRequest(dispatch, 'POST', '/user/logout').then(response => {
         processId && dispatch(processActions.finishProcess(processId, response));
-        if (response) {
-          dispatch(applicationActions.selectPage('login'));
-          dispatch(userLogout());
-        }
+        dispatch(applicationActions.selectPage('login'));
+        dispatch(userLogout());
 
         return response;
       });

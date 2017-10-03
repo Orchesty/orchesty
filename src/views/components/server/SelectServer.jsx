@@ -18,17 +18,22 @@ class SelectServer extends React.Component {
   }
 
   render() {
-    const {servers} = config.servers.apiGateway;
-    const {selected} = this.props;
-    const items = Object.keys(servers).map(key => {
-      const server =  servers[key];
-      return <li key={key} className={selected == key ? 'active' : ''}><a href="#" onClick={this.selectServer.bind(this, key)}>{server.caption}</a></li>;
-    });
-    return (
-      <ul className="select-server">
-        {items}
-      </ul>
-    );
+    if (config.params.allowChangeServer) {
+      const {servers} = config.servers.apiGateway;
+      const {selected} = this.props;
+      const items = Object.keys(servers).map(key => {
+        const server = servers[key];
+        return <li key={key} className={selected == key ? 'active' : ''}><a href="#"
+          onClick={this.selectServer.bind(this, key)}>{server.caption}</a></li>;
+      });
+      return (
+        <ul className="select-server">
+          {items}
+        </ul>
+      );
+    } else {
+      return null;
+    }
   }
 }
 

@@ -47,14 +47,7 @@ class ResetPasswordPage extends React.Component {
             <p className="change_link">Do you remember ?
               <a href="#" className="to_register" onClick={this.loginClick}> Log in </a>
             </p>
-
             <div className="clearfix" />
-            <br />
-
-              <div>
-                <h1><i className="fa fa-paw" /> Gentelella Alela!</h1>
-                <p>©2016 All Rights Reserved. Gentelella Alela! is a Bootstrap 3 template. Privacy and Terms</p>
-              </div>
           </div>
         </form>
       );

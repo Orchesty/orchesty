@@ -3,6 +3,7 @@ import React from 'react'
 import SelectServer from 'components/server/SelectServer';
 
 import './NonAuthPage.less';
+import Toaster from "containers/Toaster";
 
 export default (WrappedComponent) => {
   
@@ -22,6 +23,7 @@ export default (WrappedComponent) => {
               </section>
             </div>
           </div>
+          <Toaster />
         </div>
       );
     }

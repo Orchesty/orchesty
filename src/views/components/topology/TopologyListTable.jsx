@@ -37,16 +37,6 @@ class TopologyListTable extends React.Component {
     this.props.listChangePage(newPage);
   }
 
-  toggleSelect(id, e) {
-    const {selected, setPageData} = this.props;
-    e.preventDefault();
-    if (selected == id){
-      setPageData({selected: null});
-    } else {
-      setPageData({selected: id});
-    }
-  }
-
   _renderHead(){
     const {list: {sort}} = this.props;
     return (
@@ -63,7 +53,7 @@ class TopologyListTable extends React.Component {
   }
 
   render() {
-    const {list, elements, openModal, clone, publish, selectPage, selected, list: {items}} = this.props;
+    const {list, elements, openModal, clone, publish, selectPage, list: {items}} = this.props;
 
     let rows = null;
     if (items){
@@ -95,7 +85,7 @@ class TopologyListTable extends React.Component {
             })
           }
           return (
-            <tr key={item._id} onClick={this.toggleSelect.bind(this, item._id)}>
+            <tr key={item._id}>
               <td>{item._id}</td>
               <td>{item.status}</td>
               <td>{item.name}</td>
@@ -107,20 +97,6 @@ class TopologyListTable extends React.Component {
           )
         }
       );
-
-      if (selected){
-        const index = items.indexOf(selected);
-        if (index != -1){
-          const sub = (
-            <tr key={selected + '-sub'}>
-              <td colSpan={6}>
-                <TopologyNodeListTable topologyId={selected} onlyEvents />
-              </td>
-            </tr>
-          );
-          rows.splice(index + 1, 0, sub);
-        }
-      }
     } else {
       rows = <tr>
         <td colSpan={6}>No items</td>
@@ -150,7 +126,6 @@ TopologyListTable.propTypes = {
   selectPage: PropTypes.func.isRequired,
   setPageData: PropTypes.func.isRequired,
   needList: PropTypes.func.isRequired,
-  selected: PropTypes.string,
   listChangeSort: PropTypes.func,
   listChangePage: PropTypes.func,
   clone: PropTypes.func,
@@ -158,10 +133,7 @@ TopologyListTable.propTypes = {
 };
 
 function mapStateToProps(state, ownProps) {
-  const {application: {selectedPage}} = state;
-  return {
-    selected: selectedPage.data ? selectedPage.data.selected : null
-  }
+ return {};
 }
 
 function mapActionsToProps(dispatch){
