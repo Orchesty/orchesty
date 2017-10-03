@@ -4,6 +4,8 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\SystemTypeEnum;
+use CleverConnectors\AppBundle\Model\Form\Field;
+use CleverConnectors\AppBundle\Model\Form\Form;
 use CleverConnectors\AppBundle\Model\Systems\WebhookSubscribes;
 use CleverConnectors\AppBundle\Model\Systems\WebhookSystemInterface;
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -19,6 +21,10 @@ use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 class NullSystem implements WebhookSystemInterface
 {
 
+    public const URL      = 'url';
+    public const USERNAME = 'username';
+    public const PASSWORD = 'password';
+
     /**
      * @var DocumentManager
      */
@@ -30,6 +36,11 @@ class NullSystem implements WebhookSystemInterface
     private $subs;
 
     /**
+     * @var string
+     */
+    private $user;
+
+    /**
      * NullSystem constructor.
      *
      * @param DocumentManager $dm
@@ -38,6 +49,14 @@ class NullSystem implements WebhookSystemInterface
     {
         $this->dm     = $dm;
         $this->subs[] = new WebhookSubscribes('node', 'top', 'uriReg', 'uriUnreg');
+    }
+
+    /**
+     * @param string $user
+     */
+    public function setUser(string $user): void
+    {
+        $this->user = $user;
     }
 
     /**
@@ -199,6 +218,13 @@ class NullSystem implements WebhookSystemInterface
      */
     public function getSettings(): array
     {
+        $systemInstall = $this->getSystemInstall();
+        if ($systemInstall) {
+            $form = $this->getForm($systemInstall->getSettings());
+
+            return $form->toArray();
+        }
+
         return [];
     }
 
@@ -224,8 +250,47 @@ class NullSystem implements WebhookSystemInterface
     private function getSystemInstall(): ?SystemInstall
     {
         return $this->dm->getRepository(SystemInstall::class)->findOneBy([
+            'user'   => $this->user,
             'system' => $this->getKey(),
         ]);
+    }
+
+    /**
+     * @param array $settings
+     *
+     * @return Form
+     */
+    private function getForm(array $settings): Form
+    {
+        $field1 = new Field(Field::URL, self::URL, $this->prepareValue(self::URL, $settings), TRUE);
+        $field2 = new Field(Field::TEXT, self::USERNAME, $this->prepareValue(self::USERNAME, $settings), TRUE);
+        $field3 = new Field(Field::PASSWORD, self::PASSWORD, $this->prepareValue(self::PASSWORD, $settings), TRUE);
+
+        $form = (new Form())
+            ->addField($field1)
+            ->addField($field2)
+            ->addField($field3);
+
+        return $form;
+    }
+
+    /**
+     * @param string $key
+     * @param array  $settings
+     *
+     * @return bool|mixed|null
+     */
+    private function prepareValue(string $key, array $settings)
+    {
+        if (isset($settings[$key])) {
+            if ($key == self::PASSWORD) {
+                return empty($settings[$key]) ? FALSE : TRUE;
+            }
+
+            return $settings[$key];
+        }
+
+        return NULL;
     }
 
 }

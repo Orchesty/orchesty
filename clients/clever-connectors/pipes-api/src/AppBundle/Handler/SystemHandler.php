@@ -121,4 +121,19 @@ class SystemHandler
         return [];
     }
 
+    /**
+     * @param string $user
+     * @param string $system
+     * @param array  $data
+     *
+     * @return array
+     */
+    public function setPassword(string $user, string $system, array $data): array
+    {
+        ControllerUtils::checkParameters(['password'], $data);
+        $this->manager->setPassword($user, $system, $data['password']);
+
+        return [];
+    }
+
 }

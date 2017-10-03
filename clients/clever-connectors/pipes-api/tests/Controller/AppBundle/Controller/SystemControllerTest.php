@@ -23,12 +23,7 @@ class SystemControllerTest extends ControllerTestCaseAbstract
         $this->loginUser('user@example.com', 'pass');
         $response = $this->sendGet('/systems/null.user.group');
         $this->assertEquals(200, $response->status);
-        $this->assertEquals((object) [
-            'type'        => SystemTypeEnum::CRON,
-            'key'         => 'null',
-            'name'        => 'NULL',
-            'description' => 'Only for testing purposes',
-        ], $response->content);
+        $this->assertEquals((object) $this->getArrayDataForAssert(), $response->content);
     }
 
     /**
@@ -49,20 +44,13 @@ class SystemControllerTest extends ControllerTestCaseAbstract
         $this->loginUser('user@example.com', 'pass');
         $response = $this->sendGet('/systems', ['user' => 'someUser']);
         $this->assertEquals(200, $response->status);
-        $this->assertEquals([
-            (object) [
-                'type'        => SystemTypeEnum::CRON,
-                'key'         => 'null',
-                'name'        => 'NULL',
-                'description' => 'Only for testing purposes',
-            ], (object) [
-
-                'type'        => SystemTypeEnum::CRON,
-                'key'         => 'null',
-                'name'        => 'NULL',
-                'description' => 'Only for testing purposes',
+        $this->assertEquals(
+            [
+                (object) $this->getArrayDataForAssert(),
+                (object) $this->getArrayDataForAssert(),
             ],
-        ], $response->content);
+            $response->content
+        );
     }
 
     /**
@@ -85,20 +73,13 @@ class SystemControllerTest extends ControllerTestCaseAbstract
         $this->loginUser('user@example.com', 'pass');
         $response = $this->sendGet('/systems', ['group' => 'someGroup']);
         $this->assertEquals(200, $response->status);
-        $this->assertEquals([
-            (object) [
-                'type'        => SystemTypeEnum::CRON,
-                'key'         => 'null',
-                'name'        => 'NULL',
-                'description' => 'Only for testing purposes',
-            ], (object) [
-
-                'type'        => SystemTypeEnum::CRON,
-                'key'         => 'null',
-                'name'        => 'NULL',
-                'description' => 'Only for testing purposes',
+        $this->assertEquals(
+            [
+                (object) $this->getArrayDataForAssert(),
+                (object) $this->getArrayDataForAssert(),
             ],
-        ], $response->content);
+            $response->content
+        );
     }
 
     /**
@@ -121,14 +102,10 @@ class SystemControllerTest extends ControllerTestCaseAbstract
         $this->loginUser('user@example.com', 'pass');
         $response = $this->sendGet('/systems', ['user' => 'someUser', 'group' => 'someGroup']);
         $this->assertEquals(200, $response->status);
-        $this->assertEquals([
-            (object) [
-                'type'        => SystemTypeEnum::CRON,
-                'key'         => 'null',
-                'name'        => 'NULL',
-                'description' => 'Only for testing purposes',
-            ],
-        ], $response->content);
+        $this->assertEquals(
+            [(object) $this->getArrayDataForAssert()],
+            $response->content
+        );
     }
 
     /**
@@ -151,20 +128,13 @@ class SystemControllerTest extends ControllerTestCaseAbstract
 
         $response = $this->sendGet('/user_systems/user/someUser');
         $this->assertEquals(200, $response->status);
-        $this->assertEquals([
-            (object) [
-                'type'        => SystemTypeEnum::CRON,
-                'key'         => 'null',
-                'name'        => 'NULL',
-                'description' => 'Only for testing purposes',
-            ], (object) [
-
-                'type'        => SystemTypeEnum::CRON,
-                'key'         => 'null',
-                'name'        => 'NULL',
-                'description' => 'Only for testing purposes',
+        $this->assertEquals(
+            [
+                (object) array_merge($this->getArrayDataForAssert(), ['authorized' => FALSE]),
+                (object) array_merge($this->getArrayDataForAssert(), ['authorized' => FALSE]),
             ],
-        ], $response->content);
+            $response->content
+        );
     }
 
     /**
@@ -357,6 +327,20 @@ class SystemControllerTest extends ControllerTestCaseAbstract
         $this->loginUser('user@example.com', 'pass');
         $response = $this->sendGet('user_systems/user/someUser/system/null.user.group/sync');
         $this->assertEquals(202, $response->status);
+    }
+
+    /**
+     * @return array
+     */
+    private function getArrayDataForAssert(): array
+    {
+        return [
+            'type'        => SystemTypeEnum::CRON,
+            'key'         => 'null',
+            'name'        => 'NULL',
+            'description' => 'Only for testing purposes',
+            'authType'    => 'basic',
+        ];
     }
 
 }
