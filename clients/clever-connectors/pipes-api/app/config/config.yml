@@ -85,11 +85,6 @@ doctrine_mongodb:
                     is_bundle: false
                     dir: "%kernel.root_dir%/../src/AppBundle/Document"
                     prefix: CleverConnectors\AppBundle\Document
-                UserDocument:
-                    type: annotation
-                    is_bundle: false
-                    dir: "%src_dir%/User/Document"
-                    prefix: Hanaboso\PipesFramework\User\Document
 
 # Swiftmailer Configuration
 swiftmailer:
@@ -117,3 +112,15 @@ nelmio_cors:
             allow_methods: ['POST', 'PUT', 'GET', 'DELETE', 'OPTIONS', 'PATCH']
             max_age: 3600
 
+fos_rest:
+    disable_csrf_role: true
+    routing_loader:
+        default_format: html
+
+    view:
+        view_response_listener: "force"
+        formats:
+            json: true
+            xml: true
+    serializer:
+        serialize_null: true

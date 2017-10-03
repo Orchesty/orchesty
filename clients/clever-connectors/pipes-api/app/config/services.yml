@@ -1,5 +1,1 @@
 services:
-    doctrine.orm.security.user.provider:
-        class: Symfony\Bridge\Doctrine\Security\User\EntityUserProvider
-        arguments:
-            - "@doctrine_mongodb"

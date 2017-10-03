@@ -63,7 +63,7 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
         self::bootKernel();
         $this->container    = self::$kernel->getContainer();
         $this->dm           = $this->container->get('doctrine_mongodb.odm.default_document_manager');
-        $this->session      = $this->container->get('hbpf.user.session');
+        $this->session      = $this->container->get('session');
         $this->tokenStorage = $this->container->get('security.token_storage');
         $encoderFactory     = $this->container->get('security.encoder_factory');
         $this->encoder      = $encoderFactory->getEncoder(User::class);

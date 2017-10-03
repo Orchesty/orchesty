@@ -42,7 +42,7 @@ class UserController extends FOSRestController
     {
         $this->construct();
         try {
-            return new JsonResponse($this->userHandler->login($request->request->all())->toArray(), 200);
+            return new JsonResponse($this->userHandler->login($request->request->all())->toArray(), 200, []);
         } catch (SecurityManagerException $e) {
             return new JsonResponse(ControllerUtils::createExceptionData($e), 500);
         }
