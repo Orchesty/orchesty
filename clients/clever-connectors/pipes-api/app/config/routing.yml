@@ -26,3 +26,7 @@ hb_pf_cutom_node:
 hb_pf_configurator:
     resource: "@HbPFConfiguratorBundle/Controller"
     type: annotation
+
+hb_pf_user:
+    resource: "@HbPFUserBundle/Controller"
+    type: annotation
