@@ -46,7 +46,7 @@ class CounterPublisher extends Publisher {
             message.getCorrelationId(),
             message.getProcessId(),
             message.getParentId(),
-            message.getResult().status, // 0 OK, >0 NOK
+            message.getResult().code, // 0 OK, >0 NOK
             message.getResult().message,
             this.settings.followers.length,
             message.getMultiplier(),

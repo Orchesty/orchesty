@@ -65,7 +65,7 @@ describe("CounterPublisher", () => {
             msgSeqId,
             msgHeaders,
             msgBody,
-            { status: ResultCode.SUCCESS, message: ""},
+            { code: ResultCode.SUCCESS, message: ""},
         );
 
         // Overrides the parental function to check the data being sent easily
@@ -152,7 +152,7 @@ describe("CounterPublisher", () => {
                     msgSeqId,
                     msgHeaders,
                     JSON.stringify(msgBody),
-                    { status: ResultCode.SUCCESS, message: ""},
+                    { code: ResultCode.SUCCESS, message: ""},
                 );
                 publisher.send(msg);
             });

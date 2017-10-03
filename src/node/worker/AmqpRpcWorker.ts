@@ -1,4 +1,4 @@
-import {Channel, Message} from "amqplib";
+import {Channel, Message as AmqpMessage} from "amqplib";
 import Container from "lib-nodejs/dist/src/container/Container";
 import Connection from "lib-nodejs/dist/src/rabbitmq/Connection";
 import Publisher from "lib-nodejs/dist/src/rabbitmq/Publisher";
@@ -82,7 +82,7 @@ class AmqpRpcWorker implements IWorker {
         };
 
         this.publisher = new Publisher(connection, publisherPrepare);
-        this.resultsConsumer = new SimpleConsumer(connection, resultsConsumerPrepare, (msg: Message) => {
+        this.resultsConsumer = new SimpleConsumer(connection, resultsConsumerPrepare, (msg: AmqpMessage) => {
             this.processRpcResultMessage(msg);
         });
         this.resultsConsumer.consume(this.resultsQueue.name, {})
@@ -115,16 +115,7 @@ class AmqpRpcWorker implements IWorker {
         );
 
         if (this.waiting.has(msg.getProcessId())) {
-            logger.error(
-                `Worker[type'amqprpc'] is already waiting for results with same id.`,
-                logger.ctxFromMsg(msg),
-            );
-
-            msg.setResult({
-                status: ResultCode.MESSAGE_ALREADY_BEING_PROCESSED,
-                message: `Message[id=${msg.getProcessId()}] is already being processed.`,
-            });
-
+            this.onDuplicateMessage(msg);
             return Promise.resolve(msg);
         }
 
@@ -178,9 +169,9 @@ class AmqpRpcWorker implements IWorker {
     /**
      * Handler for received result message decides what to do with it.
      *
-     * @param {Message} msg
+     * @param {AmqpMessage} msg
      */
-    private processRpcResultMessage(msg: Message): void {
+    private processRpcResultMessage(msg: AmqpMessage): void {
         const corrId = msg.properties.correlationId;
 
         if (!this.waiting.has(corrId)) {
@@ -197,10 +188,10 @@ class AmqpRpcWorker implements IWorker {
                 this.updateWaiting(corrId, msg);
                 break;
             case BATCH_END_TYPE:
-                this.resolveWaiting(corrId);
+                this.resolveWaiting(corrId, msg);
                 break;
             case TEST_TYPE:
-                this.resolveWaiting(corrId);
+                this.resolveWaiting(corrId, msg);
                 break;
             default:
                 logger.warn(
@@ -214,9 +205,9 @@ class AmqpRpcWorker implements IWorker {
      * Updates the JobMessage object stored in memory
      *
      * @param {string} corrId
-     * @param {Message} resultMsg
+     * @param {AmqpMessage} resultMsg
      */
-    private updateWaiting(corrId: string, resultMsg: Message): void {
+    private updateWaiting(corrId: string, resultMsg: AmqpMessage): void {
         const stored: IWaiting = this.waiting.get(corrId);
         stored.sequence++;
 
@@ -232,7 +223,7 @@ class AmqpRpcWorker implements IWorker {
             JSON.parse(JSON.stringify(stored.message.getHeaders())), // simple object cloning,
             JSON.stringify({ data: newContent.data, settings: origContent.settings}),
 
-            { status: ResultCode.SUCCESS, message: `Part ${stored.sequence}` },
+            { code: ResultCode.SUCCESS, message: `Part ${stored.sequence}` },
         );
 
         stored.message.setMultiplier(stored.message.getMultiplier() + 1);
@@ -246,12 +237,44 @@ class AmqpRpcWorker implements IWorker {
     /**
      * Resolves the stored promise with populated message
      * @param {string} corrId
+     * @param {AmqpMessage} msg
      */
-    private resolveWaiting(corrId: string): void {
+    private resolveWaiting(corrId: string, msg: AmqpMessage): void {
         const stored: IWaiting = this.waiting.get(corrId);
+        if (!stored) {
+            logger.warn(`Worker[type='amqprpc'] cannot resolve non-existing waiting promise[corrId=${corrId}]`);
+            return;
+        }
+
+        // Set result according to received headers
+        const resCode = msg.properties.headers.hasOwnProperty("result_code") ?
+            parseInt(msg.properties.headers.result_code, 10) :
+            ResultCode.MISSING_RESULT_CODE;
+        const resMessage = msg.properties.headers.hasOwnProperty("result_message") ?
+            msg.properties.headers.result_message :
+            "";
+        stored.message.setResult({ code: resCode, message: resMessage });
+
+        // Resolves waiting promise
         stored.resolveFn(stored.message);
 
         this.waiting.delete(corrId);
+    }
+
+    /**
+     *
+     * @param {JobMessage} msg
+     */
+    private onDuplicateMessage(msg: JobMessage): void {
+        logger.error(
+            `Worker[type'amqprpc'] is already waiting for results with same id.`,
+            logger.ctxFromMsg(msg),
+        );
+
+        msg.setResult({
+            code: ResultCode.MESSAGE_ALREADY_BEING_PROCESSED,
+            message: `Message[id=${msg.getProcessId()}] is already being processed.`,
+        });
     }
 
 }

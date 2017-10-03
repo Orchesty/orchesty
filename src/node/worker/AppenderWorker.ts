@@ -21,7 +21,7 @@ class AppenderWorker implements IWorker {
      */
     public processData(msg: JobMessage): Promise<JobMessage> {
         msg.setContent(`${msg.getContent()}${this.settings.suffix}`);
-        msg.setResult({status: ResultCode.SUCCESS, message: "Appender worker OK"});
+        msg.setResult({code: ResultCode.SUCCESS, message: "Appender worker OK"});
 
         return Promise.resolve(msg);
     }

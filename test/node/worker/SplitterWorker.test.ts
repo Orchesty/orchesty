@@ -19,7 +19,7 @@ describe("Splitter worker", () => {
         const worker = new SplitterWorker(settings, partialForwarder);
         return worker.processData(msg)
             .then((outMsg: JobMessage) => {
-                assert.equal(outMsg.getResult().status, ResultCode.INVALID_MESSAGE_CONTENT_FORMAT);
+                assert.equal(outMsg.getResult().code, ResultCode.INVALID_CONTENT);
                 assert.include(outMsg.getResult().message, "key is missing");
             });
     });
@@ -32,7 +32,7 @@ describe("Splitter worker", () => {
         const worker = new SplitterWorker(settings, partialForwarder);
         return worker.processData(msg)
             .then((outMsg: JobMessage) => {
-                assert.equal(outMsg.getResult().status, ResultCode.INVALID_MESSAGE_CONTENT_FORMAT);
+                assert.equal(outMsg.getResult().code, ResultCode.INVALID_CONTENT);
                 assert.include(outMsg.getResult().message, "is not array or is empty");
             });
     });
@@ -59,7 +59,7 @@ describe("Splitter worker", () => {
         const worker = new SplitterWorker(settings, partialForwarder);
         return worker.processData(msg)
             .then((outMsg: JobMessage) => {
-                assert.equal(outMsg.getResult().status, ResultCode.SUCCESS);
+                assert.equal(outMsg.getResult().code, ResultCode.SUCCESS);
                 assert.equal(outMsg.getMultiplier(), 3);
                 assert.isFalse(outMsg.getForwardSelf());
                 // Split messages check

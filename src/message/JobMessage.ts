@@ -3,7 +3,7 @@ import IMessage from "./IMessage";
 import { ResultCode } from "./ResultCode";
 
 export interface IResult {
-    status: ResultCode;
+    code: ResultCode;
     message: string;
 }
 
@@ -144,6 +144,9 @@ class JobMessage implements IMessage {
         delete headers.parent_id;
         delete headers.sequence_id;
 
+        delete headers.result_code;
+        delete headers.result_message;
+
         this.headers = headers;
     }
 
@@ -170,8 +173,8 @@ class JobMessage implements IMessage {
     public getResult(): IResult {
         if (!this.result) {
             return {
-                status: ResultCode.NOT_PROCESSED,
-                message: "Message was not changed by any worker.",
+                code: ResultCode.MESSAGE_NOT_PROCESSED,
+                message: "Message should have been modified by worker.",
             };
         }
 

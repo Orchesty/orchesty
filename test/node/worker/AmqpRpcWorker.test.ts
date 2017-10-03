@@ -10,6 +10,7 @@ import JobMessage from "../../../src/message/JobMessage";
 import IPartialForwarder from "../../../src/node/drain/IPartialForwarder";
 import AmqpRpcWorker, {IAmqpRpcWorkerSettings} from "../../../src/node/worker/AmqpRpcWorker";
 import {BATCH_END_TYPE, BATCH_ITEM_TYPE} from "../../../src/node/worker/AmqpRpcWorker";
+import {ResultCode} from "../../../src/message/ResultCode";
 
 const conn = new Connection(amqpConnectionOptions);
 
@@ -115,6 +116,10 @@ describe("AmqpRpcWorker", () => {
                             {
                                 type: BATCH_END_TYPE,
                                 correlationId: msg.properties.correlationId,
+                                headers: {
+                                    result_code: ResultCode.SUCCESS,
+                                    result_message: "okay",
+                                },
                             },
                         );
                     });
@@ -139,6 +144,8 @@ describe("AmqpRpcWorker", () => {
                 assert.instanceOf(outMsg, JobMessage);
                 assert.equal(outMsg.getMultiplier(), 5);
                 assert.isFalse(outMsg.getForwardSelf());
+                assert.equal(ResultCode.SUCCESS, outMsg.getResult().code);
+                assert.equal("okay", outMsg.getResult().message);
 
                 let i = 1;
                 forwarded.forEach((splitMsg: JobMessage) => {

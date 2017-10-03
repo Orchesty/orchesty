@@ -118,7 +118,7 @@ describe("FollowersPublisher", () => {
                     msgSeqId,
                     msgHeaders,
                     JSON.stringify(msgBody),
-                    { status: ResultCode.SUCCESS, message: ""},
+                    { code: ResultCode.SUCCESS, message: ""},
                 );
 
                 // This should send 3 messages
