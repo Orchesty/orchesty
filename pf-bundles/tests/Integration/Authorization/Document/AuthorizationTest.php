@@ -17,7 +17,7 @@ class AuthorizationTest extends DatabaseTestCaseAbstract
     /**
      * @covers Authorization
      */
-    public function testPersistAndLoad(): void
+    public function testFlushAndLoad(): void
     {
         $token = ['token' => 'token'];
         $settings = ['foo' => 'bar', 'baz' => 'bat'];
@@ -36,21 +36,21 @@ class AuthorizationTest extends DatabaseTestCaseAbstract
         ])->toArray();
 
         $this->assertArrayHasKey($authorization->getId(), $data);
-        $this->assertArrayNotHasKey('token', $data[$authorization->getId()]);
-        $this->assertArrayNotHasKey('settings', $data[$authorization->getId()]);
-        $this->assertInternalType('string', $data[$authorization->getId()]['encryptedToken']);
-        $this->assertInternalType('string', $data[$authorization->getId()]['encryptedSettings']);
+        $this->assertArrayHasKey('token', $data[$authorization->getId()]);
+        $this->assertArrayHasKey('settings', $data[$authorization->getId()]);
+        $this->assertInternalType('string', $data[$authorization->getId()]['token']);
+        $this->assertInternalType('string', $data[$authorization->getId()]['settings']);
 
         // postLoad should decrypt the data
         $loaded = $this->dm->getRepository(Authorization::class)->find($authorization->getId());
 
-        self::assertNotEmpty($loaded->getToken());
-        self::assertTrue(is_array($loaded->getToken()));
-        self::assertEquals($token, $loaded->getToken());
+        $this->assertNotEmpty($loaded->getToken());
+        $this->assertInternalType('array', $loaded->getToken());
+        $this->assertEquals($token, $loaded->getToken());
 
-        self::assertNotEmpty($loaded->getSettings());
-        self::assertTrue(is_array($loaded->getSettings()));
-        self::assertEquals($settings, $loaded->getSettings());
+        $this->assertNotEmpty($loaded->getSettings());
+        $this->assertInternalType('array', $loaded->getSettings());
+        $this->assertEquals($settings, $loaded->getSettings());
     }
 
 }

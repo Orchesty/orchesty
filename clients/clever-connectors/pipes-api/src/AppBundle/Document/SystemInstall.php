@@ -5,6 +5,7 @@ namespace CleverConnectors\AppBundle\Document;
 use CleverConnectors\AppBundle\Document\Traits\IdTrait;
 use DateTime;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Hanaboso\PipesFramework\Commons\Crypt\CryptManager;
 
 /**
  * Class SystemInstall
@@ -12,6 +13,8 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
  * @package CleverConnectors\AppBundle\Document
  *
  * @ODM\Document(repositoryClass="CleverConnectors\AppBundle\Repository\SystemInstallRepository")
+ *
+ * @ODM\HasLifecycleCallbacks
  */
 class SystemInstall
 {
@@ -55,14 +58,9 @@ class SystemInstall
     protected $created;
 
     /**
-     * @var string
+     * @var mixed
      *
      * @ODM\Field(type="string")
-     */
-    protected $encryptedSettings = '';
-
-    /**
-     * @var array
      */
     protected $settings = [];
 
@@ -195,23 +193,23 @@ class SystemInstall
     }
 
     /**
-     * @return string
+     * Encrypts settings field before saving to storage
+     *
+     * @ODM\PreFlush
      */
-    public function getEncryptedSettings(): string
+    public function encrypt(): void
     {
-        return $this->encryptedSettings;
+        $this->settings = CryptManager::encrypt($this->settings);
     }
 
     /**
-     * @param string $encryptedSettings
+     * Decrypts settings field when loading from storage
      *
-     * @return SystemInstall
+     * @ODM\PostLoad
      */
-    public function setEncryptedSettings(string $encryptedSettings): SystemInstall
+    public function decrypt(): void
     {
-        $this->encryptedSettings = $encryptedSettings;
-
-        return $this;
+        $this->settings = CryptManager::decrypt($this->settings);
     }
 
 }
