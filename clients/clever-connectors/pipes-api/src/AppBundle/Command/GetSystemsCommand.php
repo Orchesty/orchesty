@@ -10,7 +10,10 @@ namespace CleverConnectors\AppBundle\Command;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Nette\Neon\Exception;
+use Exception;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -21,13 +24,18 @@ use Symfony\Component\Console\Output\OutputInterface;
  *
  * @package CleverConnectors\AppBundle\Command
  */
-class GetSystemCommand extends Command
+class GetSystemsCommand extends Command implements LoggerAwareInterface
 {
 
     /**
      * @var DocumentManager
      */
     private $dm;
+
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
 
     /**
      * GetSystemCommand constructor.
@@ -37,7 +45,16 @@ class GetSystemCommand extends Command
     public function __construct(DocumentManager $dm)
     {
         parent::__construct('react:get-system');
-        $this->dm = $dm;
+        $this->dm     = $dm;
+        $this->logger = new NullLogger();
+    }
+
+    /**
+     * @param LoggerInterface $logger
+     */
+    public function setLogger(LoggerInterface $logger): void
+    {
+        $this->logger = $logger;
     }
 
     /**
@@ -61,11 +78,10 @@ class GetSystemCommand extends Command
                 'system' => $input->getArgument('system-key'),
             ]);
 
-            foreach ($cursor as $item) {
-                $output->writeln(json_encode($item));
-            }
+            $output->writeln(json_encode($cursor->toArray()));
         } catch (Exception $e) {
-            // @todo add no stdout logger
+            $this->logger->error($e->getMessage(), ['exception' => $e]);
+
             return 1;
         }
 

@@ -12,6 +12,9 @@ services:
         class: CleverConnectors\AppBundle\Model\Cron\CronBatchActionCallback
         arguments:
             - '@jms_serializer'
+            - '%kernel.project_dir%'
+        calls:
+            - [setLogger, ['@monolog.logger.rabbit-mq']]
 
     clever_connectors.cron.cron_batch_callback:
         class: Hanaboso\PipesFramework\RabbitMq\Impl\Batch\BatchCallback
@@ -21,7 +24,7 @@ services:
             - [setLogger, ['@monolog.logger.rabbit-mq']]
 
     clever_connectors.cron.get_system_callback:
-            class: CleverConnectors\AppBundle\Command\GetSystemCommand
+            class: CleverConnectors\AppBundle\Command\GetSystemsCommand
             arguments:
                 - '@doctrine.odm.mongodb.document_manager'
             tags:

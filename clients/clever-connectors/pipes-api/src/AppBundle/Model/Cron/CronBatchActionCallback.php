@@ -13,11 +13,15 @@ use Exception;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\BatchActionInterface;
 use InvalidArgumentException;
 use JMS\Serializer\Serializer;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use React\ChildProcess\Process;
 use React\EventLoop\LoopInterface;
 use React\Promise\Promise;
 use React\Promise\PromiseInterface;
 use RuntimeException;
+use function React\Promise\all;
 use function React\Promise\reject;
 use function React\Promise\resolve;
 
@@ -26,7 +30,7 @@ use function React\Promise\resolve;
  *
  * @package CleverConnectors\AppBundle\Model\Cron
  */
-class CronBatchActionCallback implements BatchActionInterface
+class CronBatchActionCallback implements BatchActionInterface, LoggerAwareInterface
 {
 
     /**
@@ -35,13 +39,34 @@ class CronBatchActionCallback implements BatchActionInterface
     private $serializer;
 
     /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    /**
+     * @var string
+     */
+    private $projectDir;
+
+    /**
      * CronBatchActionCallback constructor.
      *
      * @param Serializer $serializer
+     * @param string     $projectDir
      */
-    public function __construct(Serializer $serializer)
+    public function __construct(Serializer $serializer, string $projectDir)
     {
         $this->serializer = $serializer;
+        $this->logger     = new NullLogger();
+        $this->projectDir = $projectDir;
+    }
+
+    /**
+     * @param LoggerInterface $logger
+     */
+    public function setLogger(LoggerInterface $logger): void
+    {
+        $this->logger = $logger;
     }
 
     /**
@@ -68,7 +93,7 @@ class CronBatchActionCallback implements BatchActionInterface
         $connectorKey = $data['data']['param'] ?? NULL;
 
         if ($connectorKey === NULL) {
-            return reject(new InvalidArgumentException('Body has not connector key.'));
+            return reject(new InvalidArgumentException('Body has not system key.'));
         } else {
             return resolve($connectorKey);
         }
@@ -87,8 +112,19 @@ class CronBatchActionCallback implements BatchActionInterface
             ->parseBody($message->content)
             ->then(function (array $data) {
                 return $this->getConnectorKey($data);
-            })->then(function (string $connectorKey) use ($loop, $itemCallBack) {
-                return $this->processSystem($loop, $connectorKey, $itemCallBack);
+            })->then(function (string $connectorKey) use ($loop) {
+                return $this->processSystem($loop, $connectorKey);
+            })->then(function (string $data) {
+                return $this->parseBody($data);
+            })->then(function (array $data) use ($itemCallBack): Promise {
+                $items = [];
+                $i     = 0;
+                foreach ($data as $item) {
+                    $items[] = $this->processItem($item, $i, $itemCallBack);
+                    $i++;
+                }
+
+                return all($items);
             });
     }
 
@@ -96,66 +132,61 @@ class CronBatchActionCallback implements BatchActionInterface
      * @param array $item
      * @param int   $i
      *
-     * @return array
+     * @return PromiseInterface
      */
-    public function prepareData(array $item, int $i): array
+    public function prepareData(array $item, int $i): PromiseInterface
     {
-        return [
+        $data = [
             'id'   => $i,
             'data' => $item,
         ];
+
+        return resolve($data);
     }
 
     /**
-     * @param string   $chunk
+     * @param array    $item
      * @param int      $i
      * @param callable $itemCallback
+     *
+     * @return PromiseInterface
+     * @internal param string $chunk
      */
-    private function processItem(string $chunk, int $i, callable $itemCallback): void
+    private function processItem(array $item, int $i, callable $itemCallback): PromiseInterface
     {
-        $this
-            ->parseBody(trim($chunk))
-            ->then(function (array $data) use ($i) {
-                return $this->prepareData($data, $i);
-            })
+        return $this
+            ->prepareData($item, $i)
             ->then($itemCallback);
     }
 
     /**
      * @param LoopInterface $loop
      * @param string        $systemKey
-     * @param callable      $itemCallback
      *
-     * @return PromiseInterface
+     * @return Promise
      */
-    public function processSystem(LoopInterface $loop, string $systemKey, callable $itemCallback): PromiseInterface
+    private function processSystem(LoopInterface $loop, string $systemKey): Promise
     {
-        $process = new Process(sprintf('bin/console react:get-system %s', $systemKey));
+        $this->logger->info(sprintf('Start finding user system for key "%s".', $systemKey));
+        $process = new Process(sprintf('bin/console react:get-system %s', $systemKey), $this->projectDir);
         $process->start($loop);
 
-        $prom = new Promise(function ($resolve) use ($process, $itemCallback): void {
+        return new Promise(function ($resolve, $reject) use ($process): void {
 
-            $i = 0;
-            $process->stdout->on('data', function (string $chunk) use (&$i, $itemCallback): void {
-                $this->processItem($chunk, $i, $itemCallback);
-                $i++;
+            $buffer = '';
+            $process->stdout->on('data', function (string $chunk) use (&$buffer): void {
+                $buffer .= $chunk;
             });
 
-            $process->stdout->on('end', function () use ($resolve): void {
-                $resolve();
+            $process->on('exit', function ($exitCode) use ($resolve, $reject, &$buffer): void {
+                if ($exitCode === 0) {
+                    $resolve(trim($buffer));
+                } else {
+                    $reject(new RuntimeException(sprintf('Process exited with code %s.', $exitCode)));
+                }
             });
 
-        }, function ($reject) use ($process): void {
-            $process->stdout->on('error', function (Exception $e) use ($reject): void {
-                $reject($e);
-            });
-
-            $process->on('exit', function ($exitCode, $termSignal) use ($reject): void {
-                $reject(new RuntimeException(sprintf('Process exited with code %s', $exitCode)));
-            });
         });
-
-        return $prom;
     }
 
 }
