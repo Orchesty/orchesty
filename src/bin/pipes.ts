@@ -27,6 +27,9 @@ switch (argv.service) {
     case "probe":
         pipes.startProbe();
         break;
+    case "repeater":
+        pipes.startRepeater();
+        break;
     case "node":
         pipes.startNode(argv.id);
         break;
