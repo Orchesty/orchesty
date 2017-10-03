@@ -7,3 +7,12 @@ services:
             - '@security.encoder_factory.generic'
         tags:
             -  { name: console.command }
+
+    hbpf.command.create_user:
+        class: Hanaboso\PipesFramework\HbPFUserBundle\Command\CreateUserCommand
+        arguments:
+            - '@hbpf.database_manager_locator.user'
+            - '@hbpf.user.provider.resource'
+            - '@security.encoder_factory.generic'
+        tags:
+            -  { name: console.command }

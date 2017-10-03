@@ -17,14 +17,14 @@ use Symfony\Component\Security\Core\Encoder\EncoderFactory;
 use Symfony\Component\Security\Core\Encoder\PasswordEncoderInterface;
 
 /**
- * Class ChangePasswordCommand
+ * Class CreateUserCommand
  *
- * @package Hanaboso\PipesFramework\User\Command
+ * @package Hanaboso\PipesFramework\HbPFUserBundle\Command
  */
-class ChangePasswordCommand extends Command
+class CreateUserCommand extends Command
 {
 
-    private const CMD_NAME = 'user:password:change';
+    private const CMD_NAME = 'user:create';
 
     /**
      * @var DocumentManager|EntityManager
@@ -42,6 +42,11 @@ class ChangePasswordCommand extends Command
     private $encoder;
 
     /**
+     * @var ResourceProvider
+     */
+    private $provider;
+
+    /**
      * ChangePasswordCommand constructor.
      *
      * @param UserDatabaseManagerLocator $userDml
@@ -55,9 +60,10 @@ class ChangePasswordCommand extends Command
     )
     {
         parent::__construct();
-        $this->dm      = $userDml->get();
-        $this->repo    = $this->dm->getRepository($provider->getResource(ResourceEnum::USER));
-        $this->encoder = $encoderFactory->getEncoder($provider->getResource(ResourceEnum::USER));
+        $this->dm       = $userDml->get();
+        $this->repo     = $this->dm->getRepository($provider->getResource(ResourceEnum::USER));
+        $this->encoder  = $encoderFactory->getEncoder($provider->getResource(ResourceEnum::USER));
+        $this->provider = $provider;
     }
 
     /**
@@ -67,7 +73,7 @@ class ChangePasswordCommand extends Command
     {
         $this
             ->setName(self::CMD_NAME)
-            ->setDescription('Changes user\'s password.');
+            ->setDescription('Create new user password.');
     }
 
     /**
@@ -76,16 +82,21 @@ class ChangePasswordCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output): void
     {
-        $output->writeln('Password editing, select user by email:');
+        $output->writeln('Creating user, select user email:');
 
         $pwd1 = '';
-        $user = readline();
+        $email = readline();
         /** @var UserInterface $user */
-        $user = $this->repo->findOneBy(['email' => $user]);
+        $user = $this->repo->findOneBy(['email' => $email]);
 
-        if (!$user) {
-            $output->writeln('User with given email doesn\'t exist.');
+        if ($user) {
+            $output->writeln('User with given email exist.');
         } else {
+            $userNamespace = $this->provider->getResource(ResourceEnum::USER);
+
+            $user = new $userNamespace();
+            $user->setEmail($email);
+            $this->dm->persist($user);
             while (TRUE) {
                 $output->writeln('Set new password:');
                 system('stty -echo');
@@ -102,7 +113,7 @@ class ChangePasswordCommand extends Command
             $user->setPassword($this->encoder->encodePassword($pwd1, ''));
             $this->dm->flush($user);
 
-            $output->writeln('Password changed.');
+            $output->writeln('User created.');
         }
     }
 
