@@ -50,8 +50,8 @@ codesniffer:
 	$(DE) ./vendor/bin/phpcs --standard=./ruleset.xml --colors -p src/ tests/
 
 phpstan:
-	$(DE) ./vendor/bin/phpstan analyse -c phpstan.neon -l 7 src/
-	$(DE) ./vendor/bin/phpstan analyse -c phpstan.neon -l 4 tests/
+	$(DE) ./vendor/bin/phpstan analyse -c phpstan.neon -c ./vendor/pipes/php-check-utils/phpstan.neon -l 7 src/
+	$(DE) ./vendor/bin/phpstan analyse -c phpstan.neon -c ./vendor/pipes/php-check-utils/phpstan.neon -l 4 tests/
 
 phpunit:
 	$(DE) ./vendor/bin/phpunit -c phpunit.xml.dist --colors --stderr tests/Unit
