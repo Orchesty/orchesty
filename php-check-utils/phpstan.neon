@@ -1,0 +1,4 @@
+parameters:
+	reportUnmatchedIgnoredErrors: false
+	ignoreErrors:
+		- '#Call to an undefined method React\\Promise\\PromiseInterface::(otherwise|done|cancel|reject)\(\)\.#'
