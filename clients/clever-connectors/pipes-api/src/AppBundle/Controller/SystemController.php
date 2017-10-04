@@ -111,6 +111,28 @@ class SystemController extends FOSRestController
     }
 
     /**
+     * @Route("/user_systems/user/{userId}/system/{systemKey}/settings", requirements={"userId": "\w+", "systemKey": "[\w|\.]+"})
+     * @Method({"POST", "OPTIONS"})
+     *
+     * @param Request $request
+     * @param string  $userId
+     * @param string  $systemKey
+     *
+     * @return Response
+     */
+    public function saveSystemSettingsAction(Request $request, string $userId, string $systemKey): Response
+    {
+        try {
+            return new JsonResponse(
+                $this->handler->saveSystemSettings($userId, $systemKey, $request->request->all()),
+                200
+            );
+        } catch (SystemException $e) {
+            return new JsonResponse(ControllerUtils::createExceptionData($e), 500);
+        }
+    }
+
+    /**
      * @Route("/user_systems/user/{userId}/system/{systemKey}/uninstall")
      * @Method({"GET", "OPTIONS"})
      *

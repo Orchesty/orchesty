@@ -147,6 +147,27 @@ class SystemManager
 
     /**
      * @param string $user
+     * @param string $systemKey
+     * @param array  $data
+     *
+     * @return SystemInstall
+     * @throws SystemException
+     */
+    public function saveSystemSettings(string $user, string $systemKey, array $data): SystemInstall
+    {
+        $systemInstall = $this->getSystemInstall($user, $systemKey);
+
+        /** @var AuthorizationInterface $system */
+        $system = $this->getSystem($systemKey);
+        $system->setSettings($systemInstall, $data);
+
+        $this->dm->flush();
+
+        return $systemInstall;
+    }
+
+    /**
+     * @param string $user
      * @param string $system
      * @param string $token
      *

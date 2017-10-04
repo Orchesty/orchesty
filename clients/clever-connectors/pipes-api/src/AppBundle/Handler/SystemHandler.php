@@ -88,6 +88,20 @@ class SystemHandler
     /**
      * @param string $user
      * @param string $system
+     * @param array  $data
+     *
+     * @return array
+     */
+    public function saveSystemSettings(string $user, string $system, array $data): array
+    {
+        $this->manager->saveSystemSettings($user, $system, $data);
+
+        return [];
+    }
+
+    /**
+     * @param string $user
+     * @param string $system
      *
      * @return array
      */

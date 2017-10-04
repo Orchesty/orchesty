@@ -191,6 +191,68 @@ class SystemControllerTest extends ControllerTestCaseAbstract
     /**
      *
      */
+    public function testSaveSystemSettings(): void
+    {
+        $this->loginUser('user@example.com', 'pass');
+        $system = (new SystemInstall())
+            ->setUser('someUser')
+            ->setSystem('null.user.group')
+            ->setToken('token');
+        $this->persistAndFlush($system);
+
+        $response = $this->sendPost('/user_systems/user/someUser/system/null.user.group/settings', [
+            'settingOne' => 'settingOne',
+            'settingTwo' => 'settingTwo',
+        ]);
+
+        $this->assertEquals(200, $response->status);
+        $this->assertEquals([], $response->content);
+
+        $this->dm->clear();
+
+        /** @var SystemInstall[] $systems */
+        $systems = $this->dm->getRepository(SystemInstall::class)->findBy([
+            'system' => 'null.user.group',
+            'user'   => 'someUser',
+        ]);
+
+        $this->assertEquals(1, count($systems));
+        $this->assertEquals([
+            'settingOne' => 'settingOne',
+            'settingTwo' => 'settingTwo',
+            'password'   => NULL,
+        ], $systems[0]->getSettings());
+
+        $systems[0]->setSettings(['setting' => 'setting', 'password' => 'passw0rd']);
+        $this->dm->flush();
+
+        $response = $this->sendPost('/user_systems/user/someUser/system/null.user.group/settings', [
+            'settingOne' => 'settingOne',
+            'settingTwo' => 'settingTwo',
+        ]);
+
+        $this->assertEquals(200, $response->status);
+        $this->assertEquals([], $response->content);
+
+        $this->dm->clear();
+
+        /** @var SystemInstall[] $systems */
+        $systems = $this->dm->getRepository(SystemInstall::class)->findBy([
+            'system' => 'null.user.group',
+            'user'   => 'someUser',
+        ]);
+
+        $this->assertEquals(1, count($systems));
+        $this->assertEquals([
+            'settingOne' => 'settingOne',
+            'settingTwo' => 'settingTwo',
+            'password'   => 'passw0rd',
+        ], $systems[0]->getSettings());
+    }
+
+    /**
+     *
+     */
     public function testUninstallSystem(): void
     {
         $this->loginUser('user@example.com', 'pass');
