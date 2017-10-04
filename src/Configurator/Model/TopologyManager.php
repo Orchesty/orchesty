@@ -25,6 +25,8 @@ use Nette\Utils\Strings;
 class TopologyManager
 {
 
+    public const DEFAULT_SCHEME = '<?xml version="1.0" encoding="UTF-8"?><bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn"><bpmn:process id="Process_1" isExecutable="false" /><bpmndi:BPMNDiagram id="BPMNDiagram_1"><bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_1" /></bpmndi:BPMNDiagram></bpmn:definitions>';
+
     /**
      * @var DocumentManager
      */
@@ -54,6 +56,7 @@ class TopologyManager
     public function createTopology(array $data): Topology
     {
         $topology = $this->setTopologyData(new Topology(), $data);
+        $topology->setRawBpmn(self::DEFAULT_SCHEME);
 
         $this->dm->persist($topology);
         $this->dm->flush();

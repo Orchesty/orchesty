@@ -43,6 +43,16 @@ class OAuth2Dto implements OAuth2DtoInterface
     private $tokenUrl;
 
     /**
+     * @var string
+     */
+    private $user = '';
+
+    /**
+     * @var string
+     */
+    private $systemKey = '';
+
+    /**
      * OAuth2Dto constructor.
      *
      * @param string $clientId
@@ -105,6 +115,40 @@ class OAuth2Dto implements OAuth2DtoInterface
     public function getTokenUrl(): string
     {
         return $this->tokenUrl;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isCustomApp(): bool
+    {
+        return empty($this->user) && empty($this->systemKey);
+    }
+
+    /**
+     * @return string
+     */
+    public function getUser(): string
+    {
+        return $this->user;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSystemKey(): string
+    {
+        return $this->systemKey;
+    }
+
+    /**
+     * @param string $user
+     * @param string $systemKey
+     */
+    public function setCustomAppDependencies(string $user, string $systemKey): void
+    {
+        $this->user      = $user;
+        $this->systemKey = $systemKey;
     }
 
 }
