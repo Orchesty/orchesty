@@ -23,11 +23,6 @@ abstract class ProgressCounterAbstract implements ProgressCounterInterface
     use ProgressCounterTrait;
 
     /**
-     * @var
-     */
-    //protected $stream;
-
-    /**
      * @var Client
      */
     protected $redis;
