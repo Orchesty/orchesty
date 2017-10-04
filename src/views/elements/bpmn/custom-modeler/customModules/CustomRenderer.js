@@ -74,11 +74,12 @@ function CustomRenderer(eventBus, styles, pathMap, canvas) {
         return batchTask;
         break;
 
-      case 'generic':
+      case 'custom':
         return this.bpmnRenderer.handlers['bpmn:Task'](parentGfx, element);
       case 'connector':
         return this.bpmnRenderer.handlers['bpmn:ServiceTask'](parentGfx, element);
-      case 'parser':
+      case 'xml_parser':
+      case 'table_parser':
         return this.bpmnRenderer.handlers['bpmn:ScriptTask'](parentGfx, element);
     }
   };
