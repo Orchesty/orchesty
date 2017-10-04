@@ -4,7 +4,8 @@ services:
     image: 'rabbitmq:management-alpine'
   influxdb:
     image: 'influxdb:latest'
-
+  mongo:
+    image: 'mongo:3.4'
   # logstash dummy (tests fail on nonexistent hostname)
   logstash:
     image: busybox

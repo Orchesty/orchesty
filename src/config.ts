@@ -38,5 +38,5 @@ export const mongoStorageOptions: IMongoMessageStorageSettings = {
     port: parseInt(process.env.MONGO_PORT, 10) || 27017,
     user: process.env.MONGO_USER || "",
     pass: process.env.MONGO_PASS || "",
-    db: process.env.MONGO_DB || "repeater_messages",
+    db: process.env.MONGO_DB || "repeater",
 };
