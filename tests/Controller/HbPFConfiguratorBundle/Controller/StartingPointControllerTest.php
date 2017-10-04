@@ -62,7 +62,7 @@ class StartingPointControllerTest extends ControllerTestCaseAbstract
 
         $this->client->request(
             'GET',
-            '/api/topologies/1/test',
+            '/api/topologies/aa/test',
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
