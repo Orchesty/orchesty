@@ -15,6 +15,7 @@ class TopologyListPage extends React.Component {
   
   componentWillMount(){
    // this.props.openTopologyList();
+ //   this.props.needList(true);
     this._sendActions();
   }
 
@@ -53,7 +54,7 @@ function mapStateToProps(state, ownProps){
 }
 
 function mapActionsToProps(dispatch, ownProps){
-  const needList = forced => dispatch(topologyActions.needTopologyList(ownProps.pageKey));
+  const needList = (forced = false) => dispatch(topologyActions.needTopologyList(ownProps.pageKey));
   return {
     needList,
     notLoadedCallback: needList,
