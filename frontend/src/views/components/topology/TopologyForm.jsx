@@ -78,11 +78,6 @@ function validate(values){
   if (!values.name) {
     errors.name = 'Name is required';
   }
-  if (!values.version) {
-    errors.version = 'Version is required';
-  } else if (!isInteger(values.version)){
-    errors.version = 'Version must be integer';
-  }
 
   return errors;
 }
