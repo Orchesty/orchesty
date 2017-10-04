@@ -2,9 +2,9 @@ import config from 'rootApp/config';
 
 import * as notificationActions from 'actions/notificationActions';
 
-var unsubscribe = null;
-var apiGatewayServer = null;
-var apiGatewayServerKey = null;
+let unsubscribe = null;
+let apiGatewayServer = null;
+let apiGatewayServerKey = null;
 
 function check(dispatch, response) {
   if (response.ok){
@@ -54,7 +54,7 @@ export function makeUrl(relUrl, queries){
 }
 
 export function rawRequest(dispatch, method, relUrl, queries, options){
-  options = Object.assign({credentials: 'same-origin'}, options);
+  options = Object.assign({credentials: 'include'}, options);
   return fetch(makeUrl(relUrl, queries), Object.assign({method}, options))
     .then(check.bind(null, dispatch))
     .then(response => response ? response.text() : undefined)
@@ -65,7 +65,7 @@ export function rawRequest(dispatch, method, relUrl, queries, options){
 }
 
 export function rawRequestJSONReceive(dispatch, method, relUrl, queries, options){
-  const opt = Object.assign({method, credentials: 'same-origin'}, options);
+  const opt = Object.assign({method, credentials: 'include'}, options);
   opt.headers = Object.assign({Accept: 'application/json'}, opt.headers);
   
   return fetch(makeUrl(relUrl, queries), opt)
@@ -84,7 +84,7 @@ export default (dispatch, method, relUrl, queries, data) => {
   let options = {
     method: method,
     headers: headers,
-    credentials: 'same-origin'
+    credentials: 'include'
   };
   if (data) {
     headers['Content-Type'] = 'application/json';
