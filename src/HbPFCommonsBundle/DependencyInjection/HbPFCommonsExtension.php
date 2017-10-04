@@ -27,7 +27,6 @@ class HbPFCommonsExtension extends Extension implements PrependExtensionInterfac
         $loader->load('parameters.yml');
         $loader->load('monolog.yml');
         $loader->load('sensio_framework_extra.yml');
-        $loader->load('snc_redis.yml');
 
         $container->setParameter('src_dir', __DIR__ . '/../..');
     }
