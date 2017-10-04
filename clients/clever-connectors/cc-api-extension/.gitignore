@@ -1,0 +1,8 @@
+# Exclude IDE config
+.idea
+
+# Exclude vendor
+vendor
+
+# Exclude temp dir for test
+/temp
