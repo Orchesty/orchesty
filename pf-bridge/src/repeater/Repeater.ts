@@ -53,10 +53,12 @@ class Repeater {
      * Infinite checking loop
      */
     private checkMessages() {
-        logger.info(`Checking msg storage. Next check in ${this.settings.check_timeout}ms`, { node_id: "repeater" });
-        this.storage.get()
+        this.storage.findExpired()
             .then((toResend: Message[]) => {
-                logger.info(`Found ${toResend.length} messages to resend.`, { node_id: "repeater" });
+                logger.info(
+                    `Found ${toResend.length} messages to resend. Next check in ${this.settings.check_timeout}ms.`,
+                    { node_id: "repeater" },
+                );
 
                 toResend.forEach((msg: Message) => {
                     this.resend(msg)

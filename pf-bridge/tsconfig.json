@@ -10,7 +10,9 @@
     "typeRoots": [
       "./node_modules/@types",
       "./@types"
-    ]
+    ],
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
   },
   "compileOnSave": true,
   "include": [
