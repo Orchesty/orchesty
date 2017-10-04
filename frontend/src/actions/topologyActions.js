@@ -7,7 +7,7 @@ import config from 'rootApp/config';
 import * as notificationActions from './notificationActions';
 import * as processActions from './processActions';
 
-const {createPaginationList, listLoading, listError, listReceive, listDelete, listChangeSort, listChangePage} = listFactory('TOPOLOGY/LIST/');
+const {createPaginationList, listLoading, listError, listReceive, listDelete, listChangeSort, listChangePage, invalidateLists} = listFactory('TOPOLOGY/LIST/');
 
 function receive(data){
   return {
@@ -114,6 +114,7 @@ export function topologyCreate(data){
       response => {
         if (response){
           dispatch(receive(response));
+          dispatch(invalidateLists());
         }
         return response;
       }
@@ -130,6 +131,7 @@ export function cloneTopology(id, silent = false){
             dispatch(notificationActions.addSuccess('Node was cloned successfully.'));
           }
           dispatch(receive(response));
+          dispatch(invalidateLists());
         }
         return response;
       }
@@ -179,6 +181,9 @@ export function saveTopologySchema(id, schema){
         if (response) {
           dispatch(receiveSchema(response._id, schema));
           dispatch(receive(response));
+          if (response._id != id){
+            dispatch(invalidateLists());
+          }
         }
         return response;
     })
