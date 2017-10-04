@@ -76,7 +76,7 @@ class OAuth2Provider implements OAuth2ProviderInterface, LoggerAwareInterface
     public function authorize(OAuth2DtoInterface $dto, array $scopes = []): void
     {
         $client           = $this->createClient($dto);
-        $authorizationUrl = $this->getAuthorizeUrl($client->getAuthorizationUrl(), $scopes);
+        $authorizationUrl = $this->getAuthorizeUrl($dto, $client->getAuthorizationUrl(), $scopes);
 
         $this->redirect->make($authorizationUrl);
     }
@@ -151,14 +151,20 @@ class OAuth2Provider implements OAuth2ProviderInterface, LoggerAwareInterface
     }
 
     /**
-     * @param string $authorizeUrl
-     * @param array  $scopes
+     * @param OAuth2DtoInterface $dto
+     * @param string             $authorizeUrl
+     * @param array              $scopes
      *
      * @return string
      */
-    private function getAuthorizeUrl(string $authorizeUrl, array $scopes): string
+    private function getAuthorizeUrl(OAuth2DtoInterface $dto, string $authorizeUrl, array $scopes): string
     {
-        return sprintf('%s%s', $authorizeUrl, ScopeFormater::getScopes($scopes));
+        $state = '';
+        if (!$dto->isCustomApp()) {
+            $state = sprintf('&state=%s', base64_encode($dto->getUser() . ':' . $dto->getSystemKey()));
+        }
+
+        return sprintf('%s%s%s', $authorizeUrl, ScopeFormater::getScopes($scopes), $state);
     }
 
     /**
