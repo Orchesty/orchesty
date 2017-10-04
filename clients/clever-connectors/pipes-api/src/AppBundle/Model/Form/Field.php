@@ -42,12 +42,12 @@ class Field
      *
      * @param string $type
      * @param string $label
-     * @param mixed  $value
+     * @param null   $value
      * @param bool   $required
      *
      * @throws CleverConnectorsException
      */
-    public function __construct(string $type, string $label, $value, bool $required = FALSE)
+    public function __construct(string $type, string $label, $value = NULL, bool $required = FALSE)
     {
         if (!in_array($type, $this->getTypes())) {
             throw new CleverConnectorsException(

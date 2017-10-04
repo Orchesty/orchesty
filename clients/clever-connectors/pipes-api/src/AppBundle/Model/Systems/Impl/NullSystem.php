@@ -21,9 +21,10 @@ use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 class NullSystem implements WebhookSystemInterface
 {
 
-    public const URL      = 'url';
-    public const USERNAME = 'username';
-    public const PASSWORD = 'password';
+    public const URL          = 'url';
+    public const USERNAME     = 'username';
+    public const PASSWORD     = 'password';
+    public const PASSWORD_SET = 'password_set';
 
     /**
      * @var DocumentManager
@@ -284,7 +285,7 @@ class NullSystem implements WebhookSystemInterface
     {
         if (isset($settings[$key])) {
             if ($key == self::PASSWORD) {
-                return empty($settings[$key]) ? FALSE : TRUE;
+                return empty($settings[self::PASSWORD_SET]) ? FALSE : TRUE;
             }
 
             return $settings[$key];
