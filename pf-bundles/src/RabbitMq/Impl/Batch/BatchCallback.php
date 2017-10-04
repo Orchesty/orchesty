@@ -158,15 +158,15 @@ class BatchCallback implements AsyncCallbackInterface, LoggerAwareInterface
                             ))
                         );
                 }
-            })->otherwise(function ($e) use ($channel, $message) {
-                return $this->batchErrorCallback($channel, $message, 2001, [
-                    'result_code'    => 2001,
-                    'result_status'  => "UNKNOWN_ERROR",
-                    'result_message' => $e->getMessage(),
-                    'result_detail'  => "",
-                ])->then(function () use ($e) {
-                    return reject($e);
-                });
+            })->otherwise(function (Exception $e) use ($channel, $message) {
+                return $this
+                    ->batchErrorCallback(
+                        $channel,
+                        $message,
+                        new ErrorMessage(2001, 'UNKNOWN_ERROR', $e->getMessage()))
+                    ->then(function () use ($e) {
+                        return reject($e);
+                    });
             });
     }
 
@@ -201,7 +201,9 @@ class BatchCallback implements AsyncCallbackInterface, LoggerAwareInterface
             ]),
             '',
             $message->getHeader('reply-to')
-        );
+        )->then(function (): void {
+            $this->logger->info('Published test item.');
+        });
     }
 
     /**
@@ -214,8 +216,8 @@ class BatchCallback implements AsyncCallbackInterface, LoggerAwareInterface
      */
     private function batchAction(Message $message, Channel $channel, LoopInterface $loop): PromiseInterface
     {
-        $itemCallBack = function (array $data) use ($message, $channel) {
-            return $this->itemCallback($channel, $message, $data);
+        $itemCallBack = function (SuccessMessage $successMessage) use ($message, $channel) {
+            return $this->itemCallback($channel, $message, $successMessage);
         };
 
         return $this->batchAction
@@ -226,26 +228,26 @@ class BatchCallback implements AsyncCallbackInterface, LoggerAwareInterface
     }
 
     /**
-     * @param Channel $channel
-     * @param Message $message
-     * @param array   $data
+     * @param Channel        $channel
+     * @param Message        $message
+     * @param SuccessMessage $successMessage
      *
      * @return PromiseInterface
      */
-    private function itemCallback(Channel $channel, Message $message, array $data): PromiseInterface
+    private function itemCallback(Channel $channel, Message $message, SuccessMessage $successMessage): PromiseInterface
     {
         return $channel->publish(
-            json_encode($data),
+            sprintf('{"data":%s,"settings":%s}', $successMessage->getData(), $successMessage->getSetting()),
             array_merge($this->getHeaders($message), [
                 self::TYPE        => 'batch_item',
-                self::SEQUENCE_ID => $data['id'],
+                self::SEQUENCE_ID => $successMessage->getSequenceId(),
                 self::RESULT_CODE => 0,
             ]),
             '',
             $message->getHeader('reply-to')
         )
-            ->then(function () use ($data): void {
-                $this->logger->info(sprintf('Published batch item %s.', $data['id']));
+            ->then(function () use ($successMessage): void {
+                $this->logger->info(sprintf('Published batch item %s.', $successMessage->getSequenceId()));
             });
     }
 
@@ -267,32 +269,36 @@ class BatchCallback implements AsyncCallbackInterface, LoggerAwareInterface
             '',
             $message->getHeader('reply-to')
         )->then(function (): void {
-            $this->logger->info('Published batch total');
+            $this->logger->info('Published batch total.');
         });
     }
 
     /**
-     * @param Channel $channel
-     * @param Message $message
+     * @param Channel      $channel
+     * @param Message      $message
      *
-     * @param int     $resultCode
-     * @param array   $body
+     * @param ErrorMessage $errorMessage
      *
      * @return PromiseInterface
      */
-    private function batchErrorCallback(Channel $channel, Message $message, int $resultCode,
-                                        array $body): PromiseInterface
+    private function batchErrorCallback(Channel $channel, Message $message,
+                                        ErrorMessage $errorMessage): PromiseInterface
     {
         return $channel->publish(
-            json_encode($body),
+            json_encode([
+                'result_code'    => $errorMessage->getCode(),
+                'result_status'  => $errorMessage->getStatus(),
+                'result_message' => $errorMessage->getMessage(),
+                'result_detail'  => $errorMessage->getDetail(),
+            ]),
             array_merge($this->getHeaders($message), [
                 self::TYPE        => 'batch_total',
-                self::RESULT_CODE => $resultCode,
+                self::RESULT_CODE => $errorMessage->getCode(),
             ]),
             '',
             $message->getHeader('reply-to')
         )->then(function (): void {
-            $this->logger->info('Published batch error total');
+            $this->logger->info('Published batch error total.');
         });
     }
 

@@ -12,6 +12,7 @@ use Bunny\Message;
 use Clue\React\Buzz\Browser;
 use GuzzleHttp\Psr7\Request;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\BatchActionInterface;
+use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use React\EventLoop\LoopInterface;
@@ -42,18 +43,15 @@ class DemoCallback implements BatchActionInterface
         for ($i = 1; $i <= 10; $i++) {
             $requests[] = $this
                 ->fetchData($browser, $this->createRequest($i))
-                ->then(function (ResponseInterface $response) use ($i): array {
+                ->then(function (ResponseInterface $response) use ($i): SuccessMessage {
+                    $successMessage = new SuccessMessage($i);
                     if ($response->getHeader('content-type') == 'application/json') {
-                        return [
-                            'id'   => $i,
-                            'data' => json_decode($response->getBody()->getContents()),
-                        ];
+                        $successMessage->setData($response->getBody()->getContents());
                     } else {
-                        return [
-                            'id'   => $i,
-                            'data' => json_encode($response->getBody()->getContents()),
-                        ];
+                        $successMessage->setData(json_encode($response->getBody()->getContents()));
                     }
+
+                    return $successMessage;
                     // @todo add reject function
                 })->then($itemCallBack);
         }
