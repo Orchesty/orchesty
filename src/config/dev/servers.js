@@ -4,6 +4,7 @@ export default {
     servers: {
       apiary: {
         url: 'http://private-973c6-pipes1.apiary-mock.com',
+        noCredentials: true,
         caption: 'Apiary'
       },
       dev_docker: {
