@@ -35,13 +35,20 @@ class CurlSender
     private $clientFactory;
 
     /**
+     * @var string
+     */
+    private $certPath;
+
+    /**
      * CurlService constructor.
      *
      * @param ClientFactory $clientFactory
+     * @param string        $certPath
      */
-    public function __construct(ClientFactory $clientFactory)
+    public function __construct(ClientFactory $clientFactory, string $certPath = '')
     {
         $this->clientFactory = $clientFactory;
+        $this->certPath      = $certPath;
     }
 
     /**
@@ -53,6 +60,10 @@ class CurlSender
      */
     public function send(RequestInterface $request, array $options = []): ResponseInterface
     {
+        if ($this->certPath !== '') {
+            $options['cert'] = $this->certPath;
+        }
+
         try {
             return $this->clientFactory->create()->send($request, $options);
         } catch (Exception $e) {

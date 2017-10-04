@@ -8,6 +8,7 @@
 
 namespace CcApi\Bridges\DI;
 
+use CcApi\Connector\ConnectorManager;
 use CcApi\Curl\ClientFactory;
 use CcApi\Curl\CurlSender;
 use Nette\DI\CompilerExtension;
@@ -26,6 +27,7 @@ class CcApiExtension extends CompilerExtension
     private const DEFAULT_CONFIG = [
         'base_uri' => '',
         'timeout'  => '30',
+        'cert'     => '',
     ];
 
     /**
@@ -45,7 +47,11 @@ class CcApiExtension extends CompilerExtension
 
         $builder
             ->addDefinition($this->prefix('curl.sender'))
-            ->setFactory(CurlSender::class, []);
+            ->setFactory(CurlSender::class, [$this->prefix('@guzzle.client.factory'), $config['cert']]);
+
+        $builder
+            ->addDefinition($this->prefix('connector.manager'))
+            ->setFactory(ConnectorManager::class, [$this->prefix('@curl.sender')]);
     }
 
 }

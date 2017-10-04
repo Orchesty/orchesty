@@ -9,6 +9,7 @@
 namespace Tests\Bridges\DI;
 
 use CcApi\Bridges\DI\CcApiExtension;
+use CcApi\Connector\ConnectorInterface;
 use CcApi\Curl\ClientFactory;
 use CcApi\Curl\CurlSender;
 use Nette\DI\Compiler;
@@ -38,6 +39,7 @@ class CcApiExtensionTest extends TestCase
 
         $this->assertInstanceOf(ClientFactory::class, $container->getService('cc_api.guzzle.client.factory'));
         $this->assertInstanceOf(CurlSender::class, $container->getService('cc_api.curl.sender'));
+        $this->assertInstanceOf(ConnectorInterface::class, $container->getService('cc_api.connector.manager'));
     }
 
 }

@@ -26,4 +26,4 @@ phpstan:
 phpunit:
 	$(DR) php ./vendor/bin/phpunit --color tests
 
-test: codesniffer phpstan phpunit phpintegration
+test: codesniffer phpstan phpunit
