@@ -29,12 +29,12 @@ class TopologyForm extends React.Component {
   }
 
   onSubmit(data){
-    const {name, descr, version, enabled} = data;
+    const {name, descr, enabled} = data;
     const {onProcessing} = this.props;
     if (onProcessing){
       onProcessing(true);
     }
-    this.props.commitAction({name, descr, version: parseInt(version, 10), enabled: Boolean(enabled)}).then(
+    this.props.commitAction({name, descr, enabled: Boolean(enabled)}).then(
       response => {
         const {onSuccess, onProcessing} = this.props;
         if (typeof onProcessing == 'function'){
@@ -57,7 +57,6 @@ class TopologyForm extends React.Component {
         {!addNew && <Field name="_id" component={FormTextInput} label="Id" readOnly/>}
         <Field name="name" component={FormTextInput} label="Name" />
         <Field name="descr" component={FormTextInput} label="Description" />
-        <Field name="version" component={FormNumberInput} label="Version" step="1" />
         <Field name="enabled" component={FormCheckboxInput} label="Enabled" />
         <button ref={this.setButton} className="hidden" />
       </form>
@@ -78,11 +77,6 @@ function validate(values){
   const errors = {};
   if (!values.name) {
     errors.name = 'Name is required';
-  }
-  if (!values.version) {
-    errors.version = 'Version is required';
-  } else if (!isInteger(values.version)){
-    errors.version = 'Version must be integer';
   }
 
   return errors;
