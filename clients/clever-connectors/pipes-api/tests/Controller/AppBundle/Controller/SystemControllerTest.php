@@ -334,6 +334,8 @@ class SystemControllerTest extends ControllerTestCaseAbstract
      */
     public function testSetPassword(): void
     {
+        $this->loginUser('user@example.com', 'pass');
+
         $system = (new SystemInstall())
             ->setUser('someUser')
             ->setSystem('null.user.group')
