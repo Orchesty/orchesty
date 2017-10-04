@@ -330,6 +330,36 @@ class SystemControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
+     *
+     */
+    public function testSetPassword(): void
+    {
+        $system = (new SystemInstall())
+            ->setUser('someUser')
+            ->setSystem('null.user.group')
+            ->setToken('token')
+            ->setSettings(['password' => 'pass1']);
+        $this->persistAndFlush($system);
+
+        $response = $this->sendPut(
+            '/user_systems/user/someUser/system/null.user.group/set_password',
+            ['password' => 'pass2']
+        );
+        $this->assertEquals(200, $response->status);
+
+        $this->dm->clear();
+
+        /** @var SystemInstall[] $systems */
+        $systems = $this->dm->getRepository(SystemInstall::class)->findBy([
+            'user'   => 'someUser',
+            'system' => 'null.user.group',
+        ]);
+
+        $this->assertEquals(1, count($systems));
+        $this->assertEquals('pass2', $systems[0]->getSettings()['password']);
+    }
+
+    /**
      * @return array
      */
     private function getArrayDataForAssert(): array

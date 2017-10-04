@@ -179,7 +179,7 @@ class SystemController extends FOSRestController
     public function setPasswordAction(Request $request, string $userId, string $systemKey): Response
     {
         try {
-            return new JsonResponse($this->handler->setPassword($userId, $systemKey, $request->request->all()), 202);
+            return new JsonResponse($this->handler->setPassword($userId, $systemKey, $request->request->all()), 200);
         } catch (SystemException $e) {
             return new JsonResponse(ControllerUtils::createExceptionData($e), 500);
         }
