@@ -10,9 +10,11 @@ namespace Tests\Unit\Commons\ProgressCounter;
 
 use Hanaboso\PipesFramework\Commons\Enum\ProgressCounterStatusEnum;
 use Hanaboso\PipesFramework\Commons\ProgressCounter\ProgressCounterService;
+use Hanaboso\PipesFramework\RabbitMq\Producer\AbstractProducer;
 use Mockery;
 use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
+use PHPUnit_Framework_MockObject_MockObject;
 use Predis\Client;
 use Tests\PrivateTrait;
 
@@ -32,14 +34,17 @@ class ProgressCounterServiceTest extends TestCase
     protected $redis;
 
     /**
+     * @var PHPUnit_Framework_MockObject_MockObject|AbstractProducer
+     */
+    protected $producer;
+    /**
      *
      */
     public function setUp(): void
     {
         parent::setUp();
-        //$this->redis = $this->getMockBuilder(Client::class)->disableOriginalConstructor()->getMock();
-        $this->redis = Mockery::mock(Client::class);
-
+        $this->redis    = Mockery::mock(Client::class);
+        $this->producer = $this->getMockBuilder(AbstractProducer::class)->disableOriginalConstructor()->getMock();
     }
 
     /**
@@ -48,7 +53,10 @@ class ProgressCounterServiceTest extends TestCase
     public function testSetTotal(): void
     {
         $this->redis->shouldReceive('set')->with('aEcBuFkS12345:total', 6)->once()->andReturnUndefined();
-        $processStatus = new ProgressCounterService($this->redis);
+        $this->redis->shouldReceive('get')->times(3);
+        $this->producer->expects($this->once())->method('publish')->willReturn(TRUE);
+
+        $processStatus = new ProgressCounterService($this->redis, $this->producer);
         $processStatus->setTotal('aEcBuFkS12345', 6);
     }
 
@@ -58,7 +66,10 @@ class ProgressCounterServiceTest extends TestCase
     public function testIncrement(): void
     {
         $this->redis->shouldReceive('incr')->with('aEcBuFkS12345:progress')->once()->andReturnUndefined();
-        $processStatus = new ProgressCounterService($this->redis);
+        $this->redis->shouldReceive('get')->times(3);
+        $this->producer->expects($this->once())->method('publish')->willReturn(TRUE);
+
+        $processStatus = new ProgressCounterService($this->redis, $this->producer);
         $processStatus->increment('aEcBuFkS12345');
     }
 
@@ -71,8 +82,10 @@ class ProgressCounterServiceTest extends TestCase
             ->with('aEcBuFkS12345:status', ProgressCounterStatusEnum::FAILED)
             ->once()
             ->andReturnUndefined();
+        $this->redis->shouldReceive('get')->times(3);
+        $this->producer->expects($this->once())->method('publish')->willReturn(TRUE);
 
-        $processStatus = new ProgressCounterService($this->redis);
+        $processStatus = new ProgressCounterService($this->redis, $this->producer);
         $processStatus->setStatus('aEcBuFkS12345', new ProgressCounterStatusEnum(ProgressCounterStatusEnum::FAILED));
     }
 
@@ -96,8 +109,10 @@ class ProgressCounterServiceTest extends TestCase
             ])
             ->once()
             ->andReturnUndefined();
+        $this->redis->shouldReceive('get')->times(3);
+        $this->producer->expects($this->once())->method('publish')->willReturn(TRUE);
 
-        $processStatus = new ProgressCounterService($this->redis);
+        $processStatus = new ProgressCounterService($this->redis, $this->producer);
         $processStatus->setStatus('aEcBuFkS12345', new ProgressCounterStatusEnum(ProgressCounterStatusEnum::SUCCESS));
     }
 
@@ -109,9 +124,12 @@ class ProgressCounterServiceTest extends TestCase
         $this->redis->shouldReceive('get')
             ->andReturn(5, 3, ProgressCounterStatusEnum::FAILED);
 
-        $processStatus = new ProgressCounterService($this->redis);
+        $processStatus = new ProgressCounterService($this->redis, $this->producer);
         $message       = $this->invokeMethod($processStatus, 'prepareMessage', ['aEcBuFkS12345']);
-        $this->assertEquals(['total' => 5, 'progress' => 3, 'status' => 'failed'], $message);
+        $this->assertEquals(
+            ['total' => 5, 'progress' => 3, 'status' => 'failed', 'process_id' => 'aEcBuFkS12345'],
+            $message
+        );
     }
 
 }

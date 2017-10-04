@@ -9,6 +9,7 @@
 namespace Hanaboso\PipesFramework\Commons\ProgressCounter;
 
 use Hanaboso\PipesFramework\Commons\Enum\ProgressCounterStatusEnum;
+use Hanaboso\PipesFramework\RabbitMq\Producer\AbstractProducer;
 use Predis\Client;
 
 /**
@@ -32,13 +33,20 @@ abstract class ProgressCounterAbstract implements ProgressCounterInterface
     protected $redis;
 
     /**
+     * @var AbstractProducer
+     */
+    protected $producer;
+
+    /**
      * ProgressCounterService constructor.
      *
-     * @param Client $redis
+     * @param Client           $redis
+     * @param AbstractProducer $producer
      */
-    public function __construct(Client $redis)
+    public function __construct(Client $redis, AbstractProducer $producer)
     {
-        $this->redis = $redis;
+        $this->redis    = $redis;
+        $this->producer = $producer;
     }
 
     /**
@@ -84,8 +92,7 @@ abstract class ProgressCounterAbstract implements ProgressCounterInterface
             $this->redis->set($this->getKey($processId, self::PROGRESS_COUNTER_TOTAL), $total);
         }
 
-        //TODO: connect after finish socket server
-        //$this->stream->send($this->prepareMessage($processId));
+        $this->producer->publish($this->prepareMessage($processId));
     }
 
     /**
@@ -96,8 +103,7 @@ abstract class ProgressCounterAbstract implements ProgressCounterInterface
     {
         $this->redis->set($this->getKey($processId, self::PROGRESS_COUNTER_TOTAL), $total);
 
-        //TODO: connect after finish socket server
-        //$this->stream->send($this->prepareMessage($processId));
+        $this->producer->publish($this->prepareMessage($processId));
     }
 
     /**
@@ -107,8 +113,7 @@ abstract class ProgressCounterAbstract implements ProgressCounterInterface
     {
         $this->redis->incr(self::getKey($processId, self::PROGRESS_COUNTER_PROGRESS));
 
-        //TODO: connect after finish socket server
-        //$this->stream->send($this->prepareMessage($processId));
+        $this->producer->publish($this->prepareMessage($processId));
     }
 
     /**
@@ -119,8 +124,7 @@ abstract class ProgressCounterAbstract implements ProgressCounterInterface
     {
         $this->redis->set(self::getKey($processId, self::PROGRESS_COUNTER_STATUS), $status->getValue());
 
-        //TODO: connect after finish socket server
-        //$this->stream->send($this->prepareMessage($processId));
+        $this->producer->publish($this->prepareMessage($processId));
 
         if ($status->getValue() == ProgressCounterStatusEnum::SUCCESS) {
             $this->garbageData($processId);
@@ -135,9 +139,10 @@ abstract class ProgressCounterAbstract implements ProgressCounterInterface
     protected function prepareMessage(string $processId): array
     {
         return [
-            'total'    => $this->redis->get(self::getKey($processId, self::PROGRESS_COUNTER_TOTAL)),
-            'progress' => $this->redis->get(self::getKey($processId, self::PROGRESS_COUNTER_PROGRESS)),
-            'status'   => $this->redis->get(self::getKey($processId, self::PROGRESS_COUNTER_STATUS)),
+            'process_id' => $processId,
+            'total'      => $this->redis->get(self::getKey($processId, self::PROGRESS_COUNTER_TOTAL)),
+            'progress'   => $this->redis->get(self::getKey($processId, self::PROGRESS_COUNTER_PROGRESS)),
+            'status'     => $this->redis->get(self::getKey($processId, self::PROGRESS_COUNTER_STATUS)),
         ];
     }
 
