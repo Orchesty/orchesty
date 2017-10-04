@@ -5,7 +5,7 @@ security:
             cost: 12
     providers:
         user_provider:
-            entity:
+            mongodb:
                 class: Hanaboso\PipesFramework\User\Document\User
                 property: email
     firewalls:
