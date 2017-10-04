@@ -211,8 +211,16 @@ services:
       environment:
         SPITTER_PORT: 3000
         SPITTER_HOST: 0.0.0.0
+        SPITTER_PREFFIX: /spitter
       ports:
         - ${DEV_IP}:8090:3000
+
+    redis:
+        image: redis:3.2-alpine
+        ports:
+        - ${DEV_IP}:6379:6379
+        volumes:
+        - redis:/data
 
 volumes:
   elasticsearch: {}
@@ -220,3 +228,4 @@ volumes:
   influxdb: {}
   mongodb: {}
   rabbitmq: {}
+  redis: {}

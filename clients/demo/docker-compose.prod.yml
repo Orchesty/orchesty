@@ -74,3 +74,10 @@ services:
           - ${DEV_IP}:2003:2003
         volumes:
           - ./.docker-volumes/influxdb-data:/var/lib/influxdb
+
+    redis:
+        image: redis:3.2-alpine
+        ports:
+        - ${DEV_IP}:6379:6379
+        volumes:
+        - ./.docker-volumes/redis-data:/data
