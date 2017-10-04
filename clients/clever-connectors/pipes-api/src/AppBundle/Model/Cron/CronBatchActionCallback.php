@@ -11,6 +11,7 @@ namespace CleverConnectors\AppBundle\Model\Cron;
 use Bunny\Message;
 use Exception;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\BatchActionInterface;
+use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
 use InvalidArgumentException;
 use JMS\Serializer\Serializer;
 use Psr\Log\LoggerAwareInterface;
@@ -136,12 +137,10 @@ class CronBatchActionCallback implements BatchActionInterface, LoggerAwareInterf
      */
     public function prepareData(array $item, int $i): PromiseInterface
     {
-        $data = [
-            'id'   => $i,
-            'data' => $item,
-        ];
+        $message = new SuccessMessage($i);
+        $message->setData(json_encode($item));
 
-        return resolve($data);
+        return resolve($message);
     }
 
     /**

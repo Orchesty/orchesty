@@ -11,6 +11,7 @@ namespace Tests\Unit\AppBundle\Cron;
 use Bunny\Message;
 use CleverConnectors\AppBundle\Model\Cron\CronBatchActionCallback;
 use Exception;
+use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
 use InvalidArgumentException;
 use JMS\Serializer\Serializer;
 use PHPUnit_Framework_MockObject_MockObject;
@@ -180,13 +181,10 @@ class CronBatchActionCallbackTest extends KernelTestCase
 
         $callback
             ->prepareData(['id' => '5'], 1)
-            ->then(function (array $message) use ($loop): void {
-                $this->assertSame([
-                    'id'   => 1,
-                    'data' => [
-                        'id' => '5',
-                    ],
-                ], $message);
+            ->then(function (SuccessMessage $message) use ($loop): void {
+                $this->assertSame(1, $message->getSequenceId());
+                $this->assertSame('{"id":"5"}', $message->getData());
+                $this->assertSame('[]', $message->getSetting());
                 $loop->stop();
             })
             ->done();
