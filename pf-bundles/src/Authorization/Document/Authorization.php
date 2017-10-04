@@ -34,18 +34,28 @@ class Authorization
     private $authorizationKey;
 
     /**
-     * @var mixed
-     *
-     * @ODM\Field(type="string")
+     * @var array
      */
     private $token = [];
 
     /**
-     * @var mixed
+     * @var string
      *
      * @ODM\Field(type="string")
      */
+    private $encryptedToken;
+
+    /**
+     * @var array
+     */
     private $settings = [];
+
+    /**
+     * @var string
+     *
+     * @ODM\Field(type="string")
+     */
+    private $encryptedSettings;
 
     /**
      * Authorization constructor.
@@ -121,16 +131,16 @@ class Authorization
      * @ODM\PreFlush
      */
     public function preFlushEncrypt(): void {
-        $this->token = CryptManager::encrypt($this->token);
-        $this->settings = CryptManager::encrypt($this->settings);
+        $this->encryptedToken = CryptManager::encrypt($this->token);
+        $this->encryptedSettings = CryptManager::encrypt($this->settings);
     }
 
     /**
      * @ODM\PostLoad
      */
-    public function postLoadEncrypt(): void {
-        $this->token = CryptManager::decrypt($this->token);
-        $this->settings = CryptManager::decrypt($this->settings);
+    public function postLoadDecrypt(): void {
+        $this->token = CryptManager::decrypt($this->encryptedToken);
+        $this->settings = CryptManager::decrypt($this->encryptedSettings);
     }
 
 }

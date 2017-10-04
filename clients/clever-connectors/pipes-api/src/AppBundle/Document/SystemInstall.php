@@ -58,11 +58,16 @@ class SystemInstall
     protected $created;
 
     /**
-     * @var mixed
+     * @var array
+     */
+    protected $settings = [];
+
+    /**
+     * @var string
      *
      * @ODM\Field(type="string")
      */
-    protected $settings = [];
+    protected $encryptedSettings;
 
     /**
      * SystemInstall constructor.
@@ -199,7 +204,7 @@ class SystemInstall
      */
     public function encrypt(): void
     {
-        $this->settings = CryptManager::encrypt($this->settings);
+        $this->encryptedSettings = CryptManager::encrypt($this->settings);
     }
 
     /**
@@ -209,7 +214,7 @@ class SystemInstall
      */
     public function decrypt(): void
     {
-        $this->settings = CryptManager::decrypt($this->settings);
+        $this->settings = CryptManager::decrypt($this->encryptedSettings);
     }
 
 }

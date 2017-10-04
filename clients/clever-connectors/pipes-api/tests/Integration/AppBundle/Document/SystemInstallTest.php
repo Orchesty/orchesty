@@ -37,9 +37,10 @@ class SystemInstallTest extends DatabaseTestCaseAbstract
 
         $this->assertArrayHasKey($sys->getId(), $data);
         $this->assertArrayHasKey('user', $data[$sys->getId()]);
-        $this->assertArrayHasKey('settings', $data[$sys->getId()]);
+        $this->assertArrayHasKey('encryptedSettings', $data[$sys->getId()]);
+        $this->assertArrayNotHasKey('settings', $data[$sys->getId()]);
         $this->assertEquals($user, $data[$sys->getId()]['user']);
-        $this->assertInternalType('string', $data[$sys->getId()]['settings']);
+        $this->assertInternalType('string', $data[$sys->getId()]['encryptedSettings']);
 
         // postLoad should decrypt the data
         /** @var SystemInstall $loaded */

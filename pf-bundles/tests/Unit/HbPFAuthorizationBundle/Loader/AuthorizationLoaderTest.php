@@ -37,9 +37,8 @@ class AuthorizationLoaderTest extends KernelTestCaseAbstract
     protected function setUp(): void
     {
         parent::setUp();
-        $crypt = $this->container->get('hbpf.crypt.crypt_manager');
         $auth  = new Authorization('magento2.auth');
-        $auth->setEncryptedToken($crypt->encrypt('Password'));
+        $auth->setToken(['password' => 'Password']);
 
         $repo = $this->createPartialMock(AuthorizationRepository::class, ['getInstalledKeys']);
         $repo->method('getInstalledKeys')->willReturn(['magento2.auth']);

@@ -36,10 +36,14 @@ class AuthorizationTest extends DatabaseTestCaseAbstract
         ])->toArray();
 
         $this->assertArrayHasKey($authorization->getId(), $data);
-        $this->assertArrayHasKey('token', $data[$authorization->getId()]);
-        $this->assertArrayHasKey('settings', $data[$authorization->getId()]);
-        $this->assertInternalType('string', $data[$authorization->getId()]['token']);
-        $this->assertInternalType('string', $data[$authorization->getId()]['settings']);
+
+        $this->assertArrayNotHasKey('token', $data[$authorization->getId()]);
+        $this->assertArrayHasKey('encryptedToken', $data[$authorization->getId()]);
+        $this->assertInternalType('string', $data[$authorization->getId()]['encryptedToken']);
+
+        $this->assertArrayNotHasKey('settings', $data[$authorization->getId()]);
+        $this->assertArrayHasKey('encryptedSettings', $data[$authorization->getId()]);
+        $this->assertInternalType('string', $data[$authorization->getId()]['encryptedSettings']);
 
         // postLoad should decrypt the data
         $loaded = $this->dm->getRepository(Authorization::class)->find($authorization->getId());
