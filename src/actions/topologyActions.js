@@ -172,7 +172,7 @@ export function saveTopologySchema(id, schema){
   return dispatch => {
     return rawRequestJSONReceive(dispatch, 'PUT', `/topologies/${id}/schema.bpmn`, null, {
       headers: {
-        'Content-Type': 'application/bpmn+xml'
+        'Content-Type': 'application/xml'
       },
       body: schema
     }).then(response => {
