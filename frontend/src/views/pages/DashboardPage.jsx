@@ -1,24 +1,21 @@
 import React from 'react'
 import { connect } from 'react-redux';
 
-import * as notificationActions from 'actions/notificationActions';
+import * as applicationActions from 'actions/applicationActions';
 
 class DashboardPage extends React.Component {
   constructor(props) {
     super(props);
   }
 
-  toasterTest(){
-    this.props.addNotification('error', 'Test error notification');
-  }
-
   render() {
+    const {selectPage} = this.props;
     return (
       <div className="right_col" role="main">
         <div className="main-page">
-          Dashboard
           <div>
-            <a className="btn btn-primary" onClick={this.toasterTest.bind(this)}>Toaster test</a>
+            Welcome, continue to topology list <br/>
+            <a className="btn btn-primary" onClick={() => selectPage('topology_list')}>Go To Topology List</a>
           </div>
         </div>
       </div>
@@ -28,7 +25,7 @@ class DashboardPage extends React.Component {
 
 function mapActionsToProps(dispatch){
   return {
-    addNotification: (type, message) => dispatch(notificationActions.addNotification(type, message)),
+    selectPage: type => dispatch(applicationActions.selectPage(type)),
   }
 }
 
