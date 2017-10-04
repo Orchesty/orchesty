@@ -63,14 +63,8 @@ class SystemHandler
     public function getUserSystems(string $user): array
     {
         $systems = [];
-
-        foreach ($this->manager->getUserSystems($user) as $innerSystem) {
-            $systems[] = array_merge(
-                $innerSystem->toArray(),
-                [
-                    'authorized' => $innerSystem->isAuthorized(),
-                ]
-            );
+        foreach ($this->manager->getUserSystems($user) as $system) {
+            $systems[] = $system->toArrayWithAuth($this->manager->getSystemInstall($user, $system->getKey()));
         }
 
         return $systems;

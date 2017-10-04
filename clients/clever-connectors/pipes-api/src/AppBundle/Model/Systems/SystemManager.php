@@ -4,6 +4,7 @@ namespace CleverConnectors\AppBundle\Model\Systems;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\SystemTypeEnum;
+use CleverConnectors\AppBundle\Model\Systems\Authorizations\AuthorizationInterface;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\WebhookManager;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
@@ -184,19 +185,19 @@ class SystemManager
 
     /**
      * @param string $user
-     * @param string $system
+     * @param string $systemKey
      * @param string $password
      *
      * @return SystemInstall
      */
-    public function setPassword(string $user, string $system, string $password): SystemInstall
+    public function setPassword(string $user, string $systemKey, string $password): SystemInstall
     {
-        $systemInstall = $this->getSystemInstall($user, $system);
+        $systemInstall = $this->getSystemInstall($user, $systemKey);
 
-        $settings             = $systemInstall->getSettings();
-        $settings['password'] = $password;
+        /** @var AuthorizationInterface $system */
+        $system = $this->getSystem($systemKey);
+        $system->setPassword($systemInstall, $password);
 
-        $systemInstall->setSettings($settings);
         $this->dm->flush();
 
         return $systemInstall;
@@ -209,7 +210,7 @@ class SystemManager
      * @return SystemInstall
      * @throws SystemException
      */
-    private function getSystemInstall(string $user, string $system): SystemInstall
+    public function getSystemInstall(string $user, string $system): SystemInstall
     {
         /** @var SystemInstall $systemInstall */
         $systemInstall = $this->systemRepository->findOneBy(['user' => $user, 'system' => $system]);

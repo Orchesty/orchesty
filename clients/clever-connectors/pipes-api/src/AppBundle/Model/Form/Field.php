@@ -38,16 +38,22 @@ class Field
     private $required;
 
     /**
+     * @var string
+     */
+    private $key;
+
+    /**
      * Field constructor.
      *
      * @param string $type
+     * @param string $key
      * @param string $label
      * @param null   $value
      * @param bool   $required
      *
      * @throws CleverConnectorsException
      */
-    public function __construct(string $type, string $label, $value = NULL, bool $required = FALSE)
+    public function __construct(string $type, string $key, string $label, $value = NULL, bool $required = FALSE)
     {
         if (!in_array($type, $this->getTypes())) {
             throw new CleverConnectorsException(
@@ -57,6 +63,7 @@ class Field
         }
 
         $this->type     = $type;
+        $this->key      = $key;
         $this->label    = $label;
         $this->value    = $value;
         $this->required = $required;
@@ -92,6 +99,14 @@ class Field
     public function isRequired(): bool
     {
         return $this->required;
+    }
+
+    /**
+     * @return string
+     */
+    public function getKey(): string
+    {
+        return $this->key;
     }
 
     /**

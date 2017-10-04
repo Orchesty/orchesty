@@ -12,11 +12,12 @@ use CleverConnectors\AppBundle\Document\SystemInstall;
 interface OAuth1Interface extends AuthorizationInterface
 {
 
+    public const FRONTEND_REDIRECT_URL = 'frontend_redirect_url';
+
     /**
      * @param SystemInstall $systemInstall
-     * @param array         $data
      */
-    public function authorize(SystemInstall $systemInstall, array $data): void;
+    public function authorize(SystemInstall $systemInstall): void;
 
     /**
      * @param SystemInstall $systemInstall

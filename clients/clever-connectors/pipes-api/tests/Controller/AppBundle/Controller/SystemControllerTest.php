@@ -368,10 +368,10 @@ class SystemControllerTest extends ControllerTestCaseAbstract
     {
         return [
             'type'        => SystemTypeEnum::CRON,
-            'key'         => 'null',
+            'key'         => 'null.user.group',
             'name'        => 'NULL',
             'description' => 'Only for testing purposes',
-            'authType'    => 'basic',
+            'authType'    => 'oauth2',
         ];
     }
 

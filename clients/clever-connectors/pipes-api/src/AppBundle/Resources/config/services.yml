@@ -24,19 +24,19 @@ services:
     systems.null.user:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\NullSystem
         arguments:
-            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.providers.oauth2_provider'
         tags: ['%systems%', '%systems.dev%', '%systems.user.some_user%']
 
     systems.null.group:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\NullSystem
         arguments:
-            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.providers.oauth2_provider'
         tags: ['%systems%', '%systems.dev%', '%systems.group.some_group%']
 
     systems.null.user.group:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\NullSystem
         arguments:
-            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.providers.oauth2_provider'
         tags: ['%systems%', '%systems.dev%', '%systems.user.some_user%', '%systems.group.some_group%']
 
     manager.webhook:

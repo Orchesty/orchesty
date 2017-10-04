@@ -13,10 +13,18 @@ use CleverConnectors\AppBundle\Model\Systems\SystemInterface;
 interface AuthorizationInterface extends SystemInterface
 {
 
+    public const BASIC    = 'basic';
+    public const OAUTH    = 'oauth';
+    public const OAUTH2   = 'oauth2';
+
+    public const PASSWORD = 'password';
+
     /**
+     * @param SystemInstall $systemInstall
+     *
      * @return bool
      */
-    public function isAuthorized(): bool;
+    public function isAuthorized(SystemInstall $systemInstall): bool;
 
     /**
      * @return string
@@ -24,14 +32,11 @@ interface AuthorizationInterface extends SystemInterface
     public function getAuthorizationType(): string;
 
     /**
+     * @param SystemInstall $systemInstall
+     *
      * @return array
      */
-    public function getSettingFields(): array;
-
-    /**
-     * @return array
-     */
-    public function getSettings(): array;
+    public function getSettingFields(SystemInstall $systemInstall): array;
 
     /**
      * @param SystemInstall $systemInstall
@@ -40,5 +45,13 @@ interface AuthorizationInterface extends SystemInterface
      * @return SystemInstall
      */
     public function setSettings(SystemInstall $systemInstall, array $data): SystemInstall;
+
+    /**
+     * @param SystemInstall $systemInstall
+     * @param string        $password
+     *
+     * @return SystemInstall
+     */
+    public function setPassword(SystemInstall $systemInstall, string $password): SystemInstall;
 
 }

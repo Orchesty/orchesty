@@ -46,7 +46,7 @@ class WebhookManagerTest extends DatabaseTestCaseAbstract
         self::assertEquals('user', $res->getUser());
         self::assertEquals('top', $res->getTopologyName());
         self::assertEquals('node', $res->getNodeName());
-        self::assertEquals('null', $res->getSystemKey());
+        self::assertEquals('null.user.group', $res->getSystemKey());
 
         // Update
         $web->update($sys, 'user', 'token', 'domain');

@@ -2,14 +2,14 @@
 
 namespace CleverConnectors\AppBundle\Model\Systems;
 
-use Hanaboso\PipesFramework\Authorization\Base\AuthorizationInterface;
+use CleverConnectors\AppBundle\Document\SystemInstall;
 
 /**
  * Interface SystemInterface
  *
  * @package CleverConnectors\AppBundle\Model\Systems
  */
-interface SystemInterface extends AuthorizationInterface
+interface SystemInterface
 {
 
     /**
@@ -41,5 +41,12 @@ interface SystemInterface extends AuthorizationInterface
      * @return array
      */
     public function toArray(): array;
+
+    /**
+     * @param SystemInstall $systemInstall
+     *
+     * @return array
+     */
+    public function toArrayWithAuth(SystemInstall $systemInstall): array;
 
 }

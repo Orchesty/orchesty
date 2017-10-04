@@ -316,4 +316,39 @@ class SystemManagerTest extends DatabaseTestCaseAbstract
         $this->assertEquals('pass2', $systemInstall->getSettings()['password']);
     }
 
+    /**
+     *
+     */
+    public function testGetSystemInstall(): void
+    {
+        $system = (new SystemInstall())
+            ->setUser('user')
+            ->setSystem('null.user.group')
+            ->setToken('token')
+            ->setSettings(['password' => 'pass1']);
+        $this->persistAndFlush($system);
+
+        $systemInstall = $this->manager->setPassword('user', 'null.user.group', 'pass2');
+
+        $this->assertEquals($system, $systemInstall);
+    }
+
+    /**
+     *
+     */
+    public function testGetSystemInstallFail(): void
+    {
+        $system = (new SystemInstall())
+            ->setUser('user')
+            ->setSystem('null.user.group')
+            ->setToken('token')
+            ->setSettings(['password' => 'pass1']);
+        $this->persistAndFlush($system);
+
+        $this->expectException(SystemException::class);
+        $this->expectExceptionCode(SystemException::SYSTEM_OR_USER_NOT_FOUND);
+
+        $this->manager->setPassword('unknown', 'null.user.group', 'pass2');
+    }
+
 }

@@ -6,10 +6,13 @@ use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\SystemTypeEnum;
 use CleverConnectors\AppBundle\Model\Form\Field;
 use CleverConnectors\AppBundle\Model\Form\Form;
+use CleverConnectors\AppBundle\Model\Systems\Authorizations\OAuth2Interface;
+use CleverConnectors\AppBundle\Model\Systems\Authorizations\Traits\AuthorizationTrait;
 use CleverConnectors\AppBundle\Model\Systems\WebhookSubscribes;
 use CleverConnectors\AppBundle\Model\Systems\WebhookSystemInterface;
-use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Uri;
+use Hanaboso\PipesFramework\Authorization\Provider\Dto\OAuth2Dto;
+use Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 
@@ -18,18 +21,14 @@ use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl
  */
-class NullSystem implements WebhookSystemInterface
+class NullSystem implements WebhookSystemInterface, OAuth2Interface
 {
 
-    public const URL          = 'url';
-    public const USERNAME     = 'username';
-    public const PASSWORD     = 'password';
-    public const PASSWORD_SET = 'password_set';
+    use AuthorizationTrait;
 
-    /**
-     * @var DocumentManager
-     */
-    private $dm;
+    private const URL             = 'field1';
+    private const CONSUMER_KEY    = 'field2';
+    private const CONSUMER_SECRET = 'field3';
 
     /**
      * @var WebhookSubscribes[]
@@ -37,27 +36,19 @@ class NullSystem implements WebhookSystemInterface
     private $subs;
 
     /**
-     * @var string
+     * @var OAuth2Provider
      */
-    private $user;
+    private $provider;
 
     /**
      * NullSystem constructor.
      *
-     * @param DocumentManager $dm
+     * @param OAuth2Provider $provider
      */
-    function __construct(DocumentManager $dm)
+    function __construct(OAuth2Provider $provider)
     {
-        $this->dm     = $dm;
-        $this->subs[] = new WebhookSubscribes('node', 'top', 'uriReg', 'uriUnreg');
-    }
-
-    /**
-     * @param string $user
-     */
-    public function setUser(string $user): void
-    {
-        $this->user = $user;
+        $this->provider = $provider;
+        $this->subs[]   = new WebhookSubscribes('node', 'top', 'uriReg', 'uriUnreg');
     }
 
     /**
@@ -73,7 +64,7 @@ class NullSystem implements WebhookSystemInterface
      */
     public function getKey(): string
     {
-        return 'null';
+        return 'null.user.group';
     }
 
     /**
@@ -165,11 +156,20 @@ class NullSystem implements WebhookSystemInterface
     }
 
     /**
-     * @return string
+     * @param SystemInstall $systemInstall
+     *
+     * @return array
      */
-    public function getId(): string
+    public function toArrayWithAuth(SystemInstall $systemInstall): array
     {
-        return '';
+        return [
+            'type'        => $this->getType(),
+            'key'         => $this->getKey(),
+            'name'        => $this->getName(),
+            'description' => $this->getDescription(),
+            'authType'    => $this->getAuthorizationType(),
+            'authorized'  => $this->isAuthorized($systemInstall),
+        ];
     }
 
     /**
@@ -177,121 +177,98 @@ class NullSystem implements WebhookSystemInterface
      */
     public function getAuthorizationType(): string
     {
-        return self::BASIC;
+        return self::OAUTH2;
     }
 
     /**
+     * @param SystemInstall $systemInstall
+     *
      * @return bool
      */
-    public function isAuthorized(): bool
+    public function isAuthorized(SystemInstall $systemInstall): bool
     {
-        $systemInstall = $this->getSystemInstall();
-        if ($systemInstall && $systemInstall->getSettings()) {
-            return TRUE;
-        }
+        $settings = $systemInstall->getSettings();
 
-        return FALSE;
+        // TODO check EXPIRES ?
+
+        return !empty($settings[OAuth2Provider::ACCESS_TOKEN] ?? '');
     }
 
     /**
-     * @param string $method
-     * @param string $url
+     * @param SystemInstall $systemInstall
      *
      * @return array
      */
-    public function getHeaders(string $method, string $url): array
+    public function getSettingFields(SystemInstall $systemInstall): array
     {
-        return [];
-    }
+        $settings = $systemInstall->getSettings();
 
-    /**
-     * @param string $hostname
-     *
-     * @return string []
-     */
-    public function getInfo(string $hostname): array
-    {
-        return [];
-    }
+        $field1 = new Field(
+            Field::URL,
+            self::URL,
+            '',
+            $this->prepareValue(self::URL, $settings),
+            TRUE
+        );
 
-    /**
-     * @return array
-     */
-    public function getSettings(): array
-    {
-        $systemInstall = $this->getSystemInstall();
-        if ($systemInstall) {
-            $form = $this->getForm($systemInstall->getSettings());
+        $field2 = new Field(
+            Field::TEXT,
+            self::CONSUMER_KEY,
+            '',
+            $this->prepareValue(self::CONSUMER_KEY, $settings),
+            TRUE
+        );
 
-            return $form->toArray();
-        }
-
-        return [];
-    }
-
-    /**
-     * @param string[] $data
-     */
-    public function saveSettings(array $data): void
-    {
-        count($data);
-    }
-
-    /**
-     * @return string
-     */
-    public function getReadMe(): string
-    {
-        return '';
-    }
-
-    /**
-     * @return SystemInstall|null
-     */
-    private function getSystemInstall(): ?SystemInstall
-    {
-        return $this->dm->getRepository(SystemInstall::class)->findOneBy([
-            'user'   => $this->user,
-            'system' => $this->getKey(),
-        ]);
-    }
-
-    /**
-     * @param array $settings
-     *
-     * @return Form
-     */
-    private function getForm(array $settings): Form
-    {
-        $field1 = new Field(Field::URL, self::URL, $this->prepareValue(self::URL, $settings), TRUE);
-        $field2 = new Field(Field::TEXT, self::USERNAME, $this->prepareValue(self::USERNAME, $settings), TRUE);
-        $field3 = new Field(Field::PASSWORD, self::PASSWORD, $this->prepareValue(self::PASSWORD, $settings), TRUE);
+        $field3 = new Field(
+            Field::PASSWORD,
+            self::CONSUMER_SECRET,
+            '',
+            $this->prepareValue(self::CONSUMER_SECRET, $settings),
+            TRUE
+        );
 
         $form = (new Form())
             ->addField($field1)
             ->addField($field2)
             ->addField($field3);
 
-        return $form;
+        return $form->toArray();
     }
 
     /**
-     * @param string $key
-     * @param array  $settings
-     *
-     * @return bool|mixed|null
+     * @param SystemInstall $systemInstall
      */
-    private function prepareValue(string $key, array $settings)
+    public function authorize(SystemInstall $systemInstall): void
     {
-        if (isset($settings[$key])) {
-            if ($key == self::PASSWORD) {
-                return empty($settings[self::PASSWORD_SET]) ? FALSE : TRUE;
-            }
+        // TODO: Implement authorize() method.
 
-            return $settings[$key];
-        }
+        $this->provider->authorize(new OAuth2Dto('', '', '', '', ''), []);
+    }
 
-        return NULL;
+    /**
+     * @param SystemInstall $systemInstall
+     * @param array         $data
+     *
+     * @return SystemInstall
+     */
+    public function saveToken(SystemInstall $systemInstall, array $data): SystemInstall
+    {
+        // TODO: Implement saveToken() method.
+
+        return $systemInstall;
+    }
+
+    /**
+     * @param SystemInstall $systemInstall
+     * @param array         $data
+     *
+     * @return SystemInstall
+     */
+    public function refreshToken(SystemInstall $systemInstall, array $data): SystemInstall
+    {
+        // TODO: Implement refreshToken() method.
+
+        return $systemInstall;
     }
 
 }
