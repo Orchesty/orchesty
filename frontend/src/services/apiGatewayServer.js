@@ -96,6 +96,7 @@ export default (dispatch, method, relUrl, queries, data) => {
     .then(response => response ? response.text() : undefined)
     .then(textResponse => textResponse === undefined ? textResponse : (textResponse ? JSON.parse(textResponse) : true))
     .catch(error => {
+      console.log(error);
       dispatch(notificationActions.addNotification('error', `Error in server request: ${error}`));
       return undefined;
     });
