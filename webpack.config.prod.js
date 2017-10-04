@@ -32,14 +32,8 @@ module.exports = merge(common, {
     }),
     new webpack.optimize.UglifyJsPlugin({
       beautify: false,
-      mangle: {
-        screw_ie8: false,
-        keep_fnames: false
-      },
-      compress: {
-        screw_ie8: false,
-        warnings: false
-      },
+      mangle: false,
+      compress: false,
       comments: false
     })
   ],
