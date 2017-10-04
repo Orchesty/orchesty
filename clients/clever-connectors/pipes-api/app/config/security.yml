@@ -12,8 +12,17 @@ security:
                 property: email
 
     firewalls:
-        unsecured_areas:
-            pattern: ^/(api/user/login|api/user/logout|api/user/\w+/activate|/api/user/\w+/set_password|/api/user/reset_password|webhook/*)
+        unsecured_user:
+            pattern: ^/(api/user/login|api/user/logout|api/user/\w+/activate|/api/user/\w+/set_password|/api/user/reset_password)
+            security: false
+        unsecured_webhook:
+            pattern: ^/(webhook/*)
+            security: false
+        unsecured_clever_mnonitor:
+            pattern: ^/(user_systems/*|systems/*)
+            security: false
+        unsecured_starting_point:
+            pattern: ^/(topologies/\w+/nodes/\w+/run)
             security: false
         secured_area:
             pattern: ^/
