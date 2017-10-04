@@ -119,14 +119,11 @@ PaletteProvider.prototype.getPaletteEntries = function() {
       group: 'events',
       separator: true
     },
-    'create.generic': createAction(
-      'bpmn:Task', 'activity', 'bpmn-icon-task-none', 'Generic', { pipesType: 'generic'}
+    'create.custom': createAction(
+      'bpmn:Task', 'activity', 'bpmn-icon-task-none', 'Custom', { pipesType: 'custom'}
     ),
     'create.connector': createAction(
       'bpmn:Task', 'activity', 'bpmn-icon-service-task', 'Connector', { pipesType: 'connector'}
-    ),
-    'create.parser': createAction(
-      'bpmn:Task', 'activity', 'bpmn-icon-script-task', 'Parser', { pipesType: 'parser'}
     ),
     'create.batch': createAction(
       'bpmn:Task', 'activity', 'bpmn-icon-pipes-batch', 'Batch', { pipesType: 'batch'}
@@ -134,13 +131,19 @@ PaletteProvider.prototype.getPaletteEntries = function() {
     'create.splitter': createAction(
       'bpmn:Task', 'activity', 'bpmn-icon-pipes-splitter', 'Splitter', { pipesType: 'splitter'}
     ),
+    'create.xml_parser': createAction(
+      'bpmn:Task', 'activity', 'bpmn-icon-script-task', 'XML parser', { pipesType: 'xml_parser'}
+    ),
+    'create.table_parser': createAction(
+      'bpmn:Task', 'activity', 'bpmn-icon-script-task', 'Table parser', { pipesType: 'table_parser'}
+    ),
     'task-separator': {
       group: 'activity',
       separator: true
     },
     'create.exclusive-gateway': createAction(
       'bpmn:ExclusiveGateway', 'gateway', 'bpmn-icon-gateway-xor', 'Gateway', { pipesType: 'gateway'}
-    ),
+    )
   });
 
   return actions;

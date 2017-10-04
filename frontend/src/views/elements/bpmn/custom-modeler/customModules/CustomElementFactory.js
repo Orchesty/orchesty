@@ -33,6 +33,7 @@ function CustomElementFactory(bpmnFactory, moddle, translate) {
       // Generate default name for task
       if (!element.businessObject.name) {
         element.businessObject.name = attrs.pipesType.charAt(0).toUpperCase() + attrs.pipesType.slice(1);
+        element.businessObject.name = element.businessObject.name.replace('_', ' ');
       }
     }
 
