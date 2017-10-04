@@ -76,7 +76,7 @@ services:
     ## BEGIN STAGE
     #    image: dkr.hanaboso.net/pipes/pipes/frontend:dev
     #    environment:
-    #      BACKEND_URL: https://cleverconn.stage.hanaboso.net
+    #      BACKEND_URL: https://cleverconn.stage.hanaboso.net/api
     #      PHP_APP_INDEX: app_dev.php
     #      PHP_WEBROOT: /var/www/pipes/clients/clever-connectors/pipes-api/web
     ## END STAGE
