@@ -1,15 +1,19 @@
 export default {
   apiGateway: {
-    initDefault: 'dev_docker',
+    initDefault: 'cm_dev_docker',
     servers: {
       apiary: {
         url: 'http://private-973c6-pipes1.apiary-mock.com',
         caption: 'Apiary'
       },
-      dev_docker: {
-        url: 'http://127.0.0.66/api',
-        caption: 'Dev - docker'
-      }
+      cm_dev_docker: {
+        url: 'http://127.0.0.67/api',
+        caption: 'CM - Dev - docker'
+      },
+	    demo_dev_docker: {
+		    url: 'http://127.0.0.66/api',
+		    caption: 'Demo - Dev - docker'
+	    }
     }
   }
 }
