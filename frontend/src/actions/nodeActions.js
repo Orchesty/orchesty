@@ -4,7 +4,9 @@ import {stateType} from 'rootApp/types';
 import serverRequest from 'services/apiGatewayServer';
 import * as notificationActions from './notificationActions';
 
-const {createRelationList, listLoading, listError, listReceive} = listFactory('NODE/LIST/');
+const {createRelationList, listLoading, listError, listReceive, invalidateLists} = listFactory('NODE/LIST/');
+
+export const nodeInvalidateLists = invalidateLists;
 
 function receive(data){
   return {

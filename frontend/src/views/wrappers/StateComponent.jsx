@@ -21,9 +21,9 @@ export default WrappedComponent => {
       this._needData(nextProps, false);
     }
 
-    _needData(props){
+    _needData(props, mount){
       const {state, notLoadedCallback} = props;
-      if ((!state || state == stateType.NOT_LOADED) && notLoadedCallback) {
+      if ((!state || state == stateType.NOT_LOADED || (mount && state == stateType.ERROR)) && notLoadedCallback) {
         notLoadedCallback();
       }
     }

@@ -40,7 +40,7 @@ class ListPagination extends React.Component {
       }
       return (
         <div className="row list-pagination">
-          <div className="col col-md-4 text-pagination">Showing {list.offset + 1} to {list.offset + list.count + 1} of {list.total}</div>
+          <div className="col col-md-4 text-pagination">Showing {list.count ? list.offset + 1 : 0} to {list.offset + list.count} of {list.total}</div>
           {pagination}
         </div>
       );
