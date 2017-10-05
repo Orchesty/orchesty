@@ -14,5 +14,6 @@ class CleverConnectorsException extends Exception
     public const USER_TOKEN_NOT_EXISTS = 2;
     public const MISSING_DATA          = 3;
     public const INVALID_FIELD_TYPE    = 4;
+    public const SYSTEM_NOT_INSTALLED  = 5;
 
 }

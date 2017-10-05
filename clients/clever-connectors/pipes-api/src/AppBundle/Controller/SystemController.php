@@ -2,6 +2,7 @@
 
 namespace CleverConnectors\AppBundle\Controller;
 
+use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Handler\SystemHandler;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use FOS\RestBundle\Controller\Annotations\Route;
@@ -9,6 +10,7 @@ use FOS\RestBundle\Controller\FOSRestController;
 use Hanaboso\PipesFramework\Utils\ControllerUtils;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -205,6 +207,71 @@ class SystemController extends FOSRestController
         } catch (SystemException $e) {
             return new JsonResponse(ControllerUtils::createExceptionData($e), 500);
         }
+    }
+
+    /**
+     * @Route("/user_systems/user/{userId}/system/{systemKey}/authorize_redirect/{redirectUrl}",
+     *     requirements={"userId": "\w+", "systemKey": "[\w|\.]+", "redirectUrl": "\w+"})
+     * @Method({"GET", "OPTIONS"})
+     *
+     * @param string $userId
+     * @param string $systemKey
+     * @param string $redirectUrl
+     *
+     * @return Response|null
+     */
+    public function authorizeSystemAction(string $userId, string $systemKey, string $redirectUrl): ?Response
+    {
+        try {
+            $this->handler->authorize($userId, $systemKey, $redirectUrl);
+
+            return NULL;
+        } catch (SystemException $e) {
+            return new JsonResponse(ControllerUtils::createExceptionData($e), 500);
+        }
+    }
+
+    /**
+     * @Route("/user_systems/user/{userId}/system/{systemKey}/saveToken", requirements={"userId": "\w+", "systemKey": "[\w|\.]+"})
+     * @Method({"POST", "OPTIONS"})
+     *
+     * @param Request $request
+     * @param string  $userId
+     * @param string  $systemKey
+     *
+     * @return Response
+     */
+    public function userSaveTokenAction(Request $request, string $userId, string $systemKey): Response
+    {
+        $url = $this->handler->saveToken($userId, $systemKey, $request->request->all());
+
+        return new RedirectResponse($url);
+    }
+
+    /**
+     * @Route("/user_systems/saveToken")
+     * @Method({"POST", "OPTIONS"})
+     *
+     * @param Request $request
+     *
+     * @return Response
+     * @throws CleverConnectorsException
+     */
+    public function saveTokenAction(Request $request): Response
+    {
+        if (!$request->query->has('state')) {
+            throw new CleverConnectorsException(
+                'Missing [userId:SystemKey] in request query.',
+                CleverConnectorsException::MISSING_DATA
+            );
+        }
+
+        $str = $request->query->get('state');
+        $str = base64_decode($str);
+        $str = explode(':', $str);
+        $url = $this->handler->saveToken($str[0], $str[1], $request->request->all());
+
+        return new RedirectResponse($url);
     }
 
 }
