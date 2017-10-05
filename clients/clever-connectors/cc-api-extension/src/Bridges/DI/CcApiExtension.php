@@ -28,6 +28,7 @@ class CcApiExtension extends CompilerExtension
         'base_uri' => '',
         'timeout'  => '30',
         'cert'     => '',
+        'logger'   => FALSE,
     ];
 
     /**
@@ -48,6 +49,12 @@ class CcApiExtension extends CompilerExtension
         $builder
             ->addDefinition($this->prefix('curl.sender'))
             ->setFactory(CurlSender::class, [$this->prefix('@guzzle.client.factory'), $config['cert']]);
+
+        if ($config['logger'] === TRUE) {
+            $builder
+                ->getDefinition($this->prefix('curl.sender'))
+                ->addSetup('setLogger', ['@logger']);
+        }
 
         $builder
             ->addDefinition($this->prefix('connector.manager'))

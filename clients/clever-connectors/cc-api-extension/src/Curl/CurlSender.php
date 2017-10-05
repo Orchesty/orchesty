@@ -9,9 +9,13 @@
 namespace CcApi\Curl;
 
 use CcApi\Curl\Exception\CurlException;
+use CcApi\Logger\NullLogger;
 use Exception;
+use GuzzleHttp\Exception\RequestException;
+use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Tracy\ILogger;
 
 /**
  * Class CurlService
@@ -40,6 +44,11 @@ class CurlSender
     private $certPath;
 
     /**
+     * @var ILogger
+     */
+    private $logger;
+
+    /**
      * CurlService constructor.
      *
      * @param ClientFactory $clientFactory
@@ -49,6 +58,15 @@ class CurlSender
     {
         $this->clientFactory = $clientFactory;
         $this->certPath      = $certPath;
+        $this->logger        = new NullLogger();
+    }
+
+    /**
+     * @param ILogger $logger
+     */
+    public function setLogger(ILogger $logger): void
+    {
+        $this->logger = $logger;
     }
 
     /**
@@ -65,10 +83,66 @@ class CurlSender
         }
 
         try {
-            return $this->clientFactory->create()->send($request, $options);
+            $this->logRequest($request);
+
+            $response = $this->clientFactory->create()->send($request, $options);
+
+            $this->logResponse($response);
+
+            return $response;
+        } catch (RequestException $e) {
+            if ($e->hasResponse()) {
+                $this->logResponse($e->getResponse());
+            }
+            throw new CurlException(sprintf('Curl sender error: %s', $e->getMessage()), $e->getCode(), $e);
         } catch (Exception $e) {
             throw new CurlException(sprintf('Curl sender error: %s', $e->getMessage()), $e->getCode(), $e);
         }
+    }
+
+    /**
+     * @param RequestInterface $request
+     */
+    private function logRequest(RequestInterface $request): void
+    {
+        $message = sprintf(
+            'Request: Method: %s, Uri: %s, Headers: %s, Body: %s',
+            $request->getMethod(),
+            $request->getUri(),
+            $this->headersToString($request),
+            $request->getBody()->getContents()
+        );
+
+        $this->logger->log($message);
+    }
+
+    /**
+     * @param MessageInterface $message
+     *
+     * @return string
+     */
+    private function headersToString(MessageInterface $message): string
+    {
+        $headers = '';
+        foreach ($message->getHeaders() as $name => $values) {
+            $headers .= $name . ": " . implode(", ", $values);
+        }
+
+        return $headers;
+    }
+
+    /**
+     * @param ResponseInterface $response
+     */
+    private function logResponse(ResponseInterface $response): void
+    {
+        $message = sprintf('Response: Status Code: %s, Reason Phrase: %s, Headers: %s, Body: %s',
+            $response->getStatusCode(),
+            $response->getReasonPhrase(),
+            $this->headersToString($response),
+            $response->getBody()->getContents()
+        );
+        $this->logger->log($message);
     }
 
 }
