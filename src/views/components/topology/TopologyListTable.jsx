@@ -2,6 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 
+import processes from 'enums/processes';
 import * as applicationActions from 'actions/applicationActions';
 
 import StateComponent from 'wrappers/StateComponent';
@@ -9,7 +10,6 @@ import BoolValue from 'elements/BoolValue';
 import SortTh from 'elements/table/SortTh';
 import ActionButtonPanel from 'elements/actions/ActionButtonPanel';
 import ListPagination from 'elements/table/ListPagination';
-import TopologyNodeListTable from 'components/node/TopologyNodeListTable';
 
 class TopologyListTable extends React.Component {
   constructor(props) {
@@ -70,6 +70,7 @@ class TopologyListTable extends React.Component {
             },
             {
               caption: 'Clone',
+              processId: processes.topologyClone(id),
               action: () => {clone(id)}
             }
           ];
@@ -77,6 +78,7 @@ class TopologyListTable extends React.Component {
             menuItems.push({
               caption: 'Publish',
               action: () => {publish(id)},
+              processId: processes.topologyPublish(id),
               disabled: item.visibility == 'public'
             })
           }

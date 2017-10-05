@@ -3,6 +3,7 @@ import listFactory from './factories/listFactory';
 import serverRequest, {sortToQuery, rawRequest, rawRequestJSONReceive} from 'services/apiGatewayServer';
 import objectEquals from 'utils/objectEquals';
 
+import processes from 'enums/processes';
 import config from 'rootApp/config';
 import * as notificationActions from './notificationActions';
 import * as processActions from './processActions';
@@ -124,8 +125,10 @@ export function topologyCreate(data){
 
 export function cloneTopology(id, silent = false){
   return dispatch => {
+    dispatch(processActions.startProcess(processes.topologyClone(id)));
     return serverRequest(dispatch, 'POST', `/topologies/${id}/clone`).then(
       response => {
+        dispatch(processActions.finishProcess(processes.topologyClone(id), response));
         if (response){
           if (!silent){
             dispatch(notificationActions.addSuccess('Node was cloned successfully.'));
@@ -141,8 +144,10 @@ export function cloneTopology(id, silent = false){
 
 export function publishTopology(id, silent = false){
   return dispatch => {
+    dispatch(processActions.startProcess(processes.topologyPublish(id)));
     return serverRequest(dispatch, 'POST', `/topologies/${id}/publish`).then(
       response => {
+        dispatch(processActions.finishProcess(processes.topologyPublish(id), response));
         if (response){
           if (!silent){
             dispatch(notificationActions.addSuccess('Node was published successfully.'));
