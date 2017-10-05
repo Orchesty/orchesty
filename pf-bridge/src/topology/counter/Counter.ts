@@ -214,6 +214,7 @@ export default class Counter {
                 headers.correlation_id,
                 processId,
                 headers.parent_id,
+                headers.sequence_id,
                 resultCode,
                 content.result.message,
                 parseInt(content.route.following, 10),

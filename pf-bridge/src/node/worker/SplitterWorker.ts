@@ -126,7 +126,7 @@ class SplitterWorker implements IWorker {
                 msg.getParentId(),
                 i,
                 JSON.parse(JSON.stringify(msg.getHeaders())), // simple object cloning
-                JSON.stringify(splitContent),
+                new Buffer(JSON.stringify(splitContent)),
                 { code: ResultCode.SUCCESS, message: `Split ${i}/${content.data.length}.`},
             );
 

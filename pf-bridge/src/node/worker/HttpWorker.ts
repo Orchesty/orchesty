@@ -3,7 +3,6 @@ import logger from "../../logger/Logger";
 import JobMessage from "../../message/JobMessage";
 import { ResultCode } from "../../message/ResultCode";
 import IWorker from "./IWorker";
-import {RequestResponse} from "request";
 
 export interface IHttpWorkerSettings {
     node_id: string;
@@ -81,9 +80,9 @@ class HttpWorker implements IWorker {
                     return resolve(msg);
                 }
 
-                if (result === ResultCode.REPEAT) {
+                if (result === ResultCode.FORCE_TARGET_QUEUE) {
                     logger.info("Worker[type='http'] received 'repeat' response", logger.ctxFromMsg(msg, err));
-                    msg.setResult({ code: ResultCode.REPEAT, message: "Http want message to repeat" });
+                    msg.setResult({ code: ResultCode.FORCE_TARGET_QUEUE, message: "Http want message to repeat" });
                     msg.setContent(JSON.stringify(body));
 
                     return resolve(msg);

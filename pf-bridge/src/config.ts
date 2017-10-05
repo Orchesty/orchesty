@@ -1,6 +1,6 @@
 import {IOptions} from "lib-nodejs/dist/src/rabbitmq/Connection";
-import {IRepeaterSettings} from "./repeater/Repeater";
 import {IMongoMessageStorageSettings} from "./repeater/MongoMessageStorage";
+import {IRepeaterSettings} from "./repeater/Repeater";
 
 export const amqpConnectionOptions: IOptions = {
     host: process.env.RABBITMQ_HOST || "rabbitmq",
@@ -26,7 +26,7 @@ export const loggerOptions = {
 export const repeaterOptions: IRepeaterSettings = {
     input: {
         queue: {
-            name: process.env.REPEATER_INPUT_QUEUE || "pipes.repeater.input",
+            name: process.env.REPEATER_INPUT_QUEUE || "pipes.repeater",
             options: {},
         },
     },

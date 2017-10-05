@@ -1,8 +1,8 @@
 import {Channel, Message} from "amqplib";
+import AssertionPublisher from "lib-nodejs/dist/src/rabbitmq/AssertPublisher";
 import AMQPConnection from "lib-nodejs/dist/src/rabbitmq/Connection";
 import SimpleConsumer from "lib-nodejs/dist/src/rabbitmq/SimpleConsumer";
 import logger from "./../logger/Logger";
-import AssertionPublisher from "./AssertPublisher";
 import IMessageStorage from "./IMessageStorage";
 
 export interface IRepeaterSettings {
@@ -77,7 +77,7 @@ class Repeater {
      * @return {Promise<void>}
      */
     private resend(message: Message): Promise<void> {
-        return this.publisher.assertQueueAndSend("something", {}, message.content, message.properties);
+        return this.publisher.sendToQueue("something", message.content, message.properties);
     }
 
     /**

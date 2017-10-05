@@ -1,6 +1,7 @@
 import TimeUtils from "lib-nodejs/dist/src/utils/TimeUtils";
+import AMessage from "./AMessage";
 import IMessage from "./IMessage";
-import { ResultCode } from "./ResultCode";
+import {ResultCode, ResultCodeGroup} from "./ResultCode";
 
 export interface IResult {
     code: ResultCode;
@@ -10,7 +11,7 @@ export interface IResult {
 /**
  * Class representing the flowing message through the node
  */
-class JobMessage implements IMessage {
+class JobMessage extends AMessage implements IMessage {
 
     // timestamps
     private receivedTime: number;
@@ -27,143 +28,30 @@ class JobMessage implements IMessage {
      * @param {string} processId
      * @param {number} sequenceId
      * @param {Object} headers
-     * @param {string} content
      * @param {string} parentId
+     * @param {Buffer} body
      * @param {IResult} result
-     *
-     * AMQP Message Mandatory headers
-     *  - correlation_id
-     *  - process_id
-     *  - sequence_id
-     *  - parent_id
      *
      */
     constructor(
-        private nodeId: string,
-        private correlationId: string,
-        private processId: string,
-        private parentId: string,
-        private sequenceId: number,
-        private headers: { [key: string]: string },
-        private content: string,
+        nodeId: string,
+        correlationId: string,
+        processId: string,
+        parentId: string,
+        sequenceId: number,
+        headers: { [key: string]: string },
+        body: Buffer,
         private result?: IResult,
     ) {
-        if (!nodeId || nodeId === "") {
-            throw new Error(`Invalid nodeId. "${nodeId}"`);
-        }
-        if (!correlationId || correlationId === "") {
-            throw new Error(`Invalid correlationId. "${correlationId}"`);
-        }
-        if (!processId || processId === "") {
-            throw new Error(`Invalid processId. "${processId}"`);
-        }
-        if (!sequenceId || sequenceId < 1) {
-            throw new Error(`Invalid sequenceId. "${sequenceId}"`);
-        }
+        super(nodeId, correlationId, processId, parentId, sequenceId, headers, body);
 
         this.receivedTime = TimeUtils.nowMili();
         this.multiplier = 1;
         this.forwardSelf = true;
 
-        this.setHeaders(headers);
-        this.content = content;
-    }
-
-    /**
-     *
-     * @return {string}
-     */
-    public getNodeId(): string {
-        return this.nodeId;
-    }
-
-    /**
-     *
-     * @return {string}
-     */
-    public getCorrelationId(): string {
-        return this.correlationId;
-    }
-
-    /**
-     * @return {string}
-     */
-    public getProcessId(): string {
-        return this.processId;
-    }
-
-    /**
-     *
-     * @return {string}
-     */
-    public getParentId(): string {
-        return this.parentId;
-    }
-
-    /**
-     *
-     * @return {Number}
-     */
-    public getSequenceId(): number {
-        return this.sequenceId;
-    }
-
-    /**
-     *
-     * @param key
-     * @return {*}
-     */
-    public getHeader(key: string): string {
-        return this.headers[key];
-    }
-
-    /**
-     * Returns custom headers amended by system headers
-     *
-     * @return {*}
-     */
-    public getHeaders(): { [key: string]: string } {
-        const h = this.headers;
-
-        h.correlation_id = this.getCorrelationId();
-        h.process_id = this.getProcessId();
-        h.parent_id = this.getParentId();
-        h.sequence_id = `${this.getSequenceId()}`;
-
-        return h;
-    }
-
-    /**
-     * Cleans headers from system headers and set them to header field
-     *
-     * @param {{[p: string]: string}} headers
-     */
-    public setHeaders(headers: { [key: string]: string }): void {
-        delete headers.correlation_id;
-        delete headers.process_id;
-        delete headers.parent_id;
-        delete headers.sequence_id;
-
+        // do not include following headers when calling getHeaders() if present
         delete headers.result_code;
         delete headers.result_message;
-
-        this.headers = headers;
-    }
-
-    /**
-     *
-     * @return {string}
-     */
-    public getContent(): string {
-        return this.content;
-    }
-
-    /**
-     *
-     * @param {string} content
-     */
-    public setContent(content: string) {
-        this.content = content;
     }
 
     /**
@@ -179,6 +67,15 @@ class JobMessage implements IMessage {
         }
 
         return this.result;
+    }
+
+    /**
+     * Returns the first char of ResultCode that should equal to one of ResultCodeGroup
+     *
+     * @return {ResultCodeGroup}
+     */
+    public getResultGroup(): ResultCodeGroup {
+        return parseInt(`${this.getResult().code}`.charAt(0), 10);
     }
 
     /**
@@ -250,6 +147,18 @@ class JobMessage implements IMessage {
     public getTotalDuration(): number {
         if (this.publishedTime && this.receivedTime) {
             return this.publishedTime - this.receivedTime;
+        }
+
+        return 0;
+    }
+
+    /**
+     *
+     * @return {number}
+     */
+    public getRepeatCount(): number {
+        if (this.headers.repeat_count) {
+            return parseInt(this.headers.repeat_count, 10);
         }
 
         return 0;

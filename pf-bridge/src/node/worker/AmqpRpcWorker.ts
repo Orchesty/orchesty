@@ -147,7 +147,7 @@ class AmqpRpcWorker implements IWorker {
                 }
             };
 
-            const jobMsg = new JobMessage(this.settings.node_id, testId, testId, "", 1, {}, "");
+            const jobMsg = new JobMessage(this.settings.node_id, testId, testId, "", 1, {}, new Buffer(""));
             const t: IWaiting = { resolveFn: resolveTestFn, message: jobMsg, sequence: 0 };
             this.waiting.set(testId, t);
 
@@ -221,7 +221,7 @@ class AmqpRpcWorker implements IWorker {
             stored.message.getParentId(),
             stored.sequence,
             JSON.parse(JSON.stringify(stored.message.getHeaders())), // simple object cloning,
-            JSON.stringify({ data: newContent.data, settings: origContent.settings}),
+            new Buffer(JSON.stringify({ data: newContent.data, settings: origContent.settings})),
 
             { code: ResultCode.SUCCESS, message: `Part ${stored.sequence}` },
         );
@@ -248,11 +248,10 @@ class AmqpRpcWorker implements IWorker {
 
         // Set result according to received headers
         const resCode = msg.properties.headers.hasOwnProperty("result_code") ?
-            parseInt(msg.properties.headers.result_code, 10) :
-            ResultCode.MISSING_RESULT_CODE;
+            parseInt(msg.properties.headers.result_code, 10) : ResultCode.MISSING_RESULT_CODE;
         const resMessage = msg.properties.headers.hasOwnProperty("result_message") ?
-            msg.properties.headers.result_message :
-            "";
+            msg.properties.headers.result_message : "";
+
         stored.message.setResult({ code: resCode, message: resMessage });
 
         // Resolves waiting promise

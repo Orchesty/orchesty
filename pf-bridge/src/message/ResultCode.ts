@@ -1,12 +1,20 @@
 // Add new result codes as you wish, but always keep 0 for success
 // and keep these codes synchronized with workers implementations
 
+export enum ResultCodeGroup {
+    SUCCESS = 0,
+    NON_STANDARD = 1,
+    MESSAGE_ERROR = 2,
+    BRIDGE_ERROR = 3,
+    WORKER_ERROR = 4,
+}
+
 export enum ResultCode {
     // OK
     SUCCESS = 0,
 
-    // PENDING: 1000+
-    REPEAT = 1001,
+    // NON_STANDARD: 1000+
+    FORCE_TARGET_QUEUE = 1001,
 
     // MESSAGE ERRORS: 2000+
     UNKNOWN_ERROR = 2001,
@@ -21,6 +29,8 @@ export enum ResultCode {
     HTTP_ERROR = 3005,
     AMQPRPC_INVALID_CORRELATION_ID = 3006,
     AMQPRPC_INVALID_MESSAGE_TYPE = 3007,
+    INVALID_NON_STANDARD_CODE = 3008,
+    INVALID_NON_STANDARD_TARGET_QUEUE = 3009,
 
     // WORKER_ERRORS: 4000+
     WORKER_TIMEOUT = 4001,
