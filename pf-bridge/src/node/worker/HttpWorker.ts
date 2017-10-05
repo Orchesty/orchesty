@@ -21,15 +21,16 @@ export interface IHttpWorkerRequestParams {
     json: any;
     gzip?: boolean;
     body?: string;
-    /*headers: {
+    headers: {
         correlation_id: string,
         process_id: string,
         parent_id: string,
         sequence_id: number,
         reply_to_url?: string,
         reply_to_method?: string,
-    };*/
-    headers: { [key: string]: string }
+        token?: string, // TODO pryc s tim
+        guid?: string, // TODO pryc s tim
+    };
 }
 
 /**
@@ -136,7 +137,14 @@ class HttpWorker implements IWorker {
             method: this.settings.method.toUpperCase(),
             url: this.getUrl(this.settings.process_path),
             json: JSON.parse(inMsg.getContent()),
-            headers: inMsg.getHeaders()
+            headers: {
+                correlation_id: inMsg.getCorrelationId(),
+                process_id: inMsg.getProcessId(),
+                parent_id: inMsg.getParentId(),
+                sequence_id: inMsg.getSequenceId(),
+                token: inMsg.getHeader('token'), // TODO pryc s tim
+                guid: inMsg.getHeader('guid'), // TODO pryc s tim
+            },
         };
     }
 

@@ -124,9 +124,10 @@ class StartingPoint implements LoggerAwareInterface
     }
 
     /**
+     * @param array|null $requestHeaders
      * @return Headers
      */
-    public function createHeaders(): Headers
+    public function createHeaders(?array $requestHeaders = null): Headers
     {
         $headers = new Headers();
         $headers
@@ -134,6 +135,10 @@ class StartingPoint implements LoggerAwareInterface
             ->addHeader('parent_id', '')
             ->addHeader('correlation_id', Uuid::uuid4()->toString())
             ->addHeader('sequence_id', '1');
+
+        foreach ($requestHeaders as $name => $val) {
+            $headers->addHeader($name, (string) $val[0]); // TODO spatne
+        }
 
         return $headers;
     }
@@ -169,7 +174,7 @@ class StartingPoint implements LoggerAwareInterface
      */
     public function runWithRequest(Request $request, Topology $topology, Node $node): void
     {
-        $this->runTopology($topology, $node, $this->createHeaders(), $this->createBodyFromRequest($request));
+        $this->runTopology($topology, $node, $this->createHeaders($request->headers->all()), $this->createBodyFromRequest($request));
     }
 
     /**

@@ -13,6 +13,7 @@ use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Exceptions\Exception;
 use CleverConnectors\AppBundle\Model\CM\CMAuthorization;
 use GuzzleHttp\Psr7\Uri;
+use GuzzleHttp\RequestOptions;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
@@ -96,9 +97,9 @@ abstract class CMSubscriptionConnectorAbstract extends CMAuthorization implement
 
     /**
      * @param ProcessDto $dto
-     * @param string     $method
-     * @param int[]      $statusCode
-     * @param string     $email
+     * @param string $method
+     * @param int[] $statusCode
+     * @param string $email
      *
      * @return ProcessDto
      * @throws CleverConnectorsException
@@ -114,10 +115,14 @@ abstract class CMSubscriptionConnectorAbstract extends CMAuthorization implement
         }
 
         $req = new RequestDto($method, new Uri($this->getUrl($email)));
-        $req->setHeaders($this->getAuthorizationHeaders($dto->getHeaders()['guid'], $dto->getHeaders()['token']));
+        $req->setHeaders($this->getAuthorizationHeaders($dto->getHeaders()['guid'][0], $dto->getHeaders()['token'][0])); // TODO why header array?
         $req->setBody($dto->getData());
         try {
-            $res = $this->curl->send($req);
+            $res = $this->curl->send($req, [
+                RequestOptions::CERT => __DIR__ . '/../../../../../../hanaboso.cert.pem',     // TODO do konfigu
+                RequestOptions::SSL_KEY => __DIR__ . '/../../../../../../hanaboso.cert.pem',
+                RequestOptions::VERIFY => __DIR__ . '/../../../../../../ca.crt',
+            ]);
         } catch (Exception $e) {
             $this->logger->error(sprintf('CM %s subscription failed.', $method), ['exception' => $e]);
             throw new ConnectorException(
