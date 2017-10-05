@@ -14,10 +14,9 @@ interface OAuth2Interface extends OAuth1Interface
 
     /**
      * @param SystemInstall $systemInstall
-     * @param array         $data
      *
      * @return SystemInstall
      */
-    public function refreshToken(SystemInstall $systemInstall, array $data): SystemInstall;
+    public function refreshToken(SystemInstall $systemInstall): SystemInstall;
 
 }

@@ -229,11 +229,10 @@ class NullSystem implements WebhookSystemInterface, OAuth2Interface
 
     /**
      * @param SystemInstall $systemInstall
-     * @param array         $data
      *
      * @return SystemInstall
      */
-    public function refreshToken(SystemInstall $systemInstall, array $data): SystemInstall
+    public function refreshToken(SystemInstall $systemInstall): SystemInstall
     {
         // TODO: Implement refreshToken() method.
 
@@ -241,11 +240,12 @@ class NullSystem implements WebhookSystemInterface, OAuth2Interface
     }
 
     /**
-     * @param RequestDto $dto
+     * @param SystemInstall $systemInstall
+     * @param RequestDto    $dto
      *
      * @return ResponseDto
      */
-    public function sendRequest(RequestDto $dto): ResponseDto
+    public function sendRequest(SystemInstall $systemInstall, RequestDto $dto): ResponseDto
     {
         return new ResponseDto(200, '', '', []);
     }

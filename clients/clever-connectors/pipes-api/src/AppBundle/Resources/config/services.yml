@@ -64,3 +64,10 @@ services:
             - '@hbpf.transport.curl_manager'
         calls:
             - ['setLogger', ['@monolog.logger.commons']]
+
+    systems.salesforce:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce\SalesForceSystem
+        arguments:
+            - '@hbpf.transport.curl_manager'
+            - '@hbpf.providers.oauth2_provider'
+        tags: ['%systems%']

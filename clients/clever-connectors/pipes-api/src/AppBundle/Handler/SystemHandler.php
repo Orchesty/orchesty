@@ -203,7 +203,9 @@ class SystemHandler
     public function saveToken(string $user, string $systemKey, array $data): string
     {
         $systemInstall = $this->getSystemInstall($user, $systemKey);
+        /** @var OAuth1Interface $system */
         $system = $this->loader->getSystem($systemKey);
+        $system->saveToken($systemInstall, $data);
         $system->setSettings($systemInstall, $data);
         $this->dm->flush();
 

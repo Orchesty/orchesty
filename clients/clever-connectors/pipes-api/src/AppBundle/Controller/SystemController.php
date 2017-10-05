@@ -7,6 +7,7 @@ use CleverConnectors\AppBundle\Handler\SystemHandler;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Controller\FOSRestController;
+use Hanaboso\PipesFramework\Commons\Utils\Base64;
 use Hanaboso\PipesFramework\Utils\ControllerUtils;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -251,7 +252,7 @@ class SystemController extends FOSRestController
 
     /**
      * @Route("/user_systems/user/{userId}/system/{systemKey}/saveToken", requirements={"userId": "\w+", "systemKey": "[\w|\.]+"})
-     * @Method({"POST", "OPTIONS"})
+     * @Method({"GET", "OPTIONS"})
      *
      * @param Request $request
      * @param string  $userId
@@ -261,14 +262,14 @@ class SystemController extends FOSRestController
      */
     public function userSaveTokenAction(Request $request, string $userId, string $systemKey): Response
     {
-        $url = $this->handler->saveToken($userId, $systemKey, $request->request->all());
+        $url = $this->handler->saveToken($userId, $systemKey, ['code' => $request->get('code')]);
 
         return new RedirectResponse($url);
     }
 
     /**
      * @Route("/user_systems/saveToken")
-     * @Method({"POST", "OPTIONS"})
+     * @Method({"GET", "OPTIONS"})
      *
      * @param Request $request
      *
@@ -284,10 +285,8 @@ class SystemController extends FOSRestController
             );
         }
 
-        $str = $request->query->get('state');
-        $str = base64_decode($str);
-        $str = explode(':', $str);
-        $url = $this->handler->saveToken($str[0], $str[1], $request->request->all());
+        $str = explode(':', Base64::base64UrlDecode($request->query->get('state')));
+        $url = $this->handler->saveToken($str[0], $str[1], ['code' => $request->get('code')]);
 
         return new RedirectResponse($url);
     }

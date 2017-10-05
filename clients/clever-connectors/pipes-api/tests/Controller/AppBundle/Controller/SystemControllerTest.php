@@ -269,9 +269,10 @@ class SystemControllerTest extends ControllerTestCaseAbstract
 
         $this->assertEquals(1, count($systems));
         $this->assertEquals([
-            'settingOne' => 'settingOne',
-            'settingTwo' => 'settingTwo',
-            'password'   => NULL,
+            'settingOne'            => 'settingOne',
+            'settingTwo'            => 'settingTwo',
+            'password'              => NULL,
+            'frontend_redirect_url' => NULL,
         ], $systems[0]->getSettings());
 
         $systems[0]->setSettings(['setting' => 'setting', 'password' => 'passw0rd']);
@@ -298,6 +299,7 @@ class SystemControllerTest extends ControllerTestCaseAbstract
             'settingOne' => 'settingOne',
             'settingTwo' => 'settingTwo',
             'password'   => 'passw0rd',
+            'frontend_redirect_url' => NULL,
         ], $systems[0]->getSettings());
     }
 

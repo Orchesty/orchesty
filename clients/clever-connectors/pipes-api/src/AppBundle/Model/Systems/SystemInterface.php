@@ -40,11 +40,12 @@ interface SystemInterface
     public function getLogo(): string;
 
     /**
-     * @param RequestDto $dto
+     * @param SystemInstall $systemInstall
+     * @param RequestDto    $dto
      *
      * @return ResponseDto
      */
-    public function sendRequest(RequestDto $dto): ResponseDto;
+    public function sendRequest(SystemInstall $systemInstall, RequestDto $dto): ResponseDto;
 
     /**
      * @param SystemInstall $systemInstall

@@ -22,7 +22,8 @@ trait AuthorizationTrait
      */
     public function setSettings(SystemInstall $systemInstall, array $data): SystemInstall
     {
-        $data[AuthorizationInterface::PASSWORD] = $systemInstall->getSettings()[AuthorizationInterface::PASSWORD] ?? NULL;
+        $data[AuthorizationInterface::PASSWORD]       = $systemInstall->getSettings()[AuthorizationInterface::PASSWORD] ?? NULL;
+        $data[OAuth1Interface::FRONTEND_REDIRECT_URL] = $systemInstall->getSettings()[OAuth1Interface::FRONTEND_REDIRECT_URL] ?? NULL;
 
         return $systemInstall->setSettings($data);
     }
@@ -90,9 +91,9 @@ trait AuthorizationTrait
         ];
 
         if ($systemInstall) {
-            $arr['authorized']     = $this->isAuthorized($systemInstall);
-            $arr['token']          = $systemInstall->getToken();
-            $arr['synchronized']   = $systemInstall->isSynchronized();
+            $arr['authorized']   = $this->isAuthorized($systemInstall);
+            $arr['token']        = $systemInstall->getToken();
+            $arr['synchronized'] = $systemInstall->isSynchronized();
         }
 
         return $arr;
