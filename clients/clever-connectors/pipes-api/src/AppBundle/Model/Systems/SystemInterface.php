@@ -2,6 +2,8 @@
 
 namespace CleverConnectors\AppBundle\Model\Systems;
 
+use CleverConnectors\AppBundle\Document\SystemInstall;
+
 /**
  * Interface SystemInterface
  *
@@ -36,8 +38,10 @@ interface SystemInterface
     public function getLogo(): string;
 
     /**
+     * @param SystemInstall|null $systemInstall
+     *
      * @return array
      */
-    public function toArray(): array;
+    public function toArray(?SystemInstall $systemInstall = NULL): array;
 
 }

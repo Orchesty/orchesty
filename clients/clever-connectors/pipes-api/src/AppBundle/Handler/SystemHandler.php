@@ -48,8 +48,8 @@ class SystemHandler
     {
         $systems = [];
 
-        foreach ($this->manager->getSystems($user, $group) as $innerSystem) {
-            $systems[] = $innerSystem->toArray();
+        foreach ($this->manager->getSystems($user, $group) as $system) {
+            $systems[] = $system->toArray();
         }
 
         return $systems;
@@ -63,9 +63,8 @@ class SystemHandler
     public function getUserSystems(string $user): array
     {
         $systems = [];
-
-        foreach ($this->manager->getUserSystems($user) as $innerSystem) {
-            $systems[] = $innerSystem->toArray();
+        foreach ($this->manager->getUserSystems($user) as $system) {
+            $systems[] = $system->toArray($this->manager->getSystemInstall($user, $system->getKey()));
         }
 
         return $systems;
@@ -112,6 +111,21 @@ class SystemHandler
     {
         ControllerUtils::checkParameters(['token'], $data);
         $this->manager->switchToken($user, $system, $data['token']);
+
+        return [];
+    }
+
+    /**
+     * @param string $user
+     * @param string $system
+     * @param array  $data
+     *
+     * @return array
+     */
+    public function setPassword(string $user, string $system, array $data): array
+    {
+        ControllerUtils::checkParameters(['password'], $data);
+        $this->manager->setPassword($user, $system, $data['password']);
 
         return [];
     }

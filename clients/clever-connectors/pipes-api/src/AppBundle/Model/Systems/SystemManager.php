@@ -4,6 +4,7 @@ namespace CleverConnectors\AppBundle\Model\Systems;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\SystemTypeEnum;
+use CleverConnectors\AppBundle\Model\Systems\Authorizations\AuthorizationInterface;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\WebhookManager;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
@@ -129,14 +130,7 @@ class SystemManager
      */
     public function uninstallSystem(string $user, string $system): bool
     {
-        $systemInstall = $this->systemRepository->findOneBy(['user' => $user, 'system' => $system]);
-
-        if (!$systemInstall) {
-            throw new SystemException(
-                sprintf('System \'%s\' or user \'%s\' not found', $system, $user),
-                SystemException::SYSTEM_OR_USER_NOT_FOUND
-            );
-        }
+        $systemInstall = $this->getSystemInstall($user, $system);
 
         $systemService = $this->systemLoader->getSystem($system);
         if ($systemService->getType() === SystemTypeEnum::WEBHOOK) {
@@ -161,15 +155,7 @@ class SystemManager
      */
     public function switchToken(string $user, string $system, string $token): SystemInstall
     {
-        /** @var SystemInstall $systemInstall */
-        $systemInstall = $this->systemRepository->findOneBy(['user' => $user, 'system' => $system]);
-
-        if (!$systemInstall) {
-            throw new SystemException(
-                sprintf('System \'%s\' or user \'%s\' not found', $system, $user),
-                SystemException::SYSTEM_OR_USER_NOT_FOUND
-            );
-        }
+        $systemInstall = $this->getSystemInstall($user, $system);
 
         $systemInstall->setToken($token);
         $this->dm->flush();
@@ -195,6 +181,48 @@ class SystemManager
         }
 
         return $users;
+    }
+
+    /**
+     * @param string $user
+     * @param string $systemKey
+     * @param string $password
+     *
+     * @return SystemInstall
+     */
+    public function setPassword(string $user, string $systemKey, string $password): SystemInstall
+    {
+        $systemInstall = $this->getSystemInstall($user, $systemKey);
+
+        /** @var AuthorizationInterface $system */
+        $system = $this->getSystem($systemKey);
+        $system->setPassword($systemInstall, $password);
+
+        $this->dm->flush();
+
+        return $systemInstall;
+    }
+
+    /**
+     * @param string $user
+     * @param string $system
+     *
+     * @return SystemInstall
+     * @throws SystemException
+     */
+    public function getSystemInstall(string $user, string $system): SystemInstall
+    {
+        /** @var SystemInstall $systemInstall */
+        $systemInstall = $this->systemRepository->findOneBy(['user' => $user, 'system' => $system]);
+
+        if (!$systemInstall) {
+            throw new SystemException(
+                sprintf('System \'%s\' or user \'%s\' not found', $system, $user),
+                SystemException::SYSTEM_OR_USER_NOT_FOUND
+            );
+        }
+
+        return $systemInstall;
     }
 
 }

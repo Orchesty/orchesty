@@ -166,4 +166,23 @@ class SystemController extends FOSRestController
         }
     }
 
+    /**
+     * @Route("/user_systems/user/{userId}/system/{systemKey}/set_password", requirements={"userId": "\w+", "systemKey": "[\w|\.]+"})
+     * @Method({"PUT", "OPTIONS"})
+     *
+     * @param Request $request
+     * @param string  $userId
+     * @param string  $systemKey
+     *
+     * @return Response
+     */
+    public function setPasswordAction(Request $request, string $userId, string $systemKey): Response
+    {
+        try {
+            return new JsonResponse($this->handler->setPassword($userId, $systemKey, $request->request->all()), 200);
+        } catch (SystemException $e) {
+            return new JsonResponse(ControllerUtils::createExceptionData($e), 500);
+        }
+    }
+
 }
