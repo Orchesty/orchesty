@@ -1,9 +1,18 @@
 .topology-detail{
-  min-height: 100%;
-  height: 100%;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+
+  > .bar_tabs{
+    flex-basis: min-content;
+  }
+
+  .node-list-table{
+    flex: 1;
+  }
 
   .schema-wrapper{
-    min-height: 100%;
-    height: 100%;
+    flex: 1;
   }
 }
