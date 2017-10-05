@@ -5,3 +5,4 @@ export const LIST_RECEIVE = 'RECEIVE';
 export const LIST_ERROR = 'ERROR';
 export const LIST_CHANGE_SORT = 'CHANGE_SORT';
 export const LIST_CHANGE_PAGE = 'CHANGE_PAGE';
+export const LIST_INVALIDATE = 'INVALIDATE';
