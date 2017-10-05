@@ -93,6 +93,20 @@ class SystemManager
     }
 
     /**
+     * @param SystemInstall $systemInstall
+     *
+     * @return array
+     */
+    public function getUserSystem(SystemInstall $systemInstall): array
+    {
+        $system = $this->systemLoader->getSystem($systemInstall->getSystem());
+        $data = $system->toArray($systemInstall);
+        $data['setting_fields'] = $system->getSettingFields($systemInstall);
+
+        return $data;
+    }
+
+    /**
      * @param string $user
      * @param string $system
      * @param string $token

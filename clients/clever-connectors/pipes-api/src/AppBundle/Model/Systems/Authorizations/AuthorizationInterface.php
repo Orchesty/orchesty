@@ -33,13 +33,6 @@ interface AuthorizationInterface extends SystemInterface
 
     /**
      * @param SystemInstall $systemInstall
-     *
-     * @return array
-     */
-    public function getSettingFields(SystemInstall $systemInstall): array;
-
-    /**
-     * @param SystemInstall $systemInstall
      * @param array         $data
      *
      * @return SystemInstall

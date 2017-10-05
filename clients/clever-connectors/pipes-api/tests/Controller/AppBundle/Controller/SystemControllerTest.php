@@ -140,6 +140,57 @@ class SystemControllerTest extends ControllerTestCaseAbstract
     /**
      *
      */
+    public function testGetUserSystem(): void
+    {
+        $this->loginUser('user@example.com', 'pass');
+        $system1 = (new SystemInstall())
+            ->setUser('someUser')
+            ->setSystem('null.user.group')
+            ->setToken('token');
+        $this->persistAndFlush($system1);
+
+        $system2 = (new SystemInstall())
+            ->setUser('someUser')
+            ->setSystem('null.user.group')
+            ->setToken('token');
+        $this->persistAndFlush($system2);
+
+        $response = $this->sendGet('/user_systems/user/someUser/system/null.user.group');
+        $this->assertEquals(200, $response->status);
+        $this->assertEquals(
+            (object) array_merge($this->getArrayDataForAssert($system1), [
+                'authorized'     => FALSE,
+                'setting_fields' => [
+                    (object) [
+                        'type'     => 'url',
+                        'key'      => 'field1',
+                        'label'    => '',
+                        'value'    => NULL,
+                        'required' => TRUE,
+                    ],
+                    (object) [
+                        'type'     => 'text',
+                        'key'      => 'field2',
+                        'label'    => '',
+                        'value'    => NULL,
+                        'required' => TRUE,
+                    ],
+                    (object) [
+                        'type'     => 'password',
+                        'key'      => 'field3',
+                        'label'    => '',
+                        'value'    => NULL,
+                        'required' => TRUE,
+                    ],
+                ],
+            ]),
+            $response->content
+        );
+    }
+
+    /**
+     *
+     */
     public function testGetUserSystemsNotFound(): void
     {
         $this->loginUser('user@example.com', 'pass');

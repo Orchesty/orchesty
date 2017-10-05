@@ -94,6 +94,24 @@ class SystemController extends FOSRestController
     }
 
     /**
+     * @Route("/user_systems/user/{userId}/system/{systemKey}", requirements={"userId": "\w+", "systemKey": "[\w|\.]+"})
+     * @Method({"GET", "OPTIONS"})
+     *
+     * @param string $userId
+     * @param string $systemKey
+     *
+     * @return Response
+     */
+    public function getUserSystemAction(string $userId, string $systemKey): Response
+    {
+        try {
+            return new JsonResponse($this->handler->getUserSystem($userId, $systemKey), 200);
+        } catch (SystemException $e) {
+            return new JsonResponse(ControllerUtils::createExceptionData($e), 500);
+        }
+    }
+
+    /**
      * @Route("/user_systems/user/{userId}/system/{systemKey}/install", requirements={"userId": "\w+", "systemKey": "[\w|\.]+"})
      * @Method({"POST", "OPTIONS"})
      *

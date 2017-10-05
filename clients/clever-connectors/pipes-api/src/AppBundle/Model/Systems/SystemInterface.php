@@ -47,6 +47,13 @@ interface SystemInterface
     public function sendRequest(RequestDto $dto): ResponseDto;
 
     /**
+     * @param SystemInstall $systemInstall
+     *
+     * @return array
+     */
+    public function getSettingFields(SystemInstall $systemInstall): array;
+
+    /**
      * @param SystemInstall|null $systemInstall
      *
      * @return array

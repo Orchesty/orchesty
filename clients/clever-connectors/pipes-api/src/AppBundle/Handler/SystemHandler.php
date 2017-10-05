@@ -67,8 +67,8 @@ class SystemHandler
     {
         $systems = [];
 
-        foreach ($this->manager->getSystems($user, $group) as $innerSystem) {
-            $systems[] = $innerSystem->toArray();
+        foreach ($this->manager->getSystems($user, $group) as $system) {
+            $systems[] = $system->toArray();
         }
 
         return $systems;
@@ -87,6 +87,19 @@ class SystemHandler
         }
 
         return $systems;
+    }
+
+    /**
+     * @param string $user
+     * @param string $systemKey
+     *
+     * @return array
+     */
+    public function getUserSystem(string $user, string $systemKey): array
+    {
+        /** @var SystemInstall $systemInstall */
+        $systemInstall = $this->dm->getRepository(SystemInstall::class)->findOneBy(['user' => $user, 'system' => $systemKey]);
+        return $this->manager->getUserSystem($systemInstall);
     }
 
     /**
