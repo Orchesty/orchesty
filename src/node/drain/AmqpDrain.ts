@@ -1,5 +1,7 @@
+import AssertionPublisher from "lib-nodejs/dist/src/rabbitmq/AssertPublisher";
 import logger from "../../logger/Logger";
 import JobMessage from "../../message/JobMessage";
+import {ResultCode, ResultCodeGroup} from "../../message/ResultCode";
 import ADrain from "./ADrain";
 import CounterPublisher from "./amqp/CounterPublisher";
 import FollowersPublisher from "./amqp/FollowersPublisher";
@@ -22,7 +24,13 @@ export interface IFollower {
 
 export interface IAmqpDrainSettings {
     node_id: string;
-    counter_event: {
+    counter: {
+        queue: {
+            name: string,
+            options: any,
+        },
+    };
+    repeater: {
         queue: {
             name: string,
             options: any,
@@ -42,11 +50,13 @@ class AmqpDrain extends ADrain implements IDrain, IPartialForwarder {
      * @param {IAmqpDrainSettings} settings
      * @param {CounterPublisher} counterPublisher
      * @param {FollowersPublisher} followersPublisher
+     * @param {AssertionPublisher} nonStandardPublisher
      */
     constructor(
         private settings: IAmqpDrainSettings,
         private counterPublisher: CounterPublisher,
         private followersPublisher: FollowersPublisher,
+        private nonStandardPublisher: AssertionPublisher,
     ) {
         super(settings.node_id, settings.resequencer);
         this.settings = settings;
@@ -60,6 +70,78 @@ class AmqpDrain extends ADrain implements IDrain, IPartialForwarder {
      * @param {JobMessage} message
      */
     public forward(message: JobMessage): Promise<JobMessage> {
+
+        if (message.getResultGroup() === ResultCodeGroup.NON_STANDARD) {
+            return this.forwardNonStandard(message);
+        }
+
+        return this.forwardStandardMessage(message);
+    }
+
+    /**
+     * Allows caller to forward single split messages transparently as he wishes
+     * Does not send result to counter
+     *
+     * @param {JobMessage} message
+     * @return {Promise<boolean>}
+     */
+    public forwardPart(message: JobMessage): Promise<void> {
+        return this.followersPublisher.send(message);
+    }
+
+    /**
+     * Handles non-standard messages
+     *
+     * @param {JobMessage} message
+     * @return {Promise<JobMessage>}
+     */
+    private forwardNonStandard(message: JobMessage): Promise<JobMessage> {
+        switch (message.getResult().code) {
+
+            case ResultCode.FORCE_TARGET_QUEUE:
+                return this.forwardToTargetQueue(message);
+
+            default:
+                // Let the message fail
+                message.setResult({
+                    code: ResultCode.INVALID_NON_STANDARD_CODE,
+                    message: `Unknown non-standard result code '${message.getResult().code}'`,
+                });
+                return this.forward(message);
+        }
+    }
+
+    /**
+     *
+     * @param {JobMessage} message
+     * @return {Promise<JobMessage>}
+     */
+    private forwardToTargetQueue(message: JobMessage): Promise<JobMessage> {
+        const targetQueue: string = message.getHeaders().target_queue;
+
+        if (!targetQueue) {
+            // Let the message fail
+            message.setResult({
+                code: ResultCode.INVALID_NON_STANDARD_TARGET_QUEUE,
+                message: `Missing or invalid target_queue header '${targetQueue}'`,
+            });
+            return this.forward(message);
+        }
+
+        // TODO - prepare message options
+        return this.nonStandardPublisher.sendToQueue(targetQueue, message.getBody(), {})
+            .then(() => {
+                return message;
+            });
+    }
+
+    /**
+     * Informs counter and send to all node's publishers
+     *
+     * @param {JobMessage} message
+     * @return {Promise<JobMessage>}
+     */
+    private forwardStandardMessage(message: JobMessage): Promise<JobMessage> {
         return new Promise((resolve) => {
             const buffered = this.getMessageBuffer(message);
             buffered.forEach((bufMsg: JobMessage) => {
@@ -78,17 +160,6 @@ class AmqpDrain extends ADrain implements IDrain, IPartialForwarder {
                     });
             });
         });
-    }
-
-    /**
-     * Allows caller to forward single split messages transparently as he wishes
-     * Does not send result to counter
-     *
-     * @param {JobMessage} message
-     * @return {Promise<boolean>}
-     */
-    public forwardPart(message: JobMessage): Promise<void> {
-        return this.followersPublisher.send(message);
     }
 
 }

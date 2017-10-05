@@ -85,6 +85,10 @@ class MongoMessageStorage implements IMessageStorage {
             });
     }
 
+    public findAll() {
+        return PersistedMessage.find({});
+    }
+
     /**
      * Use wisely. Clears the whole collection
      * @return {Promise<boolean>}

@@ -1,3 +1,4 @@
+import {repeaterOptions} from "./config";
 import { IAmqpDrainSettings } from "./node/drain/AmqpDrain";
 import { IAmqpFaucetSettings } from "./node/faucet/AmqpFaucet";
 import { INodeConfig } from "./topology/Configurator";
@@ -67,10 +68,16 @@ class Defaults {
         const type = "drain.amqp";
         const settings: IAmqpDrainSettings = {
             node_id: node.id,
-            counter_event: {
+            counter: {
                 queue: {
                     name: `pipes.${topoId}.counter`,
                     options: {},
+                },
+            },
+            repeater: {
+                queue: {
+                    name: repeaterOptions.input.queue.name || `pipes.repeater`,
+                    options: repeaterOptions.input.queue.options || {},
                 },
             },
             followers: node.next.map((nextNode: string) => {

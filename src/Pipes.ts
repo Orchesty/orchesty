@@ -8,11 +8,11 @@ import IDrain from "./node/drain/IDrain";
 import IFaucet from "./node/faucet/IFaucet";
 import Node from "./node/Node";
 import IWorker from "./node/worker/IWorker";
+import MongoMessageStorage from "./repeater/MongoMessageStorage";
+import Repeater from "./repeater/Repeater";
 import {default as Configurator, INodeConfig, ITopologyConfig, ITopologyConfigSkeleton} from "./topology/Configurator";
 import Counter from "./topology/counter/Counter";
 import Probe from "./topology/Probe";
-import Repeater from "./repeater/Repeater";
-import MongoMessageStorage from "./repeater/MongoMessageStorage";
 
 class Pipes {
 

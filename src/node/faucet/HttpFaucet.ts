@@ -72,7 +72,6 @@ class HttpFaucet implements IFaucet {
         let inMsg: JobMessage;
 
         try {
-            const body = JSON.stringify(req.body);
             inMsg = new JobMessage(
                 this.settings.node_id,
                 req.headers.correlation_id,
@@ -80,7 +79,7 @@ class HttpFaucet implements IFaucet {
                 req.headers.parent_id,
                 parseInt(req.headers.sequence_id, 10),
                 req.headers,
-                body,
+                new Buffer(JSON.stringify(req.body)),
             );
         } catch (err) {
             err.message = `Cannot create JobMessage from http request. ${err.message}`;

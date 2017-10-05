@@ -32,7 +32,7 @@ class Consumer extends BasicConsumer {
                 amqMsg.properties.headers.parent_id,
                 amqMsg.properties.headers.sequence_id,
                 amqMsg.properties.headers,
-                amqMsg.content.toString(),
+                amqMsg.content,
             );
         } catch (e) {
             logger.error(`AmqpFaucet dead-lettering message`, {node_id: this.nodeId, error: e});

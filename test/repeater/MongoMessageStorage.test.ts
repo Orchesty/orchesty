@@ -6,7 +6,7 @@ import {mongoStorageOptions} from "../../src/config";
 import MongoMessageStorage from "../../src/repeater/MongoMessageStorage";
 
 describe("MongoMessageStorage", () => {
-    it("saves save messages and get the subset of them taht should be repeated", () => {
+    it("saves save messages and get the subset of them that are expired", () => {
 
         const storage = new MongoMessageStorage(mongoStorageOptions);
 
@@ -46,10 +46,12 @@ describe("MongoMessageStorage", () => {
             return storage.findExpired();
         }).then((messages: Message[]) => {
             assert.lengthOf(messages, 1);
-            const msg = messages.pop();
-            assert.equal(msg1.content.toString(), msg.content.toString());
-            assert.deepEqual(msg1.properties, msg.properties);
-            assert.deepEqual(msg1.fields, msg.fields);
+            const toRepeat = messages.pop();
+            assert.equal(msg1.content.toString(), toRepeat.content.toString());
+            assert.deepEqual(msg1.properties, toRepeat.properties);
+            assert.deepEqual(msg1.fields, toRepeat.fields);
+
+            // return PersistedMessage.find({});
         });
     });
 

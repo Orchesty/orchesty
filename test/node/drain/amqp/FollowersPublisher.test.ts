@@ -13,9 +13,15 @@ import {IAmqpDrainSettings} from "../../../../src/node/drain/AmqpDrain";
 const conn = new Connection(amqpConnectionOptions);
 const settings: IAmqpDrainSettings = {
     node_id: "test-counter-publisher",
-    counter_event: {
+    counter: {
         queue: {
             name: "test-drain-counter",
+            options: {},
+        },
+    },
+    repeater: {
+        queue: {
+            name: "test-drain-repeater",
             options: {},
         },
     },
@@ -117,7 +123,7 @@ describe("FollowersPublisher", () => {
                     "",
                     msgSeqId,
                     msgHeaders,
-                    JSON.stringify(msgBody),
+                    new Buffer(JSON.stringify(msgBody)),
                     { code: ResultCode.SUCCESS, message: ""},
                 );
 
