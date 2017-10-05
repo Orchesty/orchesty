@@ -47,6 +47,13 @@ class SystemInstall
     protected $token;
 
     /**
+     * @var DateTime
+     *
+     * @ODM\Field(type="date")
+     */
+    protected $expires;
+
+    /**
      * @var string
      *
      * @ODM\Field(type="string")
@@ -132,6 +139,26 @@ class SystemInstall
         $this->token = $token;
 
         return $this;
+    }
+
+    /**
+     * @param DateTime $expires
+     *
+     * @return SystemInstall
+     */
+    public function setExpires(DateTime $expires): SystemInstall
+    {
+        $this->expires = $expires;
+
+        return $this;
+    }
+
+    /**
+     * @return DateTime
+     */
+    public function getExpires(): DateTime
+    {
+        return $this->expires;
     }
 
     /**
