@@ -14,8 +14,6 @@ class TopologyListPage extends React.Component {
   }
   
   componentWillMount(){
-   // this.props.openTopologyList();
- //   this.props.needList(true);
     this._sendActions();
   }
 
