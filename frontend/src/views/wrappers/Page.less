@@ -1,0 +1,24 @@
+.right_col{
+  display: flex;
+  flex-direction: column;
+  margin-left: 0;
+  height: ~"calc(100% - 58px)";
+
+  .main-page{
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+
+    .page-title{
+      flex-basis: min-content;
+    }
+
+    .page-content{
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+  }
+}
