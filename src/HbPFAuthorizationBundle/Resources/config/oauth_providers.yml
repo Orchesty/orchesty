@@ -11,5 +11,6 @@ services:
         class: Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider
         arguments:
             - '@hbpf.redirect'
+            - '%backend_host%'
         calls:
             - ['setLogger', ['@monolog.logger.authorization']]
