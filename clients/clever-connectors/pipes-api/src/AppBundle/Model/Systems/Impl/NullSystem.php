@@ -142,34 +142,27 @@ class NullSystem implements WebhookSystemInterface, OAuth2Interface
     }
 
     /**
-     * @return array
-     */
-    public function toArray(): array
-    {
-        return [
-            'type'        => $this->getType(),
-            'key'         => $this->getKey(),
-            'name'        => $this->getName(),
-            'description' => $this->getDescription(),
-            'authType'    => $this->getAuthorizationType(),
-        ];
-    }
-
-    /**
-     * @param SystemInstall $systemInstall
+     * @param SystemInstall|null $systemInstall
      *
      * @return array
      */
-    public function toArrayWithAuth(SystemInstall $systemInstall): array
+    public function toArray(?SystemInstall $systemInstall = NULL): array
     {
-        return [
-            'type'        => $this->getType(),
+        $arr = [
             'key'         => $this->getKey(),
             'name'        => $this->getName(),
             'description' => $this->getDescription(),
+            'type'        => $this->getType(),
             'authType'    => $this->getAuthorizationType(),
-            'authorized'  => $this->isAuthorized($systemInstall),
         ];
+
+        if ($systemInstall) {
+            $arr['authorized']     = $this->isAuthorized($systemInstall);
+            $arr['token']          = $systemInstall->getToken();
+            $arr['synchronized']   = $systemInstall->isSynchronized();
+        }
+
+        return $arr;
     }
 
     /**

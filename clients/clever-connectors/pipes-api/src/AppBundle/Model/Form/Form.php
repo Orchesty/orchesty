@@ -34,13 +34,7 @@ class Form
     {
         $fields = [];
         foreach ($this->fields as $field) {
-            $fields[] = [
-                'type'     => $field->getType(),
-                'key'      => $field->getKey(),
-                'label'    => $field->getLabel(),
-                'value'    => $field->getValue(),
-                'required' => $field->isRequired(),
-            ];
+            $fields[] = $field->toArray();
         }
 
         return $fields;

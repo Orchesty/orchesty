@@ -114,24 +114,24 @@ class SystemControllerTest extends ControllerTestCaseAbstract
     public function testGetUserSystems(): void
     {
         $this->loginUser('user@example.com', 'pass');
-        $system = (new SystemInstall())
+        $system1 = (new SystemInstall())
             ->setUser('someUser')
             ->setSystem('null.user.group')
             ->setToken('token');
-        $this->persistAndFlush($system);
+        $this->persistAndFlush($system1);
 
-        $system = (new SystemInstall())
+        $system2 = (new SystemInstall())
             ->setUser('someUser')
             ->setSystem('null.user.group')
             ->setToken('token');
-        $this->persistAndFlush($system);
+        $this->persistAndFlush($system2);
 
         $response = $this->sendGet('/user_systems/user/someUser');
         $this->assertEquals(200, $response->status);
         $this->assertEquals(
             [
-                (object) array_merge($this->getArrayDataForAssert(), ['authorized' => FALSE]),
-                (object) array_merge($this->getArrayDataForAssert(), ['authorized' => FALSE]),
+                (object) array_merge($this->getArrayDataForAssert($system1), ['authorized' => FALSE]),
+                (object) array_merge($this->getArrayDataForAssert($system2), ['authorized' => FALSE]),
             ],
             $response->content
         );
@@ -362,17 +362,26 @@ class SystemControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
+     * @param SystemInstall|null $systemInstall
+     *
      * @return array
      */
-    private function getArrayDataForAssert(): array
+    private function getArrayDataForAssert(?SystemInstall $systemInstall = NULL): array
     {
-        return [
+        $arr = [
             'type'        => SystemTypeEnum::CRON,
             'key'         => 'null.user.group',
             'name'        => 'NULL',
             'description' => 'Only for testing purposes',
             'authType'    => 'oauth2',
         ];
+
+        if ($systemInstall) {
+            $arr['token']        = $systemInstall->getToken();
+            $arr['synchronized'] = $systemInstall->isSynchronized();
+        }
+
+        return $arr;
     }
 
 }

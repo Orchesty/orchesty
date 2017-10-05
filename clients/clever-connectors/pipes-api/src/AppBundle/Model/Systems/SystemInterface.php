@@ -38,15 +38,10 @@ interface SystemInterface
     public function getLogo(): string;
 
     /**
-     * @return array
-     */
-    public function toArray(): array;
-
-    /**
-     * @param SystemInstall $systemInstall
+     * @param SystemInstall|null $systemInstall
      *
      * @return array
      */
-    public function toArrayWithAuth(SystemInstall $systemInstall): array;
+    public function toArray(?SystemInstall $systemInstall = NULL): array;
 
 }

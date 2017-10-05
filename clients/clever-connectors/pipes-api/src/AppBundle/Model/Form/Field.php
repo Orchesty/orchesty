@@ -112,6 +112,20 @@ class Field
     /**
      * @return array
      */
+    public function toArray(): array
+    {
+        return [
+            'type'     => $this->type,
+            'key'      => $this->key,
+            'label'    => $this->label,
+            'value'    => $this->value,
+            'required' => $this->required,
+        ];
+    }
+
+    /**
+     * @return array
+     */
     private function getTypes(): array
     {
         return [

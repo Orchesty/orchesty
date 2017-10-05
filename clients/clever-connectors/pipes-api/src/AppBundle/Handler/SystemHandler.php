@@ -48,8 +48,8 @@ class SystemHandler
     {
         $systems = [];
 
-        foreach ($this->manager->getSystems($user, $group) as $innerSystem) {
-            $systems[] = $innerSystem->toArray();
+        foreach ($this->manager->getSystems($user, $group) as $system) {
+            $systems[] = $system->toArray();
         }
 
         return $systems;
@@ -64,7 +64,7 @@ class SystemHandler
     {
         $systems = [];
         foreach ($this->manager->getUserSystems($user) as $system) {
-            $systems[] = $system->toArrayWithAuth($this->manager->getSystemInstall($user, $system->getKey()));
+            $systems[] = $system->toArray($this->manager->getSystemInstall($user, $system->getKey()));
         }
 
         return $systems;
