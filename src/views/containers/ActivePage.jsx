@@ -8,8 +8,6 @@ import TopologyDetailPage from 'pages/TopologyDetailPage';
 import SchemaPage from 'pages/SchemaPage';
 import AuthorizationListPage from 'pages/AuthorizationListPage';
 
-import './ActivePage.less';
-
 class ActivePage extends React.Component {
   render() {
     const {page} = this.props;

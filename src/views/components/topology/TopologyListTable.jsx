@@ -69,10 +69,6 @@ class TopologyListTable extends React.Component {
               action: () => {openModal('topology_edit', {topologyId: id});}
             },
             {
-              caption: 'View schema',
-              action: () => {selectPage('topology_schema', {schemaId: id});}
-            },
-            {
               caption: 'Clone',
               action: () => {clone(id)}
             }

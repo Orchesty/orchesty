@@ -38,7 +38,7 @@ class App extends React.Component {
     } else {
       if (isLogged && (!pageDef || pageDef.needAuth)) {
         return (
-          <div className={showMenu ? 'main-app nav-md' : 'nav-sm'}>
+          <div className={showMenu ? 'main-app nav-md' : 'main-app nav-sm'}>
             <div className="container body">
               <div className="main_container">
                 <LeftSidePanel />
