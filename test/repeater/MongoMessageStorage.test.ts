@@ -34,7 +34,7 @@ describe("MongoMessageStorage", () => {
             },
         };
 
-        return storage.clearAll()
+        return storage.drop()
         .then(() => {
             return Promise.all([
                 storage.save(msg1),
@@ -50,8 +50,6 @@ describe("MongoMessageStorage", () => {
             assert.equal(msg1.content.toString(), toRepeat.content.toString());
             assert.deepEqual(msg1.properties, toRepeat.properties);
             assert.deepEqual(msg1.fields, toRepeat.fields);
-
-            // return PersistedMessage.find({});
         });
     });
 
