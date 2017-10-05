@@ -2,7 +2,9 @@
 
 namespace Hanaboso\PipesFramework\Configurator\Repository;
 
+use Doctrine\ODM\MongoDB\Cursor;
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use Hanaboso\PipesFramework\Commons\Enum\TopologyStatusEnum;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 
 /**
@@ -12,6 +14,23 @@ use Hanaboso\PipesFramework\Configurator\Document\Topology;
  */
 class TopologyRepository extends DocumentRepository
 {
+
+    /**
+     * @param string $name
+     *
+     * @return Topology[]
+     */
+    public function getRunnableTopologies(string $name): array
+    {
+        /** @var Cursor $result */
+        $result = $this->createQueryBuilder()
+            ->field('name')->equals($name)
+            ->field('enabled')->equals(TRUE)
+            ->field('visibility')->equals(TopologyStatusEnum::PUBLIC)
+            ->getQuery()->execute();
+
+        return $result->toArray(FALSE);
+    }
 
     /**
      * @return integer
@@ -30,7 +49,6 @@ class TopologyRepository extends DocumentRepository
     {
         /** @var Topology $result */
         $result = $this->createQueryBuilder()
-            ->select('version')
             ->field('name')->equals($name)
             ->sort('version', 'DESC')
             ->limit(1)
