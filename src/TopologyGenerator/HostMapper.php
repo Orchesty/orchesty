@@ -77,28 +77,28 @@ class HostMapper
     {
         switch ($enum->getValue()) {
             case TypeEnum::CONNECTOR:
-                $route = 'api/connector/{service_id}/action';
+                $route = 'connector/{service_id}/action';
                 break;
             case TypeEnum::WEBHOOK:
-                $route = 'api/connector/{service_id}/webhook';
+                $route = 'connector/{service_id}/webhook';
                 break;
             case TypeEnum::MAPPER:
-                $route = 'api/mapper/{service_id}';
+                $route = 'mapper/{service_id}';
                 break;
             case TypeEnum::XML_PARSER:
-                $route = 'api/xml-parser/{service_id}';
+                $route = 'xml-parser/{service_id}';
                 break;
             case TypeEnum::API:
-                $route = 'api/connector/{service_id}';
+                $route = 'connector/{service_id}';
                 break;
             case TypeEnum::FTP:
-                $route = 'api/connector/{service_id}';
+                $route = 'connector/{service_id}';
                 break;
             case TypeEnum::EMAIL:
-                $route = 'api/mailer/{service_id}';
+                $route = 'mailer/{service_id}';
                 break;
             case TypeEnum::CUSTOM:
-                $route = 'api/custom_node/{service_id}/process';
+                $route = 'custom_node/{service_id}/process';
                 break;
             default:
                 throw new InvalidArgumentException(sprintf('Type "%s" does not exist.', $enum->getValue()));
