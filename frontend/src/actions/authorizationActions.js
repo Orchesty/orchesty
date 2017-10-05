@@ -30,7 +30,7 @@ function loadList(id, loadingState = true){
       dispatch(listLoading(id));
     }
     const list = getState().authorization.lists[id];
-    const offset = list.page ? (list.page - 1) * list.pageSize : 0;
+    const offset = list.page ? list.page * list.pageSize : 0;
     return serverRequest(dispatch, 'GET', '/authorizations', sortToQuery(list.sort, {
       offset,
       limit: list.pageSize

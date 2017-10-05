@@ -6,8 +6,11 @@ import objectEquals from 'utils/objectEquals';
 import config from 'rootApp/config';
 import * as notificationActions from './notificationActions';
 import * as processActions from './processActions';
+import * as nodeActions from './nodeActions';
 
 const {createPaginationList, listLoading, listError, listReceive, listDelete, listChangeSort, listChangePage, invalidateLists} = listFactory('TOPOLOGY/LIST/');
+
+export const topologyInvalidateLists = invalidateLists;
 
 function receive(data){
   return {
@@ -45,7 +48,7 @@ function loadList(id, loadingState = true){
       dispatch(listLoading(id));
     }
     const list = getState().topology.lists[id];
-    const offset = list.page ? (list.page - 1) * list.pageSize : 0;
+    const offset = list.page ? list.page * list.pageSize : 0;
     return serverRequest(dispatch, 'GET', '/topologies', sortToQuery(list.sort, {
       offset,
       limit: list.pageSize
@@ -184,6 +187,7 @@ export function saveTopologySchema(id, schema){
           if (response._id != id){
             dispatch(invalidateLists());
           }
+          dispatch(nodeActions.nodeInvalidateLists('topology', response._id));
         }
         return response;
     })
