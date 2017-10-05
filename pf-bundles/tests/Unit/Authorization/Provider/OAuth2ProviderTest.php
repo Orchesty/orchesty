@@ -36,6 +36,21 @@ final class OAuth2ProviderTest extends TestCase
         /** @var PHPUnit_Framework_MockObject_MockObject|OAuth2Provider $provider */
         $provider = $this->getMockedProvider($url);
         $dto      = new OAuth2Dto('cl_id', 'cl_sec', '127.0.0.4/red', 'authorize/url', 'token/url');
+        $dto->setCustomAppDependencies(uniqid(), 'magento');
+
+        $provider->authorize($dto, []);
+    }
+
+    /**
+     * @dataProvider authorizeDataProvider
+     *
+     * @param string $url
+     */
+    public function testAuthorizeCustomApp(string $url): void
+    {
+        /** @var PHPUnit_Framework_MockObject_MockObject|OAuth2Provider $provider */
+        $provider = $this->getMockedProvider($url);
+        $dto      = new OAuth2Dto('cl_id', 'cl_sec', '127.0.0.4/red', 'authorize/url', 'token/url');
 
         $provider->authorize($dto, []);
     }

@@ -42,4 +42,25 @@ interface OAuth2DtoInterface
      */
     public function getTokenUrl(): string;
 
+    /**
+     * @return mixed
+     */
+    public function isCustomApp(): bool;
+
+    /**
+     * @return string
+     */
+    public function getUser(): string;
+
+    /**
+     * @return string
+     */
+    public function getSystemKey(): string;
+
+    /**
+     * @param string $user
+     * @param string $systemKey
+     */
+    public function setCustomAppDependencies(string $user, string $systemKey): void;
+
 }

@@ -68,7 +68,7 @@ class CMTestForwardConnector implements ConnectorInterface
         }
 
         $data = $data['data'];
-        $dto->setData("1111");
+        $dto->setData(json_encode($data));
 
         return $dto;
     }
