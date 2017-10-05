@@ -3,6 +3,7 @@
 namespace CleverConnectors\AppBundle\Model\Systems;
 
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
+use Hanaboso\PipesFramework\Utils\StringUtil;
 use Nette\Utils\Strings;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -28,7 +29,7 @@ class SystemCompilerPass implements CompilerPassInterface
 
             $method = sprintf(
                 'setSystemsWithTag%s',
-                $this->replaceDotsAndUnderscoresWithCapitalLetters($tagWithoutPercentage)
+                StringUtil::toCamelCase($tagWithoutPercentage)
             );
 
             if (method_exists(SystemLoader::class, $method)) {
@@ -50,18 +51,6 @@ class SystemCompilerPass implements CompilerPassInterface
                 );
             }
         }
-    }
-
-    /**
-     * @param string $string
-     *
-     * @return string
-     */
-    private function replaceDotsAndUnderscoresWithCapitalLetters(string $string): string
-    {
-        return Strings::replace($string, '#(\.\w|_\w)#', function ($matches) {
-            return Strings::firstUpper(Strings::substring($matches[0], 1));
-        });
     }
 
 }
