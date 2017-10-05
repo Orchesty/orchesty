@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace CleverConnectors\AppBundle\Model\Systems\Impl;
+namespace Tests\Integration\AppBundle\Systems\Impl;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\SystemTypeEnum;
@@ -19,7 +19,7 @@ use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 /**
  * Class NullSystem
  *
- * @package CleverConnectors\AppBundle\Model\Systems\Impl
+ * @package Tests\Integration\AppBundle\Systems\Impl
  */
 class NullSystem implements WebhookSystemInterface, OAuth2Interface
 {
@@ -262,6 +262,16 @@ class NullSystem implements WebhookSystemInterface, OAuth2Interface
         // TODO: Implement refreshToken() method.
 
         return $systemInstall;
+    }
+
+    /**
+     * @param RequestDto $dto
+     *
+     * @return ResponseDto
+     */
+    public function sendRequest(RequestDto $dto): ResponseDto
+    {
+        return new ResponseDto(200, '', '', []);
     }
 
 }

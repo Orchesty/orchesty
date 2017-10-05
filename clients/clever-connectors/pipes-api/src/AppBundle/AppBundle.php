@@ -23,6 +23,7 @@ class AppBundle extends Bundle
     {
         parent::build($container);
         (new YamlFileLoader($container, new FileLocator(__DIR__ . '/Resources/config')))->load('parameters.yml');
+        (new YamlFileLoader($container, new FileLocator(__DIR__ . '/Resources/config')))->load('dev_services.yml');
         $container->addCompilerPass(new SystemCompilerPass());
     }
 

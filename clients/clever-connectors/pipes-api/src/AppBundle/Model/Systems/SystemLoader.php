@@ -2,6 +2,7 @@
 
 namespace CleverConnectors\AppBundle\Model\Systems;
 
+use CleverConnectors\AppBundle\Model\Systems\Authorizations\AuthorizationInterface;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use Nette\Utils\Strings;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -102,16 +103,16 @@ class SystemLoader
     /**
      * @param string $key
      *
-     * @return SystemInterface
+     * @return AuthorizationInterface
      * @throws SystemException
      */
-    public function getSystem(string $key): SystemInterface
+    public function getSystem(string $key): AuthorizationInterface
     {
         $key = sprintf('%s.%s', self::PREFIX, $key);
 
         if ($this->container->has($key)) {
             $system = $this->container->get($key);
-            if ($system instanceof SystemInterface) {
+            if ($system instanceof AuthorizationInterface) {
                 return $system;
             }
         }

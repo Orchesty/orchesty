@@ -4,11 +4,11 @@ namespace Tests\Integration\AppBundle\Model\Systems;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
-use CleverConnectors\AppBundle\Model\Systems\Impl\NullSystem;
 use CleverConnectors\AppBundle\Model\Systems\SystemManager;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use Tests\DatabaseTestCaseAbstract;
+use Tests\Integration\AppBundle\Systems\Impl\NullSystem;
 
 /**
  * Class SystemManagerTest

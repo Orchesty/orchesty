@@ -27,4 +27,12 @@ interface OAuth1Interface extends AuthorizationInterface
      */
     public function saveToken(SystemInstall $systemInstall, array $data): SystemInstall;
 
+    /**
+     * @param SystemInstall $systemInstall
+     * @param string        $redirectUrl
+     *
+     * @return SystemInstall
+     */
+    public function saveFrontendRedirectUrl(SystemInstall $systemInstall, string $redirectUrl): SystemInstall;
+
 }
