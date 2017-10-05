@@ -18,7 +18,8 @@ export interface IHttpWorkerSettings {
 export interface IHttpWorkerRequestParams {
     method: string;
     url: string;
-    json: any;
+    json?: any;
+    followAllRedirects?: boolean;
     gzip?: boolean;
     body?: string;
     headers: {
@@ -141,6 +142,7 @@ class HttpWorker implements IWorker {
             method: this.settings.method.toUpperCase(),
             url: this.getUrl(this.settings.process_path),
             json: JSON.parse(inMsg.getContent()),
+            followAllRedirects: true,
             headers: {
                 correlation_id: inMsg.getCorrelationId(),
                 process_id: inMsg.getProcessId(),
@@ -170,7 +172,7 @@ class HttpWorker implements IWorker {
      */
     private onRequestError(msg: JobMessage, reqParams: IHttpWorkerRequestParams, err: any): void {
         logger.warn(
-            `Worker[type='http'] did not received response. Request params: ${JSON.stringify(reqParams)}.`,
+            `Worker[type='http'] did not receive response. Request params: ${JSON.stringify(reqParams)}.`,
             logger.ctxFromMsg(msg, err),
         );
         msg.setResult({ code: ResultCode.HTTP_ERROR, message: err });
