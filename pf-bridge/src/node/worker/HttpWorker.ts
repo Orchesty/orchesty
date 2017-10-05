@@ -21,14 +21,15 @@ export interface IHttpWorkerRequestParams {
     json: any;
     gzip?: boolean;
     body?: string;
-    headers: {
+    /*headers: {
         correlation_id: string,
         process_id: string,
         parent_id: string,
         sequence_id: number,
         reply_to_url?: string,
         reply_to_method?: string,
-    };
+    };*/
+    headers: { [key: string]: string }
 }
 
 /**
@@ -130,16 +131,12 @@ class HttpWorker implements IWorker {
      * @return {IHttpWorkerRequestParams}
      */
     private getJobRequestParams(inMsg: JobMessage): IHttpWorkerRequestParams {
+
         return {
             method: this.settings.method.toUpperCase(),
             url: this.getUrl(this.settings.process_path),
             json: JSON.parse(inMsg.getContent()),
-            headers: {
-                correlation_id: inMsg.getCorrelationId(),
-                process_id: inMsg.getProcessId(),
-                parent_id: inMsg.getParentId(),
-                sequence_id: inMsg.getSequenceId(),
-            },
+            headers: inMsg.getHeaders()
         };
     }
 
