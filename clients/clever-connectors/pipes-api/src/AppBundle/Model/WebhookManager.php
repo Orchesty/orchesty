@@ -5,7 +5,9 @@ namespace CleverConnectors\AppBundle\Model;
 use CleverConnectors\AppBundle\Document\Webhook;
 use CleverConnectors\AppBundle\Model\Systems\WebhookSubscribes;
 use CleverConnectors\AppBundle\Model\Systems\WebhookSystemInterface;
+use CleverConnectors\AppBundle\Repository\WebhookRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\DocumentRepository;
 use Exception;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Psr\Log\LoggerAwareInterface;
@@ -24,6 +26,11 @@ class WebhookManager implements LoggerAwareInterface
      * @var DocumentManager
      */
     private $dm;
+
+    /**
+     * @var WebhookRepository|DocumentRepository
+     */
+    private $webhookRepository;
 
     /**
      * @var CurlManager
@@ -49,24 +56,35 @@ class WebhookManager implements LoggerAwareInterface
      */
     function __construct(DocumentManager $dm, CurlManager $curl, string $domain)
     {
-        $this->dm     = $dm;
-        $this->curl   = $curl;
-        $this->logger = new NullLogger();
-        $this->domain = $domain;
+        $this->dm                = $dm;
+        $this->webhookRepository = $dm->getRepository(Webhook::class);
+        $this->curl              = $curl;
+        $this->logger            = new NullLogger();
+        $this->domain            = $domain;
     }
 
     /**
      * @param WebhookSystemInterface $system
      * @param string                 $userId
      * @param string                 $token
+     * @param bool                   $isUpdate
      *
-     * @return string[]
+     * @return array
      */
-    public function subscribe(WebhookSystemInterface $system, string $userId, string $token): array
+    public function subscribe(WebhookSystemInterface $system, string $userId, string $token, $isUpdate = FALSE): array
     {
         $ids = [];
         /** @var WebhookSubscribes $sub */
         foreach ($system->getWebhookSubscribes() as $sub) {
+            if (!$isUpdate && $this->webhookRepository->isWebhookRegistred(
+                    $userId,
+                    $system->getKey(),
+                    $sub->getTopologyName(),
+                    $sub->getNodeName()
+                )) {
+                continue;
+            }
+
             $url = $this->getWebhookUrl($this->domain, $userId, $token, $sub->getNodeName(), $sub->getTopologyName());
 
             $req = $system->getSubscribeRequest($url);
@@ -140,7 +158,7 @@ class WebhookManager implements LoggerAwareInterface
      */
     public function update(WebhookSystemInterface $system, string $userId, string $token): void
     {
-        $ids = $this->subscribe($system, $userId, $token);
+        $ids = $this->subscribe($system, $userId, $token, TRUE);
         $this->unsubscribe($system, $userId, $ids);
     }
 

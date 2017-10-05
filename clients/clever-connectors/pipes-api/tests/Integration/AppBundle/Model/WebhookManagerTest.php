@@ -49,7 +49,7 @@ class WebhookManagerTest extends DatabaseTestCaseAbstract
         self::assertEquals('null.user.group', $res->getSystemKey());
 
         // Update
-        $web->update($sys, 'user', 'token', 'domain');
+        $web->update($sys, 'user', 'token');
         $res = $this->dm->getRepository(Webhook::class)->findAll();
         self::assertEquals(1, count($res));
 
@@ -65,7 +65,7 @@ class WebhookManagerTest extends DatabaseTestCaseAbstract
     private function mockCurl(): CurlManagerInterface
     {
         $curl = $this->createMock(CurlManagerInterface::class);
-        $res = new ResponseDto(200, '', 'body', []);
+        $res  = new ResponseDto(200, '', 'body', []);
         $curl->method('send')->willReturn($res);
 
         return $curl;

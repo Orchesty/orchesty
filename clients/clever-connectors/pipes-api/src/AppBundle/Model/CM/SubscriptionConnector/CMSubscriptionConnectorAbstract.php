@@ -97,9 +97,9 @@ abstract class CMSubscriptionConnectorAbstract extends CMAuthorization implement
 
     /**
      * @param ProcessDto $dto
-     * @param string $method
-     * @param int[] $statusCode
-     * @param string $email
+     * @param string     $method
+     * @param int[]      $statusCode
+     * @param string     $email
      *
      * @return ProcessDto
      * @throws CleverConnectorsException
@@ -115,13 +115,14 @@ abstract class CMSubscriptionConnectorAbstract extends CMAuthorization implement
         }
 
         $req = new RequestDto($method, new Uri($this->getUrl($email)));
-        $req->setHeaders($this->getAuthorizationHeaders($dto->getHeaders()['guid'][0], $dto->getHeaders()['token'][0])); // TODO why header array?
+        $req->setHeaders($this->getAuthorizationHeaders($dto->getHeaders()['guid'][0],
+            $dto->getHeaders()['token'][0])); // TODO why header array?
         $req->setBody($dto->getData());
         try {
             $res = $this->curl->send($req, [
-                RequestOptions::CERT => __DIR__ . '/../../../../../../hanaboso.cert.pem',     // TODO do konfigu
+                RequestOptions::CERT    => __DIR__ . '/../../../../../../hanaboso.cert.pem',     // TODO do konfigu
                 RequestOptions::SSL_KEY => __DIR__ . '/../../../../../../hanaboso.cert.pem',
-                RequestOptions::VERIFY => __DIR__ . '/../../../../../../ca.crt',
+                RequestOptions::VERIFY  => __DIR__ . '/../../../../../../ca.crt',
             ]);
         } catch (Exception $e) {
             $this->logger->error(sprintf('CM %s subscription failed.', $method), ['exception' => $e]);

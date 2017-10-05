@@ -5,6 +5,7 @@ namespace CleverConnectors\AppBundle\Model\Systems;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\SystemTypeEnum;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\AuthorizationInterface;
+use CleverConnectors\AppBundle\Model\Systems\Authorizations\OAuth1Interface;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\WebhookManager;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
@@ -99,11 +100,53 @@ class SystemManager
      */
     public function getUserSystem(SystemInstall $systemInstall): array
     {
-        $system = $this->systemLoader->getSystem($systemInstall->getSystem());
-        $data = $system->toArray($systemInstall);
+        $system                 = $this->systemLoader->getSystem($systemInstall->getSystem());
+        $data                   = $system->toArray($systemInstall);
         $data['setting_fields'] = $system->getSettingFields($systemInstall);
 
         return $data;
+    }
+
+    /**
+     * @param string $system
+     * @param bool   $synchronized
+     *
+     * @return string[]
+     */
+    public function getSystemUsers(string $system, bool $synchronized): array
+    {
+        $this->systemLoader->getSystem($system);
+
+        $users   = [];
+        $systems = $this->systemRepository->findBy(['system' => $system, 'synchronized' => $synchronized]);
+
+        foreach ($systems as $systemInstall) {
+            $users[] = $systemInstall->getUser();
+        }
+
+        return $users;
+    }
+
+    /**
+     * @param string $user
+     * @param string $system
+     *
+     * @return SystemInstall
+     * @throws SystemException
+     */
+    public function getSystemInstall(string $user, string $system): SystemInstall
+    {
+        /** @var SystemInstall $systemInstall */
+        $systemInstall = $this->systemRepository->findOneBy(['user' => $user, 'system' => $system]);
+
+        if (!$systemInstall) {
+            throw new SystemException(
+                sprintf('System \'%s\' or user \'%s\' not found', $system, $user),
+                SystemException::SYSTEM_OR_USER_NOT_FOUND
+            );
+        }
+
+        return $systemInstall;
     }
 
     /**
@@ -115,19 +158,12 @@ class SystemManager
      */
     public function installSystem(string $user, string $system, string $token): SystemInstall
     {
-        $systemService = $this->systemLoader->getSystem($system);
-
+        $this->systemLoader->getSystem($system);
         $systemInstall = (new SystemInstall())
             ->setUser($user)
             ->setSystem($system)
             ->setToken($token)
             ->setSynchronized(FALSE);
-
-        if ($systemService->getType() === SystemTypeEnum::WEBHOOK) {
-            /** @var WebhookSystemInterface $webhookSystem */
-            $webhookSystem = $systemService;
-            $this->webhookManager->subscribe($webhookSystem, $user, $token);
-        }
 
         $this->dm->persist($systemInstall);
         $this->dm->flush();
@@ -146,12 +182,7 @@ class SystemManager
     {
         $systemInstall = $this->getSystemInstall($user, $system);
 
-        $systemService = $this->systemLoader->getSystem($system);
-        if ($systemService->getType() === SystemTypeEnum::WEBHOOK) {
-            /** @var WebhookSystemInterface $webhookSystem */
-            $webhookSystem = $systemService;
-            $this->webhookManager->unsubscribe($webhookSystem, $user);
-        }
+        $this->unSubscribeWebhooks($systemInstall);
 
         $this->dm->remove($systemInstall);
         $this->dm->flush();
@@ -177,6 +208,8 @@ class SystemManager
 
         $this->dm->flush();
 
+        $this->subscribeWebhooks($systemInstall);
+
         return $systemInstall;
     }
 
@@ -195,27 +228,9 @@ class SystemManager
         $systemInstall->setToken($token);
         $this->dm->flush();
 
+        $this->updateWebhooks($systemInstall);
+
         return $systemInstall;
-    }
-
-    /**
-     * @param string $system
-     * @param bool   $synchronized
-     *
-     * @return string[]
-     */
-    public function getSystemUsers(string $system, bool $synchronized): array
-    {
-        $this->systemLoader->getSystem($system);
-
-        $users   = [];
-        $systems = $this->systemRepository->findBy(['system' => $system, 'synchronized' => $synchronized]);
-
-        foreach ($systems as $systemInstall) {
-            $users[] = $systemInstall->getUser();
-        }
-
-        return $users;
     }
 
     /**
@@ -235,29 +250,93 @@ class SystemManager
 
         $this->dm->flush();
 
+        $this->subscribeWebhooks($systemInstall);
+
         return $systemInstall;
     }
 
     /**
      * @param string $user
-     * @param string $system
+     * @param string $systemKey
+     * @param string $redirectUrl
+     */
+    public function authorize(string $user, string $systemKey, string $redirectUrl): void
+    {
+        /** @var OAuth1Interface $system */
+        $system        = $this->systemLoader->getSystem($systemKey);
+        $systemInstall = $this->getSystemInstall($user, $systemKey);
+
+        $system->saveFrontendRedirectUrl($systemInstall, $redirectUrl);
+        $this->dm->flush();
+
+        $system->authorize($systemInstall);
+    }
+
+    /**
+     * @param string $user
+     * @param string $systemKey
+     * @param array  $data
      *
      * @return SystemInstall
-     * @throws SystemException
      */
-    public function getSystemInstall(string $user, string $system): SystemInstall
+    public function saveToken(string $user, string $systemKey, array $data): SystemInstall
     {
-        /** @var SystemInstall $systemInstall */
-        $systemInstall = $this->systemRepository->findOneBy(['user' => $user, 'system' => $system]);
+        $systemInstall = $this->getSystemInstall($user, $systemKey);
+        /** @var OAuth1Interface $system */
+        $system = $this->systemLoader->getSystem($systemKey);
+        $system->saveToken($systemInstall, $data);
+        $system->setSettings($systemInstall, $data);
+        $this->dm->flush();
 
-        if (!$systemInstall) {
-            throw new SystemException(
-                sprintf('System \'%s\' or user \'%s\' not found', $system, $user),
-                SystemException::SYSTEM_OR_USER_NOT_FOUND
-            );
-        }
+        $this->subscribeWebhooks($systemInstall);
 
         return $systemInstall;
+    }
+
+    /**
+     * ------------------------------------- HELPERS ----------------------------------------
+     */
+
+    /**
+     * @param SystemInstall $systemInstall
+     */
+    protected function subscribeWebhooks(SystemInstall $systemInstall): void
+    {
+        $systemService = $this->systemLoader->getSystem($systemInstall->getSystem());
+
+        if ($systemService->isAuthorized($systemInstall) && $systemService->getType() === SystemTypeEnum::WEBHOOK) {
+            /** @var WebhookSystemInterface $webhookSystem */
+            $webhookSystem = $systemService;
+            $this->webhookManager->subscribe($webhookSystem, $systemInstall->getUser(), $systemInstall->getToken());
+        }
+    }
+
+    /**
+     * @param SystemInstall $systemInstall
+     */
+    protected function updateWebhooks(SystemInstall $systemInstall): void
+    {
+        $systemService = $this->systemLoader->getSystem($systemInstall->getSystem());
+
+        if ($systemService->isAuthorized($systemInstall) && $systemService->getType() === SystemTypeEnum::WEBHOOK) {
+            /** @var WebhookSystemInterface $webhookSystem */
+            $webhookSystem = $systemService;
+            $this->webhookManager->update($webhookSystem, $systemInstall->getUser(), $systemInstall->getToken());
+        }
+    }
+
+    /**
+     * @param SystemInstall $systemInstall
+     */
+    protected function unSubscribeWebhooks(SystemInstall $systemInstall): void
+    {
+        $systemService = $this->systemLoader->getSystem($systemInstall->getSystem());
+
+        if ($systemService->isAuthorized($systemInstall) && $systemService->getType() === SystemTypeEnum::WEBHOOK) {
+            /** @var WebhookSystemInterface $webhookSystem */
+            $webhookSystem = $systemService;
+            $this->webhookManager->unsubscribe($webhookSystem, $systemInstall->getUser());
+        }
     }
 
 }

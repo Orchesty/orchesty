@@ -8,7 +8,6 @@ services:
         class: CleverConnectors\AppBundle\Handler\SystemHandler
         arguments:
             - '@systems.manager'
-            - '@systems.loader'
             - '@doctrine_mongodb.odm.default_document_manager'
 
     systems.manager:

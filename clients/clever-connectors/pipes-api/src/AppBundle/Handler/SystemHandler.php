@@ -3,9 +3,7 @@
 namespace CleverConnectors\AppBundle\Handler;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
-use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\OAuth1Interface;
-use CleverConnectors\AppBundle\Model\Systems\SystemLoader;
 use CleverConnectors\AppBundle\Model\Systems\SystemManager;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\PipesFramework\Utils\ControllerUtils;
@@ -24,11 +22,6 @@ class SystemHandler
     private $manager;
 
     /**
-     * @var SystemLoader
-     */
-    private $loader;
-
-    /**
      * @var DocumentManager
      */
     private $dm;
@@ -37,13 +30,11 @@ class SystemHandler
      * SystemHandler constructor.
      *
      * @param SystemManager   $manager
-     * @param SystemLoader    $loader
      * @param DocumentManager $dm
      */
-    public function __construct(SystemManager $manager, SystemLoader $loader, DocumentManager $dm)
+    public function __construct(SystemManager $manager, DocumentManager $dm)
     {
         $this->manager = $manager;
-        $this->loader  = $loader;
         $this->dm      = $dm;
     }
 
@@ -98,7 +89,11 @@ class SystemHandler
     public function getUserSystem(string $user, string $systemKey): array
     {
         /** @var SystemInstall $systemInstall */
-        $systemInstall = $this->dm->getRepository(SystemInstall::class)->findOneBy(['user' => $user, 'system' => $systemKey]);
+        $systemInstall = $this->dm->getRepository(SystemInstall::class)->findOneBy([
+            'user'   => $user,
+            'system' => $systemKey,
+        ]);
+
         return $this->manager->getUserSystem($systemInstall);
     }
 
@@ -183,14 +178,7 @@ class SystemHandler
      */
     public function authorize(string $user, string $systemKey, string $redirectUrl): void
     {
-        /** @var OAuth1Interface $system */
-        $system        = $this->loader->getSystem($systemKey);
-        $systemInstall = $this->getSystemInstall($user, $systemKey);
-
-        $system->saveFrontendRedirectUrl($systemInstall, $redirectUrl);
-        $this->dm->flush();
-
-        $system->authorize($systemInstall);
+        $this->manager->authorize($user, $systemKey, $redirectUrl);
     }
 
     /**
@@ -202,38 +190,9 @@ class SystemHandler
      */
     public function saveToken(string $user, string $systemKey, array $data): string
     {
-        $systemInstall = $this->getSystemInstall($user, $systemKey);
-        /** @var OAuth1Interface $system */
-        $system = $this->loader->getSystem($systemKey);
-        $system->saveToken($systemInstall, $data);
-        $system->setSettings($systemInstall, $data);
-        $this->dm->flush();
+        $systemInstall = $this->manager->saveToken($user, $systemKey, $data);
 
         return $systemInstall->getSettings()[OAuth1Interface::FRONTEND_REDIRECT_URL];
-    }
-
-    /**
-     * @param string $user
-     * @param string $systemKey
-     *
-     * @return SystemInstall
-     * @throws CleverConnectorsException
-     */
-    private function getSystemInstall(string $user, string $systemKey): SystemInstall
-    {
-        $systemInstall = $this->dm->getRepository(SystemInstall::class)->findOneBy([
-            'user'   => $user,
-            'system' => $systemKey,
-        ]);
-
-        if (!$systemInstall) {
-            throw new CleverConnectorsException(
-                'For given system and user installed system was not found.',
-                CleverConnectorsException::SYSTEM_NOT_INSTALLED
-            );
-        }
-
-        return $systemInstall;
     }
 
 }
