@@ -16,9 +16,6 @@ services:
         volumes:
           - ../../:/var/www/pipes
           - ${SSH_AUTH_SOCK}:/ssh-agent
-        networks:
-          - cmdemo_default
-
         depends_on:
           - mongo
           - rabbitmq
@@ -32,15 +29,13 @@ services:
           DEV_UID: ${DEV_UID}
           DEV_GID: ${DEV_GID}
           GENERATOR_PATH: ${GENERATOR_PATH}
-          DOCKER_NETWORK: ${DOCKER_NETWORK}
+          DOCKER_NETWORK: ${COMPOSE_PROJECT_NAME}_default
         volumes:
           - ../../:/var/www/pipes
           - ${SSH_AUTH_SOCK}:/ssh-agent
           - ./../topology:${GENERATOR_PATH}
         depends_on:
           - mongo
-        networks:
-          - cmdemo_default
 
     xml-parser-api:
         image: 'dkr.hanaboso.net/pipes/pipes/python-xml-parser:prod'
@@ -52,8 +47,6 @@ services:
           METRICS_PORT: '5555'
         ports:
           - ${DEV_IP}:8080:80
-        networks:
-          - cmdemo_default
 
     frontend:
     ## BEGIN DEV
@@ -81,7 +74,7 @@ services:
     #      PHP_WEBROOT: /var/www/pipes/clients/clever-connectors/pipes-api/web
     ## END STAGE
         networks:
-          cmdemo_default:
+          default:
             aliases:
               - connector-api
               - mailer-api
@@ -91,6 +84,10 @@ services:
               - topology-api
         depends_on:
           - monolith-fpm
+          - topology-fpm
+          - grafana
+          - kibana
+          - spitter
 
     # RabbitMQ
     rabbitmq:
@@ -99,8 +96,6 @@ services:
           - ${DEV_IP}:15672:15672
         volumes:
           - rabbitmq:/var/lib/rabbitmq
-        networks:
-          - cmdemo_default
 
     # Storage
     mongo:
@@ -109,10 +104,10 @@ services:
           - ${DEV_IP}:27017:27017
         volumes:
           - mongodb:/data/db
-        networks:
-          - cmdemo_default
+
 
     # ELK
+
     elasticsearch:
         image: docker.elastic.co/elasticsearch/elasticsearch:5.6.0
         environment:
@@ -121,37 +116,30 @@ services:
           - ${DEV_IP}:9200:9200
         volumes:
           - elasticsearch:/usr/share/elasticsearch/data
-        networks:
-          - cmdemo_default
 
     kibana:
         image: docker.elastic.co/kibana/kibana:5.6.0
         command: sh -c 'bin/kibana-plugin remove x-pack; /usr/local/bin/kibana-docker'
         ports:
           - ${DEV_IP}:5601:5601
-        networks:
-          - cmdemo_default
 
     logstash:
         image: docker.elastic.co/logstash/logstash:5.6.0
         command: --log.level debug
         volumes:
           - ./logstash.conf:/usr/share/logstash/pipeline/logstash.conf
-        networks:
-          - cmdemo_default
+
 
     # Metrics
+
+    # Grafana is now accessible on route /grafana of the webserver
     grafana:
         image: grafana/grafana:4.2.0
         environment:
-          GF_SERVER_ROOT_URL: http://${DEV_IP}:3000
+          GF_SERVER_ROOT_URL: "%(protocol)s://%(domain)s:%(http_port)s/grafana"
           GF_SECURITY_ADMIN_PASSWORD: password
-        ports:
-          - ${DEV_IP}:3000:3000
         volumes:
           - grafana:/var/lib/grafana
-        networks:
-          - cmdemo_default
 
     influxdb:
         image: influxdb:1.2-alpine
@@ -162,38 +150,35 @@ services:
         volumes:
           - influxdb:/var/lib/influxdb
           - ./influxdb.conf:/etc/influxdb/influxdb.conf
-        networks:
-          - cmdemo_default
+
 
     # Fake Services
     mailhog:
         image: mailhog/mailhog
         ports:
           - ${DEV_IP}:8025:8025
-        networks:
-          - cmdemo_default
 
     requestbin:
         image: agaveapi/requestbin:master
         ports:
           - ${DEV_IP}:5000:5000
-        networks:
-          - cmdemo_default
 
     # Fake API editor
     swagger-ui:
       image: swaggerapi/swagger-ui
       ports:
               - ${DEV_IP}:8087:8080
-      networks:
-        - cmdemo_default
 
     swagger-editor:
         image: swaggerapi/swagger-editor
         ports:
           - ${DEV_IP}:8088:8080
-        networks:
-          - cmdemo_default
+
+    # Spitter
+    spitter:
+      image: dkr.hanaboso.net/hanaboso/spitter/image:dev
+      ports:
+        - ${DEV_IP}:8090:3000
 
 volumes:
   elasticsearch: {}
@@ -201,7 +186,3 @@ volumes:
   influxdb: {}
   mongodb: {}
   rabbitmq: {}
-
-networks:
-  cmdemo_default:
-    external: true

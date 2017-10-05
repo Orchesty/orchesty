@@ -128,4 +128,5 @@ cleanup:
     - ": bridge"
     - cd $REPO_ROOT/pf-bridge/test
     - export COMPOSE_FILE=docker-compose.yml
-    - docker-compose -p p${CI_PIPELINE_ID}-bridge down -v || echo "bridge cleanup phase failed"
+    - export COMPOSE_PROJECT_NAME=p${CI_PIPELINE_ID}-bridge
+    - docker-compose down -v || echo "bridge cleanup phase failed"
