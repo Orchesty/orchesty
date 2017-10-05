@@ -124,10 +124,11 @@ class StartingPoint implements LoggerAwareInterface
     }
 
     /**
-     * @param array|null $requestHeaders
+     * @param array $requestHeaders
+     *
      * @return Headers
      */
-    public function createHeaders(?array $requestHeaders = null): Headers
+    public function createHeaders(array $requestHeaders = []): Headers
     {
         $headers = new Headers();
         $headers
@@ -174,7 +175,8 @@ class StartingPoint implements LoggerAwareInterface
      */
     public function runWithRequest(Request $request, Topology $topology, Node $node): void
     {
-        $this->runTopology($topology, $node, $this->createHeaders($request->headers->all()), $this->createBodyFromRequest($request));
+        $this->runTopology($topology, $node, $this->createHeaders($request->headers->all()),
+            $this->createBodyFromRequest($request));
     }
 
     /**

@@ -9,9 +9,12 @@
 namespace Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\DocumentRepository;
 use Exception;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
+use Hanaboso\PipesFramework\Configurator\Repository\NodeRepository;
+use Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository;
 use Hanaboso\PipesFramework\Configurator\StartingPoint\StartingPoint;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -24,9 +27,14 @@ class StartingPointHandler
 {
 
     /**
-     * @var DocumentManager
+     * @var NodeRepository|DocumentRepository
      */
-    private $dm;
+    private $nodeRepository;
+
+    /**
+     * @var TopologyRepository|DocumentRepository
+     */
+    private $topologyRepository;
 
     /**
      * @var StartingPoint
@@ -41,8 +49,9 @@ class StartingPointHandler
      */
     public function __construct(DocumentManager $dm, StartingPoint $startingPoint)
     {
-        $this->startingPoint = $startingPoint;
-        $this->dm            = $dm;
+        $this->startingPoint      = $startingPoint;
+        $this->nodeRepository     = $dm->getRepository(Node::class);
+        $this->topologyRepository = $dm->getRepository(Topology::class);
     }
 
     /**
@@ -53,7 +62,7 @@ class StartingPointHandler
      */
     public function getTopologies(string $topologyName): array
     {
-        $topologies = $this->dm->getRepository(Topology::class)->findBy(['name' => $topologyName, 'enabled' => TRUE]);
+        $topologies = $this->topologyRepository->getRunnableTopologies($topologyName);
 
         if (empty($topologies)) {
             throw new Exception(sprintf('The topology[name=%s] does not exist.', $topologyName));
@@ -71,10 +80,7 @@ class StartingPointHandler
      */
     public function getNode(string $nodeName, string $topologyId): Node
     {
-        $node = $this->dm->getRepository(Node::class)->findOneBy([
-            'name'     => $nodeName,
-            'topology' => $topologyId,
-        ]);
+        $node = $this->nodeRepository->getNodeByTopology($nodeName, $topologyId);
 
         if (empty($node)) {
             throw new Exception(sprintf('The node[name=%s] does not exist.', $nodeName));
