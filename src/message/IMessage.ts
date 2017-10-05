@@ -2,7 +2,8 @@
 interface IMessage {
 
     getHeaders(): {};
-    getContent(): string;
+    getBody(): Buffer;
+
     getNodeId(): string;
     getCorrelationId(): string;
     getProcessId(): string;

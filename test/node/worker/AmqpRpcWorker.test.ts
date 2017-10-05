@@ -7,6 +7,7 @@ import Publisher from "lib-nodejs/dist/src/rabbitmq/Publisher";
 import SimpleConsumer from "lib-nodejs/dist/src/rabbitmq/SimpleConsumer";
 import {amqpConnectionOptions} from "../../../src/config";
 import JobMessage from "../../../src/message/JobMessage";
+import {ResultCode} from "../../../src/message/ResultCode";
 import IPartialForwarder from "../../../src/node/drain/IPartialForwarder";
 import AmqpRpcWorker, {IAmqpRpcWorkerSettings} from "../../../src/node/worker/AmqpRpcWorker";
 import {BATCH_END_TYPE, BATCH_ITEM_TYPE} from "../../../src/node/worker/AmqpRpcWorker";
@@ -115,6 +116,10 @@ describe("AmqpRpcWorker", () => {
                             {
                                 type: BATCH_END_TYPE,
                                 correlationId: msg.properties.correlationId,
+                                headers: {
+                                    result_code: ResultCode.SUCCESS,
+                                    result_message: "okay",
+                                },
                             },
                         );
                     });
@@ -130,7 +135,7 @@ describe("AmqpRpcWorker", () => {
                     "",
                     1,
                     {},
-                    JSON.stringify({ settings: {}, data: "test" }),
+                    new Buffer(JSON.stringify({ settings: {}, data: "test" })),
                 );
 
                 return rpcWorker.processData(jobMsg);
@@ -139,6 +144,8 @@ describe("AmqpRpcWorker", () => {
                 assert.instanceOf(outMsg, JobMessage);
                 assert.equal(outMsg.getMultiplier(), 5);
                 assert.isFalse(outMsg.getForwardSelf());
+                assert.equal(ResultCode.SUCCESS, outMsg.getResult().code);
+                assert.equal("okay", outMsg.getResult().message);
 
                 let i = 1;
                 forwarded.forEach((splitMsg: JobMessage) => {

@@ -55,19 +55,18 @@ class SplitterWorker implements IWorker {
             return Promise.resolve(msg);
         }
 
-        msg.setForwardSelf(false);
-
         return this.splitAndSendParts(msg, content)
             .then((splits: void[]) => {
+                msg.setForwardSelf(false);
                 msg.setMultiplier(splits.length);
                 msg.setResult({
-                    status: ResultCode.SUCCESS,
+                    code: ResultCode.SUCCESS,
                     message: `Message split into ${splits.length} partial messages was successful.`,
                 });
 
                 logger.info(
                     `Worker[type"splitter"] split message. \
-                    Status="${msg.getResult().status}" message="${msg.getResult().message}"]`,
+                    Status="${msg.getResult().code}" message="${msg.getResult().message}"]`,
                     logger.ctxFromMsg(msg),
                 );
 
@@ -75,6 +74,8 @@ class SplitterWorker implements IWorker {
             })
             .catch(() => {
                 this.setError(msg, "One or multiple partial messages forward failed", {});
+                msg.setForwardSelf(false);
+
                 return msg;
             });
     }
@@ -95,7 +96,7 @@ class SplitterWorker implements IWorker {
      * @param err
      */
     private setError(msg: JobMessage, message: string, err: any): void {
-        msg.setResult({ status: ResultCode.INVALID_MESSAGE_CONTENT_FORMAT, message });
+        msg.setResult({ code: ResultCode.INVALID_CONTENT, message });
 
         logger.warn(
             `Worker[type'splitter'] could not parse json message. ${msg.getResult().message}`,
@@ -125,8 +126,8 @@ class SplitterWorker implements IWorker {
                 msg.getParentId(),
                 i,
                 JSON.parse(JSON.stringify(msg.getHeaders())), // simple object cloning
-                JSON.stringify(splitContent),
-                { status: ResultCode.SUCCESS, message: `Split ${i}/${content.data.length}.`},
+                new Buffer(JSON.stringify(splitContent)),
+                { code: ResultCode.SUCCESS, message: `Split ${i}/${content.data.length}.`},
             );
 
             splitPromises.push(this.partialForwarder.forwardPart(splitMsg));

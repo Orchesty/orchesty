@@ -21,7 +21,7 @@ class CounterPublisher extends Publisher {
         super(
             conn,
             (ch: Channel) => {
-                const q = settings.counter_event.queue;
+                const q = settings.counter.queue;
 
                 return new Promise((resolve) => {
                     ch.assertQueue(q.name, q.options)
@@ -46,7 +46,8 @@ class CounterPublisher extends Publisher {
             message.getCorrelationId(),
             message.getProcessId(),
             message.getParentId(),
-            message.getResult().status, // 0 OK, >0 NOK
+            message.getSequenceId(),
+            message.getResult().code, // 0 OK, >0 NOK
             message.getResult().message,
             this.settings.followers.length,
             message.getMultiplier(),
@@ -60,7 +61,7 @@ class CounterPublisher extends Publisher {
         };
 
         return this.sendToQueue(
-            this.settings.counter_event.queue.name,
+            this.settings.counter.queue.name,
             new Buffer(resMsg.getContent()),
             opts,
         );

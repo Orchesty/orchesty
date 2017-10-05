@@ -59,9 +59,15 @@ const expectedTopo: ITopologyConfig = {
             },
             drain: {
                 settings: {
-                    counter_event: {
+                    counter: {
                         queue: {
                             name: "pipes.test-topo.counter",
+                            options: {},
+                        },
+                    },
+                    repeater: {
+                        queue: {
+                            name: "pipes.repeater",
                             options: {},
                         },
                     },
@@ -111,9 +117,15 @@ const expectedTopo: ITopologyConfig = {
             },
             drain: {
                 settings: {
-                    counter_event: {
+                    counter: {
                         queue: {
                             name: "pipes.test-topo.counter",
+                            options: {},
+                        },
+                    },
+                    repeater: {
+                        queue: {
+                            name: "pipes.repeater",
                             options: {},
                         },
                     },

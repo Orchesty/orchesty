@@ -13,9 +13,15 @@ import {IAmqpDrainSettings} from "../../../../src/node/drain/AmqpDrain";
 const conn = new Connection(amqpConnectionOptions);
 const settings: IAmqpDrainSettings = {
     node_id: "test-counter-publisher",
-    counter_event: {
+    counter: {
         queue: {
             name: "test-drain-counter",
+            options: {},
+        },
+    },
+    repeater: {
+        queue: {
+            name: "test-drain-repeater",
             options: {},
         },
     },
@@ -56,7 +62,7 @@ describe("CounterPublisher", () => {
         const msgJobId = "123";
         const msgSeqId = 1;
         const msgHeaders = { job_id: msgJobId, sequence_id: msgSeqId.toString()};
-        const msgBody = JSON.stringify({data: "test", settings: {}});
+        const msgBody = new Buffer(JSON.stringify({data: "test", settings: {}}));
         const msg: JobMessage = new JobMessage(
             "nodeId",
             "corrId",
@@ -65,13 +71,13 @@ describe("CounterPublisher", () => {
             msgSeqId,
             msgHeaders,
             msgBody,
-            { status: ResultCode.SUCCESS, message: ""},
+            { code: ResultCode.SUCCESS, message: ""},
         );
 
         // Overrides the parental function to check the data being sent easily
         publisher.sendToQueue = (q: string, body: Buffer, opts: Options.Publish) => {
             return new Promise((resolve) => {
-                assert.equal(q, settings.counter_event.queue.name);
+                assert.equal(q, settings.counter.queue.name);
                 // In order to be able to test these random values
                 opts.messageId = "fakeId";
                 opts.timestamp = 10203040;
@@ -83,6 +89,7 @@ describe("CounterPublisher", () => {
                             process_id: msgJobId,
                             node_id: settings.node_id,
                             parent_id: "",
+                            sequence_id: `${msgSeqId}`,
                         },
                         type: "counter_message",
                         appId: settings.node_id,
@@ -120,9 +127,9 @@ describe("CounterPublisher", () => {
         const consumer = new SimpleConsumer(
             conn,
             (ch: Channel): any => {
-                return ch.assertQueue(settings.counter_event.queue.name, {})
+                return ch.assertQueue(settings.counter.queue.name, {})
                     .then(() => {
-                        return ch.purgeQueue(settings.counter_event.queue.name);
+                        return ch.purgeQueue(settings.counter.queue.name);
                     });
             },
             (received: Message) => {
@@ -142,7 +149,7 @@ describe("CounterPublisher", () => {
                 done();
             },
         );
-        consumer.consume(settings.counter_event.queue.name, {})
+        consumer.consume(settings.counter.queue.name, {})
             .then(() => {
                 const msg: JobMessage = new JobMessage(
                     "nodeId",
@@ -151,8 +158,8 @@ describe("CounterPublisher", () => {
                     "",
                     msgSeqId,
                     msgHeaders,
-                    JSON.stringify(msgBody),
-                    { status: ResultCode.SUCCESS, message: ""},
+                    new Buffer(JSON.stringify(msgBody)),
+                    { code: ResultCode.SUCCESS, message: ""},
                 );
                 publisher.send(msg);
             });

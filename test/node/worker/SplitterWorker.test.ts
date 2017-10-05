@@ -12,27 +12,28 @@ const settings: ISplitterWorkerSettings = {
 
 describe("Splitter worker", () => {
     it("should fail when invalid JSON content format", () => {
-        const msg = new JobMessage("nid", "123", "123", "", 1, {}, JSON.stringify("{foo : 1, }"));
+        const msg = new JobMessage("nid", "123", "123", "", 1, {}, new Buffer(JSON.stringify("{foo : 1, }")));
         const partialForwarder: IPartialForwarder = {
             forwardPart: () => Promise.resolve(),
         };
         const worker = new SplitterWorker(settings, partialForwarder);
         return worker.processData(msg)
             .then((outMsg: JobMessage) => {
-                assert.equal(outMsg.getResult().status, ResultCode.INVALID_MESSAGE_CONTENT_FORMAT);
+                assert.equal(outMsg.getResult().code, ResultCode.INVALID_CONTENT);
                 assert.include(outMsg.getResult().message, "key is missing");
             });
     });
 
     it("should fail when JSON content is not array with some element", () => {
-        const msg = new JobMessage("nid", "123", "123", "", 1, {}, JSON.stringify({data: [], settings: {}}));
+        const body = new Buffer(JSON.stringify({data: [], settings: {}}));
+        const msg = new JobMessage("nid", "123", "123", "", 1, {}, body);
         const partialForwarder: IPartialForwarder = {
             forwardPart: () => Promise.resolve(),
         };
         const worker = new SplitterWorker(settings, partialForwarder);
         return worker.processData(msg)
             .then((outMsg: JobMessage) => {
-                assert.equal(outMsg.getResult().status, ResultCode.INVALID_MESSAGE_CONTENT_FORMAT);
+                assert.equal(outMsg.getResult().code, ResultCode.INVALID_CONTENT);
                 assert.include(outMsg.getResult().message, "is not array or is empty");
             });
     });
@@ -49,7 +50,7 @@ describe("Splitter worker", () => {
                 some: "thing",
             },
         };
-        const msg = new JobMessage("nid", "123", "123", "", 1, {}, JSON.stringify(content));
+        const msg = new JobMessage("nid", "123", "123", "", 1, {}, new Buffer(JSON.stringify(content)));
         const partialForwarder: IPartialForwarder = {
             forwardPart: (forwardedMsg: JobMessage) => {
                 forwarded.push(forwardedMsg);
@@ -59,7 +60,7 @@ describe("Splitter worker", () => {
         const worker = new SplitterWorker(settings, partialForwarder);
         return worker.processData(msg)
             .then((outMsg: JobMessage) => {
-                assert.equal(outMsg.getResult().status, ResultCode.SUCCESS);
+                assert.equal(outMsg.getResult().code, ResultCode.SUCCESS);
                 assert.equal(outMsg.getMultiplier(), 3);
                 assert.isFalse(outMsg.getForwardSelf());
                 // Split messages check
