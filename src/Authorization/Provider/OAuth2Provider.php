@@ -15,6 +15,8 @@ use Hanaboso\PipesFramework\Authorization\Provider\Dto\OAuth2DtoInterface;
 use Hanaboso\PipesFramework\Authorization\Utils\ScopeFormater;
 use Hanaboso\PipesFramework\Authorization\Wrapper\OAuth2Wrapper;
 use Hanaboso\PipesFramework\Commons\Redirect\RedirectInterface;
+use Hanaboso\PipesFramework\Commons\Utils\Base64;
+use Nette\Http\Url;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -43,14 +45,21 @@ class OAuth2Provider implements OAuth2ProviderInterface, LoggerAwareInterface
     private $logger;
 
     /**
+     * @var string
+     */
+    private $backend;
+
+    /**
      * OAuth2Provider constructor.
      *
      * @param RedirectInterface $redirect
+     * @param string            $backend
      */
-    public function __construct(RedirectInterface $redirect)
+    public function __construct(RedirectInterface $redirect, string $backend)
     {
         $this->redirect = $redirect;
         $this->logger   = new NullLogger();
+        $this->backend  = $backend;
     }
 
     /**
@@ -143,7 +152,7 @@ class OAuth2Provider implements OAuth2ProviderInterface, LoggerAwareInterface
         return new OAuth2Wrapper([
             'clientId'                => $dto->getClientId(),
             'clientSecret'            => $dto->getClientSecret(),
-            'redirectUri'             => $dto->getRedirectUrl(),
+            'redirectUri'             => $this->backend . ltrim($dto->getRedirectUrl(), '/'),
             'urlAuthorize'            => $dto->getAuthorizeUrl(),
             'urlAccessToken'          => $dto->getTokenUrl(),
             'urlResourceOwnerDetails' => $dto->getAuthorizeUrl(),
@@ -159,12 +168,18 @@ class OAuth2Provider implements OAuth2ProviderInterface, LoggerAwareInterface
      */
     private function getAuthorizeUrl(OAuth2DtoInterface $dto, string $authorizeUrl, array $scopes): string
     {
-        $state = '';
+        $state = NULL;
         if (!$dto->isCustomApp()) {
-            $state = sprintf('&state=%s', base64_encode($dto->getUser() . ':' . $dto->getSystemKey()));
+            $state = Base64::base64UrlEncode($dto->getUser() . ':' . $dto->getSystemKey());
         }
 
-        return sprintf('%s%s%s', $authorizeUrl, ScopeFormater::getScopes($scopes), $state);
+        $url = sprintf('%s%s', $authorizeUrl, ScopeFormater::getScopes($scopes));
+
+        if ($state) {
+            $url = (string) (new Url($url))->setQueryParameter('state', $state);
+        }
+
+        return $url;
     }
 
     /**

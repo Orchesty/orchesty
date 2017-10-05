@@ -155,7 +155,7 @@ final class OAuth2ProviderTest extends TestCase
         $oauth->method('getAccessToken')->willReturn(new AccessToken(['access_token' => '123']));
 
         $client = $this->getMockBuilder(OAuth2Provider::class)
-            ->setConstructorArgs([$redirect])
+            ->setConstructorArgs([$redirect, '127.0.0.4'])
             ->setMethods(['createClient'])
             ->getMock();
 
