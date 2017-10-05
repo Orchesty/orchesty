@@ -14,15 +14,23 @@ export default WrappedComponent => {
     }
 
     componentWillMount(){
-      const {state, notLoadedCallback} = this.props;
+      this._needData(this.props, true);
+    }
+
+    componentWillReceiveProps(nextProps){
+      this._needData(nextProps, false);
+    }
+
+    _needData(props){
+      const {state, notLoadedCallback} = props;
       if ((!state || state == stateType.NOT_LOADED) && notLoadedCallback) {
         notLoadedCallback();
       }
     }
 
     render() {
-      const {state, notLoadedCallback, ...passProps} = this.props;
-      
+      const {state,  notLoadedCallback, ...passProps} = this.props;
+
       switch (state) {
         case stateType.SUCCESS:
           return <WrappedComponent {...passProps} />;

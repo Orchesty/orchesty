@@ -79,6 +79,10 @@ describe("Linear Topology test", () => {
             assert.deepEqual(req.body, msgTestContent);
             const updated = req.body;
             updated.val = updated.val + " modified";
+            resp.set({
+                result_code: 0,
+                result_message: "ok",
+            });
             resp.status(200).send(JSON.stringify(updated));
         });
         httpWorkerMock.listen(3050);

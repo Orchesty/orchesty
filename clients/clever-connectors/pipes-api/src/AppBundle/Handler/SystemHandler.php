@@ -2,7 +2,12 @@
 
 namespace CleverConnectors\AppBundle\Handler;
 
+use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
+use CleverConnectors\AppBundle\Model\Systems\Authorizations\OAuth1Interface;
+use CleverConnectors\AppBundle\Model\Systems\SystemLoader;
 use CleverConnectors\AppBundle\Model\Systems\SystemManager;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\PipesFramework\Utils\ControllerUtils;
 
 /**
@@ -19,13 +24,27 @@ class SystemHandler
     private $manager;
 
     /**
+     * @var SystemLoader
+     */
+    private $loader;
+
+    /**
+     * @var DocumentManager
+     */
+    private $dm;
+
+    /**
      * SystemHandler constructor.
      *
-     * @param SystemManager $manager
+     * @param SystemManager   $manager
+     * @param SystemLoader    $loader
+     * @param DocumentManager $dm
      */
-    public function __construct(SystemManager $manager)
+    public function __construct(SystemManager $manager, SystemLoader $loader, DocumentManager $dm)
     {
         $this->manager = $manager;
+        $this->loader  = $loader;
+        $this->dm      = $dm;
     }
 
     /**
@@ -48,8 +67,8 @@ class SystemHandler
     {
         $systems = [];
 
-        foreach ($this->manager->getSystems($user, $group) as $innerSystem) {
-            $systems[] = $innerSystem->toArray();
+        foreach ($this->manager->getSystems($user, $group) as $system) {
+            $systems[] = $system->toArray();
         }
 
         return $systems;
@@ -63,12 +82,24 @@ class SystemHandler
     public function getUserSystems(string $user): array
     {
         $systems = [];
-
-        foreach ($this->manager->getUserSystems($user) as $innerSystem) {
-            $systems[] = $innerSystem->toArray();
+        foreach ($this->manager->getUserSystems($user) as $system) {
+            $systems[] = $system->toArray($this->manager->getSystemInstall($user, $system->getKey()));
         }
 
         return $systems;
+    }
+
+    /**
+     * @param string $user
+     * @param string $systemKey
+     *
+     * @return array
+     */
+    public function getUserSystem(string $user, string $systemKey): array
+    {
+        /** @var SystemInstall $systemInstall */
+        $systemInstall = $this->dm->getRepository(SystemInstall::class)->findOneBy(['user' => $user, 'system' => $systemKey]);
+        return $this->manager->getUserSystem($systemInstall);
     }
 
     /**
@@ -82,6 +113,20 @@ class SystemHandler
     {
         ControllerUtils::checkParameters(['token'], $data);
         $this->manager->installSystem($user, $system, $data['token']);
+
+        return [];
+    }
+
+    /**
+     * @param string $user
+     * @param string $system
+     * @param array  $data
+     *
+     * @return array
+     */
+    public function saveSystemSettings(string $user, string $system, array $data): array
+    {
+        $this->manager->saveSystemSettings($user, $system, $data);
 
         return [];
     }
@@ -114,6 +159,81 @@ class SystemHandler
         $this->manager->switchToken($user, $system, $data['token']);
 
         return [];
+    }
+
+    /**
+     * @param string $user
+     * @param string $system
+     * @param array  $data
+     *
+     * @return array
+     */
+    public function setPassword(string $user, string $system, array $data): array
+    {
+        ControllerUtils::checkParameters(['password'], $data);
+        $this->manager->setPassword($user, $system, $data['password']);
+
+        return [];
+    }
+
+    /**
+     * @param string $user
+     * @param string $systemKey
+     * @param string $redirectUrl
+     */
+    public function authorize(string $user, string $systemKey, string $redirectUrl): void
+    {
+        /** @var OAuth1Interface $system */
+        $system        = $this->loader->getSystem($systemKey);
+        $systemInstall = $this->getSystemInstall($user, $systemKey);
+
+        $system->saveFrontendRedirectUrl($systemInstall, $redirectUrl);
+        $this->dm->flush();
+
+        $system->authorize($systemInstall);
+    }
+
+    /**
+     * @param string $user
+     * @param string $systemKey
+     * @param array  $data
+     *
+     * @return string
+     */
+    public function saveToken(string $user, string $systemKey, array $data): string
+    {
+        $systemInstall = $this->getSystemInstall($user, $systemKey);
+        /** @var OAuth1Interface $system */
+        $system = $this->loader->getSystem($systemKey);
+        $system->saveToken($systemInstall, $data);
+        $system->setSettings($systemInstall, $data);
+        $this->dm->flush();
+
+        return $systemInstall->getSettings()[OAuth1Interface::FRONTEND_REDIRECT_URL];
+    }
+
+    /**
+     * @param string $user
+     * @param string $systemKey
+     *
+     * @return SystemInstall
+     * @throws CleverConnectorsException
+     */
+    private function getSystemInstall(string $user, string $systemKey): SystemInstall
+    {
+        $systemInstall = $this->dm->getRepository(SystemInstall::class)->findOneBy([
+            'user'   => $user,
+            'system' => $systemKey,
+        ]);
+
+        if (!$systemInstall) {
+            throw new CleverConnectorsException(
+                'For given system and user installed system was not found.',
+                CleverConnectorsException::SYSTEM_NOT_INSTALLED
+            );
+        }
+
+        return $systemInstall;
     }
 
 }

@@ -1,8 +1,8 @@
 import * as types from 'rootApp/baseActionTypes';
 import {stateType, listType} from 'rootApp/types';
 
-function listReducer(state, action, getElementId){
-  switch (action.type){
+function listReducer(state, action, getElementId) {
+  switch (action.type) {
     case types.LIST_LOADING:
       return Object.assign({}, state, {
         state: stateType.LOADING,
@@ -35,14 +35,23 @@ function listReducer(state, action, getElementId){
       return Object.assign({}, state, {
         page: action.page
       });
-    
+
+    case types.LIST_INVALIDATE:
+      if (state.state != stateType.NOT_LOADED && (state.type == listType.PAGINATION ||
+          (state.type == listType.RELATION && state.objectType === action.objectType && state.objectId === action.objectId))) {
+        return Object.assign({}, state, {state: stateType.NOT_LOADED});
+      } else {
+        return state;
+      }
+
     default:
       return state;
   }
 }
 
 export default (state = {}, action, getElementId) => {
-  switch (action.type){
+  let newState;
+  switch (action.type) {
     case types.LIST_CREATE:
       let list = {
         id: action.id,
@@ -50,17 +59,36 @@ export default (state = {}, action, getElementId) => {
         state: stateType.NOT_LOADED,
         items: null
       };
-      if (action.listType == listType.PAGINATION){
-        list['pageSize'] = action.pageSize;
-        list['page'] = action.page;
-        list['sort'] = action.sort;
+
+      switch (action.listType) {
+        case listType.PAGINATION:
+          list['pageSize'] = action.pageSize;
+          list['page'] = action.page;
+          list['sort'] = action.sort;
+          break;
+
+        case listType.RELATION:
+          list['objectType'] = action.objectType;
+          list['objectId'] = action.objectId;
+          break;
       }
+
       return Object.assign({}, state, {[action.id]: list});
 
     case types.LIST_DELETE:
-      const newState = Object.assign({}, state);
+      newState = Object.assign({}, state);
       delete newState[action.id];
       return newState;
+
+    case types.LIST_INVALIDATE:
+      newState = {};
+      let changed = false;
+      Object.getOwnPropertyNames(state).forEach(id => {
+        let res = listReducer(state[id], action, getElementId);
+        newState[id] = res;
+        changed = changed || newState !== res;
+      });
+      return changed ? newState : state;
 
     case types.LIST_LOADING:
     case types.LIST_RECEIVE:

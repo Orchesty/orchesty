@@ -2,8 +2,9 @@
 
 namespace CleverConnectors\AppBundle\Model\Systems;
 
+use CleverConnectors\AppBundle\Model\Systems\Authorizations\AuthorizationInterface;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
-use Nette\Utils\Strings;
+use Hanaboso\PipesFramework\Utils\StringUtil;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -102,16 +103,16 @@ class SystemLoader
     /**
      * @param string $key
      *
-     * @return SystemInterface
+     * @return AuthorizationInterface
      * @throws SystemException
      */
-    public function getSystem(string $key): SystemInterface
+    public function getSystem(string $key): AuthorizationInterface
     {
         $key = sprintf('%s.%s', self::PREFIX, $key);
 
         if ($this->container->has($key)) {
             $system = $this->container->get($key);
-            if ($system instanceof SystemInterface) {
+            if ($system instanceof AuthorizationInterface) {
                 return $system;
             }
         }
@@ -171,7 +172,7 @@ class SystemLoader
     private function getSystemsByUser(string $user): array
     {
         $systems  = [];
-        $property = sprintf('systemsWithTagSystemsUser%s', Strings::firstUpper($user));
+        $property = sprintf('systemsWithTagSystemsUser%s', StringUtil::toCamelCase($user));
         if (property_exists(__CLASS__, $property)) {
             if ($this->$property) {
                 foreach ($this->$property as $system) {
@@ -197,7 +198,7 @@ class SystemLoader
     private function getSystemsByGroup(string $group): array
     {
         $systems  = [];
-        $property = sprintf('systemsWithTagSystemsGroup%s', Strings::firstUpper($group));
+        $property = sprintf('systemsWithTagSystemsGroup%s',  StringUtil::toCamelCase($group));
         if (property_exists(__CLASS__, $property)) {
             if ($this->$property) {
                 foreach ($this->$property as $system) {

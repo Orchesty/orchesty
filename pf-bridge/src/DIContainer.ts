@@ -1,4 +1,5 @@
 import Container from "lib-nodejs/dist/src/container/Container";
+import AssertionPublisher from "lib-nodejs/dist/src/rabbitmq/AssertPublisher";
 import { default as Connection } from "lib-nodejs/dist/src/rabbitmq/Connection";
 import {amqpConnectionOptions} from "./config";
 import CounterPublisher from "./node/drain/amqp/CounterPublisher";
@@ -40,10 +41,15 @@ class DIContainer extends Container {
 
     private setDrains() {
         this.set("drain.amqp", (settings: IAmqpDrainSettings) => {
-            const counterPubl = new CounterPublisher(this.get("amqp.connection"), settings);
+            const counterPub = new CounterPublisher(this.get("amqp.connection"), settings);
             const followersPub = new FollowersPublisher(this.get("amqp.connection"), settings);
+            const assertionPub = new AssertionPublisher(
+                this.get("amqp.connection"),
+                () =>  Promise.resolve(),
+                {},
+            );
 
-            return new AmqpDrain(settings, counterPubl, followersPub);
+            return new AmqpDrain(settings, counterPub, followersPub, assertionPub);
         });
     }
 

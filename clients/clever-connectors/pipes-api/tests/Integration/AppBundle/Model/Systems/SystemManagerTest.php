@@ -4,11 +4,11 @@ namespace Tests\Integration\AppBundle\Model\Systems;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
-use CleverConnectors\AppBundle\Model\Systems\Impl\NullSystem;
 use CleverConnectors\AppBundle\Model\Systems\SystemManager;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use Tests\DatabaseTestCaseAbstract;
+use Tests\Integration\AppBundle\Systems\Impl\NullSystem;
 
 /**
  * Class SystemManagerTest
@@ -43,7 +43,7 @@ class SystemManagerTest extends DatabaseTestCaseAbstract
      */
     public function testGetSystemsBySystems(): void
     {
-        $this->assertEquals(3, count($this->manager->getSystems()));
+        $this->assertEquals(4, count($this->manager->getSystems()));
     }
 
     /**
@@ -297,6 +297,58 @@ class SystemManagerTest extends DatabaseTestCaseAbstract
         $this->expectExceptionCode(SystemException::SYSTEM_NOT_FOUND);
 
         $this->manager->getSystemUsers('unknown', TRUE);
+    }
+
+    /**
+     *
+     */
+    public function testSetPassword(): void
+    {
+        $system = (new SystemInstall())
+            ->setUser('user')
+            ->setSystem('null.user.group')
+            ->setToken('token')
+            ->setSettings(['password' => 'pass1']);
+        $this->persistAndFlush($system);
+
+        $systemInstall = $this->manager->setPassword('user', 'null.user.group', 'pass2');
+
+        $this->assertEquals('pass2', $systemInstall->getSettings()['password']);
+    }
+
+    /**
+     *
+     */
+    public function testGetSystemInstall(): void
+    {
+        $system = (new SystemInstall())
+            ->setUser('user')
+            ->setSystem('null.user.group')
+            ->setToken('token')
+            ->setSettings(['password' => 'pass1']);
+        $this->persistAndFlush($system);
+
+        $systemInstall = $this->manager->setPassword('user', 'null.user.group', 'pass2');
+
+        $this->assertEquals($system, $systemInstall);
+    }
+
+    /**
+     *
+     */
+    public function testGetSystemInstallFail(): void
+    {
+        $system = (new SystemInstall())
+            ->setUser('user')
+            ->setSystem('null.user.group')
+            ->setToken('token')
+            ->setSettings(['password' => 'pass1']);
+        $this->persistAndFlush($system);
+
+        $this->expectException(SystemException::class);
+        $this->expectExceptionCode(SystemException::SYSTEM_OR_USER_NOT_FOUND);
+
+        $this->manager->setPassword('unknown', 'null.user.group', 'pass2');
     }
 
 }

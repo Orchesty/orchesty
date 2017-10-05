@@ -11,7 +11,7 @@ class NullWorker implements IWorker {
      * @return {Promise<JobMessage>}
      */
     public processData(msg: JobMessage): Promise<JobMessage> {
-        msg.setResult({status: ResultCode.SUCCESS, message: "Null worker OK"});
+        msg.setResult({code: ResultCode.SUCCESS, message: "Null worker passed message."});
 
         return Promise.resolve(msg);
     }

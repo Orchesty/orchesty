@@ -23,12 +23,7 @@ class SystemControllerTest extends ControllerTestCaseAbstract
         $this->loginUser('user@example.com', 'pass');
         $response = $this->sendGet('/systems/null.user.group');
         $this->assertEquals(200, $response->status);
-        $this->assertEquals((object) [
-            'type'        => SystemTypeEnum::CRON,
-            'key'         => 'null',
-            'name'        => 'NULL',
-            'description' => 'Only for testing purposes',
-        ], $response->content);
+        $this->assertEquals((object) $this->getArrayDataForAssert(), $response->content);
     }
 
     /**
@@ -49,20 +44,13 @@ class SystemControllerTest extends ControllerTestCaseAbstract
         $this->loginUser('user@example.com', 'pass');
         $response = $this->sendGet('/systems', ['user' => 'someUser']);
         $this->assertEquals(200, $response->status);
-        $this->assertEquals([
-            (object) [
-                'type'        => SystemTypeEnum::CRON,
-                'key'         => 'null',
-                'name'        => 'NULL',
-                'description' => 'Only for testing purposes',
-            ], (object) [
-
-                'type'        => SystemTypeEnum::CRON,
-                'key'         => 'null',
-                'name'        => 'NULL',
-                'description' => 'Only for testing purposes',
+        $this->assertEquals(
+            [
+                (object) $this->getArrayDataForAssert(),
+                (object) $this->getArrayDataForAssert(),
             ],
-        ], $response->content);
+            $response->content
+        );
     }
 
     /**
@@ -85,20 +73,13 @@ class SystemControllerTest extends ControllerTestCaseAbstract
         $this->loginUser('user@example.com', 'pass');
         $response = $this->sendGet('/systems', ['group' => 'someGroup']);
         $this->assertEquals(200, $response->status);
-        $this->assertEquals([
-            (object) [
-                'type'        => SystemTypeEnum::CRON,
-                'key'         => 'null',
-                'name'        => 'NULL',
-                'description' => 'Only for testing purposes',
-            ], (object) [
-
-                'type'        => SystemTypeEnum::CRON,
-                'key'         => 'null',
-                'name'        => 'NULL',
-                'description' => 'Only for testing purposes',
+        $this->assertEquals(
+            [
+                (object) $this->getArrayDataForAssert(),
+                (object) $this->getArrayDataForAssert(),
             ],
-        ], $response->content);
+            $response->content
+        );
     }
 
     /**
@@ -121,14 +102,10 @@ class SystemControllerTest extends ControllerTestCaseAbstract
         $this->loginUser('user@example.com', 'pass');
         $response = $this->sendGet('/systems', ['user' => 'someUser', 'group' => 'someGroup']);
         $this->assertEquals(200, $response->status);
-        $this->assertEquals([
-            (object) [
-                'type'        => SystemTypeEnum::CRON,
-                'key'         => 'null',
-                'name'        => 'NULL',
-                'description' => 'Only for testing purposes',
-            ],
-        ], $response->content);
+        $this->assertEquals(
+            [(object) $this->getArrayDataForAssert()],
+            $response->content
+        );
     }
 
     /**
@@ -137,34 +114,78 @@ class SystemControllerTest extends ControllerTestCaseAbstract
     public function testGetUserSystems(): void
     {
         $this->loginUser('user@example.com', 'pass');
-        $system = (new SystemInstall())
+        $system1 = (new SystemInstall())
             ->setUser('someUser')
             ->setSystem('null.user.group')
             ->setToken('token');
-        $this->persistAndFlush($system);
+        $this->persistAndFlush($system1);
 
-        $system = (new SystemInstall())
+        $system2 = (new SystemInstall())
             ->setUser('someUser')
             ->setSystem('null.user.group')
             ->setToken('token');
-        $this->persistAndFlush($system);
+        $this->persistAndFlush($system2);
 
         $response = $this->sendGet('/user_systems/user/someUser');
         $this->assertEquals(200, $response->status);
-        $this->assertEquals([
-            (object) [
-                'type'        => SystemTypeEnum::CRON,
-                'key'         => 'null',
-                'name'        => 'NULL',
-                'description' => 'Only for testing purposes',
-            ], (object) [
-
-                'type'        => SystemTypeEnum::CRON,
-                'key'         => 'null',
-                'name'        => 'NULL',
-                'description' => 'Only for testing purposes',
+        $this->assertEquals(
+            [
+                (object) array_merge($this->getArrayDataForAssert($system1), ['authorized' => FALSE]),
+                (object) array_merge($this->getArrayDataForAssert($system2), ['authorized' => FALSE]),
             ],
-        ], $response->content);
+            $response->content
+        );
+    }
+
+    /**
+     *
+     */
+    public function testGetUserSystem(): void
+    {
+        $this->loginUser('user@example.com', 'pass');
+        $system1 = (new SystemInstall())
+            ->setUser('someUser')
+            ->setSystem('null.user.group')
+            ->setToken('token');
+        $this->persistAndFlush($system1);
+
+        $system2 = (new SystemInstall())
+            ->setUser('someUser')
+            ->setSystem('null.user.group')
+            ->setToken('token');
+        $this->persistAndFlush($system2);
+
+        $response = $this->sendGet('/user_systems/user/someUser/system/null.user.group');
+        $this->assertEquals(200, $response->status);
+        $this->assertEquals(
+            (object) array_merge($this->getArrayDataForAssert($system1), [
+                'authorized'     => FALSE,
+                'setting_fields' => [
+                    (object) [
+                        'type'     => 'url',
+                        'key'      => 'field1',
+                        'label'    => '',
+                        'value'    => NULL,
+                        'required' => TRUE,
+                    ],
+                    (object) [
+                        'type'     => 'text',
+                        'key'      => 'field2',
+                        'label'    => '',
+                        'value'    => NULL,
+                        'required' => TRUE,
+                    ],
+                    (object) [
+                        'type'     => 'password',
+                        'key'      => 'field3',
+                        'label'    => '',
+                        'value'    => NULL,
+                        'required' => TRUE,
+                    ],
+                ],
+            ]),
+            $response->content
+        );
     }
 
     /**
@@ -216,6 +237,70 @@ class SystemControllerTest extends ControllerTestCaseAbstract
         $this->assertEquals(500, $response->status);
         $this->assertEquals(SystemException::class, $response->content->type);
         $this->assertEquals(SystemException::SYSTEM_NOT_FOUND, $response->content->error_code);
+    }
+
+    /**
+     *
+     */
+    public function testSaveSystemSettings(): void
+    {
+        $this->loginUser('user@example.com', 'pass');
+        $system = (new SystemInstall())
+            ->setUser('someUser')
+            ->setSystem('null.user.group')
+            ->setToken('token');
+        $this->persistAndFlush($system);
+
+        $response = $this->sendPost('/user_systems/user/someUser/system/null.user.group/settings', [
+            'settingOne' => 'settingOne',
+            'settingTwo' => 'settingTwo',
+        ]);
+
+        $this->assertEquals(200, $response->status);
+        $this->assertEquals([], $response->content);
+
+        $this->dm->clear();
+
+        /** @var SystemInstall[] $systems */
+        $systems = $this->dm->getRepository(SystemInstall::class)->findBy([
+            'system' => 'null.user.group',
+            'user'   => 'someUser',
+        ]);
+
+        $this->assertEquals(1, count($systems));
+        $this->assertEquals([
+            'settingOne'            => 'settingOne',
+            'settingTwo'            => 'settingTwo',
+            'password'              => NULL,
+            'frontend_redirect_url' => NULL,
+        ], $systems[0]->getSettings());
+
+        $systems[0]->setSettings(['setting' => 'setting', 'password' => 'passw0rd']);
+        $this->dm->flush();
+
+        $response = $this->sendPost('/user_systems/user/someUser/system/null.user.group/settings', [
+            'settingOne' => 'settingOne',
+            'settingTwo' => 'settingTwo',
+        ]);
+
+        $this->assertEquals(200, $response->status);
+        $this->assertEquals([], $response->content);
+
+        $this->dm->clear();
+
+        /** @var SystemInstall[] $systems */
+        $systems = $this->dm->getRepository(SystemInstall::class)->findBy([
+            'system' => 'null.user.group',
+            'user'   => 'someUser',
+        ]);
+
+        $this->assertEquals(1, count($systems));
+        $this->assertEquals([
+            'settingOne' => 'settingOne',
+            'settingTwo' => 'settingTwo',
+            'password'   => 'passw0rd',
+            'frontend_redirect_url' => NULL,
+        ], $systems[0]->getSettings());
     }
 
     /**
@@ -357,6 +442,61 @@ class SystemControllerTest extends ControllerTestCaseAbstract
         $this->loginUser('user@example.com', 'pass');
         $response = $this->sendGet('user_systems/user/someUser/system/null.user.group/sync');
         $this->assertEquals(202, $response->status);
+    }
+
+    /**
+     *
+     */
+    public function testSetPassword(): void
+    {
+        $this->loginUser('user@example.com', 'pass');
+
+        $system = (new SystemInstall())
+            ->setUser('someUser')
+            ->setSystem('null.user.group')
+            ->setToken('token')
+            ->setSettings(['password' => 'pass1']);
+        $this->persistAndFlush($system);
+
+        $response = $this->sendPut(
+            '/user_systems/user/someUser/system/null.user.group/set_password',
+            ['password' => 'pass2']
+        );
+        $this->assertEquals(200, $response->status);
+
+        $this->dm->clear();
+
+        /** @var SystemInstall[] $systems */
+        $systems = $this->dm->getRepository(SystemInstall::class)->findBy([
+            'user'   => 'someUser',
+            'system' => 'null.user.group',
+        ]);
+
+        $this->assertEquals(1, count($systems));
+        $this->assertEquals('pass2', $systems[0]->getSettings()['password']);
+    }
+
+    /**
+     * @param SystemInstall|null $systemInstall
+     *
+     * @return array
+     */
+    private function getArrayDataForAssert(?SystemInstall $systemInstall = NULL): array
+    {
+        $arr = [
+            'type'        => SystemTypeEnum::CRON,
+            'key'         => 'null.user.group',
+            'name'        => 'NULL',
+            'description' => 'Only for testing purposes',
+            'authType'    => 'oauth2',
+        ];
+
+        if ($systemInstall) {
+            $arr['token']        = $systemInstall->getToken();
+            $arr['synchronized'] = $systemInstall->isSynchronized();
+        }
+
+        return $arr;
     }
 
 }

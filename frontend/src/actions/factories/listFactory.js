@@ -43,5 +43,10 @@ export default prefix => ({
     type: prefix + types.LIST_CHANGE_PAGE,
     id: id,
     page
+  }),
+  invalidateLists: (objectType, objectId) => ({
+    type: prefix + types.LIST_INVALIDATE,
+    objectType,
+    objectId
   })
 });

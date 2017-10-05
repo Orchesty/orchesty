@@ -48,7 +48,7 @@ class SystemInstall
      *
      * @ODM\Field(type="boolean")
      */
-    protected $synchronized;
+    protected $synchronized = FALSE;
 
     /**
      * @var DateTime

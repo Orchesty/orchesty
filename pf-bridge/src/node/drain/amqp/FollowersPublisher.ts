@@ -51,10 +51,10 @@ class FollowersPublisher extends Publisher {
      * @return {Promise<void>}
      */
     public send(message: JobMessage): Promise<void> {
-        if (message.getResult().status !== ResultCode.SUCCESS) {
+        if (message.getResult().code !== ResultCode.SUCCESS) {
             logger.warn(
                 `AmqpDrain will not forward message[", \
-                status="${message.getResult().status}, message="${message.getResult().message}"].`,
+                status="${message.getResult().code}, message="${message.getResult().message}"].`,
                 logger.ctxFromMsg(message),
             );
 
