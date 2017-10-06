@@ -72,6 +72,18 @@ class RequestDto
     }
 
     /**
+     * @param Uri $uri
+     *
+     * @return RequestDto
+     */
+    public function setUri(Uri $uri): RequestDto
+    {
+        $this->uri = $uri;
+
+        return $this;
+    }
+
+    /**
      * @return string
      */
     public function getBody(): string

@@ -11,11 +11,11 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\SystemTypeEnum;
-use CleverConnectors\AppBundle\Model\Form\Field;
-use CleverConnectors\AppBundle\Model\Form\Form;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\OAuth2Interface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\Traits\AuthorizationTrait;
+use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Utils\AuthorizationUtils;
+use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Authorization\Provider\Dto\OAuth2Dto;
 use Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
@@ -37,7 +37,7 @@ class SalesForceSystem implements OAuth2Interface
     private const AUTHORIZE_URL = 'https://login.salesforce.com/services/oauth2/authorize';
     private const TOKEN_URL     = 'https://na1.salesforce.com/services/oauth2/token';
 
-    private const DATA_CENTER = 'data_center';
+    private const API_URL = 'instance_url';
 
     /**
      * @var CurlManager
@@ -167,9 +167,14 @@ class SalesForceSystem implements OAuth2Interface
      * @param RequestDto    $dto
      *
      * @return ResponseDto
+     * @throws SystemException
      */
     public function sendRequest(SystemInstall $systemInstall, RequestDto $dto): ResponseDto
     {
+
+        if (!$this->isAuthorized($systemInstall)) {
+            throw new SystemException('SalesForce is not Authorized!');
+        }
 
         $headers = [
             'Content-Type'  => 'application/json',
@@ -177,7 +182,13 @@ class SalesForceSystem implements OAuth2Interface
             'Authorization' => sprintf('Bearer %s', $systemInstall->getSettings()[OAuth2Provider::ACCESS_TOKEN]),
         ];
 
-        return $this->curl->send($dto->setHeaders(array_merge($headers, $dto->getHeaders())));
+        $url = sprintf('%s/%s', $systemInstall->getSettings()[self::API_URL], ltrim((string) $dto->getUri(), '/'));
+
+        $dto
+            ->setHeaders(array_merge($headers, $dto->getHeaders()))
+            ->setUri(new Uri($url));
+
+        return $this->curl->send($dto);
     }
 
     /**
@@ -187,19 +198,7 @@ class SalesForceSystem implements OAuth2Interface
      */
     public function getSettingFields(SystemInstall $systemInstall): array
     {
-        $form = new Form();
-
-        $dataCenter = new Field(
-            Field::TEXT,
-            self::DATA_CENTER,
-            'Data center for api url (eg. ap2)',
-            $systemInstall->getSettings()[self::DATA_CENTER] ?? '',
-            TRUE
-        );
-
-        $form->addField($dataCenter);
-
-        return $form->toArray();
+        return [];
     }
 
     /**
