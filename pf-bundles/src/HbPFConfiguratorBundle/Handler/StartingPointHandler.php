@@ -116,17 +116,14 @@ class StartingPointHandler
     }
 
     /**
-     * @param string $topologyName
+     * @param string $topologyId
      *
      * @return array
      */
-    public function runTest(string $topologyName): array
+    public function runTest(string $topologyId): array
     {
-        $res  = [];
-        $tops = $this->getTopologies($topologyName);
-        foreach ($tops as $top) {
-            $res[] = $this->startingPoint->runTest($top);
-        }
+        $topology = $this->topologyRepository->findOneBy(['id' => $topologyId]);
+        $res[]    = $this->startingPoint->runTest($topology);
 
         return $res;
     }
