@@ -11,7 +11,7 @@ import Repeater, {IRepeaterSettings} from "../../src/repeater/Repeater";
 
 const conn = new Connection(amqpConnectionOptions);
 
-describe("Repeater", () => {
+describe.skip("Repeater", () => {
     it("should consume message and publish it after repeat_interval", (done) => {
         const settings: IRepeaterSettings = {
             input: { queue: { name: "repeater_a", options: {} } },

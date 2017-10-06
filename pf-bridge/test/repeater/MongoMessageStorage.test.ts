@@ -9,7 +9,7 @@ import MongoMessageStorage from "../../src/repeater/MongoMessageStorage";
 const mongo = MongoClient.connect(`mongodb://${mongoStorageOptions.host}/${mongoStorageOptions.db}`);
 const COLLECTION_NAME = "messages";
 
-describe("MongoMessageStorage", () => {
+describe.skip("MongoMessageStorage", () => {
     it("saves save messages and get the subset of them that are expired", () => {
         const storage = new MongoMessageStorage(mongoStorageOptions);
 
