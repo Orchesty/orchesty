@@ -19,6 +19,12 @@ use Hanaboso\PipesFramework\Commons\Crypt\CryptManager;
 class SystemInstall
 {
 
+    private const USER         = 'user';
+    private const TOKEN        = 'token';
+    private const SYSTEM       = 'system';
+    private const SYNCHRONIZED = 'synchronized';
+    private const SETTINGS     = 'settings';
+
     use IdTrait;
 
     /**
@@ -58,16 +64,16 @@ class SystemInstall
     protected $created;
 
     /**
-     * @var array
-     */
-    protected $settings = [];
-
-    /**
      * @var string
      *
      * @ODM\Field(type="string")
      */
     protected $encryptedSettings;
+
+    /**
+     * @var array
+     */
+    protected $settings = [];
 
     /**
      * SystemInstall constructor.
@@ -215,6 +221,24 @@ class SystemInstall
     public function decrypt(): void
     {
         $this->settings = CryptManager::decrypt($this->encryptedSettings);
+    }
+
+    /**
+     * @param array $data
+     *
+     * @return SystemInstall
+     */
+    public static function from(array $data): SystemInstall
+    {
+        $systemInstall = new SystemInstall();
+        $systemInstall
+            ->setUser($data[self::USER] ?? '')
+            ->setToken($data[self::TOKEN] ?? '')
+            ->setSystem($data[self::SYSTEM] ?? '')
+            ->setSynchronized((bool) ($data[self::SYNCHRONIZED] ?? FALSE))
+            ->setSettings($data[self::SETTINGS] ?? '');
+
+        return $systemInstall;
     }
 
 }

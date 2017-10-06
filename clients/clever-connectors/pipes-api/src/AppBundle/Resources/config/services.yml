@@ -74,7 +74,6 @@ services:
     systems.salesforce:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce\SalesForceSystem
         arguments:
-            - '@hbpf.transport.curl_manager'
             - '@hbpf.providers.oauth2_provider'
         tags: ['%systems%']
 
@@ -82,7 +81,6 @@ services:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\ShopifySystem
         arguments:
             - '@hbpf.providers.oauth2_provider'
-            - '@hbpf.transport.curl_manager'
         tags: ['%systems%']
 
     hbpf.connectors.shopify-customer-create:

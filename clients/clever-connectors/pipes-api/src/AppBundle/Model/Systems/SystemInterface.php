@@ -4,7 +4,6 @@ namespace CleverConnectors\AppBundle\Model\Systems;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
-use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 
 /**
  * Interface SystemInterface
@@ -41,11 +40,11 @@ interface SystemInterface
 
     /**
      * @param SystemInstall $systemInstall
-     * @param RequestDto    $dto
+     * @param string        $method
      *
-     * @return ResponseDto
+     * @return RequestDto
      */
-    public function sendRequest(SystemInstall $systemInstall, RequestDto $dto): ResponseDto;
+    public function getRequestDto(SystemInstall $systemInstall, string $method): RequestDto;
 
     /**
      * @param SystemInstall $systemInstall

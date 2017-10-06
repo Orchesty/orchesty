@@ -11,7 +11,6 @@ use CleverConnectors\AppBundle\Model\Systems\WebhookSubscribes;
 use Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
-use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
 use Tests\KernelTestCaseAbstract;
 
 /**
@@ -44,10 +43,7 @@ class ShopifySystemTest extends KernelTestCaseAbstract
             $provider = $this->getMockBuilder(OAuth2Provider::class)->disableOriginalConstructor()->getMock();
             $provider->method('authorize')->willReturn(TRUE);
 
-            $this->system = new ShopifySystem(
-                $provider,
-                $this->createMock(CurlManagerInterface::class)
-            );
+            $this->system = new ShopifySystem($provider);
 
             $this->systemInstall = new SystemInstall();
             $this->systemInstall->setSettings([
