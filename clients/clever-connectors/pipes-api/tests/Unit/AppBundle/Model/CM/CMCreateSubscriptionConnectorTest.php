@@ -36,7 +36,7 @@ class CMCreateSubscriptionConnectorTest extends KernelTestCaseAbstract
         $fac = $this->createMock(CurlClientFactory::class);
         $fac->expects($this->at(0))->method('create')->willReturn(new Client($opt));
         $curl = new CurlManager($fac);
-        $conn = new CMCreateSubscriptionConnector($curl);
+        $conn = new CMCreateSubscriptionConnector($curl, []);
 
         $res = $conn->processAction((new ProcessDto())->setData('{"email":"eml@eml.com"}')->setHeaders([
             'token' => '-3*QYg*3H-5+vaez_K7_N-4K1YhCn88k',
@@ -51,7 +51,7 @@ class CMCreateSubscriptionConnectorTest extends KernelTestCaseAbstract
     {
         $curl = $this->createMock(CurlManagerInterface::class);
         $curl->method('send')->willReturn(new ResponseDto(200, '', 'someBody', []));
-        $conn = new CMCreateSubscriptionConnector($curl);
+        $conn = new CMCreateSubscriptionConnector($curl, ['cert' => '', 'ca'=> '']);
 
         $res = $conn->processAction((new ProcessDto())->setData('')->setHeaders([
             'token' => 'ttoken', 'guid' => 'gguid',

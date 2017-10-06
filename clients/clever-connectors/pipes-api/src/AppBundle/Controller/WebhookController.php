@@ -39,12 +39,20 @@ class WebhookController extends FOSRestController
      * @Method("POST")
      *
      * @param Request $request
+     * @param string  $userId
+     * @param string  $token
      * @param string  $nodeName
      * @param string  $topologyName
      *
      * @return Response
      */
-    public function webhookAction(Request $request, string $userId, string $token, string $nodeName, string $topologyName): Response
+    public function webhookAction(
+        Request $request,
+        string $userId,
+        string $token,
+        string $nodeName,
+        string $topologyName
+    ): Response
     {
         $request->headers->set('guid', $userId);
         $request->headers->set('token', $token);

@@ -35,7 +35,7 @@ class CMDeleteSubscriptionConnectorTest extends KernelTestCaseAbstract
         $fac = $this->createMock(CurlClientFactory::class);
         $fac->expects($this->at(0))->method('create')->willReturn(new Client($opt));
         $curl = new CurlManager($fac);
-        $conn = new CMDeleteSubscriptionConnector($curl);
+        $conn = new CMDeleteSubscriptionConnector($curl, []);
 
         $res = $conn->processAction((new ProcessDto())->setData('{"email":"eml@eml.com"}')->setHeaders([
             'token' => '-3*QYg*3H-5+vaez_K7_N-4K1YhCn88k',
@@ -50,7 +50,7 @@ class CMDeleteSubscriptionConnectorTest extends KernelTestCaseAbstract
     {
         $curl = $this->createMock(CurlManagerInterface::class);
         $curl->method('send')->willReturn(new ResponseDto(200, '', 'someBody', []));
-        $conn = new CMDeleteSubscriptionConnector($curl);
+        $conn = new CMDeleteSubscriptionConnector($curl, ['cert' => '', 'ca'=> '']);
 
         $res = $conn->processAction((new ProcessDto())->setData('{"email":"eml@eml.com"}')->setHeaders([
             'token' => 'ttoken', 'guid' => 'gguid',
