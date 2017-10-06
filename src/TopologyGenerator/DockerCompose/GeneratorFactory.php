@@ -27,17 +27,27 @@ class GeneratorFactory
      * @var string
      */
     private $network;
+    /**
+     * @var VolumePathDefinitionFactory
+     */
+    private $volumePathDefinitionFactory;
 
     /**
      * GeneratorFactory constructor.
      *
-     * @param string $targetDir
-     * @param string $network
+     * @param string                      $targetDir
+     * @param string                      $network
+     * @param VolumePathDefinitionFactory $volumePathDefinitionFactory
      */
-    public function __construct(string $targetDir, string $network)
+    public function __construct(
+        string $targetDir,
+        string $network,
+        VolumePathDefinitionFactory $volumePathDefinitionFactory
+    )
     {
-        $this->targetDir = $targetDir;
-        $this->network   = $network;
+        $this->targetDir                   = $targetDir;
+        $this->network                     = $network;
+        $this->volumePathDefinitionFactory = $volumePathDefinitionFactory;
     }
 
     /**
@@ -45,7 +55,7 @@ class GeneratorFactory
      */
     public function create(): Generator
     {
-        return new Generator(new Environment(), new HostMapper(), $this->targetDir, $this->network);
+        return new Generator(new Environment(), new HostMapper(), $this->targetDir, $this->network, $this->volumePathDefinitionFactory);
     }
 
 }

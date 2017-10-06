@@ -39,4 +39,20 @@ class GeneratorController extends FOSRestController
         );
     }
 
+    /**
+     * @Route("/topology/run/{id}")
+     * @Method({"GET"})
+     *
+     * @param string $id
+     *
+     * @return Response
+     */
+    public function runAction(string $id): Response
+    {
+        return $this->forward(
+            'HbPFConfiguratorBundle:Generator:run',
+            ['id' => $id]
+        );
+    }
+
 }

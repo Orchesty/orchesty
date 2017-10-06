@@ -55,25 +55,33 @@ class Generator implements GeneratorInterface
     private $network;
 
     /**
+     * @var VolumePathDefinitionFactory
+     */
+    private $volumePathDefinitionFactory;
+
+    /**
      * Generator constructor.
      *
-     * @param Environment $environment
-     * @param HostMapper  $hostMapper
-     * @param string      $targetDir
-     * @param string      $network
+     * @param Environment                 $environment
+     * @param HostMapper                  $hostMapper
+     * @param string                      $targetDir
+     * @param string                      $network
+     * @param VolumePathDefinitionFactory $volumePathDefinitionFactory
      */
     public function __construct(
         Environment $environment,
         HostMapper $hostMapper,
         string $targetDir,
-        string $network
+        string $network,
+        VolumePathDefinitionFactory $volumePathDefinitionFactory
     )
     {
-        $this->environment    = $environment;
-        $this->hostMapper     = $hostMapper;
-        $this->targetDir      = $targetDir;
-        $this->network        = $network;
-        $this->composeBuilder = new ComposeBuilder();
+        $this->environment                 = $environment;
+        $this->hostMapper                  = $hostMapper;
+        $this->targetDir                   = $targetDir;
+        $this->network                     = $network;
+        $this->composeBuilder              = new ComposeBuilder();
+        $this->volumePathDefinitionFactory = $volumePathDefinitionFactory;
     }
 
     /**
@@ -109,20 +117,40 @@ class Generator implements GeneratorInterface
      */
     public function createCompose(Topology $topology, iterable $nodes): string
     {
+        $volumePathDefinition = $this->volumePathDefinitionFactory->create($topology);
+
         $compose = new Compose();
 
         $compose->addNetwork($this->network);
 
-        $builder            = new ProbeServiceBuilder($this->environment, self::REGISTRY, $this->network, $topology);
+        $builder = new ProbeServiceBuilder(
+            $this->environment,
+            self::REGISTRY,
+            $this->network,
+            $topology,
+            $volumePathDefinition
+        );
+
         $nodeWatcherService = $builder->build(new Node());
         $compose->addServices($nodeWatcherService);
 
-        $builder        = new CounterServiceBuilder($this->environment, self::REGISTRY, $this->network);
+        $builder = new CounterServiceBuilder(
+            $this->environment,
+            self::REGISTRY,
+            $this->network,
+            $volumePathDefinition
+        );
+
         $counterService = $builder->build(new Node());
         $compose->addServices($counterService);
 
         foreach ($nodes as $node) {
-            $builder = new NodeServiceBuilder($this->environment, self::REGISTRY, $this->network);
+            $builder = new NodeServiceBuilder(
+                $this->environment,
+                self::REGISTRY,
+                $this->network,
+                $volumePathDefinition
+            );
             $compose->addServices($builder->build($node));
         }
 

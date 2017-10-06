@@ -4,6 +4,8 @@ services:
             arguments:
                 - '@hbpf.database_manager_locator'
                 - '@hbpf.configurator.manager.topology'
+                - '@hbpf.handler.generator_handler'
+                - '@hbpf.transport.curl_manager'
 
     hbpf.configurator.handler.node:
         class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\NodeHandler
@@ -23,3 +25,4 @@ services:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '%generator_path%'
             - '%docker_network%'
+            - '@hbpf.docker_compose.volume_path_definition_factory'

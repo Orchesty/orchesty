@@ -4,7 +4,10 @@ namespace Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\DatabaseManager\DatabaseManagerLocator;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
+use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Commons\Utils\UriParams;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
@@ -18,6 +21,10 @@ use Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository;
  */
 class TopologyHandler
 {
+
+    protected const GENERATOR_TOPOLOGY_URL = 'http://connector-api:80/api/topology/generate/{id}';
+
+    protected const RUN_TOPOLOGY_URL = 'http://topology-api:80/api/topology/run/{id}';
 
     /**
      * @var DocumentRepository|TopologyRepository
@@ -35,16 +42,35 @@ class TopologyHandler
     private $manager;
 
     /**
+     * @var GeneratorHandler
+     */
+    private $generatorHandler;
+
+    /**
+     * @var CurlManagerInterface
+     */
+    private $curlManager;
+
+    /**
      * TopologyHandler constructor.
      *
      * @param DatabaseManagerLocator $dml
      * @param TopologyManager        $manager
+     * @param GeneratorHandler       $generatorHandler
+     * @param CurlManagerInterface   $curlManager
      */
-    public function __construct(DatabaseManagerLocator $dml, TopologyManager $manager)
+    public function __construct(
+        DatabaseManagerLocator $dml,
+        TopologyManager $manager,
+        GeneratorHandler $generatorHandler,
+        CurlManagerInterface $curlManager
+    )
     {
         $this->dm                 = $dml->getDm();
         $this->topologyRepository = $this->dm->getRepository(Topology::class);
         $this->manager            = $manager;
+        $this->generatorHandler   = $generatorHandler;
+        $this->curlManager        = $curlManager;
     }
 
     /**
@@ -175,6 +201,28 @@ class TopologyHandler
         $this->manager->deleteTopology($topology);
 
         return TRUE;
+    }
+
+    public function generateTopology(string $id)
+    {
+        //TODO: add to function
+        $uri = str_replace('{id}', $id, self::GENERATOR_TOPOLOGY_URL);
+
+        $dto      = new RequestDto('GET', new Uri($uri));
+        $response = $this->curlManager->send($dto);
+
+        return $response;
+    }
+
+    public function runTopology(string $id)
+    {
+        //TODO: add to function
+        $uri = str_replace('{id}', $id, self::RUN_TOPOLOGY_URL);
+
+        $dto      = new RequestDto('GET', new Uri($uri));
+        $response = $this->curlManager->send($dto);
+
+        return $response;
     }
 
     /**

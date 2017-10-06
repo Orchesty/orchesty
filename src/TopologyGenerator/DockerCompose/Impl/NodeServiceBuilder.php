@@ -11,6 +11,7 @@ namespace Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\Impl;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\Service;
 use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\ServiceBuilderInterface;
+use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\VolumePathDefinition;
 use Hanaboso\PipesFramework\TopologyGenerator\Environment;
 use Hanaboso\PipesFramework\TopologyGenerator\GeneratorUtils;
 
@@ -40,17 +41,29 @@ class NodeServiceBuilder implements ServiceBuilderInterface
     private $network;
 
     /**
+     * @var VolumePathDefinition
+     */
+    private $volumePathDefinition;
+
+    /**
      * NodeServiceBuilder constructor.
      *
-     * @param Environment $environment
-     * @param string      $registry
-     * @param string      $network
+     * @param Environment          $environment
+     * @param string               $registry
+     * @param string               $network
+     * @param VolumePathDefinition $volumePathDefinition
      */
-    public function __construct(Environment $environment, string $registry, string $network)
+    public function __construct(
+        Environment $environment,
+        string $registry,
+        string $network,
+        VolumePathDefinition $volumePathDefinition
+    )
     {
-        $this->environment = $environment;
-        $this->registry    = $registry;
-        $this->network     = $network;
+        $this->environment          = $environment;
+        $this->registry             = $registry;
+        $this->network              = $network;
+        $this->volumePathDefinition = $volumePathDefinition;
     }
 
     /**
@@ -68,7 +81,7 @@ class NodeServiceBuilder implements ServiceBuilderInterface
             ->addEnvironment(Environment::RABBITMQ_USER, $this->environment->getRabbitMqUser())
             ->addEnvironment(Environment::RABBITMQ_PASS, $this->environment->getRabbitMqPass())
             ->addEnvironment(Environment::RABBITMQ_VHOST, $this->environment->getRabbitMqVHost())
-            ->addVolume('./topology.json:/srv/app/topology.json')
+            ->addVolume($this->volumePathDefinition->getSourceVolume('topology.json') . ':/srv/app/topology.json')
             ->setCommand(sprintf(
                     './dist/src/bin/pipes.js start node --id %s',
                     GeneratorUtils::normalizeName($node->getId(), $node->getName())

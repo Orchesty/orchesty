@@ -13,7 +13,7 @@ use FOS\RestBundle\Controller\FOSRestController;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\GeneratorHandler;
 use Psr\Log\LoggerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 /**
  * Class GeneratorController
@@ -56,9 +56,9 @@ class GeneratorController extends FOSRestController
      *
      * @param string $id
      *
-     * @return Response
+     * @return JsonResponse
      */
-    public function generateAction(string $id): Response
+    public function generateAction(string $id): JsonResponse
     {
         //TODO: Make much better !!!!
         $this->construct();
@@ -66,7 +66,26 @@ class GeneratorController extends FOSRestController
         $result     = $this->generatorHandler->generateTopology($id);
         $statusCode = $result ? 200 : 400;
 
-        return $this->handleView($this->view([], $statusCode, []));
+        return new JsonResponse(["result" => $statusCode], $statusCode, []);
+    }
+
+    /**
+     * @Route("/topology/run/{id}")
+     * @Method({"GET"})
+     *
+     * @param string $id
+     *
+     * @return JsonResponse
+     */
+    public function runAction(string $id): JsonResponse
+    {
+        //TODO: Make much better !!!!
+        $this->construct();
+
+        $result     = $this->generatorHandler->runTopology($id);
+        $statusCode = $result ? 200 : 400;
+
+        return new JsonResponse(["result" => $statusCode], $statusCode, []);
     }
 
     /**
