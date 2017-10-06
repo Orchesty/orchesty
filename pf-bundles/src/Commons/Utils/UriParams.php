@@ -17,13 +17,18 @@ class UriParams
      */
     public static function parseOrderBy($orderBy = NULL): array
     {
+        $convertTable = [
+            '-' => 'DESC',
+            '+' => 'ASC',
+        ];
+
         $sort = [];
 
         if (!empty($orderBy)) {
             foreach (explode(',', $orderBy) as $item) {
                 $name        = substr($item, 0, -1);
                 $direction   = substr($item, -1);
-                $sort[$name] = $direction;
+                $sort[$name] = $convertTable[$direction];
             }
         }
 
