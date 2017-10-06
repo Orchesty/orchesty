@@ -10,32 +10,37 @@ namespace Hanaboso\PipesFramework\Commons\Enum;
 class TypeEnum extends EnumAbstract
 {
 
-    public const API          = 'api';
-    public const CONNECTOR    = 'connector';
-    public const CRON         = 'cron';
-    public const CUSTOM       = 'custom';
-    public const EMAIL        = 'email';
-    public const FTP          = 'ftp';
-    public const MAPPER       = 'mapper';
-    public const SPLITTER     = 'splitter';
-    public const TABLE_PARSER = 'table_parser';
-    public const WEBHOOK      = 'webhook';
-    public const XML_PARSER   = 'xml_parser';
+    public const API             = 'api';
+    public const BATCH           = 'batch';
+    public const BATCH_CONNECTOR = 'batch_connector';
+    public const CONNECTOR       = 'connector';
+    public const CRON            = 'cron';
+    public const CUSTOM          = 'custom';
+    public const EMAIL           = 'email';
+    public const FTP             = 'ftp';
+    public const MAPPER          = 'mapper';
+    public const SPLITTER        = 'splitter';
+    public const TABLE_PARSER    = 'table_parser';
+    public const WEBHOOK         = 'webhook';
+    public const XML_PARSER      = 'xml_parser';
+
     /**
      * @var string[]
      */
     protected static $choices = [
-        self::API          => 'api',
-        self::CONNECTOR    => 'connector',
-        self::CRON         => 'cron',
-        self::CUSTOM       => 'custom',
-        self::EMAIL        => 'email',
-        self::FTP          => 'ftp',
-        self::MAPPER       => 'mapper',
-        self::SPLITTER     => 'splitter',
-        self::TABLE_PARSER => 'table_parser',
-        self::WEBHOOK      => 'webhook',
-        self::XML_PARSER   => 'xml_parser',
+        self::API             => self::API,
+        self::BATCH           => self::BATCH,
+        self::BATCH_CONNECTOR => self::BATCH_CONNECTOR,
+        self::CONNECTOR       => self::CONNECTOR,
+        self::CRON            => self::CRON,
+        self::CUSTOM          => self::CUSTOM,
+        self::EMAIL           => self::EMAIL,
+        self::FTP             => self::FTP,
+        self::MAPPER          => self::MAPPER,
+        self::SPLITTER        => self::SPLITTER,
+        self::TABLE_PARSER    => self::TABLE_PARSER,
+        self::WEBHOOK         => self::WEBHOOK,
+        self::XML_PARSER      => self::XML_PARSER,
     ];
 
 }
