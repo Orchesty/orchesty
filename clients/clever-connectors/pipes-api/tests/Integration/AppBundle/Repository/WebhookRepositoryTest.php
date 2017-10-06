@@ -29,7 +29,6 @@ final class WebhookRepositoryTest extends DatabaseTestCaseAbstract
         /** @var WebhookRepository $repo */
         $repo   = $this->dm->getRepository(Webhook::class);
         $result = $repo->isWebhookRegistred('1', 'sys', 'top', 'nod');
-
         self::assertFalse($result);
 
         $wh = new Webhook();
@@ -44,6 +43,19 @@ final class WebhookRepositoryTest extends DatabaseTestCaseAbstract
 
         $result = $repo->isWebhookRegistred('1', 'sys', 'top', 'nod');
         self::assertTrue($result);
+
+        $wh = new Webhook();
+        $wh
+            ->setUser('1')
+            ->setSystemKey('sys')
+            ->setTopologyName('top1')
+            ->setNodeName('nod1')
+            ->setWebhookId(NULL);
+
+        $this->persistAndFlush($wh);
+
+        $result = $repo->isWebhookRegistred('1', 'sys', 'top1', 'nod1');
+        self::assertFalse($result);
     }
 
 }
