@@ -119,7 +119,7 @@ class AmqpRpcWorker implements IWorker {
                 },
             },
         ).then(() => {
-            logger.warn(`Worker[type='amqprpc'] received result with non-existing corrId`, logger.ctxFromMsg(msg));
+            logger.warn(`Worker[type='amqprpc'] sent request.`, logger.ctxFromMsg(msg));
         }).catch((err: Error) => {
             const context = logger.ctxFromMsg(msg);
             context.error = err;
@@ -173,6 +173,8 @@ class AmqpRpcWorker implements IWorker {
                     headers: {
                         node_id: this.settings.node_id,
                         node_name: testId,
+                        process_id: testId,
+                        correlation_id: testId,
                     },
                 },
             );
@@ -189,7 +191,7 @@ class AmqpRpcWorker implements IWorker {
 
         if (!this.waiting.has(corrId)) {
             logger.warn(
-                `Worker[type='amqprpc'] received result with non-existing corrId`,
+                `Worker[type='amqprpc'] received result with unknown corrId`,
                 { node_id: this.settings.node_id, correlation_id: corrId },
             );
 
