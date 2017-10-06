@@ -92,32 +92,24 @@ class MongoMessageStorage implements IMessageStorage {
         return this.find(query)
             .then((documents: IPersistedMessage[]) => {
                 docs = documents;
+
+                // skip delete if nothing found
+                if (documents.length === 0) {
+                    const fake: DeleteWriteOpResultObject = { result: {}, deletedCount: 0 };
+                    return Promise.resolve(fake);
+                }
+
                 return this.delete(query);
             })
-            .then(() => {
-                // TODO handle delete error
+            .then((deletion: DeleteWriteOpResultObject) => {
+                if (deletion.deletedCount !== docs.length) {
+                    logger.error("MongoDb deleted count not equal with retrieved count.", { node_id: "repeater" });
+                }
                 return docs;
             })
             .catch((err) => {
                 logger.error("MongoDb findExpired error.", { node_id: "repeater", error: err });
                 return [];
-            });
-    }
-
-    /**
-     * Use wisely. Clears the whole collection
-     * @return {Promise<boolean>}
-     */
-    public drop(): Promise<boolean> {
-        return this.db
-            .then((db: Db) => {
-                return db.collection(COLLECTION_NAME).drop();
-            })
-            .then(() => {
-                return true;
-            })
-            .catch(() => {
-                return false;
             });
     }
 
