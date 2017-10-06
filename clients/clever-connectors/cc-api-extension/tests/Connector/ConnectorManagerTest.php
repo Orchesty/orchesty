@@ -33,7 +33,7 @@ class ConnectorManagerTest extends TestCase
         $c = new CurlSender($f);
         $m = new ConnectorManager($c);
 
-        $s = $m->getAllSystems('xxx');
+        $s = $m->getAllSystems();
 
         var_dump($s);
     }

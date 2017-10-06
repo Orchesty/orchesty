@@ -12,10 +12,16 @@ use CcApi\ApiEntity\System;
 use CcApi\ApiEntity\SystemFactory;
 use CcApi\ApiEntity\UserSystem;
 use CcApi\ApiEntity\UserSystemFactory;
+use CcApi\Connector\Exception\ConnectorException;
 use CcApi\Curl\CurlSender;
+use CcApi\Curl\Exception\CurlException;
+use CcApi\Curl\Headers;
+use CcApi\Curl\Query;
+use Exception;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Uri;
 use Nette\Utils\Json;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * Class ConnectorManager
@@ -41,25 +47,73 @@ class ConnectorManager implements ConnectorInterface
     }
 
     /**
+     * @param ResponseInterface $response
+     *
+     * @return array
+     * @throws ConnectorException
+     */
+    private function parseBody(ResponseInterface $response): array
+    {
+        try {
+            return Json::decode($response->getBody()->getContents(), Json::FORCE_ARRAY);
+        } catch (Exception $e) {
+            throw new ConnectorException(
+                sprintf('Parser error: %s', $e->getMessage()),
+                ConnectorException::PARSER_ERROR,
+                $e
+            );
+        }
+    }
+
+    /**
+     * @return Headers
+     */
+    private function getDefaultHeaders(): Headers
+    {
+        $headers = new Headers();
+        $headers
+            ->addHeader('Accept', 'application/json')
+            ->addHeader('Content-Type', 'application/json');
+
+        return $headers;
+    }
+
+    /**
      * @param null|string $group
      * @param null|string $user
      *
-     * @return iterable|System[]
+     * @return iterable
+     * @throws ConnectorException
      */
     public function getAllSystems(?string $group = NULL, ?string $user = NULL): iterable
     {
-        $query['group'] = $group ?? '';
-        $query['user']  = $user ?? '';
+        $query = new Query();
+        if ($group !== NULL) {
+            $query->addQuery('group', $group);
+        }
 
-        $uri     = new Uri(sprintf('/systems?%s', http_build_query($query)));
-        $request = new Request(CurlSender::GET, $uri, ['application/json']);
+        if ($user !== NULL) {
+            $query->addQuery('user', $user);
+        }
 
-        $response = $this->curlSender->send($request);
+        $request = new Request(
+            CurlSender::GET,
+            new Uri(sprintf('/systems?%s', $query->getQueryAsString())),
+            $this->getDefaultHeaders()->getHeaders()
+        );
 
-        $data = Json::decode($response->getBody()->getContents(), Json::FORCE_ARRAY);
+        try {
+            $response = $this->curlSender->send($request);
+        } catch (CurlException $e) {
+            throw new ConnectorException(
+                sprintf('Connector error: %s', $e->getMessage()),
+                ConnectorException::REQUEST_ERROR,
+                $e
+            );
+        }
 
         $systems = [];
-        foreach ($data as $item) {
+        foreach ($this->parseBody($response) as $item) {
             $systems[] = SystemFactory::create($item);
         }
 

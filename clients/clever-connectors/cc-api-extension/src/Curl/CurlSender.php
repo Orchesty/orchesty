@@ -91,8 +91,9 @@ class CurlSender
 
             return $response;
         } catch (RequestException $e) {
-            if ($e->hasResponse()) {
-                $this->logResponse($e->getResponse());
+            $response = $e->getResponse();
+            if ($response !== NULL) {
+                $this->logResponse($response);
             }
             throw new CurlException(sprintf('Curl sender error: %s', $e->getMessage()), $e->getCode(), $e);
         } catch (Exception $e) {
