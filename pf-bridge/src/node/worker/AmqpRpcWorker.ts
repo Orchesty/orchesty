@@ -11,6 +11,7 @@ import IWorker from "./IWorker";
 
 export interface IAmqpRpcWorkerSettings {
     node_id: string;
+    node_name: string;
     publish_queue: {
         name: string;
         options: any;
@@ -105,14 +106,25 @@ class AmqpRpcWorker implements IWorker {
             this.settings.publish_queue.name,
             new Buffer(msg.getContent()),
             {
-                replyTo: this.resultsQueue.name,
-                correlationId: msg.getProcessId(),
                 type: BATCH_REQUEST_TYPE,
+                replyTo: this.resultsQueue.name,
+                correlationId: msg.getCorrelationId(),
                 headers: {
                     node_id: this.settings.node_id,
+                    node_name: this.settings.node_name,
+                    correlationId: msg.getCorrelationId(),
+                    processId: msg.getProcessId(),
+                    parentId: msg.getParentId(),
+                    sequenceId: msg.getSequenceId(),
                 },
             },
-        );
+        ).then(() => {
+            logger.warn(`Worker[type='amqprpc'] received result with non-existing corrId`, logger.ctxFromMsg(msg));
+        }).catch((err: Error) => {
+            const context = logger.ctxFromMsg(msg);
+            context.error = err;
+            logger.error(`Worker[type='amqprpc'] sending message failed`, context);
+        });
 
         if (this.waiting.has(msg.getProcessId())) {
             this.onDuplicateMessage(msg);
@@ -126,7 +138,7 @@ class AmqpRpcWorker implements IWorker {
             msg.setMultiplier(0);
 
             const w: IWaiting = { resolveFn: resolve, message: msg, sequence: 0 };
-            this.waiting.set(msg.getProcessId(), w);
+            this.waiting.set(msg.getCorrelationId(), w);
         });
 
     }
@@ -160,6 +172,7 @@ class AmqpRpcWorker implements IWorker {
                     replyTo: this.resultsQueue.name,
                     headers: {
                         node_id: this.settings.node_id,
+                        node_name: testId,
                     },
                 },
             );

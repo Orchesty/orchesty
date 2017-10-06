@@ -19,6 +19,7 @@ describe("AmqpRpcWorker", () => {
         const forwarded: JobMessage[] = [];
         const settings: IAmqpRpcWorkerSettings = {
             node_id: "amqp_rpc_node_test",
+            node_name: "amqp_rpc_node",
             publish_queue: {
                 name: "amqp_rpc_pub_test",
                 options: {},
@@ -65,6 +66,7 @@ describe("AmqpRpcWorker", () => {
         const forwarded: JobMessage[] = [];
         const settings: IAmqpRpcWorkerSettings = {
             node_id: "amqp_rpc_node_multiple",
+            node_name: "amqp_rpc_node",
             publish_queue: {
                 name: "amqp_rpc_pub_multiple",
                 options: {},
