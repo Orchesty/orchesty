@@ -1,8 +1,7 @@
 import {Message} from "amqplib";
-import * as mongoose from "mongoose";
+import {Db, DeleteWriteOpResultObject, MongoClient} from "mongodb";
 import logger from "./../logger/Logger";
 import IMessageStorage from "./IMessageStorage";
-import {IPersistedMessageSchema, PersistedMessage} from "./model/PersistedMessage";
 
 export interface IMongoMessageStorageSettings {
     host: string;
@@ -12,60 +11,67 @@ export interface IMongoMessageStorageSettings {
     db: string;
 }
 
-/**
- * TODO - solve deprecated default promise warning
- * TODO - solve deprecated openUri warning
- */
+interface IPersistedMessage {
+    _id?: string;
+    // message fields
+    properties: any;
+    fields: any;
+    content: any;
+    // custom fields
+    repeat_interval: number;
+    repeat_at: number;
+    repeat_at_timestamp: number;
+    created_at: number;
+}
+
+const COLLECTION_NAME = "messages";
+
 class MongoMessageStorage implements IMessageStorage {
 
-    private db: any;
+    private db: Promise<Db>;
 
     /**
      *
      * @param {IMongoMessageStorageSettings} settings
      */
     constructor(private settings: IMongoMessageStorageSettings) {
-        // Promise = global.Promise;
-        mongoose.connect(
-            `mongodb://${this.settings.host}/${this.settings.db}`,
-            {
-                useMongoClient: true,
-                // autoReconnect: true,
-                // reconnectTries: Number.MAX_VALUE,
-            },
-            () => {
-                // connect cb
-            },
-        );
-        // this.connect();
+        this.createConnection();
     }
 
     /**
      * Saves message to the storage
      *
      * @param {Message} message
+     * @param {number} timeout
      * @return {Promise<boolean>}
      */
-    public save(message: Message): Promise<boolean> {
+    public save(message: Message, timeout: number): Promise<boolean> {
         const now = Date.now();
-        const repeatInterval = parseInt(message.properties.headers.repeat_interval, 10);
+        const repeatInterval = timeout;
         const repeatAt = now + repeatInterval;
 
-        const document: IPersistedMessageSchema = {
+        const document: IPersistedMessage = {
             properties: message.properties,
             fields: message.fields,
             content: message.content,
-            id: "",
             repeat_interval: repeatInterval,
             repeat_at: repeatAt,
             repeat_at_timestamp: repeatAt,
             created_at: now,
         };
 
-        const toSave = new PersistedMessage(document);
-
-        return toSave.save()
+        return this.db
+            .then((db: Db) => {
+                return db.collection(COLLECTION_NAME).insertOne(document);
+            })
             .then(() => {
+                logger.info(
+                    "Message persisted.",
+                    {
+                        node_id: "repeater",
+                        correlation_id: message.properties.headers.correlation_id,
+                        process_id: message.properties.headers.process_id,
+                    });
                 return true;
             })
             .catch(() => {
@@ -79,76 +85,74 @@ class MongoMessageStorage implements IMessageStorage {
      * @return {Promise<Message[]>}
      */
     public findExpired(): Promise<Message[]> {
-        return PersistedMessage.find({repeat_at : { $lte : Date.now()} })
-            .then((documents: any) => {
-                return this.cleanDocuments(documents);
+        const now = Date.now();
+        const query = {repeat_at : { $lte : now} };
+
+        let docs: IPersistedMessage[] = [];
+
+        return this.find(query)
+            .then((documents: IPersistedMessage[]) => {
+                docs = documents;
+
+                // skip deleteDocuments when nothing found
+                if (documents.length === 0) {
+                    const fake: DeleteWriteOpResultObject = { result: {}, deletedCount: 0 };
+                    return Promise.resolve(fake);
+                }
+
+                return this.deleteDocuments(query);
+            })
+            .then((deletion: DeleteWriteOpResultObject) => {
+                if (deletion.deletedCount !== docs.length) {
+                    logger.error("MongoDb deleted count not equal with retrieved count.", { node_id: "repeater" });
+                }
+                return docs;
+            })
+            .catch((err) => {
+                logger.error("MongoDb findExpired error.", { node_id: "repeater", error: err });
+                return [];
             });
     }
 
-    public findAll() {
-        return PersistedMessage.find({});
-    }
-
     /**
-     * Use wisely. Clears the whole collection
-     * @return {Promise<boolean>}
+     * Created new mongodb connection
      */
-    public clearAll(): Promise<boolean> {
-        return PersistedMessage.remove({})
-            .then(() => {
-                return true;
+    private createConnection(): void {
+        this.db = MongoClient.connect(`mongodb://${this.settings.host}/${this.settings.db}`)
+            .then((db: Db) => {
+                logger.info("MongoDb connection opened.", { node_id: "repeater" });
+
+                return db;
+            })
+            .catch((err: any) => {
+                logger.error("MongoDb connection error.", { node_id: "repeater", error: err });
+
+                return null;
             });
     }
 
     /**
-     * Removes documents form mongo and trims the documents to contain only Message's fields
      *
-     * @param {IPersistedMessageSchema[]} documents
-     * @return {any}
+     * @param query
+     * @return {Promise<IPersistedMessage[]>}
      */
-    private cleanDocuments(documents: IPersistedMessageSchema[]): Promise<Message[]> {
-        if (documents.length === 0) {
-            return Promise.resolve([]);
-        }
-
-        const messageProms: Array<Promise<Message>> = [];
-        documents.forEach((doc: IPersistedMessageSchema) => {
-
-            const prom = PersistedMessage.findByIdAndRemove(doc.id)
-                .then(() => {
-                    return {
-                        fields: doc.fields || {},
-                        properties: doc.properties || {},
-                        content: doc.content || new Buffer(""),
-                    };
-                });
-
-            messageProms.push(prom);
-        });
-
-        return Promise.all(messageProms);
+    private find(query: any): Promise<IPersistedMessage[]> {
+        return this.db
+            .then((db: Db) => {
+                return db.collection(COLLECTION_NAME).find(query).toArray();
+            });
     }
 
     /**
-     * Creates new mongo connection
+     *
+     * @param query
+     * @return {Promise<DeleteWriteOpResultObject>}
      */
-    private connect() {
-        const opts = {
-            server: { auto_reconnect: true },
-            user: this.settings.user,
-            pass: this.settings.pass,
-        };
-        this.db = mongoose.createConnection(this.settings.host, this.settings.db, this.settings.port, opts);
-
-        this.db.on("error", (err: any) => {
-            logger.error("MongoDb connection error.", { node_id: "repeater", error: err });
-        });
-        this.db.on("close", (err: any) => {
-            logger.warn("MongoDb connection closed.", { node_id: "repeater", error: err });
-        });
-        this.db.on("open", () => {
-            logger.info("MongoDb connection opened.", { node_id: "repeater" });
-        });
+    private deleteDocuments(query: any): Promise<DeleteWriteOpResultObject> {
+        return this.db
+            .then((db: Db) => {
+                return db.collection(COLLECTION_NAME).deleteMany(query);
+            });
     }
 
 }
