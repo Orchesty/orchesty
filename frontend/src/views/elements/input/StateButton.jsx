@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import {stateType} from 'rootApp/types';
 
 import './StateButton.less';
+import ProcessToState from "wrappers/ProcessToState";
 
 const sizes = {
   xs: 14,
@@ -35,4 +36,4 @@ StateButton.propTypes = {
   state: PropTypes.string
 };
 
-export default StateButton;
+export default ProcessToState(StateButton);

@@ -10,8 +10,7 @@ import TextInput from 'elements/input/TextInput';
 import PasswordInput from 'elements/input/PasswordInput';
 import StateButton from 'elements/input/StateButton';
 import NonAuthPage from 'wrappers/NonAuthPage';
-
-const processId = 'login';
+import processes from "rootApp/enums/processes";
 
 class LoginPage extends React.Component {
   constructor(props) {
@@ -36,6 +35,7 @@ class LoginPage extends React.Component {
   }
 
   render() {
+    const {componentKey} = this.props;
     return (
       <form onSubmit={this.props.handleSubmit(this.onSubmit)}>
         <h1>Login</h1>
@@ -46,7 +46,7 @@ class LoginPage extends React.Component {
           <Field name="password" component={PasswordInput} label="Password" />
         </div>
         <div>
-          <StateButton type="submit" color="default" state={this.props.processState}>Log in</StateButton>
+          <StateButton type="submit" color="default" processId={processes.authLogin(componentKey)}>Log in</StateButton>
           <a className="reset_pass" href="#" onClick={this.resetPasswordClick}>Lost your password?</a>
         </div>
 
@@ -64,10 +64,10 @@ class LoginPage extends React.Component {
 }
 
 LoginPage.propTypes = {
-  processState: PropTypes.string,
   login: PropTypes.func.isRequired,
   switchToRegistration: PropTypes.func.isRequired,
-  switchToResetPassword: PropTypes.func.isRequired
+  switchToResetPassword: PropTypes.func.isRequired,
+  componentKey: PropTypes.string.isRequired
 };
 
 function validate(values){
@@ -83,15 +83,12 @@ function validate(values){
 }
 
 function mapStateToProps(state, ownProps) {
-  const {process} = state;
-  return {
-    processState: process[processId]
-  };
+  return {};
 }
 
 function mapActionsToProps(dispatch, ownProps){
   return {
-    login: data => dispatch(authActions.login(data, processId)),
+    login: data => dispatch(authActions.login(data, ownProps.componentKey)),
     switchToRegistration: () => dispatch(applicationActions.selectPage('registration')),
     switchToResetPassword: () => dispatch(applicationActions.selectPage('reset_password'))
   }

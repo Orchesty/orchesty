@@ -58,7 +58,7 @@ class TopologySchema extends React.Component {
           onImport={addSuccessNotification}
           setActions={setActions}
           onSave={this.save}
-          processId={saveProcessId}
+          saveProcessId={saveProcessId}
         />
       </SimpleState>
     );

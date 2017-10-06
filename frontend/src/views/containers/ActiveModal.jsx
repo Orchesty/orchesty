@@ -21,10 +21,10 @@ class ActiveModal extends React.Component {
     const {modal, modalData} = this.props;
     switch (modal){
       case 'topology_edit':
-        return <TopologyEditModal {...modalData} onCloseModal={this._close} />;
+        return <TopologyEditModal {...modalData} onCloseModal={this._close} componentKey={modal}/>;
 
       case 'authorization_settings_edit':
-        return <AuthorizationSettingsEditModal {...modalData} onCloseModal={this._close} />;
+        return <AuthorizationSettingsEditModal {...modalData} onCloseModal={this._close} componentKey={modal} />;
 
       default:
         return null;
