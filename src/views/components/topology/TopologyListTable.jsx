@@ -42,7 +42,7 @@ class TopologyListTable extends React.Component {
     return (
       <tr>
         <SortTh name="id" state={sort} onChangeSort={this.changeSort}>#</SortTh>
-        <SortTh name="status" state={sort} onChangeSort={this.changeSort}>Status</SortTh>
+        <SortTh name="visibility" state={sort} onChangeSort={this.changeSort}>Visibility</SortTh>
         <SortTh name="name" state={sort} onChangeSort={this.changeSort}>Name</SortTh>
         <SortTh name="version" state={sort} onChangeSort={this.changeSort}>Version</SortTh>
         <SortTh name="description" state={sort} onChangeSort={this.changeSort}>Description</SortTh>
@@ -85,7 +85,7 @@ class TopologyListTable extends React.Component {
           return (
             <tr key={item._id}>
               <td>{item._id}</td>
-              <td>{item.status}</td>
+              <td>{item.visibility}</td>
               <td>{item.name}</td>
               <td>{item.version}</td>
               <td>{item.descr}</td>

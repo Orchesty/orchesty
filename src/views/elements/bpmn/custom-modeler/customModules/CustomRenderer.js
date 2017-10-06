@@ -30,58 +30,62 @@ function CustomRenderer(eventBus, styles, pathMap, canvas) {
     const pipesType = element.pipesType || element.businessObject.pipesType;
 
     switch (pipesType) {
-      case 'cron':
-        const timerCircle = this.bpmnRenderer.handlers['bpmn:Event'](parentGfx, element);
-        this.bpmnRenderer.handlers['bpmn:TimerEventDefinition'](parentGfx, element);
-        return timerCircle;
-        break;
+        case 'cron':
+            const timerCircle = this.bpmnRenderer.handlers['bpmn:Event'](parentGfx, element);
+            this.bpmnRenderer.handlers['bpmn:TimerEventDefinition'](parentGfx, element);
+            return timerCircle;
+            break;
 
-      case 'webhook':
-        const webhookCircle = this.bpmnRenderer.handlers['bpmn:Event'](parentGfx, element);
-        this.bpmnRenderer.handlers['bpmn:SignalEventDefinition'](parentGfx, element);
-        return webhookCircle;
-        break;
+        case 'splitter':
+            let splitterTask = this.bpmnRenderer.handlers['bpmn:Task'](parentGfx, element);
 
-      case 'splitter':
-        let splitterTask = this.bpmnRenderer.handlers['bpmn:Task'](parentGfx, element);
+            const splitterDathData = this.pathMap.getScaledPath('PIPES_SPLITTER', {
+                abspos: {x: 0, y: 0}
+            });
 
-        const splitterDathData = this.pathMap.getScaledPath('PIPES_SPLITTER', {
-          abspos: {x: 0, y: 0}
-        });
+            this.drawPath(parentGfx, splitterDathData, {
+                strokeWidth: 0.85,
+                fill: 'black',
+                stroke: 'white'
+            });
 
-        this.drawPath(parentGfx, splitterDathData, {
-          strokeWidth: 0.85,
-          fill: 'black',
-          stroke: 'white'
-        });
+            return splitterTask;
+            break;
 
-        return splitterTask;
-        break;
+        case 'batch':
+            let batchTask = this.bpmnRenderer.handlers['bpmn:Task'](parentGfx, element);
 
-      case 'batch':
-        let batchTask = this.bpmnRenderer.handlers['bpmn:Task'](parentGfx, element);
+            const batchPathData = this.pathMap.getScaledPath('PIPES_BATCH', {
+                abspos: {x: 0, y: 0}
+            });
 
-        const batchPathData = this.pathMap.getScaledPath('PIPES_BATCH', {
-          abspos: {x: 0, y: 0}
-        });
+            this.drawPath(parentGfx, batchPathData, {
+                strokeWidth: 0.1,
+                fill: 'black',
+                stroke: 'black'
+            });
 
-        this.drawPath(parentGfx, batchPathData, {
-          strokeWidth: 0.1,
-          fill: 'black',
-          stroke: 'black'
-        });
+            return batchTask;
+            break;
 
-        return batchTask;
-        break;
+        case 'connector':
+        case 'batch_connector':
+          if (element.type === 'bpmn:Event') {
+              const webhookCircle = this.bpmnRenderer.handlers['bpmn:Event'](parentGfx, element);
+              this.bpmnRenderer.handlers['bpmn:SignalEventDefinition'](parentGfx, element);
+              return webhookCircle;
+          }
 
-      case 'custom':
-        return this.bpmnRenderer.handlers['bpmn:Task'](parentGfx, element);
-      case 'connector':
-      case 'batch_connector':
-        return this.bpmnRenderer.handlers['bpmn:ServiceTask'](parentGfx, element);
-      case 'xml_parser':
-      case 'table_parser':
-        return this.bpmnRenderer.handlers['bpmn:ScriptTask'](parentGfx, element);
+          return this.bpmnRenderer.handlers['bpmn:ServiceTask'](parentGfx, element);
+
+          break;
+
+        case 'custom':
+            return this.bpmnRenderer.handlers['bpmn:Task'](parentGfx, element);
+
+        case 'xml_parser':
+        case 'table_parser':
+            return this.bpmnRenderer.handlers['bpmn:ScriptTask'](parentGfx, element);
     }
   };
 
