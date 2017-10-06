@@ -77,6 +77,7 @@ function CustomRenderer(eventBus, styles, pathMap, canvas) {
       case 'custom':
         return this.bpmnRenderer.handlers['bpmn:Task'](parentGfx, element);
       case 'connector':
+      case 'batch_connector':
         return this.bpmnRenderer.handlers['bpmn:ServiceTask'](parentGfx, element);
       case 'xml_parser':
       case 'table_parser':
