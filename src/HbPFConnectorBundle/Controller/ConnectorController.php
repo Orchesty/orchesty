@@ -47,9 +47,18 @@ class ConnectorController extends FOSRestController
 
         try {
             $data     = $this->handler->processEvent($id, $request);
-            $response = new JsonResponse($data->getData(), 200, $data->getHeaders(), TRUE);
+            $response = new JsonResponse(
+                $data->getData(),
+                200,
+                ControllerUtils::createHeaders($data->getHeaders()
+                ),
+                TRUE);
         } catch (ConnectorException $e) {
-            $response = new JsonResponse(ControllerUtils::createExceptionData($e), 500);
+            $response = new JsonResponse(
+                ControllerUtils::createExceptionData($e),
+                500,
+                ControllerUtils::createHeaders([], $e)
+            );
         }
 
         return $response;
@@ -70,9 +79,18 @@ class ConnectorController extends FOSRestController
 
         try {
             $data     = $this->handler->processAction($id, $request);
-            $response = new JsonResponse($data->getData(), 200, $data->getHeaders(), TRUE);
+            $response = new JsonResponse(
+                $data->getData(),
+                200,
+                ControllerUtils::createHeaders($data->getHeaders()
+                ),
+                TRUE);
         } catch (ConnectorException $e) {
-            $response = new JsonResponse(ControllerUtils::createExceptionData($e), 500);
+            $response = new JsonResponse(
+                ControllerUtils::createExceptionData($e),
+                500,
+                ControllerUtils::createHeaders([], $e)
+            );
         }
 
         return $response;

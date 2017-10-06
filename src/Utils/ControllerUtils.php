@@ -29,6 +29,36 @@ class ControllerUtils
     }
 
     /**
+     * @param array          $headers
+     * @param Exception|null $e
+     *
+     * @return array
+     */
+    public static function createHeaders(array $headers = [], ?Exception $e = NULL): array
+    {
+        $code    = 0;
+        $status  = 'OK';
+        $message = '';
+        $detail  = '';
+
+        if ($e) {
+            $code    = $e->getCode();
+            $status  = 'ERROR';
+            $message = $e->getMessage();
+            $detail  = $e->getTraceAsString();
+        }
+
+        $array = [
+            'result_code'    => $code,
+            'result_status'  => $status,
+            'result_message' => $message,
+            'result_detail'  => $detail,
+        ];
+
+        return array_merge($array, $headers);
+    }
+
+    /**
      * @param array $parameters
      * @param array $data
      *
