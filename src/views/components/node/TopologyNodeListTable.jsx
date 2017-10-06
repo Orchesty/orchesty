@@ -1,6 +1,7 @@
 import React from 'react';
 import {connect} from 'react-redux';
 
+import processes from 'enums/processes';
 import * as nodeActions from 'actions/nodeActions';
 import * as topologyActions from 'actions/topologyActions';
 
@@ -23,7 +24,7 @@ class TopologyNodeListTable extends React.Component{
       pageActions.push({
         caption: 'Test topology',
         action: testTopology,
-        processId: 'topology-test-' + topologyId
+        processId: processes.topologyTest(topologyId)
       });
     }
     setActions(pageActions);
@@ -54,7 +55,7 @@ function mapActionsToProps(dispatch, ownProps){
     notLoadedCallback: needList,
     updateNode: (id, data) => dispatch(nodeActions.nodeUpdate(id, data)),
     runNode: id => dispatch(nodeActions.nodeRun(id)),
-    testTopology: () => dispatch(topologyActions.testTopology(ownProps.topologyId, 'topology-test-' + ownProps.topologyId))
+    testTopology: () => dispatch(topologyActions.testTopology(ownProps.topologyId))
   }
 }
 

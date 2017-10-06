@@ -2,7 +2,7 @@ import * as types from '../../baseActionTypes';
 import {listType} from '../../types';
 
 export default prefix => ({
-  createPaginationList: (id, pageSize, sort, page = 1) => ({
+  createPaginationList: (id, pageSize, sort, page = 0) => ({
     type: prefix + types.LIST_CREATE,
     id,
     listType: listType.PAGINATION,

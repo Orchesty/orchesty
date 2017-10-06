@@ -178,36 +178,41 @@ export function loadTopologySchema(id, force = false){
   }
 }
 
-export function saveTopologySchema(id, schema){
+export function saveTopologySchema(id, schema, silent = false){
   return dispatch => {
+    dispatch(processActions.startProcess(processes.topologySaveScheme(id)));
     return rawRequestJSONReceive(dispatch, 'PUT', `/topologies/${id}/schema.bpmn`, null, {
       headers: {
         'Content-Type': 'application/xml'
       },
       body: schema
     }).then(response => {
-        if (response) {
-          dispatch(receiveSchema(response._id, schema));
-          dispatch(receive(response));
-          if (response._id != id){
-            dispatch(invalidateLists());
-          }
-          dispatch(nodeActions.nodeInvalidateLists('topology', response._id));
+      dispatch(processActions.finishProcess(processes.topologySaveScheme(id), response));
+      if (response) {
+        if (!silent){
+          notificationActions.addNotification('success', 'Schema was saved successfully.');
         }
-        return response;
-    })
+        dispatch(receiveSchema(response._id, schema));
+        dispatch(receive(response));
+        if (response._id != id){
+          dispatch(invalidateLists());
+        }
+        dispatch(nodeActions.nodeInvalidateLists('topology', response._id));
+      }
+      return response;
+    });
   }
 }
 
-export function testTopology(id, processId, silent = false){
+export function testTopology(id, silent = false){
   return (dispatch, getState) => {
     const tests = getState().topology.tests;
     if (tests[id]){
       dispatch(resetTest(id, tests[id].nodes));
     }
-    processId && dispatch(processActions.startProcess(processId));
+    dispatch(processActions.startProcess(processes.topologyTest(id)));
     return serverRequest(dispatch, 'GET', `/topologies/${id}/test`).then(response => {
-      processId && dispatch(processActions.finishProcess(processId, response));
+      dispatch(processActions.finishProcess(processes.topologyTest(id), response));
       if (response){
         dispatch(receiveTest(response));
       }
