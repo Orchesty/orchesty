@@ -104,3 +104,11 @@ services:
     hbpf.custom_node.shopify-customer-delete-mapper:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\ShopifyDeleteCustomerMapper
         arguments:
+
+    hbpf.custom_node.user-message-generator:
+        class: CleverConnectors\AppBundle\Model\CustomNode\UserMessageGenerator
+        arguments:
+            - '@jms_serializer'
+            - '%kernel.project_dir%'
+        calls:
+            - [setLogger, ['@monolog.logger.rabbit-mq']]

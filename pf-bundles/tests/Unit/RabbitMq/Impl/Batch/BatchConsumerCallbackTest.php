@@ -13,7 +13,7 @@ use Bunny\Channel;
 use Bunny\Message;
 use Exception;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\BatchActionInterface;
-use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\BatchCallback;
+use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\BatchConsumerCallback;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use PHPUnit_Framework_MockObject_MockObject;
@@ -25,7 +25,7 @@ use function React\Promise\resolve;
  *
  * @package Tests\Unit\RabbitMq\Impl\Batch
  */
-class BatchCallbackTest extends TestCase
+class BatchConsumerCallbackTest extends TestCase
 {
 
     /**
@@ -48,7 +48,7 @@ class BatchCallbackTest extends TestCase
     }
 
     /**
-     * @covers       BatchCallback::validate()
+     * @covers       BatchConsumerCallback::validate()
      * @dataProvider validateMessageDataProvider
      *
      * @param array  $headers
@@ -65,7 +65,7 @@ class BatchCallbackTest extends TestCase
         $channel->method('publish')->willReturn(resolve());
         /** @var Client|PHPUnit_Framework_MockObject_MockObject $client */
         $client   = $this->createMock(Client::class);
-        $callback = new BatchCallback($batchAction);
+        $callback = new BatchConsumerCallback($batchAction);
 
         $callback
             ->processMessage($this->createMessage($headers), $channel, $client, $loop)
@@ -121,7 +121,7 @@ class BatchCallbackTest extends TestCase
     }
 
     /**
-     * @covers BatchCallback::processMessage()
+     * @covers BatchConsumerCallback::processMessage()
      */
     public function testProcessMessageBatchAction(): void
     {
@@ -138,7 +138,7 @@ class BatchCallbackTest extends TestCase
         $client = $this->createMock(Client::class);
         $client->method('channel')->willReturn($channel);
 
-        $callback = new BatchCallback($batchAction);
+        $callback = new BatchConsumerCallback($batchAction);
 
         $headers = [
             'reply-to'       => 'reply',
@@ -164,7 +164,7 @@ class BatchCallbackTest extends TestCase
     }
 
     /**
-     * @covers BatchCallback::processMessage()
+     * @covers BatchConsumerCallback::processMessage()
      */
     public function testProcessMessageTestAction(): void
     {
@@ -181,7 +181,7 @@ class BatchCallbackTest extends TestCase
         $client = $this->createMock(Client::class);
         $client->method('channel')->willReturn($channel);
 
-        $callback = new BatchCallback($batchAction);
+        $callback = new BatchConsumerCallback($batchAction);
 
         $headers = [
             'reply-to'       => 'reply',
@@ -207,7 +207,7 @@ class BatchCallbackTest extends TestCase
     }
 
     /**
-     * @covers BatchCallback::processMessage()
+     * @covers BatchConsumerCallback::processMessage()
      */
     public function testProcessMessageBadType(): void
     {
@@ -224,7 +224,7 @@ class BatchCallbackTest extends TestCase
         $client = $this->createMock(Client::class);
         $client->method('channel')->willReturn($channel);
 
-        $callback = new BatchCallback($batchAction);
+        $callback = new BatchConsumerCallback($batchAction);
 
         $headers = [
             'reply-to'       => 'reply',

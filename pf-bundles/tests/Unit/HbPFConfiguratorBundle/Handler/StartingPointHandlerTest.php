@@ -131,7 +131,6 @@ class StartingPointHandlerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers StartingPointHandler::getTopology()
      * @covers StartingPointHandler::runTest()
      */
     public function testRunTest(): void
@@ -159,7 +158,29 @@ class StartingPointHandlerTest extends DatabaseTestCaseAbstract
 
         $result = $startingPointHandler->runTest('123');
 
-        $this->assertEquals($data, $result[0]);
+        $this->assertEquals($data, $result);
+    }
+
+    /**
+     * @covers StartingPointHandler::runTest()
+     */
+    public function testRunTestException(): void
+    {
+        $dr = $this->createMock(TopologyRepository::class);
+        $dr->expects($this->at(0))->method('findOneBy')->willReturn(NULL);
+
+        /** @var DocumentManager|\PHPUnit_Framework_MockObject_MockObject $dm */
+        $dm = $this->createMock(DocumentManager::class);
+        $dm->method('getRepository')->willReturn($dr);
+
+        /** @var StartingPoint|\PHPUnit_Framework_MockObject_MockObject $startingPoint */
+        $startingPoint = $this->createMock(StartingPoint::class);
+
+        $startingPointHandler = new StartingPointHandler($dm, $startingPoint);
+
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('The topology[id=123] does not exist.');
+        $startingPointHandler->runTest('123');
     }
 
 }

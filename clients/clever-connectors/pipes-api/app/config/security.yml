@@ -25,7 +25,7 @@ security:
             pattern: ^/(topologies/\w+/nodes/[\w-]+/run|api/topologies/\w+/nodes/[\w-]+/run)
             security: false
         unsecured_connectors:
-            pattern: ^/(connector/[\w-\.]+/action|mapper/[\w-\.]+|xml-parser/[\w-\.]+|mailer/[\w-\.]+|custom_node\[\w-\.]+)
+            pattern: ^/(connector/[\w-\.]+/action|mapper/[\w-\.]+|xml-parser/[\w-\.]+|mailer/[\w-\.]+|custom_node/[\w-\.]+)
             security: false
         secured_area:
             pattern: ^/

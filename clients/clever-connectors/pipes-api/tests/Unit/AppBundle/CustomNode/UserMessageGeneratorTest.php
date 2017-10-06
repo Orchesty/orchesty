@@ -6,11 +6,11 @@
  * Time: 11:46 AM
  */
 
-namespace Tests\Unit\AppBundle\Cron;
+namespace Tests\Unit\AppBundle\CustomNode;
 
-use Bunny\Message;
-use CleverConnectors\AppBundle\Model\Cron\CronBatchActionCallback;
+use CleverConnectors\AppBundle\Model\CustomNode\UserMessageGenerator;
 use Exception;
+use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
 use InvalidArgumentException;
 use JMS\Serializer\Serializer;
@@ -20,11 +20,11 @@ use React\Promise\Promise;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 /**
- * Class CronBatchActionCallbackTest
+ * Class UserMessageGeneratorTest
  *
  * @package Tests\Unit\AppBundle\Cron
  */
-class CronBatchActionCallbackTest extends KernelTestCase
+class UserMessageGeneratorTest extends KernelTestCase
 {
 
     /**
@@ -52,22 +52,17 @@ class CronBatchActionCallbackTest extends KernelTestCase
      * @param array  $headers
      * @param string $content
      *
-     * @return Message
+     * @return ProcessDto
      */
-    private function createMessage(array $headers = [], string $content = ''): Message
+    private function createMessage(array $headers = [], string $content = ''): ProcessDto
     {
-        return new Message(
-            'consumer_tag',
-            'delivery_tag',
-            FALSE,
-            'exchange',
-            'routing_key',
-            $headers,
-            $content);
+        return (new ProcessDto())
+            ->setHeaders($headers)
+            ->setData($content);
     }
 
     /**
-     * @covers CronBatchActionCallback::parseBody()
+     * @covers UserMessageGenerator::parseBody()
      */
     public function testParseBodyError(): void
     {
@@ -76,10 +71,10 @@ class CronBatchActionCallbackTest extends KernelTestCase
         /** @var Serializer|PHPUnit_Framework_MockObject_MockObject $serializer */
         $serializer = $this->createMock(Serializer::class);
         $serializer->method('deserialize')->willThrowException(new Exception('Json error.'));
-        $callback = new CronBatchActionCallback($serializer, $this->projectDir);
+        $callback = new UserMessageGenerator($serializer, $this->projectDir);
 
         $callback
-            ->batchAction($this->createMessage(), $loop, $this->callback)
+            ->processBatch($this->createMessage(), $loop, $this->callback)
             ->then(NULL, function (Exception $e) use ($loop): void {
                 $this->assertInstanceOf(Exception::class, $e);
                 $this->assertSame('Json error.', $e->getMessage());
@@ -91,7 +86,7 @@ class CronBatchActionCallbackTest extends KernelTestCase
     }
 
     /**
-     * @covers CronBatchActionCallback::getConnectorKey()
+     * @covers UserMessageGenerator::getConnectorKey()
      */
     public function testConnectorKeyError(): void
     {
@@ -100,10 +95,10 @@ class CronBatchActionCallbackTest extends KernelTestCase
         /** @var Serializer|PHPUnit_Framework_MockObject_MockObject $serializer */
         $serializer = $this->createMock(Serializer::class);
         $serializer->method('deserialize')->willReturn([]);
-        $callback = new CronBatchActionCallback($serializer, $this->projectDir);
+        $callback = new UserMessageGenerator($serializer, $this->projectDir);
 
         $callback
-            ->batchAction($this->createMessage(), $loop, $this->callback)
+            ->processBatch($this->createMessage(), $loop, $this->callback)
             ->then(NULL, function (Exception $e) use ($loop): void {
                 $this->assertInstanceOf(InvalidArgumentException::class, $e);
                 $this->assertSame('Body has not system key.', $e->getMessage());
@@ -115,7 +110,7 @@ class CronBatchActionCallbackTest extends KernelTestCase
     }
 
     /**
-     * @covers CronBatchActionCallback::processSystem()
+     * @covers UserMessageGenerator::processSystem()
      */
     public function testProcessSystemReject(): void
     {
@@ -124,10 +119,10 @@ class CronBatchActionCallbackTest extends KernelTestCase
         /** @var Serializer|PHPUnit_Framework_MockObject_MockObject $serializer */
         $serializer = $this->createMock(Serializer::class);
         $serializer->method('deserialize')->willReturn(["data" => ["param" => ""]]);
-        $callback = new CronBatchActionCallback($serializer, $this->projectDir);
+        $callback = new UserMessageGenerator($serializer, $this->projectDir);
 
         $callback
-            ->batchAction($this->createMessage(), $loop, $this->callback)
+            ->processBatch($this->createMessage(), $loop, $this->callback)
             ->then(NULL, function (Exception $e) use ($loop): void {
                 $this->assertInstanceOf(Exception::class, $e);
                 $this->assertSame('Process exited with code 1.', $e->getMessage());
@@ -139,7 +134,7 @@ class CronBatchActionCallbackTest extends KernelTestCase
     }
 
     /**
-     * @covers CronBatchActionCallback::batchAction()
+     * @covers UserMessageGenerator::batchAction()
      */
     public function testBatchAction(): void
     {
@@ -148,11 +143,11 @@ class CronBatchActionCallbackTest extends KernelTestCase
         /** @var Serializer|PHPUnit_Framework_MockObject_MockObject $serializer */
         $serializer = $this->createMock(Serializer::class);
         $serializer->method('deserialize')->willReturn(["data" => ["param" => "test"]]);
-        $callback = new CronBatchActionCallback($serializer, $this->projectDir);
+        $callback = new UserMessageGenerator($serializer, $this->projectDir);
 
         /** @var Promise $callback */
         $callback
-            ->batchAction($this->createMessage(), $loop, $this->callback)
+            ->processBatch($this->createMessage(), $loop, $this->callback)
             ->then(function () use ($loop): void {
                 // Test if resolve
                 $this->assertTrue(TRUE);
@@ -168,7 +163,7 @@ class CronBatchActionCallbackTest extends KernelTestCase
     }
 
     /**
-     * @covers CronBatchActionCallback::prepareData()
+     * @covers UserMessageGenerator::prepareData()
      */
     public function testPrepareMessage(): void
     {
@@ -177,7 +172,7 @@ class CronBatchActionCallbackTest extends KernelTestCase
         /** @var Serializer|PHPUnit_Framework_MockObject_MockObject $serializer */
         $serializer = $this->createMock(Serializer::class);
         $serializer->method('deserialize')->willReturn(["data" => ["param" => "test"]]);
-        $callback = new CronBatchActionCallback($serializer, $this->projectDir);
+        $callback = new UserMessageGenerator($serializer, $this->projectDir);
 
         $callback
             ->prepareData(['id' => '5'], 1)

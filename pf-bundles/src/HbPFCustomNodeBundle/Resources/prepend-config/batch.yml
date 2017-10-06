@@ -1,0 +1,23 @@
+rabbit-mq:
+    async_consumers:
+        batch:
+            class: Hanaboso\PipesFramework\CustomNode\Model\Batch\BatchConsumer
+            queue: batch
+            serializer:
+            callback: hbpf.custom_nodes.batch_callback
+            prefetch_count: 10
+
+services:
+    hbpf.custom_nodes.batch_action_callback:
+        class: Hanaboso\PipesFramework\CustomNode\Model\Batch\BatchActionCallback
+        arguments:
+            - '@hbpf.loader.custom_node'
+        calls:
+            - [setLogger, ['@monolog.logger.rabbit-mq']]
+
+    hbpf.custom_nodes.batch_callback:
+        class: Hanaboso\PipesFramework\RabbitMq\Impl\Batch\BatchConsumerCallback
+        arguments:
+            - '@hbpf.custom_nodes.batch_action_callback'
+        calls:
+            - [setLogger, ['@monolog.logger.rabbit-mq']]

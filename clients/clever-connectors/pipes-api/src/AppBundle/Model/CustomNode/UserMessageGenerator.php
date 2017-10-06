@@ -2,19 +2,19 @@
 /**
  * Created by PhpStorm.
  * User: venca
- * Date: 10/2/17
- * Time: 10:58 AM
+ * Date: 6.10.17
+ * Time: 13:59
  */
 
-namespace CleverConnectors\AppBundle\Model\Cron;
+namespace CleverConnectors\AppBundle\Model\CustomNode;
 
-use Bunny\Message;
 use Exception;
-use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\BatchActionInterface;
+use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
+use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\BatchInterface;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
 use InvalidArgumentException;
 use JMS\Serializer\Serializer;
-use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use React\ChildProcess\Process;
@@ -27,11 +27,11 @@ use function React\Promise\reject;
 use function React\Promise\resolve;
 
 /**
- * Class CronBatchActionCallback
+ * Class UserMessageGenerator
  *
- * @package CleverConnectors\AppBundle\Model\Cron
+ * @package AppBundle\Model\CustomNode
  */
-class CronBatchActionCallback implements BatchActionInterface, LoggerAwareInterface
+class UserMessageGenerator implements BatchInterface, CustomNodeInterface
 {
 
     /**
@@ -101,27 +101,27 @@ class CronBatchActionCallback implements BatchActionInterface, LoggerAwareInterf
     }
 
     /**
-     * @param Message       $message
+     * @param ProcessDto    $dto
      * @param LoopInterface $loop
-     * @param callable      $itemCallBack
+     * @param callable      $callbackItem
      *
      * @return PromiseInterface
      */
-    public function batchAction(Message $message, LoopInterface $loop, callable $itemCallBack): PromiseInterface
+    public function processBatch(ProcessDto $dto, LoopInterface $loop, callable $callbackItem): PromiseInterface
     {
         return $this
-            ->parseBody($message->content)
+            ->parseBody($dto->getData())
             ->then(function (array $data) {
                 return $this->getConnectorKey($data);
             })->then(function (string $connectorKey) use ($loop) {
                 return $this->processSystem($loop, $connectorKey);
             })->then(function (string $data) {
                 return $this->parseBody($data);
-            })->then(function (array $data) use ($itemCallBack): Promise {
+            })->then(function (array $data) use ($callbackItem): Promise {
                 $items = [];
                 $i     = 0;
                 foreach ($data as $item) {
-                    $items[] = $this->processItem($item, $i, $itemCallBack);
+                    $items[] = $this->processItem($item, $i, $callbackItem);
                     $i++;
                 }
 
@@ -186,6 +186,16 @@ class CronBatchActionCallback implements BatchActionInterface, LoggerAwareInterf
             });
 
         });
+    }
+
+    /**
+     * @param ProcessDto $dto
+     *
+     * @return ProcessDto|void
+     */
+    public function process(ProcessDto $dto): ProcessDto
+    {
+        throw new RuntimeException('The process method is not implemented.');
     }
 
 }

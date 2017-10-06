@@ -27,7 +27,7 @@ use function React\Promise\resolve;
  *
  * @package Hanaboso\PipesFramework\RabbitMq\Impl\Batch
  */
-class BatchCallback implements AsyncCallbackInterface, LoggerAwareInterface
+class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterface
 {
 
     // Properties
@@ -263,7 +263,7 @@ class BatchCallback implements AsyncCallbackInterface, LoggerAwareInterface
         return $channel->publish(
             '',
             array_merge($this->getHeaders($message), [
-                self::TYPE        => 'batch_total',
+                self::TYPE        => 'batch_end',
                 self::RESULT_CODE => 0,
             ]),
             '',
@@ -292,7 +292,7 @@ class BatchCallback implements AsyncCallbackInterface, LoggerAwareInterface
                 'result_detail'  => $errorMessage->getDetail(),
             ]),
             array_merge($this->getHeaders($message), [
-                self::TYPE        => 'batch_total',
+                self::TYPE        => 'batch_end',
                 self::RESULT_CODE => $errorMessage->getCode(),
             ]),
             '',

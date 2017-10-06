@@ -1,1 +1,7 @@
 services:
+    clever_connectors.cron.get_system_callback:
+        class: CleverConnectors\AppBundle\Command\GetSystemsCommand
+        arguments:
+            - '@doctrine.odm.mongodb.document_manager'
+        tags:
+            -  { name: console.command }

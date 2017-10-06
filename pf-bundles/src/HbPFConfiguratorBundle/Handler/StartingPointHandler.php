@@ -90,6 +90,23 @@ class StartingPointHandler
     }
 
     /**
+     * @param string $id
+     *
+     * @return Topology
+     * @throws Exception
+     */
+    protected function getTopologyById(string $id): Topology
+    {
+        $topology = $this->topologyRepository->findOneBy(['id' => $id]);
+
+        if (!$topology) {
+            throw new Exception(sprintf('The topology[id=%s] does not exist.', $id));
+        }
+
+        return $topology;
+    }
+
+    /**
      * @param Request $request
      * @param string  $topologyName
      * @param string  $nodeName
@@ -122,10 +139,7 @@ class StartingPointHandler
      */
     public function runTest(string $topologyId): array
     {
-        $topology = $this->topologyRepository->findOneBy(['id' => $topologyId]);
-        $res[]    = $this->startingPoint->runTest($topology);
-
-        return $res;
+        return $this->startingPoint->runTest($this->getTopologyById($topologyId));
     }
 
 }

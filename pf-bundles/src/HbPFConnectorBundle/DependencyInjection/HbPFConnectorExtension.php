@@ -27,6 +27,9 @@ class HbPFConnectorExtension extends Extension implements PrependExtensionInterf
         if (!$container->hasExtension('hb_pf_commons')) {
             throw new RuntimeException('You must register HbPFCommonsBundle before.');
         };
+
+        $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/prepend-config'));
+        $loader->load('batch-connector.yml');
     }
 
     /**
