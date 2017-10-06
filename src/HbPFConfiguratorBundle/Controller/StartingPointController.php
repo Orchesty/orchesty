@@ -49,17 +49,17 @@ class StartingPointController extends FOSRestController
     }
 
     /**
-     * @Route("/topologies/{topologyName}/test", defaults={}, requirements={"topologyName": "\w+"})
+     * @Route("/topologies/{topologyId}/test", defaults={}, requirements={"topologyId": "\w+"})
      * @Method({"GET"})
      *
-     * @param string $topologyName
+     * @param string $topologyId
      *
      * @return Response
      */
-    public function testAction(string $topologyName): Response
+    public function testAction(string $topologyId): Response
     {
         $this->construct();
-        $data = $this->handler->runTest($topologyName);
+        $data = $this->handler->runTest($topologyId);
 
         return $this->handleView($this->view($data, 200, ['application/json']));
     }

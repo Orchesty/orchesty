@@ -137,9 +137,9 @@ class StartingPointHandlerTest extends DatabaseTestCaseAbstract
     public function testRunTest(): void
     {
         $top = new Topology();
-        $this->setProperty($top, 'id', '');
+        $this->setProperty($top, 'id', '123');
         $dr = $this->createMock(TopologyRepository::class);
-        $dr->expects($this->at(0))->method('getRunnableTopologies')->willReturn([$top]);
+        $dr->expects($this->at(0))->method('findOneBy')->willReturn($top);
 
         /** @var DocumentManager|\PHPUnit_Framework_MockObject_MockObject $dm */
         $dm = $this->createMock(DocumentManager::class);
