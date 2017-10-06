@@ -126,7 +126,7 @@ class AmqpRpcWorker implements IWorker {
             logger.error(`Worker[type='amqprpc'] sending message failed`, context);
         });
 
-        if (this.waiting.has(msg.getProcessId())) {
+        if (this.waiting.has(msg.getCorrelationId())) {
             this.onDuplicateMessage(msg);
             return Promise.resolve(msg);
         }
@@ -152,7 +152,7 @@ class AmqpRpcWorker implements IWorker {
             const testId = "worker.amqprpc.test";
 
             const resolveTestFn = (msg: JobMessage) => {
-                if (msg.getProcessId() === testId) {
+                if (msg.getCorrelationId() === testId) {
                     resolve(true);
                 } else {
                     resolve(false);
@@ -285,7 +285,7 @@ class AmqpRpcWorker implements IWorker {
 
         msg.setResult({
             code: ResultCode.MESSAGE_ALREADY_BEING_PROCESSED,
-            message: `Message[id=${msg.getProcessId()}] is already being processed.`,
+            message: `Message[correlation_id=${msg.getCorrelationId()}] is already being processed.`,
         });
     }
 
