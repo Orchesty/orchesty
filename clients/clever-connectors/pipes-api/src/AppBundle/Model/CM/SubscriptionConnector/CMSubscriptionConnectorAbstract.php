@@ -41,13 +41,22 @@ abstract class CMSubscriptionConnectorAbstract extends CMAuthorization implement
     protected $logger;
 
     /**
+     * Authority and client certificate.
+     *
+     * @var array
+     */
+    private $secret;
+
+    /**
      * CMSubscriptionConnectorAbstract constructor.
      *
      * @param CurlManagerInterface $curl
+     * @param array                $secret
      */
-    function __construct(CurlManagerInterface $curl)
+    function __construct(CurlManagerInterface $curl, array $secret)
     {
-        $this->curl = $curl;
+        $this->curl   = $curl;
+        $this->secret = $secret;
     }
 
     /**
@@ -115,14 +124,19 @@ abstract class CMSubscriptionConnectorAbstract extends CMAuthorization implement
         }
 
         $req = new RequestDto($method, new Uri($this->getUrl($email)));
-        $req->setHeaders($this->getAuthorizationHeaders($dto->getHeaders()['guid'][0],
-            $dto->getHeaders()['token'][0])); // TODO why header array?
+
+        $req->setHeaders($this->getAuthorizationHeaders(
+            $dto->getHeaders()['guid'][0], // TODO why header array?
+            $dto->getHeaders()['token'][0]
+        ));
+
         $req->setBody($dto->getData());
+
         try {
             $res = $this->curl->send($req, [
-                RequestOptions::CERT    => __DIR__ . '/../../../../../../hanaboso.cert.pem',     // TODO do konfigu
-                RequestOptions::SSL_KEY => __DIR__ . '/../../../../../../hanaboso.cert.pem',
-                RequestOptions::VERIFY  => __DIR__ . '/../../../../../../ca.crt',
+                RequestOptions::CERT    => $this->secret['cert'],
+                RequestOptions::SSL_KEY => $this->secret['cert'],
+                RequestOptions::VERIFY  => $this->secret['ca'],
             ]);
         } catch (Exception $e) {
             $this->logger->error(sprintf('CM %s subscription failed.', $method), ['exception' => $e]);

@@ -35,7 +35,7 @@ class WebhookController extends FOSRestController
     }
 
     /**
-     * @Route("/webhook/{userId}/{token}/{nodeName}/{topologyName}", requirements={"userId": "\w+", "token": "\w+", "nodeName": "\w+", "topologyName": "\w+"})
+     * @Route("/webhook/{userId}/{token}/{nodeName}/{topologyName}")
      * @Method("POST")
      *
      * @param Request $request
@@ -44,8 +44,11 @@ class WebhookController extends FOSRestController
      *
      * @return Response
      */
-    public function webhookAction(Request $request, string $nodeName, string $topologyName): Response
+    public function webhookAction(Request $request, string $userId, string $token, string $nodeName, string $topologyName): Response
     {
+        $request->headers->set('guid', $userId);
+        $request->headers->set('token', $token);
+
         $this->handler->runWithRequest($request, $topologyName, $nodeName);
 
         return new Response('res', 200);

@@ -9,6 +9,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use Exception;
 use GuzzleHttp\Psr7\Uri;
+use GuzzleHttp\RequestOptions;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -32,17 +33,23 @@ class WebhookSecurityListener implements EventSubscriberInterface
      * @var CurlManagerInterface
      */
     private $curl;
+    /**
+     * @var array
+     */
+    private $secret;
 
     /**
      * WebhookSecurityListener constructor.
      *
      * @param DocumentManager      $dm
      * @param CurlManagerInterface $curl
+     * @param array                $secret
      */
-    function __construct(DocumentManager $dm, CurlManagerInterface $curl)
+    function __construct(DocumentManager $dm, CurlManagerInterface $curl, array $secret)
     {
         $this->repo = $dm->getRepository(Webhook::class);
         $this->curl = $curl;
+        $this->secret = $secret;
     }
 
     /**
@@ -78,17 +85,23 @@ class WebhookSecurityListener implements EventSubscriberInterface
                 );
             }
 
-            $req = new RequestDto('GET', new Uri('https://api.clevermonitor.com/v1.2'));
+            $req = new RequestDto('GET', new Uri('https://api.dev.clevermonitor.com/v1.2'));
             $req->setHeaders([
                 'Accept'    => 'application/json',
                 'X-Api-Key' => sprintf('%s:%s', $params['userId'], $params['token']),
             ]);
             try {
-                $req = $this->curl->send($req);
+                $req = $this->curl->send($req, [
+                    RequestOptions::CERT    => $this->secret['cert'],
+                    RequestOptions::SSL_KEY => $this->secret['cert'],
+                    RequestOptions::VERIFY  => $this->secret['ca'],
+                ]);
+
                 $req = $req->getStatusCode();
             } catch (Exception $e) {
                 $req = 400;
             }
+
 
             if ($req != 200) {
                 throw new CleverConnectorsException(

@@ -1,3 +1,12 @@
+# Clever Monitor Connect
+
+## Setup
+
+Store client keypair and CA certificate in `var/secret/keypair.pem` and `var/secret/ca.crt`. 
+
+
+*TODO: Move following documentation to proper location.*
+
 # SETTING UP NEW PROJECT
 
 Basic steps to set up a new project.

@@ -10,6 +10,9 @@ imports:
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
     locale: en
+    clevermonitor:
+        ca: '%kernel.project_dir%/var/secret/ca.crt'
+        cert: '%kernel.project_dir%/var/secret/keypair.pem'
 
 framework:
     translator: { fallbacks: ['%locale%'] }
