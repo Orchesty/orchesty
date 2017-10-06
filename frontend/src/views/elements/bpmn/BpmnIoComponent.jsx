@@ -25,7 +25,8 @@ class BpmnIoComponent extends React.Component {
       {
         caption: 'Save',
         action: this.saveBPMN.bind(this),
-        disabled: !this._changed
+        disabled: !this._changed,
+        processId: this.props.saveProcessId
       },
       {
         caption: 'Import / Export',
@@ -179,7 +180,8 @@ BpmnIoComponent.propTypes = {
   schema: PropTypes.string,
   onError: PropTypes.func.isRequired,
   onImport: PropTypes.func.isRequired,
-  setActions: PropTypes.func.isRequired
+  setActions: PropTypes.func.isRequired,
+  saveProcessId: PropTypes.string
 };
 
 export default BpmnIoComponent;
