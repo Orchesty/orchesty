@@ -1,0 +1,23 @@
+rabbit-mq:
+    async_consumers:
+        batch-connector:
+            class: Hanaboso\PipesFramework\Connector\Model\BatchConnector\BatchConnectorConsumer
+            queue: batch_connector
+            serializer:
+            callback: hbpf.custom_nodes.batch_connector_callback
+            prefetch_count: 10
+
+services:
+    hbpf.custom_nodes.batch_connector_action_callback:
+        class: Hanaboso\PipesFramework\Connector\Model\BatchConnector\BatchConnectorCallback
+        arguments:
+            - '@hbpf.loader.connector'
+        calls:
+            - [setLogger, ['@monolog.logger.rabbit-mq']]
+
+    hbpf.custom_nodes.batch_connector_callback:
+        class: Hanaboso\PipesFramework\RabbitMq\Impl\Batch\BatchConsumerCallback
+        arguments:
+            - '@hbpf.custom_nodes.batch_connector_action_callback'
+        calls:
+            - [setLogger, ['@monolog.logger.rabbit-mq']]

@@ -47,7 +47,7 @@ services:
         class: Hanaboso\PipesFramework\RabbitMq\Impl\AsyncDemo\DemoCallback
 
     hanaboso.pipes_framework.commons.rabbit_mq.async_demo.demo_callback:
-        class: Hanaboso\PipesFramework\RabbitMq\Impl\Batch\BatchCallback
+        class: Hanaboso\PipesFramework\RabbitMq\Impl\Batch\BatchConsumerCallback
         arguments:
             - '@hanaboso.pipes_framework.commons.rabbit_mq.async_demo.batch_demo_callback'
         calls:
