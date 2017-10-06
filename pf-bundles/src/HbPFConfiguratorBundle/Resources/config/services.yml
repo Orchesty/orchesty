@@ -7,3 +7,8 @@ services:
             - '@hbpf.transport.curl_manager'
         calls:
             - ['setLogger', ['@monolog.logger']]
+
+    hbpf.docker_compose.volume_path_definition_factory:
+        class: Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\VolumePathDefinitionFactory
+        arguments:
+            - '%project_source_path%'

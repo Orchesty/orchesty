@@ -161,7 +161,7 @@ class TopologyController extends FOSRestController
 
     /**
      * @Route("/topologies/{id}/publish", defaults={}, requirements={"id": "\w+"})
-     * @Method({"POST", "OPTIONS"})
+     * @Method({"POST", "OPTIONS", "GET"})
      *
      * @param string $id
      *
@@ -170,7 +170,11 @@ class TopologyController extends FOSRestController
     public function publishTopologyAction(string $id): Response
     {
         $this->construct();
-        $data = $this->topologyHandler->publishTopology($id);
+        $data           = $this->topologyHandler->publishTopology($id);
+        $generateResult = $this->topologyHandler->generateTopology($id);
+        $runResult      = $this->topologyHandler->runTopology($id);
+
+        var_dump($runResult->getBody());
 
         return new JsonResponse($data, 200);
     }

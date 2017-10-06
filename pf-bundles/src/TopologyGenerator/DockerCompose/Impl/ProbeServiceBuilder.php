@@ -12,6 +12,7 @@ use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\Service;
 use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\ServiceBuilderInterface;
+use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\VolumePathDefinition;
 use Hanaboso\PipesFramework\TopologyGenerator\Environment;
 
 /**
@@ -44,19 +45,32 @@ class ProbeServiceBuilder implements ServiceBuilderInterface
     private $topology;
 
     /**
+     * @var VolumePathDefinition
+     */
+    private $volumePathDefinition;
+
+    /**
      * NodeServiceBuilder constructor.
      *
-     * @param Environment $environment
-     * @param string      $registry
-     * @param string      $network
-     * @param Topology    $topology
+     * @param Environment          $environment
+     * @param string               $registry
+     * @param string               $network
+     * @param Topology             $topology
+     * @param VolumePathDefinition $volumePathDefinition
      */
-    public function __construct(Environment $environment, string $registry, string $network, Topology $topology)
+    public function __construct(
+        Environment $environment,
+        string $registry,
+        string $network,
+        Topology $topology,
+        VolumePathDefinition $volumePathDefinition
+    )
     {
-        $this->environment = $environment;
-        $this->registry    = $registry;
-        $this->network     = $network;
-        $this->topology    = $topology;
+        $this->environment          = $environment;
+        $this->registry             = $registry;
+        $this->network              = $network;
+        $this->topology             = $topology;
+        $this->volumePathDefinition = $volumePathDefinition;
     }
 
     /**
@@ -74,7 +88,8 @@ class ProbeServiceBuilder implements ServiceBuilderInterface
             ->addEnvironment(Environment::RABBITMQ_USER, $this->environment->getRabbitMqUser())
             ->addEnvironment(Environment::RABBITMQ_PASS, $this->environment->getRabbitMqPass())
             ->addEnvironment(Environment::RABBITMQ_VHOST, $this->environment->getRabbitMqVHost())
-            ->addVolume('./topology.json:/srv/app/topology.json')
+            //->addPort('${DEV_IP}:8007:8007')
+            ->addVolume($this->volumePathDefinition->getSourceVolume('topology.json') . ':/srv/app/topology.json')
             ->setCommand('./dist/src/bin/pipes.js start probe')
             ->addNetwork($this->network);
 
