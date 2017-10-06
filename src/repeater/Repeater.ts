@@ -1,9 +1,14 @@
 import {Channel, Message} from "amqplib";
 import AssertionPublisher from "lib-nodejs/dist/src/rabbitmq/AssertPublisher";
-import AMQPConnection from "lib-nodejs/dist/src/rabbitmq/Connection";
+import AMQPConnection, {PrepareFn} from "lib-nodejs/dist/src/rabbitmq/Connection";
 import SimpleConsumer from "lib-nodejs/dist/src/rabbitmq/SimpleConsumer";
 import logger from "./../logger/Logger";
 import IMessageStorage from "./IMessageStorage";
+import ObjectUtils from "lib-nodejs/dist/src/utils/ObjectUtils";
+
+process.on('unhandledRejection', (reason) => {
+    console.log('Reason: ' + reason);
+});
 
 export interface IRepeaterSettings {
     input: {
@@ -63,7 +68,11 @@ class Repeater {
                 toResend.forEach((msg: Message) => {
                     this.resend(msg)
                         .then(() => {
-                            logger.info("Message resent.", { node_id: "repeater" });
+                            const h = msg.properties.headers;
+                            logger.info(
+                                "Message repeated.",
+                                { node_id: "repeater", correlation_id: h.correlation_id, process_id: h.process_id },
+                            );
                         });
                 });
             });
@@ -77,7 +86,21 @@ class Repeater {
      * @return {Promise<void>}
      */
     private resend(message: Message): Promise<void> {
-        return this.publisher.sendToQueue("something", message.content, message.properties);
+        try {
+            const target = message.properties.replyTo;
+            const content = new Buffer(message.content.toString());
+            const props = ObjectUtils.removeNullableProperties(message.properties);
+
+            return this.publisher.sendToQueue(target, content, props);
+        } catch (e) {
+            const h = message.properties.headers;
+            logger.error(
+                "Repeater could not resend message",
+                { node_id: "repeater", correlation_id: h.correlation_id, process_id: h.process_id },
+            );
+
+            return Promise.resolve();
+        }
     }
 
     /**
@@ -85,21 +108,34 @@ class Repeater {
      * @return {SimpleConsumer}
      */
     private createConsumer() {
-        return new SimpleConsumer(
-            this.amqpCon,
-            (ch: Channel) => {
-                return new Promise((resolve) => {
-                    ch.assertQueue(this.settings.input.queue.name, this.settings.input.queue.options)
-                        .then(() => {
-                            logger.info("Repeater consumer ready.", { node_id: "repeater" });
-                            resolve();
-                        });
-                });
-            },
-            (msg: Message) => {
-                return this.storage.save(msg);
-            },
-        );
+        const prepareFn: PrepareFn = (ch: Channel) => {
+            return new Promise((resolve) => {
+                ch.assertQueue(this.settings.input.queue.name, this.settings.input.queue.options)
+                    .then(() => {
+                        logger.info("Repeater consumer ready.", { node_id: "repeater" });
+                        resolve();
+                    });
+            });
+        };
+
+        const handleMessageFn = (msg: Message) => {
+            const headers = msg.properties.headers;
+
+            if (!headers.repeat_interval || !msg.properties.replyTo) {
+                logger.error(
+                    "Repeater discarded message. Missing 'repeat_interval' or 'reply_to' header.",
+                    { node_id: "repeater", correlation_id: headers.correlation_id, process_id: headers.process_id },
+                );
+
+                return;
+            }
+
+            const timeout = parseInt(msg.properties.headers.repeat_interval, 10);
+
+            return this.storage.save(msg, timeout);
+        };
+
+        return new SimpleConsumer(this.amqpCon, prepareFn, handleMessageFn);
     }
 
     /**
