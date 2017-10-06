@@ -119,11 +119,11 @@ class AmqpRpcWorker implements IWorker {
                 },
             },
         ).then(() => {
-            logger.warn(`Worker[type='amqprpc'] sent request.`, logger.ctxFromMsg(msg));
+            logger.info(`Worker[type='amqprpc'] sent request and is waiting for responses.`, logger.ctxFromMsg(msg));
         }).catch((err: Error) => {
             const context = logger.ctxFromMsg(msg);
             context.error = err;
-            logger.error(`Worker[type='amqprpc'] sending message failed`, context);
+            logger.error(`Worker[type='amqprpc'] sending request failed`, context);
         });
 
         if (this.waiting.has(msg.getCorrelationId())) {
