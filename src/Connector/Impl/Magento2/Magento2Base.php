@@ -11,9 +11,11 @@ namespace Hanaboso\PipesFramework\Connector\Impl\Magento2;
 
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Authorization\Impl\Magento2\Magento2AuthorizationInterface;
+use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
+use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
 use Psr\Http\Message\StreamInterface;
 
 /**
@@ -51,6 +53,20 @@ abstract class Magento2Base implements ConnectorInterface
         $this->id            = $id;
         $this->authorization = $authorization;
         $this->curl          = $curl;
+    }
+
+    /**
+     * @param ProcessDto $dto
+     *
+     * @return ProcessDto|void
+     * @throws ConnectorException
+     */
+    public function processEvent(ProcessDto $dto): ProcessDto
+    {
+        throw new ConnectorException(
+            'Magento2 has no support for webhooks!',
+            ConnectorException::CONNECTOR_DOES_NOT_HAVE_PROCESS_EVENT
+        );
     }
 
     /**
