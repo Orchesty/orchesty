@@ -22,8 +22,7 @@ trait AuthorizationTrait
      */
     public function setSettings(SystemInstall $systemInstall, array $data): SystemInstall
     {
-        $data[AuthorizationInterface::PASSWORD]       = $systemInstall->getSettings()[AuthorizationInterface::PASSWORD] ?? NULL;
-        $data[OAuth1Interface::FRONTEND_REDIRECT_URL] = $systemInstall->getSettings()[OAuth1Interface::FRONTEND_REDIRECT_URL] ?? NULL;
+        $data = array_merge($systemInstall->getSettings(), $data);
 
         return $systemInstall->setSettings($data);
     }

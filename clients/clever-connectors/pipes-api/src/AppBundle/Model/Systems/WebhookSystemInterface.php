@@ -2,6 +2,7 @@
 
 namespace CleverConnectors\AppBundle\Model\Systems;
 
+use CleverConnectors\AppBundle\Document\SystemInstall;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 
@@ -19,18 +20,22 @@ interface WebhookSystemInterface extends SystemInterface
     public function getWebhookSubscribes(): array;
 
     /**
-     * @param string $url
+     * @param WebhookSubscribes $subscription
+     * @param SystemInstall     $systemInstall
+     * @param string            $url
      *
      * @return RequestDto
      */
-    public function getSubscribeRequest(string $url): RequestDto;
+    public function getSubscribeRequest(WebhookSubscribes $subscription, SystemInstall $systemInstall,
+                                        string $url): RequestDto;
 
     /**
-     * @param string $id
+     * @param SystemInstall $systemInstall
+     * @param string        $webhookId
      *
      * @return RequestDto
      */
-    public function getUnsubscribeRequest(string $id): RequestDto;
+    public function getUnsubscribeRequest(SystemInstall $systemInstall, string $webhookId): RequestDto;
 
     /**
      * @param ResponseDto $response
@@ -41,9 +46,7 @@ interface WebhookSystemInterface extends SystemInterface
 
     /**
      * @param WebhookSubscribes $sub
-     *
-     * @return WebhookSystemInterface
      */
-    public function addWebhookSubscribes(WebhookSubscribes $sub): WebhookSystemInterface;
+    public function addWebhookSubscribes(WebhookSubscribes $sub): void;
 
 }

@@ -8,6 +8,7 @@ use CleverConnectors\AppBundle\Model\Form\Field;
 use CleverConnectors\AppBundle\Model\Form\Form;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\OAuth2Interface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\Traits\AuthorizationTrait;
+use CleverConnectors\AppBundle\Model\Systems\Impl\WebhookSystemTrait;
 use CleverConnectors\AppBundle\Model\Systems\WebhookSubscribes;
 use CleverConnectors\AppBundle\Model\Systems\WebhookSystemInterface;
 use GuzzleHttp\Psr7\Uri;
@@ -25,15 +26,11 @@ class NullSystem implements WebhookSystemInterface, OAuth2Interface
 {
 
     use AuthorizationTrait;
+    use WebhookSystemTrait;
 
     private const URL             = 'field1';
     private const CONSUMER_KEY    = 'field2';
     private const CONSUMER_SECRET = 'field3';
-
-    /**
-     * @var WebhookSubscribes[]
-     */
-    private $subs;
 
     /**
      * @var OAuth2Provider
@@ -48,7 +45,7 @@ class NullSystem implements WebhookSystemInterface, OAuth2Interface
     function __construct(OAuth2Provider $provider)
     {
         $this->provider = $provider;
-        $this->subs[]   = new WebhookSubscribes('node', 'top', 'uriReg', 'uriUnreg');
+        $this->subscriptions[]   = new WebhookSubscribes('node', 'top', 'uriReg', 'uriUnreg');
     }
 
     /**
@@ -92,29 +89,12 @@ class NullSystem implements WebhookSystemInterface, OAuth2Interface
     }
 
     /**
-     * @return array
-     */
-    public function getWebhookSubscribes(): array
-    {
-        return $this->subs;
-    }
-
-    /**
-     * @param string $url
+     * @param SystemInstall $systemInstall
+     * @param string        $webhookId
      *
      * @return RequestDto
      */
-    public function getSubscribeRequest(string $url): RequestDto
-    {
-        return new RequestDto('POST', new Uri('uriSub'));
-    }
-
-    /**
-     * @param string $id
-     *
-     * @return RequestDto
-     */
-    public function getUnsubscribeRequest(string $id): RequestDto
+    public function getUnsubscribeRequest(SystemInstall $systemInstall, string $webhookId): RequestDto
     {
         return new RequestDto('POST', new Uri('uriUnsub'));
     }
@@ -127,18 +107,6 @@ class NullSystem implements WebhookSystemInterface, OAuth2Interface
     public function getWebhookId(ResponseDto $response): string
     {
         return '9';
-    }
-
-    /**
-     * @param WebhookSubscribes $sub
-     *
-     * @return WebhookSystemInterface
-     */
-    public function addWebhookSubscribes(WebhookSubscribes $sub): WebhookSystemInterface
-    {
-        $this->subs[] = $sub;
-
-        return $this;
     }
 
     /**
@@ -248,6 +216,19 @@ class NullSystem implements WebhookSystemInterface, OAuth2Interface
     public function sendRequest(SystemInstall $systemInstall, RequestDto $dto): ResponseDto
     {
         return new ResponseDto(200, '', '', []);
+    }
+
+    /**
+     * @param WebhookSubscribes $subscription
+     * @param SystemInstall     $systemInstall
+     * @param string            $url
+     *
+     * @return RequestDto
+     */
+    public function getSubscribeRequest(WebhookSubscribes $subscription, SystemInstall $systemInstall,
+                                        string $url): RequestDto
+    {
+        return new RequestDto('POST', new Uri('uriSub'));
     }
 
 }

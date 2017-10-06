@@ -33,28 +33,30 @@ class WebhookManagerTest extends DatabaseTestCaseAbstract
      */
     public function testSubscribe(): void
     {
-        $sys = $this->container->get('systems.null.user.group');
-        $web = $this->container->get('manager.webhook');
-        $this->setProperty($web, 'curl', $this->mockCurl());
+        $system  = $this->container->get('systems.null.user.group');
+        $webhook = $this->container->get('manager.webhook');
+        $this->setProperty($webhook, 'curl', $this->mockCurl());
+
+        $this->container->get('systems.manager')->installSystem('someUser', 'null.user.group', 'token');
 
         // Subscribe
-        $web->subscribe($sys, 'user', 'token', 'domain');
+        $webhook->subscribe($system, 'someUser', 'token');
         /** @var Webhook $res */
         $res = $this->dm->getRepository(Webhook::class)->findAll();
         self::assertEquals(1, count($res));
         $res = $res[0];
-        self::assertEquals('user', $res->getUser());
+        self::assertEquals('someUser', $res->getUser());
         self::assertEquals('top', $res->getTopologyName());
         self::assertEquals('node', $res->getNodeName());
         self::assertEquals('null.user.group', $res->getSystemKey());
 
         // Update
-        $web->update($sys, 'user', 'token');
+        $webhook->update($system, 'someUser', 'token');
         $res = $this->dm->getRepository(Webhook::class)->findAll();
         self::assertEquals(1, count($res));
 
         // Unsubscribe
-        $web->unsubscribe($sys, 'user');
+        $webhook->unsubscribe($system, 'someUser');
         $res = $this->dm->getRepository(Webhook::class)->findAll();
         self::assertEquals(0, count($res));
     }

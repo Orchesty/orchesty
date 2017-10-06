@@ -21,7 +21,7 @@ use Symfony\Component\Security\Core\Encoder\BCryptPasswordEncoder;
  *
  * @package Tests
  */
-class ControllerTestCaseAbstract extends WebTestCase
+abstract class ControllerTestCaseAbstract extends WebTestCase
 {
 
     /**

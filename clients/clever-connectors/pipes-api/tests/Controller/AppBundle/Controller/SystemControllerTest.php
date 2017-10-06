@@ -280,8 +280,10 @@ class SystemControllerTest extends ControllerTestCaseAbstract
         $this->persistAndFlush($system);
 
         $response = $this->sendPost('/user_systems/user/someUser/system/null.user.group/settings', [
-            'settingOne' => 'settingOne',
-            'settingTwo' => 'settingTwo',
+            'settingOne'            => 'settingOne',
+            'settingTwo'            => 'settingTwo',
+            'password'              => NULL,
+            'frontend_redirect_url' => NULL,
         ]);
 
         $this->assertEquals(200, $response->status);
@@ -327,7 +329,7 @@ class SystemControllerTest extends ControllerTestCaseAbstract
             'settingOne' => 'settingOne',
             'settingTwo' => 'settingTwo',
             'password'   => 'passw0rd',
-            'frontend_redirect_url' => NULL,
+            'setting'    => 'setting',
         ], $systems[0]->getSettings());
     }
 
