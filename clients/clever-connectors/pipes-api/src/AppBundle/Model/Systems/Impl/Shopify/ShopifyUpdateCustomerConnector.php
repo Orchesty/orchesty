@@ -7,7 +7,7 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\Shopify;
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Shopify
  */
-class ShopifyUpdateCustomerConnector extends ShopifyWebhookAbstract
+class ShopifyUpdateCustomerConnector extends ShopifyCustomerConnectorAbstract
 {
 
     /**

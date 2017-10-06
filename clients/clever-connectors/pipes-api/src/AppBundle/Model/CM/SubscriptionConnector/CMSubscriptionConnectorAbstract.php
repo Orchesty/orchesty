@@ -71,11 +71,14 @@ abstract class CMSubscriptionConnectorAbstract extends CMAuthorization implement
      * @param ProcessDto $dto
      *
      * @return ProcessDto|void
-     * @throws Exception
+     * @throws ConnectorException
      */
     public function processEvent(ProcessDto $dto): ProcessDto
     {
-        throw new Exception('CMSubscriptionConnector has no support for webhooks!');
+        throw new ConnectorException(
+            'CMSubscriptionConnector has no support for webhooks!',
+            ConnectorException::CONNECTOR_DOES_NOT_HAVE_PROCESS_EVENT
+        );
     }
 
     /**

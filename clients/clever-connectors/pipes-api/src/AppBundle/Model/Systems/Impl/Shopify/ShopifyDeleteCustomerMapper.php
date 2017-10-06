@@ -3,16 +3,15 @@
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Shopify;
 
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
-use Exception;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
-use Hanaboso\PipesFramework\Connector\ConnectorInterface;
+use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
 
 /**
  * Class ShopifyDeleteCustomerMapper
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Shopify
  */
-class ShopifyDeleteCustomerMapper implements ConnectorInterface
+class ShopifyDeleteCustomerMapper implements CustomNodeInterface
 {
 
     /**
@@ -21,7 +20,7 @@ class ShopifyDeleteCustomerMapper implements ConnectorInterface
      * @return ProcessDto
      * @throws CleverConnectorsException
      */
-    public function processAction(ProcessDto $dto): ProcessDto
+    public function process(ProcessDto $dto): ProcessDto
     {
         $data = json_decode($dto->getData(), TRUE);
 
@@ -36,25 +35,6 @@ class ShopifyDeleteCustomerMapper implements ConnectorInterface
         ];
 
         return $dto->setData(json_encode($res));
-    }
-
-    /**
-     * @return string
-     */
-    public function getId(): string
-    {
-        return 'shopify-customer-delete-mapper';
-    }
-
-    /**
-     * @param ProcessDto $dto
-     *
-     * @return ProcessDto|void
-     * @throws Exception
-     */
-    public function processEvent(ProcessDto $dto): ProcessDto
-    {
-        throw new Exception('Shopify mapper has no process event.');
     }
 
 }

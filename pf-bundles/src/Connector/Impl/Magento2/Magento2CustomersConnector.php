@@ -10,7 +10,6 @@
 namespace Hanaboso\PipesFramework\Connector\Impl\Magento2;
 
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
-use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
 
 /**
  * Class Magento2CustomersConnector
@@ -33,20 +32,6 @@ class Magento2CustomersConnector extends Magento2Base
         $dto->setData(json_decode($data, TRUE));
 
         return $dto;
-    }
-
-    /**
-     * @param ProcessDto $dto
-     *
-     * @return ProcessDto|void
-     * @throws ConnectorException
-     */
-    public function processEvent(ProcessDto $dto): ProcessDto
-    {
-        throw new ConnectorException(
-            'Connector doesn\'n have process event',
-            ConnectorException::CONNECTOR_DOES_NOT_HAVE_PROCESS_EVENT
-        );
     }
 
 }

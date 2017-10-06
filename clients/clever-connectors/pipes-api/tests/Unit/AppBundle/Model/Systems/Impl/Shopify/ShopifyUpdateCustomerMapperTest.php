@@ -22,7 +22,7 @@ class ShopifyUpdateCustomerMapperTest extends ConnectorTestCaseAbstract
         $connector = $this->container->get('hbpf.custom_node.shopify-customer-update-mapper');
 
         $response = Json::decode(
-            $connector->processAction((new ProcessDto())->setData($this->getRequest()))->getData(),
+            $connector->process((new ProcessDto())->setData($this->getRequest()))->getData(),
             TRUE
         );
 
