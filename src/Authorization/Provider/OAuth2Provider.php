@@ -152,7 +152,7 @@ class OAuth2Provider implements OAuth2ProviderInterface, LoggerAwareInterface
         return new OAuth2Wrapper([
             'clientId'                => $dto->getClientId(),
             'clientSecret'            => $dto->getClientSecret(),
-            'redirectUri'             => $this->backend . '/' . ltrim($dto->getRedirectUrl(), '/'),
+            'redirectUri'             => rtrim($this->backend, '/') . '/' . ltrim($dto->getRedirectUrl(), '/'),
             'urlAuthorize'            => $dto->getAuthorizeUrl(),
             'urlAccessToken'          => $dto->getTokenUrl(),
             'urlResourceOwnerDetails' => $dto->getAuthorizeUrl(),
