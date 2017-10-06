@@ -14,6 +14,8 @@ RUN apt-get update && \
     apt-get clean && apt-get autoremove -y && \
     rm -rf /var/lib/apt/lists/* /var/lib/log/* /var/log/* /tmp/* /var/tmp/*
 
+RUN groupmod -g 800 docker
+
 # Container has the same ssh as the host machine
 ENV SSH_AUTH_SOCK=/tmp/bound-ssh-agent
 
