@@ -63,7 +63,7 @@ class AmqpRpcWorker implements IWorker {
             const q = settings.publish_queue;
 
             return new Promise((resolve) => {
-                ch.assertQueue(q.name, q.options)
+                ch.assertQueue(q.name, q.options || { durable: false, exclusive: false, autoDelete: false })
                     .then(() => {
                         resolve();
                     });
