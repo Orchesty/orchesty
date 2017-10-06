@@ -20,20 +20,20 @@ use Symfony\Component\HttpFoundation\Response;
  *
  * @package Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller
  *
- * * @Route(service="hbpf.configurator.generator_controller")
+ * @Route(service="hbpf.configurator.generator_controller")
  */
 class GeneratorController extends FOSRestController
 {
 
     /**
-     * @var LoggerInterface
+     * @var LoggerInterface|NULL
      */
-    protected $logger;
+    protected $logger = NULL;
 
     /**
-     * @var GeneratorHandler
+     * @var GeneratorHandler|NULL
      */
-    private $generatorHandler;
+    private $generatorHandler = NULL;
 
     /**
      * GeneratorController constructor.
@@ -41,17 +41,17 @@ class GeneratorController extends FOSRestController
      * @param GeneratorHandler $generatorHandler
      * @param LoggerInterface  $logger
      */
-    public function __construct(
+    /*public function __construct(
         GeneratorHandler $generatorHandler,
         LoggerInterface $logger
     )
     {
         $this->generatorHandler = $generatorHandler;
         $this->logger           = $logger;
-    }
+    }*/
 
     /**
-     * @Route("/api/topology/generate/{id}")
+     * @Route("/topology/generate/{id}")
      * @Method({"GET"})
      *
      * @param string $id
@@ -60,10 +60,26 @@ class GeneratorController extends FOSRestController
      */
     public function generateAction(string $id): Response
     {
+        //TODO: Make much better !!!!
+        $this->construct();
+
         $result     = $this->generatorHandler->generateTopology($id);
         $statusCode = $result ? 200 : 400;
 
         return $this->handleView($this->view([], $statusCode, []));
+    }
+
+    /**
+     *
+     */
+    public function construct(): void
+    {
+        if (!$this->generatorHandler) {
+            $this->generatorHandler = $this->container->get('hbpf.handler.generator_handler');
+        }
+        if (!$this->logger) {
+            $this->logger = $this->container->get('monolog.logger.security');
+        }
     }
 
 }
