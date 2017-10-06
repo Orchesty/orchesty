@@ -112,10 +112,10 @@ class AmqpRpcWorker implements IWorker {
                 headers: {
                     node_id: this.settings.node_id,
                     node_name: this.settings.node_name,
-                    correlationId: msg.getCorrelationId(),
-                    processId: msg.getProcessId(),
-                    parentId: msg.getParentId(),
-                    sequenceId: msg.getSequenceId(),
+                    correlation_id: msg.getCorrelationId(),
+                    process_id: msg.getProcessId(),
+                    parent_id: msg.getParentId(),
+                    sequence_id: msg.getSequenceId(),
                 },
             },
         ).then(() => {
