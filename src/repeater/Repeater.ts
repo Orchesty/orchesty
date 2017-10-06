@@ -2,13 +2,9 @@ import {Channel, Message} from "amqplib";
 import AssertionPublisher from "lib-nodejs/dist/src/rabbitmq/AssertPublisher";
 import AMQPConnection, {PrepareFn} from "lib-nodejs/dist/src/rabbitmq/Connection";
 import SimpleConsumer from "lib-nodejs/dist/src/rabbitmq/SimpleConsumer";
+import ObjectUtils from "lib-nodejs/dist/src/utils/ObjectUtils";
 import logger from "./../logger/Logger";
 import IMessageStorage from "./IMessageStorage";
-import ObjectUtils from "lib-nodejs/dist/src/utils/ObjectUtils";
-
-process.on('unhandledRejection', (reason) => {
-    console.log('Reason: ' + reason);
-});
 
 export interface IRepeaterSettings {
     input: {
