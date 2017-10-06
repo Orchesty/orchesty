@@ -10,8 +10,7 @@ import * as applicationActions from 'actions/applicationActions';
 import TextInput from 'elements/input/TextInput';
 import NonAuthPage from 'wrappers/NonAuthPage';
 import StateButton from 'elements/input/StateButton';
-
-const processId = 'reset-password';
+import processes from "rootApp/enums/processes";
 
 class ResetPasswordPage extends React.Component {
   constructor(props) {
@@ -60,7 +59,8 @@ class ResetPasswordPage extends React.Component {
 ResetPasswordPage.propTypes = {
   processState: PropTypes.string,
   resetPassword: PropTypes.func.isRequired,
-  switchToLogin: PropTypes.func.isRequired
+  switchToLogin: PropTypes.func.isRequired,
+  componentKey: PropTypes.string.isRequired
 };
 
 function validate(values){
@@ -75,13 +75,14 @@ function validate(values){
 function mapStateToProps(state, ownProps) {
   const {process} = state;
   return {
-    processState: process[processId]
+    processState: process[processes.authResetPassword(ownProps.componentKey)]
   };
 }
 
 function mapActionsToProps(dispatch, ownProps){
+  console.log(ownProps.componentKey);
   return {
-    resetPassword: email => dispatch(authActions.resetPassword(email, processId)),
+    resetPassword: email => dispatch(authActions.resetPassword(email, ownProps.componentKey)),
     switchToLogin: () => dispatch(applicationActions.selectPage('login'))
   }
 }

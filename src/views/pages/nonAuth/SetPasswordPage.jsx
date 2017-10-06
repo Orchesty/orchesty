@@ -9,8 +9,7 @@ import * as applicationActions from 'actions/applicationActions';
 import PasswordInput from 'elements/input/PasswordInput';
 import NonAuthPage from 'wrappers/NonAuthPage';
 import StateButton from 'elements/input/StateButton';
-
-const processId = 'set-password';
+import processes from "rootApp/enums/processes";
 
 class SetPasswordPage extends React.Component {
   constructor(props) {
@@ -29,6 +28,7 @@ class SetPasswordPage extends React.Component {
   }
 
   render() {
+    const {componentKey} = this.props;
     return (
       <form onSubmit={this.props.handleSubmit(this.onSubmit)}>
         <h1>Set password</h1>
@@ -39,7 +39,7 @@ class SetPasswordPage extends React.Component {
           <Field name="confirmPassword" component={PasswordInput} label="Confirm password"/>
         </div>
         <div>
-          <StateButton type="submit" color="default" state={this.props.processState}>Submit</StateButton>
+          <StateButton type="submit" color="default" processId={processes.authSetPassword(componentKey)}>Submit</StateButton>
         </div>
 
         <div className="clearfix"/>
@@ -59,7 +59,8 @@ SetPasswordPage.propTypes = {
   token: PropTypes.string.isRequired,
   processState: PropTypes.string,
   setPassword: PropTypes.func.isRequired,
-  switchToLogin: PropTypes.func.isRequired
+  switchToLogin: PropTypes.func.isRequired,
+  componentKey: PropTypes.string.isRequired
 };
 
 function validate(values) {
@@ -76,15 +77,12 @@ function validate(values) {
 }
 
 function mapStateToProps(state, ownProps) {
-  const {process} = state;
-  return {
-    processState: process[processId]
-  };
+  return {};
 }
 
 function mapActionsToProps(dispatch, ownProps) {
   return {
-    setPassword: password => dispatch(authActions.setPassword(ownProps.token, password, processId)),
+    setPassword: password => dispatch(authActions.setPassword(ownProps.token, password, ownProps.componentKey)),
     switchToLogin: () => dispatch(applicationActions.selectPage('login'))
   }
 }

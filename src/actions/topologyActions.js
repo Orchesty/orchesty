@@ -101,8 +101,10 @@ export function topologyListChangePage(topologyListId, page) {
 
 export function topologyUpdate(id, data){
   return dispatch => {
+    dispatch(processActions.startProcess(processes.topologyUpdate(id)));
     return serverRequest(dispatch, 'PATCH', `/topologies/${id}`, null, data).then(
       response => {
+        dispatch(processActions.finishProcess(processes.topologyUpdate(id), response));
         if (response) {
           dispatch(receive(response));
         }
@@ -112,10 +114,12 @@ export function topologyUpdate(id, data){
   }
 }
 
-export function topologyCreate(data){
+export function topologyCreate(data, processHash = 'new'){
   return dispatch => {
+    dispatch(processActions.startProcess(processes.topologyCreate(processHash)));
     return serverRequest(dispatch, 'POST', `/topologies`, null, data).then(
       response => {
+        dispatch(processActions.finishProcess(processes.topologyCreate(processHash), response));
         if (response){
           dispatch(receive(response));
           dispatch(invalidateLists());
@@ -190,7 +194,7 @@ export function saveTopologySchema(id, schema, silent = false){
       dispatch(processActions.finishProcess(processes.topologySaveScheme(id), response));
       if (response) {
         if (!silent){
-          notificationActions.addNotification('success', 'Schema was saved successfully.');
+          dispatch(notificationActions.addNotification('success', 'Schema was saved successfully.'));
         }
         dispatch(receiveSchema(response._id, schema));
         dispatch(receive(response));

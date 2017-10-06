@@ -2,7 +2,9 @@ import * as types from 'rootApp/actionTypes';
 import listFactory from './factories/listFactory';
 import {stateType} from 'rootApp/types';
 import serverRequest from 'services/apiGatewayServer';
+import processes from 'enums/processes';
 import * as notificationActions from './notificationActions';
+import * as processActions from './processActions';
 
 const {createRelationList, listLoading, listError, listReceive, invalidateLists} = listFactory('NODE/LIST/');
 
@@ -62,8 +64,10 @@ export function needNode(id, force = false){
 
 export function nodeUpdate(id, data, silent = false){
   return dispatch => {
+    dispatch(processActions.startProcess(processes.nodeUpdate(id)));
     return serverRequest(dispatch, 'PATCH', `/nodes/${id}`, null, data).then(
       response => {
+        dispatch(processActions.finishProcess(processes.nodeUpdate(id), response));
         if (response) {
           if (!silent){
             dispatch(notificationActions.addSuccess('Node was updated'));
@@ -81,8 +85,10 @@ export function nodeRun(id, silent = false){
     return new Promise((resolve, reject) => {
       dispatch(needNode(id)).then(node => {
         if (node) {
+          dispatch(processActions.startProcess(processes.nodeRun(id)));
           serverRequest(dispatch, 'POST', `/topologies/${node.topology_id}/nodes/${node._id}/run`).then(
             response => {
+              dispatch(processActions.finishProcess(processes.nodeRun(id), response));
               if (response) {
                 if (!silent){
                   dispatch(notificationActions.addSuccess('Node was started successfully.'));
