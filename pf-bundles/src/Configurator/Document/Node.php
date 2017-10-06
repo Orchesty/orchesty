@@ -10,7 +10,6 @@ use Hanaboso\PipesFramework\Commons\Enum\TypeEnum;
 use Hanaboso\PipesFramework\Commons\Traits\Document\IdTrait;
 use Hanaboso\PipesFramework\Configurator\Document\Embed\EmbedNode;
 use Hanaboso\PipesFramework\Configurator\Exception\NodeException;
-use Nette\Utils\Strings;
 
 /**
  * Class Node
@@ -82,7 +81,7 @@ class Node
      */
     public function setName(string $name): Node
     {
-        $this->name = Strings::webalize($name);
+        $this->name = $name;
 
         return $this;
     }

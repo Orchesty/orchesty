@@ -32,7 +32,7 @@ class NodeManagerTest extends KernelTestCaseAbstract
             ->setHandler(HandlerEnum::EVENT);
 
         $data = [
-            'name'    => 'test name',
+            'name'    => 'test-name',
             'type'    => TypeEnum::MAPPER,
             'handler' => HandlerEnum::ACTION,
         ];

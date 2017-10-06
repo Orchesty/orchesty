@@ -41,19 +41,19 @@ class GeneratorTest extends TestCase
         $node1 = new Node();
         $this->setProperty($node1, 'id', '1');
         $node1
-            ->setName('magento2_customer')
+            ->setName('magento2-customer')
             ->setType(TypeEnum::CONNECTOR);
 
         $node2 = new Node();
         $this->setProperty($node2, 'id', '2');
         $node2
-            ->setName('xml_parser')
+            ->setName('xml-parser')
             ->setType(TypeEnum::XML_PARSER);
 
         $node3 = new Node();
         $this->setProperty($node3, 'id', '3');
         $node3
-            ->setName('mapper_1')
+            ->setName('mapper-1')
             ->setType(TypeEnum::MAPPER);
 
         $node4 = new Node();
