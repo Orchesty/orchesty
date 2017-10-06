@@ -1,6 +1,7 @@
 import * as types from 'rootApp/actionTypes';
 import * as processActions from './processActions';
 import * as authActions from './authActions';
+import processes from "rootApp/enums/processes";
 
 function changeApiGateway(server){
   return {
@@ -9,18 +10,18 @@ function changeApiGateway(server){
   }
 }
 
-export function changeApiGatewayServer(server, processId){
+export function changeApiGatewayServer(server, processHash = 'default'){
   return (dispatch, getState) => {
     if (getState().server.apiGateway !== server){
-      processId && dispatch(processActions.startProcess(processId));
+      dispatch(processActions.startProcess(processes.serverApiGatewayChange(processHash)));
       return dispatch(authActions.logout()).then(response => {
         dispatch(changeApiGateway(server));
-        processId && dispatch(processActions.finishProcess(processId, response));
+        dispatch(processActions.finishProcess(processes.serverApiGatewayChange(processHash), response));
 
         return Boolean(response);
       });
     } else {
-      processId && dispatch(processActions.finishProcess(processId, true));
+      dispatch(processActions.finishProcess(processes.serverApiGatewayChange(processHash), true));
       return Promise.resolve(true);
     }
   }

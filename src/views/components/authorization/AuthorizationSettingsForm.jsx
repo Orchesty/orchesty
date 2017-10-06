@@ -7,6 +7,7 @@ import * as authorizationActions from 'actions/authorizationActions';
 
 import {FormTextInput} from 'elements/formInputs';
 import StateComponent from 'wrappers/StateComponent';
+import processes from "rootApp/enums/processes";
 
 
 class AuthorizationSettingsForm extends React.Component {
@@ -60,18 +61,16 @@ AuthorizationSettingsForm.propTypes = {
 function mapStateToProps(state, ownProps) {
   const {authorization, process} = state;
   const settings = authorization.settings[ownProps.authorizationId];
-  const loadProcessId = 'authorization-settings-load-' + ownProps.authorizationId;
   return {
     initialValues: settings,
-    state: process[loadProcessId]
+    state: process[processes.authorizationLoadSettings(ownProps.authorizationId)]
   };
 }
 
 function mapActionsToProps(dispatch, ownProps){
-  const loadProcessId = 'authorization-settings-load-' + ownProps.authorizationId;
   return {
-    commitAction: (data) => dispatch(authorizationActions.saveSettings(ownProps.authorizationId, data, ownProps.processId)),
-    notLoadedCallback: () => dispatch(authorizationActions.needSettings(ownProps.authorizationId, false,loadProcessId))
+    commitAction: (data) => dispatch(authorizationActions.saveSettings(ownProps.authorizationId, data)),
+    notLoadedCallback: () => dispatch(authorizationActions.needSettings(ownProps.authorizationId, false))
   }
 }
 

@@ -30,16 +30,9 @@ class TopologyForm extends React.Component {
 
   onSubmit(data){
     const {name, descr, enabled} = data;
-    const {onProcessing} = this.props;
-    if (onProcessing){
-      onProcessing(true);
-    }
     this.props.commitAction({name, descr, enabled: Boolean(enabled)}).then(
       response => {
-        const {onSuccess, onProcessing} = this.props;
-        if (typeof onProcessing == 'function'){
-          onProcessing(false);
-        }
+        const {onSuccess} = this.props;
         if (response){
           if (onSuccess){
             onSuccess(this);
@@ -68,7 +61,6 @@ TopologyForm.propTypes = {
   addNew: PropTypes.bool,
   handleSubmit: PropTypes.func.isRequired,
   setSubmit: PropTypes.func.isRequired,
-  onProcessing: PropTypes.func,
   onSuccess: PropTypes.func,
   commitAction: PropTypes.func.isRequired
 };
@@ -92,7 +84,7 @@ function mapStateToProps(state, ownProps) {
 function mapActionsToProps(dispatch, ownProps){
   return {
     commitAction: (data) => dispatch(
-      ownProps.addNew ? topologyActions.topologyCreate(data) : topologyActions.topologyUpdate(ownProps.topologyId, data)
+      ownProps.addNew ? topologyActions.topologyCreate(data, ownProps.newProcessId) : topologyActions.topologyUpdate(ownProps.topologyId, data)
     )
   }
 }

@@ -9,8 +9,7 @@ import * as applicationActions from 'actions/applicationActions';
 import TextInput from 'elements/input/TextInput';
 import NonAuthPage from 'wrappers/NonAuthPage';
 import StateButton from 'elements/input/StateButton';
-
-const processId = 'activation';
+import processes from "rootApp/enums/processes";
 
 class ActivationPage extends React.Component {
   constructor(props) {
@@ -29,6 +28,7 @@ class ActivationPage extends React.Component {
   }
 
   render() {
+    const {componentKey} = this.props;
     return (
       <form onSubmit={this.props.handleSubmit(this.onSubmit)}>
         <h1>Activation</h1>
@@ -36,7 +36,7 @@ class ActivationPage extends React.Component {
           <Field name="token" component={TextInput} label="Token"/>
         </div>
         <div>
-          <StateButton type="submit" color="default" state={this.props.processState}>Submit</StateButton>
+          <StateButton type="submit" color="default" processId={processes.authActivate(componentKey)}>Submit</StateButton>
         </div>
 
         <div className="clearfix"/>
@@ -54,9 +54,9 @@ class ActivationPage extends React.Component {
 
 ActivationPage.propTypes = {
   token: PropTypes.string,
-  processState: PropTypes.string,
   activate: PropTypes.func.isRequired,
-  switchToLogin: PropTypes.func.isRequired
+  switchToLogin: PropTypes.func.isRequired,
+  componentKey: PropTypes.string.isRequired
 };
 
 function validate(values) {
@@ -69,16 +69,14 @@ function validate(values) {
 }
 
 function mapStateToProps(state, ownProps) {
-  const {process} = state;
   return {
-    processState: process[processId],
     initialValues: {token: ownProps.token}
   };
 }
 
 function mapActionsToProps(dispatch, ownProps) {
   return {
-    activate: token => dispatch(authActions.activate(token, processId)),
+    activate: token => dispatch(authActions.activate(token, ownProps.componentKey)),
     switchToLogin: () => dispatch(applicationActions.selectPage('login'))
   }
 }

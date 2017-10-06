@@ -1,8 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types';
 
+import processes from 'enums/processes';
 import AbstractTable from '../AbstractTable';
-
 import StateComponent from 'wrappers/StateComponent';
 import SortTh from 'elements/table/SortTh';
 import BoolValue from 'elements/BoolValue';
@@ -27,7 +27,7 @@ class AuthorizationListTable extends AbstractTable {
   }
 
   _renderRows() {
-    const {list, elements, editSettings, authorize, getAuthorizeProcessState} = this.props;
+    const {list, elements, editSettings, authorize} = this.props;
     return list && list.items ? list.items.map(id => {
       const item = elements[id];
       const menuItems = [];
@@ -41,6 +41,7 @@ class AuthorizationListTable extends AbstractTable {
         menuItems.push({
           caption: 'Authorize',
           disabled: !item.can_authorize,
+          processId: processes.authorizationAuthorize(id),
           action: () => {authorize(item.name)}
         });
       }
@@ -60,8 +61,7 @@ class AuthorizationListTable extends AbstractTable {
 AuthorizationListTable.propTypes = Object.assign({}, AbstractTable.propTypes, {
   elements: PropTypes.object.isRequired,
   editSettings: PropTypes.func,
-  authorize: PropTypes.func,
-  getAuthorizeProcessState: PropTypes.func
+  authorize: PropTypes.func
 });
 
 export default StateComponent(AuthorizationListTable);

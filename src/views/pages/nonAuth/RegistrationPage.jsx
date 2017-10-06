@@ -10,8 +10,7 @@ import * as applicationActions from 'actions/applicationActions';
 import TextInput from 'elements/input/TextInput';
 import NonAuthPage from 'wrappers/NonAuthPage';
 import StateButton from 'elements/input/StateButton';
-
-const processId = 'registration';
+import processes from "rootApp/enums/processes";
 
 class RegistrationPage extends React.Component {
   constructor(props) {
@@ -60,7 +59,8 @@ class RegistrationPage extends React.Component {
 RegistrationPage.propTypes = {
   processState: PropTypes.string,
   register: PropTypes.func.isRequired,
-  switchToLogin: PropTypes.func.isRequired
+  switchToLogin: PropTypes.func.isRequired,
+  componentKey: PropTypes.string.isRequired
 };
 
 function validate(values){
@@ -75,13 +75,13 @@ function validate(values){
 function mapStateToProps(state, ownProps) {
   const {process} = state;
   return {
-    processState: process[processId]
+    processState: process[processes.authRegister(ownProps.componentKey)]
   };
 }
 
 function mapActionsToProps(dispatch, ownProps){
   return {
-    register: email => dispatch(authActions.register(email, processId)),
+    register: email => dispatch(authActions.register(email, ownProps.componentKey)),
     switchToLogin: () => dispatch(applicationActions.selectPage('login'))
   }
 }
