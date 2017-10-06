@@ -3,6 +3,7 @@
 namespace CleverConnectors\AppBundle\Handler;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\OAuth1Interface;
 use CleverConnectors\AppBundle\Model\Systems\SystemManager;
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -103,10 +104,23 @@ class SystemHandler
      * @param array  $data
      *
      * @return array
+     * @throws CleverConnectorsException
      */
     public function installSystem(string $user, string $system, array $data): array
     {
         ControllerUtils::checkParameters(['token'], $data);
+
+        $systemInstall = $this->dm->getRepository(SystemInstall::class)->findOneBy([
+            'user'   => $user,
+            'system' => $system,
+        ]);
+        if ($systemInstall) {
+            throw new CleverConnectorsException(
+                'Requested system has already been installed for current user.',
+                CleverConnectorsException::SYSTEM_ALREADY_INSTALLED
+            );
+        }
+
         $systemInstall = $this->manager->installSystem($user, $system, $data['token']);
 
         return $this->manager->getUserSystem($systemInstall);

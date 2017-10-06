@@ -230,7 +230,7 @@ class SystemController extends FOSRestController
 
     /**
      * @Route("/user_systems/user/{userId}/system/{systemKey}/authorize_redirect/{redirectUrl}",
-     *     requirements={"userId": "\w+", "systemKey": "[\w|\.]+", "redirectUrl": "\w+"})
+     *     requirements={"userId": "\w+", "systemKey": "[\w|\.]+", "redirectUrl": ".+"})
      * @Method({"GET", "OPTIONS"})
      *
      * @param string $userId

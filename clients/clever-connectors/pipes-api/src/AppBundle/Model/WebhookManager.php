@@ -2,6 +2,7 @@
 
 namespace CleverConnectors\AppBundle\Model;
 
+use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Document\Webhook;
 use CleverConnectors\AppBundle\Model\Systems\WebhookSubscribes;
 use CleverConnectors\AppBundle\Model\Systems\WebhookSystemInterface;
@@ -73,6 +74,10 @@ class WebhookManager implements LoggerAwareInterface
      */
     public function subscribe(WebhookSystemInterface $system, string $userId, string $token, $isUpdate = FALSE): array
     {
+        $systemInstall = $this->dm->getRepository(SystemInstall::class)->findOneBy([
+            'system' => $system->getKey(), 'user' => $userId,
+        ]);
+
         $ids = [];
         /** @var WebhookSubscribes $sub */
         foreach ($system->getWebhookSubscribes() as $sub) {
@@ -87,7 +92,7 @@ class WebhookManager implements LoggerAwareInterface
 
             $url = $this->getWebhookUrl($this->domain, $userId, $token, $sub->getNodeName(), $sub->getTopologyName());
 
-            $req = $system->getSubscribeRequest($url);
+            $req = $system->getSubscribeRequest($sub, $systemInstall, $url);
             try {
                 $res = $this->curl->send($req);
                 $id  = $system->getWebhookId($res);
@@ -118,6 +123,10 @@ class WebhookManager implements LoggerAwareInterface
      */
     public function unsubscribe(WebhookSystemInterface $system, string $userId, array $new = []): void
     {
+        $systemInstall = $this->dm->getRepository(SystemInstall::class)->findOneBy([
+            'system' => $system->getKey(), 'user' => $userId,
+        ]);
+
         $arr = $this->dm->getRepository(Webhook::class)->findBy([
             'user'      => $userId,
             'systemKey' => $system->getKey(),
@@ -128,7 +137,7 @@ class WebhookManager implements LoggerAwareInterface
                 continue;
             }
 
-            $req = $system->getUnsubscribeRequest($sub->getWebhookId());
+            $req = $system->getUnsubscribeRequest($systemInstall, $sub->getWebhookId());
             try {
                 $res = $this->curl->send($req);
                 if ($res->getStatusCode() == 200) {
@@ -158,8 +167,9 @@ class WebhookManager implements LoggerAwareInterface
      */
     public function update(WebhookSystemInterface $system, string $userId, string $token): void
     {
-        $ids = $this->subscribe($system, $userId, $token, TRUE);
-        $this->unsubscribe($system, $userId, $ids);
+        // Shopify forbides subscription on same entity/action and address -> first needs unsubscribe
+        $this->unsubscribe($system, $userId);
+        $this->subscribe($system, $userId, $token);
     }
 
     /**
