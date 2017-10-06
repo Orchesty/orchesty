@@ -62,7 +62,12 @@ class Generator implements GeneratorInterface
      * @param string      $targetDir
      * @param string      $network
      */
-    public function __construct(Environment $environment, HostMapper $hostMapper, string $targetDir, string $network)
+    public function __construct(
+        Environment $environment,
+        HostMapper $hostMapper,
+        string $targetDir,
+        string $network
+    )
     {
         $this->environment    = $environment;
         $this->hostMapper     = $hostMapper;
@@ -82,24 +87,9 @@ class Generator implements GeneratorInterface
         $config['id'] = GeneratorUtils::normalizeName($topology->getId(), $topology->getName());
 
         foreach ($nodes as $node) {
+            $nodeConfig['id'] = GeneratorUtils::normalizeName($node->getId(), $node->getName());
 
-            $nodeConfig['id']                 = GeneratorUtils::normalizeName($node->getId(), $node->getName());
-            $nodeConfig['worker']['type']     = 'worker.http';
-            $nodeConfig['worker']['settings'] = [
-                'host'         => $this->hostMapper->getHost(new TypeEnum($node->getType())),
-                'process_path' => sprintf(
-                    '/%s',
-                    $this->hostMapper->getRoute(new TypeEnum($node->getType()), $node->getName())
-                ),
-                'status_path'  => sprintf(
-                    '/%s/test',
-                    $this->hostMapper->getRoute(new TypeEnum($node->getType()), $node->getName())
-                ),
-                'method'       => 'POST',
-                'port'         => 80,
-                'secure'       => FALSE,
-                'opts'         => [],
-            ];
+            $nodeConfig['worker'] = $this->getWorkerConfig($node);
 
             $nodeConfig['next'] = [];
             foreach ($node->getNext() as $next) {
@@ -175,6 +165,72 @@ class Generator implements GeneratorInterface
             $targetDir,
             GeneratorUtils::normalizeName($topology->getId(), $topology->getName())
         );
+    }
+
+    /**
+     * @param Node $node
+     *
+     * @return array
+     */
+    private function getWorkerConfig(Node $node): array
+    {
+        switch ($node->getType()) {
+            case TypeEnum::BATCH:
+                return $this->getAmqpRpcWorkerConfig($node);
+
+            case TypeEnum::BATCH_CONNECTOR:
+                return $this->getAmqpRpcWorkerConfig($node);
+
+            default:
+                return $this->getHttpWorkerConfig($node);
+
+        }
+    }
+
+    /**
+     * @param Node $node
+     *
+     * @return array
+     */
+    private function getHttpWorkerConfig(Node $node): array
+    {
+        return [
+            'type'     => 'worker.http',
+            'settings' => [
+                'host'         => $this->hostMapper->getHost(new TypeEnum($node->getType())),
+                'process_path' => sprintf(
+                    '/%s',
+                    $this->hostMapper->getRoute(new TypeEnum($node->getType()), $node->getName())
+                ),
+                'status_path'  => sprintf(
+                    '/%s/test',
+                    $this->hostMapper->getRoute(new TypeEnum($node->getType()), $node->getName())
+                ),
+                'method'       => 'POST',
+                'port'         => 80,
+                'secure'       => FALSE,
+                'opts'         => [],
+            ],
+        ];
+    }
+
+    /**
+     * @param Node $node
+     *
+     * @return array
+     */
+    private function getAmqpRpcWorkerConfig(Node $node): array
+    {
+        return [
+            'type'     => 'splitter.amqprpc',
+            'settings' => [
+                'node_name'     => $node->getName(),
+                'publish_queue' => [
+                    'name'    => $node->getType(),
+                    'options' => NULL,
+                ],
+            ],
+        ];
     }
 
 }
