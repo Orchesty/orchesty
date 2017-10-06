@@ -2,6 +2,8 @@ import React from 'react'
 import PropTypes from 'prop-types';
 
 import TopologyForm from 'components/topology/TopologyForm';
+import StateButton from 'elements/input/StateButton';
+import processes from "rootApp/enums/processes";
 
 class TopologyEditModal extends React.Component {
   constructor(props) {
@@ -11,7 +13,6 @@ class TopologyEditModal extends React.Component {
     this.makeSubmit = this.makeSubmit.bind(this);
     this.setSubmit = this.setSubmit.bind(this);
     this._submitForm = null;
-    this.onProcessing = this.onProcessing.bind(this);
     this.state = {
       processing: false
     };
@@ -26,10 +27,6 @@ class TopologyEditModal extends React.Component {
     this.props.onCloseModal(this);
   }
 
-  onProcessing(value){
-    this.setState({processing: value});
-  }
-
   makeSubmit(){
     if (!this.state.processing){
       this._submitForm();
@@ -41,9 +38,9 @@ class TopologyEditModal extends React.Component {
   }
 
   render() {
-    const {topologyId, addNew} = this.props;
-    const {processing} = this.state;
+    const {topologyId, addNew, componentKey} = this.props;
     const formKey = 'topology.' + (addNew ? 'new' : topologyId);
+    const processId = addNew ? processes.topologyCreate(componentKey) : processes.topologyUpdate(topologyId);
     return (
       <div className="modal fade in" tabIndex="-1" role="dialog" aria-hidden="true" style={{display: 'block', paddingRight: '17px'}}>
         <div className="modal-dialog modal-md">
@@ -58,13 +55,13 @@ class TopologyEditModal extends React.Component {
                 setSubmit={this.setSubmit}
                 topologyId={topologyId}
                 addNew={addNew}
+                newProcessId={componentKey}
                 onSuccess={this.close}
-                onProcessing={this.onProcessing}
               />
             </div>
             <div className="modal-footer">
               <button type="button" className="btn btn-default" onClick={this.closeClick}>Close</button>
-              <button type="button" className="btn btn-primary" onClick={this.makeSubmit}>{processing ? 'Updating...' : 'Save changes'}</button>
+              <StateButton type="button" color="primary" processId={processId} onClick={this.makeSubmit}>Save changes</StateButton>
             </div>
           </div>
         </div>
@@ -81,7 +78,8 @@ TopologyEditModal.propTypes = {
   topologyId: (props, propName, componentName) =>
     typeof props[propName] == 'string' || props.addNew ? null : new Error(`${propName} in ${componentName} must be string or addNew prop must be true`),
   addNew: PropTypes.bool.isRequired,
-  onCloseModal: PropTypes.func.isRequired
+  onCloseModal: PropTypes.func.isRequired,
+  componentKey: PropTypes.string
 };
 
 export default TopologyEditModal;

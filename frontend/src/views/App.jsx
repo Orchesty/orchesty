@@ -53,15 +53,15 @@ class App extends React.Component {
       } else {
         switch (page.key){
           case 'login':
-            return <LoginPage {...page.args}/>;
+            return <LoginPage componentKey={page.key} {...page.args}/>;
           case 'registration':
-            return <RegistrationPage {...page.args} />;
+            return <RegistrationPage componentKey={page.key} {...page.args} />;
           case 'reset_password':
-            return <ResetPasswordPage {...page.args} />;
+            return <ResetPasswordPage componentKey={page.key} {...page.args} />;
           case 'set_password':
-            return <SetPasswordPage {...page.args} />;
+            return <SetPasswordPage componentKey={page.key} {...page.args} />;
           case 'user_activation':
-            return <ActivationPage {...page.args} />;
+            return <ActivationPage componentKey={page.key} {...page.args} />;
           default:
             return <Error404Page />;
         }

@@ -1,10 +1,10 @@
 import React from 'react'
 import PropTypes from 'prop-types';
-import {connect} from 'react-redux';
 
 import {stateType} from 'rootApp/types';
 import AuthorizationSettingsForm from 'components/authorization/AuthorizationSettingsForm';
 import StateButton from 'elements/input/StateButton';
+import processes from "enums/processes";
 
 class AuthorizationSettingsEditModal extends React.Component {
   constructor(props) {
@@ -36,8 +36,9 @@ class AuthorizationSettingsEditModal extends React.Component {
   }
 
   render() {
-    const {authorizationId, processId, processState} = this.props;
+    const {authorizationId} = this.props;
     const formKey = 'authorization.settings.' + authorizationId;
+    const processId = processes.authorizationSaveSettings(authorizationId);
     return (
       <div className="modal fade in" tabIndex="-1" role="dialog" aria-hidden="true" style={{display: 'block', paddingRight: '17px'}}>
         <div className="modal-dialog modal-md">
@@ -51,13 +52,12 @@ class AuthorizationSettingsEditModal extends React.Component {
                 form={formKey}
                 setSubmit={this.setSubmit}
                 authorizationId={authorizationId}
-                processId={processId}
                 onSuccess={this.close}
               />
             </div>
             <div className="modal-footer">
               <button type="button" className="btn btn-default" onClick={this.closeClick}>Close</button>
-              <StateButton type="button" color="primary" state={processState} onClick={this.makeSubmit}>Save changes</StateButton>
+              <StateButton type="button" color="primary" processId={processId} onClick={this.makeSubmit}>Save changes</StateButton>
             </div>
           </div>
         </div>
@@ -68,18 +68,8 @@ class AuthorizationSettingsEditModal extends React.Component {
 
 AuthorizationSettingsEditModal.propTypes = {
   authorizationId: PropTypes.string.isRequired,
-  processId: PropTypes.string.isRequired,
-  processState: PropTypes.string,
   onCloseModal: PropTypes.func.isRequired
 };
 
-function mapStateToProps(state, ownProps) {
-  const {process} = state;
-  const processId = 'authorization-settings-save-' + ownProps.authorizationId;
-  return {
-    processState: process[processId],
-    processId
-  };
-}
 
-export default connect(mapStateToProps)(AuthorizationSettingsEditModal);
+export default AuthorizationSettingsEditModal;

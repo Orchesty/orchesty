@@ -3,6 +3,7 @@ import * as applicationActions from './applicationActions';
 import * as notificationActions from './notificationActions';
 import * as processActions from './processActions';
 import serverRequest from 'services/apiGatewayServer';
+import processes from "rootApp/enums/processes";
 
 
 function userLogged(data){
@@ -18,11 +19,11 @@ function userLogout() {
   }
 }
 
-export function login(data, processId) {
+export function login(data, processHash = 'default') {
   return dispatch => {
-    processId && dispatch(processActions.startProcess(processId));
+    dispatch(processActions.startProcess(processes.authLogin(processHash)));
     return serverRequest(dispatch, 'POST', '/user/login', null, data).then(response => {
-      processId && dispatch(processActions.finishProcess(processId, response));
+      dispatch(processActions.finishProcess(processes.authLogin(processHash), response));
       if (response){
         dispatch(userLogged(response));
         dispatch(applicationActions.selectPage('dashboard'));
@@ -40,38 +41,38 @@ export function afterLogout() {
   }
 }
 
-export function logout(processId) {
+export function logout(processHash = 'default') {
   return (dispatch, getState) => {
     if (getState().auth.user) {
-      processId && dispatch(processActions.startProcess(processId));
+      dispatch(processActions.startProcess(processes.authLogout(processHash)));
       return serverRequest(dispatch, 'POST', '/user/logout').then(response => {
-        processId && dispatch(processActions.finishProcess(processId, response));
+        dispatch(processActions.finishProcess(processes.authLogout(processHash), response));
         dispatch(afterLogout());
         return response;
       });
     } else {
-      processId && dispatch(processActions.finishProcess(processId, true));
+      dispatch(processActions.finishProcess(processes.authLogout(processHash), true));
       return Promise.resolve(true);
     }
   }
 }
 
-export function register(email, processId) {
+export function register(email, processHash = 'default') {
   return dispatch => {
-    processId && dispatch(processActions.startProcess(processId));
+    dispatch(processActions.startProcess(processes.authRegister(processHash)));
     return serverRequest(dispatch, 'POST', '/user/register', null, {email}).then(response => {
-      processId && dispatch(processActions.finishProcess(processId, response));
+      dispatch(processActions.finishProcess(processes.authRegister(processHash), response));
       
       return response;
     })
   }
 }
 
-export function activate(token, processId){
+export function activate(token, processHash = 'default'){
   return dispatch => {
-    processId && dispatch(processActions.startProcess(processId));
+    dispatch(processActions.startProcess(processes.authActivate(processHash)));
     return serverRequest(dispatch, 'POST', `/user/${token}/activate`).then(response => {
-      processId && dispatch(processActions.finishProcess(processId, response));
+      dispatch(processActions.finishProcess(processes.authActivate(processHash), response));
       if (response){
         dispatch(applicationActions.selectPage('set_password', {token}));
         dispatch(notificationActions.addSuccess('You account was activated'));
@@ -81,22 +82,22 @@ export function activate(token, processId){
   }
 }
 
-export function resetPassword(email, processId) {
+export function resetPassword(email, processHash = 'default') {
   return dispatch => {
-    processId && dispatch(processActions.startProcess(processId));
+    dispatch(processActions.startProcess(processes.authResetPassword(processHash)));
     return serverRequest(dispatch, 'POST', '/user/reset_password', null, {email}).then(response => {
-      processId && dispatch(processActions.finishProcess(processId, response));
+      dispatch(processActions.finishProcess(processes.authResetPassword(processHash), response));
 
       return response;
     })
   }
 }
 
-export function setPassword(token, password, processId) {
+export function setPassword(token, password, processHash = 'default') {
   return dispatch => {
-    processId && dispatch(processActions.startProcess(processId));
+    dispatch(processActions.startProcess(processes.authSetPassword(processHash)));
     return serverRequest(dispatch, 'POST', `/user/${token}/set_password`, null, {password}).then(response => {
-      processId && dispatch(processActions.finishProcess(processId, response));
+      dispatch(processActions.finishProcess(processes.authSetPassword(processHash), response));
       if (response){
         dispatch(applicationActions.selectPage('login'));
         dispatch(notificationActions.addSuccess('Password was set'));

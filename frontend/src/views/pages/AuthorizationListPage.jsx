@@ -14,8 +14,7 @@ function mapStateToProps(state, ownProps){
   return {
     list: list,
     elements: authorization.elements,
-    state: list && list.state,
-    getAuthorizeProcessState: authorizationId => process['authorization-authorize-' + authorizationId]
+    state: list && list.state
   }
 }
 
@@ -26,7 +25,7 @@ function mapActionsToProps(dispatch, ownProps){
     notLoadedCallback: needList,
     listChangePage: (page) => dispatch(authorizationActions.authorizationsListChangePage(ownProps.pageKey, page)),
     editSettings: authorizationId => dispatch(applicationActions.openModal('authorization_settings_edit', {authorizationId})),
-    authorize: authorizationId => dispatch(authorizationActions.authorize(authorizationId, 'authorization-authorize-' + authorizationId))
+    authorize: authorizationId => dispatch(authorizationActions.authorize(authorizationId))
   }
 }
 
