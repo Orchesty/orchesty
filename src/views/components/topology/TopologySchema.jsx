@@ -26,11 +26,13 @@ class TopologySchema extends React.Component {
   }
 
   _needSchema(props){
-    if (props.schema === undefined && this.state.state == stateType.NOT_LOADED){
-      this.setState({state: stateType.LOADING});
-      props.loadTopologySchema().then(response => {
-        this.setState({state: stateType.SUCCESS});
-      });
+    if (props.schema === undefined){
+      if (this.state.state !== stateType.LOADING) {
+        this.setState({state: stateType.LOADING});
+        props.loadTopologySchema().then(response => {
+          this.setState({state: stateType.SUCCESS});
+        });
+      }
     } else {
       this.setState({state: stateType.SUCCESS});
     }
