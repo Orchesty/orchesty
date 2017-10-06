@@ -214,15 +214,43 @@ class SystemControllerTest extends ControllerTestCaseAbstract
         $response = $this->sendPost('/user_systems/user/someUser/system/null.user.group/install', [
             'token' => 'token',
         ]);
-        $this->assertEquals(200, $response->status);
-        $this->assertEquals([], $response->content);
 
-        /** @var SystemInstall[] $systems */
-        $systems = $this->dm->getRepository(SystemInstall::class)->findBy([
+        /** @var SystemInstall[] $system */
+        $system = $this->dm->getRepository(SystemInstall::class)->findOneBy([
             'system' => 'null.user.group',
             'user'   => 'someUser',
         ]);
-        $this->assertEquals(1, count($systems));
+        $this->assertEquals(1, count($system));
+        $this->assertEquals(200, $response->status);
+        $this->assertEquals(
+            (object) array_merge($this->getArrayDataForAssert($system), [
+                'authorized'     => FALSE,
+                'setting_fields' => [
+                    (object) [
+                        'type'     => 'url',
+                        'key'      => 'field1',
+                        'label'    => '',
+                        'value'    => NULL,
+                        'required' => TRUE,
+                    ],
+                    (object) [
+                        'type'     => 'text',
+                        'key'      => 'field2',
+                        'label'    => '',
+                        'value'    => NULL,
+                        'required' => TRUE,
+                    ],
+                    (object) [
+                        'type'     => 'password',
+                        'key'      => 'field3',
+                        'label'    => '',
+                        'value'    => NULL,
+                        'required' => TRUE,
+                    ],
+                ],
+            ]),
+            $response->content
+        );
     }
 
     /**

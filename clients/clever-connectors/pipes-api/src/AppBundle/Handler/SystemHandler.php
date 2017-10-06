@@ -107,9 +107,9 @@ class SystemHandler
     public function installSystem(string $user, string $system, array $data): array
     {
         ControllerUtils::checkParameters(['token'], $data);
-        $this->manager->installSystem($user, $system, $data['token']);
+        $systemInstall = $this->manager->installSystem($user, $system, $data['token']);
 
-        return [];
+        return $this->manager->getUserSystem($systemInstall);
     }
 
     /**
