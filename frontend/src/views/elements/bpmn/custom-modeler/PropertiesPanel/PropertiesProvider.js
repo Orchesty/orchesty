@@ -3,7 +3,7 @@ import PropertiesActivator from 'bpmn-js-properties-panel/lib/PropertiesActivato
 import processProps from 'bpmn-js-properties-panel/lib/provider/bpmn/parts/ProcessProps';
 import eventProps from 'bpmn-js-properties-panel/lib/provider/bpmn/parts/EventProps';
 import linkProps from 'bpmn-js-properties-panel/lib/provider/bpmn/parts/LinkProps';
-import idProps from 'bpmn-js-properties-panel/lib/provider/bpmn/parts/IdProps';
+import CustomIdProps from './parts/CustomIdProps';
 import CustomNameProps from './parts/CustomNameProps';
 import ElementPipesTypeProps from './parts/PipesTypeProps';
 import CronTimeProps from './parts/CronTimeProps.js';
@@ -15,7 +15,7 @@ function createGeneralTabGroups(element, bpmnFactory, elementRegistry, translate
     entries: [],
   };
 
-  idProps(generalGroup, element, translate);
+  CustomIdProps(generalGroup, element, translate);
   CustomNameProps(generalGroup, element, translate);
   processProps(generalGroup, element, translate);
   ElementPipesTypeProps(generalGroup, element, translate);
