@@ -15,6 +15,7 @@ use CleverConnectors\AppBundle\Model\Form\Field;
 use CleverConnectors\AppBundle\Model\Form\Form;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\OAuth2Interface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\Traits\AuthorizationTrait;
+use CleverConnectors\AppBundle\Utils\AuthorizationUtils;
 use Hanaboso\PipesFramework\Authorization\Provider\Dto\OAuth2Dto;
 use Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
@@ -212,11 +213,9 @@ class SalesForceSystem implements OAuth2Interface
      */
     private function createDto(SystemInstall $systemInstall): OAuth2Dto
     {
-        //@TODO use util
+        $redirectUrl = AuthorizationUtils::generateUrl();
 
-        $red = '/user_systems/saveToken';
-
-        $dto = new OAuth2Dto(self::CLIENT_ID, self::CLIENT_SECRET, $red, self::AUTHORIZE_URL, self::TOKEN_URL);
+        $dto = new OAuth2Dto(self::CLIENT_ID, self::CLIENT_SECRET, $redirectUrl, self::AUTHORIZE_URL, self::TOKEN_URL);
         $dto->setCustomAppDependencies($systemInstall->getUser(), $systemInstall->getSystem());
 
         return $dto;
