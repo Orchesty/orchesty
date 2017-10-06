@@ -55,7 +55,7 @@ class AmqpRpcWorker implements IWorker {
         this.waiting = new Container();
         this.resultsQueue = {
             name: `${settings.publish_queue.name}_reply`,
-            options: settings.publish_queue.options,
+            options: settings.publish_queue.options || {},
             prefetch: 1,
         };
 
