@@ -33,15 +33,20 @@ export function login(data, processId) {
   }
 }
 
+export function afterLogout() {
+  return dispatch => {
+    dispatch(applicationActions.selectPage('login'));
+    dispatch(userLogout());
+  }
+}
+
 export function logout(processId) {
   return (dispatch, getState) => {
     if (getState().auth.user) {
       processId && dispatch(processActions.startProcess(processId));
       return serverRequest(dispatch, 'POST', '/user/logout').then(response => {
         processId && dispatch(processActions.finishProcess(processId, response));
-        dispatch(applicationActions.selectPage('login'));
-        dispatch(userLogout());
-
+        dispatch(afterLogout());
         return response;
       });
     } else {

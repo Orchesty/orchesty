@@ -1,6 +1,7 @@
 import config from 'rootApp/config';
 
 import * as notificationActions from 'actions/notificationActions';
+import * as authActions from 'actions/authActions';
 
 let unsubscribe = null;
 let apiGatewayServer = null;
@@ -10,13 +11,18 @@ function check(dispatch, response) {
   if (response.ok){
     return response
   } else {
-    response.json()
-      .then(errorData => {
-        dispatch(notificationActions.addNotification('error', `Error in server request: ${errorData.error_code} - ${errorData.message}`));
-      })
-      .catch(parserError => {
-        dispatch(notificationActions.addNotification('error', `Error in server request: ${response.status} - ${response.statusText}`));
-      });
+    if (response.status == 403){
+     dispatch(authActions.afterLogout());
+     dispatch(notificationActions.addNotification('error', 'You are not logged. Log in again.'));
+    } else {
+      response.json()
+        .then(errorData => {
+          dispatch(notificationActions.addNotification('error', `Error in server request: ${errorData.error_code} - ${errorData.message}`));
+        })
+        .catch(parserError => {
+          dispatch(notificationActions.addNotification('error', `Error in server request: ${response.status} - ${response.statusText}`));
+        });
+    }
   }
 }
 
