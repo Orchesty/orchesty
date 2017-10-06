@@ -151,8 +151,8 @@ class HttpWorker implements IWorker {
                 process_id: inMsg.getProcessId(),
                 parent_id: inMsg.getParentId(),
                 sequence_id: inMsg.getSequenceId(),
-                token: "", // inMsg.getHeader('token'), // TODO pryc s tim
-                guid: "", // inMsg.getHeader('guid'), // TODO pryc s tim
+                token: inMsg.getHeaders()['token'], // TODO pryc s tim
+                guid: inMsg.getHeaders()['guid'], // TODO pryc s tim
             },
         };
     }
