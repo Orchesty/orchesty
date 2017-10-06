@@ -42,11 +42,12 @@ class MongoMessageStorage implements IMessageStorage {
      * Saves message to the storage
      *
      * @param {Message} message
+     * @param {number} timeout
      * @return {Promise<boolean>}
      */
-    public save(message: Message): Promise<boolean> {
+    public save(message: Message, timeout: number): Promise<boolean> {
         const now = Date.now();
-        const repeatInterval = parseInt(message.properties.headers.repeat_interval, 10);
+        const repeatInterval = timeout;
         const repeatAt = now + repeatInterval;
 
         const document: IPersistedMessage = {
@@ -93,13 +94,13 @@ class MongoMessageStorage implements IMessageStorage {
             .then((documents: IPersistedMessage[]) => {
                 docs = documents;
 
-                // skip delete if nothing found
+                // skip deleteDocuments when nothing found
                 if (documents.length === 0) {
                     const fake: DeleteWriteOpResultObject = { result: {}, deletedCount: 0 };
                     return Promise.resolve(fake);
                 }
 
-                return this.delete(query);
+                return this.deleteDocuments(query);
             })
             .then((deletion: DeleteWriteOpResultObject) => {
                 if (deletion.deletedCount !== docs.length) {
@@ -147,7 +148,7 @@ class MongoMessageStorage implements IMessageStorage {
      * @param query
      * @return {Promise<DeleteWriteOpResultObject>}
      */
-    private delete(query: any): Promise<DeleteWriteOpResultObject> {
+    private deleteDocuments(query: any): Promise<DeleteWriteOpResultObject> {
         return this.db
             .then((db: Db) => {
                 return db.collection(COLLECTION_NAME).deleteMany(query);

@@ -45,8 +45,8 @@ describe("MongoMessageStorage", () => {
             })
             .then(() => {
                 return Promise.all([
-                    storage.save(msg1),
-                    storage.save(msg2),
+                    storage.save(msg1, msg1.properties.headers.repeat_interval),
+                    storage.save(msg2, msg2.properties.headers.repeat_interval),
                 ]);
             })
             .then(() => {
@@ -93,7 +93,7 @@ describe("MongoMessageStorage", () => {
                 return db.collection(COLLECTION_NAME).drop();
             })
             .then(() => {
-                return storage.save(msg);
+                return storage.save(msg, msg.properties.headers.repeat_interval);
             })
             .then(() => {
                 return db.collection(COLLECTION_NAME).find({}).toArray();
