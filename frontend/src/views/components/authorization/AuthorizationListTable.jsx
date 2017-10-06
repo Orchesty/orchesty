@@ -41,7 +41,6 @@ class AuthorizationListTable extends AbstractTable {
         menuItems.push({
           caption: 'Authorize',
           disabled: !item.can_authorize,
-          state: getAuthorizeProcessState(item.name),
           action: () => {authorize(item.name)}
         });
       }
