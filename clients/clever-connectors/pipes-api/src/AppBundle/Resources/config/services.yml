@@ -93,10 +93,10 @@ services:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\ShopifyDeleteCustomerConnector
         arguments:
 
-    hbpf.connectors.shopify-customer-update-mapper:
+    hbpf.custom_node.shopify-customer-update-mapper:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\ShopifyUpdateCustomerMapper
         arguments:
 
-    hbpf.connectors.shopify-customer-delete-mapper:
+    hbpf.custom_node.shopify-customer-delete-mapper:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\ShopifyDeleteCustomerMapper
         arguments:

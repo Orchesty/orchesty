@@ -33,8 +33,8 @@ class ShopifySystem implements WebhookSystemInterface, OAuth2Interface
     private const API_KEY    = 'api_key';
     private const API_SECRET = 'api_secret';
 
-    private const WEBHOOK_SUBSCRIBE_URL   = '.myshopify.com/admin/webhooks.json';
-    private const WEBHOOK_UNSUBSCRIBE_URL = '.myshopify.com/admin/webhooks/%s.json';
+    private const WEBHOOK_SUBSCRIBE_URL   = 'https://%s.myshopify.com/admin/webhooks.json';
+    private const WEBHOOK_UNSUBSCRIBE_URL = 'https://%s.myshopify.com/admin/webhooks/%s.json';
 
     use AuthorizationTrait;
     use WebhookSystemTrait;
@@ -141,7 +141,7 @@ class ShopifySystem implements WebhookSystemInterface, OAuth2Interface
         $topic     = $this->topics[$subs->getNodeName()];
 
         $dto = new RequestDto('POST',
-            new Uri(sprintf('https://%s' . $subs->getRegistrationUrl(), $systemUrl)));
+            new Uri(sprintf($subs->getRegistrationUrl(), $systemUrl)));
 
         $dto->setBody(json_encode([
             'webhook' => [
@@ -165,7 +165,7 @@ class ShopifySystem implements WebhookSystemInterface, OAuth2Interface
     public function getUnsubscribeRequest(SystemInstall $systemInstall, string $webhookId): RequestDto
     {
         $dto = new RequestDto('DELETE',
-            new Uri(sprintf('https://%s' . $this->subscriptions[0]->getUnregistrationUrl(),
+            new Uri(sprintf($this->subscriptions[0]->getUnregistrationUrl(),
                 $systemInstall->getSettings()[self::SYSTEM_URL], $webhookId)));
 
         $dto->setHeaders($this->getHeaders($systemInstall));
@@ -222,7 +222,7 @@ class ShopifySystem implements WebhookSystemInterface, OAuth2Interface
         $field1 = new Field(
             Field::URL,
             self::SYSTEM_URL,
-            'System url',
+            'System url of client\'s app - XXX.myshopify.com (only XXX part).',
             $this->prepareValue(self::SYSTEM_URL, $settings),
             TRUE
         );
@@ -269,13 +269,7 @@ class ShopifySystem implements WebhookSystemInterface, OAuth2Interface
     {
         $settings = $systemInstall->getSettings();
 
-        $dto = new OAuth2Dto(
-            $settings[self::API_KEY],
-            $settings[self::API_SECRET],
-            AuthorizationUtils::generateUrl(),
-            sprintf('https://%s.myshopify.com/admin/oauth/authorize', $settings[self::SYSTEM_URL]),
-            sprintf('https://%s.myshopify.com/admin/oauth/access_token', $settings[self::SYSTEM_URL])
-        );
+        $dto = $this->getDto($systemInstall);
 
         $dto->setCustomAppDependencies($systemInstall->getUser(), $this->getKey());
 
