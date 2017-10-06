@@ -4,6 +4,7 @@ import {connect} from 'react-redux';
 
 import {stateType} from 'rootApp/types';
 
+import processes from 'enums/processes';
 import * as topologyActions from 'actions/topologyActions';
 import * as notificationActions from 'actions/notificationActions';
 
@@ -39,7 +40,6 @@ class TopologySchema extends React.Component {
   save(xml){
     this.props.saveTopologySchema(xml).then(topology => {
       if (topology){
-        this.props.addSuccessNotification('Schema was saved successfully.');
         if (topology._id !== this.props.schemaId){
           this.props.onChangeTopology(topology._id);
         }
@@ -48,7 +48,7 @@ class TopologySchema extends React.Component {
   }
 
   render() {
-    const {schema, setActions, addErrorNotification , addSuccessNotification} = this.props;
+    const {schema, setActions, addErrorNotification , addSuccessNotification, saveProcessId} = this.props;
 
     return (
       <SimpleState state={this.state.state}>
@@ -58,6 +58,7 @@ class TopologySchema extends React.Component {
           onImport={addSuccessNotification}
           setActions={setActions}
           onSave={this.save}
+          processId={saveProcessId}
         />
       </SimpleState>
     );
@@ -72,13 +73,15 @@ TopologySchema.propTypes = {
   schema: PropTypes.string,
   schemaId: PropTypes.string,
   saveTopologySchema: PropTypes.func.isRequired,
-  onChangeTopology: PropTypes.func.isRequired
+  onChangeTopology: PropTypes.func.isRequired,
+  saveProcessId: PropTypes.string
 };
 
 function mapStateToProps(state, ownProps) {
   const {topology} = state;
   return {
-    schema: topology.schemas[ownProps.schemaId]
+    schema: topology.schemas[ownProps.schemaId],
+    saveProcessId: processes.topologySaveScheme(ownProps.schemaId)
   };
 }
 
