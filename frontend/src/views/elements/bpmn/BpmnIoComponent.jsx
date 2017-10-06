@@ -146,21 +146,8 @@ class BpmnIoComponent extends React.Component {
     });
   }
 
-  onWindowResize() {
-    this.calculateHeight();
-  }
-
-  calculateHeight() {
-    if (this._self){
-      this.setState({
-        height: window.innerHeight - this._self.getBoundingClientRect().top - window.scrollX - 10
-      });
-    }
-  }
-
   setSelf(self) {
     this._self = self;
-   // this.calculateHeight();
   }
 
   render() {
