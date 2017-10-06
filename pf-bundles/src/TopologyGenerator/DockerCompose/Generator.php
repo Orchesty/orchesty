@@ -87,11 +87,10 @@ class Generator implements GeneratorInterface
         $config['id'] = GeneratorUtils::normalizeName($topology->getId(), $topology->getName());
 
         foreach ($nodes as $node) {
-            $nodeConfig['id'] = GeneratorUtils::normalizeName($node->getId(), $node->getName());
-
+            $nodeConfig           = [];
+            $nodeConfig['id']     = GeneratorUtils::normalizeName($node->getId(), $node->getName());
             $nodeConfig['worker'] = $this->getWorkerConfig($node);
-
-            $nodeConfig['next'] = [];
+            $nodeConfig['next']   = [];
             foreach ($node->getNext() as $next) {
                 $nodeConfig['next'][] = GeneratorUtils::normalizeName($next->getId(), $next->getName());
             }
