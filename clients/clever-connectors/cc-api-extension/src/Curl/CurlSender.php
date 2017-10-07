@@ -89,6 +89,9 @@ class CurlSender
 
             $this->logResponse($response);
 
+            // Rewind body to the beginning of the stream.
+            $response->getBody()->rewind();
+
             return $response;
         } catch (RequestException $e) {
             $response = $e->getResponse();

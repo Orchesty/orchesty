@@ -21,6 +21,7 @@ use Exception;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Uri;
 use Nette\Utils\Json;
+use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
 /**
@@ -79,10 +80,29 @@ class ConnectorManager implements ConnectorInterface
     }
 
     /**
+     * @param RequestInterface $request
+     *
+     * @return ResponseInterface
+     * @throws ConnectorException
+     */
+    private function send(RequestInterface $request): ResponseInterface
+    {
+        try {
+            return $this->curlSender->send($request);
+        } catch (CurlException $e) {
+            throw new ConnectorException(
+                sprintf('Connector error: %s', $e->getMessage()),
+                ConnectorException::REQUEST_ERROR,
+                $e
+            );
+        }
+    }
+
+    /**
      * @param null|string $group
      * @param null|string $user
      *
-     * @return iterable
+     * @return iterable|System[]
      * @throws ConnectorException
      */
     public function getAllSystems(?string $group = NULL, ?string $user = NULL): iterable
@@ -102,15 +122,7 @@ class ConnectorManager implements ConnectorInterface
             $this->getDefaultHeaders()->getHeaders()
         );
 
-        try {
-            $response = $this->curlSender->send($request);
-        } catch (CurlException $e) {
-            throw new ConnectorException(
-                sprintf('Connector error: %s', $e->getMessage()),
-                ConnectorException::REQUEST_ERROR,
-                $e
-            );
-        }
+        $response = $this->send($request);
 
         $systems = [];
         foreach ($this->parseBody($response) as $item) {
@@ -127,14 +139,15 @@ class ConnectorManager implements ConnectorInterface
      */
     public function getSystem(string $systemKey): System
     {
-        $uri     = new Uri(sprintf('/systems/%s', $systemKey));
-        $request = new Request(CurlSender::GET, $uri, ['application/json']);
+        $request = new Request(
+            CurlSender::GET,
+            new Uri(sprintf('/systems/%s', $systemKey)),
+            $this->getDefaultHeaders()->getHeaders()
+        );
 
-        $response = $this->curlSender->send($request);
+        $response = $this->send($request);
 
-        $data = Json::decode($response->getBody()->getContents(), Json::FORCE_ARRAY);
-
-        return SystemFactory::create($data);
+        return SystemFactory::create($this->parseBody($response));
     }
 
     /**
@@ -145,14 +158,15 @@ class ConnectorManager implements ConnectorInterface
      */
     public function getUserSystem(string $userId, string $systemKey): UserSystem
     {
-        $uri     = new Uri(sprintf('/user_systems/user/%s/system/%s', $userId, $systemKey));
-        $request = new Request(CurlSender::GET, $uri, ['application/json']);
+        $request = new Request(
+            CurlSender::GET,
+            new Uri(sprintf('/user_systems/user/%s/system/%s', $userId, $systemKey)),
+            $this->getDefaultHeaders()->getHeaders()
+        );
 
-        $response = $this->curlSender->send($request);
+        $response = $this->send($request);
 
-        $data = Json::decode($response->getBody()->getContents(), Json::FORCE_ARRAY);
-
-        return UserSystemFactory::create($data);
+        return UserSystemFactory::create($this->parseBody($response));
     }
 
 }
