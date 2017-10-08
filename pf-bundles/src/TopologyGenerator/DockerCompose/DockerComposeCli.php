@@ -30,15 +30,18 @@ class DockerComposeCli
         $this->configDir = $configDir;
     }
 
-    public function up()
+    /**
+     * @return bool
+     */
+    public function up(): bool
     {
         $config = sprintf('%s/%s', $this->configDir, self::DOCKER_CONFIG_FILE);
 
         $command = str_replace('{config}', $config, self::DOCKER_COMPOSE_UP);
 
-        $command ="docker info";
-        $res = system($command, $val);
-        print_r($res);
-        print_r($val);
+        exec($command);
+
+        return TRUE;
     }
+
 }
