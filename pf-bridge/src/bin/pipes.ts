@@ -4,7 +4,7 @@ import * as fs from "fs";
 import * as yargs from "yargs";
 import Pipes from "../Pipes";
 
-const topologyConfig = JSON.parse(fs.readFileSync("topology.json", "utf8"));
+const topologyConfig = JSON.parse(fs.readFileSync("topology/topology.json", "utf8"));
 const pipes = new Pipes(topologyConfig);
 
 const argv = yargs
