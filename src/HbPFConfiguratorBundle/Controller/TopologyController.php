@@ -171,10 +171,9 @@ class TopologyController extends FOSRestController
     {
         $this->construct();
         $data           = $this->topologyHandler->publishTopology($id);
+        //TODO: dat vedetm odstranit GET
         $generateResult = $this->topologyHandler->generateTopology($id);
         $runResult      = $this->topologyHandler->runTopology($id);
-
-        var_dump($runResult->getBody());
 
         return new JsonResponse($data, 200);
     }
