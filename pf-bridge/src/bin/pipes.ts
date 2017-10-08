@@ -4,7 +4,14 @@ import * as fs from "fs";
 import * as yargs from "yargs";
 import Pipes from "../Pipes";
 
-const topologyConfig = JSON.parse(fs.readFileSync("topology/topology.json", "utf8"));
+let topologyConfig;
+if (process.env.TOPOLOGY_JSON) {
+    // json string is base64 encoded
+    topologyConfig = JSON.parse(atob(process.env.TOPOLOGY_JSON));
+} else {
+    topologyConfig = JSON.parse(fs.readFileSync("topology/topology.json", "utf8"));
+}
+
 const pipes = new Pipes(topologyConfig);
 
 const argv = yargs
