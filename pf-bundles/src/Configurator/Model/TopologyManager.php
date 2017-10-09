@@ -127,7 +127,7 @@ class TopologyManager
             ->setName($topology->getName())
             ->setVersion($version + 1)
             ->setDescr($topology->getDescr())
-            ->setEnabled($topology->isEnabled())
+            ->setEnabled(FALSE)
             ->setBpmn($topology->getBpmn())
             ->setRawBpmn($topology->getRawBpmn());
 
