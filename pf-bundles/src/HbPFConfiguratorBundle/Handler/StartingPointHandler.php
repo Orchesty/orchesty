@@ -122,13 +122,13 @@ class StartingPointHandler
     /**
      * @param string      $topologyName
      * @param string      $nodeName
-     * @param string|null $param
+     * @param string|null $body JSON string
      */
-    public function run(string $topologyName, string $nodeName, ?string $param = NULL): void
+    public function run(string $topologyName, string $nodeName, ?string $body = NULL): void
     {
         $tops = $this->getTopologies($topologyName);
         foreach ($tops as $top) {
-            $this->startingPoint->run($top, $this->getNode($nodeName, $top->getId()), $param);
+            $this->startingPoint->run($top, $this->getNode($nodeName, $top->getId()), $body);
         }
     }
 

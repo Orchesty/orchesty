@@ -159,13 +159,13 @@ class StartingPoint implements LoggerAwareInterface
     }
 
     /**
-     * @param null|string $param
+     * @param null|string $body JSON string
      *
      * @return string
      */
-    public function createBody(?string $param = NULL): string
+    public function createBody(?string $body = NULL): string
     {
-        return sprintf(self::CONTENT, $param ?? '""');
+        return sprintf(self::CONTENT, $body ?? '""');
     }
 
     /**
@@ -182,11 +182,11 @@ class StartingPoint implements LoggerAwareInterface
     /**
      * @param Topology    $topology
      * @param Node        $node
-     * @param null|string $param
+     * @param null|string $body JSON string
      */
-    public function run(Topology $topology, Node $node, ?string $param = NULL): void
+    public function run(Topology $topology, Node $node, ?string $body = NULL): void
     {
-        $this->runTopology($topology, $node, $this->createHeaders(), $this->createBody($param));
+        $this->runTopology($topology, $node, $this->createHeaders(), $this->createBody($body));
     }
 
     /**

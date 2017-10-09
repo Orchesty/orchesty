@@ -250,7 +250,7 @@ class StartingPointTest extends TestCase
     /**
      * @covers StartingPoint::createBody()
      */
-    public function testCreateBody(): void
+    public function testCreateBodyEmpty(): void
     {
         $startingPoint = new StartingPoint($this->startingPointProducer, $this->curlManager);
         $body          = $startingPoint->createBody();
@@ -259,6 +259,22 @@ class StartingPointTest extends TestCase
 
         $this->assertSame([
             "data"     => "",
+            "settings" => "",
+        ], $body);
+    }
+
+    /**
+     * @covers StartingPoint::createBody()
+     */
+    public function testCreateBody(): void
+    {
+        $startingPoint = new StartingPoint($this->startingPointProducer, $this->curlManager);
+        $body          = $startingPoint->createBody(json_encode(['param' => 'test']));
+
+        $body = json_decode($body, TRUE);
+
+        $this->assertSame([
+            "data"     => ['param' => 'test'],
             "settings" => "",
         ], $body);
     }
