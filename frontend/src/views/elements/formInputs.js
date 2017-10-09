@@ -7,4 +7,4 @@ import NumberInput from "rootApp/views/elements/input/NumberInput";
 
 export const FormTextInput = FormElement(TextInput);
 export const FormNumberInput = FormElement(NumberInput);
-export const FormCheckboxInput = FormElement(CheckboxInput);
+export const FormCheckboxInput = FormElement(CheckboxInput, {marginTop: '6px'});
