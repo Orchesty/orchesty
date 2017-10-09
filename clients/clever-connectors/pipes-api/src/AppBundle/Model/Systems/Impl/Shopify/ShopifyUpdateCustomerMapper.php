@@ -43,11 +43,11 @@ class ShopifyUpdateCustomerMapper implements CustomNodeInterface
         }
 
         if (!empty($data['addresses'])) {
-            if (array_key_exists('company', $data['addresses'][0])) {
-                $res['company'] = $data['addresses'][0]['company'];
-            }
             if (array_key_exists('city', $data['addresses'][0])) {
-                $res['contact'] = $data['addresses'][0]['city'];
+                $res['contacts'] = [
+                    'contact'      => $data['addresses'][0]['city'],
+                    'contact_type' => 2,
+                ];
             }
         }
 
