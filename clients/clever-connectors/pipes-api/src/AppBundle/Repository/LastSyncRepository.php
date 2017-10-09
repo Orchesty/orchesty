@@ -3,7 +3,6 @@
 namespace CleverConnectors\AppBundle\Repository;
 
 use CleverConnectors\AppBundle\Document\LastSync;
-use DateTime;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 
 /**
@@ -17,9 +16,9 @@ class LastSyncRepository extends DocumentRepository
      * @param string $topologyName
      * @param string $nodeName
      *
-     * @return DateTime
+     * @return LastSync|null
      */
-    public function getLastSyncTime(string $userId, string $topologyName, string $nodeName): DateTime
+    public function getLastSyncTime(string $userId, string $topologyName, string $nodeName): ?LastSync
     {
         /** @var LastSync $res */
         $res = $this->createQueryBuilder()
@@ -31,7 +30,7 @@ class LastSyncRepository extends DocumentRepository
             ->getQuery()
             ->getSingleResult();
 
-        return $res->getTimestamp();
+        return $res ?? NULL;
     }
 
 }

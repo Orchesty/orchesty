@@ -35,7 +35,7 @@ class SalesForceSystem implements OAuth2Interface
     private const AUTHORIZE_URL = 'https://login.salesforce.com/services/oauth2/authorize';
     private const TOKEN_URL     = 'https://na1.salesforce.com/services/oauth2/token';
 
-    private const API_URL = 'na73.lightning.force.com';
+    private const API_URL = 'instance_url';
 
     /**
      * @var OAuth2Provider

@@ -22,15 +22,15 @@ class SalesForceContactMapperTest extends ConnectorTestCaseAbstract
         $connector = $this->container->get('hbpf.custom_node.salesforce-contact-mapper');
 
         $response = Json::decode(
-            $connector->process((new ProcessDto())->setData(file_get_contents(__DIR__ . '/data/SalesforceContact.json')))
+            $connector->process((new ProcessDto())->setData(file_get_contents(__DIR__ . '/data/SalesForceSingleContactItem.json')))
                 ->getData(),
             TRUE
         );
 
         $this->assertEquals([
-            'email'      => 'gfdhg@asd.com',
-            'first_name' => 'bmnmb',
-            'last_name'  => 'zzzz',
+            'email'      => 'eml@adsf.com',
+            'first_name' => 'asd',
+            'last_name'  => 'asdasdasd',
         ], $response);
     }
 

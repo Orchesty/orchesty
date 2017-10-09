@@ -4,7 +4,7 @@ namespace Tests\Integration\AppBundle\Model\Systems;
 
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\SystemLoader;
-use Tests\Integration\AppBundle\Systems\Impl\NullSystem;
+use Tests\Integration\AppBundle\Model\Systems\Impl\NullSystem;
 use Tests\KernelTestCaseAbstract;
 
 /**

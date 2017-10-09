@@ -9,4 +9,4 @@ parameters:
         - '%systems.user.some_user%'
         - '%systems.group.some_group%'
 
-    webhook.domain: 'http://localhost'
+    webhook.domain: 'https://cleverconn.stage.hanaboso.net'

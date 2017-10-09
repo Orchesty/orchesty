@@ -1,19 +1,19 @@
 services:
 
     systems.null.user:
-        class: Tests\Integration\AppBundle\Systems\Impl\NullSystem
+        class: Tests\Integration\AppBundle\Model\Systems\Impl\NullSystem
         arguments:
             - '@hbpf.providers.oauth2_provider'
         tags: ['%systems%', '%systems.dev%', '%systems.user.some_user%']
 
     systems.null.group:
-        class: Tests\Integration\AppBundle\Systems\Impl\NullSystem
+        class: Tests\Integration\AppBundle\Model\Systems\Impl\NullSystem
         arguments:
             - '@hbpf.providers.oauth2_provider'
         tags: ['%systems%', '%systems.dev%', '%systems.group.some_group%']
 
     systems.null.user.group:
-        class: Tests\Integration\AppBundle\Systems\Impl\NullSystem
+        class: Tests\Integration\AppBundle\Model\Systems\Impl\NullSystem
         arguments:
             - '@hbpf.providers.oauth2_provider'
         tags: ['%systems%', '%systems.dev%', '%systems.user.some_user%', '%systems.group.some_group%']
