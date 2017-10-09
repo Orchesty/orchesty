@@ -183,10 +183,10 @@ abstract class SalesForceConnectorAbstract implements BatchInterface, CustomNode
      * @param SystemInstall $systemInstall
      * @param string        $topologyName
      *
-     * @return LastSync|null
+     * @return LastSync
      * @throws SystemException
      */
-    protected function getLastSync(ProcessDto $dto, SystemInstall $systemInstall, string &$topologyName): ?LastSync
+    protected function getLastSync(ProcessDto $dto, SystemInstall $systemInstall, string &$topologyName): LastSync
     {
         if (!array_key_exists('node_id', $dto->getHeaders())) {
             throw new SystemException(

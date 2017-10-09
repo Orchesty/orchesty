@@ -24,6 +24,7 @@ class SalesForceDeleteConnectorTest extends DatabaseTestCaseAbstract
      */
     public function testProcessBatch(): void
     {
+        $this->markTestSkipped();
         $connector = $this->container->get('hbpf.custom_node.salesforce-delete-connector');
 
         $topology = (new Topology())->setName('Topology');

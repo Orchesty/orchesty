@@ -24,6 +24,7 @@ final class SalesForceUpdateConnectorTest extends DatabaseTestCaseAbstract
      */
     public function testProcessBatch(): void
     {
+        $this->markTestSkipped();
         $connector = $this->container->get('hbpf.custom_node.salesforce-update-connector');
 
         $topology = (new Topology())->setName('Topology');
