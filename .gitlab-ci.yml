@@ -83,7 +83,7 @@ stage-demo:
   stage: stage3
   when: manual
   script:
-    - rsync -a --delete --exclude '.git' ./ ~/stage_demo
+    - rsync -av --delete --exclude '.git' ./ ~/stage_demo
     - cd ~/stage_demo/clients/demo
     - export COMPOSE_PROJECT_NAME=stagedemo
     - export NPM_INSTALL="yes"
@@ -95,7 +95,7 @@ stage-cm:
   stage: stage3
   when: manual
   script:
-    - rsync -a --delete --exclude 'clients/clever-connectors/pipes-api/var/secret' --exclude '.git' ./ ~/stage_cm
+    - rsync -av --delete --exclude 'clients/clever-connectors/pipes-api/var/secret' --exclude '.git' ./ ~/stage_cm
     - cd ~/stage_cm/clients/clever-connectors
     - export COMPOSE_PROJECT_NAME=stagecm
     - export NPM_INSTALL="yes"
