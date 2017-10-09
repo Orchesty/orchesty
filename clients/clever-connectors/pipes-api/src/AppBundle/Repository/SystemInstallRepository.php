@@ -5,6 +5,7 @@ namespace CleverConnectors\AppBundle\Repository;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use DateTime;
 use DateTimeZone;
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use Hanaboso\PipesFramework\Commons\Crypt\CryptManager;
 use LogicException;
@@ -61,6 +62,25 @@ class SystemInstallRepository extends DocumentRepository
                     SystemInstall::ENCRYPTED_SETTINGS => CryptManager::encrypt([]),
                 ]
             );
+    }
+
+    /**
+     * @param DateTime $dateTime
+     *
+     * @return array
+     */
+    public function findByExpires(DateTime $dateTime): array
+    {
+        $criteria = new Criteria();
+        $criteria->where($criteria->expr()->lte('expires', $dateTime));
+        $criteria->where(
+            $criteria->expr()->andX(
+                $criteria->expr()->neq('expires', NULL),
+                $criteria->expr()->lte('expires', $dateTime)
+            )
+        );
+
+        return $this->matching($criteria)->toArray();
     }
 
 }

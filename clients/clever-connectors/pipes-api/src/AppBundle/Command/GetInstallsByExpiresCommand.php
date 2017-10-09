@@ -3,6 +3,7 @@
 namespace CleverConnectors\AppBundle\Command;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
+use DateTime;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Exception;
 use Psr\Log\LoggerAwareInterface;
@@ -17,7 +18,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  *
  * @package CleverConnectors\AppBundle\Command
  */
-class RefreshTokensCommand extends Command implements LoggerAwareInterface
+class GetInstallsByExpiresCommand extends Command implements LoggerAwareInterface
 {
 
     /**
@@ -31,16 +32,23 @@ class RefreshTokensCommand extends Command implements LoggerAwareInterface
     private $logger;
 
     /**
+     * @var int
+     */
+    private $interval;
+
+    /**
      * GetSystemCommand constructor.
      *
      * @param DocumentManager $dm
+     * @param int             $interval
      */
-    public function __construct(DocumentManager $dm)
+    public function __construct(DocumentManager $dm, int $interval)
     {
-        parent::__construct('tokens:refresh');
+        parent::__construct('react:get-installs-by-expires');
 
-        $this->dm     = $dm;
-        $this->logger = new NullLogger();
+        $this->dm       = $dm;
+        $this->logger   = new NullLogger();
+        $this->interval = $interval;
     }
 
     /**
@@ -64,13 +72,16 @@ class RefreshTokensCommand extends Command implements LoggerAwareInterface
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         try {
-            // TODO expires
+            // interval is in seconds
+            $expires = time() + $this->interval * 2;
 
-            $cursor = $this->dm->getDocumentCollection(SystemInstall::class)->find([
-                'expires' => $expires,
-            ]);
+            // convert to datetime
+            $datetime = new DateTime();
+            $datetime->setTimestamp($expires);
 
-            $output->writeln(json_encode($cursor->toArray()));
+            $systemInstalls = $this->dm->getRepository(SystemInstall::class)->findByExpires($datetime);
+
+            $output->writeln(json_encode($systemInstalls));
         } catch (Exception $e) {
             $this->logger->error($e->getMessage(), ['exception' => $e]);
 

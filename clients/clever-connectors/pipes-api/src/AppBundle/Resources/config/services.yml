@@ -152,3 +152,11 @@ services:
             - '@clever_connector.async_command_factory'
         calls:
             - [setLogger, ['@monolog.logger.rabbit-mq']]
+
+    hbpf.custom_node.refresh-tokens-message-generator:
+        class: CleverConnectors\AppBundle\Model\CustomNode\RefreshTokensMessageGenerator
+        arguments:
+            - '@jms_serializer.serializer'
+            - '%kernel.project_dir%'
+        calls:
+            - [setLogger, ['@monolog.logger.rabbit-mq']]

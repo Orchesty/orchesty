@@ -22,7 +22,6 @@ class WebhookRepository extends DocumentRepository
      */
     public function isWebhookRegistred(string $userId, string $systemKey, string $topologyName, string $nodeName): bool
     {
-
         $result = $this->createQueryBuilder()
             ->field('user')->equals($userId)
             ->field('systemKey')->equals($systemKey)
