@@ -99,16 +99,16 @@ class Configurator {
         nodeSkeleton: INodeConfigSkeleton,
         isInitial: boolean = false,
     ): INodeConfig {
-        const defNode: INodeConfig = Defaults.getNodeConfigDefaults(topoId, nodeSkeleton);
+        const defaults: INodeConfig = Defaults.getNodeConfigDefaults(topoId, nodeSkeleton);
 
-        const faucetSettings = nodeSkeleton.faucet || defNode.faucet;
+        const faucetSettings = nodeSkeleton.faucet || defaults.faucet;
         faucetSettings.settings.node_id = nodeSkeleton.id;
 
-        const workerSettings = nodeSkeleton.worker || defNode.worker;
+        const workerSettings = nodeSkeleton.worker || defaults.worker;
         workerSettings.settings.node_id = nodeSkeleton.id;
 
-        const isResequencer = nodeSkeleton.resequencer || defNode.resequencer;
-        const drainSettings = nodeSkeleton.drain || defNode.drain;
+        const isResequencer = nodeSkeleton.resequencer || defaults.resequencer;
+        const drainSettings = nodeSkeleton.drain || defaults.drain;
         drainSettings.settings.resequencer = isResequencer;
         drainSettings.settings.node_id = nodeSkeleton.id;
 
@@ -119,7 +119,7 @@ class Configurator {
             faucet: faucetSettings,
             drain: drainSettings,
             resequencer: isResequencer,
-            debug: nodeSkeleton.debug || defNode.debug,
+            debug: nodeSkeleton.debug || defaults.debug,
             initial: isInitial,
         };
     }

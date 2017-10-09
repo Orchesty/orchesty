@@ -2,7 +2,7 @@
     "id": "pf-example",
     "nodes": [
         {
-            "id": "node_1",
+            "id": "abc123",
             "resequencer": true,
             "faucet": {
                 "type": "faucet.http",

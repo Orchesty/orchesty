@@ -36,6 +36,12 @@ export interface IAmqpDrainSettings {
             options: any,
         },
     };
+    faucet: {
+        queue: {
+            name: string,
+            options: any,
+        },
+    },
     followers: IFollower[];
     resequencer: boolean;
 }
@@ -98,7 +104,11 @@ class AmqpDrain extends ADrain implements IDrain, IPartialForwarder {
     private forwardNonStandard(message: JobMessage): Promise<JobMessage> {
         switch (message.getResult().code) {
 
-            case ResultCode.FORCE_TARGET_QUEUE:
+            // Handle non-standard result codes
+            case ResultCode.REPEAT:
+                return this.forwardRepeat(message);
+
+            case ResultCode.FORWARD_TO_TARGET_QUEUE:
                 return this.forwardToTargetQueue(message);
 
             default:
@@ -109,6 +119,25 @@ class AmqpDrain extends ADrain implements IDrain, IPartialForwarder {
                 });
                 return this.forward(message);
         }
+    }
+
+    /**
+     *
+     * @param {JobMessage} message
+     * @return {Promise<JobMessage>}
+     */
+    private forwardRepeat(message: JobMessage): Promise<JobMessage> {
+        const targetQueue: string = this.settings.repeater.queue.name;
+
+        const headers = message.getHeaders();
+        headers.repeat_target_queue = this.settings.faucet.queue.name;
+
+        const props = { headers: message.getHeaders() };
+
+        return this.nonStandardPublisher.sendToQueue(targetQueue, message.getBody(), props)
+            .then(() => {
+                return message;
+            });
     }
 
     /**

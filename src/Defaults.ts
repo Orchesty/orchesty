@@ -66,6 +66,7 @@ class Defaults {
      */
     public static getDefaultDrainConfig(topoId: string, node: INodeConfigSkeleton): IDrainConfig {
         const type = "drain.amqp";
+        const faucetConf = Defaults.getDefaultFaucetConfig(topoId, node);
         const settings: IAmqpDrainSettings = {
             node_id: node.id,
             counter: {
@@ -78,6 +79,12 @@ class Defaults {
                 queue: {
                     name: repeaterOptions.input.queue.name || `pipes.repeater`,
                     options: repeaterOptions.input.queue.options || {},
+                },
+            },
+            faucet: {
+                queue: {
+                    name: faucetConf.settings.queue.name,
+                    options: faucetConf.settings.queue.options,
                 },
             },
             followers: node.next.map((nextNode: string) => {

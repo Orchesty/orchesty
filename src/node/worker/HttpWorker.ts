@@ -73,26 +73,19 @@ class HttpWorker implements IWorker {
 
                 // Worker sent result code, react on it's value
                 const result = parseInt(response.headers.result_code, 10);
+                const resultMessage = response.headers.result_message;
 
-                // Successfully processed
                 if (result === ResultCode.SUCCESS) {
-                    logger.info("Worker[type='http'] received 'success' response", logger.ctxFromMsg(msg, err));
-                    msg.setResult({ code: ResultCode.SUCCESS, message: "Http worker OK." });
-                    msg.setContent(JSON.stringify(body));
-
-                    return resolve(msg);
+                    logger.info("Worker[type='http'] received 'SUCCESS' response", logger.ctxFromMsg(msg, err));
+                } else {
+                    logger.warn(
+                        `Worker[type='http'] received response code: "${result}"`,
+                        logger.ctxFromMsg(msg, err),
+                    );
                 }
 
-                if (result === ResultCode.FORCE_TARGET_QUEUE) {
-                    logger.info("Worker[type='http'] received 'repeat' response", logger.ctxFromMsg(msg, err));
-                    msg.setResult({ code: ResultCode.FORCE_TARGET_QUEUE, message: "Http want message to repeat" });
-                    msg.setContent(JSON.stringify(body));
-
-                    return resolve(msg);
-                }
-
-                logger.warn("Worker[type='http'] received 'error' response", logger.ctxFromMsg(msg, err));
-                msg.setResult({ code: result, message: response.headers.result_message });
+                // Set the received result code and message body
+                msg.setResult({ code: result, message: resultMessage });
                 msg.setContent(JSON.stringify(body));
 
                 return resolve(msg);
