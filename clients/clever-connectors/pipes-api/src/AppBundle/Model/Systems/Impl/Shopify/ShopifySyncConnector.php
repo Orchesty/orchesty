@@ -20,8 +20,6 @@ use Doctrine\ODM\MongoDB\DocumentRepository;
 use GuzzleHttp\Psr7\Request;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
-use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
-use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\BatchInterface;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
 use Psr\Http\Message\RequestInterface;
@@ -72,8 +70,8 @@ class ShopifySyncConnector implements BatchInterface, ConnectorInterface
     /**
      * @param ProcessDto $dto
      *
-     * @return ProcessDto
-     * @throws ConnectorException
+     * @return ProcessDto|void
+     * @throws SystemException
      */
     public function processEvent(ProcessDto $dto): ProcessDto
     {
@@ -83,8 +81,8 @@ class ShopifySyncConnector implements BatchInterface, ConnectorInterface
     /**
      * @param ProcessDto $dto
      *
-     * @return ProcessDto
-     * @throws ConnectorException
+     * @return ProcessDto|void
+     * @throws SystemException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {

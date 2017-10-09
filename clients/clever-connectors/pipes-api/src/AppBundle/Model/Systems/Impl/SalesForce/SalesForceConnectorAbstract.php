@@ -18,9 +18,9 @@ use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
-use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\BatchInterface;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
+use Hanaboso\PipesFramework\TopologyGenerator\GeneratorUtils;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use React\Promise\PromiseInterface;
@@ -33,7 +33,7 @@ use React\Promise\PromiseInterface;
 abstract class SalesForceConnectorAbstract implements BatchInterface, ConnectorInterface
 {
 
-    protected const QUERY_URL  = '%sservices/data/v40.0/query?q=%s';
+    protected const QUERY_URL  = '%s/services/data/v40.0/query?q=%s';
     protected const PAGE_LIMIT = 50;
     protected const NODE_NAME  = '';
 
@@ -68,7 +68,7 @@ abstract class SalesForceConnectorAbstract implements BatchInterface, ConnectorI
     /**
      * @param ProcessDto $dto
      *
-     * @return ProcessDto
+     * @return ProcessDto|void
      * @throws ConnectorException
      */
     public function processEvent(ProcessDto $dto): ProcessDto
@@ -79,7 +79,7 @@ abstract class SalesForceConnectorAbstract implements BatchInterface, ConnectorI
     /**
      * @param ProcessDto $dto
      *
-     * @return ProcessDto
+     * @return ProcessDto|void
      * @throws ConnectorException
      */
     public function processAction(ProcessDto $dto): ProcessDto
@@ -139,7 +139,7 @@ abstract class SalesForceConnectorAbstract implements BatchInterface, ConnectorI
      */
     protected function getSystemInstall(ProcessDto $dto): SystemInstall
     {
-        $system = SystemInstall::from(json_decode($dto->getData(), TRUE));
+        $system = SystemInstall::from(json_decode($dto->getData(), TRUE)['data']);
 
         return $this->repo->getSystemInstall($system->getUser(), $system->getToken(), $system->getSystem());
     }
@@ -208,7 +208,7 @@ abstract class SalesForceConnectorAbstract implements BatchInterface, ConnectorI
             );
         }
 
-        $node         = $this->dm->getRepository(Node::class)->findOneBy(['id' => $dto->getHeaders()['node_id']]);
+        $node         = $this->dm->getRepository(Node::class)->findOneBy(['id' => GeneratorUtils::denormalizeName($dto->getHeaders()['node_id'])]);
         $top          = $this->dm->getRepository(Topology::class)->findOneBy(['id' => $node->getTopology()]);
         $topologyName = $top->getName();
         /** @var LastSyncRepository $repo */

@@ -25,7 +25,7 @@ final class SalesForceUpdateConnectorTest extends DatabaseTestCaseAbstract
     public function testProcessBatch(): void
     {
         $this->markTestSkipped();
-        $connector = $this->container->get('hbpf.custom_node.salesforce-update-connector');
+        $connector = $this->container->get('hbpf.connector.salesforce-update-connector');
 
         $topology = (new Topology())->setName('Topology');
         $this->persistAndFlush($topology);
@@ -48,9 +48,11 @@ final class SalesForceUpdateConnectorTest extends DatabaseTestCaseAbstract
 
         $processDto = (new ProcessDto())
             ->setData(Json::encode([
-                'user'   => $system->getUser(),
-                'token'  => $system->getToken(),
-                'system' => $system->getSystem(),
+                "data" => [
+                    'user'   => $system->getUser(),
+                    'token'  => $system->getToken(),
+                    'system' => $system->getSystem(),
+                ],
             ]))->setHeaders([
                 'Authorization' => 'Bearer 00D1I000001WyE7!ARAAQEza5QDZ3b2kfre2tZhM48dzRlC8nnrrmUBHYtUiUYFLvj8nmL3CCquz29k1Yz6q7SnORxPuW.WTuT2in_pxfYuMH_eA',
                 'node_id'       => $node->getId(),
@@ -66,7 +68,7 @@ final class SalesForceUpdateConnectorTest extends DatabaseTestCaseAbstract
             function (): void {
                 $this->assertTrue(TRUE);
             },
-            function (): void {
+            function ($e): void {
                 $this->assertTrue(FALSE);
             }
         )->done();
