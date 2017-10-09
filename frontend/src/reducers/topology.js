@@ -52,7 +52,7 @@ function reducer(state = initialState, action){
       return Object.assign({}, state, {
         tests: Object.assign({}, state.tests, {
           [action.data.id]: Object.assign({}, action.data, {
-            nodes: action.data.nodes.map(item => item.node)
+            nodes: action.data.nodes.map(item => item.id)
           })
         })
       });
