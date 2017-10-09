@@ -6,6 +6,7 @@ use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use DateTime;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\DocumentRepository;
 use Exception;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
@@ -23,7 +24,7 @@ class GetInstallsByExpiresCommand extends Command implements LoggerAwareInterfac
 {
 
     /**
-     * @var SystemInstallRepository
+     * @var DocumentRepository|SystemInstallRepository
      */
     private $repository;
 
