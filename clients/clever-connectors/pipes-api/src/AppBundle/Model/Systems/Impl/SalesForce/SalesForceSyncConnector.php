@@ -10,6 +10,8 @@
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce;
 
 use Clue\React\Buzz\Browser;
+use DateTime;
+use DateTimeZone;
 use GuzzleHttp\Psr7\Request;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Psr\Http\Message\RequestInterface;
@@ -53,6 +55,12 @@ class SalesForceSyncConnector extends SalesForceConnectorAbstract
                     return all($this->doPageLoop($total, $browser, $baseUrl, $callbackItem, $headers));
                 }
             );
+
+        $systemInstall
+            ->setSynchronized(TRUE)
+            ->setSynchronizedTime(new DateTime('now', new DateTimeZone('UTC')));
+
+        $this->dm->flush($systemInstall);
 
         return $promise;
     }

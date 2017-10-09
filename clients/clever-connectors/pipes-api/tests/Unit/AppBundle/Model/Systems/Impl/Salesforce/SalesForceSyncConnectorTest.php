@@ -9,8 +9,10 @@
 
 namespace Tests\Unit\AppBundle\Model\Systems\Impl\Salesforce;
 
+use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce\SalesForceSyncConnector;
 use CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce\SalesForceSystem;
+use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\Uri;
@@ -62,7 +64,14 @@ final class SalesForceSyncConnectorTest extends KernelTestCaseAbstract
      */
     private function mockSync()
     {
+        $systemInstal = $this->createMock(SystemInstallRepository::class);
+        $systemInstal->method('getSystemInstall')->willReturn((new SystemInstall()));
+
         $dm = $this->createMock(DocumentManager::class);
+        $dm
+            ->expects($this->at(0))
+            ->method('getRepository')
+            ->willReturn($systemInstal);
 
         $syncConn = $this->getMockBuilder(SalesForceSyncConnector::class)
             ->setMethods(['fetchData'])

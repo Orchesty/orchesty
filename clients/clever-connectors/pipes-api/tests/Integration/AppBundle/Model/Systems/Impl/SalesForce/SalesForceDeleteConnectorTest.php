@@ -2,6 +2,7 @@
 
 namespace Tests\Integration\AppBundle\Model\Systems\Impl\SalesForce;
 
+use CleverConnectors\AppBundle\Document\SystemInstall;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
@@ -28,6 +29,17 @@ class SalesForceDeleteConnectorTest extends DatabaseTestCaseAbstract
         $topology = (new Topology())->setName('Topology');
         $this->persistAndFlush($topology);
 
+        $system = new SystemInstall();
+        $system
+            ->setUser('u_123')
+            ->setToken('t-456')
+            ->setSystem('s_-879')
+            ->setSettings([
+                'access_token' => '00D1I000001WyE7!ARAAQEza5QDZ3b2kfre2tZhM48dzRlC8nnrrmUBHYtUiUYFLvj8nmL3CCquz29k1Yz6q7SnORxPuW.WTuT2in_pxfYuMH_eA',
+                'instance_url' => 'https://na73.salesforce.com/',
+            ]);
+        $this->persistAndFlush($system);
+
         $node = (new Node())
             ->setName('Node')
             ->setTopology($topology->getId());
@@ -35,10 +47,9 @@ class SalesForceDeleteConnectorTest extends DatabaseTestCaseAbstract
 
         $processDto = (new ProcessDto())
             ->setData(Json::encode([
-                'settings' => [
-                    'access_token' => '00D1I000001WyE7!ARAAQEza5QDZ3b2kfre2tZhM48dzRlC8nnrrmUBHYtUiUYFLvj8nmL3CCquz29k1Yz6q7SnORxPuW.WTuT2in_pxfYuMH_eA',
-                    'instance_url' => 'https://na73.salesforce.com/',
-                ],
+                'user'   => $system->getUser(),
+                'token'  => $system->getToken(),
+                'system' => $system->getSystem(),
             ]))->setHeaders([
                 'Authorization' => 'Bearer 00D1I000001WyE7!ARAAQEza5QDZ3b2kfre2tZhM48dzRlC8nnrrmUBHYtUiUYFLvj8nmL3CCquz29k1Yz6q7SnORxPuW.WTuT2in_pxfYuMH_eA',
                 'node_id'       => $node->getId(),

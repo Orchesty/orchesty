@@ -108,9 +108,9 @@ class LastSync
     }
 
     /**
-     * @return DateTime
+     * @return DateTime|null
      */
-    public function getTimestamp(): DateTime
+    public function getTimestamp(): ?DateTime
     {
         return $this->timestamp;
     }

@@ -45,7 +45,7 @@ class SalesForceDeleteConnector extends SalesForceConnectorAbstract
         $endTime   = new DateTime('now');
 
         $timeQuery = $this->getTimeQuery($startTime, $endTime) . '+AND+IsDeleted=TRUE';
-        $countReq = $this->createCountRequest($baseUrl, $headers, $timeQuery);
+        $countReq  = $this->createCountRequest($baseUrl, $headers, $timeQuery);
 
         $promise = $this->fetchData($browser, $countReq)
             ->then(function (ResponseInterface $response): int {
@@ -57,9 +57,6 @@ class SalesForceDeleteConnector extends SalesForceConnectorAbstract
                 }
             );
 
-        if (!$lastSync) {
-            $lastSync = $this->createLastSync($systemInstall, self::NODE_NAME, $topologyName);
-        }
         $lastSync->setTimestamp($endTime);
         $this->dm->flush();
 

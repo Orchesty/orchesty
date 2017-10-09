@@ -46,12 +46,12 @@ class SalesForceUpdateConnector extends SalesForceConnectorAbstract
         $headers       = $dto->getHeaders();
         $topologyName  = '';
 
-        $lastSync = $this->getLastSync($dto, $systemInstall, $topologyName);
+        $lastSync  = $this->getLastSync($dto, $systemInstall, $topologyName);
         $startTime = $lastSync ? $lastSync->getTimestamp() : NULL;
         $endTime   = new DateTime('now');
 
         $timeQuery = $this->getTimeQuery($startTime, $endTime);
-        $countReq = $this->createCountRequest($baseUrl, $headers, $timeQuery);
+        $countReq  = $this->createCountRequest($baseUrl, $headers, $timeQuery);
 
         $promise = $this->fetchData($browser, $countReq)
             ->then(
@@ -64,9 +64,6 @@ class SalesForceUpdateConnector extends SalesForceConnectorAbstract
                 }
             );
 
-        if (!$lastSync) {
-            $lastSync = $this->createLastSync($systemInstall, self::NODE_NAME, $topologyName);
-        }
         $lastSync->setTimestamp($endTime);
         $this->dm->flush();
 

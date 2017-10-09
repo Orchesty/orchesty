@@ -10,9 +10,11 @@
 namespace Tests\Unit\AppBundle\Model\Systems\Impl\Salesforce;
 
 use CleverConnectors\AppBundle\Document\LastSync;
+use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce\SalesForceDeleteConnector;
 use CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce\SalesForceSystem;
 use CleverConnectors\AppBundle\Repository\LastSyncRepository;
+use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use DateTime;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Response;
@@ -78,17 +80,24 @@ final class SalesForceDeleteConnectorTest extends KernelTestCaseAbstract
         $lastSync = $this->createMock(LastSyncRepository::class);
         $lastSync->method('getLastSyncTime')->willReturn((new LastSync())->setTimestamp(new DateTime()));
 
+        $systemInstal = $this->createMock(SystemInstallRepository::class);
+        $systemInstal->method('getSystemInstall')->willReturn((new SystemInstall())->setUser('12')->setToken('12')->setSystem('123'));
+
         $dm = $this->createMock(DocumentManager::class);
         $dm
             ->expects($this->at(0))
             ->method('getRepository')
-            ->willReturn($node);
+            ->willReturn($systemInstal);
         $dm
             ->expects($this->at(1))
             ->method('getRepository')
-            ->willReturn($topo);
+            ->willReturn($node);
         $dm
             ->expects($this->at(2))
+            ->method('getRepository')
+            ->willReturn($topo);
+        $dm
+            ->expects($this->at(3))
             ->method('getRepository')
             ->willReturn($lastSync);
 

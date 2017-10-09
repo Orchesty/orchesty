@@ -6,9 +6,11 @@ use CleverConnectors\AppBundle\Document\LastSync;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Repository\LastSyncRepository;
+use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use Clue\React\Buzz\Browser;
 use DateTime;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\DocumentRepository;
 use Exception;
 use GuzzleHttp\Psr7\Request;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
@@ -44,6 +46,11 @@ abstract class SalesForceConnectorAbstract implements BatchInterface, CustomNode
     protected $dm;
 
     /**
+     * @var SystemInstallRepository|DocumentRepository
+     */
+    private $repo;
+
+    /**
      * SalesForceDeleteConnector constructor.
      *
      * @param SalesForceSystem $system
@@ -53,6 +60,7 @@ abstract class SalesForceConnectorAbstract implements BatchInterface, CustomNode
     {
         $this->system = $system;
         $this->dm     = $dm;
+        $this->repo   = $this->dm->getRepository(SystemInstall::class);
     }
 
     /**
@@ -118,7 +126,9 @@ abstract class SalesForceConnectorAbstract implements BatchInterface, CustomNode
      */
     protected function getSystemInstall(ProcessDto $dto): SystemInstall
     {
-        return SystemInstall::from(json_decode($dto->getData(), TRUE));
+        $system = SystemInstall::from(json_decode($dto->getData(), TRUE));
+
+        return $this->repo->getSystemInstall($system->getUser(), $system->getToken(), $system->getSystem());
     }
 
     /**
@@ -191,7 +201,17 @@ abstract class SalesForceConnectorAbstract implements BatchInterface, CustomNode
         /** @var LastSyncRepository $repo */
         $repo = $this->dm->getRepository(LastSync::class);
 
-        return $repo->getLastSyncTime($systemInstall->getUser(), $topologyName, static::NODE_NAME);
+        $lastSync = $repo->getLastSyncTime($systemInstall->getUser(), $topologyName, static::NODE_NAME);
+
+        if (!$lastSync) {
+            $lastSync = $this->createLastSync($systemInstall, self::NODE_NAME, $topologyName);
+        }
+
+        if ($systemInstall->isSynchronized() && $systemInstall->getSynchronizedTime()) {
+            $lastSync->setTimestamp($systemInstall->getSynchronizedTime());
+        }
+
+        return $lastSync;
     }
 
     /**
@@ -204,7 +224,8 @@ abstract class SalesForceConnectorAbstract implements BatchInterface, CustomNode
     protected function createLastSync(SystemInstall $systemInstall, string $node, string $topology): LastSync
     {
         $lastSync = new LastSync();
-        $lastSync->setUser($systemInstall->getUser())
+        $lastSync
+            ->setUser($systemInstall->getUser())
             ->setNodeName($node)
             ->setTopologyName($topology);
         $this->dm->persist($lastSync);
