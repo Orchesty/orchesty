@@ -9,6 +9,7 @@ use CleverConnectors\AppBundle\Model\Form\Field;
 use CleverConnectors\AppBundle\Model\Form\Form;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\OAuth2Interface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\Traits\AuthorizationTrait;
+use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\WebhookSystemTrait;
 use CleverConnectors\AppBundle\Model\Systems\WebhookSubscribes;
 use CleverConnectors\AppBundle\Model\Systems\WebhookSystemInterface;
@@ -18,7 +19,6 @@ use Hanaboso\PipesFramework\Authorization\Provider\Dto\OAuth2Dto;
 use Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
-use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
 
 /**
  * Class ShopifySystem
@@ -45,11 +45,6 @@ class ShopifySystem implements WebhookSystemInterface, OAuth2Interface
     private $provider;
 
     /**
-     * @var CurlManagerInterface
-     */
-    private $curl;
-
-    /**
      * @var array
      */
     private $topics = [
@@ -68,10 +63,9 @@ class ShopifySystem implements WebhookSystemInterface, OAuth2Interface
     /**
      * ShopifySystem constructor.
      *
-     * @param OAuth2Provider       $provider
-     * @param CurlManagerInterface $curl
+     * @param OAuth2Provider $provider
      */
-    function __construct(OAuth2Provider $provider, CurlManagerInterface $curl)
+    function __construct(OAuth2Provider $provider)
     {
         $this->provider = $provider;
 
@@ -84,7 +78,6 @@ class ShopifySystem implements WebhookSystemInterface, OAuth2Interface
         $this->subscriptions[] = new WebhookSubscribes('shopify-customer-delete', 'topology',
             self::WEBHOOK_SUBSCRIBE_URL, self::WEBHOOK_UNSUBSCRIBE_URL);
 
-        $this->curl = $curl;
     }
 
     /**
@@ -283,13 +276,22 @@ class ShopifySystem implements WebhookSystemInterface, OAuth2Interface
 
     /**
      * @param SystemInstall $systemInstall
-     * @param RequestDto    $dto
+     * @param string        $method
      *
-     * @return ResponseDto
+     * @return RequestDto
+     * @throws SystemException
      */
-    public function sendRequest(SystemInstall $systemInstall, RequestDto $dto): ResponseDto
+    public function getRequestDto(SystemInstall $systemInstall, string $method): RequestDto
     {
-        return $this->curl->send($dto->setHeaders(array_merge($this->getHeaders($systemInstall), $dto->getHeaders())));
+        if (!$this->isAuthorized($systemInstall)) {
+            throw new SystemException('SalesForce is not Authorized!', SystemException::SYSTEM_IS_UNAUTHORIZED);
+        }
+
+        $url = sprintf('https://%s.myshopify.com/', $systemInstall->getSettings()[self::SYSTEM_URL]);
+        $dto = new RequestDto($method, new Uri($url));
+        $dto->setHeaders($this->getHeaders($systemInstall));
+
+        return $dto;
     }
 
     /**

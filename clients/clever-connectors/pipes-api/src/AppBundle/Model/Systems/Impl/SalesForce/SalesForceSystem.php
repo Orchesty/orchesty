@@ -18,9 +18,7 @@ use CleverConnectors\AppBundle\Utils\AuthorizationUtils;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Authorization\Provider\Dto\OAuth2Dto;
 use Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider;
-use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
-use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 
 /**
  * Class SalesForceSystem
@@ -40,11 +38,6 @@ class SalesForceSystem implements OAuth2Interface
     private const API_URL = 'na73.lightning.force.com';
 
     /**
-     * @var CurlManager
-     */
-    private $curl;
-
-    /**
      * @var OAuth2Provider
      */
     private $provider;
@@ -52,12 +45,10 @@ class SalesForceSystem implements OAuth2Interface
     /**
      * SalesForceSystem constructor.
      *
-     * @param CurlManager    $curl
      * @param OAuth2Provider $provider
      */
-    public function __construct(CurlManager $curl, OAuth2Provider $provider)
+    public function __construct(OAuth2Provider $provider)
     {
-        $this->curl     = $curl;
         $this->provider = $provider;
     }
 
@@ -164,16 +155,15 @@ class SalesForceSystem implements OAuth2Interface
 
     /**
      * @param SystemInstall $systemInstall
-     * @param RequestDto    $dto
+     * @param string        $method
      *
-     * @return ResponseDto
+     * @return RequestDto
      * @throws SystemException
      */
-    public function sendRequest(SystemInstall $systemInstall, RequestDto $dto): ResponseDto
+    public function getRequestDto(SystemInstall $systemInstall, string $method): RequestDto
     {
-
         if (!$this->isAuthorized($systemInstall)) {
-            throw new SystemException('SalesForce is not Authorized!');
+            throw new SystemException('SalesForce is not Authorized!', SystemException::SYSTEM_IS_UNAUTHORIZED);
         }
 
         $headers = [
@@ -182,13 +172,10 @@ class SalesForceSystem implements OAuth2Interface
             'Authorization' => sprintf('Bearer %s', $systemInstall->getSettings()[OAuth2Provider::ACCESS_TOKEN]),
         ];
 
-        $url = sprintf('%s/%s', $systemInstall->getSettings()[self::API_URL], ltrim((string) $dto->getUri(), '/'));
+        $dto = new RequestDto($method, new Uri($systemInstall->getSettings()[self::API_URL]));
+        $dto->setHeaders(array_merge($headers, $dto->getHeaders()));
 
-        $dto
-            ->setHeaders(array_merge($headers, $dto->getHeaders()))
-            ->setUri(new Uri($url));
-
-        return $this->curl->send($dto);
+        return $dto;
     }
 
     /**

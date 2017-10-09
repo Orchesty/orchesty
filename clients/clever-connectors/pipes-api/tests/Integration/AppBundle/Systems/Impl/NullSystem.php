@@ -44,8 +44,8 @@ class NullSystem implements WebhookSystemInterface, OAuth2Interface
      */
     function __construct(OAuth2Provider $provider)
     {
-        $this->provider = $provider;
-        $this->subscriptions[]   = new WebhookSubscribes('node', 'top', 'uriReg', 'uriUnreg');
+        $this->provider        = $provider;
+        $this->subscriptions[] = new WebhookSubscribes('node', 'top', 'uriReg', 'uriUnreg');
     }
 
     /**
@@ -209,13 +209,13 @@ class NullSystem implements WebhookSystemInterface, OAuth2Interface
 
     /**
      * @param SystemInstall $systemInstall
-     * @param RequestDto    $dto
+     * @param string        $method
      *
-     * @return ResponseDto
+     * @return RequestDto
      */
-    public function sendRequest(SystemInstall $systemInstall, RequestDto $dto): ResponseDto
+    public function getRequestDto(SystemInstall $systemInstall, string $method): RequestDto
     {
-        return new ResponseDto(200, '', '', []);
+        return new RequestDto('POST', new Uri(''));
     }
 
     /**

@@ -16,5 +16,6 @@ final class SystemException extends Exception
     public const SYSTEM_METHOD_NOT_FOUND   = 2;
     public const SYSTEM_PROPERTY_NOT_FOUND = 3;
     public const SYSTEM_OR_USER_NOT_FOUND  = 4;
+    public const SYSTEM_IS_UNAUTHORIZED    = 5;
 
 }
