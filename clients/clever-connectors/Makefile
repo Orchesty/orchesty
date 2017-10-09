@@ -23,6 +23,12 @@ init-dev: .env
 	$(DC_DEV) up -d --force-recreate --remove-orphans
 	$(DE_DEV) monolith-fpm composer global require hirak/prestissimo
 	$(DE_DEV) monolith-fpm composer install --ignore-platform-reqs
+	$(DE_DEV) batch composer global require hirak/prestissimo
+	$(DE_DEV) batch composer install --ignore-platform-reqs
+	$(DE_DEV) batch-connector composer global require hirak/prestissimo
+	$(DE_DEV) batch-connector composer install --ignore-platform-reqs
+	$(DE_DEV) batch-connector nohup php bin/console rabbit-mq:async-consumer batch-connector &
+	$(DE_DEV) batch nohup php bin/console rabbit-mq:async-consumer batch &
 	#$(DE_DEV) magento install-sampledata
 	#$(DE_DEV) magento install-magento
 

@@ -17,7 +17,7 @@ services:
         depends_on:
           - mongo
           - rabbitmq
-        command: bash -c "composer install && bin/console rabbit-mq:async-consumer batch"
+        #command: bash -c "composer install && bin/console rabbit-mq:async-consumer batch"
 
     batch-connector:
         image: dkr.hanaboso.net/pipes/pipes/php-dev:dev
@@ -32,7 +32,7 @@ services:
         depends_on:
           - mongo
           - rabbitmq
-        command: bash -c "composer install && rabbit-mq:async-consumer batch-connector"
+        #command: bash -c "composer install && rabbit-mq:async-consumer batch-connector"
 
     # PHP Services monolith
     monolith-fpm:
