@@ -229,13 +229,18 @@ class AmqpRpcWorker implements IWorker {
         const origContent = JSON.parse(stored.message.getContent());
         const newContent = JSON.parse(resultMsg.content.toString());
 
+        const headers = this.mergeHeaders(
+            JSON.parse(JSON.stringify(stored.message.getHeaders())),
+            JSON.parse(JSON.stringify(resultMsg.properties.headers)),
+        );
+
         const splitMsg = new JobMessage(
             this.settings.node_id,
             stored.message.getCorrelationId(),
             stored.message.getProcessId(),
             stored.message.getParentId(),
             stored.sequence,
-            JSON.parse(JSON.stringify(stored.message.getHeaders())), // simple object cloning,
+            headers,
             new Buffer(JSON.stringify({ data: newContent.data, settings: origContent.settings})),
 
             { code: ResultCode.SUCCESS, message: `Part ${stored.sequence}` },
@@ -289,6 +294,30 @@ class AmqpRpcWorker implements IWorker {
             code: ResultCode.MESSAGE_ALREADY_BEING_PROCESSED,
             message: `Message[correlation_id=${msg.getCorrelationId()}] is already being processed.`,
         });
+    }
+
+    /**
+     *
+     * @param one
+     * @param two
+     * @return {{}}
+     */
+    private mergeHeaders(one: any, two: any): {} {
+        const merged: any = {};
+
+        for (const key in one) {
+            if (one.hasOwnProperty(key)) {
+                merged[key] = one[key];
+            }
+        }
+
+        for (const key in two) {
+            if (two.hasOwnProperty(key)) {
+                merged[key] = two[key];
+            }
+        }
+
+        return merged;
     }
 
 }
