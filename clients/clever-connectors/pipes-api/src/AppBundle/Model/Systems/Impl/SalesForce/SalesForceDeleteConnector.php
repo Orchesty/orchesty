@@ -21,7 +21,7 @@ class SalesForceDeleteConnector extends SalesForceConnectorAbstract
 {
 
     protected const   NODE_NAME = 'salesforce-delete-connector';
-    protected const   QUERY_URL = '%sservices/data/v40.0/queryAll?q=%s';
+    protected const   QUERY_URL = '%s/services/data/v40.0/queryAll?q=%s';
 
     /**
      * @param ProcessDto    $dto
@@ -37,7 +37,7 @@ class SalesForceDeleteConnector extends SalesForceConnectorAbstract
         $systemInstall = $this->getSystemInstall($dto);
         $requestDto    = $this->system->getRequestDto($systemInstall, 'GET');
         $baseUrl       = (string) $requestDto->getUri();
-        $headers       = $dto->getHeaders();
+        $headers       = $requestDto->getHeaders();
         $topologyName  = '';
 
         $lastSync  = $this->getLastSync($dto, $systemInstall, $topologyName);

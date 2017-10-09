@@ -38,12 +38,12 @@ class SalesForceUpdateConnector extends SalesForceConnectorAbstract
      */
     public function processBatch(ProcessDto $dto, LoopInterface $loop, callable $callbackItem): PromiseInterface
     {
-        $browser = new Browser($loop);
+        $browser       = new Browser($loop);
         $systemInstall = $this->getSystemInstall($dto);
-        $requestDto = $this->system->getRequestDto($systemInstall, 'GET');
-        $baseUrl = (string) $requestDto->getUri();
-        $headers      = $requestDto->getHeaders();
-        $topologyName = '';
+        $requestDto    = $this->system->getRequestDto($systemInstall, 'GET');
+        $baseUrl       = (string) $requestDto->getUri();
+        $headers       = $requestDto->getHeaders();
+        $topologyName  = '';
 
         $lastSync  = $this->getLastSync($dto, $systemInstall, $topologyName);
         $startTime = $lastSync ? $lastSync->getTimestamp() : NULL;

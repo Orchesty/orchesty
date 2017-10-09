@@ -46,8 +46,8 @@ final class SalesForceDeleteConnectorTest extends KernelTestCaseAbstract
 
         $processDto = new ProcessDto();
         $processDto
-            ->setHeaders(['node_id' => 2234])
-            ->setData(json_encode(['settings' => [], 'user' => '123']));
+            ->setHeaders(['node_id' => '2234-awdawd'])
+            ->setData(json_encode(['data' => ['settings' => [], 'user' => '123']]));
 
         /** @var SalesForceDeleteConnector $syncConn */
         $syncConn = $this->mockSync();
@@ -81,7 +81,8 @@ final class SalesForceDeleteConnectorTest extends KernelTestCaseAbstract
         $lastSync->method('getLastSyncTime')->willReturn((new LastSync())->setTimestamp(new DateTime()));
 
         $systemInstal = $this->createMock(SystemInstallRepository::class);
-        $systemInstal->method('getSystemInstall')->willReturn((new SystemInstall())->setUser('12')->setToken('12')->setSystem('123'));
+        $systemInstal->method('getSystemInstall')->willReturn((new SystemInstall())->setUser('12')->setToken('12')
+            ->setSystem('123'));
 
         $dm = $this->createMock(DocumentManager::class);
         $dm

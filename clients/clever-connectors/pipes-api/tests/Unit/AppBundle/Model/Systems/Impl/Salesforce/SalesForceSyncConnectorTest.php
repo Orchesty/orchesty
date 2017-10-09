@@ -40,7 +40,7 @@ final class SalesForceSyncConnectorTest extends KernelTestCaseAbstract
         $processDto = new ProcessDto();
         $processDto
             ->setHeaders([])
-            ->setData(json_encode(['settings' => [], 'user' => '123']));
+            ->setData(json_encode(['data' => ['settings' => [], 'user' => '123']]));
 
         /** @var SalesForceSyncConnector $syncConn */
         $syncConn = $this->mockSync();
