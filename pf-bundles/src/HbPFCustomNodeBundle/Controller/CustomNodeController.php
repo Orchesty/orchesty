@@ -74,7 +74,7 @@ class CustomNodeController extends FOSRestController
     }
 
     /**
-     * @Route("/custom_node/{nodeId}/process/test", defaults={}, requirements={"nodeId": "\w+"})
+     * @Route("/custom_node/{nodeId}/process/test", defaults={})
      * @Method({"GET", "OPTIONS"})
      *
      * @param string $nodeId
