@@ -41,7 +41,7 @@ export interface IAmqpDrainSettings {
             name: string,
             options: any,
         },
-    },
+    };
     followers: IFollower[];
     resequencer: boolean;
 }
