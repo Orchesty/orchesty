@@ -161,6 +161,10 @@ abstract class CMSubscriptionConnectorAbstract extends CMAuthorization implement
         $data = str_replace(PHP_EOL, '', $data);
         $dto->setData($data);
 
+        // @todo vyresit predavani custom hlavicek
+        $header = $dto->getHeaders();
+        $dto->setHeaders(['token' => $header['token'], 'guid' => $header['guid']]);
+
         return $dto;
     }
 
