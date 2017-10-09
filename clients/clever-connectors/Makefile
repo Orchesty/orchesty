@@ -4,6 +4,7 @@ DEV_YML?="docker-compose.dev.yml"
 
 DC_DEV=docker-compose -f $(DEV_YML)
 DE_DEV=docker-compose -f $(DEV_YML) exec -T
+DE_DEVT=docker-compose -f $(DEV_YML) exec
 DC_PROD=docker-compose -f docker-compose.prod.yml
 DE_PROD=docker-compose -f docker-compose.prod.yml exec -T
 
@@ -27,8 +28,8 @@ init-dev: .env
 	$(DE_DEV) batch composer install --ignore-platform-reqs
 	$(DE_DEV) batch-connector composer global require hirak/prestissimo
 	$(DE_DEV) batch-connector composer install --ignore-platform-reqs
-	$(DE_DEV) batch-connector nohup php bin/console rabbit-mq:async-consumer batch-connector &
-	$(DE_DEV) batch nohup php bin/console rabbit-mq:async-consumer batch &
+	$(DE_DEVT) batch-connector nohup php bin/console rabbit-mq:async-consumer batch-connector &
+	$(DE_DEVT) batch nohup php bin/console rabbit-mq:async-consumer batch &
 	#$(DE_DEV) magento install-sampledata
 	#$(DE_DEV) magento install-magento
 
