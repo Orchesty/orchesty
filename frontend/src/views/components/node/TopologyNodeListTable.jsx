@@ -37,12 +37,13 @@ class TopologyNodeListTable extends React.Component{
 }
 
 function mapStateToProps(state, ownProps) {
-  const {node} = state;
+  const {node, topology} = state;
   const list = node.lists['@topology-' + ownProps.topologyId];
   return {
     list: list,
     state: list && list.state,
     elements: node.elements,
+    topologyElements: topology.elements,
     tests: node.tests,
     withTopology: ownProps.withTopology !== undefined ? ownProps.withTopology : false,
     withNodeTest: ownProps.withNodeTest !== undefined ? ownProps.withNodeTest : true
