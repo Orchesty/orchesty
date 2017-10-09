@@ -69,7 +69,7 @@ class SalesForceDeleteConnector extends SalesForceConnectorAbstract
 
         $startTime = $lastSync->getLastSyncTime($systemInstall->getUser(), $top->getName(), self::NODE_NAME);
         $endTime   = new DateTime('now');
-        $timeQuery = $this->getTimeQuery($startTime, $endTime) . '+AND+IsDeleted+TRUE';
+        $timeQuery = $this->getTimeQuery($startTime, $endTime) . '+AND+IsDeleted=TRUE';
 
         $countReq = $this->createCountRequest($baseUrl, $headers,  $timeQuery);
 
@@ -117,7 +117,7 @@ class SalesForceDeleteConnector extends SalesForceConnectorAbstract
      */
     private function createPageContactRequest(string $baseUrl, array $headers, string $timeQuery, int $page): RequestInterface
     {
-        $query = sprintf('select+email+from+contact%s+limit+%s,+%s', $timeQuery, self::PAGE_LIMIT,
+        $query = sprintf('select+email+from+contact%s+limit+%s+offset+%s', $timeQuery, self::PAGE_LIMIT,
             self::PAGE_LIMIT * $page);
 
         return new Request('GET', sprintf(static::QUERY_URL, $baseUrl, $query), $headers);

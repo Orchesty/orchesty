@@ -121,7 +121,7 @@ class SalesForceUpdateConnector extends SalesForceConnectorAbstract
      */
     private function createPageContactRequest(string $baseUrl, array $headers, string $timeQuery, int $page): RequestInterface
     {
-        $query = sprintf('select+email,+firstname,+lastname+from+contact%s+limit+%s,+%s', $timeQuery, self::PAGE_LIMIT,
+        $query = sprintf('select+email,+firstname,+lastname+from+contact%s+limit+%s+offset+%s', $timeQuery, self::PAGE_LIMIT,
             self::PAGE_LIMIT * $page);
 
         return new Request('GET', sprintf(self::QUERY_URL, $baseUrl, $query), $headers);

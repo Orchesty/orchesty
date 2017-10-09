@@ -6,6 +6,7 @@ use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use Clue\React\Buzz\Browser;
 use DateTime;
+use DateTimeZone;
 use Exception;
 use GuzzleHttp\Psr7\Request;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
@@ -61,14 +62,14 @@ abstract class SalesForceConnectorAbstract implements BatchInterface, CustomNode
      */
     protected function getTimeQuery(?DateTime $from, DateTime $to): string
     {
-        $timeQuery = '';
+        $timeQuery = '+';
 
         if ($from) {
-            $timeQuery = ltrim(http_build_query(['q' => '+where+LastModifiedDate>' . $from->format(DateTime::ISO8601)]),
+            $timeQuery .= ltrim(http_build_query(['q' => 'where LastModifiedDate>' . $from->format(DateTime::ISO8601)]),
                 'q=');
         }
-        $timeQuery .= ($timeQuery === '' ? '' : '+and') .
-            ltrim(http_build_query(['q' => '+where+LastModifiedDate<=' . $to->format(DateTime::ISO8601)]), 'q=');
+        $timeQuery .= ($timeQuery === '+' ? '' : 'and+') .
+            ltrim(http_build_query(['q' => 'where LastModifiedDate<=' . $to->format(DateTime::ISO8601)]), 'q=');
 
         return $timeQuery;
     }

@@ -22,7 +22,7 @@ class SalesforceDeleteContactMapperTest extends ConnectorTestCaseAbstract
         $connector = $this->container->get('hbpf.custom_node.salesforce-contact-delete-mapper');
 
         $response = Json::decode(
-            $connector->process((new ProcessDto())->setData(file_get_contents(__DIR__ . '/data/SalesforceContactDeleted.json')))
+            $connector->process((new ProcessDto())->setData(file_get_contents(__DIR__ . '/data/SalesForceSingleDeletedContactItem.json')))
                 ->getData(),
             TRUE
         );
