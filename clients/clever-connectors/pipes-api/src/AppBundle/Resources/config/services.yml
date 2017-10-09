@@ -85,6 +85,18 @@ services:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce\SalesForceDeleteContactMapper
         arguments:
 
+    hbpf.custom_node.salesforce-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce\SalesForceUpdateConnector
+        arguments:
+            - '@systems.salesforce'
+            - '@doctrine_mongodb.odm.default_document_manager'
+
+    hbpf.custom_node.salesforce-delete-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce\SalesForceDeleteConnector
+        arguments:
+            - '@systems.salesforce'
+            - '@doctrine_mongodb.odm.default_document_manager'
+
     systems.shopify:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\ShopifySystem
         arguments:

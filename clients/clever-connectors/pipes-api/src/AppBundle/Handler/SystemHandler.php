@@ -95,6 +95,8 @@ class SystemHandler
             'system' => $systemKey,
         ]);
 
+        return [$systemInstall->getSettings()['access_token']];
+
         return $this->manager->getUserSystem($systemInstall);
     }
 
