@@ -11,11 +11,11 @@ use React\EventLoop\Factory;
 use Tests\DatabaseTestCaseAbstract;
 
 /**
- * Class SalesForceUpdateConnectorTest
+ * Class SalesForceDeleteConnectorTest
  *
  * @package Tests\Integration\AppBundle\Model\Systems\Impl\SalesForce
  */
-final class SalesForceUpdateConnectorTest extends DatabaseTestCaseAbstract
+class SalesForceDeleteConnectorTest extends DatabaseTestCaseAbstract
 {
 
     /**
@@ -23,7 +23,7 @@ final class SalesForceUpdateConnectorTest extends DatabaseTestCaseAbstract
      */
     public function testProcessBatch(): void
     {
-        $connector = $this->container->get('hbpf.custom_node.salesforce-update-connector');
+        $connector = $this->container->get('hbpf.custom_node.salesforce-delete-connector');
 
         $topology = (new Topology())->setName('Topology');
         $this->persistAndFlush($topology);

@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Integration\AppBundle\Model\Systems\Impl\SalesForce;
+namespace Tests\Integration\AppBundle\Model\Systems\Impl\Shopify;
 
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
@@ -11,11 +11,11 @@ use React\EventLoop\Factory;
 use Tests\DatabaseTestCaseAbstract;
 
 /**
- * Class SalesForceUpdateConnectorTest
+ * Class ShopifySyncConnectorTest
  *
- * @package Tests\Integration\AppBundle\Model\Systems\Impl\SalesForce
+ * @package Tests\Integration\AppBundle\Model\Systems\Impl\Shopify
  */
-final class SalesForceUpdateConnectorTest extends DatabaseTestCaseAbstract
+class ShopifySyncConnectorTest extends DatabaseTestCaseAbstract
 {
 
     /**
@@ -23,7 +23,7 @@ final class SalesForceUpdateConnectorTest extends DatabaseTestCaseAbstract
      */
     public function testProcessBatch(): void
     {
-        $connector = $this->container->get('hbpf.custom_node.salesforce-update-connector');
+        $connector = $this->container->get('hbpf.custom_node.shopify-sync-connector');
 
         $topology = (new Topology())->setName('Topology');
         $this->persistAndFlush($topology);
@@ -36,12 +36,12 @@ final class SalesForceUpdateConnectorTest extends DatabaseTestCaseAbstract
         $processDto = (new ProcessDto())
             ->setData(Json::encode([
                 'settings' => [
-                    'access_token' => '00D1I000001WyE7!ARAAQEza5QDZ3b2kfre2tZhM48dzRlC8nnrrmUBHYtUiUYFLvj8nmL3CCquz29k1Yz6q7SnORxPuW.WTuT2in_pxfYuMH_eA',
-                    'instance_url' => 'https://na73.salesforce.com/',
+                    'access_token' => '676ae188bd76d1957884be07c4af4e85',
+                    'system_url'   => 'ndflakee',
                 ],
             ]))->setHeaders([
-                'Authorization' => 'Bearer 00D1I000001WyE7!ARAAQEza5QDZ3b2kfre2tZhM48dzRlC8nnrrmUBHYtUiUYFLvj8nmL3CCquz29k1Yz6q7SnORxPuW.WTuT2in_pxfYuMH_eA',
-                'node_id'       => $node->getId(),
+                'X-Shopify-Access-Token' => '676ae188bd76d1957884be07c4af4e85',
+                'node_id'                => $node->getId(),
             ]);
 
         $loop = Factory::create();

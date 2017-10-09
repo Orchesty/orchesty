@@ -85,7 +85,17 @@ services:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce\SalesForceDeleteContactMapper
         arguments:
 
-    hbpf.custom_node.salesforce-connector:
+    hbpf.custom_node.shopify-sync-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\ShopifySyncConnector
+        arguments:
+            - '@systems.shopify'
+
+    hbpf.custom_node.salesforce-sync-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce\SalesForceSyncConnector
+        arguments:
+            - '@systems.salesforce'
+
+    hbpf.custom_node.salesforce-update-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce\SalesForceUpdateConnector
         arguments:
             - '@systems.salesforce'

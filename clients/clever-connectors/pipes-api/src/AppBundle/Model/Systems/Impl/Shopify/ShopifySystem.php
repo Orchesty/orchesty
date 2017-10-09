@@ -30,8 +30,8 @@ class ShopifySystem implements WebhookSystemInterface, OAuth2Interface
 
     private const SYSTEM_URL = 'system_url';
 
-    private const API_KEY    = 'api_key';
-    private const API_SECRET = 'api_secret';
+    private const API_KEY    = '91f0d11786afbe82fc72d519356bc7f2';
+    private const API_SECRET = '469a399914df80fab1e223b18d9d95bc';
 
     private const WEBHOOK_SUBSCRIBE_URL   = 'https://%s.myshopify.com/admin/webhooks.json';
     private const WEBHOOK_UNSUBSCRIBE_URL = 'https://%s.myshopify.com/admin/webhooks/%s.json';
@@ -317,8 +317,8 @@ class ShopifySystem implements WebhookSystemInterface, OAuth2Interface
         $settings = $systemInstall->getSettings();
 
         $dto = new OAuth2Dto(
-            $settings[self::API_KEY],
-            $settings[self::API_SECRET],
+            self::API_KEY,
+            self::API_SECRET,
             AuthorizationUtils::generateUrl(),
             sprintf('https://%s.myshopify.com/admin/oauth/authorize', $settings[self::SYSTEM_URL]),
             sprintf('https://%s.myshopify.com/admin/oauth/access_token', $settings[self::SYSTEM_URL])
