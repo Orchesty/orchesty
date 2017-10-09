@@ -138,7 +138,10 @@ class UserMessageGenerator implements BatchInterface, CustomNodeInterface
     public function prepareData(array $item, int $i): PromiseInterface
     {
         $message = new SuccessMessage($i);
-        $message->setData(json_encode($item));
+        $message
+            ->setData(json_encode($item))
+            ->addHeaders('token', $item['token'] ?? '')
+            ->addHeaders('guid', $item['user'] ?? '');
 
         return resolve($message);
     }

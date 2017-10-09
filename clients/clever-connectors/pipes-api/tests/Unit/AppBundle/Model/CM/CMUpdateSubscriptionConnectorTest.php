@@ -2,7 +2,6 @@
 
 namespace Tests\Unit\AppBundle\Model\CM;
 
-use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\CM\SubscriptionConnector\CMUpdateSubscriptionConnector;
 use GuzzleHttp\Client;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
@@ -57,17 +56,6 @@ class CMUpdateSubscriptionConnectorTest extends KernelTestCaseAbstract
             'token' => 'ttoken', 'guid' => 'gguid', 'email' => 'eml@eml.com',
         ]));
         self::assertEquals('someBody', $res->getData());
-    }
-
-    /**
-     *
-     */
-    public function testCMConnectorsMissingEmail(): void
-    {
-        $conn = $this->container->get('hbpf.connector.cleverconnectors-subscriptions-update');
-        $this->expectException(CleverConnectorsException::class);
-        $this->expectExceptionCode(CleverConnectorsException::MISSING_DATA);
-        $conn->processAction((new ProcessDto())->setData('')->setHeaders(['token' => 'token', 'guid' => 'gguid']));
     }
 
 }

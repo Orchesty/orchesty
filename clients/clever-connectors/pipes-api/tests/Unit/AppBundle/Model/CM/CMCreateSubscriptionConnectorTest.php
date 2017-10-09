@@ -53,7 +53,7 @@ class CMCreateSubscriptionConnectorTest extends KernelTestCaseAbstract
         $curl->method('send')->willReturn(new ResponseDto(200, '', 'someBody', []));
         $conn = new CMCreateSubscriptionConnector($curl, ['cert' => '', 'ca'=> '']);
 
-        $res = $conn->processAction((new ProcessDto())->setData('')->setHeaders([
+        $res = $conn->processAction((new ProcessDto())->setData('{"data":[]}')->setHeaders([
             'token' => 'ttoken', 'guid' => 'gguid',
         ]));
         self::assertEquals('someBody', $res->getData());

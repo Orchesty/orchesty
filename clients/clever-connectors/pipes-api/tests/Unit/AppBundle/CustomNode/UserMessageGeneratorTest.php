@@ -152,8 +152,9 @@ class UserMessageGeneratorTest extends KernelTestCase
                 // Test if resolve
                 $this->assertTrue(TRUE);
                 $loop->stop();
-            }, function () use ($loop): void {
+            }, function ($e) use ($loop): void {
                 // Test if reject
+                var_dump($e);
                 $this->assertTrue(FALSE);
                 $loop->stop();
             })
@@ -175,10 +176,10 @@ class UserMessageGeneratorTest extends KernelTestCase
         $callback = new UserMessageGenerator($serializer, $this->projectDir);
 
         $callback
-            ->prepareData(['id' => '5'], 1)
+            ->prepareData(['id' => '5', 'token' => '123', 'user' => '123'], 1)
             ->then(function (SuccessMessage $message) use ($loop): void {
                 $this->assertSame(1, $message->getSequenceId());
-                $this->assertSame('{"id":"5"}', $message->getData());
+                $this->assertSame('{"id":"5","token":"123","user":"123"}', $message->getData());
                 $this->assertSame('[]', $message->getSetting());
                 $loop->stop();
             })
