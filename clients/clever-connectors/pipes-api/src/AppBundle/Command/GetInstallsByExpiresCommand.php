@@ -3,6 +3,7 @@
 namespace CleverConnectors\AppBundle\Command;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use DateTime;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Exception;
@@ -79,7 +80,9 @@ class GetInstallsByExpiresCommand extends Command implements LoggerAwareInterfac
             $datetime = new DateTime();
             $datetime->setTimestamp($expires);
 
-            $systemInstalls = $this->dm->getRepository(SystemInstall::class)->findByExpires($datetime);
+            /** @var SystemInstallRepository $repo */
+            $repo           = $this->dm->getRepository(SystemInstall::class);
+            $systemInstalls = $repo->findByExpires($datetime);
 
             $output->writeln(json_encode($systemInstalls));
         } catch (Exception $e) {

@@ -14,7 +14,6 @@ use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\BatchInterface;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
-use InvalidArgumentException;
 use JMS\Serializer\Serializer;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -86,22 +85,6 @@ class RefreshTokensMessageGenerator implements BatchInterface, CustomNodeInterfa
     }
 
     /**
-     * @param array $data
-     *
-     * @return PromiseInterface
-     */
-    private function getConnectorKey(array $data): PromiseInterface
-    {
-        $connectorKey = $data['data']['param'] ?? NULL;
-
-        if ($connectorKey === NULL) {
-            return reject(new InvalidArgumentException('Body has not system key.'));
-        } else {
-            return resolve($connectorKey);
-        }
-    }
-
-    /**
      * @param ProcessDto    $dto
      * @param LoopInterface $loop
      * @param callable      $callbackItem
@@ -111,12 +94,8 @@ class RefreshTokensMessageGenerator implements BatchInterface, CustomNodeInterfa
     public function processBatch(ProcessDto $dto, LoopInterface $loop, callable $callbackItem): PromiseInterface
     {
         return $this
-            ->parseBody($dto->getData())
-            ->then(function (array $data) {
-                return $this->getConnectorKey($data);
-            })->then(function (string $connectorKey) use ($loop) {
-                return $this->processSystem($loop, $connectorKey);
-            })->then(function (string $data) {
+            ->processSystem($loop)
+            ->then(function (string $data) {
                 return $this->parseBody($data);
             })->then(function (array $data) use ($callbackItem): Promise {
                 $items = [];
@@ -161,14 +140,13 @@ class RefreshTokensMessageGenerator implements BatchInterface, CustomNodeInterfa
 
     /**
      * @param LoopInterface $loop
-     * @param string        $systemKey
      *
      * @return Promise
      */
-    private function processSystem(LoopInterface $loop, string $systemKey): Promise
+    private function processSystem(LoopInterface $loop): Promise
     {
         $this->logger->info('Start finding system installs by expires');
-        $process = new Process('bin/console react:get-installs-by-expires %s', $this->projectDir);
+        $process = new Process('bin/console react:get-installs-by-expires', $this->projectDir);
         $process->start($loop);
 
         return new Promise(function ($resolve, $reject) use ($process): void {
@@ -192,11 +170,11 @@ class RefreshTokensMessageGenerator implements BatchInterface, CustomNodeInterfa
     /**
      * @param ProcessDto $dto
      *
-     * @return ProcessDto
+     * @return ProcessDto|void
      */
     public function process(ProcessDto $dto): ProcessDto
     {
-        // TODO: Implement process() method.
+        throw new RuntimeException('The process method is not implemented.');
     }
 
 }
