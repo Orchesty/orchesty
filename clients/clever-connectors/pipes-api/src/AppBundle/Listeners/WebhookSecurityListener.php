@@ -47,8 +47,8 @@ class WebhookSecurityListener implements EventSubscriberInterface
      */
     function __construct(DocumentManager $dm, CurlManagerInterface $curl, array $secret)
     {
-        $this->repo = $dm->getRepository(Webhook::class);
-        $this->curl = $curl;
+        $this->repo   = $dm->getRepository(Webhook::class);
+        $this->curl   = $curl;
         $this->secret = $secret;
     }
 
@@ -97,15 +97,16 @@ class WebhookSecurityListener implements EventSubscriberInterface
                     RequestOptions::VERIFY  => $this->secret['ca'],
                 ]);
 
-                $req = $req->getStatusCode();
+                $req  = $req->getStatusCode();
+                $text = '';
             } catch (Exception $e) {
-                $req = 400;
+                $req  = 400;
+                $text = $e->getMessage();
             }
-
 
             if ($req != 200) {
                 throw new CleverConnectorsException(
-                    sprintf('User [%s] with token [%s] was not found.',
+                    sprintf('User [%s] with token [%s] was not found. || ' . $text,
                         $params['userId'], $params['token']),
                     CleverConnectorsException::USER_TOKEN_NOT_EXISTS
                 );
