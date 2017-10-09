@@ -154,9 +154,15 @@ services:
             - [setLogger, ['@monolog.logger.rabbit-mq']]
 
     hbpf.custom_node.refresh-tokens-message-generator:
-        class: CleverConnectors\AppBundle\Model\CustomNode\RefreshTokensMessageGenerator
+        class: CleverConnectors\AppBundle\Model\CustomNode\TokenMessageGenerator
         arguments:
             - '@jms_serializer.serializer'
             - '%kernel.project_dir%'
         calls:
             - [setLogger, ['@monolog.logger.rabbit-mq']]
+
+    hbpf.custom_node.token-refresher:
+        class: CleverConnectors\AppBundle\Model\CustomNode\TokenRefresher
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@systems.loader'

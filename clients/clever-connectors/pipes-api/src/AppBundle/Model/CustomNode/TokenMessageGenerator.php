@@ -31,7 +31,7 @@ use function React\Promise\resolve;
  *
  * @package CleverConnectors\AppBundle\Model\CustomNode
  */
-class RefreshTokensMessageGenerator implements BatchInterface, CustomNodeInterface
+class TokenMessageGenerator implements BatchInterface, CustomNodeInterface
 {
 
     /**

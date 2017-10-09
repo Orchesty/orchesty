@@ -15,7 +15,7 @@ use Nette\Utils\Json;
  *
  * @package CleverConnectors\AppBundle\Model\CustomNode
  */
-class TokensRefresher implements CustomNodeInterface
+class TokenRefresher implements CustomNodeInterface
 {
 
     /**
