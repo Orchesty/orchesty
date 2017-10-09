@@ -25,7 +25,7 @@ class CMUpdateSubscriptionConnector extends CMSubscriptionConnectorAbstract
     {
         $eml = $this->getData($dto);
         if (!isset($eml['email'])) {
-            return new ProcessDto();
+            return (new ProcessDto())->setData('')->setHeaders([]);
         }
 
         return $this->processCMAction($dto, 'PATCH', [200], $eml['email']);
