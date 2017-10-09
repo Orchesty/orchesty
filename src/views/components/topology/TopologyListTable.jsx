@@ -45,7 +45,7 @@ class TopologyListTable extends React.Component {
         <SortTh name="visibility" state={sort} onChangeSort={this.changeSort}>Visibility</SortTh>
         <SortTh name="name" state={sort} onChangeSort={this.changeSort}>Name</SortTh>
         <SortTh name="version" state={sort} onChangeSort={this.changeSort}>Version</SortTh>
-        <SortTh name="description" state={sort} onChangeSort={this.changeSort}>Description</SortTh>
+        <SortTh name="descr" state={sort} onChangeSort={this.changeSort}>Description</SortTh>
         <SortTh name="enabled" state={sort} onChangeSort={this.changeSort}>Enabled</SortTh>
         <th>Actions</th>
       </tr>

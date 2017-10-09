@@ -42,7 +42,7 @@ function reducer(state, action){
 
     case types.TOPOLOGY_RECEIVE_TEST:
       const newTests = {};
-      action.data.nodes.forEach(item => {newTests[item.node] = item});
+      action.data.nodes.forEach(item => {newTests[item.id] = item});
       return Object.assign({}, state, {
         tests: Object.assign({}, state.tests, newTests)
       });
