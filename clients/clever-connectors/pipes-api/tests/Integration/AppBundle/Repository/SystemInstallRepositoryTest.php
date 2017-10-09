@@ -11,6 +11,7 @@ namespace Tests\Integration\AppBundle\Repository;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
+use DateTime;
 use LogicException;
 use Tests\DatabaseTestCaseAbstract;
 
@@ -83,6 +84,44 @@ final class SystemInstallRepositoryTest extends DatabaseTestCaseAbstract
         $sys = $repo->find($system->getId());
         $this->assertNotEmpty($sys->getSynchronizedTime());
         $this->assertTrue($sys->isSynchronized());
+    }
+
+    /**
+     *
+     */
+    public function testFindBeforeExpiration(): void
+    {
+        /** @var SystemInstallRepository $repo */
+        $repo = $this->dm->getRepository(SystemInstall::class);
+
+        $datetime = new DateTime();
+        $datetime->setTimestamp(time() + 7200);
+
+        $systemInstall = new SystemInstall();
+        $systemInstall
+            ->setUser('user')
+            ->setSystem('system')
+            ->setExpires($datetime);
+
+        $this->persistAndFlush($systemInstall);
+
+        $systemInstall2 = new SystemInstall();
+        $systemInstall2
+            ->setUser('user2')
+            ->setSystem('system2')
+            ->setExpires(NULL);
+
+        $this->persistAndFlush($systemInstall2);
+
+        $datetime->setTimestamp(time() + 3600);
+        $results = $repo->findBeforeExpiration($datetime);
+
+        self::assertCount(0, $results);
+
+        $datetime->setTimestamp(time() + 7200);
+        $results = $repo->findBeforeExpiration($datetime);
+
+        self::assertCount(1, $results);
     }
 
 }

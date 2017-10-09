@@ -23,9 +23,9 @@ class GetInstallsByExpiresCommand extends Command implements LoggerAwareInterfac
 {
 
     /**
-     * @var DocumentManager
+     * @var SystemInstallRepository
      */
-    private $dm;
+    private $repository;
 
     /**
      * @var LoggerInterface
@@ -47,9 +47,9 @@ class GetInstallsByExpiresCommand extends Command implements LoggerAwareInterfac
     {
         parent::__construct('react:get-installs-by-expires');
 
-        $this->dm       = $dm;
-        $this->logger   = new NullLogger();
-        $this->interval = $interval;
+        $this->repository = $dm->getRepository(SystemInstall::class);
+        $this->interval   = $interval;
+        $this->logger     = new NullLogger();
     }
 
     /**
@@ -80,9 +80,7 @@ class GetInstallsByExpiresCommand extends Command implements LoggerAwareInterfac
             $datetime = new DateTime();
             $datetime->setTimestamp($expires);
 
-            /** @var SystemInstallRepository $repo */
-            $repo           = $this->dm->getRepository(SystemInstall::class);
-            $systemInstalls = $repo->findByExpires($datetime);
+            $systemInstalls = $this->repository->findBeforeExpiration($datetime);
 
             $output->writeln(json_encode($systemInstalls));
         } catch (Exception $e) {

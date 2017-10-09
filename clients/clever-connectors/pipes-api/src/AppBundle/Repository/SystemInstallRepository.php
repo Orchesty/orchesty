@@ -69,7 +69,7 @@ class SystemInstallRepository extends DocumentRepository
      *
      * @return array
      */
-    public function findByExpires(DateTime $dateTime): array
+    public function findBeforeExpiration(DateTime $dateTime): array
     {
         $criteria = new Criteria();
         $criteria->where($criteria->expr()->lte('expires', $dateTime));
