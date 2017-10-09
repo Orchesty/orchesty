@@ -212,7 +212,7 @@ class StartingPoint implements LoggerAwareInterface
     /**
      * @param Topology    $topology
      * @param Node        $node
-     * @param null|string $body JSON string
+     * @param null|string $body     JSON string
      */
     public function run(Topology $topology, Node $node, ?string $body = NULL): void
     {
