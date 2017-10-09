@@ -285,7 +285,13 @@ export default class Counter {
 
                 const duration = process.end_timestamp - process.start_timestamp;
 
-                this.metrics.send({process_total_duration: duration})
+                this.metrics.send(
+                    {
+                        process_result: process.ok === process.total,
+                        process_total_duration: duration,
+                        process_nodes_ok: process.ok,
+                        process_nodes_nok: process.nok,
+                    })
                     .catch((err) => {
                         logger.warn("Unable to send counter metrics.", {
                             error: err,
