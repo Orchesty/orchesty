@@ -69,8 +69,8 @@ class ShopifySystem implements WebhookSystemInterface, OAuth2Interface
     {
         $this->provider = $provider;
 
-        $this->subscriptions[] = new WebhookSubscribes('shopify-customer-create', 'shopify_create_subscriber_topology',
-            self::WEBHOOK_SUBSCRIBE_URL, self::WEBHOOK_UNSUBSCRIBE_URL);
+        //$this->subscriptions[] = new WebhookSubscribes('shopify-customer-create', 'shopify_create_subscriber_topology',
+        //    self::WEBHOOK_SUBSCRIBE_URL, self::WEBHOOK_UNSUBSCRIBE_URL);
 
         $this->subscriptions[] = new WebhookSubscribes('shopify-customer-update', 'shopify_update_subscriber_topology',
             self::WEBHOOK_SUBSCRIBE_URL, self::WEBHOOK_UNSUBSCRIBE_URL);
