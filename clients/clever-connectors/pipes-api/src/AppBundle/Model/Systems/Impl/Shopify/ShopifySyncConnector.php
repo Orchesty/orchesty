@@ -248,4 +248,12 @@ class ShopifySyncConnector implements BatchInterface, ConnectorInterface
         );
     }
 
+    /**
+     * @return string
+     */
+    public function getId(): string
+    {
+        return 'shopify';
+    }
+
 }

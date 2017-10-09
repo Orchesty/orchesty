@@ -294,4 +294,12 @@ abstract class SalesForceConnectorAbstract implements BatchInterface, ConnectorI
         string $timeQuery
     ): RequestInterface;
 
+    /**
+     * @return string
+     */
+    public function getId(): string
+    {
+        return 'salesforce';
+    }
+
 }
