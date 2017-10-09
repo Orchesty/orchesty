@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Test\Integration\AppBundle\Systems\Impl\SalesForce;
+namespace Tests\Integration\AppBundle\Model\Systems\Impl\SalesForce;
 
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
@@ -12,18 +12,10 @@ use Tests\DatabaseTestCaseAbstract;
 /**
  * Class SalesForceUpdateConnectorTest
  *
- * @package Test\Integration\AppBundle\Systems\Impl\SalesForce
+ * @package Tests\Integration\AppBundle\Model\Systems\Impl\SalesForce
  */
-class SalesForceUpdateConnectorTest extends DatabaseTestCaseAbstract
+final class SalesForceUpdateConnectorTest extends DatabaseTestCaseAbstract
 {
-
-    /**
-     *
-     */
-    public function setUp(): void
-    {
-
-    }
 
     /**
      *
@@ -58,7 +50,7 @@ class SalesForceUpdateConnectorTest extends DatabaseTestCaseAbstract
         $connector->processBatch(
             $processDto,
             $loop,
-            function () {
+            function (): void {
 
             }
         );

@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Integration\AppBundle\Systems\Impl;
+namespace Tests\Integration\AppBundle\Model\Systems\Impl;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\SystemTypeEnum;
@@ -20,7 +20,7 @@ use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 /**
  * Class NullSystem
  *
- * @package Tests\Integration\AppBundle\Systems\Impl
+ * @package Tests\Integration\AppBundle\Model\Systems\Impl
  */
 class NullSystem implements WebhookSystemInterface, OAuth2Interface
 {

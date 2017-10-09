@@ -8,7 +8,7 @@ use CleverConnectors\AppBundle\Model\Systems\SystemManager;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use Tests\DatabaseTestCaseAbstract;
-use Tests\Integration\AppBundle\Systems\Impl\NullSystem;
+use Tests\Integration\AppBundle\Model\Systems\Impl\NullSystem;
 
 /**
  * Class SystemManagerTest
