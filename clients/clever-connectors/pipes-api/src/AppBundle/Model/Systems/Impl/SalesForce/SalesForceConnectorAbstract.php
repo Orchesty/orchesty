@@ -16,6 +16,8 @@ use GuzzleHttp\Psr7\Request;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
+use Hanaboso\PipesFramework\Connector\ConnectorInterface;
+use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
 use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\BatchInterface;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
@@ -28,7 +30,7 @@ use React\Promise\PromiseInterface;
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce
  */
-abstract class SalesForceConnectorAbstract implements BatchInterface, CustomNodeInterface
+abstract class SalesForceConnectorAbstract implements BatchInterface, ConnectorInterface
 {
 
     protected const QUERY_URL  = '%sservices/data/v40.0/query?q=%s';
@@ -66,12 +68,23 @@ abstract class SalesForceConnectorAbstract implements BatchInterface, CustomNode
     /**
      * @param ProcessDto $dto
      *
-     * @return ProcessDto|void
-     * @throws Exception
+     * @return ProcessDto
+     * @throws ConnectorException
      */
-    public function process(ProcessDto $dto): ProcessDto
+    public function processEvent(ProcessDto $dto): ProcessDto
     {
-        throw new SystemException('SalesForce has not implemented "process" function.');
+        throw new ConnectorException('SalesForce has not implemented "processEvent" function.');
+    }
+
+    /**
+     * @param ProcessDto $dto
+     *
+     * @return ProcessDto
+     * @throws ConnectorException
+     */
+    public function processAction(ProcessDto $dto): ProcessDto
+    {
+        throw new ConnectorException('SalesForce has not implemented "processAction" function.');
     }
 
     /**

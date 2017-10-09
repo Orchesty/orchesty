@@ -19,6 +19,8 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use GuzzleHttp\Psr7\Request;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\PipesFramework\Connector\ConnectorInterface;
+use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
 use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\BatchInterface;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
@@ -33,7 +35,7 @@ use function React\Promise\all;
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Shopify
  */
-class ShopifySyncConnector implements BatchInterface, CustomNodeInterface
+class ShopifySyncConnector implements BatchInterface, ConnectorInterface
 {
 
     private const COUNT_URL     = 'admin/customers/count.json';
@@ -70,12 +72,23 @@ class ShopifySyncConnector implements BatchInterface, CustomNodeInterface
     /**
      * @param ProcessDto $dto
      *
-     * @return ProcessDto|void
-     * @throws SystemException
+     * @return ProcessDto
+     * @throws ConnectorException
      */
-    public function process(ProcessDto $dto): ProcessDto
+    public function processEvent(ProcessDto $dto): ProcessDto
     {
-        throw new SystemException('Shopify has not implemented "process" function.');
+        throw new SystemException('Shopify has not implemented "processEvent" function.');
+    }
+
+    /**
+     * @param ProcessDto $dto
+     *
+     * @return ProcessDto
+     * @throws ConnectorException
+     */
+    public function processAction(ProcessDto $dto): ProcessDto
+    {
+        throw new SystemException('Shopify has not implemented "processAction" function.');
     }
 
     /**

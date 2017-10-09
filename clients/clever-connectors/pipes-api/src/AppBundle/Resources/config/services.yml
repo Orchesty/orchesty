@@ -85,19 +85,19 @@ services:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce\SalesForceDeleteContactMapper
         arguments:
 
-    hbpf.custom_node.salesforce-sync-connector:
+    hbpf.connector.salesforce-sync-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce\SalesForceSyncConnector
         arguments:
             - '@systems.salesforce'
             - '@doctrine_mongodb.odm.default_document_manager'
 
-    hbpf.custom_node.salesforce-update-connector:
+    hbpf.connector.salesforce-update-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce\SalesForceUpdateConnector
         arguments:
             - '@systems.salesforce'
             - '@doctrine_mongodb.odm.default_document_manager'
 
-    hbpf.custom_node.salesforce-delete-connector:
+    hbpf.connector.salesforce-delete-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce\SalesForceDeleteConnector
         arguments:
             - '@systems.salesforce'
@@ -109,22 +109,22 @@ services:
             - '@hbpf.providers.oauth2_provider'
         tags: ['%systems%']
 
-    hbpf.custom_node.shopify-sync-connector:
+    hbpf.connector.shopify-sync-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\ShopifySyncConnector
         arguments:
             - '@systems.shopify'
             - '@doctrine_mongodb.odm.default_document_manager'
 
 
-    hbpf.connectors.shopify-customer-create:
+    hbpf.connector.shopify-customer-create:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\ShopifyCreateCustomerConnector
         arguments:
 
-    hbpf.connectors.shopify-customer-update:
+    hbpf.connector.shopify-customer-update:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\ShopifyUpdateCustomerConnector
         arguments:
 
-    hbpf.connectors.shopify-customer-delete:
+    hbpf.connector.shopify-customer-delete:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\ShopifyDeleteCustomerConnector
         arguments:
 

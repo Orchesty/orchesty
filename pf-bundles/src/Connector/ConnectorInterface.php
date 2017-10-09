@@ -8,8 +8,8 @@
 
 namespace Hanaboso\PipesFramework\Connector;
 
-use GuzzleHttp\Exception\ConnectException;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
 
 /**
  * Interface ConnectorInterface
@@ -28,7 +28,7 @@ interface ConnectorInterface
      * @param ProcessDto $dto
      *
      * @return ProcessDto
-     * @throws ConnectException
+     * @throws ConnectorException
      */
     public function processEvent(ProcessDto $dto): ProcessDto;
 
@@ -36,7 +36,7 @@ interface ConnectorInterface
      * @param ProcessDto $dto
      *
      * @return ProcessDto
-     * @throws ConnectException
+     * @throws ConnectorException
      */
     public function processAction(ProcessDto $dto): ProcessDto;
 
