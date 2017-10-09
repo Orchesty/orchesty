@@ -194,8 +194,12 @@ class StartingPoint implements LoggerAwareInterface
      */
     public function runWithRequest(Request $request, Topology $topology, Node $node): void
     {
-        $this->runTopology($topology, $node, $this->createHeaders($request->headers->all()),
-            $this->createBodyFromRequest($request));
+        $this->runTopology(
+            $topology,
+            $node,
+            $this->createHeaders($request->headers->all()),
+            $this->createBodyFromRequest($request)
+        );
     }
 
     /**
@@ -229,7 +233,7 @@ class StartingPoint implements LoggerAwareInterface
             ->getChannel()
             ->queueDeclare($this->createCounterQueueName($topology), FALSE, TRUE);
 
-        $this->initializeCounterProcess($topology, $headers);
+        $this->initializeCounterProcess($topology, $node, $headers);
 
         $headers = $headers->getHeaders();
 
@@ -279,19 +283,20 @@ class StartingPoint implements LoggerAwareInterface
 
     /**
      * @param Topology $topology
+     * @param Node     $node
      * @param Headers  $headers
      */
-    private function initializeCounterProcess(Topology $topology, Headers $headers): void
+    private function initializeCounterProcess(Topology $topology, Node $node, Headers $headers): void
     {
         $queue = $this->createCounterQueueName($topology);
 
         $content = [
             'result' => [
-                'code' => 0,
+                'code'    => 0,
                 'message' => 'Starting point started process',
             ],
-            'route' => [
-                'following' => 1,
+            'route'  => [
+                'following'  => 1,
                 'multiplier' => 1,
             ],
         ];
@@ -299,13 +304,13 @@ class StartingPoint implements LoggerAwareInterface
         $headers = array_merge(
             $headers->getHeaders(),
             [
-                'type' => self::COUNTER_MESSAGE_TYPE,
-                'app_id' => 'starting_point',
-                'timestamp' => microtime(),
+                'node_id' => $node->getId(),
+                'type'    => self::COUNTER_MESSAGE_TYPE,
+                'app_id'  => 'starting_point',
             ]
         );
 
-        $this->startingPointProducer->publish($this->createBody(json_encode($content)), $queue, $headers);
+        $this->startingPointProducer->publish(json_encode($content), $queue, $headers);
     }
 
 }

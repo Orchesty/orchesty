@@ -11,7 +11,7 @@ services:
       RABBITMQ_PASS: guest
       RABBITMQ_VHOST: /
     volumes:
-      - './topology.json:/srv/app/topology.json'
+      - './topology.json:/srv/app/topology/topology.json'
     networks:
       - demo_defualt
     command: './dist/src/bin/pipes.js start probe'
@@ -26,7 +26,7 @@ services:
       RABBITMQ_PASS: guest
       RABBITMQ_VHOST: /
     volumes:
-      - './topology.json:/srv/app/topology.json'
+      - './topology.json:/srv/app/topology/topology.json'
     networks:
       - demo_defualt
     command: './dist/src/bin/pipes.js start counter'
@@ -41,7 +41,7 @@ services:
       RABBITMQ_PASS: guest
       RABBITMQ_VHOST: /
     volumes:
-      - './topology.json:/srv/app/topology.json'
+      - './topology.json:/srv/app/topology/topology.json'
     networks:
       - demo_defualt
     command: './dist/src/bin/pipes.js start node --id 1-magento2-customer'
@@ -56,7 +56,7 @@ services:
       RABBITMQ_PASS: guest
       RABBITMQ_VHOST: /
     volumes:
-      - './topology.json:/srv/app/topology.json'
+      - './topology.json:/srv/app/topology/topology.json'
     networks:
       - demo_defualt
     command: './dist/src/bin/pipes.js start node --id 2-xml-parser'
@@ -71,7 +71,7 @@ services:
       RABBITMQ_PASS: guest
       RABBITMQ_VHOST: /
     volumes:
-      - './topology.json:/srv/app/topology.json'
+      - './topology.json:/srv/app/topology/topology.json'
     networks:
       - demo_defualt
     command: './dist/src/bin/pipes.js start node --id 3-mapper-1'
@@ -86,7 +86,7 @@ services:
       RABBITMQ_PASS: guest
       RABBITMQ_VHOST: /
     volumes:
-      - './topology.json:/srv/app/topology.json'
+      - './topology.json:/srv/app/topology/topology.json'
     networks:
       - demo_defualt
     command: './dist/src/bin/pipes.js start node --id 4-mail'
@@ -101,7 +101,7 @@ services:
       RABBITMQ_PASS: guest
       RABBITMQ_VHOST: /
     volumes:
-      - './topology.json:/srv/app/topology.json'
+      - './topology.json:/srv/app/topology/topology.json'
     networks:
       - demo_defualt
     command: './dist/src/bin/pipes.js start node --id 5-ftp'
@@ -116,7 +116,7 @@ services:
       RABBITMQ_PASS: guest
       RABBITMQ_VHOST: /
     volumes:
-      - './topology.json:/srv/app/topology.json'
+      - './topology.json:/srv/app/topology/topology.json'
     networks:
       - demo_defualt
     command: './dist/src/bin/pipes.js start node --id 6-api'
