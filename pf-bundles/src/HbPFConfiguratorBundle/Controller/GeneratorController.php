@@ -36,21 +36,6 @@ class GeneratorController extends FOSRestController
     private $generatorHandler = NULL;
 
     /**
-     * GeneratorController constructor.
-     *
-     * @param GeneratorHandler $generatorHandler
-     * @param LoggerInterface  $logger
-     */
-    /*public function __construct(
-        GeneratorHandler $generatorHandler,
-        LoggerInterface $logger
-    )
-    {
-        $this->generatorHandler = $generatorHandler;
-        $this->logger           = $logger;
-    }*/
-
-    /**
      * @Route("/topology/generate/{id}")
      * @Method({"GET"})
      *
@@ -62,9 +47,14 @@ class GeneratorController extends FOSRestController
     {
         //TODO: Make much better !!!!
         $this->construct();
+        $statusCode = 400;
 
-        $result     = $this->generatorHandler->generateTopology($id);
-        $statusCode = $result ? 200 : 400;
+        if ($this->generatorHandler) {
+            $result = $this->generatorHandler->generateTopology($id);
+            if ($result) {
+                $statusCode = 200;
+            }
+        }
 
         return new JsonResponse(["result" => $statusCode], $statusCode, []);
     }
@@ -81,8 +71,14 @@ class GeneratorController extends FOSRestController
     {
         //TODO: Make much better !!!!
         $this->construct();
-        $result     = $this->generatorHandler->runTopology($id);
-        $statusCode = $result ? 200 : 400;
+        $statusCode = 400;
+
+        if ($this->generatorHandler) {
+            $result = $this->generatorHandler->runTopology($id);
+            if ($result) {
+                $statusCode = 200;
+            }
+        }
 
         return new JsonResponse(["result" => $statusCode], $statusCode, []);
     }

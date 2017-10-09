@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: Pavel Severyn
@@ -10,6 +10,11 @@ namespace Hanaboso\PipesFramework\TopologyGenerator\DockerCompose;
 
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 
+/**
+ * Class VolumePathDefinitionFactory
+ *
+ * @package Hanaboso\PipesFramework\TopologyGenerator\DockerCompose
+ */
 class VolumePathDefinitionFactory
 {
 
@@ -23,7 +28,7 @@ class VolumePathDefinitionFactory
      *
      * @param null|string $projectSourcePath
      */
-    public function __construct(string $projectSourcePath = NULL)
+    public function __construct(?string $projectSourcePath = NULL)
     {
         $this->projectSourcePath = $projectSourcePath;
     }

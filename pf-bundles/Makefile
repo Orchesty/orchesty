@@ -89,7 +89,8 @@ database-create:
 
 .env:
 	@if ! [ -f .env ]; then \
-		sed -e "s/{DEV_UID}/$(shell id -u)/g" \
-			-e "s/{DEV_GID}/$(shell id -u)/g" \
+		sed -e "s|{DEV_UID}|$(shell id -u)|g" \
+			-e "s|{DEV_GID}|$(shell id -u)|g" \
+			-e "s|{PROJECT_SOURCE_PATH}|$(shell pwd)|g" \
 			.env.dist >> .env; \
 	fi;

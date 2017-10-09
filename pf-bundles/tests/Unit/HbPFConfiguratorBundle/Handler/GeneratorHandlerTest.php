@@ -13,6 +13,7 @@ use Doctrine\ODM\MongoDB\DocumentRepository;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\GeneratorHandler;
+use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\VolumePathDefinitionFactory;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -58,7 +59,7 @@ class GeneratorHandlerTest extends TestCase
 
         /** @var GeneratorHandler|PHPUnit_Framework_MockObject_MockObject $handler */
         $handler = $this->getMockBuilder(GeneratorHandler::class)
-            ->setConstructorArgs([$dm, '/srv/directory', 'demo_network'])
+            ->setConstructorArgs([$dm, '/srv/directory', 'demo_network', new VolumePathDefinitionFactory()])
             ->setMethods(['generate'])
             ->getMock();
 
@@ -97,7 +98,7 @@ class GeneratorHandlerTest extends TestCase
 
         /** @var GeneratorHandler|PHPUnit_Framework_MockObject_MockObject $handler */
         $handler = $this->getMockBuilder(GeneratorHandler::class)
-            ->setConstructorArgs([$dm, '/srv/directory', 'demo_network'])
+            ->setConstructorArgs([$dm, '/srv/directory', 'demo_network', new VolumePathDefinitionFactory()])
             ->setMethods(['generate'])
             ->getMock();
 
