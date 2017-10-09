@@ -31,7 +31,11 @@ use Symfony\Component\HttpFoundation\Request;
 class StartingPoint implements LoggerAwareInterface
 {
 
+    private const QUEUE_PATTERN = 'pipes.%s.%s';
+
     private const CONTENT = '{"data":%s, "settings": ""}';
+
+    private const COUNTER_MESSAGE_TYPE = 'counter_message';
 
     /**
      * @var StartingPointProducer
@@ -78,9 +82,23 @@ class StartingPoint implements LoggerAwareInterface
     public function createQueueName(Topology $topology, Node $node): string
     {
         return sprintf(
-            'pipes.%s.%s',
+            self::QUEUE_PATTERN,
             $topology->getId() . '-' . Strings::webalize($topology->getName()),
             $node->getId() . '-' . Strings::webalize($node->getName())
+        );
+    }
+
+    /**
+     * @param Topology $topology
+     *
+     * @return string
+     */
+    public function createCounterQueueName(Topology $topology): string
+    {
+        return sprintf(
+            self::QUEUE_PATTERN,
+            $topology->getId() . '-' . Strings::webalize($topology->getName()),
+            'counter'
         );
     }
 
@@ -206,7 +224,15 @@ class StartingPoint implements LoggerAwareInterface
             ->getChannel()
             ->queueDeclare($this->createQueueName($topology, $node), FALSE, TRUE);
 
+        $this->startingPointProducer
+            ->getManager()
+            ->getChannel()
+            ->queueDeclare($this->createCounterQueueName($topology), FALSE, TRUE);
+
+        $this->initializeCounterProcess($topology, $headers);
+
         $headers = $headers->getHeaders();
+
         $this->startingPointProducer->publish(
             $content,
             $this->createQueueName($topology, $node),
@@ -249,6 +275,37 @@ class StartingPoint implements LoggerAwareInterface
         } else {
             throw new StartingPointException(sprintf('Request error: %s', $responseDto->getReasonPhrase()));
         }
+    }
+
+    /**
+     * @param Topology $topology
+     * @param Headers  $headers
+     */
+    private function initializeCounterProcess(Topology $topology, Headers $headers): void
+    {
+        $queue = $this->createCounterQueueName($topology);
+
+        $content = [
+            'result' => [
+                'code' => 0,
+                'message' => 'Starting point started process',
+            ],
+            'route' => [
+                'following' => 1,
+                'multiplier' => 1,
+            ],
+        ];
+
+        $headers = array_merge(
+            $headers->getHeaders(),
+            [
+                'type' => self::COUNTER_MESSAGE_TYPE,
+                'app_id' => 'starting_point',
+                'timestamp' => microtime(),
+            ]
+        );
+
+        $this->startingPointProducer->publish($this->createBody(json_encode($content)), $queue, $headers);
     }
 
 }
