@@ -85,7 +85,7 @@ stage-demo:
   script:
     - rsync -a --delete --exclude '.git' ./ ~/stage_demo
     - cd ~/stage_demo/clients/demo
-    - export COMPOSE_PROJECT_NAME=stage_demo
+    - export COMPOSE_PROJECT_NAME=stagedemo
     - export NPM_INSTALL="yes"
     - make docker-pull-dev init-dev DEV_YML=docker-compose.ci.yml
 
@@ -97,7 +97,7 @@ stage-cm:
   script:
     - rsync -a --delete --exclude 'clients/clever-connectors/pipes-api/var/secret' --exclude '.git' ./ ~/stage_cm
     - cd ~/stage_cm/clients/clever-connectors
-    - export COMPOSE_PROJECT_NAME=stage_cm
+    - export COMPOSE_PROJECT_NAME=stagecm
     - export NPM_INSTALL="yes"
     - make docker-compose.ci.yml docker-pull-dev init-dev DEV_YML=docker-compose.ci.yml
 
