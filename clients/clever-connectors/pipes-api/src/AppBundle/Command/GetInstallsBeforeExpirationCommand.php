@@ -16,11 +16,11 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Class RefreshTokensCommand
+ * Class GetInstallsBeforeExpireCommand
  *
  * @package CleverConnectors\AppBundle\Command
  */
-class GetInstallsByExpiresCommand extends Command implements LoggerAwareInterface
+class GetInstallsBeforeExpirationCommand extends Command implements LoggerAwareInterface
 {
 
     /**
@@ -46,7 +46,7 @@ class GetInstallsByExpiresCommand extends Command implements LoggerAwareInterfac
      */
     public function __construct(DocumentManager $dm, int $interval)
     {
-        parent::__construct('react:get-installs-by-expires');
+        parent::__construct('react:get-installs-before-expiration');
 
         $this->repository = $dm->getRepository(SystemInstall::class);
         $this->interval   = $interval;
