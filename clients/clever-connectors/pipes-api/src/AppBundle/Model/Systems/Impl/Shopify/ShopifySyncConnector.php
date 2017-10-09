@@ -11,7 +11,12 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\Shopify;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
+use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use Clue\React\Buzz\Browser;
+use DateTime;
+use DateTimeZone;
+use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\DocumentRepository;
 use GuzzleHttp\Psr7\Request;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
@@ -40,13 +45,26 @@ class ShopifySyncConnector implements BatchInterface, CustomNodeInterface
     private $system;
 
     /**
+     * @var DocumentManager
+     */
+    private $dm;
+
+    /**
+     * @var SystemInstallRepository|DocumentRepository
+     */
+    private $repo;
+
+    /**
      * ShopifySyncConnector constructor.
      *
-     * @param ShopifySystem $system
+     * @param ShopifySystem   $system
+     * @param DocumentManager $dm
      */
-    public function __construct(ShopifySystem $system)
+    public function __construct(ShopifySystem $system, DocumentManager $dm)
     {
         $this->system = $system;
+        $this->dm     = $dm;
+        $this->repo   = $this->dm->getRepository(SystemInstall::class);
     }
 
     /**
@@ -88,6 +106,12 @@ class ShopifySyncConnector implements BatchInterface, CustomNodeInterface
                 }
             );
 
+        $systemInstall
+            ->setSynchronized(TRUE)
+            ->setSynchronizedTime(new DateTime('now', new DateTimeZone('UTC')));
+
+        $this->dm->flush($systemInstall);
+
         return $promise;
     }
 
@@ -98,7 +122,9 @@ class ShopifySyncConnector implements BatchInterface, CustomNodeInterface
      */
     private function getSystemInstall(ProcessDto $dto): SystemInstall
     {
-        return SystemInstall::from(json_decode($dto->getData(), TRUE));
+        $system = SystemInstall::from(json_decode($dto->getData(), TRUE));
+
+        return $this->repo->getSystemInstall($system->getUser(), $system->getToken(), $system->getSystem());
     }
 
     /**

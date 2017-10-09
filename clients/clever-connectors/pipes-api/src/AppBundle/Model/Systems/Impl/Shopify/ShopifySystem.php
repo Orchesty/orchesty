@@ -284,7 +284,7 @@ class ShopifySystem implements WebhookSystemInterface, OAuth2Interface
     public function getRequestDto(SystemInstall $systemInstall, string $method): RequestDto
     {
         if (!$this->isAuthorized($systemInstall)) {
-            throw new SystemException('SalesForce is not Authorized!', SystemException::SYSTEM_IS_UNAUTHORIZED);
+            throw new SystemException('Shopify is not Authorized!', SystemException::SYSTEM_IS_UNAUTHORIZED);
         }
 
         $url = sprintf('https://%s.myshopify.com/', $systemInstall->getSettings()[self::SYSTEM_URL]);

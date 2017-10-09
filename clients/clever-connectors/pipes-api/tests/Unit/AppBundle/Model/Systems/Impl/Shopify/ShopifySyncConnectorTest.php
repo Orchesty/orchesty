@@ -9,8 +9,11 @@
 
 namespace Tests\Unit\AppBundle\Model\Systems\Impl\Shopify;
 
+use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\ShopifySyncConnector;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\ShopifySystem;
+use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
@@ -61,9 +64,20 @@ final class ShopifySyncConnectorTest extends KernelTestCaseAbstract
      */
     private function mockSync()
     {
+        $systemInstall = $this->createMock(SystemInstallRepository::class);
+        $systemInstall->method('getSystemInstall')->willReturn((new SystemInstall())->setUser('123'));
+
+        $dm = $this->createMock(DocumentManager::class);
+        $dm
+            ->method('getRepository')
+            ->willReturn($systemInstall);
+        $dm
+            ->method('flush')
+            ->willReturn(TRUE);
+
         $syncConn = $this->getMockBuilder(ShopifySyncConnector::class)
             ->setMethods(['fetchData'])
-            ->setConstructorArgs([$this->mockSystem()])
+            ->setConstructorArgs([$this->mockSystem(), $dm])
             ->getMock();
 
         $syncConn->expects($this->at(0))

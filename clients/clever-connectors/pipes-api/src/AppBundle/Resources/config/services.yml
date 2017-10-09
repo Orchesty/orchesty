@@ -85,11 +85,6 @@ services:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce\SalesForceDeleteContactMapper
         arguments:
 
-    hbpf.custom_node.shopify-sync-connector:
-        class: CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\ShopifySyncConnector
-        arguments:
-            - '@systems.shopify'
-
     hbpf.custom_node.salesforce-sync-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce\SalesForceSyncConnector
         arguments:
@@ -112,6 +107,13 @@ services:
         arguments:
             - '@hbpf.providers.oauth2_provider'
         tags: ['%systems%']
+
+    hbpf.custom_node.shopify-sync-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\ShopifySyncConnector
+        arguments:
+            - '@systems.shopify'
+            - '@doctrine_mongodb.odm.default_document_manager'
+
 
     hbpf.connectors.shopify-customer-create:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\ShopifyCreateCustomerConnector

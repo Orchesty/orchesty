@@ -61,6 +61,13 @@ class SystemInstall
      *
      * @ODM\Field(type="date")
      */
+    protected $synchronizedTime;
+
+    /**
+     * @var DateTime
+     *
+     * @ODM\Field(type="date")
+     */
     protected $created;
 
     /**
@@ -204,6 +211,26 @@ class SystemInstall
     }
 
     /**
+     * @return DateTime|null
+     */
+    public function getSynchronizedTime(): ?DateTime
+    {
+        return $this->synchronizedTime;
+    }
+
+    /**
+     * @param DateTime $synchronizedTime
+     *
+     * @return $this
+     */
+    public function setSynchronizedTime(DateTime $synchronizedTime)
+    {
+        $this->synchronizedTime = $synchronizedTime;
+
+        return $this;
+    }
+
+    /**
      * Encrypts settings field before saving to storage
      *
      * @ODM\PreFlush
@@ -236,7 +263,7 @@ class SystemInstall
             ->setToken($data[self::TOKEN] ?? '')
             ->setSystem($data[self::SYSTEM] ?? '')
             ->setSynchronized((bool) ($data[self::SYNCHRONIZED] ?? FALSE))
-            ->setSettings($data[self::SETTINGS] ?? '');
+            ->setSettings($data[self::SETTINGS] ?? []);
 
         return $systemInstall;
     }
