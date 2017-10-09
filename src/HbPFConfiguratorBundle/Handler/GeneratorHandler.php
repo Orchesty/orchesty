@@ -88,6 +88,11 @@ class GeneratorHandler
         return TRUE;
     }
 
+    /**
+     * @param string $topologyId
+     *
+     * @return bool
+     */
     public function runTopology(string $topologyId): bool
     {
         $topology = $this->dm->getRepository(Topology::class)->find($topologyId);
@@ -97,7 +102,7 @@ class GeneratorHandler
             $cli                  = new DockerComposeCli($dstTopologyDirectory);
             $result               = $cli->up();
 
-            return (bool) $result;
+            return $result;
         }
 
         return FALSE;

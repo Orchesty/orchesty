@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: Pavel Severyn
@@ -11,9 +11,17 @@ namespace Hanaboso\PipesFramework\TopologyGenerator\DockerCompose;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\TopologyGenerator\GeneratorUtils;
 
+/**
+ * Class VolumePathDefinition
+ *
+ * @package Hanaboso\PipesFramework\TopologyGenerator\DockerCompose
+ */
 class VolumePathDefinition
 {
 
+    /**
+     * @var null|string
+     */
     protected $projectSourcePath;
 
     /**

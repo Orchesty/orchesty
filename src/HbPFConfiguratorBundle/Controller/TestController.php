@@ -12,6 +12,7 @@ use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\StartingPointHandler;
 use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\GeneratorFactory;
+use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\VolumePathDefinitionFactory;
 use Psr\Log\LoggerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Response;
@@ -49,20 +50,27 @@ class TestController extends FOSRestController
     private $logger;
 
     /**
+     * @var VolumePathDefinitionFactory
+     */
+    private $volumePathDefinitionFactory;
+
+    /**
      * TestController constructor.
      *
-     * @param DocumentManager      $dm
-     * @param StartingPointHandler $startingPointHandler
-     * @param string               $rootDir
-     * @param LoggerInterface      $logger
+     * @param DocumentManager             $dm
+     * @param StartingPointHandler        $startingPointHandler
+     * @param string                      $rootDir
+     * @param LoggerInterface             $logger
+     * @param VolumePathDefinitionFactory $volumePathDefinitionFactory
      */
     public function __construct(DocumentManager $dm, StartingPointHandler $startingPointHandler, string $rootDir,
-                                LoggerInterface $logger)
+                                LoggerInterface $logger, VolumePathDefinitionFactory $volumePathDefinitionFactory)
     {
-        $this->dm                   = $dm;
-        $this->startingPointHandler = $startingPointHandler;
-        $this->rootDir              = $rootDir . '/topology';
-        $this->logger               = $logger;
+        $this->dm                          = $dm;
+        $this->startingPointHandler        = $startingPointHandler;
+        $this->rootDir                     = $rootDir . '/topology';
+        $this->logger                      = $logger;
+        $this->volumePathDefinitionFactory = $volumePathDefinitionFactory;
     }
 
     /**
@@ -94,7 +102,7 @@ class TestController extends FOSRestController
                 'topology' => $topologyId,
             ]);
 
-            $generatorFactory = new GeneratorFactory($this->rootDir, $network);
+            $generatorFactory = new GeneratorFactory($this->rootDir, $network, $this->volumePathDefinitionFactory);
             $generator        = $generatorFactory->create();
             $generator->generate($topology, $nodes);
         } else {
@@ -164,7 +172,7 @@ class TestController extends FOSRestController
 
             file_put_contents($this->rootDir . '/' . self::FILE_NAME, $topology->getId());
 
-            $generatorFactory = new GeneratorFactory($this->rootDir, $network);
+            $generatorFactory = new GeneratorFactory($this->rootDir, $network, $this->volumePathDefinitionFactory);
             $generator        = $generatorFactory->create();
 
             $generator->generate($topology, $nodes);

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: Pavel Severyn
@@ -8,11 +8,22 @@
 
 namespace Hanaboso\PipesFramework\TopologyGenerator\DockerCompose;
 
+/**
+ * Class DockerComposeCli
+ *
+ * @package Hanaboso\PipesFramework\TopologyGenerator\DockerCompose
+ */
 class DockerComposeCli
 {
 
+    /**
+     * @var string
+     */
     private const DOCKER_COMPOSE_UP = 'sudo docker-compose -f {config} up -d';
 
+    /**
+     * @var string
+     */
     private const DOCKER_CONFIG_FILE = 'docker-compose.yml';
 
     /**
@@ -38,7 +49,7 @@ class DockerComposeCli
         $config = sprintf('%s/%s', $this->configDir, self::DOCKER_CONFIG_FILE);
 
         $command = str_replace('{config}', $config, self::DOCKER_COMPOSE_UP);
-
+        //TODO: find better cli tool
         exec($command);
 
         return TRUE;

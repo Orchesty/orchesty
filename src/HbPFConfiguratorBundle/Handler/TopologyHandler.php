@@ -7,6 +7,7 @@ use Doctrine\ODM\MongoDB\DocumentRepository;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\DatabaseManager\DatabaseManagerLocator;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Commons\Utils\UriParams;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
@@ -22,34 +23,40 @@ use Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository;
 class TopologyHandler
 {
 
+    /**
+     * @var string
+     */
     protected const GENERATOR_TOPOLOGY_URL = 'http://connector-api:80/api/topology/generate/{id}';
 
+    /**
+     * @var string
+     */
     protected const RUN_TOPOLOGY_URL = 'http://topology-api:80/api/topology/run/{id}';
 
     /**
      * @var DocumentRepository|TopologyRepository
      */
-    private $topologyRepository;
+    protected $topologyRepository;
 
     /**
      * @var DocumentManager
      */
-    private $dm;
+    protected $dm;
 
     /**
      * @var TopologyManager
      */
-    private $manager;
+    protected $manager;
 
     /**
      * @var GeneratorHandler
      */
-    private $generatorHandler;
+    protected $generatorHandler;
 
     /**
      * @var CurlManagerInterface
      */
-    private $curlManager;
+    protected $curlManager;
 
     /**
      * TopologyHandler constructor.
@@ -203,7 +210,12 @@ class TopologyHandler
         return TRUE;
     }
 
-    public function generateTopology(string $id)
+    /**
+     * @param string $id
+     *
+     * @return ResponseDto
+     */
+    public function generateTopology(string $id): ResponseDto
     {
         //TODO: add to function
         $uri = str_replace('{id}', $id, self::GENERATOR_TOPOLOGY_URL);
@@ -214,7 +226,12 @@ class TopologyHandler
         return $response;
     }
 
-    public function runTopology(string $id)
+    /**
+     * @param string $id
+     *
+     * @return ResponseDto
+     */
+    public function runTopology(string $id): ResponseDto
     {
         //TODO: add to function
         $uri = str_replace('{id}', $id, self::RUN_TOPOLOGY_URL);

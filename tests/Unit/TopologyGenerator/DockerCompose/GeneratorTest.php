@@ -13,6 +13,7 @@ use Hanaboso\PipesFramework\Configurator\Document\Embed\EmbedNode;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\Generator;
+use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\VolumePathDefinitionFactory;
 use Hanaboso\PipesFramework\TopologyGenerator\Environment;
 use Hanaboso\PipesFramework\TopologyGenerator\GeneratorUtils;
 use Hanaboso\PipesFramework\TopologyGenerator\HostMapper;
@@ -89,7 +90,8 @@ class GeneratorTest extends TestCase
         $nodes[] = $node5;
         $nodes[] = $node6;
 
-        $generator = new Generator(new Environment(), new HostMapper(), __DIR__ . '/output', 'demo_defualt');
+        $generator = new Generator(new Environment(), new HostMapper(), __DIR__ . '/output', 'demo_defualt',
+            new VolumePathDefinitionFactory());
 
         $generator->generate($topology, $nodes);
 

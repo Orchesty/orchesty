@@ -10,6 +10,7 @@ namespace Tests\Unit\TopologyGenerator\DockerCompose;
 
 use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\Generator;
 use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\GeneratorFactory;
+use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\VolumePathDefinitionFactory;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -25,7 +26,7 @@ class GeneratorFactoryTest extends TestCase
      */
     public function testCreate(): void
     {
-        $generatorFactory = new GeneratorFactory(__DIR__, 'demo');
+        $generatorFactory = new GeneratorFactory(__DIR__, 'demo', new VolumePathDefinitionFactory());
 
         $this->assertInstanceOf(Generator::class, $generatorFactory->create());
     }

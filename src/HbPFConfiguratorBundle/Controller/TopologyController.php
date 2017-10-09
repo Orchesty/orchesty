@@ -161,7 +161,7 @@ class TopologyController extends FOSRestController
 
     /**
      * @Route("/topologies/{id}/publish", defaults={}, requirements={"id": "\w+"})
-     * @Method({"POST", "OPTIONS", "GET"})
+     * @Method({"POST", "OPTIONS"})
      *
      * @param string $id
      *

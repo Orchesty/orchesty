@@ -18,6 +18,7 @@ services:
             - '@hbpf.handler.starting_point'
             - "%kernel.project_dir%"
             - "@monolog.logger.test"
+            - '@hbpf.docker_compose.volume_path_definition_factory'
 
     hbpf.configurator.generator_controller:
         class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\GeneratorController
