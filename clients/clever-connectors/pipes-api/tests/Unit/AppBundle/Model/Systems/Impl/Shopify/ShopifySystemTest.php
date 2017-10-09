@@ -94,10 +94,10 @@ class ShopifySystemTest extends KernelTestCaseAbstract
      */
     public function testGetWebhookId(): void
     {
-        $res = file_get_contents(__DIR__ . '/data/ShopifyUpdateCustomerMapper.json');
+        $res = file_get_contents(__DIR__ . '/data/ShopifyWebhookSubscriptionResponse.json');
         $dto = new ResponseDto(200, '', $res, []);
         $id  = $this->system->getWebhookId($dto);
-        self::assertEquals(129715699742, $id);
+        self::assertEquals(29752623134, $id);
 
         $dto = new ResponseDto(200, '', '', []);
         $this->expectException(CleverConnectorsException::class);
@@ -125,7 +125,7 @@ class ShopifySystemTest extends KernelTestCaseAbstract
         /** @var Form $form */
         $form = $this->system->getSettingFields($this->systemInstall);
         self::assertEquals(1, count($form));
-        self::assertEquals('system_url', $form[0]['key']);
+        self::assertEquals('ndflakee', $form[0]['key']);
         self::assertEquals(Field::URL, $form[0]['type']);
     }
 
