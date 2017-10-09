@@ -32,12 +32,12 @@ class SalesForceSystem implements OAuth2Interface
 
     use AuthorizationTrait;
 
-    private const CLIENT_ID     = '3MVG9g9rbsTkKnAXMKq0EMmPAOf5Zno1IzMKXWal3N9lv.6ngUkKyM3R1oRT0PP8QaXbO0av_s4Iq1GUHEHrT';
-    private const CLIENT_SECRET = '4205207557461149071';
+    private const CLIENT_ID     = '3MVG9g9rbsTkKnAW3CCxLnJW_55kKZ67XIZboIqeXL93kTR7hQMuU8ZPRgtzK79H0Xo44sZIqZENW.POc.lpJ';
+    private const CLIENT_SECRET = '9190968633171454987';
     private const AUTHORIZE_URL = 'https://login.salesforce.com/services/oauth2/authorize';
     private const TOKEN_URL     = 'https://na1.salesforce.com/services/oauth2/token';
 
-    private const API_URL = 'instance_url';
+    private const API_URL = 'na73.lightning.force.com';
 
     /**
      * @var CurlManager

@@ -78,6 +78,14 @@ services:
             - '@hbpf.providers.oauth2_provider'
         tags: ['%systems%']
 
+    hbpf.custom_node.salesforce-contact-mapper:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce\SalesForceContactMapper
+        arguments:
+
+    hbpf.custom_node.salesforce-contact-delete-mapper:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce\SalesForceDeleteContactMapper
+        arguments:
+
     systems.shopify:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\ShopifySystem
         arguments:
