@@ -287,7 +287,7 @@ class StartingPointTest extends TestCase
         $responseBody = json_encode([
             'status'  => TRUE,
             'message' => '5/5 node ok',
-            'failed'  => [],
+            'nodes'  => [],
         ]);
 
         $this->curlManager->method('send')->willReturn(

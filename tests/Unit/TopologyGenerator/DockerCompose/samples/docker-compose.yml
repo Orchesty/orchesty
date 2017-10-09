@@ -12,8 +12,6 @@ services:
       RABBITMQ_VHOST: /
     volumes:
       - './topology.json:/srv/app/topology.json'
-    ports:
-      - '${DEV_IP}:8007:8007'
     networks:
       - demo_defualt
     command: './dist/src/bin/pipes.js start probe'

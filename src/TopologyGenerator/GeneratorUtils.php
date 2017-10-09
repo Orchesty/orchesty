@@ -29,4 +29,14 @@ class GeneratorUtils
         return sprintf('%s-%s', $id, Strings::webalize($name));
     }
 
+    /**
+     * @param string $name
+     *
+     * @return string
+     */
+    public static function denormalizeName(string $name): string
+    {
+        return preg_replace('/-.*$/', '', $name);
+    }
+
 }

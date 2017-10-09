@@ -15,6 +15,7 @@ use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Exception\StartingPointException;
+use Hanaboso\PipesFramework\TopologyGenerator\GeneratorUtils;
 use Nette\Utils\Strings;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
@@ -182,7 +183,7 @@ class StartingPoint implements LoggerAwareInterface
     /**
      * @param Topology    $topology
      * @param Node        $node
-     * @param null|string $body JSON string
+     * @param null|string $body     JSON string
      */
     public function run(Topology $topology, Node $node, ?string $body = NULL): void
     {
@@ -238,7 +239,13 @@ class StartingPoint implements LoggerAwareInterface
         $responseDto = $this->curlManager->send($requestDto);
 
         if ($responseDto->getStatusCode() === 200) {
-            return json_decode($responseDto->getBody(), TRUE);
+            $data = json_decode($responseDto->getBody(), TRUE);
+
+            foreach ($data['nodes'] as &$node) {
+                $node['id'] = GeneratorUtils::denormalizeName($node['node']);
+            }
+
+            return $data;
         } else {
             throw new StartingPointException(sprintf('Request error: %s', $responseDto->getReasonPhrase()));
         }
