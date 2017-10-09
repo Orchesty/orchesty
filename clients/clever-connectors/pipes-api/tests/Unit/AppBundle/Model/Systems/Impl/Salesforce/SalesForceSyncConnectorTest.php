@@ -4,13 +4,13 @@
  * Created by PhpStorm.
  * User: radekj
  * Date: 9.10.17
- * Time: 9:55
+ * Time: 13:17
  */
 
-namespace Tests\Unit\AppBundle\Model\Systems\Impl\Shopify;
+namespace Tests\Unit\AppBundle\Model\Systems\Impl\Salesforce;
 
-use CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\ShopifySyncConnector;
-use CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\ShopifySystem;
+use CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce\SalesForceSyncConnector;
+use CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce\SalesForceSystem;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
@@ -21,11 +21,11 @@ use Tests\KernelTestCaseAbstract;
 use function React\Promise\resolve;
 
 /**
- * Class ShopifySyncConnectorTest
+ * Class SalesForceSyncConnectorTest
  *
- * @package Tests\Unit\AppBundle\Model\Systems\Impl\Shopify
+ * @package Tests\Unit\AppBundle\Model\Systems\Impl\Salesforce
  */
-final class ShopifySyncConnectorTest extends KernelTestCaseAbstract
+final class SalesForceSyncConnectorTest extends KernelTestCaseAbstract
 {
 
     /**
@@ -39,7 +39,7 @@ final class ShopifySyncConnectorTest extends KernelTestCaseAbstract
             ->setHeaders([])
             ->setData(json_encode(['settings' => [], 'user' => '123']));
 
-        /** @var ShopifySyncConnector $syncConn */
+        /** @var SalesForceSyncConnector $syncConn */
         $syncConn = $this->mockSync();
         $data     = $syncConn->processBatch($processDto, $loop, function (): void {
         });
@@ -57,37 +57,38 @@ final class ShopifySyncConnectorTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @return PHPUnit_Framework_MockObject_MockObject|ShopifySyncConnector
+     * @return PHPUnit_Framework_MockObject_MockObject|SalesForceSyncConnector
      */
     private function mockSync()
     {
-        $syncConn = $this->getMockBuilder(ShopifySyncConnector::class)
+        $syncConn = $this->getMockBuilder(SalesForceSyncConnector::class)
             ->setMethods(['fetchData'])
             ->setConstructorArgs([$this->mockSystem()])
             ->getMock();
 
         $syncConn->expects($this->at(0))
             ->method('fetchData')
-            ->willReturn(resolve(new Response(200, [], json_encode(['count' => 1]))));
+            ->willReturn(resolve(new Response(200, [], json_encode(['totalSize' => 1]))));
 
         $syncConn->expects($this->at(1))
             ->method('fetchData')
-            ->willReturn(resolve(new Response(200, [], json_encode(['customers' => [['id' => 1]]]))));
+            ->willReturn(resolve(new Response(200, [], json_encode(['records' => [['email' => 'aa@aa.com']]]))));
 
         return $syncConn;
     }
 
     /**
-     * @return PHPUnit_Framework_MockObject_MockObject|ShopifySystem
+     * @return PHPUnit_Framework_MockObject_MockObject|SalesForceSystem
      */
     private function mockSystem()
     {
-        $requestDto = new RequestDto('GET', new Uri('http://shopify.com/'));
+        $requestDto = new RequestDto('GET', new Uri('http://salesforce.com/'));
         $requestDto->setHeaders([
-            'X-Shopify-Access-Token' => 'token123',
-            'Content-Type'           => 'application/json',
+            'Content-Type'  => 'application/json',
+            'Accept'        => 'application/json',
+            'Authorization' => 'Bearer token123',
         ]);
-        $mock = $this->createMock(ShopifySystem::class);
+        $mock = $this->createMock(SalesForceSystem::class);
         $mock->method('getRequestDto')->willReturn($requestDto);
 
         return $mock;

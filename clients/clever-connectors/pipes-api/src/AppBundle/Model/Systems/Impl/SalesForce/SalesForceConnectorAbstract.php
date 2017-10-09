@@ -14,7 +14,6 @@ use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\BatchInterface;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use React\Promise\Promise;
 use React\Promise\PromiseInterface;
 
 /**
@@ -65,10 +64,11 @@ abstract class SalesForceConnectorAbstract implements BatchInterface, CustomNode
         $timeQuery = '';
 
         if ($from) {
-            $timeQuery = ltrim(http_build_query(['q'=>'+where+LastModifiedDate>' . $from->format(DateTime::ISO8601)]), 'q=');
+            $timeQuery = ltrim(http_build_query(['q' => '+where+LastModifiedDate>' . $from->format(DateTime::ISO8601)]),
+                'q=');
         }
         $timeQuery .= ($timeQuery === '' ? '' : '+and') .
-            ltrim(http_build_query(['q'=>'+where+LastModifiedDate<=' . $to->format(DateTime::ISO8601)]), 'q=');
+            ltrim(http_build_query(['q' => '+where+LastModifiedDate<=' . $to->format(DateTime::ISO8601)]), 'q=');
 
         return $timeQuery;
     }
@@ -120,7 +120,7 @@ abstract class SalesForceConnectorAbstract implements BatchInterface, CustomNode
         $res = json_decode($response->getBody()->getContents(), TRUE);
         if (is_array($res) && array_key_exists('records', $res)) {
             $successMessage = new SuccessMessage($page);
-            $successMessage->setData($res['records']);
+            $successMessage->setData(json_encode($res['records']));
             unset($res);
 
             return $successMessage;
