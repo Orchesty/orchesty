@@ -15,6 +15,7 @@ use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use React\Promise\Promise;
+use React\Promise\PromiseInterface;
 
 /**
  * Class SalesForceConnectorAbstract
@@ -24,7 +25,7 @@ use React\Promise\Promise;
 abstract class SalesForceConnectorAbstract implements BatchInterface, CustomNodeInterface
 {
 
-    protected const QUERY_URL  = '%sservices/data/v40.0/query​​​?q=%s';
+    protected const QUERY_URL  = '%sservices/data/v40.0/query?q=%s';
     protected const PAGE_LIMIT = 50;
 
     /**
@@ -64,10 +65,10 @@ abstract class SalesForceConnectorAbstract implements BatchInterface, CustomNode
         $timeQuery = '';
 
         if ($from) {
-            $timeQuery = '+where+LastModifiedDate>' . $from->format(DateTime::ISO8601);
+            $timeQuery = ltrim(http_build_query(['q'=>'+where+LastModifiedDate>' . $from->format(DateTime::ISO8601)]), 'q=');
         }
         $timeQuery .= ($timeQuery === '' ? '' : '+and') .
-            '+where+LastModifiedDate<=' . $to->format(DateTime::ISO8601);
+            ltrim(http_build_query(['q'=>'+where+LastModifiedDate<=' . $to->format(DateTime::ISO8601)]), 'q=');
 
         return $timeQuery;
     }
@@ -90,9 +91,9 @@ abstract class SalesForceConnectorAbstract implements BatchInterface, CustomNode
      * @param Browser          $browser
      * @param RequestInterface $request
      *
-     * @return Promise
+     * @return PromiseInterface
      */
-    protected function fetchData(Browser $browser, RequestInterface $request): Promise
+    protected function fetchData(Browser $browser, RequestInterface $request): PromiseInterface
     {
         return $browser->send($request);
     }

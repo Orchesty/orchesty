@@ -27,7 +27,7 @@ class SalesForceDeleteConnector extends SalesForceConnectorAbstract
 {
 
     private const   NODE_NAME = 'salesforce-delete-connector';
-    protected const QUERY_URL = '%sservices/data/v40.0/query​​​All?q=%s';
+    protected const QUERY_URL = '%sservices/data/v40.0/queryAll?q=%s';
 
     /**
      * @var DocumentManager
@@ -65,12 +65,13 @@ class SalesForceDeleteConnector extends SalesForceConnectorAbstract
         $top  = $this->dm->getRepository(Topology::class)->findOneBy(['id' => $node->getTopology()]);
         /** @var LastSyncRepository $lastSync */
         $lastSync = $this->dm->getRepository(LastSync::class);
+        $headers = $dto->getHeaders();
 
         $startTime = $lastSync->getLastSyncTime($systemInstall->getUser(), $top->getName(), self::NODE_NAME);
         $endTime   = new DateTime('now');
         $timeQuery = $this->getTimeQuery($startTime, $endTime) . '+AND+IsDeleted+TRUE';
 
-        $countReq = $this->createCountRequest($baseUrl, $timeQuery);
+        $countReq = $this->createCountRequest($baseUrl, $headers,  $timeQuery);
 
         $promise = $this->fetchData($browser, $countReq)
             ->then(function (ResponseInterface $response): float {
@@ -78,11 +79,11 @@ class SalesForceDeleteConnector extends SalesForceConnectorAbstract
 
                 return ceil($data['totalSize'] / self::PAGE_LIMIT);
             }
-            )->then(function (float $total) use ($browser, $baseUrl, $callbackItem, $timeQuery) {
+            )->then(function (float $total) use ($browser, $baseUrl, $callbackItem, $timeQuery, $headers) {
                 $requests = [];
                 for ($i = 0; $i < $total; $i++) {
                     $requests[] = $this
-                        ->fetchData($browser, $this->createPageContactRequest($baseUrl, $timeQuery, $i))
+                        ->fetchData($browser, $this->createPageContactRequest($baseUrl, $headers, $timeQuery, $i))
                         ->then(function (ResponseInterface $response) use ($i): SuccessMessage {
 
                             return $this->createSuccessMessage($response, $i);
@@ -101,24 +102,25 @@ class SalesForceDeleteConnector extends SalesForceConnectorAbstract
                 ->setTimestamp($endTime);
             $this->dm->persist($lastSync);
         }
-        $this->dm->flush($lastSync);
+        $this->dm->flush();
 
         return $promise;
     }
 
     /**
      * @param string $baseUrl
+     * @param array  $headers
      * @param string $timeQuery
      * @param int    $page
      *
      * @return RequestInterface
      */
-    private function createPageContactRequest(string $baseUrl, string $timeQuery, int $page): RequestInterface
+    private function createPageContactRequest(string $baseUrl, array $headers, string $timeQuery, int $page): RequestInterface
     {
         $query = sprintf('select+email+from+contact%s+limit+%s,+%s', $timeQuery, self::PAGE_LIMIT,
             self::PAGE_LIMIT * $page);
 
-        return new Request('GET', sprintf(static::QUERY_URL, $baseUrl, $query));
+        return new Request('GET', sprintf(static::QUERY_URL, $baseUrl, $query), $headers);
     }
 
 }
