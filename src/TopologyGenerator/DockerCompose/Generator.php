@@ -211,6 +211,9 @@ class Generator implements GeneratorInterface
             case TypeEnum::CRON:
                 return $this->getNullWorkerConfig();
 
+            case TypeEnum::SPLITTER:
+                return $this->getJsonSplitterConfig();
+
             default:
                 return $this->getHttpWorkerConfig($node);
 
@@ -260,6 +263,18 @@ class Generator implements GeneratorInterface
                     'options' => NULL,
                 ],
             ],
+        ];
+    }
+
+    /**
+     *
+     * @return array
+     */
+    private function getJsonSplitterConfig(): array
+    {
+        return [
+            'type'     => 'splitter.json',
+            'settings' => [],
         ];
     }
 
