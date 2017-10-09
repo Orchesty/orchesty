@@ -6,7 +6,6 @@ use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use Clue\React\Buzz\Browser;
 use DateTime;
-use Doctrine\ODM\MongoDB\DocumentManager;
 use Exception;
 use GuzzleHttp\Psr7\Request;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
@@ -34,20 +33,13 @@ abstract class SalesForceConnectorAbstract implements BatchInterface, CustomNode
     protected $system;
 
     /**
-     * @var DocumentManager
-     */
-    protected $dm;
-
-    /**
      * SalesForceUpdateConnector constructor.
      *
      * @param SalesForceSystem $system
-     * @param DocumentManager  $dm
      */
-    public function __construct(SalesForceSystem $system, DocumentManager $dm)
+    public function __construct(SalesForceSystem $system)
     {
         $this->system = $system;
-        $this->dm     = $dm;
     }
 
     /**
@@ -58,7 +50,7 @@ abstract class SalesForceConnectorAbstract implements BatchInterface, CustomNode
      */
     public function process(ProcessDto $dto): ProcessDto
     {
-        throw new Exception('Not implemented');
+        throw new SystemException('SalesForce has not implemented "process" function.');
     }
 
     /**
@@ -82,15 +74,16 @@ abstract class SalesForceConnectorAbstract implements BatchInterface, CustomNode
 
     /**
      * @param string $baseUrl
+     * @param array  $headers
      * @param string $timeQuery
      *
      * @return RequestInterface
      */
-    protected function createCountRequest(string $baseUrl, string $timeQuery): RequestInterface
+    protected function createCountRequest(string $baseUrl, array $headers, string $timeQuery = ''): RequestInterface
     {
         $query = 'select+count()+from+contact' . $timeQuery;
 
-        return new Request('GET', sprintf(static::QUERY_URL, $baseUrl, $query));
+        return new Request('GET', sprintf(static::QUERY_URL, $baseUrl, $query), $headers);
     }
 
     /**
@@ -124,7 +117,7 @@ abstract class SalesForceConnectorAbstract implements BatchInterface, CustomNode
     protected function createSuccessMessage(ResponseInterface $response, int $page): SuccessMessage
     {
         $res = json_decode($response->getBody()->getContents(), TRUE);
-        if (array_key_exists('records', $res)) {
+        if (is_array($res) && array_key_exists('records', $res)) {
             $successMessage = new SuccessMessage($page);
             $successMessage->setData($res['records']);
             unset($res);
@@ -136,6 +129,29 @@ abstract class SalesForceConnectorAbstract implements BatchInterface, CustomNode
             'Missing [records] key in response data from SalesForce.',
             SystemException::MISSING_RESPONSE_DATA
         );
+    }
+
+    /**
+     * @param ResponseInterface $response
+     *
+     * @return int
+     * @throws SystemException
+     */
+    protected function getTotalPages(ResponseInterface $response): int
+    {
+        $data = json_decode($response->getBody()->getContents(), TRUE);
+
+        if (!is_array($data) || !array_key_exists('totalSize', $data)) {
+            throw new SystemException(
+                'SalesForce response has no "totalSize" field!',
+                SystemException::MISSING_RESPONSE_DATA
+            );
+        }
+
+        $total = (int) ceil($data['totalSize'] / self::PAGE_LIMIT);
+        unset($data);
+
+        return $total;
     }
 
 }

@@ -3,11 +3,10 @@
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce;
 
 use CleverConnectors\AppBundle\Document\LastSync;
-use CleverConnectors\AppBundle\Document\SystemInstall;
-use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Repository\LastSyncRepository;
 use Clue\React\Buzz\Browser;
 use DateTime;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Request;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
@@ -27,8 +26,25 @@ use function React\Promise\all;
 class SalesForceDeleteConnector extends SalesForceConnectorAbstract
 {
 
-    private const NODE_NAME = 'salesforce-delete-connector';
+    private const   NODE_NAME = 'salesforce-delete-connector';
     protected const QUERY_URL = '%sservices/data/v40.0/query​​​All?q=%s';
+
+    /**
+     * @var DocumentManager
+     */
+    private $dm;
+
+    /**
+     * SalesForceDeleteConnector constructor.
+     *
+     * @param SalesForceSystem $system
+     * @param DocumentManager  $dm
+     */
+    public function __construct(SalesForceSystem $system, DocumentManager $dm)
+    {
+        parent::__construct($system);
+        $this->dm = $dm;
+    }
 
     /**
      * @param ProcessDto    $dto
