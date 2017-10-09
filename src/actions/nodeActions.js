@@ -80,13 +80,13 @@ export function nodeUpdate(id, data, silent = false){
   }
 }
 
-export function nodeRun(id, silent = false){
+export function nodeRun(id, data, silent = false){
   return dispatch => {
     return new Promise((resolve, reject) => {
       dispatch(needNode(id)).then(node => {
         if (node) {
           dispatch(processActions.startProcess(processes.nodeRun(id)));
-          serverRequest(dispatch, 'POST', `/topologies/${node.topology_id}/nodes/${node._id}/run`).then(
+          serverRequest(dispatch, 'POST', `/topologies/${node.topology_id}/nodes/${node._id}/run`, null, data).then(
             response => {
               dispatch(processActions.finishProcess(processes.nodeRun(id), response));
               if (response) {

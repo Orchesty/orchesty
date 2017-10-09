@@ -5,7 +5,7 @@ import ListPagination from 'elements/table/ListPagination';
 import SortTh from 'elements/table/SortTh';
 import StateComponent from 'wrappers/StateComponent';
 import BoolValue from 'elements/BoolValue';
-import ActionButton from 'elements/actions/ActionButton';
+import ActionButtonPanel from 'rootApp/views/elements/actions/ActionButtonPanel';
 
 class NodeListTable extends React.Component {
   constructor(props) {
@@ -55,7 +55,7 @@ class NodeListTable extends React.Component {
           {
             caption: item.enabled ? 'Disable' : 'Enable',
             action: () => {
-              updateNode(item._id, {enable: !item.enabled})
+              updateNode(item._id, {enabled: !item.enabled})
             }
           }
         ] : null;
@@ -71,7 +71,7 @@ class NodeListTable extends React.Component {
             <td>{item.service}</td>
             <td><BoolValue value={item.enabled}/></td>
             {withNodeTest && <td>{test !== null ? <BoolValue color value={test}/> : '-'}</td>}
-            <td><ActionButton item={menuItems} right={true}/></td>
+            <td><ActionButtonPanel items={menuItems} right={true}/></td>
           </tr>
         )
       } else {
