@@ -23,12 +23,9 @@ class CMUpdateSubscriptionConnector extends CMSubscriptionConnectorAbstract
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {
-        $eml = json_decode($dto->getData(), TRUE);
+        $eml = $this->getData($dto);
         if (!isset($eml['email'])) {
-            throw new CleverConnectorsException(
-                'Required email in data for url creation.',
-                CleverConnectorsException::MISSING_DATA
-            );
+            return new ProcessDto();
         }
 
         return $this->processCMAction($dto, 'PATCH', [200], $eml['email']);

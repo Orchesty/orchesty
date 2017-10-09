@@ -133,7 +133,7 @@ abstract class CMSubscriptionConnectorAbstract extends CMAuthorization implement
             $dto->getHeaders()['token'][0]
         ));
 
-        $req->setBody($dto->getData());
+        $req->setBody(json_encode($this->getData($dto)));
 
         try {
             $res = $this->curl->send($req, [
@@ -166,6 +166,22 @@ abstract class CMSubscriptionConnectorAbstract extends CMAuthorization implement
         $dto->setHeaders(['token' => $header['token'], 'guid' => $header['guid']]);
 
         return $dto;
+    }
+
+    /**
+     * @param ProcessDto $dto
+     *
+     * @return array
+     */
+    protected function getData(ProcessDto $dto): array
+    {
+        $data = json_decode($dto->getData(), TRUE);
+
+        if (array_key_exists('data', $data)) {
+            $data = $data['data'];
+        }
+
+        return $data;
     }
 
 }
