@@ -11,6 +11,7 @@ namespace Tests\Unit\AppBundle\Model\Systems\Impl\Salesforce;
 
 use CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce\SalesForceSyncConnector;
 use CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce\SalesForceSystem;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
@@ -61,9 +62,11 @@ final class SalesForceSyncConnectorTest extends KernelTestCaseAbstract
      */
     private function mockSync()
     {
+        $dm = $this->createMock(DocumentManager::class);
+
         $syncConn = $this->getMockBuilder(SalesForceSyncConnector::class)
             ->setMethods(['fetchData'])
-            ->setConstructorArgs([$this->mockSystem()])
+            ->setConstructorArgs([$this->mockSystem(), $dm])
             ->getMock();
 
         $syncConn->expects($this->at(0))

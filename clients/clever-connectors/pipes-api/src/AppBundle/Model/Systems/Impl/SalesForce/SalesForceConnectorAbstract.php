@@ -2,13 +2,18 @@
 
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce;
 
+use CleverConnectors\AppBundle\Document\LastSync;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
+use CleverConnectors\AppBundle\Repository\LastSyncRepository;
 use Clue\React\Buzz\Browser;
 use DateTime;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Exception;
 use GuzzleHttp\Psr7\Request;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\PipesFramework\Configurator\Document\Node;
+use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\BatchInterface;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
@@ -26,6 +31,7 @@ abstract class SalesForceConnectorAbstract implements BatchInterface, CustomNode
 
     protected const QUERY_URL  = '%sservices/data/v40.0/query?q=%s';
     protected const PAGE_LIMIT = 50;
+    protected const NODE_NAME  = '';
 
     /**
      * @var SalesForceSystem
@@ -33,13 +39,20 @@ abstract class SalesForceConnectorAbstract implements BatchInterface, CustomNode
     protected $system;
 
     /**
-     * SalesForceUpdateConnector constructor.
+     * @var DocumentManager
+     */
+    protected $dm;
+
+    /**
+     * SalesForceDeleteConnector constructor.
      *
      * @param SalesForceSystem $system
+     * @param DocumentManager  $dm
      */
-    public function __construct(SalesForceSystem $system)
+    public function __construct(SalesForceSystem $system, DocumentManager $dm)
     {
         $this->system = $system;
+        $this->dm     = $dm;
     }
 
     /**
@@ -128,7 +141,7 @@ abstract class SalesForceConnectorAbstract implements BatchInterface, CustomNode
 
         throw new SystemException(
             'Missing [records] key in response data from SalesForce.',
-            SystemException::MISSING_RESPONSE_DATA
+            SystemException::MISSING_DATA
         );
     }
 
@@ -145,7 +158,7 @@ abstract class SalesForceConnectorAbstract implements BatchInterface, CustomNode
         if (!is_array($data) || !array_key_exists('totalSize', $data)) {
             throw new SystemException(
                 'SalesForce response has no "totalSize" field!',
-                SystemException::MISSING_RESPONSE_DATA
+                SystemException::MISSING_DATA
             );
         }
 
@@ -154,5 +167,97 @@ abstract class SalesForceConnectorAbstract implements BatchInterface, CustomNode
 
         return $total;
     }
+
+    /**
+     * @param ProcessDto    $dto
+     * @param SystemInstall $systemInstall
+     * @param string        $topologyName
+     *
+     * @return LastSync|null
+     * @throws SystemException
+     */
+    protected function getLastSync(ProcessDto $dto, SystemInstall $systemInstall, string &$topologyName): ?LastSync
+    {
+        if (!array_key_exists('node_id', $dto->getHeaders())) {
+            throw new SystemException(
+                'Missing [node_id] in ProcessDto.',
+                SystemException::MISSING_DATA
+            );
+        }
+
+        $node         = $this->dm->getRepository(Node::class)->findOneBy(['id' => $dto->getHeaders()['node_id']]);
+        $top          = $this->dm->getRepository(Topology::class)->findOneBy(['id' => $node->getTopology()]);
+        $topologyName = $top->getName();
+        /** @var LastSyncRepository $repo */
+        $repo = $this->dm->getRepository(LastSync::class);
+
+        return $repo->getLastSyncTime($systemInstall->getUser(), $topologyName, static::NODE_NAME);
+    }
+
+    /**
+     * @param SystemInstall $systemInstall
+     * @param string        $node
+     * @param string        $topology
+     *
+     * @return LastSync
+     */
+    protected function createLastSync(SystemInstall $systemInstall, string $node, string $topology): LastSync
+    {
+        $lastSync = new LastSync();
+        $lastSync->setUser($systemInstall->getUser())
+            ->setNodeName($node)
+            ->setTopologyName($topology);
+        $this->dm->persist($lastSync);
+
+        return $lastSync;
+    }
+
+    /**
+     * @param int      $total
+     * @param Browser  $browser
+     * @param string   $baseUrl
+     * @param callable $callbackItem
+     * @param array    $headers
+     * @param string   $timeQuery
+     *
+     * @return array
+     */
+    protected function doPageLoop(
+        int $total,
+        Browser $browser,
+        string $baseUrl,
+        callable $callbackItem,
+        array $headers,
+        string $timeQuery = ''
+    ): array
+    {
+        $requests = [];
+        for ($i = 0; $i < $total; $i++) {
+            $requests[] = $this
+                ->fetchData($browser, $this->createPageContactRequest($baseUrl, $i, $headers, $timeQuery))
+                ->then(function (ResponseInterface $response) use ($i): SuccessMessage {
+
+                    return $this->createSuccessMessage($response, $i);
+                })->then($callbackItem);
+        }
+
+        return $requests;
+    }
+
+    /**
+     * @param string $baseUrl
+     * @param int    $page
+     * @param array  $headers
+     * @param string $timeQuery
+     *
+     * @return RequestInterface
+     * @throws Exception
+     */
+    abstract protected function createPageContactRequest(
+        string $baseUrl,
+        int $page,
+        array $headers,
+        string $timeQuery
+    ): RequestInterface;
 
 }

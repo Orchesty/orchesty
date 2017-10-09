@@ -28,9 +28,9 @@ class SalesForceContactMapperTest extends ConnectorTestCaseAbstract
         );
 
         $this->assertEquals([
-            'email'      => 'gfdhg@asd.com',
-            'first_name' => 'bmnmb',
-            'last_name'  => 'zzzz',
+            'email'      => 'eml@adsf.com',
+            'first_name' => 'asd',
+            'last_name'  => 'asdasdasd',
         ], $response);
     }
 

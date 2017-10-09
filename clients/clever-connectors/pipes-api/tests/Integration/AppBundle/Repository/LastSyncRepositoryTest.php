@@ -43,8 +43,8 @@ class LastSyncRepositoryTest extends DatabaseTestCaseAbstract
         /** @var DateTime $res */
         $res = $repo->getLastSyncTime('userId', 'topologyName', 'nodeName');
 
-        $this->assertInstanceOf(DateTime::class, $res);
-        self::assertEquals($sync->getTimestamp(), $res);
+        $this->assertInstanceOf(LastSync::class, $res);
+        self::assertEquals($sync->getTimestamp(), $res->getTimestamp());
     }
 
 }

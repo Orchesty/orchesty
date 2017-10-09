@@ -89,6 +89,7 @@ services:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce\SalesForceSyncConnector
         arguments:
             - '@systems.salesforce'
+            - '@doctrine_mongodb.odm.default_document_manager'
 
     hbpf.custom_node.salesforce-update-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce\SalesForceUpdateConnector

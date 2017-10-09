@@ -9,6 +9,7 @@
 
 namespace Tests\Unit\AppBundle\Model\Systems\Impl\Salesforce;
 
+use CleverConnectors\AppBundle\Document\LastSync;
 use CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce\SalesForceSystem;
 use CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce\SalesForceUpdateConnector;
 use CleverConnectors\AppBundle\Repository\LastSyncRepository;
@@ -75,7 +76,7 @@ final class SalesForceUpdateConnectorTest extends KernelTestCaseAbstract
         $topo->method('findOneBy')->willReturn((new Topology())->setName('NAME'));
 
         $lastSync = $this->createMock(LastSyncRepository::class);
-        $lastSync->method('getLastSyncTime')->willReturn(new DateTime());
+        $lastSync->method('getLastSyncTime')->willReturn((new LastSync())->setTimestamp(new DateTime()));
 
         $dm = $this->createMock(DocumentManager::class);
         $dm

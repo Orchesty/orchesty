@@ -7,11 +7,11 @@ use Nette\Utils\Json;
 use Tests\ConnectorTestCaseAbstract;
 
 /**
- * Class SalesforceDeleteContactMapperTest
+ * Class SalesForceDeleteContactMapperTest
  *
  * @package Tests\Unit\AppBundle\Model\Systems\Impl\Salesforce
  */
-class SalesforceDeleteContactMapperTest extends ConnectorTestCaseAbstract
+class SalesForceDeleteContactMapperTest extends ConnectorTestCaseAbstract
 {
 
     /**
@@ -28,7 +28,7 @@ class SalesforceDeleteContactMapperTest extends ConnectorTestCaseAbstract
         );
 
         $this->assertEquals([
-            'email' => 'dfg@centu.as',
+            'email' => 'eml@adsf.com',
         ], $response);
     }
 
