@@ -47,6 +47,8 @@ class TokenRefresher implements CustomNodeInterface
      */
     public function process(ProcessDto $dto): ProcessDto
     {
+        // TODO user serializer to get class SystemInstall, not stdClass!!!
+
         /** @var SystemInstall $systemInstall */
         $systemInstall = Json::decode($dto->getData());
 
