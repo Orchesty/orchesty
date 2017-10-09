@@ -3,6 +3,7 @@ import Container from "lib-nodejs/dist/src/container/Container";
 import Connection from "lib-nodejs/dist/src/rabbitmq/Connection";
 import Publisher from "lib-nodejs/dist/src/rabbitmq/Publisher";
 import SimpleConsumer from "lib-nodejs/dist/src/rabbitmq/SimpleConsumer";
+import ObjectUtils from "lib-nodejs/dist/src/utils/ObjectUtils";
 import logger from "../../logger/Logger";
 import JobMessage from "../../message/JobMessage";
 import {ResultCode} from "../../message/ResultCode";
@@ -229,7 +230,7 @@ class AmqpRpcWorker implements IWorker {
         const origContent = JSON.parse(stored.message.getContent());
         const newContent = JSON.parse(resultMsg.content.toString());
 
-        const headers = this.mergeHeaders(
+        const headers = ObjectUtils.mergeObjectsProperties(
             JSON.parse(JSON.stringify(stored.message.getHeaders())),
             JSON.parse(JSON.stringify(resultMsg.properties.headers)),
         );
@@ -294,30 +295,6 @@ class AmqpRpcWorker implements IWorker {
             code: ResultCode.MESSAGE_ALREADY_BEING_PROCESSED,
             message: `Message[correlation_id=${msg.getCorrelationId()}] is already being processed.`,
         });
-    }
-
-    /**
-     *
-     * @param one
-     * @param two
-     * @return {{}}
-     */
-    private mergeHeaders(one: any, two: any): {} {
-        const merged: any = {};
-
-        for (const key in one) {
-            if (one.hasOwnProperty(key)) {
-                merged[key] = one[key];
-            }
-        }
-
-        for (const key in two) {
-            if (two.hasOwnProperty(key)) {
-                merged[key] = two[key];
-            }
-        }
-
-        return merged;
     }
 
 }

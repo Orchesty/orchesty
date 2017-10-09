@@ -45,7 +45,7 @@ class SplitterWorker implements IWorker {
             return Promise.resolve(msg);
         }
 
-        if (!content.hasOwnProperty('data') || !content.hasOwnProperty('settings')) {
+        if (!content.hasOwnProperty("data") || !content.hasOwnProperty("settings")) {
             this.setError(msg, "Cannot split content, data and/or settings key is missing.", null);
             return Promise.resolve(msg);
         }
