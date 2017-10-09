@@ -45,7 +45,7 @@ class ControllerUtils
             $code    = $e->getCode();
             $status  = 'ERROR';
             $message = $e->getMessage();
-            $detail  = $e->getTraceAsString();
+            $detail  = json_encode($e->getTraceAsString());
         }
 
         $array = [
