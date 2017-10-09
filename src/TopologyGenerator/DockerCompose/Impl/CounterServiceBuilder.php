@@ -80,7 +80,7 @@ class CounterServiceBuilder implements ServiceBuilderInterface
             ->addEnvironment(Environment::RABBITMQ_USER, $this->environment->getRabbitMqUser())
             ->addEnvironment(Environment::RABBITMQ_PASS, $this->environment->getRabbitMqPass())
             ->addEnvironment(Environment::RABBITMQ_VHOST, $this->environment->getRabbitMqVHost())
-            ->addVolume($this->volumePathDefinition->getSourceVolume('topology.json') . ':/srv/app/topology.json')
+            ->addVolume($this->volumePathDefinition->getSourceVolume('topology.json') . ':/srv/app/topology/topology.json')
             ->setCommand('./dist/src/bin/pipes.js start counter')
             ->addNetwork($this->network);
 

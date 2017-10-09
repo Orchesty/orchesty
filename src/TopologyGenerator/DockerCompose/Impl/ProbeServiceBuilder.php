@@ -89,7 +89,7 @@ class ProbeServiceBuilder implements ServiceBuilderInterface
             ->addEnvironment(Environment::RABBITMQ_PASS, $this->environment->getRabbitMqPass())
             ->addEnvironment(Environment::RABBITMQ_VHOST, $this->environment->getRabbitMqVHost())
             //->addPort('${DEV_IP}:8007:8007')
-            ->addVolume($this->volumePathDefinition->getSourceVolume('topology.json') . ':/srv/app/topology.json')
+            ->addVolume($this->volumePathDefinition->getSourceVolume('topology.json') . ':/srv/app/topology/topology.json')
             ->setCommand('./dist/src/bin/pipes.js start probe')
             ->addNetwork($this->network);
 
