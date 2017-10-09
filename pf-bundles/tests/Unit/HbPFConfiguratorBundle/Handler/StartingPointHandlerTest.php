@@ -9,6 +9,7 @@
 namespace Tests\Unit\HbPFConfiguratorBundle\Handler;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\DocumentRepository;
 use Exception;
 use Hanaboso\PipesFramework\Commons\Enum\TopologyStatusEnum;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
@@ -16,6 +17,7 @@ use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository;
 use Hanaboso\PipesFramework\Configurator\StartingPoint\StartingPoint;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\StartingPointHandler;
+use PHPUnit_Framework_MockObject_MockObject;
 use Symfony\Component\HttpFoundation\Request;
 use Tests\DatabaseTestCaseAbstract;
 use Tests\PrivateTrait;
@@ -35,8 +37,51 @@ class StartingPointHandlerTest extends DatabaseTestCaseAbstract
      */
     public function testGetTopologyException(): void
     {
+        $dr = $this->createMock(DocumentRepository::class);
+        $dr->expects($this->at(0))->method('find')->willReturn(NULL);
 
+        /** @var DocumentManager|\PHPUnit_Framework_MockObject_MockObject $dm */
+        $dm = $this->createMock(DocumentManager::class);
+        $dm->method('getRepository')->willReturn($dr);
 
+        /** @var StartingPoint|\PHPUnit_Framework_MockObject_MockObject $startingPoint */
+        $startingPoint = $this->createMock(StartingPoint::class);
+
+        $startingPointHandler = new StartingPointHandler($dm, $startingPoint);
+
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('The topology[id=123] does not exist.');
+        $startingPointHandler->runWithRequestById(Request::createFromGlobals(), '123', '1');
+    }
+
+    /**
+     * @covers StartingPointHandler::getNode()
+     */
+    public function testGetNodeException(): void
+    {
+        $dr = $this->createMock(DocumentRepository::class);
+        $dr->expects($this->at(0))->method('find')->willReturn(new Topology());
+        $dr->expects($this->at(1))->method('find')->willReturn(NULL);
+
+        /** @var DocumentManager|\PHPUnit_Framework_MockObject_MockObject $dm */
+        $dm = $this->createMock(DocumentManager::class);
+        $dm->method('getRepository')->willReturn($dr);
+
+        /** @var StartingPoint|\PHPUnit_Framework_MockObject_MockObject $startingPoint */
+        $startingPoint = $this->createMock(StartingPoint::class);
+
+        $startingPointHandler = new StartingPointHandler($dm, $startingPoint);
+
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('The node[id=1] does not exist.');
+        $startingPointHandler->runWithRequestById(Request::createFromGlobals(), '123', '1');
+    }
+
+    /**
+     * @covers StartingPointHandler::getTopology()
+     */
+    public function testGetTopologiesException(): void
+    {
         /** @var StartingPoint|\PHPUnit_Framework_MockObject_MockObject $startingPoint */
         $startingPoint = $this->createMock(StartingPoint::class);
 
@@ -50,7 +95,7 @@ class StartingPointHandlerTest extends DatabaseTestCaseAbstract
     /**
      * @covers StartingPointHandler::getNode()
      */
-    public function testGetNodeException(): void
+    public function testGetNodeByNameException(): void
     {
         $top = new Topology();
         $top
@@ -60,7 +105,7 @@ class StartingPointHandlerTest extends DatabaseTestCaseAbstract
 
         $this->persistAndFlush($top);
 
-        /** @var StartingPoint|\PHPUnit_Framework_MockObject_MockObject $startingPoint */
+        /** @var StartingPoint|PHPUnit_Framework_MockObject_MockObject $startingPoint */
         $startingPoint = $this->createMock(StartingPoint::class);
 
         $startingPointHandler = new StartingPointHandler($this->dm, $startingPoint);
@@ -124,7 +169,7 @@ class StartingPointHandlerTest extends DatabaseTestCaseAbstract
 
         $this->persistAndFlush($node);
 
-        /** @var StartingPoint|\PHPUnit_Framework_MockObject_MockObject $startingPoint */
+        /** @var StartingPoint|PHPUnit_Framework_MockObject_MockObject $startingPoint */
         $startingPoint        = $this->createMock(StartingPoint::class);
         $startingPointHandler = new StartingPointHandler($this->dm, $startingPoint);
         $startingPointHandler->run('123', '1');
@@ -138,9 +183,9 @@ class StartingPointHandlerTest extends DatabaseTestCaseAbstract
         $top = new Topology();
         $this->setProperty($top, 'id', '123');
         $dr = $this->createMock(TopologyRepository::class);
-        $dr->expects($this->at(0))->method('findOneBy')->willReturn($top);
+        $dr->expects($this->at(0))->method('find')->willReturn($top);
 
-        /** @var DocumentManager|\PHPUnit_Framework_MockObject_MockObject $dm */
+        /** @var DocumentManager|PHPUnit_Framework_MockObject_MockObject $dm */
         $dm = $this->createMock(DocumentManager::class);
         $dm->method('getRepository')->willReturn($dr);
 
@@ -150,7 +195,7 @@ class StartingPointHandlerTest extends DatabaseTestCaseAbstract
             'failed'  => [],
         ];
 
-        /** @var StartingPoint|\PHPUnit_Framework_MockObject_MockObject $startingPoint */
+        /** @var StartingPoint|PHPUnit_Framework_MockObject_MockObject $startingPoint */
         $startingPoint = $this->createMock(StartingPoint::class);
         $startingPoint->method('runTest')->willReturn($data);
 
@@ -169,11 +214,11 @@ class StartingPointHandlerTest extends DatabaseTestCaseAbstract
         $dr = $this->createMock(TopologyRepository::class);
         $dr->expects($this->at(0))->method('findOneBy')->willReturn(NULL);
 
-        /** @var DocumentManager|\PHPUnit_Framework_MockObject_MockObject $dm */
+        /** @var DocumentManager|PHPUnit_Framework_MockObject_MockObject $dm */
         $dm = $this->createMock(DocumentManager::class);
         $dm->method('getRepository')->willReturn($dr);
 
-        /** @var StartingPoint|\PHPUnit_Framework_MockObject_MockObject $startingPoint */
+        /** @var StartingPoint|PHPUnit_Framework_MockObject_MockObject $startingPoint */
         $startingPoint = $this->createMock(StartingPoint::class);
 
         $startingPointHandler = new StartingPointHandler($dm, $startingPoint);

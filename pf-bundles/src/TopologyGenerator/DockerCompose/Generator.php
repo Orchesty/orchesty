@@ -208,6 +208,9 @@ class Generator implements GeneratorInterface
             case TypeEnum::BATCH_CONNECTOR:
                 return $this->getAmqpRpcWorkerConfig($node);
 
+            case TypeEnum::CRON:
+                return $this->getNullWorkerConfig();
+
             default:
                 return $this->getHttpWorkerConfig($node);
 
@@ -257,6 +260,17 @@ class Generator implements GeneratorInterface
                     'options' => NULL,
                 ],
             ],
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    private function getNullWorkerConfig(): array
+    {
+        return [
+            'type'     => 'worker.null',
+            'settings' => [],
         ];
     }
 
