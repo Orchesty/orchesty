@@ -166,6 +166,7 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
                         new ErrorMessage(2001, 'UNKNOWN_ERROR', $e->getMessage()))
                     ->then(function () use ($e) {
                         $this->logger->error(sprintf('Batch action error: %s', $e->getMessage()), ['exception' => $e]);
+
                         return reject($e);
                     });
             });
@@ -239,16 +240,20 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
     {
         return $channel->publish(
             sprintf('{"data":%s,"settings":%s}', $successMessage->getData(), $successMessage->getSetting()),
-            array_merge($this->getHeaders($message), [
-                self::TYPE        => 'batch_item',
-                self::SEQUENCE_ID => $successMessage->getSequenceId(),
-                self::RESULT_CODE => 0,
-            ]),
+            array_merge(
+                $this->getHeaders($message),
+                $successMessage->getHeaders(),
+                [
+                    self::TYPE        => 'batch_item',
+                    self::SEQUENCE_ID => $successMessage->getSequenceId(),
+                    self::RESULT_CODE => 0,
+                ]
+            ),
             '',
             $message->getHeader('reply-to')
         )
             ->then(function () use ($successMessage): void {
-                $this->logger->info(sprintf('Published batch item %s. Body: %s', $successMessage->getSequenceId(), sprintf('{"data":%s,"settings":%s}', $successMessage->getData(), $successMessage->getSetting())));
+                $this->logger->info(sprintf('Published batch item %s.', $successMessage->getSequenceId()));
             });
     }
 

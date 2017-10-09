@@ -32,6 +32,11 @@ class SuccessMessage
     private $setting = [];
 
     /**
+     * @var array
+     */
+    private $headers = [];
+
+    /**
      * MessageDto constructor.
      *
      * @param int $sequenceId
@@ -85,6 +90,27 @@ class SuccessMessage
     public function setSetting(array $setting): SuccessMessage
     {
         $this->setting = $setting;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getHeaders(): array
+    {
+        return $this->headers;
+    }
+
+    /**
+     * @param string $key
+     * @param string $value
+     *
+     * @return SuccessMessage
+     */
+    public function addHeaders(string $key, string $value): SuccessMessage
+    {
+        $this->headers[$key] = $value;
 
         return $this;
     }
