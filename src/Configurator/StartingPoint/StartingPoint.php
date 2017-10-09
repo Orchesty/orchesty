@@ -37,6 +37,11 @@ class StartingPoint implements LoggerAwareInterface
 
     private const COUNTER_MESSAGE_TYPE = 'counter_message';
 
+    private const HEADERS = [
+        'token',
+        'guid',
+    ];
+
     /**
      * @var StartingPointProducer
      */
@@ -157,7 +162,9 @@ class StartingPoint implements LoggerAwareInterface
             ->addHeader('sequence_id', '1');
 
         foreach ($requestHeaders as $name => $val) {
-            $headers->addHeader($name, (string) $val[0]); // TODO spatne
+            if (in_array($name, self::HEADERS)) {
+                $headers->addHeader($name, (string) $val[0]); // TODO spatne
+            }
         }
 
         return $headers;
@@ -205,7 +212,7 @@ class StartingPoint implements LoggerAwareInterface
     /**
      * @param Topology    $topology
      * @param Node        $node
-     * @param null|string $body     JSON string
+     * @param null|string $body JSON string
      */
     public function run(Topology $topology, Node $node, ?string $body = NULL): void
     {
