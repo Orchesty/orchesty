@@ -13,57 +13,87 @@ use FOS\RestBundle\Controller\FOSRestController;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\GeneratorHandler;
 use Psr\Log\LoggerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 /**
  * Class GeneratorController
  *
  * @package Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller
  *
- * * @Route(service="hbpf.configurator.generator_controller")
+ * @Route(service="hbpf.configurator.generator_controller")
  */
 class GeneratorController extends FOSRestController
 {
 
     /**
-     * @var LoggerInterface
+     * @var LoggerInterface|NULL
      */
-    protected $logger;
+    protected $logger = NULL;
 
     /**
-     * @var GeneratorHandler
+     * @var GeneratorHandler|NULL
      */
-    private $generatorHandler;
+    private $generatorHandler = NULL;
 
     /**
-     * GeneratorController constructor.
-     *
-     * @param GeneratorHandler $generatorHandler
-     * @param LoggerInterface  $logger
-     */
-    public function __construct(
-        GeneratorHandler $generatorHandler,
-        LoggerInterface $logger
-    )
-    {
-        $this->generatorHandler = $generatorHandler;
-        $this->logger           = $logger;
-    }
-
-    /**
-     * @Route("/api/topology/generate/{id}")
+     * @Route("/topology/generate/{id}")
      * @Method({"GET"})
      *
      * @param string $id
      *
-     * @return Response
+     * @return JsonResponse
      */
-    public function generateAction(string $id): Response
+    public function generateAction(string $id): JsonResponse
     {
-        $result     = $this->generatorHandler->generateTopology($id);
-        $statusCode = $result ? 200 : 400;
+        //TODO: Make much better !!!!
+        $this->construct();
+        $statusCode = 400;
 
-        return $this->handleView($this->view([], $statusCode, []));
+        if ($this->generatorHandler) {
+            $result = $this->generatorHandler->generateTopology($id);
+            if ($result) {
+                $statusCode = 200;
+            }
+        }
+
+        return new JsonResponse(["result" => $statusCode], $statusCode, []);
+    }
+
+    /**
+     * @Route("/topology/run/{id}")
+     * @Method({"GET"})
+     *
+     * @param string $id
+     *
+     * @return JsonResponse
+     */
+    public function runAction(string $id): JsonResponse
+    {
+        //TODO: Make much better !!!!
+        $this->construct();
+        $statusCode = 400;
+
+        if ($this->generatorHandler) {
+            $result = $this->generatorHandler->runTopology($id);
+            if ($result) {
+                $statusCode = 200;
+            }
+        }
+
+        return new JsonResponse(["result" => $statusCode], $statusCode, []);
+    }
+
+    /**
+     *
+     */
+    public function construct(): void
+    {
+        if (!$this->generatorHandler) {
+            $this->generatorHandler = $this->container->get('hbpf.handler.generator_handler');
+        }
+        if (!$this->logger) {
+            $this->logger = $this->container->get('monolog.logger.security');
+        }
     }
 
 }

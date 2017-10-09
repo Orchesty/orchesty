@@ -59,10 +59,12 @@ services:
           DEV_GID: ${DEV_GID}
           GENERATOR_PATH: ${GENERATOR_PATH}
           DOCKER_NETWORK: ${COMPOSE_PROJECT_NAME}_default
+          PROJECT_SOURCE_PATH: ${PROJECT_SOURCE_PATH}
         volumes:
           - ../../:/var/www/pipes
           - ${SSH_AUTH_SOCK}:/ssh-agent
           - ./../topology:${GENERATOR_PATH}
+          - /var/run/docker.sock:/var/run/docker.sock
         depends_on:
           - mongo
 
