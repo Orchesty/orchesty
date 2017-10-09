@@ -22,7 +22,7 @@ class SalesForceContactMapper implements CustomNodeInterface
      */
     public function process(ProcessDto $dto): ProcessDto
     {
-        $data = json_decode($dto->getData(), TRUE);
+        $data = json_decode($dto->getData(), TRUE)['data'];
 
         if (!array_key_exists('Email', $data)) {
             throw new CleverConnectorsException(
