@@ -208,6 +208,9 @@ services:
     # Spitter
     spitter:
       image: dkr.hanaboso.net/hanaboso/spitter/image:dev
+      environment:
+        SPITTER_PORT: 3000
+        SPITTER_HOST: 0.0.0.0
       ports:
         - ${DEV_IP}:8090:3000
 
