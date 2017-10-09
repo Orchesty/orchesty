@@ -78,7 +78,7 @@ class SystemController extends FOSRestController
     }
 
     /**
-     * @Route("/user_systems/user/{userId}", requirements={"userId": "\w+"})
+     * @Route("/user_systems/user/{userId}")
      * @Method({"GET", "OPTIONS"})
      *
      * @param string $userId
@@ -95,7 +95,7 @@ class SystemController extends FOSRestController
     }
 
     /**
-     * @Route("/user_systems/user/{userId}/system/{systemKey}", requirements={"userId": "\w+", "systemKey": "[\w|\.]+"})
+     * @Route("/user_systems/user/{userId}/system/{systemKey}")
      * @Method({"GET", "OPTIONS"})
      *
      * @param string $userId
@@ -113,7 +113,7 @@ class SystemController extends FOSRestController
     }
 
     /**
-     * @Route("/user_systems/user/{userId}/system/{systemKey}/install", requirements={"userId": "\w+", "systemKey": "[\w|\.]+"})
+     * @Route("/user_systems/user/{userId}/system/{systemKey}/install")
      * @Method({"POST", "OPTIONS"})
      *
      * @param Request $request
@@ -132,7 +132,7 @@ class SystemController extends FOSRestController
     }
 
     /**
-     * @Route("/user_systems/user/{userId}/system/{systemKey}/settings", requirements={"userId": "\w+", "systemKey": "[\w|\.]+"})
+     * @Route("/user_systems/user/{userId}/system/{systemKey}/settings")
      * @Method({"POST", "OPTIONS"})
      *
      * @param Request $request
@@ -172,7 +172,7 @@ class SystemController extends FOSRestController
     }
 
     /**
-     * @Route("/user_systems/user/{userId}/system/{systemKey}/switch_token", requirements={"userId": "\w+", "systemKey": "[\w|\.]+"})
+     * @Route("/user_systems/user/{userId}/system/{systemKey}/switch_token")
      * @Method({"PUT", "OPTIONS"})
      *
      * @param Request $request
@@ -191,7 +191,7 @@ class SystemController extends FOSRestController
     }
 
     /**
-     * @Route("/user_systems/user/{userId}/system/{systemKey}/sync", requirements={"userId": "\w+", "systemKey": "[\w|\.]+"})
+     * @Route("/user_systems/user/{userId}/system/{systemKey}/sync")
      * @Method({"GET", "OPTIONS"})
      *
      * @param string $userId
@@ -210,7 +210,7 @@ class SystemController extends FOSRestController
     }
 
     /**
-     * @Route("/user_systems/user/{userId}/system/{systemKey}/set_password", requirements={"userId": "\w+", "systemKey": "[\w|\.]+"})
+     * @Route("/user_systems/user/{userId}/system/{systemKey}/set_password")
      * @Method({"PUT", "OPTIONS"})
      *
      * @param Request $request
@@ -229,8 +229,7 @@ class SystemController extends FOSRestController
     }
 
     /**
-     * @Route("/user_systems/user/{userId}/system/{systemKey}/authorize_redirect/{redirectUrl}",
-     *     requirements={"userId": "\w+", "systemKey": "[\w|\.]+", "redirectUrl": ".+"})
+     * @Route("/user_systems/user/{userId}/system/{systemKey}/authorize_redirect/{redirectUrl}")
      * @Method({"GET", "OPTIONS"})
      *
      * @param string $userId
@@ -251,7 +250,7 @@ class SystemController extends FOSRestController
     }
 
     /**
-     * @Route("/user_systems/user/{userId}/system/{systemKey}/saveToken", requirements={"userId": "\w+", "systemKey": "[\w|\.]+"})
+     * @Route("/user_systems/user/{userId}/system/{systemKey}/saveToken")
      * @Method({"GET", "OPTIONS"})
      *
      * @param Request $request
