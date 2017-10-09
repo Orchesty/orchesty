@@ -42,15 +42,6 @@ class ShopifyUpdateCustomerMapper implements CustomNodeInterface
             $res['last_name'] = $data['last_name'];
         }
 
-        if (!empty($data['addresses'])) {
-            if (array_key_exists('city', $data['addresses'][0])) {
-                $res['contacts'] = [
-                    'contact'      => $data['addresses'][0]['city'],
-                    'contact_type' => 2,
-                ];
-            }
-        }
-
         return $dto->setData(json_encode($res));
     }
 
