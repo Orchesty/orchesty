@@ -71,6 +71,12 @@ const expectedTopo: ITopologyConfig = {
                             options: {},
                         },
                     },
+                    faucet: {
+                        queue: {
+                            name: "pipes.test-topo.node_a",
+                            options: {},
+                        },
+                    },
                     followers: [
                         {
                             exchange: {
@@ -126,6 +132,12 @@ const expectedTopo: ITopologyConfig = {
                     repeater: {
                         queue: {
                             name: "pipes.repeater",
+                            options: {},
+                        },
+                    },
+                    faucet: {
+                        queue: {
+                            name: "pipes.test-topo.node_b",
                             options: {},
                         },
                     },

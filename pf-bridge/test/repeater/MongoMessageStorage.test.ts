@@ -9,7 +9,7 @@ import MongoMessageStorage from "../../src/repeater/MongoMessageStorage";
 const mongo = MongoClient.connect(`mongodb://${mongoStorageOptions.host}/${mongoStorageOptions.db}`);
 const COLLECTION_NAME = "messages";
 
-describe.skip("MongoMessageStorage", () => {
+describe("MongoMessageStorage", () => {
     it("saves save messages and get the subset of them that are expired", () => {
         const storage = new MongoMessageStorage(mongoStorageOptions);
 
@@ -41,7 +41,7 @@ describe.skip("MongoMessageStorage", () => {
         return mongo
             .then((mongodb: Db) => {
                 db = mongodb;
-                return db.collection(COLLECTION_NAME).drop();
+                return db.collection(COLLECTION_NAME).deleteMany({});
             })
             .then(() => {
                 return Promise.all([
@@ -90,7 +90,7 @@ describe.skip("MongoMessageStorage", () => {
         return mongo
             .then((mongodb: Db) => {
                 db = mongodb;
-                return db.collection(COLLECTION_NAME).drop();
+                return db.collection(COLLECTION_NAME).deleteMany({});
             })
             .then(() => {
                 return storage.save(msg, msg.properties.headers.repeat_interval);

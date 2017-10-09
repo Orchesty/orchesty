@@ -83,7 +83,7 @@ class Repeater {
      */
     private resend(message: Message): Promise<void> {
         try {
-            const target = message.properties.replyTo;
+            const target = message.properties.headers.repeat_target_queue;
             const content = new Buffer(message.content.toString());
             const props = ObjectUtils.removeNullableProperties(message.properties);
 
@@ -117,16 +117,16 @@ class Repeater {
         const handleMessageFn = (msg: Message) => {
             const headers = msg.properties.headers;
 
-            if (!headers.repeat_interval || !msg.properties.replyTo) {
+            if (!headers.repeat_interval || !headers.repeat_target_queue) {
                 logger.error(
-                    "Repeater discarded message. Missing 'repeat_interval' or 'reply_to' header.",
+                    "Repeater discarded message. Missing 'repeat_interval' or 'repeat_target_queue' header.",
                     { node_id: "repeater", correlation_id: headers.correlation_id, process_id: headers.process_id },
                 );
 
                 return;
             }
 
-            const timeout = parseInt(msg.properties.headers.repeat_interval, 10);
+            const timeout = parseInt(headers.repeat_interval, 10);
 
             return this.storage.save(msg, timeout);
         };

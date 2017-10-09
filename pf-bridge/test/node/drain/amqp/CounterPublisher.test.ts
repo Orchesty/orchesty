@@ -25,6 +25,12 @@ const settings: IAmqpDrainSettings = {
             options: {},
         },
     },
+    faucet: {
+        queue: {
+            name: "repeat_queue",
+            options: {},
+        },
+    },
     resequencer: false,
     followers: [
         {
