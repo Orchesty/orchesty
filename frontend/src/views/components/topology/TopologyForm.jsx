@@ -3,10 +3,9 @@ import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import {Field, reduxForm} from 'redux-form'
 
-import {isInteger} from "utils/validations";
 import * as topologyActions from 'actions/topologyActions';
 
-import {FormTextInput, FormCheckboxInput, FormNumberInput} from 'elements/formInputs';
+import {FormTextInput, FormCheckboxInput} from 'elements/formInputs';
 
 class TopologyForm extends React.Component {
   constructor(props) {
@@ -49,7 +48,7 @@ class TopologyForm extends React.Component {
     let enabledReadonly = false;
     let enabledDescripton = "";
 
-    if (addNew || !initialValues.status || initialValues.status !== 'public') {
+    if (addNew || !initialValues.visibility || initialValues.visibility !== 'public') {
         enabledReadonly = true;
         enabledDescripton = "Please publish topology first";
     }
