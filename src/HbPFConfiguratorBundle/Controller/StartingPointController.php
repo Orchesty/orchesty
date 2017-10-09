@@ -49,6 +49,24 @@ class StartingPointController extends FOSRestController
     }
 
     /**
+     * @Route("/topologies/{topologyId}/nodes/{nodeId}/run_by_id", defaults={}, requirements={"topologyId": "\w+", "nodeId": "[\w-\.]+"})
+     * @Method({"POST"})
+     *
+     * @param Request $request
+     * @param string  $topologyId
+     * @param string  $nodeId
+     *
+     * @return Response
+     */
+    public function runByIdAction(Request $request, string $topologyId, string $nodeId): Response
+    {
+        $this->construct();
+        $this->handler->runWithRequestById($request, $topologyId, $nodeId);
+
+        return $this->handleView($this->view([], 200, []));
+    }
+
+    /**
      * @Route("/topologies/{topologyId}/test", defaults={}, requirements={"topologyId": "\w+"})
      * @Method({"GET"})
      *

@@ -24,18 +24,18 @@ class StartingPointController extends FOSRestController
 {
 
     /**
-     * @Route("/topologies/{topologyName}/nodes/{nodeName}/run", defaults={}, requirements={"topologyName": "\w+", "nodeName": "[\w-\.]+"})
+     * @Route("/topologies/{topologyId}/nodes/{nodeId}/run", defaults={}, requirements={"topologyId": "\w+", "nodeId": "[\w-\.]+"})
      * @Method({"POST"})
      *
-     * @param string $topologyName
-     * @param string $nodeName
+     * @param string $topologyId
+     * @param string $nodeId
      *
      * @return Response
      */
-    public function runAction(string $topologyName, string $nodeName): Response
+    public function runAction(string $topologyId, string $nodeId): Response
     {
-        return $this->forward('HbPFConfiguratorBundle:StartingPoint:run',
-            ['topologyName' => $topologyName, 'nodeName' => $nodeName]);
+        return $this->forward('HbPFConfiguratorBundle:StartingPoint:runById',
+            ['topologyId' => $topologyId, 'nodeId' => $nodeId]);
     }
 
     /**
