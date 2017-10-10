@@ -47,7 +47,7 @@ class SystemInstall
     protected $token;
 
     /**
-     * @var DateTime
+     * @var DateTime|null
      *
      * @ODM\Field(type="date")
      */
@@ -142,11 +142,11 @@ class SystemInstall
     }
 
     /**
-     * @param DateTime $expires
+     * @param DateTime|null $expires
      *
      * @return SystemInstall
      */
-    public function setExpires(DateTime $expires): SystemInstall
+    public function setExpires(?DateTime $expires): SystemInstall
     {
         $this->expires = $expires;
 
@@ -154,9 +154,9 @@ class SystemInstall
     }
 
     /**
-     * @return DateTime
+     * @return DateTime|null
      */
-    public function getExpires(): DateTime
+    public function getExpires(): ?DateTime
     {
         return $this->expires;
     }
