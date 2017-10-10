@@ -2,25 +2,19 @@
 
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce;
 
-use CleverConnectors\AppBundle\Document\LastSync;
 use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Model\LastSync\LastSyncManager;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
-use CleverConnectors\AppBundle\Repository\LastSyncRepository;
-use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
-use Clue\React\Buzz\Browser;
 use DateTime;
-use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\DocumentRepository;
 use Exception;
 use GuzzleHttp\Psr7\Request;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
-use Hanaboso\PipesFramework\Configurator\Document\Node;
-use Hanaboso\PipesFramework\Configurator\Document\Topology;
+use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSender;
+use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSenderFactory;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\BatchInterface;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
-use Hanaboso\PipesFramework\TopologyGenerator\GeneratorUtils;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use React\Promise\PromiseInterface;
@@ -43,26 +37,27 @@ abstract class SalesForceConnectorAbstract implements BatchInterface, ConnectorI
     protected $system;
 
     /**
-     * @var DocumentManager
+     * @var LastSyncManager
      */
-    protected $dm;
+    protected $lastSyncManager;
 
     /**
-     * @var SystemInstallRepository|DocumentRepository
+     * @var CurlSenderFactory
      */
-    private $repo;
+    protected $factory;
 
     /**
      * SalesForceDeleteConnector constructor.
      *
-     * @param SalesForceSystem $system
-     * @param DocumentManager  $dm
+     * @param SalesForceSystem  $system
+     * @param LastSyncManager   $lastSyncManager
+     * @param CurlSenderFactory $factory
      */
-    public function __construct(SalesForceSystem $system, DocumentManager $dm)
+    public function __construct(SalesForceSystem $system, LastSyncManager $lastSyncManager, CurlSenderFactory $factory)
     {
-        $this->system = $system;
-        $this->dm     = $dm;
-        $this->repo   = $this->dm->getRepository(SystemInstall::class);
+        $this->system          = $system;
+        $this->lastSyncManager = $lastSyncManager;
+        $this->factory         = $factory;
     }
 
     /**
@@ -122,26 +117,41 @@ abstract class SalesForceConnectorAbstract implements BatchInterface, ConnectorI
     }
 
     /**
-     * @param Browser          $browser
+     * @param CurlSender       $sender
      * @param RequestInterface $request
      *
      * @return PromiseInterface
      */
-    protected function fetchData(Browser $browser, RequestInterface $request): PromiseInterface
+    protected function fetchData(CurlSender $sender, RequestInterface $request): PromiseInterface
     {
-        return $browser->send($request);
+        return $sender->send($request);
+    }
+
+    /**
+     * @param array $data
+     *
+     * @return SystemInstall
+     * @throws SystemException
+     */
+    protected function getSystemInstall(array $data): SystemInstall
+    {
+        if (!array_key_exists('system_install', $data)) {
+            throw new SystemException('Missing [system_install] in data.', SystemException::MISSING_DATA);
+        }
+
+        return SystemInstall::from($data['system_install']);
     }
 
     /**
      * @param ProcessDto $dto
      *
-     * @return SystemInstall
+     * @return array
      */
-    protected function getSystemInstall(ProcessDto $dto): SystemInstall
+    protected function getParsedData(ProcessDto $dto): array
     {
-        $system = SystemInstall::from(json_decode($dto->getData(), TRUE)['data']);
+        $data = json_decode($dto->getData(), TRUE);
 
-        return $this->repo->getSystemInstall($system->getUser(), $system->getToken(), $system->getSystem());
+        return $data['data'] ?? $data;
     }
 
     /**
@@ -192,73 +202,18 @@ abstract class SalesForceConnectorAbstract implements BatchInterface, ConnectorI
     }
 
     /**
-     * @param ProcessDto    $dto
-     * @param SystemInstall $systemInstall
-     * @param string        $topologyName
-     *
-     * @return LastSync
-     * @throws SystemException
-     */
-    protected function getLastSync(ProcessDto $dto, SystemInstall $systemInstall, string &$topologyName): LastSync
-    {
-        if (!array_key_exists('node_id', $dto->getHeaders())) {
-            throw new SystemException(
-                'Missing [node_id] in ProcessDto.',
-                SystemException::MISSING_DATA
-            );
-        }
-
-        $node         = $this->dm->getRepository(Node::class)->findOneBy(['id' => GeneratorUtils::denormalizeName($dto->getHeaders()['node_id'])]);
-        $top          = $this->dm->getRepository(Topology::class)->findOneBy(['id' => $node->getTopology()]);
-        $topologyName = $top->getName();
-        /** @var LastSyncRepository $repo */
-        $repo = $this->dm->getRepository(LastSync::class);
-
-        $lastSync = $repo->getLastSyncTime($systemInstall->getUser(), $topologyName, static::NODE_NAME);
-
-        if (!$lastSync) {
-            $lastSync = $this->createLastSync($systemInstall, self::NODE_NAME, $topologyName);
-        }
-
-        if ($systemInstall->isSynchronized() && $systemInstall->getSynchronizedTime()) {
-            $lastSync->setTimestamp($systemInstall->getSynchronizedTime());
-        }
-
-        return $lastSync;
-    }
-
-    /**
-     * @param SystemInstall $systemInstall
-     * @param string        $node
-     * @param string        $topology
-     *
-     * @return LastSync
-     */
-    protected function createLastSync(SystemInstall $systemInstall, string $node, string $topology): LastSync
-    {
-        $lastSync = new LastSync();
-        $lastSync
-            ->setUser($systemInstall->getUser())
-            ->setNodeName($node)
-            ->setTopologyName($topology);
-        $this->dm->persist($lastSync);
-
-        return $lastSync;
-    }
-
-    /**
-     * @param int      $total
-     * @param Browser  $browser
-     * @param string   $baseUrl
-     * @param callable $callbackItem
-     * @param array    $headers
-     * @param string   $timeQuery
+     * @param int        $total
+     * @param CurlSender $sender
+     * @param string     $baseUrl
+     * @param callable   $callbackItem
+     * @param array      $headers
+     * @param string     $timeQuery
      *
      * @return array
      */
     protected function doPageLoop(
         int $total,
-        Browser $browser,
+        CurlSender $sender,
         string $baseUrl,
         callable $callbackItem,
         array $headers,
@@ -268,7 +223,7 @@ abstract class SalesForceConnectorAbstract implements BatchInterface, ConnectorI
         $requests = [];
         for ($i = 0; $i < $total; $i++) {
             $requests[] = $this
-                ->fetchData($browser, $this->createPageContactRequest($baseUrl, $i, $headers, $timeQuery))
+                ->fetchData($sender, $this->createPageContactRequest($baseUrl, $i, $headers, $timeQuery))
                 ->then(function (ResponseInterface $response) use ($i): SuccessMessage {
 
                     return $this->createSuccessMessage($response, $i);

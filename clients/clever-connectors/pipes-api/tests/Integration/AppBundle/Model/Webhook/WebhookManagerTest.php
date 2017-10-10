@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Integration\AppBundle\Model;
+namespace Tests\Integration\AppBundle\Model\Webhook;
 
 use CleverConnectors\AppBundle\Document\Webhook;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;

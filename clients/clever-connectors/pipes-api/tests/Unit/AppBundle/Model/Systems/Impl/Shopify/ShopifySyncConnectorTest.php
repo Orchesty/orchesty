@@ -9,7 +9,6 @@
 
 namespace Tests\Unit\AppBundle\Model\Systems\Impl\Shopify;
 
-use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\ShopifySyncConnector;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\ShopifySystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
@@ -17,6 +16,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSenderFactory;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use PHPUnit_Framework_MockObject_MockObject;
 use React\EventLoop\Factory;
@@ -35,12 +35,18 @@ final class ShopifySyncConnectorTest extends KernelTestCaseAbstract
      */
     public function testProcessBatch(): void
     {
-        $loop = Factory::create();
+        $dtoData = [
+            'data' => [
+                'system_install' => ['user' => '123'],
+                'topology'       => ['name' => 'top-name-ever'],
+            ],
+        ];
 
+        $loop       = Factory::create();
         $processDto = new ProcessDto();
         $processDto
             ->setHeaders([])
-            ->setData(json_encode(['settings' => [], 'user' => '123']));
+            ->setData(json_encode($dtoData));
 
         /** @var ShopifySyncConnector $syncConn */
         $syncConn = $this->mockSync();
@@ -65,19 +71,18 @@ final class ShopifySyncConnectorTest extends KernelTestCaseAbstract
     private function mockSync()
     {
         $systemInstall = $this->createMock(SystemInstallRepository::class);
-        $systemInstall->method('getSystemInstall')->willReturn((new SystemInstall())->setUser('123'));
+        $systemInstall->method('setSyncTime')->willReturn(NULL);
 
         $dm = $this->createMock(DocumentManager::class);
         $dm
             ->method('getRepository')
             ->willReturn($systemInstall);
-        $dm
-            ->method('flush')
-            ->willReturn(TRUE);
+
+        $sender = $this->createMock(CurlSenderFactory::class);
 
         $syncConn = $this->getMockBuilder(ShopifySyncConnector::class)
             ->setMethods(['fetchData'])
-            ->setConstructorArgs([$this->mockSystem(), $dm])
+            ->setConstructorArgs([$this->mockSystem(), $dm, $sender])
             ->getMock();
 
         $syncConn->expects($this->at(0))

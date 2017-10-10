@@ -1,11 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace CleverConnectors\AppBundle\Model;
+namespace CleverConnectors\AppBundle\Model\Webhook;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Document\Webhook;
-use CleverConnectors\AppBundle\Model\Systems\WebhookSubscribes;
-use CleverConnectors\AppBundle\Model\Systems\WebhookSystemInterface;
 use CleverConnectors\AppBundle\Repository\WebhookRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentRepository;
@@ -18,7 +16,7 @@ use Psr\Log\NullLogger;
 /**
  * Class WebhookManager
  *
- * @package CleverConnectors\AppBundle\Model
+ * @package CleverConnectors\AppBundle\Model\Webhook
  */
 class WebhookManager implements LoggerAwareInterface
 {

@@ -4,6 +4,7 @@ namespace CleverConnectors\AppBundle\Document;
 
 use CleverConnectors\AppBundle\Document\Traits\IdTrait;
 use DateTime;
+use DateTimeZone;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Hanaboso\PipesFramework\Commons\Crypt\CryptManager;
 
@@ -19,11 +20,14 @@ use Hanaboso\PipesFramework\Commons\Crypt\CryptManager;
 class SystemInstall
 {
 
-    private const USER         = 'user';
-    private const TOKEN        = 'token';
-    private const SYSTEM       = 'system';
-    private const SYNCHRONIZED = 'synchronized';
-    private const SETTINGS     = 'settings';
+    private const ID                 = 'id';
+    public const  USER               = 'user';
+    public const  TOKEN              = 'token';
+    public const  SYSTEM             = 'system';
+    public const  SYNCHRONIZED       = 'synchronized';
+    public const  SYNCHRONIZED_TIME  = 'synchronizedTime';
+    public const  ENCRYPTED_SETTINGS = 'encryptedSettings';
+    public const  CREATED            = 'created';
 
     use IdTrait;
 
@@ -257,13 +261,19 @@ class SystemInstall
      */
     public static function from(array $data): SystemInstall
     {
-        $systemInstall = new SystemInstall();
+        $systemInstall     = new SystemInstall();
+        $systemInstall->id = $data[self::ID] ?? '';
         $systemInstall
             ->setUser($data[self::USER] ?? '')
             ->setToken($data[self::TOKEN] ?? '')
             ->setSystem($data[self::SYSTEM] ?? '')
+            ->setCreated($data[self::CREATED] ?? new DateTime('now', new DateTimeZone('UTC')))
             ->setSynchronized((bool) ($data[self::SYNCHRONIZED] ?? FALSE))
-            ->setSettings($data[self::SETTINGS] ?? []);
+            ->setSettings([]);
+
+        if (isset($data[self::ENCRYPTED_SETTINGS])) {
+            $systemInstall->setSettings(CryptManager::decrypt($data[self::ENCRYPTED_SETTINGS]));
+        }
 
         return $systemInstall;
     }

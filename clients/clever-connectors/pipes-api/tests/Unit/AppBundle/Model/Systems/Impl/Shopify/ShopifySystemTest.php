@@ -7,7 +7,7 @@ use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Form\Field;
 use CleverConnectors\AppBundle\Model\Form\Form;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\ShopifySystem;
-use CleverConnectors\AppBundle\Model\Systems\WebhookSubscribes;
+use CleverConnectors\AppBundle\Model\Webhook\WebhookSubscribes;
 use Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;

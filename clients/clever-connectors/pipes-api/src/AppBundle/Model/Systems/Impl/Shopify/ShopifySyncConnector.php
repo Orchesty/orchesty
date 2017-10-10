@@ -12,13 +12,12 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\Shopify;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
-use Clue\React\Buzz\Browser;
-use DateTime;
-use DateTimeZone;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use GuzzleHttp\Psr7\Request;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSender;
+use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSenderFactory;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\BatchInterface;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
@@ -45,26 +44,27 @@ class ShopifySyncConnector implements BatchInterface, ConnectorInterface
     private $system;
 
     /**
-     * @var DocumentManager
-     */
-    private $dm;
-
-    /**
      * @var SystemInstallRepository|DocumentRepository
      */
-    private $repo;
+    private $systemInstallRepository;
+
+    /**
+     * @var CurlSenderFactory
+     */
+    private $factory;
 
     /**
      * ShopifySyncConnector constructor.
      *
-     * @param ShopifySystem   $system
-     * @param DocumentManager $dm
+     * @param ShopifySystem     $system
+     * @param DocumentManager   $dm
+     * @param CurlSenderFactory $factory
      */
-    public function __construct(ShopifySystem $system, DocumentManager $dm)
+    public function __construct(ShopifySystem $system, DocumentManager $dm, CurlSenderFactory $factory)
     {
-        $this->system = $system;
-        $this->dm     = $dm;
-        $this->repo   = $this->dm->getRepository(SystemInstall::class);
+        $this->system                  = $system;
+        $this->systemInstallRepository = $dm->getRepository(SystemInstall::class);
+        $this->factory                 = $factory;
     }
 
     /**
@@ -99,8 +99,9 @@ class ShopifySyncConnector implements BatchInterface, ConnectorInterface
     public function processBatch(ProcessDto $dto, LoopInterface $loop, callable $callbackItem): PromiseInterface
     {
 
-        $browser       = new Browser($loop);
-        $systemInstall = $this->getSystemInstall($dto);
+        $browser       = $this->factory->create($loop);
+        $data          = $this->getParsedData($dto);
+        $systemInstall = $this->getSystemInstall($data);
         $requestDto    = $this->system->getRequestDto($systemInstall, 'GET');
         $baseUrl       = (string) $requestDto->getUri();
         $headers       = $requestDto->getHeaders();
@@ -117,25 +118,36 @@ class ShopifySyncConnector implements BatchInterface, ConnectorInterface
                 }
             );
 
-        $systemInstall
-            ->setSynchronized(TRUE)
-            ->setSynchronizedTime(new DateTime('now', new DateTimeZone('UTC')));
-
-        $this->dm->flush($systemInstall);
+        $this->systemInstallRepository->setSyncTime($systemInstall);
 
         return $promise;
     }
 
     /**
-     * @param ProcessDto $dto
+     * @param array $data
      *
      * @return SystemInstall
+     * @throws SystemException
      */
-    private function getSystemInstall(ProcessDto $dto): SystemInstall
+    protected function getSystemInstall(array $data): SystemInstall
     {
-        $system = SystemInstall::from(json_decode($dto->getData(), TRUE));
+        if (!array_key_exists('system_install', $data)) {
+            throw new SystemException('Missing [system_install] in data.', SystemException::MISSING_DATA);
+        }
 
-        return $this->repo->getSystemInstall($system->getUser(), $system->getToken(), $system->getSystem());
+        return SystemInstall::from($data['system_install']);
+    }
+
+    /**
+     * @param ProcessDto $dto
+     *
+     * @return array
+     */
+    protected function getParsedData(ProcessDto $dto): array
+    {
+        $data = json_decode($dto->getData(), TRUE);
+
+        return $data['data'] ?? $data;
     }
 
     /**
@@ -150,14 +162,14 @@ class ShopifySyncConnector implements BatchInterface, ConnectorInterface
     }
 
     /**
-     * @param Browser          $browser
+     * @param CurlSender       $sender
      * @param RequestInterface $request
      *
      * @return PromiseInterface
      */
-    protected function fetchData(Browser $browser, RequestInterface $request): PromiseInterface
+    protected function fetchData(CurlSender $sender, RequestInterface $request): PromiseInterface
     {
-        return $browser->send($request);
+        return $sender->send($request);
     }
 
     /**
@@ -181,17 +193,17 @@ class ShopifySyncConnector implements BatchInterface, ConnectorInterface
     }
 
     /**
-     * @param int      $total
-     * @param Browser  $browser
-     * @param string   $baseUrl
-     * @param callable $callbackItem
-     * @param array    $headers
+     * @param int        $total
+     * @param CurlSender $sender
+     * @param string     $baseUrl
+     * @param callable   $callbackItem
+     * @param array      $headers
      *
      * @return array
      */
     private function doPageLoop(
         int $total,
-        Browser $browser,
+        CurlSender $sender,
         string $baseUrl,
         callable $callbackItem,
         array $headers
@@ -200,7 +212,7 @@ class ShopifySyncConnector implements BatchInterface, ConnectorInterface
         $requests = [];
         for ($i = 1; $i <= $total; $i++) {
             $requests[] = $this
-                ->fetchData($browser, $this->createCustomerRequest($baseUrl, $i, $headers))
+                ->fetchData($sender, $this->createCustomerRequest($baseUrl, $i, $headers))
                 ->then(
                     function (ResponseInterface $response) use ($i): SuccessMessage {
                         return $this->createSuccessMessage($response, $i);

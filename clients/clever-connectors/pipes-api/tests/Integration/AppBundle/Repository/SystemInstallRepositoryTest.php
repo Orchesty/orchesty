@@ -60,4 +60,29 @@ final class SystemInstallRepositoryTest extends DatabaseTestCaseAbstract
         $repo->getSystemInstall($system->getUser(), $system->getToken(), $system->getSystem());
     }
 
+    /**
+     *
+     */
+    public function testSetSyncTime(): void
+    {
+        $system = new SystemInstall();
+        $system
+            ->setUser('u-123' . uniqid())
+            ->setToken('t-456')
+            ->setSystem('s-789');
+        $this->dm->persist($system);
+        $this->dm->flush($system);
+        $this->dm->clear();
+
+        /** @var SystemInstallRepository $repo */
+        $repo = $this->dm->getRepository(SystemInstall::class);
+        $repo->setSyncTime($system);
+
+        $this->dm->clear();
+        /** @var SystemInstall $sys */
+        $sys = $repo->find($system->getId());
+        $this->assertNotEmpty($sys->getSynchronizedTime());
+        $this->assertTrue($sys->isSynchronized());
+    }
+
 }
