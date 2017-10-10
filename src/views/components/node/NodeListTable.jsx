@@ -41,7 +41,7 @@ class NodeListTable extends React.Component {
   }
 
   render() {
-    const {list, elements, withTopology, updateNode, runNode, onlyEvents, listChangePage, withNodeTest, tests} = this.props;
+    const {list, elements, topologyElements, withTopology, updateNode, runNode, onlyEvents, listChangePage, withNodeTest, tests} = this.props;
     const rows = list && list.items ? list.items.map(id => {
       const item = elements[id];
       if (!onlyEvents || item.handler == 'event') {
@@ -50,7 +50,8 @@ class NodeListTable extends React.Component {
             caption: 'Run',
             action: () => {
               runNode(item._id);
-            }
+            },
+            disabled: !item.enabled || !topologyElements[item.topology_id].enabled
           },
           {
             caption: item.enabled ? 'Disable' : 'Enable',
@@ -105,6 +106,7 @@ NodeListTable.defaultProps = {
 NodeListTable.propTypes = {
   list: PropTypes.object,
   elements: PropTypes.object.isRequired,
+  topologyElements: PropTypes.object.isRequired,
   tests: PropTypes.object,
   withTopology: PropTypes.bool.isRequired,
   withNodeTest: PropTypes.bool.isRequired,
