@@ -90,6 +90,7 @@ class Topology
         $this->visibility = TopologyStatusEnum::DRAFT;
         $this->status     = StatusEnum::NEW;
         $this->version    = 1;
+        $this->name       = '';
     }
 
     /**

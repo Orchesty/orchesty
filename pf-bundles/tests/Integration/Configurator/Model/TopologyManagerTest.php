@@ -17,7 +17,7 @@ use Tests\DatabaseTestCaseAbstract;
  *
  * @package Tests\Integration\Configurator\Model
  */
-class TopologyManagerTest extends DatabaseTestCaseAbstract
+final class TopologyManagerTest extends DatabaseTestCaseAbstract
 {
 
     /**
@@ -29,7 +29,9 @@ class TopologyManagerTest extends DatabaseTestCaseAbstract
 
         self::assertEquals(1, $manager->createTopology(['name' => 'Topology'])->getVersion());
         self::assertEquals(2, $manager->createTopology(['name' => 'Topology'])->getVersion());
-        self::assertEquals(3, $manager->createTopology(['name' => 'Topology'])->getVersion());
+        $topology = $manager->createTopology(['name' => 'Topology']);
+        self::assertEquals(3, $topology->getVersion());
+        self::assertEquals(3, $manager->updateTopology($topology, ['name' => 'Topology'])->getVersion());
 
         $topology = $manager->createTopology(['name' => 'AnotherTopology']);
         self::assertEquals(1, $topology->getVersion());
