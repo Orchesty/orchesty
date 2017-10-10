@@ -10,3 +10,10 @@ services:
         class: CleverConnectors\AppBundle\Model\Command\AsyncCommandFactory
         arguments:
             - '%kernel.project_dir%'
+
+    clever_connectors.cron.get_topology_callback:
+            class: CleverConnectors\AppBundle\Command\GetTopologyCommand
+            arguments:
+                - '@doctrine.odm.mongodb.document_manager'
+            tags:
+                -  { name: console.command }
