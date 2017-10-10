@@ -6,7 +6,7 @@
  * Time: 13:40
  */
 
-namespace Hanaboso\PipesFramework\RabbitMq\Async\Curl;
+namespace Hanaboso\PipesFramework\Commons\Transport\AsyncCurl;
 
 use Clue\React\Buzz\Browser;
 use Psr\Log\LoggerAwareInterface;
@@ -19,7 +19,7 @@ use React\EventLoop\LoopInterface;
  *
  * @package Hanaboso\PipesFramework\RabbitMq\Async\Curl
  */
-class CurlFactory implements LoggerAwareInterface
+class CurlSenderFactory implements LoggerAwareInterface
 {
 
     /**

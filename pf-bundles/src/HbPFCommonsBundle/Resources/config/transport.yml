@@ -23,3 +23,8 @@ services:
             - '@hbpf.transport.soap_client_factory'
         calls:
             - ['setLogger', ['@monolog.logger.commons']]
+
+    hbpf.transport.async_curl_factory:
+        class: Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSenderFactory
+        calls:
+            - ['setLogger', ['@monolog.logger.commons']]
