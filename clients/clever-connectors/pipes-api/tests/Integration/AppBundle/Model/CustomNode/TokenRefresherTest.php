@@ -3,9 +3,9 @@
 namespace Tests\Integration\AppBundle\Model\CustomNode;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
-use CleverConnectors\AppBundle\Model\CustomNode\TokenRefresher;
 use DateTime;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use JMS\Serializer\SerializerBuilder;
 use Tests\DatabaseTestCaseAbstract;
 
 /**
@@ -33,18 +33,22 @@ final class TokenRefresherTest extends DatabaseTestCaseAbstract
 
         $this->persistAndFlush($systemInstall);
 
-        $dto = new ProcessDto();
-        $dto->setData(json_encode($systemInstall));
+        $serializer = SerializerBuilder::create()->build();
 
-        $node   = new TokenRefresher($this->dm, $this->container->get('systems.loader'));
+        $dto = new ProcessDto();
+        $dto->setData($serializer->serialize($systemInstall, 'json'));
+
+        $node   = $this->container->get('hbpf.custom_node.token-refresher');
         $result = $node->process($dto);
 
         self::assertEquals($result, $dto);
 
+        $this->dm->clear(SystemInstall::class);
+
         /** @var SystemInstall $result */
         $result = $this->dm->getRepository(SystemInstall::class)->find($systemInstall->getId());
 
-        self::assertEquals($timestamp, $result->getExpires()->getTimestamp() + 3600);
+        self::assertEquals($timestamp + 3600, $result->getExpires()->getTimestamp());
     }
 
 }

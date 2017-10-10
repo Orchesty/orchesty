@@ -8,7 +8,6 @@ use CleverConnectors\AppBundle\Model\Systems\SystemLoader;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
-use Nette\Utils\Json;
 
 /**
  * Class TokensRefresher
@@ -47,15 +46,19 @@ class TokenRefresher implements CustomNodeInterface
      */
     public function process(ProcessDto $dto): ProcessDto
     {
-        // TODO user serializer to get class SystemInstall, not stdClass!!!
-
-        /** @var SystemInstall $systemInstall */
-        $systemInstall = Json::decode($dto->getData());
+        $systemInstall = json_decode($dto->getData(), TRUE);
+        $systemInstall = $this->dm->getRepository(SystemInstall::class)->find($systemInstall['id']);
 
         /** @var OAuth2Interface $system */
-        $system = $this->loader->getSystem($systemInstall->getSystem());
-        $system->refreshToken($systemInstall);
+        $system        = $this->loader->getSystem($systemInstall->getSystem());
+        $systemInstallNew = $system->refreshToken($systemInstall);
+
+        //var_dump($systemInstallNew->getExpires()->getTimestamp());
         $this->dm->flush();
+        //var_dump($systemInstallNew->getExpires()->getTimestamp());
+
+        $systemInstallNew2 = $this->dm->getRepository(SystemInstall::class)->find($systemInstallNew->getId());
+        //var_dump($systemInstallNew2->getExpires()->getTimestamp());
 
         return $dto;
     }
