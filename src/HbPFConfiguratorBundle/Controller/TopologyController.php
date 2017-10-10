@@ -195,8 +195,8 @@ class TopologyController extends FOSRestController
     }
 
     /**
-     * @Route("/topologies/{id}/delete", defaults={}, requirements={"id": "\w+"})
-     * @Method({"GET", "OPTIONS"})
+     * @Route("/topologies/{id}", defaults={}, requirements={"id": "\w+"})
+     * @Method({"DELETE", "OPTIONS"})
      *
      * @param string $id
      *
