@@ -3,6 +3,7 @@
 namespace Tests\Integration\AppBundle\Model\Systems\Impl\Shopify;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
+use Hanaboso\PipesFramework\Commons\Crypt\CryptManager;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
@@ -30,31 +31,38 @@ class ShopifySyncConnectorTest extends DatabaseTestCaseAbstract
         $topology = (new Topology())->setName('Topology');
         $this->persistAndFlush($topology);
 
+        $settings = [
+            'access_token' => '676ae188bd76d1957884be07c4af4e85',
+            'system_url'   => 'ndflakee',
+        ];
+
         $system = new SystemInstall();
         $system
             ->setUser('u_123')
             ->setToken('t-456')
             ->setSystem('s_-879')
-            ->setSettings([
-                'access_token' => '676ae188bd76d1957884be07c4af4e85',
-                'system_url'   => 'ndflakee',
-            ]);
+            ->setSettings($settings);
         $this->persistAndFlush($system);
+
+        $dtoData = [
+            'data' => [
+                'system_install' => [
+                    'id'                => $system->getId(),
+                    'user'              => $system->getUser(),
+                    'token'             => $system->getToken(),
+                    'system'            => $system->getSystem(),
+                    'encryptedSettings' => CryptManager::encrypt($settings),
+                ],
+                'topology'       => ['name' => 'top-name-ever'],
+            ],
+        ];
 
         $node = (new Node())
             ->setName('Node')
             ->setTopology($topology->getId());
         $this->persistAndFlush($node);
 
-        $processDto = (new ProcessDto())
-            ->setData(Json::encode([
-                'user'   => $system->getUser(),
-                'token'  => $system->getToken(),
-                'system' => $system->getSystem(),
-            ]))->setHeaders([
-                'X-Shopify-Access-Token' => '676ae188bd76d1957884be07c4af4e85',
-                'node_id'                => $node->getId(),
-            ]);
+        $processDto = (new ProcessDto())->setData(Json::encode($dtoData))->setHeaders([]);
 
         $loop = Factory::create();
 

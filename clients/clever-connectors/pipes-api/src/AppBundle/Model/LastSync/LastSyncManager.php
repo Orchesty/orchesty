@@ -7,10 +7,7 @@ use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Repository\LastSyncRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
-use Hanaboso\PipesFramework\Configurator\Document\Node;
-use Hanaboso\PipesFramework\Configurator\Document\Topology;
-use Hanaboso\PipesFramework\TopologyGenerator\GeneratorUtils;
+use Doctrine\ODM\MongoDB\DocumentRepository;
 
 /**
  * Class LastSyncManager
@@ -26,44 +23,40 @@ class LastSyncManager
     private $dm;
 
     /**
+     * @var DocumentRepository|LastSyncRepository
+     */
+    private $repository;
+
+    /**
      * LastSyncManager constructor.
      *
      * @param DocumentManager $dm
      */
     public function __construct(DocumentManager $dm)
     {
-        $this->dm = $dm;
+        $this->dm         = $dm;
+        $this->repository = $this->dm->getRepository(LastSync::class);
     }
 
     /**
-     * @param ProcessDto    $dto
+     * @param array         $data
      * @param SystemInstall $systemInstall
      * @param string        $nodeName
      *
      * @return LastSync
      * @throws SystemException
      */
-    public function getLastSync(ProcessDto $dto, SystemInstall $systemInstall, string $nodeName): LastSync
+    public function getLastSync(array $data, SystemInstall $systemInstall, string $nodeName): LastSync
     {
-        if (!array_key_exists('node_id', $dto->getHeaders())) {
-            throw new SystemException(
-                'Missing [node_id] in ProcessDto.',
-                SystemException::MISSING_DATA
-            );
+        if (!array_key_exists('topology', $data) || !array_key_exists('name', $data['topology'])) {
+            throw new SystemException('Missing [topology][name] in data.', SystemException::MISSING_DATA);
         }
 
-        $node         = $this->dm->getRepository(Node::class)->findOneBy([
-            'id' => GeneratorUtils::denormalizeName($dto->getHeaders()['node_id']),
-        ]);
-        $topology     = $this->dm->getRepository(Topology::class)->findOneBy(['id' => $node->getTopology()]);
-        $topologyName = $topology->getName();
-
-        /** @var LastSyncRepository $repository */
-        $repository = $this->dm->getRepository(LastSync::class);
-        $lastSync   = $repository->getLastSyncTime($systemInstall->getUser(), $topologyName, $nodeName);
+        $this->dm->clear(LastSync::class);
+        $lastSync = $this->repository->getLastSyncTime($systemInstall->getUser(), $data['topology']['name'], $nodeName);
 
         if (!$lastSync) {
-            $lastSync = $this->createLastSync($systemInstall, $nodeName, $topologyName);
+            $lastSync = $this->createLastSync($systemInstall, $nodeName, $data['topology']['name']);
         }
 
         if ($systemInstall->isSynchronized() && $systemInstall->getSynchronizedTime()) {
@@ -72,6 +65,18 @@ class LastSyncManager
 
         return $lastSync;
     }
+
+    /**
+     * @param LastSync $lastSync
+     */
+    public function updateLastSync(LastSync $lastSync): void
+    {
+        $this->dm->flush($lastSync);
+    }
+
+    /**
+     * ------------------------------------------- HELPERS ---------------------------------------------
+     */
 
     /**
      * @param SystemInstall $systemInstall

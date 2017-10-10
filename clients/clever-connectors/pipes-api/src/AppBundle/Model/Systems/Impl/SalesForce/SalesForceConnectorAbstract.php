@@ -5,14 +5,12 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\LastSync\LastSyncManager;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
-use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
-use Clue\React\Buzz\Browser;
 use DateTime;
-use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\DocumentRepository;
 use Exception;
 use GuzzleHttp\Psr7\Request;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSender;
+use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSenderFactory;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\BatchInterface;
@@ -44,28 +42,22 @@ abstract class SalesForceConnectorAbstract implements BatchInterface, ConnectorI
     protected $lastSyncManager;
 
     /**
-     * @var DocumentManager
+     * @var CurlSenderFactory
      */
-    protected $dm;
-
-    /**
-     * @var SystemInstallRepository|DocumentRepository
-     */
-    private $repo;
+    protected $factory;
 
     /**
      * SalesForceDeleteConnector constructor.
      *
-     * @param SalesForceSystem $system
-     * @param DocumentManager  $dm
-     * @param LastSyncManager  $lastSyncManager
+     * @param SalesForceSystem  $system
+     * @param LastSyncManager   $lastSyncManager
+     * @param CurlSenderFactory $factory
      */
-    public function __construct(SalesForceSystem $system, DocumentManager $dm, LastSyncManager $lastSyncManager)
+    public function __construct(SalesForceSystem $system, LastSyncManager $lastSyncManager, CurlSenderFactory $factory)
     {
         $this->system          = $system;
-        $this->dm              = $dm;
-        $this->repo            = $this->dm->getRepository(SystemInstall::class);
         $this->lastSyncManager = $lastSyncManager;
+        $this->factory         = $factory;
     }
 
     /**
@@ -125,26 +117,41 @@ abstract class SalesForceConnectorAbstract implements BatchInterface, ConnectorI
     }
 
     /**
-     * @param Browser          $browser
+     * @param CurlSender       $sender
      * @param RequestInterface $request
      *
      * @return PromiseInterface
      */
-    protected function fetchData(Browser $browser, RequestInterface $request): PromiseInterface
+    protected function fetchData(CurlSender $sender, RequestInterface $request): PromiseInterface
     {
-        return $browser->send($request);
+        return $sender->send($request);
+    }
+
+    /**
+     * @param array $data
+     *
+     * @return SystemInstall
+     * @throws SystemException
+     */
+    protected function getSystemInstall(array $data): SystemInstall
+    {
+        if (!array_key_exists('system_install', $data)) {
+            throw new SystemException('Missing [system_install] in data.', SystemException::MISSING_DATA);
+        }
+
+        return SystemInstall::from($data['system_install']);
     }
 
     /**
      * @param ProcessDto $dto
      *
-     * @return SystemInstall
+     * @return array
      */
-    protected function getSystemInstall(ProcessDto $dto): SystemInstall
+    protected function getParsedData(ProcessDto $dto): array
     {
-        $system = SystemInstall::from(json_decode($dto->getData(), TRUE)['data']);
+        $data = json_decode($dto->getData(), TRUE);
 
-        return $this->repo->getSystemInstall($system->getUser(), $system->getToken(), $system->getSystem());
+        return $data['data'] ?? $data;
     }
 
     /**
@@ -195,18 +202,18 @@ abstract class SalesForceConnectorAbstract implements BatchInterface, ConnectorI
     }
 
     /**
-     * @param int      $total
-     * @param Browser  $browser
-     * @param string   $baseUrl
-     * @param callable $callbackItem
-     * @param array    $headers
-     * @param string   $timeQuery
+     * @param int        $total
+     * @param CurlSender $sender
+     * @param string     $baseUrl
+     * @param callable   $callbackItem
+     * @param array      $headers
+     * @param string     $timeQuery
      *
      * @return array
      */
     protected function doPageLoop(
         int $total,
-        Browser $browser,
+        CurlSender $sender,
         string $baseUrl,
         callable $callbackItem,
         array $headers,
@@ -216,7 +223,7 @@ abstract class SalesForceConnectorAbstract implements BatchInterface, ConnectorI
         $requests = [];
         for ($i = 0; $i < $total; $i++) {
             $requests[] = $this
-                ->fetchData($browser, $this->createPageContactRequest($baseUrl, $i, $headers, $timeQuery))
+                ->fetchData($sender, $this->createPageContactRequest($baseUrl, $i, $headers, $timeQuery))
                 ->then(function (ResponseInterface $response) use ($i): SuccessMessage {
 
                     return $this->createSuccessMessage($response, $i);

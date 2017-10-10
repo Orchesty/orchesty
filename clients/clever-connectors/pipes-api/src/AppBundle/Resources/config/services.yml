@@ -94,22 +94,23 @@ services:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce\SalesForceSyncConnector
         arguments:
             - '@systems.salesforce'
-            - '@doctrine_mongodb.odm.default_document_manager'
             - '@manager.last_sync'
+            - '@hbpf.transport.async_curl_factory'
+            - '@doctrine_mongodb.odm.default_document_manager'
 
     hbpf.connector.salesforce-update-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce\SalesForceUpdateConnector
         arguments:
             - '@systems.salesforce'
-            - '@doctrine_mongodb.odm.default_document_manager'
             - '@manager.last_sync'
+            - '@hbpf.transport.async_curl_factory'
 
     hbpf.connector.salesforce-delete-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce\SalesForceDeleteConnector
         arguments:
             - '@systems.salesforce'
-            - '@doctrine_mongodb.odm.default_document_manager'
             - '@manager.last_sync'
+            - '@hbpf.transport.async_curl_factory'
 
     systems.shopify:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\ShopifySystem
@@ -122,6 +123,7 @@ services:
         arguments:
             - '@systems.shopify'
             - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.transport.async_curl_factory'
 
     hbpf.connector.shopify-customer-create:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\ShopifyCreateCustomerConnector

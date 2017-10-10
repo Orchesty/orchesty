@@ -9,11 +9,14 @@
 
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce;
 
-use Clue\React\Buzz\Browser;
-use DateTime;
-use DateTimeZone;
+use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Model\LastSync\LastSyncManager;
+use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
+use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\DocumentRepository;
 use GuzzleHttp\Psr7\Request;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSenderFactory;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use React\EventLoop\LoopInterface;
@@ -29,6 +32,30 @@ class SalesForceSyncConnector extends SalesForceConnectorAbstract
 {
 
     /**
+     * @var SystemInstallRepository|DocumentRepository
+     */
+    private $systemInstallRepository;
+
+    /**
+     * SalesForceSyncConnector constructor.
+     *
+     * @param SalesForceSystem  $system
+     * @param LastSyncManager   $lastSyncManager
+     * @param CurlSenderFactory $factory
+     * @param DocumentManager   $dm
+     */
+    public function __construct(
+        SalesForceSystem $system,
+        LastSyncManager $lastSyncManager,
+        CurlSenderFactory $factory,
+        DocumentManager $dm
+    )
+    {
+        parent::__construct($system, $lastSyncManager, $factory);
+        $this->systemInstallRepository = $dm->getRepository(SystemInstall::class);
+    }
+
+    /**
      * @param ProcessDto    $dto
      * @param LoopInterface $loop
      * @param callable      $callbackItem
@@ -38,8 +65,9 @@ class SalesForceSyncConnector extends SalesForceConnectorAbstract
     public function processBatch(ProcessDto $dto, LoopInterface $loop, callable $callbackItem): PromiseInterface
     {
 
-        $browser       = new Browser($loop);
-        $systemInstall = $this->getSystemInstall($dto);
+        $browser       = $this->factory->create($loop);
+        $data          = $this->getParsedData($dto);
+        $systemInstall = $this->getSystemInstall($data);
         $requestDto    = $this->system->getRequestDto($systemInstall, 'GET');
         $baseUrl       = (string) $requestDto->getUri();
         $headers       = $requestDto->getHeaders();
@@ -56,11 +84,7 @@ class SalesForceSyncConnector extends SalesForceConnectorAbstract
                 }
             );
 
-        $systemInstall
-            ->setSynchronized(TRUE)
-            ->setSynchronizedTime(new DateTime('now', new DateTimeZone('UTC')));
-
-        $this->dm->flush($systemInstall);
+        $this->systemInstallRepository->setSyncTime($systemInstall);
 
         return $promise;
     }
@@ -73,7 +97,12 @@ class SalesForceSyncConnector extends SalesForceConnectorAbstract
      *
      * @return RequestInterface
      */
-    protected function createPageContactRequest(string $baseUrl, int $page, array $headers, string $timeQuery = ''): RequestInterface
+    protected function createPageContactRequest(
+        string $baseUrl,
+        int $page,
+        array $headers,
+        string $timeQuery = ''
+    ): RequestInterface
     {
         $query = sprintf(
             'select+email,+firstname,+lastname+from+contact+limit+%s+offset+%s',

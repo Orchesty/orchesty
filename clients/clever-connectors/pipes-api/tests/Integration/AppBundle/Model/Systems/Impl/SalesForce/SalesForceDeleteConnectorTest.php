@@ -3,6 +3,7 @@
 namespace Tests\Integration\AppBundle\Model\Systems\Impl\SalesForce;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
+use Hanaboso\PipesFramework\Commons\Crypt\CryptManager;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
@@ -30,15 +31,17 @@ class SalesForceDeleteConnectorTest extends DatabaseTestCaseAbstract
         $topology = (new Topology())->setName('Topology');
         $this->persistAndFlush($topology);
 
+        $settings = [
+            'access_token' => '00D1I000001WyE7!ARAAQIObuJ1gc6YcwxSsoolt9VvRJxyUeJZVP3ozOlKh9mQ8hxwgYNamy6_01wgynh4Lx.xqhHgZVGolJ4bm7lm2rkvsB9ZN',
+            'instance_url' => 'https://na73.salesforce.com/',
+        ];
+
         $system = new SystemInstall();
         $system
             ->setUser('u_123')
             ->setToken('t-456')
             ->setSystem('s_-879')
-            ->setSettings([
-                'access_token' => '00D1I000001WyE7!ARAAQEza5QDZ3b2kfre2tZhM48dzRlC8nnrrmUBHYtUiUYFLvj8nmL3CCquz29k1Yz6q7SnORxPuW.WTuT2in_pxfYuMH_eA',
-                'instance_url' => 'https://na73.salesforce.com/',
-            ]);
+            ->setSettings($settings);
         $this->persistAndFlush($system);
 
         $node = (new Node())
@@ -46,19 +49,21 @@ class SalesForceDeleteConnectorTest extends DatabaseTestCaseAbstract
             ->setTopology($topology->getId());
         $this->persistAndFlush($node);
 
-        $processDto = (new ProcessDto())
-            ->setData(Json::encode([
-                'data' => [
-                    'user'   => $system->getUser(),
-                    'token'  => $system->getToken(),
-                    'system' => $system->getSystem(),
+        $dtoData = [
+            'data' => [
+                'system_install' => [
+                    'id'                => $system->getId(),
+                    'user'              => $system->getUser(),
+                    'token'             => $system->getToken(),
+                    'system'            => $system->getSystem(),
+                    'encryptedSettings' => CryptManager::encrypt($settings),
                 ],
-            ]))->setHeaders([
-                'Authorization' => 'Bearer 00D1I000001WyE7!ARAAQEza5QDZ3b2kfre2tZhM48dzRlC8nnrrmUBHYtUiUYFLvj8nmL3CCquz29k1Yz6q7SnORxPuW.WTuT2in_pxfYuMH_eA',
-                'node_id'       => $node->getId(),
-            ]);
+                'topology'       => ['name' => 'top-name-ever'],
+            ],
+        ];
 
-        $loop = Factory::create();
+        $processDto = (new ProcessDto())->setData(Json::encode($dtoData))->setHeaders([]);
+        $loop       = Factory::create();
 
         $process = $connector->processBatch($processDto, $loop, function (SuccessMessage $message): void {
             $this->assertTrue(is_array(Json::decode($message->getData(), TRUE)));

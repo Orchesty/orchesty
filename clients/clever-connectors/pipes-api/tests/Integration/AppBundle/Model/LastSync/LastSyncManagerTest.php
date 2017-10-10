@@ -6,7 +6,6 @@ use CleverConnectors\AppBundle\Document\LastSync;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\LastSync\LastSyncManager;
 use DateTime;
-use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Tests\DatabaseTestCaseAbstract;
@@ -59,10 +58,12 @@ final class LastSyncManagerTest extends DatabaseTestCaseAbstract
             ->setTimestamp(new DateTime('today midnight'));
         $this->persistAndFlush($lastSync);
 
-        $processDto = (new ProcessDto())->setHeaders(['node_id' => $node->getId()]);
+        $dtoData = [
+            'topology' => ['name' => $topology->getName()],
+        ];
 
         $this->dm->clear();
-        $existingLastSync = $this->manager->getLastSync($processDto, $system, 'Node');
+        $existingLastSync = $this->manager->getLastSync($dtoData, $system, 'Node');
         $this->assertEquals($lastSync->getTimestamp(), $existingLastSync->getTimestamp());
     }
 
@@ -85,11 +86,37 @@ final class LastSyncManagerTest extends DatabaseTestCaseAbstract
             ->setTopology($topology->getId());
         $this->persistAndFlush($node);
 
-        $processDto = (new ProcessDto())->setHeaders(['node_id' => $node->getId()]);
+        $dtoData = [
+            'topology' => ['name' => $topology->getName()],
+        ];
 
         $this->dm->clear();
-        $existingLastSync = $this->manager->getLastSync($processDto, $system, 'Node');
+        $existingLastSync = $this->manager->getLastSync($dtoData, $system, 'Node');
         $this->assertEquals(NULL, $existingLastSync->getTimestamp());
+    }
+
+    /**
+     *
+     */
+    public function testUpdateLastSync(): void
+    {
+        $lastSync = (new LastSync())
+            ->setUser('User')
+            ->setTopologyName('Topology')
+            ->setNodeName('Node');
+        $this->persistAndFlush($lastSync);
+
+        $this->dm->clear();
+        /** @var LastSync $sync */
+        $sync = $this->dm->getRepository(LastSync::class)->find($lastSync->getId());
+        $sync->setNodeName('AA_AA');
+        $this->manager->updateLastSync($sync);
+
+        $this->dm->clear();
+        /** @var LastSync $sync */
+        $sync = $this->dm->getRepository(LastSync::class)->find($sync->getId());
+
+        $this->assertSame('AA_AA', $sync->getNodeName());
     }
 
 }

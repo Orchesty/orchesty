@@ -3,8 +3,12 @@
 namespace CleverConnectors\AppBundle\Repository;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
+use DateTime;
+use DateTimeZone;
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use Hanaboso\PipesFramework\Commons\Crypt\CryptManager;
 use LogicException;
+use MongoId;
 
 /**
  * Class SystemInstallRepository
@@ -35,6 +39,28 @@ class SystemInstallRepository extends DocumentRepository
         }
 
         return $ret;
+    }
+
+    /**
+     * @param SystemInstall $systemInstall
+     */
+    public function setSyncTime(SystemInstall $systemInstall): void
+    {
+        $now = new DateTime('now', new DateTimeZone('UTC'));
+        $this->getDocumentManager()
+            ->getDocumentCollection(SystemInstall::class)
+            ->update(
+                ['_id' => new MongoId($systemInstall->getId())],
+                [
+                    SystemInstall::USER               => $systemInstall->getUser(),
+                    SystemInstall::TOKEN              => $systemInstall->getToken(),
+                    SystemInstall::SYSTEM             => $systemInstall->getSystem(),
+                    SystemInstall::CREATED            => $systemInstall->getCreated()->format(DateTime::W3C),
+                    SystemInstall::SYNCHRONIZED       => TRUE,
+                    SystemInstall::SYNCHRONIZED_TIME  => $now->format(DateTime::W3C),
+                    SystemInstall::ENCRYPTED_SETTINGS => CryptManager::encrypt([]),
+                ]
+            );
     }
 
 }

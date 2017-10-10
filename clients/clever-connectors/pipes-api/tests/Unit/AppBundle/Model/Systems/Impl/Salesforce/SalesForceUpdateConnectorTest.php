@@ -16,10 +16,10 @@ use CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce\SalesForceSystem;
 use CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce\SalesForceUpdateConnector;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use DateTime;
-use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSenderFactory;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Repository\NodeRepository;
@@ -40,12 +40,19 @@ final class SalesForceUpdateConnectorTest extends KernelTestCaseAbstract
      */
     public function testProcessBatch(): void
     {
+        $dtoData = [
+            'data' => [
+                'system_install' => ['user' => '123'],
+                'topology'       => ['name' => 'top-name-ever'],
+            ],
+        ];
+
         $loop = Factory::create();
 
         $processDto = new ProcessDto();
         $processDto
             ->setHeaders(['node_id' => '2234-adawad'])
-            ->setData(json_encode(['data' => ['settings' => [], 'user' => '123']]));
+            ->setData(json_encode($dtoData));
 
         /** @var SalesForceUpdateConnector $syncConn */
         $syncConn = $this->mockSync();
@@ -76,24 +83,21 @@ final class SalesForceUpdateConnectorTest extends KernelTestCaseAbstract
         $systemInstal->method('getSystemInstall')->willReturn((new SystemInstall())->setUser('12')->setToken('12')
             ->setSystem('123'));
 
-        $dm = $this->createMock(DocumentManager::class);
-        $dm
-            ->expects($this->at(0))
-            ->method('getRepository')
-            ->willReturn($systemInstal);
-        $dm
-            ->expects($this->at(1))
-            ->method('getRepository')
-            ->willReturn($node);
-
         $lastSync = $this->createMock(LastSyncManager::class);
+
         $lastSync
             ->method('getLastSync')
             ->willReturn((new LastSync())->setTimestamp(new DateTime()));
 
+        $lastSync
+            ->method('updateLastSync')
+            ->willReturn(NULL);
+
+        $sender = $this->createMock(CurlSenderFactory::class);
+
         $syncConn = $this->getMockBuilder(SalesForceUpdateConnector::class)
             ->setMethods(['fetchData'])
-            ->setConstructorArgs([$this->mockSystem(), $dm, $lastSync])
+            ->setConstructorArgs([$this->mockSystem(), $lastSync, $sender])
             ->getMock();
 
         $syncConn->expects($this->at(0))

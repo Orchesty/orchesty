@@ -9,7 +9,6 @@
 
 namespace Tests\Unit\AppBundle\Model\Systems\Impl\Salesforce;
 
-use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce\SalesForceSyncConnector;
 use CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce\SalesForceSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
@@ -17,6 +16,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSenderFactory;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use PHPUnit_Framework_MockObject_MockObject;
 use React\EventLoop\Factory;
@@ -35,12 +35,18 @@ final class SalesForceSyncConnectorTest extends KernelTestCaseAbstract
      */
     public function testProcessBatch(): void
     {
-        $loop = Factory::create();
+        $dtoData = [
+            'data' => [
+                'system_install' => ['user' => '123'],
+                'topology'       => ['name' => 'top-name-ever'],
+            ],
+        ];
 
+        $loop       = Factory::create();
         $processDto = new ProcessDto();
         $processDto
             ->setHeaders([])
-            ->setData(json_encode(['data' => ['settings' => [], 'user' => '123']]));
+            ->setData(json_encode($dtoData));
 
         /** @var SalesForceSyncConnector $syncConn */
         $syncConn = $this->mockSync();
@@ -65,7 +71,7 @@ final class SalesForceSyncConnectorTest extends KernelTestCaseAbstract
     private function mockSync()
     {
         $systemInstal = $this->createMock(SystemInstallRepository::class);
-        $systemInstal->method('getSystemInstall')->willReturn((new SystemInstall()));
+        $systemInstal->method('setSyncTime')->willReturn(NULL);
 
         $dm = $this->createMock(DocumentManager::class);
         $dm
@@ -73,9 +79,11 @@ final class SalesForceSyncConnectorTest extends KernelTestCaseAbstract
             ->method('getRepository')
             ->willReturn($systemInstal);
 
+        $sender = $this->createMock(CurlSenderFactory::class);
+
         $syncConn = $this->getMockBuilder(SalesForceSyncConnector::class)
             ->setMethods(['fetchData'])
-            ->setConstructorArgs([$this->mockSystem(), $dm, $this->container->get('manager.last_sync')])
+            ->setConstructorArgs([$this->mockSystem(), $this->container->get('manager.last_sync'), $sender, $dm])
             ->getMock();
 
         $syncConn->expects($this->at(0))

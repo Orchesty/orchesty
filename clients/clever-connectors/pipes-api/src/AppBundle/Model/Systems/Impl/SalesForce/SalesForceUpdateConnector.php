@@ -9,7 +9,6 @@
 
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce;
 
-use Clue\React\Buzz\Browser;
 use DateTime;
 use GuzzleHttp\Psr7\Request;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
@@ -38,13 +37,14 @@ class SalesForceUpdateConnector extends SalesForceConnectorAbstract
      */
     public function processBatch(ProcessDto $dto, LoopInterface $loop, callable $callbackItem): PromiseInterface
     {
-        $browser       = new Browser($loop);
-        $systemInstall = $this->getSystemInstall($dto);
+        $browser       = $this->factory->create($loop);
+        $data          = $this->getParsedData($dto);
+        $systemInstall = $this->getSystemInstall($data);
         $requestDto    = $this->system->getRequestDto($systemInstall, 'GET');
         $baseUrl       = (string) $requestDto->getUri();
         $headers       = $requestDto->getHeaders();
 
-        $lastSync  = $this->lastSyncManager->getLastSync($dto, $systemInstall, self::NODE_NAME);
+        $lastSync  = $this->lastSyncManager->getLastSync($data, $systemInstall, self::NODE_NAME);
         $startTime = $lastSync ? $lastSync->getTimestamp() : NULL;
         $endTime   = new DateTime('now');
 
@@ -63,7 +63,7 @@ class SalesForceUpdateConnector extends SalesForceConnectorAbstract
             );
 
         $lastSync->setTimestamp($endTime);
-        $this->dm->flush();
+        $this->lastSyncManager->updateLastSync($lastSync);
 
         return $promise;
     }
