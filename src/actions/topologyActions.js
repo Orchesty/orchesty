@@ -20,6 +20,13 @@ function receive(data){
   }
 }
 
+function remove(id) {
+  return {
+    type: types.TOPOLOGY_REMOVE,
+    id
+  }
+}
+
 function receiveSchema(id, data){
   return {
     type: types.TOPOLOGY_RECEIVE_SCHEMA,
@@ -123,6 +130,22 @@ export function topologyCreate(data, processHash = 'new'){
         if (response){
           dispatch(receive(response));
           dispatch(invalidateLists());
+        }
+        return response;
+      }
+    )
+  }
+}
+
+export function topologyDelete(id){
+  return dispatch => {
+    dispatch(processActions.startProcess(processes.topologyDelete(id)));
+    return serverRequest(dispatch, 'DELETE', `/topologies/${id}`).then(
+      response => {
+        dispatch(processActions.finishProcess(processes.topologyDelete(id), response));
+        if (response) {
+          dispatch(invalidateLists());
+          dispatch(remove(id));
         }
         return response;
       }

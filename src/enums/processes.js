@@ -8,6 +8,7 @@ export default {
   authSetPassword: hash => `auth-set-pswd-${hash}`,
   topologyCreate: hash => `topology-create-${hash}`,
   topologyUpdate: id => `topology-update-${id}`,
+  topologyDelete: id => `topology-delete-${id}`,
   topologyPublish: id => `topology-publish-${id}`,
   topologyClone: id => `topology-clone-${id}`,
   topologyTest: id => `topology-test-${id}`,
