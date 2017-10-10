@@ -36,6 +36,12 @@ function CustomRenderer(eventBus, styles, pathMap, canvas) {
             return timerCircle;
             break;
 
+        case 'webhook':
+            const webhookCircle = this.bpmnRenderer.handlers['bpmn:Event'](parentGfx, element);
+            this.bpmnRenderer.handlers['bpmn:SignalEventDefinition'](parentGfx, element);
+            return webhookCircle;
+            break;
+
         case 'splitter':
             let splitterTask = this.bpmnRenderer.handlers['bpmn:Task'](parentGfx, element);
 
@@ -70,15 +76,7 @@ function CustomRenderer(eventBus, styles, pathMap, canvas) {
 
         case 'connector':
         case 'batch_connector':
-          if (element.type === 'bpmn:Event') {
-              const webhookCircle = this.bpmnRenderer.handlers['bpmn:Event'](parentGfx, element);
-              this.bpmnRenderer.handlers['bpmn:SignalEventDefinition'](parentGfx, element);
-              return webhookCircle;
-          }
-
-          return this.bpmnRenderer.handlers['bpmn:ServiceTask'](parentGfx, element);
-
-          break;
+            return this.bpmnRenderer.handlers['bpmn:ServiceTask'](parentGfx, element);
 
         case 'custom':
             return this.bpmnRenderer.handlers['bpmn:Task'](parentGfx, element);
