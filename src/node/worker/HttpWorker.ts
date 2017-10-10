@@ -34,6 +34,8 @@ export interface IHttpWorkerRequestParams {
     };
 }
 
+const DEFAULT_EMPTY_BODY = { data: {}, settings: {}};
+
 /**
  * Converts JobMessage to Http request and then converts received Http response back to JobMessage object
  */
@@ -82,6 +84,11 @@ class HttpWorker implements IWorker {
                         `Worker[type='http'] received response code: "${result}"`,
                         logger.ctxFromMsg(msg, err),
                     );
+                }
+
+                // On empty body set default content
+                if (!body) {
+                    body = DEFAULT_EMPTY_BODY;
                 }
 
                 // Set the received result code and message body

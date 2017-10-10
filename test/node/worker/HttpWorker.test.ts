@@ -33,6 +33,14 @@ httpServer.post("/invalid-result-code", (req, resp) => {
     });
     resp.status(200).send(JSON.stringify({ val: "modified" }));
 });
+httpServer.post("/empty-result-body", (req, resp) => {
+    assert.deepEqual(req.body, { val: "original" });
+    resp.set({
+        result_code: ResultCode.SUCCESS,
+        result_message: "some error",
+    });
+    resp.status(200).send();
+});
 httpServer.listen(4020);
 
 describe("HttpWorker", () => {
@@ -113,6 +121,26 @@ describe("HttpWorker", () => {
             .then((outMsg: JobMessage) => {
                 assert.equal(outMsg.getResult().code, ResultCode.HTTP_ERROR);
                 assert.equal(outMsg.getContent(), JSON.stringify({ val: "original" }));
+            });
+    });
+
+    it("should return empty data and settings when worker returns empty body", () => {
+        const msg = new JobMessage("nid", "123", "123", "", 1, {}, new Buffer(JSON.stringify({ val: "original" })));
+        const worker = new HttpWorker({
+            node_id: "someId",
+            host: "localhost",
+            method: "post",
+            port: 4020,
+            process_path: "/empty-result-body",
+            status_path: "/status",
+            secure: false,
+            opts : {},
+        });
+
+        return worker.processData(msg)
+            .then((outMsg: JobMessage) => {
+                assert.equal(outMsg.getResult().code, ResultCode.SUCCESS);
+                assert.equal(outMsg.getContent(), JSON.stringify({ data: {}, settings: {} }));
             });
     });
 
