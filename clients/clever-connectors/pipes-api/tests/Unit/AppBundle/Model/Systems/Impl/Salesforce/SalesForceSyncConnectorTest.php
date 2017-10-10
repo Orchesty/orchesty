@@ -75,7 +75,7 @@ final class SalesForceSyncConnectorTest extends KernelTestCaseAbstract
 
         $syncConn = $this->getMockBuilder(SalesForceSyncConnector::class)
             ->setMethods(['fetchData'])
-            ->setConstructorArgs([$this->mockSystem(), $dm])
+            ->setConstructorArgs([$this->mockSystem(), $dm, $this->container->get('manager.last_sync')])
             ->getMock();
 
         $syncConn->expects($this->at(0))

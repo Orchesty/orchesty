@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace CleverConnectors\AppBundle\Model\Systems;
+namespace CleverConnectors\AppBundle\Model\Webhook;
 
 /**
  * Class WebhookSubscribes
  *
- * @package CleverConnectors\AppBundle\Model\Systems
+ * @package CleverConnectors\AppBundle\Model\Webhook
  */
 class WebhookSubscribes
 {

@@ -43,9 +43,8 @@ class SalesForceUpdateConnector extends SalesForceConnectorAbstract
         $requestDto    = $this->system->getRequestDto($systemInstall, 'GET');
         $baseUrl       = (string) $requestDto->getUri();
         $headers       = $requestDto->getHeaders();
-        $topologyName  = '';
 
-        $lastSync  = $this->getLastSync($dto, $systemInstall, $topologyName);
+        $lastSync  = $this->lastSyncManager->getLastSync($dto, $systemInstall, self::NODE_NAME);
         $startTime = $lastSync ? $lastSync->getTimestamp() : NULL;
         $endTime   = new DateTime('now');
 

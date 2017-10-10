@@ -25,7 +25,7 @@ class SalesForceDeleteConnectorTest extends DatabaseTestCaseAbstract
     public function testProcessBatch(): void
     {
         $this->markTestSkipped();
-        $connector = $this->container->get('hbpf.custom_node.salesforce-delete-connector');
+        $connector = $this->container->get('hbpf.connector.salesforce-delete-connector');
 
         $topology = (new Topology())->setName('Topology');
         $this->persistAndFlush($topology);
@@ -48,9 +48,11 @@ class SalesForceDeleteConnectorTest extends DatabaseTestCaseAbstract
 
         $processDto = (new ProcessDto())
             ->setData(Json::encode([
-                'user'   => $system->getUser(),
-                'token'  => $system->getToken(),
-                'system' => $system->getSystem(),
+                'data' => [
+                    'user'   => $system->getUser(),
+                    'token'  => $system->getToken(),
+                    'system' => $system->getSystem(),
+                ],
             ]))->setHeaders([
                 'Authorization' => 'Bearer 00D1I000001WyE7!ARAAQEza5QDZ3b2kfre2tZhM48dzRlC8nnrrmUBHYtUiUYFLvj8nmL3CCquz29k1Yz6q7SnORxPuW.WTuT2in_pxfYuMH_eA',
                 'node_id'       => $node->getId(),

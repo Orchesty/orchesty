@@ -1,15 +1,16 @@
 <?php declare(strict_types=1);
 
-namespace CleverConnectors\AppBundle\Model\Systems;
+namespace CleverConnectors\AppBundle\Model\Webhook;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Model\Systems\SystemInterface;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 
 /**
  * Interface WebhookSystemInterface
  *
- * @package CleverConnectors\AppBundle\Model\Systems
+ * @package CleverConnectors\AppBundle\Model\Webhook
  */
 interface WebhookSystemInterface extends SystemInterface
 {
@@ -26,8 +27,11 @@ interface WebhookSystemInterface extends SystemInterface
      *
      * @return RequestDto
      */
-    public function getSubscribeRequest(WebhookSubscribes $subscription, SystemInstall $systemInstall,
-                                        string $url): RequestDto;
+    public function getSubscribeRequest(
+        WebhookSubscribes $subscription,
+        SystemInstall $systemInstall,
+        string $url
+    ): RequestDto;
 
     /**
      * @param SystemInstall $systemInstall

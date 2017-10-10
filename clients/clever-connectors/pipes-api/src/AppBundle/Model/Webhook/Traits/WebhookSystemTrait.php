@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace CleverConnectors\AppBundle\Model\Systems\Impl;
+namespace CleverConnectors\AppBundle\Model\Webhook\Traits;
 
-use CleverConnectors\AppBundle\Model\Systems\WebhookSubscribes;
+use CleverConnectors\AppBundle\Model\Webhook\WebhookSubscribes;
 
 /**
  *

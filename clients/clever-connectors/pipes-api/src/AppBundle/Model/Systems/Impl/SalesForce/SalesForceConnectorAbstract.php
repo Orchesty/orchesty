@@ -2,10 +2,9 @@
 
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce;
 
-use CleverConnectors\AppBundle\Document\LastSync;
 use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Model\LastSync\LastSyncManager;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
-use CleverConnectors\AppBundle\Repository\LastSyncRepository;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use Clue\React\Buzz\Browser;
 use DateTime;
@@ -14,13 +13,10 @@ use Doctrine\ODM\MongoDB\DocumentRepository;
 use Exception;
 use GuzzleHttp\Psr7\Request;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
-use Hanaboso\PipesFramework\Configurator\Document\Node;
-use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\BatchInterface;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
-use Hanaboso\PipesFramework\TopologyGenerator\GeneratorUtils;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use React\Promise\PromiseInterface;
@@ -43,6 +39,11 @@ abstract class SalesForceConnectorAbstract implements BatchInterface, ConnectorI
     protected $system;
 
     /**
+     * @var LastSyncManager
+     */
+    protected $lastSyncManager;
+
+    /**
      * @var DocumentManager
      */
     protected $dm;
@@ -57,12 +58,14 @@ abstract class SalesForceConnectorAbstract implements BatchInterface, ConnectorI
      *
      * @param SalesForceSystem $system
      * @param DocumentManager  $dm
+     * @param LastSyncManager  $lastSyncManager
      */
-    public function __construct(SalesForceSystem $system, DocumentManager $dm)
+    public function __construct(SalesForceSystem $system, DocumentManager $dm, LastSyncManager $lastSyncManager)
     {
-        $this->system = $system;
-        $this->dm     = $dm;
-        $this->repo   = $this->dm->getRepository(SystemInstall::class);
+        $this->system          = $system;
+        $this->dm              = $dm;
+        $this->repo            = $this->dm->getRepository(SystemInstall::class);
+        $this->lastSyncManager = $lastSyncManager;
     }
 
     /**
@@ -189,61 +192,6 @@ abstract class SalesForceConnectorAbstract implements BatchInterface, ConnectorI
         unset($data);
 
         return $total;
-    }
-
-    /**
-     * @param ProcessDto    $dto
-     * @param SystemInstall $systemInstall
-     * @param string        $topologyName
-     *
-     * @return LastSync
-     * @throws SystemException
-     */
-    protected function getLastSync(ProcessDto $dto, SystemInstall $systemInstall, string &$topologyName): LastSync
-    {
-        if (!array_key_exists('node_id', $dto->getHeaders())) {
-            throw new SystemException(
-                'Missing [node_id] in ProcessDto.',
-                SystemException::MISSING_DATA
-            );
-        }
-
-        $node         = $this->dm->getRepository(Node::class)->findOneBy(['id' => GeneratorUtils::denormalizeName($dto->getHeaders()['node_id'])]);
-        $top          = $this->dm->getRepository(Topology::class)->findOneBy(['id' => $node->getTopology()]);
-        $topologyName = $top->getName();
-        /** @var LastSyncRepository $repo */
-        $repo = $this->dm->getRepository(LastSync::class);
-
-        $lastSync = $repo->getLastSyncTime($systemInstall->getUser(), $topologyName, static::NODE_NAME);
-
-        if (!$lastSync) {
-            $lastSync = $this->createLastSync($systemInstall, self::NODE_NAME, $topologyName);
-        }
-
-        if ($systemInstall->isSynchronized() && $systemInstall->getSynchronizedTime()) {
-            $lastSync->setTimestamp($systemInstall->getSynchronizedTime());
-        }
-
-        return $lastSync;
-    }
-
-    /**
-     * @param SystemInstall $systemInstall
-     * @param string        $node
-     * @param string        $topology
-     *
-     * @return LastSync
-     */
-    protected function createLastSync(SystemInstall $systemInstall, string $node, string $topology): LastSync
-    {
-        $lastSync = new LastSync();
-        $lastSync
-            ->setUser($systemInstall->getUser())
-            ->setNodeName($node)
-            ->setTopologyName($topology);
-        $this->dm->persist($lastSync);
-
-        return $lastSync;
     }
 
     /**
