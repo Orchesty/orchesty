@@ -99,6 +99,24 @@ export function topologyListChangePage(topologyListId, page) {
   }
 }
 
+export function needTopology(id, force = false){
+  return (dispatch, getState) => {
+    const topology = getState().topology.elements[id];
+    if (!topology || force){
+      return serverRequest(dispatch, 'GET', `/topologies/${id}`).then(
+        response => {
+          if (response) {
+            dispatch(receive(response));
+          }
+          return response;
+        }
+      );
+    } else {
+      return Promise.resolve(topology);
+    }
+  }
+}
+
 export function topologyUpdate(id, data){
   return dispatch => {
     dispatch(processActions.startProcess(processes.topologyUpdate(id)));
