@@ -88,6 +88,11 @@ doctrine_mongodb:
                     is_bundle: false
                     dir: "%kernel.root_dir%/../src/AppBundle/Document"
                     prefix: CleverConnectors\AppBundle\Document
+            filters:
+                deleted:
+                    class: CleverConnectors\AppBundle\Database\DeletedFilter
+                    enabled: true
+
 
 # Swiftmailer Configuration
 swiftmailer:
