@@ -30,8 +30,6 @@ class ShopifyUpdateCustomerMapperTest extends ConnectorTestCaseAbstract
             'email'      => 'email@example.com',
             'first_name' => 'First',
             'last_name'  => 'Last',
-            'company'    => 'Company',
-            'contact'    => 'City',
         ], $response);
     }
 
