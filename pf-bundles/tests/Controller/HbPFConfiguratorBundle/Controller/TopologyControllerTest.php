@@ -362,8 +362,8 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
         $this->mockHandler('deleteTopology', TRUE);
 
         $this->client->request(
-            'GET',
-            '/api/topologies/999/delete',
+            'DELETE',
+            '/api/topologies/999',
             [],
             [],
             [

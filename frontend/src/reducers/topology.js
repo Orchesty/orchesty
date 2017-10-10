@@ -41,6 +41,11 @@ function reducer(state = initialState, action){
         elements: addElement(state.elements, action.data)
       });
 
+    case types.TOPOLOGY_REMOVE:
+      const newElements = Object.assign({}, state.elements);
+      delete newElements[action.id];
+      return Object.assign({}, state, {elements: newElements});
+
     case types.TOPOLOGY_RECEIVE_SCHEMA:
       return Object.assign({}, state, {
         schemas: Object.assign({}, state.schemas, {

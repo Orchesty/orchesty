@@ -53,7 +53,7 @@ class TopologyListTable extends React.Component {
   }
 
   render() {
-    const {list, elements, openModal, clone, publish, selectPage, list: {items}} = this.props;
+    const {list, elements, openModal, clone, topologyDelete, publish, selectPage, list: {items}} = this.props;
 
     let rows = null;
     if (items){
@@ -80,7 +80,15 @@ class TopologyListTable extends React.Component {
               action: () => {publish(id)},
               processId: processes.topologyPublish(id),
               disabled: item.visibility == 'public'
-            })
+            });
+          }
+          if (topologyDelete){
+            menuItems.push(
+              {
+                caption: 'Delete',
+                processId: processes.topologyDelete(id),
+                action: () => {topologyDelete(id)}
+              });
           }
           return (
             <tr key={item._id}>
@@ -127,7 +135,8 @@ TopologyListTable.propTypes = {
   listChangeSort: PropTypes.func,
   listChangePage: PropTypes.func,
   clone: PropTypes.func,
-  publish: PropTypes.func
+  publish: PropTypes.func,
+  topologyDelete: PropTypes.func
 };
 
 function mapStateToProps(state, ownProps) {
