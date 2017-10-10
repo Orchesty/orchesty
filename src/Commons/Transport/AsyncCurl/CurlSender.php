@@ -6,7 +6,7 @@
  * Time: 13:41
  */
 
-namespace Hanaboso\PipesFramework\RabbitMq\Async\Curl;
+namespace Hanaboso\PipesFramework\Commons\Transport\AsyncCurl;
 
 use Clue\React\Buzz\Browser;
 use Clue\React\Buzz\Message\ResponseException;

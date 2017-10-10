@@ -6,13 +6,13 @@
  * Time: 13:52
  */
 
-namespace Tests\Unit\RabbitMq\Async\Curl;
+namespace Tests\Unit\Commons\Transport\AsyncCurl;
 
 use Clue\React\Buzz\Browser;
 use Clue\React\Buzz\Message\ResponseException;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
-use Hanaboso\PipesFramework\RabbitMq\Async\Curl\CurlSender;
+use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSender;
 use PHPUnit\Framework\TestCase;
 use PHPUnit_Framework_MockObject_MockObject;
 use Psr\Http\Message\ResponseInterface;
