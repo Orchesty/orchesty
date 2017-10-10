@@ -3,8 +3,12 @@
 namespace Tests\Integration\AppBundle\Model\CustomNode;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Model\CustomNode\TokenRefresher;
+use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use DateTime;
+use Doctrine\ODM\MongoDB\DocumentRepository;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use JMS\Serializer\Serializer;
 use JMS\Serializer\SerializerBuilder;
 use Tests\DatabaseTestCaseAbstract;
 
@@ -15,6 +19,33 @@ use Tests\DatabaseTestCaseAbstract;
  */
 final class TokenRefresherTest extends DatabaseTestCaseAbstract
 {
+
+    /**
+     * @var TokenRefresher
+     */
+    private $node;
+
+    /**
+     * @var SystemInstallRepository|DocumentRepository
+     */
+    private $repo;
+
+    /**
+     * @var Serializer
+     */
+    private $serializer;
+
+    /**
+     *
+     */
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->node       = $this->container->get('hbpf.custom_node.token-refresher');
+        $this->repo       = $this->dm->getRepository(SystemInstall::class);
+        $this->serializer = SerializerBuilder::create()->build();
+    }
 
     /**
      *
@@ -33,22 +64,45 @@ final class TokenRefresherTest extends DatabaseTestCaseAbstract
 
         $this->persistAndFlush($systemInstall);
 
-        $serializer = SerializerBuilder::create()->build();
-
         $dto = new ProcessDto();
-        $dto->setData($serializer->serialize($systemInstall, 'json'));
+        $dto->setData($this->serializer->serialize($systemInstall, 'json'));
 
-        $node   = $this->container->get('hbpf.custom_node.token-refresher');
-        $result = $node->process($dto);
+        $result = $this->node->process($dto);
 
         self::assertEquals($result, $dto);
 
         $this->dm->clear(SystemInstall::class);
 
-        /** @var SystemInstall $result */
-        $result = $this->dm->getRepository(SystemInstall::class)->find($systemInstall->getId());
+        $result = $this->repo->find($systemInstall->getId());
 
         self::assertEquals($timestamp + 3600, $result->getExpires()->getTimestamp());
+    }
+
+    /**
+     *
+     */
+    public function testProcessExpiresIsNull(): void
+    {
+        $systemInstall = new SystemInstall();
+        $systemInstall
+            ->setUser('user')
+            ->setSystem('null.user.group')
+            ->setExpires(NULL);
+
+        $this->persistAndFlush($systemInstall);
+
+        $dto = new ProcessDto();
+        $dto->setData($this->serializer->serialize($systemInstall, 'json'));
+
+        $result = $this->node->process($dto);
+
+        self::assertEquals($result, $dto);
+
+        $this->dm->clear(SystemInstall::class);
+
+        $result = $this->repo->find($systemInstall->getId());
+
+        self::assertEquals(NULL, $result->getExpires());
     }
 
 }

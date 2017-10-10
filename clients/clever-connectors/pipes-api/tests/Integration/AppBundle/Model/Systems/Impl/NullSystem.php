@@ -202,7 +202,7 @@ class NullSystem implements WebhookSystemInterface, OAuth2Interface
      */
     public function refreshToken(SystemInstall $systemInstall): SystemInstall
     {
-        $datetime     = $systemInstall->getExpires();
+        $datetime     = clone $systemInstall->getExpires();
         $newTimestamp = $datetime->getTimestamp() + 3600;
 
         $systemInstall->setExpires($datetime->setTimestamp($newTimestamp));

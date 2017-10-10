@@ -54,16 +54,10 @@ class TokenRefresher implements CustomNodeInterface
         }
 
         /** @var OAuth2Interface $system */
-        $system           = $this->loader->getSystem($systemInstall->getSystem());
-        $systemInstallNew = $system->refreshToken($systemInstall);
+        $system = $this->loader->getSystem($systemInstall->getSystem());
+        $system->refreshToken($systemInstall);
 
-        //var_dump($systemInstallNew->getExpires()->getTimestamp());
         $this->dm->flush();
-        //var_dump($systemInstallNew->getExpires()->getTimestamp());
-
-        $systemInstallNew2 = $this->dm->getRepository(SystemInstall::class)->find($systemInstallNew->getId());
-
-        //var_dump($systemInstallNew2->getExpires()->getTimestamp());
 
         return $dto;
     }
