@@ -6,6 +6,7 @@ export default {
   authActivate: hash => `auth-activate-${hash}`,
   authResetPassword: hash => `auth-reset-pswd-${hash}`,
   authSetPassword: hash => `auth-set-pswd-${hash}`,
+  topologyLoad: id => `topology-load-${id}`,
   topologyCreate: hash => `topology-create-${hash}`,
   topologyUpdate: id => `topology-update-${id}`,
   topologyDelete: id => `topology-delete-${id}`,

@@ -110,15 +110,18 @@ export function needTopology(id, force = false){
   return (dispatch, getState) => {
     const topology = getState().topology.elements[id];
     if (!topology || force){
+      dispatch(processActions.startProcess(processes.topologyLoad(id)));
       return serverRequest(dispatch, 'GET', `/topologies/${id}`).then(
         response => {
           if (response) {
             dispatch(receive(response));
           }
+          dispatch(processActions.finishProcess(processes.topologyLoad(id), response));
           return response;
         }
       );
     } else {
+      dispatch(processActions.finishProcess(processes.topologyLoad(id), true));
       return Promise.resolve(topology);
     }
   }
