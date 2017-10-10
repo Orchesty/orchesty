@@ -223,6 +223,9 @@ export function saveTopologySchema(id, schema, silent = false){
         dispatch(receive(response));
         if (response._id != id){
           dispatch(invalidateLists());
+          if (!silent) {
+            dispatch(notificationActions.addNotification('warning', 'New topology was created.'));
+          }
         }
         dispatch(nodeActions.nodeInvalidateLists('topology', response._id));
       }
