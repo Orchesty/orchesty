@@ -8,6 +8,7 @@
 
 namespace CleverConnectors\AppBundle\Model\CustomNode;
 
+use CleverConnectors\AppBundle\Model\Command\AsyncCommandFactory;
 use Exception;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
@@ -17,7 +18,6 @@ use InvalidArgumentException;
 use JMS\Serializer\Serializer;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
-use React\ChildProcess\Process;
 use React\EventLoop\LoopInterface;
 use React\Promise\Promise;
 use React\Promise\PromiseInterface;
@@ -45,21 +45,23 @@ class UserMessageGenerator implements BatchInterface, CustomNodeInterface
     private $logger;
 
     /**
-     * @var string
+     * @var AsyncCommandFactory
      */
-    private $projectDir;
+    private $asyncCommandFactory;
 
     /**
      * CronBatchActionCallback constructor.
      *
-     * @param Serializer $serializer
-     * @param string     $projectDir
+     * @param Serializer          $serializer
+     * @param AsyncCommandFactory $asyncCommandFactory
+     *
+     * @internal param string $projectDir
      */
-    public function __construct(Serializer $serializer, string $projectDir)
+    public function __construct(Serializer $serializer, AsyncCommandFactory $asyncCommandFactory)
     {
-        $this->serializer = $serializer;
-        $this->logger     = new NullLogger();
-        $this->projectDir = $projectDir;
+        $this->serializer          = $serializer;
+        $this->asyncCommandFactory = $asyncCommandFactory;
+        $this->logger              = new NullLogger();
     }
 
     /**
@@ -170,25 +172,8 @@ class UserMessageGenerator implements BatchInterface, CustomNodeInterface
     private function processSystem(LoopInterface $loop, string $systemKey): Promise
     {
         $this->logger->info(sprintf('Start finding user system for key "%s".', $systemKey));
-        $process = new Process(sprintf('bin/console react:get-system %s', $systemKey), $this->projectDir);
-        $process->start($loop);
 
-        return new Promise(function ($resolve, $reject) use ($process): void {
-
-            $buffer = '';
-            $process->stdout->on('data', function (string $chunk) use (&$buffer): void {
-                $buffer .= $chunk;
-            });
-
-            $process->on('exit', function ($exitCode) use ($resolve, $reject, &$buffer): void {
-                if ($exitCode === 0) {
-                    $resolve(trim($buffer));
-                } else {
-                    $reject(new RuntimeException(sprintf('Process exited with code %s.', $exitCode)));
-                }
-            });
-
-        });
+        return $this->asyncCommandFactory->create($loop, sprintf('react:get-system %s', $systemKey));
     }
 
     /**

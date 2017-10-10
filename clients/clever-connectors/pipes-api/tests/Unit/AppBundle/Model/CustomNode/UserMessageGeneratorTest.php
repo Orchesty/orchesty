@@ -6,25 +6,27 @@
  * Time: 11:46 AM
  */
 
-namespace Tests\Unit\AppBundle\CustomNode;
+namespace Tests\Unit\AppBundle\Model\CustomNode;
 
+use CleverConnectors\AppBundle\Model\Command\AsyncCommandFactory;
 use CleverConnectors\AppBundle\Model\CustomNode\UserMessageGenerator;
 use Exception;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
 use InvalidArgumentException;
 use JMS\Serializer\Serializer;
+use MongoDB\Exception\RuntimeException;
+use PHPUnit\Framework\TestCase;
 use PHPUnit_Framework_MockObject_MockObject;
 use React\EventLoop\Factory;
 use React\Promise\Promise;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 /**
  * Class UserMessageGeneratorTest
  *
  * @package Tests\Unit\AppBundle\Cron
  */
-class UserMessageGeneratorTest extends KernelTestCase
+class UserMessageGeneratorTest extends TestCase
 {
 
     /**
@@ -33,18 +35,11 @@ class UserMessageGeneratorTest extends KernelTestCase
     private $callback;
 
     /**
-     * @var string
-     */
-    private $projectDir;
-
-    /**
      *
      */
     public function setUp(): void
     {
-        parent::setUp();
-        $this->projectDir = self::bootKernel()->getContainer()->getParameter('kernel.project_dir');
-        $this->callback   = function (): void {
+        $this->callback = function (): void {
         };
     }
 
@@ -71,7 +66,9 @@ class UserMessageGeneratorTest extends KernelTestCase
         /** @var Serializer|PHPUnit_Framework_MockObject_MockObject $serializer */
         $serializer = $this->createMock(Serializer::class);
         $serializer->method('deserialize')->willThrowException(new Exception('Json error.'));
-        $callback = new UserMessageGenerator($serializer, $this->projectDir);
+        /** @var AsyncCommandFactory|PHPUnit_Framework_MockObject_MockObject $asyncCommandFactory */
+        $asyncCommandFactory = $this->createMock(AsyncCommandFactory::class);
+        $callback            = new UserMessageGenerator($serializer, $asyncCommandFactory);
 
         $callback
             ->processBatch($this->createMessage(), $loop, $this->callback)
@@ -95,7 +92,9 @@ class UserMessageGeneratorTest extends KernelTestCase
         /** @var Serializer|PHPUnit_Framework_MockObject_MockObject $serializer */
         $serializer = $this->createMock(Serializer::class);
         $serializer->method('deserialize')->willReturn([]);
-        $callback = new UserMessageGenerator($serializer, $this->projectDir);
+        /** @var AsyncCommandFactory|PHPUnit_Framework_MockObject_MockObject $asyncCommandFactory */
+        $asyncCommandFactory = $this->createMock(AsyncCommandFactory::class);
+        $callback            = new UserMessageGenerator($serializer, $asyncCommandFactory);
 
         $callback
             ->processBatch($this->createMessage(), $loop, $this->callback)
@@ -119,7 +118,12 @@ class UserMessageGeneratorTest extends KernelTestCase
         /** @var Serializer|PHPUnit_Framework_MockObject_MockObject $serializer */
         $serializer = $this->createMock(Serializer::class);
         $serializer->method('deserialize')->willReturn(["data" => ["param" => ""]]);
-        $callback = new UserMessageGenerator($serializer, $this->projectDir);
+        /** @var AsyncCommandFactory|PHPUnit_Framework_MockObject_MockObject $asyncCommandFactory */
+        $asyncCommandFactory = $this->createMock(AsyncCommandFactory::class);
+        $asyncCommandFactory->method('create')->willReturn(new Promise(function ($resolve, $reject): void {
+            $reject(new RuntimeException('Process exited with code 1.'));
+        }));
+        $callback = new UserMessageGenerator($serializer, $asyncCommandFactory);
 
         $callback
             ->processBatch($this->createMessage(), $loop, $this->callback)
@@ -143,8 +147,12 @@ class UserMessageGeneratorTest extends KernelTestCase
         /** @var Serializer|PHPUnit_Framework_MockObject_MockObject $serializer */
         $serializer = $this->createMock(Serializer::class);
         $serializer->method('deserialize')->willReturn(["data" => ["param" => "test"]]);
-        $callback = new UserMessageGenerator($serializer, $this->projectDir);
-
+        /** @var AsyncCommandFactory|PHPUnit_Framework_MockObject_MockObject $asyncCommandFactory */
+        $asyncCommandFactory = $this->createMock(AsyncCommandFactory::class);
+        $callback            = new UserMessageGenerator($serializer, $asyncCommandFactory);
+        $asyncCommandFactory->method('create')->willReturn(new Promise(function ($resolve): void {
+            $resolve('');
+        }));
         /** @var Promise $callback */
         $callback
             ->processBatch($this->createMessage(), $loop, $this->callback)
@@ -154,7 +162,6 @@ class UserMessageGeneratorTest extends KernelTestCase
                 $loop->stop();
             }, function ($e) use ($loop): void {
                 // Test if reject
-                var_dump($e);
                 $this->assertTrue(FALSE);
                 $loop->stop();
             })
@@ -173,7 +180,9 @@ class UserMessageGeneratorTest extends KernelTestCase
         /** @var Serializer|PHPUnit_Framework_MockObject_MockObject $serializer */
         $serializer = $this->createMock(Serializer::class);
         $serializer->method('deserialize')->willReturn(["data" => ["param" => "test"]]);
-        $callback = new UserMessageGenerator($serializer, $this->projectDir);
+        /** @var AsyncCommandFactory|PHPUnit_Framework_MockObject_MockObject $asyncCommandFactory */
+        $asyncCommandFactory = $this->createMock(AsyncCommandFactory::class);
+        $callback            = new UserMessageGenerator($serializer, $asyncCommandFactory);
 
         $callback
             ->prepareData(['id' => '5', 'token' => '123', 'user' => '123'], 1)

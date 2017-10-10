@@ -5,3 +5,8 @@ services:
             - '@doctrine.odm.mongodb.document_manager'
         tags:
             -  { name: console.command }
+
+    clever_connector.async_command_factory:
+        class: CleverConnectors\AppBundle\Model\Command\AsyncCommandFactory
+        arguments:
+            - '%kernel.project_dir%'
