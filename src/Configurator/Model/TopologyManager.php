@@ -55,7 +55,8 @@ class TopologyManager
      */
     public function createTopology(array $data): Topology
     {
-        $topology = $this->setTopologyData(new Topology(), $data);
+        $topology = $this->checkTopologyName(new Topology(), $data);
+        $topology = $this->setTopologyData($topology, $data);
         $topology->setRawBpmn(self::DEFAULT_SCHEME);
 
         $this->dm->persist($topology);
@@ -72,6 +73,7 @@ class TopologyManager
      */
     public function updateTopology(Topology $topology, array $data): Topology
     {
+        $topology = $this->checkTopologyName($topology, $data);
         $topology = $this->setTopologyData($topology, $data);
         $this->dm->flush();
 
@@ -291,14 +293,8 @@ class TopologyManager
      */
     private function setTopologyData(Topology $topology, array $data): Topology
     {
-        $data = $this->checkTopologyNameAndVersion($data);
-
         if (isset($data['name'])) {
             $topology->setName($data['name']);
-        }
-
-        if (isset($data['version'])) {
-            $topology->setVersion($data['version']);
         }
 
         if (isset($data['descr'])) {
@@ -309,37 +305,23 @@ class TopologyManager
             $topology->setEnabled($data['enabled']);
         }
 
-        if (isset($data['visibility'])) {
-            $topology->setVisibility($data['visibility']);
-        }
-
-        if (isset($data['status'])) {
-            $topology->setStatus($data['status']);
-        }
-
         return $topology;
     }
 
     /**
-     * @param array $data
+     * @param Topology $topology
+     * @param array    $data
      *
-     * @return array
+     * @return Topology
      */
-    private function checkTopologyNameAndVersion(array $data): array
+    private function checkTopologyName(Topology $topology, array $data): Topology
     {
-        if (isset($data['name'])) {
-            /** @var Topology[] $topologies */
-            $topologies = $this->dm->getRepository(Topology::class)->findBy(
-                ['name' => $data['name']],
-                ['version' => 'DESC']
-            );
-
-            if ($topologies) {
-                $data['version'] = $topologies[0]->getVersion() + 1;
-            }
+        if (isset($data['name']) && $topology->getName() !== $data['name']) {
+            $version = $this->topologyRepository->getMaxVersion($data['name']);
+            $topology->setVersion($version + 1);
         }
 
-        return $data;
+        return $topology;
     }
 
 }
