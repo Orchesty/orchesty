@@ -117,7 +117,7 @@ class UserMessageGenerator implements BatchInterface, CustomNodeInterface
                 return $this->getConnectorKey($data);
             })->then(function (string $connectorKey) use ($loop, $dto) {
                 return all([
-                    $this->processSystem($loop, $connectorKey),
+                    $this->getSystems($loop, $connectorKey),
                     $this->getTopology($loop, $dto->getHeader('node_id')),
                 ]);
             })->then(function (array $result) {
@@ -183,7 +183,7 @@ class UserMessageGenerator implements BatchInterface, CustomNodeInterface
      *
      * @return PromiseInterface
      */
-    private function processSystem(LoopInterface $loop, string $systemKey): PromiseInterface
+    private function getSystems(LoopInterface $loop, string $systemKey): PromiseInterface
     {
         $this->logger->info(sprintf('Start finding user system for key "%s".', $systemKey));
 

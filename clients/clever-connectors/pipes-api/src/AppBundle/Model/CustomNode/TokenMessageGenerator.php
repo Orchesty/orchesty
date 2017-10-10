@@ -9,6 +9,7 @@
 
 namespace CleverConnectors\AppBundle\Model\CustomNode;
 
+use CleverConnectors\AppBundle\Model\Command\AsyncCommandFactory;
 use Exception;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
@@ -17,7 +18,6 @@ use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
 use JMS\Serializer\Serializer;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
-use React\ChildProcess\Process;
 use React\EventLoop\LoopInterface;
 use React\Promise\Promise;
 use React\Promise\PromiseInterface;
@@ -45,21 +45,21 @@ class TokenMessageGenerator implements BatchInterface, CustomNodeInterface
     private $logger;
 
     /**
-     * @var string
+     * @var AsyncCommandFactory
      */
-    private $projectDir;
+    private $asyncCommandFactory;
 
     /**
      * CronBatchActionCallback constructor.
      *
-     * @param Serializer $serializer
-     * @param string     $projectDir
+     * @param Serializer          $serializer
+     * @param AsyncCommandFactory $asyncCommandFactory
      */
-    public function __construct(Serializer $serializer, string $projectDir)
+    public function __construct(Serializer $serializer, AsyncCommandFactory $asyncCommandFactory)
     {
-        $this->serializer = $serializer;
-        $this->logger     = new NullLogger();
-        $this->projectDir = $projectDir;
+        $this->serializer          = $serializer;
+        $this->asyncCommandFactory = $asyncCommandFactory;
+        $this->logger              = new NullLogger();
     }
 
     /**
@@ -94,7 +94,7 @@ class TokenMessageGenerator implements BatchInterface, CustomNodeInterface
     public function processBatch(ProcessDto $dto, LoopInterface $loop, callable $callbackItem): PromiseInterface
     {
         return $this
-            ->processSystem($loop)
+            ->getExpiredSystems($loop)
             ->then(function (string $data) {
                 return $this->parseBody($data);
             })->then(function (array $data) use ($callbackItem): Promise {
@@ -143,28 +143,11 @@ class TokenMessageGenerator implements BatchInterface, CustomNodeInterface
      *
      * @return Promise
      */
-    private function processSystem(LoopInterface $loop): Promise
+    private function getExpiredSystems(LoopInterface $loop): Promise
     {
         $this->logger->info('Start finding system installs by expires');
-        $process = new Process('bin/console react:get-installs-by-expires', $this->projectDir);
-        $process->start($loop);
 
-        return new Promise(function ($resolve, $reject) use ($process): void {
-
-            $buffer = '';
-            $process->stdout->on('data', function (string $chunk) use (&$buffer): void {
-                $buffer .= $chunk;
-            });
-
-            $process->on('exit', function ($exitCode) use ($resolve, $reject, &$buffer): void {
-                if ($exitCode === 0) {
-                    $resolve(trim($buffer));
-                } else {
-                    $reject(new RuntimeException(sprintf('Process exited with code %s.', $exitCode)));
-                }
-            });
-
-        });
+        return $this->asyncCommandFactory->create($loop, 'react:get-installs-by-expires');
     }
 
     /**
