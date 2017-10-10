@@ -8,6 +8,7 @@ services:
       - ../:/srv/libs
       - ${SSH_AUTH_SOCK}:/tmp/bound-ssh-agent
       - ./topology:${GENERATOR_PATH}
+      - /var/run/docker-pavel.severyn.sock:/var/run/docker.sock
     environment:
       - DEV_UID=${DEV_UID}
       - DEV_GID=${DEV_GID}
