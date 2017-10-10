@@ -7,8 +7,15 @@ import * as topologyActions from 'actions/topologyActions';
 import * as applicationActions from 'actions/applicationActions';
 
 import NodeListTable from './NodeListTable';
+import {stateType} from 'rootApp/types';
+import stateMerge from 'rootApp/utils/stateMerge';
 
 class TopologyNodeListTable extends React.Component{
+  constructor(props){
+    super(props);
+    this.state = {topologyState: stateType.NOT_LOADED};
+    this.needData = this.needData.bind(this);
+  }
 
   componentWillMount(){
     this._sendActions();
@@ -31,8 +38,29 @@ class TopologyNodeListTable extends React.Component{
     setActions(pageActions);
   }
 
+  _needTopology(){
+    const {topologyId, topologyElements, needTopology} = this.props;
+    const topology = topologyElements[topologyId];
+    if (topology === undefined){
+      if (this.state.topologyState !== stateType.LOADING) {
+        this.setState({topologyState: stateType.LOADING});
+        needTopology().then(response => {
+          this.setState({topologyState: stateType.SUCCESS});
+        });
+      }
+    } else {
+      this.setState({topologyState: stateType.SUCCESS});
+    }
+  }
+
+  needData(){
+    this._needTopology();
+    this.props.needList(false)
+  }
+
   render(){
-    return <NodeListTable {...this.props} />
+    const {listState, ...passProps} = this.props;
+    return <NodeListTable notLoadedCallback={this.needData} state={stateMerge([listState, this.state.topologyState])} {...passProps} />
   }
 }
 
@@ -41,7 +69,7 @@ function mapStateToProps(state, ownProps) {
   const list = node.lists['@topology-' + ownProps.topologyId];
   return {
     list: list,
-    state: list && list.state,
+    listState: list && list.state,
     elements: node.elements,
     topologyElements: topology.elements,
     tests: node.tests,
@@ -54,7 +82,7 @@ function mapActionsToProps(dispatch, ownProps){
   const needList = forced => dispatch(nodeActions.needNodesForTopology(ownProps.topologyId, forced));
   return {
     needList,
-    notLoadedCallback: needList,
+    needTopology: forced => dispatch(topologyActions.needTopology(ownProps.topologyId, forced)),
     updateNode: (id, data) => dispatch(nodeActions.nodeUpdate(id, data)),
     runNode: id => dispatch(applicationActions.openModal('node_run', {nodeId: id})),
     testTopology: () => dispatch(topologyActions.testTopology(ownProps.topologyId))
