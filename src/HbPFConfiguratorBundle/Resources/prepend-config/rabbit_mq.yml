@@ -1,0 +1,20 @@
+rabbit-mq:
+    exchanges:
+        progress_counter:
+            durable: true
+            type: direct
+
+    queues:
+        progress_counter:
+            durable: true
+            bindings:
+                - exchange: progress_counter
+                  routing_key: progress_counter
+
+    producers:
+        progress_counter:
+            class: Hanaboso\PipesFramework\Commons\ProgressCounter\Producer\ProgressCounterProducer
+            exchange: progress_counter
+            content_type: application/json
+            serializer: Hanaboso\PipesFramework\RabbitMq\Serializers\JsonSerializer
+            routing_key: progress_counter

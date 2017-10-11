@@ -19,6 +19,7 @@ use Hanaboso\PipesFramework\HbPFTableParserBundle\HbPFTableParserBundle;
 use Hanaboso\PipesFramework\HbPFUserBundle\HbPFUserBundle;
 use JMS\SerializerBundle\JMSSerializerBundle;
 use Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle;
+use Snc\RedisBundle\SncRedisBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\MonologBundle\MonologBundle;
 use Symfony\Bundle\SecurityBundle\SecurityBundle;
@@ -48,6 +49,7 @@ class AppKernel extends Kernel
             new SecurityBundle(),
             new SensioFrameworkExtraBundle(),
             new SwiftmailerBundle(),
+            new SncRedisBundle(),
 
             new HbPFAclBundle(),
             new HbPFApiGatewayBundle(),
