@@ -13,6 +13,11 @@ namespace Hanaboso\PipesFramework\Commons\Process;
  *
  * @package Hanaboso\PipesFramework\Commons\Process
  */
+/**
+ * Class ProcessDto
+ *
+ * @package Hanaboso\PipesFramework\Commons\Process
+ */
 final class ProcessDto
 {
 
@@ -64,6 +69,17 @@ final class ProcessDto
         $this->headers = $headers;
 
         return $this;
+    }
+
+    /**
+     * @param string      $key
+     * @param null|string $default
+     *
+     * @return null|string
+     */
+    public function getHeader(string $key, ?string $default = NULL): string
+    {
+        return $this->headers[$key] ?? $default;
     }
 
 }

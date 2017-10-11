@@ -38,14 +38,14 @@ final class CustomNodeLoader
     }
 
     /**
-     * @param string $node
+     * @param string $serviceName
      *
      * @return CustomNodeInterface
      * @throws CustomNodeException
      */
-    public function get(string $node): CustomNodeInterface
+    public function get(string $serviceName): CustomNodeInterface
     {
-        $name = sprintf('%s.%s', self::PREFIX, $node);
+        $name = sprintf('%s.%s', self::PREFIX, $serviceName);
         if ($this->container->has($name)) {
             /** @var CustomNodeInterface $node */
             $node = $this->container->get($name);
@@ -54,7 +54,7 @@ final class CustomNodeLoader
         }
 
         throw new CustomNodeException(
-            sprintf('Node [%s] not found.', $node),
+            sprintf('Node [%s] not found.', $serviceName),
             CustomNodeException::CUSTOM_NODE_SERVICE_NOT_FOUND
         );
     }

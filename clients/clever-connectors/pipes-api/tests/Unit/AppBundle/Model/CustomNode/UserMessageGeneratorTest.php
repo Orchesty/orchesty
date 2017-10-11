@@ -20,6 +20,7 @@ use PHPUnit\Framework\TestCase;
 use PHPUnit_Framework_MockObject_MockObject;
 use React\EventLoop\Factory;
 use React\Promise\Promise;
+use Throwable;
 
 /**
  * Class UserMessageGeneratorTest
@@ -126,8 +127,8 @@ class UserMessageGeneratorTest extends TestCase
         $callback = new UserMessageGenerator($serializer, $asyncCommandFactory);
 
         $callback
-            ->processBatch($this->createMessage(), $loop, $this->callback)
-            ->then(NULL, function (Exception $e) use ($loop): void {
+            ->processBatch($this->createMessage(['node_id' => '132']), $loop, $this->callback)
+            ->then(NULL, function (Throwable $e) use ($loop): void {
                 $this->assertInstanceOf(Exception::class, $e);
                 $this->assertSame('Process exited with code 1.', $e->getMessage());
                 $loop->stop();
@@ -155,7 +156,7 @@ class UserMessageGeneratorTest extends TestCase
         }));
         /** @var Promise $callback */
         $callback
-            ->processBatch($this->createMessage(), $loop, $this->callback)
+            ->processBatch($this->createMessage(['node_id' => '123']), $loop, $this->callback)
             ->then(function () use ($loop): void {
                 // Test if resolve
                 $this->assertTrue(TRUE);
@@ -185,10 +186,10 @@ class UserMessageGeneratorTest extends TestCase
         $callback            = new UserMessageGenerator($serializer, $asyncCommandFactory);
 
         $callback
-            ->prepareData(['id' => '5', 'token' => '123', 'user' => '123'], 1)
+            ->prepareData(['id' => '5', 'token' => '123', 'user' => '123'], ['name' => 'Name'], 1)
             ->then(function (SuccessMessage $message) use ($loop): void {
                 $this->assertSame(1, $message->getSequenceId());
-                $this->assertSame('{"id":"5","token":"123","user":"123"}', $message->getData());
+                $this->assertSame('{"topology":{"name":"Name"},"system_install":{"id":"5","token":"123","user":"123"}}', $message->getData());
                 $this->assertSame('[]', $message->getSetting());
                 $loop->stop();
             })

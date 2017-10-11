@@ -115,15 +115,21 @@ class UserMessageGenerator implements BatchInterface, CustomNodeInterface
             ->parseBody($dto->getData())
             ->then(function (array $data) {
                 return $this->getConnectorKey($data);
-            })->then(function (string $connectorKey) use ($loop) {
-                return $this->processSystem($loop, $connectorKey);
-            })->then(function (string $data) {
-                return $this->parseBody($data);
+            })->then(function (string $connectorKey) use ($loop, $dto) {
+                return all([
+                    $this->processSystem($loop, $connectorKey),
+                    $this->getTopology($loop, $dto->getHeader('node_id')),
+                ]);
+            })->then(function (array $result) {
+                return all([
+                    $this->parseBody($result[0]),
+                    $this->parseBody($result[1]),
+                ]);
             })->then(function (array $data) use ($callbackItem): Promise {
                 $items = [];
                 $i     = 0;
-                foreach ($data as $item) {
-                    $items[] = $this->processItem($item, $i, $callbackItem);
+                foreach ($data[0] as $item) {
+                    $items[] = $this->processItem($item, $data[1], $i, $callbackItem);
                     $i++;
                 }
 
@@ -133,15 +139,19 @@ class UserMessageGenerator implements BatchInterface, CustomNodeInterface
 
     /**
      * @param array $item
+     * @param array $topology
      * @param int   $i
      *
      * @return PromiseInterface
      */
-    public function prepareData(array $item, int $i): PromiseInterface
+    public function prepareData(array $item, array $topology, int $i): PromiseInterface
     {
         $message = new SuccessMessage($i);
         $message
-            ->setData(json_encode($item))
+            ->setData(json_encode([
+                'topology'       => $topology,
+                'system_install' => $item,
+            ]))
             ->addHeaders('token', $item['token'] ?? '')
             ->addHeaders('guid', $item['user'] ?? '');
 
@@ -150,30 +160,60 @@ class UserMessageGenerator implements BatchInterface, CustomNodeInterface
 
     /**
      * @param array    $item
+     * @param array    $topology
      * @param int      $i
      * @param callable $itemCallback
      *
      * @return PromiseInterface
      * @internal param string $chunk
      */
-    private function processItem(array $item, int $i, callable $itemCallback): PromiseInterface
+    private function processItem(array $item, array $topology, int $i, callable $itemCallback): PromiseInterface
     {
         return $this
-            ->prepareData($item, $i)
-            ->then($itemCallback);
+            ->prepareData($item, $topology, $i)
+            ->then($itemCallback)
+            ->then(function () use ($item): void {
+                unset($item);
+            });
     }
 
     /**
      * @param LoopInterface $loop
      * @param string        $systemKey
      *
-     * @return Promise
+     * @return PromiseInterface
      */
-    private function processSystem(LoopInterface $loop, string $systemKey): Promise
+    private function processSystem(LoopInterface $loop, string $systemKey): PromiseInterface
     {
         $this->logger->info(sprintf('Start finding user system for key "%s".', $systemKey));
 
-        return $this->asyncCommandFactory->create($loop, sprintf('react:get-system %s', $systemKey));
+        return $this->asyncCommandFactory
+            ->create($loop, sprintf('react:get-system %s', $systemKey))
+            ->then(NULL, function (Exception $e) use ($systemKey) {
+                $this->logger->error(sprintf('System [id=%s] not found', $systemKey));
+
+                return reject($e);
+            });
+    }
+
+    /**
+     * @param LoopInterface $loop
+     * @param string        $nodeId
+     *
+     * @return PromiseInterface
+     */
+    private function getTopology(LoopInterface $loop, string $nodeId): PromiseInterface
+    {
+        $this->logger->info(sprintf('Start finding topology by node id "%s".', $nodeId));
+
+        return $this->asyncCommandFactory->create(
+            $loop,
+            sprintf('react:get-topology %s', $nodeId)
+        )->then(NULL, function (Exception $e) use ($nodeId) {
+            $this->logger->error(sprintf('Topology by nodeId [id=%s] not found.', $nodeId));
+
+            return reject($e);
+        });
     }
 
     /**

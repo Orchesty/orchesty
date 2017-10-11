@@ -149,6 +149,6 @@ services:
         class: CleverConnectors\AppBundle\Model\CustomNode\UserMessageGenerator
         arguments:
             - '@jms_serializer'
-            - '%kernel.project_dir%'
+            - '@clever_connector.async_command_factory'
         calls:
             - [setLogger, ['@monolog.logger.rabbit-mq']]
