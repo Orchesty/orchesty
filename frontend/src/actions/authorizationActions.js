@@ -46,10 +46,10 @@ function loadSettings(id){
   return dispatch => {
     dispatch(processActions.startProcess(processes.authorizationLoadSettings(id)));
     return serverRequest(dispatch, 'GET', `/authorizations/${id}/settings`).then(response => {
-      dispatch(processActions.finishProcess(processes.authorizationLoadSettings(id), response));
       if (response){
         dispatch(receiveSettings(id, response));
       }
+      dispatch(processActions.finishProcess(processes.authorizationLoadSettings(id), response));
 
       return response;
     });
@@ -83,10 +83,10 @@ export function needAuthorization(id, force = false){
       dispatch(processActions.startProcess(processes.authorizationLoad(id)));
       return serverRequest(dispatch, 'GET', `/authorizations/${id}`).then(
         response => {
-          dispatch(processActions.finishProcess(processes.authorizationLoad(id), response));
           if (response) {
             dispatch(receive(response));
           }
+          dispatch(processActions.finishProcess(processes.authorizationLoad(id), response));
           return response;
         }
       );
@@ -111,12 +111,12 @@ export function saveSettings(id, data, silent = false){
     dispatch(processActions.startProcess(processes.authorizationSaveSettings(id)));
     return serverRequest(dispatch, 'PUT', `/authorizations/${id}/settings`, null, data).then(response => {
       if (response){
-        dispatch(processActions.finishProcess(processes.authorizationSaveSettings(id), response));
         if (!silent){
           dispatch(notificationActions.addSuccess('Authorization setting was saved'));
         }
         dispatch(receiveSettings(id, response));
         dispatch(needAuthorization(id, true));
+        dispatch(processActions.finishProcess(processes.authorizationSaveSettings(id), response));
       }
       return response;
     });

@@ -67,13 +67,13 @@ export function nodeUpdate(id, data, silent = false){
     dispatch(processActions.startProcess(processes.nodeUpdate(id)));
     return serverRequest(dispatch, 'PATCH', `/nodes/${id}`, null, data).then(
       response => {
-        dispatch(processActions.finishProcess(processes.nodeUpdate(id), response));
         if (response) {
           if (!silent){
             dispatch(notificationActions.addSuccess('Node was updated'));
           }
           dispatch(receive(response));
         }
+        dispatch(processActions.finishProcess(processes.nodeUpdate(id), response));
         return response;
       }
     )
