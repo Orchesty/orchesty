@@ -130,6 +130,17 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
 
         $this->dm->persist($top);
         $this->dm->flush($top);
+
+        $node = new Node();
+        $node
+            ->setName('node name')
+            ->setType(TypeEnum::CONNECTOR)
+            ->setTopology($top->getId())
+            ->setHandler(HandlerEnum::EVENT)
+            ->setEnabled(TRUE);
+
+        $this->dm->persist($node);
+        $this->dm->flush($node);
         $this->dm->clear();
 
         /** @var Topology $res */
@@ -140,6 +151,17 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
         self::assertEquals($top->getDescr(), $res->getDescr());
         self::assertEquals(TopologyStatusEnum::DRAFT, $res->getVisibility());
         self::assertEquals($top->isEnabled(), $res->isEnabled());
+        self::assertEquals($top->getBpmn(), $res->getBpmn());
+        self::assertEquals($top->getRawBpmn(), $res->getRawBpmn());
+
+        $nodes     = $this->dm->getRepository(Node::class)->findBy(['topology' => $res->getId()]);
+        $nodeClone = $nodes[0];
+
+        self::assertEquals($node->getName(), $nodeClone->getName());
+        self::assertEquals($node->getType(), $nodeClone->getType());
+        self::assertEquals($res->getId(), $nodeClone->getTopology());
+        self::assertEquals($node->getHandler(), $nodeClone->getHandler());
+        self::assertEquals($node->isEnabled(), $nodeClone->isEnabled());
     }
 
     /**
