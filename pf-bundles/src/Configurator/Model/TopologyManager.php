@@ -52,11 +52,20 @@ class TopologyManager
      * @param array $data
      *
      * @return Topology
+     * @throws TopologyException
      */
     public function createTopology(array $data): Topology
     {
-        $topology = $this->checkTopologyName(new Topology(), $data);
-        $topology = $this->setTopologyData($topology, $data);
+        $topology = $this->dm->getRepository(Topology::class)->findBy(['name' => $data['name'] ?? NULL]);
+
+        if ($topology) {
+            throw new TopologyException(
+                sprintf('Topology with name \'%s\' already exists', $data['name'] ?? ''),
+                TopologyException::TOPOLOGY_NAME_ALREADY_EXISTS
+            );
+        }
+
+        $topology = $this->setTopologyData(new Topology(), $data);
         $topology->setRawBpmn(self::DEFAULT_SCHEME);
 
         $this->dm->persist($topology);
@@ -334,10 +343,18 @@ class TopologyManager
      * @param array    $data
      *
      * @return Topology
+     * @throws TopologyException
      */
     private function checkTopologyName(Topology $topology, array $data): Topology
     {
-        if (isset($data['name']) && $topology->getName() !== $data['name']) {
+        if (isset($data['name'])) {
+            if ($topology->getVisibility() === TopologyStatusEnum::PUBLIC && $topology->getName() !== $data['name']) {
+                throw new TopologyException(
+                    'Cannot change name of published topology',
+                    TopologyException::TOPOLOGY_CANNOT_CHANGE_NAME
+                );
+            }
+
             $version = $this->topologyRepository->getMaxVersion($data['name']);
             $topology->setVersion($version + 1);
         }

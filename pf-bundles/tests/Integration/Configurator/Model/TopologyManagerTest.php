@@ -23,20 +23,65 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     /**
      *
      */
+    public function testCreateTopologyWithSameName(): void
+    {
+        $manager = $this->container->get('hbpf.configurator.manager.topology');
+
+        self::expectException(TopologyException::class);
+        self::expectExceptionCode(TopologyException::TOPOLOGY_NAME_ALREADY_EXISTS);
+        self::assertEquals(1, $manager->createTopology(['name' => 'Topology'])->getVersion());
+        $manager->createTopology(['name' => 'Topology'])->getVersion();
+    }
+
+    /**
+     *
+     */
+    public function testUpdateUnpublishedTopologyWithName(): void
+    {
+        $manager  = $this->container->get('hbpf.configurator.manager.topology');
+        $topology = $manager->createTopology(['name' => 'Topology']);
+        $manager->updateTopology($topology, ['name' => 'Another Topology']);
+
+        $this->dm->clear();
+        $topologies = $this->dm->getRepository(Topology::class)->findBy(['name' => 'Another Topology']);
+        self::assertEquals(1, count($topologies));
+    }
+
+    /**
+     *
+     */
+    public function testUpdatePublishedTopologyWithName(): void
+    {
+        $manager  = $this->container->get('hbpf.configurator.manager.topology');
+        $topology = $manager->createTopology(['name' => 'Topology']);
+        $topology->setVisibility(TopologyStatusEnum::PUBLIC);
+        $this->dm->flush();
+
+        self::expectException(TopologyException::class);
+        self::expectExceptionCode(TopologyException::TOPOLOGY_CANNOT_CHANGE_NAME);
+
+        $manager->updateTopology($topology, ['name' => 'Another Topology']);
+    }
+
+    /**
+     *
+     */
     public function testNameAndVersionTopology(): void
     {
         $manager = $this->container->get('hbpf.configurator.manager.topology');
 
-        self::assertEquals(1, $manager->createTopology(['name' => 'Topology'])->getVersion());
-        self::assertEquals(2, $manager->createTopology(['name' => 'Topology'])->getVersion());
         $topology = $manager->createTopology(['name' => 'Topology']);
-        self::assertEquals(3, $topology->getVersion());
-        self::assertEquals(3, $manager->updateTopology($topology, ['name' => 'Topology'])->getVersion());
-
-        $topology = $manager->createTopology(['name' => 'AnotherTopology']);
         self::assertEquals(1, $topology->getVersion());
-        self::assertEquals(4, $manager->updateTopology($topology, ['name' => 'Topology'])->getVersion());
-        self::assertEquals(4, $manager->updateTopology($topology, ['enabled' => FALSE])->getVersion());
+
+        $topology = $manager->updateTopology($topology, ['name' => 'Topology']);
+        self::assertEquals(2, $topology->getVersion());
+
+        $topology->setVisibility(TopologyStatusEnum::PUBLIC);
+        $this->dm->flush();
+
+        self::expectException(TopologyException::class);
+        self::expectExceptionCode(TopologyException::TOPOLOGY_CANNOT_CHANGE_NAME);
+        $manager->updateTopology($topology, ['name' => 'Another Topology']);
     }
 
     /**
