@@ -1,0 +1,18 @@
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
+<script>
+	var socket = io('http://localhost:8080/stream');
+
+	socket.on('connect', function () {
+		console.log('Connection to websockets created.');
+		socket.emit('subscribe', { userId: 'abc', groups: ['b', 'c'] });
+	});
+
+	socket.on('disconnect', function () {
+		console.log('Connection to websockets closed.');
+	});
+
+	socket.on('message', function (data) {
+		console.log(data);
+	});
+
+</script>
