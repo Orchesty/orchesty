@@ -11,6 +11,8 @@ const httpServer = express();
 httpServer.use(bodyParser.json());
 httpServer.post("/ok", (req, resp) => {
     assert.deepEqual(req.body, { val: "original" });
+    assert.equal(req.headers.node_name, "httpworker");
+    assert.equal(req.headers.node_id, "507f191e810c19729de860ea");
     resp.set({
         result_code: 0,
         result_message: "ok",
@@ -47,7 +49,7 @@ describe("HttpWorker", () => {
     it("should convert JobMessage to http request and receives response and sets message result", () => {
         const msg = new JobMessage("nid", "123", "123", "", 1, {}, new Buffer(JSON.stringify({ val: "original" })));
         const worker = new HttpWorker({
-            node_id: "someId",
+            node_label: { id: "someId", node_id: "507f191e810c19729de860ea", node_name: "httpworker" },
             host: "localhost",
             method: "post",
             port: 4020,
@@ -67,7 +69,7 @@ describe("HttpWorker", () => {
     it("should return original message content when server responds with error", () => {
         const msg = new JobMessage("nid", "123", "123", "", 1, {}, new Buffer(JSON.stringify({ val: "original" })));
         const worker = new HttpWorker({
-            node_id: "someId",
+            node_label: { id: "someId", node_id: "507f191e810c19729de860ea", node_name: "httpworker" },
             host: "localhost",
             method: "post",
             port: 4020,
@@ -87,7 +89,7 @@ describe("HttpWorker", () => {
     it("should return modified message but be marged as failed due to result_status error", () => {
         const msg = new JobMessage("nid", "123", "123", "", 1, {}, new Buffer(JSON.stringify({ val: "original" })));
         const worker = new HttpWorker({
-            node_id: "someId",
+            node_label: { id: "someId", node_id: "507f191e810c19729de860ea", node_name: "httpworker" },
             host: "localhost",
             method: "post",
             port: 4020,
@@ -107,7 +109,7 @@ describe("HttpWorker", () => {
     it("should return original message content when process_path does not exist", () => {
         const msg = new JobMessage("nid", "123", "123", "", 1, {}, new Buffer(JSON.stringify({ val: "original" })));
         const worker = new HttpWorker({
-            node_id: "someId",
+            node_label: { id: "someId", node_id: "507f191e810c19729de860ea", node_name: "httpworker" },
             host: "localhost",
             method: "post",
             port: 4020,
@@ -127,7 +129,7 @@ describe("HttpWorker", () => {
     it("should return empty data and settings when worker returns empty body", () => {
         const msg = new JobMessage("nid", "123", "123", "", 1, {}, new Buffer(JSON.stringify({ val: "original" })));
         const worker = new HttpWorker({
-            node_id: "someId",
+            node_label: { id: "someId", node_id: "507f191e810c19729de860ea", node_name: "httpworker" },
             host: "localhost",
             method: "post",
             port: 4020,
@@ -152,7 +154,7 @@ describe("HttpWorker", () => {
         workerServer.listen(4321);
 
         const worker = new HttpWorker({
-            node_id: "someId",
+            node_label: { id: "someId", node_id: "507f191e810c19729de860ea", node_name: "httpworker" },
             host: "localhost",
             method: "post",
             port: 4321,
@@ -176,7 +178,7 @@ describe("HttpWorker", () => {
         workerServer.listen(4322);
 
         const worker = new HttpWorker({
-            node_id: "someId",
+            node_label: { id: "someId", node_id: "507f191e810c19729de860ea", node_name: "httpworker" },
             host: "localhost",
             method: "post",
             port: 4322,

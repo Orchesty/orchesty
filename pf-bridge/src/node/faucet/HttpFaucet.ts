@@ -3,6 +3,7 @@ import * as express from "express";
 import logger from "../../logger/Logger";
 import JobMessage from "../../message/JobMessage";
 import IFaucet, {FaucetProcessMsgFn} from "./IFaucet";
+import {INodeLabel} from "../../topology/Configurator";
 
 export interface IValidHttpRequest {
     headers: {
@@ -18,7 +19,7 @@ export interface IValidHttpRequest {
 }
 
 export interface IHttpFaucetSettings {
-    node_id: string;
+    node_label: INodeLabel;
     port: number;
 }
 
@@ -50,13 +51,13 @@ class HttpFaucet implements IFaucet {
                     resp.sendStatus(200);
                 })
                 .catch((err: Error) => {
-                    logger.error("HttpFaucet processData error.", { node_id: this.settings.node_id, error: err});
+                    logger.error("HttpFaucet processData error.", { node_id: this.settings.node_label.id, error: err});
                     resp.status(500).end(err.message);
                 });
         });
 
         app.listen(this.port, () => {
-            logger.info(`HttpFaucet Listening on: ${this.port}${this.path}`, { node_id: this.settings.node_id});
+            logger.info(`HttpFaucet Listening on: ${this.port}${this.path}`, { node_id: this.settings.node_label.id});
         });
 
         return Promise.resolve();
@@ -73,7 +74,7 @@ class HttpFaucet implements IFaucet {
 
         try {
             inMsg = new JobMessage(
-                this.settings.node_id,
+                this.settings.node_label.id,
                 req.headers.correlation_id,
                 req.headers.process_id,
                 req.headers.parent_id,

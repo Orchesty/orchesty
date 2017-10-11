@@ -12,7 +12,11 @@ import {IAmqpDrainSettings} from "../../../../src/node/drain/AmqpDrain";
 
 const conn = new Connection(amqpConnectionOptions);
 const settings: IAmqpDrainSettings = {
-    node_id: "test-counter-publisher",
+    node_label: {
+        id: "test-counter-publisher",
+        node_id: "507f191e810c19729de860ea",
+        node_name: "counter",
+    },
     counter: {
         queue: {
             name: "test-drain-counter",

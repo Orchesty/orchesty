@@ -13,6 +13,11 @@ class Defaults {
     public static getNodeConfigDefaults(topoId: string, node: INodeConfigSkeleton): INodeConfig {
         return {
             id: node.id,
+            label: {
+                id: node.id,
+                node_id: node.label ? node.label.node_id : "",
+                node_name: node.label ? node.label.node_name : "",
+            },
             next: [],
             worker: Defaults.getDefaultWorkerConfig(),
             faucet: Defaults.getDefaultFaucetConfig(topoId, node),
@@ -47,7 +52,7 @@ class Defaults {
     public static getDefaultFaucetConfig(topoId: string, node: INodeConfigSkeleton): IFaucetConfig {
         const type = "faucet.amqp";
         const settings: IAmqpFaucetSettings = {
-            node_id: node.id,
+            node_label: node.label,
             exchange: { name: `pipes.${topoId}.events`, type: "direct", options: {} },
             queue: { name: `pipes.${topoId}.${node.id}`, options: {} },
             prefetch: 10000,
@@ -68,7 +73,7 @@ class Defaults {
         const type = "drain.amqp";
         const faucetConf = Defaults.getDefaultFaucetConfig(topoId, node);
         const settings: IAmqpDrainSettings = {
-            node_id: node.id,
+            node_label: node.label,
             counter: {
                 queue: {
                     name: `pipes.${topoId}.counter`,

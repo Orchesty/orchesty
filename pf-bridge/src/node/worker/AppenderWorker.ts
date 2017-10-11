@@ -1,8 +1,10 @@
 import JobMessage from "../../message/JobMessage";
 import {ResultCode} from "../../message/ResultCode";
+import {INodeLabel} from "../../topology/Configurator";
 import IWorker from "./IWorker";
 
 export interface IAppenderWorkerSettings {
+    node_label: INodeLabel;
     suffix: string;
 }
 

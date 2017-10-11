@@ -8,7 +8,8 @@ const HTTP_PROBE_PATH = "/status";
 const HTTP_TIMEOUT = 10000;
 
 interface INodeInfo {
-    node: string;
+    id: string;
+    name: string;
     url: string;
     code: number;
     body: string;
@@ -16,7 +17,8 @@ interface INodeInfo {
 }
 
 interface IProbeNodeResult {
-    node: string;
+    id: string;
+    name: string;
     status: boolean;
     url: string;
     code: number;
@@ -111,7 +113,8 @@ class Probe {
                     }
 
                     nodesInfo.push({
-                        node: node.id,
+                        id: node.label.node_id,
+                        name: node.label.node_name,
                         url: node.debug.url,
                         code: response ? response.statusCode : 500,
                         body,
@@ -145,7 +148,8 @@ class Probe {
         const nodes: IProbeNodeResult[] = [];
         nodesInfo.forEach((n: INodeInfo) => {
             nodes.push({
-                node: n.node,
+                id: n.id,
+                name: n.name,
                 status: n.code === 200,
                 url: n.url,
                 code: n.code,

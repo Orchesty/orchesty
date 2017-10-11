@@ -12,6 +12,11 @@ const topo = Configurator.createConfigFromSkeleton(
         nodes: [
             {
                 id: "node1",
+                label: {
+                    id: "node1",
+                    node_id: "507f191e810c19729de860ea",
+                    node_name: "a",
+                },
                 next: ["node2"],
                 debug: {
                     port: 6001,
@@ -21,6 +26,11 @@ const topo = Configurator.createConfigFromSkeleton(
             },
             {
                 id: "node2",
+                label: {
+                    id: "node2",
+                    node_id: "607f191e810c19729de860cd",
+                    node_name: "b",
+                },
                 next: [],
                 debug: {
                     port: 6002,
@@ -113,18 +123,20 @@ describe("Probe", () => {
                     result.nodes,
                     [
                         {
-                            node: topo.nodes[1].id,
-                            url: topo.nodes[1].debug.url,
-                            code: 500,
-                            message: "Worker down",
-                            status: false,
-                        },
-                        {
-                            node: topo.nodes[0].id,
+                            id: topo.nodes[0].label.node_id,
+                            name: topo.nodes[0].label.node_name,
                             url: topo.nodes[0].debug.url,
                             code: 200,
                             message: "OK",
                             status: true,
+                        },
+                        {
+                            id: topo.nodes[1].label.node_id,
+                            name: topo.nodes[1].label.node_name,
+                            url: topo.nodes[1].debug.url,
+                            code: 500,
+                            message: "Worker down",
+                            status: false,
                         },
                     ],
                 );

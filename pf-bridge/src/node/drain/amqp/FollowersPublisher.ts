@@ -39,7 +39,7 @@ class FollowersPublisher extends Publisher {
 
                 return Promise.all(followersPromises)
                     .then(() => {
-                        logger.info("AmqpDrain followers publisher ready", {node_id: this.settings.node_id});
+                        logger.info("AmqpDrain followers publisher ready", {node_id: this.settings.node_label.id});
                     });
             });
         this.settings = settings;
@@ -88,7 +88,7 @@ class FollowersPublisher extends Publisher {
             headers: message.getHeaders(),
             type: "job_message",
             timestamp: Date.now(),
-            appId: this.settings.node_id,
+            appId: this.settings.node_label.id,
         };
 
         for (const follower of this.settings.followers) {

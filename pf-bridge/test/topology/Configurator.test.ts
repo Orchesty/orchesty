@@ -19,6 +19,11 @@ const testTopo: ITopologyConfigSkeleton = {
         },
         {
             id: "node_b",
+            label: {
+                id: "node_b",
+                node_id: "507f191e810c19729de860ea",
+                node_name: "b",
+            },
             resequencer: true,
             worker: { type: "worker.appender", settings: { suffix: "| something"} },
             next: [],
@@ -92,25 +97,42 @@ const expectedTopo: ITopologyConfig = {
                             routing_key: "test-topo.node_b",
                         },
                     ],
-                    node_id: "node_a",
+                    node_label: {
+                        id: "node_a",
+                        node_id: "",
+                        node_name: "",
+                    },
                     resequencer: true,
                 },
                 type: "drain.amqp",
             },
             faucet: {
                 settings: {
-                    node_id: "node_a",
+                    node_label: {
+                        id: "node_a",
+                        node_id: "",
+                        node_name: "",
+                    },
                     port: 3333,
                 },
                 type: "faucet.http",
             },
             id: "node_a",
             initial: true,
+            label: {
+                id: "node_a",
+                node_id: "",
+                node_name: "",
+            },
             next: ["node_b"],
             resequencer: true,
             worker: {
                 settings: {
-                    node_id: "node_a",
+                    node_label: {
+                        id: "node_a",
+                        node_id: "",
+                        node_name: "",
+                    },
                 },
                 type: "worker.null",
             },
@@ -142,7 +164,11 @@ const expectedTopo: ITopologyConfig = {
                         },
                     },
                     followers: [],
-                    node_id: "node_b",
+                    node_label: {
+                        id: "node_b",
+                        node_id: "507f191e810c19729de860ea",
+                        node_name: "b",
+                    },
                     resequencer: true,
                 },
                 type: "drain.amqp",
@@ -159,7 +185,11 @@ const expectedTopo: ITopologyConfig = {
                         options: {},
                         type: "direct",
                     },
-                    node_id: "node_b",
+                    node_label: {
+                        id: "node_b",
+                        node_id: "507f191e810c19729de860ea",
+                        node_name: "b",
+                    },
                     prefetch: 10000,
                     queue: {
                         name: "pipes.test-topo.node_b",
@@ -171,11 +201,20 @@ const expectedTopo: ITopologyConfig = {
             },
             id: "node_b",
             initial: false,
+            label: {
+                id: "node_b",
+                node_id: "507f191e810c19729de860ea",
+                node_name: "b",
+            },
             next: [],
             resequencer: true,
             worker: {
                 settings: {
-                    node_id: "node_b",
+                    node_label: {
+                        id: "node_b",
+                        node_id: "507f191e810c19729de860ea",
+                        node_name: "b",
+                    },
                     suffix: "| something",
                 },
                 type: "worker.appender",

@@ -12,7 +12,11 @@ import {IAmqpDrainSettings} from "../../../../src/node/drain/AmqpDrain";
 
 const conn = new Connection(amqpConnectionOptions);
 const settings: IAmqpDrainSettings = {
-    node_id: "test-counter-publisher",
+    node_label: {
+        id: "test-counter-publisher",
+        node_id: "507f191e810c19729de860ea",
+        node_name: "test",
+    },
     counter: {
         queue: {
             name: "test-drain-counter",
@@ -93,12 +97,12 @@ describe("CounterPublisher", () => {
                         headers: {
                             correlation_id: "corrId",
                             process_id: msgJobId,
-                            node_id: settings.node_id,
+                            node_id: settings.node_label.id,
                             parent_id: "",
                             sequence_id: `${msgSeqId}`,
                         },
                         type: "counter_message",
-                        appId: settings.node_id,
+                        appId: settings.node_label.id,
                         messageId: "fakeId",
                         timestamp: 10203040,
 

@@ -2,10 +2,11 @@ import * as request from "request";
 import logger from "../../logger/Logger";
 import JobMessage from "../../message/JobMessage";
 import { ResultCode } from "../../message/ResultCode";
+import {INodeLabel} from "../../topology/Configurator";
 import IWorker from "./IWorker";
 
 export interface IHttpWorkerSettings {
-    node_id: string;
+    node_label: INodeLabel;
     host: string;
     port: number;
     method: string;
@@ -27,6 +28,8 @@ export interface IHttpWorkerRequestParams {
         process_id: string,
         parent_id: string,
         sequence_id: number,
+        node_id: string,
+        node_name: string,
         reply_to_url?: string,
         reply_to_method?: string,
         token?: string, // TODO pryc s tim
@@ -107,13 +110,14 @@ class HttpWorker implements IWorker {
      */
     public isWorkerReady(): Promise<boolean> {
         return new Promise((resolve) => {
+            const nodeId = this.settings.node_label.id;
             const reqParams = { method: "GET", url: this.getUrl(this.settings.status_path)};
 
-            logger.info(`HttpWorker asking worker if is ready on ${reqParams.url}`, {node_id: this.settings.node_id});
+            logger.info(`HttpWorker asking worker if is ready on ${reqParams.url}`, {node_id: nodeId});
 
             request(reqParams, (err, response) => {
                 if (err) {
-                    logger.warn("HttpWorker worker not ready.", { node_id: this.settings.node_id, error: err });
+                    logger.warn("HttpWorker worker not ready.", { node_id: nodeId, error: err });
 
                     return resolve(false);
                 }
@@ -121,13 +125,13 @@ class HttpWorker implements IWorker {
                 if (response.statusCode !== 200) {
                     logger.warn(
                         `HttpWorker worker not ready: statusCode="${response.statusCode}"`,
-                        { node_id: this.settings.node_id },
+                        { node_id: nodeId },
                     );
 
                     return resolve(false);
                 }
 
-                logger.info("Worker[type'http'] ready", { node_id: this.settings.node_id });
+                logger.info("Worker[type'http'] ready", { node_id: nodeId });
 
                 return resolve(true);
             });
@@ -151,6 +155,8 @@ class HttpWorker implements IWorker {
                 process_id: inMsg.getProcessId(),
                 parent_id: inMsg.getParentId(),
                 sequence_id: inMsg.getSequenceId(),
+                node_id: this.settings.node_label.node_id,
+                node_name: this.settings.node_label.node_name,
                 token: inMsg.getHeaders().token, // TODO pryc s tim
                 guid: inMsg.getHeaders().guid, // TODO pryc s tim
             },

@@ -10,7 +10,11 @@ import {default as AmqpFaucet, IAmqpFaucetSettings} from "../../../src/node/fauc
 import {FaucetProcessMsgFn} from "../../../src/node/faucet/IFaucet";
 
 const settings: IAmqpFaucetSettings = {
-    node_id: "amqpFaucetNodeId",
+    node_label: {
+        id: "amqpFaucetNodeId",
+        node_id: "507f191e810c19729de860ea",
+        node_name: "faucet-amqp",
+    },
     exchange: {
         name: "amqp_faucet_test_ex",
         type: "direct",

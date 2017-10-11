@@ -18,8 +18,11 @@ describe("AmqpRpcWorker", () => {
     it("should check if worker is ready by sending rpc message", () => {
         const forwarded: JobMessage[] = [];
         const settings: IAmqpRpcWorkerSettings = {
-            node_id: "amqp_rpc_node_test",
-            node_name: "amqp_rpc_node",
+            node_label: {
+                id: "amqp_rpc_node_test",
+                node_id: "507f191e810c19729de860ea",
+                node_name: "amqprpcnode",
+            },
             publish_queue: {
                 name: "amqp_rpc_pub_test",
                 options: {},
@@ -65,8 +68,11 @@ describe("AmqpRpcWorker", () => {
     it("should send 1 message to external worker and receive multiple", () => {
         const forwarded: JobMessage[] = [];
         const settings: IAmqpRpcWorkerSettings = {
-            node_id: "amqp_rpc_node_multiple",
-            node_name: "amqp_rpc_node",
+            node_label: {
+                id: "amqp_rpc_node_multiple",
+                node_id: "507f191e810c19729de860ea",
+                node_name: "amqprpcnode",
+            },
             publish_queue: {
                 name: "amqp_rpc_pub_multiple",
                 options: {},
@@ -94,7 +100,17 @@ describe("AmqpRpcWorker", () => {
                 });
             },
             (msg: Message) => {
-                // Send partial messages and the cork afterward
+                // check if message has all mandatory headers
+                assert.deepEqual(msg.properties.headers, {
+                    node_id: "amqp_rpc_node_multiple",
+                    node_name: "amqprpcnode",
+                    correlation_id: "amqp.worker.correlation_id",
+                    process_id: "amqp.worker.process_id",
+                    parent_id: "",
+                    sequence_id: 1,
+                });
+
+                // Send partial messages and the confirmation message afterwards
                 let i = 1;
                 const proms = [];
                 while (i <= 5) {
@@ -104,12 +120,17 @@ describe("AmqpRpcWorker", () => {
                         {
                             type: BATCH_ITEM_TYPE,
                             correlationId: msg.properties.correlationId,
+                            headers: {
+                                result_code: ResultCode.SUCCESS,
+                                result_message: "ok",
+                            },
                         },
                     );
                     proms.push(p);
                     i++;
                 }
 
+                // Send confirmation message after all BATCH_ITEM messages are sent
                 Promise.all(proms)
                     .then(() => {
                         publisher.sendToQueue(
@@ -120,7 +141,7 @@ describe("AmqpRpcWorker", () => {
                                 correlationId: msg.properties.correlationId,
                                 headers: {
                                     result_code: ResultCode.SUCCESS,
-                                    result_message: "okay",
+                                    result_message: "all okay",
                                 },
                             },
                         );
@@ -147,7 +168,7 @@ describe("AmqpRpcWorker", () => {
                 assert.equal(outMsg.getMultiplier(), 5);
                 assert.isFalse(outMsg.getForwardSelf());
                 assert.equal(ResultCode.SUCCESS, outMsg.getResult().code);
-                assert.equal("okay", outMsg.getResult().message);
+                assert.equal("all okay", outMsg.getResult().message);
 
                 let i = 1;
                 forwarded.forEach((splitMsg: JobMessage) => {

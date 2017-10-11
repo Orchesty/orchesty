@@ -9,7 +9,11 @@ import FollowersPublisher from "../../../src/node/drain/amqp/FollowersPublisher"
 import AmqpDrain, {IAmqpDrainSettings} from "../../../src/node/drain/AmqpDrain";
 
 const settings: IAmqpDrainSettings = {
-    node_id: "test-amqpdrain",
+    node_label: {
+        id: "test-amqpdrain",
+        node_id: "507f191e810c19729de860ea",
+        node_name: "test",
+    },
     counter: {
         queue: {
             name: "test-amqpdrain-counter",

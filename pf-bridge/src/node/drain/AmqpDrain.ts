@@ -2,6 +2,7 @@ import AssertionPublisher from "lib-nodejs/dist/src/rabbitmq/AssertPublisher";
 import logger from "../../logger/Logger";
 import JobMessage from "../../message/JobMessage";
 import {ResultCode, ResultCodeGroup} from "../../message/ResultCode";
+import {INodeLabel} from "../../topology/Configurator";
 import ADrain from "./ADrain";
 import CounterPublisher from "./amqp/CounterPublisher";
 import FollowersPublisher from "./amqp/FollowersPublisher";
@@ -23,7 +24,7 @@ export interface IFollower {
 }
 
 export interface IAmqpDrainSettings {
-    node_id: string;
+    node_label: INodeLabel;
     counter: {
         queue: {
             name: string,
@@ -64,7 +65,7 @@ class AmqpDrain extends ADrain implements IDrain, IPartialForwarder {
         private followersPublisher: FollowersPublisher,
         private nonStandardPublisher: AssertionPublisher,
     ) {
-        super(settings.node_id, settings.resequencer);
+        super(settings.node_label.id, settings.resequencer);
         this.settings = settings;
     }
 
