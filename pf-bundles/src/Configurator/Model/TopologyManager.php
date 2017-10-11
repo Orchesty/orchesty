@@ -56,11 +56,11 @@ class TopologyManager
      */
     public function createTopology(array $data): Topology
     {
-        $topology = $this->dm->getRepository(Topology::class)->findBy(['name' => $data['name'] ?? NULL]);
+        $topology = $this->dm->getRepository(Topology::class)->findBy(['name' => $data['name']]);
 
         if ($topology) {
             throw new TopologyException(
-                sprintf('Topology with name \'%s\' already exists', $data['name'] ?? ''),
+                sprintf('Topology with name \'%s\' already exists', $data['name']),
                 TopologyException::TOPOLOGY_NAME_ALREADY_EXISTS
             );
         }
