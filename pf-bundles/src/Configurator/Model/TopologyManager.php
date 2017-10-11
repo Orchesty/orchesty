@@ -143,6 +143,18 @@ class TopologyManager
             ->setRawBpmn($topology->getRawBpmn());
 
         $this->dm->persist($res);
+
+        /** @var Node $node */
+        foreach ($this->dm->getRepository(Node::class)->findBy(['topology' => $topology->getId()]) as $node) {
+            $nodeCopy = (new Node())
+                ->setName($node->getName())
+                ->setType($node->getType())
+                ->setTopology($res->getId())
+                ->setHandler($node->getHandler())
+                ->setEnabled($node->isEnabled());
+            $this->dm->persist($nodeCopy);
+        }
+
         $this->dm->flush();
 
         return $res;
