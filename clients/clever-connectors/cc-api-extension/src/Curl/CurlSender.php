@@ -102,6 +102,16 @@ class CurlSender
     }
 
     /**
+     * @param string $key
+     *
+     * @return null|string
+     */
+    public function getConfig(string $key): ?string
+    {
+        return $this->clientFactory->create()->getConfig($key);
+    }
+
+    /**
      * @param RequestInterface $request
      */
     private function logRequest(RequestInterface $request): void

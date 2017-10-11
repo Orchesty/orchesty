@@ -280,7 +280,14 @@ class ConnectorManager implements ConnectorInterface
      */
     public function authorizeUserSystem(string $userId, string $systemKey, string $redirectUrl): void
     {
-        //@todo redirect
+        header(sprintf(
+            'Location: %s/user_systems/user/%s/system/%s/authorize_redirect/%s',
+            $this->curlSender->getConfig('base_uri'),
+            $userId,
+            $systemKey,
+            urlencode($redirectUrl)
+        ));
+        die;
     }
 
 }

@@ -226,16 +226,4 @@ class ConnectorManagerTest extends TestCase
         $this->assertTrue(TRUE);
     }
 
-    /**
-     * @covers ConnectorManager::authorizeUserSystem()
-     */
-    public function testAuthorizeUserSystem(): void
-    {
-        $content = '';
-        $cm      = new ConnectorManager($this->createSuccessResponse($content));
-
-        $cm->authorizeUserSystem('123', '', 'http://example.com');
-        $this->assertTrue(TRUE);
-    }
-
 }
