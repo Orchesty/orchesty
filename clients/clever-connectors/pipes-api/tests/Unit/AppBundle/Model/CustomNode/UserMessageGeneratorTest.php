@@ -110,7 +110,7 @@ class UserMessageGeneratorTest extends TestCase
     }
 
     /**
-     * @covers UserMessageGenerator::processSystem()
+     * @covers UserMessageGenerator::getSystems()
      */
     public function testProcessSystemReject(): void
     {

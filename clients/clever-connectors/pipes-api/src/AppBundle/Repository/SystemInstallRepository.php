@@ -63,4 +63,22 @@ class SystemInstallRepository extends DocumentRepository
             );
     }
 
+    /**
+     * @param DateTime $dateTime
+     *
+     * @return array
+     */
+    public function findBeforeExpiration(DateTime $dateTime): array
+    {
+        $query = $this->createQueryBuilder()->find()
+            ->field('expires')->notEqual(NULL)
+            ->field('expires')->lte($dateTime)
+            ->getQueryArray();
+
+        $cursor = $this->dm->getDocumentCollection($this->getClassName())
+            ->find($query);
+
+        return $cursor->toArray();
+    }
+
 }
