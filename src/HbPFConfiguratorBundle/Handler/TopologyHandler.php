@@ -14,6 +14,7 @@ use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyManager;
 use Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository;
+use Hanaboso\PipesFramework\Utils\ControllerUtils;
 
 /**
  * Class TopologyHandler
@@ -126,6 +127,8 @@ class TopologyHandler
      */
     public function createTopology(array $data): array
     {
+        ControllerUtils::checkParameters(['name', 'descr'], $data);
+
         $topology = $this->manager->createTopology($data);
 
         return $this->getTopologyData($topology);
@@ -140,6 +143,8 @@ class TopologyHandler
      */
     public function updateTopology(string $id, array $data): array
     {
+        ControllerUtils::checkParameters(['descr', 'enabled'], $data);
+
         $topology = $this->getTopologyById($id);
         $this->manager->updateTopology($topology, $data);
 
