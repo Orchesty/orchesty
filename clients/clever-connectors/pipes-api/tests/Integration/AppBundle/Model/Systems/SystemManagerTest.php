@@ -7,6 +7,8 @@ use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\SystemManager;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use Hanaboso\PipesFramework\Configurator\Document\Node;
+use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Tests\DatabaseTestCaseAbstract;
 use Tests\Integration\AppBundle\Model\Systems\Impl\NullSystem;
 
@@ -349,6 +351,32 @@ class SystemManagerTest extends DatabaseTestCaseAbstract
         $this->expectExceptionCode(SystemException::SYSTEM_OR_USER_NOT_FOUND);
 
         $this->manager->setPassword('unknown', 'null.user.group', 'pass2');
+    }
+
+    /**
+     *
+     */
+    public function testDeleteTopology(): void
+    {
+        $manager = $this->container->get('systems.manager');
+
+        $top = new Topology();
+        $top->setName('ttop');
+        $this->dm->persist($top);
+        $this->dm->flush($top);
+
+        $nodes = [];
+        for ($i = 0; $i < 2; $i++) {
+            $nodes[$i] = new Node();
+            $nodes[$i]->setTopology($top->getId());
+            $this->dm->persist($nodes[$i]);
+        }
+        $this->dm->flush();
+
+        $manager->deleteTopology($top, [], $nodes, []);
+        $this->dm->clear();
+        self::assertNull($this->dm->getRepository(Topology::class)->findOneBy(['name' => 'ttop']));
+        self::assertEmpty($this->dm->getRepository(Node::class)->findBy(['topology' => $top->getId()]));
     }
 
 }

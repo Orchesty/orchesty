@@ -37,4 +37,19 @@ class WebhookRepository extends DocumentRepository
         return FALSE;
     }
 
+    /**
+     * @param string $topologyName
+     *
+     * @return array
+     */
+    public function getWebhooksForTopology(string $topologyName): array
+    {
+        return $this->createQueryBuilder()
+            ->select(['systemKey'])
+            ->field('topologyName')->equals($topologyName)
+            ->group(['user' => 1, 'systemKey' => 2], [])
+            ->reduce('function (obj, prev) {}')
+            ->getQuery()->execute()->toArray(FALSE);
+    }
+
 }

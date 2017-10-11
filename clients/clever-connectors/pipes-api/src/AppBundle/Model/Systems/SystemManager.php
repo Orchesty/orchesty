@@ -2,6 +2,7 @@
 
 namespace CleverConnectors\AppBundle\Model\Systems;
 
+use CleverConnectors\AppBundle\Document\LastSync;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\SystemTypeEnum;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\AuthorizationInterface;
@@ -12,6 +13,8 @@ use CleverConnectors\AppBundle\Model\Webhook\WebhookSystemInterface;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use Hanaboso\PipesFramework\Configurator\Document\Node;
+use Hanaboso\PipesFramework\Configurator\Document\Topology;
 
 /**
  * Class SystemManager
@@ -292,6 +295,42 @@ class SystemManager
         $this->subscribeWebhooks($systemInstall);
 
         return $systemInstall;
+    }
+
+    /**
+     * @param Topology   $topology
+     * @param array      $users
+     * @param Node[]     $nodes
+     * @param LastSync[] $syncs
+     */
+    public function deleteTopology(
+        ?Topology $topology = NULL,
+        array $users,
+        array $nodes,
+        array $syncs
+    ): void
+    {
+        if (!empty($users)) {
+            /** @var WebhookSystemInterface $system */
+            $system = $this->systemLoader->getSystem($users[0]['systemKey']);
+            foreach ($users as $user) {
+                $this->webhookManager->unsubscribe($system, $user['user']);
+            }
+        }
+
+        if ($topology) {
+            //TODO zastavit běžící topologii
+            $topology->setDeleted(TRUE);
+        }
+
+        foreach ($syncs as $sync) {
+            $sync->setDeleted(TRUE);
+        }
+        foreach ($nodes as $node) {
+            $node->setDeleted(TRUE);
+        }
+
+        $this->dm->flush();
     }
 
     /**
