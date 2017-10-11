@@ -13,6 +13,13 @@ services:
         arguments:
             - '%project_source_path%'
 
+    hbpf.topology_generator.topology_actions_factory:
+        class: Hanaboso\PipesFramework\TopologyGenerator\Actions\TopologyActionsFactory
+        arguments:
+            - '@hbpf.docker.handler.docker_handler'
+            - '@hbpf.rabbit_mq.handler.rabbit_mq_handler'
+            - '@hbpf.docker_compose.volume_path_definition_factory'
+
     hbpf.progress_counter.progress_counter_service:
         class: Hanaboso\PipesFramework\Commons\ProgressCounter\ProgressCounterService
         arguments:

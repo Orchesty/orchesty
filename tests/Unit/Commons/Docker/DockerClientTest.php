@@ -8,15 +8,39 @@
 
 namespace Tests\Unit\Commons\Docker;
 
+use Hanaboso\PipesFramework\Commons\Docker\Docker;
 use Hanaboso\PipesFramework\Commons\Docker\DockerClient;
+use Hanaboso\PipesFramework\Commons\Docker\Endpoint\Containers;
 use PHPUnit\Framework\TestCase;
+use Tests\DatabaseTestCaseAbstract;
 
-class DockerClientTest extends TestCase
+class DockerClientTest extends DatabaseTestCaseAbstract
 {
 
     public function testCreateClient()
     {
-        new DockerClient();
+        $this->markTestSkipped();
+        $client = $this->container->get('hbpf.commons.docker.docker_client');
+//        $client = new DockerClient();
+
+        $docker    = new Docker($client);
+        
+        /** @var Containers $container*/
+        $container = $docker->getEndpoint(Docker::COINTAINERS);
+
+        $filters = [
+            'label'  =>
+                [
+                    0 => 'com.docker.compose.project=pfbundles',
+                ],
+            'status' =>
+                [
+                    0 => 'running',
+                ],
+        ];
+
+
+        $result = $container->list([], []);
     }
 
 }

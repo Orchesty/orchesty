@@ -72,9 +72,60 @@ class GeneratorController extends FOSRestController
         //TODO: Make much better !!!!
         $this->construct();
         $statusCode = 400;
+        $result     = NULL;
 
         if ($this->generatorHandler) {
             $result = $this->generatorHandler->runTopology($id);
+            if (count($result) > 0) {
+                $statusCode = 200;
+            }
+        }
+
+        return new JsonResponse(["result" => $statusCode], $statusCode, []);
+    }
+
+    /**
+     * @Route("/topology/stop/{id}")
+     * @Method({"GET"})
+     *
+     * @param string $id
+     *
+     * @return JsonResponse
+     */
+    public function stopAction(string $id): JsonResponse
+    {
+        //TODO: Make much better !!!!
+        $this->construct();
+        $statusCode = 400;
+        $result     = NULL;
+
+        if ($this->generatorHandler) {
+            $result = $this->generatorHandler->stopTopology($id);
+            if (count($result) == 0) {
+                $statusCode = 200;
+            }
+        }
+
+        return new JsonResponse(["result" => $statusCode, "docker_info" => $result], $statusCode, []);
+    }
+
+    /**
+     * @Route("/topology/delete/{id}")
+     * @Method({"GET"})
+     *
+     * @param string $id
+     *
+     * @return JsonResponse
+     */
+    public function deleteAction(string $id): JsonResponse
+    {
+        //TODO: Make much better !!!!
+        $this->construct();
+        $statusCode = 400;
+
+        if ($this->generatorHandler) {
+            $this->generatorHandler->stopTopology($id);
+            $result = $this->generatorHandler->destroyTopology($id);
             if ($result) {
                 $statusCode = 200;
             }
@@ -84,7 +135,32 @@ class GeneratorController extends FOSRestController
     }
 
     /**
+     * @Route("/topology/delete/{id}")
+     * @Method("{GET}")
      *
+     * @param string $id
+     *
+     * @return JsonResponse
+     */
+    public function infoAction(string $id): JsonResponse
+    {
+        //TODO: Make much better !!!!
+        $this->construct();
+        $statusCode = 400;
+        $result     = NULL;
+
+        if ($this->generatorHandler) {
+            $result = $this->generatorHandler->infoTopology($id);
+            if ($result) {
+                $statusCode = 200;
+            }
+        }
+
+        return new JsonResponse(["result" => $statusCode, "docker_info" => $result], $statusCode, []);
+    }
+
+    /**
+     * fake __construct
      */
     public function construct(): void
     {

@@ -16,14 +16,14 @@ use Http\Client\HttpClient;
 use Http\Client\Socket\Client as SocketHttpClient;
 use Http\Message\MessageFactory;
 use Http\Message\MessageFactory\GuzzleMessageFactory;
-use Psr\Http\Message\RequestInterface;
 
+/**
+ * Class DockerClient
+ *
+ * @package Hanaboso\PipesFramework\Commons\Docker
+ */
 class DockerClient
 {
-
-    public const RESULT_AS_ARRAY = 1;
-
-    public const RESULT_AS_OBJECT = 2;
 
     /**
      * @var HttpClient
@@ -36,53 +36,23 @@ class DockerClient
     protected $messageFactory;
 
     /**
-     * @var array
-     */
-    protected $serializer;
-
-    /**
      * @var string
      */
     protected $version;
-
-    //    public function _send()
-    //    {
-    //        //curl -G XGET --unix-socket /var/run/docker-pavel.severyn.sock http:/v1.30/containers/json --data-urlencode 'filters={"label":["com.docker.compose.project=59d5f1cf2b493c00157e3ca9aaa"], "status":["running"]}'
-    //
-    //        $this->messageFactory = new GuzzleMessageFactory();
-    //        $socketClient         = new SocketHttpClient($this->messageFactory,
-    //            ['remote_socket' => 'unix:///var/run/docker.sock']);
-    //        $lengthPlugin         = new ContentLengthPlugin();
-    //        $decodingPlugin       = new DecoderPlugin();
-    //        $errorPlugin          = new ErrorPlugin();
-    //
-    //        $httpClient = new PluginClient($socketClient, [
-    //            $errorPlugin,
-    //            $lengthPlugin,
-    //            $decodingPlugin,
-    //        ]);
-    //
-    //        $request  = $messageFactory->createRequest('GET',
-    //            'http://v1.30/containers/json?filters=%7B%22label%22%3A%5B%22com.docker.compose.project%3D59d5f1cf2b493c00157e3ca9aaa%22%5D%2C%20%22status%22%3A%5B%22running%22%5D%7D',
-    //            [], "");
-    //        $response = $httpClient->sendRequest($request);
-    //        $json     = json_decode($response->getBody()->getContents(), TRUE);
-    //        print_r(count($json));
-    //        print_r($json);
-    //
-    //    }
 
     /**
      *
      * Client constructor.
      *
      * @param array  $connectOption
-     * @param array  $serializer
      * @param string $version
      */
-    public function __construct(array $connectOption = ['remote_socket' => 'unix:///var/run/docker.sock'],
-                                $serializer = [], string $version = '1.30')
+    public function __construct(array $connectOption = [], string $version = '1.30')
     {
+        if (empty($connectOption)) {
+            $connectOption = $this->getDefault();
+        }
+
         $this->messageFactory = new GuzzleMessageFactory();
         $socketClient         = new SocketHttpClient($this->messageFactory, $connectOption);
 
@@ -92,24 +62,17 @@ class DockerClient
             new DecoderPlugin(),
         ]);
 
-        $this->serializer = $serializer;
-        $this->version    = $version;
+        $this->version = $version;
     }
 
     /**
-     * @param RequestInterface $request
+     * @return array
      */
-    public function send(RequestInterface $request, $resultAs = self::RESULT_AS_ARRAY)
+    protected function getDefault(): array
     {
-        $response = $this->httpClient->sendRequest($request);
-
-        if ($resultAs == self::RESULT_AS_ARRAY) {
-            return json_decode($response->getBody()->getContents(), TRUE);
-        } elseif ($resultAs == self::RESULT_AS_OBJECT) {
-            return json_decode($response->getBody()->getContents());
-        }
-
-        return $response->getBody()->getContents();
+        return [
+            'remote_socket' => 'unix:///var/run/docker.sock',
+        ];
     }
 
     /**
@@ -118,12 +81,25 @@ class DockerClient
      * @param array  $headers
      * @param string $body
      *
-     * @return RequestInterface
+     * @return DockerResult
+     * @internal param RequestInterface $request
      */
-    public function prepareRequest(string $method, string $uri, array $headers = [],
-                                   string $body = ""): RequestInterface
+    public function send(string $method, string $uri, array $headers = [],
+                         string $body = ""): DockerResult
     {
-        return $this->messageFactory->createRequest($method, $uri, $headers, $body);
+        $request = $this->messageFactory->createRequest($method, $uri, $headers, $body);
+
+        $response = $this->httpClient->sendRequest($request);
+
+        return new DockerResult($response->getBody());
+    }
+
+    /**
+     * @return string
+     */
+    public function getVersion(): string
+    {
+        return $this->version;
     }
 
 }

@@ -8,6 +8,11 @@
 
 namespace Hanaboso\PipesFramework\Commons\Docker\Serializer;
 
+/**
+ * Class Serializer
+ *
+ * @package Hanaboso\PipesFramework\Commons\Docker\Serializer
+ */
 class Serializer implements SerializerInterface
 {
 

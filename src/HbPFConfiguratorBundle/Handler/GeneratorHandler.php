@@ -11,11 +11,12 @@ namespace Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
-use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\DockerComposeCli;
-use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\Generator;
-use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\GeneratorFactory;
-use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\VolumePathDefinitionFactory;
-use InvalidArgumentException;
+use Hanaboso\PipesFramework\TopologyGenerator\Actions\DestroyTopologyActions;
+use Hanaboso\PipesFramework\TopologyGenerator\Actions\GenerateTopologyActions;
+use Hanaboso\PipesFramework\TopologyGenerator\Actions\StartTopologyActions;
+use Hanaboso\PipesFramework\TopologyGenerator\Actions\StopTopologyActions;
+use Hanaboso\PipesFramework\TopologyGenerator\Actions\TopologyActionsFactory;
+use Hanaboso\PipesFramework\TopologyGenerator\Exception\TopologyGeneratorException;
 
 /**
  * Class GeneratorHandler
@@ -38,39 +39,39 @@ class GeneratorHandler
     /**
      * @var string
      */
-    private $dstDirectory;
+    protected $dstDirectory;
 
     /**
-     * @var VolumePathDefinitionFactory
+     * @var TopologyActionsFactory
      */
-    private $volumePathDefinition;
+    protected $actionsFactory;
 
     /**
      * GeneratorHandler constructor.
      *
-     * @param DocumentManager             $dm
-     * @param string                      $dstDirectory
-     * @param string                      $network
-     * @param VolumePathDefinitionFactory $volumePathDefinition
+     * @param DocumentManager        $dm
+     * @param string                 $dstDirectory
+     * @param string                 $network
+     * @param TopologyActionsFactory $actionsFactory
      */
     public function __construct(
         DocumentManager $dm,
         string $dstDirectory,
         string $network,
-        VolumePathDefinitionFactory $volumePathDefinition
+        TopologyActionsFactory $actionsFactory
     )
     {
-        $this->dm                   = $dm;
-        $this->dstDirectory         = $dstDirectory;
-        $this->network              = $network;
-        $this->volumePathDefinition = $volumePathDefinition;
+        $this->dm             = $dm;
+        $this->dstDirectory   = $dstDirectory;
+        $this->network        = $network;
+        $this->actionsFactory = $actionsFactory;
     }
 
     /**
      * @param string $topologyId
      *
      * @return bool
-     * @throws InvalidArgumentException
+     * @throws TopologyGeneratorException
      */
     public function generateTopology(string $topologyId): bool
     {
@@ -79,48 +80,135 @@ class GeneratorHandler
             'topology' => $topologyId,
         ]);
 
-        if (!is_array($nodes) || empty($nodes)) {
-            return FALSE;
-        } else {
-            $this->generate($topology, $nodes);
+        if ($topology && !empty($nodes)) {
+            /** @var GenerateTopologyActions $actions */
+            $actions = $this->actionsFactory->getTopologyAction(TopologyActionsFactory::GENERATE);
+            $res     = $actions->generateTopology($topology, $nodes, $this->dstDirectory, $this->network);
+
+            return $res;
         }
 
-        return TRUE;
+        throw new TopologyGeneratorException(
+            sprintf('Generate topology %s failed', $topologyId),
+            TopologyGeneratorException::GENERATE_TOPOLOGY_FAILED
+        );
+    }
+
+    /**
+     * @param string $topologyId
+     *
+     * @return array|null
+     * @throws TopologyGeneratorException
+     */
+    public function runTopology(string $topologyId): ?array
+    {
+        $topology = $this->dm->getRepository(Topology::class)->find($topologyId);
+
+        if ($topology) {
+            /** @var StartTopologyActions $actions */
+            $actions = $this->actionsFactory->getTopologyAction(TopologyActionsFactory::START);
+            $res     = $actions->runTopology($topology, $this->dstDirectory);
+
+            if ($res) {
+                $dockerInfo = $actions->getTopologyInfo($topology);
+
+                //TODO: add normalizer
+                return $dockerInfo;
+            } else {
+
+                return NULL;
+            }
+        }
+
+        throw new TopologyGeneratorException(
+            sprintf('Run topology %s failed', $topologyId),
+            TopologyGeneratorException::RUN_TOPOLOGY_FAILED
+        );
+    }
+
+    /**
+     * @param string $topologyId
+     *
+     * @return array|null
+     * @throws TopologyGeneratorException
+     */
+    public function stopTopology(string $topologyId): ?array
+    {
+        $topology = $this->dm->getRepository(Topology::class)->find($topologyId);
+
+        if ($topology) {
+            /** @var StopTopologyActions $actions */
+            $actions = $this->actionsFactory->getTopologyAction(TopologyActionsFactory::STOP);
+            $res     = $actions->stopTopology($topology, $this->dstDirectory);
+
+            if ($res) {
+                $dockerInfo = $actions->getTopologyInfo($topology);
+
+                return $dockerInfo;
+            } else {
+                return NULL;
+            }
+        }
+
+        throw new TopologyGeneratorException(
+            sprintf('Stop topology %s failed', $topologyId),
+            TopologyGeneratorException::STOP_TOPOLOGY_FAILED
+        );
     }
 
     /**
      * @param string $topologyId
      *
      * @return bool
+     * @throws TopologyGeneratorException
      */
-    public function runTopology(string $topologyId): bool
+    public function destroyTopology(string $topologyId): bool
+    {
+        $topology = $this->dm->getRepository(Topology::class)->find($topologyId);
+        $nodes    = $this->dm->getRepository(Node::class)->findBy([
+            'topology' => $topologyId,
+        ]);
+
+        if ($topology && !empty($nodes)) {
+            /** @var DestroyTopologyActions $actions */
+            $actions = $this->actionsFactory->getTopologyAction(TopologyActionsFactory::DESTROY);
+            $res     = $actions->deleteTopologyDir($topology, $this->dstDirectory);
+
+            if ($res) {
+                $actions->deleteQueues($topology, $nodes);
+            }
+
+            return $res;
+        }
+
+        throw new TopologyGeneratorException(
+            sprintf('Destroy topology %s failed', $topologyId),
+            TopologyGeneratorException::TOPOLOGY_NOT_FOUND
+        );
+    }
+
+    /**
+     * @param string $topologyId
+     *
+     * @return array
+     * @throws TopologyGeneratorException
+     */
+    public function infoTopology(string $topologyId): array
     {
         $topology = $this->dm->getRepository(Topology::class)->find($topologyId);
 
         if ($topology) {
-            $dstTopologyDirectory = Generator::getTopologyDir($topology, $this->dstDirectory);
-            $cli                  = new DockerComposeCli($dstTopologyDirectory);
-            $result               = $cli->up();
+            /** @var StopTopologyActions $actions */
+            $actions    = $this->actionsFactory->getTopologyAction(TopologyActionsFactory::START);
+            $dockerInfo = $actions->getTopologyInfo($topology);
 
-            return $result;
+            return $dockerInfo;
         }
 
-        return FALSE;
-    }
-
-    /**
-     * @param Topology $topology
-     * @param Node[]   $nodes
-     */
-    protected function generate(Topology $topology, array $nodes): void
-    {
-        $dstTopologyDirectory = Generator::getTopologyDir($topology, $this->dstDirectory);
-
-        if (!file_exists($dstTopologyDirectory)) {
-            $generatorFactory = new GeneratorFactory($this->dstDirectory, $this->network, $this->volumePathDefinition);
-            $generator        = $generatorFactory->create();
-            $generator->generate($topology, $nodes);
-        }
+        throw new TopologyGeneratorException(
+            sprintf('Topology %s not found', $topologyId),
+            TopologyGeneratorException::TOPOLOGY_NOT_FOUND
+        );
     }
 
     /**
