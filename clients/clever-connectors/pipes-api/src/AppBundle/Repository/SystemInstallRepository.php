@@ -5,7 +5,6 @@ namespace CleverConnectors\AppBundle\Repository;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use DateTime;
 use DateTimeZone;
-use Doctrine\Common\Collections\Criteria;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use Hanaboso\PipesFramework\Commons\Crypt\CryptManager;
 use LogicException;
@@ -71,15 +70,15 @@ class SystemInstallRepository extends DocumentRepository
      */
     public function findBeforeExpiration(DateTime $dateTime): array
     {
-        $criteria = new Criteria();
-        $criteria->where(
-            $criteria->expr()->andX(
-                $criteria->expr()->neq('expires', NULL),
-                $criteria->expr()->lte('expires', $dateTime)
-            )
-        );
+        $query = $this->createQueryBuilder()->find()
+            ->field('expires')->notEqual(NULL)
+            ->field('expires')->lte($dateTime)
+            ->getQueryArray();
 
-        return $this->matching($criteria)->toArray();
+        $cursor = $this->dm->getDocumentCollection($this->getClassName())
+            ->find($query);
+
+        return $cursor->toArray();
     }
 
 }

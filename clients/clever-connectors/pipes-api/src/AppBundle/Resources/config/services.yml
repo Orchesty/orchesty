@@ -157,7 +157,7 @@ services:
         class: CleverConnectors\AppBundle\Model\CustomNode\TokenMessageGenerator
         arguments:
             - '@jms_serializer.serializer'
-            - '%kernel.project_dir%'
+            - '@clever_connector.async_command_factory'
         calls:
             - [setLogger, ['@monolog.logger.rabbit-mq']]
 

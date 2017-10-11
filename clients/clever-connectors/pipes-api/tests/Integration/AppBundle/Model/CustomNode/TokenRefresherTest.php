@@ -8,8 +8,7 @@ use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use DateTime;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
-use JMS\Serializer\Serializer;
-use JMS\Serializer\SerializerBuilder;
+use MongoDB\BSON\ObjectID;
 use Tests\DatabaseTestCaseAbstract;
 
 /**
@@ -31,20 +30,14 @@ final class TokenRefresherTest extends DatabaseTestCaseAbstract
     private $repo;
 
     /**
-     * @var Serializer
-     */
-    private $serializer;
-
-    /**
      *
      */
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->node       = $this->container->get('hbpf.custom_node.token-refresher');
-        $this->repo       = $this->dm->getRepository(SystemInstall::class);
-        $this->serializer = SerializerBuilder::create()->build();
+        $this->node = $this->container->get('hbpf.custom_node.token-refresher');
+        $this->repo = $this->dm->getRepository(SystemInstall::class);
     }
 
     /**
@@ -64,8 +57,12 @@ final class TokenRefresherTest extends DatabaseTestCaseAbstract
 
         $this->persistAndFlush($systemInstall);
 
+        $system = $this
+            ->dm->getDocumentCollection(SystemInstall::class)
+            ->findOne(['_id' => new ObjectID($systemInstall->getId())]);
+
         $dto = new ProcessDto();
-        $dto->setData($this->serializer->serialize($systemInstall, 'json'));
+        $dto->setData(json_encode(['data' => $system]));
 
         $result = $this->node->process($dto);
 
@@ -91,8 +88,12 @@ final class TokenRefresherTest extends DatabaseTestCaseAbstract
 
         $this->persistAndFlush($systemInstall);
 
+        $system = $this
+            ->dm->getDocumentCollection(SystemInstall::class)
+            ->findOne(['_id' => new ObjectID($systemInstall->getId())]);
+
         $dto = new ProcessDto();
-        $dto->setData($this->serializer->serialize($systemInstall, 'json'));
+        $dto->setData(json_encode(['data' => $system]));
 
         $result = $this->node->process($dto);
 

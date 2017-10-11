@@ -147,7 +147,8 @@ class TokenMessageGenerator implements BatchInterface, CustomNodeInterface
     {
         $this->logger->info('Start finding system installs by expires');
 
-        return $this->asyncCommandFactory->create($loop, 'react:get-installs-by-expires');
+        return $this->asyncCommandFactory
+            ->create($loop, 'react:get-installs-before-expiration');
     }
 
     /**
