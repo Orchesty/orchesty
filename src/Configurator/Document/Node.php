@@ -7,6 +7,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations\Index;
 use Doctrine\ODM\MongoDB\PersistentCollection;
 use Hanaboso\PipesFramework\Commons\Enum\HandlerEnum;
 use Hanaboso\PipesFramework\Commons\Enum\TypeEnum;
+use Hanaboso\PipesFramework\Commons\Traits\Document\DeletedTrait;
 use Hanaboso\PipesFramework\Commons\Traits\Document\IdTrait;
 use Hanaboso\PipesFramework\Configurator\Document\Embed\EmbedNode;
 use Hanaboso\PipesFramework\Configurator\Exception\NodeException;
@@ -22,6 +23,7 @@ class Node
 {
 
     use IdTrait;
+    use DeletedTrait;
 
     /**
      * @var string
