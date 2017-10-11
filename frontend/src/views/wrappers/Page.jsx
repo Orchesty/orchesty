@@ -23,13 +23,13 @@ export default (WrappedComponent, PageHeader) => {
 
     render() {
       const {pageActions} = this.state;
-      const {...passProps} = this.props;
+      const {pageTitle, pageSubtitle, ...passProps} = this.props;
 
-      let pageTitle = null;
+      let header = null;
       if (PageHeader || pageActions) {
-        pageTitle = typeof PageHeader == 'function' ? <PageHeader actions={pageActions}/> : (
+        header = typeof PageHeader == 'function' ? <PageHeader actions={pageActions}/> : (
           <div className="page-title">
-            <div className="title_left"><h3>{PageHeader}</h3></div>
+            <div className="title_left"><h3>{pageTitle || PageHeader} {pageSubtitle && <small>{pageSubtitle}</small>}</h3></div>
             <div className="title_right">
               <div className="pull-right">
                 <ActionButtonPanel items={pageActions} size="md" right={true}/>
@@ -42,7 +42,7 @@ export default (WrappedComponent, PageHeader) => {
       return (
         <div className="right_col" role="main">
           <div className="main-page">
-            {pageTitle}
+            {header}
             <div className="page-content">
               <WrappedComponent setActions={this.setActions} {...passProps} />
             </div>

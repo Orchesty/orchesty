@@ -48,7 +48,7 @@ class TopologyNodeListTable extends React.Component{
           this.setState({topologyState: stateType.SUCCESS});
         });
       }
-    } else {
+    } else if (this.state.topologyState != stateType.SUCCESS) {
       this.setState({topologyState: stateType.SUCCESS});
     }
   }
@@ -59,8 +59,9 @@ class TopologyNodeListTable extends React.Component{
   }
 
   render(){
-    const {listState, ...passProps} = this.props;
-    return <NodeListTable notLoadedCallback={this.needData} state={stateMerge([listState, this.state.topologyState])} {...passProps} />
+    const {listState, needTopology, ...passProps} = this.props;
+    const state = stateMerge([listState, this.state.topologyState]);
+    return <NodeListTable notLoadedCallback={this.needData} state={state} {...passProps} />
   }
 }
 
