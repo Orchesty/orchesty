@@ -10,6 +10,7 @@ import BoolValue from 'elements/BoolValue';
 import SortTh from 'elements/table/SortTh';
 import ActionButtonPanel from 'elements/actions/ActionButtonPanel';
 import ListPagination from 'elements/table/ListPagination';
+import TopologyListFilter from './TopologyListFilter';
 
 class TopologyListTable extends React.Component {
   constructor(props) {
@@ -111,6 +112,7 @@ class TopologyListTable extends React.Component {
 
     return (
       <div className="topology-list-table">
+        <TopologyListFilter />
         <table className="table table-hover">
           <thead>
           {this._renderHead()}

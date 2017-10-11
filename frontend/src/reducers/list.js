@@ -27,9 +27,13 @@ function listReducer(state, action, getElementId) {
       });
 
     case types.LIST_CHANGE_SORT:
-      return Object.assign({}, state, {
+      const newData = {
         sort: action.sort
-      });
+      };
+      if (state.type == listType.PAGINATION && state.page != 0){
+        newData['page'] = 0;
+      }
+      return Object.assign({}, state, newData);
 
     case types.LIST_CHANGE_PAGE:
       return Object.assign({}, state, {
