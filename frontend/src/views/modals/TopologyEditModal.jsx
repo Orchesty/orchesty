@@ -47,7 +47,7 @@ class TopologyEditModal extends React.Component {
           <div className="modal-content">
             <div className="modal-header">
               <button type="button" className="close" onClick={this.closeClick}><span aria-hidden="true">×</span></button>
-              <h4 className="modal-title" id="myModalLabel">Topology edit</h4>
+              <h4 className="modal-title" id="myModalLabel">{(addNew ? 'New' : 'Edit') + ' topology'}</h4>
             </div>
             <div className="modal-body">
               <TopologyForm
