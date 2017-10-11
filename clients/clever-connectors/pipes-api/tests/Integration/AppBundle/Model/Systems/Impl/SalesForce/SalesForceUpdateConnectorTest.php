@@ -52,7 +52,7 @@ final class SalesForceUpdateConnectorTest extends DatabaseTestCaseAbstract
         $dtoData = [
             'data' => [
                 'system_install' => [
-                    'id'                => $system->getId(),
+                    '_id'               => $system->getId(),
                     'user'              => $system->getUser(),
                     'token'             => $system->getToken(),
                     'system'            => $system->getSystem(),
@@ -73,7 +73,7 @@ final class SalesForceUpdateConnectorTest extends DatabaseTestCaseAbstract
             function (): void {
                 $this->assertTrue(TRUE);
             },
-            function ($e): void {
+            function (): void {
                 $this->assertTrue(FALSE);
             }
         )->done();

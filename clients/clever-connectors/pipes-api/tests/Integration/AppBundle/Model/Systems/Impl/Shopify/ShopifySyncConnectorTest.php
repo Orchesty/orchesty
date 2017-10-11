@@ -47,7 +47,7 @@ class ShopifySyncConnectorTest extends DatabaseTestCaseAbstract
         $dtoData = [
             'data' => [
                 'system_install' => [
-                    'id'                => $system->getId(),
+                    '_id'               => $system->getId(),
                     'user'              => $system->getUser(),
                     'token'             => $system->getToken(),
                     'system'            => $system->getSystem(),
