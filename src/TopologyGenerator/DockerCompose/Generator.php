@@ -95,8 +95,15 @@ class Generator implements GeneratorInterface
         $config['id'] = GeneratorUtils::normalizeName($topology->getId(), $topology->getName());
 
         foreach ($nodes as $node) {
-            $nodeConfig           = [];
-            $nodeConfig['id']     = GeneratorUtils::normalizeName($node->getId(), $node->getName());
+            $nodeFullId = GeneratorUtils::normalizeName($node->getId(), $node->getName());
+
+            $nodeConfig          = [];
+            $nodeConfig['id']    = $nodeFullId;
+            $nodeConfig['label'] = [
+                'id'        => $nodeFullId,
+                'node_id'   => $node->getId(),
+                'node_name' => $node->getName(),
+            ];
             $nodeConfig['worker'] = $this->getWorkerConfig($node);
             $nodeConfig['next']   = [];
             foreach ($node->getNext() as $next) {
@@ -257,7 +264,6 @@ class Generator implements GeneratorInterface
         return [
             'type'     => 'splitter.amqprpc',
             'settings' => [
-                'node_name'     => $node->getName(),
                 'publish_queue' => [
                     'name'    => $node->getType(),
                     'options' => NULL,
