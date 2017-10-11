@@ -12,6 +12,7 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\Shopify;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
+use CleverConnectors\AppBundle\Utils\CronUtils;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use GuzzleHttp\Psr7\Request;
@@ -98,10 +99,8 @@ class ShopifySyncConnector implements BatchInterface, ConnectorInterface
      */
     public function processBatch(ProcessDto $dto, LoopInterface $loop, callable $callbackItem): PromiseInterface
     {
-
         $browser       = $this->factory->create($loop);
-        $data          = $this->getParsedData($dto);
-        $systemInstall = $this->getSystemInstall($data);
+        $systemInstall = CronUtils::getSystemInstall($dto);
         $requestDto    = $this->system->getRequestDto($systemInstall, 'GET');
         $baseUrl       = (string) $requestDto->getUri();
         $headers       = $requestDto->getHeaders();
@@ -121,33 +120,6 @@ class ShopifySyncConnector implements BatchInterface, ConnectorInterface
         $this->systemInstallRepository->setSyncTime($systemInstall);
 
         return $promise;
-    }
-
-    /**
-     * @param array $data
-     *
-     * @return SystemInstall
-     * @throws SystemException
-     */
-    protected function getSystemInstall(array $data): SystemInstall
-    {
-        if (!array_key_exists('system_install', $data)) {
-            throw new SystemException('Missing [system_install] in data.', SystemException::MISSING_DATA);
-        }
-
-        return SystemInstall::from($data['system_install']);
-    }
-
-    /**
-     * @param ProcessDto $dto
-     *
-     * @return array
-     */
-    protected function getParsedData(ProcessDto $dto): array
-    {
-        $data = json_decode($dto->getData(), TRUE);
-
-        return $data['data'] ?? $data;
     }
 
     /**

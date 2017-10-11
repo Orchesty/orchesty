@@ -2,7 +2,6 @@
 
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce;
 
-use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\LastSync\LastSyncManager;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use DateTime;
@@ -125,33 +124,6 @@ abstract class SalesForceConnectorAbstract implements BatchInterface, ConnectorI
     protected function fetchData(CurlSender $sender, RequestInterface $request): PromiseInterface
     {
         return $sender->send($request);
-    }
-
-    /**
-     * @param array $data
-     *
-     * @return SystemInstall
-     * @throws SystemException
-     */
-    protected function getSystemInstall(array $data): SystemInstall
-    {
-        if (!array_key_exists('system_install', $data)) {
-            throw new SystemException('Missing [system_install] in data.', SystemException::MISSING_DATA);
-        }
-
-        return SystemInstall::from($data['system_install']);
-    }
-
-    /**
-     * @param ProcessDto $dto
-     *
-     * @return array
-     */
-    protected function getParsedData(ProcessDto $dto): array
-    {
-        $data = json_decode($dto->getData(), TRUE);
-
-        return $data['data'] ?? $data;
     }
 
     /**
