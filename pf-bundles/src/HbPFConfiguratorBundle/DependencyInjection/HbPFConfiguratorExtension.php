@@ -28,10 +28,16 @@ class HbPFConfiguratorExtension extends Extension implements PrependExtensionInt
             throw new RuntimeException('You must register HbPFCommonsBundle before.');
         };
 
+        if (!$container->hasExtension('rabbit-mq')) {
+            throw new RuntimeException('You must register HbPFRabbitMqBundle before.');
+        };
+
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/prepend-config'));
         $loader->load('parameters.yml');
         $loader->load('starting-point.yml');
         $loader->load('doctrine_mongo.yml');
+        $loader->load('snc_redis.yml');
+        $loader->load('rabbit_mq.yml');
 
         $container->setParameter('src_dir', __DIR__ . '/../..');
     }
