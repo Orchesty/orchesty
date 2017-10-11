@@ -108,9 +108,18 @@ class TopologyManager
      * @param Topology $topology
      *
      * @return Topology
+     * @throws TopologyException
      */
     public function publishTopology(Topology $topology): Topology
     {
+        $nodes = $this->dm->getRepository(Node::class)->findBy(['topology' => $topology->getId()]);
+        if (empty($nodes)) {
+            throw new TopologyException(
+                'Topology has no nodes.',
+                TopologyException::TOPOLOGY_HAS_NO_NODES
+            );
+        }
+
         $topology->setVisibility(TopologyStatusEnum::PUBLIC);
         $this->dm->flush();
 

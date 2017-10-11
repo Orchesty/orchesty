@@ -20,5 +20,6 @@ class TopologyException extends PipesFrameworkException
     public const TOPOLOGY_NODE_NAME_NOT_FOUND  = self::OFFSET + 4;
     public const TOPOLOGY_NODE_TYPE_NOT_FOUND  = self::OFFSET + 5;
     public const TOPOLOGY_NODE_TYPE_NOT_EXIST  = self::OFFSET + 6;
+    public const TOPOLOGY_HAS_NO_NODES         = self::OFFSET + 7;
 
 }
