@@ -80,9 +80,38 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     {
         $top = new Topology();
         $top->setName('asd')->setVisibility(TopologyStatusEnum::DRAFT);
+
+        $this->dm->persist($top);
+
+        $node = new Node();
+        $node
+            ->setName('abc')
+            ->setType(TypeEnum::CONNECTOR)
+            ->setTopology($top->getId());
+
+        $this->dm->persist($node);
+        $this->dm->flush();
+
         /** @var Topology $res */
         $res = $this->container->get('hbpf.configurator.manager.topology')->publishTopology($top);
         self::assertEquals(TopologyStatusEnum::PUBLIC, $res->getVisibility());
+    }
+
+    /**
+     *
+     */
+    public function testPublishTopologyNoNodes(): void
+    {
+        $top = new Topology();
+        $top->setName('asd')->setVisibility(TopologyStatusEnum::DRAFT);
+
+        $this->dm->persist($top);
+        $this->dm->flush();
+
+        self::expectException(TopologyException::class);
+        self::expectExceptionCode(TopologyException::TOPOLOGY_HAS_NO_NODES);
+
+        $this->container->get('hbpf.configurator.manager.topology')->publishTopology($top);
     }
 
     /**
