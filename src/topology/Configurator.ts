@@ -16,11 +16,19 @@ export interface IDrainConfig {
     settings: any;
 }
 
+export interface INodeLabel {
+    id: string; // unique id combining node_id and node_name
+    node_id: string; // uuid of the node
+    node_name: string; // human readable name of the node
+}
+
 export interface INodeConfigSkeleton {
     // mandatory fields
     id: string;
-    next: string[];
+    next: string[]; // list of ids
+
     // optional fields - will be filled by defaults if not present
+    label?: INodeLabel;
     worker?: IWorkerConfig;
     faucet?: IFaucetConfig;
     drain?: IDrainConfig;
@@ -34,6 +42,7 @@ export interface INodeConfigSkeleton {
 
 export interface INodeConfig {
     id: string;
+    label: INodeLabel;
     next: string[];
     worker: IWorkerConfig;
     faucet: IFaucetConfig;
@@ -100,20 +109,21 @@ class Configurator {
         isInitial: boolean = false,
     ): INodeConfig {
         const defaults: INodeConfig = Defaults.getNodeConfigDefaults(topoId, nodeSkeleton);
+        const isResequencer = nodeSkeleton.resequencer || defaults.resequencer;
 
         const faucetSettings = nodeSkeleton.faucet || defaults.faucet;
-        faucetSettings.settings.node_id = nodeSkeleton.id;
-
         const workerSettings = nodeSkeleton.worker || defaults.worker;
-        workerSettings.settings.node_id = nodeSkeleton.id;
-
-        const isResequencer = nodeSkeleton.resequencer || defaults.resequencer;
         const drainSettings = nodeSkeleton.drain || defaults.drain;
         drainSettings.settings.resequencer = isResequencer;
-        drainSettings.settings.node_id = nodeSkeleton.id;
+
+        // add label to all node parts
+        faucetSettings.settings.node_label = nodeSkeleton.label || defaults.label;
+        workerSettings.settings.node_label = nodeSkeleton.label || defaults.label;
+        drainSettings.settings.node_label = nodeSkeleton.label || defaults.label;
 
         return {
             id: nodeSkeleton.id,
+            label: defaults.label,
             next: nodeSkeleton.next,
             worker: workerSettings,
             faucet: faucetSettings,

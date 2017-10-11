@@ -3,9 +3,10 @@ import Connection from "lib-nodejs/dist/src/rabbitmq/Connection";
 import logger from "../../logger/Logger";
 import Consumer from "./amqp/AMQPConsumer";
 import IFaucet, {FaucetProcessMsgFn} from "./IFaucet";
+import {INodeLabel} from "../../topology/Configurator";
 
 export interface IAmqpFaucetSettings {
-    node_id: string;
+    node_label: INodeLabel;
     exchange: {
         name: string,
         type: string,
@@ -46,7 +47,7 @@ class AmqpFaucet implements IFaucet {
 
         logger.info(
             `AmqpFaucet input to be configured to read from "${this.settings.queue.name}"`,
-            { node_id: this.settings.node_id},
+            { node_id: this.settings.node_label.id},
         );
 
         const prepareFn = (ch: Channel) => {
@@ -72,13 +73,13 @@ class AmqpFaucet implements IFaucet {
             });
         };
 
-        this.consumer = new Consumer(this.settings.node_id, this.connection, prepareFn, processData);
+        this.consumer = new Consumer(this.settings.node_label.id, this.connection, prepareFn, processData);
 
         return this.consumer.consume(this.settings.queue.name, {})
             .then(() => {
                 logger.info(
                     `AmqpFaucet started consumption of "${this.settings.queue.name}"`,
-                    { node_id: this.settings.node_id},
+                    { node_id: this.settings.node_label.id},
                 );
             });
     }

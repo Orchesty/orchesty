@@ -7,12 +7,12 @@ import ObjectUtils from "lib-nodejs/dist/src/utils/ObjectUtils";
 import logger from "../../logger/Logger";
 import JobMessage from "../../message/JobMessage";
 import {ResultCode} from "../../message/ResultCode";
+import {INodeLabel} from "../../topology/Configurator";
 import IPartialForwarder from "../drain/IPartialForwarder";
 import IWorker from "./IWorker";
 
 export interface IAmqpRpcWorkerSettings {
-    node_id: string;
-    node_name: string;
+    node_label: INodeLabel;
     publish_queue: {
         name: string;
         options: any;
@@ -91,7 +91,7 @@ class AmqpRpcWorker implements IWorker {
             .then(() => {
                 logger.info(
                     `Worker[type='amqprpc'] consuming ${this.resultsQueue.name}`,
-                    { node_id: this.settings.node_id},
+                    { node_id: this.settings.node_label.id},
                 );
             });
     }
@@ -111,8 +111,8 @@ class AmqpRpcWorker implements IWorker {
                 replyTo: this.resultsQueue.name,
                 correlationId: msg.getCorrelationId(),
                 headers: {
-                    node_id: this.settings.node_id,
-                    node_name: this.settings.node_name,
+                    node_id: this.settings.node_label.id,
+                    node_name: this.settings.node_label.node_name,
                     correlation_id: msg.getCorrelationId(),
                     process_id: msg.getProcessId(),
                     parent_id: msg.getParentId(),
@@ -160,7 +160,7 @@ class AmqpRpcWorker implements IWorker {
                 }
             };
 
-            const jobMsg = new JobMessage(this.settings.node_id, testId, testId, "", 1, {}, new Buffer(""));
+            const jobMsg = new JobMessage(this.settings.node_label.id, testId, testId, "", 1, {}, new Buffer(""));
             const t: IWaiting = { resolveFn: resolveTestFn, message: jobMsg, sequence: 0 };
             this.waiting.set(testId, t);
 
@@ -172,10 +172,12 @@ class AmqpRpcWorker implements IWorker {
                     correlationId: testId,
                     replyTo: this.resultsQueue.name,
                     headers: {
-                        node_id: this.settings.node_id,
-                        node_name: testId,
-                        process_id: testId,
+                        node_id: this.settings.node_label.node_id,
+                        node_name: this.settings.node_label.node_name,
                         correlation_id: testId,
+                        process_id: testId,
+                        parent_id: "",
+                        sequence_id: "1",
                     },
                 },
             );
@@ -193,7 +195,7 @@ class AmqpRpcWorker implements IWorker {
         if (!this.waiting.has(corrId)) {
             logger.warn(
                 `Worker[type='amqprpc'] received result with unknown corrId`,
-                { node_id: this.settings.node_id, correlation_id: corrId },
+                { node_id: this.settings.node_label.id, correlation_id: corrId },
             );
 
             return;
@@ -212,7 +214,7 @@ class AmqpRpcWorker implements IWorker {
             default:
                 logger.warn(
                     `Worker[type='amqprpc'] received result of unknown type: ${msg.properties.type}`,
-                    { node_id: this.settings.node_id, correlation_id: corrId },
+                    { node_id: this.settings.node_label.id, correlation_id: corrId },
                 );
         }
     }
@@ -236,15 +238,14 @@ class AmqpRpcWorker implements IWorker {
         );
 
         const splitMsg = new JobMessage(
-            this.settings.node_id,
+            this.settings.node_label.id,
             stored.message.getCorrelationId(),
             stored.message.getProcessId(),
             stored.message.getParentId(),
             stored.sequence,
             headers,
             new Buffer(JSON.stringify({ data: newContent.data, settings: origContent.settings})),
-
-            { code: ResultCode.SUCCESS, message: `Part ${stored.sequence}` },
+            { code: ResultCode.SUCCESS, message: `Part ${stored.sequence}` }, // TODO - unhardcode?
         );
 
         stored.message.setMultiplier(stored.message.getMultiplier() + 1);

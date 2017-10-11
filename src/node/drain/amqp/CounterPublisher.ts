@@ -42,7 +42,7 @@ class CounterPublisher extends Publisher {
      */
     public send(message: JobMessage): Promise<void> {
         const resMsg = new CounterMessage(
-            this.settings.node_id,
+            this.settings.node_label.id,
             message.getCorrelationId(),
             message.getProcessId(),
             message.getParentId(),
@@ -57,7 +57,7 @@ class CounterPublisher extends Publisher {
             headers: resMsg.getHeaders(),
             type: "counter_message",
             timestamp: Date.now(),
-            appId: this.settings.node_id,
+            appId: this.settings.node_label.id,
         };
 
         return this.sendToQueue(

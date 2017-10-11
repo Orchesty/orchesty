@@ -1,6 +1,7 @@
 import logger from "../../logger/Logger";
 import JobMessage from "../../message/JobMessage";
 import {ResultCode} from "../../message/ResultCode";
+import {INodeLabel} from "../../topology/Configurator";
 import IPartialForwarder from "../drain/IPartialForwarder";
 import IWorker from "./IWorker";
 
@@ -10,7 +11,7 @@ interface IJsonMessageFormat {
 }
 
 export interface ISplitterWorkerSettings {
-    node_id: string;
+    node_label: INodeLabel;
 }
 
 /**
@@ -120,7 +121,7 @@ class SplitterWorker implements IWorker {
                 settings: content.settings,
             };
             const splitMsg = new JobMessage(
-                this.settings.node_id,
+                this.settings.node_label.id,
                 msg.getCorrelationId(),
                 msg.getProcessId(),
                 msg.getParentId(),

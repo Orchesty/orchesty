@@ -7,7 +7,7 @@ import IPartialForwarder from "../../../src/node/drain/IPartialForwarder";
 import SplitterWorker, {ISplitterWorkerSettings} from "../../../src/node/worker/SplitterWorker";
 
 const settings: ISplitterWorkerSettings = {
-    node_id: "someId",
+    node_label: { id: "someId", node_id: "507f191e810c19729de860ea", node_name: "splitter" },
 };
 
 describe("Splitter worker", () => {
