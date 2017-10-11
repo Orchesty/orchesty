@@ -75,7 +75,7 @@ function reducer(state = initialState, action){
 }
 
 export default (state = initialState, action) => {
-  if (action.type == types.USER_LOGOUT){
+  if (action.type == types.USER_LOGOUT || action.type == types.USER_LOGGED){
     return initialState;
   }
 
