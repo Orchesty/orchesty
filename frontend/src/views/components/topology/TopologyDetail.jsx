@@ -1,5 +1,10 @@
 import React from 'react'
 import PropTypes from 'prop-types';
+import {connect} from 'react-redux';
+
+import processes from 'rootApp/enums/processes';
+import * as topologyActions from 'rootApp/actions/topologyActions';
+import * as applicationActions from 'rootApp/actions/applicationActions';
 
 import TabBar from 'elements/tab/TabBar';
 import TopologyNodeListTable from 'components/node/TopologyNodeListTable';
@@ -28,19 +33,54 @@ class TopologyDetail extends React.Component {
     }
   }
 
-  setActions(tab, actions){
-    const {activeTab, setActions} = this.props;
-    this._actions[tab] = actions;
-    if (tab == activeTab){
-      setActions(actions);
-    }
+  componentWillMount(){
+    this._sendActions();
   }
 
-  componentWillReceiveProps(nextProps){
-    const {activeTab, setActions} = this.props;
-    if (activeTab != nextProps.activeTab){
-      setActions(this._actions[nextProps.activeTab]);
+  setActions(tab, actions){
+    this._actions[tab] = actions;
+    this._sendActions();
+  }
+
+  _sendActions(){
+    const {topology, setActions, testTopology, edit, clone, publish, topologyDelete, topologyId} = this.props;
+    const pageActions = [];
+    if (edit){
+      pageActions.push({caption: 'Edit', action: edit});
     }
+    if (clone){
+      pageActions.push({
+        caption: 'Clone',
+        processId: processes.topologyClone(topologyId),
+        action: clone
+      })
+    }
+    if (publish){
+      pageActions.push({
+        caption: 'Publish',
+        action: publish,
+        processId: processes.topologyPublish(topologyId),
+        disabled: topology.visibility == 'public'
+      });
+    }
+    if (testTopology) {
+      pageActions.push({
+        caption: 'Test topology',
+        action: testTopology,
+        processId: processes.topologyTest(topologyId)
+      });
+    }
+    if (topologyDelete){
+      pageActions.push({
+        caption: 'Delete',
+        processId: processes.topologyDelete(topologyId),
+        action: topologyDelete
+      });
+    }
+    if (this._actions['schema']){
+      pageActions.push(...this._actions['schema']);
+    }
+    setActions(pageActions);
   }
 
   changeTab(tab, index){
@@ -69,10 +109,28 @@ TopologyDetail.defaultProps = {
 
 TopologyDetail.propTypes = {
   topologyId: PropTypes.string.isRequired,
+  topology: PropTypes.object.isRequired,
   activeTab: PropTypes.oneOf(tabItems.map(tab => tab.id)).isRequired,
   onChangeTab: PropTypes.func.isRequired,
   setActions: PropTypes.func.isRequired,
-  onChangeTopology: PropTypes.func.isRequired
+  onChangeTopology: PropTypes.func.isRequired,
+  testTopology: PropTypes.func
 };
 
-export default TopologyDetail;
+function mapStateToProps(state, ownProps) {
+  return {
+  }
+}
+
+function mapActionsToProps(dispatch, ownProps){
+  const {topologyId} = ownProps;
+  return {
+    edit: () => dispatch(applicationActions.openModal('topology_edit', {topologyId})),
+    testTopology: () => dispatch(topologyActions.testTopology(ownProps.topologyId)),
+    clone: () => dispatch(topologyActions.cloneTopology(topologyId)),
+    topologyDelete: () => dispatch(topologyActions.topologyDelete(topologyId, true)),
+    publish: () => dispatch(topologyActions.publishTopology(topologyId))
+  }
+}
+
+export default connect(mapStateToProps, mapActionsToProps)(TopologyDetail);

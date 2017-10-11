@@ -17,7 +17,8 @@ function mapStateToProps(state, ownProps) {
   return {
     state: topologyEntity ? stateType.SUCCESS : process[processes.topologyLoad(ownProps.topologyId)],
     pageTitle: topologyEntity ? `${topologyEntity.name} - ${topologyEntity.version}` : null,
-    pageSubtitle: topologyEntity ? topologyEntity.descr : null
+    pageSubtitle: topologyEntity ? topologyEntity.descr : null,
+    topology: topologyEntity
   }
 }
 
