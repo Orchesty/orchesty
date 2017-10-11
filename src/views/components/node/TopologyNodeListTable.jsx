@@ -1,7 +1,6 @@
 import React from 'react';
 import {connect} from 'react-redux';
 
-import processes from 'enums/processes';
 import * as nodeActions from 'actions/nodeActions';
 import * as topologyActions from 'actions/topologyActions';
 import * as applicationActions from 'actions/applicationActions';
@@ -15,27 +14,6 @@ class TopologyNodeListTable extends React.Component{
     super(props);
     this.state = {topologyState: stateType.NOT_LOADED};
     this.needData = this.needData.bind(this);
-  }
-
-  componentWillMount(){
-    this._sendActions();
-  }
-
-  componentWillUnmount() {
-    this.props.setActions(null);
-  }
-
-  _sendActions(){
-    const {setActions, testTopology, topologyId} = this.props;
-    const pageActions = [];
-    if (testTopology) {
-      pageActions.push({
-        caption: 'Test topology',
-        action: testTopology,
-        processId: processes.topologyTest(topologyId)
-      });
-    }
-    setActions(pageActions);
   }
 
   _needTopology(){
@@ -86,7 +64,6 @@ function mapActionsToProps(dispatch, ownProps){
     needTopology: forced => dispatch(topologyActions.needTopology(ownProps.topologyId, forced)),
     updateNode: (id, data) => dispatch(nodeActions.nodeUpdate(id, data)),
     runNode: id => dispatch(applicationActions.openModal('node_run', {nodeId: id})),
-    testTopology: () => dispatch(topologyActions.testTopology(ownProps.topologyId))
   }
 }
 
