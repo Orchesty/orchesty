@@ -9,7 +9,7 @@
 namespace Hanaboso\PipesFramework\Commons\Docker;
 
 use Hanaboso\PipesFramework\Commons\Docker\Endpoint\Containers;
-use Http\Client\HttpClient;
+use Hanaboso\PipesFramework\Commons\Docker\Endpoint\EndpointAbstract;
 use Symfony\Component\Intl\Exception\NotImplementedException;
 
 /**
@@ -40,10 +40,10 @@ class Docker
     /**
      * @param string $endpoint
      *
-     * @return Containers
+     * @return EndpointAbstract
      * @throws NotImplementedException
      */
-    public function getEndpoint(string $endpoint): Containers
+    public function getEndpoint(string $endpoint): EndpointAbstract
     {
         if ($endpoint == self::COINTAINERS) {
             return new Containers($this->client);
