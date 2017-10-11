@@ -1,7 +1,7 @@
 {
   "name": "hanaboso/pipes-framework",
   "description": "PipesFramework for Symfony",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "autoload": {
     "psr-4": {
       "Hanaboso\\PipesFramework\\": "src/",
@@ -35,12 +35,11 @@
     "symfony/swiftmailer-bundle": "^3.0",
     "symfony/symfony": "^3.3",
     "snc/redis-bundle": "2.x-dev",
-    "predis/predis": "^1.0"
+    "predis/predis": "^1.1"
   },
   "require-dev": {
     "pipes/php-check-utils": "^1.0",
-    "sensio/framework-extra-bundle": "^3.0",
-    "mockery/mockery": "^0.9.9"
+    "sensio/framework-extra-bundle": "^3.0"
   },
   "repositories": [
     {
