@@ -9,7 +9,7 @@
 
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce;
 
-use DateTime;
+use CleverConnectors\AppBundle\Utils\CronUtils;
 use GuzzleHttp\Psr7\Request;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Psr\Http\Message\RequestInterface;
@@ -38,17 +38,16 @@ class SalesForceUpdateConnector extends SalesForceConnectorAbstract
     public function processBatch(ProcessDto $dto, LoopInterface $loop, callable $callbackItem): PromiseInterface
     {
         $browser       = $this->factory->create($loop);
-        $data          = $this->getParsedData($dto);
-        $systemInstall = $this->getSystemInstall($data);
+        $data          = CronUtils::parseData($dto);
+        $systemInstall = CronUtils::getSystemInstall($dto);
         $requestDto    = $this->system->getRequestDto($systemInstall, 'GET');
         $baseUrl       = (string) $requestDto->getUri();
         $headers       = $requestDto->getHeaders();
 
-        $lastSync  = $this->lastSyncManager->getLastSync($data, $systemInstall, self::NODE_NAME);
-        $startTime = $lastSync ? $lastSync->getTimestamp() : NULL;
-        $endTime   = new DateTime('now');
+        $lastSync = $this->lastSyncManager->getLastSync($data, $systemInstall, self::NODE_NAME);
+        $times    = CronUtils::getTimes($lastSync);
 
-        $timeQuery = $this->getTimeQuery($startTime, $endTime);
+        $timeQuery = $this->getTimeQuery($times->getStart(), $times->getEnd());
         $countReq  = $this->createCountRequest($baseUrl, $headers, $timeQuery);
 
         $promise = $this->fetchData($browser, $countReq)
@@ -62,7 +61,7 @@ class SalesForceUpdateConnector extends SalesForceConnectorAbstract
                 }
             );
 
-        $lastSync->setTimestamp($endTime);
+        $lastSync->setTimestamp($times->getEnd());
         $this->lastSyncManager->updateLastSync($lastSync);
 
         return $promise;
@@ -83,10 +82,12 @@ class SalesForceUpdateConnector extends SalesForceConnectorAbstract
         string $timeQuery
     ): RequestInterface
     {
-        $query = sprintf('select+email,+firstname,+lastname+from+contact%s+limit+%s+offset+%s',
+        $query = sprintf(
+            'select+email,+firstname,+lastname+from+contact%s+limit+%s+offset+%s',
             $timeQuery,
             self::PAGE_LIMIT,
-            self::PAGE_LIMIT * $page);
+            self::PAGE_LIMIT * $page
+        );
 
         return new Request('GET', sprintf(self::QUERY_URL, $baseUrl, $query), $headers);
     }
