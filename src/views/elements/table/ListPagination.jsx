@@ -31,7 +31,7 @@ class ListPagination extends React.Component {
               pageCount={pageCount}
               pageRangeDisplayed={5}
               marginPagesDisplayed={1}
-              initialPage={page}
+              forcePage={page}
               onPageChange={this._pageChange}
               containerClassName="pagination pull-right"
               activeClassName="active"
