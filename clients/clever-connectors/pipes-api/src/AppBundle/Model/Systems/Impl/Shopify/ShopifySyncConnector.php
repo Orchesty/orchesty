@@ -19,6 +19,7 @@ use GuzzleHttp\Psr7\Request;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSender;
 use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSenderFactory;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\BatchInterface;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
@@ -91,6 +92,14 @@ class ShopifySyncConnector implements BatchInterface, ConnectorInterface
     }
 
     /**
+     * @return string
+     */
+    public function getId(): string
+    {
+        return 'shopify';
+    }
+
+    /**
      * @param ProcessDto    $dto
      * @param LoopInterface $loop
      * @param callable      $callbackItem
@@ -99,21 +108,18 @@ class ShopifySyncConnector implements BatchInterface, ConnectorInterface
      */
     public function processBatch(ProcessDto $dto, LoopInterface $loop, callable $callbackItem): PromiseInterface
     {
-        $browser       = $this->factory->create($loop);
+        $sender        = $this->factory->create($loop);
         $systemInstall = CronUtils::getSystemInstall($dto);
         $requestDto    = $this->system->getRequestDto($systemInstall, 'GET');
-        $baseUrl       = (string) $requestDto->getUri();
-        $headers       = $requestDto->getHeaders();
-        $countReq      = $this->createCountRequest($baseUrl, $headers);
 
-        $promise = $this->fetchData($browser, $countReq)
+        $promise = $this->fetchData($sender, $this->createCountRequest($requestDto))
             ->then(
                 function (ResponseInterface $response): int {
                     return $this->getTotalPages($response);
                 }
             )->then(
-                function (int $total) use ($browser, $baseUrl, $callbackItem, $headers) {
-                    return all($this->doPageLoop($total, $browser, $baseUrl, $callbackItem, $headers));
+                function (int $total) use ($sender, $callbackItem, $requestDto) {
+                    return all($this->doPageLoop($total, $sender, $callbackItem, $requestDto));
                 }
             );
 
@@ -123,14 +129,13 @@ class ShopifySyncConnector implements BatchInterface, ConnectorInterface
     }
 
     /**
-     * @param string $baseUrl
-     * @param array  $headers
+     * @param RequestDto $dto
      *
      * @return RequestInterface
      */
-    private function createCountRequest(string $baseUrl, array $headers): RequestInterface
+    private function createCountRequest(RequestDto $dto): RequestInterface
     {
-        return new Request('GET', sprintf('%s%s', $baseUrl, self::COUNT_URL), $headers);
+        return new Request('GET', sprintf('%s%s', $dto->getUri(TRUE), self::COUNT_URL), $dto->getHeaders());
     }
 
     /**
@@ -167,24 +172,17 @@ class ShopifySyncConnector implements BatchInterface, ConnectorInterface
     /**
      * @param int        $total
      * @param CurlSender $sender
-     * @param string     $baseUrl
      * @param callable   $callbackItem
-     * @param array      $headers
+     * @param RequestDto $requestDto
      *
      * @return array
      */
-    private function doPageLoop(
-        int $total,
-        CurlSender $sender,
-        string $baseUrl,
-        callable $callbackItem,
-        array $headers
-    ): array
+    private function doPageLoop(int $total, CurlSender $sender, callable $callbackItem, RequestDto $requestDto): array
     {
         $requests = [];
         for ($i = 1; $i <= $total; $i++) {
             $requests[] = $this
-                ->fetchData($sender, $this->createCustomerRequest($baseUrl, $i, $headers))
+                ->fetchData($sender, $this->createCustomerRequest($i, $requestDto))
                 ->then(
                     function (ResponseInterface $response) use ($i): SuccessMessage {
                         return $this->createSuccessMessage($response, $i);
@@ -196,15 +194,18 @@ class ShopifySyncConnector implements BatchInterface, ConnectorInterface
     }
 
     /**
-     * @param string $baseUrl
-     * @param int    $page
-     * @param array  $headers
+     * @param int        $page
+     * @param RequestDto $dto
      *
      * @return RequestInterface
      */
-    private function createCustomerRequest(string $baseUrl, int $page, array $headers): RequestInterface
+    private function createCustomerRequest(int $page, RequestDto $dto): RequestInterface
     {
-        return new Request('GET', sprintf('%s%s%s', $baseUrl, self::CUSTOMERS_URL, $page), $headers);
+        return new Request(
+            'GET',
+            sprintf('%s%s%s', $dto->getUri(TRUE), self::CUSTOMERS_URL, $page),
+            $dto->getHeaders()
+        );
     }
 
     /**
@@ -228,14 +229,6 @@ class ShopifySyncConnector implements BatchInterface, ConnectorInterface
             'Shopify Error: Key customers not found in response.',
             SystemException::MISSING_RESPONSE_DATA
         );
-    }
-
-    /**
-     * @return string
-     */
-    public function getId(): string
-    {
-        return 'shopify';
     }
 
 }

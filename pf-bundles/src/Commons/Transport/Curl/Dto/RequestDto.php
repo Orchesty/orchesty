@@ -64,10 +64,16 @@ class RequestDto
     }
 
     /**
-     * @return Uri
+     * @param bool $asString
+     *
+     * @return Uri|string
      */
-    public function getUri(): Uri
+    public function getUri($asString = FALSE)
     {
+        if ($asString) {
+            return (string) $this->uri;
+        }
+
         return $this->uri;
     }
 

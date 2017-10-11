@@ -18,6 +18,7 @@ use Doctrine\ODM\MongoDB\DocumentRepository;
 use GuzzleHttp\Psr7\Request;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSenderFactory;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use React\EventLoop\LoopInterface;
@@ -66,21 +67,18 @@ class SalesForceSyncConnector extends SalesForceConnectorAbstract
     public function processBatch(ProcessDto $dto, LoopInterface $loop, callable $callbackItem): PromiseInterface
     {
 
-        $browser       = $this->factory->create($loop);
+        $sender        = $this->factory->create($loop);
         $systemInstall = CronUtils::getSystemInstall($dto);
         $requestDto    = $this->system->getRequestDto($systemInstall, 'GET');
-        $baseUrl       = (string) $requestDto->getUri();
-        $headers       = $requestDto->getHeaders();
-        $countRequest  = $this->createCountRequest($baseUrl, $headers);
 
-        $promise = $this->fetchData($browser, $countRequest)
+        $promise = $this->fetchData($sender, $this->createCountRequest($requestDto))
             ->then(
                 function (ResponseInterface $response): int {
                     return $this->getTotalPages($response);
                 }
             )->then(
-                function (int $total) use ($browser, $baseUrl, $callbackItem, $headers) {
-                    return all($this->doPageLoop($total, $browser, $baseUrl, $callbackItem, $headers));
+                function (int $total) use ($sender, $callbackItem, $requestDto) {
+                    return all($this->doPageLoop($total, $sender, $callbackItem, $requestDto));
                 }
             );
 
@@ -90,18 +88,16 @@ class SalesForceSyncConnector extends SalesForceConnectorAbstract
     }
 
     /**
-     * @param string $baseUrl
-     * @param int    $page
-     * @param array  $headers
-     * @param string $timeQuery
+     * @param int        $page
+     * @param string     $timeQuery
+     * @param RequestDto $dto
      *
      * @return RequestInterface
      */
     protected function createPageContactRequest(
-        string $baseUrl,
         int $page,
-        array $headers,
-        string $timeQuery = ''
+        string $timeQuery = '',
+        RequestDto $dto
     ): RequestInterface
     {
         $query = sprintf(
@@ -110,7 +106,7 @@ class SalesForceSyncConnector extends SalesForceConnectorAbstract
             self::PAGE_LIMIT * $page
         );
 
-        return new Request('GET', sprintf(self::QUERY_URL, $baseUrl, $query), $headers);
+        return new Request('GET', sprintf(self::QUERY_URL, $dto->getUri(TRUE), $query), $dto->getHeaders());
     }
 
 }

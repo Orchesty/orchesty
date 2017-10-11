@@ -5,6 +5,7 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce;
 use CleverConnectors\AppBundle\Utils\CronUtils;
 use GuzzleHttp\Psr7\Request;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use React\EventLoop\LoopInterface;
@@ -35,22 +36,18 @@ class SalesForceDeleteConnector extends SalesForceConnectorAbstract
         $data          = CronUtils::parseData($dto);
         $systemInstall = CronUtils::getSystemInstall($dto);
         $requestDto    = $this->system->getRequestDto($systemInstall, 'GET');
-        $baseUrl       = (string) $requestDto->getUri();
-        $headers       = $requestDto->getHeaders();
-
-        $lastSync = $this->lastSyncManager->getLastSync($data, $systemInstall, self::NODE_NAME);
-        $times    = CronUtils::getTimes($lastSync);
-
-        $timeQuery = $this->getTimeQuery($times->getStart(), $times->getEnd()) . '+AND+IsDeleted=TRUE';
-        $countReq  = $this->createCountRequest($baseUrl, $headers, $timeQuery);
+        $lastSync      = $this->lastSyncManager->getLastSync($data, $systemInstall, self::NODE_NAME);
+        $times         = CronUtils::getTimes($lastSync);
+        $timeQuery     = $this->getTimeQuery($times->getStart(), $times->getEnd()) . '+AND+IsDeleted=TRUE';
+        $countReq      = $this->createCountRequest($requestDto, $timeQuery);
 
         $promise = $this->fetchData($browser, $countReq)
             ->then(function (ResponseInterface $response): int {
                 return $this->getTotalPages($response);
             }
             )->then(
-                function (int $total) use ($browser, $baseUrl, $callbackItem, $timeQuery, $headers) {
-                    return all($this->doPageLoop($total, $browser, $baseUrl, $callbackItem, $headers, $timeQuery));
+                function (int $total) use ($browser, $callbackItem, $timeQuery, $requestDto) {
+                    return all($this->doPageLoop($total, $browser, $callbackItem, $requestDto, $timeQuery));
                 }
             );
 
@@ -61,18 +58,16 @@ class SalesForceDeleteConnector extends SalesForceConnectorAbstract
     }
 
     /**
-     * @param string $baseUrl
-     * @param int    $page
-     * @param array  $headers
-     * @param string $timeQuery
+     * @param int        $page
+     * @param string     $timeQuery
+     * @param RequestDto $dto
      *
      * @return RequestInterface
      */
     protected function createPageContactRequest(
-        string $baseUrl,
         int $page,
-        array $headers,
-        string $timeQuery
+        string $timeQuery,
+        RequestDto $dto
     ): RequestInterface
     {
         $query = sprintf(
@@ -81,7 +76,7 @@ class SalesForceDeleteConnector extends SalesForceConnectorAbstract
             self::PAGE_LIMIT * $page
         );
 
-        return new Request('GET', sprintf(static::QUERY_URL, $baseUrl, $query), $headers);
+        return new Request('GET', sprintf(static::QUERY_URL, $dto->getUri(TRUE), $query), $dto->getHeaders());
     }
 
 }

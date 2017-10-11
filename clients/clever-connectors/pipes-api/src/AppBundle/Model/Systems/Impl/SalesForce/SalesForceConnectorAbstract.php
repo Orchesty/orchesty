@@ -5,11 +5,11 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce;
 use CleverConnectors\AppBundle\Model\LastSync\LastSyncManager;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use DateTime;
-use Exception;
 use GuzzleHttp\Psr7\Request;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSender;
 use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSenderFactory;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\BatchInterface;
@@ -82,6 +82,14 @@ abstract class SalesForceConnectorAbstract implements BatchInterface, ConnectorI
     }
 
     /**
+     * @return string
+     */
+    public function getId(): string
+    {
+        return 'salesforce';
+    }
+
+    /**
      * @param DateTime|null $from
      * @param DateTime      $to
      *
@@ -102,17 +110,16 @@ abstract class SalesForceConnectorAbstract implements BatchInterface, ConnectorI
     }
 
     /**
-     * @param string $baseUrl
-     * @param array  $headers
-     * @param string $timeQuery
+     * @param RequestDto $dto
+     * @param string     $timeQuery
      *
      * @return RequestInterface
      */
-    protected function createCountRequest(string $baseUrl, array $headers, string $timeQuery = ''): RequestInterface
+    protected function createCountRequest(RequestDto $dto, string $timeQuery = ''): RequestInterface
     {
         $query = 'select+count()+from+contact' . $timeQuery;
 
-        return new Request('GET', sprintf(static::QUERY_URL, $baseUrl, $query), $headers);
+        return new Request('GET', sprintf(static::QUERY_URL, $dto->getUri(TRUE), $query), $dto->getHeaders());
     }
 
     /**
@@ -176,9 +183,8 @@ abstract class SalesForceConnectorAbstract implements BatchInterface, ConnectorI
     /**
      * @param int        $total
      * @param CurlSender $sender
-     * @param string     $baseUrl
      * @param callable   $callbackItem
-     * @param array      $headers
+     * @param RequestDto $dto
      * @param string     $timeQuery
      *
      * @return array
@@ -186,16 +192,15 @@ abstract class SalesForceConnectorAbstract implements BatchInterface, ConnectorI
     protected function doPageLoop(
         int $total,
         CurlSender $sender,
-        string $baseUrl,
         callable $callbackItem,
-        array $headers,
+        RequestDto $dto,
         string $timeQuery = ''
     ): array
     {
         $requests = [];
         for ($i = 0; $i < $total; $i++) {
             $requests[] = $this
-                ->fetchData($sender, $this->createPageContactRequest($baseUrl, $i, $headers, $timeQuery))
+                ->fetchData($sender, $this->createPageContactRequest($i, $timeQuery, $dto))
                 ->then(function (ResponseInterface $response) use ($i): SuccessMessage {
 
                     return $this->createSuccessMessage($response, $i);
@@ -206,27 +211,16 @@ abstract class SalesForceConnectorAbstract implements BatchInterface, ConnectorI
     }
 
     /**
-     * @param string $baseUrl
-     * @param int    $page
-     * @param array  $headers
-     * @param string $timeQuery
+     * @param int        $page
+     * @param string     $timeQuery
+     * @param RequestDto $dto
      *
      * @return RequestInterface
-     * @throws Exception
      */
     abstract protected function createPageContactRequest(
-        string $baseUrl,
         int $page,
-        array $headers,
-        string $timeQuery
+        string $timeQuery,
+        RequestDto $dto
     ): RequestInterface;
-
-    /**
-     * @return string
-     */
-    public function getId(): string
-    {
-        return 'salesforce';
-    }
 
 }
