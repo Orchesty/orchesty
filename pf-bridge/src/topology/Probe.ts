@@ -1,15 +1,14 @@
 import * as express from "express";
 import * as request from "request";
 import logger from "../logger/Logger";
-import {INodeConfig} from "./Configurator";
+import {INodeConfig, INodeLabel} from "./Configurator";
 
 const DEFAULT_HTTP_PORT = 8007;
 const HTTP_PROBE_PATH = "/status";
 const HTTP_TIMEOUT = 10000;
 
 interface INodeInfo {
-    id: string;
-    name: string;
+    label: INodeLabel;
     url: string;
     code: number;
     body: string;
@@ -18,7 +17,8 @@ interface INodeInfo {
 
 interface IProbeNodeResult {
     id: string;
-    name: string;
+    node_id: string;
+    node_name: string;
     status: boolean;
     url: string;
     code: number;
@@ -113,8 +113,7 @@ class Probe {
                     }
 
                     nodesInfo.push({
-                        id: node.label.node_id,
-                        name: node.label.node_name,
+                        label: node.label,
                         url: node.debug.url,
                         code: response ? response.statusCode : 500,
                         body,
@@ -148,8 +147,9 @@ class Probe {
         const nodes: IProbeNodeResult[] = [];
         nodesInfo.forEach((n: INodeInfo) => {
             nodes.push({
-                id: n.id,
-                name: n.name,
+                id: n.label.id,
+                node_id: n.label.node_id,
+                node_name: n.label.node_name,
                 status: n.code === 200,
                 url: n.url,
                 code: n.code,

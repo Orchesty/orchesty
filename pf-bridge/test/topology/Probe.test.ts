@@ -123,16 +123,18 @@ describe("Probe", () => {
                     result.nodes,
                     [
                         {
-                            id: topo.nodes[0].label.node_id,
-                            name: topo.nodes[0].label.node_name,
+                            id: topo.nodes[0].id,
+                            node_id: topo.nodes[0].label.node_id,
+                            node_name: topo.nodes[0].label.node_name,
                             url: topo.nodes[0].debug.url,
                             code: 200,
                             message: "OK",
                             status: true,
                         },
                         {
-                            id: topo.nodes[1].label.node_id,
-                            name: topo.nodes[1].label.node_name,
+                            id: topo.nodes[1].id,
+                            node_id: topo.nodes[1].label.node_id,
+                            node_name: topo.nodes[1].label.node_name,
                             url: topo.nodes[1].debug.url,
                             code: 500,
                             message: "Worker down",
