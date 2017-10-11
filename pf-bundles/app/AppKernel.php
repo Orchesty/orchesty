@@ -49,6 +49,7 @@ class AppKernel extends Kernel
             new SecurityBundle(),
             new SensioFrameworkExtraBundle(),
             new SwiftmailerBundle(),
+            new SncRedisBundle(),
 
             new HbPFAclBundle(),
             new HbPFApiGatewayBundle(),
@@ -63,7 +64,6 @@ class AppKernel extends Kernel
             new HbPFTableParserBundle(),
             new HbPFUserBundle(),
             new HbPFRabbitMqBundle(),
-            new SncRedisBundle(),
         ];
 
         return $bundles;
