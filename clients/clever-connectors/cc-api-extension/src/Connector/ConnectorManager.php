@@ -169,4 +169,118 @@ class ConnectorManager implements ConnectorInterface
         return UserSystemFactory::create($this->parseBody($response));
     }
 
+    /**
+     * @param string $userId
+     *
+     * @return iterable|UserSystem[]
+     */
+    public function getAllUserSystems(string $userId): iterable
+    {
+        $request = new Request(
+            CurlSender::GET,
+            new Uri(sprintf('/user_systems/user/%s', $userId)),
+            $this->getDefaultHeaders()->getHeaders()
+        );
+
+        $response = $this->send($request);
+
+        $userSystems = [];
+        foreach ($this->parseBody($response) as $item) {
+            $userSystems[] = UserSystemFactory::create($item);
+        }
+
+        return $userSystems;
+    }
+
+    /**
+     * @param string $userId
+     * @param string $systemKey
+     * @param array  $settings
+     */
+    public function saveUserSystemSetting(string $userId, string $systemKey, array $settings): void
+    {
+        $request = new Request(
+            CurlSender::POST,
+            new Uri(sprintf('/user_systems/user/%s/system/%s/settings', $userId, $systemKey)),
+            $this->getDefaultHeaders()->getHeaders(),
+            json_encode($settings)
+        );
+
+        $this->send($request);
+    }
+
+    /**
+     * @param string $userId
+     * @param string $systemKey
+     * @param string $token
+     */
+    public function installUserSystem(string $userId, string $systemKey, string $token): void
+    {
+        $request = new Request(
+            CurlSender::POST,
+            new Uri(sprintf('/user_systems/user/%s/system/%s/install', $userId, $systemKey)),
+            $this->getDefaultHeaders()->getHeaders(),
+            json_encode(['token' => $token])
+        );
+
+        $this->send($request);
+    }
+
+    /**
+     * @param string $userId
+     * @param string $systemKey
+     */
+    public function uninstallUserSystem(string $userId, string $systemKey): void
+    {
+        $request = new Request(
+            CurlSender::GET,
+            new Uri(sprintf('/user_systems/user/%s/system/%s/uninstall', $userId, $systemKey)),
+            $this->getDefaultHeaders()->getHeaders()
+        );
+
+        $this->send($request);
+    }
+
+    /**
+     * @param string $userId
+     * @param string $systemKey
+     */
+    public function synchronizeUserSystem(string $userId, string $systemKey): void
+    {
+        $request = new Request(
+            CurlSender::GET,
+            new Uri(sprintf('/user_systems/user/%s/system/%s/sync', $userId, $systemKey)),
+            $this->getDefaultHeaders()->getHeaders()
+        );
+
+        $this->send($request);
+    }
+
+    /**
+     * @param string $userId
+     * @param string $systemKey
+     * @param string $token
+     */
+    public function switchUserSystemToken(string $userId, string $systemKey, string $token): void
+    {
+        $request = new Request(
+            CurlSender::GET,
+            new Uri(sprintf('/user_systems/user/%s/system/%s/sync', $userId, $systemKey)),
+            $this->getDefaultHeaders()->getHeaders(),
+            json_encode(['token' => $token])
+        );
+
+        $this->send($request);
+    }
+
+    /**
+     * @param string $userId
+     * @param string $systemKey
+     * @param string $redirectUrl
+     */
+    public function authorizeUserSystem(string $userId, string $systemKey, string $redirectUrl): void
+    {
+        //@todo redirect
+    }
+
 }
