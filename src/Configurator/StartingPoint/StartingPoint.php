@@ -15,7 +15,6 @@ use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Exception\StartingPointException;
-use Hanaboso\PipesFramework\TopologyGenerator\GeneratorUtils;
 use Nette\Utils\Strings;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
@@ -277,10 +276,6 @@ class StartingPoint implements LoggerAwareInterface
 
         if ($responseDto->getStatusCode() === 200) {
             $data = json_decode($responseDto->getBody(), TRUE);
-
-            foreach ($data['nodes'] as &$node) {
-                $node['id'] = GeneratorUtils::denormalizeName($node['node']);
-            }
 
             return $data;
         } else {
