@@ -1,0 +1,9 @@
+# Exclude IDE config
+.idea
+
+# Exclude temp file
+temp/*
+!temp/.gitkeep
+logs/*
+!logs/.gitkeep
+vendor
