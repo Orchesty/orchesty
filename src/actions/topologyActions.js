@@ -129,10 +129,10 @@ export function topologyUpdate(id, data){
     dispatch(processActions.startProcess(processes.topologyUpdate(id)));
     return serverRequest(dispatch, 'PATCH', `/topologies/${id}`, null, data).then(
       response => {
-        dispatch(processActions.finishProcess(processes.topologyUpdate(id), response));
         if (response) {
           dispatch(receive(response));
         }
+        dispatch(processActions.finishProcess(processes.topologyUpdate(id), response));
         return response;
       }
     )
@@ -144,11 +144,11 @@ export function topologyCreate(data, processHash = 'new'){
     dispatch(processActions.startProcess(processes.topologyCreate(processHash)));
     return serverRequest(dispatch, 'POST', `/topologies`, null, data).then(
       response => {
-        dispatch(processActions.finishProcess(processes.topologyCreate(processHash), response));
         if (response){
           dispatch(receive(response));
           dispatch(invalidateLists());
         }
+        dispatch(processActions.finishProcess(processes.topologyCreate(processHash), response));
         return response;
       }
     )
@@ -160,11 +160,11 @@ export function topologyDelete(id){
     dispatch(processActions.startProcess(processes.topologyDelete(id)));
     return serverRequest(dispatch, 'DELETE', `/topologies/${id}`).then(
       response => {
-        dispatch(processActions.finishProcess(processes.topologyDelete(id), response));
         if (response) {
           dispatch(invalidateLists());
           dispatch(remove(id));
         }
+        dispatch(processActions.finishProcess(processes.topologyDelete(id), response));
         return response;
       }
     )
@@ -176,14 +176,14 @@ export function cloneTopology(id, silent = false){
     dispatch(processActions.startProcess(processes.topologyClone(id)));
     return serverRequest(dispatch, 'POST', `/topologies/${id}/clone`).then(
       response => {
-        dispatch(processActions.finishProcess(processes.topologyClone(id), response));
         if (response){
           if (!silent){
-            dispatch(notificationActions.addSuccess('Node was cloned successfully.'));
+            dispatch(notificationActions.addSuccess('Topology was cloned successfully.'));
           }
           dispatch(receive(response));
           dispatch(invalidateLists());
         }
+        dispatch(processActions.finishProcess(processes.topologyClone(id), response));
         return response;
       }
     )
@@ -195,13 +195,13 @@ export function publishTopology(id, silent = false){
     dispatch(processActions.startProcess(processes.topologyPublish(id)));
     return serverRequest(dispatch, 'POST', `/topologies/${id}/publish`).then(
       response => {
-        dispatch(processActions.finishProcess(processes.topologyPublish(id), response));
         if (response){
           if (!silent){
-            dispatch(notificationActions.addSuccess('Node was published successfully.'));
+            dispatch(notificationActions.addSuccess('Topology was published successfully.'));
           }
           dispatch(receive(response));
         }
+        dispatch(processActions.finishProcess(processes.topologyPublish(id), response));
         return response;
       }
     )
@@ -232,7 +232,6 @@ export function saveTopologySchema(id, schema, silent = false){
       },
       body: schema
     }).then(response => {
-      dispatch(processActions.finishProcess(processes.topologySaveScheme(id), response));
       if (response) {
         if (!silent){
           dispatch(notificationActions.addNotification('success', 'Schema was saved successfully.'));
@@ -247,6 +246,7 @@ export function saveTopologySchema(id, schema, silent = false){
         }
         dispatch(nodeActions.nodeInvalidateLists('topology', response._id));
       }
+      dispatch(processActions.finishProcess(processes.topologySaveScheme(id), response));
       return response;
     });
   }
@@ -260,11 +260,10 @@ export function testTopology(id, silent = false){
     }
     dispatch(processActions.startProcess(processes.topologyTest(id)));
     return serverRequest(dispatch, 'GET', `/topologies/${id}/test`).then(response => {
-      dispatch(processActions.finishProcess(processes.topologyTest(id), response));
       if (response){
         dispatch(receiveTest(response));
       }
-
+      dispatch(processActions.finishProcess(processes.topologyTest(id), response));
       return response;
     })
   }
