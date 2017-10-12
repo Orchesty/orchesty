@@ -6,6 +6,7 @@ import StreamConsumer, {IStreamConsumerSettings} from "./StreamConsumer";
 
 export interface IStreamServerSettings {
     port: number;
+    namespace: string;
     consumer: IStreamConsumerSettings;
 }
 
@@ -72,7 +73,7 @@ class StreamServer {
         );
 
         const io = SocketIO(this.settings.port);
-        this.stream = io.of("/stream");
+        this.stream = io.of(settings.namespace);
     }
 
     /**
