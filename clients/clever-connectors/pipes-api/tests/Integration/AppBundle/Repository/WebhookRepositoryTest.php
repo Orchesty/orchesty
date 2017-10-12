@@ -58,4 +58,27 @@ final class WebhookRepositoryTest extends DatabaseTestCaseAbstract
         self::assertFalse($result);
     }
 
+    /**
+     *
+     */
+    public function testGetWebhooksForTopology(): void
+    {
+        for ($i = 0; $i < 4; $i++) {
+            $web = new Webhook();
+            $web->setTopologyName('top')
+                ->setSystemKey('null')
+                ->setUser($i ? 'user2' : 'user1');
+            $this->dm->persist($web);
+        }
+        $this->dm->flush();
+
+        /** @var WebhookRepository $repo */
+        $repo = $this->dm->getRepository(Webhook::class);
+
+        $res = $repo->getWebhooks('top');
+        self::assertEquals(2, count($res));
+        self::assertEquals('user1', $res[0]['user']);
+        self::assertEquals('user2', $res[1]['user']);
+    }
+
 }

@@ -22,8 +22,9 @@ class AppBundle extends Bundle
     public function build(ContainerBuilder $container): void
     {
         parent::build($container);
-        (new YamlFileLoader($container, new FileLocator(__DIR__ . '/Resources/config')))->load('parameters.yml');
-        (new YamlFileLoader($container, new FileLocator(__DIR__ . '/Resources/config')))->load('dev_services.yml');
+        $loader = new YamlFileLoader($container, new FileLocator(__DIR__ . '/Resources/config'));
+        $loader->load('parameters.yml');
+        $loader->load('dev_services.yml');
         $container->addCompilerPass(new SystemCompilerPass());
     }
 

@@ -5,6 +5,7 @@ namespace Hanaboso\PipesFramework\Configurator\Document;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 use Hanaboso\PipesFramework\Commons\Enum\StatusEnum;
 use Hanaboso\PipesFramework\Commons\Enum\TopologyStatusEnum;
+use Hanaboso\PipesFramework\Commons\Traits\Document\DeletedTrait;
 use Hanaboso\PipesFramework\Commons\Traits\Document\IdTrait;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
 use Nette\Utils\Json;
@@ -25,6 +26,7 @@ class Topology
 {
 
     use IdTrait;
+    use DeletedTrait;
 
     /**
      * @var string

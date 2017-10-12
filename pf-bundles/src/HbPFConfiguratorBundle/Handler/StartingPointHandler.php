@@ -13,9 +13,12 @@ use Doctrine\ODM\MongoDB\DocumentRepository;
 use Exception;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
+use Hanaboso\PipesFramework\Configurator\Event\TopologyEvent;
 use Hanaboso\PipesFramework\Configurator\Repository\NodeRepository;
 use Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository;
 use Hanaboso\PipesFramework\Configurator\StartingPoint\StartingPoint;
+use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -42,16 +45,23 @@ class StartingPointHandler
     private $startingPoint;
 
     /**
+     * @var EventDispatcherInterface
+     */
+    private $dispatcher;
+
+    /**
      * StartingPointHandler constructor.
      *
      * @param DocumentManager $dm
      * @param StartingPoint   $startingPoint
+     * @param EventDispatcher $dispatcher
      */
-    public function __construct(DocumentManager $dm, StartingPoint $startingPoint)
+    public function __construct(DocumentManager $dm, StartingPoint $startingPoint, EventDispatcherInterface $dispatcher)
     {
         $this->startingPoint      = $startingPoint;
         $this->nodeRepository     = $dm->getRepository(Node::class);
         $this->topologyRepository = $dm->getRepository(Topology::class);
+        $this->dispatcher         = $dispatcher;
     }
 
     /**
@@ -65,6 +75,7 @@ class StartingPointHandler
         $topologies = $this->topologyRepository->getRunnableTopologies($topologyName);
 
         if (empty($topologies)) {
+            $this->dispatcher->dispatch(TopologyEvent::EVENT, new TopologyEvent($topologyName));
             throw new Exception(sprintf('The topology[name=%s] does not exist.', $topologyName));
         }
 
@@ -72,17 +83,18 @@ class StartingPointHandler
     }
 
     /**
-     * @param string $nodeName
-     * @param string $topologyId
+     * @param string   $nodeName
+     * @param Topology $topology
      *
      * @return Node
      * @throws Exception
      */
-    public function getNodeByName(string $nodeName, string $topologyId): Node
+    public function getNodeByName(string $nodeName, Topology $topology): Node
     {
-        $node = $this->nodeRepository->getNodeByTopology($nodeName, $topologyId);
+        $node = $this->nodeRepository->getNodeByTopology($nodeName, $topology->getId());
 
         if (empty($node)) {
+            $this->dispatcher->dispatch(TopologyEvent::EVENT, new TopologyEvent($topology->getName()));
             throw new Exception(sprintf('The node[name=%s] does not exist.', $nodeName));
         }
 
@@ -133,7 +145,7 @@ class StartingPointHandler
         $topologies = $this->getTopologies($topologyName);
         foreach ($topologies as $topology) {
             $this->startingPoint->runWithRequest($request, $topology,
-                $this->getNodeByName($nodeName, $topology->getId()));
+                $this->getNodeByName($nodeName, $topology));
         }
     }
 
@@ -150,13 +162,13 @@ class StartingPointHandler
     /**
      * @param string      $topologyName
      * @param string      $nodeName
-     * @param string|null $body         JSON string
+     * @param string|null $body
      */
     public function run(string $topologyName, string $nodeName, ?string $body = NULL): void
     {
         $topologies = $this->getTopologies($topologyName);
         foreach ($topologies as $topology) {
-            $this->startingPoint->run($topology, $this->getNodeByName($nodeName, $topology->getId()), $body);
+            $this->startingPoint->run($topology, $this->getNodeByName($nodeName, $topology), $body);
         }
     }
 

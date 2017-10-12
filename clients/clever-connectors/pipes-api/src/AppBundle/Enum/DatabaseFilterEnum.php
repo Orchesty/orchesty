@@ -5,21 +5,19 @@ namespace CleverConnectors\AppBundle\Enum;
 use Hanaboso\PipesFramework\Commons\Enum\EnumAbstract;
 
 /**
- * Class SystemTypeEnum
+ * Class DatabaseFilterEnum
  *
  * @package CleverConnectors\AppBundle\Enum
  */
-final class SystemTypeEnum extends EnumAbstract
+final class DatabaseFilterEnum extends EnumAbstract
 {
 
-    public const CRON    = 'cron';
-    public const WEBHOOK = 'webhook';
+    public const DELETED = 'deleted';
     /**
      * @var string[]
      */
     protected static $choices = [
-        self::CRON    => 'cron',
-        self::WEBHOOK => 'webhook',
+        self::DELETED => 'deleted',
     ];
 
 }

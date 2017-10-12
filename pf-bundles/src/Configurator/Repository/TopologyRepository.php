@@ -61,4 +61,17 @@ class TopologyRepository extends DocumentRepository
         return $result->getVersion();
     }
 
+    /**
+     * @param string $topologyName
+     *
+     * @return int
+     */
+    public function getTopologiesCountByName(string $topologyName): int
+    {
+        return  $this->createQueryBuilder()
+            ->field('name')->equals($topologyName)
+            ->count()
+            ->getQuery()->execute();
+    }
+
 }

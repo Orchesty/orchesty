@@ -28,7 +28,7 @@ use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 class ShopifySystem implements WebhookSystemInterface, OAuth2Interface
 {
 
-    private const SYSTEM_URL = 'ndflakee';
+    private const SYSTEM_URL = 'system_url';
 
     private const API_KEY    = '91f0d11786afbe82fc72d519356bc7f2';
     private const API_SECRET = '469a399914df80fab1e223b18d9d95bc';
@@ -129,7 +129,9 @@ class ShopifySystem implements WebhookSystemInterface, OAuth2Interface
      */
     public function getSubscribeRequest(WebhookSubscribes $subs, SystemInstall $systemInstall, string $url): RequestDto
     {
-        $systemUrl = self::SYSTEM_URL;
+        $sett = $systemInstall->getSettings();
+
+        $systemUrl = $sett[self::SYSTEM_URL];
         $topic     = $this->topics[$subs->getNodeName()];
 
         $dto = new RequestDto('POST',
@@ -156,9 +158,11 @@ class ShopifySystem implements WebhookSystemInterface, OAuth2Interface
      */
     public function getUnsubscribeRequest(SystemInstall $systemInstall, string $webhookId): RequestDto
     {
+        $sett = $systemInstall->getSettings();
+
         $dto = new RequestDto('DELETE',
             new Uri(sprintf($this->subscriptions[0]->getUnregistrationUrl(),
-                self::SYSTEM_URL, $webhookId)));
+                $sett[self::SYSTEM_URL], $webhookId)));
 
         $dto->setHeaders($this->getHeaders($systemInstall));
 
@@ -191,7 +195,10 @@ class ShopifySystem implements WebhookSystemInterface, OAuth2Interface
      */
     public function isAuthorized(SystemInstall $systemInstall): bool
     {
-        return !empty($systemInstall->getSettings()[OAuth2Provider::ACCESS_TOKEN] ?? '');
+        $sett = $systemInstall->getSettings();
+
+        return !empty($sett[OAuth2Provider::ACCESS_TOKEN] ?? '')
+            && !empty($sett[self::SYSTEM_URL] ?? '');
     }
 
     /**
@@ -212,8 +219,8 @@ class ShopifySystem implements WebhookSystemInterface, OAuth2Interface
         $settings = $systemInstall->getSettings();
 
         $field1 = new Field(
-            Field::URL,
-            self::SYSTEM_URL,
+            Field::TEXT,
+            $settings[self::SYSTEM_URL],
             'System url of client\'s app - XXX.myshopify.com (only XXX part).',
             $this->prepareValue(self::SYSTEM_URL, $settings),
             TRUE
@@ -286,7 +293,9 @@ class ShopifySystem implements WebhookSystemInterface, OAuth2Interface
             throw new SystemException('Shopify is not Authorized!', SystemException::SYSTEM_IS_UNAUTHORIZED);
         }
 
-        $url = sprintf('https://%s.myshopify.com/', self::SYSTEM_URL);
+        $sett = $systemInstall->getSettings();
+
+        $url = sprintf('https://%s.myshopify.com/', $sett[self::SYSTEM_URL]);
         $dto = new RequestDto($method, new Uri($url));
         $dto->setHeaders($this->getHeaders($systemInstall));
 
@@ -313,12 +322,14 @@ class ShopifySystem implements WebhookSystemInterface, OAuth2Interface
      */
     private function getDto(SystemInstall $systemInstall): OAuth2Dto
     {
+        $sett = $systemInstall->getSettings();
+
         $dto = new OAuth2Dto(
             self::API_KEY,
             self::API_SECRET,
             AuthorizationUtils::generateUrl(),
-            sprintf('https://%s.myshopify.com/admin/oauth/authorize', self::SYSTEM_URL),
-            sprintf('https://%s.myshopify.com/admin/oauth/access_token', self::SYSTEM_URL)
+            sprintf('https://%s.myshopify.com/admin/oauth/authorize', $sett[self::SYSTEM_URL]),
+            sprintf('https://%s.myshopify.com/admin/oauth/access_token', $sett[self::SYSTEM_URL])
         );
 
         $dto->setCustomAppDependencies($systemInstall->getUser(), $this->getKey());

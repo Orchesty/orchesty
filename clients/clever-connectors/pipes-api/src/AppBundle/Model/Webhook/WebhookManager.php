@@ -8,7 +8,7 @@ use CleverConnectors\AppBundle\Repository\WebhookRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use Exception;
-use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
+use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -32,7 +32,7 @@ class WebhookManager implements LoggerAwareInterface
     private $webhookRepository;
 
     /**
-     * @var CurlManager
+     * @var CurlManagerInterface
      */
     private $curl;
 
@@ -49,11 +49,11 @@ class WebhookManager implements LoggerAwareInterface
     /**
      * WebhookManager constructor.
      *
-     * @param DocumentManager $dm
-     * @param CurlManager     $curl
-     * @param string          $domain
+     * @param DocumentManager      $dm
+     * @param CurlManagerInterface $curl
+     * @param string               $domain
      */
-    function __construct(DocumentManager $dm, CurlManager $curl, string $domain)
+    function __construct(DocumentManager $dm, CurlManagerInterface $curl, string $domain)
     {
         $this->dm                = $dm;
         $this->webhookRepository = $dm->getRepository(Webhook::class);
@@ -84,7 +84,8 @@ class WebhookManager implements LoggerAwareInterface
                     $system->getKey(),
                     $sub->getTopologyName(),
                     $sub->getNodeName()
-                )) {
+                )
+            ) {
                 continue;
             }
 
