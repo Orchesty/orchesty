@@ -18,6 +18,7 @@ use Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository;
 use Hanaboso\PipesFramework\Configurator\StartingPoint\StartingPoint;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\StartingPointHandler;
 use PHPUnit_Framework_MockObject_MockObject;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\HttpFoundation\Request;
 use Tests\DatabaseTestCaseAbstract;
 use Tests\PrivateTrait;
@@ -44,10 +45,14 @@ class StartingPointHandlerTest extends DatabaseTestCaseAbstract
         $dm = $this->createMock(DocumentManager::class);
         $dm->method('getRepository')->willReturn($dr);
 
+        /** @var EventDispatcher|PHPUnit_Framework_MockObject_MockObject $dispatcher */
+        $dispatcher = $this->createMock(EventDispatcher::class);
+        $dispatcher->method('dispatch')->willReturn('');
+
         /** @var StartingPoint|\PHPUnit_Framework_MockObject_MockObject $startingPoint */
         $startingPoint = $this->createMock(StartingPoint::class);
 
-        $startingPointHandler = new StartingPointHandler($dm, $startingPoint);
+        $startingPointHandler = new StartingPointHandler($dm, $startingPoint, $dispatcher);
 
         $this->expectException(Exception::class);
         $this->expectExceptionMessage('The topology[id=123] does not exist.');
@@ -67,10 +72,14 @@ class StartingPointHandlerTest extends DatabaseTestCaseAbstract
         $dm = $this->createMock(DocumentManager::class);
         $dm->method('getRepository')->willReturn($dr);
 
+        /** @var EventDispatcher|PHPUnit_Framework_MockObject_MockObject $dispatcher */
+        $dispatcher = $this->createMock(EventDispatcher::class);
+        $dispatcher->method('dispatch')->willReturn('');
+
         /** @var StartingPoint|\PHPUnit_Framework_MockObject_MockObject $startingPoint */
         $startingPoint = $this->createMock(StartingPoint::class);
 
-        $startingPointHandler = new StartingPointHandler($dm, $startingPoint);
+        $startingPointHandler = new StartingPointHandler($dm, $startingPoint, $dispatcher);
 
         $this->expectException(Exception::class);
         $this->expectExceptionMessage('The node[id=1] does not exist.');
@@ -85,7 +94,11 @@ class StartingPointHandlerTest extends DatabaseTestCaseAbstract
         /** @var StartingPoint|\PHPUnit_Framework_MockObject_MockObject $startingPoint */
         $startingPoint = $this->createMock(StartingPoint::class);
 
-        $startingPointHandler = new StartingPointHandler($this->dm, $startingPoint);
+        /** @var EventDispatcher|PHPUnit_Framework_MockObject_MockObject $dispatcher */
+        $dispatcher = $this->createMock(EventDispatcher::class);
+        $dispatcher->method('dispatch')->willReturn('');
+
+        $startingPointHandler = new StartingPointHandler($this->dm, $startingPoint, $dispatcher);
 
         $this->expectException(Exception::class);
         $this->expectExceptionMessage('The topology[name=123] does not exist.');
@@ -108,7 +121,11 @@ class StartingPointHandlerTest extends DatabaseTestCaseAbstract
         /** @var StartingPoint|PHPUnit_Framework_MockObject_MockObject $startingPoint */
         $startingPoint = $this->createMock(StartingPoint::class);
 
-        $startingPointHandler = new StartingPointHandler($this->dm, $startingPoint);
+        /** @var EventDispatcher|PHPUnit_Framework_MockObject_MockObject $dispatcher */
+        $dispatcher = $this->createMock(EventDispatcher::class);
+        $dispatcher->method('dispatch')->willReturn('');
+
+        $startingPointHandler = new StartingPointHandler($this->dm, $startingPoint, $dispatcher);
 
         $this->expectException(Exception::class);
         $this->expectExceptionMessage('The node[name=1] does not exist.');
@@ -140,9 +157,13 @@ class StartingPointHandlerTest extends DatabaseTestCaseAbstract
             $this->persistAndFlush($node);
         }
 
+        /** @var EventDispatcher|PHPUnit_Framework_MockObject_MockObject $dispatcher */
+        $dispatcher = $this->createMock(EventDispatcher::class);
+        $dispatcher->method('dispatch')->willReturn('');
+
         /** @var StartingPoint|\PHPUnit_Framework_MockObject_MockObject $startingPoint */
         $startingPoint        = $this->createMock(StartingPoint::class);
-        $startingPointHandler = new StartingPointHandler($this->dm, $startingPoint);
+        $startingPointHandler = new StartingPointHandler($this->dm, $startingPoint, $dispatcher);
         $startingPointHandler->runWithRequest(Request::createFromGlobals(), '123', '1');
     }
 
@@ -169,9 +190,13 @@ class StartingPointHandlerTest extends DatabaseTestCaseAbstract
 
         $this->persistAndFlush($node);
 
+        /** @var EventDispatcher|PHPUnit_Framework_MockObject_MockObject $dispatcher */
+        $dispatcher = $this->createMock(EventDispatcher::class);
+        $dispatcher->method('dispatch')->willReturn('');
+
         /** @var StartingPoint|PHPUnit_Framework_MockObject_MockObject $startingPoint */
         $startingPoint        = $this->createMock(StartingPoint::class);
-        $startingPointHandler = new StartingPointHandler($this->dm, $startingPoint);
+        $startingPointHandler = new StartingPointHandler($this->dm, $startingPoint, $dispatcher);
         $startingPointHandler->run('123', '1');
     }
 
@@ -195,11 +220,15 @@ class StartingPointHandlerTest extends DatabaseTestCaseAbstract
             'failed'  => [],
         ];
 
+        /** @var EventDispatcher|PHPUnit_Framework_MockObject_MockObject $dispatcher */
+        $dispatcher = $this->createMock(EventDispatcher::class);
+        $dispatcher->method('dispatch')->willReturn('');
+
         /** @var StartingPoint|PHPUnit_Framework_MockObject_MockObject $startingPoint */
         $startingPoint = $this->createMock(StartingPoint::class);
         $startingPoint->method('runTest')->willReturn($data);
 
-        $startingPointHandler = new StartingPointHandler($dm, $startingPoint);
+        $startingPointHandler = new StartingPointHandler($dm, $startingPoint, $dispatcher);
 
         $result = $startingPointHandler->runTest('123');
 
@@ -221,7 +250,11 @@ class StartingPointHandlerTest extends DatabaseTestCaseAbstract
         /** @var StartingPoint|PHPUnit_Framework_MockObject_MockObject $startingPoint */
         $startingPoint = $this->createMock(StartingPoint::class);
 
-        $startingPointHandler = new StartingPointHandler($dm, $startingPoint);
+        /** @var EventDispatcher|PHPUnit_Framework_MockObject_MockObject $dispatcher */
+        $dispatcher = $this->createMock(EventDispatcher::class);
+        $dispatcher->method('dispatch')->willReturn('');
+
+        $startingPointHandler = new StartingPointHandler($dm, $startingPoint, $dispatcher);
 
         $this->expectException(Exception::class);
         $this->expectExceptionMessage('The topology[id=123] does not exist.');

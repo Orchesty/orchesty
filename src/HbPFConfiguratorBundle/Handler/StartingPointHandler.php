@@ -162,7 +162,7 @@ class StartingPointHandler
     /**
      * @param string      $topologyName
      * @param string      $nodeName
-     * @param string|null $body JSON string
+     * @param string|null $body
      */
     public function run(string $topologyName, string $nodeName, ?string $body = NULL): void
     {
