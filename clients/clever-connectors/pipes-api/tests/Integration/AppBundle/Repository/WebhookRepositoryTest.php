@@ -75,7 +75,7 @@ final class WebhookRepositoryTest extends DatabaseTestCaseAbstract
         /** @var WebhookRepository $repo */
         $repo = $this->dm->getRepository(Webhook::class);
 
-        $res = $repo->getWebhooksForTopology('top');
+        $res = $repo->getWebhooks('top');
         self::assertEquals(2, count($res));
         self::assertEquals('user1', $res[0]['user']);
         self::assertEquals('user2', $res[1]['user']);

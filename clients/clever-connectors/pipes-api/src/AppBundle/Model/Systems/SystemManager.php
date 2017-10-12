@@ -298,23 +298,23 @@ class SystemManager
     }
 
     /**
-     * @param Topology   $topology
-     * @param array      $users
-     * @param Node[]     $nodes
-     * @param LastSync[] $syncs
+     * @param Topology|null $topology
+     * @param array         $webhooks
+     * @param Node[]        $nodes
+     * @param LastSync[]    $syncs
      */
     public function deleteTopology(
         ?Topology $topology = NULL,
-        array $users,
-        array $nodes,
-        array $syncs
+        array $webhooks = [],
+        array $nodes = [],
+        array $syncs = []
     ): void
     {
-        if (!empty($users)) {
-            /** @var WebhookSystemInterface $system */
-            $system = $this->systemLoader->getSystem($users[0]['systemKey']);
-            foreach ($users as $user) {
-                $this->webhookManager->unsubscribe($system, $user['user']);
+        if (!empty($webhooks)) {
+            foreach ($webhooks as $webhook) {
+                /** @var WebhookSystemInterface $system */
+                $system = $this->systemLoader->getSystem($webhook['systemKey']);
+                $this->webhookManager->unsubscribe($system, $webhook['user']);
             }
         }
 

@@ -12,6 +12,7 @@ use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyManager;
+use Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\GeneratorHandler;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler as HbPFTopologyHandler;
 
@@ -66,18 +67,20 @@ class TopologyHandler extends HbPFTopologyHandler
             );
         }
 
-        $users      = [];
+        $webhooks      = [];
         $nodes      = [];
         $syncs      = [];
-        $topologies = $this->dm->getRepository(Topology::class)->findBy(['name' => $topology->getName()]);
+        /** @var TopologyRepository $repo */
+        $repo = $this->dm->getRepository(Topology::class);
+        $topologies = $repo->getTopologiesCountByName($topology->getName());
 
-        if (count($topologies) === 1) {
+        if ($topologies === 1) {
             $nodes = $this->dm->getRepository(Node::class)->findBy(['topology' => $id]);
             $syncs = $this->dm->getRepository(LastSync::class)->findBy(['topologyName' => $topology->getName()]);
-            $users = $this->getUsers($topology->getName());
+            $webhooks = $this->getWebhooks($topology->getName());
         }
 
-        $this->sysManager->deleteTopology($topology, $users, $nodes, $syncs);
+        $this->sysManager->deleteTopology($topology, $webhooks, $nodes, $syncs);
 
         return TRUE;
     }
@@ -89,7 +92,7 @@ class TopologyHandler extends HbPFTopologyHandler
      */
     public function deleteWebhooksByTopologyName(string $topologyName): bool
     {
-        $users = $this->getUsers($topologyName);
+        $users = $this->getWebhooks($topologyName);
         $this->sysManager->deleteTopology(NULL, $users, [], []);
 
         return TRUE;
@@ -104,11 +107,11 @@ class TopologyHandler extends HbPFTopologyHandler
      *
      * @return array
      */
-    private function getUsers(string $topologyName): array
+    private function getWebhooks(string $topologyName): array
     {
         /** @var WebhookRepository $repo */
         $repo  = $this->dm->getRepository(Webhook::class);
-        return $repo->getWebhooksForTopology($topologyName);
+        return $repo->getWebhooks($topologyName);
     }
 
 }

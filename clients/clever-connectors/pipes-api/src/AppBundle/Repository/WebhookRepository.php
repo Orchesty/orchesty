@@ -42,7 +42,7 @@ class WebhookRepository extends DocumentRepository
      *
      * @return array
      */
-    public function getWebhooksForTopology(string $topologyName): array
+    public function getWebhooks(string $topologyName): array
     {
         return $this->createQueryBuilder()
             ->select(['systemKey'])
