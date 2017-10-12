@@ -112,8 +112,11 @@ PaletteProvider.prototype.getPaletteEntries = function() {
     'create.start-event': createAction(
       'bpmn:Event', 'events', 'bpmn-icon-start-event-timer', 'Cron', { pipesType: 'cron'}
     ),
-    'create.signal-event': createAction(
+    'create.webhook-event': createAction(
       'bpmn:Event', 'events', 'bpmn-icon-start-event-signal', 'Webhook', { pipesType: 'webhook'}
+    ),
+    'create.signal-event': createAction(
+      'bpmn:Event', 'events', 'bpmn-icon-start-event-escalation', 'Signal', { pipesType: 'signal'}
     ),
     'event-separator': {
       group: 'events',
