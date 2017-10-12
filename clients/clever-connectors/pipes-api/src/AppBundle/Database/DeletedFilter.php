@@ -21,7 +21,8 @@ final class DeletedFilter extends BsonFilter
      */
     public function addFilterCriteria(ClassMetadata $class): array
     {
-        return $class->getReflectionClass()->hasProperty(DatabaseFilterEnum::DELETED) ? ['deleted' => FALSE] : [];
+        return $class->getReflectionClass()
+            ->hasProperty(DatabaseFilterEnum::DELETED) ? ['deleted' => ['$ne' => TRUE]] : [];
     }
 
 }
