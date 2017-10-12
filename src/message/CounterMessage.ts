@@ -1,6 +1,9 @@
 import {INodeLabel} from "../topology/Configurator";
 import AMessage from "./AMessage";
-import {CORRELATION_ID_HEADER, PARENT_ID_HEADER, PROCESS_ID_HEADER, SEQUENCE_ID_HEADER} from "./Headers";
+import {
+    CORRELATION_ID_HEADER, default as Headers, PARENT_ID_HEADER, PROCESS_ID_HEADER,
+    SEQUENCE_ID_HEADER,
+} from "./Headers";
 import IMessage from "./IMessage";
 import { ResultCode } from "./ResultCode";
 
@@ -20,30 +23,15 @@ export interface ICounterMessageContent {
 
 class CounterMessage extends AMessage implements IMessage {
 
-    /**
-     *
-     * @param {INodeLabel} node
-     * @param {string} correlationId
-     * @param {string} processId
-     * @param {string} parentId
-     * @param {number} sequenceId
-     * @param {ResultCode} resultCode
-     * @param {string} resultMsg
-     * @param {number} following
-     * @param {number} multiplier
-     */
     constructor(
         node: INodeLabel,
-        correlationId: string,
-        processId: string,
-        parentId: string,
-        sequenceId: number,
+        headers: Headers,
         private resultCode: ResultCode,
         private resultMsg: string = "",
         private following: number = 0,
         private multiplier: number = 1,
     ) {
-        super(node, correlationId, processId, parentId, sequenceId, {}, new Buffer(""));
+        super(node, headers, new Buffer(""));
 
         this.resultCode = resultCode;
         this.resultMsg = resultMsg;
@@ -71,8 +59,8 @@ class CounterMessage extends AMessage implements IMessage {
      *
      * @return CounterMessageHeaders
      */
-    public getHeaders(): ICounterMessageHeaders {
-        const h = super.getHeaders();
+    public getHeaders(): Headers {
+        const h = super.getHeaders().getRaw();
 
         delete h[CORRELATION_ID_HEADER];
         delete h[PROCESS_ID_HEADER];
@@ -85,7 +73,7 @@ class CounterMessage extends AMessage implements IMessage {
         h.parent_id = this.getParentId();
         h.sequence_id = this.getSequenceId();
 
-        return h;
+        return new Headers(h);
     }
 
     /**

@@ -1,8 +1,9 @@
 import TimeUtils from "lib-nodejs/dist/src/utils/TimeUtils";
+import {INodeLabel} from "../topology/Configurator";
 import AMessage from "./AMessage";
+import Headers from "./Headers";
 import IMessage from "./IMessage";
 import {ResultCode, ResultCodeGroup} from "./ResultCode";
-import {INodeLabel} from "../topology/Configurator";
 
 export interface IResult {
     code: ResultCode;
@@ -25,34 +26,24 @@ class JobMessage extends AMessage implements IMessage {
     /**
      *
      * @param {INodeLabel} node
-     * @param {string} correlationId
-     * @param {string} processId
-     * @param {number} sequenceId
-     * @param {Object} headers
-     * @param {string} parentId
+     * @param {Headers} headers
      * @param {Buffer} body
      * @param {IResult} result
-     *
      */
     constructor(
         node: INodeLabel,
-        correlationId: string,
-        processId: string,
-        parentId: string,
-        sequenceId: number,
-        headers: { [key: string]: string },
+        headers: Headers,
         body: Buffer,
         private result?: IResult,
     ) {
-        super(node, correlationId, processId, parentId, sequenceId, headers, body);
+        super(node, headers, body);
 
         this.receivedTime = TimeUtils.nowMili();
         this.multiplier = 1;
         this.forwardSelf = true;
 
-        // do not include following headers when calling getHeaders() if present
-        delete headers.result_code;
-        delete headers.result_message;
+        headers.removeHeader("result_code");
+        headers.removeHeader("result_message");
     }
 
     /**

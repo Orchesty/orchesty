@@ -32,15 +32,7 @@ class Consumer extends BasicConsumer {
             const headers = Headers.getPFHeaders(amqMsg.properties.headers);
             Headers.validateMandatoryHeaders(headers);
 
-            inMsg = new JobMessage(
-                this.node,
-                headers[CORRELATION_ID_HEADER],
-                headers[PROCESS_ID_HEADER],
-                headers[PARENT_ID_HEADER],
-                parseInt(headers[SEQUENCE_ID_HEADER], 10),
-                headers,
-                amqMsg.content,
-            );
+            inMsg = new JobMessage(this.node, new Headers(headers), amqMsg.content);
         } catch (e) {
             logger.error(`AmqpFaucet dead-lettering message`, {node_id: this.node.id, error: e});
             channel.nack(amqMsg, false, false); // dead-letter due to invalid message

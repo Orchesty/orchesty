@@ -77,15 +77,10 @@ class HttpFaucet implements IFaucet {
         try {
             // validate headers and remove all non pf-headers
             const headers = Headers.getPFHeaders(req.headers);
-            Headers.validateMandatoryHeaders(headers);
 
             inMsg = new JobMessage(
                 this.settings.node_label,
-                headers[CORRELATION_ID_HEADER],
-                headers[PROCESS_ID_HEADER],
-                headers[PARENT_ID_HEADER],
-                parseInt(headers[SEQUENCE_ID_HEADER], 10),
-                req.headers,
+                new Headers(headers),
                 new Buffer(JSON.stringify(req.body)),
             );
         } catch (err) {

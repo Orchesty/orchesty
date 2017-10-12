@@ -131,9 +131,9 @@ class AmqpDrain extends ADrain implements IDrain, IPartialForwarder {
         const targetQueue: string = this.settings.repeater.queue.name;
 
         const headers = message.getHeaders();
-        headers.repeat_target_queue = this.settings.faucet.queue.name;
+        headers.setHeader("repeat_target_queue", this.settings.faucet.queue.name);
 
-        const props = { headers: message.getHeaders() };
+        const props = { headers: message.getHeaders().getRaw() };
 
         return this.nonStandardPublisher.sendToQueue(targetQueue, message.getBody(), props)
             .then(() => {
@@ -147,7 +147,7 @@ class AmqpDrain extends ADrain implements IDrain, IPartialForwarder {
      * @return {Promise<JobMessage>}
      */
     private forwardToTargetQueue(message: JobMessage): Promise<JobMessage> {
-        const targetQueue: string = message.getHeaders().target_queue;
+        const targetQueue: string = message.getHeaders().getRaw().target_queue;
 
         if (!targetQueue) {
             // Let the message fail
