@@ -9,6 +9,7 @@ import JobMessage from "../../../../src/message/JobMessage";
 import {ResultCode} from "../../../../src/message/ResultCode";
 import CounterPublisher from "../../../../src/node/drain/amqp/CounterPublisher";
 import {IAmqpDrainSettings} from "../../../../src/node/drain/AmqpDrain";
+import {INodeLabel} from "../../../../src/topology/Configurator";
 
 const conn = new Connection(amqpConnectionOptions);
 const settings: IAmqpDrainSettings = {
@@ -73,8 +74,9 @@ describe("CounterPublisher", () => {
         const msgSeqId = 1;
         const msgHeaders = { job_id: msgJobId, sequence_id: msgSeqId.toString()};
         const msgBody = new Buffer(JSON.stringify({data: "test", settings: {}}));
+        const node: INodeLabel = {id: "nodeId", node_id: "nodeId", node_name: "nodeName"};
         const msg: JobMessage = new JobMessage(
-            "nodeId",
+            node,
             "corrId",
             msgJobId,
             "",
@@ -99,7 +101,7 @@ describe("CounterPublisher", () => {
                             process_id: msgJobId,
                             node_id: settings.node_label.id,
                             parent_id: "",
-                            sequence_id: `${msgSeqId}`,
+                            sequence_id: msgSeqId,
                         },
                         type: "counter_message",
                         appId: settings.node_label.id,
@@ -129,9 +131,9 @@ describe("CounterPublisher", () => {
     });
     it("publishes message to counter input queue", (done) => {
         const publisher = new CounterPublisher(conn, settings);
-        const msgJobId = "123";
+        const msgProcessId = "123";
         const msgSeqId = 1;
-        const msgHeaders = { job_id: msgJobId, sequence_id: msgSeqId.toString()};
+        const msgHeaders = { job_id: msgProcessId, sequence_id: msgSeqId.toString()};
         const msgBody = {data: "test", settings: {}};
 
         const consumer = new SimpleConsumer(
@@ -161,10 +163,11 @@ describe("CounterPublisher", () => {
         );
         consumer.consume(settings.counter.queue.name, {})
             .then(() => {
+                const node: INodeLabel = {id: "nodeId", node_id: "nodeId", node_name: "nodeName"};
                 const msg: JobMessage = new JobMessage(
-                    "nodeId",
+                    node,
                     "corrId",
-                    msgJobId,
+                    msgProcessId,
                     "",
                     msgSeqId,
                     msgHeaders,

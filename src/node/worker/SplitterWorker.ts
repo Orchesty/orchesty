@@ -121,7 +121,7 @@ class SplitterWorker implements IWorker {
                 settings: content.settings,
             };
             const splitMsg = new JobMessage(
-                this.settings.node_label.id,
+                this.settings.node_label,
                 msg.getCorrelationId(),
                 msg.getProcessId(),
                 msg.getParentId(),

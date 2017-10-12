@@ -5,6 +5,7 @@ import Publisher from "lib-nodejs/dist/src/rabbitmq/Publisher";
 import logger from "../../logger/Logger";
 import {default as CounterMessage, ICounterMessageHeaders} from "../../message/CounterMessage";
 import { ResultCode } from "../../message/ResultCode";
+import {INodeLabel} from "../Configurator";
 import CounterConsumer from "./CounterConsumer";
 
 const ID_DELIMITER = ".";
@@ -209,8 +210,15 @@ export default class Counter {
             const processId = Counter.getMostTopProcessId(headers.process_id);
             const resultCode = content.result.code;
 
+            // TODO add missing headers
+            const node: INodeLabel = {
+                id: headers.node_id,
+                node_id: headers.node_id,
+                node_name: headers.node_name,
+            };
+
             const cm = new CounterMessage(
-                headers.node_id,
+                node,
                 headers.correlation_id,
                 processId,
                 headers.parent_id,

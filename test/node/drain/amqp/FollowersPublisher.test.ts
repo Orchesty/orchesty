@@ -9,6 +9,7 @@ import JobMessage from "../../../../src/message/JobMessage";
 import {ResultCode} from "../../../../src/message/ResultCode";
 import FollowersPublisher from "../../../../src/node/drain/amqp/FollowersPublisher";
 import {IAmqpDrainSettings} from "../../../../src/node/drain/AmqpDrain";
+import {INodeLabel} from "../../../../src/topology/Configurator";
 
 const conn = new Connection(amqpConnectionOptions);
 const settings: IAmqpDrainSettings = {
@@ -92,9 +93,9 @@ describe("FollowersPublisher", () => {
         const fConfig = settings.followers[0];
         const outputQueue = fConfig.queue.name;
         const publisher = new FollowersPublisher(conn, settings);
-        const msgJobId = "123";
+        const msgProcessId = "123";
         const msgSeqId = 1;
-        const msgHeaders = { job_id: msgJobId, sequence_id: msgSeqId.toString()};
+        const msgHeaders = { job_id: msgProcessId, sequence_id: msgSeqId.toString()};
         const msgBody = {data: "test", settings: {}};
 
         const consumer = new SimpleConsumer(
@@ -126,10 +127,11 @@ describe("FollowersPublisher", () => {
 
         consumer.consume(outputQueue, {})
             .then(() => {
+                const node: INodeLabel = {id: "nodeId", node_id: "nodeId", node_name: "nodeName"};
                 const msg: JobMessage = new JobMessage(
-                    "nodeId",
+                    node,
                     "corrId",
-                    msgJobId,
+                    msgProcessId,
                     "",
                     msgSeqId,
                     msgHeaders,

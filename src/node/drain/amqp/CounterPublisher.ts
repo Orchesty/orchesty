@@ -42,7 +42,7 @@ class CounterPublisher extends Publisher {
      */
     public send(message: JobMessage): Promise<void> {
         const resMsg = new CounterMessage(
-            this.settings.node_label.id,
+            this.settings.node_label,
             message.getCorrelationId(),
             message.getProcessId(),
             message.getParentId(),

@@ -23,18 +23,7 @@ export interface IHttpWorkerRequestParams {
     followAllRedirects?: boolean;
     gzip?: boolean;
     body?: string;
-    headers: {
-        correlation_id: string,
-        process_id: string,
-        parent_id: string,
-        sequence_id: number,
-        node_id: string,
-        node_name: string,
-        reply_to_url?: string,
-        reply_to_method?: string,
-        token?: string, // TODO pryc s tim
-        guid?: string, // TODO pryc s tim
-    };
+    headers?: any;
 }
 
 const DEFAULT_EMPTY_BODY = { data: {}, settings: {}};
@@ -157,8 +146,6 @@ class HttpWorker implements IWorker {
                 sequence_id: inMsg.getSequenceId(),
                 node_id: this.settings.node_label.node_id,
                 node_name: this.settings.node_label.node_name,
-                token: inMsg.getHeaders().token, // TODO pryc s tim
-                guid: inMsg.getHeaders().guid, // TODO pryc s tim
             },
         };
     }

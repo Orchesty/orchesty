@@ -7,6 +7,7 @@ import JobMessage from "../../../src/message/JobMessage";
 import CounterPublisher from "../../../src/node/drain/amqp/CounterPublisher";
 import FollowersPublisher from "../../../src/node/drain/amqp/FollowersPublisher";
 import AmqpDrain, {IAmqpDrainSettings} from "../../../src/node/drain/AmqpDrain";
+import {INodeLabel} from "../../../src/topology/Configurator";
 
 const settings: IAmqpDrainSettings = {
     node_label: {
@@ -61,7 +62,8 @@ describe("AmqpDrain", () => {
         const drain = new AmqpDrain(settings, counterPub, followPub, nonstandardPub);
 
         const body = new Buffer(JSON.stringify({data: "test", settings: {}}));
-        const msg: JobMessage = new JobMessage("nid", "123", "123", "", 1, {}, body);
+        const node: INodeLabel = {id: "nodeId", node_id: "nodeId", node_name: "nodeName"};
+        const msg: JobMessage = new JobMessage(node, "123", "123", "", 1, {}, body);
 
         return drain.forward(msg)
             .then((result: JobMessage) => {
@@ -87,7 +89,8 @@ describe("AmqpDrain", () => {
         const drain = new AmqpDrain(settings, counterPub, followPub, nonstandardPub);
 
         const body = new Buffer(JSON.stringify({data: "test", settings: {}}));
-        const msg: JobMessage = new JobMessage("nid", "123", "123", "", 1, {}, body);
+        const node: INodeLabel = {id: "nodeId", node_id: "nodeId", node_name: "nodeName"};
+        const msg: JobMessage = new JobMessage(node, "123", "123", "", 1, {}, body);
 
         return drain.forwardPart(msg)
             .then(() => {

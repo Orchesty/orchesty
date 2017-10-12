@@ -2,6 +2,7 @@ import TimeUtils from "lib-nodejs/dist/src/utils/TimeUtils";
 import AMessage from "./AMessage";
 import IMessage from "./IMessage";
 import {ResultCode, ResultCodeGroup} from "./ResultCode";
+import {INodeLabel} from "../topology/Configurator";
 
 export interface IResult {
     code: ResultCode;
@@ -23,7 +24,7 @@ class JobMessage extends AMessage implements IMessage {
 
     /**
      *
-     * @param {string} nodeId
+     * @param {INodeLabel} node
      * @param {string} correlationId
      * @param {string} processId
      * @param {number} sequenceId
@@ -34,7 +35,7 @@ class JobMessage extends AMessage implements IMessage {
      *
      */
     constructor(
-        nodeId: string,
+        node: INodeLabel,
         correlationId: string,
         processId: string,
         parentId: string,
@@ -43,7 +44,7 @@ class JobMessage extends AMessage implements IMessage {
         body: Buffer,
         private result?: IResult,
     ) {
-        super(nodeId, correlationId, processId, parentId, sequenceId, headers, body);
+        super(node, correlationId, processId, parentId, sequenceId, headers, body);
 
         this.receivedTime = TimeUtils.nowMili();
         this.multiplier = 1;
@@ -147,18 +148,6 @@ class JobMessage extends AMessage implements IMessage {
     public getTotalDuration(): number {
         if (this.publishedTime && this.receivedTime) {
             return this.publishedTime - this.receivedTime;
-        }
-
-        return 0;
-    }
-
-    /**
-     *
-     * @return {number}
-     */
-    public getRepeatCount(): number {
-        if (this.headers.repeat_count) {
-            return parseInt(this.headers.repeat_count, 10);
         }
 
         return 0;

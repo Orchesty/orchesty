@@ -2,40 +2,47 @@ import { Channel, Message } from "amqplib";
 import Connection from "lib-nodejs/dist/src/rabbitmq/Connection";
 import { default as BasicConsumer } from "lib-nodejs/dist/src/rabbitmq/Consumer";
 import logger from "../../../logger/Logger";
+import Headers from "../../../message/Headers";
+import {CORRELATION_ID_HEADER, PARENT_ID_HEADER, PROCESS_ID_HEADER, SEQUENCE_ID_HEADER} from "../../../message/Headers";
 import JobMessage from "../../../message/JobMessage";
+import {INodeLabel} from "../../../topology/Configurator";
 import { WorkerProcessFn } from "../../worker/IWorker";
 import {FaucetProcessMsgFn} from "../IFaucet";
 
 class Consumer extends BasicConsumer {
 
-    private nodeId: string;
+    private node: INodeLabel;
     private processData: WorkerProcessFn;
 
     constructor(
-        nodeId: string,
+        node: INodeLabel,
         conn: Connection,
         channelCb: (ch: Channel) => Promise<any>,
         processData: FaucetProcessMsgFn,
     ) {
         super(conn, channelCb);
-        this.nodeId = nodeId;
+        this.node = node;
         this.processData = processData;
     }
 
     public processMessage(amqMsg: Message, channel: Channel): void {
         let inMsg: JobMessage;
         try {
+            // validate headers and remove all non pf-headers
+            const headers = Headers.getPFHeaders(amqMsg.properties.headers);
+            Headers.validateMandatoryHeaders(headers);
+
             inMsg = new JobMessage(
-                this.nodeId,
-                amqMsg.properties.headers.correlation_id,
-                amqMsg.properties.headers.process_id,
-                amqMsg.properties.headers.parent_id,
-                amqMsg.properties.headers.sequence_id,
-                amqMsg.properties.headers,
+                this.node,
+                headers[CORRELATION_ID_HEADER],
+                headers[PROCESS_ID_HEADER],
+                headers[PARENT_ID_HEADER],
+                parseInt(headers[SEQUENCE_ID_HEADER], 10),
+                headers,
                 amqMsg.content,
             );
         } catch (e) {
-            logger.error(`AmqpFaucet dead-lettering message`, {node_id: this.nodeId, error: e});
+            logger.error(`AmqpFaucet dead-lettering message`, {node_id: this.node.id, error: e});
             channel.nack(amqMsg, false, false); // dead-letter due to invalid message
             return;
         }
