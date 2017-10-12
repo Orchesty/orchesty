@@ -31,7 +31,7 @@ class ShopifyDeleteCustomerMapper implements CustomNodeInterface
             );
         }
         $res = [
-            'email' => $data['id'], //TODO Shopify does not send email that is required by cm...
+            'email' => (string) $data['id'], //TODO Shopify does not send email that is required by cm...
         ];
 
         return $dto->setData(json_encode($res));
