@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace CleverConnectors\AppBundle\Model\Systems\Impl\Shopify;
+namespace CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\Connector;
 
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
@@ -10,7 +10,7 @@ use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
 /**
  * Class ShopifyCustomerConnectorAbstract
  *
- * @package CleverConnectors\AppBundle\Model\Systems\Impl\Shopify
+ * @package CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\Connector
  */
 abstract class ShopifyCustomerConnectorAbstract implements ConnectorInterface
 {

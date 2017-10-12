@@ -127,39 +127,6 @@ services:
             - '@manager.last_sync'
             - '@hbpf.transport.async_curl_factory'
 
-    systems.shopify:
-        class: CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\ShopifySystem
-        arguments:
-            - '@hbpf.providers.oauth2_provider'
-        tags: ['%systems%']
-
-    hbpf.connector.shopify-sync-connector:
-        class: CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\ShopifySyncConnector
-        arguments:
-            - '@systems.shopify'
-            - '@doctrine_mongodb.odm.default_document_manager'
-            - '@hbpf.transport.async_curl_factory'
-
-    hbpf.connector.shopify-customer-create:
-        class: CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\ShopifyCreateCustomerConnector
-        arguments:
-
-    hbpf.connector.shopify-customer-update:
-        class: CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\ShopifyUpdateCustomerConnector
-        arguments:
-
-    hbpf.connector.shopify-customer-delete:
-        class: CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\ShopifyDeleteCustomerConnector
-        arguments:
-
-    hbpf.custom_node.shopify-customer-update-mapper:
-        class: CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\ShopifyUpdateCustomerMapper
-        arguments:
-
-    hbpf.custom_node.shopify-customer-delete-mapper:
-        class: CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\ShopifyDeleteCustomerMapper
-        arguments:
-
     hbpf.custom_node.user-message-generator:
         class: CleverConnectors\AppBundle\Model\CustomNode\UserMessageGenerator
         arguments:

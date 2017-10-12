@@ -13,9 +13,11 @@ abstract class ConnectorTestCaseAbstract extends DatabaseTestCaseAbstract
 {
 
     /**
+     * @param string $file
+     *
      * @return string
      */
-    protected function getRequest(): string
+    protected function getRequest(string $file): string
     {
         $class     = Strings::substring(get_called_class(), strrpos(get_called_class(), '\\') + 1);
         $namespace = str_replace(
@@ -23,7 +25,7 @@ abstract class ConnectorTestCaseAbstract extends DatabaseTestCaseAbstract
             '/',
             Strings::substring(str_replace([$class, 'Tests\\'], '', get_called_class()), 0, -1)
         );
-        $path      = sprintf('%s/%s/data/%s', __DIR__, $namespace, str_replace('Test', '.json', $class));
+        $path      = sprintf('%s/%s/../data/%s', __DIR__, $namespace, $file);
 
         if (!file_exists($path)) {
             file_put_contents($path, '{"key": "Example content"}');

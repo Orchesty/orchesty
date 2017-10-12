@@ -7,9 +7,9 @@
  * Time: 9:55
  */
 
-namespace Tests\Unit\AppBundle\Model\Systems\Impl\Shopify;
+namespace Tests\Unit\AppBundle\Model\Systems\Impl\Shopify\Connector;
 
-use CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\ShopifySyncConnector;
+use CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\Connector\ShopifySyncCustomerConnector;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\ShopifySystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -24,11 +24,11 @@ use Tests\KernelTestCaseAbstract;
 use function React\Promise\resolve;
 
 /**
- * Class ShopifySyncConnectorTest
+ * Class ShopifySyncCustomerConnectorTest
  *
- * @package Tests\Unit\AppBundle\Model\Systems\Impl\Shopify
+ * @package Tests\Unit\AppBundle\Model\Systems\Impl\Shopify\Connector
  */
-final class ShopifySyncConnectorTest extends KernelTestCaseAbstract
+final class ShopifySyncCustomerConnectorTest extends KernelTestCaseAbstract
 {
 
     /**
@@ -48,7 +48,7 @@ final class ShopifySyncConnectorTest extends KernelTestCaseAbstract
             ->setHeaders([])
             ->setData(json_encode($dtoData));
 
-        /** @var ShopifySyncConnector $syncConn */
+        /** @var ShopifySyncCustomerConnector $syncConn */
         $syncConn = $this->mockSync();
         $data     = $syncConn->processBatch($processDto, $loop, function (): void {
         });
@@ -66,7 +66,7 @@ final class ShopifySyncConnectorTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @return PHPUnit_Framework_MockObject_MockObject|ShopifySyncConnector
+     * @return PHPUnit_Framework_MockObject_MockObject|ShopifySyncCustomerConnector
      */
     private function mockSync()
     {
@@ -80,7 +80,7 @@ final class ShopifySyncConnectorTest extends KernelTestCaseAbstract
 
         $sender = $this->createMock(CurlSenderFactory::class);
 
-        $syncConn = $this->getMockBuilder(ShopifySyncConnector::class)
+        $syncConn = $this->getMockBuilder(ShopifySyncCustomerConnector::class)
             ->setMethods(['fetchData'])
             ->setConstructorArgs([$this->mockSystem(), $dm, $sender])
             ->getMock();
