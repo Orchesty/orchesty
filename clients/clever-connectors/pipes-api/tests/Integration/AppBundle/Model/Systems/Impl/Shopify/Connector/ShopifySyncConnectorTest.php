@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Integration\AppBundle\Model\Systems\Impl\Shopify;
+namespace Tests\Integration\AppBundle\Model\Systems\Impl\Shopify\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use Hanaboso\PipesFramework\Commons\Crypt\CryptManager;
@@ -15,7 +15,7 @@ use Tests\DatabaseTestCaseAbstract;
 /**
  * Class ShopifySyncConnectorTest
  *
- * @package Tests\Integration\AppBundle\Model\Systems\Impl\Shopify
+ * @package Tests\Integration\AppBundle\Model\Systems\Impl\Shopify\Connector
  */
 class ShopifySyncConnectorTest extends DatabaseTestCaseAbstract
 {
@@ -26,7 +26,7 @@ class ShopifySyncConnectorTest extends DatabaseTestCaseAbstract
     public function testProcessBatch(): void
     {
         $this->markTestSkipped();
-        $connector = $this->container->get('hbpf.connector.shopify-sync-connector');
+        $connector = $this->container->get('hbpf.connector.shopify-sync-customer-connector');
 
         $topology = (new Topology())->setName('Topology');
         $this->persistAndFlush($topology);

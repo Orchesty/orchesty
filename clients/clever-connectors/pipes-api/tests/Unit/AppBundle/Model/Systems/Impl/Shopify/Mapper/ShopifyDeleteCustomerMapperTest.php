@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Unit\AppBundle\Model\Systems\Impl\Shopify;
+namespace Tests\Unit\AppBundle\Model\Systems\Impl\Shopify\Mapper;
 
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Nette\Utils\Json;
@@ -9,7 +9,7 @@ use Tests\ConnectorTestCaseAbstract;
 /**
  * Class ShopifyDeleteCustomerMapperTest
  *
- * @package Tests\Unit\AppBundle\Model\Systems\Impl\Shopify
+ * @package Tests\Unit\AppBundle\Model\Systems\Impl\Shopify\Mapper
  */
 class ShopifyDeleteCustomerMapperTest extends ConnectorTestCaseAbstract
 {
@@ -22,7 +22,7 @@ class ShopifyDeleteCustomerMapperTest extends ConnectorTestCaseAbstract
         $connector = $this->container->get('hbpf.custom_node.shopify-customer-delete-mapper');
 
         $response = Json::decode(
-            $connector->process((new ProcessDto())->setData($this->getRequest()))->getData(),
+            $connector->process((new ProcessDto())->setData($this->getRequest('ShopifyDeleteCustomerMapper.json')))->getData(),
             TRUE
         );
 

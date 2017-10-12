@@ -25,6 +25,9 @@ class AppBundle extends Bundle
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__ . '/Resources/config'));
         $loader->load('parameters.yml');
         $loader->load('dev_services.yml');
+
+        $loader = new YamlFileLoader($container, new FileLocator(__DIR__ . '/Resources/system'));
+        $loader->load('shopify.yml');
         $container->addCompilerPass(new SystemCompilerPass());
     }
 

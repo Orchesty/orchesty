@@ -7,10 +7,11 @@
  * Time: 17:36
  */
 
-namespace CleverConnectors\AppBundle\Model\Systems\Impl\Shopify;
+namespace CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
+use CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\ShopifySystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use CleverConnectors\AppBundle\Utils\CronUtils;
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -30,11 +31,11 @@ use React\Promise\PromiseInterface;
 use function React\Promise\all;
 
 /**
- * Class ShopifySyncConnector
+ * Class ShopifySyncCustomerConnector
  *
- * @package CleverConnectors\AppBundle\Model\Systems\Impl\Shopify
+ * @package CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\Connector
  */
-class ShopifySyncConnector implements BatchInterface, ConnectorInterface
+class ShopifySyncCustomerConnector implements BatchInterface, ConnectorInterface
 {
 
     private const COUNT_URL     = 'admin/customers/count.json';
