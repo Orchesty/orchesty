@@ -69,7 +69,7 @@ class BatchConsumerCallbackTest extends TestCase
 
         $callback
             ->processMessage($this->createMessage($headers), $channel, $client, $loop)
-            ->then(NULL, function ($e) use ($loop, $message): void {
+            ->then(NULL, function (Exception $e) use ($loop, $message): void {
                 $this->assertInstanceOf(InvalidArgumentException::class, $e);
                 $this->assertSame($message, $e->getMessage());
                 $loop->stop();
@@ -104,7 +104,7 @@ class BatchConsumerCallbackTest extends TestCase
                 [
                     'reply-to' => 'reply',
                     'type'     => 'batch',
-                    'node_id'  => '132',
+                    'pfp_node_id'  => '132',
                 ],
                 'Missing "correlation-id" in the message header.',
             ],
@@ -112,8 +112,8 @@ class BatchConsumerCallbackTest extends TestCase
                 [
                     'reply-to'       => 'reply',
                     'type'           => 'batch',
-                    'node_id'        => '132',
-                    'correlation-id' => '123',
+                    'pfp_node_id'        => '132',
+                    'pfp_correlation-id' => '123',
                 ],
                 'Missing "process_id" in the message header.',
             ],
@@ -143,9 +143,9 @@ class BatchConsumerCallbackTest extends TestCase
         $headers = [
             'reply-to'       => 'reply',
             'type'           => 'batch',
-            'node_id'        => '132',
-            'correlation-id' => '123',
-            'process_id'     => '123',
+            'pfp_node_id'        => '132',
+            'pfp_correlation-id' => '123',
+            'pfp_process_id'     => '123',
         ];
         $callback
             ->processMessage($this->createMessage($headers), $channel, $client, $loop)
@@ -186,9 +186,9 @@ class BatchConsumerCallbackTest extends TestCase
         $headers = [
             'reply-to'       => 'reply',
             'type'           => 'test',
-            'node_id'        => '132',
-            'correlation-id' => '123',
-            'process_id'     => '123',
+            'pfp_node_id'        => '132',
+            'pfp_correlation-id' => '123',
+            'pfp_process_id'     => '123',
         ];
         $callback
             ->processMessage($this->createMessage($headers), $channel, $client, $loop)
@@ -229,9 +229,9 @@ class BatchConsumerCallbackTest extends TestCase
         $headers = [
             'reply-to'       => 'reply',
             'type'           => 'unknown',
-            'node_id'        => '132',
-            'correlation-id' => '123',
-            'process_id'     => '123',
+            'pfp_node_id'        => '132',
+            'pfp_correlation-id' => '123',
+            'pfp_process_id'     => '123',
         ];
         $callback
             ->processMessage($this->createMessage($headers), $channel, $client, $loop)
