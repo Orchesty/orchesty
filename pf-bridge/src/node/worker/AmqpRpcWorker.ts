@@ -10,6 +10,7 @@ import {ResultCode} from "../../message/ResultCode";
 import {INodeLabel} from "../../topology/Configurator";
 import IPartialForwarder from "../drain/IPartialForwarder";
 import IWorker from "./IWorker";
+import {default as Headers, SEQUENCE_ID_HEADER} from "../../message/Headers";
 
 export interface IAmqpRpcWorkerSettings {
     node_label: INodeLabel;
@@ -160,7 +161,13 @@ class AmqpRpcWorker implements IWorker {
                 }
             };
 
-            const jobMsg = new JobMessage(this.settings.node_label, testId, testId, "", 1, {}, new Buffer(""));
+            const headers = new Headers();
+            headers.setPermanentHeader("correlation_id", testId);
+            headers.setPermanentHeader("process_id", testId);
+            headers.setPermanentHeader("parent_id", "");
+            headers.setPermanentHeader("sequence_id", 1);
+
+            const jobMsg = new JobMessage(this.settings.node_label, headers, new Buffer(""));
             const t: IWaiting = { resolveFn: resolveTestFn, message: jobMsg, sequence: 0 };
             this.waiting.set(testId, t);
 
@@ -229,22 +236,22 @@ class AmqpRpcWorker implements IWorker {
         const stored: IWaiting = this.waiting.get(corrId);
         stored.sequence++;
 
-        const origContent = JSON.parse(stored.message.getContent());
         const newContent = JSON.parse(resultMsg.content.toString());
 
-        const headers = ObjectUtils.mergeObjectsProperties(
-            JSON.parse(JSON.stringify(stored.message.getHeaders())),
+        let headers = ObjectUtils.mergeObjectsProperties(
+            JSON.parse(JSON.stringify(stored.message.getHeaders().getRaw())),
             JSON.parse(JSON.stringify(resultMsg.properties.headers)),
         );
 
+        headers = Headers.getPFHeaders(headers);
+
+        const headerObj = new Headers(headers);
+        headerObj.setPermanentHeader(SEQUENCE_ID_HEADER, stored.sequence);
+
         const splitMsg = new JobMessage(
             this.settings.node_label,
-            stored.message.getCorrelationId(),
-            stored.message.getProcessId(),
-            stored.message.getParentId(),
-            stored.sequence,
-            headers,
-            new Buffer(JSON.stringify({ data: newContent.data, settings: origContent.settings})),
+            headerObj,
+            new Buffer(JSON.stringify({ data: newContent.data, settings: {}})),
             { code: ResultCode.SUCCESS, message: `Part ${stored.sequence}` }, // TODO - unhardcode?
         );
 

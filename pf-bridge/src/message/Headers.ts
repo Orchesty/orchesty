@@ -90,6 +90,63 @@ class Headers {
         }
     }
 
+    /**
+     *
+     * @param {{[p: string]: any}} headers
+     */
+    constructor(private headers?: { [key: string]: any }) {}
+
+    /**
+     *
+     * @param {string} key
+     * @param value
+     */
+    public setHeader(key: string, value: any) {
+        this.headers[`${PF_HEADERS_PREFIX}key`] = value;
+    }
+
+    /**
+     *
+     * @param {string} key
+     * @param value
+     */
+    public setPermanentHeader(key: string, value: any) {
+        this.headers[`${PF_PERMANENT_HEADERS_PREFIX}}key`] = value;
+    }
+
+    /**
+     *
+     * @param {string} key
+     * @param value
+     */
+    public setCustomHeader(key: string, value: any) {
+        this.headers[key] = value;
+    }
+
+    /**
+     *
+     * @return any
+     */
+    public getRaw(): any {
+        return this.headers;
+    }
+
+    /**
+     *
+     * @param {string} key
+     */
+    public removeHeader(key: string) {
+        delete this.headers[`${PF_HEADERS_PREFIX}key`];
+    }
+
+    /**
+     *
+     * @param {string} key
+     */
+    public removeCustomHeader(key: string) {
+        delete this.headers[key];
+    }
+
 }
 
 export default Headers;
