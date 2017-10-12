@@ -80,7 +80,7 @@ class BatchActionAbstractTest extends TestCase
         $batchAction = $this->getMockForAbstractClass(BatchActionAbstract::class);
 
         $batchAction
-            ->batchAction($this->createMessage(['node_name' => 'abc']), $loop, $this->callback)
+            ->batchAction($this->createMessage(['pf_node_name' => 'abc']), $loop, $this->callback)
             ->then(function () use ($loop): void {
                 $this->assertTrue(TRUE);
                 $loop->stop();

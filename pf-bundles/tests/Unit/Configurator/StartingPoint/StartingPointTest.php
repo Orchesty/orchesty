@@ -156,14 +156,20 @@ class StartingPointTest extends TestCase
      */
     public function testCreateHeaders(): void
     {
+        /** @var Topology|PHPUnit_Framework_MockObject_MockObject $topology */
+        $topology = $this->createMock(Topology::class);
+        $topology->method('getId')->willReturn('13');
+        $topology->method('getName')->willReturn('name');
         $startingPoint = new StartingPoint($this->startingPointProducer, $this->curlManager);
-        $headers       = $startingPoint->createHeaders();
+        $headers       = $startingPoint->createHeaders($topology);
 
-        $this->assertCount(4, $headers->getHeaders());
-        $this->assertArrayHasKey('process_id', $headers->getHeaders());
-        $this->assertArrayHasKey('parent_id', $headers->getHeaders());
-        $this->assertArrayHasKey('correlation_id', $headers->getHeaders());
-        $this->assertArrayHasKey('sequence_id', $headers->getHeaders());
+        $this->assertCount(6, $headers->getHeaders());
+        $this->assertArrayHasKey('pfp_process_id', $headers->getHeaders());
+        $this->assertArrayHasKey('pfp_parent_id', $headers->getHeaders());
+        $this->assertArrayHasKey('pfp_correlation_id', $headers->getHeaders());
+        $this->assertArrayHasKey('pfp_sequence_id', $headers->getHeaders());
+        $this->assertArrayHasKey('pf_topology_id', $headers->getHeaders());
+        $this->assertArrayHasKey('pf_topology_name', $headers->getHeaders());
     }
 
     /**
@@ -287,7 +293,7 @@ class StartingPointTest extends TestCase
         $responseBody = json_encode([
             'status'  => TRUE,
             'message' => '5/5 node ok',
-            'nodes'  => [],
+            'nodes'   => [],
         ]);
 
         $this->curlManager->method('send')->willReturn(

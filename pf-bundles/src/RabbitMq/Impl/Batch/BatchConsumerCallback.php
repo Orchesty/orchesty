@@ -12,6 +12,7 @@ use Bunny\Async\Client;
 use Bunny\Channel;
 use Bunny\Message;
 use Exception;
+use Hanaboso\PipesFramework\Commons\Utils\PipesHeaders;
 use Hanaboso\PipesFramework\RabbitMq\Consumer\AsyncCallbackInterface;
 use InvalidArgumentException;
 use Psr\Log\LoggerAwareInterface;
@@ -89,17 +90,17 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
                 )
             );
         }
-        if ($this->isEmpty($message->getHeader(self::NODE_ID))) {
+        if ($this->isEmpty(PipesHeaders::getPermanentHeader(self::NODE_ID, $message->headers))) {
             return reject(new InvalidArgumentException(
                 sprintf('Missing "%s" in the message header.', self::NODE_ID)
             ));
         }
-        if ($this->isEmpty($message->getHeader(self::CORRELATION_ID))) {
+        if ($this->isEmpty(PipesHeaders::getPermanentHeader(self::CORRELATION_ID, $message->headers))) {
             return reject(new InvalidArgumentException(
                 sprintf('Missing "%s" in the message header.', self::CORRELATION_ID)
             ));
         }
-        if ($this->isEmpty($message->getHeader(self::PROCESS_ID))) {
+        if ($this->isEmpty(PipesHeaders::getPermanentHeader(self::PROCESS_ID, $message->headers))) {
             return reject(new InvalidArgumentException(
                 sprintf('Missing "%s" in the message header.', self::PROCESS_ID)
             ));
@@ -180,10 +181,10 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
     private function getHeaders(Message $message): array
     {
         return [
-            self::CORRELATION_ID => $message->getHeader(self::CORRELATION_ID),
-            self::NODE_ID        => $message->getHeader(self::NODE_ID),
-            self::PROCESS_ID     => $message->getHeader(self::PROCESS_ID),
-            self::PARENT_ID      => $message->getHeader(self::PARENT_ID),
+            self::CORRELATION_ID => PipesHeaders::getPermanentHeader(self::CORRELATION_ID, $message->headers),
+            self::NODE_ID        => PipesHeaders::getPermanentHeader(self::NODE_ID, $message->headers),
+            self::PROCESS_ID     => PipesHeaders::getPermanentHeader(self::PROCESS_ID, $message->headers),
+            self::PARENT_ID      => PipesHeaders::getPermanentHeader(self::PARENT_ID, $message->headers),
         ];
     }
 
@@ -198,8 +199,8 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
         return $channel->publish(
             '',
             array_merge($this->getHeaders($message), [
-                self::TYPE        => 'test',
-                self::RESULT_CODE => 0,
+                self::TYPE                                 => 'test',
+                PipesHeaders::createKey(self::RESULT_CODE) => 0,
             ]),
             '',
             $message->getHeader('reply-to')
@@ -244,9 +245,9 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
                 $this->getHeaders($message),
                 $successMessage->getHeaders(),
                 [
-                    self::TYPE        => 'batch_item',
-                    self::SEQUENCE_ID => $successMessage->getSequenceId(),
-                    self::RESULT_CODE => 0,
+                    self::TYPE                                          => 'batch_item',
+                    PipesHeaders::createPermanentKey(self::SEQUENCE_ID) => $successMessage->getSequenceId(),
+                    PipesHeaders::createKey(self::RESULT_CODE)          => 0,
                 ]
             ),
             '',
@@ -269,8 +270,8 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
         return $channel->publish(
             '',
             array_merge($this->getHeaders($message), [
-                self::TYPE        => 'batch_end',
-                self::RESULT_CODE => 0,
+                self::TYPE                                 => 'batch_end',
+                PipesHeaders::createKey(self::RESULT_CODE) => 0,
             ]),
             '',
             $message->getHeader('reply-to')
@@ -298,8 +299,8 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
                 'result_detail'  => $errorMessage->getDetail(),
             ]),
             array_merge($this->getHeaders($message), [
-                self::TYPE        => 'batch_end',
-                self::RESULT_CODE => $errorMessage->getCode(),
+                self::TYPE                                 => 'batch_end',
+                PipesHeaders::createKey(self::RESULT_CODE) => $errorMessage->getCode(),
             ]),
             '',
             $message->getHeader('reply-to')

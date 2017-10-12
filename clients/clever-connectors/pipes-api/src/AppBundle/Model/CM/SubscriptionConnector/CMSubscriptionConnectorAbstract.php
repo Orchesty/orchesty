@@ -18,6 +18,7 @@ use GuzzleHttp\RequestOptions;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
+use Hanaboso\PipesFramework\Commons\Utils\PipesHeaders;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
 use Psr\Log\LoggerAwareInterface;
@@ -120,7 +121,12 @@ abstract class CMSubscriptionConnectorAbstract extends CMAuthorization implement
      */
     public function processCMAction(ProcessDto $dto, string $method, array $statusCode, string $email = ''): ProcessDto
     {
-        if (!isset($dto->getHeaders()['guid']) || !isset($dto->getHeaders()['token'])) {
+        /** @var string $token */
+        $token = PipesHeaders::getHeader('token', $dto->getHeaders());
+        /** @var string $user */
+        $user = PipesHeaders::getHeader('guid', $dto->getHeaders());
+
+        if (!$token || !$user) {
             throw new CleverConnectorsException(
                 'Missing required data in headers.',
                 CleverConnectorsException::MISSING_DATA
@@ -129,10 +135,7 @@ abstract class CMSubscriptionConnectorAbstract extends CMAuthorization implement
 
         $req = new RequestDto($method, new Uri($this->getUrl($email)));
 
-        $req->setHeaders($this->getAuthorizationHeaders(
-            $dto->getHeaders()['guid'][0], // TODO why header array?
-            $dto->getHeaders()['token'][0]
-        ));
+        $req->setHeaders($this->getAuthorizationHeaders($user, $token));
 
         $req->setBody(json_encode($this->getData($dto)));
 
@@ -158,13 +161,7 @@ abstract class CMSubscriptionConnectorAbstract extends CMAuthorization implement
             );
         }
 
-        $data = $res->getBody();
-        $data = str_replace(PHP_EOL, '', $data);
-        $dto->setData($data);
-
-        // @todo vyresit predavani custom hlavicek
-        $header = $dto->getHeaders();
-        $dto->setHeaders(['token' => $header['token'], 'guid' => $header['guid']]);
+        $dto->setData($res->getBody());
 
         return $dto;
     }

@@ -84,9 +84,9 @@ class UserMessageGeneratorTest extends TestCase
     }
 
     /**
-     * @covers UserMessageGenerator::getConnectorKey()
+     * @covers UserMessageGenerator::getSystemKey()
      */
-    public function testConnectorKeyError(): void
+    public function testSystemKeyError(): void
     {
         $loop = Factory::create();
 
@@ -186,10 +186,10 @@ class UserMessageGeneratorTest extends TestCase
         $callback            = new UserMessageGenerator($serializer, $asyncCommandFactory);
 
         $callback
-            ->prepareData(['id' => '5', 'token' => '123', 'user' => '123'], ['name' => 'Name'], 1)
+            ->prepareData(['id' => '5', 'token' => '123', 'user' => '123'], 1)
             ->then(function (SuccessMessage $message) use ($loop): void {
                 $this->assertSame(1, $message->getSequenceId());
-                $this->assertSame('{"topology":{"name":"Name"},"system_install":{"id":"5","token":"123","user":"123"}}', $message->getData());
+                $this->assertSame('{"system_install":{"id":"5","token":"123","user":"123"}}', $message->getData());
                 $this->assertSame('[]', $message->getSetting());
                 $loop->stop();
             })

@@ -12,6 +12,7 @@ use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
+use Hanaboso\PipesFramework\Commons\Utils\PipesHeaders;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Exception\StartingPointException;
@@ -35,11 +36,6 @@ class StartingPoint implements LoggerAwareInterface
     private const CONTENT = '{"data":%s, "settings": ""}';
 
     private const COUNTER_MESSAGE_TYPE = 'counter_message';
-
-    private const HEADERS = [
-        'token',
-        'guid',
-    ];
 
     /**
      * @var StartingPointProducer
@@ -147,23 +143,24 @@ class StartingPoint implements LoggerAwareInterface
     }
 
     /**
-     * @param array $requestHeaders
+     * @param Topology $topology
+     * @param array    $requestHeaders
      *
      * @return Headers
      */
-    public function createHeaders(array $requestHeaders = []): Headers
+    public function createHeaders(Topology $topology, array $requestHeaders = []): Headers
     {
         $headers = new Headers();
         $headers
-            ->addHeader('process_id', Uuid::uuid4()->toString())
-            ->addHeader('parent_id', '')
-            ->addHeader('correlation_id', Uuid::uuid4()->toString())
-            ->addHeader('sequence_id', '1');
+            ->addHeader(PipesHeaders::createPermanentKey('process_id'), Uuid::uuid4()->toString())
+            ->addHeader(PipesHeaders::createPermanentKey('parent_id'), '')
+            ->addHeader(PipesHeaders::createPermanentKey('correlation_id'), Uuid::uuid4()->toString())
+            ->addHeader(PipesHeaders::createPermanentKey('sequence_id'), '1')
+            ->addHeader(PipesHeaders::createKey('topology_id'), $topology->getId())
+            ->addHeader(PipesHeaders::createKey('topology_name'), $topology->getName());
 
-        foreach ($requestHeaders as $name => $val) {
-            if (in_array($name, self::HEADERS)) {
-                $headers->addHeader($name, (string) $val[0]); // TODO spatne
-            }
+        foreach ($requestHeaders as $key => $value) {
+            $headers->addHeader(PipesHeaders::createKey($key), (string) $value[0]);
         }
 
         return $headers;
@@ -203,7 +200,7 @@ class StartingPoint implements LoggerAwareInterface
         $this->runTopology(
             $topology,
             $node,
-            $this->createHeaders($request->headers->all()),
+            $this->createHeaders($topology, $request->headers->all()),
             $this->createBodyFromRequest($request)
         );
     }
@@ -211,11 +208,11 @@ class StartingPoint implements LoggerAwareInterface
     /**
      * @param Topology    $topology
      * @param Node        $node
-     * @param null|string $body     JSON string
+     * @param null|string $body
      */
     public function run(Topology $topology, Node $node, ?string $body = NULL): void
     {
-        $this->runTopology($topology, $node, $this->createHeaders(), $this->createBody($body));
+        $this->runTopology($topology, $node, $this->createHeaders($topology), $this->createBody($body));
     }
 
     /**
@@ -249,9 +246,9 @@ class StartingPoint implements LoggerAwareInterface
             $headers
         );
         $this->logger->info('Starting point message', [
-            'correlation_id' => $headers['correlation_id'],
-            'process_id'     => $headers['process_id'],
-            'parent_id'      => $headers['parent_id'],
+            'correlation_id' => PipesHeaders::getPermanentHeader('correlation_id', $headers),
+            'process_id'     => PipesHeaders::getPermanentHeader('process_id', $headers),
+            'parent_id'      => PipesHeaders::getPermanentHeader('parent_id', $headers),
             'node_id'        => $node->getId(),
             'node_name'      => $node->getName(),
             'topology_id'    => $topology->getId(),
