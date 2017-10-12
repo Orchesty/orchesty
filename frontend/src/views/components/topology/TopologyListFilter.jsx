@@ -2,22 +2,24 @@ import React from 'react'
 import {Field, reduxForm} from 'redux-form';
 
 import {FilterSelect} from 'elements/filterInputs';
-
-const visibilityOptions = [
-  {value: '', label: 'All'},
-  {value: 'public', label: 'Public'},
-  {value: 'draft', label: 'Draft'}
-];
+import VisibilityFilter from 'rootApp/views/filters/VisibilityFilter';
 
 class TopologyListFilter extends React.Component {
   constructor(props) {
     super(props);
+    this.changeFilter = this.changeFilter.bind(this);
+  }
+
+  changeFilter(name, value){
+    const {changeFilter, filter} = this.props;
+    changeFilter(Object.assign({}, filter, {[name]: value}));
   }
 
   render() {
+    const {filter: {visibility} = {}} = this.props;
     return (
       <form className="form-horizontal">
-        <Field name="visibility" component={FilterSelect} label="Visibility" icon="fa fa-eye" options={visibilityOptions} />
+        <VisibilityFilter name="visibility" value={visibility} onChange={this.changeFilter}/>
       </form>
     );
   }

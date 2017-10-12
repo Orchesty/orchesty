@@ -25,6 +25,14 @@ function receive(data){
   }
 }
 
+
+function receiveItems(items){
+  return {
+    type: types.AUTHORIZATION_RECEIVE_ITEMS,
+    items
+  }
+}
+
 function loadList(id, loadingState = true){
   return (dispatch, getState) => {
     if (loadingState) {
@@ -36,6 +44,9 @@ function loadList(id, loadingState = true){
       offset,
       limit: list.pageSize
     })).then(response => {
+      if (response){
+        dispatch(receiveItems(response.items));
+      }
       dispatch(response ? listReceive(id, response) : listError(id));
       return response;
     })
