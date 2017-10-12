@@ -111,7 +111,7 @@ class AmqpRpcWorker implements IWorker {
                 replyTo: this.resultsQueue.name,
                 correlationId: msg.getCorrelationId(),
                 headers: {
-                    node_id: this.settings.node_label.id,
+                    node_id: this.settings.node_label.node_id,
                     node_name: this.settings.node_label.node_name,
                     correlation_id: msg.getCorrelationId(),
                     process_id: msg.getProcessId(),
