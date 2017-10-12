@@ -31,9 +31,9 @@ function addElement(oldElements, element){
 
 function reducer(state = initialState, action){
   switch (action.type){
-    case types.TOPOLOGY_LIST_RECEIVE: 
+    case types.TOPOLOGY_RECEIVE_ITEMS:
       return Object.assign({}, state, {
-        elements: addElements(state.elements, action.data.items)
+        elements: addElements(state.elements, action.items)
       });
     
     case types.TOPOLOGY_RECEIVE:

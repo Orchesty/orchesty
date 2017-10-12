@@ -40,6 +40,11 @@ function listReducer(state, action, getElementId) {
         page: action.page
       });
 
+    case types.LIST_CHANGE_FILTER:
+      return Object.assign({}, state, {
+        filter: action.filter
+      });
+
     case types.LIST_INVALIDATE:
       if (state.state != stateType.NOT_LOADED && (state.type == listType.PAGINATION ||
           (state.type == listType.RELATION && state.objectType === action.objectType && state.objectId === action.objectId))) {
@@ -61,14 +66,21 @@ export default (state = {}, action, getElementId) => {
         id: action.id,
         type: action.listType,
         state: stateType.NOT_LOADED,
+        local: Boolean(action.local),
         items: null
       };
 
       switch (action.listType) {
+        case listType.COMPLETE:
+          list['sort'] = action.sort;
+          list['filter'] = action.filter;
+          break;
+
         case listType.PAGINATION:
           list['pageSize'] = action.pageSize;
           list['page'] = action.page;
           list['sort'] = action.sort;
+          list['filter'] = action.filter;
           break;
 
         case listType.RELATION:
@@ -99,6 +111,7 @@ export default (state = {}, action, getElementId) => {
     case types.LIST_ERROR:
     case types.LIST_CHANGE_PAGE:
     case types.LIST_CHANGE_SORT:
+    case types.LIST_CHANGE_FILTER:
       return Object.assign({}, state, {
         [action.id]: listReducer(state[action.id], action, getElementId)
       });

@@ -42,7 +42,7 @@ class TopologyListTable extends React.Component {
     const {list: {sort}} = this.props;
     return (
       <tr>
-        <SortTh name="id" state={sort} onChangeSort={this.changeSort}>#</SortTh>
+        <SortTh name="_id" state={sort} onChangeSort={this.changeSort}>#</SortTh>
         <SortTh name="visibility" state={sort} onChangeSort={this.changeSort}>Visibility</SortTh>
         <SortTh name="name" state={sort} onChangeSort={this.changeSort}>Name</SortTh>
         <SortTh name="version" state={sort} onChangeSort={this.changeSort}>Version</SortTh>
@@ -54,7 +54,7 @@ class TopologyListTable extends React.Component {
   }
 
   render() {
-    const {list, elements, openModal, clone, topologyDelete, publish, selectPage, list: {items}} = this.props;
+    const {list, elements, listChangeFilter, openModal, clone, topologyDelete, publish, selectPage, list: {items}} = this.props;
 
     let rows = null;
     if (items){
@@ -112,7 +112,7 @@ class TopologyListTable extends React.Component {
 
     return (
       <div className="topology-list-table">
-        <TopologyListFilter />
+        {listChangeFilter && <TopologyListFilter filter={list.filter} changeFilter={listChangeFilter} />}
         <table className="table table-hover">
           <thead>
           {this._renderHead()}
@@ -132,23 +132,13 @@ TopologyListTable.propTypes = {
   elements: PropTypes.object.isRequired,
   openModal: PropTypes.func.isRequired,
   selectPage: PropTypes.func.isRequired,
-  setPageData: PropTypes.func.isRequired,
   needList: PropTypes.func.isRequired,
   listChangeSort: PropTypes.func,
   listChangePage: PropTypes.func,
+  listChangeFilter: PropTypes.func,
   clone: PropTypes.func,
   publish: PropTypes.func,
   topologyDelete: PropTypes.func
 };
 
-function mapStateToProps(state, ownProps) {
- return {};
-}
-
-function mapActionsToProps(dispatch){
-  return {
-    setPageData: data => dispatch(applicationActions.setPageData(data)),
-  }
-}
-
-export default connect(mapStateToProps, mapActionsToProps)(StateComponent(TopologyListTable));
+export default StateComponent(TopologyListTable);
