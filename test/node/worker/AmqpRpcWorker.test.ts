@@ -102,7 +102,7 @@ describe("AmqpRpcWorker", () => {
             (msg: Message) => {
                 // check if message has all mandatory headers
                 assert.deepEqual(msg.properties.headers, {
-                    node_id: "amqp_rpc_node_multiple",
+                    node_id: "507f191e810c19729de860ea",
                     node_name: "amqprpcnode",
                     correlation_id: "amqp.worker.correlation_id",
                     process_id: "amqp.worker.process_id",
