@@ -1,9 +1,12 @@
+import {INodeLabel} from "../topology/Configurator";
 import AMessage from "./AMessage";
+import {CORRELATION_ID_HEADER, PARENT_ID_HEADER, PROCESS_ID_HEADER, SEQUENCE_ID_HEADER} from "./Headers";
 import IMessage from "./IMessage";
 import { ResultCode } from "./ResultCode";
 
 export interface ICounterMessageHeaders {
     node_id: string;
+    node_name: string;
     correlation_id: string;
     process_id: string;
     parent_id: string;
@@ -19,18 +22,18 @@ class CounterMessage extends AMessage implements IMessage {
 
     /**
      *
-     * @param {string} processId
-     * @param {string} nodeId
+     * @param {INodeLabel} node
      * @param {string} correlationId
+     * @param {string} processId
      * @param {string} parentId
-     * @param {string} sequenceId
-     * @param {number} resultCode
+     * @param {number} sequenceId
+     * @param {ResultCode} resultCode
      * @param {string} resultMsg
      * @param {number} following
      * @param {number} multiplier
      */
     constructor(
-        nodeId: string,
+        node: INodeLabel,
         correlationId: string,
         processId: string,
         parentId: string,
@@ -40,7 +43,7 @@ class CounterMessage extends AMessage implements IMessage {
         private following: number = 0,
         private multiplier: number = 1,
     ) {
-        super(nodeId, correlationId, processId, parentId, sequenceId, {}, new Buffer(""));
+        super(node, correlationId, processId, parentId, sequenceId, {}, new Buffer(""));
 
         this.resultCode = resultCode;
         this.resultMsg = resultMsg;
@@ -70,7 +73,17 @@ class CounterMessage extends AMessage implements IMessage {
      */
     public getHeaders(): ICounterMessageHeaders {
         const h = super.getHeaders();
+
+        delete h[CORRELATION_ID_HEADER];
+        delete h[PROCESS_ID_HEADER];
+        delete h[PARENT_ID_HEADER];
+        delete h[SEQUENCE_ID_HEADER];
+
         h.node_id = this.getNodeId();
+        h.correlation_id = this.getCorrelationId();
+        h.process_id = this.getProcessId();
+        h.parent_id = this.getParentId();
+        h.sequence_id = this.getSequenceId();
 
         return h;
     }

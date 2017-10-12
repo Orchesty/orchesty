@@ -160,7 +160,7 @@ class AmqpRpcWorker implements IWorker {
                 }
             };
 
-            const jobMsg = new JobMessage(this.settings.node_label.id, testId, testId, "", 1, {}, new Buffer(""));
+            const jobMsg = new JobMessage(this.settings.node_label, testId, testId, "", 1, {}, new Buffer(""));
             const t: IWaiting = { resolveFn: resolveTestFn, message: jobMsg, sequence: 0 };
             this.waiting.set(testId, t);
 
@@ -238,7 +238,7 @@ class AmqpRpcWorker implements IWorker {
         );
 
         const splitMsg = new JobMessage(
-            this.settings.node_label.id,
+            this.settings.node_label,
             stored.message.getCorrelationId(),
             stored.message.getProcessId(),
             stored.message.getParentId(),

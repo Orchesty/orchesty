@@ -6,6 +6,7 @@ import * as express from "express";
 import JobMessage from "../../../src/message/JobMessage";
 import {ResultCode} from "../../../src/message/ResultCode";
 import HttpWorker from "../../../src/node/worker/HttpWorker";
+import {INodeLabel} from "../../../src/topology/Configurator";
 
 const httpServer = express();
 httpServer.use(bodyParser.json());
@@ -47,7 +48,8 @@ httpServer.listen(4020);
 
 describe("HttpWorker", () => {
     it("should convert JobMessage to http request and receives response and sets message result", () => {
-        const msg = new JobMessage("nid", "123", "123", "", 1, {}, new Buffer(JSON.stringify({ val: "original" })));
+        const node: INodeLabel = {id: "nodeId", node_id: "nodeId", node_name: "nodeName"};
+        const msg = new JobMessage(node, "123", "123", "", 1, {}, new Buffer(JSON.stringify({ val: "original" })));
         const worker = new HttpWorker({
             node_label: { id: "someId", node_id: "507f191e810c19729de860ea", node_name: "httpworker" },
             host: "localhost",
@@ -67,7 +69,8 @@ describe("HttpWorker", () => {
     });
 
     it("should return original message content when server responds with error", () => {
-        const msg = new JobMessage("nid", "123", "123", "", 1, {}, new Buffer(JSON.stringify({ val: "original" })));
+        const node: INodeLabel = {id: "nodeId", node_id: "nodeId", node_name: "nodeName"};
+        const msg = new JobMessage(node, "123", "123", "", 1, {}, new Buffer(JSON.stringify({ val: "original" })));
         const worker = new HttpWorker({
             node_label: { id: "someId", node_id: "507f191e810c19729de860ea", node_name: "httpworker" },
             host: "localhost",
@@ -87,7 +90,8 @@ describe("HttpWorker", () => {
     });
 
     it("should return modified message but be marged as failed due to result_status error", () => {
-        const msg = new JobMessage("nid", "123", "123", "", 1, {}, new Buffer(JSON.stringify({ val: "original" })));
+        const node: INodeLabel = {id: "nodeId", node_id: "nodeId", node_name: "nodeName"};
+        const msg = new JobMessage(node, "123", "123", "", 1, {}, new Buffer(JSON.stringify({ val: "original" })));
         const worker = new HttpWorker({
             node_label: { id: "someId", node_id: "507f191e810c19729de860ea", node_name: "httpworker" },
             host: "localhost",
@@ -107,7 +111,8 @@ describe("HttpWorker", () => {
     });
 
     it("should return original message content when process_path does not exist", () => {
-        const msg = new JobMessage("nid", "123", "123", "", 1, {}, new Buffer(JSON.stringify({ val: "original" })));
+        const node: INodeLabel = {id: "nodeId", node_id: "nodeId", node_name: "nodeName"};
+        const msg = new JobMessage(node, "123", "123", "", 1, {}, new Buffer(JSON.stringify({ val: "original" })));
         const worker = new HttpWorker({
             node_label: { id: "someId", node_id: "507f191e810c19729de860ea", node_name: "httpworker" },
             host: "localhost",
@@ -127,7 +132,8 @@ describe("HttpWorker", () => {
     });
 
     it("should return empty data and settings when worker returns empty body", () => {
-        const msg = new JobMessage("nid", "123", "123", "", 1, {}, new Buffer(JSON.stringify({ val: "original" })));
+        const node: INodeLabel = {id: "nodeId", node_id: "nodeId", node_name: "nodeName"};
+        const msg = new JobMessage(node, "123", "123", "", 1, {}, new Buffer(JSON.stringify({ val: "original" })));
         const worker = new HttpWorker({
             node_label: { id: "someId", node_id: "507f191e810c19729de860ea", node_name: "httpworker" },
             host: "localhost",

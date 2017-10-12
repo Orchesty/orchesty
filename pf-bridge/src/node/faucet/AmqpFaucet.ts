@@ -1,9 +1,9 @@
 import { Channel } from "amqplib";
 import Connection from "lib-nodejs/dist/src/rabbitmq/Connection";
 import logger from "../../logger/Logger";
+import {INodeLabel} from "../../topology/Configurator";
 import Consumer from "./amqp/AMQPConsumer";
 import IFaucet, {FaucetProcessMsgFn} from "./IFaucet";
-import {INodeLabel} from "../../topology/Configurator";
 
 export interface IAmqpFaucetSettings {
     node_label: INodeLabel;
@@ -73,7 +73,7 @@ class AmqpFaucet implements IFaucet {
             });
         };
 
-        this.consumer = new Consumer(this.settings.node_label.id, this.connection, prepareFn, processData);
+        this.consumer = new Consumer(this.settings.node_label, this.connection, prepareFn, processData);
 
         return this.consumer.consume(this.settings.queue.name, {})
             .then(() => {

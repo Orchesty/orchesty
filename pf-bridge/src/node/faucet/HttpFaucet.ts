@@ -1,9 +1,11 @@
 import * as bodyParser from "body-parser";
 import * as express from "express";
 import logger from "../../logger/Logger";
+import Headers from "../../message/Headers";
+import {CORRELATION_ID_HEADER, PARENT_ID_HEADER, PROCESS_ID_HEADER, SEQUENCE_ID_HEADER} from "../../message/Headers";
 import JobMessage from "../../message/JobMessage";
-import IFaucet, {FaucetProcessMsgFn} from "./IFaucet";
 import {INodeLabel} from "../../topology/Configurator";
+import IFaucet, {FaucetProcessMsgFn} from "./IFaucet";
 
 export interface IValidHttpRequest {
     headers: {
@@ -52,7 +54,7 @@ class HttpFaucet implements IFaucet {
                 })
                 .catch((err: Error) => {
                     logger.error("HttpFaucet processData error.", { node_id: this.settings.node_label.id, error: err});
-                    resp.status(500).end(err.message);
+                    resp.status(400).end(err.message);
                 });
         });
 
@@ -73,12 +75,16 @@ class HttpFaucet implements IFaucet {
         let inMsg: JobMessage;
 
         try {
+            // validate headers and remove all non pf-headers
+            const headers = Headers.getPFHeaders(req.headers);
+            Headers.validateMandatoryHeaders(headers);
+
             inMsg = new JobMessage(
-                this.settings.node_label.id,
-                req.headers.correlation_id,
-                req.headers.process_id,
-                req.headers.parent_id,
-                parseInt(req.headers.sequence_id, 10),
+                this.settings.node_label,
+                headers[CORRELATION_ID_HEADER],
+                headers[PROCESS_ID_HEADER],
+                headers[PARENT_ID_HEADER],
+                parseInt(headers[SEQUENCE_ID_HEADER], 10),
                 req.headers,
                 new Buffer(JSON.stringify(req.body)),
             );

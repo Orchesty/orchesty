@@ -11,6 +11,7 @@ import {ResultCode} from "../../../src/message/ResultCode";
 import IPartialForwarder from "../../../src/node/drain/IPartialForwarder";
 import AmqpRpcWorker, {IAmqpRpcWorkerSettings} from "../../../src/node/worker/AmqpRpcWorker";
 import {BATCH_END_TYPE, BATCH_ITEM_TYPE} from "../../../src/node/worker/AmqpRpcWorker";
+import {INodeLabel} from "../../../src/topology/Configurator";
 
 const conn = new Connection(amqpConnectionOptions);
 
@@ -151,8 +152,9 @@ describe("AmqpRpcWorker", () => {
 
         return externalWorkerMock.consume(settings.publish_queue.name, {})
             .then(() => {
+                const node: INodeLabel = {id: "amqp.worker.node_id", node_id: "nodeId", node_name: "nodeName"};
                 const jobMsg = new JobMessage(
-                    "amqp.worker.node_id",
+                    node,
                     "amqp.worker.correlation_id",
                     "amqp.worker.process_id",
                     "",

@@ -4,13 +4,15 @@ import "mocha";
 import * as shuffle from "shuffle-array";
 import JobMessage from "../../src/message/JobMessage";
 import Resequencer from "../../src/node/Resequencer";
+import {INodeLabel} from "../../src/topology/Configurator";
 
 describe("Resequencer", () => {
     it("orders messages with same job_id by their sequenceId", () => {
         const messages: JobMessage[] = [];
 
+        const node: INodeLabel = {id: "nodeId", node_id: "nodeId", node_name: "nodeName"};
         for (let i = 1; i <= 10; i++) {
-            messages.push(new JobMessage("nodeId", "corrId", "procId", "parId", i, {}, new Buffer("")));
+            messages.push(new JobMessage(node, "corrId", "procId", "parId", i, {}, new Buffer("")));
         }
         const resequencer = new Resequencer("nodeId");
         let output: JobMessage[] = [];
@@ -31,9 +33,10 @@ describe("Resequencer", () => {
     it("orders messages by their sequenceId when also mixed job_id", () => {
         const messages: JobMessage[] = [];
 
+        const node: INodeLabel = {id: "nodeId", node_id: "nodeId", node_name: "nodeName"};
         for (let i = 1; i <= 2; i++) {
             for (let j = 1; j <= 10; j++) {
-                messages.push(new JobMessage("nodeId", `${i}`, `${i}`, "", j, {}, new Buffer("")));
+                messages.push(new JobMessage(node, `${i}`, `${i}`, "", j, {}, new Buffer("")));
             }
         }
         const resequencer = new Resequencer("nodeId");

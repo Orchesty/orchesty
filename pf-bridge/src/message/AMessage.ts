@@ -1,7 +1,20 @@
+import {INodeLabel} from "../topology/Configurator";
+import {CORRELATION_ID_HEADER, PARENT_ID_HEADER, PROCESS_ID_HEADER, SEQUENCE_ID_HEADER} from "./Headers";
+
 abstract class AMessage {
 
+    /**
+     *
+     * @param {INodeLabel} node
+     * @param {string} correlationId
+     * @param {string} processId
+     * @param {string} parentId
+     * @param {number} sequenceId
+     * @param {{[p: string]: string}} headers
+     * @param {Buffer} body
+     */
     constructor(
-        protected nodeId: string,
+        protected node: INodeLabel,
         protected correlationId: string,
         protected processId: string,
         protected parentId: string,
@@ -9,18 +22,10 @@ abstract class AMessage {
         protected headers: { [key: string]: string },
         protected body: Buffer,
     ) {
-        if (!nodeId || nodeId === "") {
-            throw new Error(`Cannot create message object. Invalid nodeId. "${nodeId}"`);
+        if (!node.id || node.id === "") {
+            throw new Error(`Cannot create message object. Invalid node info. "${node}"`);
         }
-        if (!correlationId || correlationId === "") {
-            throw new Error(`Cannot create message object. Invalid correlationId. "${correlationId}"`);
-        }
-        if (!processId || processId === "") {
-            throw new Error(`Cannot create message object. Invalid processId. "${processId}"`);
-        }
-        // if (!parentId) {
-        //     throw new Error(`Cannot create message object. Invalid parentId. "${parentId}"`);
-        // }
+
         if (!sequenceId || sequenceId < 1) {
             throw new Error(`Cannot create message object. Invalid sequenceId. "${sequenceId}"`);
         }
@@ -28,8 +33,12 @@ abstract class AMessage {
         this.setHeaders(headers);
     }
 
+    public getNodeLabel(): INodeLabel {
+        return this.node;
+    }
+
     public getNodeId() {
-        return this.nodeId;
+        return this.node.id;
     }
 
     public getCorrelationId() {
@@ -56,10 +65,10 @@ abstract class AMessage {
     public getHeaders(): any {
         const h = this.headers;
 
-        h.correlation_id = this.getCorrelationId();
-        h.process_id = this.getProcessId();
-        h.parent_id = this.getParentId();
-        h.sequence_id = `${this.getSequenceId()}`;
+        h[CORRELATION_ID_HEADER] = this.getCorrelationId();
+        h[PROCESS_ID_HEADER] = this.getProcessId();
+        h[PARENT_ID_HEADER] = this.getParentId();
+        h[SEQUENCE_ID_HEADER] = `${this.getSequenceId()}`;
 
         return h;
     }
@@ -70,10 +79,11 @@ abstract class AMessage {
      * @param {{[p: string]: string}} headers
      */
     public setHeaders(headers: { [key: string]: string }): void {
-        delete headers.correlation_id;
-        delete headers.process_id;
-        delete headers.parent_id;
-        delete headers.sequence_id;
+
+        delete headers[CORRELATION_ID_HEADER];
+        delete headers[PROCESS_ID_HEADER];
+        delete headers[PARENT_ID_HEADER];
+        delete headers[SEQUENCE_ID_HEADER];
 
         this.headers = headers;
     }

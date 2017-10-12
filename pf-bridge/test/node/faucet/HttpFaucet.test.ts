@@ -25,9 +25,10 @@ describe("HttpFaucet", () => {
                     method: "post",
                     uri: "http://localhost:6038/",
                     headers: {
-                        correlation_id: "corrid",
-                        process_id: "A23B23",
-                        sequence_id: 1,
+                        pfp_correlation_id: "corrid",
+                        pfp_process_id: "A23B23",
+                        pfp_parent_id: "parentid",
+                        pfp_sequence_id: 1,
                     },
                 };
 
@@ -51,8 +52,7 @@ describe("HttpFaucet", () => {
                     method: "post",
                     uri: "http://localhost:6039/",
                     headers: {
-                        // Missing job_id header
-                        // job_id: "A23B23",
+                        // Missing mandatory headers
                         sequence_id: 1,
                     },
                 };
@@ -60,7 +60,7 @@ describe("HttpFaucet", () => {
                 return rp(options);
             })
             .catch((err: any) => {
-                assert.equal(500, err.statusCode);
+                assert.equal(400, err.statusCode);
                 assert.include(err.message, "Cannot create JobMessage from http request.");
             });
     });
