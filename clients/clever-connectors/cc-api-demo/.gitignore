@@ -7,3 +7,7 @@ temp/*
 logs/*
 !logs/.gitkeep
 vendor
+
+# Exclude local config
+.env
+app/config/config.local.neon

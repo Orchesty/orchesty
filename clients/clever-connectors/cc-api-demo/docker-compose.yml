@@ -1,0 +1,14 @@
+---
+version: '2'
+
+services:
+  webserver:
+    build:
+        context: .
+        args:
+            DEV_USERNAME: ${DEV_USERNAME}
+            DEV_UID: ${DEV_UID}
+    volumes:
+      - ./:/var/www/html
+    ports:
+      - ${DEV_IP}:80:80
