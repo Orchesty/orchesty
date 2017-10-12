@@ -220,7 +220,7 @@ class ShopifySystem implements WebhookSystemInterface, OAuth2Interface
 
         $field1 = new Field(
             Field::TEXT,
-            $settings[self::SYSTEM_URL],
+            self::SYSTEM_URL,
             'System url of client\'s app - XXX.myshopify.com (only XXX part).',
             $this->prepareValue(self::SYSTEM_URL, $settings),
             TRUE
