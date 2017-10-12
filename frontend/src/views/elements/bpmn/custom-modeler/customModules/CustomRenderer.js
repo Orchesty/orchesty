@@ -42,6 +42,12 @@ function CustomRenderer(eventBus, styles, pathMap, canvas) {
             return webhookCircle;
             break;
 
+        case 'signal':
+            const signalCircle = this.bpmnRenderer.handlers['bpmn:Event'](parentGfx, element);
+            this.bpmnRenderer.handlers['bpmn:EscalationEventDefinition'](parentGfx, element);
+            return signalCircle;
+            break;
+
         case 'splitter':
             let splitterTask = this.bpmnRenderer.handlers['bpmn:Task'](parentGfx, element);
 
