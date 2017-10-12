@@ -6,6 +6,7 @@ import StreamServer, {IStreamServerSettings} from "../stream/StreamServer";
 const conn = new Connection(amqpConnectionOptions);
 const settings: IStreamServerSettings = {
     port: 8080,
+    namespace: "/stream",
     consumer: {
         queue: {
             name: "stream_input",

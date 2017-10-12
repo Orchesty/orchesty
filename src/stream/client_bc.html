@@ -13,6 +13,7 @@
 
 	socket.on('message', function (data) {
 		console.log(data);
+		document.body.innerHTML += '<p>' + data.content + '</p>';
 	});
 
 </script>

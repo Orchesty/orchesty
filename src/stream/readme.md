@@ -1,4 +1,4 @@
-samostatny dockerfile nebo soucast files?
+samostatny dockerfile nebo soucast pipes?
 
 kam umistit? do clients/clever-connectors?
 
@@ -9,3 +9,5 @@ co si predstavuji aby klient umel?
 nevalidni amqp message zahazovat?
 
 na co je refresh potreba? ma fungovat tak ze bude klient periodicky volat /subscribe a pokud po nejaky cas nezavola, tak ho server odhlasi sam?
+
+spozdit konzumaci zprav pri nabehnuti serveru aby meli kjlienti sanci se pripojit?
