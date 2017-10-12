@@ -19,6 +19,7 @@ class TypeEnum extends EnumAbstract
     public const EMAIL           = 'email';
     public const FTP             = 'ftp';
     public const MAPPER          = 'mapper';
+    public const SIGNAL          = 'signal';
     public const SPLITTER        = 'splitter';
     public const TABLE_PARSER    = 'table_parser';
     public const WEBHOOK         = 'webhook';
@@ -37,6 +38,7 @@ class TypeEnum extends EnumAbstract
         self::EMAIL           => self::EMAIL,
         self::FTP             => self::FTP,
         self::MAPPER          => self::MAPPER,
+        self::SIGNAL          => self::SIGNAL,
         self::SPLITTER        => self::SPLITTER,
         self::TABLE_PARSER    => self::TABLE_PARSER,
         self::WEBHOOK         => self::WEBHOOK,
