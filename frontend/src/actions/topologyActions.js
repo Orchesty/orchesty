@@ -8,6 +8,7 @@ import config from 'rootApp/config';
 import * as notificationActions from './notificationActions';
 import * as processActions from './processActions';
 import * as nodeActions from './nodeActions';
+import * as applicationActions from './applicationActions';
 
 const {createPaginationList, listLoading, listError, listReceive, listDelete, listChangeSort, listChangePage, invalidateLists} = listFactory('TOPOLOGY/LIST/');
 
@@ -158,13 +159,16 @@ export function topologyCreate(data, processHash = 'new'){
   }
 }
 
-export function topologyDelete(id){
+export function topologyDelete(id, redirectToList = false){
   return dispatch => {
     dispatch(processActions.startProcess(processes.topologyDelete(id)));
     return serverRequest(dispatch, 'DELETE', `/topologies/${id}`).then(
       response => {
         if (response) {
           dispatch(invalidateLists());
+          if (redirectToList){
+            dispatch(applicationActions.selectPage('topology_list'));
+          }
           dispatch(remove(id));
         }
         dispatch(processActions.finishProcess(processes.topologyDelete(id), response));
