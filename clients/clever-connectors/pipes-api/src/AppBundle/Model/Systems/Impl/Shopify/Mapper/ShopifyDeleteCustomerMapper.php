@@ -2,6 +2,7 @@
 
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\Mapper;
 
+use CleverConnectors\AppBundle\Enum\CleverFieldsEnum;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
@@ -31,7 +32,9 @@ class ShopifyDeleteCustomerMapper implements CustomNodeInterface
             );
         }
         $res = [
-            'email' => (string) $data['id'], //TODO Shopify does not send email that is required by cm...
+            CleverFieldsEnum::FOREIGN_ID => (string) $data['id'],
+            //TODO Shopify does not send email that is required by cm...
+            'email'                      => (string) $data['id'],
         ];
 
         return $dto->setData(json_encode($res));

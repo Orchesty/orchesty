@@ -9,6 +9,7 @@ namespace CleverConnectors\AppBundle\Model\CM\SubscriptionConnector;
  * Time: 17:49
  */
 
+use CleverConnectors\AppBundle\Enum\CleverFieldsEnum;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Exceptions\Exception;
 use CleverConnectors\AppBundle\Model\CM\CMAuthorization;
@@ -180,6 +181,12 @@ abstract class CMSubscriptionConnectorAbstract extends CMAuthorization implement
         if (array_key_exists('data', $data)) {
             $data = $data['data'];
         }
+
+        //@TODO: až bude implementováno u C-M tak smazat
+        if (array_key_exists(CleverFieldsEnum::FOREIGN_ID, $data)) {
+            unset($data[CleverFieldsEnum::FOREIGN_ID]);
+        }
+        // -----------------------------------------------
 
         return $data;
     }

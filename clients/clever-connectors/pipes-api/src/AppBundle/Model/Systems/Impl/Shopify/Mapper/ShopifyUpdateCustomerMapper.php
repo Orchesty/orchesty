@@ -2,6 +2,7 @@
 
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\Mapper;
 
+use CleverConnectors\AppBundle\Enum\CleverFieldsEnum;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
@@ -38,8 +39,13 @@ class ShopifyUpdateCustomerMapper implements CustomNodeInterface
         if (array_key_exists('first_name', $data)) {
             $res['first_name'] = $data['first_name'];
         }
+
         if (array_key_exists('last_name', $data)) {
             $res['last_name'] = $data['last_name'];
+        }
+
+        if (array_key_exists('id', $data)) {
+            $res[CleverFieldsEnum::FOREIGN_ID] = $data['id'];
         }
 
         return $dto->setData(json_encode($res));

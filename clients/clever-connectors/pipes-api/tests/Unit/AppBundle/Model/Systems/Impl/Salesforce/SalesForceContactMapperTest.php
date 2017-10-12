@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\AppBundle\Model\Systems\Impl\Salesforce;
 
+use CleverConnectors\AppBundle\Enum\CleverFieldsEnum;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Nette\Utils\Json;
 use Tests\ConnectorTestCaseAbstract;
@@ -28,9 +29,10 @@ class SalesForceContactMapperTest extends ConnectorTestCaseAbstract
         );
 
         $this->assertEquals([
-            'email'      => 'eml@adsf.com',
-            'first_name' => 'asd',
-            'last_name'  => 'asdasdasd',
+            'email'                      => 'eml@adsf.com',
+            'first_name'                 => 'asd',
+            'last_name'                  => 'asdasdasd',
+            CleverFieldsEnum::FOREIGN_ID => '129875625',
         ], $response);
     }
 

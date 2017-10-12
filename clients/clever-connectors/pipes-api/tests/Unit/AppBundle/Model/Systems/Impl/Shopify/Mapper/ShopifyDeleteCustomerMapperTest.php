@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\AppBundle\Model\Systems\Impl\Shopify\Mapper;
 
+use CleverConnectors\AppBundle\Enum\CleverFieldsEnum;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Nette\Utils\Json;
 use Tests\ConnectorTestCaseAbstract;
@@ -22,12 +23,14 @@ class ShopifyDeleteCustomerMapperTest extends ConnectorTestCaseAbstract
         $connector = $this->container->get('hbpf.custom_node.shopify-customer-delete-mapper');
 
         $response = Json::decode(
-            $connector->process((new ProcessDto())->setData($this->getRequest('ShopifyDeleteCustomerMapper.json')))->getData(),
+            $connector->process((new ProcessDto())->setData($this->getRequest('ShopifyDeleteCustomerMapper.json')))
+                ->getData(),
             TRUE
         );
 
         $this->assertEquals([
-            'email' => '131244785694',
+            'email'                      => '131244785694',
+            CleverFieldsEnum::FOREIGN_ID => '131244785694',
         ], $response);
     }
 

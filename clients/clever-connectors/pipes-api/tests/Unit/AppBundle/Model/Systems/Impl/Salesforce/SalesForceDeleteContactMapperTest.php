@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\AppBundle\Model\Systems\Impl\Salesforce;
 
+use CleverConnectors\AppBundle\Enum\CleverFieldsEnum;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Nette\Utils\Json;
 use Tests\ConnectorTestCaseAbstract;
@@ -28,7 +29,8 @@ class SalesForceDeleteContactMapperTest extends ConnectorTestCaseAbstract
         );
 
         $this->assertEquals([
-            'email' => 'eml@adsf.com',
+            'email'                      => 'eml@adsf.com',
+            CleverFieldsEnum::FOREIGN_ID => '129875625',
         ], $response);
     }
 
