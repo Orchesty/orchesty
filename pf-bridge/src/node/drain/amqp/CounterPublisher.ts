@@ -43,7 +43,7 @@ class CounterPublisher extends Publisher {
     public send(message: JobMessage): Promise<void> {
         const counterMessage = new CounterMessage(
             this.settings.node_label,
-            message.getHeaders(),
+            message.getHeaders().getRaw(),
             message.getResult().code, // 0 OK, >0 NOK
             message.getResult().message,
             this.settings.followers.length,

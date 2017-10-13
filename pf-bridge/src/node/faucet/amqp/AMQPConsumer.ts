@@ -2,8 +2,6 @@ import { Channel, Message } from "amqplib";
 import Connection from "lib-nodejs/dist/src/rabbitmq/Connection";
 import { default as BasicConsumer } from "lib-nodejs/dist/src/rabbitmq/Consumer";
 import logger from "../../../logger/Logger";
-import Headers from "../../../message/Headers";
-import {CORRELATION_ID_HEADER, PARENT_ID_HEADER, PROCESS_ID_HEADER, SEQUENCE_ID_HEADER} from "../../../message/Headers";
 import JobMessage from "../../../message/JobMessage";
 import {INodeLabel} from "../../../topology/Configurator";
 import { WorkerProcessFn } from "../../worker/IWorker";
@@ -28,11 +26,7 @@ class Consumer extends BasicConsumer {
     public processMessage(amqMsg: Message, channel: Channel): void {
         let inMsg: JobMessage;
         try {
-            // validate headers and remove all non pf-headers
-            const headers = Headers.getPFHeaders(amqMsg.properties.headers);
-            Headers.validateMandatoryHeaders(headers);
-
-            inMsg = new JobMessage(this.node, new Headers(headers), amqMsg.content);
+            inMsg = new JobMessage(this.node, amqMsg.properties.headers, amqMsg.content);
         } catch (e) {
             logger.error(`AmqpFaucet dead-lettering message`, {node_id: this.node.id, error: e});
             channel.nack(amqMsg, false, false); // dead-letter due to invalid message

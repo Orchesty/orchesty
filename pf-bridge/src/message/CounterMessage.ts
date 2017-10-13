@@ -1,9 +1,5 @@
 import {INodeLabel} from "../topology/Configurator";
 import AMessage from "./AMessage";
-import {
-    CORRELATION_ID_HEADER, default as Headers, PARENT_ID_HEADER, PROCESS_ID_HEADER,
-    SEQUENCE_ID_HEADER,
-} from "./Headers";
 import IMessage from "./IMessage";
 import { ResultCode } from "./ResultCode";
 
@@ -25,7 +21,7 @@ class CounterMessage extends AMessage implements IMessage {
 
     constructor(
         node: INodeLabel,
-        headers: Headers,
+        headers: { [key: string]: string },
         private resultCode: ResultCode,
         private resultMsg: string = "",
         private following: number = 0,
@@ -53,27 +49,6 @@ class CounterMessage extends AMessage implements IMessage {
      */
     public getMultiplier(): number {
         return this.multiplier;
-    }
-
-    /**
-     *
-     * @return CounterMessageHeaders
-     */
-    public getHeaders(): Headers {
-        const h = super.getHeaders().getRaw();
-
-        delete h[CORRELATION_ID_HEADER];
-        delete h[PROCESS_ID_HEADER];
-        delete h[PARENT_ID_HEADER];
-        delete h[SEQUENCE_ID_HEADER];
-
-        h.node_id = this.getNodeId();
-        h.correlation_id = this.getCorrelationId();
-        h.process_id = this.getProcessId();
-        h.parent_id = this.getParentId();
-        h.sequence_id = this.getSequenceId();
-
-        return new Headers(h);
     }
 
     /**

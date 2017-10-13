@@ -1,7 +1,7 @@
 import TimeUtils from "lib-nodejs/dist/src/utils/TimeUtils";
 import {INodeLabel} from "../topology/Configurator";
 import AMessage from "./AMessage";
-import Headers from "./Headers";
+import {PFHeaders} from "./HeadersEnum";
 import IMessage from "./IMessage";
 import {ResultCode, ResultCodeGroup} from "./ResultCode";
 
@@ -26,13 +26,13 @@ class JobMessage extends AMessage implements IMessage {
     /**
      *
      * @param {INodeLabel} node
-     * @param {Headers} headers
+     * @param {{}} headers
      * @param {Buffer} body
      * @param {IResult} result
      */
     constructor(
         node: INodeLabel,
-        headers: Headers,
+        headers: { [key: string]: string },
         body: Buffer,
         private result?: IResult,
     ) {
@@ -42,8 +42,8 @@ class JobMessage extends AMessage implements IMessage {
         this.multiplier = 1;
         this.forwardSelf = true;
 
-        headers.removeHeader("result_code");
-        headers.removeHeader("result_message");
+        this.headers.removeHeader(PFHeaders.RESULT_CODE);
+        this.headers.removeHeader(PFHeaders.RESULT_MESSAGE);
     }
 
     /**

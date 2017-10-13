@@ -85,7 +85,7 @@ class FollowersPublisher extends Publisher {
 
         const promises: Array<Promise<void>> = [];
         const options: Options.Publish = {
-            headers: message.getHeaders(),
+            headers: message.getHeaders().getRaw(),
             type: "job_message",
             timestamp: Date.now(),
             appId: this.settings.node_label.id,

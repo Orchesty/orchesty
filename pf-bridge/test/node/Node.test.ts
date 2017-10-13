@@ -6,7 +6,7 @@ import "mocha";
 import * as rp from "request-promise";
 import * as mock from "ts-mockito";
 import AmqpDrain from "../../src/node/drain/AmqpDrain";
-import HttpFaucet from "../../src/node/faucet/HttpFaucet";
+import AmqpFaucet from "../../src/node/faucet/AmqpFaucet";
 import Node from "../../src/node/Node";
 import UppercaseWorker from "../../src/node/worker/UppercaseWorker";
 
@@ -19,8 +19,8 @@ describe("Node", () => {
         const worker = mock.mock(UppercaseWorker);
         worker.isWorkerReady = () => Promise.resolve(true);
         const drain = mock.mock(AmqpDrain);
-        const faucet = mock.mock(HttpFaucet);
-        const faucetInstance: HttpFaucet = mock.instance(faucet);
+        const faucet = mock.mock(AmqpFaucet);
+        const faucetInstance: AmqpFaucet = mock.instance(faucet);
         faucetInstance.open = () => Promise.resolve();
 
         const node = new Node(
@@ -48,8 +48,8 @@ describe("Node", () => {
         const worker = mock.mock(UppercaseWorker);
         worker.isWorkerReady = () => Promise.resolve(false);
         const drain = mock.mock(AmqpDrain);
-        const faucet = mock.mock(HttpFaucet);
-        const faucetInstance: HttpFaucet = mock.instance(faucet);
+        const faucet = mock.mock(AmqpFaucet);
+        const faucetInstance: AmqpFaucet = mock.instance(faucet);
         faucetInstance.open = () => Promise.resolve();
 
         const node = new Node(

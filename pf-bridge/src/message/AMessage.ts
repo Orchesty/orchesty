@@ -1,24 +1,29 @@
 import {INodeLabel} from "../topology/Configurator";
-import {
-    CORRELATION_ID_HEADER, default as Headers, PARENT_ID_HEADER, PROCESS_ID_HEADER, SEQUENCE_ID_HEADER,
-} from "./Headers";
+import Headers from "./Headers";
+import {PFHeaders} from "./HeadersEnum";
 
 abstract class AMessage {
 
+    protected headers: Headers;
+
+    /**
+     * Constructor
+     */
     constructor(
         protected node: INodeLabel,
-        protected headers: Headers,
+        headers: { [key: string]: string },
         protected body: Buffer,
     ) {
-        Headers.validateMandatoryHeaders(headers.getRaw());
+        const h = Headers.getPFHeaders(headers);
+        Headers.validateMandatoryHeaders(h);
 
-        if (!node.id || node.id === "") {
-            throw new Error(`Cannot create message object. Invalid node info. "${node}"`);
+        if (!node.id || !node.node_id || !node.node_name) {
+            throw new Error(`Cannot create message object. Invalid node label obj: "${JSON.stringify(node)}"`);
         }
 
-        if (headers.getRaw().sequenceId < 1) {
-            throw new Error(`SequenceId must be greater than 0. "${headers.getRaw().sequenceId}"`);
-        }
+        this.headers = new Headers(h);
+        this.headers.setPFHeader(PFHeaders.NODE_ID, node.node_id);
+        this.headers.setPFHeader(PFHeaders.NODE_NAME, node.node_name);
     }
 
     public getNodeLabel(): INodeLabel {
@@ -30,25 +35,24 @@ abstract class AMessage {
     }
 
     public getCorrelationId() {
-        return this.headers.getRaw()[CORRELATION_ID_HEADER];
+        return this.headers.getPFHeader(PFHeaders.CORRELATION_ID);
     }
 
     public getProcessId() {
-        return this.headers.getRaw()[PROCESS_ID_HEADER];
+        return this.headers.getPFHeader(PFHeaders.PROCESS_ID);
     }
 
     public getParentId() {
-        return this.headers.getRaw()[PARENT_ID_HEADER];
+        return this.headers.getPFHeader(PFHeaders.PARENT_ID);
     }
 
     public getSequenceId() {
-        return this.headers.getRaw()[SEQUENCE_ID_HEADER];
+        return parseInt(this.headers.getPFHeader(PFHeaders.SEQUENCE_ID), 10);
     }
 
     /**
-     * Returns custom headers amended by system headers
      *
-     * @return {*}
+     * @return {Headers}
      */
     public getHeaders(): Headers {
         return this.headers;

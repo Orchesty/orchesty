@@ -1,4 +1,6 @@
 import logger from "../../logger/Logger";
+import Headers from "../../message/Headers";
+import {PFHeaders} from "../../message/HeadersEnum";
 import JobMessage from "../../message/JobMessage";
 import {ResultCode} from "../../message/ResultCode";
 import {INodeLabel} from "../../topology/Configurator";
@@ -120,13 +122,13 @@ class SplitterWorker implements IWorker {
                 data: item,
                 settings: content.settings,
             };
+
+            const headers = new Headers(msg.getHeaders().getRaw());
+            headers.setPFHeader(PFHeaders.SEQUENCE_ID, `${i}`);
+
             const splitMsg = new JobMessage(
                 this.settings.node_label,
-                msg.getCorrelationId(),
-                msg.getProcessId(),
-                msg.getParentId(),
-                i,
-                JSON.parse(JSON.stringify(msg.getHeaders())), // simple object cloning
+                headers.getRaw(),
                 new Buffer(JSON.stringify(splitContent)),
                 { code: ResultCode.SUCCESS, message: `Split ${i}/${content.data.length}.`},
             );
