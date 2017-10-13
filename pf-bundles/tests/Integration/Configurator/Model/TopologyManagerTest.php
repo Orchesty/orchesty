@@ -66,21 +66,16 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     /**
      *
      */
-    public function testNameAndVersionTopology(): void
+    public function testCheckTopologyNameUnPublished(): void
     {
         $manager = $this->container->get('hbpf.configurator.manager.topology');
 
+        $manager->createTopology(['name' => 'Another Topology']);
         $topology = $manager->createTopology(['name' => 'Topology']);
         self::assertEquals(1, $topology->getVersion());
 
-        $topology = $manager->updateTopology($topology, ['name' => 'Topology']);
-        self::assertEquals(2, $topology->getVersion());
-
-        $topology->setVisibility(TopologyStatusEnum::PUBLIC);
-        $this->dm->flush();
-
         self::expectException(TopologyException::class);
-        self::expectExceptionCode(TopologyException::TOPOLOGY_CANNOT_CHANGE_NAME);
+        self::expectExceptionCode(TopologyException::TOPOLOGY_NAME_ALREADY_EXISTS);
         $manager->updateTopology($topology, ['name' => 'Another Topology']);
     }
 

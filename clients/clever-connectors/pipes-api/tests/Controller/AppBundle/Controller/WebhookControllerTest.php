@@ -34,8 +34,10 @@ class WebhookControllerTest extends ControllerTestCaseAbstract
         $curl->method('send')->willReturn($resp);
         $this->client->getContainer()->set('hbpf.transport.curl_manager', $curl);
 
-        $web = new Webhook();
-        $web->setTopologyName('topName')->setNodeName('nodeName');
+        $web = (new Webhook())
+            ->setSystemKey('systemKey')
+            ->setTopologyName('topName')
+            ->setNodeName('nodeName');
         $this->persistAndFlush($web);
 
         $this->client->request('POST', '/webhook/userId/token/nodeName/topName', [], [], []);
@@ -62,8 +64,10 @@ class WebhookControllerTest extends ControllerTestCaseAbstract
         $curl->method('send')->willReturn($resp);
         $this->client->getContainer()->set('hbpf.transport.curl_manager', $curl);
 
-        $web = new Webhook();
-        $web->setTopologyName('topName')->setNodeName('nodeName');
+        $web = (new Webhook())
+            ->setSystemKey('systemKey')
+            ->setTopologyName('topName')
+            ->setNodeName('nodeName');
         $this->persistAndFlush($web);
 
         $this->client->request('POST', '/webhook/userId/token/nodeName/topName', [], [], []);
