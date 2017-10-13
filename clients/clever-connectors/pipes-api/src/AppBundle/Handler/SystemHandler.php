@@ -172,6 +172,15 @@ class SystemHandler
     /**
      * @param string $user
      * @param string $system
+     */
+    public function synchronizeSubscriptions(string $user, string $system): void
+    {
+        $this->manager->synchronizeSubscriptions($user, $system);
+    }
+
+    /**
+     * @param string $user
+     * @param string $system
      * @param array  $data
      *
      * @return array

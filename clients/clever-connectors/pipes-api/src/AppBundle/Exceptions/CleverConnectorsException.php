@@ -18,5 +18,6 @@ class CleverConnectorsException extends Exception
     public const SYSTEM_ALREADY_INSTALLED = 6;
     public const TOPOLOGY_NOT_FOUND       = 7;
     public const PROCESS_ID_NOT_FOUND     = 8;
+    public const STARTING_NODE_NOT_FOUND  = 9;
 
 }

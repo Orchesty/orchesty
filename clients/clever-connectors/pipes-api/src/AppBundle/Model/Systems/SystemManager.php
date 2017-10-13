@@ -5,6 +5,7 @@ namespace CleverConnectors\AppBundle\Model\Systems;
 use CleverConnectors\AppBundle\Document\LastSync;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\SystemTypeEnum;
+use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\AuthorizationInterface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\OAuth1Interface;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
@@ -13,8 +14,12 @@ use CleverConnectors\AppBundle\Model\Webhook\WebhookSystemInterface;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use Hanaboso\PipesFramework\Commons\Enum\HandlerEnum;
+use Hanaboso\PipesFramework\Commons\Enum\TypeEnum;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
+use Hanaboso\PipesFramework\Configurator\StartingPoint\StartingPoint;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class SystemManager
@@ -45,18 +50,30 @@ class SystemManager
     private $webhookManager;
 
     /**
+     * @var StartingPoint
+     */
+    private $startingPoint;
+
+    /**
      * SystemManager constructor.
      *
      * @param DocumentManager $dm
      * @param SystemLoader    $systemLoader
      * @param WebhookManager  $webhookManager
+     * @param StartingPoint   $startingPoint
      */
-    public function __construct(DocumentManager $dm, SystemLoader $systemLoader, WebhookManager $webhookManager)
+    public function __construct(
+        DocumentManager $dm,
+        SystemLoader $systemLoader,
+        WebhookManager $webhookManager,
+        StartingPoint $startingPoint
+    )
     {
         $this->dm               = $dm;
         $this->systemLoader     = $systemLoader;
         $this->systemRepository = $dm->getRepository(SystemInstall::class);
         $this->webhookManager   = $webhookManager;
+        $this->startingPoint    = $startingPoint;
     }
 
     /**
@@ -235,6 +252,44 @@ class SystemManager
         $this->updateWebhooks($systemInstall);
 
         return $systemInstall;
+    }
+
+    /**
+     * @param $user
+     * @param $system
+     *
+     * @throws CleverConnectorsException
+     */
+    public function synchronizeSubscriptions($user, $system): void
+    {
+        // todo use PipesHeaders - different keys
+        $headers = [
+            'user'   => [$user],
+            'system' => [$system],
+        ];
+
+        $request = new Request();
+        $request->headers->add($headers);
+
+        $topologyName = sprintf('%s-sync-subscribers', $system);
+        $topologies   = $this->dm->getRepository(Topology::class)->getRunnableTopologies($topologyName);
+
+        foreach ($topologies as $topology) {
+            $node = $this->dm->getRepository(Node::class)->findOneBy([
+                'topology' => $topology->getId(),
+                'type'     => TypeEnum::SIGNAL,
+                'handler'  => HandlerEnum::EVENT,
+            ]);
+
+            if (!$node) {
+                throw new CleverConnectorsException(
+                    sprintf('Starting Node not found for topology [%s]', $topology->getId()),
+                    CleverConnectorsException::STARTING_NODE_NOT_FOUND
+                );
+            }
+
+            $this->startingPoint->runWithRequest($request, $topology, $node);
+        }
     }
 
     /**

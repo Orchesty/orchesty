@@ -228,8 +228,11 @@ class NullSystem implements WebhookSystemInterface, OAuth2Interface
      *
      * @return RequestDto
      */
-    public function getSubscribeRequest(WebhookSubscribes $subscription, SystemInstall $systemInstall,
-                                        string $url): RequestDto
+    public function getSubscribeRequest(
+        WebhookSubscribes $subscription,
+        SystemInstall $systemInstall,
+        string $url
+    ): RequestDto
     {
         return new RequestDto('POST', new Uri('uriSub'));
     }

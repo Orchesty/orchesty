@@ -202,8 +202,9 @@ class SystemController extends FOSRestController
     public function synchronizeSubscriptionsAction(string $userId, string $systemKey): Response
     {
         try {
-            // TODO: Implement synchronizeSubscriptions
-            return new JsonResponse([], 202);
+            $this->handler->synchronizeSubscriptions($userId, $systemKey);
+
+            return new JsonResponse([], 200);
         } catch (SystemException $e) {
             return new JsonResponse(ControllerUtils::createExceptionData($e), 500);
         }
