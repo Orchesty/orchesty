@@ -9,8 +9,6 @@
 
 namespace Hanaboso\PipesFramework\Authorization\Provider\Dto;
 
-use Hanaboso\PipesFramework\Authorization\Document\Authorization;
-
 /**
  * Interface OAuth1DtoInterface
  *
@@ -38,11 +36,6 @@ interface OAuth1DtoInterface
      * @return int
      */
     public function getAuthType(): int;
-
-    /**
-     * @return Authorization
-     */
-    public function getAuthorization(): Authorization;
 
     /**
      * @return array

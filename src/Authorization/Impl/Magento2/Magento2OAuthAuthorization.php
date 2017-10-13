@@ -14,7 +14,6 @@ use Hanaboso\PipesFramework\Authorization\Base\OAuthAuthorizationAbstract;
 use Hanaboso\PipesFramework\Authorization\Document\Authorization;
 use Hanaboso\PipesFramework\Authorization\Exception\AuthorizationException;
 use Hanaboso\PipesFramework\Authorization\Provider\Dto\OAuth1Dto;
-use Hanaboso\PipesFramework\Authorization\Provider\Dto\OAuth1DtoInterface;
 use Hanaboso\PipesFramework\Authorization\Provider\OAuth1Provider;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
@@ -303,7 +302,7 @@ class Magento2OAuthAuthorization extends OAuthAuthorizationAbstract implements M
      */
     private function saveOAuthStuffs(): callable
     {
-        return function (DocumentManager $dm, OAuth1DtoInterface $dto, array $data): void {
+        return function (DocumentManager $dm, OAuth1Dto $dto, array $data): void {
             $dto->getAuthorization()->setToken(
                 array_merge($dto->getToken(), $data)
             );
