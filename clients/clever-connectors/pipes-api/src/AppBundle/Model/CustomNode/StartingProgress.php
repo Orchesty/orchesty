@@ -9,6 +9,7 @@
 
 namespace CleverConnectors\AppBundle\Model\CustomNode;
 
+use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\ProgressCounter\ProgressCounterService;
 use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
@@ -40,13 +41,23 @@ class StartingProgress implements CustomNodeInterface
      * @param ProcessDto $dto
      *
      * @return ProcessDto
+     * @throws CleverConnectorsException
      */
     public function process(ProcessDto $dto): ProcessDto
     {
-        $progressId = $dto->getHeader('progress_id'); // TODO overit s Vencou, ze je v hlavicke progress id
-        $data       = json_decode($dto->getData(), TRUE)['data'];
-        $users      = $data['progress_users'] ?? [];
-        $groups     = $data['progress_groups'] ?? [];
+        // TODO PipesHeaders
+        $progressId = $dto->getHeader('process_id');
+
+        if (!$progressId) {
+            throw new CleverConnectorsException(
+                'Process ID not found.',
+                CleverConnectorsException::PROCESS_ID_NOT_FOUND
+            );
+        }
+
+        $data   = json_decode($dto->getData(), TRUE)['data'];
+        $users  = $data['progress_users'] ?? [];
+        $groups = $data['progress_groups'] ?? [];
 
         $this->progressCounterService->start($progressId, $users, $groups);
 
