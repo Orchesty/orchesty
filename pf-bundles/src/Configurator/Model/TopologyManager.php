@@ -153,15 +153,36 @@ class TopologyManager
 
         $this->dm->persist($res);
 
-        /** @var Node $node */
-        foreach ($this->dm->getRepository(Node::class)->findBy(['topology' => $topology->getId()]) as $node) {
+        /** @var Node[] $topologyNodes */
+        $topologyNodes = $this->dm->getRepository(Node::class)->findBy(['topology' => $topology->getId()]);
+        $nodesMap      = [];
+
+        foreach ($topologyNodes as $topologyNode) {
             $nodeCopy = (new Node())
-                ->setName($node->getName())
-                ->setType($node->getType())
+                ->setName($topologyNode->getName())
+                ->setType($topologyNode->getType())
                 ->setTopology($res->getId())
-                ->setHandler($node->getHandler())
-                ->setEnabled($node->isEnabled());
+                ->setHandler($topologyNode->getHandler())
+                ->setEnabled($topologyNode->isEnabled());
             $this->dm->persist($nodeCopy);
+
+            $nodesMap[$topologyNode->getId()] = ['orig' => $topologyNode, 'copy' => $nodeCopy];
+        }
+
+        /** @var array $node */
+        foreach ($nodesMap as $node) {
+
+            /** @var Node $orig */
+            /** @var Node $copy */
+            $orig = $node['orig'];
+            $copy = $node['copy'];
+
+            if (!$orig->getNext()->isEmpty()) {
+                $nexts = $orig->getNext();
+                foreach ($nexts as $next) {
+                    $copy->addNext(EmbedNode::from($nodesMap[$next->getId()]['copy']));
+                }
+            }
         }
 
         $this->dm->flush();
