@@ -7,7 +7,6 @@ use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\LastSync\LastSyncManager;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Magento2\Connector\Magento2UpdateCustomerConnector;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Magento2\Magento2System;
-use CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce\SalesForceDeleteConnector;
 use CleverConnectors\AppBundle\Repository\LastSyncRepository;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use DateTime;
@@ -44,7 +43,7 @@ final class Magento2UpdateCustomerConnectorTest extends KernelTestCaseAbstract
             ->setHeaders(['node_id' => '2234-awdawd'])
             ->setData(json_encode(['data' => ['system_install' => []], ['settings' => [], 'user' => '123']]));
 
-        /** @var SalesForceDeleteConnector $syncConn */
+        /** @var Magento2UpdateCustomerConnector $syncConn */
         $syncConn = $this->mockSync();
         $data     = $syncConn->processBatch($processDto, $loop, function (): void {
         });

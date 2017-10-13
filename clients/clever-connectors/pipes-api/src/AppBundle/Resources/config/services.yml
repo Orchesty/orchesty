@@ -64,42 +64,6 @@ services:
             - '@hbpf.configurator.handler.topology'
         tags: ['kernel.event_subscriber']
 
-    systems.salesforce:
-        class: CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce\SalesForceSystem
-        arguments:
-            - '@hbpf.providers.oauth2_provider'
-        tags: ['%systems%']
-
-    hbpf.custom_node.salesforce-contact-mapper:
-        class: CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce\SalesForceContactMapper
-        arguments:
-
-    hbpf.custom_node.salesforce-contact-delete-mapper:
-        class: CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce\SalesForceDeleteContactMapper
-        arguments:
-
-    hbpf.connector.salesforce-sync-connector:
-        class: CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce\SalesForceSyncConnector
-        arguments:
-            - '@systems.salesforce'
-            - '@manager.last_sync'
-            - '@hbpf.transport.async_curl_factory'
-            - '@doctrine_mongodb.odm.default_document_manager'
-
-    hbpf.connector.salesforce-update-connector:
-        class: CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce\SalesForceUpdateConnector
-        arguments:
-            - '@systems.salesforce'
-            - '@manager.last_sync'
-            - '@hbpf.transport.async_curl_factory'
-
-    hbpf.connector.salesforce-delete-connector:
-        class: CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce\SalesForceDeleteConnector
-        arguments:
-            - '@systems.salesforce'
-            - '@manager.last_sync'
-            - '@hbpf.transport.async_curl_factory'
-
     hbpf.custom_node.user-message-generator:
         class: CleverConnectors\AppBundle\Model\CustomNode\UserMessageGenerator
         arguments:

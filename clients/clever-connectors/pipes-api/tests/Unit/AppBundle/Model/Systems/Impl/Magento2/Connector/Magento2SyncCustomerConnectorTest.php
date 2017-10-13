@@ -7,7 +7,6 @@ use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\LastSync\LastSyncManager;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Magento2\Connector\Magento2SyncCustomerConnector;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Magento2\Magento2System;
-use CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce\SalesForceSyncConnector;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use DateTime;
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -40,7 +39,7 @@ final class Magento2SyncCustomerConnectorTest extends KernelTestCaseAbstract
             ->setHeaders([])
             ->setData(json_encode(['data' => ['system_install' => []], ['settings' => [], 'user' => '123']]));
 
-        /** @var SalesForceSyncConnector $syncConn */
+        /** @var Magento2SyncCustomerConnector $syncConn */
         $syncConn = $this->mockSync();
         $data     = $syncConn->processBatch($processDto, $loop, function (): void {
         });
