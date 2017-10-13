@@ -28,8 +28,13 @@ class TopologyForm extends React.Component {
   }
 
   onSubmit(data){
+    const {addNew, initialValues} = this.props;
     const {name, descr, enabled} = data;
-    this.props.commitAction({name, descr, enabled: Boolean(enabled)}).then(
+    const sendData = {descr, enabled: Boolean(enabled)};
+    if (addNew || initialValues.visibility !== 'public'){
+      sendData['name'] = name;
+    }
+    this.props.commitAction(sendData).then(
       response => {
         const {onSuccess} = this.props;
         if (response){
@@ -53,10 +58,12 @@ class TopologyForm extends React.Component {
         enabledDescripton = "Please publish topology first";
     }
 
+    const nameReadOnly = !(addNew || initialValues.visibility !== 'public');
+
     return (
       <form className="form-horizontal form-label-left" onSubmit={this.props.handleSubmit(this.onSubmit)}>
         {!addNew && <Field name="_id" component={FormTextInput} label="Id" readOnly/>}
-        <Field name="name" component={FormTextInput} label="Name" />
+        <Field name="name" component={FormTextInput} label="Name" readOnly={nameReadOnly} />
         <Field name="descr" component={FormTextInput} label="Description" />
         <Field name="enabled" component={FormCheckboxInput} label="Enabled" description={enabledDescripton} readOnly={enabledReadonly} />
         <button ref={this.setButton} className="hidden" />
