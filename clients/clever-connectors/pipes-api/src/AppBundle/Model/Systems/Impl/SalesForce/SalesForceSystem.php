@@ -136,6 +136,7 @@ class SalesForceSystem implements OAuth2Interface
     {
         $dto   = $this->createDto($systemInstall);
         $token = $this->provider->getAccessToken($dto, $data);
+        $systemInstall->setExpires(NULL);
 
         return $this->setSettings($systemInstall, $token);
     }

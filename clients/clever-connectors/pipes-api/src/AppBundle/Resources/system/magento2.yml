@@ -1,0 +1,27 @@
+services:
+    systems.magento2:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Magento2\Magento2System
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.transport.curl_manager'
+            - '@hbpf.redirect'
+        tags: ['%systems%']
+
+    hbpf.connector.magento2-sync-customer-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Magento2\Connector\Magento2SyncCustomerConnector
+        arguments:
+            - '@systems.magento2'
+            - '@manager.last_sync'
+            - '@hbpf.transport.async_curl_factory'
+            - '@doctrine_mongodb.odm.default_document_manager'
+
+    hbpf.connector.magento2-update-customer-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Magento2\Connector\Magento2UpdateCustomerConnector
+        arguments:
+            - '@systems.magento2'
+            - '@manager.last_sync'
+            - '@hbpf.transport.async_curl_factory'
+
+    hbpf.custom_node.magento2-update-customer-mapper:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Magento2\Mapper\Magento2UpdateCustomerMapper
+        arguments:

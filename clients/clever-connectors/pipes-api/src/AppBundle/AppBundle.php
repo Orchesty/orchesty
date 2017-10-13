@@ -27,6 +27,8 @@ class AppBundle extends Bundle
         $loader->load('dev_services.yml');
 
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__ . '/Resources/system'));
+        $loader->load('cleverMonitor.yml');
+        $loader->load('magento2.yml');
         $loader->load('shopify.yml');
         $container->addCompilerPass(new SystemCompilerPass());
     }

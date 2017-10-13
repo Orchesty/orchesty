@@ -64,33 +64,6 @@ services:
             - '@hbpf.configurator.handler.topology'
         tags: ['kernel.event_subscriber']
 
-    hbpf.connector.cleverconnectors-subscriptions-create:
-        class: CleverConnectors\AppBundle\Model\CM\SubscriptionConnector\CMCreateSubscriptionConnector
-        arguments:
-            - '@hbpf.transport.curl_manager'
-            - '%clevermonitor%'
-        calls:
-            - ['setLogger', ['@monolog.logger.commons']]
-
-    hbpf.connector.cleverconnectors-subscriptions-update:
-        class: CleverConnectors\AppBundle\Model\CM\SubscriptionConnector\CMUpdateSubscriptionConnector
-        arguments:
-            - '@hbpf.transport.curl_manager'
-            - '%clevermonitor%'
-        calls:
-            - ['setLogger', ['@monolog.logger.commons']]
-
-    hbpf.connector.cleverconnectors-subscriptions-delete:
-        class: CleverConnectors\AppBundle\Model\CM\SubscriptionConnector\CMDeleteSubscriptionConnector
-        arguments:
-            - '@hbpf.transport.curl_manager'
-            - '%clevermonitor%'
-        calls:
-            - ['setLogger', ['@monolog.logger.commons']]
-
-    hbpf.connector.cleverconnectors-forward-connector:
-        class: CleverConnectors\AppBundle\Model\CM\TestForwardConnector\CMTestForwardConnector
-
     systems.salesforce:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce\SalesForceSystem
         arguments:

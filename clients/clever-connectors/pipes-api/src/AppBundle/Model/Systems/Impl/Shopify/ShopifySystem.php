@@ -252,9 +252,8 @@ class ShopifySystem implements WebhookSystemInterface, OAuth2Interface
     {
         $arr = $this->provider->getAccessToken($this->getDto($systemInstall), $data);
 
+        $systemInstall->setExpires(NULL);
         $this->setSettings($systemInstall, $arr);
-
-        //TODO systemInstall expirace nastavit na NULL
 
         return $systemInstall;
     }

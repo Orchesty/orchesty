@@ -20,14 +20,14 @@ services:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\Connector\ShopifyUpdateCustomerConnector
         arguments:
 
-    hbpf.connector.shopify-customer-delete-connector:
+    hbpf.connector.shopify-delete-customer-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\Connector\ShopifyDeleteCustomerConnector
         arguments:
 
-    hbpf.custom_node.shopify-customer-update-mapper:
+    hbpf.custom_node.shopify-update-customer-mapper:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\Mapper\ShopifyUpdateCustomerMapper
         arguments:
 
-    hbpf.custom_node.shopify-customer-delete-mapper:
+    hbpf.custom_node.shopify-delete-customer-mapper:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\Mapper\ShopifyDeleteCustomerMapper
         arguments:

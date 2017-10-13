@@ -1,0 +1,91 @@
+{
+  "items": [
+    {
+      "id": 1,
+      "group_id": 1,
+      "default_billing": "0",
+      "default_shipping": "0",
+      "created_at": "2017-10-10 12:14:08",
+      "updated_at": "2017-10-10 12:14:09",
+      "created_in": "Default Store View",
+      "email": "email@example.com",
+      "firstname": "John",
+      "lastname": "Doe",
+      "gender": 0,
+      "store_id": 1,
+      "website_id": 1,
+      "addresses": [],
+      "disable_auto_group_change": 0
+    },
+    {
+      "id": 2,
+      "group_id": 1,
+      "default_billing": "0",
+      "default_shipping": "0",
+      "created_at": "2017-10-10 13:29:38",
+      "updated_at": "2017-10-10 13:29:38",
+      "created_in": "Default Store View",
+      "email": "example@example.com",
+      "firstname": "A",
+      "lastname": "A",
+      "gender": 0,
+      "store_id": 1,
+      "website_id": 1,
+      "addresses": [],
+      "disable_auto_group_change": 0
+    },
+    {
+      "id": 3,
+      "group_id": 1,
+      "default_billing": "0",
+      "default_shipping": "0",
+      "created_at": "2017-10-10 13:29:57",
+      "updated_at": "2017-10-10 13:29:57",
+      "created_in": "Default Store View",
+      "email": "exampleB@example.com",
+      "firstname": "B",
+      "lastname": "B",
+      "gender": 0,
+      "store_id": 1,
+      "website_id": 1,
+      "addresses": [],
+      "disable_auto_group_change": 0
+    },
+    {
+      "id": 4,
+      "group_id": 1,
+      "default_billing": "0",
+      "default_shipping": "0",
+      "created_at": "2017-10-10 13:30:10",
+      "updated_at": "2017-10-10 13:30:10",
+      "created_in": "Default Store View",
+      "email": "exampleC@example.com",
+      "firstname": "C",
+      "lastname": "C",
+      "gender": 0,
+      "store_id": 1,
+      "website_id": 1,
+      "addresses": [],
+      "disable_auto_group_change": 0
+    }
+  ],
+  "search_criteria": {
+    "filter_groups": [
+      {
+        "filters": [
+          {
+            "field": "updated_at",
+            "value": "2017-10-09 14:23:51",
+            "condition_type": "gt"
+          },
+          {
+            "field": "updated_at",
+            "value": "2017-10-10 14:23:51",
+            "condition_type": "lteq"
+          }
+        ]
+      }
+    ]
+  },
+  "total_count": 4
+}

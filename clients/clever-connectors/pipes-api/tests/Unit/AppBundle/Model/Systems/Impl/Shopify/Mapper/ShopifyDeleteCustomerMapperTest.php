@@ -20,7 +20,7 @@ class ShopifyDeleteCustomerMapperTest extends ConnectorTestCaseAbstract
      */
     public function testProcessEvent(): void
     {
-        $connector = $this->container->get('hbpf.custom_node.shopify-customer-delete-mapper');
+        $connector = $this->container->get('hbpf.custom_node.shopify-delete-customer-mapper');
 
         $response = Json::decode(
             $connector->process((new ProcessDto())->setData($this->getRequest('ShopifyDeleteCustomerMapper.json')))
