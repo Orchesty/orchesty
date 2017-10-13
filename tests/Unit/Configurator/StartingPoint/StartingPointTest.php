@@ -11,11 +11,11 @@ namespace Tests\Unit\Configurator\StartingPoint;
 use Bunny\Channel;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
+use Hanaboso\PipesFramework\Commons\Utils\PipesHeaders;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Exception\StartingPointException;
 use Hanaboso\PipesFramework\Configurator\StartingPoint\StartingPoint;
-use Hanaboso\PipesFramework\Configurator\StartingPoint\StartingPointProducer;
 use Hanaboso\PipesFramework\RabbitMq\BunnyManager;
 use PHPUnit\Framework\TestCase;
 use PHPUnit_Framework_MockObject_MockObject;
@@ -33,9 +33,9 @@ class StartingPointTest extends TestCase
     use PrivateTrait;
 
     /**
-     * @var StartingPointProducer|PHPUnit_Framework_MockObject_MockObject
+     * @var BunnyManager|PHPUnit_Framework_MockObject_MockObject
      */
-    private $startingPointProducer;
+    private $bunnyManager;
 
     /**
      * @var Topology
@@ -62,11 +62,8 @@ class StartingPointTest extends TestCase
         $channel = $this->createMock(Channel::class);
         $channel->method('queueDeclare');
 
-        $bunnyManager = $this->createMock(BunnyManager::class);
-        $bunnyManager->method('getChannel')->willReturn($channel);
-
-        $this->startingPointProducer = $this->createMock(StartingPointProducer::class);
-        $this->startingPointProducer->method('getManager')->willReturn($bunnyManager);
+        $this->bunnyManager = $this->createMock(BunnyManager::class);
+        $this->bunnyManager->method('getChannel')->willReturn($channel);
 
         $this->topology = new Topology();
         $this->setProperty($this->topology, 'id', '1');
@@ -89,7 +86,7 @@ class StartingPointTest extends TestCase
      */
     public function testRun(): void
     {
-        $startingPoint = new StartingPoint($this->startingPointProducer, $this->curlManager);
+        $startingPoint = new StartingPoint($this->bunnyManager, $this->curlManager);
         $startingPoint->run($this->topology, $this->node);
     }
 
@@ -98,7 +95,7 @@ class StartingPointTest extends TestCase
      */
     public function testRunWithRequest(): void
     {
-        $startingPoint = new StartingPoint($this->startingPointProducer, $this->curlManager);
+        $startingPoint = new StartingPoint($this->bunnyManager, $this->curlManager);
         $startingPoint->runWithRequest(Request::createFromGlobals(), $this->topology, $this->node);
     }
 
@@ -111,7 +108,7 @@ class StartingPointTest extends TestCase
 
         $this->expectException(StartingPointException::class);
         $this->expectExceptionMessage('The node[id=1] does not belong to the topology[id=1].');
-        $startingPoint = new StartingPoint($this->startingPointProducer, $this->curlManager);
+        $startingPoint = new StartingPoint($this->bunnyManager, $this->curlManager);
         $startingPoint->run($this->topology, $this->node);
     }
 
@@ -124,7 +121,7 @@ class StartingPointTest extends TestCase
 
         $this->expectException(StartingPointException::class);
         $this->expectExceptionMessage('The topology[id=1] does not enable.');
-        $startingPoint = new StartingPoint($this->startingPointProducer, $this->curlManager);
+        $startingPoint = new StartingPoint($this->bunnyManager, $this->curlManager);
         $startingPoint->run($this->topology, $this->node);
     }
 
@@ -137,7 +134,7 @@ class StartingPointTest extends TestCase
 
         $this->expectException(StartingPointException::class);
         $this->expectExceptionMessage('The node[id=1] does not enable.');
-        $startingPoint = new StartingPoint($this->startingPointProducer, $this->curlManager);
+        $startingPoint = new StartingPoint($this->bunnyManager, $this->curlManager);
         $startingPoint->run($this->topology, $this->node);
     }
 
@@ -146,7 +143,7 @@ class StartingPointTest extends TestCase
      */
     public function testCreateQueueName(): void
     {
-        $startingPoint = new StartingPoint($this->startingPointProducer, $this->curlManager);
+        $startingPoint = new StartingPoint($this->bunnyManager, $this->curlManager);
         $name          = $startingPoint->createQueueName($this->topology, $this->node);
         $this->assertSame('pipes.1-topology.1-magento2-customer', $name);
     }
@@ -156,14 +153,21 @@ class StartingPointTest extends TestCase
      */
     public function testCreateHeaders(): void
     {
-        $startingPoint = new StartingPoint($this->startingPointProducer, $this->curlManager);
-        $headers       = $startingPoint->createHeaders();
+        /** @var Topology|PHPUnit_Framework_MockObject_MockObject $topology */
+        $topology = $this->createMock(Topology::class);
+        $topology->method('getId')->willReturn('13');
+        $topology->method('getName')->willReturn('name');
+        $startingPoint = new StartingPoint($this->bunnyManager, $this->curlManager);
+        $headers       = $startingPoint->createHeaders($topology);
 
-        $this->assertCount(4, $headers->getHeaders());
-        $this->assertArrayHasKey('process_id', $headers->getHeaders());
-        $this->assertArrayHasKey('parent_id', $headers->getHeaders());
-        $this->assertArrayHasKey('correlation_id', $headers->getHeaders());
-        $this->assertArrayHasKey('sequence_id', $headers->getHeaders());
+        $this->assertCount(7, $headers->getHeaders());
+        $this->assertArrayHasKey(PipesHeaders::PF_PREFIX . 'process_id', $headers->getHeaders());
+        $this->assertArrayHasKey(PipesHeaders::PF_PREFIX . 'parent_id', $headers->getHeaders());
+        $this->assertArrayHasKey(PipesHeaders::PF_PREFIX . 'correlation_id', $headers->getHeaders());
+        $this->assertArrayHasKey(PipesHeaders::PF_PREFIX . 'sequence_id', $headers->getHeaders());
+        $this->assertArrayHasKey(PipesHeaders::PF_PREFIX . 'topology_id', $headers->getHeaders());
+        $this->assertArrayHasKey(PipesHeaders::PF_PREFIX . 'topology_name', $headers->getHeaders());
+        $this->assertArrayHasKey('content_type', $headers->getHeaders());
     }
 
     /**
@@ -171,7 +175,7 @@ class StartingPointTest extends TestCase
      */
     public function testCreateBodyFromRequestXml(): void
     {
-        $startingPoint = new StartingPoint($this->startingPointProducer, $this->curlManager);
+        $startingPoint = new StartingPoint($this->bunnyManager, $this->curlManager);
 
         $request = new Request([], [], [], [], [], [
             'CONTENT_TYPE' => 'application/xml',
@@ -203,7 +207,7 @@ class StartingPointTest extends TestCase
      */
     public function testCreateBodyFromRequestJson(): void
     {
-        $startingPoint = new StartingPoint($this->startingPointProducer, $this->curlManager);
+        $startingPoint = new StartingPoint($this->bunnyManager, $this->curlManager);
 
         $request = new Request([], [], [], [], [], [
             'CONTENT_TYPE' => 'application/json',
@@ -229,7 +233,7 @@ class StartingPointTest extends TestCase
      */
     public function testCreateBodyFromRequestCsv(): void
     {
-        $startingPoint = new StartingPoint($this->startingPointProducer, $this->curlManager);
+        $startingPoint = new StartingPoint($this->bunnyManager, $this->curlManager);
 
         $request = new Request([], [], [], [], [], [
             'CONTENT_TYPE' => 'text/csv',
@@ -252,7 +256,7 @@ class StartingPointTest extends TestCase
      */
     public function testCreateBodyEmpty(): void
     {
-        $startingPoint = new StartingPoint($this->startingPointProducer, $this->curlManager);
+        $startingPoint = new StartingPoint($this->bunnyManager, $this->curlManager);
         $body          = $startingPoint->createBody();
 
         $body = json_decode($body, TRUE);
@@ -268,7 +272,7 @@ class StartingPointTest extends TestCase
      */
     public function testCreateBody(): void
     {
-        $startingPoint = new StartingPoint($this->startingPointProducer, $this->curlManager);
+        $startingPoint = new StartingPoint($this->bunnyManager, $this->curlManager);
         $body          = $startingPoint->createBody(json_encode(['param' => 'test']));
 
         $body = json_decode($body, TRUE);
@@ -287,14 +291,14 @@ class StartingPointTest extends TestCase
         $responseBody = json_encode([
             'status'  => TRUE,
             'message' => '5/5 node ok',
-            'nodes'  => [],
+            'nodes'   => [],
         ]);
 
         $this->curlManager->method('send')->willReturn(
             new ResponseDto(200, '', $responseBody, ['application/json'])
         );
 
-        $startingPoint = new StartingPoint($this->startingPointProducer, $this->curlManager);
+        $startingPoint = new StartingPoint($this->bunnyManager, $this->curlManager);
         $body          = $startingPoint->runTest($this->topology);
 
         $this->assertEquals(json_decode($responseBody, TRUE), $body);
@@ -309,7 +313,7 @@ class StartingPointTest extends TestCase
             new ResponseDto(400, 'Error', '', ['application/json'])
         );
 
-        $startingPoint = new StartingPoint($this->startingPointProducer, $this->curlManager);
+        $startingPoint = new StartingPoint($this->bunnyManager, $this->curlManager);
         $this->expectException(StartingPointException::class);
         $this->expectExceptionMessage('Request error: Error');
         $startingPoint->runTest($this->topology);
