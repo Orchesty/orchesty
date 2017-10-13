@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Unit\AppBundle\Model\Systems\Impl\SalesForce\Mapper;
+namespace Tests\Unit\AppBundle\Model\Systems\Impl\Salesforce\Mapper;
 
 use CleverConnectors\AppBundle\Enum\CleverFieldsEnum;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
@@ -8,11 +8,11 @@ use Nette\Utils\Json;
 use Tests\ConnectorTestCaseAbstract;
 
 /**
- * Class SalesForceUpdateContactMapperTest
+ * Class SalesforceUpdateContactMapperTest
  *
- * @package Tests\Unit\AppBundle\Model\Systems\Impl\SalesForce\Mapper
+ * @package Tests\Unit\AppBundle\Model\Systems\Impl\Salesforce\Mapper
  */
-final class SalesForceUpdateContactMapperTest extends ConnectorTestCaseAbstract
+final class SalesforceUpdateContactMapperTest extends ConnectorTestCaseAbstract
 {
 
     /**
@@ -23,7 +23,7 @@ final class SalesForceUpdateContactMapperTest extends ConnectorTestCaseAbstract
         $connector = $this->container->get('hbpf.custom_node.salesforce-update-contact-mapper');
 
         $response = Json::decode(
-            $connector->process((new ProcessDto())->setData($this->getRequest('SalesForceUpdateContactMapper.json')))
+            $connector->process((new ProcessDto())->setData($this->getRequest('SalesforceUpdateContactMapper.json')))
                 ->getData(),
             TRUE
         );

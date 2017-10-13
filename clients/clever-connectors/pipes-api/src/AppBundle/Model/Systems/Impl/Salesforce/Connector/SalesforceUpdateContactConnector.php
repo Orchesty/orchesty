@@ -1,6 +1,13 @@
 <?php declare(strict_types=1);
 
-namespace CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce\Connector;
+/**
+ * Created by PhpStorm.
+ * User: radek.jirsa
+ * Date: 6.10.17
+ * Time: 17:36
+ */
+
+namespace CleverConnectors\AppBundle\Model\Systems\Impl\Salesforce\Connector;
 
 use CleverConnectors\AppBundle\Utils\CronUtils;
 use GuzzleHttp\Psr7\Request;
@@ -13,15 +20,14 @@ use React\Promise\PromiseInterface;
 use function React\Promise\all;
 
 /**
- * Class SalesForceDeleteContactConnector
+ * Class SalesforceUpdateContactConnector
  *
- * @package CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce\Connector
+ * @package CleverConnectors\AppBundle\Model\Systems\Impl\Salesforce\Connector
  */
-class SalesForceDeleteContactConnector extends SalesForceContactConnectorAbstract
+class SalesforceUpdateContactConnector extends SalesforceContactConnectorAbstract
 {
 
-    protected const   NODE_NAME = 'salesforce-delete-contact-connector';
-    protected const   QUERY_URL = '%s/services/data/v40.0/queryAll?q=%s';
+    protected const NODE_NAME = 'salesforce-update-contact-connector';
 
     /**
      * @param ProcessDto    $dto
@@ -38,13 +44,13 @@ class SalesForceDeleteContactConnector extends SalesForceContactConnectorAbstrac
         $requestDto    = $this->system->getRequestDto($systemInstall, 'GET');
         $lastSync      = $this->lastSyncManager->getLastSync($data, $systemInstall, self::NODE_NAME);
         $times         = CronUtils::getTimes($lastSync);
-        $timeQuery     = $this->getTimeQuery($times->getStart(), $times->getEnd()) . '+AND+IsDeleted=TRUE';
-        $countReq      = $this->createCountRequest($requestDto, $timeQuery);
+        $timeQuery     = $this->getTimeQuery($times->getStart(), $times->getEnd());
 
-        $promise = $this->fetchData($browser, $countReq)
-            ->then(function (ResponseInterface $response): int {
-                return $this->getTotalPages($response);
-            }
+        $promise = $this->fetchData($browser, $this->createCountRequest($requestDto, $timeQuery))
+            ->then(
+                function (ResponseInterface $response): int {
+                    return $this->getTotalPages($response);
+                }
             )->then(
                 function (int $total) use ($browser, $callbackItem, $timeQuery, $requestDto) {
                     return all($this->doPageLoop($total, $browser, $callbackItem, $requestDto, $timeQuery));
@@ -71,12 +77,13 @@ class SalesForceDeleteContactConnector extends SalesForceContactConnectorAbstrac
     ): RequestInterface
     {
         $query = sprintf(
-            'select+email+from+contact%s+limit+%s+offset+%s', $timeQuery,
+            'select+email,+firstname,+lastname+from+contact%s+limit+%s+offset+%s',
+            $timeQuery,
             self::PAGE_LIMIT,
             self::PAGE_LIMIT * $page
         );
 
-        return new Request('GET', sprintf(static::QUERY_URL, $dto->getUri(TRUE), $query), $dto->getHeaders());
+        return new Request('GET', sprintf(self::QUERY_URL, $dto->getUri(TRUE), $query), $dto->getHeaders());
     }
 
 }

@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Integration\AppBundle\Model\Systems\Impl\SalesForce\Connector;
+namespace Tests\Integration\AppBundle\Model\Systems\Impl\Salesforce\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use Hanaboso\PipesFramework\Commons\Crypt\CryptManager;
@@ -13,11 +13,11 @@ use React\EventLoop\Factory;
 use Tests\DatabaseTestCaseAbstract;
 
 /**
- * Class SalesForceSyncContactConnectorTest
+ * Class SalesforceUpdateContactConnectorTest
  *
- * @package Tests\Integration\AppBundle\Model\Systems\Impl\SalesForce\Connector
+ * @package Tests\Integration\AppBundle\Model\Systems\Impl\Salesforce\Connector
  */
-final class SalesForceSyncContactConnectorTest extends DatabaseTestCaseAbstract
+final class SalesforceUpdateContactConnectorTest extends DatabaseTestCaseAbstract
 {
 
     /**
@@ -26,7 +26,7 @@ final class SalesForceSyncContactConnectorTest extends DatabaseTestCaseAbstract
     public function testProcessBatch(): void
     {
         $this->markTestSkipped();
-        $connector = $this->container->get('hbpf.connector.salesforce-sync-contact-connector');
+        $connector = $this->container->get('hbpf.connector.salesforce-update-contact-connector');
 
         $topology = (new Topology())->setName('Topology');
         $this->persistAndFlush($topology);
@@ -79,12 +79,6 @@ final class SalesForceSyncContactConnectorTest extends DatabaseTestCaseAbstract
         )->done();
 
         $loop->run();
-
-        $this->dm->clear();
-        /** @var SystemInstall $sys */
-        $sys = $this->dm->getRepository(SystemInstall::class)->find($system->getId());
-        $this->assertInstanceOf(SystemInstall::class, $sys);
-        $this->assertTrue($sys->isSynchronized());
     }
 
 }

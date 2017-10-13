@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce;
+namespace CleverConnectors\AppBundle\Model\Systems\Impl\Salesforce;
 
 /**
  * Created by PhpStorm.
@@ -21,11 +21,11 @@ use Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 
 /**
- * Class SalesForceSystem
+ * Class SalesforceSystem
  *
- * @package CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce
+ * @package CleverConnectors\AppBundle\Model\Systems\Impl\Salesforce
  */
-class SalesForceSystem implements OAuth2Interface
+class SalesforceSystem implements OAuth2Interface
 {
 
     use AuthorizationTrait;
@@ -43,7 +43,7 @@ class SalesForceSystem implements OAuth2Interface
     private $provider;
 
     /**
-     * SalesForceSystem constructor.
+     * SalesforceSystem constructor.
      *
      * @param OAuth2Provider $provider
      */
@@ -65,7 +65,7 @@ class SalesForceSystem implements OAuth2Interface
      */
     public function getName(): string
     {
-        return 'SalesForce';
+        return 'Salesforce';
     }
 
     /**
@@ -73,7 +73,7 @@ class SalesForceSystem implements OAuth2Interface
      */
     public function getDescription(): string
     {
-        return 'SalesForce descr.';
+        return 'Salesforce descr.';
     }
 
     /**
@@ -164,7 +164,7 @@ class SalesForceSystem implements OAuth2Interface
     public function getRequestDto(SystemInstall $systemInstall, string $method): RequestDto
     {
         if (!$this->isAuthorized($systemInstall)) {
-            throw new SystemException('SalesForce is not Authorized!', SystemException::SYSTEM_IS_UNAUTHORIZED);
+            throw new SystemException('Salesforce is not Authorized!', SystemException::SYSTEM_IS_UNAUTHORIZED);
         }
 
         $headers = [

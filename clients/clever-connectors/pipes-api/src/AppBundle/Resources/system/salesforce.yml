@@ -1,12 +1,12 @@
 services:
     systems.salesforce:
-        class: CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce\SalesForceSystem
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Salesforce\SalesforceSystem
         arguments:
             - '@hbpf.providers.oauth2_provider'
         tags: ['%systems%']
 
     hbpf.connector.salesforce-sync-contact-connector:
-        class: CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce\Connector\SalesForceSyncContactConnector
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Salesforce\Connector\SalesforceSyncContactConnector
         arguments:
             - '@systems.salesforce'
             - '@manager.last_sync'
@@ -14,23 +14,23 @@ services:
             - '@doctrine_mongodb.odm.default_document_manager'
 
     hbpf.connector.salesforce-update-contact-connector:
-        class: CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce\Connector\SalesForceUpdateContactConnector
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Salesforce\Connector\SalesforceUpdateContactConnector
         arguments:
             - '@systems.salesforce'
             - '@manager.last_sync'
             - '@hbpf.transport.async_curl_factory'
 
     hbpf.connector.salesforce-delete-contact-connector:
-        class: CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce\Connector\SalesForceDeleteContactConnector
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Salesforce\Connector\SalesforceDeleteContactConnector
         arguments:
             - '@systems.salesforce'
             - '@manager.last_sync'
             - '@hbpf.transport.async_curl_factory'
 
     hbpf.custom_node.salesforce-update-contact-mapper:
-        class: CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce\Mapper\SalesForceUpdateContactMapper
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Salesforce\Mapper\SalesforceUpdateContactMapper
         arguments:
 
     hbpf.custom_node.salesforce-delete-contact-mapper:
-        class: CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce\Mapper\SalesForceDeleteContactMapper
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Salesforce\Mapper\SalesforceDeleteContactMapper
         arguments:

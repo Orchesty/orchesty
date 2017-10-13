@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Unit\AppBundle\Model\Systems\Impl\SalesForce\Mapper;
+namespace Tests\Unit\AppBundle\Model\Systems\Impl\Salesforce\Mapper;
 
 use CleverConnectors\AppBundle\Enum\CleverFieldsEnum;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
@@ -8,11 +8,11 @@ use Nette\Utils\Json;
 use Tests\ConnectorTestCaseAbstract;
 
 /**
- * Class SalesForceDeleteContactMapperTest
+ * Class SalesforceDeleteContactMapperTest
  *
- * @package Tests\Unit\AppBundle\Model\Systems\Impl\SalesForce\Mapper
+ * @package Tests\Unit\AppBundle\Model\Systems\Impl\Salesforce\Mapper
  */
-final class SalesForceDeleteContactMapperTest extends ConnectorTestCaseAbstract
+final class SalesforceDeleteContactMapperTest extends ConnectorTestCaseAbstract
 {
 
     /**
@@ -23,7 +23,7 @@ final class SalesForceDeleteContactMapperTest extends ConnectorTestCaseAbstract
         $connector = $this->container->get('hbpf.custom_node.salesforce-delete-contact-mapper');
 
         $response = Json::decode(
-            $connector->process((new ProcessDto())->setData($this->getRequest('SalesForceDeleteContactMapper.json')))
+            $connector->process((new ProcessDto())->setData($this->getRequest('SalesforceDeleteContactMapper.json')))
                 ->getData(),
             TRUE
         );

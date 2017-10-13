@@ -7,13 +7,13 @@
  * Time: 13:52
  */
 
-namespace Tests\Unit\AppBundle\Model\Systems\Impl\SalesForce\Connector;
+namespace Tests\Unit\AppBundle\Model\Systems\Impl\Salesforce\Connector;
 
 use CleverConnectors\AppBundle\Document\LastSync;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\LastSync\LastSyncManager;
-use CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce\Connector\SalesForceUpdateContactConnector;
-use CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce\SalesForceSystem;
+use CleverConnectors\AppBundle\Model\Systems\Impl\Salesforce\Connector\SalesforceUpdateContactConnector;
+use CleverConnectors\AppBundle\Model\Systems\Impl\Salesforce\SalesforceSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use DateTime;
 use GuzzleHttp\Psr7\Response;
@@ -29,11 +29,11 @@ use Tests\KernelTestCaseAbstract;
 use function React\Promise\resolve;
 
 /**
- * Class SalesForceUpdateContactConnectorTest
+ * Class SalesforceUpdateContactConnectorTest
  *
- * @package Tests\Unit\AppBundle\Model\Systems\Impl\SalesForce\Connector
+ * @package Tests\Unit\AppBundle\Model\Systems\Impl\Salesforce\Connector
  */
-final class SalesForceUpdateContactConnectorTest extends KernelTestCaseAbstract
+final class SalesforceUpdateContactConnectorTest extends KernelTestCaseAbstract
 {
 
     /**
@@ -54,7 +54,7 @@ final class SalesForceUpdateContactConnectorTest extends KernelTestCaseAbstract
             ->setHeaders(['node_id' => '2234-adawad'])
             ->setData(json_encode($dtoData));
 
-        /** @var SalesForceUpdateContactConnector $syncConn */
+        /** @var SalesforceUpdateContactConnector $syncConn */
         $syncConn = $this->mockSync();
         $data     = $syncConn->processBatch($processDto, $loop, function (): void {
         });
@@ -72,7 +72,7 @@ final class SalesForceUpdateContactConnectorTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @return PHPUnit_Framework_MockObject_MockObject|SalesForceUpdateContactConnector
+     * @return PHPUnit_Framework_MockObject_MockObject|SalesforceUpdateContactConnector
      */
     private function mockSync()
     {
@@ -95,7 +95,7 @@ final class SalesForceUpdateContactConnectorTest extends KernelTestCaseAbstract
 
         $sender = $this->createMock(CurlSenderFactory::class);
 
-        $syncConn = $this->getMockBuilder(SalesForceUpdateContactConnector::class)
+        $syncConn = $this->getMockBuilder(SalesforceUpdateContactConnector::class)
             ->setMethods(['fetchData'])
             ->setConstructorArgs([$this->mockSystem(), $lastSync, $sender])
             ->getMock();
@@ -112,7 +112,7 @@ final class SalesForceUpdateContactConnectorTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @return PHPUnit_Framework_MockObject_MockObject|SalesForceSystem
+     * @return PHPUnit_Framework_MockObject_MockObject|SalesforceSystem
      */
     private function mockSystem()
     {
@@ -122,7 +122,7 @@ final class SalesForceUpdateContactConnectorTest extends KernelTestCaseAbstract
             'Accept'        => 'application/json',
             'Authorization' => 'Bearer token123',
         ]);
-        $mock = $this->createMock(SalesForceSystem::class);
+        $mock = $this->createMock(SalesforceSystem::class);
         $mock->method('getRequestDto')->willReturn($requestDto);
 
         return $mock;

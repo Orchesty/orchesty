@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce\Connector;
+namespace CleverConnectors\AppBundle\Model\Systems\Impl\Salesforce\Connector;
 
 use CleverConnectors\AppBundle\Model\LastSync\LastSyncManager;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
-use CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce\SalesForceSystem;
+use CleverConnectors\AppBundle\Model\Systems\Impl\Salesforce\SalesforceSystem;
 use DateTime;
 use GuzzleHttp\Psr7\Request;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
@@ -20,11 +20,11 @@ use Psr\Http\Message\ResponseInterface;
 use React\Promise\PromiseInterface;
 
 /**
- * Class SalesForceContactConnectorAbstract
+ * Class SalesforceContactConnectorAbstract
  *
- * @package CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce\Connector
+ * @package CleverConnectors\AppBundle\Model\Systems\Impl\Salesforce\Connector
  */
-abstract class SalesForceContactConnectorAbstract implements BatchInterface, ConnectorInterface
+abstract class SalesforceContactConnectorAbstract implements BatchInterface, ConnectorInterface
 {
 
     protected const QUERY_URL  = '%s/services/data/v40.0/query?q=%s';
@@ -32,7 +32,7 @@ abstract class SalesForceContactConnectorAbstract implements BatchInterface, Con
     protected const NODE_NAME  = '';
 
     /**
-     * @var SalesForceSystem
+     * @var SalesforceSystem
      */
     protected $system;
 
@@ -47,13 +47,13 @@ abstract class SalesForceContactConnectorAbstract implements BatchInterface, Con
     protected $factory;
 
     /**
-     * SalesForceDeleteConnector constructor.
+     * SalesforceDeleteConnector constructor.
      *
-     * @param SalesForceSystem  $system
+     * @param SalesforceSystem  $system
      * @param LastSyncManager   $lastSyncManager
      * @param CurlSenderFactory $factory
      */
-    public function __construct(SalesForceSystem $system, LastSyncManager $lastSyncManager, CurlSenderFactory $factory)
+    public function __construct(SalesforceSystem $system, LastSyncManager $lastSyncManager, CurlSenderFactory $factory)
     {
         $this->system          = $system;
         $this->lastSyncManager = $lastSyncManager;
@@ -68,7 +68,7 @@ abstract class SalesForceContactConnectorAbstract implements BatchInterface, Con
      */
     public function processEvent(ProcessDto $dto): ProcessDto
     {
-        throw new ConnectorException('SalesForce has not implemented "processEvent" function.');
+        throw new ConnectorException('Salesforce has not implemented "processEvent" function.');
     }
 
     /**
@@ -79,7 +79,7 @@ abstract class SalesForceContactConnectorAbstract implements BatchInterface, Con
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {
-        throw new ConnectorException('SalesForce has not implemented "processAction" function.');
+        throw new ConnectorException('Salesforce has not implemented "processAction" function.');
     }
 
     /**
@@ -153,7 +153,7 @@ abstract class SalesForceContactConnectorAbstract implements BatchInterface, Con
         }
 
         throw new SystemException(
-            'Missing [records] key in response data from SalesForce.',
+            'Missing [records] key in response data from Salesforce.',
             SystemException::MISSING_DATA
         );
     }
@@ -170,7 +170,7 @@ abstract class SalesForceContactConnectorAbstract implements BatchInterface, Con
 
         if (!is_array($data) || !array_key_exists('totalSize', $data)) {
             throw new SystemException(
-                'SalesForce response has no "totalSize" field!',
+                'Salesforce response has no "totalSize" field!',
                 SystemException::MISSING_DATA
             );
         }

@@ -7,11 +7,11 @@
  * Time: 12:27
  */
 
-namespace CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce\Connector;
+namespace CleverConnectors\AppBundle\Model\Systems\Impl\Salesforce\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\LastSync\LastSyncManager;
-use CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce\SalesForceSystem;
+use CleverConnectors\AppBundle\Model\Systems\Impl\Salesforce\SalesforceSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use CleverConnectors\AppBundle\Utils\CronUtils;
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -27,11 +27,11 @@ use React\Promise\PromiseInterface;
 use function React\Promise\all;
 
 /**
- * Class SalesForceSyncConnector
+ * Class SalesforceSyncContactConnector
  *
- * @package CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce
+ * @package CleverConnectors\AppBundle\Model\Systems\Impl\Salesforce
  */
-class SalesForceSyncContactConnector extends SalesForceContactConnectorAbstract
+class SalesforceSyncContactConnector extends SalesforceContactConnectorAbstract
 {
 
     /**
@@ -40,15 +40,15 @@ class SalesForceSyncContactConnector extends SalesForceContactConnectorAbstract
     private $systemInstallRepository;
 
     /**
-     * SalesForceSyncConnector constructor.
+     * SalesforceSyncConnector constructor.
      *
-     * @param SalesForceSystem  $system
+     * @param SalesforceSystem  $system
      * @param LastSyncManager   $lastSyncManager
      * @param CurlSenderFactory $factory
      * @param DocumentManager   $dm
      */
     public function __construct(
-        SalesForceSystem $system,
+        SalesforceSystem $system,
         LastSyncManager $lastSyncManager,
         CurlSenderFactory $factory,
         DocumentManager $dm

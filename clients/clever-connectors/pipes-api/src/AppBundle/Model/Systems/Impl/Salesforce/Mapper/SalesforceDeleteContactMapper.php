@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce\Mapper;
+namespace CleverConnectors\AppBundle\Model\Systems\Impl\Salesforce\Mapper;
 
 use CleverConnectors\AppBundle\Enum\CleverFieldsEnum;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
@@ -8,11 +8,11 @@ use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
 
 /**
- * Class SalesForceDeleteContactMapper
+ * Class SalesforceDeleteContactMapper
  *
- * @package CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce\Mapper
+ * @package CleverConnectors\AppBundle\Model\Systems\Impl\Salesforce\Mapper
  */
-class SalesForceDeleteContactMapper implements CustomNodeInterface
+class SalesforceDeleteContactMapper implements CustomNodeInterface
 {
 
     /**
