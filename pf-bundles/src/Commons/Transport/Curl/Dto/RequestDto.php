@@ -35,6 +35,11 @@ class RequestDto
     private $body = '';
 
     /**
+     * @var array
+     */
+    private $debugInfo = [];
+
+    /**
      * RequestDto constructor.
      *
      * @param string $method
@@ -132,6 +137,43 @@ class RequestDto
         $this->headers = $headers;
 
         return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getDebugInfo(): array
+    {
+        return $this->debugInfo;
+    }
+
+    /**
+     * @param array $debugInfo
+     *
+     * @return RequestDto
+     */
+    public function setDebugInfo(array $debugInfo): RequestDto
+    {
+        $this->debugInfo = $debugInfo;
+
+        return $this;
+    }
+
+    /**
+     * @param RequestDto  $dto
+     * @param Uri|null    $uri
+     * @param null|string $method
+     *
+     * @return RequestDto
+     */
+    public static function from(RequestDto $dto, ?Uri $uri = NULL, ?string $method = NULL): RequestDto
+    {
+        $self = new self($method ?? $dto->getMethod(), $uri ?? new Uri($dto->getUri(TRUE)));
+        $self
+            ->setHeaders($dto->getHeaders())
+            ->setDebugInfo($dto->getDebugInfo());
+
+        return $self;
     }
 
 }

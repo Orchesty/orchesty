@@ -6,7 +6,7 @@ use CleverConnectors\AppBundle\Model\LastSync\LastSyncManager;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Salesforce\SalesforceSystem;
 use DateTime;
-use GuzzleHttp\Psr7\Request;
+use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSender;
 use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSenderFactory;
@@ -15,7 +15,6 @@ use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\BatchInterface;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
-use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use React\Promise\PromiseInterface;
 
@@ -106,22 +105,23 @@ abstract class SalesforceContactConnectorAbstract implements BatchInterface, Con
      * @param RequestDto $dto
      * @param string     $timeQuery
      *
-     * @return RequestInterface
+     * @return RequestDto
      */
-    protected function createCountRequest(RequestDto $dto, string $timeQuery = ''): RequestInterface
+    protected function createCountRequest(RequestDto $dto, string $timeQuery = ''): RequestDto
     {
         $query = 'select+count()+from+contact' . $timeQuery;
+        $uri   = new Uri(sprintf(static::QUERY_URL, $dto->getUri(TRUE), $query));
 
-        return new Request('GET', sprintf(static::QUERY_URL, $dto->getUri(TRUE), $query), $dto->getHeaders());
+        return RequestDto::from($dto, $uri);
     }
 
     /**
-     * @param CurlSender       $sender
-     * @param RequestInterface $request
+     * @param CurlSender $sender
+     * @param RequestDto $request
      *
      * @return PromiseInterface
      */
-    protected function fetchData(CurlSender $sender, RequestInterface $request): PromiseInterface
+    protected function fetchData(CurlSender $sender, RequestDto $request): PromiseInterface
     {
         return $sender->send($request);
     }
@@ -208,12 +208,8 @@ abstract class SalesforceContactConnectorAbstract implements BatchInterface, Con
      * @param string     $timeQuery
      * @param RequestDto $dto
      *
-     * @return RequestInterface
+     * @return RequestDto
      */
-    abstract protected function createPageContactRequest(
-        int $page,
-        string $timeQuery,
-        RequestDto $dto
-    ): RequestInterface;
+    abstract protected function createPageContactRequest(int $page, string $timeQuery, RequestDto $dto): RequestDto;
 
 }

@@ -20,6 +20,7 @@ class LastSyncRepository extends DocumentRepository
      */
     public function getLastSyncTime(string $userId, string $topologyName, string $nodeName): ?LastSync
     {
+        $this->getDocumentManager()->clear(LastSync::class);
         /** @var LastSync $res */
         $res = $this->createQueryBuilder()
             ->select('timestamp')

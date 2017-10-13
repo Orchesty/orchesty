@@ -3,6 +3,7 @@
 namespace CleverConnectors\AppBundle\Repository;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Utils\CMHeaders;
 use DateTime;
 use DateTimeZone;
 use Doctrine\ODM\MongoDB\DocumentRepository;
@@ -19,11 +20,31 @@ class SystemInstallRepository extends DocumentRepository
 {
 
     /**
+     * @param array $headers
+     *
+     * @return SystemInstall
+     * @throws LogicException
+     */
+    public function getSystemInstallFromHeaders(array $headers): SystemInstall
+    {
+        $user   = CMHeaders::get(CMHeaders::GUID, $headers) ?? '';
+        $token  = CMHeaders::get(CMHeaders::TOKEN, $headers) ?? '';
+        $system = CMHeaders::get(CMHeaders::SYSTEM_KEY, $headers) ?? '';
+
+        if (empty($user) || empty($token) || empty($system)) {
+            throw new LogicException('SystemInstall not found!');
+        }
+
+        return $this->getSystemInstall($user, $token, $system);
+    }
+
+    /**
      * @param string $user
      * @param string $token
      * @param string $systemKey
      *
      * @return SystemInstall
+     * @throws LogicException
      */
     public function getSystemInstall(string $user, string $token, string $systemKey): SystemInstall
     {

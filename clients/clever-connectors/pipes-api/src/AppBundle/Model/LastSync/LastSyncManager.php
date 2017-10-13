@@ -4,10 +4,11 @@ namespace CleverConnectors\AppBundle\Model\LastSync;
 
 use CleverConnectors\AppBundle\Document\LastSync;
 use CleverConnectors\AppBundle\Document\SystemInstall;
-use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Repository\LastSyncRepository;
+use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use LogicException;
 
 /**
  * Class LastSyncManager
@@ -39,24 +40,24 @@ class LastSyncManager
     }
 
     /**
-     * @param array         $data
      * @param SystemInstall $systemInstall
-     * @param string        $nodeName
+     * @param array         $headers
      *
      * @return LastSync
-     * @throws SystemException
      */
-    public function getLastSync(array $data, SystemInstall $systemInstall, string $nodeName): LastSync
+    public function getLastSync(SystemInstall $systemInstall, array $headers): LastSync
     {
-        if (!array_key_exists('topology', $data) || !array_key_exists('name', $data['topology'])) {
-            throw new SystemException('Missing [topology][name] in data.', SystemException::MISSING_DATA);
+        $topologyName = CMHeaders::get(CMHeaders::TOPOLOGY_NAME, $headers) ?? '';
+        $nodeName     = CMHeaders::get(CMHeaders::NODE_NAME, $headers) ?? '';
+
+        if (empty($topologyName) || empty($nodeName)) {
+            throw new LogicException('Missing topology_name or node_name Header');
         }
 
-        $this->dm->clear(LastSync::class);
-        $lastSync = $this->repository->getLastSyncTime($systemInstall->getUser(), $data['topology']['name'], $nodeName);
+        $lastSync = $this->repository->getLastSyncTime($systemInstall->getUser(), $topologyName, $nodeName);
 
         if (!$lastSync) {
-            $lastSync = $this->createLastSync($systemInstall, $nodeName, $data['topology']['name']);
+            $lastSync = $this->createLastSync($systemInstall, $nodeName, $topologyName);
         }
 
         if ($systemInstall->isSynchronized() && $systemInstall->getSynchronizedTime()) {

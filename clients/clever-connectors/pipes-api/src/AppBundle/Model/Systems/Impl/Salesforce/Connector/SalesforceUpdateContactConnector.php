@@ -9,11 +9,11 @@
 
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Salesforce\Connector;
 
+use CleverConnectors\AppBundle\Utils\CMHeaders;
 use CleverConnectors\AppBundle\Utils\CronUtils;
-use GuzzleHttp\Psr7\Request;
+use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
-use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use React\EventLoop\LoopInterface;
 use React\Promise\PromiseInterface;
@@ -27,7 +27,13 @@ use function React\Promise\all;
 class SalesforceUpdateContactConnector extends SalesforceContactConnectorAbstract
 {
 
-    protected const NODE_NAME = 'salesforce-update-contact-connector';
+    /**
+     * @return string
+     */
+    public function getId(): string
+    {
+        return 'salesforce-update-contact-connector';
+    }
 
     /**
      * @param ProcessDto    $dto
@@ -39,12 +45,12 @@ class SalesforceUpdateContactConnector extends SalesforceContactConnectorAbstrac
     public function processBatch(ProcessDto $dto, LoopInterface $loop, callable $callbackItem): PromiseInterface
     {
         $browser       = $this->factory->create($loop);
-        $data          = CronUtils::parseData($dto);
         $systemInstall = CronUtils::getSystemInstall($dto);
         $requestDto    = $this->system->getRequestDto($systemInstall, 'GET');
-        $lastSync      = $this->lastSyncManager->getLastSync($data, $systemInstall, self::NODE_NAME);
-        $times         = CronUtils::getTimes($lastSync);
-        $timeQuery     = $this->getTimeQuery($times->getStart(), $times->getEnd());
+        $requestDto->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()));
+        $lastSync  = $this->lastSyncManager->getLastSync($systemInstall, $dto->getHeaders());
+        $times     = CronUtils::getTimes($lastSync);
+        $timeQuery = $this->getTimeQuery($times->getStart(), $times->getEnd());
 
         $promise = $this->fetchData($browser, $this->createCountRequest($requestDto, $timeQuery))
             ->then(
@@ -68,13 +74,9 @@ class SalesforceUpdateContactConnector extends SalesforceContactConnectorAbstrac
      * @param string     $timeQuery
      * @param RequestDto $dto
      *
-     * @return RequestInterface
+     * @return RequestDto
      */
-    protected function createPageContactRequest(
-        int $page,
-        string $timeQuery,
-        RequestDto $dto
-    ): RequestInterface
+    protected function createPageContactRequest(int $page, string $timeQuery, RequestDto $dto): RequestDto
     {
         $query = sprintf(
             'select+email,+firstname,+lastname+from+contact%s+limit+%s+offset+%s',
@@ -82,16 +84,9 @@ class SalesforceUpdateContactConnector extends SalesforceContactConnectorAbstrac
             self::PAGE_LIMIT,
             self::PAGE_LIMIT * $page
         );
+        $uri   = new Uri(sprintf(self::QUERY_URL, $dto->getUri(TRUE), $query));
 
-        return new Request('GET', sprintf(self::QUERY_URL, $dto->getUri(TRUE), $query), $dto->getHeaders());
-    }
-
-    /**
-     * @return string
-     */
-    public function getId(): string
-    {
-        return 'salesforce-update-contact-connector';
+        return RequestDto::from($dto, $uri);
     }
 
 }

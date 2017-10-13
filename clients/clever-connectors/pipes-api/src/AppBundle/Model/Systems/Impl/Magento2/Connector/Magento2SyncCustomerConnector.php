@@ -6,14 +6,13 @@ use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\LastSync\LastSyncManager;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Magento2\Magento2System;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
-use CleverConnectors\AppBundle\Utils\CronUtils;
+use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentRepository;
-use GuzzleHttp\Psr7\Request;
+use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSenderFactory;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
-use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use React\EventLoop\LoopInterface;
 use React\Promise\PromiseInterface;
@@ -61,9 +60,10 @@ class Magento2SyncCustomerConnector extends Magento2ConnectorAbstract
     public function processBatch(ProcessDto $dto, LoopInterface $loop, callable $callbackItem): PromiseInterface
     {
 
-        $sender       = $this->factory->create($loop);
-        $systemInstall = CronUtils::getSystemInstall($dto);
+        $sender        = $this->factory->create($loop);
+        $systemInstall = $this->systemInstallRepository->getSystemInstallFromHeaders($dto->getHeaders());
         $requestDto    = $this->system->getRequestDto($systemInstall, 'GET');
+        $requestDto->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()));
 
         $promise = $this->fetchData($sender, $this->createCountRequest($requestDto))
             ->then(
@@ -86,21 +86,18 @@ class Magento2SyncCustomerConnector extends Magento2ConnectorAbstract
      * @param string     $timeQuery
      * @param RequestDto $dto
      *
-     * @return RequestInterface
+     * @return RequestDto
      */
-    protected function createPageContactRequest(
-        int $page,
-        string $timeQuery = '',
-        RequestDto $dto
-    ): RequestInterface
+    protected function createPageContactRequest(int $page, string $timeQuery = '', RequestDto $dto): RequestDto
     {
         $query = sprintf(
             'searchCriteria[pageSize]=%s&searchCriteria[currentPage]=%s',
             self::PAGE_LIMIT,
             $page
         );
+        $uri   = new Uri(sprintf(self::QUERY_URL, $dto->getUri(TRUE), $query));
 
-        return new Request('GET', sprintf(self::QUERY_URL, $dto->getUri(TRUE), $query), $dto->getHeaders());
+        return RequestDto::from($dto, $uri);
     }
 
 }

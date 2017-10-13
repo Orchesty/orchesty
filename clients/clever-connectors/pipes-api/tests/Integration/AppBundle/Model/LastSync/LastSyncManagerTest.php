@@ -5,6 +5,7 @@ namespace Tests\Integration\AppBundle\Model\LastSync;
 use CleverConnectors\AppBundle\Document\LastSync;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\LastSync\LastSyncManager;
+use CleverConnectors\AppBundle\Utils\CMHeaders;
 use DateTime;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
@@ -58,12 +59,13 @@ final class LastSyncManagerTest extends DatabaseTestCaseAbstract
             ->setTimestamp(new DateTime('today midnight'));
         $this->persistAndFlush($lastSync);
 
-        $dtoData = [
-            'topology' => ['name' => $topology->getName()],
+        $arr = [
+            CMHeaders::createKey(CMHeaders::TOPOLOGY_NAME) => $topology->getName(),
+            CMHeaders::createKey(CMHeaders::NODE_NAME)     => 'Node',
         ];
 
         $this->dm->clear();
-        $existingLastSync = $this->manager->getLastSync($dtoData, $system, 'Node');
+        $existingLastSync = $this->manager->getLastSync($system, $arr);
         $this->assertEquals($lastSync->getTimestamp(), $existingLastSync->getTimestamp());
     }
 
@@ -86,12 +88,13 @@ final class LastSyncManagerTest extends DatabaseTestCaseAbstract
             ->setTopology($topology->getId());
         $this->persistAndFlush($node);
 
-        $dtoData = [
-            'topology' => ['name' => $topology->getName()],
+        $arr = [
+            CMHeaders::createKey(CMHeaders::TOPOLOGY_NAME) => $topology->getName(),
+            CMHeaders::createKey(CMHeaders::NODE_NAME)     => 'Node',
         ];
 
         $this->dm->clear();
-        $existingLastSync = $this->manager->getLastSync($dtoData, $system, 'Node');
+        $existingLastSync = $this->manager->getLastSync($system, $arr);
         $this->assertEquals(NULL, $existingLastSync->getTimestamp());
     }
 

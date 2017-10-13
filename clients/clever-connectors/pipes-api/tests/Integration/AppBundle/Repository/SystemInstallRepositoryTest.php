@@ -11,6 +11,7 @@ namespace Tests\Integration\AppBundle\Repository;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
+use CleverConnectors\AppBundle\Utils\CMHeaders;
 use DateTime;
 use LogicException;
 use Tests\DatabaseTestCaseAbstract;
@@ -22,6 +23,59 @@ use Tests\DatabaseTestCaseAbstract;
  */
 final class SystemInstallRepositoryTest extends DatabaseTestCaseAbstract
 {
+
+    /**
+     *
+     */
+    public function testGetSystemInstallFromHeaders(): void
+    {
+        $system = new SystemInstall();
+        $system
+            ->setUser('u-123')
+            ->setToken('t-456')
+            ->setSystem('s-789');
+
+        $this->dm->persist($system);
+        $this->dm->flush($system);
+        $this->dm->clear();
+
+        $arr = [
+            CMHeaders::createKey(CMHeaders::GUID)       => $system->getUser(),
+            CMHeaders::createKey(CMHeaders::TOKEN)      => $system->getToken(),
+            CMHeaders::createKey(CMHeaders::SYSTEM_KEY) => $system->getSystem(),
+        ];
+
+        /** @var SystemInstallRepository $repo */
+        $repo = $this->dm->getRepository(SystemInstall::class);
+        $sys  = $repo->getSystemInstallFromHeaders($arr);
+        $this->assertInstanceOf(SystemInstall::class, $sys);
+    }
+
+    /**
+     *
+     */
+    public function testGetSystemInstallFromHeadersEx(): void
+    {
+        $system = new SystemInstall();
+        $system
+            ->setUser('u-123')
+            ->setToken('t-456')
+            ->setSystem('s-789');
+
+        $this->dm->persist($system);
+        $this->dm->flush($system);
+        $this->dm->clear();
+
+        $arr = [
+            CMHeaders::createKey(CMHeaders::GUID)       => $system->getUser(),
+            CMHeaders::createKey(CMHeaders::SYSTEM_KEY) => $system->getSystem(),
+        ];
+
+        /** @var SystemInstallRepository $repo */
+        $repo = $this->dm->getRepository(SystemInstall::class);
+        $this->expectException(LogicException::class);
+        $repo->getSystemInstallFromHeaders($arr);
+    }
 
     /**
      *
