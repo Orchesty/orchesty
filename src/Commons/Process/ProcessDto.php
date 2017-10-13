@@ -77,7 +77,7 @@ final class ProcessDto
      *
      * @return null|string
      */
-    public function getHeader(string $key, ?string $default = NULL): string
+    public function getHeader(string $key, ?string $default = NULL): ?string
     {
         return $this->headers[$key] ?? $default;
     }
