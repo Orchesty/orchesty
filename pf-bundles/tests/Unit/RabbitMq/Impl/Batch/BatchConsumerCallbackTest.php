@@ -107,14 +107,14 @@ class BatchConsumerCallbackTest extends TestCase
                     'type'                              => 'batch',
                     PipesHeaders::PF_PREFIX . 'node_id' => '132',
                 ],
-                'Missing "correlation-id" in the message header.',
+                'Missing "correlation_id" in the message header.',
             ],
             [
                 [
                     'reply-to'                                 => 'reply',
                     'type'                                     => 'batch',
                     PipesHeaders::PF_PREFIX . 'node_id'        => '132',
-                    PipesHeaders::PF_PREFIX . 'correlation-id' => '123',
+                    PipesHeaders::PF_PREFIX . 'correlation_id' => '123',
                 ],
                 'Missing "process_id" in the message header.',
             ],
@@ -145,7 +145,7 @@ class BatchConsumerCallbackTest extends TestCase
             'reply-to'                                 => 'reply',
             'type'                                     => 'batch',
             PipesHeaders::PF_PREFIX . 'node_id'        => '132',
-            PipesHeaders::PF_PREFIX . 'correlation-id' => '123',
+            PipesHeaders::PF_PREFIX . 'correlation_id' => '123',
             PipesHeaders::PF_PREFIX . 'process_id'     => '123',
         ];
         $callback
@@ -188,7 +188,7 @@ class BatchConsumerCallbackTest extends TestCase
             'reply-to'                                 => 'reply',
             'type'                                     => 'test',
             PipesHeaders::PF_PREFIX . 'node_id'        => '132',
-            PipesHeaders::PF_PREFIX . 'correlation-id' => '123',
+            PipesHeaders::PF_PREFIX . 'correlation_id' => '123',
             PipesHeaders::PF_PREFIX . 'process_id'     => '123',
         ];
         $callback
@@ -231,7 +231,7 @@ class BatchConsumerCallbackTest extends TestCase
             'reply-to'                                 => 'reply',
             'type'                                     => 'unknown',
             PipesHeaders::PF_PREFIX . 'node_id'        => '132',
-            PipesHeaders::PF_PREFIX . 'correlation-id' => '123',
+            PipesHeaders::PF_PREFIX . 'correlation_id' => '123',
             PipesHeaders::PF_PREFIX . 'process_id'     => '123',
         ];
         $callback

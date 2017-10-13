@@ -146,7 +146,8 @@ class UserMessageGenerator implements BatchInterface, CustomNodeInterface
                 'system_install' => $item,
             ]))
             ->addHeaders(PipesHeaders::createKey('token'), $item['token'] ?? '')
-            ->addHeaders(PipesHeaders::createKey('guid'), $item['user'] ?? '');
+            ->addHeaders(PipesHeaders::createKey('guid'), $item['user'] ?? '')
+            ->addHeaders(PipesHeaders::createKey('system_key'), $item['system'] ?? '');
 
         return resolve($message);
     }
