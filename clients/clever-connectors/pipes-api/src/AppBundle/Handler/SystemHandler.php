@@ -159,7 +159,6 @@ class SystemHandler
      * @param array  $data
      *
      * @return array
-     * @internal param string $token
      *
      */
     public function switchToken(string $user, string $system, array $data): array

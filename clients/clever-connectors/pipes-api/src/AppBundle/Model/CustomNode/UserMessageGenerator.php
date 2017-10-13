@@ -54,8 +54,6 @@ class UserMessageGenerator implements BatchInterface, CustomNodeInterface
      *
      * @param Serializer          $serializer
      * @param AsyncCommandFactory $asyncCommandFactory
-     *
-     * @internal param string $projectDir
      */
     public function __construct(Serializer $serializer, AsyncCommandFactory $asyncCommandFactory)
     {
@@ -165,7 +163,6 @@ class UserMessageGenerator implements BatchInterface, CustomNodeInterface
      * @param callable $itemCallback
      *
      * @return PromiseInterface
-     * @internal param string $chunk
      */
     private function processItem(array $item, array $topology, int $i, callable $itemCallback): PromiseInterface
     {

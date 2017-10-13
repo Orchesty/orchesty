@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\AppBundle\Model\Systems\Impl\Magento2\Mapper;
 
+use CleverConnectors\AppBundle\Enum\CleverFieldsEnum;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Nette\Utils\Json;
 use Tests\ConnectorTestCaseAbstract;
@@ -28,9 +29,11 @@ final class Magento2UpdateCustomerMapperTest extends ConnectorTestCaseAbstract
         );
 
         $this->assertEquals([
-            'email'      => 'email@example.com',
-            'first_name' => 'John',
-            'last_name'  => 'Doe',
+            CleverFieldsEnum::EMAIL      => 'email@example.com',
+            CleverFieldsEnum::FIRST_NAME => 'John',
+            CleverFieldsEnum::LAST_NAME  => 'Doe',
+            CleverFieldsEnum::FOREIGN_ID => '1',
+            CleverFieldsEnum::REACTIVATE => TRUE,
         ], $response);
     }
 

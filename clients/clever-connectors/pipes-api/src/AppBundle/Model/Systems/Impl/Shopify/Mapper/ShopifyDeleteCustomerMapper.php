@@ -2,8 +2,8 @@
 
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\Mapper;
 
-use CleverConnectors\AppBundle\Enum\CleverFieldsEnum;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
+use CleverConnectors\AppBundle\Model\CM\SubscriptionConnector\CustomerObject\CMSubscriber;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
 
@@ -31,13 +31,15 @@ class ShopifyDeleteCustomerMapper implements CustomNodeInterface
                 CleverConnectorsException::MISSING_DATA
             );
         }
-        $res = [
-            CleverFieldsEnum::FOREIGN_ID => (string) $data['id'],
-            //TODO Shopify does not send email that is required by cm...
-            'email'                      => (string) $data['id'],
-        ];
 
-        return $dto->setData(json_encode($res));
+        $obj = new CMSubscriber();
+        $obj
+            ->setForeignId($data['id'])
+            //TODO Shopify does not send email that is required by cm...
+            ->setEmail((string) $data['id'])
+            ->setReactivate(FALSE);
+
+        return $dto->setData(json_encode($obj->toArray()));
     }
 
 }

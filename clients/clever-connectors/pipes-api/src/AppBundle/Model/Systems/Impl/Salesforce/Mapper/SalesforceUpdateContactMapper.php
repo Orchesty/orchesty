@@ -2,8 +2,8 @@
 
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Salesforce\Mapper;
 
-use CleverConnectors\AppBundle\Enum\CleverFieldsEnum;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
+use CleverConnectors\AppBundle\Model\CM\SubscriptionConnector\CustomerObject\CMSubscriber;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
 
@@ -32,23 +32,22 @@ class SalesforceUpdateContactMapper implements CustomNodeInterface
             );
         }
 
-        $res = [
-            'email' => $data['Email'],
-        ];
+        $obj = new CMSubscriber();
+        $obj->setEmail($data['Email']);
 
         if (array_key_exists('FirstName', $data)) {
-            $res['first_name'] = $data['FirstName'];
+            $obj->setFirstName($data['FirstName']);
         }
 
         if (array_key_exists('LastName', $data)) {
-            $res['last_name'] = $data['LastName'];
+            $obj->setLastName($data['LastName']);
         }
 
         if (array_key_exists('Id', $data)) {
-            $res[CleverFieldsEnum::FOREIGN_ID] = $data['Id'];
+            $obj->setForeignId($data['Id']);
         }
 
-        return $dto->setData(json_encode($res));
+        return $dto->setData(json_encode($obj->toArray()));
     }
 
 }

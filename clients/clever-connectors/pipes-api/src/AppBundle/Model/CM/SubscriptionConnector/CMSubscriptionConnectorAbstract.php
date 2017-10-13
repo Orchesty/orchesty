@@ -13,6 +13,7 @@ use CleverConnectors\AppBundle\Enum\CleverFieldsEnum;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Exceptions\Exception;
 use CleverConnectors\AppBundle\Model\CM\CMAuthorization;
+use CleverConnectors\AppBundle\Utils\CMHeaders;
 use GuzzleHttp\Psr7\Uri;
 use GuzzleHttp\RequestOptions;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
@@ -120,7 +121,10 @@ abstract class CMSubscriptionConnectorAbstract extends CMAuthorization implement
      */
     public function processCMAction(ProcessDto $dto, string $method, array $statusCode, string $email = ''): ProcessDto
     {
-        if (!isset($dto->getHeaders()['guid']) || !isset($dto->getHeaders()['token'])) {
+        $user  = CMHeaders::get(CMHeaders::GUID, $dto->getHeaders());
+        $token = CMHeaders::get(CMHeaders::TOKEN, $dto->getHeaders());
+
+        if (!isset($user) || !isset($token)) {
             throw new CleverConnectorsException(
                 'Missing required data in headers.',
                 CleverConnectorsException::MISSING_DATA
@@ -128,12 +132,8 @@ abstract class CMSubscriptionConnectorAbstract extends CMAuthorization implement
         }
 
         $req = new RequestDto($method, new Uri($this->getUrl($email)));
-
-        $req->setHeaders($this->getAuthorizationHeaders(
-            $dto->getHeaders()['guid'][0], // TODO why header array?
-            $dto->getHeaders()['token'][0]
-        ));
-
+        // TODO why header array?
+        $req->setHeaders($this->getAuthorizationHeaders($user[0], $token[0]));
         $req->setBody(json_encode($this->getData($dto)));
 
         try {
@@ -163,9 +163,6 @@ abstract class CMSubscriptionConnectorAbstract extends CMAuthorization implement
         $dto->setData($data);
 
         // @todo vyresit predavani custom hlavicek
-        $header = $dto->getHeaders();
-        $dto->setHeaders(['token' => $header['token'], 'guid' => $header['guid']]);
-
         return $dto;
     }
 
@@ -186,6 +183,7 @@ abstract class CMSubscriptionConnectorAbstract extends CMAuthorization implement
         if (array_key_exists(CleverFieldsEnum::FOREIGN_ID, $data)) {
             unset($data[CleverFieldsEnum::FOREIGN_ID]);
         }
+
         // -----------------------------------------------
 
         return $data;

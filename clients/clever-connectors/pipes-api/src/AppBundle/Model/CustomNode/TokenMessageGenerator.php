@@ -129,7 +129,6 @@ class TokenMessageGenerator implements BatchInterface, CustomNodeInterface
      * @param callable $itemCallback
      *
      * @return PromiseInterface
-     * @internal param string $chunk
      */
     private function processItem(array $item, int $i, callable $itemCallback): PromiseInterface
     {

@@ -3,6 +3,7 @@
 namespace Tests\Unit\AppBundle\Model\CM;
 
 use CleverConnectors\AppBundle\Model\CM\SubscriptionConnector\CMDeleteSubscriptionConnector;
+use CleverConnectors\AppBundle\Utils\CMHeaders;
 use GuzzleHttp\Client;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlClientFactory;
@@ -52,9 +53,14 @@ class CMDeleteSubscriptionConnectorTest extends KernelTestCaseAbstract
         $curl->method('send')->willReturn(new ResponseDto(200, '', 'someBody', []));
         $conn = new CMDeleteSubscriptionConnector($curl, ['cert' => '', 'ca'=> '']);
 
-        $res = $conn->processAction((new ProcessDto())->setData('{"email":"eml@eml.com"}')->setHeaders([
-            'token' => 'ttoken', 'guid' => 'gguid',
-        ]));
+        $res = $conn->processAction((new ProcessDto())
+            ->setData('{"email":"eml@eml.com"}')
+            ->setHeaders(
+            [
+                CMHeaders::createKey(CMHeaders::TOKEN) => 'ttoken',
+                CMHeaders::createKey(CMHeaders::GUID)  => 'gguid',
+            ]
+        ));
         self::assertEquals('someBody', $res->getData());
     }
 

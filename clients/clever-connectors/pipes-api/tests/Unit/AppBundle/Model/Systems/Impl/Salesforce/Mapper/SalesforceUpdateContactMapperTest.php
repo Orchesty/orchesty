@@ -29,10 +29,11 @@ final class SalesforceUpdateContactMapperTest extends ConnectorTestCaseAbstract
         );
 
         $this->assertEquals([
-            'email'                      => 'eml@adsf.com',
-            'first_name'                 => 'asdasdas',
-            'last_name'                  => 'dasdasd',
+            CleverFieldsEnum::EMAIL      => 'eml@adsf.com',
+            CleverFieldsEnum::FIRST_NAME => 'asdasdas',
+            CleverFieldsEnum::LAST_NAME  => 'dasdasd',
             CleverFieldsEnum::FOREIGN_ID => '129875625',
+            CleverFieldsEnum::REACTIVATE => TRUE,
         ], $response);
     }
 

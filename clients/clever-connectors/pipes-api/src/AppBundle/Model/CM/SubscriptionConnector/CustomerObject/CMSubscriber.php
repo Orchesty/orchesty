@@ -22,22 +22,27 @@ final class CMSubscriber
     /**
      * @var string
      */
-    private $email;
+    private $email = '';
 
     /**
      * @var string
      */
-    private $firstName;
+    private $firstName = '';
 
     /**
      * @var string
      */
-    private $lastName;
+    private $lastName = '';
 
     /**
      * @var string
      */
-    private $foreignId;
+    private $foreignId = '';
+
+    /**
+     * @var bool
+     */
+    private $reactivate = TRUE;
 
     /**
      * @return string
@@ -108,13 +113,33 @@ final class CMSubscriber
     }
 
     /**
-     * @param string $foreignId
+     * @param mixed $foreignId
      *
      * @return CMSubscriber
      */
-    public function setForeignId(string $foreignId): CMSubscriber
+    public function setForeignId($foreignId): CMSubscriber
     {
-        $this->foreignId = $foreignId;
+        $this->foreignId = (string) $foreignId;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isReactivate(): bool
+    {
+        return $this->reactivate;
+    }
+
+    /**
+     * @param bool $reactivate
+     *
+     * @return CMSubscriber
+     */
+    public function setReactivate(bool $reactivate): CMSubscriber
+    {
+        $this->reactivate = $reactivate;
 
         return $this;
     }
@@ -129,6 +154,7 @@ final class CMSubscriber
             CleverFieldsEnum::LAST_NAME  => $this->lastName,
             CleverFieldsEnum::EMAIL      => $this->email,
             CleverFieldsEnum::FOREIGN_ID => $this->foreignId,
+            CleverFieldsEnum::REACTIVATE => $this->reactivate,
         ];
     }
 

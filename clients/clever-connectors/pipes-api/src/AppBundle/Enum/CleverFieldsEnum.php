@@ -23,6 +23,7 @@ final class CleverFieldsEnum extends EnumAbstract
     public const EMAIL      = 'email';
     public const FIRST_NAME = 'first_name';
     public const LAST_NAME  = 'last_name';
+    public const REACTIVATE = 'reactivate';
 
     /**
      * @var string[]
@@ -32,6 +33,7 @@ final class CleverFieldsEnum extends EnumAbstract
         self::EMAIL      => 'email',
         self::FIRST_NAME => 'first_name',
         self::LAST_NAME  => 'last_name',
+        self::REACTIVATE => 'reactivate',
     ];
 
 }

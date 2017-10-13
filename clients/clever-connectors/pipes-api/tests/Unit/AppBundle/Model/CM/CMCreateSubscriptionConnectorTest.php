@@ -4,6 +4,7 @@ namespace Tests\Unit\AppBundle\Model\CM;
 
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\CM\SubscriptionConnector\CMCreateSubscriptionConnector;
+use CleverConnectors\AppBundle\Utils\CMHeaders;
 use GuzzleHttp\Client;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlClientFactory;
@@ -26,7 +27,7 @@ class CMCreateSubscriptionConnectorTest extends KernelTestCaseAbstract
     public function testRealConnect(): void
     {
         $this->markTestSkipped('Online test');
-        $opt    = [
+        $opt = [
             'curl' => [
                 CURLOPT_SSL_VERIFYHOST => FALSE,
                 CURLOPT_SSL_VERIFYPEER => FALSE,
@@ -51,11 +52,16 @@ class CMCreateSubscriptionConnectorTest extends KernelTestCaseAbstract
     {
         $curl = $this->createMock(CurlManagerInterface::class);
         $curl->method('send')->willReturn(new ResponseDto(200, '', 'someBody', []));
-        $conn = new CMCreateSubscriptionConnector($curl, ['cert' => '', 'ca'=> '']);
+        $conn = new CMCreateSubscriptionConnector($curl, ['cert' => '', 'ca' => '']);
 
-        $res = $conn->processAction((new ProcessDto())->setData('{"data":[]}')->setHeaders([
-            'token' => 'ttoken', 'guid' => 'gguid',
-        ]));
+        $res = $conn->processAction((new ProcessDto())
+            ->setData('{"data":[]}')
+            ->setHeaders(
+                [
+                    CMHeaders::createKey(CMHeaders::TOKEN) => 'ttoken',
+                    CMHeaders::createKey(CMHeaders::GUID)  => 'gguid',
+                ]
+            ));
         self::assertEquals('someBody', $res->getData());
     }
 

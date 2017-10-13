@@ -3,6 +3,7 @@
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Magento2\Mapper;
 
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
+use CleverConnectors\AppBundle\Model\CM\SubscriptionConnector\CustomerObject\CMSubscriber;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
 use Nette\Utils\Json;
@@ -32,18 +33,22 @@ class Magento2UpdateCustomerMapper implements CustomNodeInterface
             );
         }
 
-        $res = [
-            'email' => $data['email'],
-        ];
+        $obj = new CMSubscriber();
+        $obj->setEmail($data['email']);
 
         if (array_key_exists('firstname', $data)) {
-            $res['first_name'] = $data['firstname'];
-        }
-        if (array_key_exists('lastname', $data)) {
-            $res['last_name'] = $data['lastname'];
+            $obj->setFirstName($data['firstname']);
         }
 
-        return $dto->setData(Json::encode($res));
+        if (array_key_exists('lastname', $data)) {
+            $obj->setLastName($data['lastname']);
+        }
+
+        if (array_key_exists('id', $data)) {
+            $obj->setForeignId($data['id']);
+        }
+
+        return $dto->setData(Json::encode($obj->toArray()));
     }
 
 }

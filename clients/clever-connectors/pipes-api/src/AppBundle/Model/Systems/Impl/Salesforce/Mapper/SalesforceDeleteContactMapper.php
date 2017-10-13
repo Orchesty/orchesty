@@ -2,8 +2,8 @@
 
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Salesforce\Mapper;
 
-use CleverConnectors\AppBundle\Enum\CleverFieldsEnum;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
+use CleverConnectors\AppBundle\Model\CM\SubscriptionConnector\CustomerObject\CMSubscriber;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
 
@@ -31,15 +31,17 @@ class SalesforceDeleteContactMapper implements CustomNodeInterface
                 CleverConnectorsException::MISSING_DATA
             );
         }
-        $res = [
-            'email' => $data['Email'],
-        ];
+
+        $obj = new CMSubscriber();
+        $obj
+            ->setEmail($data['Email'])
+            ->setReactivate(FALSE);
 
         if (array_key_exists('Id', $data)) {
-            $res[CleverFieldsEnum::FOREIGN_ID] = $data['Id'];
+            $obj->setForeignId($data['Id']);
         }
 
-        return $dto->setData(json_encode($res));
+        return $dto->setData(json_encode($obj->toArray()));
     }
 
 }

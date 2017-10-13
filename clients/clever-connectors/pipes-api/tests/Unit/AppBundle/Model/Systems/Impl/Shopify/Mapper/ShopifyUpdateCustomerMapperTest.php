@@ -29,10 +29,11 @@ class ShopifyUpdateCustomerMapperTest extends ConnectorTestCaseAbstract
         );
 
         $this->assertEquals([
-            'email'                      => 'email@example.com',
-            'first_name'                 => 'First',
-            'last_name'                  => 'Last',
+            CleverFieldsEnum::EMAIL      => 'email@example.com',
+            CleverFieldsEnum::FIRST_NAME => 'First',
+            CleverFieldsEnum::LAST_NAME  => 'Last',
             CleverFieldsEnum::FOREIGN_ID => '129715699742',
+            CleverFieldsEnum::REACTIVATE => TRUE,
         ], $response);
     }
 
