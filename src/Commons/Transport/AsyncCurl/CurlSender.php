@@ -11,6 +11,8 @@ namespace Hanaboso\PipesFramework\Commons\Transport\AsyncCurl;
 use Clue\React\Buzz\Browser;
 use Clue\React\Buzz\Message\ResponseException;
 use Exception;
+use GuzzleHttp\Psr7\Request;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -59,27 +61,29 @@ class CurlSender implements LoggerAwareInterface
     }
 
     /**
-     * @param RequestInterface $request
+     * @param RequestDto $dto
      *
      * @return PromiseInterface
      */
-    public function send(RequestInterface $request): PromiseInterface
+    public function send(RequestDto $dto): PromiseInterface
     {
-        $this->logRequest($request);
+        $request = new Request($dto->getMethod(), $dto->getUri(), $dto->getHeaders());
+
+        $this->logRequest($request, $dto->getDebugInfo());
 
         return $this
             ->sendRequest($request)
-            ->then(function (ResponseInterface $response) {
-                $this->logResponse($response);
+            ->then(function (ResponseInterface $response) use ($dto) {
+                $this->logResponse($response, $dto->getDebugInfo());
 
                 return resolve($response);
-            }, function (Exception $e) {
+            }, function (Exception $e) use ($dto) {
                 if ($e instanceof ResponseException) {
-                    $this->logResponse($e->getResponse());
+                    $this->logResponse($e->getResponse(), $dto->getDebugInfo());
                 } else {
                     $this->logger->error(
                         sprintf('Async request error: %s', $e->getMessage()),
-                        ['exception' => $e]
+                        array_merge(['exception' => $e], $dto->getDebugInfo())
                     );
                 }
 
@@ -99,8 +103,9 @@ class CurlSender implements LoggerAwareInterface
 
     /**
      * @param RequestInterface $request
+     * @param array            $debugInfo
      */
-    private function logRequest(RequestInterface $request): void
+    private function logRequest(RequestInterface $request, array $debugInfo = []): void
     {
         $message = sprintf(
             'Request: Method: %s, Uri: %s, Headers: %s, Body: %s',
@@ -110,7 +115,7 @@ class CurlSender implements LoggerAwareInterface
             $request->getBody()->getContents()
         );
 
-        $this->logger->info($message);
+        $this->logger->info($message, [$debugInfo]);
     }
 
     /**
@@ -130,8 +135,9 @@ class CurlSender implements LoggerAwareInterface
 
     /**
      * @param ResponseInterface $response
+     * @param array             $debugInfo
      */
-    private function logResponse(ResponseInterface $response): void
+    private function logResponse(ResponseInterface $response, array $debugInfo = []): void
     {
         $message = sprintf('Response: Status Code: %s, Reason Phrase: %s, Headers: %s, Body: %s',
             $response->getStatusCode(),
@@ -139,7 +145,7 @@ class CurlSender implements LoggerAwareInterface
             $this->headersToString($response),
             $response->getBody()->getContents()
         );
-        $this->logger->info($message);
+        $this->logger->info($message, $debugInfo);
 
         $response->getBody()->rewind();
     }
