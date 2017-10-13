@@ -5,6 +5,7 @@ namespace CleverConnectors\AppBundle\Listeners;
 use CleverConnectors\AppBundle\Controller\WebhookController;
 use CleverConnectors\AppBundle\Document\Webhook;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
+use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use Exception;
@@ -84,6 +85,10 @@ class WebhookSecurityListener implements EventSubscriberInterface
                     CleverConnectorsException::WEBHOOK_NOT_FOUND
                 );
             }
+
+            $ev->getRequest()->headers->set(CMHeaders::createKey(CMHeaders::GUID), $params['userId']);
+            $ev->getRequest()->headers->set(CMHeaders::createKey(CMHeaders::TOKEN), $params['token']);
+            $ev->getRequest()->headers->set(CMHeaders::createKey(CMHeaders::SYSTEM_KEY), $res->getSystemKey());
 
             $req = new RequestDto('GET', new Uri('https://api.dev.clevermonitor.com/v1.2'));
             $req->setHeaders([
