@@ -7,7 +7,7 @@
  * Time: 17:36
  */
 
-namespace CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce;
+namespace CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce\Connector;
 
 use CleverConnectors\AppBundle\Utils\CronUtils;
 use GuzzleHttp\Psr7\Request;
@@ -20,14 +20,14 @@ use React\Promise\PromiseInterface;
 use function React\Promise\all;
 
 /**
- * Class SalesForceUpdateConnector
+ * Class SalesForceUpdateContactConnector
  *
- * @package CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce
+ * @package CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce\Connector
  */
-class SalesForceUpdateConnector extends SalesForceConnectorAbstract
+class SalesForceUpdateContactConnector extends SalesForceContactConnectorAbstract
 {
 
-    protected const NODE_NAME = 'salesforce-update-connector';
+    protected const NODE_NAME = 'salesforce-update-contact-connector';
 
     /**
      * @param ProcessDto    $dto

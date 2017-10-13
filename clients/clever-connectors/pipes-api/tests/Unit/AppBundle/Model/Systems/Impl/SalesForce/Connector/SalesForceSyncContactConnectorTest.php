@@ -7,9 +7,9 @@
  * Time: 13:17
  */
 
-namespace Tests\Unit\AppBundle\Model\Systems\Impl\Salesforce;
+namespace Tests\Unit\AppBundle\Model\Systems\Impl\SalesForce\Connector;
 
-use CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce\SalesForceSyncConnector;
+use CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce\Connector\SalesForceSyncContactConnector;
 use CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce\SalesForceSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -24,11 +24,11 @@ use Tests\KernelTestCaseAbstract;
 use function React\Promise\resolve;
 
 /**
- * Class SalesForceSyncConnectorTest
+ * Class SalesForceSyncContactConnectorTest
  *
- * @package Tests\Unit\AppBundle\Model\Systems\Impl\Salesforce
+ * @package Tests\Unit\AppBundle\Model\Systems\Impl\SalesForce\Connector
  */
-final class SalesForceSyncConnectorTest extends KernelTestCaseAbstract
+final class SalesForceSyncContactConnectorTest extends KernelTestCaseAbstract
 {
 
     /**
@@ -48,7 +48,7 @@ final class SalesForceSyncConnectorTest extends KernelTestCaseAbstract
             ->setHeaders([])
             ->setData(json_encode($dtoData));
 
-        /** @var SalesForceSyncConnector $syncConn */
+        /** @var SalesForceSyncContactConnector $syncConn */
         $syncConn = $this->mockSync();
         $data     = $syncConn->processBatch($processDto, $loop, function (): void {
         });
@@ -66,7 +66,7 @@ final class SalesForceSyncConnectorTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @return PHPUnit_Framework_MockObject_MockObject|SalesForceSyncConnector
+     * @return PHPUnit_Framework_MockObject_MockObject|SalesForceSyncContactConnector
      */
     private function mockSync()
     {
@@ -81,7 +81,7 @@ final class SalesForceSyncConnectorTest extends KernelTestCaseAbstract
 
         $sender = $this->createMock(CurlSenderFactory::class);
 
-        $syncConn = $this->getMockBuilder(SalesForceSyncConnector::class)
+        $syncConn = $this->getMockBuilder(SalesForceSyncContactConnector::class)
             ->setMethods(['fetchData'])
             ->setConstructorArgs([$this->mockSystem(), $this->container->get('manager.last_sync'), $sender, $dm])
             ->getMock();

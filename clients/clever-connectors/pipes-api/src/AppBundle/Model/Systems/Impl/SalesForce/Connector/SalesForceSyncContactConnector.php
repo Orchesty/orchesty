@@ -7,10 +7,11 @@
  * Time: 12:27
  */
 
-namespace CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce;
+namespace CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\LastSync\LastSyncManager;
+use CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce\SalesForceSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use CleverConnectors\AppBundle\Utils\CronUtils;
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -30,7 +31,7 @@ use function React\Promise\all;
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce
  */
-class SalesForceSyncConnector extends SalesForceConnectorAbstract
+class SalesForceSyncContactConnector extends SalesForceContactConnectorAbstract
 {
 
     /**

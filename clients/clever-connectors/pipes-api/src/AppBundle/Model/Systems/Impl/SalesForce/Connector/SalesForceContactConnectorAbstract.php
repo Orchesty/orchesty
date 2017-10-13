@@ -1,9 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce;
+namespace CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce\Connector;
 
 use CleverConnectors\AppBundle\Model\LastSync\LastSyncManager;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
+use CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce\SalesForceSystem;
 use DateTime;
 use GuzzleHttp\Psr7\Request;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
@@ -19,11 +20,11 @@ use Psr\Http\Message\ResponseInterface;
 use React\Promise\PromiseInterface;
 
 /**
- * Class SalesForceConnectorAbstract
+ * Class SalesForceContactConnectorAbstract
  *
- * @package CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce
+ * @package CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce\Connector
  */
-abstract class SalesForceConnectorAbstract implements BatchInterface, ConnectorInterface
+abstract class SalesForceContactConnectorAbstract implements BatchInterface, ConnectorInterface
 {
 
     protected const QUERY_URL  = '%s/services/data/v40.0/query?q=%s';

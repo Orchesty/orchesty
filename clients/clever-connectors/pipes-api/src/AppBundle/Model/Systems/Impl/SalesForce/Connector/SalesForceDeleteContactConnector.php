@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce;
+namespace CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce\Connector;
 
 use CleverConnectors\AppBundle\Utils\CronUtils;
 use GuzzleHttp\Psr7\Request;
@@ -13,14 +13,14 @@ use React\Promise\PromiseInterface;
 use function React\Promise\all;
 
 /**
- * Class SalesForceDeleteConnector
+ * Class SalesForceDeleteContactConnector
  *
- * @package CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce
+ * @package CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce\Connector
  */
-class SalesForceDeleteConnector extends SalesForceConnectorAbstract
+class SalesForceDeleteContactConnector extends SalesForceContactConnectorAbstract
 {
 
-    protected const   NODE_NAME = 'salesforce-delete-connector';
+    protected const   NODE_NAME = 'salesforce-delete-contact-connector';
     protected const   QUERY_URL = '%s/services/data/v40.0/queryAll?q=%s';
 
     /**

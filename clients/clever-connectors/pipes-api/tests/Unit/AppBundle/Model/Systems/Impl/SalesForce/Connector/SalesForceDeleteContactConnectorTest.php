@@ -4,16 +4,16 @@
  * Created by PhpStorm.
  * User: radekj
  * Date: 9.10.17
- * Time: 13:52
+ * Time: 14:22
  */
 
-namespace Tests\Unit\AppBundle\Model\Systems\Impl\Salesforce;
+namespace Tests\Unit\AppBundle\Model\Systems\Impl\SalesForce\Connector;
 
 use CleverConnectors\AppBundle\Document\LastSync;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\LastSync\LastSyncManager;
+use CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce\Connector\SalesForceDeleteContactConnector;
 use CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce\SalesForceSystem;
-use CleverConnectors\AppBundle\Model\Systems\Impl\SalesForce\SalesForceUpdateConnector;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use DateTime;
 use GuzzleHttp\Psr7\Response;
@@ -29,11 +29,11 @@ use Tests\KernelTestCaseAbstract;
 use function React\Promise\resolve;
 
 /**
- * Class SalesForceUpdateConnectorTest
+ * Class SalesForceDeleteContactConnectorTest
  *
- * @package Tests\Unit\AppBundle\Model\Systems\Impl\Salesforce
+ * @package Tests\Unit\AppBundle\Model\Systems\Impl\SalesForce\Connector
  */
-final class SalesForceUpdateConnectorTest extends KernelTestCaseAbstract
+final class SalesForceDeleteContactConnectorTest extends KernelTestCaseAbstract
 {
 
     /**
@@ -47,14 +47,13 @@ final class SalesForceUpdateConnectorTest extends KernelTestCaseAbstract
             ],
         ];
 
-        $loop = Factory::create();
-
+        $loop       = Factory::create();
         $processDto = new ProcessDto();
         $processDto
-            ->setHeaders(['node_id' => '2234-adawad'])
+            ->setHeaders(['node_id' => '2234-awdawd'])
             ->setData(json_encode($dtoData));
 
-        /** @var SalesForceUpdateConnector $syncConn */
+        /** @var SalesForceDeleteContactConnector $syncConn */
         $syncConn = $this->mockSync();
         $data     = $syncConn->processBatch($processDto, $loop, function (): void {
         });
@@ -72,7 +71,7 @@ final class SalesForceUpdateConnectorTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @return PHPUnit_Framework_MockObject_MockObject|SalesForceUpdateConnector
+     * @return PHPUnit_Framework_MockObject_MockObject|SalesForceDeleteContactConnector
      */
     private function mockSync()
     {
@@ -84,18 +83,16 @@ final class SalesForceUpdateConnectorTest extends KernelTestCaseAbstract
             ->setSystem('123'));
 
         $lastSync = $this->createMock(LastSyncManager::class);
-
         $lastSync
             ->method('getLastSync')
             ->willReturn((new LastSync())->setTimestamp(new DateTime()));
-
         $lastSync
             ->method('updateLastSync')
             ->willReturn(NULL);
 
         $sender = $this->createMock(CurlSenderFactory::class);
 
-        $syncConn = $this->getMockBuilder(SalesForceUpdateConnector::class)
+        $syncConn = $this->getMockBuilder(SalesForceDeleteContactConnector::class)
             ->setMethods(['fetchData'])
             ->setConstructorArgs([$this->mockSystem(), $lastSync, $sender])
             ->getMock();

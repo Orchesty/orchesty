@@ -30,6 +30,7 @@ class AppBundle extends Bundle
         $loader->load('cleverMonitor.yml');
         $loader->load('magento2.yml');
         $loader->load('shopify.yml');
+        $loader->load('salesForce.yml');
         $container->addCompilerPass(new SystemCompilerPass());
     }
 

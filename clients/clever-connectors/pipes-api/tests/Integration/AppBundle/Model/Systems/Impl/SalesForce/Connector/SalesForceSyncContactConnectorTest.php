@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Integration\AppBundle\Model\Systems\Impl\SalesForce;
+namespace Tests\Integration\AppBundle\Model\Systems\Impl\SalesForce\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use Hanaboso\PipesFramework\Commons\Crypt\CryptManager;
@@ -13,11 +13,11 @@ use React\EventLoop\Factory;
 use Tests\DatabaseTestCaseAbstract;
 
 /**
- * Class SalesForceSyncConnectorTest
+ * Class SalesForceSyncContactConnectorTest
  *
- * @package Tests\Integration\AppBundle\Model\Systems\Impl\SalesForce
+ * @package Tests\Integration\AppBundle\Model\Systems\Impl\SalesForce\Connector
  */
-class SalesForceSyncConnectorTest extends DatabaseTestCaseAbstract
+final class SalesForceSyncContactConnectorTest extends DatabaseTestCaseAbstract
 {
 
     /**
@@ -26,7 +26,7 @@ class SalesForceSyncConnectorTest extends DatabaseTestCaseAbstract
     public function testProcessBatch(): void
     {
         $this->markTestSkipped();
-        $connector = $this->container->get('hbpf.connector.salesforce-sync-connector');
+        $connector = $this->container->get('hbpf.connector.salesforce-sync-contact-connector');
 
         $topology = (new Topology())->setName('Topology');
         $this->persistAndFlush($topology);
