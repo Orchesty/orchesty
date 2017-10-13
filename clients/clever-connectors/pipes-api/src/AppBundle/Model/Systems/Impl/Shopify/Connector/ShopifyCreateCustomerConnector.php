@@ -15,7 +15,7 @@ class ShopifyCreateCustomerConnector extends ShopifyCustomerConnectorAbstract
      */
     public function getId(): string
     {
-        return 'shopify-customer-create';
+        return 'shopify-create-customer-connector';
     }
 
 }

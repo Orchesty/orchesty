@@ -83,14 +83,6 @@ abstract class SalesforceContactConnectorAbstract implements BatchInterface, Con
     }
 
     /**
-     * @return string
-     */
-    public function getId(): string
-    {
-        return 'salesforce';
-    }
-
-    /**
      * @param DateTime|null $from
      * @param DateTime      $to
      *

@@ -79,4 +79,12 @@ class SalesforceDeleteContactConnector extends SalesforceContactConnectorAbstrac
         return new Request('GET', sprintf(static::QUERY_URL, $dto->getUri(TRUE), $query), $dto->getHeaders());
     }
 
+    /**
+     * @return string
+     */
+    public function getId(): string
+    {
+        return 'salesforce-delete-contact-connector';
+    }
+
 }

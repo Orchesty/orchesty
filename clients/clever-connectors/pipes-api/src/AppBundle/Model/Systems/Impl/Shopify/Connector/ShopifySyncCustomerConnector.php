@@ -97,7 +97,7 @@ class ShopifySyncCustomerConnector implements BatchInterface, ConnectorInterface
      */
     public function getId(): string
     {
-        return 'shopify';
+        return 'shopify-sync-customer-connector';
     }
 
     /**

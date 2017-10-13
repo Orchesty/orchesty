@@ -15,7 +15,7 @@ class ShopifyUpdateCustomerConnector extends ShopifyCustomerConnectorAbstract
      */
     public function getId(): string
     {
-        return 'shopify-update-customer';
+        return 'shopify-update-customer-connector';
     }
 
 }

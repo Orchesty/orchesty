@@ -48,9 +48,9 @@ class ShopifySystem implements WebhookSystemInterface, OAuth2Interface
      * @var array
      */
     private $topics = [
-        'shopify-customer-create' => 'customers/create',
-        'shopify-customer-update' => 'customers/update',
-        'shopify-customer-delete' => 'customers/delete',
+        'shopify-create-customer-connector' => 'customers/create',
+        'shopify-update-customer-connector' => 'customers/update',
+        'shopify-delete-customer-connector' => 'customers/delete',
     ];
 
     /**
@@ -69,13 +69,13 @@ class ShopifySystem implements WebhookSystemInterface, OAuth2Interface
     {
         $this->provider = $provider;
 
-        $this->subscriptions[] = new WebhookSubscribes('shopify-customer-create', 'shopify_create_subscriber_topology',
+        $this->subscriptions[] = new WebhookSubscribes('shopify-create-customer-connector', 'shopify-create-customer',
             self::WEBHOOK_SUBSCRIBE_URL, self::WEBHOOK_UNSUBSCRIBE_URL);
 
-        $this->subscriptions[] = new WebhookSubscribes('shopify-customer-update', 'shopify_update_subscriber_topology',
+        $this->subscriptions[] = new WebhookSubscribes('shopify-update-customer-connector', 'shopify-update-customer',
             self::WEBHOOK_SUBSCRIBE_URL, self::WEBHOOK_UNSUBSCRIBE_URL);
 
-        $this->subscriptions[] = new WebhookSubscribes('shopify-customer-delete', 'shopify_delete_subscriber_topology',
+        $this->subscriptions[] = new WebhookSubscribes('shopify-delete-customer-connector', 'shopify-delete-customer',
             self::WEBHOOK_SUBSCRIBE_URL, self::WEBHOOK_UNSUBSCRIBE_URL);
 
     }

@@ -15,7 +15,7 @@ class ShopifyDeleteCustomerConnector extends ShopifyCustomerConnectorAbstract
      */
     public function getId(): string
     {
-        return 'shopify-delete-customer';
+        return 'shopify-delete-customer-connector';
     }
 
 }

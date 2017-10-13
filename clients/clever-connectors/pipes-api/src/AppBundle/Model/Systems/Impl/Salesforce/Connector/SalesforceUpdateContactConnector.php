@@ -86,4 +86,12 @@ class SalesforceUpdateContactConnector extends SalesforceContactConnectorAbstrac
         return new Request('GET', sprintf(self::QUERY_URL, $dto->getUri(TRUE), $query), $dto->getHeaders());
     }
 
+    /**
+     * @return string
+     */
+    public function getId(): string
+    {
+        return 'salesforce-update-contact-connector';
+    }
+
 }
