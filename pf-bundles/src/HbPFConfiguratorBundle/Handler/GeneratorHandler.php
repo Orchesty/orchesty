@@ -112,7 +112,6 @@ class GeneratorHandler
             if ($res) {
                 $dockerInfo = $actions->getTopologyInfo($topology);
 
-                //TODO: add normalizer
                 return $dockerInfo;
             } else {
 

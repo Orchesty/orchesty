@@ -76,7 +76,7 @@ class GeneratorController extends FOSRestController
 
         if ($this->generatorHandler) {
             $result = $this->generatorHandler->runTopology($id);
-            if (count($result) > 0) {
+            if ($result && count($result)) {
                 $statusCode = 200;
             }
         }
@@ -101,7 +101,7 @@ class GeneratorController extends FOSRestController
 
         if ($this->generatorHandler) {
             $result = $this->generatorHandler->stopTopology($id);
-            if (count($result) == 0) {
+            if (is_array($result) && count($result) == 0) {
                 $statusCode = 200;
             }
         }
@@ -135,7 +135,7 @@ class GeneratorController extends FOSRestController
     }
 
     /**
-     * @Route("/topology/delete/{id}")
+     * @Route("/topology/info/{id}")
      * @Method("{GET}")
      *
      * @param string $id

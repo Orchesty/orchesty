@@ -51,9 +51,9 @@ class GenerateTopologyActionsTest extends TestCase
     protected $configDir;
 
     /**
-     *
+     * setUp
      */
-    public function setUp()
+    public function setUp(): void
     {
         $this->configDir = '/opt/srv/topology';
 
@@ -124,4 +124,5 @@ class GenerateTopologyActionsTest extends TestCase
             ],
         ];
     }
+
 }
