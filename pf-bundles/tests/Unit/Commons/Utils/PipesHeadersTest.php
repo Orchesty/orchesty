@@ -20,58 +20,46 @@ class PipesHeadersTest extends TestCase
 {
 
     /**
-     * @covers PipesHeaders::createPermanentKey()
-     */
-    public function testCreatePermanentKey(): void
-    {
-        $this->assertSame('pfp_node_id', PipesHeaders::createPermanentKey('node_id'));
-    }
-
-    /**
      * @covers PipesHeaders::createKey()
      */
-    public function testKey(): void
+    public function testCreateKey(): void
     {
         $this->assertSame('pf_node_id', PipesHeaders::createKey('node_id'));
     }
 
     /**
-     * @covers PipesHeaders::getPermanentHeaders()
+     * @covers PipesHeaders::clear()
      */
-    public function testGetPermanentHeaders(): void
+    public function testClear(): void
     {
-        $this->assertSame(['pfp_node_id' => '123'], PipesHeaders::getPermanentHeaders([
+        $this->assertSame(['pf_token' => '456'], PipesHeaders::clear([
             'content-type' => 'application/json', 'pfp_node_id' => '123', 'pf_token' => '456',
         ]));
     }
 
     /**
-     * @covers PipesHeaders::getPermanentHeader()
+     * @covers PipesHeaders::get()
      */
-    public function testGetPermanentHeader(): void
+    public function testGet(): void
     {
-        $this->assertSame('123', PipesHeaders::getPermanentHeader('node_id', [
+        $this->assertSame('456', PipesHeaders::get('token', [
             'content-type' => 'application/json', 'pfp_node_id' => '123', 'pf_token' => '456',
         ]));
     }
 
     /**
-     * @covers PipesHeaders::getHeaders()
+     * @covers PipesHeaders::debugInfo()
      */
-    public function testGetHeaders(): void
+    public function testDebugInfo(): void
     {
-        $this->assertSame(['pf_token' => '456'], PipesHeaders::getHeaders([
-            'content-type' => 'application/json', 'pfp_node_id' => '123', 'pf_token' => '456',
-        ]));
-    }
-
-    /**
-     * @covers PipesHeaders::getHeader()
-     */
-    public function testGetHeader(): void
-    {
-        $this->assertSame('456', PipesHeaders::getHeader('token', [
-            'content-type' => 'application/json', 'pfp_node_id' => '123', 'pf_token' => '456',
+        $this->assertSame([
+            'node_id'        => '123',
+            'correlation_id' => '456',
+        ], PipesHeaders::debugInfo([
+            'content-type'      => 'application/json',
+            'pf_node_id'        => '123',
+            'pf_token'          => '456',
+            'pf_correlation_id' => '456',
         ]));
     }
 

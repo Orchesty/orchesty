@@ -122,9 +122,9 @@ abstract class CMSubscriptionConnectorAbstract extends CMAuthorization implement
     public function processCMAction(ProcessDto $dto, string $method, array $statusCode, string $email = ''): ProcessDto
     {
         /** @var string $token */
-        $token = PipesHeaders::getHeader('token', $dto->getHeaders());
+        $token = PipesHeaders::get('token', $dto->getHeaders());
         /** @var string $user */
-        $user = PipesHeaders::getHeader('guid', $dto->getHeaders());
+        $user = PipesHeaders::get('guid', $dto->getHeaders());
 
         if (!$token || !$user) {
             throw new CleverConnectorsException(

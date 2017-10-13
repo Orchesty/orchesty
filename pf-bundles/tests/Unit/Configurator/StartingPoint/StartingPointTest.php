@@ -11,6 +11,7 @@ namespace Tests\Unit\Configurator\StartingPoint;
 use Bunny\Channel;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
+use Hanaboso\PipesFramework\Commons\Utils\PipesHeaders;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Exception\StartingPointException;
@@ -164,12 +165,12 @@ class StartingPointTest extends TestCase
         $headers       = $startingPoint->createHeaders($topology);
 
         $this->assertCount(6, $headers->getHeaders());
-        $this->assertArrayHasKey('pfp_process_id', $headers->getHeaders());
-        $this->assertArrayHasKey('pfp_parent_id', $headers->getHeaders());
-        $this->assertArrayHasKey('pfp_correlation_id', $headers->getHeaders());
-        $this->assertArrayHasKey('pfp_sequence_id', $headers->getHeaders());
-        $this->assertArrayHasKey('pf_topology_id', $headers->getHeaders());
-        $this->assertArrayHasKey('pf_topology_name', $headers->getHeaders());
+        $this->assertArrayHasKey(PipesHeaders::PF_PREFIX . 'process_id', $headers->getHeaders());
+        $this->assertArrayHasKey(PipesHeaders::PF_PREFIX . 'parent_id', $headers->getHeaders());
+        $this->assertArrayHasKey(PipesHeaders::PF_PREFIX . 'correlation_id', $headers->getHeaders());
+        $this->assertArrayHasKey(PipesHeaders::PF_PREFIX . 'sequence_id', $headers->getHeaders());
+        $this->assertArrayHasKey(PipesHeaders::PF_PREFIX . 'topology_id', $headers->getHeaders());
+        $this->assertArrayHasKey(PipesHeaders::PF_PREFIX . 'topology_name', $headers->getHeaders());
     }
 
     /**
