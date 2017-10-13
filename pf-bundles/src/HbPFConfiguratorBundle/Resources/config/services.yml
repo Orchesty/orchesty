@@ -3,7 +3,7 @@ services:
     hbpf.starting_point.starting_point:
         class: Hanaboso\PipesFramework\Configurator\StartingPoint\StartingPoint
         arguments:
-            - '@rabbit-mq.producer.starting_point'
+            - '@rabbit-mq.manager'
             - '@hbpf.transport.curl_manager'
         calls:
             - ['setLogger', ['@monolog.logger']]

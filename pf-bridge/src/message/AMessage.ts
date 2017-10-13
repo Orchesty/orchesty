@@ -1,81 +1,61 @@
+import {INodeLabel} from "../topology/Configurator";
+import Headers from "./Headers";
+import {PFHeaders} from "./HeadersEnum";
+
 abstract class AMessage {
 
+    protected headers: Headers;
+
+    /**
+     * Constructor
+     */
     constructor(
-        protected nodeId: string,
-        protected correlationId: string,
-        protected processId: string,
-        protected parentId: string,
-        protected sequenceId: number,
-        protected headers: { [key: string]: string },
+        protected node: INodeLabel,
+        headers: { [key: string]: string },
         protected body: Buffer,
     ) {
-        if (!nodeId || nodeId === "") {
-            throw new Error(`Cannot create message object. Invalid nodeId. "${nodeId}"`);
-        }
-        if (!correlationId || correlationId === "") {
-            throw new Error(`Cannot create message object. Invalid correlationId. "${correlationId}"`);
-        }
-        if (!processId || processId === "") {
-            throw new Error(`Cannot create message object. Invalid processId. "${processId}"`);
-        }
-        // if (!parentId) {
-        //     throw new Error(`Cannot create message object. Invalid parentId. "${parentId}"`);
-        // }
-        if (!sequenceId || sequenceId < 1) {
-            throw new Error(`Cannot create message object. Invalid sequenceId. "${sequenceId}"`);
+        const h = Headers.getPFHeaders(headers);
+        Headers.validateMandatoryHeaders(h);
+
+        if (!node.id || !node.node_id || !node.node_name) {
+            throw new Error(`Cannot create message object. Invalid node label obj: "${JSON.stringify(node)}"`);
         }
 
-        this.setHeaders(headers);
+        this.headers = new Headers(h);
+        this.headers.setPFHeader(PFHeaders.NODE_ID, node.node_id);
+        this.headers.setPFHeader(PFHeaders.NODE_NAME, node.node_name);
+    }
+
+    public getNodeLabel(): INodeLabel {
+        return this.node;
     }
 
     public getNodeId() {
-        return this.nodeId;
+        return this.node.id;
     }
 
     public getCorrelationId() {
-        return this.correlationId;
+        return this.headers.getPFHeader(PFHeaders.CORRELATION_ID);
     }
 
     public getProcessId() {
-        return this.processId;
+        return this.headers.getPFHeader(PFHeaders.PROCESS_ID);
     }
 
     public getParentId() {
-        return this.parentId;
+        return this.headers.getPFHeader(PFHeaders.PARENT_ID);
     }
 
     public getSequenceId() {
-        return this.sequenceId;
+        return parseInt(this.headers.getPFHeader(PFHeaders.SEQUENCE_ID), 10);
     }
 
     /**
-     * Returns custom headers amended by system headers
      *
-     * @return {*}
+     * @return {Headers}
      */
-    public getHeaders(): any {
-        const h = this.headers;
-
-        h.correlation_id = this.getCorrelationId();
-        h.process_id = this.getProcessId();
-        h.parent_id = this.getParentId();
-        h.sequence_id = `${this.getSequenceId()}`;
-
-        return h;
-    }
-
-    /**
-     * Cleans headers from system headers and set them to header field
-     *
-     * @param {{[p: string]: string}} headers
-     */
-    public setHeaders(headers: { [key: string]: string }): void {
-        delete headers.correlation_id;
-        delete headers.process_id;
-        delete headers.parent_id;
-        delete headers.sequence_id;
-
-        this.headers = headers;
+    public getHeaders(): Headers {
+        return this.headers;
     }
 
     /**

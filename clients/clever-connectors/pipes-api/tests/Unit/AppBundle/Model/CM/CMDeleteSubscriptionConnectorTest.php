@@ -39,8 +39,8 @@ class CMDeleteSubscriptionConnectorTest extends KernelTestCaseAbstract
         $conn = new CMDeleteSubscriptionConnector($curl, []);
 
         $res = $conn->processAction((new ProcessDto())->setData('{"email":"eml@eml.com"}')->setHeaders([
-            'token' => '-3*QYg*3H-5+vaez_K7_N-4K1YhCn88k',
-            'guid'  => '51a83cfe-9e04-11e7-a177-000d3a20eb16',
+            'pf_token' => '-3*QYg*3H-5+vaez_K7_N-4K1YhCn88k',
+            'pf_guid'  => '51a83cfe-9e04-11e7-a177-000d3a20eb16',
         ]));
     }
 

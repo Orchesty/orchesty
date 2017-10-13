@@ -3,39 +3,32 @@ import Connection from "lib-nodejs/dist/src/rabbitmq/Connection";
 import { default as BasicConsumer } from "lib-nodejs/dist/src/rabbitmq/Consumer";
 import logger from "../../../logger/Logger";
 import JobMessage from "../../../message/JobMessage";
+import {INodeLabel} from "../../../topology/Configurator";
 import { WorkerProcessFn } from "../../worker/IWorker";
 import {FaucetProcessMsgFn} from "../IFaucet";
 
 class Consumer extends BasicConsumer {
 
-    private nodeId: string;
+    private node: INodeLabel;
     private processData: WorkerProcessFn;
 
     constructor(
-        nodeId: string,
+        node: INodeLabel,
         conn: Connection,
         channelCb: (ch: Channel) => Promise<any>,
         processData: FaucetProcessMsgFn,
     ) {
         super(conn, channelCb);
-        this.nodeId = nodeId;
+        this.node = node;
         this.processData = processData;
     }
 
     public processMessage(amqMsg: Message, channel: Channel): void {
         let inMsg: JobMessage;
         try {
-            inMsg = new JobMessage(
-                this.nodeId,
-                amqMsg.properties.headers.correlation_id,
-                amqMsg.properties.headers.process_id,
-                amqMsg.properties.headers.parent_id,
-                amqMsg.properties.headers.sequence_id,
-                amqMsg.properties.headers,
-                amqMsg.content,
-            );
+            inMsg = new JobMessage(this.node, amqMsg.properties.headers, amqMsg.content);
         } catch (e) {
-            logger.error(`AmqpFaucet dead-lettering message`, {node_id: this.nodeId, error: e});
+            logger.error(`AmqpFaucet dead-lettering message`, {node_id: this.node.id, error: e});
             channel.nack(amqMsg, false, false); // dead-letter due to invalid message
             return;
         }

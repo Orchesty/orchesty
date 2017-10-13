@@ -8,13 +8,17 @@
 
 namespace Hanaboso\PipesFramework\Configurator\StartingPoint;
 
+use Bunny\Channel;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
+use Hanaboso\PipesFramework\Commons\Utils\PipesHeaders;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Exception\StartingPointException;
+use Hanaboso\PipesFramework\HbPFRabbitMqBundle\DebugMessageTrait;
+use Hanaboso\PipesFramework\RabbitMq\BunnyManager;
 use Nette\Utils\Strings;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
@@ -30,21 +34,18 @@ use Symfony\Component\HttpFoundation\Request;
 class StartingPoint implements LoggerAwareInterface
 {
 
+    use DebugMessageTrait;
+
     private const QUEUE_PATTERN = 'pipes.%s.%s';
 
     private const CONTENT = '{"data":%s, "settings": ""}';
 
     private const COUNTER_MESSAGE_TYPE = 'counter_message';
 
-    private const HEADERS = [
-        'token',
-        'guid',
-    ];
-
     /**
-     * @var StartingPointProducer
+     * @var BunnyManager
      */
-    private $startingPointProducer;
+    private $bunnyManager;
 
     /**
      * @var CurlManagerInterface
@@ -59,14 +60,14 @@ class StartingPoint implements LoggerAwareInterface
     /**
      * StartingPoint constructor.
      *
-     * @param StartingPointProducer $startingPointProducer
-     * @param CurlManagerInterface  $curlManager
+     * @param BunnyManager         $bunnyManager
+     * @param CurlManagerInterface $curlManager
      */
-    public function __construct(StartingPointProducer $startingPointProducer, CurlManagerInterface $curlManager)
+    public function __construct(BunnyManager $bunnyManager, CurlManagerInterface $curlManager)
     {
-        $this->startingPointProducer = $startingPointProducer;
-        $this->curlManager           = $curlManager;
-        $this->logger                = new NullLogger();
+        $this->bunnyManager = $bunnyManager;
+        $this->curlManager  = $curlManager;
+        $this->logger       = new NullLogger();
     }
 
     /**
@@ -147,23 +148,25 @@ class StartingPoint implements LoggerAwareInterface
     }
 
     /**
-     * @param array $requestHeaders
+     * @param Topology $topology
+     * @param array    $requestHeaders
      *
      * @return Headers
      */
-    public function createHeaders(array $requestHeaders = []): Headers
+    public function createHeaders(Topology $topology, array $requestHeaders = []): Headers
     {
         $headers = new Headers();
         $headers
-            ->addHeader('process_id', Uuid::uuid4()->toString())
-            ->addHeader('parent_id', '')
-            ->addHeader('correlation_id', Uuid::uuid4()->toString())
-            ->addHeader('sequence_id', '1');
+            ->addHeader(PipesHeaders::createKey('process_id'), Uuid::uuid4()->toString())
+            ->addHeader(PipesHeaders::createKey('parent_id'), '')
+            ->addHeader(PipesHeaders::createKey('correlation_id'), Uuid::uuid4()->toString())
+            ->addHeader(PipesHeaders::createKey('sequence_id'), '1')
+            ->addHeader(PipesHeaders::createKey('topology_id'), $topology->getId())
+            ->addHeader(PipesHeaders::createKey('topology_name'), $topology->getName())
+            ->addHeader('content_type', 'application/json');
 
-        foreach ($requestHeaders as $name => $val) {
-            if (in_array($name, self::HEADERS)) {
-                $headers->addHeader($name, (string) $val[0]); // TODO spatne
-            }
+        foreach (PipesHeaders::clear($requestHeaders) as $key => $value) {
+            $headers->addHeader($key, (string) $value[0]);
         }
 
         return $headers;
@@ -203,7 +206,7 @@ class StartingPoint implements LoggerAwareInterface
         $this->runTopology(
             $topology,
             $node,
-            $this->createHeaders($request->headers->all()),
+            $this->createHeaders($topology, $request->headers->all()),
             $this->createBodyFromRequest($request)
         );
     }
@@ -211,11 +214,11 @@ class StartingPoint implements LoggerAwareInterface
     /**
      * @param Topology    $topology
      * @param Node        $node
-     * @param null|string $body     JSON string
+     * @param null|string $body
      */
     public function run(Topology $topology, Node $node, ?string $body = NULL): void
     {
-        $this->runTopology($topology, $node, $this->createHeaders(), $this->createBody($body));
+        $this->runTopology($topology, $node, $this->createHeaders($topology), $this->createBody($body));
     }
 
     /**
@@ -229,29 +232,21 @@ class StartingPoint implements LoggerAwareInterface
     protected function runTopology(Topology $topology, Node $node, Headers $headers, string $content = ''): void
     {
         $this->validateTopology($topology, $node);
-        $this->startingPointProducer
-            ->getManager()
-            ->getChannel()
-            ->queueDeclare($this->createQueueName($topology, $node), FALSE, TRUE);
 
-        $this->startingPointProducer
-            ->getManager()
-            ->getChannel()
-            ->queueDeclare($this->createCounterQueueName($topology), FALSE, TRUE);
+        // Create channel and queues
+        /** @var Channel $channel */
+        $channel = $this->bunnyManager->getChannel();
+        $channel->queueDeclare($this->createQueueName($topology, $node), FALSE, TRUE);
+        $channel->queueDeclare($this->createCounterQueueName($topology), FALSE, TRUE);
 
-        $this->initializeCounterProcess($topology, $node, $headers);
+        // Publish messages
+        $this->publishInitializeCounterProcess($channel, $this->createCounterQueueName($topology), $headers, $node);
+        $this->publishProcessMessage($channel, $this->createQueueName($topology, $node), $headers, $content);
 
-        $headers = $headers->getHeaders();
-
-        $this->startingPointProducer->publish(
-            $content,
-            $this->createQueueName($topology, $node),
-            $headers
-        );
         $this->logger->info('Starting point message', [
-            'correlation_id' => $headers['correlation_id'],
-            'process_id'     => $headers['process_id'],
-            'parent_id'      => $headers['parent_id'],
+            'correlation_id' => PipesHeaders::get('correlation_id', $headers->getHeaders()),
+            'process_id'     => PipesHeaders::get('process_id', $headers->getHeaders()),
+            'parent_id'      => PipesHeaders::get('parent_id', $headers->getHeaders()),
             'node_id'        => $node->getId(),
             'node_name'      => $node->getName(),
             'topology_id'    => $topology->getId(),
@@ -284,14 +279,14 @@ class StartingPoint implements LoggerAwareInterface
     }
 
     /**
-     * @param Topology $topology
-     * @param Node     $node
-     * @param Headers  $headers
+     * @param Channel $channel
+     * @param string  $queue
+     * @param Headers $headers
+     * @param Node    $node
      */
-    private function initializeCounterProcess(Topology $topology, Node $node, Headers $headers): void
+    private function publishInitializeCounterProcess(Channel $channel, string $queue, Headers $headers,
+                                                     Node $node): void
     {
-        $queue = $this->createCounterQueueName($topology);
-
         $content = [
             'result' => [
                 'code'    => 0,
@@ -311,8 +306,34 @@ class StartingPoint implements LoggerAwareInterface
                 'app_id'  => 'starting_point',
             ]
         );
+        $content = json_encode($content);
 
-        $this->startingPointProducer->publish(json_encode($content), $queue, $headers);
+        $channel->publish($content, $headers, '', $queue);
+        $this->logger->debug(
+            'publish',
+            $this->prepareMessage($content, '', $queue, $headers)
+        );
+    }
+
+    /**
+     * @param Channel $channel
+     * @param string  $queue
+     * @param Headers $headers
+     * @param string  $content
+     */
+    private function publishProcessMessage(Channel $channel, string $queue, Headers $headers,
+                                           string $content = ''): void
+    {
+        $channel->publish(
+            $content,
+            $headers->getHeaders(),
+            '',
+            $queue
+        );
+        $this->logger->debug(
+            'publish',
+            $this->prepareMessage($content, '', $queue, $headers->getHeaders())
+        );
     }
 
 }

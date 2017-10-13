@@ -1,9 +1,11 @@
+import {INodeLabel} from "../topology/Configurator";
 import AMessage from "./AMessage";
 import IMessage from "./IMessage";
 import { ResultCode } from "./ResultCode";
 
 export interface ICounterMessageHeaders {
     node_id: string;
+    node_name: string;
     correlation_id: string;
     process_id: string;
     parent_id: string;
@@ -17,30 +19,15 @@ export interface ICounterMessageContent {
 
 class CounterMessage extends AMessage implements IMessage {
 
-    /**
-     *
-     * @param {string} processId
-     * @param {string} nodeId
-     * @param {string} correlationId
-     * @param {string} parentId
-     * @param {string} sequenceId
-     * @param {number} resultCode
-     * @param {string} resultMsg
-     * @param {number} following
-     * @param {number} multiplier
-     */
     constructor(
-        nodeId: string,
-        correlationId: string,
-        processId: string,
-        parentId: string,
-        sequenceId: number,
+        node: INodeLabel,
+        headers: { [key: string]: string },
         private resultCode: ResultCode,
         private resultMsg: string = "",
         private following: number = 0,
         private multiplier: number = 1,
     ) {
-        super(nodeId, correlationId, processId, parentId, sequenceId, {}, new Buffer(""));
+        super(node, headers, new Buffer(""));
 
         this.resultCode = resultCode;
         this.resultMsg = resultMsg;
@@ -62,17 +49,6 @@ class CounterMessage extends AMessage implements IMessage {
      */
     public getMultiplier(): number {
         return this.multiplier;
-    }
-
-    /**
-     *
-     * @return CounterMessageHeaders
-     */
-    public getHeaders(): ICounterMessageHeaders {
-        const h = super.getHeaders();
-        h.node_id = this.getNodeId();
-
-        return h;
     }
 
     /**

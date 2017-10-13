@@ -1,5 +1,7 @@
 import TimeUtils from "lib-nodejs/dist/src/utils/TimeUtils";
+import {INodeLabel} from "../topology/Configurator";
 import AMessage from "./AMessage";
+import {PFHeaders} from "./HeadersEnum";
 import IMessage from "./IMessage";
 import {ResultCode, ResultCodeGroup} from "./ResultCode";
 
@@ -23,35 +25,25 @@ class JobMessage extends AMessage implements IMessage {
 
     /**
      *
-     * @param {string} nodeId
-     * @param {string} correlationId
-     * @param {string} processId
-     * @param {number} sequenceId
-     * @param {Object} headers
-     * @param {string} parentId
+     * @param {INodeLabel} node
+     * @param {{}} headers
      * @param {Buffer} body
      * @param {IResult} result
-     *
      */
     constructor(
-        nodeId: string,
-        correlationId: string,
-        processId: string,
-        parentId: string,
-        sequenceId: number,
+        node: INodeLabel,
         headers: { [key: string]: string },
         body: Buffer,
         private result?: IResult,
     ) {
-        super(nodeId, correlationId, processId, parentId, sequenceId, headers, body);
+        super(node, headers, body);
 
         this.receivedTime = TimeUtils.nowMili();
         this.multiplier = 1;
         this.forwardSelf = true;
 
-        // do not include following headers when calling getHeaders() if present
-        delete headers.result_code;
-        delete headers.result_message;
+        this.headers.removeHeader(PFHeaders.RESULT_CODE);
+        this.headers.removeHeader(PFHeaders.RESULT_MESSAGE);
     }
 
     /**
@@ -147,18 +139,6 @@ class JobMessage extends AMessage implements IMessage {
     public getTotalDuration(): number {
         if (this.publishedTime && this.receivedTime) {
             return this.publishedTime - this.receivedTime;
-        }
-
-        return 0;
-    }
-
-    /**
-     *
-     * @return {number}
-     */
-    public getRepeatCount(): number {
-        if (this.headers.repeat_count) {
-            return parseInt(this.headers.repeat_count, 10);
         }
 
         return 0;

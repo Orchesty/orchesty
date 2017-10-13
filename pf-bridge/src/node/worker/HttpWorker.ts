@@ -1,9 +1,11 @@
 import * as request from "request";
 import logger from "../../logger/Logger";
+import Headers from "../../message/Headers";
 import JobMessage from "../../message/JobMessage";
 import { ResultCode } from "../../message/ResultCode";
 import {INodeLabel} from "../../topology/Configurator";
 import IWorker from "./IWorker";
+import {PFHeaders} from "../../message/HeadersEnum";
 
 export interface IHttpWorkerSettings {
     node_label: INodeLabel;
@@ -23,18 +25,7 @@ export interface IHttpWorkerRequestParams {
     followAllRedirects?: boolean;
     gzip?: boolean;
     body?: string;
-    headers: {
-        correlation_id: string,
-        process_id: string,
-        parent_id: string,
-        sequence_id: number,
-        node_id: string,
-        node_name: string,
-        reply_to_url?: string,
-        reply_to_method?: string,
-        token?: string, // TODO pryc s tim
-        guid?: string, // TODO pryc s tim
-    };
+    headers?: any;
 }
 
 const DEFAULT_EMPTY_BODY = { data: {}, settings: {}};
@@ -71,20 +62,21 @@ class HttpWorker implements IWorker {
                     return resolve(msg);
                 }
 
-                if (!response.headers || !response.headers.result_code) {
+                const resultHeaders = new Headers(response.headers);
+                const claimedCode = parseInt(resultHeaders.getPFHeader(PFHeaders.RESULT_CODE), 10);
+                if (!(claimedCode in ResultCode)) {
                     this.onMissingResultCode(msg);
                     return resolve(msg);
                 }
 
                 // Worker sent result code, react on it's value
-                const result = parseInt(response.headers.result_code, 10);
                 const resultMessage = response.headers.result_message;
 
-                if (result === ResultCode.SUCCESS) {
+                if (claimedCode === ResultCode.SUCCESS) {
                     logger.info("Worker[type='http'] received 'SUCCESS' response", logger.ctxFromMsg(msg, err));
                 } else {
                     logger.warn(
-                        `Worker[type='http'] received response code: "${result}"`,
+                        `Worker[type='http'] received response code: "${claimedCode}"`,
                         logger.ctxFromMsg(msg, err),
                     );
                 }
@@ -95,7 +87,7 @@ class HttpWorker implements IWorker {
                 }
 
                 // Set the received result code and message body
-                msg.setResult({ code: result, message: resultMessage });
+                msg.setResult({ code: claimedCode, message: resultMessage });
                 msg.setContent(JSON.stringify(body));
 
                 return resolve(msg);
@@ -145,21 +137,20 @@ class HttpWorker implements IWorker {
      */
     private getJobRequestParams(inMsg: JobMessage): IHttpWorkerRequestParams {
 
+        const headersToSend = new Headers();
+        headersToSend.setPFHeader(PFHeaders.CORRELATION_ID, inMsg.getCorrelationId());
+        headersToSend.setPFHeader(PFHeaders.PROCESS_ID, inMsg.getProcessId());
+        headersToSend.setPFHeader(PFHeaders.PARENT_ID, inMsg.getParentId());
+        headersToSend.setPFHeader(PFHeaders.SEQUENCE_ID, `${inMsg.getSequenceId()}`);
+        headersToSend.setPFHeader(PFHeaders.NODE_ID, this.settings.node_label.node_id);
+        headersToSend.setPFHeader(PFHeaders.NODE_NAME, this.settings.node_label.node_name);
+
         return {
             method: this.settings.method.toUpperCase(),
             url: this.getUrl(this.settings.process_path),
             json: JSON.parse(inMsg.getContent()),
             followAllRedirects: true,
-            headers: {
-                correlation_id: inMsg.getCorrelationId(),
-                process_id: inMsg.getProcessId(),
-                parent_id: inMsg.getParentId(),
-                sequence_id: inMsg.getSequenceId(),
-                node_id: this.settings.node_label.node_id,
-                node_name: this.settings.node_label.node_name,
-                token: inMsg.getHeaders().token, // TODO pryc s tim
-                guid: inMsg.getHeaders().guid, // TODO pryc s tim
-            },
+            headers: headersToSend.getRaw(),
         };
     }
 

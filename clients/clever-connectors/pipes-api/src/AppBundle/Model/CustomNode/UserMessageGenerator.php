@@ -9,6 +9,7 @@
 namespace CleverConnectors\AppBundle\Model\CustomNode;
 
 use CleverConnectors\AppBundle\Model\Command\AsyncCommandFactory;
+use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Exception;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
@@ -89,7 +90,7 @@ class UserMessageGenerator implements BatchInterface, CustomNodeInterface
      *
      * @return PromiseInterface
      */
-    private function getConnectorKey(array $data): PromiseInterface
+    private function getSystemKey(array $data): PromiseInterface
     {
         $connectorKey = $data['data']['param'] ?? NULL;
 
@@ -112,22 +113,16 @@ class UserMessageGenerator implements BatchInterface, CustomNodeInterface
         return $this
             ->parseBody($dto->getData())
             ->then(function (array $data) {
-                return $this->getConnectorKey($data);
-            })->then(function (string $connectorKey) use ($loop, $dto) {
-                return all([
-                    $this->getSystems($loop, $connectorKey),
-                    $this->getTopology($loop, $dto->getHeader('node_id')),
-                ]);
-            })->then(function (array $result) {
-                return all([
-                    $this->parseBody($result[0]),
-                    $this->parseBody($result[1]),
-                ]);
+                return $this->getSystemKey($data);
+            })->then(function (string $systemKey) use ($loop) {
+                return $this->getSystems($loop, $systemKey);
+            })->then(function (string $data) {
+                return $this->parseBody($data);
             })->then(function (array $data) use ($callbackItem): Promise {
                 $items = [];
                 $i     = 0;
-                foreach ($data[0] as $item) {
-                    $items[] = $this->processItem($item, $data[1], $i, $callbackItem);
+                foreach ($data as $item) {
+                    $items[] = $this->processItem($item, $i, $callbackItem);
                     $i++;
                 }
 
@@ -137,37 +132,35 @@ class UserMessageGenerator implements BatchInterface, CustomNodeInterface
 
     /**
      * @param array $item
-     * @param array $topology
      * @param int   $i
      *
      * @return PromiseInterface
      */
-    public function prepareData(array $item, array $topology, int $i): PromiseInterface
+    public function prepareData(array $item, int $i): PromiseInterface
     {
         $message = new SuccessMessage($i);
         $message
             ->setData(json_encode([
-                'topology'       => $topology,
                 'system_install' => $item,
             ]))
-            ->addHeaders('token', $item['token'] ?? '')
-            ->addHeaders('guid', $item['user'] ?? '');
+            ->addHeaders(CMHeaders::createKey(CMHeaders::TOKEN), $item['token'] ?? '')
+            ->addHeaders(CMHeaders::createKey(CMHeaders::GUID), $item['user'] ?? '')
+            ->addHeaders(CMHeaders::createKey(CMHeaders::SYSTEM_KEY), $item['system'] ?? '');
 
         return resolve($message);
     }
 
     /**
      * @param array    $item
-     * @param array    $topology
      * @param int      $i
      * @param callable $itemCallback
      *
      * @return PromiseInterface
      */
-    private function processItem(array $item, array $topology, int $i, callable $itemCallback): PromiseInterface
+    private function processItem(array $item, int $i, callable $itemCallback): PromiseInterface
     {
         return $this
-            ->prepareData($item, $topology, $i)
+            ->prepareData($item, $i)
             ->then($itemCallback)
             ->then(function () use ($item): void {
                 unset($item);
@@ -191,26 +184,6 @@ class UserMessageGenerator implements BatchInterface, CustomNodeInterface
 
                 return reject($e);
             });
-    }
-
-    /**
-     * @param LoopInterface $loop
-     * @param string        $nodeId
-     *
-     * @return PromiseInterface
-     */
-    private function getTopology(LoopInterface $loop, string $nodeId): PromiseInterface
-    {
-        $this->logger->info(sprintf('Start finding topology by node id "%s".', $nodeId));
-
-        return $this->asyncCommandFactory->create(
-            $loop,
-            sprintf('react:get-topology %s', $nodeId)
-        )->then(NULL, function (Exception $e) use ($nodeId) {
-            $this->logger->error(sprintf('Topology by nodeId [id=%s] not found.', $nodeId));
-
-            return reject($e);
-        });
     }
 
     /**

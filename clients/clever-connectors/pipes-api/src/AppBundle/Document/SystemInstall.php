@@ -7,6 +7,7 @@ use DateTime;
 use DateTimeZone;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Hanaboso\PipesFramework\Commons\Crypt\CryptManager;
+use MongoDate;
 
 /**
  * Class SystemInstall
@@ -294,12 +295,18 @@ class SystemInstall
             ->setUser($data[self::USER] ?? '')
             ->setToken($data[self::TOKEN] ?? '')
             ->setSystem($data[self::SYSTEM] ?? '')
-            ->setCreated($data[self::CREATED] ?? new DateTime('now', new DateTimeZone('UTC')))
             ->setSynchronized((bool) ($data[self::SYNCHRONIZED] ?? FALSE))
             ->setSettings([]);
 
         if (isset($data[self::ENCRYPTED_SETTINGS])) {
             $systemInstall->setSettings(CryptManager::decrypt($data[self::ENCRYPTED_SETTINGS]));
+        }
+
+        if (array_key_exists(self::CREATED, $data)) {
+            $mongoDate = new MongoDate($data[self::CREATED]['sec'], $data[self::CREATED]['usec']);
+            $systemInstall->setCreated($mongoDate->toDateTime());
+        } else {
+            $systemInstall->setCreated(new DateTime('now', new DateTimeZone('UTC')));
         }
 
         return $systemInstall;

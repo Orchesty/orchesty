@@ -3,8 +3,11 @@ import IMetrics from "lib-nodejs/dist/src/metrics/IMetrics";
 import Connection from "lib-nodejs/dist/src/rabbitmq/Connection";
 import Publisher from "lib-nodejs/dist/src/rabbitmq/Publisher";
 import logger from "../../logger/Logger";
-import {default as CounterMessage, ICounterMessageHeaders} from "../../message/CounterMessage";
+import {default as CounterMessage} from "../../message/CounterMessage";
+import Headers from "../../message/Headers";
+import {PFHeaders} from "../../message/HeadersEnum";
 import { ResultCode } from "../../message/ResultCode";
+import {INodeLabel} from "../Configurator";
 import CounterConsumer from "./CounterConsumer";
 
 const ID_DELIMITER = ".";
@@ -199,22 +202,23 @@ export default class Counter {
      * @return {boolean}
      */
     private handleMessage(msg: Message): void {
-        let headers: ICounterMessageHeaders = null;
-        let content: any;
-
         try {
-            headers = msg.properties.headers;
-            content = JSON.parse(msg.content.toString());
+            const headers = new Headers(msg.properties.headers);
+            const content = JSON.parse(msg.content.toString());
 
-            const processId = Counter.getMostTopProcessId(headers.process_id);
             const resultCode = content.result.code;
+            const processId = Counter.getMostTopProcessId(headers.getPFHeader(PFHeaders.PROCESS_ID));
+            headers.setPFHeader(PFHeaders.PROCESS_ID, processId);
+
+            const node: INodeLabel = {
+                id: headers.getHeader(PFHeaders.NODE_ID),
+                node_id: headers.getHeader(PFHeaders.NODE_ID),
+                node_name: headers.getHeader(PFHeaders.NODE_NAME),
+            };
 
             const cm = new CounterMessage(
-                headers.node_id,
-                headers.correlation_id,
-                processId,
-                headers.parent_id,
-                headers.sequence_id,
+                node,
+                headers.getRaw(),
                 resultCode,
                 content.result.message,
                 parseInt(content.route.following, 10),

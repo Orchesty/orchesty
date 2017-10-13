@@ -162,7 +162,6 @@ abstract class CMSubscriptionConnectorAbstract extends CMAuthorization implement
         $data = str_replace(PHP_EOL, '', $data);
         $dto->setData($data);
 
-        // @todo vyresit predavani custom hlavicek
         return $dto;
     }
 

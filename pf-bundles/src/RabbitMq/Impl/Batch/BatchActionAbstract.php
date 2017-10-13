@@ -10,6 +10,7 @@ namespace Hanaboso\PipesFramework\RabbitMq\Impl\Batch;
 
 use Bunny\Message;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\PipesFramework\Commons\Utils\PipesHeaders;
 use InvalidArgumentException;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
@@ -57,13 +58,13 @@ abstract class BatchActionAbstract implements BatchActionInterface, LoggerAwareI
      */
     private function validateHeaders(Message $message): PromiseInterface
     {
-        if ($this->isEmpty($message->getHeader(self::NODE_NAME))) {
+        if ($this->isEmpty(PipesHeaders::get(self::NODE_NAME, $message->headers))) {
             return reject(new InvalidArgumentException(
                 sprintf('Missing "%s" in the message header.', self::NODE_NAME)
             ));
         }
 
-        return resolve($message);
+        return resolve(PipesHeaders::get(self::NODE_NAME, $message->headers));
     }
 
     /**
@@ -99,8 +100,8 @@ abstract class BatchActionAbstract implements BatchActionInterface, LoggerAwareI
     {
         return $this
             ->validateHeaders($message)
-            ->then(function (Message $message) {
-                return $this->getBatchService($message->getHeader(self::NODE_NAME));
+            ->then(function (string $serviceName) {
+                return $this->getBatchService($serviceName);
             })->then(function (BatchInterface $node) use ($message, $loop, $itemCallBack) {
                 return $node->processBatch($this->createProcessDto($message), $loop, $itemCallBack);
             });

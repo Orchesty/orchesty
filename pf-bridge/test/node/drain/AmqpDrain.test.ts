@@ -3,10 +3,13 @@ import "mocha";
 
 import AssertionPublisher from "lib-nodejs/dist/src/rabbitmq/AssertPublisher";
 import * as mock from "ts-mockito";
+import Headers from "../../../src/message/Headers";
+import {PFHeaders} from "../../../src/message/HeadersEnum";
 import JobMessage from "../../../src/message/JobMessage";
 import CounterPublisher from "../../../src/node/drain/amqp/CounterPublisher";
 import FollowersPublisher from "../../../src/node/drain/amqp/FollowersPublisher";
 import AmqpDrain, {IAmqpDrainSettings} from "../../../src/node/drain/AmqpDrain";
+import {INodeLabel} from "../../../src/topology/Configurator";
 
 const settings: IAmqpDrainSettings = {
     node_label: {
@@ -61,7 +64,13 @@ describe("AmqpDrain", () => {
         const drain = new AmqpDrain(settings, counterPub, followPub, nonstandardPub);
 
         const body = new Buffer(JSON.stringify({data: "test", settings: {}}));
-        const msg: JobMessage = new JobMessage("nid", "123", "123", "", 1, {}, body);
+        const node: INodeLabel = {id: "nodeId", node_id: "nodeId", node_name: "nodeName"};
+        const headers = new Headers();
+        headers.setPFHeader(PFHeaders.CORRELATION_ID, "123");
+        headers.setPFHeader(PFHeaders.PROCESS_ID, "123");
+        headers.setPFHeader(PFHeaders.PARENT_ID, "");
+        headers.setPFHeader(PFHeaders.SEQUENCE_ID, `1`);
+        const msg: JobMessage = new JobMessage(node, headers.getRaw(), body);
 
         return drain.forward(msg)
             .then((result: JobMessage) => {
@@ -87,7 +96,13 @@ describe("AmqpDrain", () => {
         const drain = new AmqpDrain(settings, counterPub, followPub, nonstandardPub);
 
         const body = new Buffer(JSON.stringify({data: "test", settings: {}}));
-        const msg: JobMessage = new JobMessage("nid", "123", "123", "", 1, {}, body);
+        const node: INodeLabel = {id: "nodeId", node_id: "nodeId", node_name: "nodeName"};
+        const headers = new Headers();
+        headers.setPFHeader(PFHeaders.CORRELATION_ID, "123");
+        headers.setPFHeader(PFHeaders.PROCESS_ID, "123");
+        headers.setPFHeader(PFHeaders.PARENT_ID, "");
+        headers.setPFHeader(PFHeaders.SEQUENCE_ID, `1`);
+        const msg: JobMessage = new JobMessage(node, headers.getRaw(), body);
 
         return drain.forwardPart(msg)
             .then(() => {
