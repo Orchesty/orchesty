@@ -152,10 +152,10 @@ class StartingPoint implements LoggerAwareInterface
     {
         $headers = new Headers();
         $headers
-            ->addHeader(PipesHeaders::createPermanentKey('process_id'), Uuid::uuid4()->toString())
-            ->addHeader(PipesHeaders::createPermanentKey('parent_id'), '')
-            ->addHeader(PipesHeaders::createPermanentKey('correlation_id'), Uuid::uuid4()->toString())
-            ->addHeader(PipesHeaders::createPermanentKey('sequence_id'), '1')
+            ->addHeader(PipesHeaders::createKey('process_id'), Uuid::uuid4()->toString())
+            ->addHeader(PipesHeaders::createKey('parent_id'), '')
+            ->addHeader(PipesHeaders::createKey('correlation_id'), Uuid::uuid4()->toString())
+            ->addHeader(PipesHeaders::createKey('sequence_id'), '1')
             ->addHeader(PipesHeaders::createKey('topology_id'), $topology->getId())
             ->addHeader(PipesHeaders::createKey('topology_name'), $topology->getName());
 
@@ -246,9 +246,9 @@ class StartingPoint implements LoggerAwareInterface
             $headers
         );
         $this->logger->info('Starting point message', [
-            'correlation_id' => PipesHeaders::getPermanentHeader('correlation_id', $headers),
-            'process_id'     => PipesHeaders::getPermanentHeader('process_id', $headers),
-            'parent_id'      => PipesHeaders::getPermanentHeader('parent_id', $headers),
+            'correlation_id' => PipesHeaders::get('correlation_id', $headers),
+            'process_id'     => PipesHeaders::get('process_id', $headers),
+            'parent_id'      => PipesHeaders::get('parent_id', $headers),
             'node_id'        => $node->getId(),
             'node_name'      => $node->getName(),
             'topology_id'    => $topology->getId(),

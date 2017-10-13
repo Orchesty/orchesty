@@ -12,6 +12,7 @@ use Bunny\Async\Client;
 use Bunny\Channel;
 use Bunny\Message;
 use Exception;
+use Hanaboso\PipesFramework\Commons\Utils\PipesHeaders;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\BatchActionInterface;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\BatchConsumerCallback;
 use InvalidArgumentException;
@@ -102,18 +103,18 @@ class BatchConsumerCallbackTest extends TestCase
             ],
             [
                 [
-                    'reply-to' => 'reply',
-                    'type'     => 'batch',
-                    'pfp_node_id'  => '132',
+                    'reply-to'                          => 'reply',
+                    'type'                              => 'batch',
+                    PipesHeaders::PF_PREFIX . 'node_id' => '132',
                 ],
                 'Missing "correlation-id" in the message header.',
             ],
             [
                 [
-                    'reply-to'       => 'reply',
-                    'type'           => 'batch',
-                    'pfp_node_id'        => '132',
-                    'pfp_correlation-id' => '123',
+                    'reply-to'                                 => 'reply',
+                    'type'                                     => 'batch',
+                    PipesHeaders::PF_PREFIX . 'node_id'        => '132',
+                    PipesHeaders::PF_PREFIX . 'correlation-id' => '123',
                 ],
                 'Missing "process_id" in the message header.',
             ],
@@ -141,11 +142,11 @@ class BatchConsumerCallbackTest extends TestCase
         $callback = new BatchConsumerCallback($batchAction);
 
         $headers = [
-            'reply-to'       => 'reply',
-            'type'           => 'batch',
-            'pfp_node_id'        => '132',
-            'pfp_correlation-id' => '123',
-            'pfp_process_id'     => '123',
+            'reply-to'                                 => 'reply',
+            'type'                                     => 'batch',
+            PipesHeaders::PF_PREFIX . 'node_id'        => '132',
+            PipesHeaders::PF_PREFIX . 'correlation-id' => '123',
+            PipesHeaders::PF_PREFIX . 'process_id'     => '123',
         ];
         $callback
             ->processMessage($this->createMessage($headers), $channel, $client, $loop)
@@ -184,11 +185,11 @@ class BatchConsumerCallbackTest extends TestCase
         $callback = new BatchConsumerCallback($batchAction);
 
         $headers = [
-            'reply-to'       => 'reply',
-            'type'           => 'test',
-            'pfp_node_id'        => '132',
-            'pfp_correlation-id' => '123',
-            'pfp_process_id'     => '123',
+            'reply-to'                                 => 'reply',
+            'type'                                     => 'test',
+            PipesHeaders::PF_PREFIX . 'node_id'        => '132',
+            PipesHeaders::PF_PREFIX . 'correlation-id' => '123',
+            PipesHeaders::PF_PREFIX . 'process_id'     => '123',
         ];
         $callback
             ->processMessage($this->createMessage($headers), $channel, $client, $loop)
@@ -227,11 +228,11 @@ class BatchConsumerCallbackTest extends TestCase
         $callback = new BatchConsumerCallback($batchAction);
 
         $headers = [
-            'reply-to'       => 'reply',
-            'type'           => 'unknown',
-            'pfp_node_id'        => '132',
-            'pfp_correlation-id' => '123',
-            'pfp_process_id'     => '123',
+            'reply-to'                                 => 'reply',
+            'type'                                     => 'unknown',
+            PipesHeaders::PF_PREFIX . 'node_id'        => '132',
+            PipesHeaders::PF_PREFIX . 'correlation-id' => '123',
+            PipesHeaders::PF_PREFIX . 'process_id'     => '123',
         ];
         $callback
             ->processMessage($this->createMessage($headers), $channel, $client, $loop)

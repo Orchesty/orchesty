@@ -16,18 +16,7 @@ namespace Hanaboso\PipesFramework\Commons\Utils;
 class PipesHeaders
 {
 
-    public const PFP_PREFIX = 'pfp_';
-    public const PF_PREFIX  = 'pf_';
-
-    /**
-     * @param string $key
-     *
-     * @return string
-     */
-    public static function createPermanentKey(string $key): string
-    {
-        return sprintf('%s%s', self::PFP_PREFIX, $key);
-    }
+    public const PF_PREFIX = 'pf_';
 
     /**
      * @param string $key
@@ -44,23 +33,7 @@ class PipesHeaders
      *
      * @return array
      */
-    public static function getPermanentHeaders(array $headers): array
-    {
-        return array_filter(
-            $headers,
-            function ($key) {
-                return self::existPrefix(self::PFP_PREFIX, $key);
-            },
-            ARRAY_FILTER_USE_KEY
-        );
-    }
-
-    /**
-     * @param array $headers
-     *
-     * @return array
-     */
-    public static function getHeaders(array $headers): array
+    public static function clear(array $headers): array
     {
         return array_filter(
             $headers,
@@ -77,20 +50,37 @@ class PipesHeaders
      *
      * @return string|null
      */
-    public static function getPermanentHeader(string $key, array $headers): ?string
+    public static function get(string $key, array $headers): ?string
     {
-        return $headers[self::PFP_PREFIX . $key] ?? NULL;
+        return $headers[self::PF_PREFIX . $key] ?? NULL;
     }
 
     /**
-     * @param string $key
-     * @param array  $headers
+     * @param array $headers
      *
-     * @return string|null
+     * @return array
      */
-    public static function getHeader(string $key, array $headers): ?string
+    public static function debugInfo(array $headers): array
     {
-        return $headers[self::PF_PREFIX . $key] ?? NULL;
+        // Find debug header
+        $debugInfo = array_filter(
+            $headers,
+            function ($key) {
+                return 
+                    self::existPrefix(self::PF_PREFIX, $key) &&
+                    in_array($key, [self::createKey('correlation_id'), self::createKey('node_id')]);
+
+            },
+            ARRAY_FILTER_USE_KEY
+        );
+
+        // remove prefix from header
+        foreach ($debugInfo as $key => $value) {
+            $debugInfo[substr($key, strlen(self::PF_PREFIX))] = $value;
+            unset($debugInfo[$key]);
+        }
+
+        return $debugInfo;
     }
 
     /**
