@@ -121,3 +121,9 @@ services:
         arguments:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@systems.loader'
+
+    cc.listener.progress_counter:
+        class: CleverConnectors\AppBundle\Listeners\ProgressCounterListener
+        arguments:
+            - '@hbpf.progress_counter.progress_counter_service'
+        tags: ['kernel.event_subscriber']
