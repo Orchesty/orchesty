@@ -13,7 +13,6 @@ use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\StartingPoint\StartingPoint;
 use Hanaboso\PipesFramework\RabbitMq\Handler\RabbitMqHandler;
-use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\DockerComposeCli;
 use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\Generator;
 
 /**

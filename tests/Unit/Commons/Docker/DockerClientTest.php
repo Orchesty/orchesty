@@ -1,46 +1,85 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
- * User: pavel.severyn
+ * User: Pavel Severyn
  * Date: 10.10.17
  * Time: 13:34
  */
 
 namespace Tests\Unit\Commons\Docker;
 
-use Hanaboso\PipesFramework\Commons\Docker\Docker;
 use Hanaboso\PipesFramework\Commons\Docker\DockerClient;
-use Hanaboso\PipesFramework\Commons\Docker\Endpoint\Containers;
+use Hanaboso\PipesFramework\Commons\Docker\DockerResult;
+use Http\Client\Common\PluginClient;
+use Http\Client\HttpClient;
 use PHPUnit\Framework\TestCase;
-use Tests\DatabaseTestCaseAbstract;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\StreamInterface;
+use Tests\PrivateTrait;
 
-class DockerClientTest extends DatabaseTestCaseAbstract
+/**
+ * Class DockerClientTest
+ *
+ * @package Tests\Unit\Commons\Docker
+ */
+class DockerClientTest extends TestCase
 {
 
-    public function testCreateClient()
+    use PrivateTrait;
+
+    /**
+     * @covers DockerClient::__construct
+     */
+    public function testCreateClient(): void
     {
-        $this->markTestSkipped();
-        $client = $this->container->get('hbpf.commons.docker.docker_client');
-//        $client = new DockerClient();
+        $client = new DockerClient();
 
-        $docker    = new Docker($client);
-        
-        /** @var Containers $container*/
-        $container = $docker->getEndpoint(Docker::COINTAINERS);
+        $this->assertInstanceOf(PluginClient::class, $this->getProperty($client, 'httpClient'));
+        $this->assertEquals('1.30', $this->getProperty($client, 'version'));
+    }
 
-        $filters = [
-            'label'  =>
-                [
-                    0 => 'com.docker.compose.project=pfbundles',
-                ],
-            'status' =>
-                [
-                    0 => 'running',
-                ],
-        ];
+    /**
+     * @covers DockerClient::getDefault()
+     */
+    public function testGetDeafult(): void
+    {
+        $client = new DockerClient();
+        $this->assertEquals(
+            ['remote_socket' => 'unix:///var/run/docker.sock'],
+            $this->invokeMethod($client, 'getDefault')
+        );
+    }
 
+    /**
+     * @covers DockerClient::send()
+     */
+    public function testSend(): void
+    {
+        $client = new DockerClient();
 
-        $result = $container->list([], []);
+        $stream = $this
+            ->getMockBuilder(StreamInterface::class)
+            ->getMock();
+        $stream->method('getContents')->willReturn('[{}]');
+
+        $responseInterface = $this
+            ->getMockBuilder(ResponseInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $responseInterface->expects($this->once())->method('getBody')->willReturn($stream);
+
+        $httpClient = $this
+            ->getMockBuilder(HttpClient::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $httpClient->expects($this->once())->method('sendRequest')->willReturn($responseInterface);
+
+        $this->setProperty($client, 'httpClient', $httpClient);
+
+        $result = $client->send('GET', 'https://www.example.com', [], '');
+        $this->assertInstanceOf(DockerResult::class, $result);
+
+        $this->assertEquals('[{}]', $result->getContent());
     }
 
 }

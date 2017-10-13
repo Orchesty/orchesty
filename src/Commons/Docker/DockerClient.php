@@ -38,7 +38,7 @@ class DockerClient
     /**
      * @var string
      */
-    protected $version;
+    protected $version = '1.30';
 
     /**
      *
@@ -56,13 +56,23 @@ class DockerClient
         $this->messageFactory = new GuzzleMessageFactory();
         $socketClient         = new SocketHttpClient($this->messageFactory, $connectOption);
 
-        $this->httpClient = new PluginClient($socketClient, [
+        $this->httpClient = $this->getHttpClient($socketClient);
+
+        $this->version = $version;
+    }
+
+    /**
+     * @param HttpClient $socketClient
+     *
+     * @return HttpClient
+     */
+    protected function getHttpClient(HttpClient $socketClient): HttpClient
+    {
+        return new PluginClient($socketClient, [
             new ErrorPlugin(),
             new ContentLengthPlugin(),
             new DecoderPlugin(),
         ]);
-
-        $this->version = $version;
     }
 
     /**

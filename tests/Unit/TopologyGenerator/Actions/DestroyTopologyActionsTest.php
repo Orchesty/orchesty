@@ -56,9 +56,9 @@ class DestroyTopologyActionsTest extends TestCase
     protected $configDir;
 
     /**
-     *
+     * setUp
      */
-    public function setUp()
+    public function setUp(): void
     {
         $this->configDir = '/opt/srv/topology';
 
@@ -71,7 +71,7 @@ class DestroyTopologyActionsTest extends TestCase
             ->getMock();
 
         $this->actions = $this
-            ->getMockBuilder(DestroyTopologyActions::class, ['__construct', 'deleteTopologyDir', 'deleteQueues'])
+            ->getMockBuilder(DestroyTopologyActions::class)
             ->setConstructorArgs([$this->dockerHandler, $this->rabbitMqHandler])
             ->setMethods(['getDockerComposeCli'])
             ->getMock();
@@ -85,6 +85,10 @@ class DestroyTopologyActionsTest extends TestCase
     /**
      * @covers       DestroyTopologyActions::runTopology()
      * @dataProvider runTopology
+     *
+     * @param string $id
+     * @param string $name
+     * @param bool   $result
      */
     public function testDeleteTopology(string $id, string $name, bool $result): void
     {
@@ -107,7 +111,8 @@ class DestroyTopologyActionsTest extends TestCase
      *
      * @param string $id
      * @param string $name
-     * @param bool   $result
+     * @param array  $queues
+     * @param string $exchange
      */
     public function testDeleteQueues(string $id, string $name, array $queues, string $exchange): void
     {
@@ -144,7 +149,7 @@ class DestroyTopologyActionsTest extends TestCase
                 '111222333',
                 'too',
                 ['pipes.111222333-too.counter', 'pipes.111222333-too.node1-1', 'pipes.111222333-too.node2-2'],
-                'pipes.111222333-too.events'
+                'pipes.111222333-too.events',
             ],
         ];
     }

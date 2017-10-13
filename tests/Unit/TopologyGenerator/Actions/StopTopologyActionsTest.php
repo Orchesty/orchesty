@@ -47,15 +47,15 @@ class StopTopologyActionsTest extends TestCase
     protected $configDir;
 
     /**
-     *
+     * setUp
      */
-    public function setUp()
+    public function setUp(): void
     {
         $this->configDir = '/opt/srv/topology';
 
         $this->dockerHandler = $this->getMockBuilder(DockerHandler::class)->disableOriginalConstructor()->getMock();
 
-        $this->actions = $this->getMockBuilder(StopTopologyActions::class, ['__construct', 'runTopology'])
+        $this->actions = $this->getMockBuilder(StopTopologyActions::class)
             ->setConstructorArgs([$this->dockerHandler])
             ->setMethods(['getDockerComposeCli'])
             ->getMock();
@@ -69,6 +69,10 @@ class StopTopologyActionsTest extends TestCase
     /**
      * @covers       StoptTopologyActions::runTopology()
      * @dataProvider runTopology
+     *
+     * @param string $id
+     * @param string $name
+     * @param bool   $result
      */
     public function testRunTopology(string $id, string $name, bool $result): void
     {

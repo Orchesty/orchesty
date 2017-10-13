@@ -47,9 +47,9 @@ class StartTopologyActionsTest extends TestCase
     protected $configDir;
 
     /**
-     *
+     * setUp
      */
-    public function setUp()
+    public function setUp(): void
     {
         $this->configDir = '/opt/srv/topology';
 
@@ -67,8 +67,12 @@ class StartTopologyActionsTest extends TestCase
     }
 
     /**
-     * @covers StartTopologyActions::runTopology()
+     * @covers       StartTopologyActions::runTopology()
      * @dataProvider runTopology
+     *
+     * @param string $id
+     * @param string $name
+     * @param bool   $result
      */
     public function testRunTopology(string $id, string $name, bool $result): void
     {

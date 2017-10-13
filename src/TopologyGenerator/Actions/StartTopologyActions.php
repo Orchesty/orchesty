@@ -9,7 +9,6 @@
 namespace Hanaboso\PipesFramework\TopologyGenerator\Actions;
 
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
-use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\DockerComposeCli;
 use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\Generator;
 
 /**
