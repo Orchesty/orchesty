@@ -18,6 +18,17 @@ class PipesHeaders
 
     public const PF_PREFIX = 'pf_';
 
+    // Framework headers
+    public const CORRELATION_ID = 'correlation_id';
+    public const PROCESS_ID     = 'process_id';
+    public const PARENT_ID      = 'parent_id';
+    public const SEQUENCE_ID    = 'sequence_id';
+    public const NODE_ID        = 'node_id';
+    public const NODE_NAME      = 'node_name';
+    public const TOPOLOGY_ID    = 'topology_id';
+    public const TOPOLOGY_NAME  = 'topology_name';
+    public const RESULT_CODE    = 'result_code';
+
     /**
      * @param string $key
      *
@@ -66,7 +77,7 @@ class PipesHeaders
         $debugInfo = array_filter(
             $headers,
             function ($key) {
-                return 
+                return
                     self::existPrefix(self::PF_PREFIX, $key) &&
                     in_array($key, [self::createKey('correlation_id'), self::createKey('node_id')]);
 
