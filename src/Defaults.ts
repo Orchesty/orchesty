@@ -15,8 +15,8 @@ class Defaults {
             id: node.id,
             label: {
                 id: node.id,
-                node_id: node.label ? node.label.node_id : "",
-                node_name: node.label ? node.label.node_name : "",
+                node_id: node.label ? node.label.node_id : node.id,
+                node_name: node.label ? node.label.node_name : `${node.id}_unknown`,
             },
             next: [],
             worker: Defaults.getDefaultWorkerConfig(),

@@ -131,7 +131,7 @@ class AmqpDrain extends ADrain implements IDrain, IPartialForwarder {
         const targetQueue: string = this.settings.repeater.queue.name;
 
         const headers = message.getHeaders();
-        headers.setHeader("repeat_target_queue", this.settings.faucet.queue.name);
+        headers.setPFHeader("repeat_target_queue", this.settings.faucet.queue.name);
 
         const props = { headers: message.getHeaders().getRaw() };
 

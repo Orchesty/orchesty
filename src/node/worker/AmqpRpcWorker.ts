@@ -5,12 +5,13 @@ import Publisher from "lib-nodejs/dist/src/rabbitmq/Publisher";
 import SimpleConsumer from "lib-nodejs/dist/src/rabbitmq/SimpleConsumer";
 import ObjectUtils from "lib-nodejs/dist/src/utils/ObjectUtils";
 import logger from "../../logger/Logger";
+import Headers from "../../message/Headers";
+import {PFHeaders} from "../../message/HeadersEnum";
 import JobMessage from "../../message/JobMessage";
 import {ResultCode} from "../../message/ResultCode";
 import {INodeLabel} from "../../topology/Configurator";
 import IPartialForwarder from "../drain/IPartialForwarder";
 import IWorker from "./IWorker";
-import {default as Headers, SEQUENCE_ID_HEADER} from "../../message/Headers";
 
 export interface IAmqpRpcWorkerSettings {
     node_label: INodeLabel;
@@ -104,6 +105,14 @@ class AmqpRpcWorker implements IWorker {
      * @return {Promise<JobMessage>}
      */
     public processData(msg: JobMessage): Promise<JobMessage> {
+        const headersToSend = new Headers();
+        headersToSend.setPFHeader(PFHeaders.CORRELATION_ID, msg.getCorrelationId());
+        headersToSend.setPFHeader(PFHeaders.PROCESS_ID, msg.getProcessId());
+        headersToSend.setPFHeader(PFHeaders.PARENT_ID, msg.getParentId());
+        headersToSend.setPFHeader(PFHeaders.SEQUENCE_ID, `${msg.getSequenceId()}`);
+        headersToSend.setPFHeader(PFHeaders.NODE_ID, this.settings.node_label.node_id);
+        headersToSend.setPFHeader(PFHeaders.NODE_NAME, this.settings.node_label.node_name);
+
         this.publisher.sendToQueue(
             this.settings.publish_queue.name,
             new Buffer(msg.getContent()),
@@ -111,14 +120,7 @@ class AmqpRpcWorker implements IWorker {
                 type: BATCH_REQUEST_TYPE,
                 replyTo: this.resultsQueue.name,
                 correlationId: msg.getCorrelationId(),
-                headers: {
-                    node_id: this.settings.node_label.node_id,
-                    node_name: this.settings.node_label.node_name,
-                    correlation_id: msg.getCorrelationId(),
-                    process_id: msg.getProcessId(),
-                    parent_id: msg.getParentId(),
-                    sequence_id: msg.getSequenceId(),
-                },
+                headers: headersToSend.getRaw(),
             },
         ).then(() => {
             logger.info(`Worker[type='amqprpc'] sent request and is waiting for responses.`, logger.ctxFromMsg(msg));
@@ -161,13 +163,13 @@ class AmqpRpcWorker implements IWorker {
                 }
             };
 
-            const headers = new Headers();
-            headers.setPermanentHeader("correlation_id", testId);
-            headers.setPermanentHeader("process_id", testId);
-            headers.setPermanentHeader("parent_id", "");
-            headers.setPermanentHeader("sequence_id", 1);
+            const testHeaders = new Headers();
+            testHeaders.setPFHeader(PFHeaders.CORRELATION_ID, testId);
+            testHeaders.setPFHeader(PFHeaders.PROCESS_ID, testId);
+            testHeaders.setPFHeader(PFHeaders.PARENT_ID, "");
+            testHeaders.setPFHeader(PFHeaders.SEQUENCE_ID, "1");
 
-            const jobMsg = new JobMessage(this.settings.node_label, headers, new Buffer(""));
+            const jobMsg = new JobMessage(this.settings.node_label, testHeaders.getRaw(), new Buffer(""));
             const t: IWaiting = { resolveFn: resolveTestFn, message: jobMsg, sequence: 0 };
             this.waiting.set(testId, t);
 
@@ -246,11 +248,11 @@ class AmqpRpcWorker implements IWorker {
         headers = Headers.getPFHeaders(headers);
 
         const headerObj = new Headers(headers);
-        headerObj.setPermanentHeader(SEQUENCE_ID_HEADER, stored.sequence);
+        headerObj.setPFHeader(PFHeaders.SEQUENCE_ID, `${stored.sequence}`);
 
         const splitMsg = new JobMessage(
             this.settings.node_label,
-            headerObj,
+            headerObj.getRaw(),
             new Buffer(JSON.stringify({ data: newContent.data, settings: {}})),
             { code: ResultCode.SUCCESS, message: `Part ${stored.sequence}` }, // TODO - unhardcode?
         );
@@ -275,13 +277,18 @@ class AmqpRpcWorker implements IWorker {
             return;
         }
 
-        // Set result according to received headers
-        const resCode = msg.properties.headers.hasOwnProperty("result_code") ?
-            parseInt(msg.properties.headers.result_code, 10) : ResultCode.MISSING_RESULT_CODE;
-        const resMessage = msg.properties.headers.hasOwnProperty("result_message") ?
-            msg.properties.headers.result_message : "";
+        const resultHeaders = new Headers(msg.properties.headers);
 
-        stored.message.setResult({ code: resCode, message: resMessage });
+        let resultCode = ResultCode.MISSING_RESULT_CODE;
+        const claimedCode = parseInt(resultHeaders.getPFHeader(PFHeaders.RESULT_CODE), 10);
+        if (claimedCode in ResultCode) {
+            resultCode = claimedCode;
+        }
+
+        const resultMessage = resultHeaders.getPFHeader(PFHeaders.RESULT_MESSAGE) ?
+            resultHeaders.getPFHeader(PFHeaders.RESULT_MESSAGE) : "";
+
+        stored.message.setResult({ code: resultCode, message: resultMessage });
 
         // Resolves waiting promise
         stored.resolveFn(stored.message);

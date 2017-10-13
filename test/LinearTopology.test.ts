@@ -72,10 +72,10 @@ describe("Linear Topology test", () => {
     it("complete flow of messages till the end", (done) => {
         const msgTestContent = { val: "test content" };
         const msgHeaders = { headers: {
-            pfp_correlation_id: "corrid",
-            pfp_process_id: "test",
-            pfp_parent_id: "",
-            pfp_sequence_id: 1,
+            pf_correlation_id: "corrid",
+            pf_process_id: "test",
+            pf_parent_id: "",
+            pf_sequence_id: 1,
         }};
 
         const httpWorkerMock = express();
@@ -85,8 +85,8 @@ describe("Linear Topology test", () => {
             const updated = req.body;
             updated.val = updated.val + " modified";
             resp.set({
-                result_code: 0,
-                result_message: "ok",
+                pf_result_code: 0,
+                pf_result_message: "ok",
             });
             resp.status(200).send(JSON.stringify(updated));
         });
@@ -130,7 +130,7 @@ describe("Linear Topology test", () => {
                 (msg: Message) => {
                     // In this fn we evaluate expected incoming message and state if test is OK or failed
                     const data: ICounterProcessInfo = JSON.parse(msg.content.toString());
-                    assert.equal(data.process_id, msgHeaders.headers.pfp_process_id);
+                    assert.equal(data.process_id, msgHeaders.headers.pf_process_id);
                     assert.equal(data.total, pip.getTopologyConfig().nodes.length);
                     assert.equal(data.ok, pip.getTopologyConfig().nodes.length);
                     assert.equal(data.nok, 0);

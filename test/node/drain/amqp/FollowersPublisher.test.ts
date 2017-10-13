@@ -5,6 +5,8 @@ import {Channel, Message} from "amqplib";
 import Connection from "lib-nodejs/dist/src/rabbitmq/Connection";
 import SimpleConsumer from "lib-nodejs/dist/src/rabbitmq/SimpleConsumer";
 import {amqpConnectionOptions} from "../../../../src/config";
+import Headers from "../../../../src/message/Headers";
+import {PFHeaders} from "../../../../src/message/HeadersEnum";
 import JobMessage from "../../../../src/message/JobMessage";
 import {ResultCode} from "../../../../src/message/ResultCode";
 import FollowersPublisher from "../../../../src/node/drain/amqp/FollowersPublisher";
@@ -83,6 +85,7 @@ const settings: IAmqpDrainSettings = {
 
 describe("FollowersPublisher", () => {
     it("publishes message to followers", (done) => {
+        const node: INodeLabel = {id: "nodeId", node_id: "nodeId", node_name: "nodeName"};
         const receivedMessages: Message[] = [];
         const checkEnd = () => {
             if (receivedMessages.length === 3) {
@@ -93,9 +96,10 @@ describe("FollowersPublisher", () => {
         const fConfig = settings.followers[0];
         const outputQueue = fConfig.queue.name;
         const publisher = new FollowersPublisher(conn, settings);
+        const msgCorrId = "corrId";
         const msgProcessId = "123";
+        const msgParentId = "";
         const msgSeqId = 1;
-        const msgHeaders = { job_id: msgProcessId, sequence_id: msgSeqId.toString()};
         const msgBody = {data: "test", settings: {}};
 
         const consumer = new SimpleConsumer(
@@ -120,21 +124,32 @@ describe("FollowersPublisher", () => {
                 receivedMessages.push(received);
                 // Check if content and headers remain the same
                 assert.deepEqual(msgBody, JSON.parse(received.content.toString()));
-                assert.deepEqual(msgHeaders, received.properties.headers);
+                assert.deepEqual(
+                    received.properties.headers,
+                    {
+                        pf_correlation_id: msgCorrId,
+                        pf_process_id: msgProcessId,
+                        pf_parent_id: msgParentId,
+                        pf_sequence_id: `${msgSeqId}`,
+                        pf_node_id: node.node_id,
+                        pf_node_name: node.node_name,
+                    },
+                );
                 checkEnd();
             },
         );
 
         consumer.consume(outputQueue, {})
             .then(() => {
-                const node: INodeLabel = {id: "nodeId", node_id: "nodeId", node_name: "nodeName"};
+                const headers = new Headers();
+                headers.setPFHeader(PFHeaders.CORRELATION_ID, msgCorrId);
+                headers.setPFHeader(PFHeaders.PROCESS_ID, msgProcessId);
+                headers.setPFHeader(PFHeaders.PARENT_ID, "");
+                headers.setPFHeader(PFHeaders.SEQUENCE_ID, `${msgSeqId}`);
+
                 const msg: JobMessage = new JobMessage(
                     node,
-                    "corrId",
-                    msgProcessId,
-                    "",
-                    msgSeqId,
-                    msgHeaders,
+                    headers.getRaw(),
                     new Buffer(JSON.stringify(msgBody)),
                     { code: ResultCode.SUCCESS, message: ""},
                 );

@@ -7,7 +7,6 @@ import FollowersPublisher from "./node/drain/amqp/FollowersPublisher";
 import {default as AmqpDrain, IAmqpDrainSettings} from "./node/drain/AmqpDrain";
 import IPartialForwarder from "./node/drain/IPartialForwarder";
 import {default as AmqpFaucet, IAmqpFaucetSettings} from "./node/faucet/AmqpFaucet";
-import {default as HttpFaucet, IHttpFaucetSettings} from "./node/faucet/HttpFaucet";
 import AmqpRpcWorker, {IAmqpRpcWorkerSettings} from "./node/worker/AmqpRpcWorker";
 import AppenderWorker, {IAppenderWorkerSettings} from "./node/worker/AppenderWorker";
 import HttpWorker, {IHttpWorkerSettings} from "./node/worker/HttpWorker";
@@ -20,26 +19,16 @@ class DIContainer extends Container {
     constructor() {
         super();
         this.setServices();
-        this.setFaucets();
-        this.setDrains();
         this.setWorkers();
-        this.setSplitterWorkers();
     }
 
     private setServices() {
         this.set("amqp.connection", new Connection(amqpConnectionOptions));
-    }
 
-    private setFaucets() {
         this.set("faucet.amqp", (settings: IAmqpFaucetSettings) => {
             return new AmqpFaucet(settings, this.get("amqp.connection"));
         });
-        this.set("faucet.http", (settings: IHttpFaucetSettings) => {
-            return new HttpFaucet(settings);
-        });
-    }
 
-    private setDrains() {
         this.set("drain.amqp", (settings: IAmqpDrainSettings) => {
             const counterPub = new CounterPublisher(this.get("amqp.connection"), settings);
             const followersPub = new FollowersPublisher(this.get("amqp.connection"), settings);
@@ -54,6 +43,7 @@ class DIContainer extends Container {
     }
 
     private setWorkers() {
+        // Standard workers
         this.set("worker.appender", (settings: IAppenderWorkerSettings) => {
             return new AppenderWorker(settings);
         });
@@ -66,9 +56,8 @@ class DIContainer extends Container {
         this.set("worker.uppercase", (settings: {}) => {
             return new UppercaseWorker();
         });
-    }
 
-    private setSplitterWorkers() {
+        // Splitter workers
         this.set("splitter.amqprpc", (settings: IAmqpRpcWorkerSettings, forwarder: IPartialForwarder) => {
             return new AmqpRpcWorker(this.get("amqp.connection"), settings, forwarder);
         });

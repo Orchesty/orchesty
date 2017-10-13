@@ -1,6 +1,8 @@
 import { assert } from "chai";
 import "mocha";
 
+import Headers from "../../../src/message/Headers";
+import {PFHeaders} from "../../../src/message/HeadersEnum";
 import JobMessage from "../../../src/message/JobMessage";
 import {ResultCode} from "../../../src/message/ResultCode";
 import IPartialForwarder from "../../../src/node/drain/IPartialForwarder";
@@ -14,7 +16,12 @@ const settings: ISplitterWorkerSettings = {
 describe("Splitter worker", () => {
     it("should fail when invalid JSON content format", () => {
         const node: INodeLabel = {id: "nodeId", node_id: "nodeId", node_name: "nodeName"};
-        const msg = new JobMessage(node, "123", "123", "", 1, {}, new Buffer(JSON.stringify("{foo : 1, }")));
+        const headers = new Headers();
+        headers.setPFHeader(PFHeaders.CORRELATION_ID, "123");
+        headers.setPFHeader(PFHeaders.PROCESS_ID, "123");
+        headers.setPFHeader(PFHeaders.PARENT_ID, "");
+        headers.setPFHeader(PFHeaders.SEQUENCE_ID, "1");
+        const msg = new JobMessage(node, headers.getRaw(), new Buffer(JSON.stringify("{foo : 1, }")));
         const partialForwarder: IPartialForwarder = {
             forwardPart: () => Promise.resolve(),
         };
@@ -29,7 +36,12 @@ describe("Splitter worker", () => {
     it("should fail when JSON content is not array with some element", () => {
         const body = new Buffer(JSON.stringify({data: [], settings: {}}));
         const node: INodeLabel = {id: "nodeId", node_id: "nodeId", node_name: "nodeName"};
-        const msg = new JobMessage(node, "123", "123", "", 1, {}, body);
+        const headers = new Headers();
+        headers.setPFHeader(PFHeaders.CORRELATION_ID, "123");
+        headers.setPFHeader(PFHeaders.PROCESS_ID, "123");
+        headers.setPFHeader(PFHeaders.PARENT_ID, "");
+        headers.setPFHeader(PFHeaders.SEQUENCE_ID, "1");
+        const msg = new JobMessage(node, headers.getRaw(), body);
         const partialForwarder: IPartialForwarder = {
             forwardPart: () => Promise.resolve(),
         };
@@ -54,7 +66,12 @@ describe("Splitter worker", () => {
             },
         };
         const node: INodeLabel = {id: "nodeId", node_id: "nodeId", node_name: "nodeName"};
-        const msg = new JobMessage(node, "123", "123", "", 1, {}, new Buffer(JSON.stringify(content)));
+        const headers = new Headers();
+        headers.setPFHeader(PFHeaders.CORRELATION_ID, "123");
+        headers.setPFHeader(PFHeaders.PROCESS_ID, "123");
+        headers.setPFHeader(PFHeaders.PARENT_ID, "");
+        headers.setPFHeader(PFHeaders.SEQUENCE_ID, "1");
+        const msg = new JobMessage(node, headers.getRaw(), new Buffer(JSON.stringify(content)));
         const partialForwarder: IPartialForwarder = {
             forwardPart: (forwardedMsg: JobMessage) => {
                 forwarded.push(forwardedMsg);

@@ -99,8 +99,8 @@ const expectedTopo: ITopologyConfig = {
                     ],
                     node_label: {
                         id: "node_a",
-                        node_id: "",
-                        node_name: "",
+                        node_id: "node_a",
+                        node_name: "node_a_unknown",
                     },
                     resequencer: true,
                 },
@@ -110,8 +110,8 @@ const expectedTopo: ITopologyConfig = {
                 settings: {
                     node_label: {
                         id: "node_a",
-                        node_id: "",
-                        node_name: "",
+                        node_id: "node_a",
+                        node_name: "node_a_unknown",
                     },
                     port: 3333,
                 },
@@ -121,8 +121,8 @@ const expectedTopo: ITopologyConfig = {
             initial: true,
             label: {
                 id: "node_a",
-                node_id: "",
-                node_name: "",
+                node_id: "node_a",
+                node_name: "node_a_unknown",
             },
             next: ["node_b"],
             resequencer: true,
@@ -130,8 +130,8 @@ const expectedTopo: ITopologyConfig = {
                 settings: {
                     node_label: {
                         id: "node_a",
-                        node_id: "",
-                        node_name: "",
+                        node_id: "node_a",
+                        node_name: "node_a_unknown",
                     },
                 },
                 type: "worker.null",

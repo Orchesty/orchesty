@@ -1,24 +1,10 @@
+import {PFHeaders} from "./HeadersEnum";
 
-// Header prefixes
 const PF_HEADERS_PREFIX           = "pf_";
-const PF_PERMANENT_HEADERS_PREFIX = "pfp_";
-
-// Mandatory PF headers
-export const CORRELATION_ID_HEADER  = "pfp_correlation_id";
-export const PROCESS_ID_HEADER      = "pfp_process_id";
-export const PARENT_ID_HEADER       = "pfp_parent_id";
-export const SEQUENCE_ID_HEADER     = "pfp_sequence_id";
 
 export const HEADERS_WHITELIST = [
     "content-type",
 ];
-
-export interface IMandatoryHeaders {
-    pfp_correlation_id: string;
-    pfp_process_id: string;
-    pfp_parent_id: string;
-    pfp_sequence_id: number;
-}
 
 class Headers {
 
@@ -31,11 +17,6 @@ class Headers {
         const pfHeaders: any = {};
 
         Object.keys(headers).forEach((key: any) => {
-            if (key.substr(0, PF_PERMANENT_HEADERS_PREFIX.length) === PF_PERMANENT_HEADERS_PREFIX) {
-                pfHeaders[key] = headers[key];
-                return;
-            }
-
             if (key.substr(0, PF_HEADERS_PREFIX.length) === PF_HEADERS_PREFIX) {
                 pfHeaders[key] = headers[key];
                 return;
@@ -54,25 +35,26 @@ class Headers {
      *
      * @param headers
      */
-    public static validateMandatoryHeaders(headers: { [key: string]: any }) {
+    public static validateMandatoryHeaders(headers: { [key: string]: string }) {
         if (!headers) {
             throw new Error("Invalid headers. Is it object?");
         }
 
-        if (!headers[CORRELATION_ID_HEADER]) {
-            throw new Error(`Invalid '${CORRELATION_ID_HEADER}' header.`);
+        if (!headers[`${PF_HEADERS_PREFIX}${PFHeaders.CORRELATION_ID}`]) {
+            throw new Error(`Invalid '${PF_HEADERS_PREFIX}${PFHeaders.CORRELATION_ID}' header.`);
         }
 
-        if (!headers[PROCESS_ID_HEADER]) {
-            throw new Error(`Invalid '${PROCESS_ID_HEADER}' header.`);
+        if (!headers[`${PF_HEADERS_PREFIX}${PFHeaders.PROCESS_ID}`]) {
+            throw new Error(`Invalid '${PF_HEADERS_PREFIX}${PFHeaders.CORRELATION_ID}' header.`);
         }
 
-        if (headers[PARENT_ID_HEADER] === undefined) {
-            throw new Error(`Invalid '${PARENT_ID_HEADER}' header.`);
+        if (headers[`${PF_HEADERS_PREFIX}${PFHeaders.PARENT_ID}`] === undefined) {
+            throw new Error(`Invalid '${PF_HEADERS_PREFIX}${PFHeaders.PARENT_ID}' header.`);
         }
 
-        if (!headers[SEQUENCE_ID_HEADER]) {
-            throw new Error(`Invalid '${SEQUENCE_ID_HEADER}' header.`);
+        if (!headers[`${PF_HEADERS_PREFIX}${PFHeaders.SEQUENCE_ID}`] ||
+            parseInt(headers[`${PF_HEADERS_PREFIX}${PFHeaders.SEQUENCE_ID}`], 10) < 1) {
+            throw new Error(`Invalid '${PF_HEADERS_PREFIX}${PFHeaders.SEQUENCE_ID}' header.`);
         }
     }
 
@@ -81,7 +63,7 @@ class Headers {
      * @param headers
      * @return {boolean}
      */
-    public static containsAllMandatory(headers: { [key: string]: any }): boolean {
+    public static containsAllMandatory(headers: { [key: string]: string }): boolean {
         try {
             Headers.validateMandatoryHeaders(headers);
             return true;
@@ -90,19 +72,10 @@ class Headers {
         }
     }
 
-    /**
-     *
-     * @param {{[p: string]: any}} headers
-     */
-    constructor(private headers?: { [key: string]: any }) {}
-
-    /**
-     *
-     * @param {string} key
-     * @param value
-     */
-    public setHeader(key: string, value: any) {
-        this.headers[`${PF_HEADERS_PREFIX}key`] = value;
+    constructor(private headers?: { [key: string]: string }) {
+        if (!headers) {
+            this.headers = {};
+        }
     }
 
     /**
@@ -110,17 +83,35 @@ class Headers {
      * @param {string} key
      * @param value
      */
-    public setPermanentHeader(key: string, value: any) {
-        this.headers[`${PF_PERMANENT_HEADERS_PREFIX}}key`] = value;
-    }
-
-    /**
-     *
-     * @param {string} key
-     * @param value
-     */
-    public setCustomHeader(key: string, value: any) {
+    public setHeader(key: string, value: string) {
         this.headers[key] = value;
+    }
+
+    /**
+     *
+     * @param {string} key
+     * @param value
+     */
+    public setPFHeader(key: string, value: string) {
+        this.headers[`${PF_HEADERS_PREFIX}${key}`] = value;
+    }
+
+    /**
+     *
+     * @param {string} key
+     * @return {string}
+     */
+    public getHeader(key: string): string {
+        return this.headers[`${PF_HEADERS_PREFIX}${key}`];
+    }
+
+    /**
+     *
+     * @param {string} key
+     * @return {string}
+     */
+    public getPFHeader(key: string): string {
+        return this.headers[`${PF_HEADERS_PREFIX}${key}`];
     }
 
     /**
@@ -128,14 +119,14 @@ class Headers {
      * @return any
      */
     public getRaw(): any {
-        return this.headers;
+        return JSON.parse(JSON.stringify(this.headers));
     }
 
     /**
      *
      * @param {string} key
      */
-    public removeHeader(key: string) {
+    public removePFHeader(key: string) {
         delete this.headers[`${PF_HEADERS_PREFIX}key`];
     }
 
@@ -143,7 +134,7 @@ class Headers {
      *
      * @param {string} key
      */
-    public removeCustomHeader(key: string) {
+    public removeHeader(key: string) {
         delete this.headers[key];
     }
 

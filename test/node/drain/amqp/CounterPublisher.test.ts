@@ -5,6 +5,8 @@ import {Channel, Message, Options} from "amqplib";
 import Connection from "lib-nodejs/dist/src/rabbitmq/Connection";
 import SimpleConsumer from "lib-nodejs/dist/src/rabbitmq/SimpleConsumer";
 import {amqpConnectionOptions} from "../../../../src/config";
+import Headers from "../../../../src/message/Headers";
+import {PFHeaders} from "../../../../src/message/HeadersEnum";
 import JobMessage from "../../../../src/message/JobMessage";
 import {ResultCode} from "../../../../src/message/ResultCode";
 import CounterPublisher from "../../../../src/node/drain/amqp/CounterPublisher";
@@ -14,9 +16,9 @@ import {INodeLabel} from "../../../../src/topology/Configurator";
 const conn = new Connection(amqpConnectionOptions);
 const settings: IAmqpDrainSettings = {
     node_label: {
-        id: "test-counter-publisher",
-        node_id: "507f191e810c19729de860ea",
-        node_name: "test",
+        id: "drainId",
+        node_id: "someDrainId",
+        node_name: "drainName",
     },
     counter: {
         queue: {
@@ -70,18 +72,21 @@ const settings: IAmqpDrainSettings = {
 describe("CounterPublisher", () => {
     it("composes message in correct format", () => {
         const publisher = new CounterPublisher(conn, settings);
-        const msgJobId = "123";
+        const msgCorrId = "corrId";
+        const msgProcessId = "123";
         const msgSeqId = 1;
-        const msgHeaders = { job_id: msgJobId, sequence_id: msgSeqId.toString()};
-        const msgBody = new Buffer(JSON.stringify({data: "test", settings: {}}));
+        const msgBody = new Buffer(JSON.stringify({some: "json content"}));
         const node: INodeLabel = {id: "nodeId", node_id: "nodeId", node_name: "nodeName"};
+
+        const headers = new Headers();
+        headers.setPFHeader(PFHeaders.CORRELATION_ID, msgCorrId);
+        headers.setPFHeader(PFHeaders.PROCESS_ID, msgProcessId);
+        headers.setPFHeader(PFHeaders.PARENT_ID, "");
+        headers.setPFHeader(PFHeaders.SEQUENCE_ID, `${msgSeqId}`);
+
         const msg: JobMessage = new JobMessage(
             node,
-            "corrId",
-            msgJobId,
-            "",
-            msgSeqId,
-            msgHeaders,
+            headers.getRaw(),
             msgBody,
             { code: ResultCode.SUCCESS, message: ""},
         );
@@ -97,11 +102,12 @@ describe("CounterPublisher", () => {
                     opts,
                     {
                         headers: {
-                            correlation_id: "corrId",
-                            process_id: msgJobId,
-                            node_id: settings.node_label.id,
-                            parent_id: "",
-                            sequence_id: msgSeqId,
+                            pf_correlation_id: "corrId",
+                            pf_process_id: msgProcessId,
+                            pf_parent_id: "",
+                            pf_sequence_id: `${msgSeqId}`,
+                            pf_node_id: settings.node_label.node_id,
+                            pf_node_name: settings.node_label.node_name,
                         },
                         type: "counter_message",
                         appId: settings.node_label.id,
@@ -131,10 +137,16 @@ describe("CounterPublisher", () => {
     });
     it("publishes message to counter input queue", (done) => {
         const publisher = new CounterPublisher(conn, settings);
+        const msgCorrId = "corrId";
         const msgProcessId = "123";
         const msgSeqId = 1;
-        const msgHeaders = { job_id: msgProcessId, sequence_id: msgSeqId.toString()};
         const msgBody = {data: "test", settings: {}};
+
+        const headers = new Headers();
+        headers.setPFHeader(PFHeaders.CORRELATION_ID, msgCorrId);
+        headers.setPFHeader(PFHeaders.PROCESS_ID, msgProcessId);
+        headers.setPFHeader(PFHeaders.PARENT_ID, "");
+        headers.setPFHeader(PFHeaders.SEQUENCE_ID, `${msgSeqId}`);
 
         const consumer = new SimpleConsumer(
             conn,
@@ -166,11 +178,7 @@ describe("CounterPublisher", () => {
                 const node: INodeLabel = {id: "nodeId", node_id: "nodeId", node_name: "nodeName"};
                 const msg: JobMessage = new JobMessage(
                     node,
-                    "corrId",
-                    msgProcessId,
-                    "",
-                    msgSeqId,
-                    msgHeaders,
+                    headers.getRaw(),
                     new Buffer(JSON.stringify(msgBody)),
                     { code: ResultCode.SUCCESS, message: ""},
                 );
