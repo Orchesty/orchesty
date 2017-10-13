@@ -12,6 +12,7 @@ use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Webhook\WebhookManager;
 use CleverConnectors\AppBundle\Model\Webhook\WebhookSystemInterface;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
+use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use Hanaboso\PipesFramework\Commons\Enum\HandlerEnum;
@@ -262,14 +263,9 @@ class SystemManager
      */
     public function synchronizeSubscriptions($user, $system): void
     {
-        // todo use PipesHeaders - different keys
-        $headers = [
-            'user'   => [$user],
-            'system' => [$system],
-        ];
-
         $request = new Request();
-        $request->headers->add($headers);
+        $request->headers->set(CMHeaders::createKey(CMHeaders::GUID), $user);
+        $request->headers->set(CMHeaders::createKey(CMHeaders::SYSTEM_KEY), $system);
 
         $topologyName = sprintf('%s-sync-subscribers', $system);
         $topologies   = $this->dm->getRepository(Topology::class)->getRunnableTopologies($topologyName);
