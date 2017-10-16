@@ -46,6 +46,15 @@ httpServer.post("/empty-result-body", (req, resp) => {
     });
     resp.status(200).send();
 });
+httpServer.post("/ok-xml", (req, resp) => {
+    assert.deepEqual(req.body, { val: "original" });
+    resp.set({
+        pf_result_code: 0,
+        pf_result_message: "ok",
+    });
+    resp.set("content-type", "application/xml");
+    resp.status(200).send("<?xml version=\"1.0\" encoding=\"UTF-8\"?><root>some content</root>");
+});
 httpServer.listen(4020);
 
 describe("HttpWorker", () => {
@@ -224,6 +233,35 @@ describe("HttpWorker", () => {
         return worker.isWorkerReady()
             .then((isReady: boolean) => {
                 assert.isFalse(isReady);
+            });
+    });
+
+    it("should send json and receive xml", () => {
+        const node: INodeLabel = {id: "nodeId", node_id: "nodeId", node_name: "nodeName"};
+        const headers = new Headers();
+        headers.setPFHeader(PFHeaders.CORRELATION_ID, "123");
+        headers.setPFHeader(PFHeaders.PROCESS_ID, "123");
+        headers.setPFHeader(PFHeaders.PARENT_ID, "");
+        headers.setPFHeader(PFHeaders.SEQUENCE_ID, "1");
+        const msg = new JobMessage(node, headers.getRaw(), new Buffer(JSON.stringify({ val: "original" })));
+        const worker = new HttpWorker({
+            node_label: { id: "someId", node_id: "507f191e810c19729de860ea", node_name: "httpworker" },
+            host: "localhost",
+            method: "post",
+            port: 4020,
+            process_path: "/ok-xml",
+            status_path: "/status",
+            secure: false,
+            opts : {},
+        });
+
+        return worker.processData(msg)
+            .then((outMsg: JobMessage) => {
+                assert.equal(outMsg.getResult().code, ResultCode.SUCCESS);
+                assert.equal(
+                    outMsg.getContent(),
+                    "<?xml version=\"1.0\" encoding=\"UTF-8\"?><root>some content</root>",
+                );
             });
     });
 
