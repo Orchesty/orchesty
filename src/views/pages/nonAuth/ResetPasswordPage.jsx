@@ -80,7 +80,6 @@ function mapStateToProps(state, ownProps) {
 }
 
 function mapActionsToProps(dispatch, ownProps){
-  console.log(ownProps.componentKey);
   return {
     resetPassword: email => dispatch(authActions.resetPassword(email, ownProps.componentKey)),
     switchToLogin: () => dispatch(applicationActions.selectPage('login'))

@@ -10,6 +10,7 @@ import * as notificationActions from './notificationActions';
 import * as processActions from './processActions';
 import * as nodeActions from './nodeActions';
 import * as applicationActions from './applicationActions';
+import * as topologyGroupActions from './topologyGroupActions';
 import {listType} from 'rootApp/types';
 import filterCallback from 'rootApp/utils/filterCallback';
 
@@ -80,6 +81,7 @@ function loadList(id, loadingState = true){
     let promise =  serverRequest(dispatch, 'GET', '/topologies', query).then(response => {
       if (response){
         dispatch(receiveItems(response.items));
+        dispatch(topologyGroupActions.recalculateAllTopologyGroups());
       }
       return response;
     });
@@ -96,17 +98,17 @@ function loadList(id, loadingState = true){
 function prepareLocalList(list, elements){
   const elementArray = Object.values(elements);
   let res = {
-    total: elementArray.length,
     items: elementArray
   };
   if (list.filter){
     Object.keys(list.filter).forEach(key => {
       const filterItem = list.filter[key];
       if (filterItem !== undefined || filterItem !== null){
-        list.items = list.items.filter(filterCallback(key, filterItem));
+        res.items = res.items.filter(filterCallback(filterItem));
       }
     });
   }
+  res.total = res.items.length;
   if (list.sort){
     res.items.sort(sortCompare(list.sort));
   }
@@ -134,7 +136,9 @@ export function needTopologyList(listId) {
   return (dispatch, getState) => {
     const list = getState().topology.lists[listId];
     if (!list) {
-      dispatch(createCompleteList(listId, true));
+      const create = config.params.preferPaging ?
+        createPaginationList.bind(null, listId, config.params.defaultPageSize) : createCompleteList.bind(null, listId);
+      dispatch(create(true));
     }
     return dispatch(loadList(listId));
   }
@@ -195,7 +199,9 @@ export function needTopology(id, force = false){
       return serverRequest(dispatch, 'GET', `/topologies/${id}`).then(
         response => {
           if (response) {
+            const oldTopology = getState().topology.elements[id];
             dispatch(receive(response));
+            dispatch(topologyGroupActions.recalculateTopologyGroup(response.name, oldTopology));
           }
           dispatch(processActions.finishProcess(processes.topologyLoad(id), response));
           return response;
@@ -209,12 +215,14 @@ export function needTopology(id, force = false){
 }
 
 export function topologyUpdate(id, data){
-  return dispatch => {
+  return (dispatch, getState) => {
     dispatch(processActions.startProcess(processes.topologyUpdate(id)));
     return serverRequest(dispatch, 'PATCH', `/topologies/${id}`, null, data).then(
       response => {
         if (response) {
+          const oldTopology = getState().topology.elements[id];
           dispatch(receive(response));
+          dispatch(topologyGroupActions.recalculateTopologyGroup(response.name, oldTopology));
         }
         dispatch(processActions.finishProcess(processes.topologyUpdate(id), response));
         return response;
@@ -230,6 +238,7 @@ export function topologyCreate(data, processHash = 'new'){
       response => {
         if (response){
           dispatch(receive(response));
+          dispatch(topologyGroupActions.recalculateTopologyGroup(response.name));
           dispatch(invalidateLists());
         }
         dispatch(processActions.finishProcess(processes.topologyCreate(processHash), response));
@@ -268,6 +277,7 @@ export function cloneTopology(id, silent = false){
             dispatch(notificationActions.addSuccess('Topology was cloned successfully.'));
           }
           dispatch(receive(response));
+          dispatch(topologyGroupActions.recalculateTopologyGroup(response.name));
           dispatch(invalidateLists());
         }
         dispatch(processActions.finishProcess(processes.topologyClone(id), response));
@@ -278,7 +288,7 @@ export function cloneTopology(id, silent = false){
 }
 
 export function publishTopology(id, silent = false){
-  return dispatch => {
+  return (dispatch, getState) => {
     dispatch(processActions.startProcess(processes.topologyPublish(id)));
     return serverRequest(dispatch, 'POST', `/topologies/${id}/publish`).then(
       response => {
@@ -286,7 +296,9 @@ export function publishTopology(id, silent = false){
           if (!silent){
             dispatch(notificationActions.addSuccess('Topology was published successfully.'));
           }
+          const oldTopology = getState().topology.elements[id];
           dispatch(receive(response));
+          dispatch(topologyGroupActions.recalculateTopologyGroup(response.name, oldTopology));
         }
         dispatch(processActions.finishProcess(processes.topologyPublish(id), response));
         return response;
@@ -325,6 +337,7 @@ export function saveTopologySchema(id, schema, silent = false){
         }
         dispatch(receiveSchema(response._id, schema));
         dispatch(receive(response));
+        dispatch(topologyGroupActions.recalculateTopologyGroup(response.name));
         if (response._id != id){
           dispatch(invalidateLists());
           if (!silent) {

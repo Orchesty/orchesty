@@ -12,5 +12,6 @@ export const stateType = {
 };
 
 export const filterType = {
-  EXACT: 'exact'
+  EXACT: 'exact',
+  SEARCH: 'search'
 };
