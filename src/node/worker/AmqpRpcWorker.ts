@@ -86,9 +86,14 @@ class AmqpRpcWorker implements IWorker {
         };
 
         this.publisher = new Publisher(connection, publisherPrepare);
-        this.resultsConsumer = new SimpleConsumer(connection, resultsConsumerPrepare, (msg: AmqpMessage) => {
-            this.processRpcResultMessage(msg);
-        });
+        this.resultsConsumer = new SimpleConsumer(
+            connection,
+            resultsConsumerPrepare,
+            (msg: AmqpMessage) => {
+                this.processRpcResultMessage(msg);
+            }
+        );
+
         this.resultsConsumer.consume(this.resultsQueue.name, {})
             .then(() => {
                 logger.info(
@@ -105,11 +110,7 @@ class AmqpRpcWorker implements IWorker {
      * @return {Promise<JobMessage>}
      */
     public processData(msg: JobMessage): Promise<JobMessage> {
-        const headersToSend = new Headers();
-        headersToSend.setPFHeader(PFHeaders.CORRELATION_ID, msg.getCorrelationId());
-        headersToSend.setPFHeader(PFHeaders.PROCESS_ID, msg.getProcessId());
-        headersToSend.setPFHeader(PFHeaders.PARENT_ID, msg.getParentId());
-        headersToSend.setPFHeader(PFHeaders.SEQUENCE_ID, `${msg.getSequenceId()}`);
+        const headersToSend = new Headers(msg.getHeaders().getRaw());
         headersToSend.setPFHeader(PFHeaders.NODE_ID, this.settings.node_label.node_id);
         headersToSend.setPFHeader(PFHeaders.NODE_NAME, this.settings.node_label.node_name);
 

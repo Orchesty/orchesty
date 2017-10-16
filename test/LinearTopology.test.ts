@@ -76,6 +76,10 @@ describe("Linear Topology test", () => {
             pf_process_id: "test",
             pf_parent_id: "",
             pf_sequence_id: 1,
+            pf_topology_id: "topoid",
+            pf_topology_name: "toponame",
+            pf_foo: "bar",
+            foo: "bar",
         }};
 
         const httpWorkerMock = express();
