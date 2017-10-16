@@ -26,7 +26,7 @@ use React\Promise\PromiseInterface;
 abstract class SalesforceContactConnectorAbstract implements BatchInterface, ConnectorInterface
 {
 
-    protected const QUERY_URL  = '%s/services/data/v40.0/query?q=%s';
+    protected const QUERY_URL  = '%sservices/data/v40.0/query?q=%s';
     protected const PAGE_LIMIT = 50;
     protected const NODE_NAME  = '';
 
@@ -95,8 +95,8 @@ abstract class SalesforceContactConnectorAbstract implements BatchInterface, Con
             $timeQuery .= ltrim(http_build_query(['q' => 'where LastModifiedDate>' . $from->format(DateTime::ISO8601)]),
                 'q=');
         }
-        $timeQuery .= ($timeQuery === '+' ? '' : '+and+') .
-            ltrim(http_build_query(['q' => 'where LastModifiedDate<=' . $to->format(DateTime::ISO8601)]), 'q=');
+        $timeQuery .= ($timeQuery === '+where+' ? '' : '+and+') .
+            ltrim(http_build_query(['q' => 'LastModifiedDate<=' . $to->format(DateTime::ISO8601)]), 'q=');
 
         return $timeQuery;
     }
