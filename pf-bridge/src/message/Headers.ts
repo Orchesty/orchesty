@@ -1,6 +1,6 @@
 import {PFHeaders} from "./HeadersEnum";
 
-const PF_HEADERS_PREFIX           = "pf_";
+export const PF_HEADERS_PREFIX = "pf-";
 
 export const HEADERS_WHITELIST = [
     "content-type",

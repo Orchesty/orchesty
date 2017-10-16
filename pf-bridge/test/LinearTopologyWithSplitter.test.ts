@@ -69,10 +69,10 @@ describe("Linear topology with splitter test", () => {
             { val : "to be split 4"},
         ];
         const msgHeaders = { headers: {
-            pf_correlation_id: "corrid",
-            pf_process_id: "test",
-            pf_parent_id: "",
-            pf_sequence_id: 1,
+            "pf-correlation-id": "corrid",
+            "pf-process-id": "test",
+            "pf-parent-id": "",
+            "pf-sequence-id": 1,
         }};
 
         const pip = new Pipes(testTopology);
@@ -113,7 +113,7 @@ describe("Linear topology with splitter test", () => {
                 (msg: Message) => {
                     // In this fn we evaluate expected incoming message and state if test is OK or failed
                     const data: ICounterProcessInfo = JSON.parse(msg.content.toString());
-                    assert.equal(data.process_id, msgHeaders.headers.pf_process_id);
+                    assert.equal(data.process_id, msgHeaders.headers["pf-process-id"]);
                     assert.equal(data.total, 6);
                     assert.equal(data.ok, 6);
                     assert.equal(data.nok, 0);

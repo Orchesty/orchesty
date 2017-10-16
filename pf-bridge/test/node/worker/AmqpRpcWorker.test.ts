@@ -105,15 +105,15 @@ describe("AmqpRpcWorker", () => {
             (msg: Message) => {
                 // check if message has all expected headers
                 assert.deepEqual(msg.properties.headers, {
-                    pf_node_id: "507f191e810c19729de860ea",
-                    pf_node_name: "amqprpcnode",
-                    pf_correlation_id: "amqp.worker.correlation_id",
-                    pf_process_id: "amqp.worker.process_id",
-                    pf_parent_id: "",
-                    pf_sequence_id: "1",
-                    pf_topology_id: "topoId",
-                    pf_topology_name: "topoName",
-                    pf_foo: "bar",
+                    "pf-node-id": "507f191e810c19729de860ea",
+                    "pf-node-name": "amqprpcnode",
+                    "pf-correlation-id": "amqp.worker.correlation_id",
+                    "pf-process-id": "amqp.worker.process_id",
+                    "pf-parent-id": "",
+                    "pf-sequence-id": "1",
+                    "pf-topology-id": "topoId",
+                    "pf-topology-name": "topoName",
+                    "pf-foo": "bar",
                 });
 
                 // Send partial messages and the confirmation message afterwards
@@ -121,9 +121,9 @@ describe("AmqpRpcWorker", () => {
                 const proms = [];
                 while (i <= 5) {
                     const replyHeaders = JSON.parse(JSON.stringify(msg.properties.headers));
-                    replyHeaders.pf_sequence_id = i;
-                    replyHeaders.pf_result_code = ResultCode.SUCCESS;
-                    replyHeaders.pf_result_message = "ok";
+                    replyHeaders["pf-sequence-id"] = i;
+                    replyHeaders["pf-result-code"] = ResultCode.SUCCESS;
+                    replyHeaders["pf-result-message"] = "ok";
 
                     const p = publisher.sendToQueue(
                         msg.properties.replyTo,
@@ -142,9 +142,9 @@ describe("AmqpRpcWorker", () => {
                 Promise.all(proms)
                     .then(() => {
                         const finalHeaders = JSON.parse(JSON.stringify(msg.properties.headers));
-                        finalHeaders.pf_sequence_id = 1;
-                        finalHeaders.pf_result_code = ResultCode.SUCCESS;
-                        finalHeaders.pf_result_message = "everything okay";
+                        finalHeaders["pf-sequence-id"] = 1;
+                        finalHeaders["pf-result-code"] = ResultCode.SUCCESS;
+                        finalHeaders["pf-result-message"] = "everything okay";
 
                         publisher.sendToQueue(
                             msg.properties.replyTo,

@@ -8,19 +8,19 @@ describe("Headers", () => {
         let h;
         assert.isFalse(Headers.containsAllMandatory(h));
 
-        h = { pf_correlation_id : "corrid" };
+        h = { "pf-correlation-id" : "corrid" };
         assert.isFalse(Headers.containsAllMandatory(h));
 
-        h = { pf_correlation_id : "corrid", pf_process_id: "procid" };
+        h = { "pf-correlation-id" : "corrid", "pf-process-id": "procid" };
         assert.isFalse(Headers.containsAllMandatory(h));
 
-        h = { pf_correlation_id : "corrid", pf_process_id: "procid", pf_parent_id: "parid "};
+        h = { "pf-correlation-id" : "corrid", "pf-process-id": "procid", "pf-parent-id": "par "};
         assert.isFalse(Headers.containsAllMandatory(h));
 
-        h = { pf_correlation_id : "corrid", pf_process_id: "procid", pf_parent_id: "parid ", pf_sequence_id: "1"};
+        h = { "pf-correlation-id" : "corrid", "pf-process-id": "procid", "pf-parent-id": "par ", "pf-sequence-id": "1"};
         assert.isTrue(Headers.containsAllMandatory(h));
 
-        h = { pf_correlation_id : "corrid", pf_process_id: "", pf_parent_id: "parid ", pf_sequence_id: "66"};
+        h = { "pf-correlation-id" : "corrid", "pf-process-id": "", "pf-parent-id": "par ", "pf-sequence-id": "66"};
         assert.isFalse(Headers.containsAllMandatory(h));
     });
 
@@ -29,14 +29,14 @@ describe("Headers", () => {
             "content-type": "application/json",
             "content-length": 1024,
             "guid": "usertoken",
-            "pf_correlation_id": "corrid",
-            "pf_guid": "pfusertoken",
+            "pf-correlation-id": "corrid",
+            "pf-guid": "pfusertoken",
         };
 
         assert.deepEqual(Headers.getPFHeaders(headers), {
             "content-type": "application/json",
-            "pf_correlation_id": "corrid",
-            "pf_guid": "pfusertoken",
+            "pf-correlation-id": "corrid",
+            "pf-guid": "pfusertoken",
         });
     });
 });

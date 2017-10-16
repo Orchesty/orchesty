@@ -127,12 +127,12 @@ describe("FollowersPublisher", () => {
                 assert.deepEqual(
                     received.properties.headers,
                     {
-                        pf_correlation_id: msgCorrId,
-                        pf_process_id: msgProcessId,
-                        pf_parent_id: msgParentId,
-                        pf_sequence_id: `${msgSeqId}`,
-                        pf_node_id: node.node_id,
-                        pf_node_name: node.node_name,
+                        "pf-correlation-id": msgCorrId,
+                        "pf-process-id": msgProcessId,
+                        "pf-parent-id": msgParentId,
+                        "pf-sequence-id": `${msgSeqId}`,
+                        "pf-node-id": node.node_id,
+                        "pf-node-name": node.node_name,
                     },
                 );
                 checkEnd();
