@@ -8,6 +8,8 @@
 
 namespace Hanaboso\PipesFramework\RabbitMq\Impl\Batch;
 
+use InvalidArgumentException;
+
 /**
  * Class MessageDto
  *
@@ -38,6 +40,9 @@ class SuccessMessage
      */
     public function __construct(int $sequenceId)
     {
+        if ($sequenceId < 1) {
+            throw new InvalidArgumentException('Sequence ID must be grater then 0.');
+        }
         $this->sequenceId = $sequenceId;
     }
 

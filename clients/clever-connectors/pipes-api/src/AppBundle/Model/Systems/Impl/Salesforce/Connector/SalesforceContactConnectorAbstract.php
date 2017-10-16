@@ -195,8 +195,9 @@ abstract class SalesforceContactConnectorAbstract implements BatchInterface, Con
             $requests[] = $this
                 ->fetchData($sender, $this->createPageContactRequest($i, $timeQuery, $dto))
                 ->then(function (ResponseInterface $response) use ($i): SuccessMessage {
-
-                    return $this->createSuccessMessage($response, $i);
+                    $j = $i;
+                    $j++;// @todo better solution
+                    return $this->createSuccessMessage($response, $j);
                 })->then($callbackItem);
         }
 

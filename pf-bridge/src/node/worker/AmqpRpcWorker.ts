@@ -247,8 +247,8 @@ class AmqpRpcWorker implements IWorker {
             );
 
             splitMsg.setResult({
-                code: resultMsg.properties.headers[PFHeaders.RESULT_CODE],
-                message: resultMsg.properties.headers[PFHeaders.RESULT_MESSAGE],
+                code: resultMsg.properties.headers[`pf-${PFHeaders.RESULT_CODE}`],
+                message: resultMsg.properties.headers[`pf-${PFHeaders.RESULT_MESSAGE}`],
             });
 
             this.partialForwarder.forwardPart(splitMsg)

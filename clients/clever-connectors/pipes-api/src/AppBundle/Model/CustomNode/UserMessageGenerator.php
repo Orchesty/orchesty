@@ -120,7 +120,7 @@ class UserMessageGenerator implements BatchInterface, CustomNodeInterface
                 return $this->parseBody($data);
             })->then(function (array $data) use ($callbackItem): Promise {
                 $items = [];
-                $i     = 0;
+                $i     = 1;
                 foreach ($data as $item) {
                     $items[] = $this->processItem($item, $i, $callbackItem);
                     $i++;
