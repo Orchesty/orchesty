@@ -95,7 +95,7 @@ abstract class SalesforceContactConnectorAbstract implements BatchInterface, Con
             $timeQuery .= ltrim(http_build_query(['q' => 'where LastModifiedDate>' . $from->format(DateTime::ISO8601)]),
                 'q=');
         }
-        $timeQuery .= ($timeQuery === '+' ? '' : 'and+') .
+        $timeQuery .= ($timeQuery === '+' ? '' : '+and+') .
             ltrim(http_build_query(['q' => 'where LastModifiedDate<=' . $to->format(DateTime::ISO8601)]), 'q=');
 
         return $timeQuery;
