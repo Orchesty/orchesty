@@ -26,7 +26,7 @@ use React\Promise\PromiseInterface;
 abstract class SalesforceContactConnectorAbstract implements BatchInterface, ConnectorInterface
 {
 
-    protected const QUERY_URL  = '%sservices/data/v40.0/query?q=%s';
+    protected const QUERY_URL  = '%s/services/data/v40.0/query?q=%s';
     protected const PAGE_LIMIT = 50;
     protected const NODE_NAME  = '';
 
@@ -110,7 +110,7 @@ abstract class SalesforceContactConnectorAbstract implements BatchInterface, Con
     protected function createCountRequest(RequestDto $dto, string $timeQuery = ''): RequestDto
     {
         $query = 'select+count()+from+contact' . $timeQuery;
-        $uri   = new Uri(sprintf(static::QUERY_URL, $dto->getUri(TRUE), $query));
+        $uri   = new Uri(sprintf(static::QUERY_URL, rtrim($dto->getUri(TRUE), '/'), $query));
 
         return RequestDto::from($dto, $uri);
     }
