@@ -137,11 +137,7 @@ class HttpWorker implements IWorker {
      */
     private getJobRequestParams(inMsg: JobMessage): IHttpWorkerRequestParams {
 
-        const headersToSend = new Headers();
-        headersToSend.setPFHeader(PFHeaders.CORRELATION_ID, inMsg.getCorrelationId());
-        headersToSend.setPFHeader(PFHeaders.PROCESS_ID, inMsg.getProcessId());
-        headersToSend.setPFHeader(PFHeaders.PARENT_ID, inMsg.getParentId());
-        headersToSend.setPFHeader(PFHeaders.SEQUENCE_ID, `${inMsg.getSequenceId()}`);
+        const headersToSend = new Headers(inMsg.getHeaders().getRaw());
         headersToSend.setPFHeader(PFHeaders.NODE_ID, this.settings.node_label.node_id);
         headersToSend.setPFHeader(PFHeaders.NODE_NAME, this.settings.node_label.node_name);
 
