@@ -4,7 +4,7 @@
   "description": "Hanaboso pipes and filters basic node skeleton implementation",
   "main": "dist/src/bin/pipes.js",
   "scripts": {
-    "build": "rm -f ./dist & ./node_modules/.bin/tsc",
+    "build": "rm -rf ./dist & ./node_modules/.bin/tsc",
     "lint": "./node_modules/.bin/tslint ./src/**/*.ts ./test/**/*.ts",
     "start": "node --use-strict ./dist/src/bin/pipes.js",
     "test": "NODE_ENV=test ./node_modules/mocha/bin/mocha dist/test/ --recursive"
