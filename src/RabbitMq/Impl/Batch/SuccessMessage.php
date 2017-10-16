@@ -29,11 +29,6 @@ class SuccessMessage
     /**
      * @var array
      */
-    private $setting = [];
-
-    /**
-     * @var array
-     */
     private $headers = [];
 
     /**
@@ -70,26 +65,6 @@ class SuccessMessage
     public function setData(string $data): SuccessMessage
     {
         $this->data = $data;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getSetting(): string
-    {
-        return json_encode($this->setting);
-    }
-
-    /**
-     * @param array $setting
-     *
-     * @return SuccessMessage
-     */
-    public function setSetting(array $setting): SuccessMessage
-    {
-        $this->setting = $setting;
 
         return $this;
     }

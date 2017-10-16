@@ -24,7 +24,7 @@ class PipesHeadersTest extends TestCase
      */
     public function testCreateKey(): void
     {
-        $this->assertSame('pf_node_id', PipesHeaders::createKey('node_id'));
+        $this->assertSame('pf-node-id', PipesHeaders::createKey('node-id'));
     }
 
     /**
@@ -32,8 +32,8 @@ class PipesHeadersTest extends TestCase
      */
     public function testClear(): void
     {
-        $this->assertSame(['pf_token' => '456'], PipesHeaders::clear([
-            'content-type' => 'application/json', 'pfp_node_id' => '123', 'pf_token' => '456',
+        $this->assertSame(['pf-token' => '456'], PipesHeaders::clear([
+            'content-type' => 'application/json', 'pfp-node-id' => '123', 'pf-token' => '456',
         ]));
     }
 
@@ -43,7 +43,7 @@ class PipesHeadersTest extends TestCase
     public function testGet(): void
     {
         $this->assertSame('456', PipesHeaders::get('token', [
-            'content-type' => 'application/json', 'pfp_node_id' => '123', 'pf_token' => '456',
+            'content-type' => 'application/json', 'pfp-node-id' => '123', 'pf-token' => '456',
         ]));
     }
 
@@ -57,9 +57,9 @@ class PipesHeadersTest extends TestCase
             'correlation_id' => '456',
         ], PipesHeaders::debugInfo([
             'content-type'      => 'application/json',
-            'pf_node_id'        => '123',
-            'pf_token'          => '456',
-            'pf_correlation_id' => '456',
+            'pf-node-id'        => '123',
+            'pf-token'          => '456',
+            'pf-correlation-id' => '456',
         ]));
     }
 

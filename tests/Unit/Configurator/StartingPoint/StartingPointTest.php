@@ -161,12 +161,12 @@ class StartingPointTest extends TestCase
         $headers       = $startingPoint->createHeaders($topology);
 
         $this->assertCount(7, $headers->getHeaders());
-        $this->assertArrayHasKey(PipesHeaders::PF_PREFIX . 'process_id', $headers->getHeaders());
-        $this->assertArrayHasKey(PipesHeaders::PF_PREFIX . 'parent_id', $headers->getHeaders());
-        $this->assertArrayHasKey(PipesHeaders::PF_PREFIX . 'correlation_id', $headers->getHeaders());
-        $this->assertArrayHasKey(PipesHeaders::PF_PREFIX . 'sequence_id', $headers->getHeaders());
-        $this->assertArrayHasKey(PipesHeaders::PF_PREFIX . 'topology_id', $headers->getHeaders());
-        $this->assertArrayHasKey(PipesHeaders::PF_PREFIX . 'topology_name', $headers->getHeaders());
+        $this->assertArrayHasKey(PipesHeaders::PF_PREFIX . 'process-id', $headers->getHeaders());
+        $this->assertArrayHasKey(PipesHeaders::PF_PREFIX . 'parent-id', $headers->getHeaders());
+        $this->assertArrayHasKey(PipesHeaders::PF_PREFIX . 'correlation-id', $headers->getHeaders());
+        $this->assertArrayHasKey(PipesHeaders::PF_PREFIX . 'sequence-id', $headers->getHeaders());
+        $this->assertArrayHasKey(PipesHeaders::PF_PREFIX . 'topology-id', $headers->getHeaders());
+        $this->assertArrayHasKey(PipesHeaders::PF_PREFIX . 'topology-name', $headers->getHeaders());
         $this->assertArrayHasKey('content_type', $headers->getHeaders());
     }
 
@@ -189,17 +189,12 @@ class StartingPointTest extends TestCase
 
         $body = $startingPoint->createBodyFromRequest($request);
 
-        $body = json_decode($body, TRUE);
-
-        $this->assertSame([
-            "data"     => '
+        $this->assertSame('
 <?xml version="1.0" encoding="UTF-8" ?>
 <!-- Comment -->
 <root attr="Name">
   <title>Title</title>
-</root>',
-            "settings" => "",
-        ], $body);
+</root>', $body);
     }
 
     /**
@@ -217,15 +212,7 @@ class StartingPointTest extends TestCase
 
         $body = $startingPoint->createBodyFromRequest($request);
 
-        $body = json_decode($body, TRUE);
-
-        $this->assertSame([
-            "data"     => [
-                "name"  => "Name",
-                "array" => [],
-            ],
-            "settings" => "",
-        ], $body);
+        $this->assertSame('{"name": "Name", "array": []}', $body);
     }
 
     /**
@@ -243,12 +230,7 @@ class StartingPointTest extends TestCase
 
         $body = $startingPoint->createBodyFromRequest($request);
 
-        $body = json_decode($body, TRUE);
-
-        $this->assertSame([
-            "data"     => "Data1,Data2,Data3",
-            "settings" => "",
-        ], $body);
+        $this->assertSame("Data1,Data2,Data3", $body);
     }
 
     /**
@@ -259,12 +241,7 @@ class StartingPointTest extends TestCase
         $startingPoint = new StartingPoint($this->bunnyManager, $this->curlManager);
         $body          = $startingPoint->createBody();
 
-        $body = json_decode($body, TRUE);
-
-        $this->assertSame([
-            "data"     => "",
-            "settings" => "",
-        ], $body);
+        $this->assertSame("", $body);
     }
 
     /**
@@ -277,10 +254,7 @@ class StartingPointTest extends TestCase
 
         $body = json_decode($body, TRUE);
 
-        $this->assertSame([
-            "data"     => ['param' => 'test'],
-            "settings" => "",
-        ], $body);
+        $this->assertSame(['param' => 'test'], $body);
     }
 
     /**

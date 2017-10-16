@@ -231,7 +231,7 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
         );
 
         return $channel->publish(
-            sprintf('{"data":%s,"settings":%s}', $successMessage->getData(), $successMessage->getSetting()),
+            $successMessage->getData(),
             $headers,
             '',
             $message->getHeader('reply-to')

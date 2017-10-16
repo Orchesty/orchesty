@@ -16,21 +16,21 @@ namespace Hanaboso\PipesFramework\Commons\Utils;
 class PipesHeaders
 {
 
-    public const PF_PREFIX = 'pf_';
+    public const PF_PREFIX = 'pf-';
 
     // Framework headers
-    public const CORRELATION_ID = 'correlation_id';
-    public const PROCESS_ID     = 'process_id';
-    public const PARENT_ID      = 'parent_id';
-    public const SEQUENCE_ID    = 'sequence_id';
-    public const NODE_ID        = 'node_id';
-    public const NODE_NAME      = 'node_name';
-    public const TOPOLOGY_ID    = 'topology_id';
-    public const TOPOLOGY_NAME  = 'topology_name';
-    public const RESULT_CODE    = 'result_code';
-    public const RESULT_STATUS  = 'result_status';
-    public const RESULT_MESSAGE = 'result_message';
-    public const RESULT_DETAIL  = 'result_detail';
+    public const CORRELATION_ID = 'correlation-id';
+    public const PROCESS_ID     = 'process-id';
+    public const PARENT_ID      = 'parent-id';
+    public const SEQUENCE_ID    = 'sequence-id';
+    public const NODE_ID        = 'node-id';
+    public const NODE_NAME      = 'node-name';
+    public const TOPOLOGY_ID    = 'topology-id';
+    public const TOPOLOGY_NAME  = 'topology-name';
+    public const RESULT_CODE    = 'result-code';
+    public const RESULT_STATUS  = 'result-status';
+    public const RESULT_MESSAGE = 'result-message';
+    public const RESULT_DETAIL  = 'result-detail';
 
     /**
      * @param string $key
@@ -82,7 +82,7 @@ class PipesHeaders
             function ($key) {
                 return
                     self::existPrefix(self::PF_PREFIX, $key) &&
-                    in_array($key, [self::createKey('correlation_id'), self::createKey('node_id')]);
+                    in_array($key, [self::createKey(self::CORRELATION_ID), self::createKey(self::NODE_ID)]);
 
             },
             ARRAY_FILTER_USE_KEY
@@ -90,7 +90,7 @@ class PipesHeaders
 
         // remove prefix from header
         foreach ($debugInfo as $key => $value) {
-            $debugInfo[substr($key, strlen(self::PF_PREFIX))] = $value;
+            $debugInfo[str_replace('-', '_', substr($key, strlen(self::PF_PREFIX)))] = $value;
             unset($debugInfo[$key]);
         }
 
