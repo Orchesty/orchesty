@@ -5,6 +5,7 @@ namespace Tests\Integration\Configurator\Model;
 use Hanaboso\PipesFramework\Commons\Enum\HandlerEnum;
 use Hanaboso\PipesFramework\Commons\Enum\TopologyStatusEnum;
 use Hanaboso\PipesFramework\Commons\Enum\TypeEnum;
+use Hanaboso\PipesFramework\Configurator\Document\Embed\EmbedNode;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
@@ -171,16 +172,61 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
         $this->dm->persist($top);
         $this->dm->flush($top);
 
-        $node = new Node();
-        $node
-            ->setName('node name')
+        /**
+         * 1 -> 2 -> 3
+         *        -> 4 -> 5
+         */
+
+        $node5 = new Node();
+        $node5
+            ->setName('node5')
             ->setType(TypeEnum::CONNECTOR)
             ->setTopology($top->getId())
             ->setHandler(HandlerEnum::EVENT)
             ->setEnabled(TRUE);
+        $this->dm->persist($node5);
 
-        $this->dm->persist($node);
-        $this->dm->flush($node);
+        $node4 = new Node();
+        $node4
+            ->setName('node4')
+            ->setType(TypeEnum::CONNECTOR)
+            ->setTopology($top->getId())
+            ->setHandler(HandlerEnum::EVENT)
+            ->setEnabled(TRUE)
+            ->addNext(EmbedNode::from($node5));
+        $this->dm->persist($node4);
+
+        $node3 = new Node();
+        $node3
+            ->setName('node3')
+            ->setType(TypeEnum::CONNECTOR)
+            ->setTopology($top->getId())
+            ->setHandler(HandlerEnum::EVENT)
+            ->setEnabled(TRUE);
+        $this->dm->persist($node3);
+
+        $node2 = new Node();
+        $node2
+            ->setName('node2')
+            ->setType(TypeEnum::CONNECTOR)
+            ->setTopology($top->getId())
+            ->setHandler(HandlerEnum::EVENT)
+            ->setEnabled(TRUE)
+            ->addNext(EmbedNode::from($node3))
+            ->addNext(EmbedNode::from($node4));
+        $this->dm->persist($node2);
+
+        $node1 = new Node();
+        $node1
+            ->setName('node1')
+            ->setType(TypeEnum::CONNECTOR)
+            ->setTopology($top->getId())
+            ->setHandler(HandlerEnum::EVENT)
+            ->setEnabled(TRUE)
+            ->addNext(EmbedNode::from($node2));
+        $this->dm->persist($node1);
+
+        $this->dm->flush();
         $this->dm->clear();
 
         /** @var Topology $res */
@@ -194,14 +240,57 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
         self::assertEquals($top->getBpmn(), $res->getBpmn());
         self::assertEquals($top->getRawBpmn(), $res->getRawBpmn());
 
+        /** @var Node[] $nodes */
         $nodes     = $this->dm->getRepository(Node::class)->findBy(['topology' => $res->getId()]);
-        $nodeClone = $nodes[0];
+        self::assertCount(5, $nodes);
 
-        self::assertEquals($node->getName(), $nodeClone->getName());
-        self::assertEquals($node->getType(), $nodeClone->getType());
-        self::assertEquals($res->getId(), $nodeClone->getTopology());
-        self::assertEquals($node->getHandler(), $nodeClone->getHandler());
-        self::assertEquals($node->isEnabled(), $nodeClone->isEnabled());
+        foreach ($nodes as $node) {
+            if ($node->getName() == 'node1') {
+                $this->assertNodeAfterClone($node1, $node, $res, 1);
+            } elseif ($node->getName() == 'node2') {
+                $this->assertNodeAfterClone($node2, $node, $res, 2);
+            } elseif ($node->getName() == 'node3') {
+                $this->assertNodeAfterClone($node3, $node, $res, 0);
+            } elseif ($node->getName() == 'node4') {
+                $this->assertNodeAfterClone($node4, $node, $res, 1);
+            } elseif ($node->getName() == 'node5') {
+                $this->assertNodeAfterClone($node5, $node, $res, 0);
+            }
+        }
+    }
+
+    /**
+     * @param Node     $expected
+     * @param Node     $actual
+     * @param Topology $topology
+     * @param int      $nextCount
+     */
+    private function assertNodeAfterClone(Node $expected, Node $actual, Topology $topology, int $nextCount): void
+    {
+        self::assertFalse($expected->getId() == $actual->getId());
+        self::assertEquals($expected->getName(), $actual->getName());
+        self::assertEquals($expected->getType(), $actual->getType());
+        self::assertEquals($topology->getId(), $actual->getTopology());
+        self::assertEquals($expected->getHandler(), $actual->getHandler());
+        self::assertEquals($expected->isEnabled(), $actual->isEnabled());
+
+        // next
+        self::assertEquals($nextCount, $expected->getNext()->count());
+        self::assertEquals($nextCount, $actual->getNext()->count());
+
+        /** @var EmbedNode[] $expNext */
+        /** @var EmbedNode[] $actNext */
+        $expNext = $expected->getNext()->toArray();
+        $actNext = $actual->getNext()->toArray();
+
+        if ($nextCount == 1) {
+            self::assertFalse($expNext[0]->getId() == $actNext[0]->getId());
+            self::assertEquals($expNext[0]->getName(), $actNext[0]->getName());
+        } elseif ($nextCount == 2) {
+            self::assertFalse($expNext[0]->getId() == $actNext[0]->getId());
+            self::assertEquals($expNext[0]->getName(), $actNext[0]->getName());
+            self::assertEquals($expNext[1]->getName(), $actNext[1]->getName());
+        }
     }
 
     /**
