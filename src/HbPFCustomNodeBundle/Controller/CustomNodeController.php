@@ -59,9 +59,9 @@ class CustomNodeController extends FOSRestController
             $response = new JsonResponse(
                 $data->getData(),
                 200,
-                ControllerUtils::createHeaders($data->getHeaders()
-                ),
-                TRUE);
+                ControllerUtils::createHeaders($data->getHeaders()),
+                TRUE
+            );
         } catch (CustomNodeException $e) {
             $response = new JsonResponse(
                 ControllerUtils::createExceptionData($e),

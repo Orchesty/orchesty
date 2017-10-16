@@ -28,6 +28,9 @@ class PipesHeaders
     public const TOPOLOGY_ID    = 'topology_id';
     public const TOPOLOGY_NAME  = 'topology_name';
     public const RESULT_CODE    = 'result_code';
+    public const RESULT_STATUS  = 'result_status';
+    public const RESULT_MESSAGE = 'result_message';
+    public const RESULT_DETAIL  = 'result_detail';
 
     /**
      * @param string $key

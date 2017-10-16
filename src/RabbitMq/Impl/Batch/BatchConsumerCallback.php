@@ -36,8 +36,8 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
     use DebugMessageTrait;
 
     // Properties
-    private const REPLY_TO       = 'reply-to';
-    private const TYPE           = 'type';
+    private const REPLY_TO = 'reply-to';
+    private const TYPE     = 'type';
 
     /**
      * @var BatchActionInterface
@@ -224,7 +224,7 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
             $message->headers,
             $successMessage->getHeaders(),
             [
-                self::TYPE                                 => 'batch_item',
+                self::TYPE                                         => 'batch_item',
                 PipesHeaders::createKey(PipesHeaders::SEQUENCE_ID) => $successMessage->getSequenceId(),
                 PipesHeaders::createKey(PipesHeaders::RESULT_CODE) => 0,
             ]
@@ -254,7 +254,7 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
     private function batchCallback(Channel $channel, Message $message): PromiseInterface
     {
         $headers = array_merge($message->headers, [
-            self::TYPE                                 => 'batch_end',
+            self::TYPE                                         => 'batch_end',
             PipesHeaders::createKey(PipesHeaders::RESULT_CODE) => 0,
         ]);
 
@@ -280,26 +280,21 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
                                         ErrorMessage $errorMessage): PromiseInterface
     {
         $headers = array_merge($message->headers, [
-            self::TYPE                                 => 'batch_end',
-            PipesHeaders::createKey(PipesHeaders::RESULT_CODE) => $errorMessage->getCode(),
+            self::TYPE                                            => 'batch_end',
+            PipesHeaders::createKey(PipesHeaders::RESULT_CODE)    => $errorMessage->getCode(),
+            PipesHeaders::createKey(PipesHeaders::RESULT_STATUS)  => $errorMessage->getStatus(),
+            PipesHeaders::createKey(PipesHeaders::RESULT_MESSAGE) => $errorMessage->getMessage(),
+            PipesHeaders::createKey(PipesHeaders::RESULT_DETAIL)  => $errorMessage->getDetail(),
         ]);
 
-        return $channel->publish(
-            json_encode([
-                'result_code'    => $errorMessage->getCode(),
-                'result_status'  => $errorMessage->getStatus(),
-                'result_message' => $errorMessage->getMessage(),
-                'result_detail'  => $errorMessage->getDetail(),
-            ]),
-            $headers,
-            '',
-            $message->getHeader('reply-to')
-        )->then(function () use ($message, $headers): void {
-            $this->logger->info(
-                'Published batch error end.',
-                $this->prepareMessage('', '', $message->getHeader('reply-to'), $headers)
-            );
-        });
+        return $channel
+            ->publish('', $headers, '', $message->getHeader('reply-to'))
+            ->then(function () use ($message, $headers): void {
+                $this->logger->info(
+                    'Published batch error end.',
+                    $this->prepareMessage('', '', $message->getHeader('reply-to'), $headers)
+                );
+            });
     }
 
 }

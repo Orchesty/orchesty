@@ -67,7 +67,7 @@ class CurlSender implements LoggerAwareInterface
      */
     public function send(RequestDto $dto): PromiseInterface
     {
-        $request = new Request($dto->getMethod(), $dto->getUri(), $dto->getHeaders());
+        $request = new Request($dto->getMethod(), $dto->getUri(), $dto->getHeaders(), $dto->getBody());
 
         $this->logRequest($request, $dto->getDebugInfo());
 
@@ -108,14 +108,14 @@ class CurlSender implements LoggerAwareInterface
     private function logRequest(RequestInterface $request, array $debugInfo = []): void
     {
         $message = sprintf(
-            'Request: Method: %s, Uri: %s, Headers: %s, Body: %s',
+            'Request: Method: %s, Uri: %s, Headers: %s, Body: "%s"',
             $request->getMethod(),
             $request->getUri(),
             $this->headersToString($request),
             $request->getBody()->getContents()
         );
 
-        $this->logger->info($message, [$debugInfo]);
+        $this->logger->info($message, $debugInfo);
     }
 
     /**
@@ -125,12 +125,12 @@ class CurlSender implements LoggerAwareInterface
      */
     private function headersToString(MessageInterface $message): string
     {
-        $headers = '';
-        foreach ($message->getHeaders() as $name => $values) {
-            $headers .= $name . ": " . implode(", ", $values);
+        $headers = [];
+        foreach ($message->getHeaders() as $key => $values) {
+            $headers[] = sprintf('%s=%s', $key, implode(", ", $values));
         }
 
-        return $headers;
+        return implode(", ", $headers);
     }
 
     /**
@@ -139,7 +139,7 @@ class CurlSender implements LoggerAwareInterface
      */
     private function logResponse(ResponseInterface $response, array $debugInfo = []): void
     {
-        $message = sprintf('Response: Status Code: %s, Reason Phrase: %s, Headers: %s, Body: %s',
+        $message = sprintf('Response: Status Code: %s, Reason Phrase: %s, Headers: %s, Body: "%s"',
             $response->getStatusCode(),
             $response->getReasonPhrase(),
             $this->headersToString($response),
