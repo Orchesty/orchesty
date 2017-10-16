@@ -5,6 +5,7 @@ import {filterType} from 'rootApp/types';
 
 const VisibilityFilter = FilterCase(FilterSelect, {
   type: filterType.EXACT,
+  property: 'visibility',
   options: [
     {value: '', label: 'All'},
     {value: 'public', label: 'Public'},

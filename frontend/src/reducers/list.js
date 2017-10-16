@@ -41,9 +41,13 @@ function listReducer(state, action, getElementId) {
       });
 
     case types.LIST_CHANGE_FILTER:
-      return Object.assign({}, state, {
+      const newDataF = {
         filter: action.filter
-      });
+      };
+      if (state.type == listType.PAGINATION && state.page != 0){
+        newDataF['page'] = 0;
+      }
+      return Object.assign({}, state, newDataF);
 
     case types.LIST_INVALIDATE:
       if (state.state != stateType.NOT_LOADED && (state.type == listType.PAGINATION ||

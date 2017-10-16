@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 export default (WrappedComponent, parameters) => {
 
-  const {type, ...passParams} = parameters;
+  const {type, property, ...passParams} = parameters;
 
   class FilterCase extends React.Component {
     constructor(props) {
@@ -14,13 +14,14 @@ export default (WrappedComponent, parameters) => {
     change(e){
       const {onChange, name} = this.props;
       e.preventDefault();
-      onChange(name, {type, value: e.target.value});
+      onChange(name, {type, value: e.target.value, property: this.props.property || property});
     }
 
     render() {
-      const {name, onChange, value, ...passProps} = this.props;
-      const pass = Object.assign({}, parameters, passProps);
-      const newValue = value ? value.value : undefined;
+      const {name, onChange, filterItem, ...passProps} = this.props;
+      let pass = Object.assign({}, passParams, passProps);
+      pass.subProps = Object.assign({filterItem, onChange, type, name, property: this.props.property || property}, pass.subProps);
+      const newValue = filterItem ? filterItem.value : '';
       return <WrappedComponent value={newValue} onChange={this.change} {...pass}/>
     }
   }
@@ -29,7 +30,8 @@ export default (WrappedComponent, parameters) => {
 
   FilterCase.propTypes = {
     name: PropTypes.string.isRequired,
-    onChange: PropTypes.func.isRequired
+    onChange: PropTypes.func.isRequired,
+    filterItem: PropTypes.object
   };
 
   return FilterCase;

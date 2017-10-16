@@ -111,16 +111,18 @@ class TopologyListTable extends React.Component {
     }
 
     return (
-      <div className="topology-list-table">
+      <div className="list-table topology-list-table">
         {listChangeFilter && <TopologyListFilter filter={list.filter} changeFilter={listChangeFilter} />}
-        <table className="table table-hover">
-          <thead>
-          {this._renderHead()}
-          </thead>
-          <tbody>
-            {rows}
-          </tbody>
-        </table>
+        <div className="table-wrapper">
+          <table className="table table-hover">
+            <thead>
+            {this._renderHead()}
+            </thead>
+            <tbody>
+              {rows}
+            </tbody>
+          </table>
+        </div>
         <ListPagination list={list} onPageChange={this.changePage} />
       </div>
     );
