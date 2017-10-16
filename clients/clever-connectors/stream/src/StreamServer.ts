@@ -1,18 +1,19 @@
 import {Message} from "amqplib";
-import Connection from "lib-nodejs/dist/src/rabbitmq/Connection";
+import logger from "lib-nodejs/dist/src/logger/Logger";
+import Connection, {IOptions} from "lib-nodejs/dist/src/rabbitmq/Connection";
 import * as SocketIO from "socket.io";
-import logger from "../logger/Logger";
 import StreamConsumer, {IStreamConsumerSettings} from "./StreamConsumer";
 
 export interface IStreamServerSettings {
     port: number;
     namespace: string;
     consumer: IStreamConsumerSettings;
+    amqp: IOptions;
 }
 
 export interface IStreamMessage {
     event: string;
-    recipients: string[];
+    groups: string[];
     content: string;
 }
 
@@ -34,7 +35,7 @@ class StreamServer {
      * @return {boolean}
      */
     private static isMessageValid(body: any): boolean {
-        if (!body.recipients || !Array.isArray(body.recipients)) {
+        if (!body.groups || !Array.isArray(body.groups)) {
             logger.error(`Invalid stream message 'recipients'.`);
             return false;
         }
@@ -123,7 +124,7 @@ class StreamServer {
         }
 
         // Send to ws clients
-        body.recipients.forEach((group: string) => {
+        body.groups.forEach((group: string) => {
             this.stream.to(group).emit("message", { event: body.event, content: body.content });
         });
     }

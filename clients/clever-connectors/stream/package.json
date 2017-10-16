@@ -1,0 +1,31 @@
+{
+  "name": "cc-stream",
+  "version": "1.0.0",
+  "description": "Clever Connectors stream server",
+  "main": "index.js",
+  "scripts": {
+    "build": "rm -f ./dist & ./node_modules/.bin/tsc",
+    "lint": "./node_modules/.bin/tslint ./src/**/*.ts ./test/**/*.ts",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node --use-strict ./dist/index.js"
+  },
+  "keywords": [
+    "Clever",
+    "Stream",
+    "WS"
+  ],
+  "author": "Tomas Sedlacek <mail@kedlas.cz> (http://www.kedlas.cz)",
+  "license": "ISC",
+  "dependencies": {
+    "amqplib": "0.5.1",
+    "lib-nodejs": "git+ssh://git@gitlab.hanaboso.net:hanaboso/lib-nodejs.git#1.1.1",
+    "socket.io": "2.0.3"
+  },
+  "devDependencies": {
+    "@types/amqplib": "^0.5.4",
+    "@types/socket.io": "^1.4.31",
+    "ts-node": "^3.3.0",
+    "tslint": "^5.7.0",
+    "typescript": "^2.5.3"
+  }
+}
