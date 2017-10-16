@@ -4,6 +4,7 @@ namespace Hanaboso\PipesFramework\Utils;
 
 use Exception;
 use Hanaboso\PipesFramework\Commons\Exception\PipesFrameworkException;
+use Hanaboso\PipesFramework\Commons\Utils\PipesHeaders;
 
 /**
  * Class ControllerUtils
@@ -49,10 +50,10 @@ class ControllerUtils
         }
 
         $array = [
-            'result_code'    => $code,
-            'result_status'  => $status,
-            'result_message' => $message,
-            'result_detail'  => $detail,
+            PipesHeaders::createKey(PipesHeaders::RESULT_CODE)    => $code,
+            PipesHeaders::createKey(PipesHeaders::RESULT_STATUS)  => $status,
+            PipesHeaders::createKey(PipesHeaders::RESULT_MESSAGE) => $message,
+            PipesHeaders::createKey(PipesHeaders::RESULT_DETAIL)  => $detail,
         ];
 
         return array_merge($array, $headers);
