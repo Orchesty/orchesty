@@ -92,14 +92,19 @@ class FollowersPublisher extends Publisher {
         };
 
         for (const follower of this.settings.followers) {
-            promises.push(
-                this.publish(
-                    follower.exchange.name,
-                    follower.routing_key,
-                    new Buffer(message.getContent()),
-                    options,
-                ),
-            );
+            const prom = this.publish(
+                follower.exchange.name,
+                follower.routing_key,
+                new Buffer(message.getContent()),
+                options,
+            ).then(() => {
+                logger.info(
+                    `Forwarded message. Headers: ${JSON.stringify(options.headers)}`,
+                    logger.ctxFromMsg(message),
+                );
+            });
+
+            promises.push(prom);
         }
 
         return promises;
