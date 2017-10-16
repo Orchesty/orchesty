@@ -114,7 +114,7 @@ class SystemManagerTest extends TestCase
     }
 
     /**
-     * @param $className
+     * @param string $className
      *
      * @return PHPUnit_Framework_MockObject_MockObject|mixed
      */

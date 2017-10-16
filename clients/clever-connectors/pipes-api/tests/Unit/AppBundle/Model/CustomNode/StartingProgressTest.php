@@ -11,6 +11,7 @@ namespace Tests\Unit\AppBundle\Model\CustomNode;
 
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\CustomNode\StartingProgress;
+use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\ProgressCounter\ProgressCounterService;
 use PHPUnit\Framework\TestCase;
@@ -48,7 +49,7 @@ class StartingProgressTest extends TestCase
         $dto = new ProcessDto();
         $dto
             ->setData(json_encode(['data' => []]))
-            ->setHeaders(['process_id' => 'abc']);
+            ->setHeaders([CMHeaders::createKey(CMHeaders::PROCESS_ID) => 'abc']);
 
         $startingProgress = new StartingProgress($this->progressCounterService);
         $startingProgress->process($dto);

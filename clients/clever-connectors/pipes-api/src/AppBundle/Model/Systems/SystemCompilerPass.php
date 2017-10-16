@@ -23,7 +23,7 @@ class SystemCompilerPass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container): void
     {
-        $loader = $container->findDefinition('systems.loader');
+        $loader = $container->findDefinition('cc.systems.loader');
         foreach ($container->getParameter('systems.tags') as $tagWithPercentage) {
             $tagWithoutPercentage = $container->getParameter(Strings::substring($tagWithPercentage, 1, -1));
 

@@ -10,9 +10,9 @@
 namespace CleverConnectors\AppBundle\Model\CustomNode;
 
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
+use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\ProgressCounter\ProgressCounterService;
-use Hanaboso\PipesFramework\Commons\Utils\PipesHeaders;
 use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
 
 /**
@@ -46,7 +46,7 @@ class StartingProgress implements CustomNodeInterface
      */
     public function process(ProcessDto $dto): ProcessDto
     {
-        $progressId = PipesHeaders::get(PipesHeaders::PROCESS_ID, $dto->getHeaders());
+        $progressId = CMHeaders::get(CMHeaders::PROCESS_ID, $dto->getHeaders());
 
         if (!$progressId) {
             throw new CleverConnectorsException(

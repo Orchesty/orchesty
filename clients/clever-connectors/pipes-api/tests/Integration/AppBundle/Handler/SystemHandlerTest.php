@@ -46,7 +46,7 @@ class SystemHandlerTest extends DatabaseTestCaseAbstract
      */
     public function testInstallSystemMissingToken(): void
     {
-        $handler = $this->container->get('systems.handler');
+        $handler = $this->container->get('cc.systems.handler');
         $this->expectException(PipesFrameworkException::class);
         $this->expectExceptionCode(PipesFrameworkException::REQUIRED_PARAMETER_NOT_FOUND);
         $handler->installSystem('', '', []);

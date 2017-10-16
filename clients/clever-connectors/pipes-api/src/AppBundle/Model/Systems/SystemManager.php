@@ -19,6 +19,8 @@ use Hanaboso\PipesFramework\Commons\Enum\HandlerEnum;
 use Hanaboso\PipesFramework\Commons\Enum\TypeEnum;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
+use Hanaboso\PipesFramework\Configurator\Repository\NodeRepository;
+use Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository;
 use Hanaboso\PipesFramework\Configurator\StartingPoint\StartingPoint;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -46,6 +48,16 @@ class SystemManager
     private $systemRepository;
 
     /**
+     * @var TopologyRepository|DocumentRepository
+     */
+    private $topologyRepository;
+
+    /**
+     * @var NodeRepository|DocumentRepository
+     */
+    private $nodeRepository;
+
+    /**
      * @var WebhookManager
      */
     private $webhookManager;
@@ -70,11 +82,13 @@ class SystemManager
         StartingPoint $startingPoint
     )
     {
-        $this->dm               = $dm;
-        $this->systemLoader     = $systemLoader;
-        $this->systemRepository = $dm->getRepository(SystemInstall::class);
-        $this->webhookManager   = $webhookManager;
-        $this->startingPoint    = $startingPoint;
+        $this->dm                 = $dm;
+        $this->systemLoader       = $systemLoader;
+        $this->systemRepository   = $dm->getRepository(SystemInstall::class);
+        $this->topologyRepository = $dm->getRepository(Topology::class);
+        $this->nodeRepository     = $dm->getRepository(Node::class);
+        $this->webhookManager     = $webhookManager;
+        $this->startingPoint      = $startingPoint;
     }
 
     /**
@@ -256,22 +270,22 @@ class SystemManager
     }
 
     /**
-     * @param $user
-     * @param $system
+     * @param string $user
+     * @param string $system
      *
      * @throws CleverConnectorsException
      */
-    public function synchronizeSubscriptions($user, $system): void
+    public function synchronizeSubscriptions(string $user, string $system): void
     {
         $request = new Request();
         $request->headers->set(CMHeaders::createKey(CMHeaders::GUID), $user);
         $request->headers->set(CMHeaders::createKey(CMHeaders::SYSTEM_KEY), $system);
 
         $topologyName = sprintf('%s-sync-subscribers', $system);
-        $topologies   = $this->dm->getRepository(Topology::class)->getRunnableTopologies($topologyName);
+        $topologies   = $this->topologyRepository->getRunnableTopologies($topologyName);
 
         foreach ($topologies as $topology) {
-            $node = $this->dm->getRepository(Node::class)->findOneBy([
+            $node = $this->nodeRepository->findOneBy([
                 'topology' => $topology->getId(),
                 'type'     => TypeEnum::SIGNAL,
                 'handler'  => HandlerEnum::EVENT,

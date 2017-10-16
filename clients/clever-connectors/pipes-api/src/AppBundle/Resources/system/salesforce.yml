@@ -9,7 +9,7 @@ services:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Salesforce\Connector\SalesforceSyncContactConnector
         arguments:
             - '@systems.salesforce'
-            - '@manager.last_sync'
+            - '@cc.last_sync.manager'
             - '@hbpf.transport.async_curl_factory'
             - '@doctrine_mongodb.odm.default_document_manager'
 
@@ -17,14 +17,14 @@ services:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Salesforce\Connector\SalesforceUpdateContactConnector
         arguments:
             - '@systems.salesforce'
-            - '@manager.last_sync'
+            - '@cc.last_sync.manager'
             - '@hbpf.transport.async_curl_factory'
 
     hbpf.connector.salesforce-delete-contact-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Salesforce\Connector\SalesforceDeleteContactConnector
         arguments:
             - '@systems.salesforce'
-            - '@manager.last_sync'
+            - '@cc.last_sync.manager'
             - '@hbpf.transport.async_curl_factory'
 
     hbpf.custom_node.salesforce-update-contact-mapper:

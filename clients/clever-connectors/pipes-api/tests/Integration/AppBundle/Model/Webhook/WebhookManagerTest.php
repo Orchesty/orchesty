@@ -34,10 +34,10 @@ class WebhookManagerTest extends DatabaseTestCaseAbstract
     public function testSubscribe(): void
     {
         $system  = $this->container->get('systems.null.user.group');
-        $webhook = $this->container->get('manager.webhook');
+        $webhook = $this->container->get('cc.webhook.manager');
         $this->setProperty($webhook, 'curl', $this->mockCurl());
 
-        $this->container->get('systems.manager')->installSystem('someUser', 'null.user.group', 'token');
+        $this->container->get('cc.systems.manager')->installSystem('someUser', 'null.user.group', 'token');
 
         // Subscribe
         $webhook->subscribe($system, 'someUser', 'token');
