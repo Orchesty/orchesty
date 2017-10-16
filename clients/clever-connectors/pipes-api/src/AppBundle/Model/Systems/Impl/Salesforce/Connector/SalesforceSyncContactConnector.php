@@ -102,7 +102,7 @@ class SalesforceSyncContactConnector extends SalesforceContactConnectorAbstract
             self::PAGE_LIMIT,
             self::PAGE_LIMIT * $page
         );
-        $uri   = new Uri(sprintf(self::QUERY_URL, $dto->getUri(TRUE), $query));
+        $uri   = new Uri(sprintf(self::QUERY_URL, rtrim($dto->getUri(TRUE), '/'), $query));
 
         return RequestDto::from($dto, $uri);
     }
