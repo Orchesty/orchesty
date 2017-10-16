@@ -96,20 +96,6 @@ abstract class CMSubscriptionConnectorAbstract extends CMAuthorization implement
     }
 
     /**
-     * @param string $email
-     *
-     * @return string
-     */
-    protected function getUrl(string $email = ''): string
-    {
-        if ($email != '') {
-            $email = '/' . $email;
-        }
-
-        return sprintf('https://api.dev.clevermonitor.com/v1.2/subscribers/email%s', $email);
-    }
-
-    /**
      * @param ProcessDto $dto
      * @param string     $method
      * @param int[]      $statusCode
@@ -166,6 +152,20 @@ abstract class CMSubscriptionConnectorAbstract extends CMAuthorization implement
     }
 
     /**
+     * @param string $email
+     *
+     * @return string
+     */
+    protected function getUrl(string $email = ''): string
+    {
+        if ($email != '') {
+            $email = '/' . $email;
+        }
+
+        return sprintf('https://api.dev.clevermonitor.com/v1.2/subscribers/email%s', $email);
+    }
+
+    /**
      * @param ProcessDto $dto
      *
      * @return array
@@ -173,10 +173,6 @@ abstract class CMSubscriptionConnectorAbstract extends CMAuthorization implement
     protected function getData(ProcessDto $dto): array
     {
         $data = json_decode($dto->getData(), TRUE);
-
-        if (array_key_exists('data', $data)) {
-            $data = $data['data'];
-        }
 
         //@TODO: až bude implementováno u C-M tak smazat
         if (array_key_exists(CleverFieldsEnum::FOREIGN_ID, $data)) {

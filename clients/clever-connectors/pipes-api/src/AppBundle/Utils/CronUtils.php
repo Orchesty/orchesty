@@ -34,14 +34,14 @@ class CronUtils
     {
         $data = json_decode($dto->getData(), TRUE);
 
-        if (!array_key_exists('data', $data) || !is_array($data['data'])) {
+        if (!is_array($data) || empty($data)) {
             throw new CleverConnectorsException(
-                'Missing [data] or bad [data] format.',
+                'Empty data or bad format.',
                 CleverConnectorsException::MISSING_DATA
             );
         }
 
-        return $data['data'];
+        return $data;
     }
 
     /**

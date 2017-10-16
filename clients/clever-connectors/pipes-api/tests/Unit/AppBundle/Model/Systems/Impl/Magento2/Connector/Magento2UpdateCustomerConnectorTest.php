@@ -41,7 +41,7 @@ final class Magento2UpdateCustomerConnectorTest extends KernelTestCaseAbstract
         $processDto = new ProcessDto();
         $processDto
             ->setHeaders(['node_id' => '2234-awdawd'])
-            ->setData(json_encode(['data' => ['system_install' => []], ['settings' => [], 'user' => '123']]));
+            ->setData(json_encode(['system_install' => []]));
 
         /** @var Magento2UpdateCustomerConnector $syncConn */
         $syncConn = $this->mockSync();

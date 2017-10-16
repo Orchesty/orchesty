@@ -41,7 +41,7 @@ class SystemController extends FOSRestController
     }
 
     /**
-     * @Route("/systems/{systemKey}", requirements={"system": "[\w|\.]+"})
+     * @Route("/systems/{systemKey}")
      * @Method({"GET", "OPTIONS"})
      *
      * @param string $systemKey

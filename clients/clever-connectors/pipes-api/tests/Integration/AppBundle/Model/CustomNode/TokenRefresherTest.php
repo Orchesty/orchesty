@@ -62,7 +62,7 @@ final class TokenRefresherTest extends DatabaseTestCaseAbstract
             ->findOne(['_id' => new ObjectID($systemInstall->getId())]);
 
         $dto = new ProcessDto();
-        $dto->setData(json_encode(['data' => $system]));
+        $dto->setData(json_encode($system));
 
         $result = $this->node->process($dto);
 
@@ -93,7 +93,7 @@ final class TokenRefresherTest extends DatabaseTestCaseAbstract
             ->findOne(['_id' => new ObjectID($systemInstall->getId())]);
 
         $dto = new ProcessDto();
-        $dto->setData(json_encode(['data' => $system]));
+        $dto->setData(json_encode($system));
 
         $result = $this->node->process($dto);
 

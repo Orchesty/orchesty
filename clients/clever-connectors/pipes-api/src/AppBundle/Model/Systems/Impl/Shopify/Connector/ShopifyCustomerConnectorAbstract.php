@@ -38,14 +38,14 @@ abstract class ShopifyCustomerConnectorAbstract implements ConnectorInterface
     public function processEvent(ProcessDto $dto): ProcessDto
     {
         $arr = json_decode($dto->getData(), TRUE);
-        if (!array_key_exists('data', $arr)) {
+        if (!is_array($arr) || empty($arr)) {
             throw new CleverConnectorsException(
-                'Missing key [data] in dto from webhook request.',
+                'Empty data or bad format.',
                 CleverConnectorsException::MISSING_DATA
             );
         }
 
-        return $dto->setData(json_encode($arr['data']));
+        return $dto;
     }
 
 }

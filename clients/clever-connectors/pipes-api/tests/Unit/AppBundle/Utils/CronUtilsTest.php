@@ -33,7 +33,7 @@ final class CronUtilsTest extends TestCase
         $content = ['key' => 'val'];
 
         $dto = new ProcessDto();
-        $dto->setData(json_encode(['data' => $content]));
+        $dto->setData(json_encode($content));
 
         $res = CronUtils::parseData($dto);
 
@@ -60,7 +60,7 @@ final class CronUtilsTest extends TestCase
     public function testParseDataInvalidData(): void
     {
         $dto = new ProcessDto();
-        $dto->setData(json_encode(['data' => 123]));
+        $dto->setData(json_encode(123));
 
         self::expectException(CleverConnectorsException::class);
         self::expectExceptionCode(CleverConnectorsException::MISSING_DATA);
@@ -82,7 +82,7 @@ final class CronUtilsTest extends TestCase
         ];
 
         $dto = new ProcessDto();
-        $dto->setData(json_encode(['data' => $content]));
+        $dto->setData(json_encode($content));
 
         $res = CronUtils::getSystemInstall($dto);
 
@@ -111,7 +111,7 @@ final class CronUtilsTest extends TestCase
     public function testGetSystemInstallInvalidData(): void
     {
         $dto = new ProcessDto();
-        $dto->setData(json_encode(['data' => 123]));
+        $dto->setData(json_encode( 123));
 
         self::expectException(CleverConnectorsException::class);
         self::expectExceptionCode(CleverConnectorsException::MISSING_DATA);
@@ -125,7 +125,7 @@ final class CronUtilsTest extends TestCase
     public function testGetSystemInstallNoSystemData(): void
     {
         $dto = new ProcessDto();
-        $dto->setData(json_encode(['data' => []]));
+        $dto->setData(json_encode([]));
 
         self::expectException(CleverConnectorsException::class);
         self::expectExceptionCode(CleverConnectorsException::MISSING_DATA);

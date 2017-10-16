@@ -48,12 +48,12 @@ class WisepopsCreateEmailConnector implements ConnectorInterface
         $arr = json_decode($dto->getData(), TRUE);
         if (!is_array($arr) || empty($arr)) {
             throw new CleverConnectorsException(
-                'Missing empty dto body from webhook request.',
+                'Empty data or bad format.',
                 CleverConnectorsException::MISSING_DATA
             );
         }
 
-        return $dto->setData(json_encode($arr));
+        return $dto;
     }
 
 }

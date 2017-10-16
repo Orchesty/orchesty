@@ -23,7 +23,6 @@ class LastSyncRepository extends DocumentRepository
         $this->getDocumentManager()->clear(LastSync::class);
         /** @var LastSync $res */
         $res = $this->createQueryBuilder()
-            ->select('timestamp')
             ->field('user')->equals($userId)
             ->field('topologyName')->equals($topologyName)
             ->field('nodeName')->equals($nodeName)

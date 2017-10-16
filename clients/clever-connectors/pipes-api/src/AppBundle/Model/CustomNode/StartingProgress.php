@@ -55,7 +55,7 @@ class StartingProgress implements CustomNodeInterface
             );
         }
 
-        $data   = json_decode($dto->getData(), TRUE)['data'];
+        $data   = json_decode($dto->getData(), TRUE);
         $users  = $data['progress_users'] ?? [];
         $groups = $data['progress_groups'] ?? [];
 

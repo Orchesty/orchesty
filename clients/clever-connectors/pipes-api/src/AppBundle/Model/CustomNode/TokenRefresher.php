@@ -46,10 +46,8 @@ class TokenRefresher implements CustomNodeInterface
      */
     public function process(ProcessDto $dto): ProcessDto
     {
-        $systemInstall = json_decode($dto->getData(), TRUE)['data'];
-        $systemInstall = $this
-            ->dm->getRepository(SystemInstall::class)
-            ->find($systemInstall['_id']['$id']);
+        $systemInstall = json_decode($dto->getData(), TRUE);
+        $systemInstall = $this->dm->getRepository(SystemInstall::class)->find($systemInstall['_id']['$id']);
 
         if (!$systemInstall->getExpires()) {
             return $dto;

@@ -41,10 +41,8 @@ final class SalesforceUpdateContactConnectorTest extends KernelTestCaseAbstract
     public function testProcessBatch(): void
     {
         $dtoData = [
-            'data' => [
-                'system_install' => ['user' => '123'],
-                'topology'       => ['name' => 'top-name-ever'],
-            ],
+            'system_install' => ['user' => '123'],
+            'topology'       => ['name' => 'top-name-ever'],
         ];
 
         $loop = Factory::create();

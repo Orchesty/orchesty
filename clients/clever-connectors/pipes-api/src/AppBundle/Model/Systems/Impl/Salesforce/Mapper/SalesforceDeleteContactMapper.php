@@ -23,7 +23,7 @@ class SalesforceDeleteContactMapper implements CustomNodeInterface
      */
     public function process(ProcessDto $dto): ProcessDto
     {
-        $data = json_decode($dto->getData(), TRUE)['data'];
+        $data = json_decode($dto->getData(), TRUE);
 
         if (!array_key_exists('Email', $data)) {
             throw new CleverConnectorsException(
