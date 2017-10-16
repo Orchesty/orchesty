@@ -38,6 +38,7 @@ class AppExtension extends Extension
         $loader->load('magento2.yml');
         $loader->load('shopify.yml');
         $loader->load('salesforce.yml');
+        $loader->load('wisepops.yml');
     }
 
 }
