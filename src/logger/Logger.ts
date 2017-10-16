@@ -3,6 +3,7 @@ import * as os from "os";
 import {loggerOptions} from "../config";
 import JobMessage from "../message/JobMessage";
 import {default as winston} from "./Winston";
+import {ResultCode} from "../message/ResultCode";
 
 export interface ILogContext {
     node_id?: string;
@@ -10,6 +11,8 @@ export interface ILogContext {
     process_id?: string;
     parent_id?: string;
     sequence_id?: number;
+    result_code?: ResultCode;
+    result_message?: string;
     error?: Error;
 }
 
@@ -21,6 +24,8 @@ interface ILoggerFormat {
     message: string;
     node_id?: string;
     correlation_id?: string;
+    result_code?: ResultCode;
+    result_message?: string;
     stacktrace?: {
         message: string,
         trace?: string,
@@ -55,6 +60,14 @@ class Logger {
 
         if (context.node_id) {
             line.node_id = context.node_id;
+        }
+
+        if (context.result_code >= 0) {
+            line.result_code = context.result_code;
+        }
+
+        if (context.result_message) {
+            line.result_message = context.result_message;
         }
 
         if (context.error) {

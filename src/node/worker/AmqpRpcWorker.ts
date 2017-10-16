@@ -238,32 +238,29 @@ class AmqpRpcWorker implements IWorker {
     private updateWaiting(corrId: string, resultMsg: AmqpMessage): void {
         const stored: IWaiting = this.waiting.get(corrId);
         stored.sequence++;
-
-        const newContent = JSON.parse(resultMsg.content.toString());
-
-        let headers = ObjectUtils.mergeObjectsProperties(
-            JSON.parse(JSON.stringify(stored.message.getHeaders().getRaw())),
-            JSON.parse(JSON.stringify(resultMsg.properties.headers)),
-        );
-
-        headers = Headers.getPFHeaders(headers);
-
-        const headerObj = new Headers(headers);
-        headerObj.setPFHeader(PFHeaders.SEQUENCE_ID, `${stored.sequence}`);
-
-        const splitMsg = new JobMessage(
-            this.settings.node_label,
-            headerObj.getRaw(),
-            new Buffer(JSON.stringify({ data: newContent.data, settings: {}})),
-            { code: ResultCode.SUCCESS, message: `Part ${stored.sequence}` }, // TODO - unhardcode?
-        );
-
         stored.message.setMultiplier(stored.message.getMultiplier() + 1);
 
-        this.partialForwarder.forwardPart(splitMsg)
-            .catch(() => {
-                logger.warn(`Worker[type='amqprpc'] partial forward failed.`, logger.ctxFromMsg(splitMsg));
+        try {
+            const splitMsg = new JobMessage(
+                this.settings.node_label,
+                resultMsg.properties.headers,
+                resultMsg.content,
+            );
+
+            splitMsg.setResult({
+                code: resultMsg.properties.headers[PFHeaders.RESULT_CODE],
+                message: resultMsg.properties.headers[PFHeaders.RESULT_MESSAGE],
             });
+
+
+            this.partialForwarder.forwardPart(splitMsg)
+                .catch(() => {
+                    logger.warn(`Worker[type='amqprpc'] partial forward failed.`, logger.ctxFromMsg(splitMsg));
+                });
+
+        } catch (err) {
+            logger.error(`Worker[type='amqprpc'] partial message is invalid. Error: ${err}`);
+        }
     }
 
     /**

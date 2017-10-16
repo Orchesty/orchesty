@@ -49,7 +49,7 @@ httpServer.post("/empty-result-body", (req, resp) => {
 httpServer.listen(4020);
 
 describe("HttpWorker", () => {
-    it("should convert JobMessage to http request and receives response and sets message result", () => {
+    it("should convert JobMessage to http request, receive response and set message result", () => {
         const node: INodeLabel = {id: "nodeId", node_id: "nodeId", node_name: "nodeName"};
         const headers = new Headers();
         headers.setPFHeader(PFHeaders.CORRELATION_ID, "123");
@@ -153,7 +153,7 @@ describe("HttpWorker", () => {
             });
     });
 
-    it("should return empty data and settings when worker returns empty body", () => {
+    it("should return empty data when worker returns empty body", () => {
         const node: INodeLabel = {id: "nodeId", node_id: "nodeId", node_name: "nodeName"};
         const headers = new Headers();
         headers.setPFHeader(PFHeaders.CORRELATION_ID, "123");
@@ -175,7 +175,7 @@ describe("HttpWorker", () => {
         return worker.processData(msg)
             .then((outMsg: JobMessage) => {
                 assert.equal(outMsg.getResult().code, ResultCode.SUCCESS);
-                assert.equal(outMsg.getContent(), JSON.stringify({ data: {}, settings: {} }));
+                assert.equal(outMsg.getContent(), "");
             });
     });
 

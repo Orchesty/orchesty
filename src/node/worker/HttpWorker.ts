@@ -1,11 +1,11 @@
 import * as request from "request";
 import logger from "../../logger/Logger";
 import Headers from "../../message/Headers";
-import JobMessage from "../../message/JobMessage";
+import {PFHeaders} from "../../message/HeadersEnum";
+import JobMessage, {IResult} from "../../message/JobMessage";
 import { ResultCode } from "../../message/ResultCode";
 import {INodeLabel} from "../../topology/Configurator";
 import IWorker from "./IWorker";
-import {PFHeaders} from "../../message/HeadersEnum";
 
 export interface IHttpWorkerSettings {
     node_label: INodeLabel;
@@ -28,8 +28,6 @@ export interface IHttpWorkerRequestParams {
     headers?: any;
 }
 
-const DEFAULT_EMPTY_BODY = { data: {}, settings: {}};
-
 /**
  * Converts JobMessage to Http request and then converts received Http response back to JobMessage object
  */
@@ -48,11 +46,10 @@ class HttpWorker implements IWorker {
         return new Promise((resolve) => {
             Object.assign(reqParams, this.settings.opts);
 
-            const reqLog = `${reqParams.method} ${reqParams.url} Headers: ${JSON.stringify(reqParams.headers)}`;
+            const reqLog = `${reqParams.method} ${reqParams.url} ${JSON.stringify(reqParams.headers)}`;
             logger.info(`Worker[type='http'] sent request. ${reqLog}`, logger.ctxFromMsg(msg));
 
-            // Make http request and wait for response
-            request(reqParams, (err: any, response: any, body: any) => {
+            request(reqParams, (err: any, response: request.RequestResponse, body: any) => {
                 if (err) {
                     this.onRequestError(msg, reqParams, err);
                     return resolve(msg);
@@ -63,33 +60,18 @@ class HttpWorker implements IWorker {
                     return resolve(msg);
                 }
 
-                const resultHeaders = new Headers(response.headers);
-                const claimedCode = parseInt(resultHeaders.getPFHeader(PFHeaders.RESULT_CODE), 10);
-                if (!(claimedCode in ResultCode)) {
+                let result: IResult;
+                try {
+                    result = this.getResultFromResponse(response);
+                } catch (err) {
                     this.onMissingResultCode(msg);
                     return resolve(msg);
                 }
 
-                // Worker sent result code, react on it's value
-                const resultMessage = response.headers.result_message;
+                logger.info("Worker[type='http'] received valid response.", logger.ctxFromMsg(msg, err));
 
-                if (claimedCode === ResultCode.SUCCESS) {
-                    logger.info("Worker[type='http'] received 'SUCCESS' response", logger.ctxFromMsg(msg, err));
-                } else {
-                    logger.warn(
-                        `Worker[type='http'] received response code: "${claimedCode}"`,
-                        logger.ctxFromMsg(msg, err),
-                    );
-                }
-
-                // On empty body set default content
-                if (!body) {
-                    body = DEFAULT_EMPTY_BODY;
-                }
-
-                // Set the received result code and message body
-                msg.setResult({ code: claimedCode, message: resultMessage });
-                msg.setContent(JSON.stringify(body));
+                msg.setResult(result);
+                msg.setContent(JSON.stringify(body) || "");
 
                 return resolve(msg);
             });
@@ -161,6 +143,25 @@ class HttpWorker implements IWorker {
         const port = this.settings.port || 80;
 
         return `${protocol}${this.settings.host}:${port}${path}`;
+    }
+
+    /**
+     *
+     * @param {request.RequestResponse} response
+     * @return {IResult}
+     */
+    private getResultFromResponse(response: request.RequestResponse): IResult {
+        const responseHeaders: any = response.headers;
+        const resultHeaders = new Headers(responseHeaders);
+
+        const resultCode = parseInt(resultHeaders.getPFHeader(PFHeaders.RESULT_CODE), 10);
+        const resultMessage = resultHeaders.getPFHeader(PFHeaders.RESULT_MESSAGE) || "";
+
+        if (!(resultCode in ResultCode)) {
+            throw new Error("Missing or invalid result code.");
+        }
+
+        return {code: resultCode, message: resultMessage};
     }
 
     /**

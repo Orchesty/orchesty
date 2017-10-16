@@ -7,11 +7,6 @@ import {INodeLabel} from "../../topology/Configurator";
 import IPartialForwarder from "../drain/IPartialForwarder";
 import IWorker from "./IWorker";
 
-interface IJsonMessageFormat {
-    data: any;
-    settings: any;
-}
-
 export interface ISplitterWorkerSettings {
     node_label: INodeLabel;
 }
@@ -39,22 +34,17 @@ class SplitterWorker implements IWorker {
      */
     public processData(msg: JobMessage): Promise<JobMessage> {
 
-        let content: IJsonMessageFormat;
+        let content: any[];
 
         try {
             content = JSON.parse(msg.getContent());
         } catch (err) {
-            this.setError(msg, "Could not parse message content.", err);
+            this.setError(msg, "Could not parse message content. Is it valid JSON?", err);
             return Promise.resolve(msg);
         }
 
-        if (!content.hasOwnProperty("data") || !content.hasOwnProperty("settings")) {
-            this.setError(msg, "Cannot split content, data and/or settings key is missing.", null);
-            return Promise.resolve(msg);
-        }
-
-        if (!Array.isArray(content.data) || content.data.length < 1) {
-            this.setError(msg, "Cannot split content. data is not array or is empty.", null);
+        if (!Array.isArray(content) || content.length < 1) {
+            this.setError(msg, "Message content must be json array.", null);
             return Promise.resolve(msg);
         }
 
@@ -64,7 +54,7 @@ class SplitterWorker implements IWorker {
                 msg.setMultiplier(splits.length);
                 msg.setResult({
                     code: ResultCode.SUCCESS,
-                    message: `Message split into ${splits.length} partial messages was successful.`,
+                    message: `Split into ${splits.length} messages was successful.`,
                 });
 
                 logger.info(
@@ -110,27 +100,23 @@ class SplitterWorker implements IWorker {
     /**
      *
      * @param {JobMessage} msg
-     * @param {IJsonMessageFormat} content
-     * @return {JobMessage}
+     * @param {any[]} content
+     * @return {Promise<void[]>}
      */
-    private splitAndSendParts(msg: JobMessage, content: IJsonMessageFormat): Promise<void[]> {
+    private splitAndSendParts(msg: JobMessage, content: any[]): Promise<void[]> {
         const splitPromises: Array<Promise<void>> = [];
         let i: number = 1;
 
-        content.data.forEach((item: any) => {
-            const splitContent: IJsonMessageFormat = {
-                data: item,
-                settings: content.settings,
-            };
-
+        content.forEach((item: any) => {
             const headers = new Headers(msg.getHeaders().getRaw());
             headers.setPFHeader(PFHeaders.SEQUENCE_ID, `${i}`);
+            headers.setHeader("content-type", "application/json");
 
             const splitMsg = new JobMessage(
                 this.settings.node_label,
                 headers.getRaw(),
-                new Buffer(JSON.stringify(splitContent)),
-                { code: ResultCode.SUCCESS, message: `Split ${i}/${content.data.length}.`},
+                new Buffer(JSON.stringify(item)),
+                { code: ResultCode.SUCCESS, message: `Json split ${i}/${content.length}.`},
             );
 
             splitPromises.push(this.partialForwarder.forwardPart(splitMsg));

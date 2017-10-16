@@ -15,26 +15,29 @@ const settings: ISplitterWorkerSettings = {
 
 describe("Splitter worker", () => {
     it("should fail when invalid JSON content format", () => {
+        const partialForwarder: IPartialForwarder = {
+            forwardPart: () => Promise.resolve(),
+        };
         const node: INodeLabel = {id: "nodeId", node_id: "nodeId", node_name: "nodeName"};
         const headers = new Headers();
         headers.setPFHeader(PFHeaders.CORRELATION_ID, "123");
         headers.setPFHeader(PFHeaders.PROCESS_ID, "123");
         headers.setPFHeader(PFHeaders.PARENT_ID, "");
         headers.setPFHeader(PFHeaders.SEQUENCE_ID, "1");
-        const msg = new JobMessage(node, headers.getRaw(), new Buffer(JSON.stringify("{foo : 1, }")));
-        const partialForwarder: IPartialForwarder = {
-            forwardPart: () => Promise.resolve(),
-        };
+        const msg = new JobMessage(node, headers.getRaw(), new Buffer("{}{}{}"));
         const worker = new SplitterWorker(settings, partialForwarder);
         return worker.processData(msg)
             .then((outMsg: JobMessage) => {
                 assert.equal(outMsg.getResult().code, ResultCode.INVALID_CONTENT);
-                assert.include(outMsg.getResult().message, "key is missing");
+                assert.include(outMsg.getResult().message, "Could not parse message content.");
             });
     });
 
-    it("should fail when JSON content is not array with some element", () => {
-        const body = new Buffer(JSON.stringify({data: [], settings: {}}));
+    it("should fail when JSON content is empty array", () => {
+        const partialForwarder: IPartialForwarder = {
+            forwardPart: () => Promise.resolve(),
+        };
+        const body = new Buffer(JSON.stringify({ foo: "bar" }));
         const node: INodeLabel = {id: "nodeId", node_id: "nodeId", node_name: "nodeName"};
         const headers = new Headers();
         headers.setPFHeader(PFHeaders.CORRELATION_ID, "123");
@@ -42,29 +45,21 @@ describe("Splitter worker", () => {
         headers.setPFHeader(PFHeaders.PARENT_ID, "");
         headers.setPFHeader(PFHeaders.SEQUENCE_ID, "1");
         const msg = new JobMessage(node, headers.getRaw(), body);
-        const partialForwarder: IPartialForwarder = {
-            forwardPart: () => Promise.resolve(),
-        };
         const worker = new SplitterWorker(settings, partialForwarder);
         return worker.processData(msg)
             .then((outMsg: JobMessage) => {
                 assert.equal(outMsg.getResult().code, ResultCode.INVALID_CONTENT);
-                assert.include(outMsg.getResult().message, "is not array or is empty");
+                assert.include(outMsg.getResult().message, "Message content must be json array");
             });
     });
 
     it("should split message", () => {
         const forwarded: JobMessage[] = [];
-        const content = {
-            data: [
-                { foo: "bar" },
-                { foo: "baz" },
-                { foo: "woo" },
-            ],
-            settings: {
-                some: "thing",
-            },
-        };
+        const content = [
+            { foo: "bar" },
+            { foo: "baz" },
+            { foo: "woo" },
+        ];
         const node: INodeLabel = {id: "nodeId", node_id: "nodeId", node_name: "nodeName"};
         const headers = new Headers();
         headers.setPFHeader(PFHeaders.CORRELATION_ID, "123");
@@ -89,7 +84,7 @@ describe("Splitter worker", () => {
                 forwarded.forEach((split) => {
                     assert.equal(
                         split.getContent(),
-                        JSON.stringify({ data: content.data[i], settings: content.settings}),
+                        JSON.stringify(content[i]),
                     );
                     i++;
                 });

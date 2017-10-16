@@ -62,15 +62,12 @@ const firstQueue = `pipes.${testTopology.id}.${testTopology.nodes[0].id}`;
 
 describe("Linear topology with splitter test", () => {
     it("complete flow of messages till the end", (done) => {
-        const msgTestContent = {
-            data: [
-                { val : "to be split 1"},
-                { val : "to be split 2"},
-                { val : "to be split 3"},
-                { val : "to be split 4"},
-            ],
-            settings: {},
-        };
+        const msgTestContent = [
+            { val : "to be split 1"},
+            { val : "to be split 2"},
+            { val : "to be split 3"},
+            { val : "to be split 4"},
+        ];
         const msgHeaders = { headers: {
             pf_correlation_id: "corrid",
             pf_process_id: "test",
