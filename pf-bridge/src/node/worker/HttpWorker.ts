@@ -6,6 +6,7 @@ import JobMessage, {IResult} from "../../message/JobMessage";
 import { ResultCode } from "../../message/ResultCode";
 import {INodeLabel} from "../../topology/Configurator";
 import IWorker from "./IWorker";
+import {type} from "os";
 
 export interface IHttpWorkerSettings {
     node_label: INodeLabel;
@@ -49,7 +50,7 @@ class HttpWorker implements IWorker {
             const reqLog = `${reqParams.method} ${reqParams.url} ${JSON.stringify(reqParams.headers)}`;
             logger.info(`Worker[type='http'] sent request. ${reqLog}`, logger.ctxFromMsg(msg));
 
-            request(reqParams, (err: any, response: request.RequestResponse, body: any) => {
+            request(reqParams, (err: any, response: request.RequestResponse, body: string) => {
                 if (err) {
                     this.onRequestError(msg, reqParams, err);
                     return resolve(msg);
@@ -70,8 +71,16 @@ class HttpWorker implements IWorker {
 
                 logger.info("Worker[type='http'] received valid response.", logger.ctxFromMsg(msg, err));
 
+                if (body === undefined || body === null) {
+                    body = "";
+                }
+
+                if (typeof body !== "string") {
+                    body = JSON.stringify(body);
+                }
+
                 msg.setResult(result);
-                msg.setContent(JSON.stringify(body) || "");
+                msg.setContent(body);
 
                 return resolve(msg);
             });
