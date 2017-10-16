@@ -8,5 +8,3 @@ parameters:
         - '%systems%'
         - '%systems.user.some_user%'
         - '%systems.group.some_group%'
-
-    webhook.domain: 'https://cleverconn.stage.hanaboso.net'

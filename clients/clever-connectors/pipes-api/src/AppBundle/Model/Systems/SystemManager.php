@@ -5,16 +5,24 @@ namespace CleverConnectors\AppBundle\Model\Systems;
 use CleverConnectors\AppBundle\Document\LastSync;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\SystemTypeEnum;
+use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\AuthorizationInterface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\OAuth1Interface;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Webhook\WebhookManager;
 use CleverConnectors\AppBundle\Model\Webhook\WebhookSystemInterface;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
+use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use Hanaboso\PipesFramework\Commons\Enum\HandlerEnum;
+use Hanaboso\PipesFramework\Commons\Enum\TypeEnum;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
+use Hanaboso\PipesFramework\Configurator\Repository\NodeRepository;
+use Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository;
+use Hanaboso\PipesFramework\Configurator\StartingPoint\StartingPoint;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class SystemManager
@@ -40,9 +48,24 @@ class SystemManager
     private $systemRepository;
 
     /**
+     * @var TopologyRepository|DocumentRepository
+     */
+    private $topologyRepository;
+
+    /**
+     * @var NodeRepository|DocumentRepository
+     */
+    private $nodeRepository;
+
+    /**
      * @var WebhookManager
      */
     private $webhookManager;
+
+    /**
+     * @var StartingPoint
+     */
+    private $startingPoint;
 
     /**
      * SystemManager constructor.
@@ -50,13 +73,22 @@ class SystemManager
      * @param DocumentManager $dm
      * @param SystemLoader    $systemLoader
      * @param WebhookManager  $webhookManager
+     * @param StartingPoint   $startingPoint
      */
-    public function __construct(DocumentManager $dm, SystemLoader $systemLoader, WebhookManager $webhookManager)
+    public function __construct(
+        DocumentManager $dm,
+        SystemLoader $systemLoader,
+        WebhookManager $webhookManager,
+        StartingPoint $startingPoint
+    )
     {
-        $this->dm               = $dm;
-        $this->systemLoader     = $systemLoader;
-        $this->systemRepository = $dm->getRepository(SystemInstall::class);
-        $this->webhookManager   = $webhookManager;
+        $this->dm                 = $dm;
+        $this->systemLoader       = $systemLoader;
+        $this->systemRepository   = $dm->getRepository(SystemInstall::class);
+        $this->topologyRepository = $dm->getRepository(Topology::class);
+        $this->nodeRepository     = $dm->getRepository(Node::class);
+        $this->webhookManager     = $webhookManager;
+        $this->startingPoint      = $startingPoint;
     }
 
     /**
@@ -235,6 +267,39 @@ class SystemManager
         $this->updateWebhooks($systemInstall);
 
         return $systemInstall;
+    }
+
+    /**
+     * @param string $user
+     * @param string $system
+     *
+     * @throws CleverConnectorsException
+     */
+    public function synchronizeSubscriptions(string $user, string $system): void
+    {
+        $request = new Request();
+        $request->headers->set(CMHeaders::createKey(CMHeaders::GUID), $user);
+        $request->headers->set(CMHeaders::createKey(CMHeaders::SYSTEM_KEY), $system);
+
+        $topologyName = sprintf('%s-sync-subscribers', $system);
+        $topologies   = $this->topologyRepository->getRunnableTopologies($topologyName);
+
+        foreach ($topologies as $topology) {
+            $node = $this->nodeRepository->findOneBy([
+                'topology' => $topology->getId(),
+                'type'     => TypeEnum::SIGNAL,
+                'handler'  => HandlerEnum::EVENT,
+            ]);
+
+            if (!$node) {
+                throw new CleverConnectorsException(
+                    sprintf('Starting Node not found for topology [%s]', $topology->getId()),
+                    CleverConnectorsException::STARTING_NODE_NOT_FOUND
+                );
+            }
+
+            $this->startingPoint->runWithRequest($request, $topology, $node);
+        }
     }
 
     /**

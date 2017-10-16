@@ -66,7 +66,6 @@ class SalesforceSyncContactConnector extends SalesforceContactConnectorAbstract
      */
     public function processBatch(ProcessDto $dto, LoopInterface $loop, callable $callbackItem): PromiseInterface
     {
-
         $sender        = $this->factory->create($loop);
         $systemInstall = $this->systemInstallRepository->getSystemInstallFromHeaders($dto->getHeaders());
         $requestDto    = $this->system->getRequestDto($systemInstall, 'GET');

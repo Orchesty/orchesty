@@ -1,93 +1,43 @@
 services:
-    systems.controller:
+    cc.systems.controller:
         class: CleverConnectors\AppBundle\Controller\SystemController
         arguments:
-            - '@systems.handler'
+            - '@cc.systems.handler'
 
-    systems.handler:
+    cc.systems.handler:
         class: CleverConnectors\AppBundle\Handler\SystemHandler
         arguments:
-            - '@systems.manager'
+            - '@cc.systems.manager'
             - '@doctrine_mongodb.odm.default_document_manager'
 
-    systems.manager:
+    cc.systems.manager:
         class: CleverConnectors\AppBundle\Model\Systems\SystemManager
         arguments:
             - '@doctrine_mongodb.odm.default_document_manager'
-            - '@systems.loader'
-            - '@manager.webhook'
+            - '@cc.systems.loader'
+            - '@cc.webhook.manager'
+            - '@hbpf.starting_point.starting_point'
 
-    systems.loader:
+    cc.systems.loader:
         class: CleverConnectors\AppBundle\Model\Systems\SystemLoader
         arguments:
             - '@service_container'
 
-    manager.webhook:
+    cc.webhook.manager:
         class: CleverConnectors\AppBundle\Model\Webhook\WebhookManager
         arguments:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.transport.curl_manager'
-            - '%webhook.domain%'
+            - '%backend_host%'
         calls:
             - ['setLogger', ['@monolog.logger.commons']]
 
-    manager.last_sync:
-        class: CleverConnectors\AppBundle\Model\LastSync\LastSyncManager
-        arguments:
-            - '@doctrine_mongodb.odm.default_document_manager'
-
-    cc.controller.webhook:
+    cc.webhook.controller:
         class: CleverConnectors\AppBundle\Controller\WebhookController
         arguments:
             - '@hbpf.handler.starting_point'
 
-    listener.controller.security:
-        class: CleverConnectors\AppBundle\Listeners\WebhookSecurityListener
+    cc.last_sync.manager:
+        class: CleverConnectors\AppBundle\Model\LastSync\LastSyncManager
         arguments:
             - '@doctrine_mongodb.odm.default_document_manager'
-            - '@hbpf.transport.curl_manager'
-            - '%clevermonitor%'
-        tags: ['kernel.event_subscriber']
-
-    hbpf.configurator.handler.topology:
-        class: CleverConnectors\AppBundle\Handler\TopologyHandler
-        arguments:
-            - '@hbpf.database_manager_locator'
-            - '@hbpf.configurator.manager.topology'
-            - '@hbpf.handler.generator_handler'
-            - '@hbpf.transport.curl_manager'
-            - '@systems.manager'
-
-    cc.listener.topology:
-        class: CleverConnectors\AppBundle\Listeners\TopologyEventListener
-        arguments:
-            - '@hbpf.configurator.handler.topology'
-        tags: ['kernel.event_subscriber']
-
-    hbpf.custom_node.user-message-generator:
-        class: CleverConnectors\AppBundle\Model\CustomNode\UserMessageGenerator
-        arguments:
-            - '@jms_serializer'
-            - '@clever_connector.async_command_factory'
-        calls:
-            - [setLogger, ['@monolog.logger.rabbit-mq']]
-
-    hbpf.custom_node.refresh-tokens-message-generator:
-        class: CleverConnectors\AppBundle\Model\CustomNode\TokenMessageGenerator
-        arguments:
-            - '@jms_serializer.serializer'
-            - '@clever_connector.async_command_factory'
-        calls:
-            - [setLogger, ['@monolog.logger.rabbit-mq']]
-
-    hbpf.custom_node.token-refresher:
-        class: CleverConnectors\AppBundle\Model\CustomNode\TokenRefresher
-        arguments:
-            - '@doctrine_mongodb.odm.default_document_manager'
-            - '@systems.loader'
-
-    cc.listener.progress_counter:
-        class: CleverConnectors\AppBundle\Listeners\ProgressCounterListener
-        arguments:
-            - '@hbpf.progress_counter.progress_counter_service'
-        tags: ['kernel.event_subscriber']

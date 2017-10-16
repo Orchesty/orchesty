@@ -36,7 +36,7 @@ class SystemManagerTest extends DatabaseTestCaseAbstract
     protected function setUp(): void
     {
         parent::setUp();
-        $this->manager    = $this->container->get('systems.manager');
+        $this->manager    = $this->container->get('cc.systems.manager');
         $this->repository = $this->dm->getRepository(SystemInstall::class);
     }
 
@@ -358,7 +358,7 @@ class SystemManagerTest extends DatabaseTestCaseAbstract
      */
     public function testDeleteTopology(): void
     {
-        $manager = $this->container->get('systems.manager');
+        $manager = $this->container->get('cc.systems.manager');
 
         $top = new Topology();
         $top->setName('ttop');

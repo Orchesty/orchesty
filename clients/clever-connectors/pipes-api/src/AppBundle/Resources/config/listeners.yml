@@ -1,0 +1,21 @@
+services:
+
+    cc.topology.listener:
+        class: CleverConnectors\AppBundle\Listeners\TopologyEventListener
+        arguments:
+            - '@hbpf.configurator.handler.topology'
+        tags: ['kernel.event_subscriber']
+
+    cc.progress_counter.listener:
+        class: CleverConnectors\AppBundle\Listeners\ProgressCounterListener
+        arguments:
+            - '@hbpf.progress_counter.progress_counter_service'
+        tags: ['kernel.event_subscriber']
+
+    cc.webhook.security.listener:
+        class: CleverConnectors\AppBundle\Listeners\WebhookSecurityListener
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.transport.curl_manager'
+            - '%clevermonitor%'
+        tags: ['kernel.event_subscriber']

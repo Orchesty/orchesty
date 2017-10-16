@@ -30,7 +30,7 @@ final class LastSyncManagerTest extends DatabaseTestCaseAbstract
     public function setUp(): void
     {
         parent::setUp();
-        $this->manager = $this->container->get('manager.last_sync');
+        $this->manager = $this->container->get('cc.last_sync.manager');
     }
 
     /**

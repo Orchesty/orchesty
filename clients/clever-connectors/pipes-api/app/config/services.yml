@@ -25,3 +25,12 @@ services:
             - '%access_token_refresh_interval%'
         tags:
             -  { name: console.command }
+
+    hbpf.configurator.handler.topology:
+        class: CleverConnectors\AppBundle\Handler\TopologyHandler
+        arguments:
+            - '@hbpf.database_manager_locator'
+            - '@hbpf.configurator.manager.topology'
+            - '@hbpf.handler.generator_handler'
+            - '@hbpf.transport.curl_manager'
+            - '@cc.systems.manager'

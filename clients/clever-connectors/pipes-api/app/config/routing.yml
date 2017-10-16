@@ -1,4 +1,4 @@
-systems:
+cc:
     resource: '@AppBundle/Controller/'
     type: annotation
 

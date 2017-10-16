@@ -14,7 +14,7 @@ use Symfony\Component\HttpFoundation\Response;
  *
  * @package CleverConnectors\AppBundle\Controller
  *
- * @Route(service="cc.controller.webhook")
+ * @Route(service="cc.webhook.controller")
  */
 class WebhookController extends FOSRestController
 {

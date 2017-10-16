@@ -20,7 +20,7 @@ use Symfony\Component\HttpFoundation\Response;
  *
  * @package CleverConnectors\AppBundle\Controller
  *
- * @Route(service="systems.controller")
+ * @Route(service="cc.systems.controller")
  */
 class SystemController extends FOSRestController
 {
@@ -202,7 +202,8 @@ class SystemController extends FOSRestController
     public function synchronizeSubscriptionsAction(string $userId, string $systemKey): Response
     {
         try {
-            // TODO: Implement synchronizeSubscriptions
+            $this->handler->synchronizeSubscriptions($userId, $systemKey);
+
             return new JsonResponse([], 202);
         } catch (SystemException $e) {
             return new JsonResponse(ControllerUtils::createExceptionData($e), 500);
