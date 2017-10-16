@@ -6,7 +6,6 @@ import JobMessage, {IResult} from "../../message/JobMessage";
 import { ResultCode } from "../../message/ResultCode";
 import {INodeLabel} from "../../topology/Configurator";
 import IWorker from "./IWorker";
-import {type} from "os";
 
 export interface IHttpWorkerSettings {
     node_label: INodeLabel;

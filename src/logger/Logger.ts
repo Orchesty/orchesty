@@ -2,8 +2,8 @@ import Sender from "lib-nodejs/dist/src/udp/Sender";
 import * as os from "os";
 import {loggerOptions} from "../config";
 import JobMessage from "../message/JobMessage";
-import {default as winston} from "./Winston";
 import {ResultCode} from "../message/ResultCode";
+import {default as winston} from "./Winston";
 
 export interface ILogContext {
     node_id?: string;

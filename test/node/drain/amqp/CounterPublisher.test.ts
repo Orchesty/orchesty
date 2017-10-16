@@ -102,12 +102,12 @@ describe("CounterPublisher", () => {
                     opts,
                     {
                         headers: {
-                            pf_correlation_id: "corrId",
-                            pf_process_id: msgProcessId,
-                            pf_parent_id: "",
-                            pf_sequence_id: `${msgSeqId}`,
-                            pf_node_id: settings.node_label.node_id,
-                            pf_node_name: settings.node_label.node_name,
+                            "pf-correlation-id": "corrId",
+                            "pf-process-id": msgProcessId,
+                            "pf-parent-id": "",
+                            "pf-sequence-id": `${msgSeqId}`,
+                            "pf-node-id": settings.node_label.node_id,
+                            "pf-node-name": settings.node_label.node_name,
                         },
                         type: "counter_message",
                         appId: settings.node_label.id,

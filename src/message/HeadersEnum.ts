@@ -1,16 +1,16 @@
 export enum PFHeaders {
     // mandatory headers
-    CORRELATION_ID = "correlation_id",
-    PROCESS_ID = "process_id",
-    PARENT_ID = "parent_id",
-    SEQUENCE_ID = "sequence_id",
+    CORRELATION_ID = "correlation-id",
+    PROCESS_ID = "process-id",
+    PARENT_ID = "parent-id",
+    SEQUENCE_ID = "sequence-id",
     // topology related headers
-    TOPOLOGY_ID = "topology_id",
-    TOPOLOGY_NAME = "topology_name",
+    TOPOLOGY_ID = "topology-id",
+    TOPOLOGY_NAME = "topology-name",
     // Node label headers
-    NODE_ID = "node_id",
-    NODE_NAME = "node_name",
+    NODE_ID = "node-id",
+    NODE_NAME = "node-name",
     // result headers
-    RESULT_CODE = "result_code",
-    RESULT_MESSAGE = "result_message",
+    RESULT_CODE = "result-code",
+    RESULT_MESSAGE = "result-message",
 }

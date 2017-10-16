@@ -3,7 +3,6 @@ import Container from "lib-nodejs/dist/src/container/Container";
 import Connection from "lib-nodejs/dist/src/rabbitmq/Connection";
 import Publisher from "lib-nodejs/dist/src/rabbitmq/Publisher";
 import SimpleConsumer from "lib-nodejs/dist/src/rabbitmq/SimpleConsumer";
-import ObjectUtils from "lib-nodejs/dist/src/utils/ObjectUtils";
 import logger from "../../logger/Logger";
 import Headers from "../../message/Headers";
 import {PFHeaders} from "../../message/HeadersEnum";
@@ -91,7 +90,7 @@ class AmqpRpcWorker implements IWorker {
             resultsConsumerPrepare,
             (msg: AmqpMessage) => {
                 this.processRpcResultMessage(msg);
-            }
+            },
         );
 
         this.resultsConsumer.consume(this.resultsQueue.name, {})
@@ -251,7 +250,6 @@ class AmqpRpcWorker implements IWorker {
                 code: resultMsg.properties.headers[PFHeaders.RESULT_CODE],
                 message: resultMsg.properties.headers[PFHeaders.RESULT_MESSAGE],
             });
-
 
             this.partialForwarder.forwardPart(splitMsg)
                 .catch(() => {

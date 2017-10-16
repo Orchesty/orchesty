@@ -14,43 +14,43 @@ const httpServer = express();
 httpServer.use(bodyParser.json());
 httpServer.post("/ok", (req, resp) => {
     assert.deepEqual(req.body, { val: "original" });
-    assert.equal(req.headers.pf_node_name, "httpworker");
-    assert.equal(req.headers.pf_node_id, "507f191e810c19729de860ea");
+    assert.equal(req.headers["pf-node-name"], "httpworker");
+    assert.equal(req.headers["pf-node-id"], "507f191e810c19729de860ea");
     resp.set({
-        pf_result_code: 0,
-        pf_result_message: "ok",
+        "pf-result-code": 0,
+        "pf-result-message": "ok",
     });
     resp.status(200).send(JSON.stringify({ val: "modified" }));
 });
 httpServer.post("/invalid-status-code", (req, resp) => {
     assert.deepEqual(req.body, { val: "original" });
     resp.set({
-        pf_result_code: 4001,
-        pf_result_message: "some error",
+        "pf-result-code": 4001,
+        "pf-result-message": "some error",
     });
     resp.status(500).send(JSON.stringify({ val: "modified but 500" }));
 });
 httpServer.post("/invalid-result-code", (req, resp) => {
     assert.deepEqual(req.body, { val: "original" });
     resp.set({
-        pf_result_code: ResultCode.WORKER_TIMEOUT,
-        pf_result_message: "some error",
+        "pf-result-code": ResultCode.WORKER_TIMEOUT,
+        "pf-result-message": "some error",
     });
     resp.status(200).send(JSON.stringify({ val: "modified" }));
 });
 httpServer.post("/empty-result-body", (req, resp) => {
     assert.deepEqual(req.body, { val: "original" });
     resp.set({
-        pf_result_code: ResultCode.SUCCESS,
-        pf_result_message: "some error",
+        "pf-result-code": ResultCode.SUCCESS,
+        "pf-result-message": "some error",
     });
     resp.status(200).send();
 });
 httpServer.post("/ok-xml", (req, resp) => {
     assert.deepEqual(req.body, { val: "original" });
     resp.set({
-        pf_result_code: 0,
-        pf_result_message: "ok",
+        "pf-result-code": 0,
+        "pf-result-message": "ok",
     });
     resp.set("content-type", "application/xml");
     resp.status(200).send("<?xml version=\"1.0\" encoding=\"UTF-8\"?><root>some content</root>");
