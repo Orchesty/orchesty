@@ -48,7 +48,8 @@ class HttpWorker implements IWorker {
         return new Promise((resolve) => {
             Object.assign(reqParams, this.settings.opts);
 
-            logger.info(`Worker[type='http'] sent request to: ${reqParams.url}`, logger.ctxFromMsg(msg));
+            const reqLog = `${reqParams.method} ${reqParams.url} Headers: ${JSON.stringify(reqParams.headers)}`;
+            logger.info(`Worker[type='http'] sent request. ${reqLog}`, logger.ctxFromMsg(msg));
 
             // Make http request and wait for response
             request(reqParams, (err: any, response: any, body: any) => {
