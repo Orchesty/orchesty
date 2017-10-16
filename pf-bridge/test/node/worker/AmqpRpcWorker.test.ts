@@ -103,7 +103,7 @@ describe("AmqpRpcWorker", () => {
                 });
             },
             (msg: Message) => {
-                // check if message has all mandatory headers
+                // check if message has all expected headers
                 assert.deepEqual(msg.properties.headers, {
                     pf_node_id: "507f191e810c19729de860ea",
                     pf_node_name: "amqprpcnode",
@@ -111,26 +111,27 @@ describe("AmqpRpcWorker", () => {
                     pf_process_id: "amqp.worker.process_id",
                     pf_parent_id: "",
                     pf_sequence_id: "1",
+                    pf_topology_id: "topoId",
+                    pf_topology_name: "topoName",
+                    pf_foo: "bar",
                 });
 
                 // Send partial messages and the confirmation message afterwards
                 let i = 1;
                 const proms = [];
                 while (i <= 5) {
+                    const replyHeaders = JSON.parse(JSON.stringify(msg.properties.headers));
+                    replyHeaders.pf_sequence_id = i;
+                    replyHeaders.pf_result_code = ResultCode.SUCCESS;
+                    replyHeaders.pf_result_message = "ok";
+
                     const p = publisher.sendToQueue(
                         msg.properties.replyTo,
                         new Buffer(JSON.stringify({ settings: {}, data: `${i}`})),
                         {
                             type: BATCH_ITEM_TYPE,
                             correlationId: msg.properties.correlationId,
-                            headers: {
-                                pf_result_code: ResultCode.SUCCESS,
-                                pf_result_message: "ok",
-                                pf_correlation_id: msg.properties.headers.pf_correlation_id,
-                                pf_process_id: msg.properties.headers.pf_process_id,
-                                pf_parent_id: msg.properties.headers.pf_parent_id,
-                                pf_sequence_id: i,
-                            },
+                            headers: replyHeaders,
                         },
                     );
                     proms.push(p);
@@ -140,20 +141,18 @@ describe("AmqpRpcWorker", () => {
                 // Send confirmation message after all BATCH_ITEM messages are sent
                 Promise.all(proms)
                     .then(() => {
+                        const finalHeaders = JSON.parse(JSON.stringify(msg.properties.headers));
+                        finalHeaders.pf_sequence_id = 1;
+                        finalHeaders.pf_result_code = ResultCode.SUCCESS;
+                        finalHeaders.pf_result_message = "everything okay";
+
                         publisher.sendToQueue(
                             msg.properties.replyTo,
                             new Buffer(""),
                             {
                                 type: BATCH_END_TYPE,
                                 correlationId: msg.properties.correlationId,
-                                headers: {
-                                    pf_result_code: ResultCode.SUCCESS,
-                                    pf_result_message: "everything okay",
-                                    pf_correlation_id: msg.properties.headers.pf_correlation_id,
-                                    pf_process_id: msg.properties.headers.pf_process_id,
-                                    pf_parent_id: msg.properties.headers.pf_parent_id,
-                                    pf_sequence_id: 1,
-                                },
+                                headers: finalHeaders,
                             },
                         );
                     });
@@ -168,6 +167,10 @@ describe("AmqpRpcWorker", () => {
                 headers.setPFHeader(PFHeaders.PROCESS_ID, "amqp.worker.process_id");
                 headers.setPFHeader(PFHeaders.PARENT_ID, "");
                 headers.setPFHeader(PFHeaders.SEQUENCE_ID, "1");
+                headers.setPFHeader(PFHeaders.TOPOLOGY_ID, "topoId");
+                headers.setPFHeader(PFHeaders.TOPOLOGY_NAME, "topoName");
+                headers.setPFHeader("foo", "bar");
+                headers.setHeader("baz", "bat");
 
                 const jobMsg = new JobMessage(
                     node,
