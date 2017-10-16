@@ -1,0 +1,20 @@
+services:
+    systems.wisepops:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Wisepops\WisepopsSystem
+        arguments:
+        tags: ['%systems%']
+
+    hbpf.connector.wisepops-sync-email-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Wisepops\Connector\WisepopsSyncEmailConnector
+        arguments:
+            - '@systems.wisepops'
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.transport.async_curl_factory'
+
+    hbpf.connector.wisepops-create-email-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Wisepops\Connector\WisepopsCreateEmailConnector
+        arguments:
+
+    hbpf.custom_node.wisepops-create-email-mapper:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Wisepops\Mapper\WisepopsCreateEmailMapper
+        arguments:

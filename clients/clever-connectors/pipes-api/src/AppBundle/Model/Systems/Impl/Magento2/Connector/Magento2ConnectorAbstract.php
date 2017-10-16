@@ -6,7 +6,6 @@ use CleverConnectors\AppBundle\Model\LastSync\LastSyncManager;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Magento2\Magento2System;
 use DateTime;
-use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSender;
@@ -35,11 +34,6 @@ abstract class Magento2ConnectorAbstract implements BatchInterface, ConnectorInt
      * @var Magento2System
      */
     protected $system;
-
-    /**
-     * @var DocumentManager
-     */
-    protected $dm;
 
     /**
      * @var LastSyncManager

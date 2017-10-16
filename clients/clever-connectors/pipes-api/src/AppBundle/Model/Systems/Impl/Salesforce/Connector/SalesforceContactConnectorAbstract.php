@@ -46,7 +46,7 @@ abstract class SalesforceContactConnectorAbstract implements BatchInterface, Con
     protected $factory;
 
     /**
-     * SalesforceDeleteConnector constructor.
+     * SalesforceContactConnectorAbstract constructor.
      *
      * @param SalesforceSystem  $system
      * @param LastSyncManager   $lastSyncManager
