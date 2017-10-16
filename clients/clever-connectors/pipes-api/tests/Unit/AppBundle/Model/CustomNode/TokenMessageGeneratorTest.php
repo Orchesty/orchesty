@@ -104,7 +104,6 @@ class TokenMessageGeneratorTest extends TestCase
             ->then(function (SuccessMessage $message) use ($loop): void {
                 $this->assertSame(1, $message->getSequenceId());
                 $this->assertSame('{"id":"5","token":"123","user":"123"}', $message->getData());
-                $this->assertSame('[]', $message->getSetting());
                 $loop->stop();
             })
             ->done();

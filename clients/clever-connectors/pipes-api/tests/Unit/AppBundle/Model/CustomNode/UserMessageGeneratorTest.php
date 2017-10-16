@@ -118,7 +118,7 @@ class UserMessageGeneratorTest extends TestCase
 
         /** @var Serializer|PHPUnit_Framework_MockObject_MockObject $serializer */
         $serializer = $this->createMock(Serializer::class);
-        $serializer->method('deserialize')->willReturn(["data" => ["param" => ""]]);
+        $serializer->method('deserialize')->willReturn(["param" => ""]);
         /** @var AsyncCommandFactory|PHPUnit_Framework_MockObject_MockObject $asyncCommandFactory */
         $asyncCommandFactory = $this->createMock(AsyncCommandFactory::class);
         $asyncCommandFactory->method('create')->willReturn(new Promise(function ($resolve, $reject): void {
@@ -147,7 +147,7 @@ class UserMessageGeneratorTest extends TestCase
 
         /** @var Serializer|PHPUnit_Framework_MockObject_MockObject $serializer */
         $serializer = $this->createMock(Serializer::class);
-        $serializer->method('deserialize')->willReturn(["data" => ["param" => "test"]]);
+        $serializer->method('deserialize')->willReturn(["param" => "test"], []);
         /** @var AsyncCommandFactory|PHPUnit_Framework_MockObject_MockObject $asyncCommandFactory */
         $asyncCommandFactory = $this->createMock(AsyncCommandFactory::class);
         $callback            = new UserMessageGenerator($serializer, $asyncCommandFactory);
@@ -163,6 +163,7 @@ class UserMessageGeneratorTest extends TestCase
                 $loop->stop();
             }, function ($e) use ($loop): void {
                 // Test if reject
+                var_dump($e);
                 $this->assertTrue(FALSE);
                 $loop->stop();
             })
@@ -180,7 +181,7 @@ class UserMessageGeneratorTest extends TestCase
 
         /** @var Serializer|PHPUnit_Framework_MockObject_MockObject $serializer */
         $serializer = $this->createMock(Serializer::class);
-        $serializer->method('deserialize')->willReturn(["data" => ["param" => "test"]]);
+        $serializer->method('deserialize')->willReturn(["param" => "test"]);
         /** @var AsyncCommandFactory|PHPUnit_Framework_MockObject_MockObject $asyncCommandFactory */
         $asyncCommandFactory = $this->createMock(AsyncCommandFactory::class);
         $callback            = new UserMessageGenerator($serializer, $asyncCommandFactory);
@@ -190,7 +191,6 @@ class UserMessageGeneratorTest extends TestCase
             ->then(function (SuccessMessage $message) use ($loop): void {
                 $this->assertSame(1, $message->getSequenceId());
                 $this->assertSame('{"system_install":{"id":"5","token":"123","user":"123"}}', $message->getData());
-                $this->assertSame('[]', $message->getSetting());
                 $loop->stop();
             })
             ->done();

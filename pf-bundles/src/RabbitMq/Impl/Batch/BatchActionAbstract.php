@@ -28,8 +28,6 @@ use function React\Promise\resolve;
 abstract class BatchActionAbstract implements BatchActionInterface, LoggerAwareInterface
 {
 
-    private const NODE_NAME = 'node_name';
-
     /**
      * @var LoggerInterface
      */
@@ -58,13 +56,13 @@ abstract class BatchActionAbstract implements BatchActionInterface, LoggerAwareI
      */
     private function validateHeaders(Message $message): PromiseInterface
     {
-        if ($this->isEmpty(PipesHeaders::get(self::NODE_NAME, $message->headers))) {
+        if ($this->isEmpty(PipesHeaders::get(PipesHeaders::NODE_NAME, $message->headers))) {
             return reject(new InvalidArgumentException(
-                sprintf('Missing "%s" in the message header.', self::NODE_NAME)
+                sprintf('Missing "%s" in the message header.', PipesHeaders::NODE_NAME)
             ));
         }
 
-        return resolve(PipesHeaders::get(self::NODE_NAME, $message->headers));
+        return resolve(PipesHeaders::get(PipesHeaders::NODE_NAME, $message->headers));
     }
 
     /**

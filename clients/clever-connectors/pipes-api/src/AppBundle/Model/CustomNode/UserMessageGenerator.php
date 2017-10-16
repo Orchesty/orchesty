@@ -92,7 +92,7 @@ class UserMessageGenerator implements BatchInterface, CustomNodeInterface
      */
     private function getSystemKey(array $data): PromiseInterface
     {
-        $connectorKey = $data['data']['param'] ?? NULL;
+        $connectorKey = $data['param'] ?? NULL;
 
         if ($connectorKey === NULL) {
             return reject(new InvalidArgumentException('Body has not system key.'));

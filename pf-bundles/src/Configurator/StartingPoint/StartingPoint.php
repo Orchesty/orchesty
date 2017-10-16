@@ -38,8 +38,6 @@ class StartingPoint implements LoggerAwareInterface
 
     private const QUEUE_PATTERN = 'pipes.%s.%s';
 
-    private const CONTENT = '{"data":%s, "settings": ""}';
-
     private const COUNTER_MESSAGE_TYPE = 'counter_message';
 
     /**
@@ -157,13 +155,13 @@ class StartingPoint implements LoggerAwareInterface
     {
         $headers = new Headers();
         $headers
-            ->addHeader(PipesHeaders::createKey('process_id'), Uuid::uuid4()->toString())
-            ->addHeader(PipesHeaders::createKey('parent_id'), '')
-            ->addHeader(PipesHeaders::createKey('correlation_id'), Uuid::uuid4()->toString())
-            ->addHeader(PipesHeaders::createKey('sequence_id'), '1')
-            ->addHeader(PipesHeaders::createKey('topology_id'), $topology->getId())
-            ->addHeader(PipesHeaders::createKey('topology_name'), $topology->getName())
-            ->addHeader('content_type', 'application/json');
+            ->addHeader(PipesHeaders::createKey(PipesHeaders::PROCESS_ID), Uuid::uuid4()->toString())
+            ->addHeader(PipesHeaders::createKey(PipesHeaders::PARENT_ID), '')
+            ->addHeader(PipesHeaders::createKey(PipesHeaders::CORRELATION_ID), Uuid::uuid4()->toString())
+            ->addHeader(PipesHeaders::createKey(PipesHeaders::SEQUENCE_ID), '1')
+            ->addHeader(PipesHeaders::createKey(PipesHeaders::TOPOLOGY_ID), $topology->getId())
+            ->addHeader(PipesHeaders::createKey(PipesHeaders::TOPOLOGY_NAME), $topology->getName())
+            ->addHeader('content_type', $requestHeaders['content-type'] ?? 'text/plain');
 
         foreach (PipesHeaders::clear($requestHeaders) as $key => $value) {
             $headers->addHeader($key, (string) $value[0]);
@@ -179,11 +177,10 @@ class StartingPoint implements LoggerAwareInterface
      */
     public function createBodyFromRequest(Request $request): string
     {
-        if ($request->getContentType() === 'json') {
-            return sprintf(self::CONTENT, $request->getContent());
-        } else {
-            return sprintf(self::CONTENT, json_encode($request->getContent()));
-        }
+        /** @var string $content */
+        $content = $request->getContent();
+
+        return $content;
     }
 
     /**
@@ -193,7 +190,7 @@ class StartingPoint implements LoggerAwareInterface
      */
     public function createBody(?string $body = NULL): string
     {
-        return sprintf(self::CONTENT, $body ?? '""');
+        return $body ?? '';
     }
 
     /**
@@ -244,9 +241,9 @@ class StartingPoint implements LoggerAwareInterface
         $this->publishProcessMessage($channel, $this->createQueueName($topology, $node), $headers, $content);
 
         $this->logger->info('Starting point message', [
-            'correlation_id' => PipesHeaders::get('correlation_id', $headers->getHeaders()),
-            'process_id'     => PipesHeaders::get('process_id', $headers->getHeaders()),
-            'parent_id'      => PipesHeaders::get('parent_id', $headers->getHeaders()),
+            'correlation_id' => PipesHeaders::get(PipesHeaders::CORRELATION_ID, $headers->getHeaders()),
+            'process_id'     => PipesHeaders::get(PipesHeaders::PROCESS_ID, $headers->getHeaders()),
+            'parent_id'      => PipesHeaders::get(PipesHeaders::PARENT_ID, $headers->getHeaders()),
             'node_id'        => $node->getId(),
             'node_name'      => $node->getName(),
             'topology_id'    => $topology->getId(),
@@ -301,9 +298,9 @@ class StartingPoint implements LoggerAwareInterface
         $headers = array_merge(
             $headers->getHeaders(),
             [
-                'node_id' => $node->getId(),
-                'type'    => self::COUNTER_MESSAGE_TYPE,
-                'app_id'  => 'starting_point',
+                'type'                                         => self::COUNTER_MESSAGE_TYPE,
+                'app_id'                                       => 'starting_point',
+                PipesHeaders::createKey(PipesHeaders::NODE_ID) => $node->getId(),
             ]
         );
         $content = json_encode($content);
