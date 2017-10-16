@@ -2,7 +2,10 @@
 
 namespace Tests\Integration\AppBundle\Model\Systems\Impl\Salesforce\Connector;
 
+use CleverConnectors\AppBundle\Document\LastSync;
 use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Utils\CMHeaders;
+use DateTime;
 use Hanaboso\PipesFramework\Commons\Crypt\CryptManager;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
@@ -44,6 +47,13 @@ final class SalesforceUpdateContactConnectorTest extends DatabaseTestCaseAbstrac
             ->setSettings($settings);
         $this->persistAndFlush($system);
 
+        $lastSync = new LastSync();
+        $lastSync->setUser('u_123')
+            ->setTopologyName('Topology')
+            ->setNodeName('salesforce-sync-contanct-connector')
+            ->setTimestamp(new DateTime('-3 days'));
+        $this->persistAndFlush($lastSync);
+
         $node = (new Node())
             ->setName('Node')
             ->setTopology($topology->getId());
@@ -62,7 +72,13 @@ final class SalesforceUpdateContactConnectorTest extends DatabaseTestCaseAbstrac
             ],
         ];
 
-        $processDto = (new ProcessDto())->setData(Json::encode($dtoData))->setHeaders([]);
+        $processDto = (new ProcessDto())->setData(Json::encode($dtoData))->setHeaders([
+            CMHeaders::createKey(CMHeaders::GUID)          => 'u_123',
+            CMHeaders::createKey(CMHeaders::TOKEN)         => 't-456',
+            CMHeaders::createKey(CMHeaders::SYSTEM_KEY)    => 's_-879',
+            CMHeaders::createKey(CMHeaders::TOPOLOGY_NAME) => 'Topology',
+            CMHeaders::createKey(CMHeaders::NODE_NAME)     => 'salesforce-sync-contanct-connector',
+        ]);
         $loop       = Factory::create();
 
         $process = $connector->processBatch($processDto, $loop, function (SuccessMessage $message): void {
