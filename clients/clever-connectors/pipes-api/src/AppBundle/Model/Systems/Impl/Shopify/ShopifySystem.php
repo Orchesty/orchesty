@@ -134,8 +134,7 @@ class ShopifySystem implements WebhookSystemInterface, OAuth2Interface
         $systemUrl = $sett[self::SYSTEM_URL];
         $topic     = $this->topics[$subs->getNodeName()];
 
-        $dto = new RequestDto('POST',
-            new Uri(sprintf($subs->getRegistrationUrl(), $systemUrl)));
+        $dto = new RequestDto('POST', new Uri(sprintf($subs->getRegistrationUrl(), $systemUrl)));
 
         $dto->setBody(json_encode([
             'webhook' => [

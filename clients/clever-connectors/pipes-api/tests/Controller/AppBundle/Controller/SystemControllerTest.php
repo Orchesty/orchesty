@@ -33,7 +33,7 @@ class SystemControllerTest extends ControllerTestCaseAbstract
     {
         $this->loginUser('user@example.com', 'pass');
         $response = $this->sendGet('/systems/unknown');
-        $this->assertEquals(500, $response->status);
+        $this->assertEquals(404, $response->status);
     }
 
     /**
@@ -262,7 +262,7 @@ class SystemControllerTest extends ControllerTestCaseAbstract
         $response = $this->sendPost('/user_systems/user/someUser/system/unknown/install', [
             'token' => 'token',
         ]);
-        $this->assertEquals(500, $response->status);
+        $this->assertEquals(404, $response->status);
         $this->assertEquals(SystemException::class, $response->content->type);
         $this->assertEquals(SystemException::SYSTEM_NOT_FOUND, $response->content->error_code);
     }
@@ -370,7 +370,7 @@ class SystemControllerTest extends ControllerTestCaseAbstract
         $this->persistAndFlush($system);
 
         $response = $this->sendGet('/user_systems/user/someUser/system/unknown/uninstall');
-        $this->assertEquals(500, $response->status);
+        $this->assertEquals(404, $response->status);
         $this->assertEquals(SystemException::class, $response->content->type);
         $this->assertEquals(SystemException::SYSTEM_OR_USER_NOT_FOUND, $response->content->error_code);
     }
@@ -388,7 +388,7 @@ class SystemControllerTest extends ControllerTestCaseAbstract
         $this->persistAndFlush($system);
 
         $response = $this->sendGet('/user_systems/user/unknown/system/null.user.group/uninstall');
-        $this->assertEquals(500, $response->status);
+        $this->assertEquals(404, $response->status);
         $this->assertEquals(SystemException::class, $response->content->type);
         $this->assertEquals(SystemException::SYSTEM_OR_USER_NOT_FOUND, $response->content->error_code);
     }
@@ -438,7 +438,7 @@ class SystemControllerTest extends ControllerTestCaseAbstract
             '/user_systems/user/someUser/system/unknown/switch_token',
             ['token' => 'anotherToken']
         );
-        $this->assertEquals(500, $response->status);
+        $this->assertEquals(404, $response->status);
         $this->assertEquals(SystemException::class, $response->content->type);
         $this->assertEquals(SystemException::SYSTEM_OR_USER_NOT_FOUND, $response->content->error_code);
     }
@@ -459,7 +459,7 @@ class SystemControllerTest extends ControllerTestCaseAbstract
             '/user_systems/user/unknown/system/null.user.group/switch_token',
             ['token' => 'anotherToken']
         );
-        $this->assertEquals(500, $response->status);
+        $this->assertEquals(404, $response->status);
         $this->assertEquals(SystemException::class, $response->content->type);
         $this->assertEquals(SystemException::SYSTEM_OR_USER_NOT_FOUND, $response->content->error_code);
     }

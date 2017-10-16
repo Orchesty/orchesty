@@ -192,8 +192,13 @@ class WebhookManager implements LoggerAwareInterface
      *
      * @return string
      */
-    private function getWebhookUrl(string $domain, string $userId, string $token, string $nodeName,
-                                   string $topologyName): string
+    private function getWebhookUrl(
+        string $domain,
+        string $userId,
+        string $token,
+        string $nodeName,
+        string $topologyName
+    ): string
     {
         return sprintf('%s/webhook/%s/%s/%s/%s', $domain, $userId, $token, $nodeName, $topologyName);
     }

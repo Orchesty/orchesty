@@ -5,8 +5,10 @@ namespace CleverConnectors\AppBundle\Controller;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Handler\SystemHandler;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
+use Exception;
 use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Controller\FOSRestController;
+use Hanaboso\PipesFramework\Commons\Exception\PipesFrameworkException;
 use Hanaboso\PipesFramework\Commons\Utils\Base64;
 use Hanaboso\PipesFramework\Utils\ControllerUtils;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -53,7 +55,7 @@ class SystemController extends FOSRestController
         try {
             return new JsonResponse($this->handler->getSystem($systemKey), 200);
         } catch (SystemException $e) {
-            return new JsonResponse(ControllerUtils::createExceptionData($e), 500);
+            return self::processException($e);
         }
     }
 
@@ -73,7 +75,7 @@ class SystemController extends FOSRestController
                 $request->query->get('group', NULL)
             ), 200);
         } catch (SystemException $e) {
-            return new JsonResponse(ControllerUtils::createExceptionData($e), 500);
+            return self::processException($e);
         }
     }
 
@@ -90,7 +92,7 @@ class SystemController extends FOSRestController
         try {
             return new JsonResponse($this->handler->getUserSystems($userId), 200);
         } catch (SystemException $e) {
-            return new JsonResponse(ControllerUtils::createExceptionData($e), 500);
+            return self::processException($e);
         }
     }
 
@@ -108,7 +110,7 @@ class SystemController extends FOSRestController
         try {
             return new JsonResponse($this->handler->getUserSystem($userId, $systemKey), 200);
         } catch (SystemException $e) {
-            return new JsonResponse(ControllerUtils::createExceptionData($e), 500);
+            return self::processException($e);
         }
     }
 
@@ -126,8 +128,8 @@ class SystemController extends FOSRestController
     {
         try {
             return new JsonResponse($this->handler->installSystem($userId, $systemKey, $request->request->all()), 200);
-        } catch (SystemException $e) {
-            return new JsonResponse(ControllerUtils::createExceptionData($e), 500);
+        } catch (SystemException | CleverConnectorsException | PipesFrameworkException $e) {
+            return self::processException($e);
         }
     }
 
@@ -149,7 +151,7 @@ class SystemController extends FOSRestController
                 200
             );
         } catch (SystemException $e) {
-            return new JsonResponse(ControllerUtils::createExceptionData($e), 500);
+            return self::processException($e);
         }
     }
 
@@ -167,7 +169,7 @@ class SystemController extends FOSRestController
         try {
             return new JsonResponse($this->handler->uninstallSystem($userId, $systemKey), 200);
         } catch (SystemException $e) {
-            return new JsonResponse(ControllerUtils::createExceptionData($e), 500);
+            return self::processException($e);
         }
     }
 
@@ -185,8 +187,8 @@ class SystemController extends FOSRestController
     {
         try {
             return new JsonResponse($this->handler->switchToken($userId, $systemKey, $request->request->all()), 200);
-        } catch (SystemException $e) {
-            return new JsonResponse(ControllerUtils::createExceptionData($e), 500);
+        } catch (SystemException | PipesFrameworkException $e) {
+            return self::processException($e);
         }
     }
 
@@ -206,7 +208,7 @@ class SystemController extends FOSRestController
 
             return new JsonResponse([], 202);
         } catch (SystemException $e) {
-            return new JsonResponse(ControllerUtils::createExceptionData($e), 500);
+            return self::processException($e);
         }
     }
 
@@ -224,8 +226,8 @@ class SystemController extends FOSRestController
     {
         try {
             return new JsonResponse($this->handler->setPassword($userId, $systemKey, $request->request->all()), 200);
-        } catch (SystemException $e) {
-            return new JsonResponse(ControllerUtils::createExceptionData($e), 500);
+        } catch (SystemException | PipesFrameworkException $e) {
+            return self::processException($e);
         }
     }
 
@@ -246,7 +248,7 @@ class SystemController extends FOSRestController
 
             return NULL;
         } catch (SystemException $e) {
-            return new JsonResponse(ControllerUtils::createExceptionData($e), 500);
+            return self::processException($e);
         }
     }
 
@@ -289,6 +291,38 @@ class SystemController extends FOSRestController
         $url = $this->handler->saveToken($str[0], $str[1], ['code' => $request->get('code')]);
 
         return new RedirectResponse($url);
+    }
+
+    /**
+     * @param Exception $e
+     *
+     * @return JsonResponse
+     */
+    private static function processException(Exception $e): JsonResponse
+    {
+        $code = 500;
+
+        $className = get_class($e);
+        if ($className == SystemException::class) {
+            $sysNotFound = [SystemException::SYSTEM_NOT_FOUND, SystemException::SYSTEM_OR_USER_NOT_FOUND];
+            if (in_array($e->getCode(), $sysNotFound)) {
+                $code = 404;
+            }
+        }
+
+        if ($className == CleverConnectorsException::class) {
+            if ($e->getCode() == CleverConnectorsException::SYSTEM_ALREADY_INSTALLED) {
+                $code = 400;
+            }
+        }
+
+        if ($className == PipesFrameworkException::class) {
+            if ($e->getCode() == PipesFrameworkException::REQUIRED_PARAMETER_NOT_FOUND) {
+                $code = 400;
+            }
+        }
+
+        return new JsonResponse(ControllerUtils::createExceptionData($e), $code);
     }
 
 }

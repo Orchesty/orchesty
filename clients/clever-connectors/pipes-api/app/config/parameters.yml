@@ -20,3 +20,7 @@ parameters:
     rabbitmq.user: guest
     rabbitmq.password: guest
     backend_host: 'https://cleverconn.stage.hanaboso.net/'
+    clevermonitor:
+        ca: '%kernel.project_dir%/var/secret/ca.crt'
+        cert: '%kernel.project_dir%/var/secret/keypair.pem'
+    access_token_refresh_interval: 3600
