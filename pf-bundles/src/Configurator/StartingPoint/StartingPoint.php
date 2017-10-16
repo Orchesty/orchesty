@@ -161,7 +161,7 @@ class StartingPoint implements LoggerAwareInterface
             ->addHeader(PipesHeaders::createKey(PipesHeaders::SEQUENCE_ID), '1')
             ->addHeader(PipesHeaders::createKey(PipesHeaders::TOPOLOGY_ID), $topology->getId())
             ->addHeader(PipesHeaders::createKey(PipesHeaders::TOPOLOGY_NAME), $topology->getName())
-            ->addHeader('content_type', $requestHeaders['content-type'] ?? 'text/plain');
+            ->addHeader('content_type', $requestHeaders['content-type'][0] ?? 'text/plain');
 
         foreach (PipesHeaders::clear($requestHeaders) as $key => $value) {
             $headers->addHeader($key, (string) $value[0]);
