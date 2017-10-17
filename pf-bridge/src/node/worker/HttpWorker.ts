@@ -69,7 +69,7 @@ class HttpWorker implements IWorker {
 
                 logger.info("Worker[type='http'] received valid response.", logger.ctxFromMsg(msg, err));
 
-                if (body === undefined || body === null) {
+                if (!body) {
                     body = "";
                 }
 

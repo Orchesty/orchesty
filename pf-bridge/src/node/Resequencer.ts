@@ -12,6 +12,8 @@ interface IBufferType {
  */
 class Resequencer {
 
+    public static readonly START_SEQUENCE_ID = 0;
+
     private nodeId: string;
     private buffer: {[key: string]: IBufferType };
     private bufferTtl: number;
@@ -37,8 +39,8 @@ class Resequencer {
         const buf = this.getBuffer(msg.getProcessId());
 
         if (msg.getSequenceId() < buf.waitingFor) {
-            let warn = `Resequencer already processed seqId ${msg.getSequenceId()} of job "${msg.getProcessId()}."`;
-            warn += " This is possible message duplicate and will be ignored.";
+            let warn = `Resequencer has already processed sequenceId ${msg.getSequenceId()}."`;
+            warn += " This is possible message duplicate and this message will be ignored.";
             logger.warn(warn, logger.ctxFromMsg(msg));
             return [];
         }
@@ -60,9 +62,10 @@ class Resequencer {
      */
     private getBuffer(processId: string): IBufferType {
         if (!this.buffer[processId]) {
+            // Create blank buffer
             this.buffer[processId] = {
                 messages: {},
-                waitingFor: 1,
+                waitingFor: Resequencer.START_SEQUENCE_ID,
                 timeout: setTimeout(() => { delete this.buffer[processId]; }, this.bufferTtl),
             };
         }

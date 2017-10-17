@@ -72,7 +72,7 @@ describe("Linear topology with splitter test", () => {
             "pf-correlation-id": "corrid",
             "pf-process-id": "test",
             "pf-parent-id": "",
-            "pf-sequence-id": 1,
+            "pf-sequence-id": 0,
         }};
 
         const pip = new Pipes(testTopology);

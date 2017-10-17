@@ -5,6 +5,7 @@ import {ResultCode} from "../../message/ResultCode";
 import {INodeLabel} from "../../topology/Configurator";
 import IPartialForwarder from "../drain/IPartialForwarder";
 import IWorker from "./IWorker";
+import Resequencer from "../Resequencer";
 
 export interface ISplitterWorkerSettings {
     node_label: INodeLabel;
@@ -104,7 +105,7 @@ class SplitterWorker implements IWorker {
      */
     private splitAndSendParts(msg: JobMessage, content: any[]): Promise<void[]> {
         const splitPromises: Array<Promise<void>> = [];
-        let i: number = 1;
+        let i: number = Resequencer.START_SEQUENCE_ID;
 
         content.forEach((item: any) => {
             const headers = new Headers(msg.getHeaders().getRaw());
@@ -115,7 +116,7 @@ class SplitterWorker implements IWorker {
                 this.settings.node_label,
                 headers.getRaw(),
                 new Buffer(JSON.stringify(item)),
-                { code: ResultCode.SUCCESS, message: `Json split ${i}/${content.length}.`},
+                { code: ResultCode.SUCCESS, message: `Json split ${i}/${content.length - 1}.`},
             );
 
             splitPromises.push(this.partialForwarder.forwardPart(splitMsg));
