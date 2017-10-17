@@ -239,21 +239,7 @@ class Generator implements GeneratorInterface
     {
         return [
             'type'     => 'worker.http',
-            'settings' => [
-                'host'         => $this->hostMapper->getHost(new TypeEnum($node->getType())),
-                'process_path' => sprintf(
-                    '/%s',
-                    $this->hostMapper->getRoute(new TypeEnum($node->getType()), $node->getName())
-                ),
-                'status_path'  => sprintf(
-                    '/%s/test',
-                    $this->hostMapper->getRoute(new TypeEnum($node->getType()), $node->getName())
-                ),
-                'method'       => 'POST',
-                'port'         => 80,
-                'secure'       => FALSE,
-                'opts'         => [],
-            ],
+            'settings' => $this->getHttpWorkerSettings($node),
         ];
     }
 
@@ -266,15 +252,31 @@ class Generator implements GeneratorInterface
     {
         return [
             'type'     => 'worker.http_xml_parser',
-            'settings' => [
-                'host'         => $this->hostMapper->getHost(new TypeEnum($node->getType())),
-                'process_path' => 'parse',
-                'status_path'  => 'test',
-                'method'       => 'POST',
-                'port'         => 80,
-                'secure'       => FALSE,
-                'opts'         => [],
-            ],
+            'settings' => $this->getHttpWorkerSettings($node),
+        ];
+    }
+
+    /**
+     * @param Node $node
+     *
+     * @return array
+     */
+    private function getHttpWorkerSettings(Node $node): array
+    {
+        return [
+            'host'         => $this->hostMapper->getHost(new TypeEnum($node->getType())),
+            'process_path' => sprintf(
+                '/%s',
+                $this->hostMapper->getRoute(new TypeEnum($node->getType()), $node->getName())
+            ),
+            'status_path'  => sprintf(
+                '/%s/test',
+                $this->hostMapper->getRoute(new TypeEnum($node->getType()), $node->getName())
+            ),
+            'method'       => 'POST',
+            'port'         => 80,
+            'secure'       => FALSE,
+            'opts'         => [],
         ];
     }
 

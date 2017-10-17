@@ -68,6 +68,7 @@ class HostMapperTest extends TestCase
             [TypeEnum::EMAIL, 'mailer/1'],
             [TypeEnum::CONNECTOR, 'connector/1/action'],
             [TypeEnum::WEBHOOK, 'connector/1/webhook'],
+            [TypeEnum::XML_PARSER, '1'],
         ];
     }
 

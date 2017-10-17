@@ -90,6 +90,9 @@ class HostMapper
             case TypeEnum::MAPPER:
                 $route = 'mapper/{service_id}';
                 break;
+            case TypeEnum::XML_PARSER:
+                $route = '{service_id}';
+                break;
             case TypeEnum::EMAIL:
                 $route = 'mailer/{service_id}';
                 break;
