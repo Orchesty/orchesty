@@ -21,6 +21,7 @@ use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Repository\NodeRepository;
 use Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository;
 use Hanaboso\PipesFramework\Configurator\StartingPoint\StartingPoint;
+use Hanaboso\PipesFramework\TopologyGenerator\Request\RequestHandler;
 use PHPUnit\Framework\TestCase;
 use PHPUnit_Framework_MockObject_MockObject;
 
@@ -31,6 +32,11 @@ use PHPUnit_Framework_MockObject_MockObject;
  */
 class SystemManagerTest extends TestCase
 {
+
+    /**
+     * @var PHPUnit_Framework_MockObject_MockObject|RequestHandler
+     */
+    protected $requestHandler;
 
     /**
      * @var PHPUnit_Framework_MockObject_MockObject|DocumentManager
@@ -61,6 +67,7 @@ class SystemManagerTest extends TestCase
         $this->systemLoader   = $this->getClassMock(SystemLoader::class);
         $this->webhookManager = $this->getClassMock(WebhookManager::class);
         $this->startingPoint  = $this->getClassMock(StartingPoint::class);
+        $this->requestHandler = $this->getClassMock(RequestHandler::class);
         $this->startingPoint->method('runWithRequest');
     }
 
@@ -71,7 +78,8 @@ class SystemManagerTest extends TestCase
     {
         $this->prepareDmMock(new Node());
 
-        $manager = new SystemManager($this->dm, $this->systemLoader, $this->webhookManager, $this->startingPoint);
+        $manager = new SystemManager($this->dm, $this->systemLoader, $this->webhookManager, $this->startingPoint,
+            $this->requestHandler);
         $manager->synchronizeSubscriptions('user', 'system');
     }
 
@@ -85,7 +93,8 @@ class SystemManagerTest extends TestCase
         self::expectException(CleverConnectorsException::class);
         self::expectExceptionCode(CleverConnectorsException::STARTING_NODE_NOT_FOUND);
 
-        $manager = new SystemManager($this->dm, $this->systemLoader, $this->webhookManager, $this->startingPoint);
+        $manager = new SystemManager($this->dm, $this->systemLoader, $this->webhookManager, $this->startingPoint,
+            $this->requestHandler);
         $manager->synchronizeSubscriptions('user', 'system');
     }
 

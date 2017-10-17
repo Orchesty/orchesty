@@ -396,7 +396,7 @@ class SystemManager
 
         if ($topology) {
             $topology->setDeleted(TRUE);
-            $this->requestHandler->deleteTopology();
+            $this->requestHandler->deleteTopology($topology->getId());
         }
 
         foreach ($syncs as $sync) {
