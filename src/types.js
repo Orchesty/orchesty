@@ -13,5 +13,6 @@ export const stateType = {
 
 export const filterType = {
   EXACT: 'exact',
-  SEARCH: 'search'
+  SEARCH: 'search',
+  BOOLEAN: 'boolean_str'
 };

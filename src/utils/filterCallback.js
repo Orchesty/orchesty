@@ -13,6 +13,9 @@ export default filter => {
     case filterType.SEARCH:
       return shouldFilterText(value) ? item => item[property].indexOf(value) >= 0 : () => true;
 
+    case filterType.BOOLEAN:
+      return shouldFilterText(value) ? item => item[property] == value : () => true;
+
     default:
       return () => false;
   }
