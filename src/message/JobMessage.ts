@@ -1,7 +1,7 @@
 import TimeUtils from "lib-nodejs/dist/src/utils/TimeUtils";
 import {INodeLabel} from "../topology/Configurator";
 import AMessage from "./AMessage";
-import {PFHeaders} from "./HeadersEnum";
+import Headers from "./Headers";
 import IMessage from "./IMessage";
 import {ResultCode, ResultCodeGroup} from "./ResultCode";
 
@@ -42,8 +42,8 @@ class JobMessage extends AMessage implements IMessage {
         this.multiplier = 1;
         this.forwardSelf = true;
 
-        this.headers.removeHeader(PFHeaders.RESULT_CODE);
-        this.headers.removeHeader(PFHeaders.RESULT_MESSAGE);
+        this.headers.removeHeader(Headers.RESULT_CODE);
+        this.headers.removeHeader(Headers.RESULT_MESSAGE);
     }
 
     /**

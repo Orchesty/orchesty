@@ -5,7 +5,6 @@ import Publisher from "lib-nodejs/dist/src/rabbitmq/Publisher";
 import SimpleConsumer from "lib-nodejs/dist/src/rabbitmq/SimpleConsumer";
 import logger from "../../logger/Logger";
 import Headers from "../../message/Headers";
-import {PFHeaders} from "../../message/HeadersEnum";
 import JobMessage from "../../message/JobMessage";
 import {ResultCode} from "../../message/ResultCode";
 import {INodeLabel} from "../../topology/Configurator";
@@ -26,16 +25,18 @@ interface IWaiting {
     sequence: number;
 }
 
-export const TEST_TYPE = "test";
-export const BATCH_REQUEST_TYPE = "batch";
-export const BATCH_END_TYPE = "batch_end";
-export const BATCH_ITEM_TYPE = "batch_item";
-
 /**
  * TODO add waiting timeout
  * TODO if in responses are messages with same sequenceId take the latest
  */
 class AmqpRpcWorker implements IWorker {
+
+    public static readonly TEST_TYPE = "test";
+    public static readonly TEST_ID = "worker.amqprpc.test";
+
+    public static readonly BATCH_REQUEST_TYPE = "batch";
+    public static readonly BATCH_END_TYPE = "batch_end";
+    public static readonly BATCH_ITEM_TYPE = "batch_item";
 
     private publisher: Publisher;
     private resultsQueue: { name: string, options: any, prefetch: number };
@@ -110,14 +111,14 @@ class AmqpRpcWorker implements IWorker {
      */
     public processData(msg: JobMessage): Promise<JobMessage> {
         const headersToSend = new Headers(msg.getHeaders().getRaw());
-        headersToSend.setPFHeader(PFHeaders.NODE_ID, this.settings.node_label.node_id);
-        headersToSend.setPFHeader(PFHeaders.NODE_NAME, this.settings.node_label.node_name);
+        headersToSend.setPFHeader(Headers.NODE_ID, this.settings.node_label.node_id);
+        headersToSend.setPFHeader(Headers.NODE_NAME, this.settings.node_label.node_name);
 
         this.publisher.sendToQueue(
             this.settings.publish_queue.name,
             new Buffer(msg.getContent()),
             {
-                type: BATCH_REQUEST_TYPE,
+                type: AmqpRpcWorker.BATCH_REQUEST_TYPE,
                 replyTo: this.resultsQueue.name,
                 correlationId: msg.getCorrelationId(),
                 headers: headersToSend.getRaw(),
@@ -153,10 +154,8 @@ class AmqpRpcWorker implements IWorker {
      */
     public isWorkerReady(): Promise<boolean> {
         return new Promise((resolve) => {
-            const testId = "worker.amqprpc.test";
-
             const resolveTestFn = (msg: JobMessage) => {
-                if (msg.getCorrelationId() === testId) {
+                if (msg.getCorrelationId() === AmqpRpcWorker.TEST_ID) {
                     resolve(true);
                 } else {
                     resolve(false);
@@ -164,30 +163,23 @@ class AmqpRpcWorker implements IWorker {
             };
 
             const testHeaders = new Headers();
-            testHeaders.setPFHeader(PFHeaders.CORRELATION_ID, testId);
-            testHeaders.setPFHeader(PFHeaders.PROCESS_ID, testId);
-            testHeaders.setPFHeader(PFHeaders.PARENT_ID, "");
-            testHeaders.setPFHeader(PFHeaders.SEQUENCE_ID, "1");
+            testHeaders.setPFHeader(Headers.CORRELATION_ID, AmqpRpcWorker.TEST_ID);
+            testHeaders.setPFHeader(Headers.PROCESS_ID, AmqpRpcWorker.TEST_ID);
+            testHeaders.setPFHeader(Headers.PARENT_ID, "");
+            testHeaders.setPFHeader(Headers.SEQUENCE_ID, "1");
 
             const jobMsg = new JobMessage(this.settings.node_label, testHeaders.getRaw(), new Buffer(""));
             const t: IWaiting = { resolveFn: resolveTestFn, message: jobMsg, sequence: 0 };
-            this.waiting.set(testId, t);
+            this.waiting.set(AmqpRpcWorker.TEST_ID, t);
 
             this.publisher.sendToQueue(
                 this.settings.publish_queue.name,
-                new Buffer("isWorkerReady test message"),
+                new Buffer("Is worker ready test message."),
                 {
-                    type: TEST_TYPE,
-                    correlationId: testId,
+                    type: AmqpRpcWorker.TEST_TYPE,
+                    correlationId: AmqpRpcWorker.TEST_ID,
                     replyTo: this.resultsQueue.name,
-                    headers: {
-                        node_id: this.settings.node_label.node_id,
-                        node_name: this.settings.node_label.node_name,
-                        correlation_id: testId,
-                        process_id: testId,
-                        parent_id: "",
-                        sequence_id: "1",
-                    },
+                    headers: jobMsg.getHeaders().getRaw(),
                 },
             );
         });
@@ -211,13 +203,13 @@ class AmqpRpcWorker implements IWorker {
         }
 
         switch (msg.properties.type) {
-            case BATCH_ITEM_TYPE:
+            case AmqpRpcWorker.BATCH_ITEM_TYPE:
                 this.updateWaiting(corrId, msg);
                 break;
-            case BATCH_END_TYPE:
+            case AmqpRpcWorker.BATCH_END_TYPE:
                 this.resolveWaiting(corrId, msg);
                 break;
-            case TEST_TYPE:
+            case AmqpRpcWorker.TEST_TYPE:
                 this.resolveWaiting(corrId, msg);
                 break;
             default:
@@ -247,8 +239,8 @@ class AmqpRpcWorker implements IWorker {
             );
 
             splitMsg.setResult({
-                code: parseInt(splitMsg.getHeaders().getPFHeader(PFHeaders.RESULT_CODE), 10),
-                message: splitMsg.getHeaders().getPFHeader(PFHeaders.RESULT_MESSAGE),
+                code: parseInt(splitMsg.getHeaders().getPFHeader(Headers.RESULT_CODE), 10),
+                message: splitMsg.getHeaders().getPFHeader(Headers.RESULT_MESSAGE),
             });
 
             this.partialForwarder.forwardPart(splitMsg)
@@ -276,13 +268,13 @@ class AmqpRpcWorker implements IWorker {
         const resultHeaders = new Headers(msg.properties.headers);
 
         let resultCode = ResultCode.MISSING_RESULT_CODE;
-        const claimedCode = parseInt(resultHeaders.getPFHeader(PFHeaders.RESULT_CODE), 10);
+        const claimedCode = parseInt(resultHeaders.getPFHeader(Headers.RESULT_CODE), 10);
         if (claimedCode in ResultCode) {
             resultCode = claimedCode;
         }
 
-        const resultMessage = resultHeaders.getPFHeader(PFHeaders.RESULT_MESSAGE) ?
-            resultHeaders.getPFHeader(PFHeaders.RESULT_MESSAGE) : "";
+        const resultMessage = resultHeaders.getPFHeader(Headers.RESULT_MESSAGE) ?
+            resultHeaders.getPFHeader(Headers.RESULT_MESSAGE) : "";
 
         stored.message.setResult({ code: resultCode, message: resultMessage });
 

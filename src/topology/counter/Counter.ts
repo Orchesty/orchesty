@@ -5,7 +5,6 @@ import Publisher from "lib-nodejs/dist/src/rabbitmq/Publisher";
 import logger from "../../logger/Logger";
 import {default as CounterMessage} from "../../message/CounterMessage";
 import Headers from "../../message/Headers";
-import {PFHeaders} from "../../message/HeadersEnum";
 import { ResultCode } from "../../message/ResultCode";
 import {INodeLabel} from "../Configurator";
 import CounterConsumer from "./CounterConsumer";
@@ -207,13 +206,13 @@ export default class Counter {
             const content = JSON.parse(msg.content.toString());
 
             const resultCode = content.result.code;
-            const processId = Counter.getMostTopProcessId(headers.getPFHeader(PFHeaders.PROCESS_ID));
-            headers.setPFHeader(PFHeaders.PROCESS_ID, processId);
+            const processId = Counter.getMostTopProcessId(headers.getPFHeader(Headers.PROCESS_ID));
+            headers.setPFHeader(Headers.PROCESS_ID, processId);
 
             const node: INodeLabel = {
-                id: headers.getHeader(PFHeaders.NODE_ID),
-                node_id: headers.getHeader(PFHeaders.NODE_ID),
-                node_name: headers.getHeader(PFHeaders.NODE_NAME),
+                id: headers.getHeader(Headers.NODE_ID),
+                node_id: headers.getHeader(Headers.NODE_ID),
+                node_name: headers.getHeader(Headers.NODE_NAME),
             };
 
             const cm = new CounterMessage(

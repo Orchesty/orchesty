@@ -1,6 +1,5 @@
 import {INodeLabel} from "../topology/Configurator";
 import Headers from "./Headers";
-import {PFHeaders} from "./HeadersEnum";
 
 abstract class AMessage {
 
@@ -22,8 +21,8 @@ abstract class AMessage {
         }
 
         this.headers = new Headers(h);
-        this.headers.setPFHeader(PFHeaders.NODE_ID, node.node_id);
-        this.headers.setPFHeader(PFHeaders.NODE_NAME, node.node_name);
+        this.headers.setPFHeader(Headers.NODE_ID, node.node_id);
+        this.headers.setPFHeader(Headers.NODE_NAME, node.node_name);
     }
 
     public getNodeLabel(): INodeLabel {
@@ -35,19 +34,19 @@ abstract class AMessage {
     }
 
     public getCorrelationId() {
-        return this.headers.getPFHeader(PFHeaders.CORRELATION_ID);
+        return this.headers.getPFHeader(Headers.CORRELATION_ID);
     }
 
     public getProcessId() {
-        return this.headers.getPFHeader(PFHeaders.PROCESS_ID);
+        return this.headers.getPFHeader(Headers.PROCESS_ID);
     }
 
     public getParentId() {
-        return this.headers.getPFHeader(PFHeaders.PARENT_ID);
+        return this.headers.getPFHeader(Headers.PARENT_ID);
     }
 
     public getSequenceId() {
-        return parseInt(this.headers.getPFHeader(PFHeaders.SEQUENCE_ID), 10);
+        return parseInt(this.headers.getPFHeader(Headers.SEQUENCE_ID), 10);
     }
 
     /**
