@@ -75,7 +75,7 @@ describe("Linear Topology test", () => {
             "pf-correlation-id": "corrid",
             "pf-process-id": "test",
             "pf-parent-id": "",
-            "pf-sequence-id": 1,
+            "pf-sequence-id": 0,
             "pf-topology-id": "topoid",
             "pf-topology-name": "toponame",
             "pf-foo": "bar",

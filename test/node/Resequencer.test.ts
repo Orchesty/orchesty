@@ -12,7 +12,7 @@ describe("Resequencer", () => {
         const messages: JobMessage[] = [];
 
         const node: INodeLabel = {id: "nodeId", node_id: "nodeId", node_name: "nodeName"};
-        for (let i = 1; i <= 10; i++) {
+        for (let i = 0; i < 10; i++) {
             const headers = new Headers();
             headers.setPFHeader(Headers.CORRELATION_ID, "corrId");
             headers.setPFHeader(Headers.PROCESS_ID, "procId");
@@ -29,7 +29,7 @@ describe("Resequencer", () => {
         });
 
         assert.lengthOf(output, messages.length);
-        let j = 1;
+        let j = 0;
         output.forEach((msg: JobMessage) => {
             assert.equal(j, msg.getSequenceId());
             j++;
@@ -40,8 +40,8 @@ describe("Resequencer", () => {
         const messages: JobMessage[] = [];
 
         const node: INodeLabel = {id: "nodeId", node_id: "nodeId", node_name: "nodeName"};
-        for (let i = 1; i <= 2; i++) {
-            for (let j = 1; j <= 10; j++) {
+        for (let i = 0; i < 2; i++) {
+            for (let j = 0; j < 10; j++) {
                 const headers = new Headers();
                 headers.setPFHeader(Headers.CORRELATION_ID, `${i}`);
                 headers.setPFHeader(Headers.PROCESS_ID, `${i}`);
@@ -66,13 +66,13 @@ describe("Resequencer", () => {
         assert.lengthOf(output1, messages.length / 2);
         assert.lengthOf(output2, messages.length / 2);
 
-        let k = 1;
+        let k = 0;
         output1.forEach((msg: JobMessage) => {
             assert.equal(k, msg.getSequenceId());
             k++;
         });
 
-        let l = 1;
+        let l = 0;
         output1.forEach((msg: JobMessage) => {
             assert.equal(l, msg.getSequenceId());
             l++;

@@ -1,3 +1,5 @@
+import Resequencer from "../node/Resequencer";
+
 class Headers {
 
     public static readonly PF_HEADERS_PREFIX = "pf-";
@@ -54,25 +56,31 @@ class Headers {
             throw new Error("Invalid headers. Is it object?");
         }
 
+        const errors = [];
+
         let key = `${Headers.PF_HEADERS_PREFIX}${Headers.CORRELATION_ID}`;
         if (!(key in headers) || !headers[key]) {
-            throw new Error(`Invalid '${key}' header.`);
+            errors.push(key);
         }
 
         key = `${Headers.PF_HEADERS_PREFIX}${Headers.PROCESS_ID}`;
         if (!(key in headers) || !headers[key]) {
-            throw new Error(`Invalid '${key}' header.`);
+            errors.push(key);
         }
 
         key = `${Headers.PF_HEADERS_PREFIX}${Headers.SEQUENCE_ID}`;
-        if (!(key in headers) || !headers[key] || parseInt(headers[key], 10) < 0) {
-            throw new Error(`Invalid '${key}' header.`);
+        if (!(key in headers) || parseInt(headers[key], 10) < Resequencer.START_SEQUENCE_ID) {
+            errors.push(key);
         }
 
         // parent-id must be present but can be empty
         key = `${Headers.PF_HEADERS_PREFIX}${Headers.PARENT_ID}`;
         if (!(key in headers)) {
-            throw new Error(`Invalid '${key}' header.`);
+            errors.push(key);
+        }
+
+        if (errors.length > 0) {
+            throw new Error(`Invalid '${errors.join(",")}' headers. Headers provided: ${JSON.stringify(headers)}`);
         }
     }
 
