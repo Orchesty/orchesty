@@ -1,5 +1,6 @@
 import Connection from "lib-nodejs/dist/src/rabbitmq/Connection";
 import StreamServer, {IStreamServerSettings} from "./StreamServer";
+import Users from "./Users";
 
 const settings: IStreamServerSettings = {
     port: 8080,
@@ -18,9 +19,17 @@ const settings: IStreamServerSettings = {
         vhost: process.env.RABBITMQ_VHOST || "/",
         heartbeat: parseInt(process.env.RABBITMQ_HEARTBEAT, 10) || 60,
     },
+    http: {
+        port: 3030,
+        routes: {
+            login: "/login",
+            logout: "/logout",
+        },
+    },
 };
 
+const users = new Users(settings.http);
 const conn = new Connection(settings.amqp);
-const stream = new StreamServer(settings, conn);
+const stream = new StreamServer(settings, users, conn);
 
 stream.start();

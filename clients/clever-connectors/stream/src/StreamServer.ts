@@ -3,12 +3,14 @@ import logger from "lib-nodejs/dist/src/logger/Logger";
 import Connection, {IOptions} from "lib-nodejs/dist/src/rabbitmq/Connection";
 import * as SocketIO from "socket.io";
 import StreamConsumer, {IStreamConsumerSettings} from "./StreamConsumer";
+import {default as Users, IStreamHttpServerSettings} from "./Users";
 
 export interface IStreamServerSettings {
     port: number;
     namespace: string;
     consumer: IStreamConsumerSettings;
     amqp: IOptions;
+    http: IStreamHttpServerSettings;
 }
 
 export interface IStreamMessage {
@@ -59,10 +61,12 @@ class StreamServer {
     /**
      *
      * @param {IStreamServerSettings} settings
+     * @param {Users} users
      * @param {AMQPConnection} connection
      */
     constructor(
         private settings: IStreamServerSettings,
+        private users: Users,
         connection: Connection,
     ) {
         this.consumer = new StreamConsumer(
