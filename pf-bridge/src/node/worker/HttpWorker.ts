@@ -1,7 +1,6 @@
 import * as request from "request";
 import logger from "../../logger/Logger";
 import Headers from "../../message/Headers";
-import {PFHeaders} from "../../message/HeadersEnum";
 import JobMessage, {IResult} from "../../message/JobMessage";
 import { ResultCode } from "../../message/ResultCode";
 import {INodeLabel} from "../../topology/Configurator";
@@ -129,8 +128,8 @@ class HttpWorker implements IWorker {
     private getJobRequestParams(inMsg: JobMessage): IHttpWorkerRequestParams {
 
         const headersToSend = new Headers(inMsg.getHeaders().getRaw());
-        headersToSend.setPFHeader(PFHeaders.NODE_ID, this.settings.node_label.node_id);
-        headersToSend.setPFHeader(PFHeaders.NODE_NAME, this.settings.node_label.node_name);
+        headersToSend.setPFHeader(Headers.NODE_ID, this.settings.node_label.node_id);
+        headersToSend.setPFHeader(Headers.NODE_NAME, this.settings.node_label.node_name);
 
         return {
             method: this.settings.method.toUpperCase(),
@@ -162,8 +161,8 @@ class HttpWorker implements IWorker {
         const responseHeaders: any = response.headers;
         const resultHeaders = new Headers(responseHeaders);
 
-        const resultCode = parseInt(resultHeaders.getPFHeader(PFHeaders.RESULT_CODE), 10);
-        const resultMessage = resultHeaders.getPFHeader(PFHeaders.RESULT_MESSAGE) || "";
+        const resultCode = parseInt(resultHeaders.getPFHeader(Headers.RESULT_CODE), 10);
+        const resultMessage = resultHeaders.getPFHeader(Headers.RESULT_MESSAGE) || "";
 
         if (!(resultCode in ResultCode)) {
             throw new Error("Missing or invalid result code.");

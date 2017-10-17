@@ -2,7 +2,6 @@ import { assert } from "chai";
 import "mocha";
 
 import Headers from "../../../src/message/Headers";
-import {PFHeaders} from "../../../src/message/HeadersEnum";
 import JobMessage from "../../../src/message/JobMessage";
 import {ResultCode} from "../../../src/message/ResultCode";
 import IPartialForwarder from "../../../src/node/drain/IPartialForwarder";
@@ -20,10 +19,10 @@ describe("Splitter worker", () => {
         };
         const node: INodeLabel = {id: "nodeId", node_id: "nodeId", node_name: "nodeName"};
         const headers = new Headers();
-        headers.setPFHeader(PFHeaders.CORRELATION_ID, "123");
-        headers.setPFHeader(PFHeaders.PROCESS_ID, "123");
-        headers.setPFHeader(PFHeaders.PARENT_ID, "");
-        headers.setPFHeader(PFHeaders.SEQUENCE_ID, "1");
+        headers.setPFHeader(Headers.CORRELATION_ID, "123");
+        headers.setPFHeader(Headers.PROCESS_ID, "123");
+        headers.setPFHeader(Headers.PARENT_ID, "");
+        headers.setPFHeader(Headers.SEQUENCE_ID, "1");
         const msg = new JobMessage(node, headers.getRaw(), new Buffer("{}{}{}"));
         const worker = new SplitterWorker(settings, partialForwarder);
         return worker.processData(msg)
@@ -40,10 +39,10 @@ describe("Splitter worker", () => {
         const body = new Buffer(JSON.stringify({ foo: "bar" }));
         const node: INodeLabel = {id: "nodeId", node_id: "nodeId", node_name: "nodeName"};
         const headers = new Headers();
-        headers.setPFHeader(PFHeaders.CORRELATION_ID, "123");
-        headers.setPFHeader(PFHeaders.PROCESS_ID, "123");
-        headers.setPFHeader(PFHeaders.PARENT_ID, "");
-        headers.setPFHeader(PFHeaders.SEQUENCE_ID, "1");
+        headers.setPFHeader(Headers.CORRELATION_ID, "123");
+        headers.setPFHeader(Headers.PROCESS_ID, "123");
+        headers.setPFHeader(Headers.PARENT_ID, "");
+        headers.setPFHeader(Headers.SEQUENCE_ID, "1");
         const msg = new JobMessage(node, headers.getRaw(), body);
         const worker = new SplitterWorker(settings, partialForwarder);
         return worker.processData(msg)
@@ -62,10 +61,10 @@ describe("Splitter worker", () => {
         ];
         const node: INodeLabel = {id: "nodeId", node_id: "nodeId", node_name: "nodeName"};
         const headers = new Headers();
-        headers.setPFHeader(PFHeaders.CORRELATION_ID, "123");
-        headers.setPFHeader(PFHeaders.PROCESS_ID, "123");
-        headers.setPFHeader(PFHeaders.PARENT_ID, "");
-        headers.setPFHeader(PFHeaders.SEQUENCE_ID, "1");
+        headers.setPFHeader(Headers.CORRELATION_ID, "123");
+        headers.setPFHeader(Headers.PROCESS_ID, "123");
+        headers.setPFHeader(Headers.PARENT_ID, "");
+        headers.setPFHeader(Headers.SEQUENCE_ID, "1");
         const msg = new JobMessage(node, headers.getRaw(), new Buffer(JSON.stringify(content)));
         const partialForwarder: IPartialForwarder = {
             forwardPart: (forwardedMsg: JobMessage) => {

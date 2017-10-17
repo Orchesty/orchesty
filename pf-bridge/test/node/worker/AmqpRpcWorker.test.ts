@@ -7,19 +7,17 @@ import Publisher from "lib-nodejs/dist/src/rabbitmq/Publisher";
 import SimpleConsumer from "lib-nodejs/dist/src/rabbitmq/SimpleConsumer";
 import {amqpConnectionOptions} from "../../../src/config";
 import Headers from "../../../src/message/Headers";
-import {PFHeaders} from "../../../src/message/HeadersEnum";
 import JobMessage from "../../../src/message/JobMessage";
 import {ResultCode} from "../../../src/message/ResultCode";
 import IPartialForwarder from "../../../src/node/drain/IPartialForwarder";
 import AmqpRpcWorker, {IAmqpRpcWorkerSettings} from "../../../src/node/worker/AmqpRpcWorker";
-import {BATCH_END_TYPE, BATCH_ITEM_TYPE} from "../../../src/node/worker/AmqpRpcWorker";
 import {INodeLabel} from "../../../src/topology/Configurator";
 
 const conn = new Connection(amqpConnectionOptions);
 
 describe("AmqpRpcWorker", () => {
+
     it("should check if worker is ready by sending rpc message", () => {
-        const forwarded: JobMessage[] = [];
         const settings: IAmqpRpcWorkerSettings = {
             node_label: {
                 id: "amqp_rpc_node_test",
@@ -32,10 +30,7 @@ describe("AmqpRpcWorker", () => {
             },
         };
         const partialForwarder: IPartialForwarder = {
-            forwardPart: (jm: JobMessage) => {
-                forwarded.push(jm);
-                return Promise.resolve();
-            },
+            forwardPart: () => Promise.resolve(),
         };
         const rpcWorker = new AmqpRpcWorker(conn, settings, partialForwarder);
 
@@ -54,7 +49,11 @@ describe("AmqpRpcWorker", () => {
                 });
             },
             (msg: Message) => {
-                // Send the received message to reply queue
+                assert.equal(msg.properties.correlationId, AmqpRpcWorker.TEST_ID);
+                assert.equal(msg.properties.replyTo, `${settings.publish_queue.name}_reply`);
+                assert.isTrue(Headers.containsAllMandatory(msg.properties.headers));
+
+                // Reply to received message with the same content and headers
                 publisher.sendToQueue(msg.properties.replyTo, msg.content, msg.properties);
             },
         );
@@ -68,7 +67,7 @@ describe("AmqpRpcWorker", () => {
             });
     });
 
-    it("should send 1 message to external worker and receive multiple", () => {
+    it("should send 1 message to external worker and receive multiple with proper headers", () => {
         const forwarded: JobMessage[] = [];
         const settings: IAmqpRpcWorkerSettings = {
             node_label: {
@@ -104,17 +103,19 @@ describe("AmqpRpcWorker", () => {
             },
             (msg: Message) => {
                 // check if message has all expected headers
-                assert.deepEqual(msg.properties.headers, {
-                    "pf-node-id": "507f191e810c19729de860ea",
-                    "pf-node-name": "amqprpcnode",
-                    "pf-correlation-id": "amqp.worker.correlation_id",
-                    "pf-process-id": "amqp.worker.process_id",
-                    "pf-parent-id": "",
-                    "pf-sequence-id": "1",
-                    "pf-topology-id": "topoId",
-                    "pf-topology-name": "topoName",
-                    "pf-foo": "bar",
-                });
+                assert.equal(msg.properties.correlationId, "amqp.worker.correlation_id");
+                assert.equal(msg.properties.replyTo, `${settings.publish_queue.name}_reply`);
+                assert.isTrue(Headers.containsAllMandatory(msg.properties.headers));
+                const headers = new Headers(msg.properties.headers);
+                assert.equal(headers.getPFHeader(Headers.NODE_ID), "507f191e810c19729de860ea");
+                assert.equal(headers.getPFHeader(Headers.NODE_NAME), "amqprpcnode");
+                assert.equal(headers.getPFHeader(Headers.CORRELATION_ID), "amqp.worker.correlation_id");
+                assert.equal(headers.getPFHeader(Headers.PROCESS_ID), "amqp.worker.process_id");
+                assert.equal(headers.getPFHeader(Headers.PARENT_ID), "");
+                assert.equal(headers.getPFHeader(Headers.SEQUENCE_ID), "1");
+                assert.equal(headers.getPFHeader(Headers.TOPOLOGY_ID), "topoId");
+                assert.equal(headers.getPFHeader(Headers.TOPOLOGY_NAME), "topoName");
+                assert.equal(headers.getPFHeader("foo"), "bar");
 
                 // Send partial messages and the confirmation message afterwards
                 let i = 1;
@@ -125,11 +126,13 @@ describe("AmqpRpcWorker", () => {
                     replyHeaders["pf-result-code"] = ResultCode.SUCCESS;
                     replyHeaders["pf-result-message"] = "ok";
 
+                    const content = new Buffer(`${i}`);
+
                     const p = publisher.sendToQueue(
                         msg.properties.replyTo,
-                        new Buffer(JSON.stringify({ settings: {}, data: `${i}`})),
+                        content,
                         {
-                            type: BATCH_ITEM_TYPE,
+                            type: AmqpRpcWorker.BATCH_ITEM_TYPE,
                             correlationId: msg.properties.correlationId,
                             headers: replyHeaders,
                         },
@@ -150,7 +153,7 @@ describe("AmqpRpcWorker", () => {
                             msg.properties.replyTo,
                             new Buffer(""),
                             {
-                                type: BATCH_END_TYPE,
+                                type: AmqpRpcWorker.BATCH_END_TYPE,
                                 correlationId: msg.properties.correlationId,
                                 headers: finalHeaders,
                             },
@@ -163,12 +166,12 @@ describe("AmqpRpcWorker", () => {
             .then(() => {
                 const node: INodeLabel = {id: "amqp.worker.node_id", node_id: "nodeId", node_name: "nodeName"};
                 const headers = new Headers();
-                headers.setPFHeader(PFHeaders.CORRELATION_ID, "amqp.worker.correlation_id");
-                headers.setPFHeader(PFHeaders.PROCESS_ID, "amqp.worker.process_id");
-                headers.setPFHeader(PFHeaders.PARENT_ID, "");
-                headers.setPFHeader(PFHeaders.SEQUENCE_ID, "1");
-                headers.setPFHeader(PFHeaders.TOPOLOGY_ID, "topoId");
-                headers.setPFHeader(PFHeaders.TOPOLOGY_NAME, "topoName");
+                headers.setPFHeader(Headers.CORRELATION_ID, "amqp.worker.correlation_id");
+                headers.setPFHeader(Headers.PROCESS_ID, "amqp.worker.process_id");
+                headers.setPFHeader(Headers.PARENT_ID, "");
+                headers.setPFHeader(Headers.SEQUENCE_ID, "1");
+                headers.setPFHeader(Headers.TOPOLOGY_ID, "topoId");
+                headers.setPFHeader(Headers.TOPOLOGY_NAME, "topoName");
                 headers.setPFHeader("foo", "bar");
                 headers.setHeader("baz", "bat");
 
@@ -190,9 +193,7 @@ describe("AmqpRpcWorker", () => {
                 let i = 1;
                 forwarded.forEach((splitMsg: JobMessage) => {
                     assert.equal(i, splitMsg.getSequenceId());
-
-                    const body = JSON.parse(splitMsg.getContent());
-                    assert.equal(i, parseInt(body.data, 10));
+                    assert.equal(`${i}`, splitMsg.getContent());
                     i++;
                 });
             });

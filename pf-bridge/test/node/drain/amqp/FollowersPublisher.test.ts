@@ -6,7 +6,6 @@ import Connection from "lib-nodejs/dist/src/rabbitmq/Connection";
 import SimpleConsumer from "lib-nodejs/dist/src/rabbitmq/SimpleConsumer";
 import {amqpConnectionOptions} from "../../../../src/config";
 import Headers from "../../../../src/message/Headers";
-import {PFHeaders} from "../../../../src/message/HeadersEnum";
 import JobMessage from "../../../../src/message/JobMessage";
 import {ResultCode} from "../../../../src/message/ResultCode";
 import FollowersPublisher from "../../../../src/node/drain/amqp/FollowersPublisher";
@@ -142,10 +141,10 @@ describe("FollowersPublisher", () => {
         consumer.consume(outputQueue, {})
             .then(() => {
                 const headers = new Headers();
-                headers.setPFHeader(PFHeaders.CORRELATION_ID, msgCorrId);
-                headers.setPFHeader(PFHeaders.PROCESS_ID, msgProcessId);
-                headers.setPFHeader(PFHeaders.PARENT_ID, "");
-                headers.setPFHeader(PFHeaders.SEQUENCE_ID, `${msgSeqId}`);
+                headers.setPFHeader(Headers.CORRELATION_ID, msgCorrId);
+                headers.setPFHeader(Headers.PROCESS_ID, msgProcessId);
+                headers.setPFHeader(Headers.PARENT_ID, "");
+                headers.setPFHeader(Headers.SEQUENCE_ID, `${msgSeqId}`);
 
                 const msg: JobMessage = new JobMessage(
                     node,

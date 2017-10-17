@@ -4,7 +4,6 @@ import "mocha";
 import * as bodyParser from "body-parser";
 import * as express from "express";
 import Headers from "../../../src/message/Headers";
-import {PFHeaders} from "../../../src/message/HeadersEnum";
 import JobMessage from "../../../src/message/JobMessage";
 import {ResultCode} from "../../../src/message/ResultCode";
 import HttpWorker from "../../../src/node/worker/HttpWorker";
@@ -61,10 +60,10 @@ describe("HttpWorker", () => {
     it("should convert JobMessage to http request, receive response and set message result", () => {
         const node: INodeLabel = {id: "nodeId", node_id: "nodeId", node_name: "nodeName"};
         const headers = new Headers();
-        headers.setPFHeader(PFHeaders.CORRELATION_ID, "123");
-        headers.setPFHeader(PFHeaders.PROCESS_ID, "123");
-        headers.setPFHeader(PFHeaders.PARENT_ID, "");
-        headers.setPFHeader(PFHeaders.SEQUENCE_ID, "1");
+        headers.setPFHeader(Headers.CORRELATION_ID, "123");
+        headers.setPFHeader(Headers.PROCESS_ID, "123");
+        headers.setPFHeader(Headers.PARENT_ID, "");
+        headers.setPFHeader(Headers.SEQUENCE_ID, "1");
         const msg = new JobMessage(node, headers.getRaw(), new Buffer(JSON.stringify({ val: "original" })));
         const worker = new HttpWorker({
             node_label: { id: "someId", node_id: "507f191e810c19729de860ea", node_name: "httpworker" },
@@ -87,10 +86,10 @@ describe("HttpWorker", () => {
     it("should return original message content when server responds with error", () => {
         const node: INodeLabel = {id: "nodeId", node_id: "nodeId", node_name: "nodeName"};
         const headers = new Headers();
-        headers.setPFHeader(PFHeaders.CORRELATION_ID, "123");
-        headers.setPFHeader(PFHeaders.PROCESS_ID, "123");
-        headers.setPFHeader(PFHeaders.PARENT_ID, "");
-        headers.setPFHeader(PFHeaders.SEQUENCE_ID, "1");
+        headers.setPFHeader(Headers.CORRELATION_ID, "123");
+        headers.setPFHeader(Headers.PROCESS_ID, "123");
+        headers.setPFHeader(Headers.PARENT_ID, "");
+        headers.setPFHeader(Headers.SEQUENCE_ID, "1");
         const msg = new JobMessage(node, headers.getRaw(), new Buffer(JSON.stringify({ val: "original" })));
         const worker = new HttpWorker({
             node_label: { id: "someId", node_id: "507f191e810c19729de860ea", node_name: "httpworker" },
@@ -113,10 +112,10 @@ describe("HttpWorker", () => {
     it("should return modified message but be marged as failed due to result_status error", () => {
         const node: INodeLabel = {id: "nodeId", node_id: "nodeId", node_name: "nodeName"};
         const headers = new Headers();
-        headers.setPFHeader(PFHeaders.CORRELATION_ID, "123");
-        headers.setPFHeader(PFHeaders.PROCESS_ID, "123");
-        headers.setPFHeader(PFHeaders.PARENT_ID, "");
-        headers.setPFHeader(PFHeaders.SEQUENCE_ID, "1");
+        headers.setPFHeader(Headers.CORRELATION_ID, "123");
+        headers.setPFHeader(Headers.PROCESS_ID, "123");
+        headers.setPFHeader(Headers.PARENT_ID, "");
+        headers.setPFHeader(Headers.SEQUENCE_ID, "1");
         const msg = new JobMessage(node, headers.getRaw(), new Buffer(JSON.stringify({ val: "original" })));
         const worker = new HttpWorker({
             node_label: { id: "someId", node_id: "507f191e810c19729de860ea", node_name: "httpworker" },
@@ -139,10 +138,10 @@ describe("HttpWorker", () => {
     it("should return original message content when process_path does not exist", () => {
         const node: INodeLabel = {id: "nodeId", node_id: "nodeId", node_name: "nodeName"};
         const headers = new Headers();
-        headers.setPFHeader(PFHeaders.CORRELATION_ID, "123");
-        headers.setPFHeader(PFHeaders.PROCESS_ID, "123");
-        headers.setPFHeader(PFHeaders.PARENT_ID, "");
-        headers.setPFHeader(PFHeaders.SEQUENCE_ID, "1");
+        headers.setPFHeader(Headers.CORRELATION_ID, "123");
+        headers.setPFHeader(Headers.PROCESS_ID, "123");
+        headers.setPFHeader(Headers.PARENT_ID, "");
+        headers.setPFHeader(Headers.SEQUENCE_ID, "1");
         const msg = new JobMessage(node, headers.getRaw(), new Buffer(JSON.stringify({ val: "original" })));
         const worker = new HttpWorker({
             node_label: { id: "someId", node_id: "507f191e810c19729de860ea", node_name: "httpworker" },
@@ -165,10 +164,10 @@ describe("HttpWorker", () => {
     it("should return empty data when worker returns empty body", () => {
         const node: INodeLabel = {id: "nodeId", node_id: "nodeId", node_name: "nodeName"};
         const headers = new Headers();
-        headers.setPFHeader(PFHeaders.CORRELATION_ID, "123");
-        headers.setPFHeader(PFHeaders.PROCESS_ID, "123");
-        headers.setPFHeader(PFHeaders.PARENT_ID, "");
-        headers.setPFHeader(PFHeaders.SEQUENCE_ID, "1");
+        headers.setPFHeader(Headers.CORRELATION_ID, "123");
+        headers.setPFHeader(Headers.PROCESS_ID, "123");
+        headers.setPFHeader(Headers.PARENT_ID, "");
+        headers.setPFHeader(Headers.SEQUENCE_ID, "1");
         const msg = new JobMessage(node, headers.getRaw(), new Buffer(JSON.stringify({ val: "original" })));
         const worker = new HttpWorker({
             node_label: { id: "someId", node_id: "507f191e810c19729de860ea", node_name: "httpworker" },
@@ -239,10 +238,10 @@ describe("HttpWorker", () => {
     it("should send json and receive xml", () => {
         const node: INodeLabel = {id: "nodeId", node_id: "nodeId", node_name: "nodeName"};
         const headers = new Headers();
-        headers.setPFHeader(PFHeaders.CORRELATION_ID, "123");
-        headers.setPFHeader(PFHeaders.PROCESS_ID, "123");
-        headers.setPFHeader(PFHeaders.PARENT_ID, "");
-        headers.setPFHeader(PFHeaders.SEQUENCE_ID, "1");
+        headers.setPFHeader(Headers.CORRELATION_ID, "123");
+        headers.setPFHeader(Headers.PROCESS_ID, "123");
+        headers.setPFHeader(Headers.PARENT_ID, "");
+        headers.setPFHeader(Headers.SEQUENCE_ID, "1");
         const msg = new JobMessage(node, headers.getRaw(), new Buffer(JSON.stringify({ val: "original" })));
         const worker = new HttpWorker({
             node_label: { id: "someId", node_id: "507f191e810c19729de860ea", node_name: "httpworker" },

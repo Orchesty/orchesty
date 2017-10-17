@@ -1,6 +1,5 @@
 import logger from "../../logger/Logger";
 import Headers from "../../message/Headers";
-import {PFHeaders} from "../../message/HeadersEnum";
 import JobMessage from "../../message/JobMessage";
 import {ResultCode} from "../../message/ResultCode";
 import {INodeLabel} from "../../topology/Configurator";
@@ -109,7 +108,7 @@ class SplitterWorker implements IWorker {
 
         content.forEach((item: any) => {
             const headers = new Headers(msg.getHeaders().getRaw());
-            headers.setPFHeader(PFHeaders.SEQUENCE_ID, `${i}`);
+            headers.setPFHeader(Headers.SEQUENCE_ID, `${i}`);
             headers.setHeader("content-type", "application/json");
 
             const splitMsg = new JobMessage(
