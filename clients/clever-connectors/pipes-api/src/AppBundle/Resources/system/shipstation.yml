@@ -1,0 +1,24 @@
+services:
+    systems.shipstation:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Shipstation\ShipstationSystem
+        arguments:
+        tags: ['%systems%']
+
+    hbpf.connector.shipstation-sync-customer-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Shipstation\Connector\ShipstationSyncCustomerConnector
+        arguments:
+            - '@systems.shipstation'
+            - '@cc.last_sync.manager'
+            - '@hbpf.transport.async_curl_factory'
+            - '@doctrine_mongodb.odm.default_document_manager'
+
+    hbpf.connector.shipstation-update-customer-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Shipstation\Connector\ShipstationUpdateCustomerConnector
+        arguments:
+            - '@systems.shipstation'
+            - '@cc.last_sync.manager'
+            - '@hbpf.transport.async_curl_factory'
+
+    hbpf.custom_node.shipstation-update-customer-mapper:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Shipstation\Mapper\ShipstationUpdateCustomerMapper
+        arguments:
