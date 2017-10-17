@@ -1,0 +1,25 @@
+services:
+    systems.zendesk:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Zendesk\ZendeskSystem
+        arguments:
+            - '@hbpf.providers.oauth2_provider'
+
+    hbpf.connector.zendesk-sync-user-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Zendesk\Connector\ZendeskSyncUserConnector
+        arguments:
+            - '@systems.zendesk'
+            - '@cc.last_sync.manager'
+            - '@hbpf.transport.async_curl_factory'
+            - '@doctrine_mongodb.odm.default_document_manager'
+
+    hbpf.connector.zendesk-update-user-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Zendesk\Connector\ZendeskUpdateUserConnector
+        arguments:
+            - '@systems.zendesk'
+            - '@cc.last_sync.manager'
+            - '@hbpf.transport.async_curl_factory'
+            - '@doctrine_mongodb.odm.default_document_manager'
+
+    hbpf.custom_node.zendesk-update-user-mapper:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Zendesk\Mapper\ZendeskUpdateUserMapper
+        arguments:
