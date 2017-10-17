@@ -24,6 +24,9 @@ class Consumer extends BasicConsumer {
     }
 
     public processMessage(amqMsg: Message, channel: Channel): void {
+        logger.info(`AmqpFaucet received message. \
+        Headers: ${JSON.stringify(amqMsg.properties)}, Body: ${amqMsg.content.toString()}`);
+
         let inMsg: JobMessage;
         try {
             inMsg = new JobMessage(this.node, amqMsg.properties.headers, amqMsg.content);
@@ -36,6 +39,7 @@ class Consumer extends BasicConsumer {
         this.processData(inMsg)
             .then(() => {
                 channel.ack(amqMsg);
+                logger.info("AmqpFaucet message ack");
             })
             .catch((error: Error) => {
                 logger.error(`AmqpFaucet requeue message`, logger.ctxFromMsg(inMsg, error));
