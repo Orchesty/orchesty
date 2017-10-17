@@ -30,9 +30,9 @@ function addElements(oldElements, newElements){
 
 function reducer(state, action){
   switch (action.type){
-    case types.NODE_LIST_RECEIVE:
+    case types.NODE_RECEIVE_ITEMS:
       return Object.assign({}, state, {
-        elements: addElements(state.elements, action.data.items)
+        elements: addElements(state.elements, action.items)
       });
 
     case types.NODE_RECEIVE:

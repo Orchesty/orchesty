@@ -5,12 +5,16 @@ import objectEquals from 'utils/objectEquals';
 
 import processes from 'enums/processes';
 import config from 'rootApp/config';
+import sortCompare from 'utils/sortCompare';
 import * as notificationActions from './notificationActions';
 import * as processActions from './processActions';
 import * as nodeActions from './nodeActions';
 import * as applicationActions from './applicationActions';
+import * as topologyGroupActions from './topologyGroupActions';
+import {listType} from 'rootApp/types';
+import filterCallback from 'rootApp/utils/filterCallback';
 
-const {createPaginationList, listLoading, listError, listReceive, listDelete, listChangeSort, listChangePage, invalidateLists} = listFactory('TOPOLOGY/LIST/');
+const {createPaginationList, createCompleteList, listLoading, listError, listReceive, listDelete, listChangeSort, listChangePage, listChangeFilter, invalidateLists} = listFactory('TOPOLOGY/LIST/');
 
 export const topologyInvalidateLists = invalidateLists;
 
@@ -18,6 +22,13 @@ function receive(data){
   return {
     type: types.TOPOLOGY_RECEIVE,
     data
+  }
+}
+
+function receiveItems(items){
+  return {
+    type: types.TOPOLOGY_RECEIVE_ITEMS,
+    items
   }
 }
 
@@ -57,22 +68,77 @@ function loadList(id, loadingState = true){
       dispatch(listLoading(id));
     }
     const list = getState().topology.lists[id];
-    const offset = list.page ? list.page * list.pageSize : 0;
-    return serverRequest(dispatch, 'GET', '/topologies', sortToQuery(list.sort, {
-      offset,
-      limit: list.pageSize
-    })).then(response => {
+    let query = null;
+    if (!list.local){
+      query = sortToQuery(
+        list.sort,
+        list.type = listType.PAGINATION ? {
+          offset: list.page ? list.page * list.pageSize : 0,
+          limit: list.pageSize
+        } : {}
+      );
+    }
+    let promise =  serverRequest(dispatch, 'GET', '/topologies', query).then(response => {
+      if (response){
+        dispatch(receiveItems(response.items));
+        dispatch(topologyGroupActions.recalculateAllTopologyGroups());
+      }
+      return response;
+    });
+    if (list.local){
+      promise = promise.then(response => response ? prepareLocalList(list, response.items) : response);
+    }
+    return promise.then(response => {
       dispatch(response ? listReceive(id, response) : listError(id));
       return response;
-    })
+    });
   }
 }
 
-export function needTopologyList(listId, pageSize = config.params.defaultPageSize) {
+function prepareLocalList(list, elements){
+  const elementArray = Object.values(elements);
+  let res = {
+    items: elementArray
+  };
+  if (list.filter){
+    Object.keys(list.filter).forEach(key => {
+      const filterItem = list.filter[key];
+      if (filterItem !== undefined || filterItem !== null){
+        res.items = res.items.filter(filterCallback(filterItem));
+      }
+    });
+  }
+  res.total = res.items.length;
+  if (list.sort){
+    res.items.sort(sortCompare(list.sort));
+  }
+  if (list.type == listType.PAGINATION){
+    res.offset = list.page ? list.page * list.pageSize : 0;
+    res.limit = list.pageSize;
+    res.items = res.items.slice(res.offset, res.limit ? res.offset + res.limit : undefined);
+  }
+  res.count = res.items.length;
+  return res;
+}
+
+function refreshList(listId, loadingState = true){
+  return (dispatch, getState) => {
+    const list = getState().topology.lists[listId];
+    if (list.local){
+      dispatch(listReceive(listId, prepareLocalList(list, getState().topology.elements)));
+    } else {
+      return dispatch(loadList(listId, loadingState));
+    }
+  }
+}
+
+export function needTopologyList(listId) {
   return (dispatch, getState) => {
     const list = getState().topology.lists[listId];
     if (!list) {
-      dispatch(createPaginationList(listId, pageSize));
+      const create = config.params.preferPaging ?
+        createPaginationList.bind(null, listId, config.params.defaultPageSize) : createCompleteList.bind(null, listId);
+      dispatch(create(true));
     }
     return dispatch(loadList(listId));
   }
@@ -89,7 +155,7 @@ export function topologyListChangeSort(topologyListId, sort) {
     const oldSort = getState().topology.lists[topologyListId].sort;
     if (!objectEquals(oldSort, sort)) {
       dispatch(listChangeSort(topologyListId, sort));
-      return dispatch(loadList(topologyListId, false));
+      return dispatch(refreshList(topologyListId, false));
     }
     else {
       return Promise.resolve(true);
@@ -99,10 +165,28 @@ export function topologyListChangeSort(topologyListId, sort) {
 
 export function topologyListChangePage(topologyListId, page) {
   return (dispatch, getState) => {
-    const oldPage = getState().topology.lists[topologyListId].page;
-    if (!objectEquals(oldPage, page)){
-      dispatch(listChangePage(topologyListId, page));
-      dispatch(loadList(topologyListId));
+    const list = getState().topology.lists[topologyListId];
+    if (list.type == listType.PAGINATION){
+      if (!objectEquals(list.page, page)){
+        dispatch(listChangePage(topologyListId, page));
+        return dispatch(refreshList(topologyListId));
+      } else {
+        return Promise.resolve(true);
+      }
+    } else {
+      return Promise.reject('Change page failed! List is not pagination.');
+    }
+  }
+}
+
+export function topologyListChangeFilter(topologyListId, filter) {
+  return (dispatch, getState) => {
+    const list = getState().topology.lists[topologyListId];
+    if (!objectEquals(list.filter, filter)){
+      dispatch(listChangeFilter(topologyListId, filter));
+      return dispatch(refreshList(topologyListId));
+    } else {
+      return Promise.resolve(true);
     }
   }
 }
@@ -115,7 +199,9 @@ export function needTopology(id, force = false){
       return serverRequest(dispatch, 'GET', `/topologies/${id}`).then(
         response => {
           if (response) {
+            const oldTopology = getState().topology.elements[id];
             dispatch(receive(response));
+            dispatch(topologyGroupActions.recalculateTopologyGroup(response.name, oldTopology));
           }
           dispatch(processActions.finishProcess(processes.topologyLoad(id), response));
           return response;
@@ -129,12 +215,14 @@ export function needTopology(id, force = false){
 }
 
 export function topologyUpdate(id, data){
-  return dispatch => {
+  return (dispatch, getState) => {
     dispatch(processActions.startProcess(processes.topologyUpdate(id)));
     return serverRequest(dispatch, 'PATCH', `/topologies/${id}`, null, data).then(
       response => {
         if (response) {
+          const oldTopology = getState().topology.elements[id];
           dispatch(receive(response));
+          dispatch(topologyGroupActions.recalculateTopologyGroup(response.name, oldTopology));
         }
         dispatch(processActions.finishProcess(processes.topologyUpdate(id), response));
         return response;
@@ -150,6 +238,7 @@ export function topologyCreate(data, processHash = 'new'){
       response => {
         if (response){
           dispatch(receive(response));
+          dispatch(topologyGroupActions.recalculateTopologyGroup(response.name));
           dispatch(invalidateLists());
         }
         dispatch(processActions.finishProcess(processes.topologyCreate(processHash), response));
@@ -188,6 +277,7 @@ export function cloneTopology(id, silent = false){
             dispatch(notificationActions.addSuccess('Topology was cloned successfully.'));
           }
           dispatch(receive(response));
+          dispatch(topologyGroupActions.recalculateTopologyGroup(response.name));
           dispatch(invalidateLists());
         }
         dispatch(processActions.finishProcess(processes.topologyClone(id), response));
@@ -198,7 +288,7 @@ export function cloneTopology(id, silent = false){
 }
 
 export function publishTopology(id, silent = false){
-  return dispatch => {
+  return (dispatch, getState) => {
     dispatch(processActions.startProcess(processes.topologyPublish(id)));
     return serverRequest(dispatch, 'POST', `/topologies/${id}/publish`).then(
       response => {
@@ -206,7 +296,9 @@ export function publishTopology(id, silent = false){
           if (!silent){
             dispatch(notificationActions.addSuccess('Topology was published successfully.'));
           }
+          const oldTopology = getState().topology.elements[id];
           dispatch(receive(response));
+          dispatch(topologyGroupActions.recalculateTopologyGroup(response.name, oldTopology));
         }
         dispatch(processActions.finishProcess(processes.topologyPublish(id), response));
         return response;
@@ -245,6 +337,7 @@ export function saveTopologySchema(id, schema, silent = false){
         }
         dispatch(receiveSchema(response._id, schema));
         dispatch(receive(response));
+        dispatch(topologyGroupActions.recalculateTopologyGroup(response.name));
         if (response._id != id){
           dispatch(invalidateLists());
           if (!silent) {

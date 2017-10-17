@@ -1,6 +1,7 @@
 export const listType = {
   RELATION: 'relation',
-  PAGINATION: 'pagination'
+  PAGINATION: 'pagination',
+  COMPLETE: 'complete'
 };
 
 export const stateType = {
@@ -8,4 +9,9 @@ export const stateType = {
   LOADING: 'loading',
   SUCCESS: 'success',
   ERROR: 'error'
+};
+
+export const filterType = {
+  EXACT: 'exact',
+  SEARCH: 'search'
 };

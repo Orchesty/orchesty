@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 
 import ListPagination from 'elements/table/ListPagination';
 
+import './AbstractTable.less';
 
 class AbstractTable extends React.Component {
   constructor(props) {
@@ -35,15 +36,17 @@ class AbstractTable extends React.Component {
       rows = <tr><td colSpan={6}>No items</td></tr>;
     }
     return (
-      <div className="node-list-table">
-        <table className="table table-hover">
-          <thead>
-          {this._renderHead()}
-          </thead>
-          <tbody>
-          {rows}
-          </tbody>
-        </table>
+      <div className="list-table">
+        <div className="table-wrapper">
+          <table className="table table-hover">
+            <thead>
+            {this._renderHead()}
+            </thead>
+            <tbody>
+            {rows}
+            </tbody>
+          </table>
+        </div>
         <ListPagination list={list} onPageChange={listChangePage} />
       </div>
     );

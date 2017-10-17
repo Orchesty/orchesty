@@ -17,12 +17,22 @@ function receive(data){
   }
 }
 
+function receiveItems(items){
+  return {
+    type: types.NODE_RECEIVE_ITEMS,
+    items
+  }
+}
+
 function loadListForTopology(listId, topologyId, loadingState = true) {
   return dispatch => {
     if (loadingState){
       dispatch(listLoading(listId));
     }
     return serverRequest(dispatch, 'GET', `/topologies/${topologyId}/nodes`).then(response => {
+      if (response){
+        dispatch(receiveItems(response.items));
+      }
       dispatch(response ? listReceive(listId, response) : listError(listId));
       return response;
     });

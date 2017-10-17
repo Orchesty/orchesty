@@ -5,6 +5,7 @@ import {reducer as form} from 'redux-form'
 import application from './application';
 import notification from './notification';
 import topology from './topology';
+import topologyGroup from './topologyGroup';
 import node from './node';
 import authorization from './authorization';
 import auth from './auth';
@@ -16,6 +17,7 @@ const rootReducer = combineReducers({
   auth,
   notification,
   topology,
+  topologyGroup,
   node,
   authorization,
   process,
