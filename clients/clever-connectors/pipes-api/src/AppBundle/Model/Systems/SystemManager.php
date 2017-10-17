@@ -277,9 +277,11 @@ class SystemManager
      */
     public function synchronizeSubscriptions(string $user, string $system): void
     {
-        $request = new Request();
+        $systemInstall = $this->getSystemInstall($user, $system);
+        $request       = new Request([], [], [], [], [], [], json_encode(''));
         $request->headers->set(CMHeaders::createKey(CMHeaders::GUID), $user);
         $request->headers->set(CMHeaders::createKey(CMHeaders::SYSTEM_KEY), $system);
+        $request->headers->set(CMHeaders::createKey(CMHeaders::TOKEN), $systemInstall->getToken());
 
         $topologyName = sprintf('%s-sync-subscribers', $system);
         $topologies   = $this->topologyRepository->getRunnableTopologies($topologyName);

@@ -19,7 +19,7 @@ use Hanaboso\PipesFramework\Commons\Utils\PipesHeaders;
 class CMHeaders extends PipesHeaders
 {
 
-    public const SYSTEM_KEY = 'system_key';
+    public const SYSTEM_KEY = 'system-key';
     public const GUID       = 'guid';
     public const TOKEN      = 'token';
 

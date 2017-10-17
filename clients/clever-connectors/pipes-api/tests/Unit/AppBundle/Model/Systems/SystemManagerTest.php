@@ -9,6 +9,7 @@
 
 namespace Tests\Unit\AppBundle\Model\Systems;
 
+use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Systems\SystemLoader;
 use CleverConnectors\AppBundle\Model\Systems\SystemManager;
@@ -108,9 +109,14 @@ class SystemManagerTest extends TestCase
             ->method('findOneBy')
             ->willReturn($node);
 
+        $systemRepo = $this->getClassMock(SystemInstallRepository::class);
+        $systemRepo
+            ->method('findOneBy')
+            ->willReturn((new SystemInstall())->setToken('123'));
+
         $this->dm
             ->method('getRepository')
-            ->willReturnOnConsecutiveCalls($this->getClassMock(SystemInstallRepository::class), $topoRepo, $nodeRepo);
+            ->willReturnOnConsecutiveCalls($systemRepo, $topoRepo, $nodeRepo);
     }
 
     /**

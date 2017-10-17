@@ -32,7 +32,7 @@ class SystemInstallRepository extends DocumentRepository
         $system = CMHeaders::get(CMHeaders::SYSTEM_KEY, $headers) ?? '';
 
         if (empty($user) || empty($token) || empty($system)) {
-            throw new LogicException('SystemInstall not found!');
+            throw new LogicException('User or Token or System is missing in header.');
         }
 
         return $this->getSystemInstall($user, $token, $system);
@@ -48,6 +48,7 @@ class SystemInstallRepository extends DocumentRepository
      */
     public function getSystemInstall(string $user, string $token, string $systemKey): SystemInstall
     {
+        $this->getDocumentManager()->clear(SystemInstall::class);
         /** @var SystemInstall $ret */
         $ret = $this->createQueryBuilder()
             ->field('user')->equals($user)
@@ -56,7 +57,8 @@ class SystemInstallRepository extends DocumentRepository
             ->getQuery()->getSingleResult();
 
         if (!$ret || empty($ret)) {
-            throw new LogicException('SystemInstall not found!');
+            $message = 'SystemInstall not found for [user="%s"], [token="%s"], [systemKey="%s"]!';
+            throw new LogicException(sprintf($message, $user, $token, $systemKey));
         }
 
         return $ret;

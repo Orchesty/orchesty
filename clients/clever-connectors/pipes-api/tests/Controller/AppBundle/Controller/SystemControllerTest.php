@@ -469,6 +469,13 @@ class SystemControllerTest extends ControllerTestCaseAbstract
      */
     public function testSynchronizeSubscriptions(): void
     {
+        $system = (new SystemInstall())
+            ->setUser('someUser')
+            ->setSystem('null.user.group')
+            ->setToken('token')
+            ->setSettings(['password' => 'pass1']);
+        $this->persistAndFlush($system);
+
         $this->loginUser('user@example.com', 'pass');
         $response = $this->sendGet('user_systems/user/someUser/system/null.user.group/sync');
         $this->assertEquals(202, $response->status);

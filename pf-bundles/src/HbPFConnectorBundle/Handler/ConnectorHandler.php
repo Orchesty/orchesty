@@ -64,7 +64,7 @@ class ConnectorHandler
      *
      * @return void
      */
-    public function processEventTest(string $id): void
+    public function processTest(string $id): void
     {
         /** @var ConnectorInterface $conn */
         $this->loader->getConnector($id);
@@ -83,15 +83,6 @@ class ConnectorHandler
         $res  = $this->connManager->processAction($conn, $request);
 
         return $res;
-    }
-
-    /**
-     * @param string $id
-     */
-    public function processActionTest(string $id): void
-    {
-        /** @var ConnectorInterface $conn */
-        $this->loader->getConnector($id);
     }
 
 }

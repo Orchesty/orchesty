@@ -21,6 +21,7 @@ docker-pull-dev:
 	$(DC_DEV) pull
 
 init-dev: .env
+	$(DC_DEV) pull
 	$(DC_DEV) up -d --force-recreate --remove-orphans
 	$(DE_DEV) monolith-fpm composer global require hirak/prestissimo
 	$(DE_DEV) monolith-fpm composer install --ignore-platform-reqs
