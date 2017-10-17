@@ -50,7 +50,7 @@ function listReducer(state, action, getElementId) {
       return Object.assign({}, state, newDataF);
 
     case types.LIST_INVALIDATE:
-      if (state.state != stateType.NOT_LOADED && (state.type == listType.PAGINATION ||
+      if (state.state != stateType.NOT_LOADED && (state.type == listType.PAGINATION || state.type == listType.COMPLETE ||
           (state.type == listType.RELATION && state.objectType === action.objectType && state.objectId === action.objectId))) {
         return Object.assign({}, state, {state: stateType.NOT_LOADED});
       } else {
