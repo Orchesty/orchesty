@@ -99,7 +99,7 @@ class BatchConsumerCallbackTest extends TestCase
                     'reply-to' => 'reply',
                     'type'     => 'batch',
                 ],
-                'Missing "node-id" in the message header.',
+                'Missing "pf-node-id" in the message header.',
             ],
             [
                 [
@@ -107,7 +107,7 @@ class BatchConsumerCallbackTest extends TestCase
                     'type'                              => 'batch',
                     PipesHeaders::PF_PREFIX . 'node-id' => '132',
                 ],
-                'Missing "correlation-id" in the message header.',
+                'Missing "pf-correlation-id" in the message header.',
             ],
             [
                 [
@@ -116,7 +116,17 @@ class BatchConsumerCallbackTest extends TestCase
                     PipesHeaders::PF_PREFIX . 'node-id'        => '132',
                     PipesHeaders::PF_PREFIX . 'correlation-id' => '123',
                 ],
-                'Missing "process-id" in the message header.',
+                'Missing "pf-process-id" in the message header.',
+            ],
+            [
+                [
+                    'reply-to'                                 => 'reply',
+                    'type'                                     => 'batch',
+                    PipesHeaders::PF_PREFIX . 'node-id'        => '132',
+                    PipesHeaders::PF_PREFIX . 'correlation-id' => '123',
+                    PipesHeaders::PF_PREFIX . 'process-id' => '123',
+                ],
+                'Missing "pf-parent-id" in the message header.',
             ],
         ];
     }
@@ -142,11 +152,12 @@ class BatchConsumerCallbackTest extends TestCase
         $callback = new BatchConsumerCallback($batchAction);
 
         $headers = [
-            'reply-to'                                 => 'reply',
-            'type'                                     => 'batch',
-            PipesHeaders::PF_PREFIX . 'node-id'        => '132',
-            PipesHeaders::PF_PREFIX . 'correlation-id' => '123',
-            PipesHeaders::PF_PREFIX . 'process-id'     => '123',
+            'reply-to'                                            => 'reply',
+            'type'                                                => 'batch',
+            PipesHeaders::createKey(PipesHeaders::NODE_ID)        => '132',
+            PipesHeaders::createKey(PipesHeaders::CORRELATION_ID) => '123',
+            PipesHeaders::createKey(PipesHeaders::PROCESS_ID)     => '123',
+            PipesHeaders::createKey(PipesHeaders::PARENT_ID)      => '',
         ];
         $callback
             ->processMessage($this->createMessage($headers), $channel, $client, $loop)
@@ -185,11 +196,12 @@ class BatchConsumerCallbackTest extends TestCase
         $callback = new BatchConsumerCallback($batchAction);
 
         $headers = [
-            'reply-to'                                 => 'reply',
-            'type'                                     => 'test',
-            PipesHeaders::PF_PREFIX . 'node-id'        => '132',
-            PipesHeaders::PF_PREFIX . 'correlation-id' => '123',
-            PipesHeaders::PF_PREFIX . 'process-id'     => '123',
+            'reply-to'                                            => 'reply',
+            'type'                                                => 'test',
+            PipesHeaders::createKey(PipesHeaders::NODE_ID)        => '132',
+            PipesHeaders::createKey(PipesHeaders::CORRELATION_ID) => '123',
+            PipesHeaders::createKey(PipesHeaders::PROCESS_ID)     => '123',
+            PipesHeaders::createKey(PipesHeaders::PARENT_ID)      => '',
         ];
         $callback
             ->processMessage($this->createMessage($headers), $channel, $client, $loop)
@@ -228,11 +240,12 @@ class BatchConsumerCallbackTest extends TestCase
         $callback = new BatchConsumerCallback($batchAction);
 
         $headers = [
-            'reply-to'                                 => 'reply',
-            'type'                                     => 'unknown',
-            PipesHeaders::PF_PREFIX . 'node-id'        => '132',
-            PipesHeaders::PF_PREFIX . 'correlation-id' => '123',
-            PipesHeaders::PF_PREFIX . 'process-id'     => '123',
+            'reply-to'                                            => 'reply',
+            'type'                                                => 'unknown',
+            PipesHeaders::createKey(PipesHeaders::NODE_ID)        => '132',
+            PipesHeaders::createKey(PipesHeaders::CORRELATION_ID) => '123',
+            PipesHeaders::createKey(PipesHeaders::PROCESS_ID)     => '123',
+            PipesHeaders::createKey(PipesHeaders::PARENT_ID)      => '',
         ];
         $callback
             ->processMessage($this->createMessage($headers), $channel, $client, $loop)

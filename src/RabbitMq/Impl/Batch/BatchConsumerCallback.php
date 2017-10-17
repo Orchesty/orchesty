@@ -88,17 +88,22 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
         }
         if ($this->isEmpty(PipesHeaders::get(PipesHeaders::NODE_ID, $message->headers))) {
             return reject(new InvalidArgumentException(
-                sprintf('Missing "%s" in the message header.', PipesHeaders::NODE_ID)
+                sprintf('Missing "%s" in the message header.', PipesHeaders::createKey(PipesHeaders::NODE_ID))
             ));
         }
         if ($this->isEmpty(PipesHeaders::get(PipesHeaders::CORRELATION_ID, $message->headers))) {
             return reject(new InvalidArgumentException(
-                sprintf('Missing "%s" in the message header.', PipesHeaders::CORRELATION_ID)
+                sprintf('Missing "%s" in the message header.', PipesHeaders::createKey(PipesHeaders::CORRELATION_ID))
             ));
         }
         if ($this->isEmpty(PipesHeaders::get(PipesHeaders::PROCESS_ID, $message->headers))) {
             return reject(new InvalidArgumentException(
-                sprintf('Missing "%s" in the message header.', PipesHeaders::PROCESS_ID)
+                sprintf('Missing "%s" in the message header.', PipesHeaders::createKey(PipesHeaders::PROCESS_ID))
+            ));
+        }
+        if (!array_key_exists(PipesHeaders::createKey(PipesHeaders::PARENT_ID), $message->headers)) {
+            return reject(new InvalidArgumentException(
+                sprintf('Missing "%s" in the message header.', PipesHeaders::createKey(PipesHeaders::PARENT_ID))
             ));
         }
 
