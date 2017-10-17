@@ -31,3 +31,8 @@ services:
         arguments: ['@hbpf.progress_counter.progress_counter_service']
         tags:
             - { name: kernel.event_subscriber }
+
+    hbpf.topology_generator.request.request_handler:
+        class: Hanaboso\PipesFramework\TopologyGenerator\Request\RequestHandler
+        arguments:
+            - '@hbpf.transport.curl_manager'
