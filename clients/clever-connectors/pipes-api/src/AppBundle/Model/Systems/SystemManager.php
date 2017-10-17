@@ -22,6 +22,7 @@ use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Repository\NodeRepository;
 use Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository;
 use Hanaboso\PipesFramework\Configurator\StartingPoint\StartingPoint;
+use Hanaboso\PipesFramework\TopologyGenerator\Request\RequestHandler;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -68,18 +69,25 @@ class SystemManager
     private $startingPoint;
 
     /**
+     * @var RequestHandler
+     */
+    private $requestHandler;
+
+    /**
      * SystemManager constructor.
      *
      * @param DocumentManager $dm
      * @param SystemLoader    $systemLoader
      * @param WebhookManager  $webhookManager
      * @param StartingPoint   $startingPoint
+     * @param RequestHandler  $requestHandler
      */
     public function __construct(
         DocumentManager $dm,
         SystemLoader $systemLoader,
         WebhookManager $webhookManager,
-        StartingPoint $startingPoint
+        StartingPoint $startingPoint,
+        RequestHandler $requestHandler
     )
     {
         $this->dm                 = $dm;
@@ -89,6 +97,7 @@ class SystemManager
         $this->nodeRepository     = $dm->getRepository(Node::class);
         $this->webhookManager     = $webhookManager;
         $this->startingPoint      = $startingPoint;
+        $this->requestHandler     = $requestHandler;
     }
 
     /**
@@ -386,8 +395,8 @@ class SystemManager
         }
 
         if ($topology) {
-            //TODO zastavit běžící topologii
             $topology->setDeleted(TRUE);
+            $this->requestHandler->deleteTopology();
         }
 
         foreach ($syncs as $sync) {

@@ -6,6 +6,7 @@ use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Controller\FOSRestController;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler;
+use Hanaboso\PipesFramework\TopologyGenerator\Request\RequestHandler;
 use Hanaboso\PipesFramework\Utils\ControllerUtils;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -26,6 +27,11 @@ class TopologyController extends FOSRestController
      * @var TopologyHandler
      */
     private $topologyHandler;
+
+    /**
+     * @var RequestHandler
+     */
+    private $requestHandler;
 
     /**
      * @Route("/topologies")
@@ -172,8 +178,8 @@ class TopologyController extends FOSRestController
         $this->construct();
         $data = $this->topologyHandler->publishTopology($id);
 
-        $generateResult = $this->topologyHandler->generateTopology($id);
-        $runResult = $this->topologyHandler->runTopology($id);
+        $generateResult = $this->requestHandler->generateTopology($id);
+        $runResult      = $this->requestHandler->runTopology($id);
 
         if ($generateResult->getStatusCode() == 200 && $runResult->getStatusCode() == 200) {
             return new JsonResponse($data, 200);
@@ -222,6 +228,11 @@ class TopologyController extends FOSRestController
         if (!$this->topologyHandler) {
             $this->topologyHandler = $this->container->get('hbpf.configurator.handler.topology');
         }
+
+        if (!$this->requestHandler) {
+            $this->requestHandler = $this->container->get('hbpf.topology_generator.request.request_handler');
+        }
+
     }
 
 }
