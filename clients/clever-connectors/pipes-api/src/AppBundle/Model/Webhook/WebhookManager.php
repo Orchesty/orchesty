@@ -59,7 +59,7 @@ class WebhookManager implements LoggerAwareInterface
         $this->webhookRepository = $dm->getRepository(Webhook::class);
         $this->curl              = $curl;
         $this->logger            = new NullLogger();
-        $this->domain            = $domain;
+        $this->domain            = rtrim($domain, '/');
     }
 
     /**
