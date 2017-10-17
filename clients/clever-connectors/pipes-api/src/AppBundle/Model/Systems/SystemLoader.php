@@ -171,22 +171,9 @@ class SystemLoader
      */
     private function getSystemsByUser(string $user): array
     {
-        $systems  = [];
         $property = sprintf('systemsWithTagSystemsUser%s', StringUtil::toCamelCase($user));
-        if (property_exists(__CLASS__, $property)) {
-            if ($this->$property) {
-                foreach ($this->$property as $system) {
-                    $systems[] = $this->container->get($system);
-                }
-            }
 
-            return $systems;
-        }
-
-        throw new SystemException(
-            sprintf('System property \'%s\' not found', $property),
-            SystemException::SYSTEM_PROPERTY_NOT_FOUND
-        );
+        return $this->searchSystemsByProperty($property);
     }
 
     /**
@@ -197,22 +184,9 @@ class SystemLoader
      */
     private function getSystemsByGroup(string $group): array
     {
-        $systems  = [];
-        $property = sprintf('systemsWithTagSystemsGroup%s',  StringUtil::toCamelCase($group));
-        if (property_exists(__CLASS__, $property)) {
-            if ($this->$property) {
-                foreach ($this->$property as $system) {
-                    $systems[] = $this->container->get($system);
-                }
-            }
+        $property = sprintf('systemsWithTagSystemsGroup%s', StringUtil::toCamelCase($group));
 
-            return $systems;
-        }
-
-        throw new SystemException(
-            sprintf('System property \'%s\' not found', $property),
-            SystemException::SYSTEM_PROPERTY_NOT_FOUND
-        );
+        return $this->searchSystemsByProperty($property);
     }
 
     /**
@@ -221,8 +195,20 @@ class SystemLoader
      */
     private function getSystemsBySystem(): array
     {
-        $systems  = [];
         $property = 'systemsWithTagSystems';
+
+        return $this->searchSystemsByProperty($property);
+    }
+
+    /**
+     * @param string $property
+     *
+     * @return array
+     * @throws SystemException
+     */
+    private function searchSystemsByProperty(string $property): array
+    {
+        $systems = [];
         if (property_exists(__CLASS__, $property)) {
             if ($this->$property) {
                 foreach ($this->$property as $system) {
