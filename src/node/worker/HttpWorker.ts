@@ -32,7 +32,7 @@ export interface IHttpWorkerRequestParams {
  */
 class HttpWorker implements IWorker {
 
-    constructor(private settings: IHttpWorkerSettings) {}
+    constructor(protected settings: IHttpWorkerSettings) {}
 
     /**
      *
@@ -125,7 +125,7 @@ class HttpWorker implements IWorker {
      * @param {JobMessage} inMsg
      * @return {IHttpWorkerRequestParams}
      */
-    private getJobRequestParams(inMsg: JobMessage): IHttpWorkerRequestParams {
+    protected getJobRequestParams(inMsg: JobMessage): IHttpWorkerRequestParams {
 
         const headersToSend = new Headers(inMsg.getHeaders().getRaw());
         headersToSend.setPFHeader(Headers.NODE_ID, this.settings.node_label.node_id);
@@ -145,7 +145,7 @@ class HttpWorker implements IWorker {
      * @param {string} path
      * @return {string}
      */
-    private getUrl(path: string): string {
+    protected getUrl(path: string): string {
         const protocol = this.settings.secure ? "https://" : "http://";
         const port = this.settings.port || 80;
 

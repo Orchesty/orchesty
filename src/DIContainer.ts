@@ -10,6 +10,7 @@ import {default as AmqpFaucet, IAmqpFaucetSettings} from "./node/faucet/AmqpFauc
 import AmqpRpcWorker, {IAmqpRpcWorkerSettings} from "./node/worker/AmqpRpcWorker";
 import AppenderWorker, {IAppenderWorkerSettings} from "./node/worker/AppenderWorker";
 import HttpWorker, {IHttpWorkerSettings} from "./node/worker/HttpWorker";
+import HttpXmlParserWorker from "./node/worker/HttpXmlParserWorker";
 import NullWorker from "./node/worker/NullWorker";
 import SplitterWorker, {ISplitterWorkerSettings} from "./node/worker/SplitterWorker";
 import UppercaseWorker from "./node/worker/UppercaseWorker";
@@ -49,6 +50,9 @@ class DIContainer extends Container {
         });
         this.set("worker.http", (settings: IHttpWorkerSettings) => {
             return new HttpWorker(settings);
+        });
+        this.set("worker.http_xml_parser", (settings: IHttpWorkerSettings) => {
+            return new HttpXmlParserWorker(settings);
         });
         this.set("worker.null", (settings: {}) => {
             return new NullWorker();
