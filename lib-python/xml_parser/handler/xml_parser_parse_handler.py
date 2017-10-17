@@ -44,6 +44,6 @@ class XmlParserParseHandler:
         # TODO: add right keys :D
         self.metrics.send({})
 
-        result = response_handler.get_json_content(status=status, body=data)
+        result = response_handler.get_json_content(status=status, body=data, headers=self.request_data.get_headers())
 
         return result

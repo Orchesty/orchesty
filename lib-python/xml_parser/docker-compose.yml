@@ -1,0 +1,15 @@
+---
+
+version: '2'
+
+services:
+    xml-parser-api:
+        image: 'dkr.hanaboso.net/pipes/pipes/python-xml-parser:prod'
+        environment:
+          PARSER_HOST: 0.0.0.0
+          PARSER_PORT: '80'
+          PARSER_RELOADED: '1'
+          METRICS_HOST: metrics
+          METRICS_PORT: '5555'
+        ports:
+          - 127.0.0.55:8080:80

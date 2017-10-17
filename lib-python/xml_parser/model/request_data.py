@@ -1,6 +1,8 @@
 # encoding: utf-8
 import flask
 
+from utils.pipes_headers import PipesHeaders
+
 
 class RequestData:
     """
@@ -10,7 +12,12 @@ class RequestData:
         # type: (flask.request) -> None
         
         self.request_dump = request.json
+        self.headers = PipesHeaders.clear(request.headers)
 
     def get_body(self):
         # type: () -> json
         return self.request_dump
+
+    def get_headers(self):
+        # type: () -> dict
+        return self.headers
