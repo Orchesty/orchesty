@@ -3,6 +3,7 @@ import Container from "lib-nodejs/dist/src/container/Container";
 import Connection from "lib-nodejs/dist/src/rabbitmq/Connection";
 import Publisher from "lib-nodejs/dist/src/rabbitmq/Publisher";
 import SimpleConsumer from "lib-nodejs/dist/src/rabbitmq/SimpleConsumer";
+import * as uuid4 from "uuid/v4";
 import logger from "../../logger/Logger";
 import Headers from "../../message/Headers";
 import JobMessage from "../../message/JobMessage";
@@ -57,7 +58,7 @@ class AmqpRpcWorker implements IWorker {
     ) {
         this.waiting = new Container();
         this.resultsQueue = {
-            name: `${settings.publish_queue.name}_reply`,
+            name: `${settings.node_label.id}_reply`,
             options: settings.publish_queue.options || { durable: false, exclusive: false, autoDelete: false },
             prefetch: 1,
         };
@@ -110,6 +111,7 @@ class AmqpRpcWorker implements IWorker {
      * @return {Promise<JobMessage>}
      */
     public processData(msg: JobMessage): Promise<JobMessage> {
+        const uuid = uuid4();
         const headersToSend = new Headers(msg.getHeaders().getRaw());
         headersToSend.setPFHeader(Headers.NODE_ID, this.settings.node_label.node_id);
         headersToSend.setPFHeader(Headers.NODE_NAME, this.settings.node_label.node_name);
@@ -120,7 +122,7 @@ class AmqpRpcWorker implements IWorker {
             {
                 type: AmqpRpcWorker.BATCH_REQUEST_TYPE,
                 replyTo: this.resultsQueue.name,
-                correlationId: msg.getCorrelationId(),
+                correlationId: uuid,
                 headers: headersToSend.getRaw(),
             },
         ).then(() => {
@@ -131,7 +133,7 @@ class AmqpRpcWorker implements IWorker {
             logger.error(`Worker[type='amqprpc'] sending request failed`, context);
         });
 
-        if (this.waiting.has(msg.getCorrelationId())) {
+        if (this.waiting.has(uuid)) {
             this.onDuplicateMessage(msg);
             return Promise.resolve(msg);
         }
@@ -143,7 +145,7 @@ class AmqpRpcWorker implements IWorker {
             msg.setMultiplier(0);
 
             const w: IWaiting = { resolveFn: resolve, message: msg, sequence: 0 };
-            this.waiting.set(msg.getCorrelationId(), w);
+            this.waiting.set(uuid, w);
         });
 
     }
@@ -195,7 +197,7 @@ class AmqpRpcWorker implements IWorker {
 
         if (!this.waiting.has(corrId)) {
             logger.warn(
-                `Worker[type='amqprpc'] received result with unknown corrId`,
+                `Worker[type='amqprpc'] received result with unknown correlationId`,
                 { node_id: this.settings.node_label.id, correlation_id: corrId },
             );
 

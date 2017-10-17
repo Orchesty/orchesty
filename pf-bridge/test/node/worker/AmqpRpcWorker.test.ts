@@ -50,7 +50,7 @@ describe("AmqpRpcWorker", () => {
             },
             (msg: Message) => {
                 assert.equal(msg.properties.correlationId, AmqpRpcWorker.TEST_ID);
-                assert.equal(msg.properties.replyTo, `${settings.publish_queue.name}_reply`);
+                assert.equal(msg.properties.replyTo, `${settings.node_label.id}_reply`);
                 assert.isTrue(Headers.containsAllMandatory(msg.properties.headers));
 
                 // Reply to received message with the same content and headers
@@ -103,8 +103,8 @@ describe("AmqpRpcWorker", () => {
             },
             (msg: Message) => {
                 // check if message has all expected headers
-                assert.equal(msg.properties.correlationId, "amqp.worker.correlation_id");
-                assert.equal(msg.properties.replyTo, `${settings.publish_queue.name}_reply`);
+                assert.lengthOf(msg.properties.correlationId, 36); // uuidv4 length
+                assert.equal(msg.properties.replyTo, `${settings.node_label.id}_reply`);
                 assert.isTrue(Headers.containsAllMandatory(msg.properties.headers));
                 const headers = new Headers(msg.properties.headers);
                 assert.equal(headers.getPFHeader(Headers.NODE_ID), "507f191e810c19729de860ea");
