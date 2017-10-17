@@ -5,7 +5,6 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\Shipstation\Connector;
 use CleverConnectors\AppBundle\Model\LastSync\LastSyncManager;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Shipstation\ShipstationSystem;
-use DateTime;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSender;
@@ -82,25 +81,13 @@ abstract class ShipstationCustomerConnectorAbstract implements BatchInterface, C
     }
 
     /**
-     * @param DateTime|null $from
-     * @param DateTime      $to
-     *
-     * @return string
-     */
-    protected function getTimeQuery(?DateTime $from, DateTime $to): string
-    {
-        return ''; // ShipStation doesn't support it :(
-    }
-
-    /**
      * @param RequestDto $dto
-     * @param string     $timeQuery
      *
      * @return RequestDto
      */
-    protected function createCountRequest(RequestDto $dto, string $timeQuery = ''): RequestDto
+    protected function createCountRequest(RequestDto $dto): RequestDto
     {
-        $query = 'page=1&pageSize=1' . $timeQuery;
+        $query = 'page=1&pageSize=1';
         $uri   = new Uri(sprintf(static::QUERY_URL, $dto->getUri(TRUE), $query));
 
         return RequestDto::from($dto, $uri);
@@ -169,7 +156,6 @@ abstract class ShipstationCustomerConnectorAbstract implements BatchInterface, C
      * @param CurlSender $sender
      * @param callable   $callbackItem
      * @param RequestDto $dto
-     * @param string     $timeQuery
      *
      * @return array
      */
@@ -177,14 +163,13 @@ abstract class ShipstationCustomerConnectorAbstract implements BatchInterface, C
         int $total,
         CurlSender $sender,
         callable $callbackItem,
-        RequestDto $dto,
-        string $timeQuery = ''
+        RequestDto $dto
     ): array
     {
         $requests = [];
         for ($i = 1; $i <= $total; $i++) {
             $requests[] = $this
-                ->fetchData($sender, $this->createPageContactRequest($i, $timeQuery, $dto))
+                ->fetchData($sender, $this->createPageContactRequest($i, $dto))
                 ->then(function (ResponseInterface $response) use ($i): SuccessMessage {
 
                     return $this->createSuccessMessage($response, $i);
@@ -196,11 +181,10 @@ abstract class ShipstationCustomerConnectorAbstract implements BatchInterface, C
 
     /**
      * @param int        $page
-     * @param string     $timeQuery
      * @param RequestDto $dto
      *
      * @return RequestDto
      */
-    abstract protected function createPageContactRequest(int $page, string $timeQuery, RequestDto $dto): RequestDto;
+    abstract protected function createPageContactRequest(int $page, RequestDto $dto): RequestDto;
 
 }

@@ -82,12 +82,11 @@ class ShipstationSyncCustomerConnector extends ShipstationCustomerConnectorAbstr
 
     /**
      * @param int        $page
-     * @param string     $timeQuery
      * @param RequestDto $dto
      *
      * @return RequestDto
      */
-    protected function createPageContactRequest(int $page, string $timeQuery = '', RequestDto $dto): RequestDto
+    protected function createPageContactRequest(int $page, RequestDto $dto): RequestDto
     {
         $query = sprintf('page=%s&pageSize=%s', $page, self::PAGE_LIMIT);
         $uri   = new Uri(sprintf(self::QUERY_URL, $dto->getUri(TRUE), $query));

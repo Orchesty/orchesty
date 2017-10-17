@@ -149,6 +149,7 @@ class WisepopsSystem implements WebhookSystemInterface, AuthorizationInterface
      * @param string            $url
      *
      * @return RequestDto
+     * @throws SystemException
      */
     public function getSubscribeRequest(
         WebhookSubscribes $subscription,
@@ -156,6 +157,13 @@ class WisepopsSystem implements WebhookSystemInterface, AuthorizationInterface
         string $url
     ): RequestDto
     {
+        if (!$this->isAuthorized($systemInstall)) {
+            throw new SystemException(
+                'WisePOPS is not authorized.',
+                SystemException::SYSTEM_IS_UNAUTHORIZED
+            );
+        }
+
         $dto = new RequestDto('POST', new Uri($subscription->getRegistrationUrl()));
         $dto->setHeaders($this->getHeaders($systemInstall));
         $dto->setBody(sprintf('{"event":"email", "target_url":"%s"}', $url));
@@ -168,9 +176,17 @@ class WisepopsSystem implements WebhookSystemInterface, AuthorizationInterface
      * @param string        $webhookId
      *
      * @return RequestDto
+     * @throws SystemException
      */
     public function getUnsubscribeRequest(SystemInstall $systemInstall, string $webhookId): RequestDto
     {
+        if (!$this->isAuthorized($systemInstall)) {
+            throw new SystemException(
+                'WisePOPS is not authorized.',
+                SystemException::SYSTEM_IS_UNAUTHORIZED
+            );
+        }
+
         $dto = new RequestDto('DELETE', new Uri(sprintf(self::WEBHOOK_URL . '?hook_id=%s', $webhookId)));
         $dto->setHeaders($this->getHeaders($systemInstall));
 

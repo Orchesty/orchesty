@@ -41,18 +41,17 @@ class ShipstationUpdateCustomerConnector extends ShipstationCustomerConnectorAbs
         $systemInstall = CronUtils::getSystemInstall($dto);
         $requestDto    = $this->system->getRequestDto($systemInstall, 'GET');
         $requestDto->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()));
-        $lastSync  = $this->lastSyncManager->getLastSync($systemInstall, $dto->getHeaders());
-        $times     = CronUtils::getTimes($lastSync);
-        $timeQuery = $this->getTimeQuery($times->getStart(), $times->getEnd());
+        $lastSync = $this->lastSyncManager->getLastSync($systemInstall, $dto->getHeaders());
+        $times    = CronUtils::getTimes($lastSync);
 
-        $promise = $this->fetchData($browser, $this->createCountRequest($requestDto, $timeQuery))
+        $promise = $this->fetchData($browser, $this->createCountRequest($requestDto))
             ->then(
                 function (ResponseInterface $response): int {
                     return $this->getTotalPages($response);
                 }
             )->then(
-                function (int $total) use ($browser, $callbackItem, $timeQuery, $requestDto) {
-                    return all($this->doPageLoop($total, $browser, $callbackItem, $requestDto, $timeQuery));
+                function (int $total) use ($browser, $callbackItem, $requestDto) {
+                    return all($this->doPageLoop($total, $browser, $callbackItem, $requestDto));
                 }
             );
 
@@ -64,12 +63,11 @@ class ShipstationUpdateCustomerConnector extends ShipstationCustomerConnectorAbs
 
     /**
      * @param int        $page
-     * @param string     $timeQuery
      * @param RequestDto $dto
      *
      * @return RequestDto
      */
-    protected function createPageContactRequest(int $page, string $timeQuery, RequestDto $dto): RequestDto
+    protected function createPageContactRequest(int $page, RequestDto $dto): RequestDto
     {
         $query = sprintf('page=%s&pageSize=%s', $page, self::PAGE_LIMIT);
         $uri   = new Uri(sprintf(self::QUERY_URL, $dto->getUri(TRUE), $query));

@@ -126,11 +126,15 @@ class ShopifySystem implements WebhookSystemInterface, OAuth2Interface
      * @param string            $url
      *
      * @return RequestDto
+     * @throws SystemException
      */
     public function getSubscribeRequest(WebhookSubscribes $subs, SystemInstall $systemInstall, string $url): RequestDto
     {
-        $sett = $systemInstall->getSettings();
+        if (!$this->isAuthorized($systemInstall)) {
+            throw new SystemException('Shopify is not Authorized!', SystemException::SYSTEM_IS_UNAUTHORIZED);
+        }
 
+        $sett      = $systemInstall->getSettings();
         $systemUrl = $sett[self::SYSTEM_URL];
         $topic     = $this->topics[$subs->getNodeName()];
 
@@ -154,12 +158,16 @@ class ShopifySystem implements WebhookSystemInterface, OAuth2Interface
      * @param string        $webhookId
      *
      * @return RequestDto
+     * @throws SystemException
      */
     public function getUnsubscribeRequest(SystemInstall $systemInstall, string $webhookId): RequestDto
     {
-        $sett = $systemInstall->getSettings();
+        if (!$this->isAuthorized($systemInstall)) {
+            throw new SystemException('Shopify is not Authorized!', SystemException::SYSTEM_IS_UNAUTHORIZED);
+        }
 
-        $dto = new RequestDto('DELETE',
+        $sett = $systemInstall->getSettings();
+        $dto  = new RequestDto('DELETE',
             new Uri(sprintf($this->subscriptions[0]->getUnregistrationUrl(),
                 $sett[self::SYSTEM_URL], $webhookId)));
 
@@ -261,13 +269,16 @@ class ShopifySystem implements WebhookSystemInterface, OAuth2Interface
      * @param SystemInstall $systemInstall
      *
      * @return SystemInstall
+     * @throws SystemException
      */
     public function refreshToken(SystemInstall $systemInstall): SystemInstall
     {
+        if (!$this->isAuthorized($systemInstall)) {
+            throw new SystemException('Shopify is not Authorized!', SystemException::SYSTEM_IS_UNAUTHORIZED);
+        }
+
         $settings = $systemInstall->getSettings();
-
-        $dto = $this->getDto($systemInstall);
-
+        $dto      = $this->getDto($systemInstall);
         $dto->setCustomAppDependencies($systemInstall->getUser(), $this->getKey());
 
         $this->provider->refreshAccessToken(

@@ -27,8 +27,8 @@ class Magento2System implements OAuth2Interface
 
     use AuthorizationTrait;
 
-    private const USERNAME      = 'user_name';
-    private const SYSTEM_URL    = 'system_url';
+    private const USERNAME   = 'user_name';
+    private const SYSTEM_URL = 'system_url';
 
     /**
      * @var DocumentManager
@@ -147,9 +147,15 @@ class Magento2System implements OAuth2Interface
      */
     public function getRequestDto(SystemInstall $systemInstall, string $method): RequestDto
     {
-        $sett = $systemInstall->getSettings();
+        if (!$this->isAuthorized($systemInstall)) {
+            throw new SystemException(
+                'Magento2 is not authorized.',
+                SystemException::SYSTEM_IS_UNAUTHORIZED
+            );
+        }
 
-        $dto = new RequestDto($method, new Uri('http://' . $sett[self::SYSTEM_URL]));
+        $sett = $systemInstall->getSettings();
+        $dto  = new RequestDto($method, new Uri('http://' . $sett[self::SYSTEM_URL]));
         $dto->setHeaders($this->getHeaders($systemInstall));
 
         return $dto;
@@ -249,8 +255,7 @@ class Magento2System implements OAuth2Interface
     private function getDto(SystemInstall $systemInstall): RequestDto
     {
         $sett = $systemInstall->getSettings();
-
-        $dto = new RequestDto('POST',
+        $dto  = new RequestDto('POST',
             new Uri(sprintf('http://%s/rest/V1/integration/admin/token', $sett[self::SYSTEM_URL])));
         $dto->setBody(json_encode(
             [
