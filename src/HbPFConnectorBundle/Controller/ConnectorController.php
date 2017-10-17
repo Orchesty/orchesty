@@ -33,7 +33,7 @@ class ConnectorController extends FOSRestController
     private $handler;
 
     /**
-     * @Route("/connector/{id}/webhook", defaults={}, requirements={"id": "[\w-]+"})
+     * @Route("/connector/{id}/webhook")
      * @Method({"POST", "OPTIONS"})
      *
      * @param string  $id
@@ -65,7 +65,7 @@ class ConnectorController extends FOSRestController
     }
 
     /**
-     * @Route("/connector/{id}/webhook/test", defaults={}, requirements={"id": "[\w-]+"})
+     * @Route("/connector/{id}/webhook/test")
      * @Method({"GET", "OPTIONS"})
      *
      * @param string $id
@@ -77,7 +77,7 @@ class ConnectorController extends FOSRestController
         $this->construct();
 
         try {
-            $this->handler->processEventTest($id);
+            $this->handler->processTest($id);
             $response = new JsonResponse('', 200);
         } catch (ConnectorException $e) {
             $response = new JsonResponse(
@@ -91,7 +91,7 @@ class ConnectorController extends FOSRestController
     }
 
     /**
-     * @Route("/connector/{id}/action", defaults={}, requirements={"id": "[\w-]+"})
+     * @Route("/connector/{id}/action")
      * @Method({"POST", "OPTIONS"})
      *
      * @param string  $id
@@ -123,7 +123,7 @@ class ConnectorController extends FOSRestController
     }
 
     /**
-     * @Route("/connector/{id}/action/test", defaults={}, requirements={"id": "[\w-]+"})
+     * @Route("/connector/{id}/action/test")
      * @Method({"GET", "OPTIONS"})
      *
      * @param string $id
@@ -135,7 +135,7 @@ class ConnectorController extends FOSRestController
         $this->construct();
 
         try {
-            $this->handler->processActionTest($id);
+            $this->handler->processTest($id);
             $response = new JsonResponse('', 200);
         } catch (ConnectorException $e) {
             $response = new JsonResponse(

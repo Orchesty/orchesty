@@ -66,7 +66,13 @@ class PipesHeaders
      */
     public static function get(string $key, array $headers): ?string
     {
-        return $headers[self::PF_PREFIX . $key] ?? NULL;
+        $header = $headers[self::PF_PREFIX . $key] ?? NULL;
+
+        if (is_array($header)) {
+            $header = reset($header);
+        }
+
+        return $header;
     }
 
     /**
