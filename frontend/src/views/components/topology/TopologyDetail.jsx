@@ -34,16 +34,20 @@ class TopologyDetail extends React.Component {
   }
 
   componentWillMount(){
-    this._sendActions();
+    this._sendActions(this.props);
+  }
+
+  componentWillReceiveProps(props){
+    this._sendActions(props);
   }
 
   setActions(tab, actions){
     this._actions[tab] = actions;
-    this._sendActions();
+    this._sendActions(this.props);
   }
 
-  _sendActions(){
-    const {topology, setActions, testTopology, edit, clone, publish, topologyDelete, topologyId} = this.props;
+  _sendActions(props){
+    const {topology, setActions, testTopology, edit, clone, publish, topologyDelete, topologyId} = props;
     const pageActions = [];
     if (edit){
       pageActions.push({caption: 'Edit', action: edit});
