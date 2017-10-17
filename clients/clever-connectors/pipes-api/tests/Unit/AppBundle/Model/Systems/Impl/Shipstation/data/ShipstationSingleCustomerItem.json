@@ -1,0 +1,28 @@
+{
+  "customerId": 108140195,
+  "createDate": "2017-10-15T23:29:47.6370000",
+  "modifyDate": "2017-10-15T23:29:47.6370000",
+  "name": "John Doe",
+  "company": "Company",
+  "street1": "Street",
+  "street2": "",
+  "city": "City",
+  "state": "State",
+  "postalCode": "12345",
+  "countryCode": "US",
+  "phone": "",
+  "email": "email@example.com",
+  "addressVerified": "Error",
+  "marketplaceUsernames": [
+    {
+      "customerUserId": 104145456,
+      "customerId": 108140195,
+      "createDate": "2017-10-15T23:29:47.6400000",
+      "modifyDate": "2017-10-15T23:29:47.6400000",
+      "marketplaceId": 0,
+      "marketplace": "ShipStation",
+      "username": "user1@user1.com"
+    }
+  ],
+  "tags": null
+}

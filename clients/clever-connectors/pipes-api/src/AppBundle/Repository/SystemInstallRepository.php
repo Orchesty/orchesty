@@ -81,7 +81,7 @@ class SystemInstallRepository extends DocumentRepository
                     SystemInstall::CREATED            => $systemInstall->getCreated()->format(DateTime::W3C),
                     SystemInstall::SYNCHRONIZED       => TRUE,
                     SystemInstall::SYNCHRONIZED_TIME  => $now->format(DateTime::W3C),
-                    SystemInstall::ENCRYPTED_SETTINGS => CryptManager::encrypt([]),
+                    SystemInstall::ENCRYPTED_SETTINGS => CryptManager::encrypt($systemInstall->getSettings()),
                 ]
             );
     }

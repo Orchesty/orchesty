@@ -45,7 +45,7 @@ class SystemManagerTest extends DatabaseTestCaseAbstract
      */
     public function testGetSystemsBySystems(): void
     {
-        $this->assertEquals(7, count($this->manager->getSystems()));
+        $this->assertEquals(8, count($this->manager->getSystems()));
     }
 
     /**

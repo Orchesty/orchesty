@@ -1,0 +1,91 @@
+{
+  "customers": [
+    {
+      "customerId": 108140195,
+      "createDate": "2017-10-15T23:29:47.6370000",
+      "modifyDate": "2017-10-15T23:29:47.6370000",
+      "name": "Test",
+      "company": "Test",
+      "street1": "Tes",
+      "street2": "",
+      "city": "Test",
+      "state": "AA",
+      "postalCode": "12345",
+      "countryCode": "US",
+      "phone": "",
+      "email": "user1@user1.com",
+      "addressVerified": "Error",
+      "marketplaceUsernames": [
+        {
+          "customerUserId": 104145456,
+          "customerId": 108140195,
+          "createDate": "2017-10-15T23:29:47.6400000",
+          "modifyDate": "2017-10-15T23:29:47.6400000",
+          "marketplaceId": 0,
+          "marketplace": "ShipStation",
+          "username": "user1@user1.com"
+        }
+      ],
+      "tags": null
+    },
+    {
+      "customerId": 108140206,
+      "createDate": "2017-10-15T23:30:58.1800000",
+      "modifyDate": "2017-10-15T23:30:58.1800000",
+      "name": "Test",
+      "company": "Test",
+      "street1": "Test",
+      "street2": "",
+      "city": "Test",
+      "state": "AA",
+      "postalCode": "1235",
+      "countryCode": "US",
+      "phone": "",
+      "email": "user2@user2.com",
+      "addressVerified": "Error",
+      "marketplaceUsernames": [
+        {
+          "customerUserId": 104145467,
+          "customerId": 108140206,
+          "createDate": "2017-10-15T23:30:58.1930000",
+          "modifyDate": "2017-10-15T23:30:58.1930000",
+          "marketplaceId": 0,
+          "marketplace": "ShipStation",
+          "username": "user2@user2.com"
+        }
+      ],
+      "tags": null
+    },
+    {
+      "customerId": 108140527,
+      "createDate": "2017-10-15T23:52:58.7570000",
+      "modifyDate": "2017-10-15T23:52:58.7570000",
+      "name": "Test",
+      "company": "Test",
+      "street1": "Test",
+      "street2": "",
+      "city": "Test",
+      "state": "AA",
+      "postalCode": "12345",
+      "countryCode": "US",
+      "phone": "",
+      "email": "user3@user3.com",
+      "addressVerified": "Error",
+      "marketplaceUsernames": [
+        {
+          "customerUserId": 104145788,
+          "customerId": 108140527,
+          "createDate": "2017-10-15T23:52:58.7600000",
+          "modifyDate": "2017-10-15T23:52:58.7600000",
+          "marketplaceId": 0,
+          "marketplace": "ShipStation",
+          "username": "user3@user3.com"
+        }
+      ],
+      "tags": null
+    }
+  ],
+  "total": 3,
+  "page": 1,
+  "pages": 1
+}

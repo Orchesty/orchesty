@@ -39,6 +39,7 @@ class AppExtension extends Extension
         $loader->load('shopify.yml');
         $loader->load('salesforce.yml');
         $loader->load('wisepops.yml');
+        $loader->load('shipstation.yml');
     }
 
 }
