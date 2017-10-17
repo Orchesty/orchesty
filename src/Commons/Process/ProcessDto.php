@@ -13,6 +13,9 @@ namespace Hanaboso\PipesFramework\Commons\Process;
  *
  * @package Hanaboso\PipesFramework\Commons\Process
  */
+
+use Hanaboso\PipesFramework\Commons\Utils\PipesHeaders;
+
 /**
  * Class ProcessDto
  *
@@ -66,7 +69,7 @@ final class ProcessDto
      */
     public function setHeaders(array $headers): ProcessDto
     {
-        $this->headers = $headers;
+        $this->headers = PipesHeaders::clear($headers);
 
         return $this;
     }

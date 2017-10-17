@@ -40,8 +40,8 @@ class SuccessMessage
      */
     public function __construct(int $sequenceId)
     {
-        if ($sequenceId < 1) {
-            throw new InvalidArgumentException('Sequence ID must be grater then 0.');
+        if ($sequenceId < 0) {
+            throw new InvalidArgumentException('Sequence ID must be grater or equal to 0.');
         }
         $this->sequenceId = $sequenceId;
     }
