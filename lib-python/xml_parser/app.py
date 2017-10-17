@@ -13,6 +13,7 @@ from handler.xml_parser_version_handler import XmlParserVersionHandler
 from hb_metrics.metrics import Metrics
 from hb_metrics.service.udp_sender import UdpSender
 from model.request_data import RequestData
+from handler.response_handler import get_json_content
 
 os.environ.setdefault('PARSER_HOST', '0.0.0.0')
 os.environ.setdefault('PARSER_PORT', '80')
@@ -33,12 +34,12 @@ flask_json.FlaskJSON(app)
 
 
 @app.route("/", methods=['GET'])
-@app.route("/api/xml-parser/version/", methods=['GET'])
+@app.route("/version/", methods=['GET'])
 def api_xml_version():
     return XmlParserVersionHandler(__version__).handle()
 
 
-@app.route("/api/xml-parser/parse", methods=['POST'])
+@app.route("/xml-to-json", methods=['POST'])
 def api_from_source():
     request = flask.request
     request_data = RequestData(request)
@@ -46,13 +47,18 @@ def api_from_source():
     return handler.handle()
 
 
-@app.route("/api/xml-parser/decode", methods=['POST'])
-@app.route("/api/xml-parser/write", methods=['POST'])
+@app.route("/json-to-xml", methods=['POST'])
 def api_to_destination():
     request = flask.request
     request_data = RequestData(request)
     handler = XmlParserOutputHandler(request_data, metrics)
     return handler.handle()
+
+
+@app.route("/xml-to-json/test", methods=['GET'])
+@app.route("/json-to-xml/test", methods=['GET'])
+def api_test():
+    return get_json_content(200, '')
 
 
 @app.errorhandler(404)
