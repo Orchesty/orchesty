@@ -5,8 +5,18 @@
   "version": "0.0.1",
   "require": {
     "php": ">=7.1",
-    "nette/nette": "^2.4"
+    "nette/nette": "^2.4",
+    "clever-monitor/cc-api-extension": "0.0.1"
   },
   "require-dev": {
-  }
+  },
+  "repositories": [
+    {
+      "type": "path",
+      "url": "../cc-api-extension",
+      "options": {
+        "symlink": true
+      }
+    }
+  ]
 }

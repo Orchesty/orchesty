@@ -10,5 +10,6 @@ services:
             DEV_UID: ${DEV_UID}
     volumes:
       - ./:/var/www/html
+      - ../cc-api-extension/:/var/www/cc-api-extension
     ports:
       - ${DEV_IP}:80:80

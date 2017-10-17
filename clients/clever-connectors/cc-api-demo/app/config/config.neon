@@ -1,11 +1,17 @@
+cc_api:
+	base_uri: 'https://cleverconn.stage.hanaboso.net/'
+	cert: %appDir%/../cert/stage-staf.pem
+
 application:
 	errorPresenter: Error
 	mapping:
 		*: App\*Module\Presenters\*Presenter
-
 
 session:
 	expiration: 14 days
 
 services:
 	router: App\RouterFactory::createRouter
+
+extensions:
+	cc_api: CcApi\Bridges\DI\CcApiExtension

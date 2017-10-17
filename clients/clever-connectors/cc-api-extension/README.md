@@ -3,12 +3,12 @@ Clever Connectors API Extension
 
 ### Configuration - default values
 ```
-cc-api:
+cc_api:
     base_uri: ''
     timeout: 30
     cert: ''
     logger: false
 
 extension:
-    cc-api: CcApiExtension
+    cc_api: CcApiExtension
 ```
