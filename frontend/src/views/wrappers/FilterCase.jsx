@@ -1,9 +1,9 @@
 import React from 'react'
 import PropTypes from 'prop-types';
 
-export default (WrappedComponent, parameters) => {
+export default (WrappedComponent, parameters = {}) => {
 
-  const {type, property, ...passParams} = parameters;
+  const {type, property, valueProcess, ...passParams} = parameters;
 
   class FilterCase extends React.Component {
     constructor(props) {
@@ -12,13 +12,14 @@ export default (WrappedComponent, parameters) => {
     }
 
     change(e){
-      const {onChange, name} = this.props;
+      const {onChange, valueProcess = parameters.valueProcess, name} = this.props;
+      let value = valueProcess ? valueProcess(e.target.value) : e.target.value;
       e.preventDefault();
-      onChange(name, {type, value: e.target.value, property: this.props.property || property});
+      onChange(name, {type, value, property: this.props.property || property});
     }
 
     render() {
-      const {name, onChange, filterItem, ...passProps} = this.props;
+      const {name, onChange, filterItem, valueProcess, ...passProps} = this.props;
       let pass = Object.assign({}, passParams, passProps);
       pass.subProps = Object.assign({filterItem, onChange, type, name, property: this.props.property || property}, pass.subProps);
       const newValue = filterItem ? filterItem.value : '';
@@ -31,7 +32,8 @@ export default (WrappedComponent, parameters) => {
   FilterCase.propTypes = {
     name: PropTypes.string.isRequired,
     onChange: PropTypes.func.isRequired,
-    filterItem: PropTypes.object
+    filterItem: PropTypes.object,
+    valueProcess: PropTypes.func
   };
 
   return FilterCase;
