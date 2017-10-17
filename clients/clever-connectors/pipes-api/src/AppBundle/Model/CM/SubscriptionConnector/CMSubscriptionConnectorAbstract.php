@@ -118,8 +118,8 @@ abstract class CMSubscriptionConnectorAbstract extends CMAuthorization implement
         }
 
         $req = new RequestDto($method, new Uri($this->getUrl($email)));
-        // TODO why header array?
-        $req->setHeaders($this->getAuthorizationHeaders($user[0], $token[0]));
+
+        $req->setHeaders($this->getAuthorizationHeaders($user, $token));
         $req->setBody(json_encode($this->getData($dto)));
 
         try {
