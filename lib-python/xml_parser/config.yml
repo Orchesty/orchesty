@@ -1,16 +1,34 @@
 ---
 version: 1
-disable_existing_loggers: False
+disable_existing_loggers: True
+# https://docs.python.org/2/library/logging.html#logrecord-attributes
 formatters:
     simple:
-        format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+        format: "[%(asctime)s] %(levelname)s - %(name)s - %(message)s"
+    syslog:
+        format : "%(levelname)s %(module)s P%(process)d T%(thread)d %(message)s"
 
 handlers:
+    lxml:
+        class: logging.handlers.RotatingFileHandler
+        level: DEBUG
+        filename: lxml.log
+        maxBytes: 10485760 # 10MB
+        backupCount: 20
+        encoding: utf8
+        formatter: simple
+
     console:
         class: logging.StreamHandler
         level: DEBUG
         formatter: simple
         stream: ext://sys.stdout
+
+    syslog:
+        class: logging.handlers.SysLogHandler
+        level: INFO
+        formatter: syslog
+        facility: "local6"
 
     info_file_handler:
         class: logging.handlers.RotatingFileHandler
@@ -29,6 +47,14 @@ handlers:
         maxBytes: 10485760 # 10MB
         backupCount: 20
         encoding: utf8
+    warning_file_handler:
+        class: logging.handlers.RotatingFileHandler
+        level: WARNING
+        formatter: simple
+        filename: warning.log
+        maxBytes: 10485760 # 10MB
+        backupCount: 20
+        encoding: utf8
 
     debug_file_handler:
         class: logging.handlers.RotatingFileHandler
@@ -40,11 +66,16 @@ handlers:
         encoding: utf8
 
 loggers:
-    my_module:
+    handler:
         level: ERROR
-        handlers: [console]
-        propagate: no
+        handlers: [console, info_file_handler, debug_file_handler, error_file_handler, warning_file_handler]
+        propagate: yes
+    werkzeug:
+      level: DEBUG
+      handlers: [console, lxml]
+      propagate: no
 
 root:
-    level: DEBUG
-    handlers: [console, info_file_handler]
+    level: INFO
+    handlers: [console, syslog]
+

@@ -9,4 +9,9 @@ class XmlParserVersionHandler:
         self.version = version
 
     def handle(self):
+        # type: () -> jsonify
+        """
+        Prepare json response
+        :return: jsonify
+        """
         return json_response(status=httplib.OK, version=self.version)

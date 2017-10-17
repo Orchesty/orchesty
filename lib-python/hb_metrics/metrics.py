@@ -9,17 +9,17 @@ class Metrics:
     python-service,name=ubuntu,host=ubuntu key=value 1502875884010000000
     """
     MEASUREMENT = 'python-service'
-
+    
     def __init__(self, sender):
         # type: (service.udp_sender.UdpSender) -> None
         """Metrics collector
         :param sender: UDP sender service
         """
         self.sender = sender
-
+    
     def send(self, fields, host=None):
         # type: (dict, str) -> int
-
+        
         """Send UDP packet
 
         :param fields: dict with message fields
@@ -28,10 +28,10 @@ class Metrics:
         """
         message = self._get_message(fields, host)
         return self.sender.send(message)
-
+    
     def _get_message(self, fields, host=None):
         # type: (dict, str|None) -> str
-
+        
         """Prepare message for sending
 
         :rtype: object
@@ -41,10 +41,13 @@ class Metrics:
         """
         micro_time = '{}000000'.format(long(time.time() * 1000))
         prefix = self._get_prefix(host)
-        keys = ['{}={}'.format(key, value) for key, value in fields.iteritems()]
-
-        return '{} {} {}'.format(prefix, ','.join(keys), micro_time)
-
+        keys = ['{}={}'.format(key, self.prepare_value_format(value)) for key, value in fields.iteritems()]
+        
+        if len(keys):
+            return '{} {} {}'.format(prefix, ','.join(keys), micro_time)
+        else:
+            return '{} {}'.format(prefix, micro_time)
+    
     def _get_prefix(self, host=None):
         # type: (str) -> str
         """Get prefix for message, as prefix is used hostname
@@ -54,5 +57,19 @@ class Metrics:
         """
         if host is None:
             host = self.sender.get_hostname()
-
+        
         return '{},name={},host={}'.format(self.MEASUREMENT, host, host)
+
+    @staticmethod
+    def prepare_value_format(value):
+        """
+        :type value: mixed
+        """
+        if type(value) == int:
+            pass
+        elif type(value) == bool:
+            value = 'true' if value else 'false'
+        else:
+            value = '"{}"'.format(value)
+
+        return value

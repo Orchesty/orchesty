@@ -16,11 +16,19 @@ logger = logging.getLogger(__name__)
 class Reader:
     def __init__(self, validator=None):
         # type: (Validator) -> None
+
         if validator is None:
             validator = Validator()
         self.validator = validator
 
     def parse(self, src):
+        # type: (str) -> str
+        """
+        Start parsing
+        :param src: str
+        :return: str
+        """
+
         try:
             # TODO: try find better way
             xml = re.sub(r'\bencoding="[-\w]+"', '', src, count=1)
@@ -45,7 +53,7 @@ class Reader:
     def parse_inner_element(self, element):
         # type: (lxml.etree.Element) -> object
         """
-
+        Parsing elements :D
         :param element: lxml.etree.Element
         """
         result = defaultdict(list)
@@ -76,7 +84,6 @@ class Reader:
     @staticmethod
     def is_multiple(element, name):
         # type: (lxml.etree.Element, str) -> bool
-
         """
         :type element: lxml.etree.Element
         :type name: str
@@ -88,7 +95,6 @@ class Reader:
     @staticmethod
     def add_attributes(parsed, keys, values):
         # type: (defaultdict(list), list, list) -> None
-
         """
         :param parsed: defaultdict(list)
         :param item: Element

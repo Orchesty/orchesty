@@ -1,30 +1,27 @@
 # encoding: utf-8
-import httplib
 import logging
 
-import hb_metrics.metrics
-import response_handler
+from flask import Response
+
 from errors.bad_request import BadRequest
-from model.reader import Reader
+from handler.response_handler import get_xml_content
 from model.request_data import RequestData
 from model.validator import Validator
+from model.writer import Writer
 
 logger = logging.getLogger(__name__)
 
 
-class XmlParserParseHandler:
+class XmlParserOutputHandler:
     def __init__(self, request_data, metrics):
-        # type: (RequestData, hb_metrics.metrics.Metrics) -> None
+        # type: (RequestData, hb_metrics.metrics.Analytics) -> None
         self.request_data = request_data
         self.metrics = metrics
 
     def handle(self):
-        # type: () -> flask.Response
-        """Handle request and process input parsing
+        # type: () -> Response
 
-        :rtype: flask.Response
-        """
-        # TODO: add right keys :D
+        # todo: add right keys :D
         self.metrics.send({})
 
         if 'data' not in self.request_data.get_body():
@@ -37,13 +34,12 @@ class XmlParserParseHandler:
         else:
             validator = Validator()
 
-        reader = Reader(validator)
+        writer = Writer(validator)
 
-        status = httplib.OK  # 200
-        data = reader.parse(self.request_data.get_body()['data'])
-        # TODO: add right keys :D
+        # todo: add right keys :D
         self.metrics.send({})
 
-        result = response_handler.get_json_content(status=status, body=data)
+        result = writer.write(self.request_data.get_body()['data'])
+        response = get_xml_content(200, result)
 
-        return result
+        return response
