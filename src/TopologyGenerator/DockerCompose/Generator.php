@@ -221,6 +221,9 @@ class Generator implements GeneratorInterface
             case TypeEnum::SPLITTER:
                 return $this->getJsonSplitterConfig();
 
+            case TypeEnum::XML_PARSER:
+                return $this->getHttpXmlParserWorkerConfig($node);
+
             default:
                 return $this->getHttpWorkerConfig($node);
 
@@ -246,6 +249,27 @@ class Generator implements GeneratorInterface
                     '/%s/test',
                     $this->hostMapper->getRoute(new TypeEnum($node->getType()), $node->getName())
                 ),
+                'method'       => 'POST',
+                'port'         => 80,
+                'secure'       => FALSE,
+                'opts'         => [],
+            ],
+        ];
+    }
+
+    /**
+     * @param Node $node
+     *
+     * @return array
+     */
+    private function getHttpXmlParserWorkerConfig(Node $node): array
+    {
+        return [
+            'type'     => 'worker.http_xml_parser',
+            'settings' => [
+                'host'         => $this->hostMapper->getHost(new TypeEnum($node->getType())),
+                'process_path' => 'parse',
+                'status_path'  => 'test',
                 'method'       => 'POST',
                 'port'         => 80,
                 'secure'       => FALSE,
