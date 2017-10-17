@@ -17,7 +17,6 @@ use Hanaboso\PipesFramework\Configurator\Event\TopologyEvent;
 use Hanaboso\PipesFramework\Configurator\Repository\NodeRepository;
 use Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository;
 use Hanaboso\PipesFramework\Configurator\StartingPoint\StartingPoint;
-use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -52,9 +51,9 @@ class StartingPointHandler
     /**
      * StartingPointHandler constructor.
      *
-     * @param DocumentManager $dm
-     * @param StartingPoint   $startingPoint
-     * @param EventDispatcher $dispatcher
+     * @param DocumentManager          $dm
+     * @param StartingPoint            $startingPoint
+     * @param EventDispatcherInterface $dispatcher
      */
     public function __construct(DocumentManager $dm, StartingPoint $startingPoint, EventDispatcherInterface $dispatcher)
     {
