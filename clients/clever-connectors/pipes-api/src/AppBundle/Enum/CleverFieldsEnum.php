@@ -24,16 +24,18 @@ final class CleverFieldsEnum extends EnumAbstract
     public const FIRST_NAME = 'first_name';
     public const LAST_NAME  = 'last_name';
     public const REACTIVATE = 'reactivate';
+    public const SYSTEM_KEY = 'system_key';
 
     /**
      * @var string[]
      */
     protected static $choices = [
-        self::FOREIGN_ID => 'foreign_id',
+        self::FOREIGN_ID => '_foreign_id',
         self::EMAIL      => 'email',
         self::FIRST_NAME => 'first_name',
         self::LAST_NAME  => 'last_name',
         self::REACTIVATE => 'reactivate',
+        self::SYSTEM_KEY => 'system_key',
     ];
 
 }

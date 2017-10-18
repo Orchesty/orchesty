@@ -38,7 +38,7 @@ class CMDeleteSubscriptionConnectorTest extends KernelTestCaseAbstract
         $curl = new CurlManager($fac);
         $conn = new CMDeleteSubscriptionConnector($curl, []);
 
-        $res = $conn->processAction((new ProcessDto())->setData('{"email":"eml@eml.com"}')->setHeaders([
+        $conn->processAction((new ProcessDto())->setData('{"email":"eml@eml.com"}')->setHeaders([
             'pf_token' => '-3*QYg*3H-5+vaez_K7_N-4K1YhCn88k',
             'pf_guid'  => '51a83cfe-9e04-11e7-a177-000d3a20eb16',
         ]));
@@ -51,16 +51,17 @@ class CMDeleteSubscriptionConnectorTest extends KernelTestCaseAbstract
     {
         $curl = $this->createMock(CurlManagerInterface::class);
         $curl->method('send')->willReturn(new ResponseDto(200, '', 'someBody', []));
-        $conn = new CMDeleteSubscriptionConnector($curl, ['cert' => '', 'ca'=> '']);
+        $conn = new CMDeleteSubscriptionConnector($curl, ['cert' => '', 'ca' => '']);
 
         $res = $conn->processAction((new ProcessDto())
             ->setData('{"email":"eml@eml.com"}')
             ->setHeaders(
-            [
-                CMHeaders::createKey(CMHeaders::TOKEN) => 'ttoken',
-                CMHeaders::createKey(CMHeaders::GUID)  => 'gguid',
-            ]
-        ));
+                [
+                    CMHeaders::createKey(CMHeaders::TOKEN)      => 'ttoken',
+                    CMHeaders::createKey(CMHeaders::GUID)       => 'gguid',
+                    CMHeaders::createKey(CMHeaders::SYSTEM_KEY) => 'system',
+                ]
+            ));
         self::assertEquals('someBody', $res->getData());
     }
 

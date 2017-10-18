@@ -107,12 +107,13 @@ abstract class CMSubscriptionConnectorAbstract extends CMAuthorization implement
      */
     public function processCMAction(ProcessDto $dto, string $method, array $statusCode, string $email = ''): ProcessDto
     {
-        $user  = CMHeaders::get(CMHeaders::GUID, $dto->getHeaders());
-        $token = CMHeaders::get(CMHeaders::TOKEN, $dto->getHeaders());
+        $user   = CMHeaders::get(CMHeaders::GUID, $dto->getHeaders());
+        $token  = CMHeaders::get(CMHeaders::TOKEN, $dto->getHeaders());
+        $system = CMHeaders::get(CMHeaders::SYSTEM_KEY, $dto->getHeaders());
 
-        if (!isset($user) || !isset($token)) {
+        if (!isset($user) || !isset($token) || !isset($system)) {
             throw new CleverConnectorsException(
-                'Missing required data in headers.',
+                'User or Token or System is missing in header.',
                 CleverConnectorsException::MISSING_DATA
             );
         }
@@ -120,7 +121,7 @@ abstract class CMSubscriptionConnectorAbstract extends CMAuthorization implement
         $req = new RequestDto($method, new Uri($this->getUrl($email)));
 
         $req->setHeaders($this->getAuthorizationHeaders($user, $token));
-        $req->setBody(json_encode($this->getData($dto)));
+        $req->setBody(json_encode($this->getData($dto, $system)));
 
         try {
             $res = $this->curl->send($req, [
@@ -167,18 +168,24 @@ abstract class CMSubscriptionConnectorAbstract extends CMAuthorization implement
 
     /**
      * @param ProcessDto $dto
+     * @param string     $system
      *
      * @return array
      */
-    protected function getData(ProcessDto $dto): array
+    protected function getData(ProcessDto $dto, string $system): array
     {
         $data = json_decode($dto->getData(), TRUE);
+
+        $data[CleverFieldsEnum::SYSTEM_KEY] = $system;
 
         //@TODO: až bude implementováno u C-M tak smazat
         if (array_key_exists(CleverFieldsEnum::FOREIGN_ID, $data)) {
             unset($data[CleverFieldsEnum::FOREIGN_ID]);
         }
 
+        if (array_key_exists(CleverFieldsEnum::SYSTEM_KEY, $data)) {
+            unset($data[CleverFieldsEnum::SYSTEM_KEY]);
+        }
         // -----------------------------------------------
 
         return $data;

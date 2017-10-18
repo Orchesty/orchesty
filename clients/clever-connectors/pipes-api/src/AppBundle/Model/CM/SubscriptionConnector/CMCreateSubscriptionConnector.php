@@ -11,6 +11,7 @@ namespace CleverConnectors\AppBundle\Model\CM\SubscriptionConnector;
 
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
 
 /**
@@ -30,7 +31,7 @@ class CMCreateSubscriptionConnector extends CMSubscriptionConnectorAbstract
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {
-        return $this->processCMAction($dto, 'POST', [200, 201]);
+        return $this->processCMAction($dto, CurlManager::METHOD_POST, [200, 201]);
     }
 
 }
