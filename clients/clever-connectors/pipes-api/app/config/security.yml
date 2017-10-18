@@ -28,7 +28,7 @@ security:
             pattern: ^/(connector/[\w-\.]+/action|connector/[\w-\.]+/webhook|mapper/[\w-\.]+|xml-parser/[\w-\.]+|mailer/[\w-\.]+|custom_node/[\w-\.]+/process)
             security: false
         unsecured_generator:
-            pattern: ^/(api/topology/generate/\w+|api/topology/run/\w+)
+            pattern: ^/api/topology/(generate|run|stop|delete|info)/\w+
             security: false
         secured_area:
             pattern: ^/

@@ -37,6 +37,11 @@ class RequestHandler
     public const DELETE_TOPOLOGY_URL = 'http://topology-api:80/api/topology/delete/{id}';
 
     /**
+     * @var string
+     */
+    public const INFO_TOPOLOGY_URL = 'http://topology-api:80/api/topology/info/{id}';
+
+    /**
      * @var CurlManagerInterface
      */
     protected $curlManager;
@@ -89,6 +94,21 @@ class RequestHandler
     public function deleteTopology(string $topologyId): ResponseDto
     {
         $uri = $this->getUrl($topologyId, self::DELETE_TOPOLOGY_URL);
+
+        $dto      = new RequestDto('GET', new Uri($uri));
+        $response = $this->curlManager->send($dto);
+
+        return $response;
+    }
+
+    /**
+     * @param string $topologyId
+     *
+     * @return ResponseDto
+     */
+    public function infoTopology(string $topologyId): ResponseDto
+    {
+        $uri = $this->getUrl($topologyId, self::INFO_TOPOLOGY_URL);
 
         $dto      = new RequestDto('GET', new Uri($uri));
         $response = $this->curlManager->send($dto);
