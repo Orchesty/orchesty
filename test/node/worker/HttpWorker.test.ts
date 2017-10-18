@@ -12,13 +12,10 @@ import {INodeLabel} from "../../../src/topology/Configurator";
 const httpServer = express();
 const bodyParserRaw = {
     type: () => true,
-    verify: (req: any, res: any, buf: any) => {
-        req.rawBody = buf.toString();
-    },
 };
 httpServer.use(bodyParser.raw(bodyParserRaw));
-httpServer.post("/ok", (req: any, resp) => {
-    assert.deepEqual(JSON.parse(req.rawBody), { val: "original" });
+httpServer.post("/ok", (req, resp) => {
+    assert.deepEqual(JSON.parse(req.body), { val: "original" });
     assert.equal(req.headers["pf-node-name"], "httpworker");
     assert.equal(req.headers["pf-node-id"], "507f191e810c19729de860ea");
     resp.set({
@@ -51,8 +48,8 @@ httpServer.post("/empty-result-body", (req, resp) => {
     });
     resp.status(200).send();
 });
-httpServer.post("/ok-xml", (req: any, resp) => {
-    assert.deepEqual(JSON.parse(req.rawBody), { val: "original" });
+httpServer.post("/ok-xml", (req, resp) => {
+    assert.deepEqual(JSON.parse(req.body), { val: "original" });
     resp.set({
         "pf-result-code": 0,
         "pf-result-message": "ok",

@@ -9,10 +9,10 @@ class HttpXmlParserWorker extends HttpWorker {
      * @param {JobMessage} inMsg
      * @return {string}
      */
-    protected getHttpRequestBody(inMsg: JobMessage): any {
-        return {
-            data: JSON.stringify(inMsg.getContent()),
-        };
+    protected getHttpRequestBody(inMsg: JobMessage): string {
+        return JSON.stringify({
+            data: inMsg.getContent(),
+        });
     }
 
 }

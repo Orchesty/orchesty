@@ -84,9 +84,11 @@ describe("Linear Topology test", () => {
         }};
 
         const httpWorkerMock = express();
-        httpWorkerMock.use(bodyParser.text());
+        httpWorkerMock.use(bodyParser.raw({
+            type: () => true,
+        }));
         httpWorkerMock.post("/httpworker1", (req, resp) => {
-            assert.equal(req.body, msgTestContent);
+            assert.equal(req.body.toString(), msgTestContent);
             const respBody = req.body + " modified";
             resp.set({
                 "pf-result-code": 0,

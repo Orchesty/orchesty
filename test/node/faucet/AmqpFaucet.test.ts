@@ -5,6 +5,7 @@ import {Channel} from "amqplib";
 import Connection from "lib-nodejs/dist/src/rabbitmq/Connection";
 import Publisher from "lib-nodejs/dist/src/rabbitmq/Publisher";
 import {amqpConnectionOptions} from "../../../src/config";
+import Headers from "../../../src/message/Headers";
 import JobMessage from "../../../src/message/JobMessage";
 import {default as AmqpFaucet, IAmqpFaucetSettings} from "../../../src/node/faucet/AmqpFaucet";
 import {FaucetProcessMsgFn} from "../../../src/node/faucet/IFaucet";
@@ -38,10 +39,14 @@ const conn = new Connection(amqpConnectionOptions);
 const publisher = new Publisher(conn, (ch: Channel) =>  Promise.resolve() );
 
 describe("AmqpFaucet", () => {
-    it("should start consumption on open", () => {
+    it("should start consumption on open", (done) => {
         const check = (msg: JobMessage) => {
-            assert.equal(msg.getSequenceId(), 999);
-            assert.equal(msg.getProcessId(), "a23");
+            assert.equal(msg.getCorrelationId(), "correlationId");
+            assert.equal(msg.getProcessId(), "processId");
+            assert.equal(msg.getSequenceId(), 0);
+            assert.equal(msg.getParentId(), "");
+            assert.equal(msg.getHeaders().getHeader("content-type"), "text/plain");
+            done();
         };
         const faucet = new AmqpFaucet(settings, conn);
 
@@ -50,14 +55,23 @@ describe("AmqpFaucet", () => {
             return Promise.resolve(msg);
         };
 
-        return faucet.open(processFn)
+        faucet.open(processFn)
             .then(() => {
+                const headers = new Headers();
+                headers.setPFHeader(Headers.CORRELATION_ID, "correlationId");
+                headers.setPFHeader(Headers.PROCESS_ID, "processId");
+                headers.setPFHeader(Headers.SEQUENCE_ID, "0");
+                headers.setPFHeader(Headers.PARENT_ID, "");
+
                 // send message to exchange via which it should be routed to amqpFaucet's input queue
                 return publisher.publish(
                     settings.exchange.name,
                     settings.routing_key,
-                    new Buffer(JSON.stringify({data: "test", settings: {}})),
-                    { headers: { job_id: "a23", sequence_id: 999 } },
+                    new Buffer("Test content"),
+                    {
+                        contentType: "text/plain",
+                        headers: headers.getRaw(),
+                    },
                 );
             });
     });
