@@ -134,7 +134,7 @@ abstract class Magento2ConnectorAbstract implements BatchInterface, ConnectorInt
      */
     protected function createCountRequest(RequestDto $dto, string $timeQuery = ''): RequestDto
     {
-        $query = 'searchCriteria[pageSize]=1&searchCriteria[currentPage]=1' . $timeQuery;
+        $query = 'searchCriteria[pageSize]=1&searchCriteria[currentPage]=1&' . $timeQuery;
         $uri   = new Uri(sprintf(static::QUERY_URL, $dto->getUri(TRUE), $query));
 
         return RequestDto::from($dto, $uri);

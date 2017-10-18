@@ -64,7 +64,7 @@ class Magento2UpdateCustomerConnector extends Magento2ConnectorAbstract
     protected function createPageContactRequest(int $page, string $timeQuery, RequestDto $dto): RequestDto
     {
         $query = sprintf(
-            'searchCriteria[pageSize]=%s&searchCriteria[currentPage]=%s',
+            'searchCriteria[pageSize]=%s&searchCriteria[currentPage]=%s&' . $timeQuery,
             self::PAGE_LIMIT,
             $page
         );
