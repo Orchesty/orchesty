@@ -112,6 +112,9 @@ class AmqpDrain extends ADrain implements IDrain, IPartialForwarder {
             case ResultCode.FORWARD_TO_TARGET_QUEUE:
                 return this.forwardToTargetQueue(message);
 
+            case ResultCode.DO_NOT_CONTINUE:
+                return this.sendToCounterOnly(message);
+
             default:
                 // Let the message fail
                 message.setResult({
@@ -161,6 +164,20 @@ class AmqpDrain extends ADrain implements IDrain, IPartialForwarder {
         // TODO - prepare message options
         return this.nonStandardPublisher.sendToQueue(targetQueue, message.getBody(), {})
             .then(() => {
+                return message;
+            });
+    }
+
+    /**
+     *
+     * @param {JobMessage} message
+     * @return {Promise<JobMessage>}
+     */
+    private sendToCounterOnly(message: JobMessage): Promise<JobMessage> {
+        return this.counterPublisher.send(message)
+            .then(() => {
+                message.setPublishedTime();
+
                 return message;
             });
     }
