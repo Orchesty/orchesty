@@ -151,9 +151,7 @@ class GeneratorController extends FOSRestController
 
         if ($this->generatorHandler) {
             $result = $this->generatorHandler->infoTopology($id);
-            if ($result) {
-                $statusCode = 200;
-            }
+            $statusCode = 200;
         }
 
         return new JsonResponse(["result" => $statusCode, "docker_info" => $result], $statusCode, []);

@@ -18,6 +18,7 @@ services:
             - "@doctrine.odm.mongodb.document_manager"
             - '@hbpf.starting_point.starting_point'
             - '@event_dispatcher'
+            - '@hbpf.topology_generator.request.request_handler'
 
     hbpf.handler.generator_handler:
         class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\GeneratorHandler
