@@ -64,10 +64,6 @@ trait AuthorizationTrait
     protected function prepareValue(string $key, array $settings)
     {
         if (isset($settings[$key])) {
-            if ($key == AuthorizationInterface::PASSWORD) {
-                return empty($settings[AuthorizationInterface::PASSWORD]) ? FALSE : TRUE;
-            }
-
             return $settings[$key];
         }
 

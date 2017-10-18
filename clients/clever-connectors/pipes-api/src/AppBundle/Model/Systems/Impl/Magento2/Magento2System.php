@@ -72,7 +72,7 @@ class Magento2System implements OAuth2Interface
         }
 
         if (empty($systemInstall->getSettings()[OAuth2Provider::ACCESS_TOKEN] ?? '')) {
-            $this->authorize($systemInstall);
+            return FALSE;
         }
 
         return TRUE;
@@ -155,7 +155,7 @@ class Magento2System implements OAuth2Interface
         }
 
         $sett = $systemInstall->getSettings();
-        $dto  = new RequestDto($method, new Uri('http://' . $sett[self::SYSTEM_URL]));
+        $dto  = new RequestDto($method, new Uri($sett[self::SYSTEM_URL]));
         $dto->setHeaders($this->getHeaders($systemInstall));
 
         return $dto;
@@ -256,7 +256,7 @@ class Magento2System implements OAuth2Interface
     {
         $sett = $systemInstall->getSettings();
         $dto  = new RequestDto('POST',
-            new Uri(sprintf('http://%s/rest/V1/integration/admin/token', $sett[self::SYSTEM_URL])));
+            new Uri(sprintf('%s/rest/V1/integration/admin/token', $sett[self::SYSTEM_URL])));
         $dto->setBody(json_encode(
             [
                 'username' => $sett[self::USERNAME],

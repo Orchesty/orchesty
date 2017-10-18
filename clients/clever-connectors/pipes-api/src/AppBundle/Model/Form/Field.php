@@ -114,13 +114,19 @@ class Field
      */
     public function toArray(): array
     {
-        return [
+        $field = [
             'type'     => $this->type,
             'key'      => $this->key,
             'label'    => $this->label,
             'value'    => $this->value,
             'required' => $this->required,
         ];
+
+        if ($this->type === Field::PASSWORD) {
+            $field['value'] = !empty($this->value) ? TRUE : FALSE;
+        }
+
+        return $field;
     }
 
     /**
