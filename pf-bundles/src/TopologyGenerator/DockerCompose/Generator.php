@@ -250,10 +250,15 @@ class Generator implements GeneratorInterface
      */
     private function getHttpXmlParserWorkerConfig(Node $node): array
     {
-        return [
+        $config = [
             'type'     => 'worker.http_xml_parser',
             'settings' => $this->getHttpWorkerSettings($node),
         ];
+
+        // @TODO - doplnit do parser_settings: type, file, content
+        $config['settings']['parser_settings'] = [];
+
+        return $config;
     }
 
     /**
