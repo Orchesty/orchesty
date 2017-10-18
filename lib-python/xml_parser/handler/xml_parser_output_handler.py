@@ -40,6 +40,6 @@ class XmlParserOutputHandler:
         self.metrics.send({})
 
         result = writer.write(self.request_data.get_body()['data'])
-        response = get_xml_content(200, result)
+        response = get_xml_content(status=200, body=result, headers=self.request_data.get_headers())
 
         return response
