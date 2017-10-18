@@ -164,7 +164,7 @@ class WisepopsSystem implements WebhookSystemInterface, AuthorizationInterface
             );
         }
 
-        $dto = new RequestDto('POST', new Uri($subscription->getRegistrationUrl()));
+        $dto = new RequestDto('POST', new Uri($subscription->getSubscribeUrl()));
         $dto->setHeaders($this->getHeaders($systemInstall));
         $dto->setBody(sprintf('{"event":"email", "target_url":"%s"}', $url));
 

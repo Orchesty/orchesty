@@ -77,7 +77,6 @@ class ShopifySystem implements WebhookSystemInterface, OAuth2Interface
 
         $this->subscriptions[] = new WebhookSubscribes('shopify-delete-customer-connector', 'shopify-delete-customer',
             self::WEBHOOK_SUBSCRIBE_URL, self::WEBHOOK_UNSUBSCRIBE_URL);
-
     }
 
     /**
@@ -138,7 +137,7 @@ class ShopifySystem implements WebhookSystemInterface, OAuth2Interface
         $systemUrl = $sett[self::SYSTEM_URL];
         $topic     = $this->topics[$subs->getNodeName()];
 
-        $dto = new RequestDto('POST', new Uri(sprintf($subs->getRegistrationUrl(), $systemUrl)));
+        $dto = new RequestDto('POST', new Uri(sprintf($subs->getSubscribeUrl(), $systemUrl)));
 
         $dto->setBody(json_encode([
             'webhook' => [
@@ -168,7 +167,7 @@ class ShopifySystem implements WebhookSystemInterface, OAuth2Interface
 
         $sett = $systemInstall->getSettings();
         $dto  = new RequestDto('DELETE',
-            new Uri(sprintf($this->subscriptions[0]->getUnregistrationUrl(),
+            new Uri(sprintf($this->subscriptions[0]->getUnSubscribeUrl(),
                 $sett[self::SYSTEM_URL], $webhookId)));
 
         $dto->setHeaders($this->getHeaders($systemInstall));
