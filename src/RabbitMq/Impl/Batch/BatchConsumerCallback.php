@@ -186,11 +186,11 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
             PipesHeaders::createKey(PipesHeaders::RESULT_CODE) => 0,
         ]);
 
-        return $channel->publish('', $headers, '', $message->getHeader('reply-to')
+        return $channel->publish('', $headers, '', $message->getHeader(self::REPLY_TO)
         )->then(function () use ($message, $headers): void {
             $this->logger->info(
                 'Published test item.',
-                $this->prepareMessage('', '', $message->getHeader('reply-to'), $headers)
+                $this->prepareMessage('', '', $message->getHeader(self::REPLY_TO), $headers)
             );
         });
     }
@@ -225,13 +225,19 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
      */
     private function itemCallback(Channel $channel, Message $message, SuccessMessage $successMessage): PromiseInterface
     {
-        $headers = array_merge(
+        $resultMessage = sprintf(
+            'Batch item %s for node %s.',
+            $successMessage->getSequenceId(),
+            PipesHeaders::get(PipesHeaders::NODE_NAME, $message->headers)
+        );
+        $headers       = array_merge(
             $message->headers,
             $successMessage->getHeaders(),
             [
-                self::TYPE                                         => 'batch_item',
-                PipesHeaders::createKey(PipesHeaders::SEQUENCE_ID) => $successMessage->getSequenceId(),
-                PipesHeaders::createKey(PipesHeaders::RESULT_CODE) => 0,
+                self::TYPE                                            => 'batch_item',
+                PipesHeaders::createKey(PipesHeaders::SEQUENCE_ID)    => $successMessage->getSequenceId(),
+                PipesHeaders::createKey(PipesHeaders::RESULT_CODE)    => 0,
+                PipesHeaders::createKey(PipesHeaders::RESULT_MESSAGE) => $resultMessage,
             ]
         );
 
@@ -239,12 +245,12 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
             $successMessage->getData(),
             $headers,
             '',
-            $message->getHeader('reply-to')
+            $message->getHeader(self::REPLY_TO)
         )
             ->then(function () use ($successMessage, $message, $headers): void {
                 $this->logger->info(
                     sprintf('Published batch item %s.', $successMessage->getSequenceId()),
-                    $this->prepareMessage('', '', $message->getHeader('reply-to'), $headers)
+                    $this->prepareMessage('', '', $message->getHeader(self::REPLY_TO), $headers)
                 );
             });
     }
@@ -258,17 +264,22 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
      */
     private function batchCallback(Channel $channel, Message $message): PromiseInterface
     {
-        $headers = array_merge($message->headers, [
-            self::TYPE                                         => 'batch_end',
-            PipesHeaders::createKey(PipesHeaders::RESULT_CODE) => 0,
+        $resultMessage = sprintf(
+            'Batch end for node %s.',
+            PipesHeaders::get(PipesHeaders::NODE_NAME, $message->headers)
+        );
+        $headers       = array_merge($message->headers, [
+            self::TYPE                                            => 'batch_end',
+            PipesHeaders::createKey(PipesHeaders::RESULT_CODE)    => 0,
+            PipesHeaders::createKey(PipesHeaders::RESULT_MESSAGE) => $resultMessage,
         ]);
 
         return $channel
-            ->publish('', $headers, '', $message->getHeader('reply-to')
+            ->publish('', $headers, '', $message->getHeader(self::REPLY_TO)
             )->then(function () use ($message, $headers): void {
                 $this->logger->info(
                     'Published batch end.',
-                    $this->prepareMessage('', '', $message->getHeader('reply-to'), $headers)
+                    $this->prepareMessage('', '', $message->getHeader(self::REPLY_TO), $headers)
                 );
             });
     }
@@ -293,11 +304,11 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
         ]);
 
         return $channel
-            ->publish('', $headers, '', $message->getHeader('reply-to'))
+            ->publish('', $headers, '', $message->getHeader(self::REPLY_TO))
             ->then(function () use ($message, $headers): void {
                 $this->logger->info(
                     'Published batch error end.',
-                    $this->prepareMessage('', '', $message->getHeader('reply-to'), $headers)
+                    $this->prepareMessage('', '', $message->getHeader(self::REPLY_TO), $headers)
                 );
             });
     }
