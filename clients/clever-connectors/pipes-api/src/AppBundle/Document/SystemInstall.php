@@ -302,9 +302,14 @@ class SystemInstall
             $systemInstall->setSettings(CryptManager::decrypt($data[self::ENCRYPTED_SETTINGS]));
         }
 
-        if (array_key_exists(self::CREATED, $data)) {
-            $mongoDate = new MongoDate($data[self::CREATED]['sec'], $data[self::CREATED]['usec']);
-            $systemInstall->setCreated($mongoDate->toDateTime());
+        if (array_key_exists(self::CREATED, $data) && !empty($data[self::CREATED])) {
+            if (is_array($data[self::CREATED])) {
+                $date = new MongoDate($data[self::CREATED]['sec'], $data[self::CREATED]['usec']);
+                $date = $date->toDateTime();
+            } else {
+                $date = new DateTime($data[self::CREATED]);
+            }
+            $systemInstall->setCreated($date);
         } else {
             $systemInstall->setCreated(new DateTime('now', new DateTimeZone('UTC')));
         }
