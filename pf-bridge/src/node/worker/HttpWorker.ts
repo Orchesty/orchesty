@@ -17,16 +17,6 @@ export interface IHttpWorkerSettings {
     opts: any;
 }
 
-export interface IHttpWorkerRequestParams {
-    method: string;
-    url: string;
-    json?: any;
-    followAllRedirects?: boolean;
-    gzip?: boolean;
-    body?: string;
-    headers?: any;
-}
-
 /**
  * Converts JobMessage to Http request and then converts received Http response back to JobMessage object
  */
@@ -45,8 +35,7 @@ class HttpWorker implements IWorker {
         return new Promise((resolve) => {
             Object.assign(reqParams, this.settings.opts);
 
-            const reqLog = `${reqParams.method} ${reqParams.url} ${JSON.stringify(reqParams.headers)}`;
-            logger.info(`Worker[type='http'] sent request. ${reqLog}`, logger.ctxFromMsg(msg));
+            logger.info(`Worker[type='http'] sent HTTP request: ${JSON.stringify(reqParams)}`, logger.ctxFromMsg(msg));
 
             request(reqParams, (err: any, response: request.RequestResponse, body: string) => {
                 if (err) {
@@ -121,23 +110,39 @@ class HttpWorker implements IWorker {
     }
 
     /**
+     * Creates http request body to be sent
      *
      * @param {JobMessage} inMsg
-     * @return {IHttpWorkerRequestParams}
+     * @return {any}
      */
-    protected getJobRequestParams(inMsg: JobMessage): IHttpWorkerRequestParams {
+    protected getHttpRequestBody(inMsg: JobMessage): any {
+        return inMsg.getContent();
+    }
+
+    /**
+     *
+     * @param {JobMessage} inMsg
+     * @return {request.Options}
+     */
+    private getJobRequestParams(inMsg: JobMessage): request.Options {
 
         const headersToSend = new Headers(inMsg.getHeaders().getRaw());
         headersToSend.setPFHeader(Headers.NODE_ID, this.settings.node_label.node_id);
         headersToSend.setPFHeader(Headers.NODE_NAME, this.settings.node_label.node_name);
 
-        return {
+        const method = this.settings.method.toUpperCase();
+        const httpParams: request.Options = {
             method: this.settings.method.toUpperCase(),
             url: this.getUrl(this.settings.process_path),
-            json: JSON.parse(inMsg.getContent()),
             followAllRedirects: true,
             headers: headersToSend.getRaw(),
         };
+
+        if (method === "POST" || method === "PATCH" || method === "PUT") {
+            httpParams.body = this.getHttpRequestBody(inMsg);
+        }
+
+        return httpParams;
     }
 
     /**
@@ -145,7 +150,7 @@ class HttpWorker implements IWorker {
      * @param {string} path
      * @return {string}
      */
-    protected getUrl(path: string): string {
+    private getUrl(path: string): string {
         const protocol = this.settings.secure ? "https://" : "http://";
         const port = this.settings.port || 80;
 
@@ -177,7 +182,7 @@ class HttpWorker implements IWorker {
      * @param reqParams
      * @param err
      */
-    private onRequestError(msg: JobMessage, reqParams: IHttpWorkerRequestParams, err: any): void {
+    private onRequestError(msg: JobMessage, reqParams: request.Options, err: any): void {
         logger.warn(
             `Worker[type='http'] did not receive response. Request params: ${JSON.stringify(reqParams)}.`,
             logger.ctxFromMsg(msg, err),

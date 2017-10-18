@@ -1,6 +1,7 @@
 import {Channel, Options} from "amqplib";
 import Connection from "lib-nodejs/dist/src/rabbitmq/Connection";
 import Publisher from "lib-nodejs/dist/src/rabbitmq/Publisher";
+import logger from "../../../logger/Logger";
 import CounterMessage from "../../../message/CounterMessage";
 import JobMessage from "../../../message/JobMessage";
 import {IAmqpDrainSettings} from "../AmqpDrain";
@@ -56,6 +57,11 @@ class CounterPublisher extends Publisher {
             timestamp: Date.now(),
             appId: this.settings.node_label.id,
         };
+
+        logger.info(
+            `Counter publisher - sending message. ${JSON.stringify(counterMessage)}`,
+            logger.ctxFromMsg(message),
+        );
 
         return this.sendToQueue(
             this.settings.counter.queue.name,

@@ -70,7 +70,7 @@ const firstQueue = `pipes.${testTopology.id}.${testTopology.nodes[0].id}`;
 
 describe("Linear Topology test", () => {
     it("complete flow of messages till the end", (done) => {
-        const msgTestContent = { val: "test content" };
+        const msgTestContent = "test content";
         const msgHeaders = { headers: {
             "pf-correlation-id": "corrid",
             "pf-process-id": "test",
@@ -80,19 +80,19 @@ describe("Linear Topology test", () => {
             "pf-topology-name": "toponame",
             "pf-foo": "bar",
             "foo": "bar",
+            "content-type": "text/plain",
         }};
 
         const httpWorkerMock = express();
-        httpWorkerMock.use(bodyParser.json());
+        httpWorkerMock.use(bodyParser.text());
         httpWorkerMock.post("/httpworker1", (req, resp) => {
-            assert.deepEqual(req.body, msgTestContent);
-            const updated = req.body;
-            updated.val = updated.val + " modified";
+            assert.equal(req.body, msgTestContent);
+            const respBody = req.body + " modified";
             resp.set({
                 "pf-result-code": 0,
                 "pf-result-message": "ok",
             });
-            resp.status(200).send(JSON.stringify(updated));
+            resp.status(200).send(JSON.stringify(respBody));
         });
         httpWorkerMock.listen(3050);
 
@@ -169,7 +169,7 @@ describe("Linear Topology test", () => {
                     });
                 },
             );
-            return publisher.sendToQueue(firstQueue, new Buffer(JSON.stringify(msgTestContent)), msgHeaders);
+            return publisher.sendToQueue(firstQueue, new Buffer(msgTestContent), msgHeaders);
         });
     });
 
