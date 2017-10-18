@@ -2,7 +2,6 @@
 
 namespace CleverConnectors\AppBundle\DependencyInjection;
 
-use CleverConnectors\AppBundle\Model\Systems\SystemCompilerPass;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
@@ -24,7 +23,6 @@ class AppExtension extends Extension
     {
         $configuration = new Configuration();
         $this->processConfiguration($configuration, $configs);
-        $container->addCompilerPass(new SystemCompilerPass());
 
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('parameters.yml');
@@ -40,6 +38,7 @@ class AppExtension extends Extension
         $loader->load('salesforce.yml');
         $loader->load('wisepops.yml');
         $loader->load('shipstation.yml');
+        $loader->load('pipedrive.yml');
     }
 
 }

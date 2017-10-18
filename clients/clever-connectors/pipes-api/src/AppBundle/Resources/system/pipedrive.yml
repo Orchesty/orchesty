@@ -1,0 +1,32 @@
+services:
+    systems.pipedrive:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Pipedrive\PipedriveSystem
+        arguments:
+
+    hbpf.connector.pipedrive-sync-person-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Pipedrive\Connector\PipedriveSyncPersonConnector
+        arguments:
+            - '@systems.pipedrive'
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.transport.async_curl_factory'
+
+    hbpf.connector.pipedrive-update-person-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Pipedrive\Connector\PipedriveUpdatePersonConnector
+        arguments:
+
+    hbpf.connector.pipedrive-delete-person-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Pipedrive\Connector\PipedriveDeletePersonConnector
+        arguments:
+
+    hbpf.custom_node.pipedrive-update-person-mapper:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Pipedrive\Mapper\PipedriveUpdatePersonMapper
+        arguments:
+
+    hbpf.custom_node.pipedrive-delete-person-mapper:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Pipedrive\Mapper\PipedriveDeletePersonMapper
+        arguments:
+
+    hbpf.custom_node.pipedrive-sync-person-mapper:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Pipedrive\Mapper\PipedriveSyncPersonMapper
+        arguments:
+
