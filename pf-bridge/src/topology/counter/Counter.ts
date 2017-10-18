@@ -210,9 +210,9 @@ export default class Counter {
             headers.setPFHeader(Headers.PROCESS_ID, processId);
 
             const node: INodeLabel = {
-                id: headers.getHeader(Headers.NODE_ID),
-                node_id: headers.getHeader(Headers.NODE_ID),
-                node_name: headers.getHeader(Headers.NODE_NAME),
+                id: headers.getPFHeader(Headers.NODE_ID),
+                node_id: headers.getPFHeader(Headers.NODE_ID),
+                node_name: headers.getPFHeader(Headers.NODE_NAME),
             };
 
             const cm = new CounterMessage(

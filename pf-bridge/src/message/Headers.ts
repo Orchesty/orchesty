@@ -128,7 +128,7 @@ class Headers {
      * @return {string}
      */
     public getHeader(key: string): string {
-        return this.headers[`${Headers.PF_HEADERS_PREFIX}${key}`];
+        return this.headers[key];
     }
 
     /**

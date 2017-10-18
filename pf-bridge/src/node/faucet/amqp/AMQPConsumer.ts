@@ -30,6 +30,7 @@ class Consumer extends BasicConsumer {
         let inMsg: JobMessage;
         try {
             inMsg = new JobMessage(this.node, amqMsg.properties.headers, amqMsg.content);
+            inMsg.getHeaders().setHeader("content-type", amqMsg.properties.contentType);
         } catch (e) {
             logger.error(`AmqpFaucet dead-lettering message`, {node_id: this.node.id, error: e});
             channel.nack(amqMsg, false, false); // dead-letter due to invalid message
