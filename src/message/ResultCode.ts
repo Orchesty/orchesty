@@ -16,6 +16,7 @@ export enum ResultCode {
     // NON_STANDARD: 1000+
     REPEAT = 1001,
     FORWARD_TO_TARGET_QUEUE = 1002,
+    DO_NOT_CONTINUE = 1003,
 
     // MESSAGE ERRORS: 2000+
     UNKNOWN_ERROR = 2001,
