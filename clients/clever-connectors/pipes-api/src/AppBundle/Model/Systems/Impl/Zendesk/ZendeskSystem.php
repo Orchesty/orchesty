@@ -8,6 +8,7 @@ use CleverConnectors\AppBundle\Model\Form\Field;
 use CleverConnectors\AppBundle\Model\Form\Form;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\AuthorizationInterface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\Traits\AuthorizationTrait;
+use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\SystemInterface;
 use CleverConnectors\AppBundle\Model\Webhook\Traits\WebhookSystemTrait;
 use GuzzleHttp\Psr7\Uri;
@@ -95,9 +96,14 @@ class ZendeskSystem implements SystemInterface, AuthorizationInterface
      * @param string        $method
      *
      * @return RequestDto
+     * @throws SystemException
      */
     public function getRequestDto(SystemInstall $systemInstall, string $method): RequestDto
     {
+        if (!$this->isAuthorized($systemInstall)) {
+            throw new SystemException('System is unauthorized.', SystemException::SYSTEM_IS_UNAUTHORIZED);
+        }
+
         $sett = $systemInstall->getSettings();
         $dto  = new RequestDto('GET', new Uri(sprintf(self::BASE_URL, $sett[self::DOMAIN])));
         $dto->setHeaders($this->getHeaders($systemInstall));
