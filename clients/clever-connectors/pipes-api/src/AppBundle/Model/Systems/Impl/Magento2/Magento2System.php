@@ -43,7 +43,7 @@ class Magento2System implements OAuth2Interface
     /**
      * @var Redirect
      */
-    private $redirect;
+    protected $redirect;
 
     /**
      * Magento2System constructor.
@@ -135,7 +135,8 @@ class Magento2System implements OAuth2Interface
         $token = $res->getBody();
 
         $this->saveToken($systemInstall, [$token]);
-        $this->redirect->make($systemInstall->getSettings()[self::FRONTEND_REDIRECT_URL]);
+        //@TODO make better
+        //$this->redirect->make($systemInstall->getSettings()[self::FRONTEND_REDIRECT_URL]);
     }
 
     /**
@@ -210,7 +211,7 @@ class Magento2System implements OAuth2Interface
      */
     public function saveToken(SystemInstall $systemInstall, array $data): SystemInstall
     {
-        $this->setSettings($systemInstall, [OAuth2Provider::ACCESS_TOKEN => $data[0]]);
+        $this->setSettings($systemInstall, [OAuth2Provider::ACCESS_TOKEN => trim($data[0], '"')]);
         $systemInstall->setExpires(new DateTime('+1 hours'));
         $this->dm->flush();
 
