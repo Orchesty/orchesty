@@ -10,9 +10,15 @@ import HttpWorker from "../../../src/node/worker/HttpWorker";
 import {INodeLabel} from "../../../src/topology/Configurator";
 
 const httpServer = express();
-httpServer.use(bodyParser.json());
-httpServer.post("/ok", (req, resp) => {
-    assert.deepEqual(req.body, { val: "original" });
+const bodyParserRaw = {
+    type: () => true,
+    verify: (req: any, res: any, buf: any) => {
+        req.rawBody = buf.toString();
+    },
+};
+httpServer.use(bodyParser.raw(bodyParserRaw));
+httpServer.post("/ok", (req: any, resp) => {
+    assert.deepEqual(JSON.parse(req.rawBody), { val: "original" });
     assert.equal(req.headers["pf-node-name"], "httpworker");
     assert.equal(req.headers["pf-node-id"], "507f191e810c19729de860ea");
     resp.set({
@@ -22,7 +28,7 @@ httpServer.post("/ok", (req, resp) => {
     resp.status(200).send(JSON.stringify({ val: "modified" }));
 });
 httpServer.post("/invalid-status-code", (req, resp) => {
-    assert.deepEqual(req.body, { val: "original" });
+    assert.deepEqual(JSON.parse(req.body), { val: "original" });
     resp.set({
         "pf-result-code": 4001,
         "pf-result-message": "some error",
@@ -30,7 +36,7 @@ httpServer.post("/invalid-status-code", (req, resp) => {
     resp.status(500).send(JSON.stringify({ val: "modified but 500" }));
 });
 httpServer.post("/invalid-result-code", (req, resp) => {
-    assert.deepEqual(req.body, { val: "original" });
+    assert.deepEqual(JSON.parse(req.body), { val: "original" });
     resp.set({
         "pf-result-code": ResultCode.WORKER_TIMEOUT,
         "pf-result-message": "some error",
@@ -38,15 +44,15 @@ httpServer.post("/invalid-result-code", (req, resp) => {
     resp.status(200).send(JSON.stringify({ val: "modified" }));
 });
 httpServer.post("/empty-result-body", (req, resp) => {
-    assert.deepEqual(req.body, { val: "original" });
+    assert.deepEqual(JSON.parse(req.body), { val: "original" });
     resp.set({
         "pf-result-code": ResultCode.SUCCESS,
         "pf-result-message": "some error",
     });
     resp.status(200).send();
 });
-httpServer.post("/ok-xml", (req, resp) => {
-    assert.deepEqual(req.body, { val: "original" });
+httpServer.post("/ok-xml", (req: any, resp) => {
+    assert.deepEqual(JSON.parse(req.rawBody), { val: "original" });
     resp.set({
         "pf-result-code": 0,
         "pf-result-message": "ok",
@@ -64,6 +70,7 @@ describe("HttpWorker", () => {
         headers.setPFHeader(Headers.PROCESS_ID, "123");
         headers.setPFHeader(Headers.PARENT_ID, "");
         headers.setPFHeader(Headers.SEQUENCE_ID, "1");
+        // headers.setHeader("content-type", "application/json");
         const msg = new JobMessage(node, headers.getRaw(), new Buffer(JSON.stringify({ val: "original" })));
         const worker = new HttpWorker({
             node_label: { id: "someId", node_id: "507f191e810c19729de860ea", node_name: "httpworker" },
@@ -242,6 +249,7 @@ describe("HttpWorker", () => {
         headers.setPFHeader(Headers.PROCESS_ID, "123");
         headers.setPFHeader(Headers.PARENT_ID, "");
         headers.setPFHeader(Headers.SEQUENCE_ID, "1");
+        headers.setHeader("content-type", "application/json");
         const msg = new JobMessage(node, headers.getRaw(), new Buffer(JSON.stringify({ val: "original" })));
         const worker = new HttpWorker({
             node_label: { id: "someId", node_id: "507f191e810c19729de860ea", node_name: "httpworker" },

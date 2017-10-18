@@ -28,7 +28,6 @@ interface IWaiting {
 
 /**
  * TODO add waiting timeout
- * TODO if in responses are messages with same sequenceId take the latest
  */
 class AmqpRpcWorker implements IWorker {
 

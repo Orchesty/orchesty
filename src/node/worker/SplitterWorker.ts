@@ -4,8 +4,8 @@ import JobMessage from "../../message/JobMessage";
 import {ResultCode} from "../../message/ResultCode";
 import {INodeLabel} from "../../topology/Configurator";
 import IPartialForwarder from "../drain/IPartialForwarder";
-import IWorker from "./IWorker";
 import Resequencer from "../Resequencer";
+import IWorker from "./IWorker";
 
 export interface ISplitterWorkerSettings {
     node_label: INodeLabel;
