@@ -131,7 +131,11 @@ function mapActionsToProps(dispatch, ownProps){
   return {
     edit: () => dispatch(applicationActions.openModal('topology_edit', {topologyId})),
     testTopology: () => dispatch(topologyActions.testTopology(ownProps.topologyId)),
-    clone: () => dispatch(topologyActions.cloneTopology(topologyId)),
+    clone: () => dispatch(topologyActions.cloneTopology(topologyId)).then(topology => {
+      if (topology && topology._id != topologyId){
+        ownProps.onChangeTopology(topology._id);
+      }
+    }),
     topologyDelete: () => dispatch(topologyActions.topologyDelete(topologyId, true)),
     publish: () => dispatch(topologyActions.publishTopology(topologyId))
   }

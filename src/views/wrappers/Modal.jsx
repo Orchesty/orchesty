@@ -12,7 +12,14 @@ export default (WrappedComponent, parameters) => {
       this.close = this.close.bind(this);
       this.makeSubmit = this.makeSubmit.bind(this);
       this.setSubmit = this.setSubmit.bind(this);
+      this.keyDown = this.keyDown.bind(this);
+      this.setSelf = this.setSelf.bind(this);
       this._submitForm = null;
+      this._self = null;
+    }
+
+    componentDidMount(){
+      this._self && this._self.focus();
     }
 
     closeClick(e){
@@ -32,10 +39,20 @@ export default (WrappedComponent, parameters) => {
       this._submitForm = submit;
     }
 
+    keyDown(e){
+      if (e.keyCode == 27){
+        this.close();
+      }
+    }
+
+    setSelf(self){
+      this._self = self;
+    }
+
     render() {
       const {title, subTitle, size, submitCaption, closeCaption, processId, ...passProps} = this.props;
       return (
-        <div className="modal fade manage-user-modal in" tabIndex="-1" role="dialog" style={{display: 'block'}}>
+        <div ref={this.setSelf} className="modal fade manage-user-modal in" tabIndex="0" role="dialog" style={{display: 'block'}} onKeyDown={this.keyDown}>
           <div className={`modal-dialog modal-${size}`}>
             <div className="modal-content">
 

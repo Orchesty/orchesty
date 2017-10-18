@@ -13,7 +13,7 @@ const EnabledFilter = FilterCase(FilterSelect, {
     {value: false, label: 'Disabled'}
   ],
   label: "Enabled",
-  icon: "fa fa-eye"
+  icon: "fa fa-check"
 });
 
 export default EnabledFilter;
