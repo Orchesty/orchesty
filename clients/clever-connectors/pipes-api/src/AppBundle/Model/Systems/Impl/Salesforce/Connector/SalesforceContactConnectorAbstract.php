@@ -87,7 +87,7 @@ abstract class SalesforceContactConnectorAbstract implements BatchInterface, Con
      *
      * @return string
      */
-    protected function getTimeQuery(?DateTime $from, DateTime $to): string
+    public function getTimeQuery(?DateTime $from, DateTime $to): string
     {
         $timeQuery = '+';
 
@@ -95,7 +95,7 @@ abstract class SalesforceContactConnectorAbstract implements BatchInterface, Con
             $timeQuery .= ltrim(http_build_query(['q' => 'where LastModifiedDate>' . $from->format(DateTime::ISO8601)]),
                 'q=');
         }
-        $timeQuery .= ($timeQuery === '+where+' ? '' : '+and+') .
+        $timeQuery .= ($timeQuery === '+' ? 'where+' : '+and+') .
             ltrim(http_build_query(['q' => 'LastModifiedDate<=' . $to->format(DateTime::ISO8601)]), 'q=');
 
         return $timeQuery;
