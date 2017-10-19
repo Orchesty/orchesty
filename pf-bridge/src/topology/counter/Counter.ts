@@ -213,6 +213,7 @@ export default class Counter {
                 id: headers.getPFHeader(Headers.NODE_ID),
                 node_id: headers.getPFHeader(Headers.NODE_ID),
                 node_name: headers.getPFHeader(Headers.NODE_NAME),
+                topology_id: this.settings.topology,
             };
 
             const cm = new CounterMessage(

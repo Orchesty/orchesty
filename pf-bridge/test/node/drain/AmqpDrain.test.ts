@@ -20,6 +20,7 @@ const settings: IAmqpDrainSettings = {
         id: "test-amqpdrain",
         node_id: "507f191e810c19729de860ea",
         node_name: "test",
+        topology_id: "topoId",
     },
     counter: {
         queue: {
@@ -63,7 +64,7 @@ const settings: IAmqpDrainSettings = {
  */
 function createMockMessage(): JobMessage {
     const body = new Buffer(JSON.stringify({foo: "bar"}));
-    const node: INodeLabel = {id: "nodeId", node_id: "nodeId", node_name: "nodeName"};
+    const node: INodeLabel = {id: "nodeId", node_id: "nodeId", node_name: "nodeName", topology_id: "topoId"};
     const headers = new Headers();
     headers.setPFHeader(Headers.CORRELATION_ID, "123");
     headers.setPFHeader(Headers.PROCESS_ID, "123");

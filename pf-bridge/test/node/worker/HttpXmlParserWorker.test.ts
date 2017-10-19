@@ -8,7 +8,7 @@ import {INodeLabel} from "../../../src/topology/Configurator";
 
 describe("HttpXmlParserWorker", () => {
     it("should prepare POST body in correct format", () => {
-        const node: INodeLabel = {id: "nodeId", node_id: "nodeId", node_name: "nodeName"};
+        const node: INodeLabel = {id: "nodeId", node_id: "nodeId", node_name: "nodeName", topology_id: "topoId"};
         const headers = new Headers();
         headers.setPFHeader(Headers.CORRELATION_ID, "123");
         headers.setPFHeader(Headers.PROCESS_ID, "123");
@@ -23,7 +23,12 @@ describe("HttpXmlParserWorker", () => {
         );
 
         const worker = new HttpXmlParserWorker({
-            node_label: { id: "someId", node_id: "507f191e810c19729de860ea", node_name: "httpxmlparserworker" },
+            node_label: {
+                id: "someId",
+                node_id: "507f191e810c19729de860ea",
+                node_name: "httpxmlparserworker",
+                topology_id: "topoId",
+            },
             host: "localhost",
             method: "post",
             port: 4020,

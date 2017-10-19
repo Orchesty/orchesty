@@ -17,6 +17,7 @@ class Defaults {
                 id: node.id,
                 node_id: node.label ? node.label.node_id : node.id,
                 node_name: node.label ? node.label.node_name : `${node.id}_unknown`,
+                topology_id: topoId,
             },
             next: [],
             worker: Defaults.getDefaultWorkerConfig(),

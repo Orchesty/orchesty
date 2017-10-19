@@ -20,6 +20,7 @@ export interface INodeLabel {
     id: string; // unique id combining node_id and node_name
     node_id: string; // uuid of the node
     node_name: string; // human readable name of the node
+    topology_id: string;
 }
 
 export interface INodeConfigSkeleton {
