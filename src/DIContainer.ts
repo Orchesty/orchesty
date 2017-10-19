@@ -2,7 +2,6 @@ import Container from "lib-nodejs/dist/src/container/Container";
 import Metrics from "lib-nodejs/dist/src/metrics/Metrics";
 import AssertionPublisher from "lib-nodejs/dist/src/rabbitmq/AssertPublisher";
 import { default as Connection } from "lib-nodejs/dist/src/rabbitmq/Connection";
-import * as os from "os";
 import {amqpConnectionOptions, metricsOptions} from "./config";
 import CounterPublisher from "./node/drain/amqp/CounterPublisher";
 import FollowersPublisher from "./node/drain/amqp/FollowersPublisher";
@@ -19,6 +18,9 @@ import UppercaseWorker from "./node/worker/UppercaseWorker";
 
 class DIContainer extends Container {
 
+    public static readonly WORKER_TYPE_WORKER = "worker";
+    public static readonly WORKER_TYPE_SPLITTER = "splitter";
+
     constructor() {
         super();
         this.setServices();
@@ -28,11 +30,11 @@ class DIContainer extends Container {
     private setServices() {
         this.set("amqp.connection", new Connection(amqpConnectionOptions));
 
-        this.set("metrics", (nodeId: string) => {
+        this.set("metrics", (topology: string, node: string) => {
             return new Metrics(
                 metricsOptions.node_measurement,
-                nodeId,
-                os.hostname(),
+                topology,
+                node,
                 metricsOptions.server,
                 metricsOptions.port,
             );
@@ -57,28 +59,31 @@ class DIContainer extends Container {
     }
 
     private setWorkers() {
+        const wPrefix = DIContainer.WORKER_TYPE_WORKER;
+        const sPrefix = DIContainer.WORKER_TYPE_SPLITTER;
+
         // Standard workers
-        this.set("worker.appender", (settings: IAppenderWorkerSettings) => {
+        this.set(`${wPrefix}.appender`, (settings: IAppenderWorkerSettings) => {
             return new AppenderWorker(settings);
         });
-        this.set("worker.http", (settings: IHttpWorkerSettings) => {
+        this.set(`${wPrefix}.http`, (settings: IHttpWorkerSettings) => {
             return new HttpWorker(settings);
         });
-        this.set("worker.http_xml_parser", (settings: IHttpXmlParserWorkerSettings) => {
+        this.set(`${wPrefix}.http_xml_parser`, (settings: IHttpXmlParserWorkerSettings) => {
             return new HttpXmlParserWorker(settings);
         });
-        this.set("worker.null", (settings: {}) => {
+        this.set(`${wPrefix}.null`, (settings: {}) => {
             return new NullWorker();
         });
-        this.set("worker.uppercase", (settings: {}) => {
+        this.set(`${wPrefix}.uppercase`, (settings: {}) => {
             return new UppercaseWorker();
         });
 
         // Splitter workers
-        this.set("splitter.amqprpc", (settings: IAmqpRpcWorkerSettings, forwarder: IPartialForwarder) => {
+        this.set(`${sPrefix}.amqprpc`, (settings: IAmqpRpcWorkerSettings, forwarder: IPartialForwarder) => {
             return new AmqpRpcWorker(this.get("amqp.connection"), settings, forwarder);
         });
-        this.set("splitter.json", (settings: ISplitterWorkerSettings, forwarder: IPartialForwarder) => {
+        this.set(`${sPrefix}.json`, (settings: ISplitterWorkerSettings, forwarder: IPartialForwarder) => {
             return new SplitterWorker(settings, forwarder);
         });
     }

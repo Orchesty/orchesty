@@ -18,6 +18,7 @@ const settings: IAmqpDrainSettings = {
         id: "drainId",
         node_id: "someDrainId",
         node_name: "drainName",
+        topology_id: "topId",
     },
     counter: {
         queue: {
@@ -75,7 +76,7 @@ describe("CounterPublisher", () => {
         const msgProcessId = "123";
         const msgSeqId = 1;
         const msgBody = new Buffer(JSON.stringify({some: "json content"}));
-        const node: INodeLabel = {id: "nodeId", node_id: "nodeId", node_name: "nodeName"};
+        const node: INodeLabel = {id: "nodeId", node_id: "nodeId", node_name: "nodeName", topology_id: "topId"};
 
         const headers = new Headers();
         headers.setPFHeader(Headers.CORRELATION_ID, msgCorrId);
@@ -174,7 +175,7 @@ describe("CounterPublisher", () => {
         );
         consumer.consume(settings.counter.queue.name, {})
             .then(() => {
-                const node: INodeLabel = {id: "nodeId", node_id: "nodeId", node_name: "nodeName"};
+                const node: INodeLabel = {id: "nodeId", node_id: "nodeId", node_name: "nodeName", topology_id: "topId"};
                 const msg: JobMessage = new JobMessage(
                     node,
                     headers.getRaw(),

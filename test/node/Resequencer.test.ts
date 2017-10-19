@@ -7,18 +7,19 @@ import JobMessage from "../../src/message/JobMessage";
 import Resequencer from "../../src/node/Resequencer";
 import {INodeLabel} from "../../src/topology/Configurator";
 
+const nodeLabel: INodeLabel = {id: "nodeId", node_id: "nodeId", node_name: "nodeName", topology_id: "topo_id"};
+
 describe("Resequencer", () => {
     it("orders messages with same job_id by their sequenceId", () => {
         const messages: JobMessage[] = [];
 
-        const node: INodeLabel = {id: "nodeId", node_id: "nodeId", node_name: "nodeName"};
         for (let i = 0; i < 10; i++) {
             const headers = new Headers();
             headers.setPFHeader(Headers.CORRELATION_ID, "corrId");
             headers.setPFHeader(Headers.PROCESS_ID, "procId");
             headers.setPFHeader(Headers.PARENT_ID, "parId");
             headers.setPFHeader(Headers.SEQUENCE_ID, `${i}`);
-            messages.push(new JobMessage(node, headers.getRaw(), new Buffer("")));
+            messages.push(new JobMessage(nodeLabel, headers.getRaw(), new Buffer("")));
         }
         const resequencer = new Resequencer("nodeId");
         let output: JobMessage[] = [];
@@ -39,7 +40,6 @@ describe("Resequencer", () => {
     it("orders messages by their sequenceId when also mixed job_id", () => {
         const messages: JobMessage[] = [];
 
-        const node: INodeLabel = {id: "nodeId", node_id: "nodeId", node_name: "nodeName"};
         for (let i = 0; i < 2; i++) {
             for (let j = 0; j < 10; j++) {
                 const headers = new Headers();
@@ -47,7 +47,7 @@ describe("Resequencer", () => {
                 headers.setPFHeader(Headers.PROCESS_ID, `${i}`);
                 headers.setPFHeader(Headers.PARENT_ID, "");
                 headers.setPFHeader(Headers.SEQUENCE_ID, `${j}`);
-                messages.push(new JobMessage(node, headers.getRaw(), new Buffer("")));
+                messages.push(new JobMessage(nodeLabel, headers.getRaw(), new Buffer("")));
             }
         }
         const resequencer = new Resequencer("nodeId");

@@ -9,7 +9,12 @@ import SplitterWorker, {ISplitterWorkerSettings} from "../../../src/node/worker/
 import {INodeLabel} from "../../../src/topology/Configurator";
 
 const settings: ISplitterWorkerSettings = {
-    node_label: { id: "someId", node_id: "507f191e810c19729de860ea", node_name: "splitter" },
+    node_label: {
+        id: "someId",
+        node_id: "507f191e810c19729de860ea",
+        node_name: "splitter",
+        topology_id: "topoId",
+    },
 };
 
 describe("Splitter worker", () => {
@@ -17,7 +22,7 @@ describe("Splitter worker", () => {
         const partialForwarder: IPartialForwarder = {
             forwardPart: () => Promise.resolve(),
         };
-        const node: INodeLabel = {id: "nodeId", node_id: "nodeId", node_name: "nodeName"};
+        const node: INodeLabel = {id: "nodeId", node_id: "nodeId", node_name: "nodeName", topology_id: "topoId"};
         const headers = new Headers();
         headers.setPFHeader(Headers.CORRELATION_ID, "123");
         headers.setPFHeader(Headers.PROCESS_ID, "123");
@@ -37,7 +42,7 @@ describe("Splitter worker", () => {
             forwardPart: () => Promise.resolve(),
         };
         const body = new Buffer(JSON.stringify({ foo: "bar" }));
-        const node: INodeLabel = {id: "nodeId", node_id: "nodeId", node_name: "nodeName"};
+        const node: INodeLabel = {id: "nodeId", node_id: "nodeId", node_name: "nodeName", topology_id: "topoId"};
         const headers = new Headers();
         headers.setPFHeader(Headers.CORRELATION_ID, "123");
         headers.setPFHeader(Headers.PROCESS_ID, "123");
@@ -59,7 +64,7 @@ describe("Splitter worker", () => {
             { foo: "baz" },
             { foo: "woo" },
         ];
-        const node: INodeLabel = {id: "nodeId", node_id: "nodeId", node_name: "nodeName"};
+        const node: INodeLabel = {id: "nodeId", node_id: "nodeId", node_name: "nodeName", topology_id: "topoId"};
         const headers = new Headers();
         headers.setPFHeader(Headers.CORRELATION_ID, "123");
         headers.setPFHeader(Headers.PROCESS_ID, "123");

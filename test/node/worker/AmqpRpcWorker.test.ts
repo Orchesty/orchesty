@@ -23,6 +23,7 @@ describe("AmqpRpcWorker", () => {
                 id: "amqp_rpc_node_test",
                 node_id: "507f191e810c19729de860ea",
                 node_name: "amqprpcnode",
+                topology_id: "topoId",
             },
             publish_queue: {
                 name: "amqp_rpc_pub_test",
@@ -74,6 +75,7 @@ describe("AmqpRpcWorker", () => {
                 id: "amqp_rpc_node_multiple",
                 node_id: "507f191e810c19729de860ea",
                 node_name: "amqprpcnode",
+                topology_id: "topoId",
             },
             publish_queue: {
                 name: "amqp_rpc_pub_multiple",
@@ -164,7 +166,12 @@ describe("AmqpRpcWorker", () => {
 
         return externalWorkerMock.consume(settings.publish_queue.name, {})
             .then(() => {
-                const node: INodeLabel = {id: "amqp.worker.node_id", node_id: "nodeId", node_name: "nodeName"};
+                const node: INodeLabel = {
+                    id: "amqp.worker.node_id",
+                    node_id: "nodeId",
+                    node_name: "nodeName",
+                    topology_id: "topoId",
+                };
                 const headers = new Headers();
                 headers.setPFHeader(Headers.CORRELATION_ID, "amqp.worker.correlation_id");
                 headers.setPFHeader(Headers.PROCESS_ID, "amqp.worker.process_id");

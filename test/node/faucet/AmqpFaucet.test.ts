@@ -15,6 +15,7 @@ const settings: IAmqpFaucetSettings = {
         id: "amqpFaucetNodeId",
         node_id: "507f191e810c19729de860ea",
         node_name: "faucet-amqp",
+        topology_id: "topoId",
     },
     exchange: {
         name: "amqp_faucet_test_ex",

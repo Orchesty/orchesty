@@ -18,6 +18,7 @@ const settings: IAmqpDrainSettings = {
         id: "test-counter-publisher",
         node_id: "507f191e810c19729de860ea",
         node_name: "counter",
+        topology_id: "topoId",
     },
     counter: {
         queue: {
@@ -84,7 +85,7 @@ const settings: IAmqpDrainSettings = {
 
 describe("FollowersPublisher", () => {
     it("publishes message to followers", (done) => {
-        const node: INodeLabel = {id: "nodeId", node_id: "nodeId", node_name: "nodeName"};
+        const node: INodeLabel = {id: "nodeId", node_id: "nodeId", node_name: "nodeName", topology_id: "topoId"};
         const receivedMessages: Message[] = [];
         const checkEnd = () => {
             if (receivedMessages.length === 3) {

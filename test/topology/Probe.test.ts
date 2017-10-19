@@ -16,6 +16,7 @@ const topo = Configurator.createConfigFromSkeleton(
                     id: "node1",
                     node_id: "507f191e810c19729de860ea",
                     node_name: "a",
+                    topology_id: "probe-test",
                 },
                 next: ["node2"],
                 debug: {
@@ -30,6 +31,7 @@ const topo = Configurator.createConfigFromSkeleton(
                     id: "node2",
                     node_id: "607f191e810c19729de860cd",
                     node_name: "b",
+                    topology_id: "probe-test",
                 },
                 next: [],
                 debug: {

@@ -1,7 +1,7 @@
 import Container from "lib-nodejs/dist/src/container/Container";
-import Metrics from "lib-nodejs/dist/src/metrics/Metrics";
+import IMetrics from "lib-nodejs/dist/src/metrics/IMetrics";
 import * as os from "os";
-import {metricsOptions, mongoStorageOptions, repeaterOptions} from "./config";
+import {mongoStorageOptions, repeaterOptions} from "./config";
 import DIContainer from "./DIContainer";
 import logger from "./logger/Logger";
 import IDrain from "./node/drain/IDrain";
@@ -50,14 +50,11 @@ class Pipes {
      * Starts topology counter
      */
     public startCounter(): Promise<void> {
-        const metrics = new Metrics(
-            metricsOptions.node_measurement,
-            `${this.topology.id}_counter`,
-            os.hostname(),
-            metricsOptions.server,
-            metricsOptions.port,
+        const counter = new Counter(
+            this.topology.counter,
+            this.dic.get("amqp.connection"),
+            this.dic.get("metrics")(this.topology.id, `${os.hostname()}_counter`),
         );
-        const counter = new Counter(this.topology.counter, this.dic.get("amqp.connection"), metrics);
 
         return counter.listen()
             .then(() => {
@@ -113,18 +110,12 @@ class Pipes {
         const faucet: IFaucet = this.dic.get(nodeCfg.faucet.type)(nodeCfg.faucet.settings);
         const drain: IDrain = this.dic.get(nodeCfg.drain.type)(nodeCfg.drain.settings);
 
-        const splitterPrefix = "splitter";
+        const splitterPrefix = DIContainer.WORKER_TYPE_SPLITTER;
         const worker: IWorker = (nodeCfg.worker.type.substring(0, splitterPrefix.length) === splitterPrefix) ?
             this.dic.get(nodeCfg.worker.type)(nodeCfg.worker.settings, drain) :
             this.dic.get(nodeCfg.worker.type)(nodeCfg.worker.settings);
 
-        const metrics = new Metrics(
-            metricsOptions.node_measurement,
-            id,
-            os.hostname(),
-            metricsOptions.server,
-            metricsOptions.port,
-        );
+        const metrics: IMetrics = this.dic.get("metrics")(this.topology.id, `${os.hostname()}_${id}`);
 
         const node = new Node(
             id,
