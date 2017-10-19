@@ -28,7 +28,11 @@ class HttpXmlParserWorker extends HttpWorker {
      * @return {string}
      */
     public getHttpRequestBody(inMsg: JobMessage): string {
-        return `{"data":${JSON.stringify(inMsg.getContent())},"settings":{}}`;
+        if (inMsg.getHeaders().getHeader(Headers.CONTENT_TYPE) === "application/json") {
+            return this.getContent(inMsg.getContent());
+        } else {
+            return this.getContent(JSON.stringify(inMsg.getContent()));
+        }
     }
 
     /**
@@ -41,6 +45,14 @@ class HttpXmlParserWorker extends HttpWorker {
         httpHeaders.setHeader(Headers.CONTENT_TYPE, "application/json");
 
         return httpHeaders;
+    }
+
+    /**
+     * @param {string} data
+     * @returns {string}
+     */
+    private getContent(data: string): string {
+        return `{"data":${data ? data : ""},"settings":${JSON.stringify(this.settings.parser_settings)}}`;
     }
 
 }

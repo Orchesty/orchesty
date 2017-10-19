@@ -5,6 +5,7 @@ import logger from "../../../logger/Logger";
 import JobMessage from "../../../message/JobMessage";
 import {ResultCode} from "../../../message/ResultCode";
 import {IAmqpDrainSettings, IFollower} from "../AmqpDrain";
+import Headers from "../../../message/Headers";
 
 /**
  * This class will be injected to all drains and all counter result messages will be published using it
@@ -73,8 +74,12 @@ class FollowersPublisher extends Publisher {
             return [Promise.resolve()];
         }
 
+        const contentType = message.getHeaders().getHeader(Headers.CONTENT_TYPE);
+        message.getHeaders().removeHeader(Headers.CONTENT_TYPE);
+
         const promises: Array<Promise<void>> = [];
         const options: Options.Publish = {
+            contentType,
             headers: message.getHeaders().getRaw(),
             type: "job_message",
             timestamp: Date.now(),
