@@ -43,6 +43,7 @@ class AppExtension extends Extension
         $loader->load('pipedrive.yml');
         $loader->load('zendesk.yml');
         $loader->load('basecrm.yml');
+        $loader->load('mailmunch.yml');
     }
 
 }
