@@ -32,6 +32,8 @@ class PipesHeaders
     public const RESULT_MESSAGE = 'result-message';
     public const RESULT_DETAIL  = 'result-detail';
 
+    private const WHITE_LIST = ['content-type'];
+
     /**
      * @param string $key
      *
@@ -52,7 +54,7 @@ class PipesHeaders
         return array_filter(
             $headers,
             function ($key) {
-                return self::existPrefix(self::PF_PREFIX, $key);
+                return self::existPrefix(self::PF_PREFIX, $key) || in_array(strtolower($key), self::WHITE_LIST);
             },
             ARRAY_FILTER_USE_KEY
         );

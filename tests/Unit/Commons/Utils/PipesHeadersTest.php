@@ -32,7 +32,7 @@ class PipesHeadersTest extends TestCase
      */
     public function testClear(): void
     {
-        $this->assertSame(['pf-token' => '456'], PipesHeaders::clear([
+        $this->assertSame(['content-type' => 'application/json', 'pf-token' => '456'], PipesHeaders::clear([
             'content-type' => 'application/json', 'pfp-node-id' => '123', 'pf-token' => '456',
         ]));
     }
