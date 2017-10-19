@@ -1,6 +1,10 @@
 # STATUS SERVICE
 rabbit-mq:
 
+    queues:
+        pipes.results:
+            durable: true
+
     consumers:
         status-service:
             class: Hanaboso\PipesFramework\Configurator\StatusService\StatusServiceConsumer
