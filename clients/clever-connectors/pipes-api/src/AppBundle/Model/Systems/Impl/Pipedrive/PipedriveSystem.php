@@ -125,7 +125,7 @@ class PipedriveSystem implements WebhookSystemInterface, AuthorizationInterface
     public function getRequestDto(SystemInstall $systemInstall, string $method): RequestDto
     {
         if (!$this->isAuthorized($systemInstall)) {
-            throw new SystemException('System in unauthorized.', SystemException::SYSTEM_IS_UNAUTHORIZED);
+            throw new SystemException('Pipedrive is unauthorized.', SystemException::SYSTEM_IS_UNAUTHORIZED);
         }
 
         $dto = new RequestDto('GET', new Uri(self::BASE_URL));
@@ -149,7 +149,7 @@ class PipedriveSystem implements WebhookSystemInterface, AuthorizationInterface
     ): RequestDto
     {
         if (!$this->isAuthorized($systemInstall)) {
-            throw new SystemException('System in unauthorized.', SystemException::SYSTEM_IS_UNAUTHORIZED);
+            throw new SystemException('Pipedrive is unauthorized.', SystemException::SYSTEM_IS_UNAUTHORIZED);
         }
 
         $event = $this->events[$subscription->getNodeName()];
