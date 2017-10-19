@@ -51,16 +51,6 @@ class FollowersPublisher extends Publisher {
      * @return {Promise<void>}
      */
     public send(message: JobMessage): Promise<void> {
-        if (message.getResult().code !== ResultCode.SUCCESS) {
-            logger.warn(
-                `AmqpDrain will not forward message[", \
-                status="${message.getResult().code}, message="${message.getResult().message}"].`,
-                logger.ctxFromMsg(message),
-            );
-
-            return Promise.resolve();
-        }
-
         const sent = this.sendToAllFollowers(message);
 
         return Promise.all(sent)

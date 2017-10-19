@@ -1,15 +1,22 @@
+import Headers from "../../message/Headers";
 import JobMessage from "../../message/JobMessage";
 import HttpWorker, {IHttpWorkerSettings} from "./HttpWorker";
-import Headers from "../../message/Headers";
 
 export interface IHttpXmlParserWorkerSettings extends IHttpWorkerSettings {
     parser_settings: any;
 }
 
+/**
+ * This http-type worker communicates with xml parser over http connection
+ *
+ * It prepares the payload data and headers in format the xml parser requires
+ */
 class HttpXmlParserWorker extends HttpWorker {
 
-    private static readonly DATA_PLACEHOLDER = "[PF_XMLDATA_PLACEHOLDER]";
-
+    /**
+     *
+     * @param {IHttpXmlParserWorkerSettings} settings
+     */
     constructor(protected settings: IHttpXmlParserWorkerSettings) {
         super(settings);
     }
@@ -21,12 +28,7 @@ class HttpXmlParserWorker extends HttpWorker {
      * @return {string}
      */
     public getHttpRequestBody(inMsg: JobMessage): string {
-        const body: string = JSON.stringify({
-            data: HttpXmlParserWorker.DATA_PLACEHOLDER,
-            settings: this.settings.parser_settings,
-        });
-
-        return body.replace(HttpXmlParserWorker.DATA_PLACEHOLDER, inMsg.getContent());
+        return `{"data":${JSON.stringify(inMsg.getContent())},"settings":{}}`;
     }
 
     /**

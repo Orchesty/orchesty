@@ -14,10 +14,6 @@ export enum NODE_STATUS {
 
 const ROUTE_STATUS = "/status";
 
-const emptyFn: () => void = () => {
-    // function that does nothing and serves as a mock
-};
-
 /**
  * Node class wraps faucet-worker-drain objects and links them together
  * Also is responsible for sending basic metrics
@@ -101,13 +97,9 @@ class Node {
             return this.worker.processData(msgIn)
                 .then((msgOut: JobMessage) => {
                     this.sendProcessDurationMetric(msgOut);
+                    this.drain.forward(msgOut);
 
-                    return this.drain.forward(msgOut);
-                })
-                .then((forwarded: JobMessage) => {
-                    this.sendTotalDurationMetric(forwarded);
-
-                    return forwarded;
+                    return msgIn;
                 })
                 .catch((err: any) => {
                     logger.error(`Node process failed.`, logger.ctxFromMsg(msgIn, err));
@@ -136,17 +128,6 @@ class Node {
         this.metrics.send({node_process_duration: msg.getProcessDuration()})
             .catch((err) => {
                 logger.warn("Unable to send metrics", logger.ctxFromMsg(msg, err));
-            });
-    }
-
-    /**
-     *
-     * @param {JobMessage} msg
-     */
-    private sendTotalDurationMetric(msg: JobMessage): void {
-        this.metrics.send({node_total_duration: msg.getTotalDuration()})
-            .catch((err) => {
-                logger.warn("Unable to send node metrics", logger.ctxFromMsg(msg, err));
             });
     }
 
