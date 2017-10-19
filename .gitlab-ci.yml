@@ -99,7 +99,7 @@ stage-cm:
     - cd ~/stage_cm/clients/clever-connectors
     - export COMPOSE_PROJECT_NAME=stagecm
     - export NPM_INSTALL="yes"
-    - make docker-compose.ci.yml docker-pull-dev init-dev DEV_YML=docker-compose.ci.yml
+    - make docker-compose.ci.yml init-dev DEV_YML=docker-compose.ci.yml
 
 git-cm:
   stage: stage3
