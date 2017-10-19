@@ -115,7 +115,7 @@ class HttpWorker implements IWorker {
      * @param {JobMessage} inMsg
      * @return {any}
      */
-    protected getHttpRequestBody(inMsg: JobMessage): string {
+    public getHttpRequestBody(inMsg: JobMessage): string {
         return inMsg.getContent();
     }
 
