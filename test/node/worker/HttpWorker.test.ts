@@ -269,7 +269,7 @@ describe("HttpWorker", () => {
             });
     });
 
-    it.skip("should return failed result message when remote http host does not exist", () => {
+    it("should return failed result message when remote http host does not exist", () => {
         const node: INodeLabel = {id: "nodeId", node_id: "nodeId", node_name: "nodeName"};
         const headers = new Headers();
         headers.setPFHeader(Headers.CORRELATION_ID, "123");
@@ -280,7 +280,7 @@ describe("HttpWorker", () => {
         const msg = new JobMessage(node, headers.getRaw(), new Buffer(JSON.stringify({ val: "original" })));
         const worker = new HttpWorker({
             node_label: { id: "someId", node_id: "507f191e810c19729de860ea", node_name: "httpworker" },
-            host: "non-existing-host",
+            host: "nonexistinghost",
             method: "post",
             port: 80,
             process_path: "/non-existing",

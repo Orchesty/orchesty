@@ -1,5 +1,6 @@
 import JobMessage from "../../message/JobMessage";
 import HttpWorker, {IHttpWorkerSettings} from "./HttpWorker";
+import Headers from "../../message/Headers";
 
 export interface IHttpXmlParserWorkerSettings extends IHttpWorkerSettings {
     parser_settings: any;
@@ -26,6 +27,18 @@ class HttpXmlParserWorker extends HttpWorker {
         });
 
         return body.replace(HttpXmlParserWorker.DATA_PLACEHOLDER, inMsg.getContent());
+    }
+
+    /**
+     *
+     * @param {JobMessage} inMsg
+     * @return {Headers}
+     */
+    public getHttpRequestHeaders(inMsg: JobMessage): Headers {
+        const httpHeaders = super.getHttpRequestHeaders(inMsg);
+        httpHeaders.setHeader(Headers.CONTENT_TYPE, "application/json");
+
+        return httpHeaders;
     }
 
 }

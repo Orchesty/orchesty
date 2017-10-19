@@ -122,20 +122,28 @@ class HttpWorker implements IWorker {
     /**
      *
      * @param {JobMessage} inMsg
+     * @return {Headers}
+     */
+    public getHttpRequestHeaders(inMsg: JobMessage): Headers {
+        const httpHeaders = new Headers(inMsg.getHeaders().getRaw());
+        httpHeaders.setPFHeader(Headers.NODE_ID, this.settings.node_label.node_id);
+        httpHeaders.setPFHeader(Headers.NODE_NAME, this.settings.node_label.node_name);
+
+        return httpHeaders;
+    }
+
+    /**
+     *
+     * @param {JobMessage} inMsg
      * @return {request.Options}
      */
     private getJobRequestParams(inMsg: JobMessage): request.Options {
-
-        const headersToSend = new Headers(inMsg.getHeaders().getRaw());
-        headersToSend.setPFHeader(Headers.NODE_ID, this.settings.node_label.node_id);
-        headersToSend.setPFHeader(Headers.NODE_NAME, this.settings.node_label.node_name);
-
         const method = this.settings.method.toUpperCase();
         const httpParams: request.Options = {
             method: this.settings.method.toUpperCase(),
             url: this.getUrl(this.settings.process_path),
             followAllRedirects: true,
-            headers: headersToSend.getRaw(),
+            headers: this.getHttpRequestHeaders(inMsg).getRaw(),
         };
 
         if (method === "POST" || method === "PATCH" || method === "PUT") {
