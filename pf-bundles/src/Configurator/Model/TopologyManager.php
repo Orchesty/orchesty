@@ -195,9 +195,9 @@ class TopologyManager
      */
     public function deleteTopology(Topology $topology): void
     {
-        if ($topology->getVisibility() === TopologyStatusEnum::PUBLIC) {
+        if ($topology->getVisibility() === TopologyStatusEnum::PUBLIC && $topology->isEnabled()) {
             throw new TopologyException(
-                'Cannot delete published topology.',
+                'Cannot delete published topology which is enabled. Disable it first.',
                 TopologyException::CANNOT_DELETE_PUBLIC_TOPOLOGY
             );
         }
