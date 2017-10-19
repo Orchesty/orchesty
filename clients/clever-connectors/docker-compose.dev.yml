@@ -83,6 +83,8 @@ services:
           - /var/run/docker.sock:/var/run/docker.sock
         depends_on:
           - mongo
+        group_add:
+          - ${DOCKER_GID}
 
     xml-parser-api:
         image: 'dkr.hanaboso.net/pipes/pipes/python-xml-parser:prod'
