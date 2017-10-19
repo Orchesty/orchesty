@@ -8,7 +8,6 @@ use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Systems\SystemManager;
 use CleverConnectors\AppBundle\Repository\WebhookRepository;
 use Hanaboso\PipesFramework\Commons\DatabaseManager\DatabaseManagerLocator;
-use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyManager;
@@ -35,18 +34,16 @@ class TopologyHandler extends HbPFTopologyHandler
      * @param DatabaseManagerLocator $dml
      * @param TopologyManager        $manager
      * @param GeneratorHandler       $generatorHandler
-     * @param CurlManagerInterface   $curlManager
      * @param SystemManager          $sysManager
      */
     public function __construct(
         DatabaseManagerLocator $dml,
         TopologyManager $manager,
         GeneratorHandler $generatorHandler,
-        CurlManagerInterface $curlManager,
         SystemManager $sysManager
     )
     {
-        parent::__construct($dml, $manager, $generatorHandler, $curlManager);
+        parent::__construct($dml, $manager, $generatorHandler);
         $this->sysManager = $sysManager;
     }
 
@@ -67,16 +64,16 @@ class TopologyHandler extends HbPFTopologyHandler
             );
         }
 
-        $webhooks      = [];
-        $nodes      = [];
-        $syncs      = [];
+        $webhooks = [];
+        $nodes    = [];
+        $syncs    = [];
         /** @var TopologyRepository $repo */
-        $repo = $this->dm->getRepository(Topology::class);
+        $repo       = $this->dm->getRepository(Topology::class);
         $topologies = $repo->getTopologiesCountByName($topology->getName());
 
         if ($topologies === 1) {
-            $nodes = $this->dm->getRepository(Node::class)->findBy(['topology' => $id]);
-            $syncs = $this->dm->getRepository(LastSync::class)->findBy(['topologyName' => $topology->getName()]);
+            $nodes    = $this->dm->getRepository(Node::class)->findBy(['topology' => $id]);
+            $syncs    = $this->dm->getRepository(LastSync::class)->findBy(['topologyName' => $topology->getName()]);
             $webhooks = $this->getWebhooks($topology->getName());
         }
 
@@ -110,7 +107,8 @@ class TopologyHandler extends HbPFTopologyHandler
     private function getWebhooks(string $topologyName): array
     {
         /** @var WebhookRepository $repo */
-        $repo  = $this->dm->getRepository(Webhook::class);
+        $repo = $this->dm->getRepository(Webhook::class);
+
         return $repo->getWebhooks($topologyName);
     }
 

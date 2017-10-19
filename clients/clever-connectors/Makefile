@@ -14,6 +14,7 @@ DE_PROD=docker-compose -f docker-compose.prod.yml exec -T
 		sed -e "s|{DEV_UID}|$(shell id -u)|g" \
 			-e "s|{DEV_GID}|$(shell id -u)|g" \
 			-e "s|{PROJECT_SOURCE_PATH}|$(shell pwd)|g" \
+			-e "s|{DOCKER_GID}|$(shell getent group docker /etc/group | awk -F ':' '{print $$3}')|g" \
 			.env.dist >> .env; \
 	fi;
 

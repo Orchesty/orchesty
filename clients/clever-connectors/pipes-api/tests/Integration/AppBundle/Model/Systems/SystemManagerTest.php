@@ -7,10 +7,13 @@ use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\SystemManager;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
+use Hanaboso\PipesFramework\TopologyGenerator\Request\RequestHandler;
 use Tests\DatabaseTestCaseAbstract;
 use Tests\Integration\AppBundle\Model\Systems\Impl\NullSystem;
+use Tests\PrivateTrait;
 
 /**
  * Class SystemManagerTest
@@ -19,6 +22,8 @@ use Tests\Integration\AppBundle\Model\Systems\Impl\NullSystem;
  */
 class SystemManagerTest extends DatabaseTestCaseAbstract
 {
+
+    use PrivateTrait;
 
     /**
      * @var SystemManager
@@ -372,6 +377,18 @@ class SystemManagerTest extends DatabaseTestCaseAbstract
             $this->dm->persist($nodes[$i]);
         }
         $this->dm->flush();
+
+        $responseDto    = $this->getMockBuilder(ResponseDto::class)->disableOriginalConstructor()->getMock();
+        $requestHandler = $this
+            ->getMockBuilder(RequestHandler::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $requestHandler
+            ->expects($this->once())
+            ->method('deleteTopology')
+            ->with($top->getId())
+            ->willReturn($responseDto);
+        $this->setProperty($manager, 'requestHandler', $requestHandler);
 
         $manager->deleteTopology($top, [], $nodes, []);
         $this->dm->clear();

@@ -55,4 +55,52 @@ class GeneratorController extends FOSRestController
         );
     }
 
+    /**
+     * @Route("/topology/stop/{id}")
+     * @Method({"GET"})
+     *
+     * @param string $id
+     *
+     * @return Response
+     */
+    public function stopAction(string $id): Response
+    {
+        return $this->forward(
+            'HbPFConfiguratorBundle:Generator:stop',
+            ['id' => $id]
+        );
+    }
+
+    /**
+     * @Route("/topology/delete/{id}")
+     * @Method({"GET"})
+     *
+     * @param string $id
+     *
+     * @return Response
+     */
+    public function deleteAction(string $id): Response
+    {
+        return $this->forward(
+            'HbPFConfiguratorBundle:Generator:delete',
+            ['id' => $id]
+        );
+    }
+
+    /**
+     * @Route("/topology/info/{id}")
+     * @Method({"GET"})
+     *
+     * @param string $id
+     *
+     * @return Response
+     */
+    public function infoAction(string $id): Response
+    {
+        return $this->forward(
+            'HbPFConfiguratorBundle:Generator:info',
+            ['id' => $id]
+        );
+    }
+
 }

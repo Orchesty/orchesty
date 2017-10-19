@@ -32,5 +32,4 @@ services:
             - '@hbpf.database_manager_locator'
             - '@hbpf.configurator.manager.topology'
             - '@hbpf.handler.generator_handler'
-            - '@hbpf.transport.curl_manager'
             - '@cc.systems.manager'

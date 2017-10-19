@@ -36,6 +36,8 @@ class StartingPoint implements LoggerAwareInterface
 
     use DebugMessageTrait;
 
+    private const EXCHANGE_PATTERN = 'pipes.%s.events';
+
     private const QUEUE_PATTERN = 'pipes.%s.%s';
 
     private const COUNTER_MESSAGE_TYPE = 'counter_message';
@@ -82,7 +84,7 @@ class StartingPoint implements LoggerAwareInterface
      *
      * @return string
      */
-    public function createQueueName(Topology $topology, Node $node): string
+    public static function createQueueName(Topology $topology, Node $node): string
     {
         return sprintf(
             self::QUEUE_PATTERN,
@@ -96,12 +98,25 @@ class StartingPoint implements LoggerAwareInterface
      *
      * @return string
      */
-    public function createCounterQueueName(Topology $topology): string
+    public static function createCounterQueueName(Topology $topology): string
     {
         return sprintf(
             self::QUEUE_PATTERN,
             $topology->getId() . '-' . Strings::webalize($topology->getName()),
             'counter'
+        );
+    }
+
+    /**
+     * @param Topology $topology
+     *
+     * @return string
+     */
+    public static function createExchangeName(Topology $topology): string
+    {
+        return sprintf(
+            self::EXCHANGE_PATTERN,
+            $topology->getId() . '-' . Strings::webalize($topology->getName())
         );
     }
 
@@ -233,12 +248,12 @@ class StartingPoint implements LoggerAwareInterface
         // Create channel and queues
         /** @var Channel $channel */
         $channel = $this->bunnyManager->getChannel();
-        $channel->queueDeclare($this->createQueueName($topology, $node), FALSE, TRUE);
-        $channel->queueDeclare($this->createCounterQueueName($topology), FALSE, TRUE);
+        $channel->queueDeclare(self::createQueueName($topology, $node), FALSE, TRUE);
+        $channel->queueDeclare(self::createCounterQueueName($topology), FALSE, TRUE);
 
         // Publish messages
-        $this->publishInitializeCounterProcess($channel, $this->createCounterQueueName($topology), $headers, $node);
-        $this->publishProcessMessage($channel, $this->createQueueName($topology, $node), $headers, $content);
+        $this->publishInitializeCounterProcess($channel, self::createCounterQueueName($topology), $headers, $node);
+        $this->publishProcessMessage($channel, self::createQueueName($topology, $node), $headers, $content);
 
         $this->logger->info('Starting point message', [
             'correlation_id' => PipesHeaders::get(PipesHeaders::CORRELATION_ID, $headers->getHeaders()),

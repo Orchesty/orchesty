@@ -8,6 +8,7 @@ services:
       - ../:/srv/libs
       - ${SSH_AUTH_SOCK}:/tmp/bound-ssh-agent
       - ./topology:${GENERATOR_PATH}
+      - /var/run/docker.sock:/var/run/docker.sock
     environment:
       - DEV_UID=${DEV_UID}
       - DEV_GID=${DEV_GID}
@@ -15,6 +16,7 @@ services:
       - PHP_IDE_CONFIG=${PHP_IDE_CONFIG}
       - GENERATOR_PATH=${GENERATOR_PATH}
       - PROJECT_SOURCE_PATH=${PROJECT_SOURCE_PATH}
+      - DOCKER_GID=${DOCKER_GID}
     depends_on:
       - mongo
       - rabbitmq

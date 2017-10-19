@@ -1,3 +1,7 @@
 parameters:
     logger_handler: syslog
     mongo_host: mongo
+
+    docker.connection.settings:
+        remote_socket: 'unix:///var/run/docker.sock'
+

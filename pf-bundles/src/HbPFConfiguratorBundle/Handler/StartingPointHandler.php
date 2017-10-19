@@ -11,12 +11,15 @@ namespace Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use Exception;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Event\TopologyEvent;
 use Hanaboso\PipesFramework\Configurator\Repository\NodeRepository;
 use Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository;
 use Hanaboso\PipesFramework\Configurator\StartingPoint\StartingPoint;
+use Hanaboso\PipesFramework\TopologyGenerator\Request\RequestHandler;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -49,18 +52,26 @@ class StartingPointHandler
     private $dispatcher;
 
     /**
+     * @var RequestHandler
+     */
+    private $requestHandler;
+
+    /**
      * StartingPointHandler constructor.
      *
-     * @param DocumentManager          $dm
-     * @param StartingPoint            $startingPoint
-     * @param EventDispatcherInterface $dispatcher
+     * @param DocumentManager                          $dm
+     * @param StartingPoint                            $startingPoint
+     * @param EventDispatcher|EventDispatcherInterface $dispatcher
+     * @param RequestHandler                           $requestHandler
      */
-    public function __construct(DocumentManager $dm, StartingPoint $startingPoint, EventDispatcherInterface $dispatcher)
+    public function __construct(DocumentManager $dm, StartingPoint $startingPoint, EventDispatcherInterface $dispatcher,
+                                RequestHandler $requestHandler)
     {
         $this->startingPoint      = $startingPoint;
         $this->nodeRepository     = $dm->getRepository(Node::class);
         $this->topologyRepository = $dm->getRepository(Topology::class);
         $this->dispatcher         = $dispatcher;
+        $this->requestHandler     = $requestHandler;
     }
 
     /**
@@ -178,6 +189,20 @@ class StartingPointHandler
      */
     public function runTest(string $topologyId): array
     {
+        $startTopology = TRUE;
+        $runningInfo = $this->requestHandler->infoTopology($topologyId);
+        if ($runningInfo instanceof ResponseDto && $runningInfo->getBody()) {
+            $result = json_decode($runningInfo->getBody(), TRUE);
+            if (array_key_exists('docker_info', $result) && count($result['docker_info'])) {
+                $startTopology = FALSE;
+            }
+        }
+
+        if ($startTopology) {
+            $this->requestHandler->generateTopology($topologyId);
+            $this->requestHandler->runTopology($topologyId);
+        }
+
         return $this->startingPoint->runTest($this->getTopology($topologyId));
     }
 

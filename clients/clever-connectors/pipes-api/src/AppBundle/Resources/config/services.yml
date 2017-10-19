@@ -18,6 +18,7 @@ services:
             - '@cc.systems.loader'
             - '@cc.webhook.manager'
             - '@hbpf.starting_point.starting_point'
+            - '@hbpf.topology_generator.request.request_handler'
 
     cc.systems.loader:
         class: CleverConnectors\AppBundle\Model\Systems\SystemLoader
