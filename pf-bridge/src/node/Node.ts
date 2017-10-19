@@ -20,33 +20,24 @@ const ROUTE_STATUS = "/status";
  */
 class Node {
 
-    private id: string;
-    private drain: IDrain;
-    private faucet: IFaucet;
-    private worker: IWorker;
-    private debugPort: number;
-    private isInitial: boolean;
     private nodeStatus: NODE_STATUS;
-    private metrics: IMetrics;
 
+    /**
+     *
+     * @param {string} id
+     * @param {IWorker} worker
+     * @param {IFaucet} faucet
+     * @param {IDrain} drain
+     * @param {IMetrics} metrics
+     */
     constructor(
-        id: string,
-        worker: IWorker,
-        faucet: IFaucet,
-        drain: IDrain,
-        debugPort: number,
-        metrics: IMetrics,
-        isInitial: boolean = false,
+        private id: string,
+        private worker: IWorker,
+        private faucet: IFaucet,
+        private drain: IDrain,
+        private metrics: IMetrics,
     ) {
-        this.id = id;
-        this.worker = worker;
-        this.faucet = faucet;
-        this.drain = drain;
-        this.debugPort = debugPort;
-        this.isInitial = isInitial;
-
         this.nodeStatus = NODE_STATUS.BRIDGE_NOT_READY;
-        this.metrics = metrics;
     }
 
     /**
@@ -56,7 +47,7 @@ class Node {
      *
      * @private
      */
-    public startServer(): Promise<void> {
+    public startServer(port: number): Promise<void> {
         const app = express();
 
         // All nodes have "/status" route to indicate their readiness
@@ -75,8 +66,8 @@ class Node {
         });
 
         return new Promise((resolve) => {
-            app.listen(this.debugPort, () => {
-                logger.info(`Node provides ${ROUTE_STATUS} on:${this.debugPort}`, { node_id: this.id });
+            app.listen(port, () => {
+                logger.info(`Node provides ${ROUTE_STATUS} on: ${port}`, { node_id: this.id });
                 resolve();
             });
         });

@@ -35,9 +35,10 @@ class Pipes {
      * @return {Promise<void>}
      */
     public startNode(nodeId: string): Promise<void> {
-        const node: Node = this.createNode(this.getNodeConfig(nodeId));
+        const nodeConf = this.getNodeConfig(nodeId);
+        const node: Node = this.createNode(nodeConf);
 
-        return node.startServer()
+        return node.startServer(nodeConf.debug.port)
             .then(() => {
                 return node.open();
             })
@@ -117,15 +118,7 @@ class Pipes {
 
         const metrics: IMetrics = this.dic.get("metrics")(this.topology.id, `${os.hostname()}_${id}`);
 
-        const node = new Node(
-            id,
-            worker,
-            faucet,
-            drain,
-            nodeCfg.debug.port,
-            metrics,
-            nodeCfg.initial,
-        );
+        const node = new Node(id, worker, faucet, drain, metrics);
 
         this.nodes.set(nodeCfg.id, node);
 
