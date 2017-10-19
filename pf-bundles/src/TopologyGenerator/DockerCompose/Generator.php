@@ -98,16 +98,16 @@ class Generator implements GeneratorInterface
             $nodeFullId = GeneratorUtils::normalizeName($node->getId(), $node->getName());
 
             $nodeConfig          = [];
-            $nodeConfig['id']    = $nodeFullId;
+            $nodeConfig['id']    = GeneratorUtils::createServiceName($nodeFullId);
             $nodeConfig['label'] = [
-                'id'        => $nodeFullId,
+                'id'        => GeneratorUtils::createServiceName($nodeFullId),
                 'node_id'   => $node->getId(),
                 'node_name' => $node->getName(),
             ];
             $nodeConfig['worker'] = $this->getWorkerConfig($node);
             $nodeConfig['next']   = [];
             foreach ($node->getNext() as $next) {
-                $nodeConfig['next'][] = GeneratorUtils::normalizeName($next->getId(), $next->getName());
+                $nodeConfig['next'][] = GeneratorUtils::createServiceName(GeneratorUtils::normalizeName($next->getId(), $next->getName()));
             }
 
             $config['nodes'][] = $nodeConfig;
@@ -145,6 +145,7 @@ class Generator implements GeneratorInterface
             $this->environment,
             self::REGISTRY,
             $this->network,
+            $topology,
             $volumePathDefinition
         );
 

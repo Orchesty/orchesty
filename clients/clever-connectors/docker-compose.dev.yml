@@ -155,9 +155,14 @@ services:
         volumes:
           - mongodb:/data/db
 
+    redis:
+        image: redis:3.2-alpine
+        ports:
+        - ${DEV_IP}:6379:6379
+        volumes:
+        - redis:/data
 
     # ELK
-
     elasticsearch:
         image: docker.elastic.co/elasticsearch/elasticsearch:5.6.0
         environment:
@@ -178,7 +183,6 @@ services:
         command: --log.level debug
         volumes:
           - ./logstash.conf:/usr/share/logstash/pipeline/logstash.conf
-
 
     # Metrics
 
@@ -208,22 +212,6 @@ services:
         ports:
           - ${DEV_IP}:8025:8025
 
-    requestbin:
-        image: agaveapi/requestbin:master
-        ports:
-          - ${DEV_IP}:5000:5000
-
-    # Fake API editor
-    swagger-ui:
-      image: swaggerapi/swagger-ui
-      ports:
-              - ${DEV_IP}:8087:8080
-
-    swagger-editor:
-        image: swaggerapi/swagger-editor
-        ports:
-          - ${DEV_IP}:8088:8080
-
     # Spitter
     spitter:
       image: dkr.hanaboso.net/hanaboso/spitter/image:dev
@@ -233,13 +221,6 @@ services:
         SPITTER_PREFFIX: /spitter
       ports:
         - ${DEV_IP}:8090:3000
-
-    redis:
-        image: redis:3.2-alpine
-        ports:
-        - ${DEV_IP}:6379:6379
-        volumes:
-        - redis:/data
 
 volumes:
   elasticsearch: {}
