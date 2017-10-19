@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "205dedcf0879467ac5992772bdf1896a",
+    "content-hash": "51ee488c44ab9061203d16eea741d89b",
     "packages": [
         {
             "name": "alcaeus/mongo-php-adapter",
@@ -1866,11 +1866,11 @@
         },
         {
             "name": "hanaboso/pipes-framework",
-            "version": "1.0.8",
+            "version": "1.0.9",
             "dist": {
                 "type": "path",
                 "url": "../../../pf-bundles",
-                "reference": "63bd18f84bf368be4ec25d25e23661ae3dc9a7a8",
+                "reference": "5a48750114de291cc8dd1b49403ec0fcd2939b0a",
                 "shasum": null
             },
             "require": {
@@ -1888,11 +1888,14 @@
                 "nette/http": "^2.4",
                 "nette/utils": "^2.4",
                 "paragonie/halite": "^3.3",
-                "phpoffice/phpspreadsheet": "@dev",
+                "php-http/client-common": "^1.1",
+                "php-http/message": "^1.0",
+                "php-http/socket-client": "^1.0",
+                "phpoffice/phpspreadsheet": "1.0.0-beta",
                 "phpseclib/phpseclib": "^2.0",
                 "predis/predis": "^1.1",
                 "ramsey/uuid": "^3.7",
-                "snc/redis-bundle": "2.x-dev",
+                "snc/redis-bundle": "^2.0",
                 "symfony/assetic-bundle": "^2.8",
                 "symfony/monolog-bundle": "^3.1",
                 "symfony/swiftmailer-bundle": "^3.0",
@@ -3354,7 +3357,7 @@
         },
         {
             "name": "phpoffice/phpspreadsheet",
-            "version": "dev-master",
+            "version": "1.0.0-beta",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPOffice/PhpSpreadsheet.git",
@@ -4677,7 +4680,7 @@
         },
         {
             "name": "snc/redis-bundle",
-            "version": "dev-master",
+            "version": "2.0.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/snc/SncRedisBundle.git",
@@ -7850,8 +7853,7 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "phpoffice/phpspreadsheet": 20,
-        "snc/redis-bundle": 20
+        "phpoffice/phpspreadsheet": 10
     },
     "prefer-stable": false,
     "prefer-lowest": false,

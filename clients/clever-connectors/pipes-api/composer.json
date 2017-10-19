@@ -24,16 +24,13 @@
     "incenteev/composer-parameter-handler": "^2.0",
     "nelmio/cors-bundle": "^1.5",
     "php": ">=7.0",
-    "phpoffice/phpspreadsheet": "@dev",
+    "phpoffice/phpspreadsheet": "1.0.0-beta",
     "react/child-process": "^0.5",
     "sensio/distribution-bundle": "^5.0.19",
     "sensio/framework-extra-bundle": "^3.0.2",
-    "snc/redis-bundle": "2.x-dev",
+    "snc/redis-bundle": "^2.0",
     "symfony/polyfill-apcu": "^1.0",
-    "twig/twig": "^1.0||^2.0",
-    "php-http/socket-client": "^1.0",
-    "php-http/client-common": "^1.1",
-    "php-http/message": "^1.0"
+    "twig/twig": "^1.0||^2.0"
   },
   "require-dev": {
     "pipes/php-check-utils": "^1.0",

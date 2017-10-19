@@ -1,7 +1,7 @@
 {
   "name": "hanaboso/pipes-framework",
   "description": "PipesFramework for Symfony",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "autoload": {
     "psr-4": {
       "Hanaboso\\PipesFramework\\": "src/",
@@ -27,19 +27,18 @@
     "nette/http": "^2.4",
     "nette/utils": "^2.4",
     "paragonie/halite": "^3.3",
-    "phpoffice/phpspreadsheet": "@dev",
+    "php-http/client-common": "^1.1",
+    "php-http/message": "^1.0",
+    "php-http/socket-client": "^1.0",
+    "phpoffice/phpspreadsheet": "1.0.0-beta",
     "phpseclib/phpseclib": "^2.0",
+    "predis/predis": "^1.1",
     "ramsey/uuid": "^3.7",
+    "snc/redis-bundle": "^2.0",
     "symfony/assetic-bundle": "^2.8",
     "symfony/monolog-bundle": "^3.1",
     "symfony/swiftmailer-bundle": "^3.0",
-    "symfony/symfony": "^3.3",
-    "php-http/socket-client": "^1.0",
-    "php-http/client-common": "^1.1",
-    "php-http/message": "^1.0",
-    "symfony/symfony": "^3.3",
-    "snc/redis-bundle": "2.x-dev",
-    "predis/predis": "^1.1"
+    "symfony/symfony": "^3.3"
   },
   "require-dev": {
     "pipes/php-check-utils": "^1.0",

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "b3a15b94d29d2c1cb4b08c256240b9bc",
+    "content-hash": "9be33b1c7bf23d87ffa1cf77b1c3f36e",
     "packages": [
         {
             "name": "alcaeus/mongo-php-adapter",
@@ -3134,7 +3134,7 @@
         },
         {
             "name": "phpoffice/phpspreadsheet",
-            "version": "dev-master",
+            "version": "1.0.0-beta",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPOffice/PhpSpreadsheet.git",
@@ -4250,7 +4250,7 @@
         },
         {
             "name": "snc/redis-bundle",
-            "version": "dev-master",
+            "version": "2.0.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/snc/SncRedisBundle.git",
@@ -7377,8 +7377,7 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "phpoffice/phpspreadsheet": 20,
-        "snc/redis-bundle": 20
+        "phpoffice/phpspreadsheet": 10
     },
     "prefer-stable": false,
     "prefer-lowest": false,
