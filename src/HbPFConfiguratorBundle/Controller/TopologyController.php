@@ -216,8 +216,13 @@ class TopologyController extends FOSRestController
     {
         $this->construct();
         $this->topologyHandler->deleteTopology($id);
+        $deleteResult = $this->requestHandler->deleteTopology($id);
 
-        return new JsonResponse([], 200);
+        if ($deleteResult->getStatusCode() == 200) {
+            return new JsonResponse([], 200);
+        }
+
+        return new JsonResponse([], 400);
     }
 
     /**
