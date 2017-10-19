@@ -1,5 +1,3 @@
-/* tslint:disable:no-empty */
-
 import { assert } from "chai";
 import "mocha";
 
@@ -23,19 +21,11 @@ describe("Node", () => {
         const faucetInstance: AmqpFaucet = mock.instance(faucet);
         faucetInstance.open = () => Promise.resolve();
 
-        const node = new Node(
-            "test-node",
-            worker,
-            faucetInstance,
-            drain,
-            5002,
-            metricsMock,
-            true,
-        );
+        const node = new Node("test-node", worker, faucetInstance, drain, metricsMock);
 
         return node.open()
             .then(() => {
-                return node.startServer();
+                return node.startServer(5002);
             })
             .then(() => {
                 return rp("http://localhost:5002/status");
@@ -52,19 +42,11 @@ describe("Node", () => {
         const faucetInstance: AmqpFaucet = mock.instance(faucet);
         faucetInstance.open = () => Promise.resolve();
 
-        const node = new Node(
-            "test-node",
-            worker,
-            faucetInstance,
-            drain,
-            5001,
-            metricsMock,
-            true,
-        );
+        const node = new Node("test-node", worker, faucetInstance, drain, metricsMock);
 
         return node.open()
             .then(() => {
-                return node.startServer();
+                return node.startServer(5001);
             })
             .then(() => {
                 return rp("http://localhost:5001/status");
