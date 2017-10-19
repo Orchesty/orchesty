@@ -246,7 +246,7 @@ class SystemController extends FOSRestController
         try {
             $this->handler->authorize($userId, $systemKey, $redirectUrl);
 
-            return NULL;
+            return new RedirectResponse($redirectUrl);
         } catch (SystemException $e) {
             return self::processException($e);
         }
