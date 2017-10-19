@@ -15,6 +15,7 @@ use CleverConnectors\AppBundle\Model\Webhook\WebhookSubscribes;
 use CleverConnectors\AppBundle\Model\Webhook\WebhookSystemInterface;
 use CleverConnectors\AppBundle\Utils\AuthorizationUtils;
 use DateTime;
+use DateTimeZone;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Authorization\Provider\Dto\OAuth2Dto;
 use Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider;
@@ -151,7 +152,9 @@ class HubspotSystem implements WebhookSystemInterface, OAuth2Interface
     public function saveToken(SystemInstall $systemInstall, array $data): SystemInstall
     {
         $arr     = $this->provider->getAccessToken($this->getDto($systemInstall), $data);
-        $expires = (new DateTime())->setTimestamp(time() + $arr['expires_in']);
+        $expires = (new DateTime())
+            ->setTimestamp($arr['expires'])
+            ->setTimezone(new DateTimeZone('UTC'));
 
         $systemInstall->setExpires($expires);
         $this->setSettings($systemInstall, $arr);

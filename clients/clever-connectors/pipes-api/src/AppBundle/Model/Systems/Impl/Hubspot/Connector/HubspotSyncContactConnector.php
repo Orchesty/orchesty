@@ -106,16 +106,7 @@ class HubspotSyncContactConnector implements BatchInterface, ConnectorInterface
         $requestDto    = $this->system->getRequestDto($systemInstall, 'GET');
         $requestDto->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()));
 
-        $url = new Uri(sprintf('%s%s', $requestDto->getUri(TRUE), self::CONTACTS_URL));
-
-        // todo continue here (vidOffset)
-
-        $promise = $this->fetchData($sender, RequestDto::from($requestDto, $url))
-            ->then(
-                function (ResponseInterface $response) use ($sender, $callbackItem, $requestDto) {
-                    return all($this->doPageLoop($response, $sender, $callbackItem, $requestDto));
-                }
-            );
+        $promise = $this->doPageLoop($sender, $callbackItem, $requestDto);
 
         $this->systemInstallRepository->setSyncTime($systemInstall);
 
@@ -134,37 +125,39 @@ class HubspotSyncContactConnector implements BatchInterface, ConnectorInterface
     }
 
     /**
-     * @param ResponseInterface $response
-     * @param CurlSender        $sender
-     * @param callable          $callbackItem
-     * @param RequestDto        $dto
+     * @param CurlSender $sender
+     * @param callable   $callbackItem
+     * @param RequestDto $dto
      *
      * @return array
      */
-    private function doPageLoop(
-        ResponseInterface $response,
-        CurlSender $sender,
-        callable $callbackItem,
-        RequestDto $dto
-    ): array
+    private function doPageLoop(CurlSender $sender, callable $callbackItem, RequestDto $dto): array
     {
-        $hasMore  = $this->hasMore($response);
+        $i        = 1;
         $requests = [];
+        $parsed   = ['has-more' => TRUE];
 
-        while ($hasMore === TRUE) {
+        while ($parsed['has-more'] === TRUE) {
 
-            $vidOffset = '';
-            $query     = sprintf(self::CONTACTS_URL_OFFSET, $vidOffset);
-            $url       = new Uri(sprintf('%s%s', $dto->getUri(TRUE), $query));
+            if ($i == 1) {
+                $url = new Uri(sprintf('%s%s', $dto->getUri(TRUE), self::CONTACTS_URL));
+            } else {
+                $query = sprintf(self::CONTACTS_URL_OFFSET, $parsed['vid-offset']);
+                $url   = new Uri(sprintf('%s%s', $dto->getUri(TRUE), $query));
+            }
 
-            $requests[] = $this->fetchData($sender, RequestDto::from($dto, $url))
+            $requests[] = $this
+                ->fetchData($sender, RequestDto::from($dto, $url))
                 ->then(
                     function (ResponseInterface $response) use ($i): SuccessMessage {
                         return $this->createSuccessMessage($response, $i);
                     })
                 ->then($callbackItem);
 
-            $hasMore = $this->hasMore($response);
+            // TODO i need response here...
+
+            $parsed = $this->getParsedResponseData($response);
+            $i++;
         }
 
         return $requests;
@@ -173,21 +166,21 @@ class HubspotSyncContactConnector implements BatchInterface, ConnectorInterface
     /**
      * @param ResponseInterface $response
      *
-     * @return bool
+     * @return array
      * @throws SystemException
      */
-    private function hasMore(ResponseInterface $response): bool
+    private function getParsedResponseData(ResponseInterface $response): array
     {
         $data = json_decode($response->getBody()->getContents(), TRUE);
 
-        if (!is_array($data) || !array_key_exists('has-more', $data)) {
+        if (!is_array($data) || !array_key_exists('has-more', $data) || !array_key_exists('vid-offset', $data)) {
             throw new SystemException(
-                'Hubspot response has no "has-more" field!',
+                'Hubspot response has no "has-more" or "vid-offset" field!',
                 SystemException::MISSING_RESPONSE_DATA
             );
         }
 
-        return (bool) $data['has-more'];
+        return $data;
     }
 
     /**

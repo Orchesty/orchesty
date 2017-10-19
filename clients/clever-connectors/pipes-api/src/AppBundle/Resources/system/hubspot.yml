@@ -4,3 +4,25 @@ services:
         arguments:
             - '@hbpf.providers.oauth2_provider'
         tags: ['%systems%']
+
+    hbpf.connector.hubspot-update-contact-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\Connector\HubspotUpdateContactConnector
+        arguments:
+            - '@systems.hubspot'
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.transport.async_curl_factory'
+
+    hbpf.connector.hubspot-sync-contact-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\Connector\HubspotSyncContactConnector
+        arguments:
+            - '@systems.hubspot'
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.transport.async_curl_factory'
+
+    hbpf.custom_node.hubspot-update-contact-mapper:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\Mapper\HubspotUpdateContactMapper
+        arguments:
+
+    hbpf.custom_node.hubspot-delete-contact-mapper:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\Mapper\HubspotDeleteContactMapper
+        arguments:
