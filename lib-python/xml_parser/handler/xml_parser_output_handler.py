@@ -8,6 +8,7 @@ from handler.response_handler import get_xml_content
 from model.request_data import RequestData
 from model.validator import Validator
 from model.writer import Writer
+from utils.pipes_headers import PipesHeaders
 
 logger = logging.getLogger(__name__)
 
@@ -40,6 +41,16 @@ class XmlParserOutputHandler:
         self.metrics.send({})
 
         result = writer.write(self.request_data.get_body()['data'])
-        response = get_xml_content(status=200, body=result, headers=self.request_data.get_headers())
+        response = get_xml_content(status=200, body=result, headers=self.create_headers())
 
         return response
+
+    def create_headers(self):
+        """
+        :return: dict
+        """
+        headers = self.request_data.get_headers()
+        headers[PipesHeaders.create_key(PipesHeaders.RESULT_CODE)] = 0
+        headers[PipesHeaders.create_key(PipesHeaders.RESULT_MESSAGE)] = 'JSON to XML parsing was successful.'
+
+        return headers
