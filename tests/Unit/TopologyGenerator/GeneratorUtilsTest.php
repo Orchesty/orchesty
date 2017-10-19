@@ -37,4 +37,14 @@ class GeneratorUtilsTest extends TestCase
         $this->assertEquals('123', GeneratorUtils::denormalizeName('123-test'));
     }
 
+    /**
+     * @covers GeneratorUtils::normalizeName()
+     */
+    public function testCreateServiceName(): void
+    {
+        $this->assertEquals('123456-con-mag', GeneratorUtils::createServiceName('123456-connector-magento'));
+        $this->assertEquals('123456-co-ma', GeneratorUtils::createServiceName('123456-co-ma'));
+        $this->assertEquals('', GeneratorUtils::createServiceName(''));
+    }
+
 }

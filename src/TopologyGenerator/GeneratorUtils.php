@@ -47,7 +47,28 @@ class GeneratorUtils
      */
     public static function dokerizeName(string $id, string $name): string
     {
-        return sprintf('%s%s', $id, preg_replace('/-/', '', Strings::webalize($name)));
+        return sprintf('%s%s', $id, Strings::webalize($name));
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return string
+     */
+    public static function createServiceName(string $name): string
+    {
+        $pieces = [];
+        $i      = 0;
+        foreach (explode('-', $name) as $item) {
+            if ($i === 0) {
+                $pieces[] = $item;
+            } else {
+                $pieces[] = substr($item, 0, 3);
+            }
+            $i++;
+        };
+
+        return substr(implode('-', $pieces), 0, 64);
     }
 
 }

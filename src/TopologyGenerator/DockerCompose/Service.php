@@ -8,6 +8,8 @@
 
 namespace Hanaboso\PipesFramework\TopologyGenerator\DockerCompose;
 
+use Hanaboso\PipesFramework\TopologyGenerator\GeneratorUtils;
+
 /**
  * Class Service
  *
@@ -73,7 +75,7 @@ class Service
      */
     public function __construct(string $name)
     {
-        $this->name = $name;
+        $this->name = GeneratorUtils::createServiceName($name);
     }
 
     /**

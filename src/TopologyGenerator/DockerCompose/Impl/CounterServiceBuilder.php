@@ -9,6 +9,7 @@
 namespace Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\Impl;
 
 use Hanaboso\PipesFramework\Configurator\Document\Node;
+use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\Service;
 use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\ServiceBuilderInterface;
 use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\VolumePathDefinition;
@@ -45,17 +46,24 @@ class CounterServiceBuilder implements ServiceBuilderInterface
     private $volumePathDefinition;
 
     /**
+     * @var Topology
+     */
+    private $topology;
+
+    /**
      * NodeServiceBuilder constructor.
      *
      * @param Environment          $environment
      * @param string               $registry
      * @param string               $network
+     * @param Topology             $topology
      * @param VolumePathDefinition $volumePathDefinition
      */
     public function __construct(
         Environment $environment,
         string $registry,
         string $network,
+        Topology $topology,
         VolumePathDefinition $volumePathDefinition
     )
     {
@@ -63,6 +71,7 @@ class CounterServiceBuilder implements ServiceBuilderInterface
         $this->registry             = $registry;
         $this->network              = $network;
         $this->volumePathDefinition = $volumePathDefinition;
+        $this->topology             = $topology;
     }
 
     /**
@@ -72,7 +81,7 @@ class CounterServiceBuilder implements ServiceBuilderInterface
      */
     public function build(Node $node): Service
     {
-        $service = new Service('counter');
+        $service = new Service(sprintf('%s_counter', $this->topology->getId()));
         $service
             ->setImage($this->registry . '/' . self::IMAGE)
             ->addEnvironment(Environment::RABBITMQ_HOST, $this->environment->getRabbitMqHost())
