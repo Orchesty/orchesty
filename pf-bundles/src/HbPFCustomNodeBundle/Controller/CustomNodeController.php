@@ -16,6 +16,7 @@ use Hanaboso\PipesFramework\Utils\ControllerUtils;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class CustomNodeController
@@ -49,21 +50,19 @@ class CustomNodeController extends FOSRestController
      * @param Request $request
      * @param string  $nodeId
      *
-     * @return JsonResponse
+     * @return Response
      */
-    public function sendAction(Request $request, string $nodeId): JsonResponse
+    public function sendAction(Request $request, string $nodeId): Response
     {
-
         try {
             $data     = $this->handler->process($nodeId, (string) $request->getContent(), $request->headers->all());
-            $response = new JsonResponse(
+            $response = new Response(
                 $data->getData(),
                 200,
-                ControllerUtils::createHeaders($data->getHeaders()),
-                TRUE
+                ControllerUtils::createHeaders($data->getHeaders())
             );
         } catch (CustomNodeException $e) {
-            $response = new JsonResponse(
+            $response = new Response(
                 ControllerUtils::createExceptionData($e),
                 500,
                 ControllerUtils::createHeaders([], $e)

@@ -166,7 +166,7 @@ class StartingPointTest extends TestCase
         $this->assertArrayHasKey(PipesHeaders::PF_PREFIX . 'sequence-id', $headers->getHeaders());
         $this->assertArrayHasKey(PipesHeaders::PF_PREFIX . 'topology-id', $headers->getHeaders());
         $this->assertArrayHasKey(PipesHeaders::PF_PREFIX . 'topology-name', $headers->getHeaders());
-        $this->assertArrayHasKey('content_type', $headers->getHeaders());
+        $this->assertArrayHasKey('content-type', $headers->getHeaders());
     }
 
     /**

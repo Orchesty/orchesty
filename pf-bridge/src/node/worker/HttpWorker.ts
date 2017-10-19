@@ -68,6 +68,8 @@ class HttpWorker implements IWorker {
 
                 msg.setResult(result);
                 msg.setContent(body);
+                const responseContentType: any = response.headers[Headers.CONTENT_TYPE];
+                msg.getHeaders().setHeader(Headers.CONTENT_TYPE, responseContentType);
 
                 return resolve(msg);
             });

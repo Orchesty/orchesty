@@ -75,6 +75,19 @@ final class ProcessDto
     }
 
     /**
+     * @param string $key
+     * @param string $value
+     *
+     * @return ProcessDto
+     */
+    public function addHeader(string $key, string $value): ProcessDto
+    {
+        $this->headers[$key] = $value;
+
+        return $this;
+    }
+
+    /**
      * @param string      $key
      * @param null|string $default
      *
