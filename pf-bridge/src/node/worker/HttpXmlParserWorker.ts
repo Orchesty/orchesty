@@ -7,6 +7,8 @@ export interface IHttpXmlParserWorkerSettings extends IHttpWorkerSettings {
 
 class HttpXmlParserWorker extends HttpWorker {
 
+    private static readonly DATA_PLACEHOLDER = "[PF_XMLDATA_PLACEHOLDER]";
+
     constructor(protected settings: IHttpXmlParserWorkerSettings) {
         super(settings);
     }
@@ -17,11 +19,13 @@ class HttpXmlParserWorker extends HttpWorker {
      * @param {JobMessage} inMsg
      * @return {string}
      */
-    protected getHttpRequestBody(inMsg: JobMessage): string {
-        return JSON.stringify({
-            data: inMsg.getContent(),
+    public getHttpRequestBody(inMsg: JobMessage): string {
+        const body: string = JSON.stringify({
+            data: HttpXmlParserWorker.DATA_PLACEHOLDER,
             settings: this.settings.parser_settings,
         });
+
+        return body.replace(HttpXmlParserWorker.DATA_PLACEHOLDER, inMsg.getContent());
     }
 
 }
