@@ -20,8 +20,11 @@ class Headers {
     public static readonly RESULT_CODE = "result-code";
     public static readonly RESULT_MESSAGE = "result-message";
 
+    // Other headers
+    public static readonly CONTENT_TYPE = "content-type";
+
     public static readonly HEADERS_WHITELIST = [
-        "content-type",
+        Headers.CONTENT_TYPE,
     ];
 
     /**
