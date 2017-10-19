@@ -32,3 +32,16 @@ services:
         arguments:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@doctrine.orm.default_entity_manager'
+
+    hbpf.docker.handler.docker_handler:
+        class: Hanaboso\PipesFramework\Commons\Docker\Handler\DockerHandler
+        arguments: ['@hbpf.docker.docker']
+
+    hbpf.docker.docker:
+        class: Hanaboso\PipesFramework\Commons\Docker\Docker
+        arguments: ['@hbpf.commons.docker.docker_client']
+
+    hbpf.commons.docker.docker_client:
+        class: Hanaboso\PipesFramework\Commons\Docker\DockerClient
+        arguments:
+            - '%docker.connection.settings%'

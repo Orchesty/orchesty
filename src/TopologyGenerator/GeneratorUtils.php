@@ -39,4 +39,15 @@ class GeneratorUtils
         return preg_replace('/-.*$/', '', $name);
     }
 
+    /**
+     * @param string $id
+     * @param string $name
+     *
+     * @return string
+     */
+    public static function dokerizeName(string $id, string $name): string
+    {
+        return sprintf('%s%s', $id, Strings::webalize($name));
+    }
+
 }
