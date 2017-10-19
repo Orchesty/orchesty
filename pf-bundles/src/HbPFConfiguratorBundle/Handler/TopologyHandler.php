@@ -197,7 +197,7 @@ class TopologyHandler
     public function cloneTopology(string $id): array
     {
         $topology = $this->getTopologyById($id);
-        $this->manager->cloneTopology($topology);
+        $topology = $this->manager->cloneTopology($topology);
 
         return $this->getTopologyData($topology);
     }
