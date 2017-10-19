@@ -1,7 +1,9 @@
 import Container from "lib-nodejs/dist/src/container/Container";
+import Metrics from "lib-nodejs/dist/src/metrics/Metrics";
 import AssertionPublisher from "lib-nodejs/dist/src/rabbitmq/AssertPublisher";
 import { default as Connection } from "lib-nodejs/dist/src/rabbitmq/Connection";
-import {amqpConnectionOptions} from "./config";
+import * as os from "os";
+import {amqpConnectionOptions, metricsOptions} from "./config";
 import CounterPublisher from "./node/drain/amqp/CounterPublisher";
 import FollowersPublisher from "./node/drain/amqp/FollowersPublisher";
 import {default as AmqpDrain, IAmqpDrainSettings} from "./node/drain/AmqpDrain";
@@ -26,6 +28,16 @@ class DIContainer extends Container {
     private setServices() {
         this.set("amqp.connection", new Connection(amqpConnectionOptions));
 
+        this.set("metrics", (nodeId: string) => {
+            return new Metrics(
+                metricsOptions.node_measurement,
+                nodeId,
+                os.hostname(),
+                metricsOptions.server,
+                metricsOptions.port,
+            );
+        });
+
         this.set("faucet.amqp", (settings: IAmqpFaucetSettings) => {
             return new AmqpFaucet(settings, this.get("amqp.connection"));
         });
@@ -38,8 +50,9 @@ class DIContainer extends Container {
                 () =>  Promise.resolve(),
                 {},
             );
+            const metrics = this.get("metrics")(settings.node_label.id);
 
-            return new AmqpDrain(settings, counterPub, followersPub, assertionPub);
+            return new AmqpDrain(settings, counterPub, followersPub, assertionPub, metrics);
         });
     }
 

@@ -35,7 +35,7 @@ describe("HttpXmlParserWorker", () => {
         });
 
         const body = worker.getHttpRequestBody(msg);
-        assert.equal(body, "{\"data\":\"<?xml version=\"1.0\" encoding=\"UTF-8\"?><root></root>\",\"settings\":{}}");
+        assert.equal(body, '{"data":"<?xml version=\\\"1.0\\\" encoding=\\\"UTF-8\\\"?><root></root>","settings":{}}');
     });
 
 });

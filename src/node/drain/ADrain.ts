@@ -19,7 +19,7 @@ abstract class ADrain implements IDrain {
         return this.resequencer ? this.resequencer.getMessages(message) : [message];
     }
 
-    public abstract forward(msgOut: JobMessage): Promise<JobMessage>;
+    public abstract forward(msgOut: JobMessage): void;
 }
 
 export default ADrain;

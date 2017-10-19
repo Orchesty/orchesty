@@ -22,6 +22,7 @@ class Headers {
 
     // Other headers
     public static readonly CONTENT_TYPE = "content-type";
+    public static readonly REPEAT_QUEUE = "repeat_target_queue";
 
     public static readonly HEADERS_WHITELIST = [
         Headers.CONTENT_TYPE,
