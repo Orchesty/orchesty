@@ -155,7 +155,7 @@ class PipedriveSystem implements WebhookSystemInterface, AuthorizationInterface
         $event = $this->events[$subscription->getNodeName()];
         $sett  = $systemInstall->getSettings();
 
-        $dto = new RequestDto('POST', new Uri(sprintf($subscription->getRegistrationUrl(), $sett[self::API_TOKEN])));
+        $dto = new RequestDto('POST', new Uri(sprintf($subscription->getSubscribeUrl(), $sett[self::API_TOKEN])));
         $dto->setHeaders($this->getHeaders())
             ->setBody(json_encode([
                 'subscription_url' => $url,
@@ -176,7 +176,7 @@ class PipedriveSystem implements WebhookSystemInterface, AuthorizationInterface
     {
         $sett = $systemInstall->getSettings();
 
-        $dto = new RequestDto('DELETE', new Uri(sprintf($this->subscriptions[0]->getUnregistrationUrl(), $webhookId, $sett[self::API_TOKEN])));
+        $dto = new RequestDto('DELETE', new Uri(sprintf($this->subscriptions[0]->getUnSubscribeUrl(), $webhookId, $sett[self::API_TOKEN])));
         $dto->setHeaders($this->getHeaders());
 
         return $dto;
