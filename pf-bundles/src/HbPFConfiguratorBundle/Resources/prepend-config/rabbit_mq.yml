@@ -8,7 +8,7 @@ rabbit-mq:
         stream:
             durable: true
             bindings:
-                - exchange: steam
+                - exchange: stream
                   routing_key: stream
 
     producers:
