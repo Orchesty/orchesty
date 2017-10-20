@@ -91,7 +91,7 @@ class ZendeskUpdateUserConnector extends ZendeskUserConnectorAbstract
         }
         $time = rtrim($start->format(DateTime::ISO8601), '+0000') . 'Z';
 
-        return 'query=type:user updated>' . $time;
+        return 'query=type:user&updated>' . $time;
     }
 
 }

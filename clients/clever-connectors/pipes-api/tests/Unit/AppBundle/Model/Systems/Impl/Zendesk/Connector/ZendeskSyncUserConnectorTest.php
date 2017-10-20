@@ -1,9 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Unit\AppBundle\Model\Systems\Impl\Pipedrive\Connector;
+namespace Tests\Unit\AppBundle\Model\Systems\Impl\Zendesk\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
-use CleverConnectors\AppBundle\Model\Systems\Impl\Pipedrive\Connector\PipedriveSyncPersonConnector;
+use CleverConnectors\AppBundle\Model\LastSync\LastSyncManager;
+use CleverConnectors\AppBundle\Model\Systems\Impl\Zendesk\Connector\ZendeskSyncUserConnector;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Response;
@@ -11,27 +12,29 @@ use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSenderFactory;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
-use PHPUnit_Framework_MockObject_MockObject;
 use React\EventLoop\Factory;
 use Tests\ConnectorTestCaseAbstract;
 use function React\Promise\resolve;
 
 /**
- * Class PipedriveSyncPersonConnectorTest
+ * Class ZendeskSyncUserConnectorTest
  *
- * @package Tests\Unit\AppBundle\Model\Systems\Impl\Pipedrive\Connector
+ * @package Tests\Unit\AppBundle\Model\Systems\Impl\Zendesk\Connector
  */
-final class PipedriveSyncPersonConnectorTest extends ConnectorTestCaseAbstract
+class ZendeskSyncUserConnectorTest extends ConnectorTestCaseAbstract
 {
 
-    private const API_TOKEN = 'sdgfd6g465g46f456f';
+    /**
+     * @var string
+     */
+    private $auth = '';
 
     /**
      *
      */
-    public function testProcessBatch(): void
+    public function testProcess(): void
     {
-        $conn = $this->mockSync();
+        $conn = $this->mockResponses();
 
         $dtoData = [
             'system_install' => ['user' => 'user'],
@@ -61,14 +64,15 @@ final class PipedriveSyncPersonConnectorTest extends ConnectorTestCaseAbstract
     }
 
     /**
-     * @return PHPUnit_Framework_MockObject_MockObject|PipedriveSyncPersonConnector
+     * @return ZendeskSyncUserConnector|\PHPUnit_Framework_MockObject_MockObject
      */
-    private function mockSync(): PipedriveSyncPersonConnector
+    private function mockResponses(): ZendeskSyncUserConnector
     {
-        $conn = $this->getMockBuilder(PipedriveSyncPersonConnector::class)->setConstructorArgs([
-            $this->container->get('systems.pipedrive'),
-            $this->mockDm(),
+        $conn = $this->getMockBuilder(ZendeskSyncUserConnector::class)->setConstructorArgs([
+            $this->container->get('systems.zendesk'),
+            $this->createMock(LastSyncManager::class),
             $this->createMock(CurlSenderFactory::class),
+            $this->mockDm(),
         ])->setMethods(['fetchData'])->getMock();
 
         $test = $this;
@@ -77,14 +81,15 @@ final class PipedriveSyncPersonConnectorTest extends ConnectorTestCaseAbstract
             ->method('fetchData')->will($this->returnCallback(
                 function ($sender, RequestDto $dto) use ($test) {
                     $expt = new RequestDto('GET',
-                        new Uri('https://api.pipedrive.com/v1/persons?start=0&api_token=' . self::API_TOKEN));
+                        new Uri('https://hbpf.zendesk.com/api/v2/users.json'));
                     $expt->setHeaders([
-                        'Content-Type' => 'application/json',
+                        'Content-Type'  => 'application/json',
+                        'Authorization' => $this->auth,
                     ]);
 
                     $test->assertEquals($expt, $dto);
 
-                    return resolve(new Response(200, $expt->getHeaders(), $this->getRequest('personsPage.json')));
+                    return resolve(new Response(200, $expt->getHeaders(), $this->getRequest('syncPageData.json')));
                 }
             ));
 
@@ -92,7 +97,7 @@ final class PipedriveSyncPersonConnectorTest extends ConnectorTestCaseAbstract
     }
 
     /**
-     * @return PHPUnit_Framework_MockObject_MockObject|DocumentManager
+     * @return DocumentManager|\PHPUnit_Framework_MockObject_MockObject
      */
     private function mockDm(): DocumentManager
     {
@@ -102,8 +107,12 @@ final class PipedriveSyncPersonConnectorTest extends ConnectorTestCaseAbstract
             ->setSystem('system')
             ->setSynchronized(FALSE)
             ->setSettings([
-                'api_token' => self::API_TOKEN,
+                'api_token'  => 'fgjkghf564646',
+                'domain'     => 'hbpf',
+                'user_email' => 'hbpf@mail.com',
             ]);
+
+        $this->auth = 'Basic ' . base64_encode('hbpf@mail.com/token:fgjkghf564646');
 
         $repo = $this->createMock(SystemInstallRepository::class);
         $repo->method('getSystemInstallFromHeaders')->willReturn($sys);
