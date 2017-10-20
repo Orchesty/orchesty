@@ -16,6 +16,7 @@ use Hanaboso\PipesFramework\Utils\ControllerUtils;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class ConnectorController
@@ -39,22 +40,22 @@ class ConnectorController extends FOSRestController
      * @param string  $id
      * @param Request $request
      *
-     * @return JsonResponse
+     * @return Response
      */
-    public function processEventAction(string $id, Request $request): JsonResponse
+    public function processEventAction(string $id, Request $request): Response
     {
         $this->construct();
 
         try {
             $data     = $this->handler->processEvent($id, $request);
-            $response = new JsonResponse(
+            $response = new Response(
                 $data->getData(),
                 200,
                 ControllerUtils::createHeaders($data->getHeaders()
-                ),
-                TRUE);
+                )
+            );
         } catch (ConnectorException $e) {
-            $response = new JsonResponse(
+            $response = new Response(
                 ControllerUtils::createExceptionData($e),
                 500,
                 ControllerUtils::createHeaders([], $e)
