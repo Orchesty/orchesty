@@ -35,7 +35,7 @@ class DockerClientTest extends TestCase
         $client = new DockerClient();
 
         $this->assertInstanceOf(PluginClient::class, $this->getProperty($client, 'httpClient'));
-        $this->assertEquals('1.30', $this->getProperty($client, 'version'));
+        $this->assertEquals('1.24', $this->getProperty($client, 'version'));
     }
 
     /**
