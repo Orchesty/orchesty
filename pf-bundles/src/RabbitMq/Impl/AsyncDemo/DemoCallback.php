@@ -12,6 +12,7 @@ use Bunny\Message;
 use Clue\React\Buzz\Browser;
 use GuzzleHttp\Psr7\Request;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\BatchActionInterface;
+use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\BatchInterface;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -57,6 +58,16 @@ class DemoCallback implements BatchActionInterface
         }
 
         return all($requests);
+    }
+
+    /**
+     * @param string $id
+     *
+     * @return BatchInterface
+     */
+    public function getBatchService(string $id): BatchInterface
+    {
+        return new DemoBatchAction();
     }
 
     /**

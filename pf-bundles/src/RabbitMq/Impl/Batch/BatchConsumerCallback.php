@@ -182,17 +182,62 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
      */
     private function testAction(Channel $channel, Message $message): PromiseInterface
     {
+        try {
+            /** @var string $nodeName */
+            $nodeName = PipesHeaders::get(PipesHeaders::NODE_NAME, $message->headers);
+            $this->batchAction->getBatchService($nodeName);
+
+            return $this->publishSuccessTestMessage($channel, $message);
+        } catch (Exception $e) {
+            return $this->publishErrorTestMessage($channel, $message, $e);
+        }
+    }
+
+    /**
+     * @param Channel $channel
+     * @param Message $message
+     *
+     * @return PromiseInterface
+     */
+    private function publishSuccessTestMessage(Channel $channel, Message $message): PromiseInterface
+    {
         $headers = array_merge($message->headers, [
             PipesHeaders::createKey(PipesHeaders::RESULT_CODE) => 0,
         ]);
 
-        return $channel->publish('', $headers, '', $message->getHeader(self::REPLY_TO)
-        )->then(function () use ($message, $headers): void {
-            $this->logger->info(
-                'Published test item.',
-                $this->prepareMessage('', '', $message->getHeader(self::REPLY_TO), $headers)
-            );
-        });
+        return $channel
+            ->publish('', $headers, '', $message->getHeader(self::REPLY_TO))
+            ->then(function () use ($message, $headers): void {
+                $this->logger->info(
+                    'Published test item.',
+                    $this->prepareMessage('', '', $message->getHeader(self::REPLY_TO), $headers)
+                );
+            });
+    }
+
+    /**
+     * @param Channel   $channel
+     * @param Message   $message
+     * @param Exception $e
+     *
+     * @return PromiseInterface
+     */
+    public function publishErrorTestMessage(Channel $channel, Message $message, Exception $e): PromiseInterface
+    {
+        $headers = array_merge($message->headers, [
+            PipesHeaders::createKey(PipesHeaders::RESULT_CODE)    => 2001,
+            PipesHeaders::createKey(PipesHeaders::RESULT_STATUS)  => 2001,
+            PipesHeaders::createKey(PipesHeaders::RESULT_MESSAGE) => $e->getMessage(),
+        ]);
+
+        return $channel
+            ->publish('', $headers, '', $message->getHeader(self::REPLY_TO))
+            ->then(function () use ($message, $headers): void {
+                $this->logger->info(
+                    'Published test item error.',
+                    $this->prepareMessage('', '', $message->getHeader(self::REPLY_TO), $headers)
+                );
+            });
     }
 
     /**

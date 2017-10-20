@@ -42,7 +42,7 @@ class BatchActionCallback extends BatchActionAbstract
      *
      * @return BatchInterface
      */
-    protected function getBatchService(string $id): BatchInterface
+    public function getBatchService(string $id): BatchInterface
     {
         /** @var BatchInterface $node */
         $node = $this->customNodeLoader->get($id);

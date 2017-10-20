@@ -42,7 +42,7 @@ class BatchConnectorCallback extends BatchActionAbstract
      *
      * @return BatchInterface
      */
-    protected function getBatchService(string $id): BatchInterface
+    public function getBatchService(string $id): BatchInterface
     {
         /** @var BatchInterface $connector */
         $connector = $this->connectorLoader->getConnector($id);

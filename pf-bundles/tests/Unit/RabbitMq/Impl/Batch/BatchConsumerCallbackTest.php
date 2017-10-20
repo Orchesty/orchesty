@@ -15,6 +15,7 @@ use Exception;
 use Hanaboso\PipesFramework\Commons\Utils\PipesHeaders;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\BatchActionInterface;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\BatchConsumerCallback;
+use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\BatchInterface;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use PHPUnit_Framework_MockObject_MockObject;
@@ -124,7 +125,7 @@ class BatchConsumerCallbackTest extends TestCase
                     'type'                                     => 'batch',
                     PipesHeaders::PF_PREFIX . 'node-id'        => '132',
                     PipesHeaders::PF_PREFIX . 'correlation-id' => '123',
-                    PipesHeaders::PF_PREFIX . 'process-id' => '123',
+                    PipesHeaders::PF_PREFIX . 'process-id'     => '123',
                 ],
                 'Missing "pf-parent-id" in the message header.',
             ],
@@ -178,13 +179,14 @@ class BatchConsumerCallbackTest extends TestCase
     /**
      * @covers BatchConsumerCallback::processMessage()
      */
-    public function testProcessMessageTestAction(): void
+    public function testProcessMessageSuccessTestAction(): void
     {
         $loop = Factory::create();
 
         /** @var BatchActionInterface|PHPUnit_Framework_MockObject_MockObject $batchAction */
         $batchAction = $this->createMock(BatchActionInterface::class);
         $batchAction->method('batchAction')->willReturn(resolve());
+        $batchAction->method('getBatchService')->willReturn($this->createMock(BatchInterface::class));
         /** @var Channel|PHPUnit_Framework_MockObject_MockObject $channel */
         $channel = $this->createMock(Channel::class);
         $channel->method('queueDeclare')->willReturn(resolve());
@@ -202,6 +204,53 @@ class BatchConsumerCallbackTest extends TestCase
             PipesHeaders::createKey(PipesHeaders::CORRELATION_ID) => '123',
             PipesHeaders::createKey(PipesHeaders::PROCESS_ID)     => '123',
             PipesHeaders::createKey(PipesHeaders::PARENT_ID)      => '',
+            PipesHeaders::createKey(PipesHeaders::NODE_NAME)      => 'test',
+        ];
+        $callback
+            ->processMessage($this->createMessage($headers), $channel, $client, $loop)
+            ->then(function () use ($loop): void {
+                // Test if resolve
+                $this->assertTrue(TRUE);
+                $loop->stop();
+            }, function () use ($loop): void {
+                // Test if reject
+                $this->assertTrue(FALSE);
+                $loop->stop();
+            })
+            ->done();
+
+        $loop->run();
+    }
+
+    /**
+     * @covers BatchConsumerCallback::processMessage()
+     */
+    public function testProcessErrorMessageTestAction(): void
+    {
+        $loop = Factory::create();
+
+        /** @var BatchActionInterface|PHPUnit_Framework_MockObject_MockObject $batchAction */
+        $batchAction = $this->createMock(BatchActionInterface::class);
+        $batchAction->method('batchAction')->willReturn(resolve());
+        $batchAction->method('getBatchService')->willThrowException(new Exception());
+        /** @var Channel|PHPUnit_Framework_MockObject_MockObject $channel */
+        $channel = $this->createMock(Channel::class);
+        $channel->method('queueDeclare')->willReturn(resolve());
+        $channel->method('publish')->willReturn(resolve());
+        /** @var Client|PHPUnit_Framework_MockObject_MockObject $client */
+        $client = $this->createMock(Client::class);
+        $client->method('channel')->willReturn($channel);
+
+        $callback = new BatchConsumerCallback($batchAction);
+
+        $headers = [
+            'reply-to'                                            => 'reply',
+            'type'                                                => 'test',
+            PipesHeaders::createKey(PipesHeaders::NODE_ID)        => '132',
+            PipesHeaders::createKey(PipesHeaders::CORRELATION_ID) => '123',
+            PipesHeaders::createKey(PipesHeaders::PROCESS_ID)     => '123',
+            PipesHeaders::createKey(PipesHeaders::PARENT_ID)      => '',
+            PipesHeaders::createKey(PipesHeaders::NODE_NAME)      => 'test',
         ];
         $callback
             ->processMessage($this->createMessage($headers), $channel, $client, $loop)
