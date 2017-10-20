@@ -4,6 +4,7 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\Mapper;
 
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\CM\SubscriptionConnector\CustomerObject\CMSubscriber;
+use CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\HubspotSystem;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
 
@@ -12,7 +13,7 @@ use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\Mapper
  */
-class HubspotUpdateContactMapper implements CustomNodeInterface
+class HubspotUpdateContactMapper extends HubspotMapperAbstract implements CustomNodeInterface
 {
 
     /**
@@ -23,22 +24,20 @@ class HubspotUpdateContactMapper implements CustomNodeInterface
      */
     public function process(ProcessDto $dto): ProcessDto
     {
-        // TODO check subscription type (create, update, delete)
-
         $data = json_decode($dto->getData(), TRUE);
 
-        if (!array_key_exists('properties', $data)) {
-            throw new CleverConnectorsException(
-                'Missing "properties" field in data.',
-                CleverConnectorsException::MISSING_DATA
-            );
+        $this->continueAfterBasicDataCheck($data);
+
+        // we do not want deletion to continue
+        if ($data[HubspotSystem::SUBSCRIPTION_TYPE_KEY] == HubspotSystem::SUBSCRIPTION_TYPE_DELETE) {
+            return $this->setHeadersToStop($dto);
         }
 
         $properties = $data['properties'];
 
         if (!array_key_exists('email', $properties)) {
             throw new CleverConnectorsException(
-                'Missing required email field in data.',
+                'Missing required "email" field in data.',
                 CleverConnectorsException::MISSING_DATA
             );
         }

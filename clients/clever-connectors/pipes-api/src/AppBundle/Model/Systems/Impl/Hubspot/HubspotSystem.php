@@ -44,8 +44,13 @@ class HubspotSystem implements WebhookSystemInterface, OAuth2Interface
     private const WEBHOOK_SUBSCRIPTION_CREATE_URL = 'https://api.hubapi.com/webhooks/v1/%s/subscriptions?hapikey=%s&userId=%s';
     private const WEBHOOK_SUBSCRIPTION_DELETE_URL = 'https://api.hubapi.com/webhooks/v1/%s/subscriptions/%s?hapikey=%s&userId=%s';
 
-    private const SUBSCRIPTION_TYPE = 'subscriptionType';
-    private const PROPERTY_NAME     = 'propertyName';
+    public const OBJECT_ID_KEY         = 'objectId';
+    public const SUBSCRIPTION_TYPE_KEY = 'subscriptionType';
+    public const PROPERTY_NAME_KEY     = 'propertyName';
+
+    public const SUBSCRIPTION_TYPE_CREATE = 'contact.creation';
+    public const SUBSCRIPTION_TYPE_UPDATE = 'contact.propertyChange';
+    public const SUBSCRIPTION_TYPE_DELETE = 'contact.deletion';
 
     /**
      * @var OAuth2Provider
@@ -66,10 +71,10 @@ class HubspotSystem implements WebhookSystemInterface, OAuth2Interface
     {
         $this->provider = $provider;
 
-        $this->subscriptions[] = $this->prepareWebhookSubscription('contact.creation');
-        $this->subscriptions[] = $this->prepareWebhookSubscription('contact.deletion');
-        $this->subscriptions[] = $this->prepareWebhookSubscription('contact.propertyChange', 'firstname');
-        $this->subscriptions[] = $this->prepareWebhookSubscription('contact.propertyChange', 'lastname');
+        $this->subscriptions[] = $this->prepareWebhookSubscription(self::SUBSCRIPTION_TYPE_CREATE);
+        $this->subscriptions[] = $this->prepareWebhookSubscription(self::SUBSCRIPTION_TYPE_DELETE);
+        $this->subscriptions[] = $this->prepareWebhookSubscription(self::SUBSCRIPTION_TYPE_UPDATE, 'firstname');
+        $this->subscriptions[] = $this->prepareWebhookSubscription(self::SUBSCRIPTION_TYPE_UPDATE, 'lastname');
     }
 
     /**
@@ -312,9 +317,9 @@ class HubspotSystem implements WebhookSystemInterface, OAuth2Interface
      */
     private function prepareWebhookSubscription(string $type, ?string $propertyName = NULL): WebhookSubscribes
     {
-        $params = [self::SUBSCRIPTION_TYPE => $type];
+        $params = [self::SUBSCRIPTION_TYPE_KEY => $type];
         if ($propertyName) {
-            $params[self::PROPERTY_NAME] = $propertyName;
+            $params[self::PROPERTY_NAME_KEY] = $propertyName;
         }
 
         return new WebhookSubscribes(

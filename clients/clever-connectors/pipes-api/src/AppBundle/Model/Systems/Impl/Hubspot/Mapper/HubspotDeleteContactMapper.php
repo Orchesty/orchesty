@@ -4,6 +4,7 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\Mapper;
 
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\CM\SubscriptionConnector\CustomerObject\CMSubscriber;
+use CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\HubspotSystem;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
 
@@ -12,7 +13,7 @@ use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\Mapper
  */
-class HubspotDeleteContactMapper implements CustomNodeInterface
+class HubspotDeleteContactMapper extends HubspotMapperAbstract implements CustomNodeInterface
 {
 
     /**
@@ -23,21 +24,33 @@ class HubspotDeleteContactMapper implements CustomNodeInterface
      */
     public function process(ProcessDto $dto): ProcessDto
     {
-        // TODO check subscription type (create, update, delete)
-
         $data = json_decode($dto->getData(), TRUE);
 
-        if (!array_key_exists('id', $data)) {
+        $this->continueAfterBasicDataCheck($data);
+
+        $allowedTypes = [
+            HubspotSystem::SUBSCRIPTION_TYPE_CREATE,
+            HubspotSystem::SUBSCRIPTION_TYPE_UPDATE,
+        ];
+
+        // we do not want creation/propertyChange to continue
+        if (in_array($data[HubspotSystem::SUBSCRIPTION_TYPE_KEY], $allowedTypes)) {
+            return $this->setHeadersToStop($dto);
+        }
+
+        if (!array_key_exists('vid', $data)) {
             throw new CleverConnectorsException(
-                'Missing required id field in data.',
+                'Missing required "vid" field in data.',
                 CleverConnectorsException::MISSING_DATA
             );
         }
 
+        // TODO Hubspot does not make it possible to fetch email of deleted entity
+
         $obj = new CMSubscriber();
         $obj
-            ->setForeignId($data['id'])
-            ->setEmail((string) $data['id']) // todo
+            ->setForeignId($data['vid'])
+            ->setEmail((string) $data['vid'])
             ->setReactivate(FALSE);
 
         return $dto->setData(json_encode($obj->toArray()));

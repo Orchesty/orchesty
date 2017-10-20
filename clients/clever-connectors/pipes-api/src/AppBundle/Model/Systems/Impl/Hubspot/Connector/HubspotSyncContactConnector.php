@@ -20,7 +20,7 @@ use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
 use Psr\Http\Message\ResponseInterface;
 use React\EventLoop\LoopInterface;
 use React\Promise\PromiseInterface;
-use function React\Promise\all;
+use function React\Promise\resolve;
 
 /**
  * Class HubspotSyncContactConnector
@@ -73,7 +73,7 @@ class HubspotSyncContactConnector implements BatchInterface, ConnectorInterface
     /**
      * @param ProcessDto $dto
      *
-     * @return ProcessDto
+     * @return ProcessDto|void
      * @throws SystemException
      */
     public function processEvent(ProcessDto $dto): ProcessDto
@@ -84,7 +84,7 @@ class HubspotSyncContactConnector implements BatchInterface, ConnectorInterface
     /**
      * @param ProcessDto $dto
      *
-     * @return ProcessDto
+     * @return ProcessDto|void
      * @throws SystemException
      */
     public function processAction(ProcessDto $dto): ProcessDto
@@ -106,7 +106,8 @@ class HubspotSyncContactConnector implements BatchInterface, ConnectorInterface
         $requestDto    = $this->system->getRequestDto($systemInstall, 'GET');
         $requestDto->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()));
 
-        $promise = $this->doPageLoop($sender, $callbackItem, $requestDto);
+        $url     = new Uri(sprintf('%s%s', $requestDto->getUri(TRUE), self::CONTACTS_URL));
+        $promise = $this->getPage($sender, $callbackItem, $requestDto, $url, 1);
 
         $this->systemInstallRepository->setSyncTime($systemInstall);
 
@@ -128,76 +129,72 @@ class HubspotSyncContactConnector implements BatchInterface, ConnectorInterface
      * @param CurlSender $sender
      * @param callable   $callbackItem
      * @param RequestDto $dto
+     * @param Uri        $url
+     * @param int        $page
      *
-     * @return array
+     * @return PromiseInterface
      */
-    private function doPageLoop(CurlSender $sender, callable $callbackItem, RequestDto $dto): array
+    private function getPage(
+        CurlSender $sender,
+        callable $callbackItem,
+        RequestDto $dto,
+        Uri $url,
+        int $page
+    ): PromiseInterface
     {
-        $i        = 1;
-        $requests = [];
-        $parsed   = ['has-more' => TRUE];
+        $res = $this->fetchData($sender, RequestDto::from($dto, $url))
+            ->then(
+                function (ResponseInterface $response) use ($sender, $callbackItem, $dto, $url, $page) {
 
-        while ($parsed['has-more'] === TRUE) {
+                    $body   = json_decode($response->getBody()->getContents(), TRUE);
+                    $parsed = $this->checkParsedResponseData($body);
+                    $callbackItem($this->createSuccessMessage($body, $page));
 
-            if ($i == 1) {
-                $url = new Uri(sprintf('%s%s', $dto->getUri(TRUE), self::CONTACTS_URL));
-            } else {
-                $query = sprintf(self::CONTACTS_URL_OFFSET, $parsed['vid-offset']);
-                $url   = new Uri(sprintf('%s%s', $dto->getUri(TRUE), $query));
-            }
+                    if ($parsed['has-more'] === TRUE) {
+                        $query = sprintf(self::CONTACTS_URL_OFFSET, $parsed['vid-offset']);
+                        $url   = new Uri(sprintf('%s%s', $dto->getUri(TRUE), $query));
 
-            $requests[] = $this
-                ->fetchData($sender, RequestDto::from($dto, $url))
-                ->then(
-                    function (ResponseInterface $response) use ($i): SuccessMessage {
-                        return $this->createSuccessMessage($response, $i);
-                    })
-                ->then($callbackItem);
+                        return $this->getPage($sender, $callbackItem, $dto, $url, $page);
+                    }
 
-            // TODO i need response here...
+                    return resolve();
+                }
+            );
 
-            $parsed = $this->getParsedResponseData($response);
-            $i++;
-        }
-
-        return $requests;
+        return $res;
     }
 
     /**
-     * @param ResponseInterface $response
+     * @param array $body
      *
      * @return array
      * @throws SystemException
      */
-    private function getParsedResponseData(ResponseInterface $response): array
+    private function checkParsedResponseData(array $body): array
     {
-        $data = json_decode($response->getBody()->getContents(), TRUE);
-
-        if (!is_array($data) || !array_key_exists('has-more', $data) || !array_key_exists('vid-offset', $data)) {
+        if (!is_array($body) || !array_key_exists('has-more', $body) || !array_key_exists('vid-offset', $body)) {
             throw new SystemException(
                 'Hubspot response has no "has-more" or "vid-offset" field!',
                 SystemException::MISSING_RESPONSE_DATA
             );
         }
 
-        return $data;
+        return $body;
     }
 
     /**
-     * @param ResponseInterface $response
-     * @param int               $i
+     * @param array $body
+     * @param int   $i
      *
      * @return SuccessMessage
      * @throws SystemException
      */
-    private function createSuccessMessage(ResponseInterface $response, int $i): SuccessMessage
+    private function createSuccessMessage(array $body, int $i): SuccessMessage
     {
-        $data = json_decode($response->getBody()->getContents(), TRUE);
-
-        if (is_array($data) && array_key_exists('contacts', $data)) {
+        if (is_array($body) && array_key_exists('contacts', $body)) {
             $successMessage = new SuccessMessage($i);
-            $successMessage->setData(json_encode($data['contacts']));
-            unset($data);
+            $successMessage->setData(json_encode($body['contacts']));
+            unset($body);
 
             return $successMessage;
         }

@@ -8,9 +8,13 @@ services:
     hbpf.connector.hubspot-update-contact-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\Connector\HubspotUpdateContactConnector
         arguments:
+
+    hbpf.connector.hubspot-get-contact-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\Connector\HubspotGetContactConnector
+        arguments:
             - '@systems.hubspot'
             - '@doctrine_mongodb.odm.default_document_manager'
-            - '@hbpf.transport.async_curl_factory'
+            - '@hbpf.transport.curl_manager'
 
     hbpf.connector.hubspot-sync-contact-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\Connector\HubspotSyncContactConnector
