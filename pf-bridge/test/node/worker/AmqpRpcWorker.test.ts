@@ -1,7 +1,7 @@
 import { assert } from "chai";
 import "mocha";
 
-import {Channel, Message} from "amqplib";
+import {Channel, Message, Options} from "amqplib";
 import Connection from "lib-nodejs/dist/src/rabbitmq/Connection";
 import Publisher from "lib-nodejs/dist/src/rabbitmq/Publisher";
 import SimpleConsumer from "lib-nodejs/dist/src/rabbitmq/SimpleConsumer";
@@ -54,8 +54,14 @@ describe("AmqpRpcWorker", () => {
                 assert.equal(msg.properties.replyTo, `${settings.node_label.id}_reply`);
                 assert.isTrue(Headers.containsAllMandatory(msg.properties.headers));
 
-                // Reply to received message with the same content and headers
-                publisher.sendToQueue(msg.properties.replyTo, msg.content, msg.properties);
+                const replyHeaders = new Headers(msg.properties.headers);
+                replyHeaders.setPFHeader(Headers.RESULT_CODE, `${ResultCode.SUCCESS}`);
+                replyHeaders.setPFHeader(Headers.RESULT_MESSAGE, "test ok");
+
+                const options: Options.Publish = msg.properties;
+                options.headers = replyHeaders.getRaw();
+
+                publisher.sendToQueue(msg.properties.replyTo, msg.content, options);
             },
         );
 
