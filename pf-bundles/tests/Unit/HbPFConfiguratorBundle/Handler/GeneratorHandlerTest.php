@@ -190,7 +190,7 @@ class GeneratorHandlerTest extends TestCase
             ->willReturn($topologyActionReturn);
 
         $action
-            ->expects(($exception || $getTopologyInfo == NULL) ? $this->never() : $this->once())
+            ->expects(($exception) ? $this->never() : $this->once())
             ->method('deleteQueues')
             ->willReturn($getTopologyInfo);
 

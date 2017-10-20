@@ -172,10 +172,7 @@ class GeneratorHandler
             /** @var DestroyTopologyActions $actions */
             $actions = $this->actionsFactory->getTopologyAction(TopologyActionsFactory::DESTROY);
             $res     = $actions->deleteTopologyDir($topology, $this->dstDirectory);
-
-            if ($res) {
-                $actions->deleteQueues($topology, $nodes);
-            }
+            $actions->deleteQueues($topology, $nodes);
 
             return $res;
         }
