@@ -1,0 +1,72 @@
+{
+  "meta": {
+    "type": "collection",
+    "count": 3,
+    "count_left": 21,
+    "failed_objects": []
+  },
+  "items": [
+    {
+      "data": {
+        "id": 1266063,
+        "name": "gdssd",
+        "email": "gfd@asd.com",
+        "created_at": "2017-10-19T11:56:23Z",
+        "updated_at": "2017-10-19T11:56:23Z",
+        "deleted_at": null,
+        "confirmed": false,
+        "role": "user",
+        "status": "active"
+      },
+      "meta": {
+        "type": "user",
+        "sync": {
+          "event_type": "created",
+          "ack_key": "create|User|1266063|4664174183|16265213846",
+          "revision": 4664174183
+        }
+      }
+    },
+    {
+      "data": {
+        "id": 1265999,
+        "name": "dfg nfg",
+        "email": "asdd@mailinator.com",
+        "created_at": "2017-10-19T08:16:47Z",
+        "updated_at": "2017-10-19T08:16:47Z",
+        "deleted_at": null,
+        "confirmed": true,
+        "role": "admin",
+        "status": "active"
+      },
+      "meta": {
+        "type": "user",
+        "sync": {
+          "event_type": "created",
+          "ack_key": "create|User|1265999|4664161007|16257556521",
+          "revision": 4664161007
+        }
+      }
+    },
+    {
+      "data": {
+        "id": 712320,
+        "name": "asdd",
+        "time_format": "12H",
+        "timezone": "UTC-06:00",
+        "created_at": "2017-10-19T08:16:47Z",
+        "updated_at": "2017-10-19T11:56:23Z",
+        "currency": "USD",
+        "phone": "+420564567896"
+      },
+      "meta": {
+        "type": "account",
+        "sync": {
+          "event_type": "created",
+          "ack_key": "create|Account|712320|4664161007|16257556514",
+          "revision": 4664161007
+        }
+      }
+    }
+  ]
+}

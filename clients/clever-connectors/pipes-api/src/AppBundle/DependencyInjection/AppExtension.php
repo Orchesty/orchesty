@@ -41,6 +41,7 @@ class AppExtension extends Extension
         $loader->load('shipstation.yml');
         $loader->load('pipedrive.yml');
         $loader->load('zendesk.yml');
+        $loader->load('basecrm.yml');
     }
 
 }
