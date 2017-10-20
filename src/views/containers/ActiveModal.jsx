@@ -6,6 +6,7 @@ import * as applicationActions from 'actions/applicationActions';
 import TopologyEditModal from 'modals/TopologyEditModal';
 import AuthorizationSettingsEditModal from 'modals/AuthorizationSettingsEditModal';
 import TopologyRunFormModal from '../modals/TopologyRunFormModal';
+import TopologyDeleteDialog from 'rootApp/views/modals/dialogs/TopologyDeleteDialog';
 
 
 class ActiveModal extends React.Component {
@@ -29,6 +30,9 @@ class ActiveModal extends React.Component {
 
       case 'node_run':
         return <TopologyRunFormModal {...modalData} onCloseModal={this._close} componentKey={modal} />;
+
+      case 'topology_delete_dialog':
+        return <TopologyDeleteDialog {...modalData} onCloseModal={this._close} componentKey={modal} />;
       default:
         return null;
     }

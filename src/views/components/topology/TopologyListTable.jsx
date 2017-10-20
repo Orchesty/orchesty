@@ -84,11 +84,14 @@ class TopologyListTable extends React.Component {
             });
           }
           if (topologyDelete){
+            const deleteDisabled = item.visibility == 'public' && item.enabled;
             menuItems.push(
               {
                 caption: 'Delete',
                 processId: processes.topologyDelete(id),
-                action: () => {topologyDelete(id)}
+                action: () => {topologyDelete(id)},
+                disabled: deleteDisabled,
+                tooltip: deleteDisabled ? 'Disable topology first' : null
               });
           }
           return (
