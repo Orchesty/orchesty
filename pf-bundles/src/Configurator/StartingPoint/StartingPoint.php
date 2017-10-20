@@ -19,7 +19,7 @@ use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Exception\StartingPointException;
 use Hanaboso\PipesFramework\HbPFRabbitMqBundle\DebugMessageTrait;
 use Hanaboso\PipesFramework\RabbitMq\BunnyManager;
-use Nette\Utils\Strings;
+use Hanaboso\PipesFramework\TopologyGenerator\GeneratorUtils;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -88,8 +88,8 @@ class StartingPoint implements LoggerAwareInterface
     {
         return sprintf(
             self::QUEUE_PATTERN,
-            $topology->getId() . '-' . Strings::webalize($topology->getName()),
-            $node->getId() . '-' . Strings::webalize($node->getName())
+            GeneratorUtils::createServiceName(GeneratorUtils::normalizeName($topology->getId(), $topology->getName())),
+            GeneratorUtils::createServiceName(GeneratorUtils::normalizeName($node->getId(), $node->getName()))
         );
     }
 
@@ -102,7 +102,7 @@ class StartingPoint implements LoggerAwareInterface
     {
         return sprintf(
             self::QUEUE_PATTERN,
-            $topology->getId() . '-' . Strings::webalize($topology->getName()),
+            GeneratorUtils::createServiceName(GeneratorUtils::normalizeName($topology->getId(), $topology->getName())),
             'counter'
         );
     }
@@ -116,7 +116,7 @@ class StartingPoint implements LoggerAwareInterface
     {
         return sprintf(
             self::EXCHANGE_PATTERN,
-            $topology->getId() . '-' . Strings::webalize($topology->getName())
+            GeneratorUtils::createServiceName(GeneratorUtils::normalizeName($topology->getId(), $topology->getName()))
         );
     }
 
@@ -313,9 +313,9 @@ class StartingPoint implements LoggerAwareInterface
         $headers = array_merge(
             $headers->getHeaders(),
             [
-                'type'                                         => self::COUNTER_MESSAGE_TYPE,
-                'app_id'                                       => 'starting_point',
-                PipesHeaders::createKey(PipesHeaders::NODE_ID) => $node->getId(),
+                'type'                                           => self::COUNTER_MESSAGE_TYPE,
+                'app_id'                                         => 'starting_point',
+                PipesHeaders::createKey(PipesHeaders::NODE_ID)   => $node->getId(),
                 PipesHeaders::createKey(PipesHeaders::NODE_NAME) => $node->getName(),
             ]
         );

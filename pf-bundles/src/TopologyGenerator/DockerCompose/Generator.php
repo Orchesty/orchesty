@@ -92,14 +92,18 @@ class Generator implements GeneratorInterface
      */
     public function createTopologyConfig(Topology $topology, iterable $nodes): string
     {
-        $config['id'] = GeneratorUtils::normalizeName($topology->getId(), $topology->getName());
+        $config['id']            = GeneratorUtils::createServiceName(
+            GeneratorUtils::normalizeName($topology->getId(), $topology->getName())
+        );
+        $config['topology_id']   = $topology->getId();
+        $config['topology_name'] = $topology->getName();
 
         foreach ($nodes as $node) {
             $nodeFullId = GeneratorUtils::normalizeName($node->getId(), $node->getName());
 
-            $nodeConfig          = [];
-            $nodeConfig['id']    = GeneratorUtils::createServiceName($nodeFullId);
-            $nodeConfig['label'] = [
+            $nodeConfig           = [];
+            $nodeConfig['id']     = GeneratorUtils::createServiceName($nodeFullId);
+            $nodeConfig['label']  = [
                 'id'        => GeneratorUtils::createServiceName($nodeFullId),
                 'node_id'   => $node->getId(),
                 'node_name' => $node->getName(),
@@ -107,7 +111,9 @@ class Generator implements GeneratorInterface
             $nodeConfig['worker'] = $this->getWorkerConfig($node);
             $nodeConfig['next']   = [];
             foreach ($node->getNext() as $next) {
-                $nodeConfig['next'][] = GeneratorUtils::createServiceName(GeneratorUtils::normalizeName($next->getId(), $next->getName()));
+                $nodeConfig['next'][] = GeneratorUtils::createServiceName(
+                    GeneratorUtils::normalizeName($next->getId(), $next->getName())
+                );
             }
 
             $config['nodes'][] = $nodeConfig;
