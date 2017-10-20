@@ -39,6 +39,7 @@ class AppExtension extends Extension
         $loader->load('wisepops.yml');
         $loader->load('shipstation.yml');
         $loader->load('pipedrive.yml');
+        $loader->load('zendesk.yml');
     }
 
 }
