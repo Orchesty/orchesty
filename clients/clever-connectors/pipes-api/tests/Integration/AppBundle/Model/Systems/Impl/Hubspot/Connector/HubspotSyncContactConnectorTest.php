@@ -14,11 +14,11 @@ use React\EventLoop\Factory;
 use Tests\DatabaseTestCaseAbstract;
 
 /**
- * Class ShopifySyncConnectorTest
+ * Class HubspotSyncContactConnectorTest
  *
  * @package Tests\Integration\AppBundle\Model\Systems\Impl\Shopify\Connector
  */
-final class ShopifySyncConnectorTest extends DatabaseTestCaseAbstract
+class HubspotSyncContactConnectorTest extends DatabaseTestCaseAbstract
 {
 
     /**
@@ -26,22 +26,24 @@ final class ShopifySyncConnectorTest extends DatabaseTestCaseAbstract
      */
     public function testProcessBatch(): void
     {
-        //$this->markTestSkipped();
-        $connector = $this->container->get('hbpf.connector.shopify-sync-customer-connector');
+        $this->markTestSkipped();
+        $connector = $this->container->get('hbpf.connector.hubspot-sync-contact-connector');
 
         $topology = (new Topology())->setName('Topology');
         $this->persistAndFlush($topology);
 
         $settings = [
-            'access_token' => '676ae188bd76d1957884be07c4af4e85',
-            'system_url'   => 'ndflakee',
+            "access_token"  => "CMODwN3zKxICAQEY75vzASD-46cCKL-1AzIZABaAj8jGVks8XrjEx8E5f0qgk3GxD_bDZA",
+            "expires_in"    => 21600,
+            "refresh_token" => "221f086d-1760-4cb2-8260-c6833137bdd7",
+            "app_id"        => 55999,
         ];
 
         $system = new SystemInstall();
         $system
-            ->setUser('u_123')
-            ->setToken('t-456')
-            ->setSystem('s_-879')
+            ->setUser('hs_u_123')
+            ->setToken('hs_t-456')
+            ->setSystem('hs_s_-879')
             ->setSettings($settings);
         $this->persistAndFlush($system);
 
