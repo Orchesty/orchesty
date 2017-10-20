@@ -125,10 +125,8 @@ class GeneratorController extends FOSRestController
 
         if ($this->generatorHandler) {
             $this->generatorHandler->stopTopology($id);
-            $result = $this->generatorHandler->destroyTopology($id);
-            if ($result) {
-                $statusCode = 200;
-            }
+            $this->generatorHandler->destroyTopology($id);
+            $statusCode = 200;
         }
 
         return new JsonResponse(["result" => $statusCode], $statusCode, []);

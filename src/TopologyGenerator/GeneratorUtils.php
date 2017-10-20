@@ -47,7 +47,7 @@ class GeneratorUtils
      */
     public static function dokerizeName(string $id, string $name): string
     {
-        return sprintf('%s%s', $id, Strings::webalize($name));
+        return sprintf('%s%s', $id, preg_replace('/-/', '', $name));
     }
 
     /**
