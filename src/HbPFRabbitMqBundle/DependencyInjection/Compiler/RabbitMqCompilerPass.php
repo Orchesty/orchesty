@@ -270,12 +270,16 @@ class RabbitMqCompilerPass implements CompilerPassInterface
                 new Reference($this->managerServiceId),
             ]));
 
-        $container->setDefinition($this->consumerCommandServiceId,
-            new Definition('%rabbit-mq.command.consumer%', [
-                new Reference("service_container"),
-                new Reference($this->managerServiceId),
-                $consumers,
-            ]));
+        // CONSUMER COMMAND
+        $consumerCommand = new Definition('%rabbit-mq.command.consumer%', [
+            new Reference("service_container"),
+            new Reference($this->managerServiceId),
+            $consumers,
+        ]);
+        $consumerCommand->addMethodCall('setLogger', [
+            new Reference('monolog.logger.rabbit-mq', ContainerInterface::IGNORE_ON_INVALID_REFERENCE),
+        ]);
+        $container->setDefinition($this->consumerCommandServiceId, $consumerCommand);
 
         // ASYNC CONSUMER COMMAND
         $asyncConsumerCommand = new Definition('%rabbit-mq.command.async-consumer%', [

@@ -70,10 +70,24 @@ class BunnyManager
     }
 
     /**
-     * @return Client|object
+     * @return Client
      */
-    public function getClient()
+    private function createClient(): Client
     {
+        return new Client($this->config);
+    }
+
+    /**
+     * @param bool $force
+     *
+     * @return Client
+     */
+    public function getClient(bool $force = FALSE): Client
+    {
+        if ($force === TRUE) {
+            $this->client = $this->createClient();
+        }
+
         if ($this->client === NULL) {
             $this->client = $this->container->get($this->clientServiceId);
         }

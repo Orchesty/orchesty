@@ -5,6 +5,7 @@ namespace Hanaboso\PipesFramework\HbPFRabbitMqBundle\Command;
 use Bunny\Channel;
 use Bunny\Client;
 use Bunny\Exception\BunnyException;
+use Bunny\Exception\ClientException;
 use Bunny\Message;
 use Bunny\Protocol\MethodBasicQosOkFrame;
 use Bunny\Protocol\MethodQueueBindOkFrame;
@@ -14,6 +15,9 @@ use Hanaboso\PipesFramework\RabbitMq\BunnyManager;
 use Hanaboso\PipesFramework\RabbitMq\Consumer\BaseSyncConsumerAbstract;
 use Hanaboso\PipesFramework\RabbitMq\Serializers\IMessageSerializer;
 use InvalidArgumentException;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -26,7 +30,7 @@ use TypeError;
  *
  * @package Hanaboso\PipesFramework\HbPFRabbitMqBundle\Command
  */
-class ConsumerCommand extends Command
+class ConsumerCommand extends Command implements LoggerAwareInterface
 {
 
     /** @var ContainerInterface */
@@ -42,6 +46,11 @@ class ConsumerCommand extends Command
     protected $messages = 0;
 
     /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    /**
      * ConsumerCommand constructor.
      *
      * @param ContainerInterface $container
@@ -54,6 +63,7 @@ class ConsumerCommand extends Command
         $this->container = $container;
         $this->manager   = $manager;
         $this->consumers = $consumers;
+        $this->logger    = new NullLogger();
     }
 
     /**
@@ -65,6 +75,35 @@ class ConsumerCommand extends Command
             ->setDescription("Starts given consumer.")
             ->addArgument("consumer-name", InputArgument::REQUIRED, "Name of consumer.")
             ->addArgument("consumer-parameters", InputArgument::IS_ARRAY, "Argv input to consumer.", []);
+    }
+
+    /**
+     * @param LoggerInterface $logger
+     */
+    public function setLogger(LoggerInterface $logger): void
+    {
+        $this->logger = $logger;
+    }
+
+    /**
+     *
+     */
+    private function reconnect(): void
+    {
+        do {
+            $wait = 2;
+            sleep($wait);
+            $this->logger->info(sprintf('Waiting for %ss.', $wait));
+            try {
+                $this->manager->getClient(TRUE)->connect();
+                $connect = TRUE;
+                $this->logger->info('RabbitMQ is connected.');
+            } catch (ClientException $e) {
+                $connect = FALSE;
+                $this->logger->info('RabbitMQ is not connected.', ['exception' => $e]);
+            }
+
+        } while (!$connect);
     }
 
     /**
@@ -83,7 +122,15 @@ class ConsumerCommand extends Command
 
         $consumerArgv = $input->getArgument("consumer-parameters");
         array_unshift($consumerArgv, $consumerName);
-        $this->manager->setUp();
+
+        try {
+            $this->logger->info('RabbitMQ setup.');
+            $this->manager->setUp();
+        } catch (ClientException $e) {
+            $this->logger->info('RabbitMQ is not connected.', ['exception' => $e]);
+            $this->reconnect();
+            $this->manager->setUp();
+        }
 
         $channel = $this->manager->getChannel();
 
