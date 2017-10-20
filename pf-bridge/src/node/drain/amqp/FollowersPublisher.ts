@@ -2,10 +2,9 @@ import {Channel, Options} from "amqplib";
 import Connection from "lib-nodejs/dist/src/rabbitmq/Connection";
 import Publisher from "lib-nodejs/dist/src/rabbitmq/Publisher";
 import logger from "../../../logger/Logger";
-import JobMessage from "../../../message/JobMessage";
-import {ResultCode} from "../../../message/ResultCode";
-import {IAmqpDrainSettings, IFollower} from "../AmqpDrain";
 import Headers from "../../../message/Headers";
+import JobMessage from "../../../message/JobMessage";
+import {IAmqpDrainSettings, IFollower} from "../AmqpDrain";
 
 /**
  * This class will be injected to all drains and all counter result messages will be published using it

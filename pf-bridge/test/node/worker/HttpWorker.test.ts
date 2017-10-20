@@ -59,6 +59,28 @@ httpServer.post("/ok-xml", (req, resp) => {
 });
 httpServer.listen(4020);
 
+const metricsMock = {
+    send: () => Promise.resolve("sent"),
+};
+
+function createHttpWorker(port: number, processPath: string, host: string = "localhost") {
+    return new HttpWorker({
+        node_label: {
+            id: "someId",
+            node_id: "507f191e810c19729de860ea",
+            node_name: "httpworker",
+            topology_id: "topoId",
+        },
+        host,
+        method: "post",
+        port,
+        process_path: processPath,
+        status_path: "/status",
+        secure: false,
+        opts : {},
+    }, metricsMock);
+}
+
 describe("HttpWorker", () => {
     it("should convert JobMessage to http request, receive response and set message result", () => {
         const node: INodeLabel = {id: "nodeId", node_id: "nodeId", node_name: "nodeName", topology_id: "topoId"};
@@ -69,21 +91,8 @@ describe("HttpWorker", () => {
         headers.setPFHeader(Headers.SEQUENCE_ID, "1");
         // headers.setHeader("content-type", "application/json");
         const msg = new JobMessage(node, headers.getRaw(), new Buffer(JSON.stringify({ val: "original" })));
-        const worker = new HttpWorker({
-            node_label: {
-                id: "someId",
-                node_id: "507f191e810c19729de860ea",
-                node_name: "httpworker",
-                topology_id: "topoId",
-            },
-            host: "localhost",
-            method: "post",
-            port: 4020,
-            process_path: "/ok",
-            status_path: "/status",
-            secure: false,
-            opts : {},
-        });
+
+        const worker = createHttpWorker(4020, "/ok");
 
         return worker.processData(msg)
             .then((outMsg: JobMessage) => {
@@ -101,21 +110,7 @@ describe("HttpWorker", () => {
         headers.setPFHeader(Headers.SEQUENCE_ID, "1");
         const msg = new JobMessage(node, headers.getRaw(), new Buffer(JSON.stringify({ val: "original" })));
 
-        const worker = new HttpWorker({
-            node_label: {
-                id: "someId",
-                node_id: "507f191e810c19729de860ea",
-                node_name: "httpworker",
-                topology_id: "topoId",
-            },
-            host: "localhost",
-            method: "post",
-            port: 4020,
-            process_path: "/invalid-status-code",
-            status_path: "/status",
-            secure: false,
-            opts : {},
-        });
+        const worker = createHttpWorker(4020, "/invalid-status-code");
 
         return worker.processData(msg)
             .then((outMsg: JobMessage) => {
@@ -132,21 +127,8 @@ describe("HttpWorker", () => {
         headers.setPFHeader(Headers.PARENT_ID, "");
         headers.setPFHeader(Headers.SEQUENCE_ID, "1");
         const msg = new JobMessage(node, headers.getRaw(), new Buffer(JSON.stringify({ val: "original" })));
-        const worker = new HttpWorker({
-            node_label: {
-                id: "someId",
-                node_id: "507f191e810c19729de860ea",
-                node_name: "httpworker",
-                topology_id: "topoId",
-            },
-            host: "localhost",
-            method: "post",
-            port: 4020,
-            process_path: "/invalid-result-code",
-            status_path: "/status",
-            secure: false,
-            opts : {},
-        });
+
+        const worker = createHttpWorker(4020, "/invalid-result-code");
 
         return worker.processData(msg)
             .then((outMsg: JobMessage) => {
@@ -163,21 +145,8 @@ describe("HttpWorker", () => {
         headers.setPFHeader(Headers.PARENT_ID, "");
         headers.setPFHeader(Headers.SEQUENCE_ID, "1");
         const msg = new JobMessage(node, headers.getRaw(), new Buffer(JSON.stringify({ val: "original" })));
-        const worker = new HttpWorker({
-            node_label: {
-                id: "someId",
-                node_id: "507f191e810c19729de860ea",
-                node_name: "httpworker",
-                topology_id: "topoId",
-            },
-            host: "localhost",
-            method: "post",
-            port: 4020,
-            process_path: "/non-existing",
-            status_path: "/status",
-            secure: false,
-            opts : {},
-        });
+
+        const worker = createHttpWorker(4020, "/non-existing");
 
         return worker.processData(msg)
             .then((outMsg: JobMessage) => {
@@ -194,21 +163,8 @@ describe("HttpWorker", () => {
         headers.setPFHeader(Headers.PARENT_ID, "");
         headers.setPFHeader(Headers.SEQUENCE_ID, "1");
         const msg = new JobMessage(node, headers.getRaw(), new Buffer(JSON.stringify({ val: "original" })));
-        const worker = new HttpWorker({
-            node_label: {
-                id: "someId",
-                node_id: "507f191e810c19729de860ea",
-                node_name: "httpworker",
-                topology_id: "topoId",
-            },
-            host: "localhost",
-            method: "post",
-            port: 4020,
-            process_path: "/empty-result-body",
-            status_path: "/status",
-            secure: false,
-            opts : {},
-        });
+
+        const worker = createHttpWorker(4020, "/empty-result-body");
 
         return worker.processData(msg)
             .then((outMsg: JobMessage) => {
@@ -224,21 +180,7 @@ describe("HttpWorker", () => {
         });
         workerServer.listen(4321);
 
-        const worker = new HttpWorker({
-            node_label: {
-                id: "someId",
-                node_id: "507f191e810c19729de860ea",
-                node_name: "httpworker",
-                topology_id: "topoId",
-            },
-            host: "localhost",
-            method: "post",
-            port: 4321,
-            process_path: "/some-path",
-            status_path: "/status",
-            secure: false,
-            opts : {},
-        });
+        const worker = createHttpWorker(4321, "/some-path");
 
         return worker.isWorkerReady()
             .then((isReady: boolean) => {
@@ -253,21 +195,7 @@ describe("HttpWorker", () => {
         });
         workerServer.listen(4322);
 
-        const worker = new HttpWorker({
-            node_label: {
-                id: "someId",
-                node_id: "507f191e810c19729de860ea",
-                node_name: "httpworker",
-                topology_id: "topoId",
-            },
-            host: "localhost",
-            method: "post",
-            port: 4322,
-            process_path: "/some-path",
-            status_path: "/status",
-            secure: false,
-            opts : {},
-        });
+        const worker = createHttpWorker(4322, "/some-path");
 
         return worker.isWorkerReady()
             .then((isReady: boolean) => {
@@ -284,21 +212,8 @@ describe("HttpWorker", () => {
         headers.setPFHeader(Headers.SEQUENCE_ID, "1");
         headers.setHeader("content-type", "application/json");
         const msg = new JobMessage(node, headers.getRaw(), new Buffer(JSON.stringify({ val: "original" })));
-        const worker = new HttpWorker({
-            node_label: {
-                id: "someId",
-                node_id: "507f191e810c19729de860ea",
-                node_name: "httpworker",
-                topology_id: "topoId",
-            },
-            host: "localhost",
-            method: "post",
-            port: 4020,
-            process_path: "/ok-xml",
-            status_path: "/status",
-            secure: false,
-            opts : {},
-        });
+
+        const worker = createHttpWorker(4020, "/ok-xml");
 
         return worker.processData(msg)
             .then((outMsg: JobMessage) => {
@@ -319,21 +234,8 @@ describe("HttpWorker", () => {
         headers.setPFHeader(Headers.SEQUENCE_ID, "1");
         headers.setHeader("content-type", "application/json");
         const msg = new JobMessage(node, headers.getRaw(), new Buffer(JSON.stringify({ val: "original" })));
-        const worker = new HttpWorker({
-            node_label: {
-                id: "someId",
-                node_id: "507f191e810c19729de860ea",
-                node_name: "httpworker",
-                topology_id: "topoId",
-            },
-            host: "nonexistinghost",
-            method: "post",
-            port: 80,
-            process_path: "/non-existing",
-            status_path: "/status",
-            secure: false,
-            opts : {},
-        });
+
+        const worker = createHttpWorker(4020, "/non-existing", "nonexistinghost");
 
         return worker.processData(msg)
             .then((outMsg: JobMessage) => {

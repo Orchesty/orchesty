@@ -1,3 +1,5 @@
+import IMetrics from "lib-nodejs/dist/src/metrics/IMetrics";
+import TimeUtils from "lib-nodejs/dist/src/utils/TimeUtils";
 import * as request from "request";
 import logger from "../../logger/Logger";
 import Headers from "../../message/Headers";
@@ -22,7 +24,10 @@ export interface IHttpWorkerSettings {
  */
 class HttpWorker implements IWorker {
 
-    constructor(protected settings: IHttpWorkerSettings) {}
+    constructor(
+        protected settings: IHttpWorkerSettings,
+        protected metrics: IMetrics,
+    ) {}
 
     /**
      *
@@ -30,14 +35,20 @@ class HttpWorker implements IWorker {
      * @return {Promise<JobMessage>}
      */
     public processData(msg: JobMessage): Promise<JobMessage> {
-        const reqParams = this.getJobRequestParams(msg);
+        const reqParams: any = this.getJobRequestParams(msg);
 
         return new Promise((resolve) => {
             Object.assign(reqParams, this.settings.opts);
 
-            logger.info(`Worker[type='http'] sent HTTP request: ${JSON.stringify(reqParams)}`, logger.ctxFromMsg(msg));
+            logger.info(
+                `Worker[type='http'] sent request to ${reqParams.url}. Headers: ${JSON.stringify(reqParams.headers)}`,
+                logger.ctxFromMsg(msg),
+            );
 
+            const sent = TimeUtils.nowMili();
             request(reqParams, (err: any, response: request.RequestResponse, body: string) => {
+                this.sendHttpRequestMetrics(msg, err, response, sent);
+
                 if (err) {
                     this.onRequestError(msg, reqParams, err);
                     return resolve(msg);
@@ -56,21 +67,7 @@ class HttpWorker implements IWorker {
                     return resolve(msg);
                 }
 
-                logger.info("Worker[type='http'] received valid response.", logger.ctxFromMsg(msg, err));
-
-                if (!body) {
-                    body = "";
-                }
-
-                if (typeof body !== "string") {
-                    body = JSON.stringify(body);
-                }
-
-                msg.setResult(result);
-                msg.setContent(body);
-                const responseContentType: any = response.headers[Headers.CONTENT_TYPE];
-                msg.getHeaders().setHeader(Headers.CONTENT_TYPE, responseContentType);
-
+                this.onValidResponse(msg, body, response.headers, result);
                 return resolve(msg);
             });
         });
@@ -187,6 +184,36 @@ class HttpWorker implements IWorker {
     }
 
     /**
+     * Handles valid http request and updates JobMessage
+     * @param {JobMessage} msg
+     * @param {string} responseBody
+     * @param responseHeaders
+     * @param {IResult} result
+     */
+    private onValidResponse(
+        msg: JobMessage,
+        responseBody: string,
+        responseHeaders: any,
+        result: IResult,
+    ) {
+        logger.info("Worker[type='http'] received valid response.", logger.ctxFromMsg(msg));
+
+        if (!responseBody) {
+            responseBody = "";
+        }
+
+        if (typeof responseBody !== "string") {
+            responseBody = JSON.stringify(responseBody);
+        }
+
+        msg.setResult(result);
+        msg.setContent(responseBody);
+
+        const responseContentType: any = responseHeaders[Headers.CONTENT_TYPE];
+        msg.getHeaders().setHeader(Headers.CONTENT_TYPE, responseContentType);
+    }
+
+    /**
      *
      * @param {JobMessage} msg
      * @param reqParams
@@ -228,6 +255,30 @@ class HttpWorker implements IWorker {
             logger.ctxFromMsg(msg),
         );
         msg.setResult({ code: ResultCode.MISSING_RESULT_CODE, message: "Missing result code header"});
+    }
+
+    /**
+     *
+     * @param {JobMessage} msg
+     * @param err
+     * @param {request.RequestResponse} response
+     * @param {number} sent
+     */
+    private sendHttpRequestMetrics(msg: JobMessage, err: any, response: request.RequestResponse, sent: number) {
+        const duration = TimeUtils.nowMili() - sent;
+
+        let resultCode: any;
+        if (!err && response.headers && response.headers[Headers.RESULT_CODE]) {
+            resultCode = response.headers[Headers.RESULT_CODE];
+        }
+
+        this.metrics.send({
+            http_worker_process_duration: duration,
+            http_worker_error: !!err,
+            http_worker_result_code: parseInt(resultCode, 10),
+        }).catch((mErr) => {
+                logger.warn("Unable to send metrics", logger.ctxFromMsg(msg, mErr));
+            });
     }
 
 }
