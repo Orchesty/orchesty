@@ -8,6 +8,7 @@ import {default as Users, IStreamHttpServerSettings} from "./Users";
 export interface IStreamServerSettings {
     port: number;
     namespace: string;
+    subscribeTimeout: number;
     consumer: IStreamConsumerSettings;
     amqp: IOptions;
     http: IStreamHttpServerSettings;
@@ -61,6 +62,7 @@ class StreamServer {
 
     private consumer: StreamConsumer;
     private stream: SocketIO.Namespace;
+    private timeouts: { [key: string]: NodeJS.Timer };
 
     /**
      *
@@ -73,6 +75,7 @@ class StreamServer {
         private users: Users,
         private connection: Connection,
     ) {
+        this.timeouts = {};
         this.consumer = new StreamConsumer(
             settings.consumer,
             connection,
@@ -143,6 +146,10 @@ class StreamServer {
                 if (this.users.canAccessGroup(data.token, data.userId, groupId)) {
                     socket.join(groupId);
                     socket.emit(STREAM_EVENTS.INFO_MESSAGE, `You subscribed to group "${groupId}"`);
+
+                    this.removeTimeout(data.token);
+                    this.addTimeout(socket, data);
+
                     logger.info(`User '${data.userId}' subscribed to group '${groupId}'`);
                 } else {
                     socket.emit(STREAM_EVENTS.ERROR_MESSAGE, `You are not allowed to subscribe to group "${groupId}"`);
@@ -162,9 +169,28 @@ class StreamServer {
             data.groups.forEach((groupId) => {
                 socket.leave(groupId);
                 socket.emit(STREAM_EVENTS.UNSUBSCRIBE, `You unsubscribed from group "${groupId}"`);
+                this.removeTimeout(data.token);
+
                 logger.info(`User '${data.userId}' unsubscribed from group '${groupId}'`);
             });
         }
+    }
+
+    private addTimeout(socket: SocketIO.Socket, data: ISubscribeData) {
+        this.timeouts[data.token] = setTimeout(
+            () => {
+                this.unsubscribe(socket, data);
+            },
+            this.settings.subscribeTimeout,
+        );
+    }
+
+    /**
+     *
+     * @param {string} token
+     */
+    private removeTimeout(token: string) {
+        delete this.timeouts[token];
     }
 
 }

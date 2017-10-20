@@ -3,11 +3,12 @@ import StreamServer, {IStreamServerSettings} from "./StreamServer";
 import Users from "./Users";
 
 const settings: IStreamServerSettings = {
-    port: 8080,
+    port: parseInt(process.env.STREAM_WS_PORT, 10) || 8080,
     namespace: "/stream",
+    subscribeTimeout: parseInt(process.env.STREAM_SUBSCRIBE_TIMEOUT, 10) || (5 * 60 * 1000) + 30 * 1000, // 5,5 min
     consumer: {
         queue: {
-            name: "cc_stream",
+            name: process.env.STREAM_QUEUE || "stream",
             options: {},
         },
     },
@@ -20,10 +21,10 @@ const settings: IStreamServerSettings = {
         heartbeat: parseInt(process.env.RABBITMQ_HEARTBEAT, 10) || 60,
     },
     http: {
-        port: 3030,
+        port: parseInt(process.env.STREAM_HTTP_PORT, 10) || 3030,
         routes: {
-            login: "/login",
-            logout: "/logout",
+            login: process.env.STREAM_ROUTE_LOGIN || "/login",
+            logout: process.env.STREAM_ROUTE_LOGOUT || "/logout",
         },
     },
 };
