@@ -105,12 +105,4 @@ abstract class BatchActionAbstract implements BatchActionInterface, LoggerAwareI
             });
     }
 
-    /**
-     * @param string $id
-     *
-     * @return BatchInterface
-     * @throws InvalidArgumentException
-     */
-    abstract protected function getBatchService(string $id): BatchInterface;
-
 }

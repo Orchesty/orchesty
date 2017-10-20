@@ -29,4 +29,11 @@ interface BatchActionInterface
      */
     public function batchAction(Message $message, LoopInterface $loop, callable $itemCallBack): PromiseInterface;
 
+    /**
+     * @param string $id
+     *
+     * @return BatchInterface
+     */
+    public function getBatchService(string $id): BatchInterface;
+
 }
