@@ -1,4 +1,4 @@
-import { Channel, Message } from "amqplib";
+import { Channel, Message, Options } from "amqplib";
 import IMetrics from "lib-nodejs/dist/src/metrics/IMetrics";
 import Connection from "lib-nodejs/dist/src/rabbitmq/Connection";
 import Publisher from "lib-nodejs/dist/src/rabbitmq/Publisher";
@@ -272,15 +272,18 @@ export default class Counter {
      * @param process
      */
     private onJobFinished(process: ICounterProcessInfo): void {
-        const e = this.settings.pub.exchange;
-        const rKey = this.settings.pub.routing_key;
-
         if (!process) {
             logger.warn(`Counter onJobFinished received invalid process info data: "${process}"`);
             return;
         }
 
-        this.publisher.publish(e.name, rKey, new Buffer(JSON.stringify(process)), {})
+        const e = this.settings.pub.exchange;
+        const rKey = this.settings.pub.routing_key;
+        const options: Options.Publish = {
+            contentType: "application/json",
+        };
+
+        this.publisher.publish(e.name, rKey, new Buffer(JSON.stringify(process)), options)
             .then(() => {
                 logger.info(
                     "Counter job evaluated as finished",
