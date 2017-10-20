@@ -54,7 +54,7 @@ class ActionButton extends React.Component {
         case 1:
           return (
             <div className="btn-group">
-              <StateButton state={state} processId={items[0].processId} size={size} color="info" type="button" aria-expanded="true" onClick={e => this.makeAction(e, items[0])} disabled={items[0].disabled}>{caption}</StateButton>
+              <StateButton state={state} processId={items[0].processId} size={size} title={items[0].tooltip} color="info" type="button" aria-expanded="true" onClick={e => this.makeAction(e, items[0])} disabled={items[0].disabled}>{caption}</StateButton>
             </div>
           );
 
