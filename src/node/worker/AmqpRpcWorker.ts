@@ -156,7 +156,9 @@ class AmqpRpcWorker implements IWorker {
     public isWorkerReady(): Promise<boolean> {
         return new Promise((resolve) => {
             const resolveTestFn = (msg: JobMessage) => {
-                if (msg.getCorrelationId() === AmqpRpcWorker.TEST_ID) {
+                // TODO - using static corrId only single simultaneous test message is valid, fix it!
+                if (msg.getCorrelationId() === AmqpRpcWorker.TEST_ID &&
+                    msg.getResult().code === ResultCode.SUCCESS) {
                     resolve(true);
                 } else {
                     resolve(false);
