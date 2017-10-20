@@ -16,3 +16,21 @@ if he wants to receive ws messages for longer time period.
 Subscription is valid only for logged users in the remote system, thus when the user logs-in inside remote system, it
 send information about this user and allowed groups to Stream server via http. This information is validated during
 subscribe action.
+
+
+##How to use:
+
+- Start the server.
+- Make http request to /login route to register logged-in users and granted groups (provide userId and group fields)
+- From client page send subscribe ws message with defined userId and groups same as via http request before
+- Send amqp messages to input queue. These will be distributed to connected ws clients with granted access
+
+
+####AMQP message example:
+```
+{
+    "event": "test",
+    "content": "some test message content",
+    "groups": ["b"]
+}
+```

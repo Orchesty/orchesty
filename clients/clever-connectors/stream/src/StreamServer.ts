@@ -19,14 +19,17 @@ export interface IStreamMessage {
     content: string;
 }
 
-interface ISubscribeData {
+export interface ISubscribeData {
     userId: string;
     groups: string[];
 }
 
-interface IUnsubscribeData {
-    userId: string;
-    groups: string[];
+export enum STREAM_EVENTS {
+    SUBSCRIBE = "subscribe",
+    MESSAGE = "message",
+    ERROR_MESSAGE = "error_message",
+    INFO_MESSAGE = "info_message",
+    UNSUBSCRIBE = "unsubscribe",
 }
 
 class StreamServer {
@@ -67,7 +70,7 @@ class StreamServer {
     constructor(
         private settings: IStreamServerSettings,
         private users: Users,
-        connection: Connection,
+        private connection: Connection,
     ) {
         this.consumer = new StreamConsumer(
             settings.consumer,
@@ -88,18 +91,13 @@ class StreamServer {
 
         this.stream.on("connection", (socket: SocketIO.Socket) => {
 
-            socket.on("subscribe", (data: ISubscribeData) => {
-                logger.info(`Subscribe socket ${socket.id}. Data: ${JSON.stringify(data)}`);
-
-                if (data.groups && data.groups.length > 0) {
-                    data.groups.forEach((groupId) => {
-                        socket.join(groupId);
-                    });
-                }
+            socket.on(STREAM_EVENTS.SUBSCRIBE, (data: ISubscribeData) => {
+                logger.info(`Subscribe socket request ${socket.id}. Data: ${JSON.stringify(data)}`);
+                this.subscribe(socket, data);
             });
 
-            socket.on("unsubscribe", (data: IUnsubscribeData) => {
-                logger.info(`Unsubscribe socket ${socket.id}. Data: ${JSON.stringify(data)}`);
+            socket.on(STREAM_EVENTS.UNSUBSCRIBE, (data: ISubscribeData) => {
+                logger.info(`Unsubscribe socket request ${socket.id}. Data: ${JSON.stringify(data)}`);
             });
 
             socket.on("disconnect", (reason) => {
@@ -107,7 +105,6 @@ class StreamServer {
             });
         });
 
-        // todo - delay consuming until some clients are connected?
         this.consumer.start();
     }
 
@@ -124,13 +121,49 @@ class StreamServer {
                 return;
             }
         } catch (err) {
-            logger.error(`Could not parse message.`, { error: err });
+            logger.error(`Could not parse message.`, err.message);
+            return;
         }
 
         // Send to ws clients
         body.groups.forEach((group: string) => {
-            this.stream.to(group).emit("message", { event: body.event, content: body.content });
+            this.stream.to(group).emit(STREAM_EVENTS.MESSAGE, { event: body.event, content: body.content });
         });
+    }
+
+    /**
+     *
+     * @param {SocketIO.Socket} socket
+     * @param {ISubscribeData} data
+     */
+    private subscribe(socket: SocketIO.Socket, data: ISubscribeData): void {
+        if (data.groups && data.groups.length > 0) {
+            data.groups.forEach((groupId) => {
+                if (this.users.canAccessGroup(data.userId, groupId)) {
+                    socket.join(groupId);
+                    socket.emit(STREAM_EVENTS.INFO_MESSAGE, `You subscribed to group "${groupId}"`);
+                    logger.info(`User '${data.userId}' subscribed to group '${groupId}'`);
+                } else {
+                    socket.emit(STREAM_EVENTS.ERROR_MESSAGE, `You are not allowed to subscribe to group "${groupId}"`);
+                    logger.warn(`User '${data.userId}' is not allowed to subscribe to group '${groupId}'`);
+                }
+            });
+        }
+    }
+
+    /**
+     *
+     * @param {SocketIO.Socket} socket
+     * @param {ISubscribeData} data
+     */
+    private unsubscribe(socket: SocketIO.Socket, data: ISubscribeData): void {
+        if (data.groups && data.groups.length > 0) {
+            data.groups.forEach((groupId) => {
+                socket.leave(groupId);
+                socket.emit(STREAM_EVENTS.UNSUBSCRIBE, `You unsubscribed from group "${groupId}"`);
+                logger.info(`User '${data.userId}' unsubscribed from group '${groupId}'`);
+            });
+        }
     }
 
 }
