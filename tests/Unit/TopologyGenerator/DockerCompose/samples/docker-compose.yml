@@ -44,7 +44,7 @@ services:
       - './topology.json:/srv/app/topology/topology.json'
     networks:
       - demo_defualt
-    command: './dist/src/bin/pipes.js start node --id 1-magento2-customer'
+    command: './dist/src/bin/pipes.js start node --id 1-mag-cus'
   2-xml-par:
     image: 'dkr.hanaboso.net/pipes/pipes/pf-bridge:dev'
     working_dir: ''
@@ -59,7 +59,7 @@ services:
       - './topology.json:/srv/app/topology/topology.json'
     networks:
       - demo_defualt
-    command: './dist/src/bin/pipes.js start node --id 2-xml-parser'
+    command: './dist/src/bin/pipes.js start node --id 2-xml-par'
   3-map-1:
     image: 'dkr.hanaboso.net/pipes/pipes/pf-bridge:dev'
     working_dir: ''
@@ -74,7 +74,7 @@ services:
       - './topology.json:/srv/app/topology/topology.json'
     networks:
       - demo_defualt
-    command: './dist/src/bin/pipes.js start node --id 3-mapper-1'
+    command: './dist/src/bin/pipes.js start node --id 3-map-1'
   4-mai:
     image: 'dkr.hanaboso.net/pipes/pipes/pf-bridge:dev'
     working_dir: ''
@@ -89,7 +89,7 @@ services:
       - './topology.json:/srv/app/topology/topology.json'
     networks:
       - demo_defualt
-    command: './dist/src/bin/pipes.js start node --id 4-mail'
+    command: './dist/src/bin/pipes.js start node --id 4-mai'
   5-ftp:
     image: 'dkr.hanaboso.net/pipes/pipes/pf-bridge:dev'
     working_dir: ''
