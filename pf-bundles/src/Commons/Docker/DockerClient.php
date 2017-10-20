@@ -38,7 +38,7 @@ class DockerClient
     /**
      * @var string
      */
-    protected $version = '1.30';
+    protected $version = '1.24';
 
     /**
      *
@@ -47,7 +47,7 @@ class DockerClient
      * @param array  $connectOption
      * @param string $version
      */
-    public function __construct(array $connectOption = [], string $version = '1.30')
+    public function __construct(array $connectOption = [], string $version = '1.24')
     {
         if (empty($connectOption)) {
             $connectOption = $this->getDefault();
