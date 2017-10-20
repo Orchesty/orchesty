@@ -20,6 +20,7 @@ export interface IStreamMessage {
 }
 
 export interface ISubscribeData {
+    token: string;
     userId: string;
     groups: string[];
 }
@@ -139,7 +140,7 @@ class StreamServer {
     private subscribe(socket: SocketIO.Socket, data: ISubscribeData): void {
         if (data.groups && data.groups.length > 0) {
             data.groups.forEach((groupId) => {
-                if (this.users.canAccessGroup(data.userId, groupId)) {
+                if (this.users.canAccessGroup(data.token, data.userId, groupId)) {
                     socket.join(groupId);
                     socket.emit(STREAM_EVENTS.INFO_MESSAGE, `You subscribed to group "${groupId}"`);
                     logger.info(`User '${data.userId}' subscribed to group '${groupId}'`);

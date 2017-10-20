@@ -36,6 +36,9 @@ class StreamConsumer extends SimpleConsumer {
         );
     }
 
+    /**
+     * Starts the amqp consumption
+     */
     public start(): void {
         this.consume(this.settings.queue.name, {})
             .then(() => {

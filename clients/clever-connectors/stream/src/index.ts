@@ -7,7 +7,7 @@ const settings: IStreamServerSettings = {
     namespace: "/stream",
     consumer: {
         queue: {
-            name: "stream_input",
+            name: "cc_stream",
             options: {},
         },
     },

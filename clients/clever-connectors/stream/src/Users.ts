@@ -1,6 +1,7 @@
 import * as bodyParser from "body-parser";
 import * as express from "express";
 import logger from "lib-nodejs/dist/src/logger/Logger";
+import * as uuidV4 from "uuid/v4";
 import {ISubscribeData} from "./StreamServer";
 
 export interface IStreamHttpServerSettings {
@@ -11,9 +12,12 @@ export interface IStreamHttpServerSettings {
     };
 }
 
+/**
+ * TODO - use redis for storing user data instead of in-memory storage
+ */
 class Users {
 
-    private users: { [userId: string]: string[] };
+    private users: { [token: string]: { userId: string, groups: string[]} };
 
     /**
      *
@@ -25,20 +29,24 @@ class Users {
     }
 
     /**
-     * Returns boolean whether user can subscribe to group or not
+     * Returns boolean whether user has valid token and if he can subscribe to given group
      *
+     * @param {string} token
      * @param {string} userId
      * @param {string} group
      * @return {boolean}
      */
-    public canAccessGroup(userId: string, group: string): boolean {
-        if (userId in this.users) {
-            if (this.users[userId].indexOf(group) > -1) {
-                return true;
-            }
+    public canAccessGroup(token: string, userId: string, group: string): boolean {
+        if (!(token in this.users)) {
+            return false;
         }
 
-        return false;
+        const user = this.users[token];
+        if (user.userId !== userId) {
+            return false;
+        }
+
+        return user.groups.indexOf(group) >= 0;
     }
 
     /**
@@ -48,26 +56,32 @@ class Users {
         const app = express();
         app.use(bodyParser.json());
 
+        /**
+         * LogIn route
+         */
         app.post(
             this.serverSettings.routes.login,
             (req: express.Request, res: express.Response) => {
                 try {
-                    const data = this.validateHttpRequest(req);
-                    this.addUser(data.userId, data.groups);
-                    res.send(this.serverSettings.routes.login);
+                    const data = this.validateLoginRequest(req);
+                    const token = this.addUser(data.userId, data.groups);
+                    res.send(token);
                 } catch (err) {
                     res.status(400).send(err.message);
                 }
             },
         );
 
+        /**
+         * LogOut route
+         */
         app.post(
             this.serverSettings.routes.logout,
             (req: express.Request, res: express.Response) => {
                 try {
-                    const data = this.validateHttpRequest(req);
-                    this.removeUser(data.userId);
-                    res.send(this.serverSettings.routes.logout);
+                    const token = this.validateLogoutRequest(req);
+                    this.removeUser(token);
+                    res.send("");
                 } catch (err) {
                     res.status(400).send(err.message);
                 }
@@ -80,14 +94,14 @@ class Users {
     }
 
     /**
-     * Validates http request
+     * Validates login http request
      *
      * @param {e.Request} req
      * @return {ISubscribeData}
      */
-    private validateHttpRequest(req: express.Request): ISubscribeData {
+    private validateLoginRequest(req: express.Request): {userId: string, groups: string[]} {
         if (!req.body) {
-            throw new Error("Missing request body. Make sure yoy send JSON and content-type=application/json header");
+            throw new Error("Missing request body. Make sure yoy sent JSON and content-type=application/json header");
         }
 
         if (!req.body.userId) {
@@ -112,24 +126,52 @@ class Users {
     }
 
     /**
+     * Validates logout http request
      *
-     * @param {string} userId
-     * @param {string[]} groups
+     * @param {e.Request} req
+     * @return {string}
      */
-    private addUser(userId: string, groups: string[]): void {
-        logger.info(`Granting '${userId}' access to ${JSON.stringify(groups)}`);
+    private validateLogoutRequest(req: express.Request): string {
+        if (!req.body) {
+            throw new Error("Missing request body. Make sure you sent JSON and content-type=application/json header");
+        }
 
-        this.users[userId] = groups;
+        if (!req.body.token) {
+            throw new Error("Invalid 'token'.");
+        }
+
+        return req.body.token;
     }
 
     /**
      *
      * @param {string} userId
+     * @param {string[]} groups
+     * @return {string}
      */
-    private removeUser(userId: string): void {
-        logger.info(`Revoking '${userId}' access to ${JSON.stringify(this.users[userId])}`);
+    private addUser(userId: string, groups: string[]): string {
+        const token = uuidV4();
+        this.users[token] = {userId, groups};
 
-        delete this.users[userId];
+        logger.info(`Granting '${userId}' access to ${JSON.stringify(groups)}. Token: ${token}`);
+
+        return token;
+    }
+
+    /**
+     *
+     * @param {string} token
+     */
+    private removeUser(token: string): void {
+        if (!this.users[token]) {
+            logger.warn(`Trying to remove user with non-existing token '${token}'`);
+            return;
+        }
+
+        const user = this.users[token];
+        delete this.users[token];
+
+        logger.info(`Revoking '${user.userId}' access to ${JSON.stringify(user.groups)}`);
     }
 
 }
