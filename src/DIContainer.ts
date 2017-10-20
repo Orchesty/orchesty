@@ -52,7 +52,7 @@ class DIContainer extends Container {
                 () =>  Promise.resolve(),
                 {},
             );
-            const metrics = this.get("metrics")(settings.node_label.id);
+            const metrics = this.get("metrics")(settings.node_label.topology_id, settings.node_label.id);
 
             return new AmqpDrain(settings, counterPub, followersPub, assertionPub, metrics);
         });
@@ -67,10 +67,14 @@ class DIContainer extends Container {
             return new AppenderWorker(settings);
         });
         this.set(`${wPrefix}.http`, (settings: IHttpWorkerSettings) => {
-            return new HttpWorker(settings);
+            const metrics = this.get("metrics")(settings.node_label.topology_id, settings.node_label.id);
+
+            return new HttpWorker(settings, metrics);
         });
         this.set(`${wPrefix}.http_xml_parser`, (settings: IHttpXmlParserWorkerSettings) => {
-            return new HttpXmlParserWorker(settings);
+            const metrics = this.get("metrics")(settings.node_label.topology_id, settings.node_label.id);
+
+            return new HttpXmlParserWorker(settings, metrics);
         });
         this.set(`${wPrefix}.null`, (settings: {}) => {
             return new NullWorker();

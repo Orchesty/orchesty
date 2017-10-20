@@ -1,3 +1,4 @@
+import IMetrics from "lib-nodejs/dist/src/metrics/IMetrics";
 import Headers from "../../message/Headers";
 import JobMessage from "../../message/JobMessage";
 import HttpWorker, {IHttpWorkerSettings} from "./HttpWorker";
@@ -16,9 +17,10 @@ class HttpXmlParserWorker extends HttpWorker {
     /**
      *
      * @param {IHttpXmlParserWorkerSettings} settings
+     * @param {IMetrics} metrics
      */
-    constructor(protected settings: IHttpXmlParserWorkerSettings) {
-        super(settings);
+    constructor(protected settings: IHttpXmlParserWorkerSettings, protected metrics: IMetrics) {
+        super(settings, metrics);
     }
 
     /**
