@@ -62,14 +62,15 @@ class Users {
         app.post(
             this.serverSettings.routes.login,
             (req: express.Request, res: express.Response) => {
+                res.set("content-type", "application/json");
+
                 try {
                     const data = this.validateLoginRequest(req);
                     const token = this.addUser(data.userId, data.groups);
 
-                    res.set("content-type", "application/json");
                     res.send(JSON.stringify({ userId: data.userId, token }));
                 } catch (err) {
-                    res.status(400).send(err.message);
+                    res.status(400).send(JSON.stringify({error: err.message}));
                 }
             },
         );
@@ -80,14 +81,15 @@ class Users {
         app.post(
             this.serverSettings.routes.logout,
             (req: express.Request, res: express.Response) => {
+                res.set("content-type", "application/json");
+
                 try {
                     const token = this.validateLogoutRequest(req);
                     const userId = this.removeUser(token);
 
-                    res.set("content-type", "application/json");
                     res.send(JSON.stringify({ userId }));
                 } catch (err) {
-                    res.status(400).send(err.message);
+                    res.status(400).send(JSON.stringify({error: err.message}));
                 }
             },
         );
