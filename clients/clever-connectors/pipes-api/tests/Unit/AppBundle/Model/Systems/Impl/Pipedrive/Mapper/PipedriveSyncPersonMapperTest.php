@@ -31,7 +31,6 @@ final class PipedriveSyncPersonMapperTest extends ConnectorTestCaseAbstract
         $this->assertEquals([
             CleverFieldsEnum::EMAIL      => 'asd@asd.com',
             CleverFieldsEnum::FIRST_NAME => 'namae',
-            CleverFieldsEnum::LAST_NAME  => '',
             CleverFieldsEnum::FOREIGN_ID => '1',
             CleverFieldsEnum::REACTIVATE => TRUE,
         ], $response);

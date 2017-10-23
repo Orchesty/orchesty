@@ -31,7 +31,6 @@ final class PipedriveUpdatePersonMapperTest extends ConnectorTestCaseAbstract
         $this->assertEquals([
             CleverFieldsEnum::EMAIL      => 'asd@asd.com',
             CleverFieldsEnum::FIRST_NAME => 'yvxc',
-            CleverFieldsEnum::LAST_NAME  => '',
             CleverFieldsEnum::FOREIGN_ID => '6',
             CleverFieldsEnum::REACTIVATE => TRUE,
         ], $response);

@@ -31,8 +31,6 @@ class ShopifyDeleteCustomerMapperTest extends ConnectorTestCaseAbstract
         $this->assertEquals([
             CleverFieldsEnum::EMAIL      => '131244785694',
             CleverFieldsEnum::FOREIGN_ID => '131244785694',
-            CleverFieldsEnum::FIRST_NAME => '',
-            CleverFieldsEnum::LAST_NAME  => '',
             CleverFieldsEnum::REACTIVATE => FALSE,
         ], $response);
     }

@@ -149,13 +149,22 @@ final class CMSubscriber
      */
     public function toArray(): array
     {
-        return [
-            CleverFieldsEnum::FIRST_NAME => $this->firstName,
-            CleverFieldsEnum::LAST_NAME  => $this->lastName,
+        $res = [
             CleverFieldsEnum::EMAIL      => $this->email,
-            CleverFieldsEnum::FOREIGN_ID => $this->foreignId,
             CleverFieldsEnum::REACTIVATE => $this->reactivate,
         ];
+
+        if (!empty($this->firstName)) {
+            $res[CleverFieldsEnum::FIRST_NAME] = $this->firstName;
+        }
+        if (!empty($this->lastName)) {
+            $res[CleverFieldsEnum::LAST_NAME] = $this->lastName;
+        }
+        if (!empty($this->foreignId)) {
+            $res[CleverFieldsEnum::FOREIGN_ID] = $this->foreignId;
+        }
+
+        return $res;
     }
 
 }

@@ -29,11 +29,8 @@ class WisepopsCreateEmailMapperTest extends ConnectorTestCaseAbstract
         );
 
         $this->assertEquals([
-            'email'       => 'sfg@sfd.cfg',
-            'first_name'  => '',
-            'last_name'   => '',
-            '_foreign_id' => '',
-            'reactivate'  => TRUE,
+            'email'      => 'sfg@sfd.cfg',
+            'reactivate' => TRUE,
         ], $response);
     }
 
