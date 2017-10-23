@@ -12,7 +12,7 @@ namespace Hanaboso\PipesFramework\Authorization\Provider;
 use Exception;
 use Hanaboso\PipesFramework\Authorization\Exception\AuthorizationException;
 use Hanaboso\PipesFramework\Authorization\Provider\Dto\OAuth2DtoInterface;
-use Hanaboso\PipesFramework\Authorization\Utils\ScopeFormater;
+use Hanaboso\PipesFramework\Authorization\Utils\ScopeFormatter;
 use Hanaboso\PipesFramework\Authorization\Wrapper\OAuth2Wrapper;
 use Hanaboso\PipesFramework\Commons\Redirect\RedirectInterface;
 use Hanaboso\PipesFramework\Commons\Utils\Base64;
@@ -79,13 +79,13 @@ class OAuth2Provider implements OAuth2ProviderInterface, LoggerAwareInterface
     /**
      * @param OAuth2DtoInterface $dto
      * @param array              $scopes
-     *
-     * @throws AuthorizationException
+     * @param string             $separator
      */
-    public function authorize(OAuth2DtoInterface $dto, array $scopes = []): void
+    public function authorize(OAuth2DtoInterface $dto, array $scopes = [],
+                              string $separator = ScopeFormatter::COMMA): void
     {
         $client           = $this->createClient($dto);
-        $authorizationUrl = $this->getAuthorizeUrl($dto, $client->getAuthorizationUrl(), $scopes);
+        $authorizationUrl = $this->getAuthorizeUrl($dto, $client->getAuthorizationUrl(), $scopes, $separator);
 
         $this->redirect->make($authorizationUrl);
     }
@@ -166,14 +166,19 @@ class OAuth2Provider implements OAuth2ProviderInterface, LoggerAwareInterface
      *
      * @return string
      */
-    private function getAuthorizeUrl(OAuth2DtoInterface $dto, string $authorizeUrl, array $scopes): string
+    private function getAuthorizeUrl(
+        OAuth2DtoInterface $dto,
+        string $authorizeUrl,
+        array $scopes,
+        string $separator = ScopeFormatter::COMMA
+    ): string
     {
         $state = NULL;
         if (!$dto->isCustomApp()) {
             $state = Base64::base64UrlEncode($dto->getUser() . ':' . $dto->getSystemKey());
         }
 
-        $url = sprintf('%s%s', $authorizeUrl, ScopeFormater::getScopes($scopes));
+        $url = sprintf('%s%s', $authorizeUrl, ScopeFormatter::getScopes($scopes));
 
         if ($state) {
             $url = (string) (new Url($url))->setQueryParameter('state', $state);
