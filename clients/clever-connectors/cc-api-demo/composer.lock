@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "d1838aff857a10d31e991c6dc29a06de",
+    "content-hash": "a4bf58c13bec11b3db238138fc3d6182",
     "packages": [
         {
             "name": "clever-monitor/cc-api-extension",
@@ -43,6 +43,44 @@
                 "proprietary"
             ],
             "description": "Interface for communication with clever connectors.",
+            "transport-options": {
+                "symlink": true
+            }
+        },
+        {
+            "name": "clever-monitor/cm-stream",
+            "version": "0.0.1",
+            "dist": {
+                "type": "path",
+                "url": "../cm-stream",
+                "reference": "f10a5f47a8266bf28a219d7764a2bae9596280eb",
+                "shasum": null
+            },
+            "require": {
+                "guzzlehttp/guzzle": "^6.3",
+                "php": ">=7.1"
+            },
+            "require-dev": {
+                "phpstan/phpstan": "^0.8",
+                "phpunit/phpunit": "^6.3",
+                "slevomat/coding-standard": "^3.3",
+                "squizlabs/php_codesniffer": "^3.1"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "CmStream\\": "src/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "Tests\\": "tests/"
+                }
+            },
+            "license": [
+                "proprietary"
+            ],
+            "description": "Stream interface for Clever Monitor.",
             "transport-options": {
                 "symlink": true
             }

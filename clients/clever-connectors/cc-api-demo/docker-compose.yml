@@ -25,6 +25,7 @@ services:
     volumes:
       - ./:/var/www/html
       - ../cc-api-extension/:/var/www/cc-api-extension
+      - ../cm-stream/:/var/www/cm-stream
     ports:
       - 80:80
   
