@@ -1,4 +1,4 @@
-$(function(){
+$(function () {
 
 	$.nette.init();
 
@@ -27,10 +27,17 @@ $(function(){
 
 	socket.on('message', function (data) {
 		console.log(data);
-		addMessage(data.event, data.content);
+		switch (data.event) {
+			case "event-name":
+				addMessage(data.event, data.content);
+				break;
+			default:
+				addMessage(data.event, data.content);
+				break;
+		}
 	});
 
-	$("#subscribeStream").on("click", function() {
+	$("#subscribeStream").on("click", function () {
 		var userId = $("input#userId").val();
 		var groupsString = $("input#groups").val();
 		groups = groupsString.split(',');
@@ -40,9 +47,9 @@ $(function(){
 			type: "post",
 			contentType: "application/json",
 			data: JSON.stringify({userId: userId, groups: groupsString})
-		}).done(function(data) {
+		}).done(function (data) {
 			token = data.token;
-			socket.emit('subscribe', { token: token, groups: groups });
+			socket.emit('subscribe', {token: token, groups: groups});
 		});
 
 		$("form#subscribeForm").hide();
@@ -50,15 +57,15 @@ $(function(){
 		$("button#unsubscribeStream").show();
 	});
 
-	$("#unsubscribeStream").on("click", function() {
-		socket.emit('unsubscribe', { token: token, groups: groups });
+	$("#unsubscribeStream").on("click", function () {
+		socket.emit('unsubscribe', {token: token, groups: groups});
 
 		$.ajax({
 			url: "unsubscribe",
 			type: "post",
 			contentType: "application/json",
 			data: JSON.stringify({token: token})
-		}).done(function(data) {
+		}).done(function (data) {
 			// user unsubscribed
 		});
 
@@ -70,7 +77,7 @@ $(function(){
 	function addMessage(type, message) {
 		var d = new Date();
 		$("#streamMessages tbody").prepend(
-			"<tr><td>"+type+"</td><td>" + message + "</td><td>"+d.toString()+"</td></tr>"
+			"<tr><td>" + type + "</td><td>" + message + "</td><td>" + d.toString() + "</td></tr>"
 		);
 	}
 

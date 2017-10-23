@@ -1,3 +1,17 @@
+parameters:
+	ws:
+		host: http://localhost:8080/stream
+
+	rabbit-mq:
+		host: rabbitmq
+		port: 5672
+		user: guest
+		password: guest
+		vhost: /
+
+	stream:
+		host: "http://stream:3030"
+
 cc_api:
 	base_uri: 'https://cleverconn.stage.hanaboso.net/'
 	cert: %appDir%/../cert/stage-staf.pem
@@ -14,7 +28,7 @@ services:
 	router: App\RouterFactory::createRouter
 
 	guzzle_client_factory:
-		class: CmStream\GuzzleClientFactory("http://stream:3030")
+		class: CmStream\GuzzleClientFactory(%stream.host%)
 
 	subscriber:
 		class: CmStream\Subscriber
@@ -24,17 +38,3 @@ services:
 
 extensions:
 	cc_api: CcApi\Bridges\DI\CcApiExtension
-
-parameters:
-	ws:
-		host: http://localhost:8080/stream
-		httpPort: 3030
-		wsPort: 8080
-		namespace: stream
-
-	rabbit-mq:
-		host: rabbitmq
-		port: 5672
-		user: guest
-		password: guest
-		vhost: /
