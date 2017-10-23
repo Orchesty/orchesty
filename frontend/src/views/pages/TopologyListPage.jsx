@@ -63,7 +63,7 @@ function mapActionsToProps(dispatch, ownProps){
     openNewTopology: () => dispatch(applicationActions.openModal('topology_edit', {addNew: true})),
     selectPage: (key, args) => dispatch(applicationActions.selectPage(key, args)),
     clone: id => dispatch(topologyActions.cloneTopology(id)),
-    topologyDelete: id => dispatch(topologyActions.topologyDelete(id)),
+    topologyDelete: id => dispatch(applicationActions.openModal('topology_delete_dialog', {topologyId: id})),
     publish: id => dispatch(topologyActions.publishTopology(id))
   }
 }
