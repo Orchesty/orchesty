@@ -13,6 +13,12 @@ session:
 services:
 	router: App\RouterFactory::createRouter
 
+	guzzle_client_factory:
+		class: CmStream\GuzzleClientFactory("http://localhost:3030")
+
+	subscriber:
+		class: CmStream\Subscriber
+
 extensions:
 	cc_api: CcApi\Bridges\DI\CcApiExtension
 
@@ -22,3 +28,10 @@ parameters:
 		httpPort: 3030
 		wsPort: 8080
 		namespace: stream
+
+	rabbit-mq:
+		host: rabbitmq
+		port: 5672
+		user: guest
+		password: guest
+		vhost: /
