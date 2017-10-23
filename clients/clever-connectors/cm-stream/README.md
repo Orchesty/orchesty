@@ -1,14 +1,15 @@
-Clever Connectors API Extension
+CmStream
 ===============================
 
-### Configuration - default values
-```
-cc_api:
-    base_uri: ''
-    timeout: 30
-    cert: ''
-    logger: false
+### Local dev + test
+* make init
+* make test
 
-extension:
-    cc_api: CcApiExtension
+### Config
+```
+guzzle_client_factory:
+    class: CmStream\GuzzleClientFactory
+    
+subscriber:
+    class: CmStream\Subcriber("%guzzle_client_factory%")
 ```
