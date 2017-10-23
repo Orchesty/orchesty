@@ -1,0 +1,11 @@
+{
+  "scope": "store/customer/created",
+  "store_id": "1024391",
+  "data": {
+    "type": "customer",
+    "id": 1
+  },
+  "hash": "3042060d31c04ebdb5c7c275aca00131a1a94710",
+  "created_at": 1508308014,
+  "producer": "stores/ukcfcghi"
+}
