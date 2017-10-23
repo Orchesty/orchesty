@@ -18,7 +18,7 @@ send information about this user and allowed groups to Stream server via http. T
 subscribe action.
 
 
-##How to use:
+## How to use:
 
 - Start the server.
 - Make http request to /login route to register logged-in users and granted groups (provide userId and group fields)
@@ -26,7 +26,9 @@ subscribe action.
 - Send amqp messages to input queue. These will be distributed to connected ws clients with granted access
 
 
-####AMQP message example:
+## Interfaces
+
+#### AMQP message example:
 ```
 {
     "event": "test",
@@ -34,3 +36,44 @@ subscribe action.
     "groups": ["b"]
 }
 ```
+
+#### Login:
+####### Request:
+Send POST request with following body to **3030:/login** route
+```
+{
+    "userId": "some-user-email-or-id-string",
+    "groups": [
+        "group-ame",
+        "another-group-name",
+    ]
+}
+```
+
+####### Response:
+```
+{
+    "userId": "some-user-email-or-id-string",
+    "token": "uuid-token"
+}
+```
+
+#### Logout:
+####### Request:
+Send POST request with following body to **3030:/logout** route
+```
+{
+    "token": "uuid-token"
+}
+```
+
+####### Response:
+```
+{
+    "userId": "some-user-email-or-id-string"
+}
+```
+
+#### Connect to web sockets:
+**Server:** http://hostname:8080/stream
+**Subscribe message:** socket.emit('subscribe', { userId: "some-user-id", groups: ["groupName"], token: "uuid-token" });

@@ -65,7 +65,9 @@ class Users {
                 try {
                     const data = this.validateLoginRequest(req);
                     const token = this.addUser(data.userId, data.groups);
-                    res.send(token);
+
+                    res.set("content-type", "application/json");
+                    res.send(JSON.stringify({ userId: data.userId, token }));
                 } catch (err) {
                     res.status(400).send(err.message);
                 }
@@ -80,8 +82,10 @@ class Users {
             (req: express.Request, res: express.Response) => {
                 try {
                     const token = this.validateLogoutRequest(req);
-                    this.removeUser(token);
-                    res.send("");
+                    const userId = this.removeUser(token);
+
+                    res.set("content-type", "application/json");
+                    res.send(JSON.stringify({ userId }));
                 } catch (err) {
                     res.status(400).send(err.message);
                 }
@@ -162,7 +166,7 @@ class Users {
      *
      * @param {string} token
      */
-    private removeUser(token: string): void {
+    private removeUser(token: string): string {
         if (!this.users[token]) {
             logger.warn(`Trying to remove user with non-existing token '${token}'`);
             return;
@@ -172,6 +176,8 @@ class Users {
         delete this.users[token];
 
         logger.info(`Revoking '${user.userId}' access to ${JSON.stringify(user.groups)}`);
+
+        return user.userId;
     }
 
 }
