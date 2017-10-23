@@ -19,6 +19,12 @@
 
 <body>
     <div class="container">
+        {block menu}
+            <ul class="nav" n:inner-foreach="$menuItems as $item => $link">
+                <li class="nav-item"><a class="nav-link" n:href="$link">{$item}</a></li>
+            </ul>
+        {/block menu}
+
         <div n:foreach="$flashes as $flash" n:class="flash, $flash->type">{$flash->message}</div>
 
         {include content}
@@ -35,6 +41,9 @@
             crossorigin="anonymous"></script>
     <script src="https://nette.github.io/resources/js/netteForms.min.js"></script>
     <script src="{$basePath}/js/main.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
+
 {/block}
 </body>
 </html>

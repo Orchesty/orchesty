@@ -1,0 +1,36 @@
+{block title}
+    STREAM CLIENT
+{/block title}
+
+{block content}
+    <h1 class="text-center">STREAM CLIENT EXAMPLE</h1>
+
+    <hr>
+
+    <div class="row">
+        <div class="col-md-6 text-center">
+            <button type="button" class="btn btn-info" id="subscribeStream">Subscribe</button>
+        </div>
+
+        <div class="col-md-6 text-center">
+            <button type="button" class="btn" id="unsubscribeStream">Unsubscribe</button>
+        </div>
+    </div>
+
+    <div class="col-md-12" id="streamMessages">
+        <table class="table table-striped">
+            <thead class="thead-inverse">
+                <tr>
+                    <th>Event</th>
+                    <th>Message</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+
+    <script type="text/javascript">
+		var wsHost = {$host};
+    </script>
+{/block}

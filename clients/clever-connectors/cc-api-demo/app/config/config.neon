@@ -15,3 +15,10 @@ services:
 
 extensions:
 	cc_api: CcApi\Bridges\DI\CcApiExtension
+
+parameters:
+	ws:
+		host: http://localhost:8080/stream
+		httpPort: 3030
+		wsPort: 8080
+		namespace: stream

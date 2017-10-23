@@ -4,6 +4,8 @@ version: '2'
 services:
   rabbitmq:
     image: 'rabbitmq:management-alpine'
+    ports:
+      - 15672:15672
 
   stream:
     image: 'dkr.hanaboso.net/pipes/pipes/stream:dev'
