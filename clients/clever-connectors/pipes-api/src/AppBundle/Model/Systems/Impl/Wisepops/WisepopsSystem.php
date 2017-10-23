@@ -38,7 +38,7 @@ class WisepopsSystem implements WebhookSystemInterface, AuthorizationInterface
      */
     function __construct()
     {
-        $this->subscriptions[] = new WebhookSubscribes('wisepops-create-email-connector', 'weisepops_create_email',
+        $this->subscriptions[] = new WebhookSubscribes('wisepops-create-email-connector', 'wisepops-create-email',
             self::WEBHOOK_URL, self::WEBHOOK_URL);
     }
 
