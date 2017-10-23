@@ -41,31 +41,29 @@ class StreamPresenter extends BasePresenter
     }
 
     /**
-     * @param Request $request
      *
      * @return JsonResponse
      */
-    public function actionSubscription(Request $request)
+    public function actionSubscription()
     {
-        $data = json_decode($request->getRawBody(), TRUE);
+        $data = json_decode($this->getHttpRequest()->getRawBody(), TRUE);
 
-        $token = $this->subscriber->subscribe($data['userId'], $data['groups']);
+        $token = $this->subscriber->subscribe($data['userId'], explode(',', $data['groups']));
 
-        return new JsonResponse(['token' => $token]);
+        $this->sendJson(['token' => $token]);
     }
 
     /**
-     * @param Request $request
      *
      * @return JsonResponse
      */
-    public function actionUnsubscription(Request $request)
+    public function actionUnsubscription()
     {
-        $data = json_decode($request->getRawBody(), TRUE);
+        $data = json_decode($this->getHttpRequest()->getRawBody(), TRUE);
 
         $this->subscriber->unsubscribe($data['token']);
 
-        return new JsonResponse([]);
+        $this->sendJson([]);
     }
 
     /**

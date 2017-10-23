@@ -2,9 +2,7 @@ $(function(){
 
 	// Stream client scripts
 	var socket = io(wsHost);
-	var userId = "test";
-	var groups = ['a'];
-	var token = 'bcb5609a-b7f4-4df1-ad8e-e26ef52a273c';
+	var token = "";
 
 	socket.on('connect', function () {
 		console.log('Connection to websockets created.');
@@ -16,27 +14,63 @@ $(function(){
 
 	socket.on('error_message', function (data) {
 		console.log(data);
-		$("#streamMessages tbody").append("<tr><td>error</td><td>" + data + "</td></tr>")
+		addMessage("error", data);
 	});
 
 	socket.on('info_message', function (data) {
 		console.log(data);
-		$("#streamMessages tbody").append("<tr><td>info</td><td>" + data + "</td></tr>")
+		addMessage("info", data);
 	});
 
 	socket.on('message', function (data) {
 		console.log(data);
-		$("#streamMessages tbody").append("<tr><td>" + data.event + "</td><td>" + data.content + "</td></tr>")
+		addMessage(data.event, data.content);
 	});
 
 	$("#subscribeStream").on("click", function() {
+		var userId = $("input#userId").val();
+		var groups = $("input#groups").val().split(',');
 
+		$.ajax({
+			url: "subscription",
+			type: "post",
+			contentType: "application/json",
+			data: JSON.stringify({userId: userId, groups: $("input#groups").val()})
+		}).done(function(data) {
+			token = data.token;
+			socket.emit('subscribe', { userId: userId, groups: groups, token: token });
+		});
 
-		socket.emit('subscribe', { userId: userId, groups: groups, token: token });
+		$("form#subscribeForm").hide();
+		$("button#subscribeStream").hide();
+		$("button#unsubscribeStream").show();
 	});
 
 	$("#unsubscribeStream").on("click", function() {
 		socket.emit('unsubscribe', { userId: userId, groups: groups, token: token });
+
+		$.ajax({
+			url: "unsubscription",
+			type: "post",
+			contentType: "application/json",
+			data: JSON.stringify({token: token})
+		}).done(function(data) {
+			token = data.token;
+			socket.emit('subscribe', { userId: userId, groups: groups, token: token });
+		});
+
+		$("#streamMessages tbody").prepend("<tr><td>info</td><td>You unsubscribed</td></tr>")
+
+		$("form#subscribeForm").show();
+		$("button#subscribeStream").show();
+		$("button#unsubscribeStream").hide();
 	});
+
+	function addMessage(type, message) {
+		var d = new Date();
+		$("#streamMessages tbody").prepend(
+			"<tr><td>"+type+"</td><td>" + message + "</td><td>"+d.toLocaleTimeString()+"</td></tr>"
+		);
+	}
 
 });

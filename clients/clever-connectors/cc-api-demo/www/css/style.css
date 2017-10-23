@@ -1,3 +1,7 @@
 .btn {
     cursor: pointer;
 }
+
+#streamMessages {
+    margin-top: 2em;
+}

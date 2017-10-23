@@ -14,7 +14,7 @@ services:
 	router: App\RouterFactory::createRouter
 
 	guzzle_client_factory:
-		class: CmStream\GuzzleClientFactory("http://localhost:3030")
+		class: CmStream\GuzzleClientFactory("http://stream:3030")
 
 	subscriber:
 		class: CmStream\Subscriber
