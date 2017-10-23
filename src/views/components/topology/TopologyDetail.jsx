@@ -75,10 +75,13 @@ class TopologyDetail extends React.Component {
       });
     }
     if (topologyDelete){
+      const deleteDisabled = topology.visibility == 'public' && topology.enabled;
       pageActions.push({
         caption: 'Delete',
         processId: processes.topologyDelete(topologyId),
-        action: topologyDelete
+        action: topologyDelete,
+        disabled: deleteDisabled,
+        tooltip: deleteDisabled ? 'Disable topology first' : null
       });
     }
     if (this._actions['schema']){
@@ -136,7 +139,7 @@ function mapActionsToProps(dispatch, ownProps){
         ownProps.onChangeTopology(topology._id);
       }
     }),
-    topologyDelete: () => dispatch(topologyActions.topologyDelete(topologyId, true)),
+    topologyDelete: () => dispatch(applicationActions.openModal('topology_delete_dialog', {topologyId, redirectToList: true})),
     publish: () => dispatch(topologyActions.publishTopology(topologyId))
   }
 }
