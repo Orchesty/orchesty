@@ -11,34 +11,44 @@
         <div class="col-md-6 text-center">
             <h2>Subscribe</h2>
             <form id="subscribeForm">
-                <div class="form-group">
-                    <label for="userId">User ID:</label>
-                    <input type="text" name="userId" id="userId" placeholder="userId"/>
+                <div class="form-group row">
+                    <label for="userId" class="col-md-3 col-form-label">User ID:</label>
+                    <div class="col-md-9">
+                        <input type="text" class="form-control" name="userId" id="userId" placeholder="userId"/>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="groups">Groups:</label>
-                    <input type="text" name="groups" id="groups" placeholder="groupA,groupB,..."/>
+                <div class="form-group row">
+                    <label for="groups" class="col-md-3 col-form-label">Groups:</label>
+                    <div class="col-md-9">
+                        <input type="text" class="form-control" name="groups" id="groups"
+                               placeholder="groupA,groupB,..."/>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-md-3"></div>
+                    <div class="col-md-9 text-left">
+                        <button type="button" class="btn btn-primary" id="subscribeStream">Subscribe</button>
+                    </div>
                 </div>
             </form>
-
-            <button type="button" class="btn btn-info" id="subscribeStream">Subscribe</button>
 
             <button type="button" class="btn" id="unsubscribeStream" style="display: none;">Unsubscribe</button>
         </div>
         <div class="col-md-6 text-center">
             <h2>Send message</h2>
-            <button type="button" class="btn btn-info" id="sendMessage">Send</button>
+            {import '../components/form.latte'}
+            {include bootstrap-form publishForm}
         </div>
     </div>
 
     <div class="col-md-12" id="streamMessages">
         <table class="table table-striped">
             <thead class="thead-inverse">
-                <tr>
-                    <th>Event</th>
-                    <th>Message</th>
-                    <th>Date</th>
-                </tr>
+            <tr>
+                <th>Event</th>
+                <th>Message</th>
+                <th>Date</th>
+            </tr>
             </thead>
             <tbody>
             </tbody>

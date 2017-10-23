@@ -19,6 +19,9 @@ services:
 	subscriber:
 		class: CmStream\Subscriber
 
+	publish_form_factory:
+		class: PublishFormFactory
+
 extensions:
 	cc_api: CcApi\Bridges\DI\CcApiExtension
 

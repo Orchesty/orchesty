@@ -1,5 +1,7 @@
 $(function(){
 
+	$.nette.init();
+
 	// Stream client scripts
 	var socket = io(wsHost);
 	var token = "";

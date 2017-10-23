@@ -4,9 +4,8 @@ namespace App\Presenters;
 
 use Bunny\Client;
 use CmStream\Subscriber;
-use Nette\Application\Responses\JsonResponse;
 use Nette\Forms\Form;
-use Nette\Http\Request;
+use PublishFormFactory;
 
 /**
  * Class StreamPresenter
@@ -22,29 +21,35 @@ class StreamPresenter extends BasePresenter
     private $subscriber;
 
     /**
+     * @var PublishFormFactory
+     */
+    private $publishFormFactory;
+
+    /**
      * StreamPresenter constructor.
      *
-     * @param Subscriber $subscriber
+     * @param Subscriber         $subscriber
+     * @param PublishFormFactory $publishFormFactory
      */
-    public function __construct(Subscriber $subscriber)
+    public function __construct(Subscriber $subscriber, PublishFormFactory $publishFormFactory)
     {
         parent::__construct();
-        $this->subscriber = $subscriber;
+        $this->subscriber         = $subscriber;
+        $this->publishFormFactory = $publishFormFactory;
     }
 
     /**
      *
      */
-    public function renderDefault()
+    public function renderDefault(): void
     {
         $this->template->host = $this->context->getParameters()['ws']['host'];
     }
 
     /**
      *
-     * @return JsonResponse
      */
-    public function actionSubscribe()
+    public function actionSubscribe(): void
     {
         $data = json_decode($this->getHttpRequest()->getRawBody(), TRUE);
 
@@ -55,15 +60,27 @@ class StreamPresenter extends BasePresenter
 
     /**
      *
-     * @return JsonResponse
      */
-    public function actionUnsubscribe()
+    public function actionUnsubscribe(): void
+
     {
         $data = json_decode($this->getHttpRequest()->getRawBody(), TRUE);
 
         $this->subscriber->unsubscribe($data['token']);
 
         $this->sendJson([]);
+    }
+
+    /**
+     * @return Form
+     */
+    protected function createComponentPublishForm()
+    {
+        $form              = $this->publishFormFactory->create();
+        $form->getElementPrototype()->appendAttribute( 'class', 'ajax' );
+        $form->onSuccess[] = [$this, 'processPublishForm'];
+
+        return $form;
     }
 
     /**
@@ -74,7 +91,9 @@ class StreamPresenter extends BasePresenter
         $data = $form->getValues(TRUE);
 
         $client = new Client($this->context->getParameters()['rabbit-mq']);
-        $client->channel()
+        $client
+            ->connect()
+            ->channel()
             ->publish(
                 json_encode([
                     'event'   => $data['event'],
@@ -87,6 +106,11 @@ class StreamPresenter extends BasePresenter
                 '',
                 'stream'
             );
+
+        if($this->isAjax()) {
+            $form->reset();
+            $this->terminate();
+        }
     }
 
 }
