@@ -26,8 +26,6 @@ final class BigcommerceDeleteCustomerMapperTest extends ConnectorTestCaseAbstrac
 
         $this->assertEquals([
             CleverFieldsEnum::EMAIL      => '1',
-            CleverFieldsEnum::FIRST_NAME => '',
-            CleverFieldsEnum::LAST_NAME  => '',
             CleverFieldsEnum::FOREIGN_ID => '1',
             CleverFieldsEnum::REACTIVATE => FALSE,
         ], $response);
