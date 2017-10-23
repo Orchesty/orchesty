@@ -53,7 +53,7 @@ class NullSystem implements WebhookSystemInterface, OAuth2Interface
      */
     public function getType(): string
     {
-        return SystemTypeEnum::CRON;
+        return SystemTypeEnum::UI_WEBHOOK;
     }
 
     /**

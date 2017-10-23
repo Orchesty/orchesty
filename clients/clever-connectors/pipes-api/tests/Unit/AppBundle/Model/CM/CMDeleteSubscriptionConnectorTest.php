@@ -17,7 +17,7 @@ use Tests\KernelTestCaseAbstract;
  *
  * @package Tests\Unit\AppBundle\Model\CM
  */
-class CMDeleteSubscriptionConnectorTest extends KernelTestCaseAbstract
+final class CMDeleteSubscriptionConnectorTest extends KernelTestCaseAbstract
 {
 
     /**

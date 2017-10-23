@@ -18,7 +18,7 @@ use Tests\DatabaseTestCaseAbstract;
  *
  * @package Tests\Integration\AppBundle\Model\Systems\Impl\Wisepops\Connector
  */
-class WisepopsSyncEmailConnectorTest extends DatabaseTestCaseAbstract
+final class WisepopsSyncEmailConnectorTest extends DatabaseTestCaseAbstract
 {
 
     /**

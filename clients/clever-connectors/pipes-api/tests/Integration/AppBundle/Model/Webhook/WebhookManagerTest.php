@@ -3,9 +3,6 @@
 namespace Tests\Integration\AppBundle\Model\Webhook;
 
 use CleverConnectors\AppBundle\Document\Webhook;
-use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
-use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
-use PHPUnit_Framework_MockObject_MockObject;
 use Tests\DatabaseTestCaseAbstract;
 use Tests\PrivateTrait;
 
@@ -14,7 +11,7 @@ use Tests\PrivateTrait;
  *
  * @package Tests\Integration\AppBundle\Model
  */
-class WebhookManagerTest extends DatabaseTestCaseAbstract
+final class WebhookManagerTest extends DatabaseTestCaseAbstract
 {
 
     use PrivateTrait;
@@ -35,7 +32,6 @@ class WebhookManagerTest extends DatabaseTestCaseAbstract
     {
         $system  = $this->container->get('systems.null.user.group');
         $webhook = $this->container->get('cc.webhook.manager');
-        $this->setProperty($webhook, 'curl', $this->mockCurl());
 
         $this->container->get('cc.systems.manager')->installSystem('someUser', 'null.user.group', 'token');
 
@@ -59,18 +55,6 @@ class WebhookManagerTest extends DatabaseTestCaseAbstract
         $webhook->unsubscribe($system, 'someUser');
         $res = $this->dm->getRepository(Webhook::class)->findAll();
         self::assertEquals(0, count($res));
-    }
-
-    /**
-     * @return CurlManagerInterface|PHPUnit_Framework_MockObject_MockObject
-     */
-    private function mockCurl(): CurlManagerInterface
-    {
-        $curl = $this->createMock(CurlManagerInterface::class);
-        $res  = new ResponseDto(200, '', 'body', []);
-        $curl->method('send')->willReturn($res);
-
-        return $curl;
     }
 
 }

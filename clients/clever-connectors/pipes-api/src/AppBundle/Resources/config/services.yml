@@ -25,20 +25,6 @@ services:
         arguments:
             - '@service_container'
 
-    cc.webhook.manager:
-        class: CleverConnectors\AppBundle\Model\Webhook\WebhookManager
-        arguments:
-            - '@doctrine_mongodb.odm.default_document_manager'
-            - '@hbpf.transport.curl_manager'
-            - '%backend_host%'
-        calls:
-            - ['setLogger', ['@monolog.logger.commons']]
-
-    cc.webhook.controller:
-        class: CleverConnectors\AppBundle\Controller\WebhookController
-        arguments:
-            - '@hbpf.handler.starting_point'
-
     cc.last_sync.manager:
         class: CleverConnectors\AppBundle\Model\LastSync\LastSyncManager
         arguments:

@@ -13,7 +13,7 @@ use Tests\ControllerTestCaseAbstract;
  *
  * @package Tests\Controller\AppBundle\Controller
  */
-class WebhookControllerTest extends ControllerTestCaseAbstract
+final class WebhookControllerTest extends ControllerTestCaseAbstract
 {
 
     /**

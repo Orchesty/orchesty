@@ -20,7 +20,7 @@ use Tests\PrivateTrait;
  *
  * @package Tests\Integration\AppBundle\Model\Systems
  */
-class SystemManagerTest extends DatabaseTestCaseAbstract
+final class SystemManagerTest extends DatabaseTestCaseAbstract
 {
 
     use PrivateTrait;

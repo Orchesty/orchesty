@@ -17,7 +17,7 @@ use Tests\DatabaseTestCaseAbstract;
  *
  * @package Tests\Integration\AppBundle\Model\Systems\Impl\Shopify\Connector
  */
-class ShopifySyncConnectorTest extends DatabaseTestCaseAbstract
+final class ShopifySyncConnectorTest extends DatabaseTestCaseAbstract
 {
 
     /**

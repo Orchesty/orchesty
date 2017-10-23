@@ -12,7 +12,7 @@ use Tests\ControllerTestCaseAbstract;
  *
  * @package Tests\Integration\AppBundle\Controller
  */
-class SystemControllerTest extends ControllerTestCaseAbstract
+final class SystemControllerTest extends ControllerTestCaseAbstract
 {
 
     /**

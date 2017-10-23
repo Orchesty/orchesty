@@ -12,14 +12,16 @@ use Hanaboso\PipesFramework\Commons\Enum\EnumAbstract;
 final class SystemTypeEnum extends EnumAbstract
 {
 
-    public const CRON    = 'cron';
-    public const WEBHOOK = 'webhook';
+    public const CRON       = 'cron';
+    public const WEBHOOK    = 'webhook';
+    public const UI_WEBHOOK = 'ui_webhook';
     /**
      * @var string[]
      */
     protected static $choices = [
-        self::CRON    => 'cron',
-        self::WEBHOOK => 'webhook',
+        self::CRON       => 'cron',
+        self::WEBHOOK    => 'webhook',
+        self::UI_WEBHOOK => 'ui_webhook',
     ];
 
 }

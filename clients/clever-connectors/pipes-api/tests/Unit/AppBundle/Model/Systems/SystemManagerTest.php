@@ -30,7 +30,7 @@ use PHPUnit_Framework_MockObject_MockObject;
  *
  * @package Tests\Unit\AppBundle\Model\Systems
  */
-class SystemManagerTest extends TestCase
+final class SystemManagerTest extends TestCase
 {
 
     /**

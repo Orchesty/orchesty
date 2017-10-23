@@ -19,7 +19,7 @@ use Tests\KernelTestCaseAbstract;
  *
  * @package Tests\Unit\AppBundle\Model\Command
  */
-class AsyncCommandFactoryTest extends KernelTestCaseAbstract
+final class AsyncCommandFactoryTest extends KernelTestCaseAbstract
 {
 
     /**

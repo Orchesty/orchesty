@@ -25,7 +25,7 @@ use React\Promise\Promise;
  *
  * @package Tests\Unit\AppBundle\Model\CustomNode
  */
-class TokenMessageGeneratorTest extends TestCase
+final class TokenMessageGeneratorTest extends TestCase
 {
 
     /**

@@ -2,64 +2,35 @@
 
 namespace CleverConnectors\AppBundle\Model\Webhook;
 
-use CleverConnectors\AppBundle\Document\SystemInstall;
-use CleverConnectors\AppBundle\Document\Webhook;
-use CleverConnectors\AppBundle\Repository\WebhookRepository;
-use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\DocumentRepository;
-use Exception;
-use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
-use Psr\Log\LoggerAwareInterface;
-use Psr\Log\LoggerInterface;
-use Psr\Log\NullLogger;
+use CleverConnectors\AppBundle\Enum\SystemTypeEnum;
+use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
+use CleverConnectors\AppBundle\Model\Webhook\Provider\ApiWebhookProvider;
+use CleverConnectors\AppBundle\Model\Webhook\Provider\UiWebhookProvider;
+use CleverConnectors\AppBundle\Model\Webhook\Provider\WebhookProviderInterface;
 
 /**
  * Class WebhookManager
  *
  * @package CleverConnectors\AppBundle\Model\Webhook
  */
-class WebhookManager implements LoggerAwareInterface
+class WebhookManager
 {
 
     /**
-     * @var DocumentManager
+     * @var WebhookProviderInterface[]
      */
-    private $dm;
-
-    /**
-     * @var WebhookRepository|DocumentRepository
-     */
-    private $webhookRepository;
-
-    /**
-     * @var CurlManagerInterface
-     */
-    private $curl;
-
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    /**
-     * @var string
-     */
-    private $domain;
+    private $providers = [];
 
     /**
      * WebhookManager constructor.
      *
-     * @param DocumentManager      $dm
-     * @param CurlManagerInterface $curl
-     * @param string               $domain
+     * @param ApiWebhookProvider $apiWebhookProvider
+     * @param UiWebhookProvider  $uiWebhookProvider
      */
-    function __construct(DocumentManager $dm, CurlManagerInterface $curl, string $domain)
+    function __construct(ApiWebhookProvider $apiWebhookProvider, UiWebhookProvider $uiWebhookProvider)
     {
-        $this->dm                = $dm;
-        $this->webhookRepository = $dm->getRepository(Webhook::class);
-        $this->curl              = $curl;
-        $this->logger            = new NullLogger();
-        $this->domain            = rtrim($domain, '/');
+        $this->providers[SystemTypeEnum::WEBHOOK]    = $apiWebhookProvider;
+        $this->providers[SystemTypeEnum::UI_WEBHOOK] = $uiWebhookProvider;
     }
 
     /**
@@ -67,96 +38,22 @@ class WebhookManager implements LoggerAwareInterface
      * @param string                 $userId
      * @param string                 $token
      * @param bool                   $isUpdate
-     *
-     * @return array
      */
-    public function subscribe(WebhookSystemInterface $system, string $userId, string $token, $isUpdate = FALSE): array
+    public function subscribe(WebhookSystemInterface $system, string $userId, string $token, $isUpdate = FALSE): void
     {
-        $systemInstall = $this->dm->getRepository(SystemInstall::class)->findOneBy([
-            'system' => $system->getKey(), 'user' => $userId,
-        ]);
+        $provider = $this->getProvider($system);
 
-        $ids = [];
-        /** @var WebhookSubscribes $sub */
-        foreach ($system->getWebhookSubscribes() as $sub) {
-            if (!$isUpdate && $this->webhookRepository->isWebhookRegistred(
-                    $userId,
-                    $system->getKey(),
-                    $sub->getTopologyName(),
-                    $sub->getNodeName()
-                )
-            ) {
-                continue;
-            }
-
-            $url = $this->getWebhookUrl($this->domain, $userId, $token, $sub->getNodeName(), $sub->getTopologyName());
-
-            $req = $system->getSubscribeRequest($sub, $systemInstall, $url);
-            try {
-                $res = $this->curl->send($req);
-                $id  = $system->getWebhookId($res);
-            } catch (Exception $e) {
-                $this->logger->error(sprintf('Webhook (nodeName, topologyName, system) [%s, %s, %s] failed to subscribe.',
-                    $sub->getNodeName(), $sub->getTopologyName(), $system->getKey()), ['exception' => $e]);
-                $id = NULL;
-            }
-
-            $doc = new Webhook();
-            $doc->setUser($userId)
-                ->setNodeName($sub->getNodeName())
-                ->setSystemKey($system->getKey())
-                ->setTopologyName($sub->getTopologyName())
-                ->setWebhookId($id);
-            $this->dm->persist($doc);
-            $ids[] = $doc->getId();
-        }
-        $this->dm->flush();
-
-        return $ids;
+        $provider->subscribe($system, $userId, $token, $isUpdate);
     }
 
     /**
      * @param WebhookSystemInterface $system
      * @param string                 $userId
-     * @param array|null             $new
      */
-    public function unsubscribe(WebhookSystemInterface $system, string $userId, array $new = []): void
+    public function unsubscribe(WebhookSystemInterface $system, string $userId): void
     {
-        $systemInstall = $this->dm->getRepository(SystemInstall::class)->findOneBy([
-            'system' => $system->getKey(), 'user' => $userId,
-        ]);
-
-        $arr = $this->dm->getRepository(Webhook::class)->findBy([
-            'user'      => $userId,
-            'systemKey' => $system->getKey(),
-        ]);
-
-        foreach ($arr as $sub) {
-            if (in_array($sub->getId(), $new)) {
-                continue;
-            }
-
-            $req = $system->getUnsubscribeRequest($systemInstall, $sub->getWebhookId());
-            try {
-                $res = $this->curl->send($req);
-                if ($res->getStatusCode() == 200) {
-                    $this->dm->remove($sub);
-                } else {
-                    $this->logger->error(
-                        sprintf('Webhook [%s] failed to unsubscribe.', $sub->getId()),
-                        ['exception' => $res->getBody()]
-                    );
-                    $sub->setUnsubscribeFailed(TRUE);
-                }
-            } catch (Exception $e) {
-                $this->logger->error(
-                    sprintf('Webhook [%s] failed to unsubscribe.', $sub->getId()),
-                    ['exception' => $e]
-                );
-                $sub->setUnsubscribeFailed(TRUE);
-            }
-        }
-        $this->dm->flush();
+        $provider = $this->getProvider($system);
+        $provider->unsubscribe($system, $userId);
     }
 
     /**
@@ -166,41 +63,27 @@ class WebhookManager implements LoggerAwareInterface
      */
     public function update(WebhookSystemInterface $system, string $userId, string $token): void
     {
-        // Shopify forbides subscription on same entity/action and address -> first needs unsubscribe
-        $this->unsubscribe($system, $userId);
-        $this->subscribe($system, $userId, $token);
+        $provider = $this->getProvider($system);
+        $provider->update($system, $userId, $token);
     }
 
     /**
-     * @param LoggerInterface $logger
-     *
-     * @return WebhookManager
+     * ------------------------------------- HELPERS ---------------------------------------
      */
-    public function setLogger(LoggerInterface $logger): WebhookManager
-    {
-        $this->logger = $logger;
-
-        return $this;
-    }
 
     /**
-     * @param string $domain
-     * @param string $userId
-     * @param string $token
-     * @param string $nodeName
-     * @param string $topologyName
+     * @param WebhookSystemInterface $system
      *
-     * @return string
+     * @return WebhookProviderInterface
+     * @throws SystemException
      */
-    private function getWebhookUrl(
-        string $domain,
-        string $userId,
-        string $token,
-        string $nodeName,
-        string $topologyName
-    ): string
+    private function getProvider(WebhookSystemInterface $system): WebhookProviderInterface
     {
-        return sprintf('%s/webhook/%s/%s/%s/%s', $domain, $userId, $token, $nodeName, $topologyName);
+        if (array_key_exists($system->getType(), $this->providers)) {
+            return $this->providers[$system->getType()];
+        }
+
+        throw new SystemException(sprintf('Unknown webhook provider ["%s"]', $system->getType()));
     }
 
 }

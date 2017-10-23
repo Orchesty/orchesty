@@ -1,0 +1,25 @@
+services:
+    cc.webhook.manager:
+        class: CleverConnectors\AppBundle\Model\Webhook\WebhookManager
+        arguments:
+            - "@cc.webhook.api-provider"
+            - "@cc.webhook.ui-provider"
+
+    cc.webhook.api-provider:
+        class: CleverConnectors\AppBundle\Model\Webhook\Provider\ApiWebhookProvider
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.transport.curl_manager'
+            - '%backend_host%'
+        calls:
+            - ['setLogger', ['@monolog.logger.commons']]
+
+    cc.webhook.ui-provider:
+        class: CleverConnectors\AppBundle\Model\Webhook\Provider\UiWebhookProvider
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+
+    cc.webhook.controller:
+        class: CleverConnectors\AppBundle\Controller\WebhookController
+        arguments:
+            - '@hbpf.handler.starting_point'

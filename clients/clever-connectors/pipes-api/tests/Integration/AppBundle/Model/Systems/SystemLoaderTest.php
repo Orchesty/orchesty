@@ -12,7 +12,7 @@ use Tests\KernelTestCaseAbstract;
  *
  * @package Tests\Integration\AppBundle\Model\Systems
  */
-class SystemLoaderTest extends KernelTestCaseAbstract
+final class SystemLoaderTest extends KernelTestCaseAbstract
 {
 
     /**

@@ -61,6 +61,13 @@ class Webhook
     private $webhookId;
 
     /**
+     * @var boolean
+     *
+     * @ODM\Field(type="boolean")
+     */
+    private $apiReq = TRUE;
+
+    /**
      * @return string
      */
     public function getUser(): string
@@ -176,6 +183,26 @@ class Webhook
     public function setWebhookId(?string $webhookId): Webhook
     {
         $this->webhookId = $webhookId;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isApiReq(): bool
+    {
+        return $this->apiReq;
+    }
+
+    /**
+     * @param bool $apiReq
+     *
+     * @return Webhook
+     */
+    public function setApiReq(bool $apiReq): Webhook
+    {
+        $this->apiReq = $apiReq;
 
         return $this;
     }

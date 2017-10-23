@@ -16,6 +16,7 @@ class Field
     public const URL      = 'url';
     public const NUMBER   = 'number';
     public const PASSWORD = 'password';
+    public const CHECKBOX = 'checkbox';
 
     /**
      * @var string
@@ -43,6 +44,11 @@ class Field
     private $key;
 
     /**
+     * @var bool
+     */
+    private $readOnly = FALSE;
+
+    /**
      * Field constructor.
      *
      * @param string $type
@@ -51,9 +57,18 @@ class Field
      * @param null   $value
      * @param bool   $required
      *
+     * @param bool   $readOnly
+     *
      * @throws CleverConnectorsException
      */
-    public function __construct(string $type, string $key, string $label, $value = NULL, bool $required = FALSE)
+    public function __construct(
+        string $type,
+        string $key,
+        string $label,
+        $value = NULL,
+        bool $required = FALSE,
+        bool $readOnly = FALSE
+    )
     {
         if (!in_array($type, $this->getTypes())) {
             throw new CleverConnectorsException(
@@ -67,6 +82,7 @@ class Field
         $this->label    = $label;
         $this->value    = $value;
         $this->required = $required;
+        $this->readOnly = $readOnly;
     }
 
     /**
@@ -110,16 +126,25 @@ class Field
     }
 
     /**
+     * @return bool
+     */
+    public function isReadOnly(): bool
+    {
+        return $this->readOnly;
+    }
+
+    /**
      * @return array
      */
     public function toArray(): array
     {
         $field = [
-            'type'     => $this->type,
-            'key'      => $this->key,
-            'label'    => $this->label,
-            'value'    => $this->value,
-            'required' => $this->required,
+            'type'      => $this->type,
+            'key'       => $this->key,
+            'label'     => $this->label,
+            'value'     => $this->value,
+            'required'  => $this->required,
+            'read_only' => $this->readOnly,
         ];
 
         if ($this->type === Field::PASSWORD) {
@@ -139,6 +164,7 @@ class Field
             self::URL,
             self::NUMBER,
             self::PASSWORD,
+            self::CHECKBOX,
         ];
     }
 

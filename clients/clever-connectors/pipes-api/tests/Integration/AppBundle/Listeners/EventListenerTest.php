@@ -15,7 +15,7 @@ use Tests\PrivateTrait;
  *
  * @package Tests\Integration\AppBundle\Listeners
  */
-class EventListenerTest extends DatabaseTestCaseAbstract
+final class EventListenerTest extends DatabaseTestCaseAbstract
 {
 
     use PrivateTrait;
