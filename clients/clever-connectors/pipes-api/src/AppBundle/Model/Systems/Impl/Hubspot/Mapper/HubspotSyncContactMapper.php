@@ -4,16 +4,15 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\Mapper;
 
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\CM\SubscriptionConnector\CustomerObject\CMSubscriber;
-use CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\HubspotSystem;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
 
 /**
- * Class HubspotUpdateContactMapper
+ * Class HubspotSyncContactMapper
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\Mapper
  */
-class HubspotUpdateContactMapper extends HubspotMapperAbstract implements CustomNodeInterface
+class HubspotSyncContactMapper extends HubspotMapperAbstract implements CustomNodeInterface
 {
 
     /**
@@ -26,13 +25,7 @@ class HubspotUpdateContactMapper extends HubspotMapperAbstract implements Custom
     {
         $data = json_decode($dto->getData(), TRUE);
 
-        $this->continueAfterDataCheck(HubspotSystem::SUBSCRIPTION_TYPE_KEY, $data);
         $this->continueAfterDataCheck('properties', $data);
-
-        // we do not want creation/deletion to continue
-        if ($data[HubspotSystem::SUBSCRIPTION_TYPE_KEY] != HubspotSystem::SUBSCRIPTION_TYPE_UPDATE) {
-            return $this->setHeadersToStop($dto);
-        }
 
         $properties = $data['properties'];
 

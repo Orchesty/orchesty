@@ -22,7 +22,7 @@ use function React\Promise\resolve;
  *
  * @package Tests\Unit\AppBundle\Model\Systems\Impl\Hubspot\Connector
  */
-class HubspotSyncContactConnectorTest extends KernelTestCaseAbstract
+final class HubspotSyncContactConnectorTest extends KernelTestCaseAbstract
 {
 
     /**

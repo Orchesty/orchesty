@@ -9,11 +9,11 @@ use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
 
 /**
- * Class HubspotUpdateContactMapper
+ * Class HubspotCreateContactMapper
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\Mapper
  */
-class HubspotUpdateContactMapper extends HubspotMapperAbstract implements CustomNodeInterface
+class HubspotCreateContactMapper extends HubspotMapperAbstract implements CustomNodeInterface
 {
 
     /**
@@ -29,8 +29,8 @@ class HubspotUpdateContactMapper extends HubspotMapperAbstract implements Custom
         $this->continueAfterDataCheck(HubspotSystem::SUBSCRIPTION_TYPE_KEY, $data);
         $this->continueAfterDataCheck('properties', $data);
 
-        // we do not want creation/deletion to continue
-        if ($data[HubspotSystem::SUBSCRIPTION_TYPE_KEY] != HubspotSystem::SUBSCRIPTION_TYPE_UPDATE) {
+        // we do not want propertyChange/deletion to continue
+        if ($data[HubspotSystem::SUBSCRIPTION_TYPE_KEY] != HubspotSystem::SUBSCRIPTION_TYPE_CREATE) {
             return $this->setHeadersToStop($dto);
         }
 

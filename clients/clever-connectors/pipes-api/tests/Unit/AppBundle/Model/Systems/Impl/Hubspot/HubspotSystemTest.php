@@ -18,7 +18,7 @@ use Tests\KernelTestCaseAbstract;
  *
  * @package Tests\Unit\AppBundle\Model\Systems\Impl\Hubspot
  */
-class HubspotSystemTest extends KernelTestCaseAbstract
+final class HubspotSystemTest extends KernelTestCaseAbstract
 {
 
     private const ACCESS_TOKEN = 'sdf5sd46';

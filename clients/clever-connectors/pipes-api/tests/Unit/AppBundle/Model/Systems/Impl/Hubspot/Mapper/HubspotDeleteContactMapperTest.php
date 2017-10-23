@@ -16,7 +16,7 @@ use Tests\ConnectorTestCaseAbstract;
  *
  * @package Tests\Unit\AppBundle\Model\Systems\Impl\Hubspot\Mapper
  */
-class HubspotDeleteContactMapperTest extends ConnectorTestCaseAbstract
+final class HubspotDeleteContactMapperTest extends ConnectorTestCaseAbstract
 {
 
     /**

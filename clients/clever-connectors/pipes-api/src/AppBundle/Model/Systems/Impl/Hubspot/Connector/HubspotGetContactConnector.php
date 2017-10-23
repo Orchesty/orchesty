@@ -68,10 +68,10 @@ class HubspotGetContactConnector implements ConnectorInterface
      * @return ProcessDto|void
      * @throws ConnectorException
      */
-    public function processAction(ProcessDto $dto): ProcessDto
+    public function processEvent(ProcessDto $dto): ProcessDto
     {
         throw new ConnectorException(
-            'Hubspot has no support for action!',
+            'Hubspot has no support for event!',
             ConnectorException::CONNECTOR_DOES_NOT_HAVE_PROCESS_BATCH
         );
     }
@@ -82,7 +82,7 @@ class HubspotGetContactConnector implements ConnectorInterface
      * @return ProcessDto
      * @throws CleverConnectorsException
      */
-    public function processEvent(ProcessDto $dto): ProcessDto
+    public function processAction(ProcessDto $dto): ProcessDto
     {
         $arr = json_decode($dto->getData(), TRUE);
 
@@ -107,10 +107,10 @@ class HubspotGetContactConnector implements ConnectorInterface
         if (in_array($arr[HubspotSystem::SUBSCRIPTION_TYPE_KEY], $allowedTypes)) {
             $dto = $this->getContactProfile($dto, $arr);
         } elseif ($arr[HubspotSystem::SUBSCRIPTION_TYPE_KEY] == HubspotSystem::SUBSCRIPTION_TYPE_DELETE) {
-            throw new CleverConnectorsException(
-                sprintf('Disallowed subscription type "contact.deletion" for connector %s.', get_class($this)),
-                CleverConnectorsException::DISALLOWED_SUBSCRIPTION_TYPE
-            );
+//            throw new CleverConnectorsException(
+//                sprintf('Disallowed subscription type "contact.deletion" for connector %s.', get_class($this)),
+//                CleverConnectorsException::DISALLOWED_SUBSCRIPTION_TYPE
+//            );
         } else {
             throw new CleverConnectorsException(
                 sprintf('Unknown subscription type "%s"', $arr[HubspotSystem::SUBSCRIPTION_TYPE_KEY]),
@@ -141,7 +141,7 @@ class HubspotGetContactConnector implements ConnectorInterface
         $responseBody                                       = json_decode($response->getBody(), TRUE);
         $responseBody[HubspotSystem::SUBSCRIPTION_TYPE_KEY] = $body[HubspotSystem::SUBSCRIPTION_TYPE_KEY];
 
-        $dto->setData($response->getBody());
+        $dto->setData(json_encode($responseBody));
 
         return $dto;
     }

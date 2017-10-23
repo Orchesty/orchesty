@@ -18,7 +18,7 @@ use Tests\DatabaseTestCaseAbstract;
  *
  * @package Tests\Integration\AppBundle\Model\Systems\Impl\Hubspot\Connector
  */
-class HubspotSyncContactConnectorTest extends DatabaseTestCaseAbstract
+final class HubspotSyncContactConnectorTest extends DatabaseTestCaseAbstract
 {
 
     /**

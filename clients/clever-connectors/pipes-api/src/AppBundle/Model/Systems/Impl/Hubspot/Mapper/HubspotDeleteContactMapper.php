@@ -26,29 +26,14 @@ class HubspotDeleteContactMapper extends HubspotMapperAbstract implements Custom
     {
         $data = json_decode($dto->getData(), TRUE);
 
-        if (!array_key_exists(HubspotSystem::SUBSCRIPTION_TYPE_KEY, $data)) {
-            throw new CleverConnectorsException(
-                'Missing "subscriptionType" field in data.',
-                CleverConnectorsException::MISSING_DATA
-            );
-        }
-
-        $allowedTypes = [
-            HubspotSystem::SUBSCRIPTION_TYPE_CREATE,
-            HubspotSystem::SUBSCRIPTION_TYPE_UPDATE,
-        ];
+        $this->continueAfterDataCheck(HubspotSystem::SUBSCRIPTION_TYPE_KEY, $data);
 
         // we do not want creation/propertyChange to continue
-        if (in_array($data[HubspotSystem::SUBSCRIPTION_TYPE_KEY], $allowedTypes)) {
+        if ($data[HubspotSystem::SUBSCRIPTION_TYPE_KEY] != HubspotSystem::SUBSCRIPTION_TYPE_DELETE) {
             return $this->setHeadersToStop($dto);
         }
 
-        if (!array_key_exists(HubspotSystem::OBJECT_ID_KEY, $data)) {
-            throw new CleverConnectorsException(
-                'Missing required "objectId" field in data.',
-                CleverConnectorsException::MISSING_DATA
-            );
-        }
+        $this->continueAfterDataCheck(HubspotSystem::OBJECT_ID_KEY, $data);
 
         // TODO Hubspot does not make it possible to fetch email of deleted entity
 

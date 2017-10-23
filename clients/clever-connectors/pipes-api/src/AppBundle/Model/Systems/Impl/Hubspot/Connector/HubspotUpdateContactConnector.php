@@ -54,6 +54,10 @@ class HubspotUpdateContactConnector implements ConnectorInterface
             );
         }
 
+        if (array_key_exists('objectId', $arr)) {
+            $dto->setData(json_encode([$arr]));
+        }
+
         return $dto;
     }
 

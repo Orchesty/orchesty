@@ -20,7 +20,7 @@ use Tests\KernelTestCaseAbstract;
  *
  * @package Tests\Unit\AppBundle\Model\Systems\Impl\Hubspot\Connector
  */
-class HubspotGetContactConnectorTest extends KernelTestCaseAbstract
+final class HubspotGetContactConnectorTest extends KernelTestCaseAbstract
 {
 
     /**

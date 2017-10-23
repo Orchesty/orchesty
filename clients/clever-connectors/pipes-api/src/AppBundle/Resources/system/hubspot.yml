@@ -23,8 +23,16 @@ services:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.transport.async_curl_factory'
 
+    hbpf.custom_node.hubspot-create-contact-mapper:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\Mapper\HubspotCreateContactMapper
+        arguments:
+
     hbpf.custom_node.hubspot-update-contact-mapper:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\Mapper\HubspotUpdateContactMapper
+        arguments:
+
+    hbpf.custom_node.hubspot-sync-contact-mapper:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\Mapper\HubspotSyncContactMapper
         arguments:
 
     hbpf.custom_node.hubspot-delete-contact-mapper:
