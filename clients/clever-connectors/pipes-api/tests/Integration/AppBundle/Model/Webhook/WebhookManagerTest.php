@@ -3,7 +3,9 @@
 namespace Tests\Integration\AppBundle\Model\Webhook;
 
 use CleverConnectors\AppBundle\Document\Webhook;
+use CleverConnectors\AppBundle\Enum\SystemTypeEnum;
 use Tests\DatabaseTestCaseAbstract;
+use Tests\Integration\AppBundle\Model\Systems\Impl\NullSystem;
 use Tests\PrivateTrait;
 
 /**
@@ -30,7 +32,13 @@ final class WebhookManagerTest extends DatabaseTestCaseAbstract
      */
     public function testSubscribe(): void
     {
-        $system  = $this->container->get('systems.null.user.group');
+        $oauth2 = $this->container->get('hbpf.providers.oauth2_provider');
+        $system = $this->getMockBuilder(NullSystem::class)
+            ->setMethods(['getType'])
+            ->setConstructorArgs([
+                $oauth2,
+            ])->getMock();
+        $system->method('getType')->willReturn(SystemTypeEnum::UI_WEBHOOK);
         $webhook = $this->container->get('cc.webhook.manager');
 
         $this->container->get('cc.systems.manager')->installSystem('someUser', 'null.user.group', 'token');
