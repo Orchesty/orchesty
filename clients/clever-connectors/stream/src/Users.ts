@@ -29,6 +29,15 @@ class Users {
     }
 
     /**
+     *
+     * @param {string} token
+     * @return {boolean}
+     */
+    public isValidToken(token: string): boolean {
+        return token in this.users;
+    }
+
+    /**
      * Returns boolean whether user has valid token and if he can subscribe to given group
      *
      * @param {string} token

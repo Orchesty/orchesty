@@ -147,15 +147,15 @@ class StreamServer {
                     socket.join(groupId);
                     socket.emit(STREAM_EVENTS.INFO_MESSAGE, `You subscribed to group "${groupId}"`);
 
-                    this.removeTimeout(data.token);
-                    this.addTimeout(socket, data);
-
                     logger.info(`Token '${data.token}' subscribed to group '${groupId}'`);
                 } else {
                     socket.emit(STREAM_EVENTS.ERROR_MESSAGE, `You are not allowed to subscribe to group "${groupId}"`);
                     logger.warn(`Token '${data.token}' is not allowed to subscribe to group '${groupId}'`);
                 }
             });
+
+            this.removeTimeout(data.token);
+            this.addTimeout(socket, data);
         }
     }
 
@@ -165,17 +165,28 @@ class StreamServer {
      * @param {ISubscribeData} data
      */
     private unsubscribe(socket: SocketIO.Socket, data: ISubscribeData): void {
+        if (!this.users.isValidToken(data.token)) {
+            logger.warn(`Trying to unsubscribe non-existing token: "${data.token}"`);
+            return;
+        }
+
         if (data.groups && data.groups.length > 0) {
+            this.removeTimeout(data.token);
+
             data.groups.forEach((groupId) => {
                 socket.emit(STREAM_EVENTS.INFO_MESSAGE, `You unsubscribed from group "${groupId}"`);
                 socket.leave(groupId);
-                this.removeTimeout(data.token);
 
                 logger.info(`Token '${data.token}' unsubscribed from group '${groupId}'`);
             });
         }
     }
 
+    /**
+     *
+     * @param {SocketIO.Socket} socket
+     * @param {ISubscribeData} data
+     */
     private addTimeout(socket: SocketIO.Socket, data: ISubscribeData) {
         this.timeouts[data.token] = setTimeout(
             () => {
