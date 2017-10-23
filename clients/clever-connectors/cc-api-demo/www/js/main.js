@@ -3,6 +3,7 @@ $(function(){
 	// Stream client scripts
 	var socket = io(wsHost);
 	var token = "";
+	var groups = [];
 
 	socket.on('connect', function () {
 		console.log('Connection to websockets created.');
@@ -29,16 +30,17 @@ $(function(){
 
 	$("#subscribeStream").on("click", function() {
 		var userId = $("input#userId").val();
-		var groups = $("input#groups").val().split(',');
+		var groupsString = $("input#groups").val();
+		groups = groupsString.split(',');
 
 		$.ajax({
-			url: "subscription",
+			url: "subscribe",
 			type: "post",
 			contentType: "application/json",
-			data: JSON.stringify({userId: userId, groups: $("input#groups").val()})
+			data: JSON.stringify({userId: userId, groups: groupsString})
 		}).done(function(data) {
 			token = data.token;
-			socket.emit('subscribe', { userId: userId, groups: groups, token: token });
+			socket.emit('subscribe', { token: token, groups: groups });
 		});
 
 		$("form#subscribeForm").hide();
@@ -47,19 +49,16 @@ $(function(){
 	});
 
 	$("#unsubscribeStream").on("click", function() {
-		socket.emit('unsubscribe', { userId: userId, groups: groups, token: token });
+		socket.emit('unsubscribe', { token: token, groups: groups });
 
 		$.ajax({
-			url: "unsubscription",
+			url: "unsubscribe",
 			type: "post",
 			contentType: "application/json",
 			data: JSON.stringify({token: token})
 		}).done(function(data) {
-			token = data.token;
-			socket.emit('subscribe', { userId: userId, groups: groups, token: token });
+			// user unsubscribed
 		});
-
-		$("#streamMessages tbody").prepend("<tr><td>info</td><td>You unsubscribed</td></tr>")
 
 		$("form#subscribeForm").show();
 		$("button#subscribeStream").show();
@@ -69,7 +68,7 @@ $(function(){
 	function addMessage(type, message) {
 		var d = new Date();
 		$("#streamMessages tbody").prepend(
-			"<tr><td>"+type+"</td><td>" + message + "</td><td>"+d.toLocaleTimeString()+"</td></tr>"
+			"<tr><td>"+type+"</td><td>" + message + "</td><td>"+d.toString()+"</td></tr>"
 		);
 	}
 

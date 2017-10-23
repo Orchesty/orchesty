@@ -22,7 +22,6 @@ export interface IStreamMessage {
 
 export interface ISubscribeData {
     token: string;
-    userId: string;
     groups: string[];
 }
 
@@ -43,7 +42,7 @@ class StreamServer {
      */
     private static isMessageValid(body: any): boolean {
         if (!body.groups || !Array.isArray(body.groups)) {
-            logger.error(`Invalid stream message 'recipients'.`);
+            logger.error(`Invalid stream message 'groups'.`);
             return false;
         }
 
@@ -102,6 +101,7 @@ class StreamServer {
 
             socket.on(STREAM_EVENTS.UNSUBSCRIBE, (data: ISubscribeData) => {
                 logger.info(`Unsubscribe socket request ${socket.id}. Data: ${JSON.stringify(data)}`);
+                this.unsubscribe(socket, data);
             });
 
             socket.on("disconnect", (reason) => {
@@ -143,17 +143,17 @@ class StreamServer {
     private subscribe(socket: SocketIO.Socket, data: ISubscribeData): void {
         if (data.groups && data.groups.length > 0) {
             data.groups.forEach((groupId) => {
-                if (this.users.canAccessGroup(data.token, data.userId, groupId)) {
+                if (this.users.canAccessGroup(data.token, groupId)) {
                     socket.join(groupId);
                     socket.emit(STREAM_EVENTS.INFO_MESSAGE, `You subscribed to group "${groupId}"`);
 
                     this.removeTimeout(data.token);
                     this.addTimeout(socket, data);
 
-                    logger.info(`User '${data.userId}' subscribed to group '${groupId}'`);
+                    logger.info(`Token '${data.token}' subscribed to group '${groupId}'`);
                 } else {
                     socket.emit(STREAM_EVENTS.ERROR_MESSAGE, `You are not allowed to subscribe to group "${groupId}"`);
-                    logger.warn(`User '${data.userId}' is not allowed to subscribe to group '${groupId}'`);
+                    logger.warn(`Token '${data.token}' is not allowed to subscribe to group '${groupId}'`);
                 }
             });
         }
@@ -167,11 +167,11 @@ class StreamServer {
     private unsubscribe(socket: SocketIO.Socket, data: ISubscribeData): void {
         if (data.groups && data.groups.length > 0) {
             data.groups.forEach((groupId) => {
+                socket.emit(STREAM_EVENTS.INFO_MESSAGE, `You unsubscribed from group "${groupId}"`);
                 socket.leave(groupId);
-                socket.emit(STREAM_EVENTS.UNSUBSCRIBE, `You unsubscribed from group "${groupId}"`);
                 this.removeTimeout(data.token);
 
-                logger.info(`User '${data.userId}' unsubscribed from group '${groupId}'`);
+                logger.info(`Token '${data.token}' unsubscribed from group '${groupId}'`);
             });
         }
     }

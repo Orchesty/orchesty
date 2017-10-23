@@ -76,4 +76,5 @@ Send POST request with following body to **3030:/logout** route
 
 #### Connect to web sockets:
 **Server:** http://hostname:8080/stream
-**Subscribe message:** socket.emit('subscribe', { userId: "some-user-id", groups: ["groupName"], token: "uuid-token" });
+**Subscribe:** socket.emit('subscribe', { token: "uuid-token", groups: ["groupName"] });
+**Unsubscribe:** socket.emit('unsubscribe', { token: "uuid-token", groups: ["groupName"] });

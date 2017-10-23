@@ -32,19 +32,15 @@ class Users {
      * Returns boolean whether user has valid token and if he can subscribe to given group
      *
      * @param {string} token
-     * @param {string} userId
      * @param {string} group
      * @return {boolean}
      */
-    public canAccessGroup(token: string, userId: string, group: string): boolean {
+    public canAccessGroup(token: string, group: string): boolean {
         if (!(token in this.users)) {
             return false;
         }
 
         const user = this.users[token];
-        if (user.userId !== userId) {
-            return false;
-        }
 
         return user.groups.indexOf(group) >= 0;
     }

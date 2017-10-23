@@ -44,7 +44,7 @@ class StreamPresenter extends BasePresenter
      *
      * @return JsonResponse
      */
-    public function actionSubscription()
+    public function actionSubscribe()
     {
         $data = json_decode($this->getHttpRequest()->getRawBody(), TRUE);
 
@@ -57,7 +57,7 @@ class StreamPresenter extends BasePresenter
      *
      * @return JsonResponse
      */
-    public function actionUnsubscription()
+    public function actionUnsubscribe()
     {
         $data = json_decode($this->getHttpRequest()->getRawBody(), TRUE);
 
