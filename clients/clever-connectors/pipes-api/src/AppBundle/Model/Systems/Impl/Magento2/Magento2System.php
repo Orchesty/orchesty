@@ -148,12 +148,7 @@ class Magento2System implements OAuth2Interface
      */
     public function getRequestDto(SystemInstall $systemInstall, string $method): RequestDto
     {
-        if (!$this->isAuthorized($systemInstall)) {
-            throw new SystemException(
-                'Magento2 is not authorized.',
-                SystemException::SYSTEM_IS_UNAUTHORIZED
-            );
-        }
+        $this->continueOnAuthorized($systemInstall);
 
         $sett = $systemInstall->getSettings();
         $dto  = new RequestDto($method, new Uri($sett[self::SYSTEM_URL]));

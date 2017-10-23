@@ -30,10 +30,7 @@ class HubspotMapperAbstract
         }
 
         if ($message != '') {
-            throw new CleverConnectorsException(
-                'Missing "properties" field in data.',
-                CleverConnectorsException::MISSING_DATA
-            );
+            throw new CleverConnectorsException($message, CleverConnectorsException::MISSING_DATA);
         }
     }
 

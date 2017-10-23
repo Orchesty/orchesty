@@ -19,6 +19,7 @@ use DateTimeZone;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Authorization\Provider\Dto\OAuth2Dto;
 use Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider;
+use Hanaboso\PipesFramework\Authorization\Utils\ScopeFormatter;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 
@@ -145,7 +146,7 @@ class HubspotSystem implements WebhookSystemInterface, OAuth2Interface
     {
         $dto = $this->getDto($systemInstall);
 
-        $this->provider->authorize($dto, $this->scopes);
+        $this->provider->authorize($dto, $this->scopes, ScopeFormatter::SPACE);
     }
 
     /**
@@ -163,8 +164,6 @@ class HubspotSystem implements WebhookSystemInterface, OAuth2Interface
 
         $systemInstall->setExpires($expires);
         $this->setSettings($systemInstall, $arr);
-
-        // TODO: set webhook url via api
 
         return $systemInstall;
     }
@@ -246,9 +245,9 @@ class HubspotSystem implements WebhookSystemInterface, OAuth2Interface
     {
         $this->continueOnAuthorized($systemInstall);
 
-        $sett = $systemInstall->getSettings();
-        $url  = sprintf($subscription->getSubscribeUrl(), $sett[self::APP_ID], self::HAPI_KEY, self::USER_ID);
-        $dto  = new RequestDto('POST', new Uri($url));
+        $sett       = $systemInstall->getSettings();
+        $requestUrl = sprintf($subscription->getSubscribeUrl(), $sett[self::APP_ID], self::HAPI_KEY, self::USER_ID);
+        $dto        = new RequestDto('POST', new Uri($requestUrl));
 
         $body = [
             'subscriptionDetails' => $subscription->getParams(),
@@ -339,8 +338,8 @@ class HubspotSystem implements WebhookSystemInterface, OAuth2Interface
     private function getHeaders(SystemInstall $systemInstall): array
     {
         return [
-            'X-Hubspot-Access-Token' => $systemInstall->getSettings()[OAuth2Provider::ACCESS_TOKEN],
-            'Content-Type'           => 'application/json',
+            'Authorization' => 'Bearer ' . $systemInstall->getSettings()[OAuth2Provider::ACCESS_TOKEN],
+            'Content-Type'  => 'application/json',
         ];
     }
 

@@ -26,7 +26,7 @@ final class ShopifySyncConnectorTest extends DatabaseTestCaseAbstract
      */
     public function testProcessBatch(): void
     {
-        //$this->markTestSkipped();
+        $this->markTestSkipped();
         $connector = $this->container->get('hbpf.connector.shopify-sync-customer-connector');
 
         $topology = (new Topology())->setName('Topology');

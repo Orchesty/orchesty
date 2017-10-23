@@ -88,12 +88,12 @@ final class ProcessDto
     }
 
     /**
-     * @param string      $key
-     * @param null|string $default
+     * @param string     $key
+     * @param null|mixed $default
      *
-     * @return null|string
+     * @return null|mixed
      */
-    public function getHeader(string $key, ?string $default = NULL): ?string
+    public function getHeader(string $key, $default = NULL)
     {
         return $this->headers[$key] ?? $default;
     }

@@ -100,9 +100,7 @@ class ZendeskSystem implements SystemInterface, AuthorizationInterface
      */
     public function getRequestDto(SystemInstall $systemInstall, string $method): RequestDto
     {
-        if (!$this->isAuthorized($systemInstall)) {
-            throw new SystemException('Zendesk is unauthorized.', SystemException::SYSTEM_IS_UNAUTHORIZED);
-        }
+        $this->continueOnAuthorized($systemInstall);
 
         $sett = $systemInstall->getSettings();
         $dto  = new RequestDto('GET', new Uri(sprintf(self::BASE_URL, $sett[self::DOMAIN])));

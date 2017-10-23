@@ -26,7 +26,12 @@ class HubspotDeleteContactMapper extends HubspotMapperAbstract implements Custom
     {
         $data = json_decode($dto->getData(), TRUE);
 
-        $this->continueAfterBasicDataCheck($data);
+        if (!array_key_exists(HubspotSystem::SUBSCRIPTION_TYPE_KEY, $data)) {
+            throw new CleverConnectorsException(
+                'Missing "subscriptionType" field in data.',
+                CleverConnectorsException::MISSING_DATA
+            );
+        }
 
         $allowedTypes = [
             HubspotSystem::SUBSCRIPTION_TYPE_CREATE,
@@ -38,9 +43,9 @@ class HubspotDeleteContactMapper extends HubspotMapperAbstract implements Custom
             return $this->setHeadersToStop($dto);
         }
 
-        if (!array_key_exists('vid', $data)) {
+        if (!array_key_exists(HubspotSystem::OBJECT_ID_KEY, $data)) {
             throw new CleverConnectorsException(
-                'Missing required "vid" field in data.',
+                'Missing required "objectId" field in data.',
                 CleverConnectorsException::MISSING_DATA
             );
         }
@@ -49,8 +54,8 @@ class HubspotDeleteContactMapper extends HubspotMapperAbstract implements Custom
 
         $obj = new CMSubscriber();
         $obj
-            ->setForeignId($data['vid'])
-            ->setEmail((string) $data['vid'])
+            ->setForeignId($data[HubspotSystem::OBJECT_ID_KEY])
+            ->setEmail((string) $data[HubspotSystem::OBJECT_ID_KEY])
             ->setReactivate(FALSE);
 
         return $dto->setData(json_encode($obj->toArray()));

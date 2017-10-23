@@ -95,9 +95,7 @@ class ShipstationSystem implements AuthorizationInterface
      */
     public function getRequestDto(SystemInstall $systemInstall, string $method): RequestDto
     {
-        if (!$this->isAuthorized($systemInstall)) {
-            throw new SystemException('Shipstation is not Authorized!', SystemException::SYSTEM_IS_UNAUTHORIZED);
-        }
+        $this->continueOnAuthorized($systemInstall);
 
         $settings      = $systemInstall->getSettings();
         $authorization = sprintf('%s:%s', $settings[self::API_KEY], $settings[self::API_SECRET]);

@@ -35,7 +35,7 @@ class HubspotUpdateContactMapper extends HubspotMapperAbstract implements Custom
 
         $properties = $data['properties'];
 
-        if (!array_key_exists('email', $properties)) {
+        if (!array_key_exists('email', $properties) || !array_key_exists('value', $properties['email'])) {
             throw new CleverConnectorsException(
                 'Missing required "email" field in data.',
                 CleverConnectorsException::MISSING_DATA

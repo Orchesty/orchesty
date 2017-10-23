@@ -9,7 +9,7 @@
 
 namespace Tests\Unit\Authorization\Utils;
 
-use Hanaboso\PipesFramework\Authorization\Utils\ScopeFormater;
+use Hanaboso\PipesFramework\Authorization\Utils\ScopeFormatter;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -28,7 +28,7 @@ final class ScopeFormaterTest extends TestCase
      */
     public function testGetScopes(array $scopes, string $result): void
     {
-        $scopes = ScopeFormater::getScopes($scopes);
+        $scopes = ScopeFormatter::getScopes($scopes);
 
         self::assertEquals($result, $scopes);
     }

@@ -11,7 +11,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
-use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
+use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
 
@@ -36,18 +36,18 @@ class HubspotGetContactConnector implements ConnectorInterface
     private $systemInstallRepository;
 
     /**
-     * @var CurlManager
+     * @var CurlManagerInterface
      */
     private $curlManager;
 
     /**
      * HubspotSyncConnector constructor.
      *
-     * @param HubspotSystem   $system
-     * @param DocumentManager $dm
-     * @param CurlManager     $curlManager
+     * @param HubspotSystem        $system
+     * @param DocumentManager      $dm
+     * @param CurlManagerInterface $curlManager
      */
-    public function __construct(HubspotSystem $system, DocumentManager $dm, CurlManager $curlManager)
+    public function __construct(HubspotSystem $system, DocumentManager $dm, CurlManagerInterface $curlManager)
     {
         $this->system                  = $system;
         $this->curlManager             = $curlManager;

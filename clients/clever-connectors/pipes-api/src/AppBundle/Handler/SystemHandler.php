@@ -89,11 +89,7 @@ class SystemHandler
      */
     public function getUserSystem(string $user, string $systemKey): array
     {
-        /** @var SystemInstall $systemInstall */
-        $systemInstall = $this->dm->getRepository(SystemInstall::class)->findOneBy([
-            'user'   => $user,
-            'system' => $systemKey,
-        ]);
+        $systemInstall = $this->manager->getSystemInstall($user, $systemKey);
 
         return $this->manager->getUserSystem($systemInstall);
     }
@@ -114,6 +110,7 @@ class SystemHandler
             'user'   => $user,
             'system' => $system,
         ]);
+
         if ($systemInstall) {
             throw new CleverConnectorsException(
                 'Requested system has already been installed for current user.',

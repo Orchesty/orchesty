@@ -1,0 +1,158 @@
+<?php declare(strict_types=1);
+
+namespace Tests\Unit\AppBundle\Model\Systems\Impl\Hubspot\Mapper;
+
+use CleverConnectors\AppBundle\Enum\CleverFieldsEnum;
+use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
+use CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\Mapper\HubspotDeleteContactMapper;
+use CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\Mapper\HubspotUpdateContactMapper;
+use CleverConnectors\AppBundle\Utils\CMHeaders;
+use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Nette\Utils\Json;
+use Tests\ConnectorTestCaseAbstract;
+
+/**
+ * Class HubspotDeleteContactMapperTest
+ *
+ * @package Tests\Unit\AppBundle\Model\Systems\Impl\Hubspot\Mapper
+ */
+class HubspotDeleteContactMapperTest extends ConnectorTestCaseAbstract
+{
+
+    /**
+     * @var HubspotDeleteContactMapper|object
+     */
+    private $mapper;
+
+    /**
+     * @covers HubspotDeleteContactMapper::process()
+     */
+    public function testProcess(): void
+    {
+        $dto = (new ProcessDto())
+            ->setData($this->getRequest('HubspotDeleteContactMapper.json'))
+            ->setHeaders([CMHeaders::createKey(CMHeaders::RESULT_CODE) => '0']);
+
+        $res      = $this->getMapper()->process($dto);
+        $response = Json::decode($res->getData(), TRUE);
+
+        $this->assertEquals([
+            CleverFieldsEnum::EMAIL      => 1246965,
+            CleverFieldsEnum::FOREIGN_ID => 1246965,
+            CleverFieldsEnum::FIRST_NAME => '',
+            CleverFieldsEnum::LAST_NAME  => '',
+            CleverFieldsEnum::REACTIVATE => FALSE,
+        ], $response);
+
+        $resultCode = $res->getHeader(CMHeaders::createKey(CMHeaders::RESULT_CODE));
+
+        self::assertEquals(0, $resultCode);
+    }
+
+    /**
+     * @covers HubspotUpdateContactMapper::process()
+     */
+    public function testProcessFail(): void
+    {
+        $this->expectException(CleverConnectorsException::class);
+        $this->expectExceptionCode(CleverConnectorsException::MISSING_DATA);
+
+        $this->getMapper()->process((new ProcessDto())->setData(json_encode([])))->getData();
+
+        $this->expectException(CleverConnectorsException::class);
+        $this->expectExceptionCode(CleverConnectorsException::MISSING_DATA);
+
+        $data = [
+            'subscriptionType' => '',
+            'objectId'         => 123,
+        ];
+
+        $this->getMapper()->process((new ProcessDto())->setData(json_encode($data)))->getData();
+    }
+
+    /**
+     *
+     */
+    public function testProcessFail2(): void
+    {
+        $data = [
+            'subscriptionType' => '',
+            'objectId'         => 123,
+        ];
+
+        $this->getMapper()->process((new ProcessDto())->setData(json_encode($data)))->getData();
+
+        unset($data['subscriptionType']);
+
+        $this->expectException(CleverConnectorsException::class);
+        $this->expectExceptionCode(CleverConnectorsException::MISSING_DATA);
+
+        $this->getMapper()->process((new ProcessDto())->setData(json_encode($data)))->getData();
+    }
+
+    /**
+     *
+     */
+    public function testProcessFail3(): void
+    {
+        $data = [
+            'subscriptionType' => '',
+        ];
+
+        $this->expectException(CleverConnectorsException::class);
+        $this->expectExceptionCode(CleverConnectorsException::MISSING_DATA);
+
+        $this->getMapper()->process((new ProcessDto())->setData(json_encode($data)))->getData();
+    }
+
+    /**
+     *
+     */
+    public function testProcessSetHeadersToStop(): void
+    {
+        $data = [
+            'subscriptionType' => 'contact.creation',
+            'objectId'         => 123,
+        ];
+
+        $dto        = (new ProcessDto())
+            ->setData(json_encode($data))
+            ->setHeaders([CMHeaders::createKey(CMHeaders::RESULT_CODE) => '0']);
+        $res        = $this->getMapper()->process($dto);
+        $resultCode = $res->getHeader(CMHeaders::createKey(CMHeaders::RESULT_CODE));
+
+        self::assertEquals(1003, $resultCode);
+    }
+
+    /**
+     *
+     */
+    public function testProcessSetHeadersToStop2(): void
+    {
+        $data = [
+            'subscriptionType' => 'contact.propertyChange',
+            'objectId'         => 123,
+        ];
+
+        $dto        = (new ProcessDto())
+            ->setData(json_encode($data))
+            ->setHeaders([CMHeaders::createKey(CMHeaders::RESULT_CODE) => '0']);
+        $res        = $this->getMapper()->process($dto);
+        $resultCode = $res->getHeader(CMHeaders::createKey(CMHeaders::RESULT_CODE));
+
+        self::assertEquals(1003, $resultCode);
+    }
+
+    /**
+     * @return HubspotDeleteContactMapper|object
+     */
+    private function getMapper()
+    {
+        if (!$this->mapper) {
+            return $this->container->get('hbpf.custom_node.hubspot-delete-contact-mapper');
+        }
+
+        return $this->mapper;
+    }
+
+}

@@ -129,9 +129,7 @@ class ShopifySystem implements WebhookSystemInterface, OAuth2Interface
      */
     public function getSubscribeRequest(WebhookSubscribes $subs, SystemInstall $systemInstall, string $url): RequestDto
     {
-        if (!$this->isAuthorized($systemInstall)) {
-            throw new SystemException('Shopify is not Authorized!', SystemException::SYSTEM_IS_UNAUTHORIZED);
-        }
+        $this->continueOnAuthorized($systemInstall);
 
         $sett      = $systemInstall->getSettings();
         $systemUrl = $sett[self::SYSTEM_URL];
@@ -161,9 +159,7 @@ class ShopifySystem implements WebhookSystemInterface, OAuth2Interface
      */
     public function getUnsubscribeRequest(SystemInstall $systemInstall, string $webhookId): RequestDto
     {
-        if (!$this->isAuthorized($systemInstall)) {
-            throw new SystemException('Shopify is not Authorized!', SystemException::SYSTEM_IS_UNAUTHORIZED);
-        }
+        $this->continueOnAuthorized($systemInstall);
 
         $sett = $systemInstall->getSettings();
         $dto  = new RequestDto('DELETE',
@@ -272,9 +268,7 @@ class ShopifySystem implements WebhookSystemInterface, OAuth2Interface
      */
     public function refreshToken(SystemInstall $systemInstall): SystemInstall
     {
-        if (!$this->isAuthorized($systemInstall)) {
-            throw new SystemException('Shopify is not Authorized!', SystemException::SYSTEM_IS_UNAUTHORIZED);
-        }
+        $this->continueOnAuthorized($systemInstall);
 
         $settings = $systemInstall->getSettings();
         $dto      = $this->getDto($systemInstall);
@@ -297,9 +291,7 @@ class ShopifySystem implements WebhookSystemInterface, OAuth2Interface
      */
     public function getRequestDto(SystemInstall $systemInstall, string $method): RequestDto
     {
-        if (!$this->isAuthorized($systemInstall)) {
-            throw new SystemException('Shopify is not Authorized!', SystemException::SYSTEM_IS_UNAUTHORIZED);
-        }
+        $this->continueOnAuthorized($systemInstall);
 
         $sett = $systemInstall->getSettings();
 

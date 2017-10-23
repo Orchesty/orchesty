@@ -4,30 +4,27 @@ namespace Tests\Integration\AppBundle\Model\Systems\Impl\Hubspot\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
-use Hanaboso\PipesFramework\Commons\Crypt\CryptManager;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
-use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
 use Nette\Utils\Json;
-use React\EventLoop\Factory;
 use Tests\DatabaseTestCaseAbstract;
 
 /**
- * Class HubspotSyncContactConnectorTest
+ * Class HubspotGetContactConnectorTest
  *
  * @package Tests\Integration\AppBundle\Model\Systems\Impl\Hubspot\Connector
  */
-class HubspotSyncContactConnectorTest extends DatabaseTestCaseAbstract
+class HubspotGetContactConnectorTest extends DatabaseTestCaseAbstract
 {
 
     /**
      *
      */
-    public function testProcessBatch(): void
+    public function testProcessEvent(): void
     {
         $this->markTestSkipped();
-        $connector = $this->container->get('hbpf.connector.hubspot-sync-contact-connector');
+        $connector = $this->container->get('hbpf.connector.hubspot-get-contact-connector');
 
         $topology = (new Topology())->setName('Topology');
         $this->persistAndFlush($topology);
@@ -48,16 +45,8 @@ class HubspotSyncContactConnectorTest extends DatabaseTestCaseAbstract
         $this->persistAndFlush($system);
 
         $dtoData = [
-            'data' => [
-                'system_install' => [
-                    '_id'               => $system->getId(),
-                    'user'              => $system->getUser(),
-                    'token'             => $system->getToken(),
-                    'system'            => $system->getSystem(),
-                    'encryptedSettings' => CryptManager::encrypt($settings),
-                ],
-                'topology'       => ['name' => 'top-name-ever'],
-            ],
+            'objectId'         => 51,
+            'subscriptionType' => 'contact.creation',
         ];
 
         $node = (new Node())
@@ -70,26 +59,13 @@ class HubspotSyncContactConnectorTest extends DatabaseTestCaseAbstract
         $headers[CMHeaders::createKey(CMHeaders::SYSTEM_KEY)] = $system->getSystem();
 
         $processDto = (new ProcessDto())->setData(Json::encode($dtoData))->setHeaders($headers);
+        $dto        = $connector->processEvent($processDto);
+        $data       = json_decode($dto->getData(), TRUE);
 
-        $loop = Factory::create();
-
-        $process = $connector->processBatch($processDto, $loop, function (SuccessMessage $message): void {
-            $this->assertTrue(is_array(Json::decode($message->getData(), TRUE)));
-        });
-
-        $process->then(
-            function (): void {
-                $this->assertTrue(TRUE);
-            }
-        )->done();
-
-        $loop->run();
-
-        $this->dm->clear();
-        /** @var SystemInstall $sys */
-        $sys = $this->dm->getRepository(SystemInstall::class)->find($system->getId());
-        $this->assertInstanceOf(SystemInstall::class, $sys);
-        $this->assertTrue($sys->isSynchronized());
+        self::assertEquals(51, $data['vid']);
+        self::assertEquals('bh@hubspot.com', $data['properties']['email']['value']);
+        self::assertEquals('Brian', $data['properties']['firstname']['value']);
+        self::assertEquals('Halligan (Sample Contact)', $data['properties']['lastname']['value']);
     }
 
 }
