@@ -63,7 +63,7 @@ class BasecrmAcknowledgeContactConnectorTest extends ConnectorTestCaseAbstract
                         ->setHeaders([
                             'Accept'                => 'application/json',
                             'Content-Type'          => 'application/json',
-                            'User-Agent'            => 'asd',
+                            'User-Agent'            => 'Chrome/58.0.3029.96 Safari/537.36',
                             'Authorization'         => 'Bearer sdgfd6g465g46f456f',
                             'X-Basecrm-Device-UUID' => 'asdgdf546s45gfs6',
                         ]);

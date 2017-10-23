@@ -290,7 +290,15 @@ class SystemInstall
     public static function from(array $data): SystemInstall
     {
         $systemInstall     = new SystemInstall();
-        $systemInstall->id = $data[self::ID] ?? '';
+
+        if (array_key_exists(self::ID, $data)) {
+            if (is_array($data[self::ID])) {
+                $systemInstall->id = $data[self::ID]['$id'];
+            } else {
+                $systemInstall->id = $data[self::ID] ?? '';
+            }
+        }
+
         $systemInstall
             ->setUser($data[self::USER] ?? '')
             ->setToken($data[self::TOKEN] ?? '')
