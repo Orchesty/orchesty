@@ -1,0 +1,68 @@
+[
+  {
+    "id": 1,
+    "company": "",
+    "first_name": "User01",
+    "last_name": "User01",
+    "email": "User01@User01.com",
+    "phone": "",
+    "form_fields": null,
+    "date_created": "Tue, 17 Oct 2017 10:42:48 +0000",
+    "date_modified": "Tue, 17 Oct 2017 10:42:48 +0000",
+    "store_credit": "0.0000",
+    "registration_ip_address": "188.122.212.69",
+    "customer_group_id": 0,
+    "notes": "",
+    "tax_exempt_category": "",
+    "reset_pass_on_login": false,
+    "accepts_marketing": true,
+    "addresses": {
+      "url": "https://api.bigcommerce.com/stores/ukcfcghi/v2/customers/1/addresses",
+      "resource": "/customers/1/addresses"
+    }
+  },
+  {
+    "id": 3,
+    "company": "",
+    "first_name": "User02",
+    "last_name": "User02",
+    "email": "User02@User02.com",
+    "phone": "",
+    "form_fields": null,
+    "date_created": "Tue, 17 Oct 2017 11:06:33 +0000",
+    "date_modified": "Tue, 17 Oct 2017 11:06:33 +0000",
+    "store_credit": "0.0000",
+    "registration_ip_address": "188.122.212.69",
+    "customer_group_id": 0,
+    "notes": "",
+    "tax_exempt_category": "",
+    "reset_pass_on_login": false,
+    "accepts_marketing": true,
+    "addresses": {
+      "url": "https://api.bigcommerce.com/stores/ukcfcghi/v2/customers/3/addresses",
+      "resource": "/customers/3/addresses"
+    }
+  },
+  {
+    "id": 3,
+    "company": "",
+    "first_name": "User03",
+    "last_name": "User03",
+    "email": "User03@User03.com",
+    "phone": "",
+    "form_fields": null,
+    "date_created": "Tue, 17 Oct 2017 11:07:53 +0000",
+    "date_modified": "Tue, 17 Oct 2017 11:07:53 +0000",
+    "store_credit": "0.0000",
+    "registration_ip_address": "188.122.212.69",
+    "customer_group_id": 0,
+    "notes": "",
+    "tax_exempt_category": "",
+    "reset_pass_on_login": false,
+    "accepts_marketing": true,
+    "addresses": {
+      "url": "https://api.bigcommerce.com/stores/ukcfcghi/v2/customers/3/addresses",
+      "resource": "/customers/3/addresses"
+    }
+  }
+]

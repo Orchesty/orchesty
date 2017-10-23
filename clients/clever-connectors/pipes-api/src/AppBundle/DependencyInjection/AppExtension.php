@@ -37,6 +37,7 @@ class AppExtension extends Extension
         $loader->load('shopify.yml');
         $loader->load('salesforce.yml');
         $loader->load('wisepops.yml');
+        $loader->load('bigcommerce.yml');
         $loader->load('shipstation.yml');
         $loader->load('pipedrive.yml');
         $loader->load('zendesk.yml');

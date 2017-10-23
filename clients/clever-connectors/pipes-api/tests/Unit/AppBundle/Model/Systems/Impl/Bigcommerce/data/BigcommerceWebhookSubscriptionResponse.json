@@ -1,0 +1,11 @@
+{
+  "id": 123456789,
+  "client_id": "p7f4o1hfl1zdkz1bp1sy7u8qs0fq7q",
+  "store_hash": "ukcfcghi",
+  "scope": "store/customer/created",
+  "destination": "https://example.com",
+  "headers": null,
+  "is_active": true,
+  "created_at": 1508244843,
+  "updated_at": 1508244843
+}
