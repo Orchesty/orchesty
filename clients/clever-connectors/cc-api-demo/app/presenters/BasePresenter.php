@@ -10,4 +10,14 @@ use Nette;
  */
 abstract class BasePresenter extends Nette\Application\UI\Presenter
 {
+
+    public function beforeRender()
+    {
+        parent::beforeRender();
+        $this->template->menuItems = [
+            'Connectors' => 'Homepage:',
+            'Stream' => 'Stream:',
+        ];
+    }
+
 }

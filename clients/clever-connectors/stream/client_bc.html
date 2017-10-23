@@ -7,10 +7,10 @@
 
 	socket.on('connect', function () {
 		console.log('Connection to websockets created.');
-		socket.emit('subscribe', { userId: userId, groups: groups, token: token });
+		socket.emit('subscribe', { groups: groups, token: token });
 
 		// When user wants to unsubscribe, he send following message
-		// socket.emit('unsubscribe', { userId: userId, groups: groups, token: token });
+		// socket.emit('unsubscribe', { groups: groups, token: token });
 	});
 
 	socket.on('disconnect', function () {

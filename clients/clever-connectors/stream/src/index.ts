@@ -5,7 +5,7 @@ import Users from "./Users";
 const settings: IStreamServerSettings = {
     port: parseInt(process.env.STREAM_WS_PORT, 10) || 8080,
     namespace: "/stream",
-    subscribeTimeout: parseInt(process.env.STREAM_SUBSCRIBE_TIMEOUT, 10) || (5 * 60 * 1000) + 30 * 1000, // 5,5 min
+    subscribeTimeout: parseInt(process.env.STREAM_SUBSCRIBE_TIMEOUT, 10) || 5 * 60 * 1000,
     consumer: {
         queue: {
             name: process.env.STREAM_QUEUE || "stream",
