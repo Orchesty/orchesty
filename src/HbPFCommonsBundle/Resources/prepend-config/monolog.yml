@@ -6,34 +6,42 @@ monolog:
             type: service
             id: udp_handler
             level: info
+            channels: [authorization]
         commons:
             type: service
             id: udp_handler
             level: info
+            channels: [commons]
         connector:
             type: service
             id: udp_handler
             level: info
+            channels: [connector]
         ftp:
             type: service
             id: udp_handler
             level: info
+            channels: [ftp]
         mailer:
             type: service
             id: udp_handler
             level: info
+            channels: [mailer]
         parser_table:
             type: service
             id: udp_handler
             level: info
+            channels: [parser_table]
         user:
             type: service
             id: udp_handler
             level: info
+            channels: [user]
         rabbit-mq:
             type: service
             id: udp_handler
             level: info
+            channels: [rabbit-mq]
 
         # Handler for docker container
         stdout:

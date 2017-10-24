@@ -257,7 +257,7 @@ class StartingPoint implements LoggerAwareInterface
         $this->publishInitializeCounterProcess($channel, self::createCounterQueueName($topology), $headers, $node);
         $this->publishProcessMessage($channel, self::createQueueName($topology, $node), $headers, $content);
 
-        $this->logger->info('Starting point message', [
+        $this->logger->info('Starting point info message', [
             'correlation_id' => PipesHeaders::get(PipesHeaders::CORRELATION_ID, $headers->getHeaders()),
             'process_id'     => PipesHeaders::get(PipesHeaders::PROCESS_ID, $headers->getHeaders()),
             'parent_id'      => PipesHeaders::get(PipesHeaders::PARENT_ID, $headers->getHeaders()),
