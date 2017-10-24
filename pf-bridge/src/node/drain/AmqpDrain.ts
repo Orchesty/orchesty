@@ -149,10 +149,43 @@ class AmqpDrain extends ADrain implements IDrain, IPartialForwarder {
      */
     private forwardRepeat(message: JobMessage): void {
         const targetQueue: string = this.settings.repeater.queue.name;
-
         const headers = message.getHeaders();
-        headers.setPFHeader(Headers.REPEAT_QUEUE, this.settings.faucet.queue.name);
 
+        if (!targetQueue) {
+            message.setResult({code: ResultCode.REPEAT_INVALID_QUEUE, message: "Invalid repeat queue name"});
+            return this.forward(message);
+        }
+
+        if (!headers.hasPFHeader(Headers.REPEAT_INTERVAL)) {
+            message.setResult({
+                code: ResultCode.REPEAT_INVALID_INTERVAL,
+                message: `Missing "${Headers.REPEAT_INTERVAL}" header.`,
+            });
+            return this.forward(message);
+        }
+
+        if (!headers.hasPFHeader(Headers.REPEAT_HOPS) || !headers.hasPFHeader(Headers.REPEAT_MAX_HOPS)) {
+            message.setResult({
+                code: ResultCode.REPEAT_INVALID_HOPS,
+                message: `Missing or invalid repeat hops headers. Headers: ${JSON.stringify(headers.getRaw())}`,
+            });
+            return this.forward(message);
+        }
+
+        const actualHops = parseInt(headers.getPFHeader(Headers.REPEAT_HOPS), 10);
+        const maxHops = parseInt(headers.getPFHeader(Headers.REPEAT_MAX_HOPS), 10);
+
+        if (actualHops > maxHops) {
+            message.setResult({
+                code: ResultCode.REPEAT_MAX_HOPS_REACHED,
+                message: `Max repeat hops "${maxHops}" reached.`,
+            });
+            return this.forward(message);
+        }
+
+        // Send message to repeater
+        // TODO - forward message properties
+        headers.setPFHeader(Headers.REPEAT_QUEUE, this.settings.faucet.queue.name);
         const props = { headers: message.getHeaders().getRaw() };
 
         this.nonStandardPublisher.sendToQueue(targetQueue, message.getBody(), props);

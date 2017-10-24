@@ -9,6 +9,9 @@ export enum ResultCodeGroup {
     WORKER_ERROR = 4,
 }
 
+// Always sync this enum with following page:
+// https://hanaboso.atlassian.net/wiki/spaces/PIP/pages/105119850/Bridge-Worker+komunikace
+
 export enum ResultCode {
     // OK
     SUCCESS = 0,
@@ -33,6 +36,10 @@ export enum ResultCode {
     AMQPRPC_INVALID_MESSAGE_TYPE = 3007,
     INVALID_NON_STANDARD_CODE = 3008,
     INVALID_NON_STANDARD_TARGET_QUEUE = 3009,
+    REPEAT_INVALID_QUEUE = 3010,
+    REPEAT_INVALID_HOPS = 3011,
+    REPEAT_MAX_HOPS_REACHED = 3012,
+    REPEAT_INVALID_INTERVAL = 3013,
 
     // WORKER_ERRORS: 4000+
     WORKER_TIMEOUT = 4001,

@@ -125,7 +125,10 @@ class AmqpRpcWorker implements IWorker {
                 headers: headersToSend.getRaw(),
             },
         ).then(() => {
-            logger.info(`Worker[type='amqprpc'] sent request and is waiting for responses.`, logger.ctxFromMsg(msg));
+            logger.info(
+                `Worker[type='amqprpc'] sent request to "${this.settings.publish_queue.name}" queue.`,
+                logger.ctxFromMsg(msg),
+            );
         }).catch((err: Error) => {
             const context = logger.ctxFromMsg(msg);
             context.error = err;
