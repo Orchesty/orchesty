@@ -95,27 +95,27 @@ class WebhookSecurityListener implements EventSubscriberInterface
                 'Accept'    => 'application/json',
                 'X-Api-Key' => sprintf('%s:%s', $params['userId'], $params['token']),
             ]);
-//            try {
-//                $req = $this->curl->send($req, [
-//                    RequestOptions::CERT    => $this->secret['cert'],
-//                    RequestOptions::SSL_KEY => $this->secret['cert'],
-//                    RequestOptions::VERIFY  => $this->secret['ca'],
-//                ]);
-//
-//                $req  = $req->getStatusCode();
-//                $text = '';
-//            } catch (Exception $e) {
-//                $req  = 400;
-//                $text = $e->getMessage();
-//            }
-//
-//            if ($req != 200) {
-//                throw new CleverConnectorsException(
-//                    sprintf('User [%s] with token [%s] was not found. || ' . $text,
-//                        $params['userId'], $params['token']),
-//                    CleverConnectorsException::USER_TOKEN_NOT_EXISTS
-//                );
-//            }
+            try {
+                $req = $this->curl->send($req, [
+                    RequestOptions::CERT    => $this->secret['cert'],
+                    RequestOptions::SSL_KEY => $this->secret['cert'],
+                    RequestOptions::VERIFY  => $this->secret['ca'],
+                ]);
+
+                $req  = $req->getStatusCode();
+                $text = '';
+            } catch (Exception $e) {
+                $req  = 400;
+                $text = $e->getMessage();
+            }
+
+            if ($req != 200) {
+                throw new CleverConnectorsException(
+                    sprintf('User [%s] with token [%s] was not found. || ' . $text,
+                        $params['userId'], $params['token']),
+                    CleverConnectorsException::USER_TOKEN_NOT_EXISTS
+                );
+            }
         }
     }
 

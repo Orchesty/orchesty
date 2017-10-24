@@ -6,6 +6,7 @@ use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\Connector\HubspotGetContactConnector;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\HubspotSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
+use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
@@ -40,7 +41,7 @@ final class HubspotGetContactConnectorTest extends KernelTestCaseAbstract
 
         /** @var HubspotGetContactConnector $syncConn */
         $syncConn   = $this->mockSync();
-        $resultDto  = $syncConn->processEvent($processDto);
+        $resultDto  = $syncConn->processAction($processDto);
         $resultData = json_decode($resultDto->getData(), TRUE);
 
         self::assertEquals(123, $resultData['vid']);
@@ -68,7 +69,7 @@ final class HubspotGetContactConnectorTest extends KernelTestCaseAbstract
 
         /** @var HubspotGetContactConnector $syncConn */
         $syncConn = $this->mockSync();
-        $syncConn->processEvent($processDto);
+        $syncConn->processAction($processDto);
     }
 
     /**
@@ -90,7 +91,7 @@ final class HubspotGetContactConnectorTest extends KernelTestCaseAbstract
 
         /** @var HubspotGetContactConnector $syncConn */
         $syncConn = $this->mockSync();
-        $syncConn->processEvent($processDto);
+        $syncConn->processAction($processDto);
     }
 
     /**
@@ -113,7 +114,7 @@ final class HubspotGetContactConnectorTest extends KernelTestCaseAbstract
 
         /** @var HubspotGetContactConnector $syncConn */
         $syncConn = $this->mockSync();
-        $syncConn->processEvent($processDto);
+        $syncConn->processAction($processDto);
     }
 
     /**
@@ -128,15 +129,15 @@ final class HubspotGetContactConnectorTest extends KernelTestCaseAbstract
 
         $processDto = new ProcessDto();
         $processDto
-            ->setHeaders([])
+            ->setHeaders([CMHeaders::createKey(CMHeaders::RESULT_CODE) => 0])
             ->setData(json_encode($dtoData));
 
-        self::expectException(CleverConnectorsException::class);
-        self::expectExceptionCode(CleverConnectorsException::DISALLOWED_SUBSCRIPTION_TYPE);
-
         /** @var HubspotGetContactConnector $syncConn */
-        $syncConn = $this->mockSync();
-        $syncConn->processEvent($processDto);
+        $syncConn   = $this->mockSync();
+        $res        = $syncConn->processAction($processDto);
+        $resultCode = $res->getHeader(CMHeaders::createKey(CMHeaders::RESULT_CODE));
+
+        self::assertEquals(1003, $resultCode);
     }
 
     /**

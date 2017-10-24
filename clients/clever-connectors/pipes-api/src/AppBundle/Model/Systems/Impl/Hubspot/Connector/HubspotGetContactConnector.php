@@ -107,10 +107,7 @@ class HubspotGetContactConnector implements ConnectorInterface
         if (in_array($arr[HubspotSystem::SUBSCRIPTION_TYPE_KEY], $allowedTypes)) {
             $dto = $this->getContactProfile($dto, $arr);
         } elseif ($arr[HubspotSystem::SUBSCRIPTION_TYPE_KEY] == HubspotSystem::SUBSCRIPTION_TYPE_DELETE) {
-//            throw new CleverConnectorsException(
-//                sprintf('Disallowed subscription type "contact.deletion" for connector %s.', get_class($this)),
-//                CleverConnectorsException::DISALLOWED_SUBSCRIPTION_TYPE
-//            );
+            $dto = $this->setHeadersToStop($dto);
         } else {
             throw new CleverConnectorsException(
                 sprintf('Unknown subscription type "%s"', $arr[HubspotSystem::SUBSCRIPTION_TYPE_KEY]),
@@ -142,6 +139,21 @@ class HubspotGetContactConnector implements ConnectorInterface
         $responseBody[HubspotSystem::SUBSCRIPTION_TYPE_KEY] = $body[HubspotSystem::SUBSCRIPTION_TYPE_KEY];
 
         $dto->setData(json_encode($responseBody));
+
+        return $dto;
+    }
+
+    /**
+     * @param ProcessDto $dto
+     *
+     * @return ProcessDto
+     */
+    protected function setHeadersToStop(ProcessDto $dto): ProcessDto
+    {
+        $headers       = $dto->getHeaders();
+        $key           = CMHeaders::createKey(CMHeaders::RESULT_CODE);
+        $headers[$key] = 1003;
+        $dto->setHeaders($headers);
 
         return $dto;
     }

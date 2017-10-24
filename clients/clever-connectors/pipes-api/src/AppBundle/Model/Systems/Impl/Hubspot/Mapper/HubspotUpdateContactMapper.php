@@ -27,16 +27,16 @@ class HubspotUpdateContactMapper extends HubspotMapperAbstract implements Custom
         $data = json_decode($dto->getData(), TRUE);
 
         $this->continueAfterDataCheck(HubspotSystem::SUBSCRIPTION_TYPE_KEY, $data);
-        $this->continueAfterDataCheck('properties', $data);
 
         // we do not want creation/deletion to continue
         if ($data[HubspotSystem::SUBSCRIPTION_TYPE_KEY] != HubspotSystem::SUBSCRIPTION_TYPE_UPDATE) {
             return $this->setHeadersToStop($dto);
         }
 
-        $properties = $data['properties'];
+        $this->continueAfterDataCheck('properties', $data);
 
-        $email = $this->getEmail($data);
+        $properties = $data['properties'];
+        $email      = $this->getEmail($data);
 
         $obj = new CMSubscriber();
         $obj->setEmail($email);
