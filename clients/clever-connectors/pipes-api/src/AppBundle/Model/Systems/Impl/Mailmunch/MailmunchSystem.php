@@ -8,11 +8,11 @@ use CleverConnectors\AppBundle\Model\Form\Field;
 use CleverConnectors\AppBundle\Model\Form\Form;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\AuthorizationInterface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\Traits\AuthorizationTrait;
+use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Webhook\Traits\WebhookSystemTrait;
 use CleverConnectors\AppBundle\Model\Webhook\WebhookSubscribes;
 use CleverConnectors\AppBundle\Model\Webhook\WebhookSystemInterface;
 use CleverConnectors\AppBundle\Utils\WebhookUtils;
-use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 
@@ -108,11 +108,13 @@ class MailmunchSystem implements WebhookSystemInterface, AuthorizationInterface
      * @param SystemInstall $systemInstall
      * @param string        $method
      *
-     * @return RequestDto
+     * @return RequestDto|void
+     * @throws SystemException
      */
     public function getRequestDto(SystemInstall $systemInstall, string $method): RequestDto
     {
-        return new RequestDto('', new Uri());
+        throw new SystemException('Method [getRequestDto] not implemented in Mailmunch system.',
+            SystemException::SYSTEM_METHOD_NOT_FOUND);
     }
 
     /**
@@ -148,7 +150,8 @@ class MailmunchSystem implements WebhookSystemInterface, AuthorizationInterface
      * @param SystemInstall     $systemInstall
      * @param string            $url
      *
-     * @return RequestDto
+     * @return RequestDto|void
+     * @throws SystemException
      */
     public function getSubscribeRequest(
         WebhookSubscribes $subscription,
@@ -156,28 +159,33 @@ class MailmunchSystem implements WebhookSystemInterface, AuthorizationInterface
         string $url
     ): RequestDto
     {
-        return new RequestDto('', new Uri());
+        throw new SystemException('Method [getSubscribeRequest] not implemented in Mailmunch system.',
+            SystemException::SYSTEM_METHOD_NOT_FOUND);
     }
 
     /**
      * @param SystemInstall $systemInstall
      * @param string        $webhookId
      *
-     * @return RequestDto
+     * @return RequestDto|void
+     * @throws SystemException
      */
     public function getUnsubscribeRequest(SystemInstall $systemInstall, string $webhookId): RequestDto
     {
-        return new RequestDto('', new Uri());
+        throw new SystemException('Method [getUnsubscribeRequest] not implemented in Mailmunch system.',
+            SystemException::SYSTEM_METHOD_NOT_FOUND);
     }
 
     /**
      * @param ResponseDto $response
      *
-     * @return string
+     * @return string|void
+     * @throws SystemException
      */
     public function getWebhookId(ResponseDto $response): string
     {
-        return '';
+        throw new SystemException('Method [getWebhookId] not implemented in Mailmunch system.',
+            SystemException::SYSTEM_METHOD_NOT_FOUND);
     }
 
 }
