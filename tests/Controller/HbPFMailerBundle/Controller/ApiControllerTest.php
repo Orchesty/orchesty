@@ -41,10 +41,11 @@ class ApiControllerTest extends ControllerTestCaseAbstract
             'subject' => '',
             'content' => '',
         ]);
+        $content = json_decode($response->content);
 
         $this->assertEquals(500, $response->status);
-        $this->assertEquals(MessageBuilderException::class, $response->content->type);
-        $this->assertEquals(MessageBuilderException::INVALID_DATA, $response->content->error_code);
+        $this->assertEquals(MessageBuilderException::class, $content->type);
+        $this->assertEquals(2001, $content->error_code);
     }
 
     /**
@@ -53,10 +54,11 @@ class ApiControllerTest extends ControllerTestCaseAbstract
     public function testSendNotFoundMailer(): void
     {
         $response = $this->sendPost('/mailer/unknown/send', []);
+        $content = json_decode($response->content);
 
         $this->assertEquals(500, $response->status);
-        $this->assertEquals(MailerException::class, $response->content->type);
-        $this->assertEquals(MailerException::BUILDER_SERVICE_NOT_FOUND, $response->content->error_code);
+        $this->assertEquals(MailerException::class, $content->type);
+        $this->assertEquals(2001, $content->error_code);
     }
 
     /**
@@ -86,10 +88,11 @@ class ApiControllerTest extends ControllerTestCaseAbstract
             'subject' => '',
             'content' => '',
         ]);
+        $content = json_decode($response->content);
 
         $this->assertEquals(500, $response->status);
-        $this->assertEquals(MessageBuilderException::class, $response->content->type);
-        $this->assertEquals(MessageBuilderException::INVALID_DATA, $response->content->error_code);
+        $this->assertEquals(MessageBuilderException::class, $content->type);
+        $this->assertEquals(2001, $content->error_code);
     }
 
     /**
@@ -98,10 +101,11 @@ class ApiControllerTest extends ControllerTestCaseAbstract
     public function testSendTestNotFoundMailer(): void
     {
         $response = $this->sendPost('/mailer/unknown/send', []);
+        $content = json_decode($response->content);
 
         $this->assertEquals(500, $response->status);
-        $this->assertEquals(MailerException::class, $response->content->type);
-        $this->assertEquals(MailerException::BUILDER_SERVICE_NOT_FOUND, $response->content->error_code);
+        $this->assertEquals(MailerException::class, $content->type);
+        $this->assertEquals(2001, $content->error_code);
     }
 
 }
