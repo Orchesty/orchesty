@@ -47,6 +47,7 @@ class AppExtension extends Extension
         $loader->load('basecrm.yml');
         $loader->load('mailmunch.yml');
         $loader->load('zoho.yml');
+        $loader->load('quickbooks.yml');
     }
 
 }

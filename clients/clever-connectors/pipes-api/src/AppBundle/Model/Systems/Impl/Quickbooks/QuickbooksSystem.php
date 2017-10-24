@@ -1,0 +1,219 @@
+<?php
+
+namespace CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks;
+
+use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Enum\SystemTypeEnum;
+use CleverConnectors\AppBundle\Model\Systems\Authorizations\OAuth2Interface;
+use CleverConnectors\AppBundle\Model\Systems\Authorizations\Traits\AuthorizationTrait;
+use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
+use CleverConnectors\AppBundle\Utils\AuthorizationUtils;
+use DateTime;
+use GuzzleHttp\Psr7\Uri;
+use Hanaboso\PipesFramework\Authorization\Provider\Dto\OAuth2Dto;
+use Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
+
+/**
+ * Created by PhpStorm.
+ * User: michal.bartl
+ * Date: 10/20/17
+ * Time: 3:03 PM
+ */
+class QuickbooksSystem implements OAuth2Interface
+{
+
+    use AuthorizationTrait;
+
+    private const CLIENT_ID     = 'Q0VXajrrB3de6wDpxacbHRq1u1qWz4QHPjt5ypHzd49IPr36xa';
+    private const CLIENT_SECRET = 'NUVTEc0Q13kP3tD2lHmwfHfuJplnpYwxsRA7FXJ8';
+    private const AUTHORIZE_URL = 'https://appcenter.intuit.com/connect/oauth2';
+    private const TOKEN_URL     = 'https://oauth.platform.intuit.com/oauth2/v1/tokens/bearer';
+    private const API_URL       = 'https://quickbooks.api.intuit.com/v3/company/%s/';
+
+    private const REALM_ID_KEY = 'realmId';
+
+    /**
+     * @var array
+     */
+    private $scopes = [
+        'com.intuit.quickbooks.accounting',
+    ];
+
+    /**
+     * @var OAuth2Provider
+     */
+    private $provider;
+
+    /**
+     * SalesforceSystem constructor.
+     *
+     * @param OAuth2Provider $provider
+     */
+    public function __construct(OAuth2Provider $provider)
+    {
+        $this->provider = $provider;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAuthorizationType(): string
+    {
+        return self::OAUTH2;
+    }
+
+    /**
+     * @return string
+     */
+    public function getType(): string
+    {
+        return SystemTypeEnum::CRON;
+    }
+
+    /**
+     * @return string
+     */
+    public function getKey(): string
+    {
+        return 'quickbooks';
+    }
+
+    /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return 'Quickbooks';
+    }
+
+    /**
+     * @return string
+     */
+    public function getDescription(): string
+    {
+        return 'Quickbooks system';
+    }
+
+    /**
+     * @return string
+     */
+    public function getLogo(): string
+    {
+        return 'Logo';
+    }
+
+    /**
+     * @param SystemInstall $systemInstall
+     *
+     * @return bool
+     */
+    public function isAuthorized(SystemInstall $systemInstall): bool
+    {
+        return !empty($systemInstall->getSettings()[OAuth2Provider::ACCESS_TOKEN]);
+    }
+
+    /**
+     * @param SystemInstall $systemInstall
+     */
+    public function authorize(SystemInstall $systemInstall): void
+    {
+        $dto = $this->createDto($systemInstall);
+        $this->provider->authorize($dto, $this->scopes);
+    }
+
+    /**
+     * @param SystemInstall $systemInstall
+     * @param array         $data
+     *
+     * @return SystemInstall
+     */
+    public function saveToken(SystemInstall $systemInstall, array $data): SystemInstall
+    {
+        $arr = $this->provider->getAccessToken($this->createDto($systemInstall), $data);
+
+        $systemInstall->setExpires(new DateTime('+' . $arr['expires_in'] . ' seconds'));
+        $this->setSettings($systemInstall, $arr);
+
+        return $systemInstall;
+    }
+
+    /**
+     * @param SystemInstall $systemInstall
+     *
+     * @return SystemInstall
+     * @throws SystemException
+     */
+    public function refreshToken(SystemInstall $systemInstall): SystemInstall
+    {
+        if (!$this->isAuthorized($systemInstall)) {
+            throw new SystemException('Quickbooks is not authorized!', SystemException::SYSTEM_IS_UNAUTHORIZED);
+        }
+
+        $settings = $systemInstall->getSettings();
+        $dto      = $this->createDto($systemInstall);
+        $dto->setCustomAppDependencies($systemInstall->getUser(), $this->getKey());
+
+        $this->provider->refreshAccessToken(
+            $dto,
+            [OAuth2Provider::REFRESH_TOKEN => $settings[OAuth2Provider::REFRESH_TOKEN]]
+        );
+
+        return $systemInstall;
+    }
+
+    /**
+     * @param SystemInstall $systemInstall
+     * @param string        $method
+     *
+     * @return RequestDto
+     * @throws SystemException
+     */
+    public function getRequestDto(SystemInstall $systemInstall, string $method): RequestDto
+    {
+        if (!$this->isAuthorized($systemInstall)) {
+            throw new SystemException('Quickbooks is not authorized!', SystemException::SYSTEM_IS_UNAUTHORIZED);
+        }
+
+        $sett = $systemInstall->getSettings();
+
+        $url = sprintf(self::API_URL, $sett[self::REALM_ID_KEY]);
+        $dto = new RequestDto($method, new Uri($url));
+        $dto->setHeaders([
+            'Content-Type'  => 'application/json',
+            'Accept'        => 'application/json',
+            'Authorization' => 'Bearer ' . $sett[OAuth2Provider::ACCESS_TOKEN],
+        ]);
+
+        return $dto;
+    }
+
+    /**
+     * @param SystemInstall $systemInstall
+     *
+     * @return array
+     */
+    public function getSettingFields(SystemInstall $systemInstall): array
+    {
+        return [];
+    }
+
+    /**
+     * ---------------------------------------- HELPERS ---------------------------------------------
+     */
+
+    /**
+     * @param SystemInstall $systemInstall
+     *
+     * @return OAuth2Dto
+     */
+    private function createDto(SystemInstall $systemInstall): OAuth2Dto
+    {
+        $redirectUrl = AuthorizationUtils::generateUrl();
+
+        $dto = new OAuth2Dto(self::CLIENT_ID, self::CLIENT_SECRET, $redirectUrl, self::AUTHORIZE_URL, self::TOKEN_URL);
+        $dto->setCustomAppDependencies($systemInstall->getUser(), $systemInstall->getSystem());
+
+        return $dto;
+    }
+}

@@ -1,0 +1,24 @@
+services:
+    systems.pipedrive:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\QuickbooksSystem
+        arguments:
+
+    hbpf.connector.quickbooks-sync-customer-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\Connector\QuickbooksSyncCustomerConnector
+        arguments:
+
+    hbpf.connector.quickbooks-create-customer-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\Connector\QuickbooksCreateCustomerConnector
+        arguments:
+
+    hbpf.connector.quickbooks-update-customer-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\Connector\QuickbooksUpdateCustomerConnector
+        arguments:
+
+    hbpf.connector.quickbooks-delete-customer-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\Connector\QuickbooksDeleteCustomerConnector
+        arguments:
+
+    hbpf.custom_node.quickbooks-customer-mapper:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\Mapper\QuickbooksCustomerMapper
+        arguments:
