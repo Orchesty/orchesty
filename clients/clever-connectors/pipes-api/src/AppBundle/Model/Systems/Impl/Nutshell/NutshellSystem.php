@@ -122,9 +122,7 @@ class NutshellSystem implements AuthorizationInterface, WebhookSystemInterface
      */
     public function getRequestDto(SystemInstall $systemInstall, string $method): RequestDto
     {
-        if (!$this->isAuthorized($systemInstall)) {
-            throw new SystemException('Nutshell is not Authorized!', SystemException::SYSTEM_IS_UNAUTHORIZED);
-        }
+        $this->continueOnAuthorized($systemInstall);
 
         $settings      = $systemInstall->getSettings();
         $authorization = sprintf('%s:%s', $settings[self::USERNAME], $settings[self::API_KEY]);
@@ -189,7 +187,8 @@ class NutshellSystem implements AuthorizationInterface, WebhookSystemInterface
      * @param SystemInstall     $systemInstall
      * @param string            $url
      *
-     * @return RequestDto
+     * @return RequestDto|void
+     * @throws SystemException
      */
     public function getSubscribeRequest(
         WebhookSubscribes $subscription,
@@ -197,28 +196,39 @@ class NutshellSystem implements AuthorizationInterface, WebhookSystemInterface
         string $url
     ): RequestDto
     {
-        return new RequestDto('', new Uri());
+        throw new SystemException(
+            'Method [getSubscribeRequest] not implemented in Nutshell system.',
+            SystemException::SYSTEM_METHOD_NOT_FOUND
+        );
     }
 
     /**
      * @param SystemInstall $systemInstall
      * @param string        $webhookId
      *
-     * @return RequestDto
+     * @return RequestDto|void
+     * @throws SystemException
      */
     public function getUnsubscribeRequest(SystemInstall $systemInstall, string $webhookId): RequestDto
     {
-        return new RequestDto('', new Uri());
+        throw new SystemException(
+            'Method [getUnsubscribeRequest] not implemented in Nutshell system.',
+            SystemException::SYSTEM_METHOD_NOT_FOUND
+        );
     }
 
     /**
      * @param ResponseDto $response
      *
-     * @return string
+     * @return string|void
+     * @throws SystemException
      */
     public function getWebhookId(ResponseDto $response): string
     {
-        return '';
+        throw new SystemException(
+            'Method [getWebhookId] not implemented in Nutshell system.',
+            SystemException::SYSTEM_METHOD_NOT_FOUND
+        );
     }
 
 }
