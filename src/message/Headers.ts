@@ -20,9 +20,14 @@ class Headers {
     public static readonly RESULT_CODE = "result-code";
     public static readonly RESULT_MESSAGE = "result-message";
 
+    // repeat headers
+    public static readonly REPEAT_QUEUE = "repeat-queue";
+    public static readonly REPEAT_INTERVAL = "repeat-interval";
+    public static readonly REPEAT_MAX_HOPS = "repeat-max-hops";
+    public static readonly REPEAT_HOPS = "repeat-hops";
+
     // Other headers
     public static readonly CONTENT_TYPE = "content-type";
-    public static readonly REPEAT_QUEUE = "repeat_target_queue";
 
     public static readonly HEADERS_WHITELIST = [
         Headers.CONTENT_TYPE,

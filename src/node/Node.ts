@@ -83,7 +83,7 @@ class Node {
         this.nodeStatus = NODE_STATUS.READY;
 
         const processFn = (msgIn: JobMessage): Promise<JobMessage> => {
-            logger.info(`Message received.`, logger.ctxFromMsg(msgIn));
+            logger.info(`Bridge received message.`, logger.ctxFromMsg(msgIn));
 
             return this.worker.processData(msgIn)
                 .then((msgOut: JobMessage) => {

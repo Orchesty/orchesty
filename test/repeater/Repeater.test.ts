@@ -6,27 +6,27 @@ import Connection from "lib-nodejs/dist/src/rabbitmq/Connection";
 import Publisher from "lib-nodejs/dist/src/rabbitmq/Publisher";
 import SimpleConsumer from "lib-nodejs/dist/src/rabbitmq/SimpleConsumer";
 import {amqpConnectionOptions, mongoStorageOptions} from "../../src/config";
+import Headers from "../../src/message/Headers";
 import MongoMessageStorage from "../../src/repeater/MongoMessageStorage";
 import Repeater, {IRepeaterSettings} from "../../src/repeater/Repeater";
 
 const conn = new Connection(amqpConnectionOptions);
 
 describe("Repeater", () => {
-    it("should consume message and publish it after repeat_interval", (done) => {
+    it("should consume message and publish it after repeat interval", (done) => {
         const settings: IRepeaterSettings = {
             input: { queue: { name: "repeater_a", options: {} } },
             check_timeout: 1000,
         };
         const outputQueue = "repeater_a_output";
         const msgContent = "content of repeated message";
-        const msgProps = {
-            headers: {
-                correlation_id: "somecorrid",
-                process_id: "someprocid",
-                repeat_interval: 500,
-                repeat_target_queue: outputQueue,
-            },
-        };
+        const headersToSend = new Headers();
+        headersToSend.setPFHeader(Headers.CORRELATION_ID, "somecorrid");
+        headersToSend.setPFHeader(Headers.PROCESS_ID, "someprocid");
+        headersToSend.setPFHeader(Headers.REPEAT_INTERVAL, "500");
+        headersToSend.setPFHeader(Headers.REPEAT_QUEUE, outputQueue);
+        headersToSend.setPFHeader(Headers.REPEAT_HOPS, "0");
+        headersToSend.setPFHeader(Headers.REPEAT_MAX_HOPS, "5");
 
         const storage = new MongoMessageStorage(mongoStorageOptions);
         const repeater = new Repeater(settings, conn, storage);
@@ -63,15 +63,22 @@ describe("Repeater", () => {
                 // Here is the test resolution
                 // Message consumed should be same as message produced but after timeout
                 assert.equal(msg.content.toString(), msgContent);
-                assert.deepEqual(msg.properties.headers, msgProps.headers);
-                assert.isAtLeast(Date.now(),  sentTimestamp + msgProps.headers.repeat_interval);
+                assert.deepEqual(msg.properties.headers, headersToSend.getRaw());
+                assert.isAtLeast(
+                    Date.now(),
+                    sentTimestamp + parseInt(headersToSend.getPFHeader(Headers.REPEAT_INTERVAL), 10),
+                );
                 done();
             },
         );
 
         consumer.consume(outputQueue, {})
             .then(() => {
-                return publisher.sendToQueue(settings.input.queue.name, new Buffer(msgContent), msgProps);
+                return publisher.sendToQueue(
+                    settings.input.queue.name,
+                    new Buffer(msgContent),
+                    {headers: headersToSend.getRaw()},
+                );
             });
     });
 

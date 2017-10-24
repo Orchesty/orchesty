@@ -75,6 +75,24 @@ function createMockMessage(): JobMessage {
     return new JobMessage(node, headers.getRaw(), body);
 }
 
+const followPubFailMock: FollowersPublisher = mock.mock(FollowersPublisher);
+followPubFailMock.send = () => {
+    assert.fail();
+    return Promise.resolve();
+};
+
+const nonStandardPubFailMock: AssertionPublisher = mock.mock(AssertionPublisher);
+nonStandardPubFailMock.sendToQueue = () => {
+    assert.fail();
+    return Promise.resolve();
+};
+
+const counterPubFailMock: CounterPublisher = mock.mock(CounterPublisher);
+counterPubFailMock.send = () => {
+    assert.fail();
+    return Promise.resolve();
+};
+
 describe("AmqpDrain", () => {
     it("should forward message and send to counter when message has success result code", (done) => {
         let counterMsgSent = false;
@@ -106,13 +124,7 @@ describe("AmqpDrain", () => {
             return Promise.resolve();
         };
 
-        const nonstandardPub: AssertionPublisher = mock.mock(AssertionPublisher);
-        nonstandardPub.sendToQueue = () => {
-            assert.fail();
-            return Promise.resolve();
-        };
-
-        const drain = new AmqpDrain(settings, counterPub, followPub, nonstandardPub, metricsMock);
+        const drain = new AmqpDrain(settings, counterPub, followPub, nonStandardPubFailMock, metricsMock);
 
         drain.forward(msg);
     });
@@ -127,19 +139,7 @@ describe("AmqpDrain", () => {
             return Promise.resolve();
         };
 
-        const followPub: FollowersPublisher = mock.mock(FollowersPublisher);
-        followPub.send = () => {
-            assert.fail();
-            return Promise.resolve();
-        };
-
-        const nonStandardPub: AssertionPublisher = mock.mock(AssertionPublisher);
-        nonStandardPub.sendToQueue = () => {
-            assert.fail();
-            return Promise.resolve();
-        };
-
-        const drain = new AmqpDrain(settings, counterPub, followPub, nonStandardPub, metricsMock);
+        const drain = new AmqpDrain(settings, counterPub, followPubFailMock, nonStandardPubFailMock, metricsMock);
 
         drain.forward(msg);
     });
@@ -155,15 +155,45 @@ describe("AmqpDrain", () => {
             return Promise.resolve();
         };
 
-        const followPub: FollowersPublisher = mock.mock(FollowersPublisher);
-        followPub.send = () => {
-            assert.fail();
+        const nonStandardPub: AssertionPublisher = mock.mock(AssertionPublisher);
+
+        const drain = new AmqpDrain(settings, counterPub, followPubFailMock, nonStandardPub, metricsMock);
+
+        drain.forward(msg);
+    });
+
+    it("should send counter error message on repeat message with missing repeat interval", () => {
+        const msg = createMockMessage();
+        msg.setResult({ code: ResultCode.REPEAT, message: "repeat please"});
+
+        const counterPub: CounterPublisher = mock.mock(CounterPublisher);
+        counterPub.send = (toCounter: JobMessage) => {
+            assert.strictEqual(toCounter, msg);
+            assert.equal(ResultCode.REPEAT_INVALID_INTERVAL, toCounter.getResult().code);
             return Promise.resolve();
         };
 
-        const nonStandardPub: AssertionPublisher = mock.mock(AssertionPublisher);
+        const drain = new AmqpDrain(settings, counterPub, followPubFailMock, nonStandardPubFailMock, metricsMock);
 
-        const drain = new AmqpDrain(settings, counterPub, followPub, nonStandardPub, metricsMock);
+        drain.forward(msg);
+    });
+
+    it("should send counter error message on repeat message with exceeded hops", () => {
+        const msg = createMockMessage();
+        msg.setResult({ code: ResultCode.REPEAT, message: "repeat please"});
+
+        msg.getHeaders().setPFHeader(Headers.REPEAT_INTERVAL, "1000");
+        msg.getHeaders().setPFHeader(Headers.REPEAT_MAX_HOPS, "5");
+        msg.getHeaders().setPFHeader(Headers.REPEAT_HOPS, "6");
+
+        const counterPub: CounterPublisher = mock.mock(CounterPublisher);
+        counterPub.send = (toCounter: JobMessage) => {
+            assert.strictEqual(toCounter, msg);
+            assert.equal(ResultCode.REPEAT_MAX_HOPS_REACHED, toCounter.getResult().code);
+            return Promise.resolve();
+        };
+
+        const drain = new AmqpDrain(settings, counterPub, followPubFailMock, nonStandardPubFailMock, metricsMock);
 
         drain.forward(msg);
     });
@@ -172,17 +202,9 @@ describe("AmqpDrain", () => {
         const msg = createMockMessage();
         msg.setResult({ code: ResultCode.REPEAT, message: "repeat please"});
 
-        const counterPub: CounterPublisher = mock.mock(CounterPublisher);
-        counterPub.send = () => {
-            assert.fail();
-            return Promise.resolve();
-        };
-
-        const followPub: FollowersPublisher = mock.mock(FollowersPublisher);
-        followPub.send = () => {
-            assert.fail();
-            return Promise.resolve();
-        };
+        msg.getHeaders().setPFHeader(Headers.REPEAT_INTERVAL, "1000");
+        msg.getHeaders().setPFHeader(Headers.REPEAT_MAX_HOPS, "5");
+        msg.getHeaders().setPFHeader(Headers.REPEAT_HOPS, "1");
 
         const nonStandardPub: AssertionPublisher = mock.mock(AssertionPublisher);
         nonStandardPub.sendToQueue = (queue: string, body: Buffer, options: any) => {
@@ -190,6 +212,7 @@ describe("AmqpDrain", () => {
             assert.equal(body.toString(), msg.getContent());
 
             const originalHeaders = new Headers(msg.getHeaders().getRaw());
+            // this header should be added to repeater message by forwarder
             originalHeaders.setPFHeader(Headers.REPEAT_QUEUE, settings.faucet.queue.name);
 
             assert.deepEqual(options.headers, originalHeaders.getRaw());
@@ -197,7 +220,7 @@ describe("AmqpDrain", () => {
             return Promise.resolve();
         };
 
-        const drain = new AmqpDrain(settings, counterPub, followPub, nonStandardPub, metricsMock);
+        const drain = new AmqpDrain(settings, counterPubFailMock, followPubFailMock, nonStandardPub, metricsMock);
 
         drain.forward(msg);
     });
@@ -206,26 +229,15 @@ describe("AmqpDrain", () => {
         const msg: JobMessage = createMockMessage();
         msg.setResult({code: ResultCode.SUCCESS, message: "partial ok"});
 
-        const counterPub: CounterPublisher = mock.mock(CounterPublisher);
-        counterPub.send = () => {
-            assert.fail();
-            return Promise.resolve();
-        };
-        const nonStandardPub: AssertionPublisher = mock.mock(AssertionPublisher);
-        nonStandardPub.sendToQueue = () => {
-            assert.fail();
-            return Promise.resolve();
-        };
-
         const followPub: FollowersPublisher = mock.mock(FollowersPublisher);
         followPub.send = (jm: JobMessage) => {
-            // same instances
-            assert.equal(msg, jm);
+            assert.strictEqual(msg, jm);
+            assert.equal(jm.getResult().code, ResultCode.SUCCESS);
 
             return Promise.resolve();
         };
 
-        const drain = new AmqpDrain(settings, counterPub, followPub, nonStandardPub, metricsMock);
+        const drain = new AmqpDrain(settings, counterPubFailMock, followPub, nonStandardPubFailMock, metricsMock);
 
         return drain.forwardPart(msg)
             .then(() => {

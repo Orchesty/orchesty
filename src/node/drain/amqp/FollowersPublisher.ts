@@ -93,7 +93,8 @@ class FollowersPublisher extends Publisher {
                 options,
             ).then(() => {
                 logger.info(
-                    `Forwarded message. Headers: ${JSON.stringify(options.headers)}`,
+                    `Forwarded message. E: "${follower.exchange.name}", RK: "${follower.routing_key}"
+                        Headers: ${JSON.stringify(options.headers)}`,
                     logger.ctxFromMsg(message),
                 );
             });

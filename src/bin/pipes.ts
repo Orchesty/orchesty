@@ -3,8 +3,9 @@
 import * as fs from "fs";
 import * as yargs from "yargs";
 import Pipes from "../Pipes";
+import {ITopologyConfig} from "../topology/Configurator";
 
-let topologyConfig;
+let topologyConfig: ITopologyConfig;
 if (process.env.TOPOLOGY_JSON) {
     // json string is base64 encoded
     topologyConfig = JSON.parse(atob(process.env.TOPOLOGY_JSON));
@@ -25,7 +26,7 @@ const argv = yargs
     .help()
     .argv;
 
-process.env.PIPES_NODE_TYPE = `pipes_${argv.service}_${argv.id}`;
+process.env.PIPES_NODE_TYPE = `pipes_${argv.service}_${topologyConfig.id}`;
 
 switch (argv.service) {
     case "counter":
@@ -38,6 +39,7 @@ switch (argv.service) {
         pipes.startRepeater();
         break;
     case "node":
+        process.env.PIPES_NODE_TYPE = `pipes_${argv.service}_${argv.id}`;
         pipes.startNode(argv.id);
         break;
     default:
