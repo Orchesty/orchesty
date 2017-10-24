@@ -17,3 +17,8 @@
     font-family: 'pipes';
     content: "\e901";
 }
+
+.bpmn-icon-pipes-batch-connector:before {
+    font-family: 'pipes';
+    content: "\e902";
+}
