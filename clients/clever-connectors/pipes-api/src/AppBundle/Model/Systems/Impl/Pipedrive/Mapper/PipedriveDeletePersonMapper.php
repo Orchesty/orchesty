@@ -37,7 +37,8 @@ class PipedriveDeletePersonMapper implements CustomNodeInterface
         $data = $data['previous'];
 
         $obj = new CMSubscriber();
-        $obj->setEmail($data['email']);
+        $obj->setEmail($data['email'])
+            ->setReactivate(FALSE);
 
         if (array_key_exists('id', $data)) {
             $obj->setForeignId($data['id']);

@@ -1,0 +1,8 @@
+{
+  "response": {
+    "result": {
+      "DeletedIDs": true
+    },
+    "uri": "/crm/private/json/Contacts/getDeletedRecordIds"
+  }
+}

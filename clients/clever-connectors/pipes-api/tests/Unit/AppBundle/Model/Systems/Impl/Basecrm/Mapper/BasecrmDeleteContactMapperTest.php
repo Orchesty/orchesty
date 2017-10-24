@@ -30,7 +30,7 @@ final class BasecrmDeleteContactMapperTest extends ConnectorTestCaseAbstract
         $expt = [
             'email'       => '',
             '_foreign_id' => '187643117',
-            'reactivate'  => TRUE,
+            'reactivate'  => FALSE,
         ];
 
         self::assertEquals($expt, $response);

@@ -46,6 +46,7 @@ class AppExtension extends Extension
         $loader->load('zendesk.yml');
         $loader->load('basecrm.yml');
         $loader->load('mailmunch.yml');
+        $loader->load('zoho.yml');
     }
 
 }

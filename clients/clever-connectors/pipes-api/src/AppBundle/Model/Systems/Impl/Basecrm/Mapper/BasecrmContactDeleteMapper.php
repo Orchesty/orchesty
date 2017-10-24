@@ -41,7 +41,8 @@ class BasecrmContactDeleteMapper extends BasecrmContactMapperAbstract
             }
 
             $obj = new CMSubscriber();
-            $obj->setForeignId($item['data']['id']);
+            $obj->setForeignId($item['data']['id'])
+                ->setReactivate(FALSE);
 
             $dto->setData(json_encode($obj->toArray()));
         }
