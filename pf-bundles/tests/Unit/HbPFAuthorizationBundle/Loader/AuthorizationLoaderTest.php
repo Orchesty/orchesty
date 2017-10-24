@@ -37,17 +37,18 @@ class AuthorizationLoaderTest extends KernelTestCaseAbstract
     protected function setUp(): void
     {
         parent::setUp();
-        $auth  = new Authorization('magento2.auth');
+        $auth = new Authorization('magento2.auth');
         $auth->setToken(['password' => 'Password']);
 
-        $repo = $this->createPartialMock(AuthorizationRepository::class, ['getInstalledKeys']);
+        $repo = $this->createMock(AuthorizationRepository::class);
         $repo->method('getInstalledKeys')->willReturn(['magento2.auth']);
 
-        $dm = $this->createPartialMock(DocumentManager::class, ['getRepository']);
+        $dm = $this->createMock(DocumentManager::class);
         $dm->method('getRepository')->willReturn($repo);
+        $dm->method('persist')->willReturn(NULL);
+        $dm->method('flush')->willReturn(NULL);
 
-        $this->loader = $this->container->get('hbpf.loader.authorization');
-        $this->setProperty($this->loader, 'dm', $dm);
+        $this->loader = new AuthorizationLoader($this->container, $dm);
     }
 
     /**

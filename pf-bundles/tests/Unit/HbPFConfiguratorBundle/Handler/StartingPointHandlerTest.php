@@ -14,6 +14,7 @@ use Exception;
 use Hanaboso\PipesFramework\Commons\Enum\TopologyStatusEnum;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
+use Hanaboso\PipesFramework\Configurator\Repository\NodeRepository;
 use Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository;
 use Hanaboso\PipesFramework\Configurator\StartingPoint\StartingPoint;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\StartingPointHandler;
@@ -21,7 +22,7 @@ use Hanaboso\PipesFramework\TopologyGenerator\Request\RequestHandler;
 use PHPUnit_Framework_MockObject_MockObject;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\HttpFoundation\Request;
-use Tests\DatabaseTestCaseAbstract;
+use Tests\KernelTestCaseAbstract;
 use Tests\PrivateTrait;
 
 /**
@@ -29,7 +30,7 @@ use Tests\PrivateTrait;
  *
  * @package Tests\Unit\HbPFConfiguratorBundle\Handler
  */
-class StartingPointHandlerTest extends DatabaseTestCaseAbstract
+class StartingPointHandlerTest extends KernelTestCaseAbstract
 {
 
     use PrivateTrait;
@@ -126,7 +127,7 @@ class StartingPointHandlerTest extends DatabaseTestCaseAbstract
             ->setEnabled(TRUE)
             ->setVisibility(TopologyStatusEnum::PUBLIC);
 
-        $this->persistAndFlush($top);
+        $this->setProperty($top, 'id', '1');
 
         /** @var StartingPoint|PHPUnit_Framework_MockObject_MockObject $startingPoint */
         $startingPoint = $this->createMock(StartingPoint::class);
@@ -138,7 +139,19 @@ class StartingPointHandlerTest extends DatabaseTestCaseAbstract
         /** @var RequestHandler|PHPUnit_Framework_MockObject_MockObject $requestHandler */
         $requestHandler = $this->createMock(RequestHandler::class);
 
-        $startingPointHandler = new StartingPointHandler($this->dm, $startingPoint, $dispatcher, $requestHandler);
+        $nodeRepo = $this->createMock(NodeRepository::class);
+        $nodeRepo->method('getNodeByTopology')->willReturn(NULL);
+        $nodeRepo->method('find')->willReturn(new Node);
+
+        $topRepo = $this->createMock(TopologyRepository::class);
+        $topRepo->method('getRunnableTopologies')->willReturn([$top]);
+        $topRepo->method('find')->willReturn($top);
+
+        $dm = $this->createMock(DocumentManager::class);
+        $dm->expects($this->at(0))->method('getRepository')->willReturn($nodeRepo);
+        $dm->expects($this->at(1))->method('getRepository')->willReturn($topRepo);
+
+        $startingPointHandler = new StartingPointHandler($dm, $startingPoint, $dispatcher, $requestHandler);
 
         $this->expectException(Exception::class);
         $this->expectExceptionMessage('The node[name=1] does not exist.');
@@ -152,6 +165,8 @@ class StartingPointHandlerTest extends DatabaseTestCaseAbstract
      */
     public function testRunWithRequest(): void
     {
+        $tops  = [];
+        $nodes = [];
         for ($i = 0; $i < 2; $i++) {
             $top = new Topology();
             $top
@@ -159,7 +174,7 @@ class StartingPointHandlerTest extends DatabaseTestCaseAbstract
                 ->setEnabled(TRUE)
                 ->setVisibility(TopologyStatusEnum::PUBLIC);
 
-            $this->persistAndFlush($top);
+            $this->setProperty($top, 'id', (string) $i);
 
             $node = new Node();
             $node
@@ -167,8 +182,21 @@ class StartingPointHandlerTest extends DatabaseTestCaseAbstract
                 ->setEnabled(TRUE)
                 ->setTopology($top->getId());
 
-            $this->persistAndFlush($node);
+            $tops[]  = $top;
+            $nodes[] = $node;
         }
+
+        $nodeRepo = $this->createMock(NodeRepository::class);
+        $nodeRepo->method('getNodeByTopology')->willReturn($nodes[0]);
+        $nodeRepo->method('find')->willReturn($nodes[0]);
+
+        $topRepo = $this->createMock(TopologyRepository::class);
+        $topRepo->method('getRunnableTopologies')->willReturn($tops);
+        $topRepo->method('find')->willReturn($tops[0]);
+
+        $dm = $this->createMock(DocumentManager::class);
+        $dm->expects($this->at(0))->method('getRepository')->willReturn($nodeRepo);
+        $dm->expects($this->at(1))->method('getRepository')->willReturn($topRepo);
 
         /** @var EventDispatcher|PHPUnit_Framework_MockObject_MockObject $dispatcher */
         $dispatcher = $this->createMock(EventDispatcher::class);
@@ -179,7 +207,7 @@ class StartingPointHandlerTest extends DatabaseTestCaseAbstract
 
         /** @var StartingPoint|\PHPUnit_Framework_MockObject_MockObject $startingPoint */
         $startingPoint        = $this->createMock(StartingPoint::class);
-        $startingPointHandler = new StartingPointHandler($this->dm, $startingPoint, $dispatcher, $requestHandler);
+        $startingPointHandler = new StartingPointHandler($dm, $startingPoint, $dispatcher, $requestHandler);
         $startingPointHandler->runWithRequest(Request::createFromGlobals(), '123', '1');
     }
 
@@ -195,8 +223,7 @@ class StartingPointHandlerTest extends DatabaseTestCaseAbstract
             ->setName('123')
             ->setEnabled(TRUE)
             ->setVisibility(TopologyStatusEnum::PUBLIC);
-
-        $this->persistAndFlush($top);
+        $this->setProperty($top, 'id', '1');
 
         $node = new Node();
         $node
@@ -204,7 +231,17 @@ class StartingPointHandlerTest extends DatabaseTestCaseAbstract
             ->setEnabled(TRUE)
             ->setTopology($top->getId());
 
-        $this->persistAndFlush($node);
+        $nodeRepo = $this->createMock(NodeRepository::class);
+        $nodeRepo->method('getNodeByTopology')->willReturn($node);
+        $nodeRepo->method('find')->willReturn($node);
+
+        $topRepo = $this->createMock(TopologyRepository::class);
+        $topRepo->method('getRunnableTopologies')->willReturn([$top]);
+        $topRepo->method('find')->willReturn($top);
+
+        $dm = $this->createMock(DocumentManager::class);
+        $dm->expects($this->at(0))->method('getRepository')->willReturn($nodeRepo);
+        $dm->expects($this->at(1))->method('getRepository')->willReturn($topRepo);
 
         /** @var EventDispatcher|PHPUnit_Framework_MockObject_MockObject $dispatcher */
         $dispatcher = $this->createMock(EventDispatcher::class);
@@ -215,7 +252,7 @@ class StartingPointHandlerTest extends DatabaseTestCaseAbstract
 
         /** @var StartingPoint|PHPUnit_Framework_MockObject_MockObject $startingPoint */
         $startingPoint        = $this->createMock(StartingPoint::class);
-        $startingPointHandler = new StartingPointHandler($this->dm, $startingPoint, $dispatcher, $requestHandler);
+        $startingPointHandler = new StartingPointHandler($dm, $startingPoint, $dispatcher, $requestHandler);
         $startingPointHandler->run('123', '1');
     }
 
