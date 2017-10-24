@@ -35,7 +35,7 @@ trait DebugMessageTrait
     {
         $context = [];
         if ($string) {
-            $context['message'] = $string;
+            $context['body'] = $string;
         }
 
         if ($exchange) {

@@ -251,10 +251,6 @@ class StartingPoint implements LoggerAwareInterface
         $channel->queueDeclare(self::createQueueName($topology, $node), FALSE, TRUE);
         $channel->queueDeclare(self::createCounterQueueName($topology), FALSE, TRUE);
 
-        // Publish messages
-        $this->publishInitializeCounterProcess($channel, self::createCounterQueueName($topology), $headers, $node);
-        $this->publishProcessMessage($channel, self::createQueueName($topology, $node), $headers, $content);
-
         $this->logger->info('Starting point info message', [
             'correlation_id' => PipesHeaders::get(PipesHeaders::CORRELATION_ID, $headers->getHeaders()),
             'process_id'     => PipesHeaders::get(PipesHeaders::PROCESS_ID, $headers->getHeaders()),
@@ -265,6 +261,10 @@ class StartingPoint implements LoggerAwareInterface
             'topology_name'  => $topology->getName(),
             'type'           => 'starting_point',
         ]);
+
+        // Publish messages
+        $this->publishInitializeCounterProcess($channel, self::createCounterQueueName($topology), $headers, $node);
+        $this->publishProcessMessage($channel, self::createQueueName($topology, $node), $headers, $content);
     }
 
     /**
@@ -361,7 +361,7 @@ class StartingPoint implements LoggerAwareInterface
             '',
             $queue
         );
-        $this->logger->debug(
+        $this->logger->info(
             'Starting point - publish process message',
             array_merge(
                 $this->prepareMessage($content, '', $queue, $headers->getHeaders()),
