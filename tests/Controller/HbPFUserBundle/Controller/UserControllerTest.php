@@ -69,8 +69,9 @@ class UserControllerTest extends ControllerTestCaseAbstract
         ]);
 
         $this->assertEquals(500, $response->status);
-        $this->assertEquals(SecurityManagerException::class, $response->content->type);
-        $this->assertEquals(SecurityManagerException::USER_OR_PASSWORD_NOT_VALID, $response->content->error_code);
+        $content = json_decode($response->content);
+        $this->assertEquals(SecurityManagerException::class, $content->type);
+        $this->assertEquals(2001, $content->error_code);
     }
 
     /**
@@ -89,8 +90,9 @@ class UserControllerTest extends ControllerTestCaseAbstract
         ]);
 
         $this->assertEquals(500, $response->status);
-        $this->assertEquals(SecurityManagerException::class, $response->content->type);
-        $this->assertEquals(SecurityManagerException::USER_OR_PASSWORD_NOT_VALID, $response->content->error_code);
+        $content = json_decode($response->content);
+        $this->assertEquals(SecurityManagerException::class, $content->type);
+        $this->assertEquals(2001, $content->error_code);
     }
 
     /**
@@ -113,8 +115,9 @@ class UserControllerTest extends ControllerTestCaseAbstract
         $response = $this->sendPost('/api/user/logout', []);
 
         $this->assertEquals(500, $response->status);
-        $this->assertEquals(SecurityManagerException::class, $response->content->type);
-        $this->assertEquals(SecurityManagerException::USER_NOT_LOGGED, $response->content->error_code);
+        $content = json_decode($response->content);
+        $this->assertEquals(SecurityManagerException::class, $content->type);
+        $this->assertEquals(2001, $content->error_code);
     }
 
     /**
@@ -144,8 +147,9 @@ class UserControllerTest extends ControllerTestCaseAbstract
         ]);
 
         $this->assertEquals(500, $response->status);
-        $this->assertEquals(UserManagerException::class, $response->content->type);
-        $this->assertEquals(UserManagerException::USER_EMAIL_ALREADY_EXISTS, $response->content->error_code);
+        $content = json_decode($response->content);
+        $this->assertEquals(UserManagerException::class, $content->type);
+        $this->assertEquals(2001, $content->error_code);
     }
 
     /**
@@ -179,8 +183,9 @@ class UserControllerTest extends ControllerTestCaseAbstract
             []);
 
         $this->assertEquals(500, $response->status);
-        $this->assertEquals(TokenManagerException::class, $response->content->type);
-        $this->assertEquals(TokenManagerException::TOKEN_NOT_VALID, $response->content->error_code);
+        $content = json_decode($response->content);
+        $this->assertEquals(TokenManagerException::class, $content->type);
+        $this->assertEquals(2001, $content->error_code);
     }
 
     /**
@@ -219,8 +224,9 @@ class UserControllerTest extends ControllerTestCaseAbstract
             Strings::substring($token->getId(), 1)), ['password' => 'newPassword']);
 
         $this->assertEquals(500, $response->status);
-        $this->assertEquals(TokenManagerException::class, $response->content->type);
-        $this->assertEquals(TokenManagerException::TOKEN_NOT_VALID, $response->content->error_code);
+        $content = json_decode($response->content);
+        $this->assertEquals(TokenManagerException::class, $content->type);
+        $this->assertEquals(2001, $content->error_code);
     }
 
     /**
@@ -284,10 +290,11 @@ class UserControllerTest extends ControllerTestCaseAbstract
         $response = $this->sendPost('/api/user/reset_password', [
             'email' => '',
         ]);
+        $content = json_decode($response->content);
 
         $this->assertEquals(500, $response->status);
-        $this->assertEquals(UserManagerException::class, $response->content->type);
-        $this->assertEquals(UserManagerException::USER_EMAIL_NOT_EXISTS, $response->content->error_code);
+        $this->assertEquals(UserManagerException::class, $content->type);
+        $this->assertEquals(2001, $content->error_code);
     }
 
     /**
@@ -331,10 +338,11 @@ class UserControllerTest extends ControllerTestCaseAbstract
         $this->loginUser('email@example.com', 'passw0rd');
 
         $response = $this->sendDelete('/api/user/0/delete');
+        $content = json_decode($response->content);
 
         $this->assertEquals(500, $response->status);
-        $this->assertEquals(UserManagerException::class, $response->content->type);
-        $this->assertEquals(UserManagerException::USER_NOT_EXISTS, $response->content->error_code);
+        $this->assertEquals(UserManagerException::class, $content->type);
+        $this->assertEquals(2001, $content->error_code);
     }
 
     /**
@@ -360,10 +368,11 @@ class UserControllerTest extends ControllerTestCaseAbstract
         $this->dm->flush();
 
         $response = $this->sendDelete(sprintf('/api/user/%s/delete', $loggedUser->getId()));
+        $content = json_decode($response->content);
 
         $this->assertEquals(500, $response->status);
-        $this->assertEquals(UserManagerException::class, $response->content->type);
-        $this->assertEquals(UserManagerException::USER_DELETE_NOT_ALLOWED, $response->content->error_code);
+        $this->assertEquals(UserManagerException::class, $content->type);
+        $this->assertEquals(2001, $content->error_code);
     }
 
     /**
@@ -379,10 +388,11 @@ class UserControllerTest extends ControllerTestCaseAbstract
         $this->persistAndFlush($user);
 
         $response = $this->sendDelete(sprintf('/api/user/%s/delete', $user->getId()));
+        $content = json_decode($response->content);
 
         $this->assertEquals(500, $response->status);
-        $this->assertEquals(AclException::class, $response->content->type);
-        $this->assertEquals(AclException::PERMISSION, $response->content->error_code);
+        $this->assertEquals(AclException::class, $content->type);
+        $this->assertEquals(2001, $content->error_code);
     }
 
 }

@@ -17,16 +17,16 @@ class ControllerUtils
     /**
      * @param Exception $exception
      *
-     * @return array
+     * @return string
      */
-    public static function createExceptionData(Exception $exception): array
+    public static function createExceptionData(Exception $exception): string
     {
-        return [
+        return json_encode([
             'status'     => 'ERROR',
-            'error_code' => $exception->getCode(),
+            'error_code' => 2001,
             'type'       => get_class($exception),
             'message'    => $exception->getMessage(),
-        ];
+        ]);
     }
 
     /**
@@ -43,7 +43,7 @@ class ControllerUtils
         $detail  = '';
 
         if ($e) {
-            $code    = $e->getCode();
+            $code    = 2001;
             $status  = 'ERROR';
             $message = $e->getMessage();
             $detail  = json_encode($e->getTraceAsString());
