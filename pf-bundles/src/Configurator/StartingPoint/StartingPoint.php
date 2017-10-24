@@ -13,6 +13,7 @@ use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
+use Hanaboso\PipesFramework\Commons\Transport\Utils\TransportFormatter;
 use Hanaboso\PipesFramework\Commons\Utils\PipesHeaders;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
@@ -215,6 +216,7 @@ class StartingPoint implements LoggerAwareInterface
      */
     public function runWithRequest(Request $request, Topology $topology, Node $node): void
     {
+        $this->logInputRequest($request);
         $this->runTopology(
             $topology,
             $node,
@@ -291,6 +293,21 @@ class StartingPoint implements LoggerAwareInterface
     }
 
     /**
+     * @param Request $request
+     */
+    private function logInputRequest(Request $request): void
+    {
+        /** @var string $content */
+        $content = $request->getContent();
+        $this->logger->info(
+            TransportFormatter::requestToString(
+                $request->getMethod(), $request->getUri(), $request->headers->all(), $content
+            ),
+            PipesHeaders::debugInfo($request->headers->all())
+        );
+    }
+
+    /**
      * @param Channel $channel
      * @param string  $queue
      * @param Headers $headers
@@ -322,9 +339,12 @@ class StartingPoint implements LoggerAwareInterface
         $content = json_encode($content);
 
         $channel->publish($content, $headers, '', $queue);
-        $this->logger->debug(
-            'publish',
-            $this->prepareMessage($content, '', $queue, $headers)
+        $this->logger->info(
+            'Starting point - publish counter message',
+            array_merge(
+                $this->prepareMessage($content, '', $queue, $headers),
+                PipesHeaders::debugInfo($headers)
+            )
         );
     }
 
@@ -344,8 +364,11 @@ class StartingPoint implements LoggerAwareInterface
             $queue
         );
         $this->logger->debug(
-            'publish',
-            $this->prepareMessage($content, '', $queue, $headers->getHeaders())
+            'Starting point - publish process message',
+            array_merge(
+                $this->prepareMessage($content, '', $queue, $headers->getHeaders()),
+                PipesHeaders::debugInfo($headers->getHeaders())
+            )
         );
     }
 
