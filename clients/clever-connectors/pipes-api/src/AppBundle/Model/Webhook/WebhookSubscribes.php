@@ -23,12 +23,17 @@ class WebhookSubscribes
     /**
      * @var string
      */
-    private $registrationUrl;
+    private $subscribeUrl;
 
     /**
      * @var string
      */
-    private $unregistrationUrl;
+    private $unSubscribeUrl;
+
+    /**
+     * @var array|null
+     */
+    private $params = [];
 
     /**
      * @var bool
@@ -38,17 +43,25 @@ class WebhookSubscribes
     /**
      * WebhookSubscribes constructor.
      *
-     * @param string $nodeName
-     * @param string $topologyName
-     * @param string $registrationUrl
-     * @param string $unregistrationUrl
+     * @param string     $nodeName
+     * @param string     $topologyName
+     * @param string     $subscribeUrl
+     * @param string     $unSubscribeUrl
+     * @param array|null $params
      */
-    public function __construct($nodeName, $topologyName, $registrationUrl, $unregistrationUrl)
+    public function __construct(
+        string $nodeName,
+        string $topologyName,
+        string $subscribeUrl,
+        string $unSubscribeUrl,
+        ?array $params = []
+    )
     {
-        $this->nodeName          = $nodeName;
-        $this->topologyName      = $topologyName;
-        $this->registrationUrl   = $registrationUrl;
-        $this->unregistrationUrl = $unregistrationUrl;
+        $this->nodeName       = $nodeName;
+        $this->topologyName   = $topologyName;
+        $this->subscribeUrl   = $subscribeUrl;
+        $this->unSubscribeUrl = $unSubscribeUrl;
+        $this->params         = $params;
     }
 
     /**
@@ -94,19 +107,19 @@ class WebhookSubscribes
     /**
      * @return string
      */
-    public function getRegistrationUrl(): string
+    public function getSubscribeUrl(): string
     {
-        return $this->registrationUrl;
+        return $this->subscribeUrl;
     }
 
     /**
-     * @param string $registrationUrl
+     * @param string $subscribeUrl
      *
      * @return WebhookSubscribes
      */
-    public function setRegistrationUrl(string $registrationUrl): WebhookSubscribes
+    public function setSubscribeUrl(string $subscribeUrl): WebhookSubscribes
     {
-        $this->registrationUrl = $registrationUrl;
+        $this->subscribeUrl = $subscribeUrl;
 
         return $this;
     }
@@ -114,19 +127,19 @@ class WebhookSubscribes
     /**
      * @return string
      */
-    public function getUnregistrationUrl(): string
+    public function getUnSubscribeUrl(): string
     {
-        return $this->unregistrationUrl;
+        return $this->unSubscribeUrl;
     }
 
     /**
-     * @param string $unregistrationUrl
+     * @param string $unSubscribeUrl
      *
      * @return WebhookSubscribes
      */
-    public function setUnregistrationUrl(string $unregistrationUrl): WebhookSubscribes
+    public function setUnSubscribeUrl(string $unSubscribeUrl): WebhookSubscribes
     {
-        $this->unregistrationUrl = $unregistrationUrl;
+        $this->unSubscribeUrl = $unSubscribeUrl;
 
         return $this;
     }
@@ -149,6 +162,26 @@ class WebhookSubscribes
         $this->apiReq = $apiReq;
 
         return $this;
+    }
+
+    /**
+     * @param array $params
+     *
+     * @return WebhookSubscribes
+     */
+    public function setParams(array $params): WebhookSubscribes
+    {
+        $this->params = $params;
+
+        return $this;
+    }
+
+    /**
+     * @return array|null
+     */
+    public function getParams(): ?array
+    {
+        return $this->params;
     }
 
 }

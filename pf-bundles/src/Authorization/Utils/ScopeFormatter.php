@@ -14,8 +14,11 @@ namespace Hanaboso\PipesFramework\Authorization\Utils;
  *
  * @package Hanaboso\PipesFramework\Authorization\Utils
  */
-final class ScopeFormater
+final class ScopeFormatter
 {
+
+    public const COMMA = ',';
+    public const SPACE = ' ';
 
     /**
      * ScopeFormater constructor.
@@ -25,18 +28,19 @@ final class ScopeFormater
     }
 
     /**
-     * @param array $scopes
+     * @param array  $scopes
+     * @param string $separator
      *
      * @return string
      */
-    public static function getScopes(array $scopes): string
+    public static function getScopes(array $scopes, string $separator = self::COMMA): string
     {
         if (empty($scopes)) {
 
             return '';
         }
 
-        $scope = implode(',', $scopes);
+        $scope = implode($separator, $scopes);
 
         return sprintf('&scope=%s', $scope);
     }

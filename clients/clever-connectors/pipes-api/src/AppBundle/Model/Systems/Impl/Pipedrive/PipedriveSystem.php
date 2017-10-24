@@ -124,9 +124,7 @@ class PipedriveSystem implements WebhookSystemInterface, AuthorizationInterface
      */
     public function getRequestDto(SystemInstall $systemInstall, string $method): RequestDto
     {
-        if (!$this->isAuthorized($systemInstall)) {
-            throw new SystemException('Pipedrive is unauthorized.', SystemException::SYSTEM_IS_UNAUTHORIZED);
-        }
+        $this->continueOnAuthorized($systemInstall);
 
         $dto = new RequestDto('GET', new Uri(self::BASE_URL));
         $dto->setHeaders($this->getHeaders());
@@ -148,14 +146,12 @@ class PipedriveSystem implements WebhookSystemInterface, AuthorizationInterface
         string $url
     ): RequestDto
     {
-        if (!$this->isAuthorized($systemInstall)) {
-            throw new SystemException('Pipedrive is unauthorized.', SystemException::SYSTEM_IS_UNAUTHORIZED);
-        }
+        $this->continueOnAuthorized($systemInstall);
 
         $event = $this->events[$subscription->getNodeName()];
         $sett  = $systemInstall->getSettings();
 
-        $dto = new RequestDto('POST', new Uri(sprintf($subscription->getRegistrationUrl(), $sett[self::API_TOKEN])));
+        $dto = new RequestDto('POST', new Uri(sprintf($subscription->getSubscribeUrl(), $sett[self::API_TOKEN])));
         $dto->setHeaders($this->getHeaders())
             ->setBody(json_encode([
                 'subscription_url' => $url,
@@ -176,7 +172,7 @@ class PipedriveSystem implements WebhookSystemInterface, AuthorizationInterface
     {
         $sett = $systemInstall->getSettings();
 
-        $dto = new RequestDto('DELETE', new Uri(sprintf($this->subscriptions[0]->getUnregistrationUrl(), $webhookId, $sett[self::API_TOKEN])));
+        $dto = new RequestDto('DELETE', new Uri(sprintf($this->subscriptions[0]->getUnSubscribeUrl(), $webhookId, $sett[self::API_TOKEN])));
         $dto->setHeaders($this->getHeaders());
 
         return $dto;

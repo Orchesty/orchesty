@@ -144,9 +144,7 @@ class BigcommerceSystem implements WebhookSystemInterface, AuthorizationInterfac
      */
     public function getRequestDto(SystemInstall $systemInstall, string $method): RequestDto
     {
-        if (!$this->isAuthorized($systemInstall)) {
-            throw new SystemException('Bigcommerce is not Authorized!', SystemException::SYSTEM_IS_UNAUTHORIZED);
-        }
+        $this->continueOnAuthorized($systemInstall);
 
         return (new RequestDto($method, new Uri(sprintf(
             self::SYSTEM_URL, $systemInstall->getSettings()[self::STORE_ID]
@@ -208,7 +206,7 @@ class BigcommerceSystem implements WebhookSystemInterface, AuthorizationInterfac
     {
         return (new RequestDto(
             'POST',
-            new Uri(sprintf($subscription->getRegistrationUrl(), $systemInstall->getSettings()[self::STORE_ID]))
+            new Uri(sprintf($subscription->getSubscribeUrl(), $systemInstall->getSettings()[self::STORE_ID]))
         ))->setBody(Json::encode([
             'scope'       => $this->topics[$subscription->getNodeName()],
             'destination' => $url,
@@ -226,7 +224,7 @@ class BigcommerceSystem implements WebhookSystemInterface, AuthorizationInterfac
         return (new RequestDto(
             'DELETE',
             new Uri(sprintf(
-                $this->subscriptions[0]->getUnregistrationUrl(),
+                $this->subscriptions[0]->getUnSubscribeUrl(),
                 $systemInstall->getSettings()[self::STORE_ID],
                 $webhookId
             ))

@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Integration\AppBundle\Model\Systems\Impl\Shopify\Connector;
+namespace Tests\Integration\AppBundle\Model\Systems\Impl\Hubspot\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
@@ -14,11 +14,11 @@ use React\EventLoop\Factory;
 use Tests\DatabaseTestCaseAbstract;
 
 /**
- * Class ShopifySyncConnectorTest
+ * Class HubspotSyncContactConnectorTest
  *
- * @package Tests\Integration\AppBundle\Model\Systems\Impl\Shopify\Connector
+ * @package Tests\Integration\AppBundle\Model\Systems\Impl\Hubspot\Connector
  */
-final class ShopifySyncConnectorTest extends DatabaseTestCaseAbstract
+final class HubspotSyncContactConnectorTest extends DatabaseTestCaseAbstract
 {
 
     /**
@@ -27,21 +27,23 @@ final class ShopifySyncConnectorTest extends DatabaseTestCaseAbstract
     public function testProcessBatch(): void
     {
         $this->markTestSkipped();
-        $connector = $this->container->get('hbpf.connector.shopify-sync-customer-connector');
+        $connector = $this->container->get('hbpf.connector.hubspot-sync-contact-connector');
 
         $topology = (new Topology())->setName('Topology');
         $this->persistAndFlush($topology);
 
         $settings = [
-            'access_token' => '676ae188bd76d1957884be07c4af4e85',
-            'system_url'   => 'ndflakee',
+            "access_token"  => "COPd6sr0KxICAQEY75vzASD-46cCKL-1AzIZADUnP_ZsvWK5R1k2VxSQarO2253kiPZ3PQ",
+            "expires_in"    => 21600,
+            "refresh_token" => "221f086d-1760-4cb2-8260-c6833137bdd7",
+            "app_id"        => 55999,
         ];
 
         $system = new SystemInstall();
         $system
-            ->setUser('u_123')
-            ->setToken('t-456')
-            ->setSystem('s_-879')
+            ->setUser('hs_u_123')
+            ->setToken('hs_t-456')
+            ->setSystem('hs_s_-879')
             ->setSettings($settings);
         $this->persistAndFlush($system);
 
@@ -78,9 +80,6 @@ final class ShopifySyncConnectorTest extends DatabaseTestCaseAbstract
         $process->then(
             function (): void {
                 $this->assertTrue(TRUE);
-            },
-            function (): void {
-                $this->assertTrue(FALSE);
             }
         )->done();
 

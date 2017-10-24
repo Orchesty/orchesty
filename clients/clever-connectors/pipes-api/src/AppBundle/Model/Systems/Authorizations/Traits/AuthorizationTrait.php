@@ -5,6 +5,7 @@ namespace CleverConnectors\AppBundle\Model\Systems\Authorizations\Traits;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\AuthorizationInterface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\OAuth1Interface;
+use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 
 /**
  * Trait AuthorizationTrait
@@ -56,21 +57,6 @@ trait AuthorizationTrait
     }
 
     /**
-     * @param string $key
-     * @param array  $settings
-     *
-     * @return bool|mixed|null
-     */
-    protected function prepareValue(string $key, array $settings)
-    {
-        if (isset($settings[$key])) {
-            return $settings[$key];
-        }
-
-        return NULL;
-    }
-
-    /**
      * @param SystemInstall|null $systemInstall
      *
      * @return array
@@ -92,6 +78,36 @@ trait AuthorizationTrait
         }
 
         return $arr;
+    }
+
+    /**
+     * @param string $key
+     * @param array  $settings
+     *
+     * @return bool|mixed|null
+     */
+    protected function prepareValue(string $key, array $settings)
+    {
+        if (isset($settings[$key])) {
+            return $settings[$key];
+        }
+
+        return NULL;
+    }
+
+    /**
+     * @param SystemInstall $systemInstall
+     *
+     * @throws SystemException
+     */
+    protected function continueOnAuthorized(SystemInstall $systemInstall): void
+    {
+        if (!$this->isAuthorized($systemInstall)) {
+            throw new SystemException(
+                sprintf('%s is not Authorized!', $this->getName()),
+                SystemException::SYSTEM_IS_UNAUTHORIZED
+            );
+        }
     }
 
 }

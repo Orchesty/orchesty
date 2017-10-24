@@ -77,7 +77,6 @@ class ShopifySystem implements WebhookSystemInterface, OAuth2Interface
 
         $this->subscriptions[] = new WebhookSubscribes('shopify-delete-customer-connector', 'shopify-delete-customer',
             self::WEBHOOK_SUBSCRIBE_URL, self::WEBHOOK_UNSUBSCRIBE_URL);
-
     }
 
     /**
@@ -130,15 +129,13 @@ class ShopifySystem implements WebhookSystemInterface, OAuth2Interface
      */
     public function getSubscribeRequest(WebhookSubscribes $subs, SystemInstall $systemInstall, string $url): RequestDto
     {
-        if (!$this->isAuthorized($systemInstall)) {
-            throw new SystemException('Shopify is not Authorized!', SystemException::SYSTEM_IS_UNAUTHORIZED);
-        }
+        $this->continueOnAuthorized($systemInstall);
 
         $sett      = $systemInstall->getSettings();
         $systemUrl = $sett[self::SYSTEM_URL];
         $topic     = $this->topics[$subs->getNodeName()];
 
-        $dto = new RequestDto('POST', new Uri(sprintf($subs->getRegistrationUrl(), $systemUrl)));
+        $dto = new RequestDto('POST', new Uri(sprintf($subs->getSubscribeUrl(), $systemUrl)));
 
         $dto->setBody(json_encode([
             'webhook' => [
@@ -162,13 +159,11 @@ class ShopifySystem implements WebhookSystemInterface, OAuth2Interface
      */
     public function getUnsubscribeRequest(SystemInstall $systemInstall, string $webhookId): RequestDto
     {
-        if (!$this->isAuthorized($systemInstall)) {
-            throw new SystemException('Shopify is not Authorized!', SystemException::SYSTEM_IS_UNAUTHORIZED);
-        }
+        $this->continueOnAuthorized($systemInstall);
 
         $sett = $systemInstall->getSettings();
         $dto  = new RequestDto('DELETE',
-            new Uri(sprintf($this->subscriptions[0]->getUnregistrationUrl(),
+            new Uri(sprintf($this->subscriptions[0]->getUnSubscribeUrl(),
                 $sett[self::SYSTEM_URL], $webhookId)));
 
         $dto->setHeaders($this->getHeaders($systemInstall));
@@ -273,9 +268,7 @@ class ShopifySystem implements WebhookSystemInterface, OAuth2Interface
      */
     public function refreshToken(SystemInstall $systemInstall): SystemInstall
     {
-        if (!$this->isAuthorized($systemInstall)) {
-            throw new SystemException('Shopify is not Authorized!', SystemException::SYSTEM_IS_UNAUTHORIZED);
-        }
+        $this->continueOnAuthorized($systemInstall);
 
         $settings = $systemInstall->getSettings();
         $dto      = $this->getDto($systemInstall);
@@ -298,9 +291,7 @@ class ShopifySystem implements WebhookSystemInterface, OAuth2Interface
      */
     public function getRequestDto(SystemInstall $systemInstall, string $method): RequestDto
     {
-        if (!$this->isAuthorized($systemInstall)) {
-            throw new SystemException('Shopify is not Authorized!', SystemException::SYSTEM_IS_UNAUTHORIZED);
-        }
+        $this->continueOnAuthorized($systemInstall);
 
         $sett = $systemInstall->getSettings();
 

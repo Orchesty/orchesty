@@ -12,7 +12,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Exception;
 use Hanaboso\PipesFramework\Authorization\Exception\AuthorizationException;
 use Hanaboso\PipesFramework\Authorization\Provider\Dto\OAuth1DtoInterface;
-use Hanaboso\PipesFramework\Authorization\Utils\ScopeFormater;
+use Hanaboso\PipesFramework\Authorization\Utils\ScopeFormatter;
 use Hanaboso\PipesFramework\Commons\Redirect\RedirectInterface;
 use OAuth;
 use Psr\Log\LoggerAwareInterface;
@@ -201,7 +201,7 @@ class OAuth1Provider implements OAuth1ProviderInterface, LoggerAwareInterface
             $authorizeUrl,
             $redirectUrl,
             $oauthToken,
-            ScopeFormater::getScopes($scopes)
+            ScopeFormatter::getScopes($scopes)
         );
     }
 

@@ -40,6 +40,7 @@ class AppExtension extends Extension
         $loader->load('wisepops.yml');
         $loader->load('bigcommerce.yml');
         $loader->load('shipstation.yml');
+        $loader->load('hubspot.yml');
         $loader->load('pipedrive.yml');
         $loader->load('zendesk.yml');
         $loader->load('basecrm.yml');
