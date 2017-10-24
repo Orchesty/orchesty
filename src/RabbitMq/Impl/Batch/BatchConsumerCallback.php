@@ -134,6 +134,14 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
     {
         return $this
             ->validate($message)
+            ->then(function () use ($message): void {
+                $this->logger->info(
+                    'Batch consumer received message',
+                    array_merge(
+                        $this->prepareBunnyMessage($message),
+                        PipesHeaders::debugInfo($message->headers)
+                    ));
+            })
             ->then(function () use ($client) {
                 return $client->channel();
             })
@@ -166,8 +174,11 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
                         $channel,
                         $message,
                         new ErrorMessage(2001, 'UNKNOWN_ERROR', $e->getMessage()))
-                    ->then(function () use ($e) {
-                        $this->logger->error(sprintf('Batch action error: %s', $e->getMessage()), ['exception' => $e]);
+                    ->then(function () use ($e, $message) {
+                        $this->logger->error(sprintf('Batch action error: %s', $e->getMessage()), array_merge(
+                            ['exception' => $e],
+                            PipesHeaders::debugInfo($message->headers)
+                        ));
 
                         return reject($e);
                     });
@@ -210,7 +221,10 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
             ->then(function () use ($message, $headers): void {
                 $this->logger->info(
                     'Published test item.',
-                    $this->prepareMessage('', '', $message->getHeader(self::REPLY_TO), $headers)
+                    array_merge(
+                        $this->prepareMessage('', '', $message->getHeader(self::REPLY_TO), $headers),
+                        PipesHeaders::debugInfo($headers)
+                    )
                 );
             });
     }
@@ -235,7 +249,10 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
             ->then(function () use ($message, $headers): void {
                 $this->logger->info(
                     'Published test item error.',
-                    $this->prepareMessage('', '', $message->getHeader(self::REPLY_TO), $headers)
+                    array_merge(
+                        $this->prepareMessage('', '', $message->getHeader(self::REPLY_TO), $headers),
+                        PipesHeaders::debugInfo($headers)
+                    )
                 );
             });
     }
@@ -295,7 +312,10 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
             ->then(function () use ($successMessage, $message, $headers): void {
                 $this->logger->info(
                     sprintf('Published batch item %s.', $successMessage->getSequenceId()),
-                    $this->prepareMessage('', '', $message->getHeader(self::REPLY_TO), $headers)
+                    array_merge(
+                        $this->prepareMessage('', '', $message->getHeader(self::REPLY_TO), $headers),
+                        PipesHeaders::debugInfo($headers)
+                    )
                 );
             });
     }
@@ -324,7 +344,10 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
             )->then(function () use ($message, $headers): void {
                 $this->logger->info(
                     'Published batch end.',
-                    $this->prepareMessage('', '', $message->getHeader(self::REPLY_TO), $headers)
+                    array_merge(
+                        $this->prepareMessage('', '', $message->getHeader(self::REPLY_TO), $headers),
+                        PipesHeaders::debugInfo($headers)
+                    )
                 );
             });
     }
@@ -353,7 +376,10 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
             ->then(function () use ($message, $headers): void {
                 $this->logger->info(
                     'Published batch error end.',
-                    $this->prepareMessage('', '', $message->getHeader(self::REPLY_TO), $headers)
+                    array_merge(
+                        $this->prepareMessage('', '', $message->getHeader(self::REPLY_TO), $headers),
+                        PipesHeaders::debugInfo($headers)
+                    )
                 );
             });
     }

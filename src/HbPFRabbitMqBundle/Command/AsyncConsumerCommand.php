@@ -207,7 +207,12 @@ class AsyncConsumerCommand extends Command implements LoggerAwareInterface
      */
     protected function setup(Channel $channel, AsyncConsumerAbstract $asyncConsumer): PromiseInterface
     {
-        $this->logger->info('RabbitMq setup');
+        $this->logger->info(sprintf(
+            'Async consumer setup - queue: %s, prefetch_count: %s, prefetch_size: %s',
+            $asyncConsumer->getQueue(),
+            $asyncConsumer->getPrefetchCount(),
+            $asyncConsumer->getPrefetchSize()
+        ));
 
         return all([
             $channel->queueDeclare($asyncConsumer->getQueue()),
@@ -223,7 +228,7 @@ class AsyncConsumerCommand extends Command implements LoggerAwareInterface
      */
     private function runAsyncConsumer(LoopInterface $loop, AsyncConsumerAbstract $consumer): void
     {
-        $this->logger->info(sprintf('Connected to %s', $this->config['host']));
+        $this->logger->info(sprintf('Async consumer connected to %s:%s', $this->config['host'], $this->config['port']));
 
         $this
             ->connection($loop, $consumer)
@@ -244,7 +249,7 @@ class AsyncConsumerCommand extends Command implements LoggerAwareInterface
                                 $channel->ack($message);
                             }, function (Exception $e) use ($channel, $message): void {
                                 $this->logger->error(
-                                    sprintf('Message process error: %s', $e->getMessage()),
+                                    sprintf('Async consumer error: %s', $e->getMessage()),
                                     $this->prepareBunnyMessage($message)
                                 );
                                 $this->logger->info('Message NACK', $this->prepareBunnyMessage($message));
