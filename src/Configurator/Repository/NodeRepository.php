@@ -3,8 +3,12 @@
 namespace Hanaboso\PipesFramework\Configurator\Repository;
 
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use Hanaboso\PipesFramework\Commons\Enum\HandlerEnum;
+use Hanaboso\PipesFramework\Commons\Enum\TypeEnum;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
+use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Reduction\NodeReduction;
+use LogicException;
 
 /**
  * Class NodeRepository
@@ -44,6 +48,30 @@ class NodeRepository extends DocumentRepository
             ->getQuery()->getSingleResult();
 
         return $result;
+    }
+
+    /**
+     * @param Topology $topology
+     *
+     * @return Node
+     */
+    public function getStartingNode(Topology $topology): Node
+    {
+        /** @var Node $node */
+        $node = $this->createQueryBuilder()
+            ->field('topology')->equals($topology->getId())
+            ->field('type')->equals(TypeEnum::SIGNAL)
+            ->field('handler')->equals(HandlerEnum::EVENT)
+            ->field('enabled')->equals(TRUE)
+            ->getQuery()->getSingleResult();
+
+        if (!$node) {
+            throw new LogicException(
+                sprintf('Starting Node not found for topology [%s]', $topology->getId())
+            );
+        }
+
+        return $node;
     }
 
 }
