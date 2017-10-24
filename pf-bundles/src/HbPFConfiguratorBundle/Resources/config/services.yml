@@ -6,7 +6,7 @@ services:
             - '@rabbit-mq.manager'
             - '@hbpf.transport.curl_manager'
         calls:
-            - ['setLogger', ['@monolog.logger']]
+            - ['setLogger', ['@monolog.logger.commons']]
 
     hbpf.docker_compose.volume_path_definition_factory:
         class: Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\VolumePathDefinitionFactory
