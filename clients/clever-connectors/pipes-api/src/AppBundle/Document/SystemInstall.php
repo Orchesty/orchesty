@@ -25,10 +25,14 @@ class SystemInstall
     public const  USER               = 'user';
     public const  TOKEN              = 'token';
     public const  SYSTEM             = 'system';
+    public const  EXPIRES            = 'expires';
     public const  SYNCHRONIZED       = 'synchronized';
     public const  SYNCHRONIZED_TIME  = 'synchronizedTime';
-    public const  ENCRYPTED_SETTINGS = 'encryptedSettings';
     public const  CREATED            = 'created';
+    public const  ENCRYPTED_SETTINGS = 'encryptedSettings';
+    public const  EVENT_CREATE       = 'eventCreate';
+    public const  EVENT_UNSUBSCRIBE  = 'eventUnsubscribe';
+    public const  EVENT_HARD_BOUNCE  = 'eventHardBounce';
 
     use IdTrait;
 
@@ -93,6 +97,21 @@ class SystemInstall
      * @var array
      */
     protected $settings = [];
+
+    /**
+     * @var bool
+     */
+    protected $eventCreate = FALSE;
+
+    /**
+     * @var bool
+     */
+    protected $eventUnsubscribe = FALSE;
+
+    /**
+     * @var bool
+     */
+    protected $eventHardBounce = FALSE;
 
     /**
      * SystemInstall constructor.
@@ -263,6 +282,66 @@ class SystemInstall
     }
 
     /**
+     * @return bool
+     */
+    public function isEventCreate(): bool
+    {
+        return $this->eventCreate;
+    }
+
+    /**
+     * @param bool $eventCreate
+     *
+     * @return SystemInstall
+     */
+    public function setEventCreate(bool $eventCreate): SystemInstall
+    {
+        $this->eventCreate = $eventCreate;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isEventUnsubscribe(): bool
+    {
+        return $this->eventUnsubscribe;
+    }
+
+    /**
+     * @param bool $eventUnsubscribe
+     *
+     * @return SystemInstall
+     */
+    public function setEventUnsubscribe(bool $eventUnsubscribe): SystemInstall
+    {
+        $this->eventUnsubscribe = $eventUnsubscribe;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isEventHardBounce(): bool
+    {
+        return $this->eventHardBounce;
+    }
+
+    /**
+     * @param bool $eventHardBounce
+     *
+     * @return SystemInstall
+     */
+    public function setEventHardBounce(bool $eventHardBounce): SystemInstall
+    {
+        $this->eventHardBounce = $eventHardBounce;
+
+        return $this;
+    }
+
+    /**
      * Encrypts settings field before saving to storage
      *
      * @ODM\PreFlush
@@ -289,7 +368,7 @@ class SystemInstall
      */
     public static function from(array $data): SystemInstall
     {
-        $systemInstall     = new SystemInstall();
+        $systemInstall = new SystemInstall();
 
         if (array_key_exists(self::ID, $data)) {
             if (is_array($data[self::ID])) {
@@ -304,25 +383,46 @@ class SystemInstall
             ->setToken($data[self::TOKEN] ?? '')
             ->setSystem($data[self::SYSTEM] ?? '')
             ->setSynchronized((bool) ($data[self::SYNCHRONIZED] ?? FALSE))
+            ->setEventCreate((bool) ($data[self::EVENT_CREATE] ?? FALSE))
+            ->setEventUnsubscribe((bool) ($data[self::EVENT_UNSUBSCRIBE] ?? FALSE))
+            ->setEventHardBounce((bool) ($data[self::EVENT_HARD_BOUNCE] ?? FALSE))
             ->setSettings([]);
 
         if (isset($data[self::ENCRYPTED_SETTINGS])) {
             $systemInstall->setSettings(CryptManager::decrypt($data[self::ENCRYPTED_SETTINGS]));
         }
 
-        if (array_key_exists(self::CREATED, $data) && !empty($data[self::CREATED])) {
-            if (is_array($data[self::CREATED])) {
-                $date = new MongoDate($data[self::CREATED]['sec'], $data[self::CREATED]['usec']);
-                $date = $date->toDateTime();
-            } else {
-                $date = new DateTime($data[self::CREATED]);
-            }
-            $systemInstall->setCreated($date);
-        } else {
-            $systemInstall->setCreated(new DateTime('now', new DateTimeZone('UTC')));
+        $synchronizedTime = self::prepareDate($data, self::SYNCHRONIZED_TIME);
+        if ($synchronizedTime) {
+            $systemInstall->setSynchronizedTime($synchronizedTime);
         }
 
+        $systemInstall
+            ->setExpires(self::prepareDate($data, self::EXPIRES))
+            ->setCreated(self::prepareDate($data, self::CREATED) ?? new DateTime('now', new DateTimeZone('UTC')));
+
         return $systemInstall;
+    }
+
+    /**
+     * @param array  $data
+     * @param string $key
+     *
+     * @return DateTime|null
+     */
+    private static function prepareDate(array $data, string $key): ?DateTime
+    {
+        $date = NULL;
+        if (array_key_exists($key, $data) && !empty($data[$key])) {
+            if (is_array($data[$key])) {
+                $date = new MongoDate($data[$key]['sec'], $data[$key]['usec']);
+                $date = $date->toDateTime();
+            } else {
+                $date = new DateTime($data[$key]);
+            }
+        }
+
+        return $date;
     }
 
 }
