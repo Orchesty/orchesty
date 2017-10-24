@@ -16,6 +16,7 @@ use CleverConnectors\AppBundle\Model\Webhook\WebhookSubscribes;
 use CleverConnectors\AppBundle\Model\Webhook\WebhookSystemInterface;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use CleverConnectors\AppBundle\Repository\WebhookRepository;
+use CleverConnectors\AppBundle\Utils\WebhookUtils;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use Exception;
@@ -77,7 +78,7 @@ class ApiWebhookProvider implements WebhookProviderInterface, LoggerAwareInterfa
         $this->systemRepository  = $dm->getRepository(SystemInstall::class);
         $this->curl              = $curl;
         $this->logger            = new NullLogger();
-        $this->domain            = rtrim($domain, '/');
+        $this->domain            = $domain;
     }
 
     /**
@@ -114,7 +115,13 @@ class ApiWebhookProvider implements WebhookProviderInterface, LoggerAwareInterfa
                 continue;
             }
 
-            $url = $this->getWebhookUrl($this->domain, $userId, $token, $sub->getNodeName(), $sub->getTopologyName());
+            $url = WebhookUtils::getWebhookUrl(
+                $this->domain,
+                $userId,
+                $token,
+                $sub->getNodeName(),
+                $sub->getTopologyName()
+            );
 
             $req = $system->getSubscribeRequest($sub, $systemInstall, $url);
             try {
@@ -181,26 +188,6 @@ class ApiWebhookProvider implements WebhookProviderInterface, LoggerAwareInterfa
     /**
      * ------------------------------------------- HELPERS --------------------------------------
      */
-
-    /**
-     * @param string $domain
-     * @param string $userId
-     * @param string $token
-     * @param string $nodeName
-     * @param string $topologyName
-     *
-     * @return string
-     */
-    private function getWebhookUrl(
-        string $domain,
-        string $userId,
-        string $token,
-        string $nodeName,
-        string $topologyName
-    ): string
-    {
-        return sprintf('%s/webhook/%s/%s/%s/%s', $domain, $userId, $token, $nodeName, $topologyName);
-    }
 
     /**
      * @param Webhook          $webhook
