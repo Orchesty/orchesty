@@ -392,31 +392,37 @@ class SystemInstall
             $systemInstall->setSettings(CryptManager::decrypt($data[self::ENCRYPTED_SETTINGS]));
         }
 
-        if (array_key_exists(self::CREATED, $data) && !empty($data[self::CREATED])) {
-            if (is_array($data[self::CREATED])) {
-                $date = new MongoDate($data[self::CREATED]['sec'], $data[self::CREATED]['usec']);
-                $date = $date->toDateTime();
-            } else {
-                $date = new DateTime($data[self::CREATED]);
-            }
-            $systemInstall->setCreated($date);
-        } else {
-            $systemInstall->setCreated(new DateTime('now', new DateTimeZone('UTC')));
+        $synchronizedTime = self::prepareDate($data, self::SYNCHRONIZED_TIME);
+        if ($synchronizedTime) {
+            $systemInstall->setSynchronizedTime($synchronizedTime);
         }
 
-        if (array_key_exists(self::EXPIRES, $data) && !empty($data[self::EXPIRES])) {
-            if (is_array($data[self::EXPIRES])) {
-                $date = new MongoDate($data[self::EXPIRES]['sec'], $data[self::EXPIRES]['usec']);
-                $date = $date->toDateTime();
-            } else {
-                $date = new DateTime($data[self::EXPIRES]);
-            }
-            $systemInstall->setCreated($date);
-        } else {
-            $systemInstall->setCreated(new DateTime('now', new DateTimeZone('UTC')));
-        }
+        $systemInstall
+            ->setExpires(self::prepareDate($data, self::EXPIRES))
+            ->setCreated(self::prepareDate($data, self::CREATED) ?? new DateTime('now', new DateTimeZone('UTC')));
 
         return $systemInstall;
+    }
+
+    /**
+     * @param array  $data
+     * @param string $key
+     *
+     * @return DateTime|null
+     */
+    private static function prepareDate(array $data, string $key): ?DateTime
+    {
+        $date = NULL;
+        if (array_key_exists($key, $data) && !empty($data[$key])) {
+            if (is_array($data[$key])) {
+                $date = new MongoDate($data[$key]['sec'], $data[$key]['usec']);
+                $date = $date->toDateTime();
+            } else {
+                $date = new DateTime($data[$key]);
+            }
+        }
+
+        return $date;
     }
 
 }
