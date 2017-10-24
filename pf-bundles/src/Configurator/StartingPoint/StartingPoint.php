@@ -238,8 +238,6 @@ class StartingPoint implements LoggerAwareInterface
      * @param Node     $node
      * @param Headers  $headers
      * @param string   $content
-     *
-     * @internal param array $data
      */
     protected function runTopology(Topology $topology, Node $node, Headers $headers, string $content = ''): void
     {

@@ -57,10 +57,11 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
     public function testGetTopologyNotFound(): void
     {
         $response = $this->sendGet('/api/topologies/999');
+        $content = json_decode($response->content);
 
         self::assertEquals(500, $response->status);
-        self::assertEquals(TopologyException::class, $response->content->type);
-        self::assertEquals(TopologyException::TOPOLOGY_NOT_FOUND, $response->content->error_code);
+        self::assertEquals(TopologyException::class, $content->type);
+        self::assertEquals(2001, $content->error_code);
     }
 
     /**
@@ -112,10 +113,11 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
             'descr'   => 'Topology 2',
             'enabled' => TRUE,
         ]);
+        $content = json_decode($response->content);
 
         self::assertEquals(500, $response->status);
-        self::assertEquals(TopologyException::class, $response->content->type);
-        self::assertEquals(TopologyException::TOPOLOGY_NOT_FOUND, $response->content->error_code);
+        self::assertEquals(TopologyException::class, $content->type);
+        self::assertEquals(2001, $content->error_code);
     }
 
     /**
@@ -155,10 +157,11 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
             'status'  => $response->getStatusCode(),
             'content' => Json::decode($response->getContent()),
         ];
+        $content = json_decode($response->content);
 
         self::assertEquals(500, $response->status);
-        self::assertEquals(TopologyException::class, $response->content->type);
-        self::assertEquals(TopologyException::TOPOLOGY_NOT_FOUND, $response->content->error_code);
+        self::assertEquals(TopologyException::class, $content->type);
+        self::assertEquals(2001, $content->error_code);
     }
 
     /**
@@ -215,10 +218,11 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
             'status'  => $response->getStatusCode(),
             'content' => Json::decode($response->getContent()),
         ];
+        $content = json_decode($response->content);
 
         self::assertEquals(500, $response->status);
-        self::assertEquals(TopologyException::class, $response->content->type);
-        self::assertEquals(TopologyException::TOPOLOGY_NOT_FOUND, $response->content->error_code);
+        self::assertEquals(TopologyException::class, $content->type);
+        self::assertEquals(2001, $content->error_code);
     }
 
     /**

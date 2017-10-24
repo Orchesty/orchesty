@@ -51,13 +51,13 @@ class Field
     /**
      * Field constructor.
      *
-     * @param string $type
-     * @param string $key
-     * @param string $label
-     * @param null   $value
-     * @param bool   $required
+     * @param string     $type
+     * @param string     $key
+     * @param string     $label
+     * @param mixed|null $value
+     * @param bool       $required
      *
-     * @param bool   $readOnly
+     * @param bool       $readOnly
      *
      * @throws CleverConnectorsException
      */

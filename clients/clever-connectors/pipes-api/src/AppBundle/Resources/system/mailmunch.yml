@@ -2,6 +2,7 @@ services:
     systems.mailmunch:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Mailmunch\MailmunchSystem
         arguments:
+            - '%backend_host%'
 
     hbpf.connector.mailmunch-create-email-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Mailmunch\Connector\MailmunchCreateEmailConnector

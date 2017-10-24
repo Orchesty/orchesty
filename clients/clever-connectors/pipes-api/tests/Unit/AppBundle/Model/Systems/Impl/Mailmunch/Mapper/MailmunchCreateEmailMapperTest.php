@@ -28,8 +28,6 @@ class MailmunchCreateEmailMapperTest extends KernelTestCaseAbstract
         $expt = [
             'email'      => 'asd@asd.com',
             'first_name' => 'sdf',
-            'last_name'  => '',
-            '_foreign_id' => '',
             'reactivate' => TRUE,
         ];
 

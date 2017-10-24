@@ -27,21 +27,10 @@ class MailmunchCreateEmailConnector implements ConnectorInterface
     /**
      * @param ProcessDto $dto
      *
-     * @return ProcessDto|void
-     * @throws ConnectorException
-     */
-    public function processEvent(ProcessDto $dto): ProcessDto
-    {
-        throw new ConnectorException('Mailmunch has not implemented "processAction" function.');
-    }
-
-    /**
-     * @param ProcessDto $dto
-     *
      * @return ProcessDto
      * @throws CleverConnectorsException
      */
-    public function processAction(ProcessDto $dto): ProcessDto
+    public function processEvent(ProcessDto $dto): ProcessDto
     {
         $arr = parse_query($dto->getData(), TRUE);
         if (!is_array($arr) || empty($arr)) {
@@ -52,6 +41,17 @@ class MailmunchCreateEmailConnector implements ConnectorInterface
         }
 
         return $dto;
+    }
+
+    /**
+     * @param ProcessDto $dto
+     *
+     * @return ProcessDto|void
+     * @throws ConnectorException
+     */
+    public function processAction(ProcessDto $dto): ProcessDto
+    {
+        throw new ConnectorException('Mailmunch has not implemented "processAction" function.');
     }
 
 }

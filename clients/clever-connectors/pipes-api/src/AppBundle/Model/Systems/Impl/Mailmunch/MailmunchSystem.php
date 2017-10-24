@@ -4,21 +4,47 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\Mailmunch;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\SystemTypeEnum;
+use CleverConnectors\AppBundle\Model\Form\Field;
+use CleverConnectors\AppBundle\Model\Form\Form;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\AuthorizationInterface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\Traits\AuthorizationTrait;
-use CleverConnectors\AppBundle\Model\Systems\SystemInterface;
+use CleverConnectors\AppBundle\Model\Webhook\Traits\WebhookSystemTrait;
+use CleverConnectors\AppBundle\Model\Webhook\WebhookSubscribes;
+use CleverConnectors\AppBundle\Model\Webhook\WebhookSystemInterface;
+use CleverConnectors\AppBundle\Utils\WebhookUtils;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 
 /**
  * Class MailmunchSystem
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Mailmunch
  */
-class MailmunchSystem implements SystemInterface, AuthorizationInterface
+class MailmunchSystem implements WebhookSystemInterface, AuthorizationInterface
 {
 
     use AuthorizationTrait;
+    use WebhookSystemTrait;
+    /**
+     * @var string
+     */
+    private $domain;
+
+    /**
+     * MailmunchSystem constructor.
+     *
+     * @param string $domain
+     */
+    function __construct(string $domain)
+    {
+        $this->subscriptions[] = new WebhookSubscribes(
+            'mailmunch-create-email-connector',
+            'mailmunch-create-email',
+            '',
+            '');
+        $this->domain          = $domain;
+    }
 
     /**
      * @param SystemInstall $systemInstall
@@ -43,7 +69,7 @@ class MailmunchSystem implements SystemInterface, AuthorizationInterface
      */
     public function getType(): string
     {
-        return SystemTypeEnum::CRON;
+        return SystemTypeEnum::UI_WEBHOOK;
     }
 
     /**
@@ -96,7 +122,62 @@ class MailmunchSystem implements SystemInterface, AuthorizationInterface
      */
     public function getSettingFields(SystemInstall $systemInstall): array
     {
-        return [];
+        $field1 = new Field(
+            Field::URL,
+            'webhook_url',
+            'Webhook url',
+            WebhookUtils::getWebhookUrl(
+                $this->domain,
+                $systemInstall->getUser(),
+                $systemInstall->getToken(),
+                'mailmunch-create-email-connector',
+                'mailmunch-create-email'
+            ),
+            FALSE,
+            TRUE
+        );
+
+        $form = new Form();
+        $form->addField($field1);
+
+        return $form->toArray();
+    }
+
+    /**
+     * @param WebhookSubscribes $subscription
+     * @param SystemInstall     $systemInstall
+     * @param string            $url
+     *
+     * @return RequestDto
+     */
+    public function getSubscribeRequest(
+        WebhookSubscribes $subscription,
+        SystemInstall $systemInstall,
+        string $url
+    ): RequestDto
+    {
+        return new RequestDto('', new Uri());
+    }
+
+    /**
+     * @param SystemInstall $systemInstall
+     * @param string        $webhookId
+     *
+     * @return RequestDto
+     */
+    public function getUnsubscribeRequest(SystemInstall $systemInstall, string $webhookId): RequestDto
+    {
+        return new RequestDto('', new Uri());
+    }
+
+    /**
+     * @param ResponseDto $response
+     *
+     * @return string
+     */
+    public function getWebhookId(ResponseDto $response): string
+    {
+        return '';
     }
 
 }
