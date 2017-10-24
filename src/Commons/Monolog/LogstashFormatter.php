@@ -25,12 +25,12 @@ class LogstashFormatter extends NormalizerFormatter
     /**
      * @var string
      */
-    protected $serviceType;
+    protected $serviceType = '';
 
     /**
      * @param string $serviceType
      */
-    public function __construct(string $serviceType)
+    public function __construct(string $serviceType = '')
     {
         // logstash requires a ISO 8601 format date with optional millisecond precision.
         parent::__construct('Y-m-d\TH:i:s.uP');
@@ -49,6 +49,10 @@ class LogstashFormatter extends NormalizerFormatter
         $message['timestamp'] = round(microtime(TRUE) * 1000);
         $message['hostname']  = gethostname();
         $message['type']      = $this->serviceType;
+
+        if ($this->serviceType === '') {
+            $message['type'] = $record['channel'] ?? '';
+        }
 
         if (isset($record['message'])) {
             $message['message'] = $record['message'];

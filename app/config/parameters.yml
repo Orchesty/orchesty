@@ -5,7 +5,7 @@ parameters:
     # A secret key that's used to generate certain security-related tokens
     secret: ThisTokenIsNotSoSecretChangeIt
 
-    logger_handler: syslog
+    stdout_path: "%kernel.logs_dir%/stdout_%kernel.environment%.log"
 
     request_listener.http_port: 80
     request_listener.https_port: 80

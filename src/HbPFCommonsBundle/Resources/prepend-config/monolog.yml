@@ -1,76 +1,51 @@
 monolog:
     use_microseconds: false
-    channels: [authorization, commons, connector, ftp, mailer, parser_table, user, rabbit-mq, test, stdout_handler]
+    channels: [authorization, commons, connector, ftp, mailer, parser_table, user, rabbit-mq, test, stdout]
     handlers:
         authorization:
-            type: '%logger_handler%'
-            path: '%kernel.logs_dir%/authorization_%kernel.environment%.log'
-            level: info
-            max_files: 10
-        commons:
-            type: '%logger_handler%'
-            path: '%kernel.logs_dir%/commons_%kernel.environment%.log'
-            level: info
-            max_files: 10
-        connector:
-            type: '%logger_handler%'
-            path: '%kernel.logs_dir%/connector_%kernel.environment%.log'
-            level: info
-            max_files: 10
-        ftp:
-            type: '%logger_handler%'
-            path: '%kernel.logs_dir%/ftp_%kernel.environment%.log'
-            level: info
-            max_files: 10
-        mailer:
-            type: '%logger_handler%'
-            path: '%kernel.logs_dir%/mailer_%kernel.environment%.log'
-            level: info
-            max_files: 10
-        parser_table:
-            type: '%logger_handler%'
-            path: '%kernel.logs_dir%/parser_table_%kernel.environment%.log'
-            level: info
-            max_files: 10
-        user:
-            type: '%logger_handler%'
-            path: '%kernel.logs_dir%/user_%kernel.environment%.log'
-            level: info
-            max_files: 10
-        rabbit-mq:
-            type: 'stream'
-            path: 'php://stdout'
-            level: info
-            max_files: 10
-            channels: rabbit-mq
-
-        test:
             type: service
             id: udp_handler
+            level: info
+        commons:
+            type: service
+            id: udp_handler
+            level: info
+        connector:
+            type: service
+            id: udp_handler
+            level: info
+        ftp:
+            type: service
+            id: udp_handler
+            level: info
+        mailer:
+            type: service
+            id: udp_handler
+            level: info
+        parser_table:
+            type: service
+            id: udp_handler
+            level: info
+        user:
+            type: service
+            id: udp_handler
+            level: info
+        rabbit-mq:
+            type: service
+            id: udp_handler
+            level: info
 
-        # Commons handlers
-        stdout_handler:
+        # Handler for docker container
+        stdout:
             type:  stream
-            path:  "php://stdout"
-            level: debug
+            path:  "%stdout_path%"
+            level: info
             formatter: logstash_formatter
-            channels: stdout_handler
-
-        syslog_handler:
-            type: syslog
-            level: info
-
-        file_handler:
-            type: rotating_file
-            path: '%kernel.logs_dir%/test_%kernel.environment%.log'
-            level: info
             max_files: 10
 
 services:
     logstash_formatter:
         class: Hanaboso\PipesFramework\Commons\Monolog\LogstashFormatter
-        arguments:
-            - 'asdasd'
 
     udp_sender:
         class: Hanaboso\PipesFramework\Commons\Metrics\UDPSender
