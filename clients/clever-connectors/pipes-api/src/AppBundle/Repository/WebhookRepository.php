@@ -28,6 +28,7 @@ class WebhookRepository extends DocumentRepository
             ->field('topologyName')->equals($topologyName)
             ->field('nodeName')->equals($nodeName)
             ->field('webhookId')->notEqual(NULL)
+            ->field('unsubscribeFailed')->equals(FALSE)
             ->getQuery()->getSingleResult();
 
         if ($result) {

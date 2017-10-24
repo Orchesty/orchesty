@@ -51,7 +51,7 @@ class Webhook
      *
      * @ODM\Field(type="boolean")
      */
-    private $unsubscribeFailed;
+    private $unsubscribeFailed = FALSE;
 
     /**
      * @var string|null
