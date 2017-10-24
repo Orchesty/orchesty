@@ -29,3 +29,13 @@ services:
         class: CleverConnectors\AppBundle\Model\LastSync\LastSyncManager
         arguments:
             - '@doctrine_mongodb.odm.default_document_manager'
+
+
+    cc.event.controller:
+        class: CleverConnectors\AppBundle\Controller\CMEventController
+        arguments:
+            - "@cc.event.handler"
+
+    cc.event.handler:
+        class: CleverConnectors\AppBundle\Handler\CMEventHandler
+        arguments:
