@@ -12,7 +12,7 @@ use Tests\ConnectorTestCaseAbstract;
  *
  * @package Tests\Unit\AppBundle\Model\Systems\Impl\Shopify\Mapper
  */
-class ShopifyUpdateCustomerMapperTest extends ConnectorTestCaseAbstract
+final class ShopifyUpdateCustomerMapperTest extends ConnectorTestCaseAbstract
 {
 
     /**

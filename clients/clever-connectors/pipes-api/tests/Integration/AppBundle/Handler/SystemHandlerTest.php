@@ -14,7 +14,7 @@ use Tests\DatabaseTestCaseAbstract;
  *
  * @package Tests\Integration\AppBundle\Handler
  */
-class SystemHandlerTest extends DatabaseTestCaseAbstract
+final class SystemHandlerTest extends DatabaseTestCaseAbstract
 {
 
     /**

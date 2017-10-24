@@ -13,22 +13,27 @@ class WebhookSubscribes
     /**
      * @var string
      */
-    protected $nodeName;
+    private $nodeName;
 
     /**
      * @var string
      */
-    protected $topologyName;
+    private $topologyName;
 
     /**
      * @var string
      */
-    protected $registrationUrl;
+    private $registrationUrl;
 
     /**
      * @var string
      */
-    protected $unregistrationUrl;
+    private $unregistrationUrl;
+
+    /**
+     * @var bool
+     */
+    private $apiReq = FALSE;
 
     /**
      * WebhookSubscribes constructor.
@@ -122,6 +127,26 @@ class WebhookSubscribes
     public function setUnregistrationUrl(string $unregistrationUrl): WebhookSubscribes
     {
         $this->unregistrationUrl = $unregistrationUrl;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isApiReq(): bool
+    {
+        return $this->apiReq;
+    }
+
+    /**
+     * @param bool $apiReq
+     *
+     * @return WebhookSubscribes
+     */
+    public function setApiReq(bool $apiReq): WebhookSubscribes
+    {
+        $this->apiReq = $apiReq;
 
         return $this;
     }

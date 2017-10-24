@@ -18,7 +18,7 @@ use Tests\KernelTestCaseAbstract;
  *
  * @package Tests\Unit\AppBundle\Model\Systems\Impl\Shopify
  */
-class ShopifySystemTest extends KernelTestCaseAbstract
+final class ShopifySystemTest extends KernelTestCaseAbstract
 {
 
     private const ACCESS_TOKEN = 'sdf5sd46';

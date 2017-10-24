@@ -4,10 +4,12 @@ namespace Tests\Integration\AppBundle\Listeners;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Document\Webhook;
+use CleverConnectors\AppBundle\Enum\SystemTypeEnum;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Configurator\Event\TopologyEvent;
 use Tests\DatabaseTestCaseAbstract;
+use Tests\Integration\AppBundle\Model\Systems\Impl\NullSystem;
 use Tests\PrivateTrait;
 
 /**
@@ -15,7 +17,7 @@ use Tests\PrivateTrait;
  *
  * @package Tests\Integration\AppBundle\Listeners
  */
-class EventListenerTest extends DatabaseTestCaseAbstract
+final class EventListenerTest extends DatabaseTestCaseAbstract
 {
 
     use PrivateTrait;
@@ -38,6 +40,15 @@ class EventListenerTest extends DatabaseTestCaseAbstract
         $this->dm->persist($sysInstall);
 
         $this->dm->flush();
+
+        $oauth2 = $this->container->get('hbpf.providers.oauth2_provider');
+        $system = $this->getMockBuilder(NullSystem::class)
+            ->setMethods(['getType'])
+            ->setConstructorArgs([
+                $oauth2,
+            ])->getMock();
+        $system->method('getType')->willReturn(SystemTypeEnum::UI_WEBHOOK);
+        $this->container->set('systems.null.user.group', $system);
 
         $curl = $this->getMockBuilder(CurlManagerInterface::class)->disableOriginalConstructor()->getMock();
         $curl->method('send')->willReturn(new ResponseDto(200, '', '', []));

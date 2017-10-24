@@ -21,7 +21,7 @@ use function React\Promise\resolve;
  *
  * @package Tests\Unit\AppBundle\Model\Systems\Impl\Zendesk\Connector
  */
-class ZendeskSyncUserConnectorTest extends ConnectorTestCaseAbstract
+final class ZendeskSyncUserConnectorTest extends ConnectorTestCaseAbstract
 {
 
     /**

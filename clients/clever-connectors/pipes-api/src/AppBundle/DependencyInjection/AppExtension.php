@@ -30,6 +30,7 @@ class AppExtension extends Extension
         $loader->load('listeners.yml');
         $loader->load('custom_nodes.yml');
         $loader->load('services.yml');
+        $loader->load('webhook.yml');
 
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/system'));
         $loader->load('cleverMonitor.yml');

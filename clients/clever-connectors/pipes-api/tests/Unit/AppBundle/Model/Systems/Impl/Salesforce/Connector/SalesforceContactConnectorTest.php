@@ -10,7 +10,7 @@ use Tests\KernelTestCaseAbstract;
  *
  * @package Tests\Unit\AppBundle\Model\Systems\Impl\Salesforce\Connector
  */
-class SalesforceContactConnectorTest extends KernelTestCaseAbstract
+final class SalesforceContactConnectorTest extends KernelTestCaseAbstract
 {
 
     /**

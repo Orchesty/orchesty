@@ -27,7 +27,7 @@ use Throwable;
  *
  * @package Tests\Unit\AppBundle\Cron
  */
-class UserMessageGeneratorTest extends TestCase
+final class UserMessageGeneratorTest extends TestCase
 {
 
     /**

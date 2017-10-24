@@ -11,7 +11,7 @@ use Tests\KernelTestCaseAbstract;
  *
  * @package Tests\Unit\AppBundle\Listeners
  */
-class ProgressCounterListenerTest extends KernelTestCaseAbstract
+final class ProgressCounterListenerTest extends KernelTestCaseAbstract
 {
 
     /**

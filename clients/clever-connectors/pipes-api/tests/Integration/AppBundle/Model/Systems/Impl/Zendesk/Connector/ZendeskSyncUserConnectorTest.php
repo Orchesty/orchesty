@@ -18,7 +18,7 @@ use Tests\DatabaseTestCaseAbstract;
  *
  * @package Tests\Integration\AppBundle\Model\Systems\Impl\Zendesk\Connector
  */
-class ZendeskSyncUserConnectorTest extends DatabaseTestCaseAbstract
+final class ZendeskSyncUserConnectorTest extends DatabaseTestCaseAbstract
 {
 
     /**

@@ -25,7 +25,7 @@ use function React\Promise\resolve;
  *
  * @package Tests\Unit\AppBundle\Model\Systems\Impl\Zendesk\Connector
  */
-class ZendeskUpdateUserConnectorTest extends ConnectorTestCaseAbstract
+final class ZendeskUpdateUserConnectorTest extends ConnectorTestCaseAbstract
 {
 
     use PrivateTrait;

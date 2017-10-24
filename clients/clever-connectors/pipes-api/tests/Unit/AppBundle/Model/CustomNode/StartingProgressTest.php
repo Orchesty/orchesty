@@ -22,7 +22,7 @@ use PHPUnit_Framework_MockObject_MockObject;
  *
  * @package Tests\Unit\AppBundle\Model\CustomNode
  */
-class StartingProgressTest extends TestCase
+final class StartingProgressTest extends TestCase
 {
 
     /**

@@ -3,10 +3,9 @@
 namespace Tests\Integration\AppBundle\Model\Webhook;
 
 use CleverConnectors\AppBundle\Document\Webhook;
-use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
-use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
-use PHPUnit_Framework_MockObject_MockObject;
+use CleverConnectors\AppBundle\Enum\SystemTypeEnum;
 use Tests\DatabaseTestCaseAbstract;
+use Tests\Integration\AppBundle\Model\Systems\Impl\NullSystem;
 use Tests\PrivateTrait;
 
 /**
@@ -14,7 +13,7 @@ use Tests\PrivateTrait;
  *
  * @package Tests\Integration\AppBundle\Model
  */
-class WebhookManagerTest extends DatabaseTestCaseAbstract
+final class WebhookManagerTest extends DatabaseTestCaseAbstract
 {
 
     use PrivateTrait;
@@ -33,9 +32,14 @@ class WebhookManagerTest extends DatabaseTestCaseAbstract
      */
     public function testSubscribe(): void
     {
-        $system  = $this->container->get('systems.null.user.group');
+        $oauth2 = $this->container->get('hbpf.providers.oauth2_provider');
+        $system = $this->getMockBuilder(NullSystem::class)
+            ->setMethods(['getType'])
+            ->setConstructorArgs([
+                $oauth2,
+            ])->getMock();
+        $system->method('getType')->willReturn(SystemTypeEnum::UI_WEBHOOK);
         $webhook = $this->container->get('cc.webhook.manager');
-        $this->setProperty($webhook, 'curl', $this->mockCurl());
 
         $this->container->get('cc.systems.manager')->installSystem('someUser', 'null.user.group', 'token');
 
@@ -59,18 +63,6 @@ class WebhookManagerTest extends DatabaseTestCaseAbstract
         $webhook->unsubscribe($system, 'someUser');
         $res = $this->dm->getRepository(Webhook::class)->findAll();
         self::assertEquals(0, count($res));
-    }
-
-    /**
-     * @return CurlManagerInterface|PHPUnit_Framework_MockObject_MockObject
-     */
-    private function mockCurl(): CurlManagerInterface
-    {
-        $curl = $this->createMock(CurlManagerInterface::class);
-        $res  = new ResponseDto(200, '', 'body', []);
-        $curl->method('send')->willReturn($res);
-
-        return $curl;
     }
 
 }

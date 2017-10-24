@@ -11,7 +11,7 @@ use Tests\DatabaseTestCaseAbstract;
  *
  * @package Tests\Integration\AppBundle\Document
  */
-class SystemInstallTest extends DatabaseTestCaseAbstract
+final class SystemInstallTest extends DatabaseTestCaseAbstract
 {
 
     /**

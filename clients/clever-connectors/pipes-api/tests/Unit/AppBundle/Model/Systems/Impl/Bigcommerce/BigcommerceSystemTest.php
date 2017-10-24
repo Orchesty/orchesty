@@ -69,7 +69,6 @@ final class BigcommerceSystemTest extends KernelTestCaseAbstract
             'destination' => 'subscribeUrl',
         ], Json::decode($dto->getBody(), TRUE));
 
-
         $dto = $this->system->getSubscribeRequest(new WebhookSubscribes(
             'bigcommerce-update-customer-connector',
             'bigcommerce-update-customer',
@@ -85,7 +84,6 @@ final class BigcommerceSystemTest extends KernelTestCaseAbstract
             'scope'       => 'store/customer/updated',
             'destination' => 'subscribeUrl',
         ], Json::decode($dto->getBody(), TRUE));
-
 
         $dto = $this->system->getSubscribeRequest(new WebhookSubscribes(
             'bigcommerce-delete-customer-connector',
@@ -154,25 +152,28 @@ final class BigcommerceSystemTest extends KernelTestCaseAbstract
         $this->assertEquals(3, count($form));
         $this->assertEquals([
             0 => [
-                'type'     => 'text',
-                'key'      => 'store_id',
-                'label'    => 'Store ID (XXX part in https://store-XXX.mybigcommerce.com)',
-                'value'    => 'ukcfcghi',
-                'required' => TRUE,
+                'type'      => 'text',
+                'key'       => 'store_id',
+                'label'     => 'Store ID (XXX part in https://store-XXX.mybigcommerce.com)',
+                'value'     => 'ukcfcghi',
+                'required'  => TRUE,
+                'read_only' => FALSE,
             ],
             1 => [
-                'type'     => 'text',
-                'key'      => 'client_id',
-                'label'    => 'Client ID',
-                'value'    => 'p7f4o1hfl1zdkz1bp1sy7u8qs0fq7q',
-                'required' => TRUE,
+                'type'      => 'text',
+                'key'       => 'client_id',
+                'label'     => 'Client ID',
+                'value'     => 'p7f4o1hfl1zdkz1bp1sy7u8qs0fq7q',
+                'required'  => TRUE,
+                'read_only' => FALSE,
             ],
             2 => [
-                'type'     => 'text',
-                'key'      => 'access_token',
-                'label'    => 'Access Token',
-                'value'    => '7ndpkdbqb0h1wycrxhtw43ye0yprtn9',
-                'required' => TRUE,
+                'type'      => 'text',
+                'key'       => 'access_token',
+                'label'     => 'Access Token',
+                'value'     => '7ndpkdbqb0h1wycrxhtw43ye0yprtn9',
+                'required'  => TRUE,
+                'read_only' => FALSE,
             ],
         ], $form);
     }

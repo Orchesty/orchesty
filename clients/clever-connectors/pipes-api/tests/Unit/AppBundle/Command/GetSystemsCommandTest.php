@@ -22,7 +22,7 @@ use Symfony\Component\Console\Tester\CommandTester;
  *
  * @package Unit\AppBundle\Command
  */
-class GetSystemsCommandTest extends TestCase
+final class GetSystemsCommandTest extends TestCase
 {
 
     /**

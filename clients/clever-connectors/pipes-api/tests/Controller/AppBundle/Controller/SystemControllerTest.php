@@ -12,7 +12,7 @@ use Tests\ControllerTestCaseAbstract;
  *
  * @package Tests\Integration\AppBundle\Controller
  */
-class SystemControllerTest extends ControllerTestCaseAbstract
+final class SystemControllerTest extends ControllerTestCaseAbstract
 {
 
     /**
@@ -162,25 +162,28 @@ class SystemControllerTest extends ControllerTestCaseAbstract
                 'authorized'     => FALSE,
                 'setting_fields' => [
                     (object) [
-                        'type'     => 'url',
-                        'key'      => 'field1',
-                        'label'    => '',
-                        'value'    => NULL,
-                        'required' => TRUE,
+                        'type'      => 'url',
+                        'key'       => 'field1',
+                        'label'     => '',
+                        'value'     => NULL,
+                        'required'  => TRUE,
+                        'read_only' => FALSE,
                     ],
                     (object) [
-                        'type'     => 'text',
-                        'key'      => 'field2',
-                        'label'    => '',
-                        'value'    => NULL,
-                        'required' => TRUE,
+                        'type'      => 'text',
+                        'key'       => 'field2',
+                        'label'     => '',
+                        'value'     => NULL,
+                        'required'  => TRUE,
+                        'read_only' => FALSE,
                     ],
                     (object) [
-                        'type'     => 'password',
-                        'key'      => 'field3',
-                        'label'    => '',
-                        'value'    => NULL,
-                        'required' => TRUE,
+                        'type'      => 'password',
+                        'key'       => 'field3',
+                        'label'     => '',
+                        'value'     => NULL,
+                        'required'  => TRUE,
+                        'read_only' => FALSE,
                     ],
                 ],
             ]),
@@ -227,25 +230,28 @@ class SystemControllerTest extends ControllerTestCaseAbstract
                 'authorized'     => FALSE,
                 'setting_fields' => [
                     (object) [
-                        'type'     => 'url',
-                        'key'      => 'field1',
-                        'label'    => '',
-                        'value'    => NULL,
-                        'required' => TRUE,
+                        'type'      => 'url',
+                        'key'       => 'field1',
+                        'label'     => '',
+                        'value'     => NULL,
+                        'required'  => TRUE,
+                        'read_only' => FALSE,
                     ],
                     (object) [
-                        'type'     => 'text',
-                        'key'      => 'field2',
-                        'label'    => '',
-                        'value'    => NULL,
-                        'required' => TRUE,
+                        'type'      => 'text',
+                        'key'       => 'field2',
+                        'label'     => '',
+                        'value'     => NULL,
+                        'required'  => TRUE,
+                        'read_only' => FALSE,
                     ],
                     (object) [
-                        'type'     => 'password',
-                        'key'      => 'field3',
-                        'label'    => '',
-                        'value'    => NULL,
-                        'required' => TRUE,
+                        'type'      => 'password',
+                        'key'       => 'field3',
+                        'label'     => '',
+                        'value'     => NULL,
+                        'required'  => TRUE,
+                        'read_only' => FALSE,
                     ],
                 ],
             ]),

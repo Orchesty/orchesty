@@ -12,7 +12,7 @@ use Tests\ConnectorTestCaseAbstract;
  *
  * @package Tests\Unit\AppBundle\Model\Systems\Impl\Wisepops\Mapper
  */
-class WisepopsCreateEmailMapperTest extends ConnectorTestCaseAbstract
+final class WisepopsCreateEmailMapperTest extends ConnectorTestCaseAbstract
 {
 
     /**
