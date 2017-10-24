@@ -17,7 +17,7 @@ use Tests\DatabaseTestCaseAbstract;
  *
  * @package Tests\Integration\AppBundle\Model\Systems\Impl\Basecrm\Connector
  */
-class BasecrmContactConnectorTest extends DatabaseTestCaseAbstract
+final class BasecrmContactConnectorTest extends DatabaseTestCaseAbstract
 {
 
     /**

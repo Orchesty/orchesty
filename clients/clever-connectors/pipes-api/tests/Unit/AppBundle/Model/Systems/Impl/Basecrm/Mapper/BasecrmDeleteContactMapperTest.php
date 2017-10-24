@@ -11,7 +11,7 @@ use Tests\ConnectorTestCaseAbstract;
  *
  * @package Tests\Unit\AppBundle\Model\Systems\Impl\Basecrm\Mapper
  */
-class BasecrmDeleteContactMapperTest extends ConnectorTestCaseAbstract
+final class BasecrmDeleteContactMapperTest extends ConnectorTestCaseAbstract
 {
 
     /**
@@ -29,8 +29,6 @@ class BasecrmDeleteContactMapperTest extends ConnectorTestCaseAbstract
 
         $expt = [
             'email'       => '',
-            'first_name'  => '',
-            'last_name'   => '',
             '_foreign_id' => '187643117',
             'reactivate'  => TRUE,
         ];

@@ -18,7 +18,7 @@ use function React\Promise\resolve;
  *
  * @package Tests\Unit\AppBundle\Model\Systems\Impl\Basecrm\Connector
  */
-class BasecrmContactConnectorTest extends ConnectorTestCaseAbstract
+final class BasecrmContactConnectorTest extends ConnectorTestCaseAbstract
 {
 
     /**
