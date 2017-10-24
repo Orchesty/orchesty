@@ -98,9 +98,7 @@ class BasecrmSystem implements SystemInterface, AuthorizationInterface
      */
     public function getRequestDto(SystemInstall $systemInstall, string $method): RequestDto
     {
-        if (!$this->isAuthorized($systemInstall)) {
-            throw new SystemException('BaseCRM is unauthorized.');
-        }
+        $this->continueOnAuthorized($systemInstall);
 
         $dto = new RequestDto($method, new Uri(self::SYSTEM_URL));
         $dto->setHeaders($this->getHeaders($systemInstall, NULL));

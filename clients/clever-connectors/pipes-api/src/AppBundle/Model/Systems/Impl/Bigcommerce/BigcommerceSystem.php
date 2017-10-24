@@ -144,9 +144,7 @@ class BigcommerceSystem implements WebhookSystemInterface, AuthorizationInterfac
      */
     public function getRequestDto(SystemInstall $systemInstall, string $method): RequestDto
     {
-        if (!$this->isAuthorized($systemInstall)) {
-            throw new SystemException('Bigcommerce is not Authorized!', SystemException::SYSTEM_IS_UNAUTHORIZED);
-        }
+        $this->continueOnAuthorized($systemInstall);
 
         return (new RequestDto($method, new Uri(sprintf(
             self::SYSTEM_URL, $systemInstall->getSettings()[self::STORE_ID]
