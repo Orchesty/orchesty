@@ -18,7 +18,7 @@ const testTopology: ITopologyConfigSkeleton = {
             id: "node-a",
             resequencer: true,
             debug: {
-                port: 4101,
+                port: 4111,
                 host: "localhost",
                 url: "http://localhost:4101/status",
             },
@@ -34,7 +34,7 @@ const testTopology: ITopologyConfigSkeleton = {
                 },
             },
             debug: {
-                port: 4102,
+                port: 4112,
                 host: "localhost",
                 url: "http://localhost:4102/status",
             },

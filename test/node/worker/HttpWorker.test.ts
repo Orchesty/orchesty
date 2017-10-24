@@ -13,48 +13,64 @@ const httpServer = express();
 const bodyParserRaw = {
     type: () => true,
 };
+
 httpServer.use(bodyParser.raw(bodyParserRaw));
 httpServer.post("/ok", (req, resp) => {
     assert.deepEqual(JSON.parse(req.body), { val: "original" });
     assert.equal(req.headers["pf-node-name"], "httpworker");
     assert.equal(req.headers["pf-node-id"], "507f191e810c19729de860ea");
-    resp.set({
-        "pf-result-code": 0,
-        "pf-result-message": "ok",
-    });
+
+    const requestHeaders: any = req.headers;
+    const replyHeaders = new Headers(requestHeaders);
+    replyHeaders.setPFHeader(Headers.RESULT_CODE, `${ResultCode.SUCCESS}`);
+    replyHeaders.setPFHeader(Headers.RESULT_MESSAGE, "ok");
+
+    resp.set(replyHeaders.getRaw());
     resp.status(200).send(JSON.stringify({ val: "modified" }));
 });
 httpServer.post("/invalid-status-code", (req, resp) => {
     assert.deepEqual(JSON.parse(req.body), { val: "original" });
-    resp.set({
-        "pf-result-code": 4001,
-        "pf-result-message": "some error",
-    });
+
+    const requestHeaders: any = req.headers;
+    const replyHeaders = new Headers(requestHeaders);
+    replyHeaders.setPFHeader(Headers.RESULT_CODE, `${ResultCode.WORKER_TIMEOUT}`);
+    replyHeaders.setPFHeader(Headers.RESULT_MESSAGE, "some error");
+
+    resp.set(replyHeaders.getRaw());
     resp.status(500).send(JSON.stringify({ val: "modified but 500" }));
 });
 httpServer.post("/invalid-result-code", (req, resp) => {
     assert.deepEqual(JSON.parse(req.body), { val: "original" });
-    resp.set({
-        "pf-result-code": ResultCode.WORKER_TIMEOUT,
-        "pf-result-message": "some error",
-    });
+
+    const requestHeaders: any = req.headers;
+    const replyHeaders = new Headers(requestHeaders);
+    replyHeaders.setPFHeader(Headers.RESULT_CODE, "999");
+    replyHeaders.setPFHeader(Headers.RESULT_MESSAGE, "ok");
+
+    resp.set(replyHeaders.getRaw());
     resp.status(200).send(JSON.stringify({ val: "modified" }));
 });
 httpServer.post("/empty-result-body", (req, resp) => {
     assert.deepEqual(JSON.parse(req.body), { val: "original" });
-    resp.set({
-        "pf-result-code": ResultCode.SUCCESS,
-        "pf-result-message": "some error",
-    });
+
+    const requestHeaders: any = req.headers;
+    const replyHeaders = new Headers(requestHeaders);
+    replyHeaders.setPFHeader(Headers.RESULT_CODE, `${ResultCode.SUCCESS}`);
+    replyHeaders.setPFHeader(Headers.RESULT_MESSAGE, "ok");
+
+    resp.set(replyHeaders.getRaw());
     resp.status(200).send();
 });
 httpServer.post("/ok-xml", (req, resp) => {
     assert.deepEqual(JSON.parse(req.body), { val: "original" });
-    resp.set({
-        "pf-result-code": 0,
-        "pf-result-message": "ok",
-    });
-    resp.set("content-type", "application/xml");
+
+    const requestHeaders: any = req.headers;
+    const replyHeaders = new Headers(requestHeaders);
+    replyHeaders.setPFHeader(Headers.RESULT_CODE, `${ResultCode.SUCCESS}`);
+    replyHeaders.setPFHeader(Headers.RESULT_MESSAGE, "ok");
+    replyHeaders.setPFHeader(Headers.CONTENT_TYPE, "application/xml");
+
+    resp.set(replyHeaders.getRaw());
     resp.status(200).send("<?xml version=\"1.0\" encoding=\"UTF-8\"?><root>some content</root>");
 });
 httpServer.listen(4020);
@@ -119,7 +135,7 @@ describe("HttpWorker", () => {
             });
     });
 
-    it("should return modified message but be marged as failed due to result_status error", () => {
+    it("should return modified message but be marked as failed due to result_status error", () => {
         const node: INodeLabel = {id: "nodeId", node_id: "nodeId", node_name: "nodeName", topology_id: "topoId"};
         const headers = new Headers();
         headers.setPFHeader(Headers.CORRELATION_ID, "123");
@@ -132,8 +148,8 @@ describe("HttpWorker", () => {
 
         return worker.processData(msg)
             .then((outMsg: JobMessage) => {
-                assert.equal(outMsg.getResult().code, ResultCode.WORKER_TIMEOUT);
-                assert.equal(outMsg.getContent(), JSON.stringify({ val: "modified" }));
+                assert.equal(outMsg.getResult().code, ResultCode.MISSING_RESULT_CODE);
+                assert.equal(outMsg.getContent(), JSON.stringify({ val: "original" }));
             });
     });
 

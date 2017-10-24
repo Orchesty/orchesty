@@ -25,7 +25,7 @@ class Consumer extends BasicConsumer {
 
     public processMessage(amqMsg: Message, channel: Channel): void {
         logger.info(`AmqpFaucet received message. \
-        Headers: ${JSON.stringify(amqMsg.properties)}, Body: ${amqMsg.content.toString()}`);
+            Headers: ${JSON.stringify(amqMsg.properties)}, Body: ${amqMsg.content.toString()}`);
 
         let inMsg: JobMessage;
         try {
