@@ -9,7 +9,7 @@
 
 namespace CleverConnectors\AppBundle\Controller;
 
-use CleverConnectors\AppBundle\Handler\CMEventHandler;
+use CleverConnectors\AppBundle\Handler\CMEventsHandler;
 use FOS\RestBundle\Controller\FOSRestController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -21,22 +21,22 @@ use Symfony\Component\HttpFoundation\Response;
  *
  * @package CleverConnectors\AppBundle\Controller
  *
- * @Route(service="cc.cm_event.controller")
+ * @Route(service="cc.cm_events.controller")
  */
-class CMEventController extends FOSRestController
+class CMEventsController extends FOSRestController
 {
 
     /**
-     * @var CMEventHandler
+     * @var CMEventsHandler
      */
     private $handler;
 
     /**
      * CMEventController constructor.
      *
-     * @param CMEventHandler $handler
+     * @param CMEventsHandler $handler
      */
-    public function __construct(CMEventHandler $handler)
+    public function __construct(CMEventsHandler $handler)
     {
         $this->handler = $handler;
     }
@@ -52,7 +52,7 @@ class CMEventController extends FOSRestController
      */
     public function createAction(Request $request, string $userId): Response
     {
-        $this->handler->createEvent();
+        $this->handler->createEvent($request, $userId);
 
         return new Response([], 200);
     }
@@ -68,7 +68,7 @@ class CMEventController extends FOSRestController
      */
     public function unsubscribeAction(Request $request, string $userId): Response
     {
-        $this->handler->unsubscribeEvent();
+        $this->handler->unsubscribeEvent($request, $userId);
 
         return new Response([], 200);
     }
@@ -84,7 +84,7 @@ class CMEventController extends FOSRestController
      */
     public function HardBounceAction(Request $request, string $userId): Response
     {
-        $this->handler->hardBounceEvent();
+        $this->handler->hardBounceEvent($request, $userId);
 
         return new Response([], 200);
     }

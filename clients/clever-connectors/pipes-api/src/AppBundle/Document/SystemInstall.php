@@ -362,6 +362,16 @@ class SystemInstall
     }
 
     /**
+     * @param string $event
+     *
+     * @return bool
+     */
+    public static function isEvent(string $event): bool
+    {
+        return in_array($event, [self::EVENT_CREATE, self::EVENT_UNSUBSCRIBE, self::EVENT_HARD_BOUNCE]);
+    }
+
+    /**
      * @param array $data
      *
      * @return SystemInstall

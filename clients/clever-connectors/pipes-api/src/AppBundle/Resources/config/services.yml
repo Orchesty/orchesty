@@ -31,11 +31,11 @@ services:
             - '@doctrine_mongodb.odm.default_document_manager'
 
 
-    cc.event.controller:
-        class: CleverConnectors\AppBundle\Controller\CMEventController
+    cc.events.controller:
+        class: CleverConnectors\AppBundle\Controller\CMEventsController
         arguments:
             - "@cc.event.handler"
 
-    cc.event.handler:
-        class: CleverConnectors\AppBundle\Handler\CMEventHandler
+    cc.events.handler:
+        class: CleverConnectors\AppBundle\Handler\CMEventsHandler
         arguments:

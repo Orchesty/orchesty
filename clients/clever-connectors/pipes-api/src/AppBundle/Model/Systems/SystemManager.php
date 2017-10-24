@@ -14,9 +14,8 @@ use CleverConnectors\AppBundle\Model\Webhook\WebhookSystemInterface;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Doctrine\Common\Persistence\ObjectRepository;
+use CleverConnectors\AppBundle\Utils\TopologyNameUtils;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Hanaboso\PipesFramework\Commons\Enum\HandlerEnum;
-use Hanaboso\PipesFramework\Commons\Enum\TypeEnum;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Repository\NodeRepository;
@@ -162,8 +161,9 @@ class SystemManager
     {
         $this->systemLoader->getSystem($system);
 
-        $users   = [];
+        /** @var SystemInstall[] $systems */
         $systems = $this->systemRepository->findBy(['system' => $system, 'synchronized' => $synchronized]);
+        $users   = [];
 
         foreach ($systems as $systemInstall) {
             $users[] = $systemInstall->getUser();
@@ -293,24 +293,10 @@ class SystemManager
         $request->headers->set(CMHeaders::createKey(CMHeaders::GUID), $user);
         $request->headers->set(CMHeaders::createKey(CMHeaders::SYSTEM_KEY), $system);
         $request->headers->set(CMHeaders::createKey(CMHeaders::TOKEN), $systemInstall->getToken());
-
-        $topologyName = sprintf('%s-sync-subscribers', $system);
-        $topologies   = $this->topologyRepository->getRunnableTopologies($topologyName);
+        $topologies = $this->topologyRepository->getRunnableTopologies(TopologyNameUtils::getSyncName($systemInstall));
 
         foreach ($topologies as $topology) {
-            $node = $this->nodeRepository->findOneBy([
-                'topology' => $topology->getId(),
-                'type'     => TypeEnum::SIGNAL,
-                'handler'  => HandlerEnum::EVENT,
-            ]);
-
-            if (!$node) {
-                throw new CleverConnectorsException(
-                    sprintf('Starting Node not found for topology [%s]', $topology->getId()),
-                    CleverConnectorsException::STARTING_NODE_NOT_FOUND
-                );
-            }
-
+            $node = $this->nodeRepository->getStartingNode($topology);
             $this->startingPoint->runWithRequest($request, $topology, $node);
         }
     }
