@@ -256,6 +256,11 @@ class ConnectorManager implements ConnectorInterface
         $this->send($request);
     }
 
+    public function setUserSystemPassword(): void
+    {
+        // todo
+    }
+
     /**
      * @param string $userId
      * @param string $systemKey
@@ -264,8 +269,8 @@ class ConnectorManager implements ConnectorInterface
     public function switchUserSystemToken(string $userId, string $systemKey, string $token): void
     {
         $request = new Request(
-            CurlSender::GET,
-            new Uri(sprintf('/user_systems/user/%s/system/%s/sync', $userId, $systemKey)),
+            CurlSender::PUT,
+            new Uri(sprintf('/user_systems/user/%s/system/%s/switch_token', $userId, $systemKey)),
             $this->getDefaultHeaders()->getHeaders(),
             json_encode(['token' => $token])
         );
