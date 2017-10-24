@@ -39,8 +39,6 @@ final class HubspotDeleteContactMapperTest extends ConnectorTestCaseAbstract
         $this->assertEquals([
             CleverFieldsEnum::EMAIL      => 1246965,
             CleverFieldsEnum::FOREIGN_ID => 1246965,
-            CleverFieldsEnum::FIRST_NAME => '',
-            CleverFieldsEnum::LAST_NAME  => '',
             CleverFieldsEnum::REACTIVATE => FALSE,
         ], $response);
 
@@ -80,14 +78,31 @@ final class HubspotDeleteContactMapperTest extends ConnectorTestCaseAbstract
             'objectId'         => 123,
         ];
 
-        $this->getMapper()->process((new ProcessDto())->setData(json_encode($data)))->getData();
+        $headers = [];
 
-        unset($data['subscriptionType']);
+        $dto = (new ProcessDto())
+            ->setData(json_encode($data))
+            ->setHeaders($headers);
+
+        $this->expectException(CleverConnectorsException::class);
+        $this->expectExceptionCode(CleverConnectorsException::UNKNOWN_SUBSCRIPTION_TYPE);
+
+        $this->getMapper()->process($dto)->getData();
+    }
+
+    /**
+     *
+     */
+    public function testProcessFail2_2(): void
+    {
+        $data = [
+            'objectId' => 123,
+        ];
 
         $this->expectException(CleverConnectorsException::class);
         $this->expectExceptionCode(CleverConnectorsException::MISSING_DATA);
 
-        $this->getMapper()->process((new ProcessDto())->setData(json_encode($data)))->getData();
+        $this->getMapper()->process((new ProcessDto())->setData(json_encode($data))->setHeaders([]))->getData();
     }
 
     /**
@@ -100,9 +115,9 @@ final class HubspotDeleteContactMapperTest extends ConnectorTestCaseAbstract
         ];
 
         $this->expectException(CleverConnectorsException::class);
-        $this->expectExceptionCode(CleverConnectorsException::MISSING_DATA);
+        $this->expectExceptionCode(CleverConnectorsException::UNKNOWN_SUBSCRIPTION_TYPE);
 
-        $this->getMapper()->process((new ProcessDto())->setData(json_encode($data)))->getData();
+        $this->getMapper()->process((new ProcessDto())->setData(json_encode($data))->setHeaders([]))->getData();
     }
 
     /**

@@ -14,6 +14,7 @@ use CleverConnectors\AppBundle\Model\Webhook\Traits\WebhookSystemTrait;
 use CleverConnectors\AppBundle\Model\Webhook\WebhookSubscribes;
 use CleverConnectors\AppBundle\Model\Webhook\WebhookSystemInterface;
 use CleverConnectors\AppBundle\Utils\AuthorizationUtils;
+use CleverConnectors\AppBundle\Utils\WebhookUtils;
 use DateTime;
 use DateTimeZone;
 use GuzzleHttp\Psr7\Uri;
@@ -35,6 +36,7 @@ class HubspotSystem implements WebhookSystemInterface, OAuth2Interface
     use WebhookSystemTrait;
 
     private const APP_ID                          = 'app_id';
+    private const WEBHOOK_URL                     = 'webhook_url';
     private const USER_ID                         = 4846078;
     private const HAPI_KEY                        = 'abab4202-0a4b-4099-8b61-fe325790d7cd';
     private const CLIENT_ID                       = '91caba3e-b12b-44d9-8e37-93e50918efa9';
@@ -64,13 +66,20 @@ class HubspotSystem implements WebhookSystemInterface, OAuth2Interface
     private $scopes = ['contacts'];
 
     /**
+     * @var string
+     */
+    private $domain;
+
+    /**
      * HubspotSystem constructor.
      *
      * @param OAuth2Provider $provider
+     * @param string         $domain
      */
-    public function __construct(OAuth2Provider $provider)
+    public function __construct(OAuth2Provider $provider, string $domain)
     {
         $this->provider = $provider;
+        $this->domain   = $domain;
 
         $this->subscriptions[] = $this->prepareWebhookSubscription(self::SUBSCRIPTION_TYPE_CREATE);
         $this->subscriptions[] = $this->prepareWebhookSubscription(self::SUBSCRIPTION_TYPE_DELETE);
@@ -224,7 +233,26 @@ class HubspotSystem implements WebhookSystemInterface, OAuth2Interface
             TRUE
         );
 
-        $form = (new Form())->addField($field1);
+        $webhookUrl = WebhookUtils::getWebhookUrl(
+            $this->domain,
+            $systemInstall->getUser(),
+            $systemInstall->getToken(),
+            $this->getNodeName(),
+            $this->getTopologyName()
+        );
+
+        $field2 = new Field(
+            Field::URL,
+            self::WEBHOOK_URL,
+            'Url where client\'s app should send webhook messages to.',
+            $webhookUrl,
+            FALSE,
+            TRUE
+        );
+
+        $form = (new Form())
+            ->addField($field1)
+            ->addField($field2);
 
         return $form->toArray();
     }
@@ -322,8 +350,8 @@ class HubspotSystem implements WebhookSystemInterface, OAuth2Interface
         }
 
         return new WebhookSubscribes(
-            sprintf('%s-update-contact-connector', $this->getKey()),
-            sprintf('%s-update-contact', $this->getKey()),
+            $this->getNodeName(),
+            $this->getTopologyName(),
             self::WEBHOOK_SUBSCRIPTION_CREATE_URL,
             self::WEBHOOK_SUBSCRIPTION_DELETE_URL,
             $params
@@ -361,6 +389,22 @@ class HubspotSystem implements WebhookSystemInterface, OAuth2Interface
         $dto->setCustomAppDependencies($systemInstall->getUser(), $this->getKey());
 
         return $dto;
+    }
+
+    /**
+     * @return string
+     */
+    private function getNodeName(): string
+    {
+        return sprintf('%s-update-contact-connector', $this->getKey());
+    }
+
+    /**
+     * @return string
+     */
+    private function getTopologyName(): string
+    {
+        return sprintf('%s-update-contact', $this->getKey());
     }
 
 }

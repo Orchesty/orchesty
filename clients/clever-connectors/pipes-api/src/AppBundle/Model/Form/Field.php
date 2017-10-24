@@ -29,7 +29,7 @@ class Field
     private $label;
 
     /**
-     * @var string|int|bool|null
+     * @var mixed|null
      */
     private $value;
 
@@ -56,7 +56,6 @@ class Field
      * @param string     $label
      * @param mixed|null $value
      * @param bool       $required
-     *
      * @param bool       $readOnly
      *
      * @throws CleverConnectorsException

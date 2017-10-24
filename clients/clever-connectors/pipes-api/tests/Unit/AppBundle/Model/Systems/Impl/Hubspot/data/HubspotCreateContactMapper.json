@@ -1,5 +1,5 @@
 {
-  "subscriptionType": "contact.propertyChange",
+  "subscriptionType": "contact.creation",
   "vid": 3234574,
   "canonical-vid": 3234574,
   "merged-vids": [

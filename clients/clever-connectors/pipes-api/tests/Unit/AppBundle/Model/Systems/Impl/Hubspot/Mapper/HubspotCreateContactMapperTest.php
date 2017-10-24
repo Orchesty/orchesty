@@ -4,34 +4,34 @@ namespace Tests\Unit\AppBundle\Model\Systems\Impl\Hubspot\Mapper;
 
 use CleverConnectors\AppBundle\Enum\CleverFieldsEnum;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
-use CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\Mapper\HubspotUpdateContactMapper;
+use CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\Mapper\HubspotCreateContactMapper;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Nette\Utils\Json;
 use Tests\ConnectorTestCaseAbstract;
 
 /**
- * Class HubspotUpdateContactMapperTest
+ * Class HubspotCreateContactMapperTest
  *
  * @package Tests\Unit\AppBundle\Model\Systems\Impl\Hubspot\Mapper
  */
-final class HubspotUpdateContactMapperTest extends ConnectorTestCaseAbstract
+final class HubspotCreateContactMapperTest extends ConnectorTestCaseAbstract
 {
 
     /**
-     * @var HubspotUpdateContactMapper|object
+     * @var HubspotCreateContactMapper|object
      */
     private $mapper;
 
     /**
-     * @covers HubspotUpdateContactMapper::process()
+     * @covers HubspotCreateContactMapper::process()
      */
     public function testProcess(): void
     {
         $response = Json::decode(
             $this->getMapper()
                 ->process((new ProcessDto())
-                    ->setData($this->getRequest('HubspotUpdateContactMapper.json'))
+                    ->setData($this->getRequest('HubspotCreateContactMapper.json'))
                     ->setHeaders([]))
                 ->getData(),
             TRUE
@@ -47,7 +47,7 @@ final class HubspotUpdateContactMapperTest extends ConnectorTestCaseAbstract
     }
 
     /**
-     * @covers HubspotUpdateContactMapper::process()
+     * @covers HubspotCreateContactMapper::process()
      */
     public function testProcessFail(): void
     {
@@ -58,7 +58,7 @@ final class HubspotUpdateContactMapperTest extends ConnectorTestCaseAbstract
     }
 
     /**
-     * @covers HubspotUpdateContactMapper::process()
+     * @covers HubspotCreateContactMapper::process()
      */
     public function testProcessFail1(): void
     {
@@ -84,7 +84,7 @@ final class HubspotUpdateContactMapperTest extends ConnectorTestCaseAbstract
     {
         $data = [
             'vid'               => 123,
-            'subscriptionType'  => 'contact.propertyChange',
+            'subscriptionType'  => 'contact.creation',
             'properties'        => [],
             'identity-profiles' => [
                 [
@@ -115,32 +115,14 @@ final class HubspotUpdateContactMapperTest extends ConnectorTestCaseAbstract
     public function testProcessFail3(): void
     {
         $data = [
-            'subscriptionType' => '',
+            'vid'              => 123,
+            'subscriptionType' => 'contact.propertyChange',
         ];
 
-        $this->expectException(CleverConnectorsException::class);
-        $this->expectExceptionCode(CleverConnectorsException::UNKNOWN_SUBSCRIPTION_TYPE);
+        $res        = $this->getMapper()->process((new ProcessDto())->setData(json_encode($data))->setHeaders([]));
+        $resultCode = $res->getHeader(CMHeaders::createKey(CMHeaders::RESULT_CODE));
 
-        $this->getMapper()->process((new ProcessDto())->setData(json_encode($data))->setHeaders([]));
-    }
-
-    /**
-     *
-     */
-    public function testProcessFail4(): void
-    {
-        $data = [
-            'subscriptionType' => 'contact.deletion',
-        ];
-
-        $dto        = (new ProcessDto())
-            ->setData(json_encode($data))
-            ->setHeaders([CMHeaders::createKey(CMHeaders::RESULT_CODE) => '0']);
-
-        $this->expectException(CleverConnectorsException::class);
-        $this->expectExceptionCode(CleverConnectorsException::DISALLOWED_SUBSCRIPTION_TYPE);
-
-        $this->getMapper()->process($dto);
+        self::assertEquals(1003, $resultCode);
     }
 
     /**
@@ -149,25 +131,26 @@ final class HubspotUpdateContactMapperTest extends ConnectorTestCaseAbstract
     public function testProcessSetHeadersToStop(): void
     {
         $data = [
-            'subscriptionType' => 'contact.creation',
+            'subscriptionType' => 'contact.deletion',
         ];
 
         $dto        = (new ProcessDto())
             ->setData(json_encode($data))
-            ->setHeaders([CMHeaders::createKey(CMHeaders::RESULT_CODE) => '0']);
-        $res        = $this->getMapper()->process($dto);
-        $resultCode = $res->getHeader(CMHeaders::createKey(CMHeaders::RESULT_CODE));
+            ->setHeaders([]);
 
-        self::assertEquals(1003, $resultCode);
+        $this->expectException(CleverConnectorsException::class);
+        $this->expectExceptionCode(CleverConnectorsException::DISALLOWED_SUBSCRIPTION_TYPE);
+
+        $this->getMapper()->process($dto);
     }
 
     /**
-     * @return HubspotUpdateContactMapper|object
+     * @return HubspotCreateContactMapper|object
      */
     private function getMapper()
     {
         if (!$this->mapper) {
-            return $this->container->get('hbpf.custom_node.hubspot-update-contact-mapper');
+            return $this->container->get('hbpf.custom_node.hubspot-create-contact-mapper');
         }
 
         return $this->mapper;

@@ -29,8 +29,18 @@ class HubspotCreateContactMapper extends HubspotMapperAbstract implements Custom
         $this->continueAfterDataCheck(HubspotSystem::SUBSCRIPTION_TYPE_KEY, $data);
 
         // we do not want propertyChange/deletion to continue
-        if ($data[HubspotSystem::SUBSCRIPTION_TYPE_KEY] != HubspotSystem::SUBSCRIPTION_TYPE_CREATE) {
+        if ($data[HubspotSystem::SUBSCRIPTION_TYPE_KEY] == HubspotSystem::SUBSCRIPTION_TYPE_UPDATE) {
             return $this->setHeadersToStop($dto);
+        } elseif ($data[HubspotSystem::SUBSCRIPTION_TYPE_KEY] == HubspotSystem::SUBSCRIPTION_TYPE_DELETE) {
+            throw new CleverConnectorsException(
+                sprintf('Disallowed subscription type "%s"', $data[HubspotSystem::SUBSCRIPTION_TYPE_KEY]),
+                CleverConnectorsException::DISALLOWED_SUBSCRIPTION_TYPE
+            );
+        } elseif ($data[HubspotSystem::SUBSCRIPTION_TYPE_KEY] != HubspotSystem::SUBSCRIPTION_TYPE_CREATE) {
+            throw new CleverConnectorsException(
+                sprintf('Unknown subscription type "%s"', $data[HubspotSystem::SUBSCRIPTION_TYPE_KEY]),
+                CleverConnectorsException::UNKNOWN_SUBSCRIPTION_TYPE
+            );
         }
 
         $this->continueAfterDataCheck('properties', $data);

@@ -3,6 +3,7 @@ services:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\HubspotSystem
         arguments:
             - '@hbpf.providers.oauth2_provider'
+            - '%backend_host%'
         tags: ['%systems%']
 
     hbpf.connector.hubspot-update-contact-connector:

@@ -44,9 +44,12 @@ final class HubspotSystemTest extends KernelTestCaseAbstract
             $provider = $this->getMockBuilder(OAuth2Provider::class)->disableOriginalConstructor()->getMock();
             $provider->method('authorize')->willReturn(TRUE);
 
-            $this->system = new HubspotSystem($provider);
+            $this->system = new HubspotSystem($provider, 'abc');
 
             $this->systemInstall = new SystemInstall();
+            $this->systemInstall
+                ->setUser('user123')
+                ->setToken('token123');
             $this->systemInstall->setSettings([
                 'access_token' => self::ACCESS_TOKEN,
                 'app_id'       => 12345,
@@ -128,9 +131,11 @@ final class HubspotSystemTest extends KernelTestCaseAbstract
         /** @var Form $form */
         $form = $this->system->getSettingFields($this->systemInstall);
 
-        self::assertEquals(1, count($form));
+        self::assertEquals(2, count($form));
         self::assertEquals('app_id', $form[0]['key']);
         self::assertEquals(Field::TEXT, $form[0]['type']);
+        self::assertEquals('webhook_url', $form[1]['key']);
+        self::assertEquals(Field::URL, $form[1]['type']);
     }
 
 }

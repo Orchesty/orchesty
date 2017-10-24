@@ -31,6 +31,11 @@ class WebhookSubscribes
     private $unSubscribeUrl;
 
     /**
+     * @var array|null
+     */
+    private $params = [];
+
+    /**
      * @var bool
      */
     private $apiReq = FALSE;

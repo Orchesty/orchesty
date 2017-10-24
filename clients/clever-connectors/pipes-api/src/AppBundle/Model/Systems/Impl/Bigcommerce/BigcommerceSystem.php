@@ -208,7 +208,7 @@ class BigcommerceSystem implements WebhookSystemInterface, AuthorizationInterfac
     {
         return (new RequestDto(
             'POST',
-            new Uri(sprintf($subscription->getRegistrationUrl(), $systemInstall->getSettings()[self::STORE_ID]))
+            new Uri(sprintf($subscription->getSubscribeUrl(), $systemInstall->getSettings()[self::STORE_ID]))
         ))->setBody(Json::encode([
             'scope'       => $this->topics[$subscription->getNodeName()],
             'destination' => $url,
@@ -226,7 +226,7 @@ class BigcommerceSystem implements WebhookSystemInterface, AuthorizationInterfac
         return (new RequestDto(
             'DELETE',
             new Uri(sprintf(
-                $this->subscriptions[0]->getUnregistrationUrl(),
+                $this->subscriptions[0]->getUnSubscribeUrl(),
                 $systemInstall->getSettings()[self::STORE_ID],
                 $webhookId
             ))
