@@ -70,26 +70,22 @@ class SystemInstallRepository extends DocumentRepository
     public function setSyncTime(SystemInstall $systemInstall): void
     {
         $now = new DateTime('now', new DateTimeZone('UTC'));
-        $this->getDocumentManager()
-            ->getDocumentCollection(SystemInstall::class)
-            ->update(
-                ['_id' => new MongoId($systemInstall->getId())],
-                [
-                    SystemInstall::USER               => $systemInstall->getUser(),
-                    SystemInstall::TOKEN              => $systemInstall->getToken(),
-                    SystemInstall::SYSTEM             => $systemInstall->getSystem(),
-                    SystemInstall::CREATED            => $systemInstall->getCreated()->format(DateTime::W3C),
-                    SystemInstall::SYNCHRONIZED       => TRUE,
-                    SystemInstall::SYNCHRONIZED_TIME  => $now->format(DateTime::W3C),
-                    SystemInstall::ENCRYPTED_SETTINGS => CryptManager::encrypt($systemInstall->getSettings()),
-                ]
-            );
+        $systemInstall
+            ->setSynchronizedTime($now)
+            ->setSynchronized(TRUE);
+        $this->saveSystemInstall($systemInstall);
     }
+
     /**
      * @param SystemInstall $systemInstall
      */
     public function saveSystemInstall(SystemInstall $systemInstall): void
     {
+        $expires = !$systemInstall->getExpires() ? NULL : $systemInstall->getExpires()->format(DateTime::W3C);
+        $created = !$systemInstall->getCreated() ? NULL : $systemInstall->getCreated()->format(DateTime::W3C);
+        $sync    = !$systemInstall->getSynchronizedTime() ? NULL : $systemInstall->getSynchronizedTime()
+            ->format(DateTime::W3C);
+
         $this->getDocumentManager()
             ->getDocumentCollection(SystemInstall::class)
             ->update(
@@ -98,10 +94,14 @@ class SystemInstallRepository extends DocumentRepository
                     SystemInstall::USER               => $systemInstall->getUser(),
                     SystemInstall::TOKEN              => $systemInstall->getToken(),
                     SystemInstall::SYSTEM             => $systemInstall->getSystem(),
-                    SystemInstall::CREATED            => $systemInstall->getCreated()->format(DateTime::W3C),
+                    SystemInstall::EXPIRES            => $expires,
                     SystemInstall::SYNCHRONIZED       => $systemInstall->isSynchronized(),
-                    SystemInstall::SYNCHRONIZED_TIME  => $systemInstall->getSynchronizedTime(),
+                    SystemInstall::SYNCHRONIZED_TIME  => $sync,
+                    SystemInstall::CREATED            => $created,
                     SystemInstall::ENCRYPTED_SETTINGS => CryptManager::encrypt($systemInstall->getSettings()),
+                    SystemInstall::EVENT_CREATE       => $systemInstall->isEventCreate(),
+                    SystemInstall::EVENT_UNSUBSCRIBE  => $systemInstall->isEventUnsubscribe(),
+                    SystemInstall::EVENT_HARD_BOUNCE  => $systemInstall->isEventHardBounce(),
                 ]
             );
     }
