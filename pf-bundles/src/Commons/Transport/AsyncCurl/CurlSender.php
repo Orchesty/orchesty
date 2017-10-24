@@ -13,7 +13,7 @@ use Clue\React\Buzz\Message\ResponseException;
 use Exception;
 use GuzzleHttp\Psr7\Request;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
-use Psr\Http\Message\MessageInterface;
+use Hanaboso\PipesFramework\Commons\Transport\Utils\TransportFormatter;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerAwareInterface;
@@ -107,30 +107,14 @@ class CurlSender implements LoggerAwareInterface
      */
     private function logRequest(RequestInterface $request, array $debugInfo = []): void
     {
-        $message = sprintf(
-            'Request: Method: %s, Uri: %s, Headers: %s, Body: "%s"',
+        $message = TransportFormatter::requestToString(
             $request->getMethod(),
-            $request->getUri(),
-            $this->headersToString($request),
+            (string) $request->getUri(),
+            $request->getHeaders(),
             $request->getBody()->getContents()
         );
 
         $this->logger->info($message, $debugInfo);
-    }
-
-    /**
-     * @param MessageInterface $message
-     *
-     * @return string
-     */
-    private function headersToString(MessageInterface $message): string
-    {
-        $headers = [];
-        foreach ($message->getHeaders() as $key => $values) {
-            $headers[] = sprintf('%s=%s', $key, implode(", ", $values));
-        }
-
-        return implode(", ", $headers);
     }
 
     /**
@@ -139,10 +123,10 @@ class CurlSender implements LoggerAwareInterface
      */
     private function logResponse(ResponseInterface $response, array $debugInfo = []): void
     {
-        $message = sprintf('Response: Status Code: %s, Reason Phrase: %s, Headers: %s, Body: "%s"',
+        $message = TransportFormatter::responseToString(
             $response->getStatusCode(),
             $response->getReasonPhrase(),
-            $this->headersToString($response),
+            $response->getHeaders(),
             $response->getBody()->getContents()
         );
         $this->logger->info($message, $debugInfo);

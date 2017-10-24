@@ -7,6 +7,7 @@ use GuzzleHttp\Psr7\Request;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
+use Hanaboso\PipesFramework\Commons\Transport\Utils\TransportFormatter;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -88,10 +89,10 @@ final class CurlManager implements CurlManagerInterface, LoggerAwareInterface
         try {
             $request = new Request($dto->getMethod(), $dto->getUri(), $dto->getHeaders(), $dto->getBody());
 
-            $this->logger->info(sprintf('Request: Method: %s, Uri: %s, Headers: %s, Body: %s',
+            $this->logger->info(TransportFormatter::requestToString(
                 $dto->getMethod(),
-                $dto->getUri(),
-                $this->getHeadersAsString($dto->getHeaders()),
+                (string) $dto->getUri(),
+                $dto->getHeaders(),
                 $dto->getBody()
             ));
 
@@ -105,10 +106,10 @@ final class CurlManager implements CurlManagerInterface, LoggerAwareInterface
                 $psrResponse->getHeaders()
             );
 
-            $this->logger->info(sprintf('Response: Status Code: %s, Reason Phrase: %s, Headers: %s, Body: %s',
+            $this->logger->info(TransportFormatter::responseToString(
                 $psrResponse->getStatusCode(),
                 $psrResponse->getReasonPhrase(),
-                $this->getHeadersAsString($psrResponse->getHeaders()),
+                $psrResponse->getHeaders(),
                 $psrResponse->getBody()->getContents()
             ));
 
@@ -123,21 +124,6 @@ final class CurlManager implements CurlManagerInterface, LoggerAwareInterface
         }
 
         return $response;
-    }
-
-    /**
-     * @param array $headers
-     *
-     * @return string
-     */
-    private function getHeadersAsString(array $headers): string
-    {
-        $string = '';
-        foreach ($headers as $key => $value) {
-            $string .= sprintf('%s: %s, ', $key, is_array($value) ? array_values($value)[0] : $value);
-        }
-
-        return mb_substr($string, 0, -2);
     }
 
 }
