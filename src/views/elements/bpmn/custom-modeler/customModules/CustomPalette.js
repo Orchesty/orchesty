@@ -126,7 +126,7 @@ PaletteProvider.prototype.getPaletteEntries = function() {
       'bpmn:Task', 'activity', 'bpmn-icon-service-task', 'Connector', { pipesType: 'connector'}
     ),
     'create.batch_connector': createAction(
-      'bpmn:Task', 'activity', 'bpmn-icon-service-task', 'Batch connector', { pipesType: 'batch_connector'}
+      'bpmn:Task', 'activity', 'bpmn-icon-pipes-batch-connector', 'Batch connector', { pipesType: 'batch_connector'}
     ),
     'create.custom': createAction(
       'bpmn:Task', 'activity', 'bpmn-icon-task-none', 'Custom', { pipesType: 'custom'}
@@ -142,13 +142,6 @@ PaletteProvider.prototype.getPaletteEntries = function() {
     ),
     'create.splitter': createAction(
       'bpmn:Task', 'activity', 'bpmn-icon-pipes-splitter', 'Splitter', { pipesType: 'splitter'}
-    ),
-    'task-separator': {
-      group: 'activity',
-      separator: true
-    },
-    'create.exclusive-gateway': createAction(
-      'bpmn:ExclusiveGateway', 'gateway', 'bpmn-icon-gateway-xor', 'Gateway', { pipesType: 'gateway'}
     )
   });
 
