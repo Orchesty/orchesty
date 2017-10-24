@@ -24,4 +24,14 @@ final class SystemTypeEnum extends EnumAbstract
         self::UI_WEBHOOK => 'ui_webhook',
     ];
 
+    /**
+     * @param string $type
+     *
+     * @return bool
+     */
+    public static function isWebhook(string $type): bool
+    {
+        return in_array($type, [self::WEBHOOK, self::UI_WEBHOOK]);
+    }
+
 }

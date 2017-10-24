@@ -58,7 +58,7 @@ class ConnectorController extends FOSRestController
             $response = new Response(
                 ControllerUtils::createExceptionData($e),
                 500,
-                ControllerUtils::createHeaders([], $e)
+                ControllerUtils::createHeaders($request->headers->all(), $e)
             );
         }
 
@@ -69,11 +69,12 @@ class ConnectorController extends FOSRestController
      * @Route("/connector/{id}/webhook/test")
      * @Method({"GET", "OPTIONS"})
      *
-     * @param string $id
+     * @param Request $request
+     * @param string  $id
      *
      * @return JsonResponse
      */
-    public function processEventTestAction(string $id): JsonResponse
+    public function processEventTestAction(Request $request, string $id): JsonResponse
     {
         $this->construct();
 
@@ -84,7 +85,7 @@ class ConnectorController extends FOSRestController
             $response = new JsonResponse(
                 ControllerUtils::createExceptionData($e),
                 500,
-                ControllerUtils::createHeaders([], $e)
+                ControllerUtils::createHeaders($request->headers->all(), $e)
             );
         }
 
@@ -109,14 +110,13 @@ class ConnectorController extends FOSRestController
             $response = new JsonResponse(
                 $data->getData(),
                 200,
-                ControllerUtils::createHeaders($data->getHeaders()
-                ),
+                ControllerUtils::createHeaders($data->getHeaders()),
                 TRUE);
         } catch (ConnectorException $e) {
             $response = new JsonResponse(
                 ControllerUtils::createExceptionData($e),
                 500,
-                ControllerUtils::createHeaders([], $e)
+                ControllerUtils::createHeaders($request->headers->all(), $e)
             );
         }
 
@@ -127,11 +127,12 @@ class ConnectorController extends FOSRestController
      * @Route("/connector/{id}/action/test")
      * @Method({"GET", "OPTIONS"})
      *
-     * @param string $id
+     * @param Request $request
+     * @param string  $id
      *
      * @return JsonResponse
      */
-    public function processActionTestAction(string $id): JsonResponse
+    public function processActionTestAction(Request $request, string $id): JsonResponse
     {
         $this->construct();
 
@@ -142,7 +143,7 @@ class ConnectorController extends FOSRestController
             $response = new JsonResponse(
                 ControllerUtils::createExceptionData($e),
                 500,
-                ControllerUtils::createHeaders([], $e)
+                ControllerUtils::createHeaders($request->headers->all(), $e)
             );
         }
 

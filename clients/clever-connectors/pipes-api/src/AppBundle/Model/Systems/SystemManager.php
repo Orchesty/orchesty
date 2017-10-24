@@ -213,6 +213,8 @@ class SystemManager
         $this->dm->persist($systemInstall);
         $this->dm->flush();
 
+        $this->subscribeWebhooks($systemInstall);
+
         return $systemInstall;
     }
 
@@ -420,7 +422,7 @@ class SystemManager
     {
         $systemService = $this->systemLoader->getSystem($systemInstall->getSystem());
 
-        if ($systemService->isAuthorized($systemInstall) && $systemService->getType() === SystemTypeEnum::WEBHOOK) {
+        if ($systemService->isAuthorized($systemInstall) && SystemTypeEnum::isWebhook($systemService->getType())) {
             /** @var WebhookSystemInterface $webhookSystem */
             $webhookSystem = $systemService;
             $this->webhookManager->subscribe($webhookSystem, $systemInstall->getUser(), $systemInstall->getToken());
@@ -434,7 +436,7 @@ class SystemManager
     {
         $systemService = $this->systemLoader->getSystem($systemInstall->getSystem());
 
-        if ($systemService->isAuthorized($systemInstall) && $systemService->getType() === SystemTypeEnum::WEBHOOK) {
+        if ($systemService->isAuthorized($systemInstall) && SystemTypeEnum::isWebhook($systemService->getType())) {
             /** @var WebhookSystemInterface $webhookSystem */
             $webhookSystem = $systemService;
             $this->webhookManager->update($webhookSystem, $systemInstall->getUser(), $systemInstall->getToken());
@@ -448,7 +450,7 @@ class SystemManager
     {
         $systemService = $this->systemLoader->getSystem($systemInstall->getSystem());
 
-        if ($systemService->isAuthorized($systemInstall) && $systemService->getType() === SystemTypeEnum::WEBHOOK) {
+        if ($systemService->isAuthorized($systemInstall) && SystemTypeEnum::isWebhook($systemService->getType())) {
             /** @var WebhookSystemInterface $webhookSystem */
             $webhookSystem = $systemService;
             $this->webhookManager->unsubscribe($webhookSystem, $systemInstall->getUser());
