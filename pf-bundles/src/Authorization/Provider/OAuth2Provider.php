@@ -163,6 +163,7 @@ class OAuth2Provider implements OAuth2ProviderInterface, LoggerAwareInterface
      * @param OAuth2DtoInterface $dto
      * @param string             $authorizeUrl
      * @param array              $scopes
+     * @param string             $separator
      *
      * @return string
      */
@@ -178,7 +179,7 @@ class OAuth2Provider implements OAuth2ProviderInterface, LoggerAwareInterface
             $state = Base64::base64UrlEncode($dto->getUser() . ':' . $dto->getSystemKey());
         }
 
-        $url = sprintf('%s%s', $authorizeUrl, ScopeFormatter::getScopes($scopes));
+        $url = sprintf('%s%s', $authorizeUrl, ScopeFormatter::getScopes($scopes, $separator));
 
         if ($state) {
             $url = (string) (new Url($url))->setQueryParameter('state', $state);
