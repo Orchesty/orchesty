@@ -1,0 +1,13 @@
+{
+  "meta": {
+    "type": "contact",
+    "sync": {
+      "event_type": "deleted",
+      "ack_key": "delete|Contact|187643117|0|16269873768",
+      "revision": 0
+    }
+  },
+  "data": {
+    "id": 187643117
+  }
+}

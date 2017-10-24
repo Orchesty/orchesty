@@ -1,0 +1,23 @@
+{
+  "data": {
+    "id": "64007dee-2651-458c-9699-b0a5bfd32367",
+    "queues": [
+      {
+        "data": {
+          "name": "main",
+          "pages": 2,
+          "total_count": 26
+        },
+        "meta": {
+          "type": "sync_queue",
+          "links": {
+            "self": "https://api.getbase.com/v2/sync/64007dee-2651-458c-9699-b0a5bfd32367/queues/main"
+          }
+        }
+      }
+    ]
+  },
+  "meta": {
+    "type": "sync_session"
+  }
+}

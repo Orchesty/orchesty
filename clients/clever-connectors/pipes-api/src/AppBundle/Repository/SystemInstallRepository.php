@@ -85,6 +85,26 @@ class SystemInstallRepository extends DocumentRepository
                 ]
             );
     }
+    /**
+     * @param SystemInstall $systemInstall
+     */
+    public function saveSystemInstall(SystemInstall $systemInstall): void
+    {
+        $this->getDocumentManager()
+            ->getDocumentCollection(SystemInstall::class)
+            ->update(
+                ['_id' => new MongoId($systemInstall->getId())],
+                [
+                    SystemInstall::USER               => $systemInstall->getUser(),
+                    SystemInstall::TOKEN              => $systemInstall->getToken(),
+                    SystemInstall::SYSTEM             => $systemInstall->getSystem(),
+                    SystemInstall::CREATED            => $systemInstall->getCreated()->format(DateTime::W3C),
+                    SystemInstall::SYNCHRONIZED       => $systemInstall->isSynchronized(),
+                    SystemInstall::SYNCHRONIZED_TIME  => $systemInstall->getSynchronizedTime(),
+                    SystemInstall::ENCRYPTED_SETTINGS => CryptManager::encrypt($systemInstall->getSettings()),
+                ]
+            );
+    }
 
     /**
      * @param DateTime $dateTime

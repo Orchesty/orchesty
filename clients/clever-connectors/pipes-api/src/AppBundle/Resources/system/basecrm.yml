@@ -1,0 +1,33 @@
+services:
+    systems.basecrm:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Basecrm\BasecrmSystem
+        arguments:
+
+    hbpf.connector.basecrm-contact-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Basecrm\Connector\BasecrmContactConnector
+        arguments:
+            - '@systems.basecrm'
+            - '@hbpf.transport.async_curl_factory'
+            - '@doctrine_mongodb.odm.default_document_manager'
+
+    hbpf.connector.basecrm-queue-contact-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Basecrm\Connector\BasecrmQueueContactConnector
+        arguments:
+            - '@systems.basecrm'
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.transport.curl_manager'
+
+    hbpf.connector.basecrm-acknowledge-contact-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Basecrm\Connector\BasecrmAcknowledgeContactConnector
+        arguments:
+            - '@hbpf.transport.curl_manager'
+            - '@systems.basecrm'
+            - '@doctrine_mongodb.odm.default_document_manager'
+
+    hbpf.custom_node.basecrm-update-contact-mapper:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Basecrm\Mapper\BasecrmContactUpdateMapper
+        arguments:
+
+    hbpf.custom_node.basecrm-delete-contact-mapper:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Basecrm\Mapper\BasecrmContactDeleteMapper
+        arguments:
