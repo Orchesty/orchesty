@@ -1,8 +1,9 @@
-import {Channel, Message} from "amqplib";
+import {Channel, Message, Options} from "amqplib";
 import AssertionPublisher from "lib-nodejs/dist/src/rabbitmq/AssertPublisher";
 import AMQPConnection, {PrepareFn} from "lib-nodejs/dist/src/rabbitmq/Connection";
 import SimpleConsumer from "lib-nodejs/dist/src/rabbitmq/SimpleConsumer";
 import ObjectUtils from "lib-nodejs/dist/src/utils/ObjectUtils";
+import Headers from "../message/Headers";
 import logger from "./../logger/Logger";
 import IMessageStorage from "./IMessageStorage";
 
@@ -83,9 +84,13 @@ class Repeater {
      */
     private resend(message: Message): Promise<void> {
         try {
-            const target = message.properties.headers.repeat_target_queue;
+            const headers = new Headers(message.properties.headers);
+            const target = headers.getPFHeader(Headers.REPEAT_QUEUE);
+
             const content = new Buffer(message.content.toString());
-            const props = ObjectUtils.removeNullableProperties(message.properties);
+            const props: Options.Publish = ObjectUtils.removeNullableProperties(message.properties);
+            props.headers = headers.getRaw();
+            props.priority ? props.priority++ : props.priority = 1;
 
             return this.publisher.sendToQueue(target, content, props);
         } catch (e) {
@@ -115,18 +120,24 @@ class Repeater {
         };
 
         const handleMessageFn = (msg: Message) => {
-            const headers = msg.properties.headers;
+            const headers = new Headers(msg.properties.headers);
 
-            if (!headers.repeat_interval || !headers.repeat_target_queue) {
+            if (!headers.hasPFHeader(Headers.REPEAT_QUEUE) || !headers.hasPFHeader(Headers.REPEAT_INTERVAL)) {
                 logger.error(
-                    "Repeater discarded message. Missing 'repeat_interval' or 'repeat_target_queue' header.",
-                    { node_id: "repeater", correlation_id: headers.correlation_id, process_id: headers.process_id },
+                    `Repeater discarded message. Missing 'REPEAT_QUEUE' or 'REPEAT_INTERVAL' headers.
+                     Headers: "${JSON.stringify(headers.getRaw())}"`,
+                    {
+                        node_id: "repeater",
+                        correlation_id: headers.getPFHeader(Headers.CORRELATION_ID),
+                        process_id: headers.getPFHeader(Headers.PROCESS_ID),
+                    },
                 );
 
+                // Ignore this message and ack it
                 return;
             }
 
-            const timeout = parseInt(headers.repeat_interval, 10);
+            const timeout = parseInt(headers.getPFHeader(Headers.REPEAT_INTERVAL), 10);
 
             return this.storage.save(msg, timeout);
         };
