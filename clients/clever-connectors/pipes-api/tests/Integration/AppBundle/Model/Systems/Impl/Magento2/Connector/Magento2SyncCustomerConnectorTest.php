@@ -26,7 +26,7 @@ final class Magento2SyncCustomerConnectorTest extends DatabaseTestCaseAbstract
     public function testProcessBatch(): void
     {
         $this->markTestSkipped();
-        $connector = $this->container->get('hbpf.connector.magento2-sync-connector');
+        $connector = $this->container->get('hbpf.connector.magento2-sync-customer-connector');
 
         $topology = (new Topology())->setName('Topology');
         $this->persistAndFlush($topology);

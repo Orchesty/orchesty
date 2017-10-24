@@ -1,9 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Integration\AppBundle\Model\Systems\Impl\Magento2\Connector;
+namespace Tests\Integration\AppBundle\Model\Systems\Impl\Nutshell\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
-use Hanaboso\PipesFramework\Commons\Crypt\CryptManager;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
@@ -13,11 +12,11 @@ use React\EventLoop\Factory;
 use Tests\DatabaseTestCaseAbstract;
 
 /**
- * Class Magento2UpdateCustomerConnectorTest
+ * Class NutshellSyncContactConnectorTest
  *
- * @package Tests\Integration\AppBundle\Model\Systems\Impl\Magento2\Connector
+ * @package Tests\Integration\AppBundle\Model\Systems\Impl\Nutshell\Connector
  */
-final class Magento2UpdateCustomerConnectorTest extends DatabaseTestCaseAbstract
+class NutshellSyncContactConnectorTest extends DatabaseTestCaseAbstract
 {
 
     /**
@@ -26,17 +25,17 @@ final class Magento2UpdateCustomerConnectorTest extends DatabaseTestCaseAbstract
     public function testProcessBatch(): void
     {
         $this->markTestSkipped();
-        $connector = $this->container->get('hbpf.connector.magento2-update-customer-connector');
+        $connector = $this->container->get('hbpf.connector.nutshell-sync-contact-connector');
 
         $topology = (new Topology())->setName('Topology');
         $this->persistAndFlush($topology);
 
         $settings = [
-            'access_token' => 'd4y2ujldkrjwifkegbfspesf23mm5lsq',
+            'username' => 'nutshell@mailinator.com',
+            'api_key'  => '967b1f7b321e6305d18e6656a650c32420aba98d',
         ];
 
-        $system = new SystemInstall();
-        $system
+        $system = (new SystemInstall())
             ->setUser('u_123')
             ->setToken('t-456')
             ->setSystem('s_-879')
@@ -48,27 +47,16 @@ final class Magento2UpdateCustomerConnectorTest extends DatabaseTestCaseAbstract
             ->setTopology($topology->getId());
         $this->persistAndFlush($node);
 
-        $dtoData = [
-            'data' => [
-                'system_install' => [
-                    'id'                => $system->getId(),
-                    'user'              => $system->getUser(),
-                    'token'             => $system->getToken(),
-                    'system'            => $system->getSystem(),
-                    'encryptedSettings' => CryptManager::encrypt($settings),
-                ],
-                'topology'       => ['name' => 'top-name-ever'],
-            ],
-        ];
-
-        $processDto = (new ProcessDto())->setData(Json::encode($dtoData))->setHeaders(['node_id' => $node->getId()]);
         $loop       = Factory::create();
+        $processDto = (new ProcessDto())->setHeaders([
+            'pf-guid'       => $system->getUser(),
+            'pf-token'      => $system->getToken(),
+            'pf-system-key' => $system->getSystem(),
+        ]);
 
-        $process = $connector->processBatch($processDto, $loop, function (SuccessMessage $message): void {
+        $connector->processBatch($processDto, $loop, function (SuccessMessage $message): void {
             $this->assertTrue(is_array(Json::decode($message->getData(), TRUE)));
-        });
-
-        $process->then(
+        })->then(
             function (): void {
                 $this->assertTrue(TRUE);
             },
@@ -78,6 +66,12 @@ final class Magento2UpdateCustomerConnectorTest extends DatabaseTestCaseAbstract
         )->done();
 
         $loop->run();
+
+        $this->dm->clear();
+        /** @var SystemInstall $system */
+        $system = $this->dm->getRepository(SystemInstall::class)->find($system->getId());
+        $this->assertInstanceOf(SystemInstall::class, $system);
+        $this->assertTrue($system->isSynchronized());
     }
 
 }

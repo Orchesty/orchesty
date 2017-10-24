@@ -1,0 +1,33 @@
+services:
+    systems.nutshell:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Nutshell\NutshellSystem
+        arguments:
+            - '%backend_host%'
+        tags: ['%systems%']
+
+    hbpf.connector.nutshell-sync-contact-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Nutshell\Connector\NutshellSyncContactConnector
+        arguments:
+            - '@systems.nutshell'
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.transport.async_curl_factory'
+
+    hbpf.connector.nutshell-contact-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Nutshell\Connector\NutshellContactConnector
+        arguments:
+
+    hbpf.custom_node.nutshell-sync-update-contact-mapper:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Nutshell\Mapper\NutshellSyncUpdateContactMapper
+        arguments:
+
+    hbpf.custom_node.nutshell-create-contact-mapper:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Nutshell\Mapper\NutshellCreateContactMapper
+        arguments:
+
+    hbpf.custom_node.nutshell-update-contact-mapper:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Nutshell\Mapper\NutshellUpdateContactMapper
+        arguments:
+
+    hbpf.custom_node.nutshell-delete-contact-mapper:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Nutshell\Mapper\NutshellDeleteContactMapper
+        arguments:
