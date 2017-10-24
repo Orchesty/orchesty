@@ -132,7 +132,10 @@ class AmqpRpcWorker implements IWorker {
         }).catch((err: Error) => {
             const context = logger.ctxFromMsg(msg);
             context.error = err;
-            logger.error(`Worker[type='amqprpc'] sending request failed`, context);
+            logger.error(
+                `Worker[type='amqprpc'] sending request to "${this.settings.publish_queue.name}" failed`,
+                context,
+            );
         });
 
         if (this.waiting.has(uuid)) {

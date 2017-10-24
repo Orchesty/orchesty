@@ -2,6 +2,11 @@ import {IOptions} from "lib-nodejs/dist/src/rabbitmq/Connection";
 import {IMongoMessageStorageSettings} from "./repeater/MongoMessageStorage";
 import {IRepeaterSettings} from "./repeater/Repeater";
 
+// Set timeouts and other env values differently for tests
+if (process.env.NODE_ENV === "test") {
+    process.env.REPEATER_CHECK_TIMEOUT = "500";
+}
+
 export const amqpConnectionOptions: IOptions = {
     host: process.env.RABBITMQ_HOST || "rabbitmq",
     user: process.env.RABBITMQ_USER || "guest",
@@ -30,7 +35,7 @@ export const repeaterOptions: IRepeaterSettings = {
             options: {},
         },
     },
-    check_timeout: 10 * 1000,
+    check_timeout: parseInt(process.env.REPEATER_CHECK_TIMEOUT, 10) || 5 * 1000,
 };
 
 export const mongoStorageOptions: IMongoMessageStorageSettings = {

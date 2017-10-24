@@ -59,6 +59,14 @@ abstract class AMessage {
 
     /**
      *
+     * @param {Headers} headers
+     */
+    public setHeaders(headers: Headers) {
+        this.headers = headers;
+    }
+
+    /**
+     *
      * @return {Buffer}
      */
     public getBody(): Buffer {

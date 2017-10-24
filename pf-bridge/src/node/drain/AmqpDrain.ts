@@ -83,13 +83,12 @@ class AmqpDrain extends ADrain implements IDrain, IPartialForwarder {
      */
     public forward(message: JobMessage): void {
 
-        const bufferedMessages = this.getMessageBuffer(message);
+        if (message.getResultGroup() === ResultCodeGroup.NON_STANDARD) {
+            this.forwardNonStandard(message);
+            return;
+        }
 
-        bufferedMessages.forEach((bufMsg: JobMessage) => {
-            if (bufMsg.getResultGroup() === ResultCodeGroup.NON_STANDARD) {
-                this.forwardNonStandard(bufMsg);
-                return;
-            }
+        this.getMessageBuffer(message).forEach((bufMsg: JobMessage) => {
 
             if (bufMsg.getResult().code === ResultCode.SUCCESS) {
                 this.forwardSuccessMessage(bufMsg);

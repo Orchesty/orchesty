@@ -15,51 +15,50 @@ import {ICounterProcessInfo} from "../src/topology/counter/Counter";
 import Pipes from "./../src/Pipes";
 
 const testTopology: ITopologyConfigSkeleton = {
-    id: "linear-topo",
+    id: "topo-with-repeater",
     nodes: [
         {
-            id: "first",
+            id: "start-node",
             resequencer: true,
-            debug: {
-                port: 4001,
-                host: "localhost",
-                url: "http://localhost:4001/status",
-            },
-            next: ["second"],
-        },
-        {
-            id: "second",
-            resequencer: true,
+            // This worker will send REPEAT result code first request
             worker: {
                 type: "worker.http",
                 settings: {
                     host: "localhost",
                     method: "post",
-                    port: 3050,
-                    process_path: "/httpworker1/",
+                    port: 5050,
+                    process_path: "/process-first",
                     status_path: "/status",
                     secure: false,
                     opts: {},
                 },
             },
             debug: {
-                port: 4002,
+                port: 4101,
                 host: "localhost",
-                url: "http://localhost:4002/status",
+                url: "http://localhost:4001/status",
             },
-            next: ["third"],
+            next: ["end-node"],
         },
         {
-            id: "third",
+            id: "end-node",
             resequencer: true,
             worker: {
-                type: "worker.uppercase",
-                settings: {},
+                type: "worker.http",
+                settings: {
+                    host: "localhost",
+                    method: "post",
+                    port: 5050,
+                    process_path: "/process-second",
+                    status_path: "/status",
+                    secure: false,
+                    opts: {},
+                },
             },
             debug: {
-                port: 4003,
+                port: 4102,
                 host: "localhost",
-                url: "http://localhost:4003/status",
+                url: "http://localhost:4002/status",
             },
             next: [],
         },
@@ -69,52 +68,70 @@ const testTopology: ITopologyConfigSkeleton = {
 const amqpConn = new Connection(config.amqpConnectionOptions);
 const firstQueue = `pipes.${testTopology.id}.${testTopology.nodes[0].id}`;
 
-describe("Linear Topology test", () => {
-    it("complete flow of messages till the end", (done) => {
-        const msgTestContent = "test content";
-        const msgHeaders = { headers: {
-            "pf-correlation-id": "corrid",
-            "pf-process-id": "test",
-            "pf-parent-id": "",
-            "pf-sequence-id": 0,
-            "pf-topology-id": "topoid",
-            "pf-topology-name": "toponame",
-            "pf-foo": "bar",
-            "foo": "bar",
-            "content-type": "text/plain",
-        }};
+const httpWorkerMock = express();
+httpWorkerMock.use(bodyParser.raw({
+    type: () => true,
+}));
+let processedFirst = false;
+httpWorkerMock.post("/process-first", (req, resp) => {
+    if (!processedFirst) {
+        processedFirst = true;
+        const requestHeaders: any = req.headers;
+        const replyHeaders = new Headers(requestHeaders);
+        replyHeaders.setPFHeader(Headers.RESULT_CODE, `${ResultCode.REPEAT}`);
+        replyHeaders.setPFHeader(Headers.RESULT_MESSAGE, "repeat me please");
+        replyHeaders.setPFHeader(Headers.REPEAT_INTERVAL, "500");
+        replyHeaders.setPFHeader(Headers.REPEAT_MAX_HOPS, "5");
+        replyHeaders.setPFHeader(Headers.REPEAT_HOPS, "1");
+        resp.set(replyHeaders.getRaw());
+        resp.status(200).send(req.body);
+    } else {
+        const respBody = req.body + " modified";
+        const requestHeaders: any = req.headers;
+        const replyHeaders = new Headers(requestHeaders);
+        replyHeaders.setPFHeader(Headers.RESULT_CODE, `${ResultCode.SUCCESS}`);
+        replyHeaders.setPFHeader(Headers.RESULT_MESSAGE, "now ok");
+        resp.set(replyHeaders.getRaw());
+        resp.status(200).send(respBody);
+    }
+});
+httpWorkerMock.post("/process-second", (req, resp) => {
+    assert.equal(req.body.toString(), "test content modified");
+    const requestHeaders: any = req.headers;
+    const replyHeaders = new Headers(requestHeaders);
+    replyHeaders.setPFHeader(Headers.RESULT_CODE, `${ResultCode.SUCCESS}`);
+    replyHeaders.setPFHeader(Headers.RESULT_MESSAGE, "ok");
 
-        const httpWorkerMock = express();
-        httpWorkerMock.use(bodyParser.raw({
-            type: () => true,
-        }));
-        httpWorkerMock.post("/httpworker1", (req, resp) => {
-            assert.equal(req.body.toString(), msgTestContent);
-            const respBody = req.body + " modified";
+    const respBody = req.body + " again";
+    resp.set(replyHeaders.getRaw());
+    resp.status(200).send(respBody);
+});
+httpWorkerMock.listen(5050);
 
-            const requestHeaders: any = req.headers;
-            const replyHeaders = new Headers(requestHeaders);
-            replyHeaders.setPFHeader(Headers.RESULT_CODE, `${ResultCode.SUCCESS}`);
-            replyHeaders.setPFHeader(Headers.RESULT_MESSAGE, "ok");
+const testMsgContent = "test content";
+const testMsgHeaders = new Headers();
+testMsgHeaders.setPFHeader(Headers.CORRELATION_ID, "corrid");
+testMsgHeaders.setPFHeader(Headers.PROCESS_ID, "procid");
+testMsgHeaders.setPFHeader(Headers.PARENT_ID, "");
+testMsgHeaders.setPFHeader(Headers.SEQUENCE_ID, "0");
+testMsgHeaders.setPFHeader(Headers.TOPOLOGY_ID, testTopology.id);
+testMsgHeaders.setHeader(Headers.CONTENT_TYPE, "text/plain");
 
-            resp.set(replyHeaders.getRaw());
-            resp.status(200).send(JSON.stringify(respBody));
-        });
-        httpWorkerMock.listen(3050);
-
+describe("Node with repeater test", () => {
+    it("in first node message should be repeated and then forwarded to second node", (done) => {
         const pip = new Pipes(testTopology);
 
         Promise.all([
             pip.startCounter(),
+            pip.startRepeater(),
             pip.startNode(testTopology.nodes[0].id),
             pip.startNode(testTopology.nodes[1].id),
-            pip.startNode(testTopology.nodes[2].id),
         ])
         .then(() => {
             // Prepares consumer of counter output
             // Prepares function for evaluation of test end
             const counterResultQueue = {
-                name: "linear-topology-counter-result",
+                name: "node-with-repeater-counter-result",
                 options: {},
             };
             const resultConsumer = new SimpleConsumer(
@@ -140,19 +157,10 @@ describe("Linear Topology test", () => {
                 (msg: Message) => {
                     // In this fn we evaluate expected incoming message and state if test is OK or failed
                     const data: ICounterProcessInfo = JSON.parse(msg.content.toString());
-                    assert.equal(data.process_id, msgHeaders.headers["pf-process-id"]);
+                    assert.equal(data.process_id, testMsgHeaders.getPFHeader(Headers.PROCESS_ID));
                     assert.equal(data.total, pip.getTopologyConfig().nodes.length);
                     assert.equal(data.ok, pip.getTopologyConfig().nodes.length);
                     assert.equal(data.nok, 0);
-                    const trace: string[] = [];
-                    data.messages.forEach((info) => {
-                        assert.equal(info.resultCode, ResultCode.SUCCESS);
-                        trace.push(info.node);
-                    });
-                    assert.deepEqual(
-                        trace,
-                        [testTopology.nodes[0].id, testTopology.nodes[1].id, testTopology.nodes[2].id],
-                    );
                     done();
                 },
             );
@@ -175,7 +183,7 @@ describe("Linear Topology test", () => {
                     });
                 },
             );
-            return publisher.sendToQueue(firstQueue, new Buffer(msgTestContent), msgHeaders);
+            return publisher.sendToQueue(firstQueue, new Buffer(testMsgContent), { headers: testMsgHeaders.getRaw() });
         });
     });
 

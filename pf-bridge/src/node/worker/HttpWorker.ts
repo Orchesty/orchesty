@@ -59,15 +59,26 @@ class HttpWorker implements IWorker {
                     return resolve(msg);
                 }
 
-                let result: IResult;
+                const responseHeaders: any = response.headers;
                 try {
-                    result = this.getResultFromResponse(response);
+                    Headers.validateMandatoryHeaders(responseHeaders);
+                } catch (err) {
+                    this.onInvalidResponseHeaders(msg);
+                    return resolve(msg);
+                }
+
+                const cleanResponseHeaders = new Headers(Headers.getPFHeaders(responseHeaders));
+                let result: IResult;
+
+                try {
+                    result = this.getResultFromResponse(cleanResponseHeaders);
                 } catch (err) {
                     this.onMissingResultCode(msg);
                     return resolve(msg);
                 }
 
-                this.onValidResponse(msg, body, response.headers, result);
+                this.onValidResponse(msg, body, cleanResponseHeaders, result);
+
                 return resolve(msg);
             });
         });
@@ -166,15 +177,12 @@ class HttpWorker implements IWorker {
 
     /**
      *
-     * @param {request.RequestResponse} response
+     * @param {Headers} headers
      * @return {IResult}
      */
-    private getResultFromResponse(response: request.RequestResponse): IResult {
-        const responseHeaders: any = response.headers;
-        const resultHeaders = new Headers(responseHeaders);
-
-        const resultCode = parseInt(resultHeaders.getPFHeader(Headers.RESULT_CODE), 10);
-        const resultMessage = resultHeaders.getPFHeader(Headers.RESULT_MESSAGE) || "";
+    private getResultFromResponse(headers: Headers): IResult {
+        const resultCode = parseInt(headers.getPFHeader(Headers.RESULT_CODE), 10);
+        const resultMessage = headers.getPFHeader(Headers.RESULT_MESSAGE) || "";
 
         if (!(resultCode in ResultCode)) {
             throw new Error("Missing or invalid result code.");
@@ -187,13 +195,13 @@ class HttpWorker implements IWorker {
      * Handles valid http request and updates JobMessage
      * @param {JobMessage} msg
      * @param {string} responseBody
-     * @param responseHeaders
+     * @param {Headers} responseHeaders
      * @param {IResult} result
      */
     private onValidResponse(
         msg: JobMessage,
         responseBody: string,
-        responseHeaders: any,
+        responseHeaders: Headers,
         result: IResult,
     ) {
         logger.info("Worker[type='http'] received valid response.", logger.ctxFromMsg(msg));
@@ -206,11 +214,9 @@ class HttpWorker implements IWorker {
             responseBody = JSON.stringify(responseBody);
         }
 
-        msg.setResult(result);
+        msg.setHeaders(responseHeaders);
         msg.setContent(responseBody);
-
-        const responseContentType: any = responseHeaders[Headers.CONTENT_TYPE];
-        msg.getHeaders().setHeader(Headers.CONTENT_TYPE, responseContentType);
+        msg.setResult(result);
     }
 
     /**
@@ -243,6 +249,18 @@ class HttpWorker implements IWorker {
                 message: `Http response with code ${statusCode} received`,
             },
         );
+    }
+
+    /**
+     *
+     * @param {JobMessage} msg
+     */
+    private onInvalidResponseHeaders(msg: JobMessage): void {
+        logger.warn(
+            `Worker[type='http'] received response with missing mandatory headers.`,
+            logger.ctxFromMsg(msg),
+        );
+        msg.setResult({ code: ResultCode.INVALID_HEADERS, message: "Invalid headers"});
     }
 
     /**
