@@ -2,11 +2,11 @@
 # Set parameters here that may be different on each deployment target of the app, e.g. development, staging, production.
 # https://symfony.com/doc/current/best_practices/configuration.html#infrastructure-related-configuration
 parameters:
-    database_host: 127.0.0.1
+    database_host: mongo
     database_port: ~
-    database_name: symfony
+    database_name: clever-connectors
     database_user: root
-    database_password: ~
+    database_password: root
     # You should uncomment this if you want to use pdo_sqlite
     #database_path: '%kernel.project_dir%/var/data/data.sqlite'
 
@@ -15,8 +15,16 @@ parameters:
     mailer_user: ~
     mailer_password: ~
 
+    # Base params
+    locale: en
+
     # A secret key that's used to generate certain security-related tokens
     secret: ThisTokenIsNotSoSecretChangeIt
+
+    stdout_path: "php://stdout"
+
+    request_listener.http_port: 80
+    request_listener.https_port: 80
 
     # Rabbitmq
     rabbitmq.host: rabbitmq
@@ -25,4 +33,9 @@ parameters:
     rabbitmq.user: guest
     rabbitmq.password: guest
 
-    backend_host: 127.0.0.76
+    backend_host: 'https://cleverconn.stage.hanaboso.net/'
+
+    clevermonitor:
+        ca: '%kernel.project_dir%/var/secret/ca.crt'
+        cert: '%kernel.project_dir%/var/secret/keypair.pem'
+    access_token_refresh_interval: 3600

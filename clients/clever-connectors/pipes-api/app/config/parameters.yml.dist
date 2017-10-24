@@ -2,7 +2,7 @@
 # Set parameters here that may be different on each deployment target of the app, e.g. development, staging, production.
 # https://symfony.com/doc/current/best_practices/configuration.html#infrastructure-related-configuration
 parameters:
-    database_host: cleverconnectors_mongo_1
+    database_host: mongo
     database_port: ~
     database_name: clever-connectors
     database_user: root
@@ -21,7 +21,7 @@ parameters:
     # A secret key that's used to generate certain security-related tokens
     secret: ThisTokenIsNotSoSecretChangeIt
 
-    logger_handler: syslog
+    stdout_path: "php://stdout"
 
     request_listener.http_port: 80
     request_listener.https_port: 80

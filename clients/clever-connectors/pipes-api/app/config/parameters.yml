@@ -11,7 +11,7 @@ parameters:
     mailer_password: null
     locale: en
     secret: ThisTokenIsNotSoSecretChangeIt
-    logger_handler: syslog
+    stdout_path: 'php://stdout'
     request_listener.http_port: 80
     request_listener.https_port: 80
     rabbitmq.host: rabbitmq

@@ -3,7 +3,6 @@ monolog:
     channels: [webhook_systems]
     handlers:
         webhook_systems:
-            type: '%logger_handler%'
-            path: '%kernel.logs_dir%/authorization_%kernel.environment%.log'
+            type: service
+            id: udp_handler
             level: info
-            max_files: 10
