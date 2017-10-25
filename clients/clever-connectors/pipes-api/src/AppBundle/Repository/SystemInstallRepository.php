@@ -20,6 +20,26 @@ class SystemInstallRepository extends DocumentRepository
 {
 
     /**
+     * @param string $event
+     * @param string $userId
+     *
+     * @return array
+     */
+    public function getSystemInstallByEvent(string $event, string $userId): array
+    {
+        $systemInstalls = $this->createQueryBuilder()
+            ->field($event)->equals(TRUE)
+            ->field('user')->equals($userId)
+            ->getQuery()->execute()->toArray(FALSE);
+
+        if (!empty($systemInstalls)) {
+            return $systemInstalls;
+        }
+
+        return [];
+    }
+
+    /**
      * @param array $headers
      *
      * @return SystemInstall

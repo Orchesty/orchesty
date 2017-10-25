@@ -102,7 +102,7 @@ class CMEventsManager implements LoggerAwareInterface
             );
         }
 
-        foreach ($this->getSystemInstall($userId, $event) as $systemInstall) {
+        foreach ($this->systemRepo->getSystemInstallByEvent($event, $userId) as $systemInstall) {
             $topologies = $this->getTopologies($systemInstall, $event);
             foreach ($topologies as $topology) {
                 try {
@@ -120,23 +120,6 @@ class CMEventsManager implements LoggerAwareInterface
      */
 
     /**
-     * @param string $userId
-     * @param string $event
-     *
-     * @return array
-     */
-    private function getSystemInstall(string $userId, string $event): array
-    {
-        $systemInstalls = $this->systemRepo->findBy([$event => TRUE, 'user' => $userId]);
-
-        if (!empty($systemInstalls)) {
-            return $systemInstalls;
-        }
-
-        return [];
-    }
-
-    /**
      * @param SystemInstall $systemInstall
      * @param string        $event
      *
@@ -145,11 +128,11 @@ class CMEventsManager implements LoggerAwareInterface
      */
     private function getTopologies(SystemInstall $systemInstall, string $event): array
     {
-        $name       = TopologyNameUtils::getEventName($systemInstall, $event);
         $topologies = $this->topologyRepo->getRunnableTopologies(
             TopologyNameUtils::getCustomEventName($systemInstall, $event)
         );
 
+        $name = TopologyNameUtils::getEventName($systemInstall, $event);
         if (empty($topologies)) {
             $topologies = $this->topologyRepo->getRunnableTopologies($name);
         }
