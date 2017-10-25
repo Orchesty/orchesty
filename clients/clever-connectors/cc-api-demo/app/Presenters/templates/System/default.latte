@@ -20,6 +20,45 @@
 
             <div class="clearfix"></div>
 
+            <h2>Installed systems</h2>
+            <div class="col-md-12">
+                <table class="table table-striped">
+                    <thead class="thead-inverse">
+                    <tr>
+                        <th>Name</th>
+                        <th>Token</th>
+                        <th>Authorized</th>
+                        <th>Synchronized</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {foreach $installedSystems as $system}
+                        <tr>
+                            <td>{$system->getName()}</td>
+                            <td>{$system->getToken()}</td>
+                            <td>{$system->isAuthorized() ? 'true' : 'false'}</td>
+                            <td>{$system->isSynchronized() ? 'true' : 'false'}</td>
+                        </tr>
+                    {/foreach}
+                    </tbody>
+                    <tfoot class="table-dark">
+                    {form systemActionForm}
+                        <tr>
+                            <td colspan="2">
+                                <div class="form-group">
+                                    {input systems class => "form-control"}
+                                </div>
+                            <td>
+                                <div class="form-group">{input install class=>"form-control btn btn-primary"}</div>
+                            </td>
+                            <td>
+                                <div class="form-group">{input uninstall class=>"form-control btn btn-secondary"}</div>
+                            </td>
+                        </tr>
+                    {/form}
+                    </tfoot>
+                </table>
+            </div>
 
         {else}
             <div class="col-md-12">

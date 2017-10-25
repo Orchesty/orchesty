@@ -10,7 +10,9 @@ namespace App\Presenters;
 
 use App\Forms\LoginFormFactory;
 use App\Forms\LogoutFormFactory;
+use App\Forms\SystemActionFormFactory;
 use CcApi\Connector\ConnectorManager;
+use Nette\Forms\Controls\SubmitButton;
 use Nette\Forms\Form;
 use Nette\Security\Identity;
 
@@ -31,25 +33,33 @@ class SystemPresenter extends BasePresenter
      * @var LoginFormFactory
      */
     private $loginFormFactory;
+
     /**
      * @var LogoutFormFactory
      */
     private $logoutFormFactory;
 
     /**
+     * @var SystemActionFormFactory
+     */
+    private $systemActionFormFactory;
+
+    /**
      * HomepagePresenter constructor.
      *
-     * @param ConnectorManager  $connectorManager
-     * @param LoginFormFactory  $loginFormFactory
-     * @param LogoutFormFactory $logoutFormFactory
+     * @param ConnectorManager        $connectorManager
+     * @param LoginFormFactory        $loginFormFactory
+     * @param LogoutFormFactory       $logoutFormFactory
+     * @param SystemActionFormFactory $systemActionFormFactory
      */
     public function __construct(ConnectorManager $connectorManager, LoginFormFactory $loginFormFactory,
-                                LogoutFormFactory $logoutFormFactory)
+                                LogoutFormFactory $logoutFormFactory, SystemActionFormFactory $systemActionFormFactory)
     {
         parent::__construct();
-        $this->connectorManager  = $connectorManager;
-        $this->loginFormFactory  = $loginFormFactory;
-        $this->logoutFormFactory = $logoutFormFactory;
+        $this->connectorManager        = $connectorManager;
+        $this->loginFormFactory        = $loginFormFactory;
+        $this->logoutFormFactory       = $logoutFormFactory;
+        $this->systemActionFormFactory = $systemActionFormFactory;
     }
 
     /**
@@ -96,15 +106,61 @@ class SystemPresenter extends BasePresenter
     }
 
     /**
+     * @return \Nette\Application\UI\Form
+     */
+    public function createComponentSystemActionForm()
+    {
+        $systems = $this->connectorManager->getAllSystems();
+
+        $items = [];
+        foreach ($systems as $system) {
+            $items[$system->getKey()] = $system->getName();
+        }
+
+        $form                         = $this->systemActionFormFactory->create($items);
+        $form['install']->onClick[]   = [$this, 'processInstall'];
+        $form['uninstall']->onClick[] = [$this, 'processUninstall'];
+
+        return $form;
+    }
+
+    /**
+     * @param SubmitButton $button
+     */
+    public function processInstall(SubmitButton $button)
+    {
+        $data = $button->getForm()->getValues();
+
+        $this->connectorManager->installUserSystem($this->userId, $data['systems'], $this->token);
+
+        $this->redirect('System:');
+    }
+
+    /**
+     * @param SubmitButton $button
+     */
+    public function processUninstall(SubmitButton $button)
+    {
+        $data = $button->getForm()->getValues();
+
+        $this->connectorManager->uninstallUserSystem($this->userId, $data['systems']);
+
+        $this->redirect('System:');
+    }
+
+    /**
      *
      */
     public function renderDefault()
     {
-        /** @var Identity $identity */
-        $identity = $this->getUser()->getIdentity();
+        $this->template->userId = $this->userId ?? '';
+        $this->template->token  = $this->token ?? '';
 
-        $this->template->userId = $identity->getId();
-        $this->template->token  = $identity->getData()['token'] ?? '';
+        if ($this->user->isLoggedIn()) {
+            $userSystems = $this->connectorManager->getAllUserSystems($this->userId);
+
+            $this->template->installedSystems = $userSystems;
+        }
     }
 
 }

@@ -43,5 +43,8 @@ services:
 	logout_form:
 		class: App\Forms\LogoutFormFactory
 
+	system_action_form:
+		class: App\Forms\SystemActionFormFactory
+
 extensions:
 	cc_api: CcApi\Bridges\DI\CcApiExtension

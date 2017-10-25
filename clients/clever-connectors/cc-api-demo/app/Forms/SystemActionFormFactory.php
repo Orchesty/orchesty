@@ -1,0 +1,44 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: venca
+ * Date: 25.10.17
+ * Time: 12:10
+ */
+
+namespace App\Forms;
+
+use CcApi\ApiEntity\System;
+use Nette\Application\UI\Form;
+
+/**
+ * Class SystemActionFormFactory
+ *
+ * @package App\Forms
+ */
+class SystemActionFormFactory
+{
+
+    /**
+     * @param array|System[] $systems
+     *
+     * @return Form
+     */
+    public function create(array $systems): Form
+    {
+        $form = new Form();
+
+        $form
+            ->addSelect('systems', 'Systems', $systems)
+            ->setPrompt('Choose system')
+            ->setRequired('Choose any system.');
+
+        $form
+            ->addSubmit('install', 'Install');
+
+        $form
+            ->addSubmit('uninstall', 'Uninstall');
+
+        return $form;
+    }
+}
