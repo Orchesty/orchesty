@@ -10,7 +10,6 @@
 namespace Tests\Unit\AppBundle\Model\Systems;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
-use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Systems\SystemLoader;
 use CleverConnectors\AppBundle\Model\Systems\SystemManager;
 use CleverConnectors\AppBundle\Model\Webhook\WebhookManager;
@@ -84,21 +83,6 @@ final class SystemManagerTest extends TestCase
     }
 
     /**
-     * @covers SystemManager::synchronizeSubscriptions()
-     */
-    public function testSynchronizeSubscriptionsNodeNotFound(): void
-    {
-        $this->prepareDmMock();
-
-        self::expectException(CleverConnectorsException::class);
-        self::expectExceptionCode(CleverConnectorsException::STARTING_NODE_NOT_FOUND);
-
-        $manager = new SystemManager($this->dm, $this->systemLoader, $this->webhookManager, $this->startingPoint,
-            $this->requestHandler);
-        $manager->synchronizeSubscriptions('user', 'system');
-    }
-
-    /**
      * @param Node|null $node
      */
     private function prepareDmMock(?Node $node = NULL): void
@@ -121,7 +105,7 @@ final class SystemManagerTest extends TestCase
         $systemRepo = $this->getClassMock(SystemInstallRepository::class);
         $systemRepo
             ->method('findOneBy')
-            ->willReturn((new SystemInstall())->setToken('123'));
+            ->willReturn((new SystemInstall())->setToken('123')->setSystem('testsys'));
 
         $this->dm
             ->method('getRepository')

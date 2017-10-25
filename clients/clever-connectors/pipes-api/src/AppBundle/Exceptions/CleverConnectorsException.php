@@ -21,5 +21,6 @@ class CleverConnectorsException extends Exception
     public const STARTING_NODE_NOT_FOUND      = 9;
     public const UNKNOWN_SUBSCRIPTION_TYPE    = 10;
     public const DISALLOWED_SUBSCRIPTION_TYPE = 11;
+    public const INVALID_ENUM_VALUE           = 12;
 
 }

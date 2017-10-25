@@ -49,4 +49,15 @@ final class SystemInstallTest extends DatabaseTestCaseAbstract
         $this->assertEquals($settings, $loaded->getSettings());
     }
 
+    /**
+     *
+     */
+    public function testIsEvent(): void
+    {
+        self::assertTrue(SystemInstall::isEvent(SystemInstall::EVENT_HARD_BOUNCE));
+        self::assertTrue(SystemInstall::isEvent(SystemInstall::EVENT_CREATE));
+        self::assertTrue(SystemInstall::isEvent(SystemInstall::EVENT_UNSUBSCRIBE));
+        self::assertFalse(SystemInstall::isEvent(SystemInstall::TOKEN));
+    }
+
 }

@@ -100,16 +100,22 @@ class SystemInstall
 
     /**
      * @var bool
+     *
+     * @ODM\Field(type="bool")
      */
     protected $eventCreate = FALSE;
 
     /**
      * @var bool
+     *
+     * @ODM\Field(type="bool")
      */
     protected $eventUnsubscribe = FALSE;
 
     /**
      * @var bool
+     *
+     * @ODM\Field(type="bool")
      */
     protected $eventHardBounce = FALSE;
 
@@ -359,6 +365,16 @@ class SystemInstall
     public function decrypt(): void
     {
         $this->settings = CryptManager::decrypt($this->encryptedSettings);
+    }
+
+    /**
+     * @param string $event
+     *
+     * @return bool
+     */
+    public static function isEvent(string $event): bool
+    {
+        return in_array($event, [self::EVENT_CREATE, self::EVENT_UNSUBSCRIBE, self::EVENT_HARD_BOUNCE]);
     }
 
     /**

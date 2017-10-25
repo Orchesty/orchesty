@@ -10,6 +10,7 @@
 namespace Tests\Integration\AppBundle\Repository;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use DateTime;
@@ -23,6 +24,32 @@ use Tests\DatabaseTestCaseAbstract;
  */
 final class SystemInstallRepositoryTest extends DatabaseTestCaseAbstract
 {
+
+    /**
+     *
+     */
+    public function testGetSystemInstallByEvent(): void
+    {
+        $sysInstall = new SystemInstall();
+        $sysInstall->setUser('usr')
+            ->setEventCreate(TRUE)
+            ->setEventHardBounce(TRUE)
+            ->setEventUnsubscribe(TRUE);
+        $this->dm->persist($sysInstall);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        /** @var SystemInstallRepository $repo */
+        $repo = $this->dm->getRepository(SystemInstall::class);
+        self::assertNotEmpty($repo->getSystemInstallByEvent(SystemInstall::EVENT_CREATE, 'usr'));
+        self::assertNotEmpty($repo->getSystemInstallByEvent(SystemInstall::EVENT_HARD_BOUNCE, 'usr'));
+        self::assertNotEmpty($repo->getSystemInstallByEvent(SystemInstall::EVENT_UNSUBSCRIBE, 'usr'));
+        self::assertEmpty($repo->getSystemInstallByEvent(SystemInstall::EVENT_UNSUBSCRIBE, 'usr4'));
+
+        $this->expectException(CleverConnectorsException::class);
+        $this->expectExceptionCode(CleverConnectorsException::INVALID_ENUM_VALUE);
+        self::assertEmpty($repo->getSystemInstallByEvent('', 'usr'));
+    }
 
     /**
      *
