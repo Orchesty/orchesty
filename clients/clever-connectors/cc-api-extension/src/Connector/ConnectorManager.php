@@ -8,6 +8,7 @@
 
 namespace CcApi\Connector;
 
+use CcApi\ApiEntity\Subscriber;
 use CcApi\ApiEntity\System;
 use CcApi\ApiEntity\SystemFactory;
 use CcApi\ApiEntity\UserSystem;
@@ -305,6 +306,54 @@ class ConnectorManager implements ConnectorInterface
             urlencode($redirectUrl)
         ));
         die;
+    }
+
+    /**
+     * @param string     $userId
+     * @param Subscriber $subscriber
+     */
+    public function subscribe(string $userId, Subscriber $subscriber): void
+    {
+        $request = new Request(
+            CurlSender::POST,
+            new Uri(sprintf('/event/user/%s/create', $userId)),
+            $this->getDefaultHeaders()->getHeaders(),
+            Json::encode($subscriber->toArray())
+        );
+
+        $this->send($request);
+    }
+
+    /**
+     * @param string     $userId
+     * @param Subscriber $subscriber
+     */
+    public function unSubscribe(string $userId, Subscriber $subscriber): void
+    {
+        $request = new Request(
+            CurlSender::POST,
+            new Uri(sprintf('/event/user/%s/unsubscribe', $userId)),
+            $this->getDefaultHeaders()->getHeaders(),
+            Json::encode($subscriber->toArray())
+        );
+
+        $this->send($request);
+    }
+
+    /**
+     * @param string     $userId
+     * @param Subscriber $subscriber
+     */
+    public function hardBounce(string $userId, Subscriber $subscriber): void
+    {
+        $request = new Request(
+            CurlSender::POST,
+            new Uri(sprintf('/event/user/%s/hard_bounce', $userId)),
+            $this->getDefaultHeaders()->getHeaders(),
+            Json::encode($subscriber->toArray())
+        );
+
+        $this->send($request);
     }
 
 }

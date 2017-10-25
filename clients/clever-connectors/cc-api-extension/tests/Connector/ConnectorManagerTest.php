@@ -8,6 +8,7 @@
 
 namespace Tests\Connector;
 
+use CcApi\ApiEntity\Subscriber;
 use CcApi\Connector\ConnectorManager;
 use CcApi\Connector\Exception\ConnectorException;
 use CcApi\Curl\CurlSender;
@@ -310,6 +311,90 @@ class ConnectorManagerTest extends TestCase
         $cm = new ConnectorManager($this->createSuccessResponse($cb));
 
         $cm->setUserSystemPassword('123', 'key', 'abc');
+        $this->assertTrue(TRUE);
+    }
+
+    /**
+     * @covers ConnectorManager::subscribe()
+     */
+    public function testSubscribe(): void
+    {
+        $cb = function (Request $request) {
+            $content = '{"email":"email@example.com","first_name":"First Name","last_name":"Last Name","_foreign_id":"123","reactivate":true}';
+
+            $this->assertSame('application/json', $request->getHeader('content-type')[0]);
+            $this->assertSame(CurlSender::POST, $request->getMethod());
+            $this->assertSame('/event/user/123/create', $request->getUri()->getPath());
+            $this->assertSame($content, $request->getBody()->getContents());
+
+            return new Response(200, [], '');
+        };
+
+        $cm = new ConnectorManager($this->createSuccessResponse($cb));
+
+        $cm->subscribe('123', (new Subscriber())
+            ->setEmail('email@example.com')
+            ->setFirstName('First Name')
+            ->setLastName('Last Name')
+            ->setForeignId(123)
+            ->setReactivate(TRUE)
+        );
+        $this->assertTrue(TRUE);
+    }
+
+    /**
+     * @covers ConnectorManager::unSubscribe()
+     */
+    public function testUnSubscribe(): void
+    {
+        $cb = function (Request $request) {
+            $content = '{"email":"email@example.com","first_name":"First Name","last_name":"Last Name","_foreign_id":"123","reactivate":true}';
+
+            $this->assertSame('application/json', $request->getHeader('content-type')[0]);
+            $this->assertSame(CurlSender::POST, $request->getMethod());
+            $this->assertSame('/event/user/123/unsubscribe', $request->getUri()->getPath());
+            $this->assertSame($content, $request->getBody()->getContents());
+
+            return new Response(200, [], '');
+        };
+
+        $cm = new ConnectorManager($this->createSuccessResponse($cb));
+
+        $cm->unSubscribe('123', (new Subscriber())
+            ->setEmail('email@example.com')
+            ->setFirstName('First Name')
+            ->setLastName('Last Name')
+            ->setForeignId(123)
+            ->setReactivate(TRUE)
+        );
+        $this->assertTrue(TRUE);
+    }
+
+    /**
+     * @covers ConnectorManager::hardBounce()
+     */
+    public function testHardBounce(): void
+    {
+        $cb = function (Request $request) {
+            $content = '{"email":"email@example.com","first_name":"First Name","last_name":"Last Name","_foreign_id":"123","reactivate":true}';
+
+            $this->assertSame('application/json', $request->getHeader('content-type')[0]);
+            $this->assertSame(CurlSender::POST, $request->getMethod());
+            $this->assertSame('/event/user/123/hard_bounce', $request->getUri()->getPath());
+            $this->assertSame($content, $request->getBody()->getContents());
+
+            return new Response(200, [], '');
+        };
+
+        $cm = new ConnectorManager($this->createSuccessResponse($cb));
+
+        $cm->hardBounce('123', (new Subscriber())
+            ->setEmail('email@example.com')
+            ->setFirstName('First Name')
+            ->setLastName('Last Name')
+            ->setForeignId(123)
+            ->setReactivate(TRUE)
+        );
         $this->assertTrue(TRUE);
     }
 
