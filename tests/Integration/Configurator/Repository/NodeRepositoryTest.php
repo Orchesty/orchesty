@@ -2,10 +2,13 @@
 
 namespace Tests\Integration\Configurator\Repository;
 
+use Hanaboso\PipesFramework\Commons\Enum\HandlerEnum;
 use Hanaboso\PipesFramework\Commons\Enum\TypeEnum;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
+use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Reduction\NodeReduction;
 use Hanaboso\PipesFramework\Configurator\Repository\NodeRepository;
+use LogicException;
 use Tests\DatabaseTestCaseAbstract;
 
 /**
@@ -86,6 +89,58 @@ final class NodeRepositoryTest extends DatabaseTestCaseAbstract
         $result = $repo->getNodeByTopology('name1', 'abc123');
 
         self::assertNotEmpty($result);
+    }
+
+    /**
+     *
+     */
+    public function testGetStartingPoint(): void
+    {
+        /** @var NodeRepository $repo */
+        $repo = $this->dm->getRepository(Node::class);
+
+        $topology = new Topology();
+        $this->dm->persist($topology);
+        $this->dm->flush($topology);
+
+        $node = new Node();
+        $node
+            ->setEnabled(TRUE)
+            ->setTopology($topology->getId())
+            ->setType(TypeEnum::SIGNAL)
+            ->setHandler(HandlerEnum::EVENT);
+        $this->dm->persist($node);
+        $this->dm->flush($node);
+        $this->dm->clear();
+
+        self::assertEquals($node->getId(), $repo->getStartingNode($topology)->getId());
+    }
+
+    /**
+     *
+     */
+    public function testGetStartingPointNotFound(): void
+    {
+        /** @var NodeRepository $repo */
+        $repo = $this->dm->getRepository(Node::class);
+
+        $topology = new Topology();
+        $this->dm->persist($topology);
+        $this->dm->flush($topology);
+
+        $node = new Node();
+        $node
+            ->setEnabled(TRUE)
+            ->setTopology($topology->getId())
+            ->setType(TypeEnum::MAPPER)
+            ->setHandler(HandlerEnum::EVENT);
+        $this->dm->persist($node);
+        $this->dm->flush($node);
+        $this->dm->clear();
+
+        $this->expectException(LogicException::class);
+        $this->expectExceptionMessage(sprintf('Starting Node not found for topology [%s]', $topology->getId()));
+        $repo->getStartingNode($topology);
     }
 
 }
