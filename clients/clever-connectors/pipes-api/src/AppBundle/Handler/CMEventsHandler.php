@@ -11,16 +11,19 @@ namespace CleverConnectors\AppBundle\Handler;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
-use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use CleverConnectors\AppBundle\Utils\TopologyNameUtils;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use Exception;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Repository\NodeRepository;
 use Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\StartingPointHandler;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -28,7 +31,7 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * @package CleverConnectors\AppBundle\Handler
  */
-class CMEventsHandler
+class CMEventsHandler implements LoggerAwareInterface
 {
 
     /**
@@ -57,6 +60,11 @@ class CMEventsHandler
     private $startingPoint;
 
     /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    /**
      * CMEventHandler constructor.
      *
      * @param DocumentManager      $dm
@@ -69,6 +77,15 @@ class CMEventsHandler
         $this->topologyRepo  = $this->dm->getRepository(Topology::class);
         $this->nodeRepo      = $this->dm->getRepository(Node::class);
         $this->startingPoint = $startingPoint;
+        $this->logger        = new NullLogger();
+    }
+
+    /**
+     * @param LoggerInterface $logger
+     */
+    public function setLogger(LoggerInterface $logger): void
+    {
+        $this->logger = $logger;
     }
 
     /**
@@ -76,7 +93,6 @@ class CMEventsHandler
      * @param string  $userId
      *
      * @throws CleverConnectorsException
-     * @throws SystemException
      */
     public function createEvent(Request $request, string $userId): void
     {
@@ -88,7 +104,6 @@ class CMEventsHandler
      * @param string  $userId
      *
      * @throws CleverConnectorsException
-     * @throws SystemException
      */
     public function unsubscribeEvent(Request $request, string $userId): void
     {
@@ -100,7 +115,6 @@ class CMEventsHandler
      * @param string  $userId
      *
      * @throws CleverConnectorsException
-     * @throws SystemException
      */
     public function hardBounceEvent(Request $request, string $userId): void
     {
@@ -115,7 +129,6 @@ class CMEventsHandler
      * @param string  $event
      *
      * @throws CleverConnectorsException
-     * @throws SystemException
      */
     private function runEvent(Request $request, string $userId, string $event): void
     {
@@ -129,8 +142,12 @@ class CMEventsHandler
         foreach ($this->getSystemInstall($userId, $event) as $systemInstall) {
             $topologies = $this->getTopologies($systemInstall, $event);
             foreach ($topologies as $topology) {
-                $node = $this->nodeRepo->getStartingNode($topology);
-                $this->startingPoint->runWithRequest($request, $topology->getName(), $node->getName());
+                try {
+                    $node = $this->nodeRepo->getStartingNode($topology);
+                    $this->startingPoint->runWithRequest($request, $topology->getName(), $node->getName());
+                } catch (Exception $e) {
+                    $this->logger->alert($e->getMessage(), ['exception' => $e]);
+                }
             }
         }
     }
@@ -140,7 +157,6 @@ class CMEventsHandler
      * @param string $event
      *
      * @return array
-     * @throws SystemException
      */
     private function getSystemInstall(string $userId, string $event): array
     {
@@ -150,10 +166,7 @@ class CMEventsHandler
             return $systemInstalls;
         }
 
-        throw new SystemException(
-            sprintf('User ["%s"] can not run event ["%s"]!', $userId, $event),
-            SystemException::SYSTEM_NOT_FOUND
-        );
+        return [];
     }
 
     /**

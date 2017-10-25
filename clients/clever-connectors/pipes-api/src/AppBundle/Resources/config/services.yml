@@ -34,8 +34,10 @@ services:
     cc.events.controller:
         class: CleverConnectors\AppBundle\Controller\CMEventsController
         arguments:
-            - "@cc.event.handler"
+            - "@cc.events.handler"
 
     cc.events.handler:
         class: CleverConnectors\AppBundle\Handler\CMEventsHandler
         arguments:
+        calls:
+            - [setLogger, ['@monolog.logger.app']]

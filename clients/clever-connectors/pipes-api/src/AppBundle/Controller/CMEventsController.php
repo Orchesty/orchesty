@@ -11,7 +11,6 @@ namespace CleverConnectors\AppBundle\Controller;
 
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Handler\CMEventsHandler;
-use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use Exception;
 use FOS\RestBundle\Controller\FOSRestController;
 use Hanaboso\PipesFramework\Utils\ControllerUtils;
@@ -58,7 +57,7 @@ class CMEventsController extends FOSRestController
     {
         try {
             $this->handler->createEvent($request, $userId);
-        } catch (CleverConnectorsException|SystemException $e) {
+        } catch (CleverConnectorsException $e) {
             return self::processException($e);
         }
 
@@ -78,7 +77,7 @@ class CMEventsController extends FOSRestController
     {
         try {
             $this->handler->unsubscribeEvent($request, $userId);
-        } catch (CleverConnectorsException|SystemException $e) {
+        } catch (CleverConnectorsException $e) {
             return self::processException($e);
         }
 
@@ -98,7 +97,7 @@ class CMEventsController extends FOSRestController
     {
         try {
             $this->handler->hardBounceEvent($request, $userId);
-        } catch (CleverConnectorsException|SystemException $e) {
+        } catch (CleverConnectorsException $e) {
             return self::processException($e);
         }
 
@@ -115,18 +114,13 @@ class CMEventsController extends FOSRestController
         $code = 500;
 
         $className = get_class($e);
-        if ($className == SystemException::class) {
-            if ($e->getCode() === SystemException::SYSTEM_NOT_FOUND) {
-                $code = 404;
-            }
-        }
 
         if ($className == CleverConnectorsException::class) {
             if ($e->getCode() == CleverConnectorsException::INVALID_ENUM_VALUE) {
                 $code = 400;
             }
             if ($e->getCode() == CleverConnectorsException::TOPOLOGY_NOT_FOUND) {
-                $code = 403;
+                $code = 404;
             }
         }
 

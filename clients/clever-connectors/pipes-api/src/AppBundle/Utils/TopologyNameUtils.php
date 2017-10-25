@@ -42,7 +42,7 @@ final class TopologyNameUtils
             throw new LogicException(sprintf('Event type ["%s"] is not valid.', $event));
         }
 
-        return sprintf('%s-%s-event', $systemInstall->getSystem());
+        return sprintf('%s-%s-event', $systemInstall->getSystem(), $event);
     }
 
     /**
