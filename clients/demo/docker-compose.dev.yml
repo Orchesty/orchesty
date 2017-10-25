@@ -41,6 +41,22 @@ services:
         networks:
           - pipesdemo_default
 
+    repeater:
+      image: 'dkr.hanaboso.net/pipes/pipes/pf-bridge:dev'
+      user: ${DEV_UID}:${DEV_GID}
+      environment:
+        RABBITMQ_HOST: rabbitmq
+        RABBITMQ_PORT: '5672'
+        RABBITMQ_USER: guest
+        RABBITMQ_PASS: guest
+        RABBITMQ_VHOST: /
+        MONGO_HOST: mongo
+        REPEATER_CHECK_TIMEOUT: '5000'
+      depends_on:
+        - mongo
+        - rabbitmq
+      command: './dist/src/bin/pipes.js start repeater'
+
     xml-parser-api:
         image: 'dkr.hanaboso.net/pipes/pipes/python-xml-parser:prod'
         environment:
