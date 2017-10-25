@@ -9,10 +9,10 @@
 namespace Tests\Unit\AppBundle\Model\Systems\Impl\Quickbooks\Connector;
 
 
-use CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\Connector\QuickbooksCreateCustomerConnector;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\Connector\QuickbooksCustomerConnectorAbstract;
+use CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\Connector\QuickbooksUpdateCustomerConnector;
 
-class QuickbooksCreateCustomerConnectorTest extends QuickbooksCustomerConnectorAbstractTest
+class QuickbooksUpdateCustomerConnectorTest extends QuickbooksCustomerConnectorAbstractTest
 {
 
     /**
@@ -28,7 +28,7 @@ class QuickbooksCreateCustomerConnectorTest extends QuickbooksCustomerConnectorA
 
         $id = $connector->getId();
 
-        $this->assertEquals('quickbooks-create-customer-connector', $id);
+        $this->assertEquals('quickbooks-update-customer-connector', $id);
     }
 
     /**
@@ -36,10 +36,12 @@ class QuickbooksCreateCustomerConnectorTest extends QuickbooksCustomerConnectorA
      */
     protected function createConnector(): QuickbooksCustomerConnectorAbstract
     {
-        return new QuickbooksCreateCustomerConnector(
+        return new QuickbooksUpdateCustomerConnector(
             $this->system,
             $this->lastSyncManager,
             $this->factory
         );
     }
+
+
 }

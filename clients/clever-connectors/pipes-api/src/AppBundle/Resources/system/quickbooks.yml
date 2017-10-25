@@ -1,11 +1,17 @@
 services:
-    systems.pipedrive:
+    systems.quickbooks:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\QuickbooksSystem
         arguments:
+            - '@hbpf.providers.oauth2_provider'
+        tags: ['%systems%']
 
     hbpf.connector.quickbooks-sync-customer-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\Connector\QuickbooksSyncCustomerConnector
         arguments:
+            - '@systems.quickbooks'
+            - '@cc.last_sync.manager'
+            - '@hbpf.transport.async_curl_factory'
+            - '@doctrine_mongodb.odm.default_document_manager'
 
     hbpf.connector.quickbooks-create-customer-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\Connector\QuickbooksCreateCustomerConnector

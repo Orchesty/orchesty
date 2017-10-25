@@ -24,13 +24,21 @@ class QuickbooksUpdateCustomerConnector extends QuickbooksCustomerConnectorAbstr
         return 'quickbooks-update-customer-connector';
     }
 
+    /**
+     * @param SystemInstall $systemInstall
+     * @param ProcessDto    $dto
+     *
+     * @return string
+     */
     private function getTimeQuery(SystemInstall $systemInstall, ProcessDto $dto): string
     {
         $lastSync = $this->lastSyncManager->getLastSync($systemInstall, $dto->getHeaders());
         $times    = CronUtils::getTimes($lastSync);
 
-        return sprintf('AND MetaData.LastUpdatedTime >= \'%s\' AND MetaData.LastUpdatedTime < \'%s\'',
-            $times->getStart()->format(DateTime::ATOM), $times->getEnd()->format(DateTime::ATOM));
+        $since = $times->getStart() ? sprintf(' AND MetaData.LastUpdatedTime >= \'%s\'', $times->getStart()->format(DateTime::ATOM)) : '';
+        $till = sprintf(' AND MetaData.LastUpdatedTime < \' % s\'', $times->getEnd()->format(DateTime::ATOM));
+
+        return $since . $till;
     }
 
     /**

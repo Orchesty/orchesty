@@ -24,6 +24,12 @@ class QuickbooksCreateCustomerConnector extends QuickbooksCustomerConnectorAbstr
         return 'quickbooks-create-customer-connector';
     }
 
+    /**
+     * @param SystemInstall $systemInstall
+     * @param ProcessDto    $dto
+     *
+     * @return string
+     */
     private function getTimeQuery(SystemInstall $systemInstall, ProcessDto $dto): string
     {
         $lastSync = $this->lastSyncManager->getLastSync($systemInstall, $dto->getHeaders());

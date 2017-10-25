@@ -29,9 +29,9 @@ class QuickbooksSystem implements OAuth2Interface
     private const CLIENT_SECRET = 'NUVTEc0Q13kP3tD2lHmwfHfuJplnpYwxsRA7FXJ8';
     private const AUTHORIZE_URL = 'https://appcenter.intuit.com/connect/oauth2';
     private const TOKEN_URL     = 'https://oauth.platform.intuit.com/oauth2/v1/tokens/bearer';
-    private const API_URL       = 'https://quickbooks.api.intuit.com/v3/company/%s/';
+    private const API_URL       = 'https://sandbox-quickbooks.api.intuit.com/v3/company/%s/';
 
-    private const REALM_ID_KEY = 'realmId';
+    private const REALM_ID_KEY = 'realm_id';
 
     /**
      * @var array
@@ -130,7 +130,8 @@ class QuickbooksSystem implements OAuth2Interface
      */
     public function saveToken(SystemInstall $systemInstall, array $data): SystemInstall
     {
-        $arr = $this->provider->getAccessToken($this->createDto($systemInstall), $data);
+        $arr                     = $this->provider->getAccessToken($this->createDto($systemInstall), $data);
+        $arr[self::REALM_ID_KEY] = $data[self::REALM_ID_KEY];
 
         $systemInstall->setExpires(new DateTime('+' . $arr['expires_in'] . ' seconds'));
         $this->setSettings($systemInstall, $arr);

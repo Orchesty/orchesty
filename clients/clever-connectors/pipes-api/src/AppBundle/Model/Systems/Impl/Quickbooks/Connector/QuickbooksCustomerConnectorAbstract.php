@@ -55,9 +55,9 @@ abstract class QuickbooksCustomerConnectorAbstract implements BatchInterface, Co
      */
     public function __construct(QuickbooksSystem $system, LastSyncManager $lastSyncManager, CurlSenderFactory $factory)
     {
-        $this->system                  = $system;
-        $this->factory                 = $factory;
-        $this->lastSyncManager         = $lastSyncManager;
+        $this->system          = $system;
+        $this->factory         = $factory;
+        $this->lastSyncManager = $lastSyncManager;
     }
 
     /**
@@ -131,7 +131,6 @@ abstract class QuickbooksCustomerConnectorAbstract implements BatchInterface, Co
         );
 
         return $promise;
-
     }
 
     /**
@@ -165,7 +164,7 @@ abstract class QuickbooksCustomerConnectorAbstract implements BatchInterface, Co
     {
         $data = json_decode($response->getBody()->getContents(), TRUE);
 
-        if (!is_array($data) || !array_key_exists('QueryResponse', $data) || array_key_exists('totalCount',
+        if (!is_array($data) || !array_key_exists('QueryResponse', $data) || !array_key_exists('totalCount',
                 $data['QueryResponse'])) {
             throw new SystemException('Quickbooks response has no "QueryResponse -> totalCount" field!',
                 SystemException::MISSING_RESPONSE_DATA);
@@ -193,7 +192,7 @@ abstract class QuickbooksCustomerConnectorAbstract implements BatchInterface, Co
         $requests = [];
         for ($i = 0; $i < $total; $i++) {
             $url = new Uri($dto->getUri(TRUE) . 'query?query=' . urldecode($this->getDataQuery($systemInstall,
-                    $processDto, $i * self::PAGE_LIMIT + 1,self::PAGE_LIMIT)));
+                    $processDto, $i * self::PAGE_LIMIT + 1, self::PAGE_LIMIT)));
 
             $requests[] = $this
                 ->fetchData($sender, RequestDto::from($dto, $url), $systemInstall)
