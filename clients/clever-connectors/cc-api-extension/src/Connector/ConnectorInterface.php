@@ -42,4 +42,58 @@ interface ConnectorInterface
      */
     public function getUserSystem(string $userId, string $systemKey): UserSystem;
 
+    /**
+     * @param string $userId
+     *
+     * @return iterable|UserSystem[]
+     */
+    public function getAllUserSystems(string $userId): iterable;
+
+    /**
+     * @param string $userId
+     * @param string $systemKey
+     * @param array  $settings
+     */
+    public function saveUserSystemSetting(string $userId, string $systemKey, array $settings): void;
+
+    /**
+     * @param string $userId
+     * @param string $systemKey
+     * @param string $token
+     */
+    public function installUserSystem(string $userId, string $systemKey, string $token): void;
+
+    /**
+     * @param string $userId
+     * @param string $systemKey
+     */
+    public function uninstallUserSystem(string $userId, string $systemKey): void;
+
+    /**
+     * @param string $userId
+     * @param string $systemKey
+     */
+    public function synchronizeUserSystem(string $userId, string $systemKey): void;
+
+    /**
+     * @param string $userId
+     * @param string $systemKey
+     * @param string $password
+     */
+    public function setUserSystemPassword(string $userId, string $systemKey, string $password): void;
+
+    /**
+     * @param string $userId
+     * @param string $systemKey
+     * @param string $token
+     */
+    public function switchUserSystemToken(string $userId, string $systemKey, string $token): void;
+
+    /**
+     * @param string $userId
+     * @param string $systemKey
+     * @param string $redirectUrl
+     */
+    public function authorizeUserSystem(string $userId, string $systemKey, string $redirectUrl): void;
+
 }
