@@ -13,10 +13,10 @@ use CcApi\Connector\Exception\ConnectorException;
 use CcApi\Curl\CurlSender;
 use CcApi\Curl\Exception\CurlException;
 use Exception;
+use GuzzleHttp\Psr7\Request;
+use GuzzleHttp\Psr7\Response;
 use PHPUnit\Framework\TestCase;
 use PHPUnit_Framework_MockObject_MockObject;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\StreamInterface;
 
 /**
  * Class ConnectorManagerTest
@@ -27,23 +27,15 @@ class ConnectorManagerTest extends TestCase
 {
 
     /**
-     * @param string $content
+     * @param callable $callback
      *
      * @return CurlSender
      */
-    private function createSuccessResponse(string $content = ''): CurlSender
+    private function createSuccessResponse(callable $callback): CurlSender
     {
-        /** @var StreamInterface|PHPUnit_Framework_MockObject_MockObject $stream */
-        $stream = $this->createMock(StreamInterface::class);
-        $stream->method('getContents')->willReturn($content);
-
-        /** @var ResponseInterface|PHPUnit_Framework_MockObject_MockObject $response */
-        $response = $this->createMock(ResponseInterface::class);
-        $response->method('getBody')->willReturn($stream);
-
         /** @var CurlSender|PHPUnit_Framework_MockObject_MockObject $curlSender */
         $curlSender = $this->createMock(CurlSender::class);
-        $curlSender->method('send')->willReturn($response);
+        $curlSender->method('send')->willReturnCallback($callback);
 
         return $curlSender;
     }
@@ -67,7 +59,13 @@ class ConnectorManagerTest extends TestCase
      */
     public function testParseError(): void
     {
-        $cm = new ConnectorManager($this->createSuccessResponse());
+        $cb = function (Request $request) {
+            $this->assertSame('application/json', $request->getHeader('content-type')[0]);
+
+            return new Response();
+        };
+
+        $cm = new ConnectorManager($this->createSuccessResponse($cb));
 
         $this->expectException(ConnectorException::class);
         $this->expectExceptionMessage('Parser error: Syntax error');
@@ -93,10 +91,17 @@ class ConnectorManagerTest extends TestCase
      */
     public function testGetAllSystem(): void
     {
-        $content = '[{"key":"key","type":"type","name":"name","description":"description"}]';
-        $cm      = new ConnectorManager($this->createSuccessResponse($content));
+        $cb = function (Request $request) {
+            $this->assertSame('application/json', $request->getHeader('content-type')[0]);
+            $this->assertSame(CurlSender::GET, $request->getMethod());
+            $this->assertSame('/systems', $request->getUri()->getPath());
+            $this->assertSame('group=group1&user=user1', $request->getUri()->getQuery());
 
-        $systems = $cm->getAllSystems();
+            return new Response(200, [], '[{"key":"key","type":"type","name":"name","description":"description"}]');
+        };
+
+        $cm      = new ConnectorManager($this->createSuccessResponse($cb));
+        $systems = $cm->getAllSystems('group1', 'user1');
 
         $this->assertSame('key', $systems[0]->getKey());
         $this->assertSame('type', $systems[0]->getType());
@@ -109,9 +114,15 @@ class ConnectorManagerTest extends TestCase
      */
     public function testGetSystem(): void
     {
-        $content = '{"key":"key","type":"type","name":"name","description":"description"}';
-        $cm      = new ConnectorManager($this->createSuccessResponse($content));
+        $cb = function (Request $request) {
+            $this->assertSame('application/json', $request->getHeader('content-type')[0]);
+            $this->assertSame(CurlSender::GET, $request->getMethod());
+            $this->assertSame('/systems/key', $request->getUri()->getPath());
 
+            return new Response(200, [], '{"key":"key","type":"type","name":"name","description":"description"}');
+        };
+
+        $cm     = new ConnectorManager($this->createSuccessResponse($cb));
         $system = $cm->getSystem('key');
 
         $this->assertSame('key', $system->getKey());
@@ -125,10 +136,18 @@ class ConnectorManagerTest extends TestCase
      */
     public function testUserGetSystem(): void
     {
-        $content = '{"key":"key","type":"type","name":"name","description":"description","token":"token","synchronized":true,"authorized":false,';
-        $content .= '"setting_fields":[{"key":"key","type":"type","value":"value","label":"label","required":true}]}';
-        $cm      = new ConnectorManager($this->createSuccessResponse($content));
+        $cb = function (Request $request) {
+            $this->assertSame('application/json', $request->getHeader('content-type')[0]);
+            $this->assertSame(CurlSender::GET, $request->getMethod());
+            $this->assertSame('/user_systems/user/123/system/key', $request->getUri()->getPath());
 
+            $content = '{"key":"key","type":"type","name":"name","description":"description","token":"token","synchronized":true,"authorized":false,';
+            $content .= '"setting_fields":[{"key":"key","type":"type","value":"value","label":"label","required":true}]}';
+
+            return new Response(200, [], $content);
+        };
+
+        $cm         = new ConnectorManager($this->createSuccessResponse($cb));
         $userSystem = $cm->getUserSystem('123', 'key');
 
         $this->assertSame('key', $userSystem->getKey());
@@ -152,9 +171,17 @@ class ConnectorManagerTest extends TestCase
      */
     public function testGetAllUserSystem(): void
     {
-        $content = '[{"key":"key","type":"type","name":"name","description":"description","token":"token","synchronized":true,"authorized":false}]';
-        $cm      = new ConnectorManager($this->createSuccessResponse($content));
+        $cb = function (Request $request) {
+            $this->assertSame('application/json', $request->getHeader('content-type')[0]);
+            $this->assertSame(CurlSender::GET, $request->getMethod());
+            $this->assertSame('/user_systems/user/123', $request->getUri()->getPath());
 
+            $content = '[{"key":"key","type":"type","name":"name","description":"description","token":"token","synchronized":true,"authorized":false}]';
+
+            return new Response(200, [], $content);
+        };
+
+        $cm          = new ConnectorManager($this->createSuccessResponse($cb));
         $userSystems = $cm->getAllUserSystems('123');
 
         $this->assertSame('key', $userSystems[0]->getKey());
@@ -171,10 +198,18 @@ class ConnectorManagerTest extends TestCase
      */
     public function testSaveUserSystemSetting(): void
     {
-        $content = '';
-        $cm      = new ConnectorManager($this->createSuccessResponse($content));
+        $cb = function (Request $request) {
+            $this->assertSame('application/json', $request->getHeader('content-type')[0]);
+            $this->assertSame(CurlSender::POST, $request->getMethod());
+            $this->assertSame('/user_systems/user/123/system/key/settings', $request->getUri()->getPath());
+            $this->assertSame('{"lorem":"abc","ipsum":"def"}', $request->getBody()->getContents());
 
-        $cm->saveUserSystemSetting('123', '', []);
+            return new Response(200, [], '');
+        };
+
+        $cm = new ConnectorManager($this->createSuccessResponse($cb));
+
+        $cm->saveUserSystemSetting('123', 'key', ['lorem' => 'abc', 'ipsum' => 'def']);
         $this->assertTrue(TRUE);
     }
 
@@ -183,10 +218,18 @@ class ConnectorManagerTest extends TestCase
      */
     public function testInstallUserSystem(): void
     {
-        $content = '';
-        $cm      = new ConnectorManager($this->createSuccessResponse($content));
+        $cb = function (Request $request) {
+            $this->assertSame('application/json', $request->getHeader('content-type')[0]);
+            $this->assertSame(CurlSender::POST, $request->getMethod());
+            $this->assertSame('/user_systems/user/123/system/key/install', $request->getUri()->getPath());
+            $this->assertSame('{"token":"abc"}', $request->getBody()->getContents());
 
-        $cm->installUserSystem('123', '', 'abc');
+            return new Response(200, [], '');
+        };
+
+        $cm = new ConnectorManager($this->createSuccessResponse($cb));
+
+        $cm->installUserSystem('123', 'key', 'abc');
         $this->assertTrue(TRUE);
     }
 
@@ -195,10 +238,18 @@ class ConnectorManagerTest extends TestCase
      */
     public function testUninstallUserSystem(): void
     {
-        $content = '';
-        $cm      = new ConnectorManager($this->createSuccessResponse($content));
+        $cb = function (Request $request) {
+            $this->assertSame('application/json', $request->getHeader('content-type')[0]);
+            $this->assertSame(CurlSender::GET, $request->getMethod());
+            $this->assertSame('/user_systems/user/123/system/key/uninstall', $request->getUri()->getPath());
+            $this->assertSame('', $request->getBody()->getContents());
 
-        $cm->uninstallUserSystem('123', '');
+            return new Response(200, [], '');
+        };
+
+        $cm = new ConnectorManager($this->createSuccessResponse($cb));
+
+        $cm->uninstallUserSystem('123', 'key');
         $this->assertTrue(TRUE);
     }
 
@@ -207,10 +258,18 @@ class ConnectorManagerTest extends TestCase
      */
     public function testSynchronizeUserSystem(): void
     {
-        $content = '';
-        $cm      = new ConnectorManager($this->createSuccessResponse($content));
+        $cb = function (Request $request) {
+            $this->assertSame('application/json', $request->getHeader('content-type')[0]);
+            $this->assertSame(CurlSender::GET, $request->getMethod());
+            $this->assertSame('/user_systems/user/123/system/key/sync', $request->getUri()->getPath());
+            $this->assertSame('', $request->getBody()->getContents());
 
-        $cm->synchronizeUserSystem('123', '');
+            return new Response(200, [], '');
+        };
+
+        $cm = new ConnectorManager($this->createSuccessResponse($cb));
+
+        $cm->synchronizeUserSystem('123', 'key');
         $this->assertTrue(TRUE);
     }
 
@@ -219,10 +278,38 @@ class ConnectorManagerTest extends TestCase
      */
     public function testSwitchUserSystemToken(): void
     {
-        $content = '';
-        $cm      = new ConnectorManager($this->createSuccessResponse($content));
+        $cb = function (Request $request) {
+            $this->assertSame('application/json', $request->getHeader('content-type')[0]);
+            $this->assertSame(CurlSender::PUT, $request->getMethod());
+            $this->assertSame('/user_systems/user/123/system/key/switch_token', $request->getUri()->getPath());
+            $this->assertSame('{"token":"abc"}', $request->getBody()->getContents());
 
-        $cm->switchUserSystemToken('123', '', '123');
+            return new Response(200, [], '');
+        };
+
+        $cm = new ConnectorManager($this->createSuccessResponse($cb));
+
+        $cm->switchUserSystemToken('123', 'key', 'abc');
+        $this->assertTrue(TRUE);
+    }
+
+    /**
+     * @covers ConnectorManager::setUserSystemPassword()
+     */
+    public function testSetUserSystemPassword(): void
+    {
+        $cb = function (Request $request) {
+            $this->assertSame('application/json', $request->getHeader('content-type')[0]);
+            $this->assertSame(CurlSender::PUT, $request->getMethod());
+            $this->assertSame('/user_systems/user/123/system/key/set_password', $request->getUri()->getPath());
+            $this->assertSame('{"password":"abc"}', $request->getBody()->getContents());
+
+            return new Response(200, [], '');
+        };
+
+        $cm = new ConnectorManager($this->createSuccessResponse($cb));
+
+        $cm->setUserSystemPassword('123', 'key', 'abc');
         $this->assertTrue(TRUE);
     }
 

@@ -259,13 +259,30 @@ class ConnectorManager implements ConnectorInterface
     /**
      * @param string $userId
      * @param string $systemKey
+     * @param string $password
+     */
+    public function setUserSystemPassword(string $userId, string $systemKey, string $password): void
+    {
+        $request = new Request(
+            CurlSender::PUT,
+            new Uri(sprintf('/user_systems/user/%s/system/%s/set_password', $userId, $systemKey)),
+            $this->getDefaultHeaders()->getHeaders(),
+            json_encode(['password' => $password])
+        );
+
+        $this->send($request);
+    }
+
+    /**
+     * @param string $userId
+     * @param string $systemKey
      * @param string $token
      */
     public function switchUserSystemToken(string $userId, string $systemKey, string $token): void
     {
         $request = new Request(
-            CurlSender::GET,
-            new Uri(sprintf('/user_systems/user/%s/system/%s/sync', $userId, $systemKey)),
+            CurlSender::PUT,
+            new Uri(sprintf('/user_systems/user/%s/system/%s/switch_token', $userId, $systemKey)),
             $this->getDefaultHeaders()->getHeaders(),
             json_encode(['token' => $token])
         );
