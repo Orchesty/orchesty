@@ -1,0 +1,9 @@
+{
+  "response": {
+    "nodata": {
+      "code": "4422",
+      "message": "There is no data to show"
+    },
+    "uri": "/crm/private/json/Contacts/getRecords"
+  }
+}

@@ -1,0 +1,33 @@
+services:
+    systems.zoho:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Zoho\ZohoSystem
+        arguments:
+
+    hbpf.connector.zoho-sync-contact-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Zoho\Connector\ZohoSyncContactConnector
+        arguments:
+            - '@systems.zoho'
+            - '@hbpf.transport.async_curl_factory'
+            - '@doctrine_mongodb.odm.default_document_manager'
+
+    hbpf.connector.zoho-update-contact-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Zoho\Connector\ZohoUpdateContactConnector
+        arguments:
+            - '@systems.zoho'
+            - '@hbpf.transport.async_curl_factory'
+            - '@cc.last_sync.manager'
+
+    hbpf.connector.zoho-delete-contact-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Zoho\Connector\ZohoUpdateContactConnector
+        arguments:
+            - '@systems.zoho'
+            - '@hbpf.transport.async_curl_factory'
+            - '@cc.last_sync.manager'
+
+    hbpf.custom_node.zoho-update-contact-mapper:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Zoho\Mapper\ZohoUpdateContactMapper
+        arguments:
+
+    hbpf.custom_node.zoho-delete-contact-mapper:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Zoho\Mapper\ZohoDeleteContactMapper
+        arguments:
