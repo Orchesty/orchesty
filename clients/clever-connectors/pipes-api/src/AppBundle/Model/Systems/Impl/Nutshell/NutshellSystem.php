@@ -168,8 +168,8 @@ class NutshellSystem implements AuthorizationInterface, WebhookSystemInterface
                 $this->url,
                 $systemInstall->getUser(),
                 $systemInstall->getToken(),
-                'nutshell-customer-connector',
-                'nutshell-customer'
+                'nutshell-contact-connector',
+                'nutshell-contact'
             ),
             FALSE,
             TRUE
