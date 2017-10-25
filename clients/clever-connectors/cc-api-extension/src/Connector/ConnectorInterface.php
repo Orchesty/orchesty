@@ -8,6 +8,7 @@
 
 namespace CcApi\Connector;
 
+use CcApi\ApiEntity\Subscriber;
 use CcApi\ApiEntity\System;
 use CcApi\ApiEntity\UserSystem;
 
@@ -95,5 +96,23 @@ interface ConnectorInterface
      * @param string $redirectUrl
      */
     public function authorizeUserSystem(string $userId, string $systemKey, string $redirectUrl): void;
+
+    /**
+     * @param string     $userId
+     * @param Subscriber $subscriber
+     */
+    public function subscribe(string $userId, Subscriber $subscriber): void;
+
+    /**
+     * @param string     $userId
+     * @param Subscriber $subscriber
+     */
+    public function unSubscribe(string $userId, Subscriber $subscriber): void;
+
+    /**
+     * @param string     $userId
+     * @param Subscriber $subscriber
+     */
+    public function hardBounce(string $userId, Subscriber $subscriber): void;
 
 }
