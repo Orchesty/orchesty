@@ -61,7 +61,7 @@ class CMEventsController extends FOSRestController
             return self::processException($e);
         }
 
-        return new Response([], 200);
+        return new Response('', 200);
     }
 
     /**
@@ -81,7 +81,7 @@ class CMEventsController extends FOSRestController
             return self::processException($e);
         }
 
-        return new Response([], 200);
+        return new Response('', 200);
     }
 
     /**
@@ -93,7 +93,7 @@ class CMEventsController extends FOSRestController
      *
      * @return Response
      */
-    public function HardBounceAction(Request $request, string $userId): Response
+    public function hardBounceAction(Request $request, string $userId): Response
     {
         try {
             $this->handler->hardBounceEvent($request, $userId);
@@ -101,7 +101,7 @@ class CMEventsController extends FOSRestController
             return self::processException($e);
         }
 
-        return new Response([], 200);
+        return new Response('', 200);
     }
 
     /**
