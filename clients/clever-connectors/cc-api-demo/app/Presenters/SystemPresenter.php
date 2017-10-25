@@ -8,13 +8,13 @@
 
 namespace App\Presenters;
 
+use App\Forms\AuthorizeFormFactory;
 use App\Forms\LoginFormFactory;
 use App\Forms\LogoutFormFactory;
 use App\Forms\SystemActionFormFactory;
 use CcApi\Connector\ConnectorManager;
 use Nette\Forms\Controls\SubmitButton;
 use Nette\Forms\Form;
-use Nette\Security\Identity;
 
 /**
  * Class SystemPresenter
@@ -45,21 +45,29 @@ class SystemPresenter extends BasePresenter
     private $systemActionFormFactory;
 
     /**
+     * @var AuthorizeFormFactory
+     */
+    private $authorizedFormFactory;
+
+    /**
      * HomepagePresenter constructor.
      *
      * @param ConnectorManager        $connectorManager
      * @param LoginFormFactory        $loginFormFactory
      * @param LogoutFormFactory       $logoutFormFactory
      * @param SystemActionFormFactory $systemActionFormFactory
+     * @param AuthorizeFormFactory    $authorizedFormFactory
      */
     public function __construct(ConnectorManager $connectorManager, LoginFormFactory $loginFormFactory,
-                                LogoutFormFactory $logoutFormFactory, SystemActionFormFactory $systemActionFormFactory)
+                                LogoutFormFactory $logoutFormFactory, SystemActionFormFactory $systemActionFormFactory,
+                                AuthorizeFormFactory $authorizedFormFactory)
     {
         parent::__construct();
         $this->connectorManager        = $connectorManager;
         $this->loginFormFactory        = $loginFormFactory;
         $this->logoutFormFactory       = $logoutFormFactory;
         $this->systemActionFormFactory = $systemActionFormFactory;
+        $this->authorizedFormFactory   = $authorizedFormFactory;
     }
 
     /**
@@ -149,12 +157,38 @@ class SystemPresenter extends BasePresenter
     }
 
     /**
+     * @return \Nette\Application\UI\Form
+     */
+    public function createComponentAuthorizeForm()
+    {
+        $form              = $this->authorizedFormFactory->create();
+        $form->onSuccess[] = [$this, 'processAuthorize'];
+
+        return $form;
+    }
+
+    /**
+     * @param Form $form
+     */
+    public function processAuthorize(Form $form)
+    {
+        $data = $form->getHttpData();
+
+        $userSystem = $this->connectorManager->getUserSystem($this->userId, $data['system_key']);
+
+        $this->template->userSystem = $userSystem;
+
+        $this->redrawControl('systemData');
+    }
+
+    /**
      *
      */
-    public function renderDefault()
+    public function actionDefault()
     {
-        $this->template->userId = $this->userId ?? '';
-        $this->template->token  = $this->token ?? '';
+        $this->template->userId     = $this->userId ?? '';
+        $this->template->token      = $this->token ?? '';
+        $this->template->userSystem = NULL;
 
         if ($this->user->isLoggedIn()) {
             $userSystems = $this->connectorManager->getAllUserSystems($this->userId);

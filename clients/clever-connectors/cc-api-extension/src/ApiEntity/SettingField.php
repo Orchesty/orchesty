@@ -82,19 +82,19 @@ class SettingField
     }
 
     /**
-     * @return string
+     * @return mixed
      */
-    public function getValue(): string
+    public function getValue()
     {
         return $this->value;
     }
 
     /**
-     * @param string $value
+     * @param mixed $value
      *
      * @return SettingField
      */
-    public function setValue(string $value): SettingField
+    public function setValue($value): SettingField
     {
         $this->value = $value;
 

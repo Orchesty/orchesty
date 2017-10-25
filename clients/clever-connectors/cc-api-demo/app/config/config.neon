@@ -46,5 +46,8 @@ services:
 	system_action_form:
 		class: App\Forms\SystemActionFormFactory
 
+	authorize_form:
+		class: App\Forms\AuthorizeFormFactory
+
 extensions:
 	cc_api: CcApi\Bridges\DI\CcApiExtension
