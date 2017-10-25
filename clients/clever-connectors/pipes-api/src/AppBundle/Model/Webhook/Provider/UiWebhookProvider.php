@@ -13,8 +13,8 @@ use CleverConnectors\AppBundle\Document\Webhook;
 use CleverConnectors\AppBundle\Model\Webhook\WebhookSubscribes;
 use CleverConnectors\AppBundle\Model\Webhook\WebhookSystemInterface;
 use CleverConnectors\AppBundle\Repository\WebhookRepository;
+use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\DocumentRepository;
 
 /**
  * Class UiWebhookProvider
@@ -30,7 +30,7 @@ class UiWebhookProvider implements WebhookProviderInterface
     private $dm;
 
     /**
-     * @var DocumentRepository|WebhookRepository
+     * @var ObjectRepository|WebhookRepository
      */
     private $webhookRepository;
 

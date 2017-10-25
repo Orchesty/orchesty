@@ -7,8 +7,8 @@ use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\HubspotSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
+use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\DocumentRepository;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
@@ -31,7 +31,7 @@ class HubspotGetContactConnector implements ConnectorInterface
     private $system;
 
     /**
-     * @var SystemInstallRepository|DocumentRepository
+     * @var SystemInstallRepository|ObjectRepository
      */
     private $systemInstallRepository;
 

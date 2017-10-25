@@ -8,8 +8,8 @@ use CleverConnectors\AppBundle\Model\Systems\Impl\Basecrm\BasecrmSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use CleverConnectors\AppBundle\Utils\CronUtils;
+use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\DocumentRepository;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Crypt\CryptManager;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
@@ -37,7 +37,7 @@ class BasecrmQueueContactConnector implements ConnectorInterface
     private $curl;
 
     /**
-     * @var SystemInstallRepository|DocumentRepository
+     * @var SystemInstallRepository|ObjectRepository
      */
     private $systemInstallRepository;
 

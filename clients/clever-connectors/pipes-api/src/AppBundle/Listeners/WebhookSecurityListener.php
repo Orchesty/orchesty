@@ -6,8 +6,8 @@ use CleverConnectors\AppBundle\Controller\WebhookController;
 use CleverConnectors\AppBundle\Document\Webhook;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
+use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\DocumentRepository;
 use Exception;
 use GuzzleHttp\Psr7\Uri;
 use GuzzleHttp\RequestOptions;
@@ -26,7 +26,7 @@ class WebhookSecurityListener implements EventSubscriberInterface
 {
 
     /**
-     * @var DocumentRepository
+     * @var ObjectRepository
      */
     private $repo;
 

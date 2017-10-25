@@ -6,8 +6,8 @@ use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Basecrm\BasecrmSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
+use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\DocumentRepository;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
@@ -33,7 +33,7 @@ class BasecrmAcknowledgeContactConnector implements ConnectorInterface
      */
     private $system;
     /**
-     * @var SystemInstallRepository|DocumentRepository
+     * @var SystemInstallRepository|ObjectRepository
      */
     private $systemInstallRepository;
 

@@ -3,7 +3,7 @@
 namespace Tests\Integration\User\Model\User;
 
 use DateTime;
-use Doctrine\ODM\MongoDB\DocumentRepository;
+use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Hanaboso\PipesFramework\User\Document\TmpUser;
 use Hanaboso\PipesFramework\User\Document\Token;
@@ -34,17 +34,17 @@ class UserManagerTest extends DatabaseTestCaseAbstract
     private $userManager;
 
     /**
-     * @var DocumentRepository
+     * @var ObjectRepository
      */
     private $userRepository;
 
     /**
-     * @var DocumentRepository
+     * @var ObjectRepository
      */
     private $tmpUserRepository;
 
     /**
-     * @var DocumentRepository
+     * @var ObjectRepository
      */
     private $tokenRepository;
 

@@ -6,8 +6,8 @@ use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\LastSync\LastSyncManager;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Zendesk\ZendeskSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
+use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\DocumentRepository;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSender;
@@ -45,7 +45,7 @@ abstract class ZendeskUserConnectorAbstract implements ConnectorInterface, Batch
     protected $factory;
 
     /**
-     * @var DocumentRepository|SystemInstallRepository
+     * @var ObjectRepository|SystemInstallRepository
      */
     protected $systemInstallRepository;
 

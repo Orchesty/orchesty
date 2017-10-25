@@ -5,8 +5,8 @@ namespace CleverConnectors\AppBundle\Command;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use DateTime;
+use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\DocumentRepository;
 use Exception;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
@@ -24,7 +24,7 @@ class GetInstallsBeforeExpirationCommand extends Command implements LoggerAwareI
 {
 
     /**
-     * @var DocumentRepository|SystemInstallRepository
+     * @var ObjectRepository|SystemInstallRepository
      */
     private $repository;
 

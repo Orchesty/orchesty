@@ -7,8 +7,8 @@ use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Bigcommerce\BigcommerceSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
+use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\DocumentRepository;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
@@ -37,7 +37,7 @@ class BigcommerceGetCustomerConnector implements ConnectorInterface
     private $manager;
 
     /**
-     * @var SystemInstallRepository|DocumentRepository
+     * @var SystemInstallRepository|ObjectRepository
      */
     private $systemInstallRepository;
 

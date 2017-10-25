@@ -7,8 +7,8 @@ use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Nutshell\NutshellSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
+use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\DocumentRepository;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSender;
@@ -38,7 +38,7 @@ class NutshellSyncContactConnector implements BatchInterface, ConnectorInterface
     private $system;
 
     /**
-     * @var SystemInstallRepository|DocumentRepository
+     * @var SystemInstallRepository|ObjectRepository
      */
     private $systemInstallRepository;
 

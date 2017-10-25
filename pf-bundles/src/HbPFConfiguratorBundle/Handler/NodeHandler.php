@@ -2,8 +2,8 @@
 
 namespace Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler;
 
+use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\DocumentRepository;
 use Hanaboso\PipesFramework\Commons\DatabaseManager\DatabaseManagerLocator;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Exception\NodeException;
@@ -19,7 +19,7 @@ class NodeHandler
 {
 
     /**
-     * @var DocumentRepository|NodeRepository
+     * @var ObjectRepository|NodeRepository
      */
     private $nodeRepository;
 

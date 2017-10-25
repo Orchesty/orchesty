@@ -6,8 +6,8 @@ use CleverConnectors\AppBundle\Document\LastSync;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Repository\LastSyncRepository;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
+use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\DocumentRepository;
 use LogicException;
 
 /**
@@ -24,7 +24,7 @@ class LastSyncManager
     private $dm;
 
     /**
-     * @var DocumentRepository|LastSyncRepository
+     * @var ObjectRepository|LastSyncRepository
      */
     private $repository;
 

@@ -13,8 +13,8 @@ use CleverConnectors\AppBundle\Model\Webhook\WebhookManager;
 use CleverConnectors\AppBundle\Model\Webhook\WebhookSystemInterface;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
+use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\DocumentRepository;
 use Hanaboso\PipesFramework\Commons\Enum\HandlerEnum;
 use Hanaboso\PipesFramework\Commons\Enum\TypeEnum;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
@@ -44,17 +44,17 @@ class SystemManager
     private $systemLoader;
 
     /**
-     * @var SystemInstallRepository|DocumentRepository
+     * @var SystemInstallRepository|ObjectRepository
      */
     private $systemRepository;
 
     /**
-     * @var TopologyRepository|DocumentRepository
+     * @var TopologyRepository|ObjectRepository
      */
     private $topologyRepository;
 
     /**
-     * @var NodeRepository|DocumentRepository
+     * @var NodeRepository|ObjectRepository
      */
     private $nodeRepository;
 

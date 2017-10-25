@@ -7,8 +7,8 @@ use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Wisepops\WisepopsSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
+use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\DocumentRepository;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSender;
@@ -36,7 +36,7 @@ class WisepopsSyncEmailConnector implements BatchInterface, ConnectorInterface
     private $system;
 
     /**
-     * @var SystemInstallRepository|DocumentRepository
+     * @var SystemInstallRepository|ObjectRepository
      */
     private $systemInstallRepository;
 
@@ -135,7 +135,8 @@ class WisepopsSyncEmailConnector implements BatchInterface, ConnectorInterface
      *
      * @return PromiseInterface
      */
-    private function getPage(CurlSender $sender, RequestDto $requestDto, string $baseUrl, callable $callbackItem, int $page): PromiseInterface
+    private function getPage(CurlSender $sender, RequestDto $requestDto, string $baseUrl, callable $callbackItem,
+                             int $page): PromiseInterface
     {
         $url = new Uri(sprintf('%s?page=%s', $baseUrl, $page));
 

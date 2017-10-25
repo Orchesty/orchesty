@@ -17,8 +17,8 @@ use CleverConnectors\AppBundle\Model\Webhook\WebhookSystemInterface;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use CleverConnectors\AppBundle\Repository\WebhookRepository;
 use CleverConnectors\AppBundle\Utils\WebhookUtils;
+use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\DocumentRepository;
 use Exception;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
@@ -40,12 +40,12 @@ class ApiWebhookProvider implements WebhookProviderInterface, LoggerAwareInterfa
     private $dm;
 
     /**
-     * @var DocumentRepository|WebhookRepository
+     * @var ObjectRepository|WebhookRepository
      */
     private $webhookRepository;
 
     /**
-     * @var DocumentRepository|SystemInstallRepository
+     * @var ObjectRepository|SystemInstallRepository
      */
     private $systemRepository;
 
