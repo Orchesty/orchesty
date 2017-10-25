@@ -3,7 +3,7 @@
 namespace Tests\Integration\User\Model\Token;
 
 use DateTime;
-use Doctrine\ODM\MongoDB\DocumentRepository;
+use Doctrine\Common\Persistence\ObjectRepository;
 use Hanaboso\PipesFramework\User\Document\TmpUser;
 use Hanaboso\PipesFramework\User\Document\Token;
 use Hanaboso\PipesFramework\User\Document\User;
@@ -29,7 +29,7 @@ class TokenManagerTest extends DatabaseTestCaseAbstract
     private $tokenManager;
 
     /**
-     * @var DocumentRepository
+     * @var ObjectRepository
      */
     private $tokenRepository;
 

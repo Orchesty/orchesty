@@ -2,7 +2,7 @@
 
 namespace Tests\Integration\User\Model\Security;
 
-use Doctrine\ODM\MongoDB\DocumentRepository;
+use Doctrine\Common\Persistence\ObjectRepository;
 use Hanaboso\PipesFramework\User\Document\User;
 use Hanaboso\PipesFramework\User\Model\Security\SecurityManager;
 use Hanaboso\PipesFramework\User\Model\Security\SecurityManagerException;
@@ -28,7 +28,7 @@ class SecurityManagerTest extends DatabaseTestCaseAbstract
     private $securityManager;
 
     /**
-     * @var DocumentRepository
+     * @var ObjectRepository
      */
     private $userRepository;
 

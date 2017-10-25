@@ -8,8 +8,8 @@
 
 namespace Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler;
 
+use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\DocumentRepository;
 use Exception;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
@@ -32,12 +32,12 @@ class StartingPointHandler
 {
 
     /**
-     * @var NodeRepository|DocumentRepository
+     * @var NodeRepository|ObjectRepository
      */
     private $nodeRepository;
 
     /**
-     * @var TopologyRepository|DocumentRepository
+     * @var TopologyRepository|ObjectRepository
      */
     private $topologyRepository;
 

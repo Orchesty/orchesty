@@ -2,8 +2,8 @@
 
 namespace Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler;
 
+use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\DocumentRepository;
 use Hanaboso\PipesFramework\Commons\DatabaseManager\DatabaseManagerLocator;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Commons\Utils\UriParams;
@@ -22,7 +22,7 @@ class TopologyHandler
 {
 
     /**
-     * @var DocumentRepository|TopologyRepository
+     * @var ObjectRepository|TopologyRepository
      */
     protected $topologyRepository;
 

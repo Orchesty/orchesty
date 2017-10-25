@@ -1,5 +1,6 @@
 {
   "name": "hanaboso/pipes-framework",
+  "license": "proprietary",
   "description": "PipesFramework for Symfony",
   "version": "1.0.9",
   "autoload": {
@@ -15,7 +16,7 @@
   "require": {
     "alcaeus/mongo-php-adapter": "^1.1",
     "bunny/bunny": "^0.2",
-    "clue/buzz-react": "^2.1",
+    "clue/buzz-react": "^2.2",
     "doctrine/doctrine-bundle": "^1.7",
     "doctrine/doctrine-fixtures-bundle": "^2.4",
     "doctrine/mongodb-odm-bundle": "^3.4",
@@ -27,9 +28,9 @@
     "nette/http": "^2.4",
     "nette/utils": "^2.4",
     "paragonie/halite": "^3.3",
-    "php-http/client-common": "^1.1",
-    "php-http/message": "^1.0",
-    "php-http/socket-client": "^1.0",
+    "php-http/client-common": "^1.6",
+    "php-http/message": "^1.6",
+    "php-http/socket-client": "^1.3",
     "phpoffice/phpspreadsheet": "1.0.0-beta",
     "phpseclib/phpseclib": "^2.0",
     "predis/predis": "^1.1",
@@ -37,7 +38,7 @@
     "snc/redis-bundle": "^2.0",
     "symfony/assetic-bundle": "^2.8",
     "symfony/monolog-bundle": "^3.1",
-    "symfony/swiftmailer-bundle": "^3.0",
+    "symfony/swiftmailer-bundle": "^3.1",
     "symfony/symfony": "^3.3"
   },
   "require-dev": {

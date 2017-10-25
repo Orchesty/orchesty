@@ -135,16 +135,16 @@
         },
         {
             "name": "clue/buzz-react",
-            "version": "v2.1.0",
+            "version": "v2.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/clue/php-buzz-react.git",
-                "reference": "3aadd4636448765b242b5c56fb02196e6c63dc06"
+                "reference": "3fec9c17ffd4f7443f853de986e734b4c131f98e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/clue/php-buzz-react/zipball/3aadd4636448765b242b5c56fb02196e6c63dc06",
-                "reference": "3aadd4636448765b242b5c56fb02196e6c63dc06",
+                "url": "https://api.github.com/repos/clue/php-buzz-react/zipball/3fec9c17ffd4f7443f853de986e734b4c131f98e",
+                "reference": "3fec9c17ffd4f7443f853de986e734b4c131f98e",
                 "shasum": ""
             },
             "require": {
@@ -153,7 +153,7 @@
                 "react/event-loop": "^1.0 || ^0.5 || ^0.4 || ^0.3",
                 "react/http-client": "^0.5.6",
                 "react/promise": "^2.2.1",
-                "react/promise-stream": "^0.1.1",
+                "react/promise-stream": "^1.0 || ^0.1.1",
                 "react/socket": "^1.0 || ^0.8.4",
                 "react/stream": "^1.0 || ^0.7",
                 "ringcentral/psr7": "^1.2"
@@ -189,7 +189,7 @@
                 "psr-7",
                 "reactphp"
             ],
-            "time": "2017-09-17T17:16:22+00:00"
+            "time": "2017-10-24T17:53:40+00:00"
         },
         {
             "name": "clue/stream-filter",
@@ -659,16 +659,16 @@
         },
         {
             "name": "doctrine/doctrine-bundle",
-            "version": "1.7.1",
+            "version": "1.7.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/DoctrineBundle.git",
-                "reference": "f8bff22d608224ed88e90b24e9d884cb10b389bb"
+                "reference": "41d6b7c9a1a37e08ab1c321193446c12d6afb5ed"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/DoctrineBundle/zipball/f8bff22d608224ed88e90b24e9d884cb10b389bb",
-                "reference": "f8bff22d608224ed88e90b24e9d884cb10b389bb",
+                "url": "https://api.github.com/repos/doctrine/DoctrineBundle/zipball/41d6b7c9a1a37e08ab1c321193446c12d6afb5ed",
+                "reference": "41d6b7c9a1a37e08ab1c321193446c12d6afb5ed",
                 "shasum": ""
             },
             "require": {
@@ -736,7 +736,7 @@
                 "orm",
                 "persistence"
             ],
-            "time": "2017-09-29T15:26:21+00:00"
+            "time": "2017-10-24T15:58:25+00:00"
         },
         {
             "name": "doctrine/doctrine-cache-bundle",
@@ -1137,26 +1137,26 @@
         },
         {
             "name": "doctrine/mongodb-odm",
-            "version": "1.1.7",
+            "version": "1.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/mongodb-odm.git",
-                "reference": "df3c1208548eafca9e356b0125cc5aa08e7f25a8"
+                "reference": "8d8ff7745073aa29aeef479d6ee514a2193cf416"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/mongodb-odm/zipball/df3c1208548eafca9e356b0125cc5aa08e7f25a8",
-                "reference": "df3c1208548eafca9e356b0125cc5aa08e7f25a8",
+                "url": "https://api.github.com/repos/doctrine/mongodb-odm/zipball/8d8ff7745073aa29aeef479d6ee514a2193cf416",
+                "reference": "8d8ff7745073aa29aeef479d6ee514a2193cf416",
                 "shasum": ""
             },
             "require": {
-                "doctrine/annotations": "~1.0",
+                "doctrine/annotations": "~1.2",
                 "doctrine/cache": "~1.0",
                 "doctrine/collections": "~1.1",
                 "doctrine/common": "~2.4",
                 "doctrine/inflector": "~1.0",
                 "doctrine/instantiator": "^1.0.1",
-                "doctrine/mongodb": "~1.3",
+                "doctrine/mongodb": "^1.6.1",
                 "php": "^5.6 || ^7.0",
                 "symfony/console": "~2.3|~3.0|^4.0"
             },
@@ -1171,7 +1171,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.1.x-dev"
+                    "dev-master": "1.2.x-dev"
                 }
             },
             "autoload": {
@@ -1217,7 +1217,7 @@
                 "odm",
                 "persistence"
             ],
-            "time": "2017-10-23T11:33:46+00:00"
+            "time": "2017-10-24T05:39:55+00:00"
         },
         {
             "name": "doctrine/mongodb-odm-bundle",
@@ -3987,16 +3987,16 @@
         },
         {
             "name": "react/promise-stream",
-            "version": "v0.1.2",
+            "version": "v1.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/reactphp/promise-stream.git",
-                "reference": "f4123898734cfa532099efceaf91d5592e5afe74"
+                "reference": "1503761d01116bf893f86b9843b3bc7a80682587"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/reactphp/promise-stream/zipball/f4123898734cfa532099efceaf91d5592e5afe74",
-                "reference": "f4123898734cfa532099efceaf91d5592e5afe74",
+                "url": "https://api.github.com/repos/reactphp/promise-stream/zipball/1503761d01116bf893f86b9843b3bc7a80682587",
+                "reference": "1503761d01116bf893f86b9843b3bc7a80682587",
                 "shasum": ""
             },
             "require": {
@@ -4029,7 +4029,7 @@
                     "email": "christian@lueck.tv"
                 }
             ],
-            "description": "The missing link between Promise-land and Stream-land for React PHP",
+            "description": "The missing link between Promise-land and Stream-land for ReactPHP",
             "homepage": "https://github.com/reactphp/promise-stream",
             "keywords": [
                 "Buffer",
@@ -4039,7 +4039,7 @@
                 "stream",
                 "unwrap"
             ],
-            "time": "2017-10-18T15:23:47+00:00"
+            "time": "2017-10-24T14:35:40+00:00"
         },
         {
             "name": "react/promise-timer",

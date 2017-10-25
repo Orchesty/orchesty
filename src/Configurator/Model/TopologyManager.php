@@ -2,8 +2,8 @@
 
 namespace Hanaboso\PipesFramework\Configurator\Model;
 
+use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\DocumentRepository;
 use Hanaboso\PipesFramework\Commons\DatabaseManager\DatabaseManagerLocator;
 use Hanaboso\PipesFramework\Commons\Enum\HandlerEnum;
 use Hanaboso\PipesFramework\Commons\Enum\TopologyStatusEnum;
@@ -33,7 +33,7 @@ class TopologyManager
     private $dm;
 
     /**
-     * @var TopologyRepository|DocumentRepository
+     * @var TopologyRepository|ObjectRepository
      */
     private $topologyRepository;
 
