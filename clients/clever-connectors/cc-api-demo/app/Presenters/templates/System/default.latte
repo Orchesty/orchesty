@@ -1,0 +1,31 @@
+{block title}
+    USER SYSTEMS
+{/block title}
+
+{block content}
+    <h1 class="text-center">USER SYSTEMS</h1>
+
+    <hr>
+
+    <div class="row">
+
+        {import '../components/form.latte'}
+        {if $user->isLoggedIn()}
+            <div class="col-md-6 text-center" style="line-height: 3rem">
+                <strong>UserId:</strong> {$userId} | <strong>Token:</strong> {$token}
+            </div>
+            <div class="col-md-6" style="line-height: 3rem">
+                {include bootstrap-form logoutForm}
+            </div>
+
+            <div class="clearfix"></div>
+
+
+        {else}
+            <div class="col-md-12">
+                {include bootstrap-form loginForm}
+            </div>
+        {/if}
+
+    </div>
+{/block}

@@ -2,10 +2,10 @@
 
 namespace App\Presenters;
 
+use App\Forms\PublishFormFactory;
 use Bunny\Client;
 use CmStream\Subscriber;
 use Nette\Forms\Form;
-use PublishFormFactory;
 
 /**
  * Class StreamPresenter
@@ -43,7 +43,6 @@ class StreamPresenter extends BasePresenter
      */
     public function renderDefault(): void
     {
-        $this->template->host = $this->context->getParameters()['ws']['host'];
     }
 
     /**

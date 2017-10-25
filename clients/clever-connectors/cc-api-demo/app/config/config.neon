@@ -25,7 +25,8 @@ session:
 	expiration: 14 days
 
 services:
-	router: App\RouterFactory::createRouter
+	router: App\Router\RouterFactory::createRouter
+	authenticator:  \App\Model\NullAuthenticator
 
 	guzzle_client_factory:
 		class: CmStream\GuzzleClientFactory(%stream.host%)
@@ -34,7 +35,13 @@ services:
 		class: CmStream\Subscriber
 
 	publish_form_factory:
-		class: PublishFormFactory
+		class: App\Forms\PublishFormFactory
+
+	login_form:
+		class: App\Forms\LoginFormFactory
+
+	logout_form:
+		class: App\Forms\LogoutFormFactory
 
 extensions:
 	cc_api: CcApi\Bridges\DI\CcApiExtension
