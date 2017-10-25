@@ -100,16 +100,22 @@ class SystemInstall
 
     /**
      * @var bool
+     *
+     * @ODM\Field(type="bool")
      */
     protected $eventCreate = FALSE;
 
     /**
      * @var bool
+     *
+     * @ODM\Field(type="bool")
      */
     protected $eventUnsubscribe = FALSE;
 
     /**
      * @var bool
+     *
+     * @ODM\Field(type="bool")
      */
     protected $eventHardBounce = FALSE;
 

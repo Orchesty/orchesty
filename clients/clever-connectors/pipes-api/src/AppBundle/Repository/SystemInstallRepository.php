@@ -3,6 +3,7 @@
 namespace CleverConnectors\AppBundle\Repository;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use DateTime;
 use DateTimeZone;
@@ -24,9 +25,17 @@ class SystemInstallRepository extends DocumentRepository
      * @param string $userId
      *
      * @return array
+     * @throws CleverConnectorsException
      */
     public function getSystemInstallByEvent(string $event, string $userId): array
     {
+        if (!SystemInstall::isEvent($event)) {
+            throw new CleverConnectorsException(
+                sprintf('Event type ["%s"] is not valid.', $event),
+                CleverConnectorsException::INVALID_ENUM_VALUE
+            );
+        }
+
         $systemInstalls = $this->createQueryBuilder()
             ->field($event)->equals(TRUE)
             ->field('user')->equals($userId)

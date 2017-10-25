@@ -44,5 +44,7 @@ services:
     cc.events.manager:
         class: CleverConnectors\AppBundle\Model\CM\CMEventsManager
         arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.handler.starting_point'
         calls:
             - [setLogger, ['@monolog.logger']]
