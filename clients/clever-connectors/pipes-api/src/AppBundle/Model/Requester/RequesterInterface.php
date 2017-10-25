@@ -1,0 +1,37 @@
+<?php declare(strict_types=1);
+
+/**
+ * Created by PhpStorm.
+ * User: radek.jirsa
+ * Date: 25.10.17
+ * Time: 16:02
+ */
+
+namespace CleverConnectors\AppBundle\Model\Requester;
+
+use CleverConnectors\AppBundle\Document\SystemInstall;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
+
+/**
+ * Interface RequesterInterface
+ */
+interface RequesterInterface
+{
+
+    /**
+     * @param array $data
+     *
+     * @return RequestDto
+     */
+    public function getRequestDto(array $data): RequestDto;
+
+    /**
+     * @param ResponseDto   $responseDto
+     * @param SystemInstall $systemInstall
+     *
+     * @return SystemInstall
+     */
+    public function processResponse(ResponseDto $responseDto, SystemInstall $systemInstall): SystemInstall;
+
+}

@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Unit\AppBundle\Model\CM;
+namespace Tests\Unit\AppBundle\Model\CMEvents;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
-use CleverConnectors\AppBundle\Model\CM\CMEventsManager;
+use CleverConnectors\AppBundle\Model\CMEvents\CMEventsManager;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
@@ -19,7 +19,7 @@ use Tests\KernelTestCaseAbstract;
 /**
  * Class CMEventsManagetTest
  *
- * @package Tests\Unit\AppBundle\Model\CM
+ * @package Tests\Unit\AppBundle\Model\CMEvents
  */
 class CMEventsManagetTest extends KernelTestCaseAbstract
 {
@@ -44,7 +44,9 @@ class CMEventsManagetTest extends KernelTestCaseAbstract
     {
         $sysRepo = $this->createMock(SystemInstallRepository::class);
         $sysRepo->expects($this->once())
-            ->method('getSystemInstallByEvent')->willReturn([(new SystemInstall())->setUser('usgfhr')->setSystem('ssghys')]);
+            ->method('getSystemInstallByEvent')->willReturn([
+                (new SystemInstall())->setUser('usgfhr')->setSystem('ssghys'),
+            ]);
 
         $topRepo = $this->createMock(TopologyRepository::class);
         $topRepo->method('getRunnableTopologies')->willReturn([]);
@@ -136,6 +138,104 @@ class CMEventsManagetTest extends KernelTestCaseAbstract
 
         $mana = new CMEventsManager($dm, $handler);
         $mana->runEvent(new Request(), '', SystemInstall::EVENT_CREATE);
+    }
+
+    /**
+     *
+     */
+    public function testSaveEventMissingTopology(): void
+    {
+        $topRepo = $this->createMock(TopologyRepository::class);
+        $topRepo->method('getRunnableTopologies')->willReturn([]);
+
+        /** @var DocumentManager|PHPUnit_Framework_MockObject_MockObject $dm */
+        $dm = $this->createMock(DocumentManager::class);
+        $dm->expects($this->at(0))
+            ->method('getRepository')->willReturn($this->createMock(NodeRepository::class));
+        $dm->expects($this->at(1))
+            ->method('getRepository')->willReturn($topRepo);
+        $dm->expects($this->at(2))
+            ->method('getRepository')->willReturn($this->createMock(NodeRepository::class));
+
+        /** @var StartingPointHandler $handler */
+        $handler = $this->createMock(StartingPointHandler::class);
+
+        $this->expectException(CleverConnectorsException::class);
+        $this->expectExceptionCode(CleverConnectorsException::TOPOLOGY_NOT_FOUND);
+
+        $systemInstall = (new SystemInstall())->setUser('usr')->setSystem('ssys')->setToken('tok');
+        $data          = [SystemInstall::EVENT_CREATE => TRUE];
+
+        $mana = new CMEventsManager($dm, $handler);
+        $mana->saveEventsForSystemInstall($systemInstall, $data);
+    }
+
+    /**
+     *
+     */
+    public function testSaveEvent(): void
+    {
+        $topRepo = $this->createMock(TopologyRepository::class);
+        $topRepo->expects($this->once())
+            ->method('getRunnableTopologies')->willReturn([(new Topology())->setName('top-name')]);
+
+        $nodeRepo = $this->createMock(NodeRepository::class);
+        $nodeRepo->expects($this->once())
+            ->method('getStartingNode')->willReturn((new Node())->setName('node-name'));
+
+        /** @var DocumentManager|PHPUnit_Framework_MockObject_MockObject $dm */
+        $dm = $this->createMock(DocumentManager::class);
+        $dm->expects($this->at(0))
+            ->method('getRepository')->willReturn($this->createMock(SystemInstallRepository::class));
+        $dm->expects($this->at(1))
+            ->method('getRepository')->willReturn($topRepo);
+        $dm->expects($this->at(2))
+            ->method('getRepository')->willReturn($nodeRepo);
+
+        /** @var StartingPointHandler $handler */
+        $handler = $this->createMock(StartingPointHandler::class);
+
+        $systemInstall = (new SystemInstall())->setUser('usr')->setSystem('ssys')->setToken('tok');
+        $data          = [SystemInstall::EVENT_CREATE => TRUE];
+
+        $mana = new CMEventsManager($dm, $handler);
+        $mana->saveEventsForSystemInstall($systemInstall, $data);
+        self::assertArrayNotHasKey(SystemInstall::EVENT_CREATE, $data);
+    }
+
+    /**
+     *
+     */
+    public function testSaveEventFindByName(): void
+    {
+        $topRepo = $this->createMock(TopologyRepository::class);
+        $topRepo->expects($this->at(0))
+            ->method('getRunnableTopologies')->willReturn([]);
+        $topRepo->expects($this->at(1))
+            ->method('getRunnableTopologies')->willReturn([(new Topology())->setName('top-name')]);
+
+        $nodeRepo = $this->createMock(NodeRepository::class);
+        $nodeRepo->expects($this->once())
+            ->method('getStartingNode')->willReturn((new Node())->setName('node-name'));
+
+        /** @var DocumentManager|PHPUnit_Framework_MockObject_MockObject $dm */
+        $dm = $this->createMock(DocumentManager::class);
+        $dm->expects($this->at(0))
+            ->method('getRepository')->willReturn($this->createMock(SystemInstallRepository::class));
+        $dm->expects($this->at(1))
+            ->method('getRepository')->willReturn($topRepo);
+        $dm->expects($this->at(2))
+            ->method('getRepository')->willReturn($nodeRepo);
+
+        /** @var StartingPointHandler $handler */
+        $handler = $this->createMock(StartingPointHandler::class);
+
+        $systemInstall = (new SystemInstall())->setUser('usr')->setSystem('ssys')->setToken('tok');
+        $data          = [SystemInstall::EVENT_CREATE => TRUE];
+
+        $mana = new CMEventsManager($dm, $handler);
+        $mana->saveEventsForSystemInstall($systemInstall, $data);
+        self::assertArrayNotHasKey(SystemInstall::EVENT_CREATE, $data);
     }
 
 }

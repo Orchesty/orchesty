@@ -42,7 +42,7 @@ services:
             - "@cc.events.manager"
 
     cc.events.manager:
-        class: CleverConnectors\AppBundle\Model\CM\CMEventsManager
+        class: CleverConnectors\AppBundle\Model\CMEvents\CMEventsManager
         arguments:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.handler.starting_point'

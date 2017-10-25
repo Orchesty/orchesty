@@ -56,4 +56,22 @@ final class TopologyNameUtils
         return sprintf('%s-%s', $systemInstall->getUser(), self::getEventName($systemInstall, $event));
     }
 
+    /**
+     * @return string
+     */
+    public static function getCMEventName(): string
+    {
+        return 'save-cmevents';
+    }
+
+    /**
+     * @param SystemInstall $systemInstall
+     *
+     * @return string
+     */
+    public static function getSystemCMEventName(SystemInstall $systemInstall): string
+    {
+        return sprintf('%s-%s', $systemInstall->getSystem(), self::getCMEventName());
+    }
+
 }

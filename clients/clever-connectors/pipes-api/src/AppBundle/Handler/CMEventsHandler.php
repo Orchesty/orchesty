@@ -11,7 +11,7 @@ namespace CleverConnectors\AppBundle\Handler;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
-use CleverConnectors\AppBundle\Model\CM\CMEventsManager;
+use CleverConnectors\AppBundle\Model\CMEvents\CMEventsManager;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
