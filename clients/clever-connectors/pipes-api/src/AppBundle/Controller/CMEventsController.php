@@ -9,8 +9,12 @@
 
 namespace CleverConnectors\AppBundle\Controller;
 
+use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Handler\CMEventsHandler;
+use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
+use Exception;
 use FOS\RestBundle\Controller\FOSRestController;
+use Hanaboso\PipesFramework\Utils\ControllerUtils;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
@@ -42,7 +46,7 @@ class CMEventsController extends FOSRestController
     }
 
     /**
-     * @Route("/event/create/{userId}")
+     * @Route("/event/user/{userId}/create")
      * @Method("POST")
      *
      * @param Request $request
@@ -52,13 +56,17 @@ class CMEventsController extends FOSRestController
      */
     public function createAction(Request $request, string $userId): Response
     {
-        $this->handler->createEvent($request, $userId);
+        try {
+            $this->handler->createEvent($request, $userId);
+        } catch (CleverConnectorsException|SystemException $e) {
+            return self::processException($e);
+        }
 
         return new Response([], 200);
     }
 
     /**
-     * @Route("/event/unsubscribe/{userId}")
+     * @Route("/event/user/{userId}/unsubscribe")
      * @Method("POST")
      *
      * @param Request $request
@@ -68,13 +76,17 @@ class CMEventsController extends FOSRestController
      */
     public function unsubscribeAction(Request $request, string $userId): Response
     {
-        $this->handler->unsubscribeEvent($request, $userId);
+        try {
+            $this->handler->unsubscribeEvent($request, $userId);
+        } catch (CleverConnectorsException|SystemException $e) {
+            return self::processException($e);
+        }
 
         return new Response([], 200);
     }
 
     /**
-     * @Route("/event/hard_bounce/{userId}")
+     * @Route("/event/user/{userId}/hard_bounce")
      * @Method("POST")
      *
      * @param Request $request
@@ -84,9 +96,41 @@ class CMEventsController extends FOSRestController
      */
     public function HardBounceAction(Request $request, string $userId): Response
     {
-        $this->handler->hardBounceEvent($request, $userId);
+        try {
+            $this->handler->hardBounceEvent($request, $userId);
+        } catch (CleverConnectorsException|SystemException $e) {
+            return self::processException($e);
+        }
 
         return new Response([], 200);
+    }
+
+    /**
+     * @param Exception $e
+     *
+     * @return Response
+     */
+    private static function processException(Exception $e): Response
+    {
+        $code = 500;
+
+        $className = get_class($e);
+        if ($className == SystemException::class) {
+            if ($e->getCode() === SystemException::SYSTEM_NOT_FOUND) {
+                $code = 404;
+            }
+        }
+
+        if ($className == CleverConnectorsException::class) {
+            if ($e->getCode() == CleverConnectorsException::INVALID_ENUM_VALUE) {
+                $code = 400;
+            }
+            if ($e->getCode() == CleverConnectorsException::TOPOLOGY_NOT_FOUND) {
+                $code = 403;
+            }
+        }
+
+        return new Response(ControllerUtils::createExceptionData($e), $code);
     }
 
 }

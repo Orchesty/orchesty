@@ -74,6 +74,9 @@ class CMEventsHandler
     /**
      * @param Request $request
      * @param string  $userId
+     *
+     * @throws CleverConnectorsException
+     * @throws SystemException
      */
     public function createEvent(Request $request, string $userId): void
     {
@@ -83,6 +86,9 @@ class CMEventsHandler
     /**
      * @param Request $request
      * @param string  $userId
+     *
+     * @throws CleverConnectorsException
+     * @throws SystemException
      */
     public function unsubscribeEvent(Request $request, string $userId): void
     {
@@ -92,6 +98,9 @@ class CMEventsHandler
     /**
      * @param Request $request
      * @param string  $userId
+     *
+     * @throws CleverConnectorsException
+     * @throws SystemException
      */
     public function hardBounceEvent(Request $request, string $userId): void
     {
@@ -105,12 +114,16 @@ class CMEventsHandler
      * @param string  $userId
      * @param string  $event
      *
+     * @throws CleverConnectorsException
      * @throws SystemException
      */
     private function runEvent(Request $request, string $userId, string $event): void
     {
         if (!SystemInstall::isEvent($event)) {
-            throw new SystemException(sprintf('Event type ["%s"] is not valid.', $event));
+            throw new CleverConnectorsException(
+                sprintf('Event type ["%s"] is not valid.', $event),
+                CleverConnectorsException::INVALID_ENUM_VALUE
+            );
         }
 
         foreach ($this->getSystemInstall($userId, $event) as $systemInstall) {
@@ -166,7 +179,10 @@ class CMEventsHandler
             return $topologies;
         }
 
-        throw new CleverConnectorsException(sprintf('Topology ["%s"] not found!', $name));
+        throw new CleverConnectorsException(
+            sprintf('Topology ["%s"] not found!', $name),
+            CleverConnectorsException::TOPOLOGY_NOT_FOUND
+        );
     }
 
 }
