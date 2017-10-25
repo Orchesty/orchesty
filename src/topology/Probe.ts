@@ -76,7 +76,7 @@ class Probe {
                     result.message = "Timeout reached.";
                     resp
                         .set("Accept", "application/json")
-                        .status(503)
+                        .status(200)
                         .send(JSON.stringify(result));
                 });
         });
