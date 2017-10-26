@@ -9,7 +9,6 @@
 
 namespace CleverConnectors\AppBundle\Utils;
 
-use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Traits\StaticTrait;
 use LogicException;
 
@@ -23,58 +22,78 @@ final class TopologyNameUtils
 
     use StaticTrait;
 
-    /**
-     * @param SystemInstall $systemInstall
-     *
-     * @return string
-     */
-    public static function getSyncName(SystemInstall $systemInstall): string
-    {
-        return sprintf('%s-sync-subscribers', $systemInstall->getSystem());
-    }
+    //Service-topologies
+    public const REFRESH_TOKEN  = 'refresh-token';
+    public const ACTIVATE_EVENT = 'activate-event';
+
+    //Systems-topologies
+    public const SYNC                = 'sync-subscribers';
+    public const CREATED_SUBSCRIBERS = 'created-subscribers';
+    public const UPDATED_SUBSCRIBERS = 'updated-subscribers';
+    public const DELETED_SUBSCRIBERS = 'deleted-subscribers';
+
+    public const CREATE_PERSON  = 'create-prison';
+    public const UPDATE_PERSON  = 'update-prison';
+    public const CREATE_CONTACT = 'create-prison';
+    public const UPDATE_CONTACT = 'update-prison';
 
     /**
-     * @param SystemInstall $systemInstall
-     * @param string        $event
+     * @var array
+     */
+    private static $service = [
+        self::REFRESH_TOKEN,
+        self::ACTIVATE_EVENT,
+    ];
+
+    /**
+     * @var array
+     */
+    private static $system = [
+        self::SYNC,
+        self::CREATED_SUBSCRIBERS,
+        self::UPDATED_SUBSCRIBERS,
+        self::DELETED_SUBSCRIBERS,
+        self::CREATE_CONTACT,
+        self::UPDATE_CONTACT,
+    ];
+
+    /**
+     * @param string $const
+     * @param string $systemKey
      *
      * @return string
      */
-    public static function getEventName(SystemInstall $systemInstall, string $event): string
+    public static function getServiceTopologyName(string $const, string $systemKey = ''): string
     {
-        if (!SystemInstall::isEvent($event)) {
-            throw new LogicException(sprintf('Event type ["%s"] is not valid.', $event));
+        if (!in_array($const, self::$service)) {
+            throw new LogicException(sprintf('Const "%s" is not a valid const for service topology!', $const));
         }
 
-        return sprintf('%s-%s-event', $systemInstall->getSystem(), $event);
+        if ($systemKey) {
+            return sprintf('%s-%s', $systemKey, $const);
+        }
+
+        return $const;
     }
 
     /**
-     * @param SystemInstall $systemInstall
-     * @param string        $event
+     * @param string $const
+     * @param string $systemKey
+     * @param string $user
      *
      * @return string
      */
-    public static function getCustomEventName(SystemInstall $systemInstall, string $event): string
+    public static function getTopologyName(string $const, string $systemKey, string $user = ''): string
     {
-        return sprintf('%s-%s', $systemInstall->getUser(), self::getEventName($systemInstall, $event));
-    }
+        if (!in_array($const, self::$system)) {
+            throw new LogicException(sprintf('Const "%s" is not a valid const for system topology!', $const));
+        }
 
-    /**
-     * @return string
-     */
-    public static function getCMEventName(): string
-    {
-        return 'save-cmevents';
-    }
+        if ($user) {
+            return sprintf('%s-%s-%s', $user, $systemKey, $const);
+        }
 
-    /**
-     * @param SystemInstall $systemInstall
-     *
-     * @return string
-     */
-    public static function getSystemCMEventName(SystemInstall $systemInstall): string
-    {
-        return sprintf('%s-%s', $systemInstall->getSystem(), self::getCMEventName());
+        return sprintf('%s-%s', $systemKey, $const);
     }
 
 }

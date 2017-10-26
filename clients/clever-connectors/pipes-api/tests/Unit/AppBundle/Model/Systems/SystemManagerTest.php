@@ -105,7 +105,7 @@ final class SystemManagerTest extends TestCase
         $systemRepo = $this->getClassMock(SystemInstallRepository::class);
         $systemRepo
             ->method('findOneBy')
-            ->willReturn((new SystemInstall())->setToken('123')->setSystem('testsys'));
+            ->willReturn((new SystemInstall())->setToken('123')->setSystem('testsys')->setUser('user'));
 
         $this->dm
             ->method('getRepository')

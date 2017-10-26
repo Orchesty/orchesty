@@ -2,8 +2,8 @@
 
 namespace Tests\Unit\AppBundle\Utils;
 
-use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Utils\TopologyNameUtils;
+use LogicException;
 use Tests\KernelTestCaseAbstract;
 
 /**
@@ -11,59 +11,43 @@ use Tests\KernelTestCaseAbstract;
  *
  * @package Tests\Unit\AppBundle\Utils
  */
-class TopologyNameUtilsTest extends KernelTestCaseAbstract
+final class TopologyNameUtilsTest extends KernelTestCaseAbstract
 {
 
     /**
      *
      */
-    public static function testGetSyncName(): void
+    public function testGetServiceTopologyName(): void
     {
-        self::assertEquals('systemkey-sync-subscribers',
-            TopologyNameUtils::getSyncName((new SystemInstall())->setSystem('systemkey')));
+        self::assertEquals(
+            'refresh-token',
+            TopologyNameUtils::getServiceTopologyName(TopologyNameUtils::REFRESH_TOKEN)
+        );
+        self::assertEquals(
+            'sys-refresh-token',
+            TopologyNameUtils::getServiceTopologyName(TopologyNameUtils::REFRESH_TOKEN, 'sys')
+        );
+
+        $this->expectException(LogicException::class);
+        TopologyNameUtils::getServiceTopologyName(TopologyNameUtils::CREATE_PERSON, 'sys');
     }
 
     /**
      *
      */
-    public static function testGetEventName(): void
+    public function testGetTopologyName(): void
     {
-        $systemInstall = (new SystemInstall())->setSystem('syskey');
-        self::assertEquals('syskey-' . SystemInstall::EVENT_HARD_BOUNCE . '-event',
-            TopologyNameUtils::getEventName($systemInstall, SystemInstall::EVENT_HARD_BOUNCE));
-        self::assertEquals('syskey-' . SystemInstall::EVENT_CREATE . '-event',
-            TopologyNameUtils::getEventName($systemInstall, SystemInstall::EVENT_CREATE));
-    }
+        self::assertEquals(
+            'sys-sync-subscribers',
+            TopologyNameUtils::getTopologyName(TopologyNameUtils::SYNC, 'sys')
+        );
+        self::assertEquals(
+            'usr-sys-sync-subscribers',
+            TopologyNameUtils::getTopologyName(TopologyNameUtils::SYNC, 'sys', 'usr')
+        );
 
-    /**
-     *
-     */
-    public static function testGetCustomEventName(): void
-    {
-        $systemInstall = (new SystemInstall())->setSystem('syss')->setUser('us');
-
-        self::assertEquals('us-syss-' . SystemInstall::EVENT_HARD_BOUNCE . '-event',
-            TopologyNameUtils::getCustomEventName($systemInstall, SystemInstall::EVENT_HARD_BOUNCE));
-        self::assertEquals('us-syss-' . SystemInstall::EVENT_CREATE . '-event',
-            TopologyNameUtils::getCustomEventName($systemInstall, SystemInstall::EVENT_CREATE));
-    }
-
-    /**
-     *
-     */
-    public static function testGetCMEventName(): void
-    {
-        self::assertEquals('save-cmevents', TopologyNameUtils::getCMEventName());
-    }
-
-    /**
-     *
-     */
-    public static function testGetSystemCMEventName(): void
-    {
-        $systemInstall = (new SystemInstall())->setSystem('syss');
-
-        self::assertEquals('syss-save-cmevents', TopologyNameUtils::getSystemCMEventName($systemInstall));
+        $this->expectException(LogicException::class);
+        TopologyNameUtils::getTopologyName(TopologyNameUtils::REFRESH_TOKEN, 'sys');
     }
 
 }

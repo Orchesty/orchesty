@@ -54,6 +54,13 @@ interface SystemInterface
     public function getSettingFields(SystemInstall $systemInstall): array;
 
     /**
+     * @param string $name
+     *
+     * @return string
+     */
+    public function getCustomTopologyName(string $name): string;
+
+    /**
      * @param SystemInstall|null $systemInstall
      *
      * @return array

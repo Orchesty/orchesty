@@ -9,6 +9,9 @@
 
 namespace CleverConnectors\AppBundle\Model\CMEvents;
 
+use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
+
 /**
  * Class CMEventObject
  *
@@ -28,14 +31,30 @@ final class CMEventObject
     private $event;
 
     /**
+     * @var string
+     */
+    private $url;
+
+    /**
      * CMEventObject constructor.
      *
      * @param string $field
      * @param string $event
+     * @param string $url
+     *
+     * @throws CleverConnectorsException
      */
-    public function __construct(string $field, string $event)
+    public function __construct(string $field, string $event, string $url)
     {
         $this->field = $field;
+        $this->url   = $url;
+
+        if (!SystemInstall::isEvent($event)) {
+            throw new CleverConnectorsException(
+                sprintf('Event type ["%s"] is not valid.', $event),
+                CleverConnectorsException::INVALID_ENUM_VALUE
+            );
+        }
         $this->event = $event;
     }
 
@@ -53,6 +72,14 @@ final class CMEventObject
     public function getEvent(): string
     {
         return $this->event;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUrl(): string
+    {
+        return $this->url;
     }
 
 }

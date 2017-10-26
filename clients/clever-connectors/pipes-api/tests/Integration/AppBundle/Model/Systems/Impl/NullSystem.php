@@ -4,8 +4,12 @@ namespace Tests\Integration\AppBundle\Model\Systems\Impl;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\SystemTypeEnum;
+use CleverConnectors\AppBundle\Model\CMEvents\CMEventObject;
+use CleverConnectors\AppBundle\Model\CMEvents\CMEventSystemInterface;
+use CleverConnectors\AppBundle\Model\CMEvents\Traits\CMEventSystemTrait;
 use CleverConnectors\AppBundle\Model\Form\Field;
 use CleverConnectors\AppBundle\Model\Form\Form;
+use CleverConnectors\AppBundle\Model\Requester\RequesterInterface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\OAuth2Interface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\Traits\AuthorizationTrait;
 use CleverConnectors\AppBundle\Model\Webhook\Traits\WebhookSystemTrait;
@@ -22,11 +26,12 @@ use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
  *
  * @package Tests\Integration\AppBundle\Model\Systems\Impl
  */
-class NullSystem implements WebhookSystemInterface, OAuth2Interface
+class NullSystem implements WebhookSystemInterface, OAuth2Interface, CMEventSystemInterface
 {
 
     use AuthorizationTrait;
     use WebhookSystemTrait;
+    use CMEventSystemTrait;
 
     private const URL             = 'field1';
     private const CONSUMER_KEY    = 'field2';
@@ -46,6 +51,8 @@ class NullSystem implements WebhookSystemInterface, OAuth2Interface
     {
         $this->provider        = $provider;
         $this->subscriptions[] = new WebhookSubscribes('node', 'top', 'uriReg', 'uriUnreg');
+        $this->cmEvents[]      = new CMEventObject('cm_hardbounce', SystemInstall::EVENT_HARD_BOUNCE, 'uriReq');
+        $this->cmEvents[]      = new CMEventObject('cm_create', SystemInstall::EVENT_CREATE, 'uriReq');
     }
 
     /**
@@ -89,6 +96,14 @@ class NullSystem implements WebhookSystemInterface, OAuth2Interface
     }
 
     /**
+     * @return string
+     */
+    public function getAuthorizationType(): string
+    {
+        return self::OAUTH2;
+    }
+
+    /**
      * @param SystemInstall $systemInstall
      * @param string        $webhookId
      *
@@ -110,14 +125,6 @@ class NullSystem implements WebhookSystemInterface, OAuth2Interface
     }
 
     /**
-     * @return string
-     */
-    public function getAuthorizationType(): string
-    {
-        return self::OAUTH2;
-    }
-
-    /**
      * @param SystemInstall $systemInstall
      *
      * @return bool
@@ -125,8 +132,6 @@ class NullSystem implements WebhookSystemInterface, OAuth2Interface
     public function isAuthorized(SystemInstall $systemInstall): bool
     {
         $settings = $systemInstall->getSettings();
-
-        // TODO check EXPIRES ?
 
         return !empty($settings[OAuth2Provider::ACCESS_TOKEN] ?? '');
     }
@@ -177,8 +182,6 @@ class NullSystem implements WebhookSystemInterface, OAuth2Interface
      */
     public function authorize(SystemInstall $systemInstall): void
     {
-        // TODO: Implement authorize() method.
-
         $this->provider->authorize(new OAuth2Dto('', '', '', '', ''), []);
     }
 
@@ -190,7 +193,8 @@ class NullSystem implements WebhookSystemInterface, OAuth2Interface
      */
     public function saveToken(SystemInstall $systemInstall, array $data): SystemInstall
     {
-        // TODO: Implement saveToken() method.
+        $systemInstall->setExpires(NULL);
+        $systemInstall->setSettings($data);
 
         return $systemInstall;
     }
@@ -235,6 +239,14 @@ class NullSystem implements WebhookSystemInterface, OAuth2Interface
     ): RequestDto
     {
         return new RequestDto('POST', new Uri('uriSub'));
+    }
+
+    /**
+     * @return RequesterInterface
+     */
+    public function getCMEventRequester(): RequesterInterface
+    {
+        return new NullRequester();
     }
 
 }

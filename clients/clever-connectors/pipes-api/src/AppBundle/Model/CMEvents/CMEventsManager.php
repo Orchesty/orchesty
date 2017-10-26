@@ -11,7 +11,10 @@ namespace CleverConnectors\AppBundle\Model\CMEvents;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
+use CleverConnectors\AppBundle\Model\Systems\SystemInterface;
+use CleverConnectors\AppBundle\Model\Systems\SystemLoader;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
+use CleverConnectors\AppBundle\Utils\CMHeaders;
 use CleverConnectors\AppBundle\Utils\InnerRequestUtils;
 use CleverConnectors\AppBundle\Utils\TopologyNameUtils;
 use Doctrine\Common\Persistence\ObjectRepository;
@@ -65,18 +68,25 @@ class CMEventsManager implements LoggerAwareInterface
     private $logger;
 
     /**
+     * @var SystemLoader
+     */
+    private $loader;
+
+    /**
      * CMEventHandler constructor.
      *
      * @param DocumentManager      $dm
      * @param StartingPointHandler $startingPoint
+     * @param SystemLoader         $loader
      */
-    public function __construct(DocumentManager $dm, StartingPointHandler $startingPoint)
+    public function __construct(DocumentManager $dm, StartingPointHandler $startingPoint, SystemLoader $loader)
     {
         $this->dm            = $dm;
         $this->systemRepo    = $this->dm->getRepository(SystemInstall::class);
         $this->topologyRepo  = $this->dm->getRepository(Topology::class);
         $this->nodeRepo      = $this->dm->getRepository(Node::class);
         $this->startingPoint = $startingPoint;
+        $this->loader        = $loader;
     }
 
     /**
@@ -103,8 +113,20 @@ class CMEventsManager implements LoggerAwareInterface
             );
         }
 
+        $request->headers->set(CMHeaders::createKey(CMHeaders::CM_EVENT_TYPE), $event);
+        switch ($event) {
+            case SystemInstall::EVENT_CREATE:
+                $const = TopologyNameUtils::CREATE_PERSON;
+                break;
+            default:
+                $const = TopologyNameUtils::UPDATE_PERSON;
+                break;
+        }
+
+        /** @var SystemInstall $systemInstall */
         foreach ($this->systemRepo->getSystemInstallByEvent($event, $userId) as $systemInstall) {
-            $topologies = $this->getTopologiesForRun($systemInstall, $event);
+            $system     = $this->loader->getSystem($systemInstall->getSystem());
+            $topologies = $this->getTopologiesForRun($system, $systemInstall, $const);
             foreach ($topologies as $topology) {
                 try {
                     $node = $this->nodeRepo->getStartingNode($topology);
@@ -122,16 +144,21 @@ class CMEventsManager implements LoggerAwareInterface
      *
      * @return SystemInstall
      */
-    public function saveEventsForSystemInstall(SystemInstall $systemInstall, array &$data): SystemInstall
+    public function saveEventsForSystemInstall(
+        SystemInstall $systemInstall,
+        array &$data
+    ): SystemInstall
     {
-        $changed = $this->getChanges($systemInstall, $data);
+        /** @var SystemInterface|CMEventSystemInterface $system */
+        $system  = $this->loader->getSystem($systemInstall->getSystem());
+        $changed = $this->getChanges($system, $systemInstall, $data);
 
         if (empty($changed)) {
             return $systemInstall;
         }
 
         $request    = InnerRequestUtils::getRequest($systemInstall, $changed);
-        $topologies = $this->getTopologiesForSave($systemInstall);
+        $topologies = $this->getTopologiesForSave($system, $systemInstall);
         foreach ($topologies as $topology) {
             try {
                 $node = $this->nodeRepo->getStartingNode($topology);
@@ -149,19 +176,21 @@ class CMEventsManager implements LoggerAwareInterface
      */
 
     /**
-     * @param SystemInstall $systemInstall
-     * @param string        $event
+     * @param SystemInterface $system
+     * @param SystemInstall   $systemInstall
+     * @param string          $const
      *
      * @return array
      * @throws CleverConnectorsException
      */
-    private function getTopologiesForRun(SystemInstall $systemInstall, string $event): array
+    private function getTopologiesForRun(SystemInterface $system, SystemInstall $systemInstall, string $const): array
     {
         $topologies = $this->topologyRepo->getRunnableTopologies(
-            TopologyNameUtils::getCustomEventName($systemInstall, $event)
+            TopologyNameUtils::getTopologyName($const, $systemInstall->getSystem(), $systemInstall->getUser())
         );
 
-        $name = TopologyNameUtils::getEventName($systemInstall, $event);
+        $name = TopologyNameUtils::getServiceTopologyName(TopologyNameUtils::ACTIVATE_EVENT);
+        $name = $system->getCustomTopologyName($name);
         if (empty($topologies)) {
             $topologies = $this->topologyRepo->getRunnableTopologies($name);
         }
@@ -178,15 +207,20 @@ class CMEventsManager implements LoggerAwareInterface
     }
 
     /**
-     * @param SystemInstall $systemInstall
+     * @param SystemInterface|CMEventSystemInterface $system
+     * @param SystemInstall                          $systemInstall
      *
      * @return array
      * @throws CleverConnectorsException
      */
-    private function getTopologiesForSave(SystemInstall $systemInstall): array
+    private function getTopologiesForSave(SystemInterface $system, SystemInstall $systemInstall): array
     {
-        $topologies = $this->topologyRepo->getRunnableTopologies(TopologyNameUtils::getSystemCMEventName($systemInstall));
-        $name       = TopologyNameUtils::getCMEventName();
+        $topologies = $this->topologyRepo->getRunnableTopologies(
+            TopologyNameUtils::getServiceTopologyName(TopologyNameUtils::ACTIVATE_EVENT, $systemInstall->getSystem())
+        );
+
+        $name = TopologyNameUtils::getServiceTopologyName(TopologyNameUtils::ACTIVATE_EVENT);
+        $name = $system->getCustomTopologyName($name);
         if (empty($topologies)) {
             $topologies = $this->topologyRepo->getRunnableTopologies($name);
         }
@@ -203,46 +237,55 @@ class CMEventsManager implements LoggerAwareInterface
     }
 
     /**
-     * @param SystemInstall $systemInstall
-     * @param array         $data
+     * @param CMEventSystemInterface|SystemInterface $system
+     * @param SystemInstall                          $systemInstall
+     * @param array                                  $data
      *
      * @return array
      */
-    private function getChanges(SystemInstall $systemInstall, array &$data): array
+    private function getChanges(CMEventSystemInterface $system, SystemInstall $systemInstall, array &$data): array
     {
         $changed = [];
 
-        if (array_key_exists(SystemInstall::EVENT_CREATE, $data) && $data[SystemInstall::EVENT_CREATE] === TRUE) {
-            if ($systemInstall->isEventCreate() === FALSE) {
-                $changed[] = SystemInstall::EVENT_CREATE;
+        if (array_key_exists(SystemInstall::EVENT_CREATE, $data)) {
+            if ($system->isEventAllowed(SystemInstall::EVENT_CREATE) === TRUE) {
+                $systemInstall->setEventCreate($data[SystemInstall::EVENT_CREATE]);
             }
-            $systemInstall->setEventCreate($data[SystemInstall::EVENT_CREATE]);
+
             unset($data[SystemInstall::EVENT_CREATE]);
         }
 
-        if (
-            array_key_exists(SystemInstall::EVENT_UNSUBSCRIBE, $data) &&
-            $data[SystemInstall::EVENT_UNSUBSCRIBE] === TRUE
-        ) {
-            if ($systemInstall->isEventUnsubscribe() === FALSE) {
-                $changed[] = SystemInstall::EVENT_UNSUBSCRIBE;
-            }
-            $systemInstall->setEventUnsubscribe($data[SystemInstall::EVENT_UNSUBSCRIBE]);
-            unset($data[SystemInstall::EVENT_UNSUBSCRIBE]);
-        }
-
-        if (
-            array_key_exists(SystemInstall::EVENT_HARD_BOUNCE, $data) &&
-            $data[SystemInstall::EVENT_HARD_BOUNCE] === TRUE
-        ) {
-            if ($systemInstall->isEventHardBounce() === FALSE) {
-                $changed[] = SystemInstall::EVENT_HARD_BOUNCE;
-            }
-            $systemInstall->setEventHardBounce($data[SystemInstall::EVENT_HARD_BOUNCE]);
-            unset($data[SystemInstall::EVENT_HARD_BOUNCE]);
-        }
+        $this->processEventData($system, $systemInstall, $data, $changed, SystemInstall::EVENT_UNSUBSCRIBE);
+        $this->processEventData($system, $systemInstall, $data, $changed, SystemInstall::EVENT_HARD_BOUNCE);
 
         return $changed;
+    }
+
+    /**
+     * @param CMEventSystemInterface|SystemInterface $system
+     * @param SystemInstall                          $systemInstall
+     * @param array                                  $data
+     * @param array                                  $changed
+     * @param string                                 $event
+     */
+    private function processEventData(
+        CMEventSystemInterface $system,
+        SystemInstall $systemInstall,
+        array &$data,
+        array &$changed,
+        string $event
+    ): void
+    {
+        if (array_key_exists($event, $data)) {
+            if ($system->isEventAllowed($event) === TRUE) {
+                if ($systemInstall->getEventState($event) === FALSE && $data[$event] === TRUE) {
+                    $changed[] = $event;
+                }
+
+                $systemInstall->setEventState($event, $data[$event]);
+            }
+            unset($data[$event]);
+        }
     }
 
 }

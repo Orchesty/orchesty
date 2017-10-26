@@ -12,6 +12,7 @@ namespace Tests\Unit\AppBundle\Document;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use DateTime;
 use Hanaboso\PipesFramework\Commons\Crypt\CryptManager;
+use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -56,6 +57,56 @@ final class SystemInstallTest extends TestCase
         self::assertEquals(TRUE, $sysInstall->isEventCreate());
         self::assertEquals(FALSE, $sysInstall->isEventUnsubscribe());
         self::assertEquals(TRUE, $sysInstall->isEventHardBounce());
+    }
+
+    /**
+     *
+     */
+    public function testIsEvent(): void
+    {
+        self::assertTrue(SystemInstall::isEvent(SystemInstall::EVENT_HARD_BOUNCE));
+        self::assertTrue(SystemInstall::isEvent(SystemInstall::EVENT_CREATE));
+        self::assertTrue(SystemInstall::isEvent(SystemInstall::EVENT_UNSUBSCRIBE));
+        self::assertFalse(SystemInstall::isEvent(SystemInstall::TOKEN));
+    }
+
+    /**
+     *
+     */
+    public function testGetEventState(): void
+    {
+        $systemInstall = new SystemInstall();
+        self::assertFalse($systemInstall->getEventState(SystemInstall::EVENT_CREATE));
+        self::assertFalse($systemInstall->getEventState(SystemInstall::EVENT_UNSUBSCRIBE));
+        self::assertFalse($systemInstall->getEventState(SystemInstall::EVENT_HARD_BOUNCE));
+
+        $systemInstall
+            ->setEventCreate(TRUE)
+            ->setEventUnsubscribe(TRUE);
+
+        self::assertTrue($systemInstall->getEventState(SystemInstall::EVENT_CREATE));
+        self::assertTrue($systemInstall->getEventState(SystemInstall::EVENT_UNSUBSCRIBE));
+        self::assertFalse($systemInstall->getEventState(SystemInstall::EVENT_HARD_BOUNCE));
+
+        $this->expectException(InvalidArgumentException::class);
+        $systemInstall->getEventState(SystemInstall::CREATED);
+    }
+
+    /**
+     *
+     */
+    public function testSetEventState(): void
+    {
+        $systemInstall = new SystemInstall();
+        $systemInstall
+            ->setEventState(SystemInstall::EVENT_CREATE, TRUE)
+            ->setEventState(SystemInstall::EVENT_UNSUBSCRIBE, TRUE);
+        self::assertTrue($systemInstall->getEventState(SystemInstall::EVENT_CREATE));
+        self::assertTrue($systemInstall->getEventState(SystemInstall::EVENT_UNSUBSCRIBE));
+        self::assertFalse($systemInstall->getEventState(SystemInstall::EVENT_HARD_BOUNCE));
+
+        $this->expectException(InvalidArgumentException::class);
+        $systemInstall->setEventState(SystemInstall::CREATED, TRUE);
     }
 
 }

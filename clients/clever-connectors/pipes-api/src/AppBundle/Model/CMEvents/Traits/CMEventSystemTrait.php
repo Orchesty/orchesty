@@ -40,4 +40,20 @@ trait CMEventSystemTrait
         return $this->cmEvents;
     }
 
+    /**
+     * @param string $event
+     *
+     * @return bool
+     */
+    public function isEventAllowed(string $event): bool
+    {
+        foreach ($this->cmEvents as $cmEvent) {
+            if ($cmEvent->getEvent() == $event) {
+                return TRUE;
+            }
+        }
+
+        return FALSE;
+    }
+
 }

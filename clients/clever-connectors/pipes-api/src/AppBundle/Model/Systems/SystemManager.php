@@ -288,8 +288,22 @@ class SystemManager
     public function synchronizeSubscriptions(string $user, string $system): void
     {
         $systemInstall = $this->getSystemInstall($user, $system);
+        $system        = $this->systemLoader->getSystem($system);
         $request       = InnerRequestUtils::getRequest($systemInstall, '');
-        $topologies    = $this->topologyRepository->getRunnableTopologies(TopologyNameUtils::getSyncName($systemInstall));
+        $topologies    = $this->topologyRepository->getRunnableTopologies(
+            TopologyNameUtils::getTopologyName(
+                TopologyNameUtils::SYNC,
+                $systemInstall->getSystem(),
+                $systemInstall->getUser()
+            )
+        );
+
+        if (empty($topologies)) {
+            $name       = $system->getCustomTopologyName(
+                TopologyNameUtils::getTopologyName(TopologyNameUtils::SYNC, $systemInstall->getSystem())
+            );
+            $topologies = $this->topologyRepository->getRunnableTopologies($name);
+        }
 
         foreach ($topologies as $topology) {
             $node = $this->nodeRepository->getStartingNode($topology);

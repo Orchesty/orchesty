@@ -17,11 +17,11 @@ use Symfony\Component\HttpFoundation\Request;
 use Tests\KernelTestCaseAbstract;
 
 /**
- * Class CMEventsManagetTest
+ * Class CMEventsManagerTest
  *
  * @package Tests\Unit\AppBundle\Model\CMEvents
  */
-class CMEventsManagetTest extends KernelTestCaseAbstract
+final class CMEventsManagerTest extends KernelTestCaseAbstract
 {
 
     /**
@@ -45,7 +45,7 @@ class CMEventsManagetTest extends KernelTestCaseAbstract
         $sysRepo = $this->createMock(SystemInstallRepository::class);
         $sysRepo->expects($this->once())
             ->method('getSystemInstallByEvent')->willReturn([
-                (new SystemInstall())->setUser('usgfhr')->setSystem('ssghys'),
+                (new SystemInstall())->setUser('usgfhr')->setSystem('null.user'),
             ]);
 
         $topRepo = $this->createMock(TopologyRepository::class);
@@ -68,7 +68,9 @@ class CMEventsManagetTest extends KernelTestCaseAbstract
         $this->expectException(CleverConnectorsException::class);
         $this->expectExceptionCode(CleverConnectorsException::TOPOLOGY_NOT_FOUND);
 
-        $mana = new CMEventsManager($dm, $handler);
+        $loader = $this->container->get('cc.systems.loader');
+
+        $mana = new CMEventsManager($dm, $handler, $loader);
         $mana->runEvent(new Request(), '', SystemInstall::EVENT_CREATE);
     }
 
@@ -79,7 +81,9 @@ class CMEventsManagetTest extends KernelTestCaseAbstract
     {
         $sysRepo = $this->createMock(SystemInstallRepository::class);
         $sysRepo->expects($this->once())
-            ->method('getSystemInstallByEvent')->willReturn([(new SystemInstall())->setUser('usr')->setSystem('ssys')]);
+            ->method('getSystemInstallByEvent')->willReturn([
+                (new SystemInstall())->setUser('usr')->setSystem('null.user'),
+            ]);
 
         $topRepo = $this->createMock(TopologyRepository::class);
         $topRepo->expects($this->once())
@@ -100,8 +104,9 @@ class CMEventsManagetTest extends KernelTestCaseAbstract
 
         /** @var StartingPointHandler $handler */
         $handler = $this->createMock(StartingPointHandler::class);
+        $loader  = $this->container->get('cc.systems.loader');
 
-        $mana = new CMEventsManager($dm, $handler);
+        $mana = new CMEventsManager($dm, $handler, $loader);
         $mana->runEvent(new Request(), '', SystemInstall::EVENT_CREATE);
     }
 
@@ -112,7 +117,9 @@ class CMEventsManagetTest extends KernelTestCaseAbstract
     {
         $sysRepo = $this->createMock(SystemInstallRepository::class);
         $sysRepo->expects($this->once())
-            ->method('getSystemInstallByEvent')->willReturn([(new SystemInstall())->setUser('usr')->setSystem('ssys')]);
+            ->method('getSystemInstallByEvent')->willReturn([
+                (new SystemInstall())->setUser('usr')->setSystem('null.user'),
+            ]);
 
         $topRepo = $this->createMock(TopologyRepository::class);
         $topRepo->expects($this->at(0))
@@ -135,8 +142,9 @@ class CMEventsManagetTest extends KernelTestCaseAbstract
 
         /** @var StartingPointHandler $handler */
         $handler = $this->createMock(StartingPointHandler::class);
+        $loader  = $this->container->get('cc.systems.loader');
 
-        $mana = new CMEventsManager($dm, $handler);
+        $mana = new CMEventsManager($dm, $handler, $loader);
         $mana->runEvent(new Request(), '', SystemInstall::EVENT_CREATE);
     }
 
@@ -151,7 +159,7 @@ class CMEventsManagetTest extends KernelTestCaseAbstract
         /** @var DocumentManager|PHPUnit_Framework_MockObject_MockObject $dm */
         $dm = $this->createMock(DocumentManager::class);
         $dm->expects($this->at(0))
-            ->method('getRepository')->willReturn($this->createMock(NodeRepository::class));
+            ->method('getRepository')->willReturn($this->createMock(SystemInstallRepository::class));
         $dm->expects($this->at(1))
             ->method('getRepository')->willReturn($topRepo);
         $dm->expects($this->at(2))
@@ -163,10 +171,12 @@ class CMEventsManagetTest extends KernelTestCaseAbstract
         $this->expectException(CleverConnectorsException::class);
         $this->expectExceptionCode(CleverConnectorsException::TOPOLOGY_NOT_FOUND);
 
-        $systemInstall = (new SystemInstall())->setUser('usr')->setSystem('ssys')->setToken('tok');
-        $data          = [SystemInstall::EVENT_CREATE => TRUE];
+        $systemInstall = (new SystemInstall())->setUser('usr')->setSystem('null.user')->setToken('tok');
+        $data          = [SystemInstall::EVENT_HARD_BOUNCE => TRUE];
 
-        $mana = new CMEventsManager($dm, $handler);
+        $loader = $this->container->get('cc.systems.loader');
+
+        $mana = new CMEventsManager($dm, $handler, $loader);
         $mana->saveEventsForSystemInstall($systemInstall, $data);
     }
 
@@ -195,13 +205,24 @@ class CMEventsManagetTest extends KernelTestCaseAbstract
         /** @var StartingPointHandler $handler */
         $handler = $this->createMock(StartingPointHandler::class);
 
-        $systemInstall = (new SystemInstall())->setUser('usr')->setSystem('ssys')->setToken('tok');
-        $data          = [SystemInstall::EVENT_CREATE => TRUE, 'settings' => []];
+        $systemInstall = (new SystemInstall())->setUser('usr')->setSystem('null.user')->setToken('tok');
+        $data          = [
+            SystemInstall::EVENT_CREATE      => TRUE,
+            SystemInstall::EVENT_HARD_BOUNCE => TRUE,
+            SystemInstall::EVENT_UNSUBSCRIBE => TRUE,
+            'settings'                       => [],
+        ];
 
-        $mana = new CMEventsManager($dm, $handler);
+        $loader = $this->container->get('cc.systems.loader');
+
+        $mana = new CMEventsManager($dm, $handler, $loader);
         $mana->saveEventsForSystemInstall($systemInstall, $data);
         self::assertArrayNotHasKey(SystemInstall::EVENT_CREATE, $data);
+        self::assertArrayNotHasKey(SystemInstall::EVENT_HARD_BOUNCE, $data);
         self::assertArrayHasKey('settings', $data);
+        self::assertTrue($systemInstall->isEventHardBounce());
+        self::assertTrue($systemInstall->isEventCreate());
+        self::assertFalse($systemInstall->isEventUnsubscribe());
     }
 
     /**
@@ -231,10 +252,12 @@ class CMEventsManagetTest extends KernelTestCaseAbstract
         /** @var StartingPointHandler $handler */
         $handler = $this->createMock(StartingPointHandler::class);
 
-        $systemInstall = (new SystemInstall())->setUser('usr')->setSystem('ssys')->setToken('tok');
-        $data          = [SystemInstall::EVENT_CREATE => TRUE, 'settings' => []];
+        $systemInstall = (new SystemInstall())->setUser('usr')->setSystem('null.user')->setToken('tok');
+        $data          = [SystemInstall::EVENT_HARD_BOUNCE => TRUE, 'settings' => []];
 
-        $mana = new CMEventsManager($dm, $handler);
+        $loader = $this->container->get('cc.systems.loader');
+
+        $mana = new CMEventsManager($dm, $handler, $loader);
         $mana->saveEventsForSystemInstall($systemInstall, $data);
         self::assertArrayNotHasKey(SystemInstall::EVENT_CREATE, $data);
         self::assertArrayHasKey('settings', $data);

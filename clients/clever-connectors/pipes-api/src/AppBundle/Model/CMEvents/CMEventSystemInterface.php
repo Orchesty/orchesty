@@ -34,4 +34,11 @@ interface CMEventSystemInterface
      */
     public function getCMEventRequester(): RequesterInterface;
 
+    /**
+     * @param string $event
+     *
+     * @return bool
+     */
+    public function isEventAllowed(string $event): bool;
+
 }

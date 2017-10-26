@@ -7,6 +7,7 @@ use DateTime;
 use DateTimeZone;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Hanaboso\PipesFramework\Commons\Crypt\CryptManager;
+use InvalidArgumentException;
 use MongoDate;
 
 /**
@@ -375,6 +376,50 @@ class SystemInstall
     public static function isEvent(string $event): bool
     {
         return in_array($event, [self::EVENT_CREATE, self::EVENT_UNSUBSCRIBE, self::EVENT_HARD_BOUNCE]);
+    }
+
+    /**
+     * @param string $event
+     *
+     * @return bool
+     */
+    public function getEventState(string $event): bool
+    {
+        switch ($event) {
+            case self::EVENT_CREATE:
+                return $this->isEventCreate();
+            case self::EVENT_UNSUBSCRIBE:
+                return $this->isEventUnsubscribe();
+            case self::EVENT_HARD_BOUNCE:
+                return $this->isEventHardBounce();
+            default:
+                throw new InvalidArgumentException(sprintf('Unsupported event type "%s"', $event));
+        }
+    }
+
+    /**
+     * @param string $event
+     * @param bool   $value
+     *
+     * @return SystemInstall
+     */
+    public function setEventState(string $event, bool $value): SystemInstall
+    {
+        switch ($event) {
+            case self::EVENT_CREATE:
+                $this->setEventCreate($value);
+                break;
+            case self::EVENT_UNSUBSCRIBE:
+                $this->setEventUnsubscribe($value);
+                break;
+            case self::EVENT_HARD_BOUNCE:
+                $this->setEventHardBounce($value);
+                break;
+            default:
+                throw new InvalidArgumentException(sprintf('Unsupported event type "%s"', $event));
+        }
+
+        return $this;
     }
 
     /**

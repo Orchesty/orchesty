@@ -30,8 +30,8 @@ interface RequesterInterface
      * @param ResponseDto   $responseDto
      * @param SystemInstall $systemInstall
      *
-     * @return SystemInstall
+     * @return mixed
      */
-    public function processResponse(ResponseDto $responseDto, SystemInstall $systemInstall): SystemInstall;
+    public function processResponse(ResponseDto $responseDto, SystemInstall $systemInstall);
 
 }
