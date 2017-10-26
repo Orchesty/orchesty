@@ -31,7 +31,7 @@ class QuickbooksSystem implements OAuth2Interface
     private const TOKEN_URL     = 'https://oauth.platform.intuit.com/oauth2/v1/tokens/bearer';
     private const API_URL       = 'https://sandbox-quickbooks.api.intuit.com/v3/company/%s/';
 
-    private const REALM_ID_KEY = 'realm_id';
+    private const REALM_ID_KEY = 'realmId';
 
     /**
      * @var array
@@ -132,8 +132,9 @@ class QuickbooksSystem implements OAuth2Interface
     {
         $arr                     = $this->provider->getAccessToken($this->createDto($systemInstall), $data);
         $arr[self::REALM_ID_KEY] = $data[self::REALM_ID_KEY];
-
-        $systemInstall->setExpires(new DateTime('+' . $arr['expires_in'] . ' seconds'));
+        $expires = new DateTime();
+        $expires->setTimestamp($arr['expires']);
+        $systemInstall->setExpires($expires);
         $this->setSettings($systemInstall, $arr);
 
         return $systemInstall;

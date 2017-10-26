@@ -11,6 +11,7 @@ namespace Tests\Integration\AppBundle\Model\Systems\Impl\Quickbooks\Connector;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Hanaboso\PipesFramework\Commons\Crypt\CryptManager;
+use Hanaboso\PipesFramework\Commons\Crypt\CryptService;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
