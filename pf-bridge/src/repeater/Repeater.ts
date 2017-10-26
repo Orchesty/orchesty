@@ -57,6 +57,11 @@ class Repeater {
     private checkMessages() {
         this.storage.findExpired()
             .then((toResend: Message[]) => {
+
+                if (toResend.length < 1) {
+                    return;
+                }
+
                 logger.info(
                     `Found ${toResend.length} messages to resend. Next check in ${this.settings.check_timeout}ms.`,
                     { node_id: "repeater" },
