@@ -47,7 +47,10 @@ services:
 		class: App\Forms\SystemActionFormFactory
 
 	authorize_form:
-		class: App\Forms\AuthorizeFormFactory
+		class: App\Forms\AuthorizationSettingFormFactory
+
+	authorize_generator_form:
+		class: App\Forms\AuthorizationSettingGeneratorFactory
 
 extensions:
 	cc_api: CcApi\Bridges\DI\CcApiExtension

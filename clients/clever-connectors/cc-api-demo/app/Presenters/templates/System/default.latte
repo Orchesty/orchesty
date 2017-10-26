@@ -26,8 +26,9 @@
 
             <div class="clearfix"></div>
 
-            <h2>Installed systems</h2>
             <div class="col-md-12">
+                <h2>Installed systems</h2>
+
                 <table class="table table-striped">
                     <thead class="thead-inverse">
                     <tr>
@@ -42,9 +43,9 @@
                         <tr>
                             <td>{$system->getName()}</td>
                             <td class="text-center">
-                                {form authorizeForm}
+                                {form authorizationSettingForm}
                                     <div class="form-group"
-                                         style="margin-bottom: 0">{input authorize class=>"form-control btn btn-primary btn-sm"}</div>
+                                         style="margin-bottom: 0">{input authorize_setting class=>"form-control btn btn-primary btn-sm"}</div>
                                     <input type="hidden" name="system_key" value="{$system->getKey()}">
                                 {/form}
                             </td>
@@ -78,17 +79,14 @@
 
             <div class="col-md-12">
                 {snippet systemData}
-                    {if $userSystem}
-                        System: {$userSystem->getName()}<br>
-                        {foreach $userSystem->getSettingFields() as $settingField}
-                            Key: {$settingField->getKey()}<br>
-                            Type: {$settingField->getType()}<br>
-                            Value: {$settingField->getValue()}<br>
-                            Label: {$settingField->getLabel()}<br>
-                            Required: {$settingField->isRequired()}
-                            <hr>
-                        {/foreach}
+
+                    {if $userSystemData}
+                        <h2>Authorization</h2>
+
+                        {import '../components/form.latte'}
+                        {include bootstrap-form authorizationSettingGeneratorForm}
                     {/if}
+
                 {/snippet}
             </div>
 

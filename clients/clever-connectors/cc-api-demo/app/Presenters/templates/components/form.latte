@@ -47,9 +47,10 @@
                 {else}
                     {input $input}
                 {/if}
+
+                <span class="form-text text-muted" n:ifcontent>{$input->error ?: $input->getOption(description)}</span>
             </div>
 
-            <span class=help-block n:ifcontent>{$input->error ?: $input->getOption(description)}</span>
         </div>
     </form>
 {/define}

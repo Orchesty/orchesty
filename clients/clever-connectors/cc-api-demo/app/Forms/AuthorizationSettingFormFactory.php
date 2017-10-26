@@ -15,7 +15,7 @@ use Nette\Application\UI\Form;
  *
  * @package App\Forms
  */
-class AuthorizeFormFactory
+class AuthorizationSettingFormFactory
 {
 
     /**
@@ -27,7 +27,7 @@ class AuthorizeFormFactory
         $form->getElementPrototype()->appendAttribute('class', 'ajax');
 
         $form
-            ->addSubmit('authorize', 'Authorize');
+            ->addSubmit('authorize_setting', 'Authorize setting');
 
         return $form;
     }

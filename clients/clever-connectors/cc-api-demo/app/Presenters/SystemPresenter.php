@@ -8,10 +8,12 @@
 
 namespace App\Presenters;
 
-use App\Forms\AuthorizeFormFactory;
+use App\Forms\AuthorizationSettingFormFactory;
+use App\Forms\AuthorizationSettingGeneratorFactory;
 use App\Forms\LoginFormFactory;
 use App\Forms\LogoutFormFactory;
 use App\Forms\SystemActionFormFactory;
+use CcApi\ApiEntity\UserSystem;
 use CcApi\Connector\ConnectorManager;
 use Nette\Forms\Controls\SubmitButton;
 use Nette\Forms\Form;
@@ -45,29 +47,42 @@ class SystemPresenter extends BasePresenter
     private $systemActionFormFactory;
 
     /**
-     * @var AuthorizeFormFactory
+     * @var AuthorizationSettingFormFactory
      */
-    private $authorizedFormFactory;
+    private $authorizationSettingFormFactory;
+
+    /**
+     * @var AuthorizationSettingGeneratorFactory
+     */
+    private $authorizeGeneratorFactory;
+
+    /**
+     * @var UserSystem|null
+     */
+    private $userSystem;
 
     /**
      * HomepagePresenter constructor.
      *
-     * @param ConnectorManager        $connectorManager
-     * @param LoginFormFactory        $loginFormFactory
-     * @param LogoutFormFactory       $logoutFormFactory
-     * @param SystemActionFormFactory $systemActionFormFactory
-     * @param AuthorizeFormFactory    $authorizedFormFactory
+     * @param ConnectorManager                     $connectorManager
+     * @param LoginFormFactory                     $loginFormFactory
+     * @param LogoutFormFactory                    $logoutFormFactory
+     * @param SystemActionFormFactory              $systemActionFormFactory
+     * @param AuthorizationSettingFormFactory      $authorizationSettingFormFactory
+     * @param AuthorizationSettingGeneratorFactory $authorizationSettingGeneratorFactory
      */
     public function __construct(ConnectorManager $connectorManager, LoginFormFactory $loginFormFactory,
                                 LogoutFormFactory $logoutFormFactory, SystemActionFormFactory $systemActionFormFactory,
-                                AuthorizeFormFactory $authorizedFormFactory)
+                                AuthorizationSettingFormFactory $authorizationSettingFormFactory,
+                                AuthorizationSettingGeneratorFactory $authorizationSettingGeneratorFactory)
     {
         parent::__construct();
-        $this->connectorManager        = $connectorManager;
-        $this->loginFormFactory        = $loginFormFactory;
-        $this->logoutFormFactory       = $logoutFormFactory;
-        $this->systemActionFormFactory = $systemActionFormFactory;
-        $this->authorizedFormFactory   = $authorizedFormFactory;
+        $this->connectorManager                = $connectorManager;
+        $this->loginFormFactory                = $loginFormFactory;
+        $this->logoutFormFactory               = $logoutFormFactory;
+        $this->systemActionFormFactory         = $systemActionFormFactory;
+        $this->authorizationSettingFormFactory = $authorizationSettingFormFactory;
+        $this->authorizeGeneratorFactory       = $authorizationSettingGeneratorFactory;
     }
 
     /**
@@ -159,10 +174,10 @@ class SystemPresenter extends BasePresenter
     /**
      * @return \Nette\Application\UI\Form
      */
-    public function createComponentAuthorizeForm()
+    public function createComponentAuthorizationSettingForm()
     {
-        $form              = $this->authorizedFormFactory->create();
-        $form->onSuccess[] = [$this, 'processAuthorize'];
+        $form              = $this->authorizationSettingFormFactory->create();
+        $form->onSuccess[] = [$this, 'processAuthorizationSetting'];
 
         return $form;
     }
@@ -170,15 +185,46 @@ class SystemPresenter extends BasePresenter
     /**
      * @param Form $form
      */
-    public function processAuthorize(Form $form)
+    public function processAuthorizationSetting(Form $form)
     {
         $data = $form->getHttpData();
 
-        $userSystem = $this->connectorManager->getUserSystem($this->userId, $data['system_key']);
-
-        $this->template->userSystem = $userSystem;
+        $this->userSystem               = $this->connectorManager->getUserSystem($this->userId, $data['system_key']);
+        $this->template->userSystemData = TRUE;
 
         $this->redrawControl('systemData');
+    }
+
+    /**
+     * @return \Nette\Application\UI\Form
+     */
+    public function createComponentAuthorizationSettingGeneratorForm()
+    {
+        if ($this->userSystem) {
+            $form = $this->authorizeGeneratorFactory->create($this->userSystem);
+
+            $form['save_password']->onClick[]     = [$this, 'processPassword'];
+            $form['save_auth_setting']->onClick[] = [$this, 'processAuthorizationSettingGenerator'];
+        } else {
+            $form = $this->authorizeGeneratorFactory->create();
+        }
+
+        return $form;
+    }
+
+    public function processPassword(SubmitButton $button)
+    {
+        $data = $button->getForm()->getValues();
+
+        // save password and refresh form
+    }
+
+    /**
+     * @param SubmitButton $button
+     */
+    public function processAuthorizationSettingGenerator(SubmitButton $button)
+    {
+        // save setting without password
     }
 
     /**
@@ -186,9 +232,9 @@ class SystemPresenter extends BasePresenter
      */
     public function actionDefault()
     {
-        $this->template->userId     = $this->userId ?? '';
-        $this->template->token      = $this->token ?? '';
-        $this->template->userSystem = NULL;
+        $this->template->userId         = $this->userId ?? '';
+        $this->template->token          = $this->token ?? '';
+        $this->template->userSystemData = FALSE;
 
         if ($this->user->isLoggedIn()) {
             $userSystems = $this->connectorManager->getAllUserSystems($this->userId);
