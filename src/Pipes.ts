@@ -1,7 +1,7 @@
 import Container from "lib-nodejs/dist/src/container/Container";
 import IMetrics from "lib-nodejs/dist/src/metrics/IMetrics";
 import * as os from "os";
-import {mongoStorageOptions, repeaterOptions} from "./config";
+import {mongoStorageOptions, probeOptions, repeaterOptions} from "./config";
 import DIContainer from "./DIContainer";
 import logger from "./logger/Logger";
 import IDrain from "./node/drain/IDrain";
@@ -65,11 +65,9 @@ class Pipes {
 
     /**
      * Starts topology probe
-     *
-     * @param {number} port
      */
-    public startProbe(port?: number): Promise<void> {
-        const probe = new Probe(this.topology.id, port);
+    public startProbe(): Promise<void> {
+        const probe = new Probe(this.topology.id, probeOptions);
 
         for (const nodeCfg of this.topology.nodes) {
             probe.addNode(nodeCfg);

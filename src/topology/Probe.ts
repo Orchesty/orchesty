@@ -3,10 +3,6 @@ import * as request from "request";
 import logger from "../logger/Logger";
 import {INodeConfig, INodeLabel} from "./Configurator";
 
-const DEFAULT_HTTP_PORT = 8007;
-const HTTP_PROBE_PATH = "/status";
-const HTTP_TIMEOUT = 10000;
-
 interface INodeInfo {
     label: INodeLabel;
     url: string;
@@ -32,20 +28,25 @@ export interface IProbeResult {
     nodes: IProbeNodeResult[];
 }
 
+export interface IProbeSettings {
+    port: number;
+    path: string;
+    timeout: number;
+}
+
 class Probe {
 
-    private port: number;
-    private topologyId: string;
     private nodes: INodeConfig[];
 
     /**
      *
      * @param {string} topologyId
-     * @param {number} port
+     * @param {IProbeSettings} settings
      */
-    constructor(topologyId: string, port?: number) {
-        this.topologyId = topologyId;
-        this.port = port || DEFAULT_HTTP_PORT;
+    constructor(
+        private topologyId: string,
+        private settings: IProbeSettings,
+    ) {
         this.nodes = [];
     }
 
@@ -63,27 +64,18 @@ class Probe {
     public start(): Promise<void> {
         const app = express();
 
-        app.get(HTTP_PROBE_PATH, (req, resp) => {
+        app.get(this.settings.path, (req, resp) => {
             this.checkTopology()
                 .then((result: IProbeResult) => {
-                    resp
-                        .set("Accept", "application/json")
-                        .status(200)
-                        .send(JSON.stringify(result));
-                })
-                .catch((result: IProbeResult) => {
-                    result.status = false;
-                    result.message = "Timeout reached.";
-                    resp
-                        .set("Accept", "application/json")
-                        .status(200)
-                        .send(JSON.stringify(result));
+                    resp.set("Accept", "application/json");
+                    resp.status(200);
+                    resp.send(JSON.stringify(result));
                 });
         });
 
         return new Promise((resolve) => {
-            app.listen(this.port, () => {
-                logger.info(`Topology Probe listening info on port: ${this.port}`);
+            app.listen(this.settings.port, () => {
+                logger.info(`Topology Probe listening info on port: ${this.settings.port}`);
                 resolve();
             });
         });
@@ -94,7 +86,7 @@ class Probe {
      * @private
      */
     public checkTopology(): Promise<IProbeResult> {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             let resolved = false;
             let ready = 0;
             let failed = 0;
@@ -103,7 +95,13 @@ class Probe {
             const nodesInfo: INodeInfo[] = [];
 
             this.nodes.forEach((node: INodeConfig) => {
-                request(node.debug.url, (err, response, body) => {
+                const requestOptions = {
+                    url: node.debug.url,
+                    method: "GET",
+                    timeout: this.settings.timeout,
+                };
+
+                request(requestOptions, (err, response, body) => {
                     total += 1;
 
                     if (!err && response.statusCode && response.statusCode === 200) {
@@ -117,7 +115,7 @@ class Probe {
                         url: node.debug.url,
                         code: response ? response.statusCode : 500,
                         body,
-                        err,
+                        err: err ? err.code : "",
                     });
 
                     if (!resolved && this.nodes.length === total) {
@@ -126,13 +124,6 @@ class Probe {
                     }
                 });
             });
-
-            setTimeout(() => {
-                if (!resolved) {
-                    resolved = true;
-                    reject(this.composeProbeResult(total, ready, nodesInfo));
-                }
-            }, HTTP_TIMEOUT);
         });
     }
 
