@@ -202,29 +202,37 @@ class SystemPresenter extends BasePresenter
     {
         if ($this->userSystem) {
             $form = $this->authorizeGeneratorFactory->create($this->userSystem);
-
-            $form['save_password']->onClick[]     = [$this, 'processPassword'];
-            $form['save_auth_setting']->onClick[] = [$this, 'processAuthorizationSettingGenerator'];
         } else {
             $form = $this->authorizeGeneratorFactory->create();
         }
 
+        $form->onSuccess[] = [$this, 'processAuthorizationSettingGenerator'];
+
         return $form;
     }
 
-    public function processPassword(SubmitButton $button)
-    {
-        $data = $button->getForm()->getValues();
-
-        // save password and refresh form
-    }
-
     /**
-     * @param SubmitButton $button
+     * @param Form $tmpForm
      */
-    public function processAuthorizationSettingGenerator(SubmitButton $button)
+    public function processAuthorizationSettingGenerator(Form $tmpForm)
     {
-        // save setting without password
+        $this->userSystem = $this->connectorManager->getUserSystem(
+            $this->userId,
+            $tmpForm->getHttpData()['system_key']
+        );
+        $form             = $this->authorizeGeneratorFactory->create($this->userSystem);
+        $form->setDefaults($tmpForm->getHttpData());
+        $data = $form->getValues(TRUE);
+
+        if (isset($data['password'])) {
+            $this->connectorManager->setUserSystemPassword($this->userId, $data['system_key'], $data['password']);
+
+            unset($data['password']);
+        }
+
+        $this->connectorManager->saveUserSystemSetting($this->userId, $data['system_key'], $data);
+
+        $this->redirect('System:');
     }
 
     /**

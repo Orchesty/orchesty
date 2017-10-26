@@ -32,24 +32,45 @@ class AuthorizationSettingGeneratorFactory
             foreach ($userSystem->getSettingFields() as $field) {
 
                 if ($field->getType() !== 'password') {
-                    $form
-                        ->addText($field->getKey(), $field->getLabel())
-                        ->setHtmlType($field->getType())
-                        ->setDefaultValue($field->getValue())
-                        ->setRequired($field->isRequired())
-                        ->setOption('description', 'Desc')
-                        ->setDisabled(TRUE);
+                    $form->addText($field->getKey(), $field->getLabel());
+
+                    if ($field->getDescription() != '') {
+                        $form[$field->getKey()]->setOption('description', $field->getDescription());
+                    }
                 } else {
-                    $form
-                        ->addText($field->getKey(), $field->getLabel())
-                        ->setHtmlType($field->getType())
-                        ->setDefaultValue($field->getValue())
-                        ->setRequired($field->isRequired())
-                        ->setOption('description', 'Desc')
-                        ->setDisabled(TRUE);
-                    $form->addSubmit('save_password', 'Save password');
+                    $form->addText($field->getKey(), $field->getLabel());
+
+                    if ($field->getValue()) {
+                        $message = 'Password exists.';
+                    } else {
+                        $message = 'Password not exists.';
+                    }
+
+                    if ($field->getDescription() != '') {
+                        $form[$field->getKey()]->setOption('description', $message . ' - ' . $field->getDescription());
+                    } else {
+                        $form[$field->getKey()]->setOption('description', $message);
+                    }
+                }
+
+                $form[$field->getKey()]
+                    ->setHtmlType($field->getType())
+                    ->setDefaultValue($field->getValue());
+
+                if ($field->isRequired()) {
+                    $form[$field->getKey()]->setRequired('This field is required.');
+                }
+
+                if ($field->isDisabled()) {
+                    $form[$field->getKey()]->setDisabled(TRUE);
+                }
+
+                if ($field->isReadOnly()) {
+                    $form[$field->getKey()]->setAttribute('readonly');
                 }
             }
+
+            $form->addHidden('system_key', $userSystem->getKey());
 
             $form->addSubmit('save_auth_setting', 'Save');
         }
