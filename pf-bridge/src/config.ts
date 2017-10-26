@@ -49,6 +49,6 @@ export const mongoStorageOptions: IMongoMessageStorageSettings = {
 
 export const probeOptions: IProbeSettings = {
     port: parseInt(process.env.PROBE_PORT, 10) || 8007,
-    path: process.env.PROBE_PATH || "status",
+    path: process.env.PROBE_PATH || "/status",
     timeout: parseInt(process.env.PROBE_TIMEOUT, 10) || 10000,
 };
