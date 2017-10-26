@@ -49,6 +49,16 @@ class Field
     private $readOnly = FALSE;
 
     /**
+     * @var bool
+     */
+    private $disabled = FALSE;
+
+    /**
+     * @var string
+     */
+    private $description = '';
+
+    /**
      * Field constructor.
      *
      * @param string     $type
@@ -76,12 +86,12 @@ class Field
             );
         }
 
-        $this->type     = $type;
-        $this->key      = $key;
-        $this->label    = $label;
-        $this->value    = $value;
-        $this->required = $required;
-        $this->readOnly = $readOnly;
+        $this->type        = $type;
+        $this->key         = $key;
+        $this->label       = $label;
+        $this->value       = $value;
+        $this->required    = $required;
+        $this->readOnly    = $readOnly;
     }
 
     /**
@@ -95,9 +105,29 @@ class Field
     /**
      * @return string
      */
+    public function getKey(): string
+    {
+        return $this->key;
+    }
+
+    /**
+     * @return string
+     */
     public function getLabel(): string
     {
         return $this->label;
+    }
+
+    /**
+     * @param string $label
+     *
+     * @return Field
+     */
+    public function setLabel(string $label): Field
+    {
+        $this->label = $label;
+
+        return $this;
     }
 
     /**
@@ -109,6 +139,18 @@ class Field
     }
 
     /**
+     * @param mixed $value
+     *
+     * @return Field
+     */
+    public function setValue($value): Field
+    {
+        $this->value = $value;
+
+        return $this;
+    }
+
+    /**
      * @return bool
      */
     public function isRequired(): bool
@@ -117,11 +159,15 @@ class Field
     }
 
     /**
-     * @return string
+     * @param bool $required
+     *
+     * @return Field
      */
-    public function getKey(): string
+    public function setRequired(bool $required): Field
     {
-        return $this->key;
+        $this->required = $required;
+
+        return $this;
     }
 
     /**
@@ -133,17 +179,71 @@ class Field
     }
 
     /**
+     * @param bool $readOnly
+     *
+     * @return Field
+     */
+    public function setReadOnly(bool $readOnly): Field
+    {
+        $this->readOnly = $readOnly;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isDisabled(): bool
+    {
+        return $this->disabled;
+    }
+
+    /**
+     * @param bool $disabled
+     *
+     * @return Field
+     */
+    public function setDisabled(bool $disabled): Field
+    {
+        $this->disabled = $disabled;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDescription(): string
+    {
+        return $this->description;
+    }
+
+    /**
+     * @param string $description
+     *
+     * @return Field
+     */
+    public function setDescription(string $description): Field
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    /**
      * @return array
      */
     public function toArray(): array
     {
         $field = [
-            'type'      => $this->type,
-            'key'       => $this->key,
-            'label'     => $this->label,
-            'value'     => $this->value,
-            'required'  => $this->required,
-            'read_only' => $this->readOnly,
+            'type'        => $this->type,
+            'key'         => $this->key,
+            'label'       => $this->label,
+            'value'       => $this->value,
+            'required'    => $this->required,
+            'read_only'   => $this->readOnly,
+            'disabled'    => $this->disabled,
+            'description' => $this->description,
         ];
 
         if ($this->type === Field::PASSWORD) {

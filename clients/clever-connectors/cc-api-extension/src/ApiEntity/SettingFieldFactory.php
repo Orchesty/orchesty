@@ -16,11 +16,14 @@ namespace CcApi\ApiEntity;
 class SettingFieldFactory
 {
 
-    private const KEY      = 'key';
-    private const TYPE     = 'type';
-    private const VALUE    = 'value';
-    private const LABEL    = 'label';
-    private const REQUIRED = 'required';
+    private const KEY         = 'key';
+    private const TYPE        = 'type';
+    private const VALUE       = 'value';
+    private const LABEL       = 'label';
+    private const REQUIRED    = 'required';
+    private const READ_ONLY   = 'read_only';
+    private const DISABLED    = 'disabled';
+    private const DESCRIPTION = 'description';
 
     /**
      * @param array $data
@@ -36,7 +39,10 @@ class SettingFieldFactory
             ->setType($data[self::TYPE] ?? '')
             ->setValue($data[self::VALUE] ?? '')
             ->setLabel($data[self::LABEL] ?? '')
-            ->setRequired($data[self::REQUIRED] ?? FALSE);
+            ->setRequired($data[self::REQUIRED] ?? FALSE)
+            ->setReadOnly($data[self::READ_ONLY] ?? FALSE)
+            ->setDisabled($data[self::DISABLED] ?? FALSE)
+            ->setDescription($data[self::DESCRIPTION] ?? '');
 
         return $field;
     }

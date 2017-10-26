@@ -45,19 +45,26 @@ class SettingFieldFactoryTest extends TestCase
             ],
             [
                 [
-                    'key'            => 'key',
-                    'type'           => 'type',
-                    'value'          => 'value',
-                    'label'          => 'label',
-                    'required'       => TRUE,
-                    'unknown'        => 'unknown',
+                    'key'         => 'key',
+                    'type'        => 'type',
+                    'value'       => 'value',
+                    'label'       => 'label',
+                    'required'    => TRUE,
+                    'read_only'   => TRUE,
+                    'disabled'    => TRUE,
+                    'description' => 'This is a description.',
+                    'unknown'     => 'unknown',
                 ],
                 (new SettingField())
                     ->setKey('key')
                     ->setType('type')
                     ->setValue('value')
                     ->setLabel('label')
-                    ->setRequired(TRUE),
+                    ->setRequired(TRUE)
+                    ->setReadOnly(TRUE)
+                    ->setDisabled(TRUE)
+                    ->setDescription('This is a description.')
+                ,
             ],
         ];
     }

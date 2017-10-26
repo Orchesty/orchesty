@@ -42,6 +42,21 @@ class SettingField
     private $required = FALSE;
 
     /**
+     * @var bool
+     */
+    private $readOnly = FALSE;
+
+    /**
+     * @var bool
+     */
+    private $disabled = FALSE;
+
+    /**
+     * @var string
+     */
+    private $description = '';
+
+    /**
      * @return string
      */
     public function getKey(): string
@@ -137,6 +152,66 @@ class SettingField
     public function setRequired(bool $required): SettingField
     {
         $this->required = $required;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isReadOnly(): bool
+    {
+        return $this->readOnly;
+    }
+
+    /**
+     * @param bool $readOnly
+     *
+     * @return $this
+     */
+    public function setReadOnly(bool $readOnly): SettingField
+    {
+        $this->readOnly = $readOnly;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isDisabled(): bool
+    {
+        return $this->disabled;
+    }
+
+    /**
+     * @param bool $disabled
+     *
+     * @return $this
+     */
+    public function setDisabled(bool $disabled): SettingField
+    {
+        $this->disabled = $disabled;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDescription(): string
+    {
+        return $this->description;
+    }
+
+    /**
+     * @param string $description
+     *
+     * @return $this
+     */
+    public function setDescription(string $description): SettingField
+    {
+        $this->description = $description;
 
         return $this;
     }
