@@ -72,7 +72,7 @@ final class HubspotSystemTest extends KernelTestCaseAbstract
         $dto = $this->system->getSubscribeRequest($webhook, $this->systemInstall, 'someUrl');
 
         self::assertInstanceOf(RequestDto::class, $dto);
-        self::assertEquals('Bearer ' . self::ACCESS_TOKEN, $dto->getHeaders()['Authorization']);
+        self::assertArrayNotHasKey('Authorization', $dto->getHeaders());
         self::assertEquals('POST', $dto->getMethod());
 
         $exp = [
@@ -91,7 +91,7 @@ final class HubspotSystemTest extends KernelTestCaseAbstract
         $dto = $this->system->getUnsubscribeRequest($this->systemInstall, '123');
 
         self::assertInstanceOf(RequestDto::class, $dto);
-        self::assertEquals('Bearer ' . self::ACCESS_TOKEN, $dto->getHeaders()['Authorization']);
+        self::assertArrayNotHasKey('Authorization', $dto->getHeaders());
         self::assertEquals('DELETE', $dto->getMethod());
     }
 

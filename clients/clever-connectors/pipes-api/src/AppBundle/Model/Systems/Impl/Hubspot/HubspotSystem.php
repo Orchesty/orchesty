@@ -283,7 +283,7 @@ class HubspotSystem implements WebhookSystemInterface, OAuth2Interface
         ];
 
         $dto->setBody(json_encode($body));
-        $dto->setHeaders($this->getHeaders($systemInstall));
+        $dto->setHeaders($this->getHeadersForWebhook());
 
         return $dto;
     }
@@ -309,7 +309,7 @@ class HubspotSystem implements WebhookSystemInterface, OAuth2Interface
         );
         $dto  = new RequestDto('DELETE', new Uri($url));
 
-        $dto->setHeaders($this->getHeaders($systemInstall));
+        $dto->setHeaders($this->getHeadersForWebhook());
 
         return $dto;
     }
@@ -368,6 +368,16 @@ class HubspotSystem implements WebhookSystemInterface, OAuth2Interface
         return [
             'Authorization' => 'Bearer ' . $systemInstall->getSettings()[OAuth2Provider::ACCESS_TOKEN],
             'Content-Type'  => 'application/json',
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    private function getHeadersForWebhook(): array
+    {
+        return [
+            'Content-Type' => 'application/json',
         ];
     }
 
