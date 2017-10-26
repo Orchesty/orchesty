@@ -10,6 +10,7 @@
 namespace CleverConnectors\AppBundle\Utils;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Traits\StaticTrait;
 use LogicException;
 
 /**
@@ -19,6 +20,8 @@ use LogicException;
  */
 final class TopologyNameUtils
 {
+
+    use StaticTrait;
 
     /**
      * @param SystemInstall $systemInstall

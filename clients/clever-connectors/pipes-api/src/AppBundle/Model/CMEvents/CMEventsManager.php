@@ -12,7 +12,7 @@ namespace CleverConnectors\AppBundle\Model\CMEvents;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
-use CleverConnectors\AppBundle\Utils\CMHeaders;
+use CleverConnectors\AppBundle\Utils\InnerRequestUtils;
 use CleverConnectors\AppBundle\Utils\TopologyNameUtils;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -124,47 +124,13 @@ class CMEventsManager implements LoggerAwareInterface
      */
     public function saveEventsForSystemInstall(SystemInstall $systemInstall, array &$data): SystemInstall
     {
-        $changed = [];
-
-        if (array_key_exists(SystemInstall::EVENT_CREATE, $data) && $data[SystemInstall::EVENT_CREATE] === TRUE) {
-            if ($systemInstall->isEventCreate() === FALSE) {
-                $changed[] = SystemInstall::EVENT_CREATE;
-            }
-            $systemInstall->setEventCreate($data[SystemInstall::EVENT_CREATE]);
-            unset($data[SystemInstall::EVENT_CREATE]);
-        }
-
-        if (
-            array_key_exists(SystemInstall::EVENT_UNSUBSCRIBE, $data) &&
-            $data[SystemInstall::EVENT_UNSUBSCRIBE] === TRUE
-        ) {
-            if ($systemInstall->isEventUnsubscribe() === FALSE) {
-                $changed[] = SystemInstall::EVENT_UNSUBSCRIBE;
-            }
-            $systemInstall->setEventUnsubscribe($data[SystemInstall::EVENT_UNSUBSCRIBE]);
-            unset($data[SystemInstall::EVENT_UNSUBSCRIBE]);
-        }
-
-        if (
-            array_key_exists(SystemInstall::EVENT_HARD_BOUNCE, $data) &&
-            $data[SystemInstall::EVENT_HARD_BOUNCE] === TRUE
-        ) {
-            if ($systemInstall->isEventHardBounce() === FALSE) {
-                $changed[] = SystemInstall::EVENT_HARD_BOUNCE;
-            }
-            $systemInstall->setEventHardBounce($data[SystemInstall::EVENT_HARD_BOUNCE]);
-            unset($data[SystemInstall::EVENT_HARD_BOUNCE]);
-        }
+        $changed = $this->getChanges($systemInstall, $data);
 
         if (empty($changed)) {
             return $systemInstall;
         }
 
-        $request = new Request([], [], [], [], [], [], json_encode($changed));
-        $request->headers->set(CMHeaders::createKey(CMHeaders::GUID), $systemInstall->getUser());
-        $request->headers->set(CMHeaders::createKey(CMHeaders::SYSTEM_KEY), $systemInstall->getSystem());
-        $request->headers->set(CMHeaders::createKey(CMHeaders::TOKEN), $systemInstall->getToken());
-
+        $request    = InnerRequestUtils::getRequest($systemInstall, $changed);
         $topologies = $this->getTopologiesForSave($systemInstall);
         foreach ($topologies as $topology) {
             try {
@@ -234,6 +200,49 @@ class CMEventsManager implements LoggerAwareInterface
             sprintf('Topology ["%s"] not found!', $name),
             CleverConnectorsException::TOPOLOGY_NOT_FOUND
         );
+    }
+
+    /**
+     * @param SystemInstall $systemInstall
+     * @param array         $data
+     *
+     * @return array
+     */
+    private function getChanges(SystemInstall $systemInstall, array &$data): array
+    {
+        $changed = [];
+
+        if (array_key_exists(SystemInstall::EVENT_CREATE, $data) && $data[SystemInstall::EVENT_CREATE] === TRUE) {
+            if ($systemInstall->isEventCreate() === FALSE) {
+                $changed[] = SystemInstall::EVENT_CREATE;
+            }
+            $systemInstall->setEventCreate($data[SystemInstall::EVENT_CREATE]);
+            unset($data[SystemInstall::EVENT_CREATE]);
+        }
+
+        if (
+            array_key_exists(SystemInstall::EVENT_UNSUBSCRIBE, $data) &&
+            $data[SystemInstall::EVENT_UNSUBSCRIBE] === TRUE
+        ) {
+            if ($systemInstall->isEventUnsubscribe() === FALSE) {
+                $changed[] = SystemInstall::EVENT_UNSUBSCRIBE;
+            }
+            $systemInstall->setEventUnsubscribe($data[SystemInstall::EVENT_UNSUBSCRIBE]);
+            unset($data[SystemInstall::EVENT_UNSUBSCRIBE]);
+        }
+
+        if (
+            array_key_exists(SystemInstall::EVENT_HARD_BOUNCE, $data) &&
+            $data[SystemInstall::EVENT_HARD_BOUNCE] === TRUE
+        ) {
+            if ($systemInstall->isEventHardBounce() === FALSE) {
+                $changed[] = SystemInstall::EVENT_HARD_BOUNCE;
+            }
+            $systemInstall->setEventHardBounce($data[SystemInstall::EVENT_HARD_BOUNCE]);
+            unset($data[SystemInstall::EVENT_HARD_BOUNCE]);
+        }
+
+        return $changed;
     }
 
 }

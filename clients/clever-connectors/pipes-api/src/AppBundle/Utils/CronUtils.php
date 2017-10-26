@@ -12,6 +12,7 @@ namespace CleverConnectors\AppBundle\Utils;
 use CleverConnectors\AppBundle\Document\LastSync;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
+use CleverConnectors\AppBundle\Traits\StaticTrait;
 use CleverConnectors\AppBundle\Utils\Dto\Times;
 use DateTime;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
@@ -21,8 +22,10 @@ use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
  *
  * @package CleverConnectors\AppBundle\Utils
  */
-class CronUtils
+final class CronUtils
 {
+
+    use StaticTrait;
 
     /**
      * @param ProcessDto $dto

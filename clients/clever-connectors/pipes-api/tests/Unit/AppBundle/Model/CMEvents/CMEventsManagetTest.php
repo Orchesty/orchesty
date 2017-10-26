@@ -196,11 +196,12 @@ class CMEventsManagetTest extends KernelTestCaseAbstract
         $handler = $this->createMock(StartingPointHandler::class);
 
         $systemInstall = (new SystemInstall())->setUser('usr')->setSystem('ssys')->setToken('tok');
-        $data          = [SystemInstall::EVENT_CREATE => TRUE];
+        $data          = [SystemInstall::EVENT_CREATE => TRUE, 'settings' => []];
 
         $mana = new CMEventsManager($dm, $handler);
         $mana->saveEventsForSystemInstall($systemInstall, $data);
         self::assertArrayNotHasKey(SystemInstall::EVENT_CREATE, $data);
+        self::assertArrayHasKey('settings', $data);
     }
 
     /**
@@ -231,11 +232,12 @@ class CMEventsManagetTest extends KernelTestCaseAbstract
         $handler = $this->createMock(StartingPointHandler::class);
 
         $systemInstall = (new SystemInstall())->setUser('usr')->setSystem('ssys')->setToken('tok');
-        $data          = [SystemInstall::EVENT_CREATE => TRUE];
+        $data          = [SystemInstall::EVENT_CREATE => TRUE, 'settings' => []];
 
         $mana = new CMEventsManager($dm, $handler);
         $mana->saveEventsForSystemInstall($systemInstall, $data);
         self::assertArrayNotHasKey(SystemInstall::EVENT_CREATE, $data);
+        self::assertArrayHasKey('settings', $data);
     }
 
 }

@@ -12,7 +12,7 @@ use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Webhook\WebhookManager;
 use CleverConnectors\AppBundle\Model\Webhook\WebhookSystemInterface;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
-use CleverConnectors\AppBundle\Utils\CMHeaders;
+use CleverConnectors\AppBundle\Utils\InnerRequestUtils;
 use CleverConnectors\AppBundle\Utils\TopologyNameUtils;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -22,7 +22,6 @@ use Hanaboso\PipesFramework\Configurator\Repository\NodeRepository;
 use Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository;
 use Hanaboso\PipesFramework\Configurator\StartingPoint\StartingPoint;
 use Hanaboso\PipesFramework\TopologyGenerator\Request\RequestHandler;
-use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class SystemManager
@@ -289,11 +288,8 @@ class SystemManager
     public function synchronizeSubscriptions(string $user, string $system): void
     {
         $systemInstall = $this->getSystemInstall($user, $system);
-        $request       = new Request([], [], [], [], [], [], json_encode(''));
-        $request->headers->set(CMHeaders::createKey(CMHeaders::GUID), $user);
-        $request->headers->set(CMHeaders::createKey(CMHeaders::SYSTEM_KEY), $system);
-        $request->headers->set(CMHeaders::createKey(CMHeaders::TOKEN), $systemInstall->getToken());
-        $topologies = $this->topologyRepository->getRunnableTopologies(TopologyNameUtils::getSyncName($systemInstall));
+        $request       = InnerRequestUtils::getRequest($systemInstall, '');
+        $topologies    = $this->topologyRepository->getRunnableTopologies(TopologyNameUtils::getSyncName($systemInstall));
 
         foreach ($topologies as $topology) {
             $node = $this->nodeRepository->getStartingNode($topology);
