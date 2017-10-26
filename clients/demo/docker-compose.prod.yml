@@ -90,6 +90,12 @@ services:
         volumes:
           - ./.docker-volumes/influxdb-data:/var/lib/influxdb
 
+    telegraf:
+        image: telegraf:1.4.2
+        volumes:
+          - telegraf:/var/lib/telegraf
+          - ./telegraf.conf:/etc/telegraf/telegraf.conf
+
     redis:
         image: redis:3.2-alpine
         ports:

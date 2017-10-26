@@ -220,6 +220,11 @@ services:
         volumes:
           - influxdb:/var/lib/influxdb
           - ./influxdb.conf:/etc/influxdb/influxdb.conf
+    
+    telegraf:
+        image: telegraf:1.4.2
+        volumes:
+          - ./telegraf.conf:/etc/telegraf/telegraf.conf
 
 
     # Fake Services

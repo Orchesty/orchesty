@@ -173,6 +173,12 @@ services:
         networks:
           - pipesdemo_default
 
+    telegraf:
+        image: telegraf:1.4.2
+        volumes:
+          - telegraf:/var/lib/telegraf
+          - ./telegraf.conf:/etc/telegraf/telegraf.conf
+
     # Fake Services
     mailhog:
         image: mailhog/mailhog
