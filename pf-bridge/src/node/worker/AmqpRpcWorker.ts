@@ -57,7 +57,7 @@ class AmqpRpcWorker implements IWorker {
     ) {
         this.waiting = new Container();
         this.resultsQueue = {
-            name: `${settings.node_label.id}_reply`,
+            name: `${settings.node_label.topology_id}.${settings.node_label.id}_reply`,
             options: settings.publish_queue.options || { durable: false, exclusive: false, autoDelete: false },
             prefetch: 1,
         };

@@ -8,7 +8,7 @@ const settings: IStreamServerSettings = {
     subscribeTimeout: parseInt(process.env.STREAM_SUBSCRIBE_TIMEOUT, 10) || 5 * 60 * 1000,
     consumer: {
         queue: {
-            name: process.env.STREAM_QUEUE || "stream",
+            name: process.env.STREAM_QUEUE || "pipes.stream",
             options: {},
         },
     },
