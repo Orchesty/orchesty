@@ -51,7 +51,10 @@ describe("AmqpRpcWorker", () => {
             },
             (msg: Message) => {
                 assert.equal(msg.properties.correlationId, AmqpRpcWorker.TEST_ID);
-                assert.equal(msg.properties.replyTo, `${settings.node_label.id}_reply`);
+                assert.equal(
+                    msg.properties.replyTo,
+                    `${settings.node_label.topology_id}.${settings.node_label.id}_reply`
+                );
                 assert.isTrue(Headers.containsAllMandatory(msg.properties.headers));
 
                 const replyHeaders = new Headers(msg.properties.headers);
@@ -112,7 +115,10 @@ describe("AmqpRpcWorker", () => {
             (msg: Message) => {
                 // check if message has all expected headers
                 assert.lengthOf(msg.properties.correlationId, 36); // uuidv4 length
-                assert.equal(msg.properties.replyTo, `${settings.node_label.id}_reply`);
+                assert.equal(
+                    msg.properties.replyTo,
+                    `${settings.node_label.topology_id}.${settings.node_label.id}_reply`
+                );
                 assert.isTrue(Headers.containsAllMandatory(msg.properties.headers));
                 const headers = new Headers(msg.properties.headers);
                 assert.equal(headers.getPFHeader(Headers.NODE_ID), "507f191e810c19729de860ea");
