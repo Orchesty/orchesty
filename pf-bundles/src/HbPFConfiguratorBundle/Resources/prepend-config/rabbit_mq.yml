@@ -1,20 +1,20 @@
 rabbit-mq:
     exchanges:
-        stream:
+        pipes.stream:
             durable: true
             type: direct
 
     queues:
-        stream:
+        pipes.stream:
             durable: true
             bindings:
-                - exchange: stream
-                  routing_key: stream
+                - exchange: pipes.stream
+                  routing_key: pipes.stream
 
     producers:
         progress_counter:
             class: Hanaboso\PipesFramework\Commons\ProgressCounter\Producer\ProgressCounterProducer
-            exchange: stream
+            exchange: pipes.stream
             content_type: application/json
             serializer: Hanaboso\PipesFramework\RabbitMq\Serializers\JsonSerializer
-            routing_key: stream
+            routing_key: pipes.stream

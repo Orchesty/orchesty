@@ -2,7 +2,7 @@ rabbit-mq:
     async_consumers:
         batch:
             class: Hanaboso\PipesFramework\CustomNode\Model\Batch\BatchConsumer
-            queue: batch
+            queue: pipes.batch
             serializer:
             callback: hbpf.custom_nodes.batch_callback
             prefetch_count: 10

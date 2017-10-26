@@ -303,7 +303,7 @@ class Generator implements GeneratorInterface
             'type'     => 'splitter.amqprpc',
             'settings' => [
                 'publish_queue' => [
-                    'name'    => $node->getType(),
+                    'name'    => sprintf('pipes.%s', $node->getType()),
                     'options' => NULL,
                 ],
             ],
