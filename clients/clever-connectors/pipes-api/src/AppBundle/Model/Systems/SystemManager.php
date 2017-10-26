@@ -6,6 +6,7 @@ use CleverConnectors\AppBundle\Document\LastSync;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\SystemTypeEnum;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
+use CleverConnectors\AppBundle\Model\CMEvents\CMEventsManager;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\AuthorizationInterface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\OAuth1Interface;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
@@ -72,6 +73,11 @@ class SystemManager
     private $requestHandler;
 
     /**
+     * @var CMEventsManager
+     */
+    private $eventsManager;
+
+    /**
      * SystemManager constructor.
      *
      * @param DocumentManager $dm
@@ -79,13 +85,15 @@ class SystemManager
      * @param WebhookManager  $webhookManager
      * @param StartingPoint   $startingPoint
      * @param RequestHandler  $requestHandler
+     * @param CMEventsManager $eventsManager
      */
     public function __construct(
         DocumentManager $dm,
         SystemLoader $systemLoader,
         WebhookManager $webhookManager,
         StartingPoint $startingPoint,
-        RequestHandler $requestHandler
+        RequestHandler $requestHandler,
+        CMEventsManager $eventsManager
     )
     {
         $this->dm                 = $dm;
@@ -96,6 +104,7 @@ class SystemManager
         $this->webhookManager     = $webhookManager;
         $this->startingPoint      = $startingPoint;
         $this->requestHandler     = $requestHandler;
+        $this->eventsManager      = $eventsManager;
     }
 
     /**
@@ -250,6 +259,7 @@ class SystemManager
 
         /** @var AuthorizationInterface $system */
         $system = $this->getSystem($systemKey);
+        $this->eventsManager->saveEventsForSystemInstall($systemInstall, $data);
         $system->setSettings($systemInstall, $data);
 
         $this->dm->flush();
