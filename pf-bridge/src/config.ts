@@ -1,6 +1,7 @@
 import {IOptions} from "lib-nodejs/dist/src/rabbitmq/Connection";
 import {IMongoMessageStorageSettings} from "./repeater/MongoMessageStorage";
 import {IRepeaterSettings} from "./repeater/Repeater";
+import {IProbeSettings} from "./topology/Probe";
 
 // Set timeouts and other env values differently for tests
 if (process.env.NODE_ENV === "test") {
@@ -44,4 +45,10 @@ export const mongoStorageOptions: IMongoMessageStorageSettings = {
     user: process.env.MONGO_USER || "",
     pass: process.env.MONGO_PASS || "",
     db: process.env.MONGO_DB || "repeater",
+};
+
+export const probeOptions: IProbeSettings = {
+    port: parseInt(process.env.PROBE_PORT, 10) || 8007,
+    path: process.env.PROBE_PATH || "status",
+    timeout: parseInt(process.env.PROBE_TIMEOUT, 10) || 10000,
 };

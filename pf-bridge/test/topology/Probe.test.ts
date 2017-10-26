@@ -46,13 +46,13 @@ const topo = Configurator.createConfigFromSkeleton(
 
 describe("Probe", () => {
     it("should return that none of nodes is running", () => {
-        const probe = new Probe("topoId", 8005);
+        const probe = new Probe("topoId", {port: 8003, path: "/status", timeout: 1000});
         topo.nodes.forEach((node: INodeConfig) => {
              probe.addNode(node);
         });
         return probe.start()
             .then(() => {
-                return rp("http://localhost:8005/status");
+                return rp("http://localhost:8003/status");
             })
             .then((resp: string) => {
                 const result: IProbeResult = JSON.parse(resp);
@@ -61,7 +61,7 @@ describe("Probe", () => {
             });
     });
 
-    it("should state that all nodes are running", () => {
+    it("should return that all nodes are running", () => {
         // Node1 server mock
         const mock1 = express();
         mock1.get("/status", (req, resp) => {
@@ -76,13 +76,13 @@ describe("Probe", () => {
         });
         const m2server = mock2.listen(topo.nodes[1].debug.port);
 
-        const probe = new Probe("topoId", 8006);
+        const probe = new Probe("topoId", {port: 8004, path: "/status", timeout: 1000});
         topo.nodes.forEach((node: INodeConfig) => {
             probe.addNode(node);
         });
         return probe.start()
             .then(() => {
-                return rp("http://localhost:8006/status");
+                return rp("http://localhost:8004/status");
             })
             .then((resp: string) => {
                 const result: IProbeResult = JSON.parse(resp);
@@ -93,7 +93,7 @@ describe("Probe", () => {
             });
     });
 
-    it("should state that first node is prepared, but the second is not", () => {
+    it("should return that first node is prepared, but the second is not", () => {
         // Node1 server mock
         const mock1 = express();
         mock1.get("/status", (req, resp) => {
@@ -108,13 +108,13 @@ describe("Probe", () => {
         });
         const m2server = mock2.listen(topo.nodes[1].debug.port);
 
-        const probe = new Probe("topoId", 8008);
+        const probe = new Probe("topoId", {port: 8005, path: "/status", timeout: 1000});
         topo.nodes.forEach((node: INodeConfig) => {
             probe.addNode(node);
         });
         return probe.start()
             .then(() => {
-                return rp("http://localhost:8008/status");
+                return rp("http://localhost:8005/status");
             })
             .then((resp: string) => {
                 const result: IProbeResult = JSON.parse(resp);
@@ -144,6 +144,41 @@ describe("Probe", () => {
                         },
                     ],
                 );
+                m1server.close();
+                m2server.close();
+            });
+    });
+
+    it("should return that all nodes are running second node check timeouted", () => {
+        // Node1 server mock
+        const mock1 = express();
+        mock1.get("/status", (req, resp) => {
+            resp.status(200).send();
+        });
+        const m1server = mock1.listen(topo.nodes[0].debug.port);
+
+        // Node2 server mock
+        const mock2 = express();
+        mock2.get("/status", (req, resp) => {
+            // return response after 500ms, which is greater then probe 200ms timeout
+            setTimeout(() => {
+                resp.status(200).send();
+            }, 500);
+        });
+        const m2server = mock2.listen(topo.nodes[1].debug.port);
+
+        const probe = new Probe("topoId", {port: 8006, path: "/status", timeout: 200});
+        topo.nodes.forEach((node: INodeConfig) => {
+            probe.addNode(node);
+        });
+        return probe.start()
+            .then(() => {
+                return rp("http://localhost:8006/status");
+            })
+            .then((resp: string) => {
+                const result: IProbeResult = JSON.parse(resp);
+                assert.equal(result.message, "1/2 nodes ready.");
+                assert.equal(result.nodes.length, 2);
                 m1server.close();
                 m2server.close();
             });
