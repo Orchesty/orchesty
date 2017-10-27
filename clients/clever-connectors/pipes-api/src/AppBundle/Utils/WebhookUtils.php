@@ -9,6 +9,8 @@
 
 namespace CleverConnectors\AppBundle\Utils;
 
+use CleverConnectors\AppBundle\Traits\StaticTrait;
+
 /**
  * Class WebhookUtils
  *
@@ -17,12 +19,7 @@ namespace CleverConnectors\AppBundle\Utils;
 final class WebhookUtils
 {
 
-    /**
-     * WebhookUtils constructor.
-     */
-    private function __construct()
-    {
-    }
+    use StaticTrait;
 
     /**
      * @param string $domain

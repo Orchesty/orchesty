@@ -29,13 +29,7 @@ class SystemInstallRepository extends DocumentRepository
      */
     public function getSystemInstallByEvent(string $event, string $userId): array
     {
-        if (!SystemInstall::isEvent($event)) {
-            throw new CleverConnectorsException(
-                sprintf('Event type ["%s"] is not valid.', $event),
-                CleverConnectorsException::INVALID_ENUM_VALUE
-            );
-        }
-
+        SystemInstall::checkEvent($event);
         $systemInstalls = $this->createQueryBuilder()
             ->field($event)->equals(TRUE)
             ->field('user')->equals($userId)

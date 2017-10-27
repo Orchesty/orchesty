@@ -16,6 +16,11 @@ trait AuthorizationTrait
 {
 
     /**
+     * @var array
+     */
+    protected $topologyNames = [];
+
+    /**
      * @param SystemInstall $systemInstall
      * @param array         $data
      *
@@ -54,6 +59,20 @@ trait AuthorizationTrait
         $settings[OAuth1Interface::FRONTEND_REDIRECT_URL] = $frontendRedirectUrl;
 
         return $systemInstall->setSettings($settings);
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return string
+     */
+    public function getCustomTopologyName(string $name): string
+    {
+        if (array_key_exists($name, $this->topologyNames)) {
+            return $this->topologyNames[$name];
+        }
+
+        return $name;
     }
 
     /**

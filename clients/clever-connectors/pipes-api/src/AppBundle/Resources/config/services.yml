@@ -19,6 +19,7 @@ services:
             - '@cc.webhook.manager'
             - '@hbpf.starting_point.starting_point'
             - '@hbpf.topology_generator.request.request_handler'
+            - '@cc.events.manager'
 
     cc.systems.loader:
         class: CleverConnectors\AppBundle\Model\Systems\SystemLoader
@@ -42,9 +43,10 @@ services:
             - "@cc.events.manager"
 
     cc.events.manager:
-        class: CleverConnectors\AppBundle\Model\CM\CMEventsManager
+        class: CleverConnectors\AppBundle\Model\CMEvents\CMEventsManager
         arguments:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.handler.starting_point'
+            - '@cc.systems.loader'
         calls:
             - [setLogger, ['@monolog.logger']]

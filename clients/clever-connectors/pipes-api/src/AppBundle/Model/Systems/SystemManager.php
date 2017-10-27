@@ -6,13 +6,14 @@ use CleverConnectors\AppBundle\Document\LastSync;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\SystemTypeEnum;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
+use CleverConnectors\AppBundle\Model\CMEvents\CMEventsManager;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\AuthorizationInterface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\OAuth1Interface;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Webhook\WebhookManager;
 use CleverConnectors\AppBundle\Model\Webhook\WebhookSystemInterface;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
-use CleverConnectors\AppBundle\Utils\CMHeaders;
+use CleverConnectors\AppBundle\Utils\InnerRequestUtils;
 use CleverConnectors\AppBundle\Utils\TopologyNameUtils;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -22,7 +23,6 @@ use Hanaboso\PipesFramework\Configurator\Repository\NodeRepository;
 use Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository;
 use Hanaboso\PipesFramework\Configurator\StartingPoint\StartingPoint;
 use Hanaboso\PipesFramework\TopologyGenerator\Request\RequestHandler;
-use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class SystemManager
@@ -73,6 +73,11 @@ class SystemManager
     private $requestHandler;
 
     /**
+     * @var CMEventsManager
+     */
+    private $eventsManager;
+
+    /**
      * SystemManager constructor.
      *
      * @param DocumentManager $dm
@@ -80,13 +85,15 @@ class SystemManager
      * @param WebhookManager  $webhookManager
      * @param StartingPoint   $startingPoint
      * @param RequestHandler  $requestHandler
+     * @param CMEventsManager $eventsManager
      */
     public function __construct(
         DocumentManager $dm,
         SystemLoader $systemLoader,
         WebhookManager $webhookManager,
         StartingPoint $startingPoint,
-        RequestHandler $requestHandler
+        RequestHandler $requestHandler,
+        CMEventsManager $eventsManager
     )
     {
         $this->dm                 = $dm;
@@ -97,6 +104,7 @@ class SystemManager
         $this->webhookManager     = $webhookManager;
         $this->startingPoint      = $startingPoint;
         $this->requestHandler     = $requestHandler;
+        $this->eventsManager      = $eventsManager;
     }
 
     /**
@@ -251,6 +259,7 @@ class SystemManager
 
         /** @var AuthorizationInterface $system */
         $system = $this->getSystem($systemKey);
+        $this->eventsManager->saveEventsForSystemInstall($systemInstall, $data);
         $system->setSettings($systemInstall, $data);
 
         $this->dm->flush();
@@ -289,11 +298,22 @@ class SystemManager
     public function synchronizeSubscriptions(string $user, string $system): void
     {
         $systemInstall = $this->getSystemInstall($user, $system);
-        $request       = new Request([], [], [], [], [], [], json_encode(''));
-        $request->headers->set(CMHeaders::createKey(CMHeaders::GUID), $user);
-        $request->headers->set(CMHeaders::createKey(CMHeaders::SYSTEM_KEY), $system);
-        $request->headers->set(CMHeaders::createKey(CMHeaders::TOKEN), $systemInstall->getToken());
-        $topologies = $this->topologyRepository->getRunnableTopologies(TopologyNameUtils::getSyncName($systemInstall));
+        $system        = $this->systemLoader->getSystem($system);
+        $request       = InnerRequestUtils::getRequest($systemInstall, '');
+        $topologies    = $this->topologyRepository->getRunnableTopologies(
+            TopologyNameUtils::getTopologyName(
+                TopologyNameUtils::SYNC,
+                $systemInstall->getSystem(),
+                $systemInstall->getUser()
+            )
+        );
+
+        if (empty($topologies)) {
+            $name       = $system->getCustomTopologyName(
+                TopologyNameUtils::getTopologyName(TopologyNameUtils::SYNC, $systemInstall->getSystem())
+            );
+            $topologies = $this->topologyRepository->getRunnableTopologies($name);
+        }
 
         foreach ($topologies as $topology) {
             $node = $this->nodeRepository->getStartingNode($topology);

@@ -3,10 +3,12 @@
 namespace CleverConnectors\AppBundle\Document;
 
 use CleverConnectors\AppBundle\Document\Traits\IdTrait;
+use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use DateTime;
 use DateTimeZone;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Hanaboso\PipesFramework\Commons\Crypt\CryptManager;
+use InvalidArgumentException;
 use MongoDate;
 
 /**
@@ -370,11 +372,60 @@ class SystemInstall
     /**
      * @param string $event
      *
+     * @throws CleverConnectorsException
+     */
+    public static function checkEvent(string $event): void
+    {
+        if (!in_array($event, [self::EVENT_CREATE, self::EVENT_UNSUBSCRIBE, self::EVENT_HARD_BOUNCE])) {
+            throw new CleverConnectorsException(
+                sprintf('Event type ["%s"] is not valid.', $event),
+                CleverConnectorsException::INVALID_ENUM_VALUE
+            );
+        };
+    }
+
+    /**
+     * @param string $event
+     *
      * @return bool
      */
-    public static function isEvent(string $event): bool
+    public function getEventState(string $event): bool
     {
-        return in_array($event, [self::EVENT_CREATE, self::EVENT_UNSUBSCRIBE, self::EVENT_HARD_BOUNCE]);
+        switch ($event) {
+            case self::EVENT_CREATE:
+                return $this->isEventCreate();
+            case self::EVENT_UNSUBSCRIBE:
+                return $this->isEventUnsubscribe();
+            case self::EVENT_HARD_BOUNCE:
+                return $this->isEventHardBounce();
+            default:
+                throw new InvalidArgumentException(sprintf('Unsupported event type "%s"', $event));
+        }
+    }
+
+    /**
+     * @param string $event
+     * @param bool   $value
+     *
+     * @return SystemInstall
+     */
+    public function setEventState(string $event, bool $value): SystemInstall
+    {
+        switch ($event) {
+            case self::EVENT_CREATE:
+                $this->setEventCreate($value);
+                break;
+            case self::EVENT_UNSUBSCRIBE:
+                $this->setEventUnsubscribe($value);
+                break;
+            case self::EVENT_HARD_BOUNCE:
+                $this->setEventHardBounce($value);
+                break;
+            default:
+                throw new InvalidArgumentException(sprintf('Unsupported event type "%s"', $event));
+        }
+
+        return $this;
     }
 
     /**

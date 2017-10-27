@@ -4,14 +4,17 @@ namespace CleverConnectors\AppBundle\Utils;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\OAuth1Interface;
+use CleverConnectors\AppBundle\Traits\StaticTrait;
 
 /**
  * Class AuthorizationUtils
  *
  * @package CleverConnectors\AppBundle\Utils
  */
-class AuthorizationUtils
+final class AuthorizationUtils
 {
+
+    use StaticTrait;
 
     /**
      * @param SystemInstall|null $systemInstall

@@ -10,6 +10,7 @@
 namespace Tests\Unit\AppBundle\Model\Systems;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Model\CMEvents\CMEventsManager;
 use CleverConnectors\AppBundle\Model\Systems\SystemLoader;
 use CleverConnectors\AppBundle\Model\Systems\SystemManager;
 use CleverConnectors\AppBundle\Model\Webhook\WebhookManager;
@@ -58,6 +59,11 @@ final class SystemManagerTest extends TestCase
     private $startingPoint;
 
     /**
+     * @var PHPUnit_Framework_MockObject_MockObject|CMEventsManager
+     */
+    private $eventsManager;
+
+    /**
      *
      */
     public function setUp(): void
@@ -67,6 +73,7 @@ final class SystemManagerTest extends TestCase
         $this->webhookManager = $this->getClassMock(WebhookManager::class);
         $this->startingPoint  = $this->getClassMock(StartingPoint::class);
         $this->requestHandler = $this->getClassMock(RequestHandler::class);
+        $this->eventsManager  = $this->getClassMock(CMEventsManager::class);
         $this->startingPoint->method('runWithRequest');
     }
 
@@ -77,8 +84,14 @@ final class SystemManagerTest extends TestCase
     {
         $this->prepareDmMock(new Node());
 
-        $manager = new SystemManager($this->dm, $this->systemLoader, $this->webhookManager, $this->startingPoint,
-            $this->requestHandler);
+        $manager = new SystemManager(
+            $this->dm,
+            $this->systemLoader,
+            $this->webhookManager,
+            $this->startingPoint,
+            $this->requestHandler,
+            $this->eventsManager
+        );
         $manager->synchronizeSubscriptions('user', 'system');
     }
 
@@ -105,7 +118,7 @@ final class SystemManagerTest extends TestCase
         $systemRepo = $this->getClassMock(SystemInstallRepository::class);
         $systemRepo
             ->method('findOneBy')
-            ->willReturn((new SystemInstall())->setToken('123')->setSystem('testsys'));
+            ->willReturn((new SystemInstall())->setToken('123')->setSystem('testsys')->setUser('user'));
 
         $this->dm
             ->method('getRepository')
