@@ -162,7 +162,7 @@ class ApiWebhookProvider implements WebhookProviderInterface, LoggerAwareInterfa
             $req = $system->getUnsubscribeRequest($systemInstall, $webhook->getWebhookId() ?? '');
             try {
                 $res = $this->curl->send($req);
-                if ($res->getStatusCode() == 200) {
+                if (in_array($res->getStatusCode(), [200, 204])) {
                     $this->dm->remove($webhook);
                 } else {
                     $this->unsubscribeFailed($webhook, NULL, $res);
