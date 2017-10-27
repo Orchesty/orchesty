@@ -17,7 +17,7 @@ services:
         depends_on:
           - mongo
           - rabbitmq
-        #command: bin/console rabbit-mq:async-consumer batch
+        command: bash -c 'while ! [ -f vendor/autoload.php ];do sleep 1; echo "sleep 1"; done; bin/console rabbit-mq:async-consumer batch'
 
     batch-connector:
         image: dkr.hanaboso.net/pipes/pipes/php-dev:dev
@@ -32,7 +32,7 @@ services:
         depends_on:
           - mongo
           - rabbitmq
-        #command: bin/console rabbit-mq:async-consumer batch-connector
+        command: bash -c 'while ! [ -f vendor/autoload.php ];do sleep 1; echo "sleep 1"; done; bin/console rabbit-mq:async-consumer batch-connector'
 
     status-service:
         image: dkr.hanaboso.net/pipes/pipes/php-dev:dev
@@ -47,7 +47,7 @@ services:
         depends_on:
           - mongo
           - rabbitmq
-        #command: bin/console rabbit-mq:consumer status-service
+        command: bash -c 'while ! [ -f vendor/autoload.php ];do sleep 1; echo "sleep 1"; done; bin/console rabbit-mq:consumer status-service'
 
     repeater:
       image: 'dkr.hanaboso.net/pipes/pipes/pf-bridge:dev'
