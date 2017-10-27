@@ -1,0 +1,54 @@
+<?php declare(strict_types=1);
+
+namespace CleverConnectors\AppBundle\Model\Systems\Impl\Basecrm\Connector;
+
+use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
+use CleverConnectors\AppBundle\Utils\CMHeaders;
+use GuzzleHttp\Psr7\Uri;
+use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+
+/**
+ * Class BasecrmCreateContactConnector
+ *
+ * @package CleverConnectors\AppBundle\Model\Systems\Impl\Basecrm\Connector
+ */
+class BasecrmCreateContactConnector extends BasecrmUpdateContactConnectorAbstract
+{
+
+    private const SUB_URL = '/v2/contacts';
+
+    /**
+     * @return string
+     */
+    public function getId(): string
+    {
+        return 'basecrm-create-contact-connector';
+    }
+
+    /**
+     * @param ProcessDto $dto
+     *
+     * @return ProcessDto
+     * @throws CleverConnectorsException
+     */
+    public function processEvent(ProcessDto $dto): ProcessDto
+    {
+        $systemInstall = $this->systemInstallRepository->getSystemInstallFromHeaders($dto->getHeaders());
+        $requestDto    = $this->system->getRequestDtoNonSync($systemInstall, 'POST');
+        $uri           = new Uri(rtrim($requestDto->getUri(TRUE), '/') . self::SUB_URL);
+
+        $requestDto->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()))
+            ->setUri($uri)
+            ->setBody($dto->getData());
+
+        $res = $this->curl->send($requestDto);
+
+        if ($res->getStatusCode() !== 200) {
+            throw new CleverConnectorsException('Failed to create new contact, BaseCRM createContactConnector.',
+                CleverConnectorsException::REQUEST_FAILED);
+        }
+
+        return $dto->setData($res->getBody());
+    }
+
+}

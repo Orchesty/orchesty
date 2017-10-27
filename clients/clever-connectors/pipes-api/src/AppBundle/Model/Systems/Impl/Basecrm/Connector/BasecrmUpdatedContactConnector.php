@@ -21,11 +21,11 @@ use React\Promise\PromiseInterface;
 use function React\Promise\resolve;
 
 /**
- * Class BasecrmContactConnector
+ * Class BasecrmUpdateContactConnector
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Basecrm\Connector
  */
-class BasecrmContactConnector implements ConnectorInterface, BatchInterface
+class BasecrmUpdatedContactConnector implements ConnectorInterface, BatchInterface
 {
 
     /**
@@ -55,7 +55,7 @@ class BasecrmContactConnector implements ConnectorInterface, BatchInterface
      */
     public function getId(): string
     {
-        return 'basecrm-contact-connector';
+        return 'basecrm-updated-contact-connector';
     }
 
     /**
@@ -88,7 +88,8 @@ class BasecrmContactConnector implements ConnectorInterface, BatchInterface
      */
     public function processEvent(ProcessDto $dto): ProcessDto
     {
-        throw new ConnectorException('BaseCRM has not implemented "processEvent" function.');
+        throw new ConnectorException('BaseCRM has no support for event, updatedContactConnector.',
+            ConnectorException::CONNECTOR_DOES_NOT_HAVE_PROCESS_EVENT);
     }
 
     /**
@@ -99,7 +100,8 @@ class BasecrmContactConnector implements ConnectorInterface, BatchInterface
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {
-        throw new ConnectorException('BaseCRM has not implemented "processAction" function.');
+        throw new ConnectorException('BaseCRM has no support for action, updatedContactConnector.',
+            ConnectorException::CONNECTOR_DOES_NOT_HAVE_PROCESS_ACTION);
     }
 
     /**

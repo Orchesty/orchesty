@@ -71,7 +71,8 @@ class BasecrmQueueContactConnector implements ConnectorInterface
      */
     public function processEvent(ProcessDto $dto): ProcessDto
     {
-        throw new ConnectorException('BaseCRM queue connector has not implemented "processEvent" function.');
+        throw new ConnectorException('BaseCRM has no support for event, queueContactConnector.',
+            ConnectorException::CONNECTOR_DOES_NOT_HAVE_PROCESS_EVENT);
     }
 
     /**
@@ -100,11 +101,14 @@ class BasecrmQueueContactConnector implements ConnectorInterface
     private function createQueue(ProcessDto $processDto, SystemInstall $systemInstall): void
     {
         $uuid = uniqid();
-        $dto  = new RequestDto('POST', new Uri(sprintf('%s/v2/sync/start', rtrim(BasecrmSystem::SYSTEM_URL, '/'))));
-        $dto->setHeaders($this->system->getHeaders($systemInstall, $uuid));
-        $dto->setDebugInfo(CMHeaders::debugInfo($processDto->getHeaders()));
+        $dto  = $this->system->getRequestDtoNonSync($systemInstall, 'POST');
+        $dto->setDebugInfo(CMHeaders::debugInfo($processDto->getHeaders()))
+            ->setHeaders(array_merge($dto->getHeaders(), [
+                'X-Basecrm-Device-UUID' => $uuid,
+            ]));
+        $uri = new Uri(sprintf('%s/v2/sync/start', rtrim(BasecrmSystem::SYSTEM_URL, '/')));
 
-        $res = $this->curl->send($dto);
+        $res = $this->curl->send(RequestDto::from($dto, $uri));
 
         if (!in_array($res->getStatusCode(), [201, 204])) {
             throw new SystemException(sprintf('BaseCRM failed to create sync que, %s', $res->getBody()),

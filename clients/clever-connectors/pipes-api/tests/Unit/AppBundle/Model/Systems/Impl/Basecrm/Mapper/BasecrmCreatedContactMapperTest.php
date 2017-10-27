@@ -1,0 +1,41 @@
+<?php declare(strict_types=1);
+
+namespace Tests\Unit\AppBundle\Model\Systems\Impl\Basecrm\Mapper;
+
+use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Nette\Utils\Json;
+use Tests\ConnectorTestCaseAbstract;
+
+/**
+ * Class BasecrmCreatedContactMapperTest
+ *
+ * @package Tests\Unit\AppBundle\Model\Systems\Impl\Basecrm\Mapper
+ */
+final class BasecrmCreatedContactMapperTest extends ConnectorTestCaseAbstract
+{
+
+    /**
+     *
+     */
+    public function testMapper(): void
+    {
+        $node = $this->container->get('hbpf.custom_node.basecrm-created-contact-mapper');
+
+        $response = Json::decode($node->process(
+            (new ProcessDto())->setData(
+                $this->getRequest('contactCreated.json')
+            ))->getData(), TRUE
+        );
+
+        $expt = [
+            'email'       => 'eml@eml.com',
+            'first_name'  => 'first',
+            'last_name'   => 'last',
+            '_foreign_id' => '188442396',
+            'reactivate'  => TRUE,
+        ];
+
+        self::assertEquals($expt, $response);
+    }
+
+}

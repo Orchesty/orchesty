@@ -4,8 +4,8 @@ services:
         arguments:
         tags: ['%systems%']
 
-    hbpf.connector.basecrm-contact-connector:
-        class: CleverConnectors\AppBundle\Model\Systems\Impl\Basecrm\Connector\BasecrmContactConnector
+    hbpf.connector.basecrm-updated-contact-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Basecrm\Connector\BasecrmUpdatedContactConnector
         arguments:
             - '@systems.basecrm'
             - '@hbpf.transport.async_curl_factory'
@@ -25,10 +25,36 @@ services:
             - '@systems.basecrm'
             - '@doctrine_mongodb.odm.default_document_manager'
 
-    hbpf.custom_node.basecrm-update-contact-mapper:
-        class: CleverConnectors\AppBundle\Model\Systems\Impl\Basecrm\Mapper\BasecrmContactUpdateMapper
+    hbpf.connector.basecrm-create-contact-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Basecrm\Connector\BasecrmCreateContactConnector
+        arguments:
+            - '@systems.basecrm'
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.transport.curl_manager'
+
+    hbpf.connector.basecrm-update-contact-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Basecrm\Connector\BasecrmUpdateContactConnector
+        arguments:
+            - '@systems.basecrm'
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.transport.curl_manager'
+
+    hbpf.custom_node.basecrm-updated-contact-mapper:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Basecrm\Mapper\BasecrmUpdatedContactMapper
         arguments:
 
-    hbpf.custom_node.basecrm-delete-contact-mapper:
-        class: CleverConnectors\AppBundle\Model\Systems\Impl\Basecrm\Mapper\BasecrmContactDeleteMapper
+    hbpf.custom_node.basecrm-deleted-contact-mapper:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Basecrm\Mapper\BasecrmDeletedContactMapper
+        arguments:
+
+    hbpf.custom_node.basecrm-create-contact-mapper:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Basecrm\Mapper\BasecrmCreateContactMapper
+        arguments:
+
+    hbpf.custom_node.basecrm-created-contact-mapper:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Basecrm\Mapper\BasecrmCreatedContactMapper
+        arguments:
+
+    hbpf.custom_node.basecrm-update-contact-mapper:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Basecrm\Mapper\BasecrmUpdateContactMapper
         arguments:

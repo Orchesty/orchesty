@@ -3,13 +3,16 @@
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Basecrm;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Enum\CleverCustomKeysEnum;
 use CleverConnectors\AppBundle\Enum\SystemTypeEnum;
+use CleverConnectors\AppBundle\Model\CMEvents\CMEventObject;
+use CleverConnectors\AppBundle\Model\CMEvents\CMEventSystemInterface;
+use CleverConnectors\AppBundle\Model\CMEvents\Traits\CMEventSystemTrait;
 use CleverConnectors\AppBundle\Model\Form\Field;
 use CleverConnectors\AppBundle\Model\Form\Form;
+use CleverConnectors\AppBundle\Model\Requester\RequesterInterface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\AuthorizationInterface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\Traits\AuthorizationTrait;
-use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
-use CleverConnectors\AppBundle\Model\Systems\SystemInterface;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 
@@ -18,16 +21,27 @@ use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Basecrm
  */
-class BasecrmSystem implements SystemInterface, AuthorizationInterface
+class BasecrmSystem implements AuthorizationInterface, CMEventSystemInterface
 {
 
     use AuthorizationTrait;
+    use CMEventSystemTrait;
 
     public const QUE_ID     = 'que_id';
     public const SYNC_UUID  = 'sync_uuid';
     public const SYSTEM_URL = 'https://api.getbase.com/';
 
     private const ACCESS_TOKEN = 'access_token';
+
+    /**
+     * BasecrmSystem constructor.
+     */
+    function __construct()
+    {
+        $this->addCMEvent(new CMEventObject('', SystemInstall::EVENT_CREATE, ''));
+        $this->addCMEvent(new CMEventObject(CleverCustomKeysEnum::HARD_BOUNCE, SystemInstall::EVENT_HARD_BOUNCE, ''));
+        $this->addCMEvent(new CMEventObject(CleverCustomKeysEnum::UNSUBSCRIBE, SystemInstall::EVENT_UNSUBSCRIBE, ''));
+    }
 
     /**
      * @return string
@@ -94,14 +108,29 @@ class BasecrmSystem implements SystemInterface, AuthorizationInterface
      * @param string        $method
      *
      * @return RequestDto
-     * @throws SystemException
      */
     public function getRequestDto(SystemInstall $systemInstall, string $method): RequestDto
     {
         $this->continueOnAuthorized($systemInstall);
 
         $dto = new RequestDto($method, new Uri(self::SYSTEM_URL));
-        $dto->setHeaders($this->getHeaders($systemInstall, NULL));
+        $dto->setHeaders($this->getHeaders($systemInstall));
+
+        return $dto;
+    }
+
+    /**
+     * @param SystemInstall $systemInstall
+     * @param string        $method
+     *
+     * @return RequestDto
+     */
+    public function getRequestDtoNonSync(SystemInstall $systemInstall, string $method): RequestDto
+    {
+        $this->continueOnAuthorized($systemInstall);
+
+        $dto = new RequestDto($method, new Uri(self::SYSTEM_URL));
+        $dto->setHeaders($this->getHeaders($systemInstall, FALSE));
 
         return $dto;
     }
@@ -129,23 +158,33 @@ class BasecrmSystem implements SystemInterface, AuthorizationInterface
 
     /**
      * @param SystemInstall $systemInstall
-     * @param null|string   $uuid
+     * @param bool          $sync
      *
      * @return array
      */
-    public function getHeaders(SystemInstall $systemInstall, ?string $uuid = NULL): array
+    public function getHeaders(SystemInstall $systemInstall, bool $sync = TRUE): array
     {
-        if (!$uuid) {
-            $uuid = $systemInstall->getSettings()[self::SYNC_UUID];
+        $headers = [
+            'Accept'        => 'application/json',
+            'Content-Type'  => 'application/json',
+            'User-Agent'    => 'Chrome/58.0.3029.96 Safari/537.36',
+            'Authorization' => 'Bearer ' . $systemInstall->getSettings()[self::ACCESS_TOKEN],
+        ];
+
+        if ($sync) {
+            $uuid                             = $systemInstall->getSettings()[self::SYNC_UUID];
+            $headers['X-Basecrm-Device-UUID'] = $uuid;
         }
 
-        return [
-            'Accept'                => 'application/json',
-            'Content-Type'          => 'application/json',
-            'User-Agent'            => 'Chrome/58.0.3029.96 Safari/537.36',
-            'Authorization'         => 'Bearer ' . $systemInstall->getSettings()[self::ACCESS_TOKEN],
-            'X-Basecrm-Device-UUID' => $uuid,
-        ];
+        return $headers;
+    }
+
+    /**
+     * @return RequesterInterface
+     */
+    public function getCMEventRequester(): ?RequesterInterface
+    {
+        return NULL;
     }
 
 }

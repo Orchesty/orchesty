@@ -7,11 +7,11 @@ use CleverConnectors\AppBundle\Model\CM\SubscriptionConnector\CustomerObject\CMS
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 
 /**
- * Class BasecrmContactUpdateMapper
+ * Class BasecrmUpdatedContactMapper
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Basecrm\Mapper
  */
-class BasecrmContactUpdateMapper extends BasecrmContactMapperAbstract
+class BasecrmUpdatedContactMapper extends BasecrmContactMapperAbstract
 {
 
     /**
@@ -36,7 +36,7 @@ class BasecrmContactUpdateMapper extends BasecrmContactMapperAbstract
                 || is_null($item['data']['id'])
             ) {
                 throw new CleverConnectorsException(
-                    'Missing required email or id field in item data, BaseCRM - updateMapper.',
+                    'Missing required email or id field in item data, BaseCRM - updatedMapper.',
                     CleverConnectorsException::MISSING_DATA
                 );
             }

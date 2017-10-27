@@ -2,17 +2,16 @@
 
 namespace Tests\Unit\AppBundle\Model\Systems\Impl\Basecrm\Mapper;
 
-use CleverConnectors\AppBundle\Enum\CleverFieldsEnum;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Nette\Utils\Json;
 use Tests\ConnectorTestCaseAbstract;
 
 /**
- * Class BasecrmDeleteContactMapperTest
+ * Class BasecrmUpdatedContactMapperTest
  *
  * @package Tests\Unit\AppBundle\Model\Systems\Impl\Basecrm\Mapper
  */
-final class BasecrmDeleteContactMapperTest extends ConnectorTestCaseAbstract
+final class BasecrmUpdatedContactMapperTest extends ConnectorTestCaseAbstract
 {
 
     /**
@@ -20,18 +19,19 @@ final class BasecrmDeleteContactMapperTest extends ConnectorTestCaseAbstract
      */
     public function testMapper(): void
     {
-        $node = $this->container->get('hbpf.custom_node.basecrm-delete-contact-mapper');
+        $node = $this->container->get('hbpf.custom_node.basecrm-updated-contact-mapper');
 
         $response = Json::decode($node->process(
             (new ProcessDto())->setData(
-                $this->getRequest('contactItemDeleted.json')
+                $this->getRequest('contactItem.json')
             ))->getData(), TRUE
         );
 
         $expt = [
-            CleverFieldsEnum::EMAIL       => '',
-            CleverFieldsEnum::FOREIGN_ID  => '187643117',
-            CleverFieldsEnum::REACTIVATE  => FALSE,
+            'email'       => 'asd@asd.com',
+            'first_name'  => 'Base',
+            '_foreign_id' => '187596661',
+            'reactivate'  => TRUE,
         ];
 
         self::assertEquals($expt, $response);

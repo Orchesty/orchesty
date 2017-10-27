@@ -26,13 +26,13 @@ final class BasecrmContactConnectorTest extends DatabaseTestCaseAbstract
     public function testProcessBatch(): void
     {
         $this->markTestSkipped();
-        $connector = $this->container->get('hbpf.connector.basecrm-contact-connector');
+        $connector = $this->container->get('hbpf.connector.basecrm-updated-contact-connector');
 
         $topology = (new Topology())->setName('Topology');
         $this->persistAndFlush($topology);
 
         $settings = [
-            'access_token' => 'db49584757d5774f50107637b7ee7f97b7a596387e47ca3d10b2bedbfb0016c9',
+            'access_token' => '9bf0585ac4ca5af87a0fd51122449a5b78b2d3c7a55ae8068fbdba09b4b90909',
             'sync_uuid'    => 'gh54g5hfs',
             'que_id'       => 'fdg64',
         ];

@@ -7,11 +7,11 @@ use CleverConnectors\AppBundle\Model\CM\SubscriptionConnector\CustomerObject\CMS
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 
 /**
- * Class BasecrmContactDeleteMapper
+ * Class BasecrmDeletedContactMapper
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Basecrm\Mapper
  */
-class BasecrmContactDeleteMapper extends BasecrmContactMapperAbstract
+class BasecrmDeletedContactMapper extends BasecrmContactMapperAbstract
 {
 
     /**
@@ -35,7 +35,7 @@ class BasecrmContactDeleteMapper extends BasecrmContactMapperAbstract
                 || is_null($item['data']['id'])
             ) {
                 throw new CleverConnectorsException(
-                    'Missing required id field in item data, BaseCRM - deleteMapper.',
+                    'Missing required id field in item data, BaseCRM - deletedMapper.',
                     CleverConnectorsException::MISSING_DATA
                 );
             }

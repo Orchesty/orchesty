@@ -2,23 +2,24 @@
 
 namespace Tests\Unit\AppBundle\Model\Systems\Impl\Basecrm\Connector;
 
-use CleverConnectors\AppBundle\Model\Systems\Impl\Basecrm\Connector\BasecrmContactConnector;
+use CleverConnectors\AppBundle\Model\Systems\Impl\Basecrm\Connector\BasecrmUpdatedContactConnector;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Crypt\CryptManager;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSenderFactory;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
+use PHPUnit_Framework_MockObject_MockObject;
 use React\EventLoop\Factory;
 use Tests\ConnectorTestCaseAbstract;
 use function React\Promise\resolve;
 
 /**
- * Class BasecrmContactConnectorTest
+ * Class BasecrmUpdatedContactConnectorTest
  *
  * @package Tests\Unit\AppBundle\Model\Systems\Impl\Basecrm\Connector
  */
-final class BasecrmContactConnectorTest extends ConnectorTestCaseAbstract
+final class BasecrmUpdatedContactConnectorTest extends ConnectorTestCaseAbstract
 {
 
     /**
@@ -68,11 +69,11 @@ final class BasecrmContactConnectorTest extends ConnectorTestCaseAbstract
     }
 
     /**
-     * @return BasecrmContactConnector|\PHPUnit_Framework_MockObject_MockObject
+     * @return BasecrmUpdatedContactConnector|PHPUnit_Framework_MockObject_MockObject
      */
-    private function mockResponses(): BasecrmContactConnector
+    private function mockResponses(): BasecrmUpdatedContactConnector
     {
-        $conn = $this->getMockBuilder(BasecrmContactConnector::class)->setConstructorArgs([
+        $conn = $this->getMockBuilder(BasecrmUpdatedContactConnector::class)->setConstructorArgs([
             $this->container->get('systems.basecrm'),
             $this->createMock(CurlSenderFactory::class),
         ])->setMethods(['fetchData'])->getMock();

@@ -2,17 +2,19 @@
 
 namespace Tests\Unit\AppBundle\Model\Systems\Impl\Basecrm\Mapper;
 
+use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Enum\CleverCustomKeysEnum;
 use CleverConnectors\AppBundle\Enum\CleverFieldsEnum;
+use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
-use Nette\Utils\Json;
-use Tests\ConnectorTestCaseAbstract;
+use Tests\KernelTestCaseAbstract;
 
 /**
  * Class BasecrmUpdateContactMapperTest
  *
  * @package Tests\Unit\AppBundle\Model\Systems\Impl\Basecrm\Mapper
  */
-final class BasecrmUpdateContactMapperTest extends ConnectorTestCaseAbstract
+class BasecrmUpdateContactMapperTest extends KernelTestCaseAbstract
 {
 
     /**
@@ -20,22 +22,23 @@ final class BasecrmUpdateContactMapperTest extends ConnectorTestCaseAbstract
      */
     public function testMapper(): void
     {
-        $node = $this->container->get('hbpf.custom_node.basecrm-update-contact-mapper');
-
-        $response = Json::decode($node->process(
-            (new ProcessDto())->setData(
-                $this->getRequest('contactItem.json')
-            ))->getData(), TRUE
-        );
-
-        $expt = [
-            CleverFieldsEnum::EMAIL       => 'asd@asd.com',
-            CleverFieldsEnum::FIRST_NAME  => 'Base',
-            CleverFieldsEnum::FOREIGN_ID  => '187596661',
-            CleverFieldsEnum::REACTIVATE  => TRUE,
+        $data = [
+            CleverFieldsEnum::FOREIGN_ID => 'ids',
         ];
 
-        self::assertEquals($expt, $response);
+        $dto = new ProcessDto();
+        $dto->setHeaders([
+            CMHeaders::createKey(CMHeaders::CM_EVENT_TYPE) => SystemInstall::EVENT_HARD_BOUNCE,
+        ])->setData(json_encode($data));
+
+        $res = $this->container->get('hbpf.custom_node.basecrm-update-contact-mapper')->process($dto);
+        self::assertEquals(json_encode([
+            'data' => [
+                'custom_fields' => [
+                    CleverCustomKeysEnum::HARD_BOUNCE => FALSE,
+                ],
+            ],
+        ]), json_decode($res->getData())->body);
     }
 
 }

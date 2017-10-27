@@ -11,6 +11,7 @@ use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
+use PHPUnit_Framework_MockObject_MockObject;
 use Tests\ConnectorTestCaseAbstract;
 
 /**
@@ -52,10 +53,11 @@ final class BasecrmQueueContactConnectorTest extends ConnectorTestCaseAbstract
     }
 
     /**
-     * @return BasecrmQueueContactConnector|\PHPUnit_Framework_MockObject_MockObject
+     * @return BasecrmQueueContactConnector|PHPUnit_Framework_MockObject_MockObject
      */
     private function mockResponses(): BasecrmQueueContactConnector
     {
+        /** @var CurlManagerInterface|PHPUnit_Framework_MockObject_MockObject $curl */
         $curl = $this->getMockBuilder(CurlManagerInterface::class)->disableOriginalConstructor()
             ->setMethods(['send'])->getMock();
 
@@ -88,7 +90,7 @@ final class BasecrmQueueContactConnectorTest extends ConnectorTestCaseAbstract
     }
 
     /**
-     * @return DocumentManager|\PHPUnit_Framework_MockObject_MockObject
+     * @return DocumentManager|PHPUnit_Framework_MockObject_MockObject
      */
     private function mockDM(): DocumentManager
     {

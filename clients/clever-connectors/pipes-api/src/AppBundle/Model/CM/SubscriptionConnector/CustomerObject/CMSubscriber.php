@@ -45,6 +45,16 @@ final class CMSubscriber
     private $reactivate = TRUE;
 
     /**
+     * @var bool
+     */
+    private $unsubscribe = FALSE;
+
+    /**
+     * @var bool
+     */
+    private $hard_bounce = FALSE;
+
+    /**
      * @return string
      */
     public function getEmail(): string
@@ -165,6 +175,46 @@ final class CMSubscriber
         }
 
         return $res;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isUnsubscribe(): bool
+    {
+        return $this->unsubscribe;
+    }
+
+    /**
+     * @param bool $unsubscribe
+     *
+     * @return CMSubscriber
+     */
+    public function setUnsubscribe(bool $unsubscribe): CMSubscriber
+    {
+        $this->unsubscribe = $unsubscribe;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isHardBounce(): bool
+    {
+        return $this->hard_bounce;
+    }
+
+    /**
+     * @param bool $hard_bounce
+     *
+     * @return CMSubscriber
+     */
+    public function setHardBounce(bool $hard_bounce): CMSubscriber
+    {
+        $this->hard_bounce = $hard_bounce;
+
+        return $this;
     }
 
 }
