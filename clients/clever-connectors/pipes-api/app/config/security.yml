@@ -18,7 +18,10 @@ security:
         unsecured_webhook:
             pattern: ^/(webhook/*)
             security: false
-        unsecured_clever_mnonitor:
+        unsecured_clever_events:
+            pattern: ^/(event/*)
+            security: false
+        unsecured_clever_monitor:
             pattern: ^/(user_systems/*|systems/*)
             security: false
         unsecured_starting_point:
