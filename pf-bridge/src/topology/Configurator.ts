@@ -118,9 +118,9 @@ class Configurator {
         drainSettings.settings.resequencer = isResequencer;
 
         // add label to all node parts
-        faucetSettings.settings.node_label = nodeSkeleton.label || defaults.label;
-        workerSettings.settings.node_label = nodeSkeleton.label || defaults.label;
-        drainSettings.settings.node_label = nodeSkeleton.label || defaults.label;
+        faucetSettings.settings.node_label = defaults.label;
+        workerSettings.settings.node_label = defaults.label;
+        drainSettings.settings.node_label = defaults.label;
 
         return {
             id: nodeSkeleton.id,
