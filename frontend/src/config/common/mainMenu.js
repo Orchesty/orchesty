@@ -1,12 +1,5 @@
 export default [
   {
-    "id": "dashboard",
-    "type": "item",
-    "icon": "fa fa-home",
-    "caption": "Dashboard",
-    "page": "dashboard"
-  },
-  {
     "id": "topology_list",
     "type": "item",
     "icon": "fa fa-connectdevelop",
