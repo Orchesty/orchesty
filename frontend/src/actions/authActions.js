@@ -1,4 +1,5 @@
 import * as types from 'rootApp/actionTypes';
+import config from 'rootApp/config';
 import * as applicationActions from './applicationActions';
 import * as notificationActions from './notificationActions';
 import * as processActions from './processActions';
@@ -25,7 +26,7 @@ export function login(data, processHash = 'default') {
     return serverRequest(dispatch, 'POST', '/user/login', null, data).then(response => {
       if (response){
         dispatch(userLogged(response));
-        dispatch(applicationActions.selectPage('dashboard'));
+        dispatch(applicationActions.selectPage(config.params.mainPage));
       }
       dispatch(processActions.finishProcess(processes.authLogin(processHash), response));
       return response;
