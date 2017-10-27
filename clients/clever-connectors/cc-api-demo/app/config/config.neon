@@ -1,6 +1,6 @@
 parameters:
 	ws:
-		host: http://localhost:8080/stream
+		host: /stream
 
 	rabbit-mq:
 		host: rabbitmq
