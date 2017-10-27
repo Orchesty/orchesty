@@ -21,6 +21,7 @@ use CcApi\Curl\Query;
 use Exception;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Uri;
+use InvalidArgumentException;
 use Nette\Utils\Json;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -298,10 +299,14 @@ class ConnectorManager implements ConnectorInterface
      */
     public function authorizeUserSystem(string $userId, string $systemKey, string $redirectUrl): void
     {
-        $url = $this->curlSender->getConfig()['base_uri'] ?? '';
+        $url = $this->curlSender->getConfig()['base_uri'] ?? NULL;
+
+        if (!$url) {
+            throw new InvalidArgumentException('Missing "base_uri" in the guzzle config.');
+        }
 
         header(sprintf(
-            'Location: %s/user_systems/user/%s/system/%s/authorize_redirect/%s',
+            'Location: %s/user_systems/user/%s/system/%s/authorize?redirect_url=%s',
             rtrim((string) $url, '/'),
             $userId,
             $systemKey,

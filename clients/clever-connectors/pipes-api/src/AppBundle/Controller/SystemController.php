@@ -11,6 +11,7 @@ use FOS\RestBundle\Controller\FOSRestController;
 use Hanaboso\PipesFramework\Commons\Exception\PipesFrameworkException;
 use Hanaboso\PipesFramework\Commons\Utils\Base64;
 use Hanaboso\PipesFramework\Utils\ControllerUtils;
+use InvalidArgumentException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -232,18 +233,24 @@ class SystemController extends FOSRestController
     }
 
     /**
-     * @Route("/user_systems/user/{userId}/system/{systemKey}/authorize_redirect/{redirectUrl}")
+     * @Route("/user_systems/user/{userId}/system/{systemKey}/authorize")
      * @Method({"GET", "OPTIONS"})
      *
-     * @param string $userId
-     * @param string $systemKey
-     * @param string $redirectUrl
+     * @param Request $request
+     * @param string  $userId
+     * @param string  $systemKey
      *
-     * @return Response|null
+     * @return null|Response
      */
-    public function authorizeSystemAction(string $userId, string $systemKey, string $redirectUrl): ?Response
+    public function authorizeSystemAction(Request $request, string $userId, string $systemKey): ?Response
     {
         try {
+
+            $redirectUrl = $request->query->get('redirect_url', NULL);
+            if (!$redirectUrl) {
+                throw new InvalidArgumentException('Missing "redirect_url" query parameter.');
+            }
+
             $this->handler->authorize($userId, $systemKey, $redirectUrl);
 
             return new RedirectResponse($redirectUrl);
