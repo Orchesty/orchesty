@@ -13,12 +13,14 @@ use App\Forms\AuthorizationSettingGeneratorFactory;
 use App\Forms\AuthorizeFormFactory;
 use App\Forms\LoginFormFactory;
 use App\Forms\LogoutFormFactory;
+use App\Forms\SwitchTokenFormFactory;
 use App\Forms\SyncFormFactory;
 use App\Forms\SystemActionFormFactory;
 use CcApi\ApiEntity\UserSystem;
 use CcApi\Connector\ConnectorManager;
 use Nette\Forms\Controls\SubmitButton;
 use Nette\Forms\Form;
+use Nette\Security\Identity;
 
 /**
  * Class SystemPresenter
@@ -67,10 +69,16 @@ class SystemPresenter extends BasePresenter
      * @var AuthorizeFormFactory
      */
     private $authorizeFormFactory;
+
     /**
      * @var SyncFormFactory
      */
     private $syncFormFactory;
+
+    /**
+     * @var SwitchTokenFormFactory
+     */
+    private $switchTokenFormFactory;
 
     /**
      * HomepagePresenter constructor.
@@ -83,12 +91,14 @@ class SystemPresenter extends BasePresenter
      * @param AuthorizationSettingGeneratorFactory $authorizationSettingGeneratorFactory
      * @param AuthorizeFormFactory                 $authorizeFormFactory
      * @param SyncFormFactory                      $syncFormFactory
+     * @param SwitchTokenFormFactory               $switchTokenFormFactory
      */
     public function __construct(ConnectorManager $connectorManager, LoginFormFactory $loginFormFactory,
                                 LogoutFormFactory $logoutFormFactory, SystemActionFormFactory $systemActionFormFactory,
                                 AuthorizationSettingFormFactory $authorizationSettingFormFactory,
                                 AuthorizationSettingGeneratorFactory $authorizationSettingGeneratorFactory,
-                                AuthorizeFormFactory $authorizeFormFactory, SyncFormFactory $syncFormFactory)
+                                AuthorizeFormFactory $authorizeFormFactory, SyncFormFactory $syncFormFactory,
+                                SwitchTokenFormFactory $switchTokenFormFactory)
     {
         parent::__construct();
         $this->connectorManager                = $connectorManager;
@@ -99,6 +109,7 @@ class SystemPresenter extends BasePresenter
         $this->authorizeGeneratorFactory       = $authorizationSettingGeneratorFactory;
         $this->authorizeFormFactory            = $authorizeFormFactory;
         $this->syncFormFactory                 = $syncFormFactory;
+        $this->switchTokenFormFactory          = $switchTokenFormFactory;
     }
 
     /**
@@ -118,7 +129,7 @@ class SystemPresenter extends BasePresenter
     public function processLogin(Form $form)
     {
         $data = $form->getValues();
-        $this->user->login($data['user_id'], $data['token']);
+        $this->user->login($data['user_id'], '');
 
         $form->reset();
         $this->redirect('System:');
@@ -170,7 +181,7 @@ class SystemPresenter extends BasePresenter
     {
         $data = $button->getForm()->getValues();
 
-        $this->connectorManager->installUserSystem($this->userId, $data['systems'], $this->token);
+        $this->connectorManager->installUserSystem($this->userId, $data['systems'], $data['token']);
 
         $this->redirect('System:');
     }
@@ -302,12 +313,42 @@ class SystemPresenter extends BasePresenter
     }
 
     /**
+     * @return \Nette\Application\UI\Form
+     */
+    public function createComponentSwitchTokenForm()
+    {
+        $systems = $this->connectorManager->getAllUserSystems($this->userId);
+
+        $items = [];
+        foreach ($systems as $system) {
+            $items[$system->getKey()] = $system->getName();
+        }
+
+        $form = $this->switchTokenFormFactory->create($items);
+
+        $form->onSuccess[] = [$this, 'processSwitchToken'];
+
+        return $form;
+    }
+
+    /**
+     * @param Form $form
+     */
+    public function processSwitchToken(Form $form)
+    {
+        $data = $form->getValues();
+
+        $this->connectorManager->switchUserSystemToken($this->userId, $data['systems'], $data['token']);
+
+        $this->redirect('System:');
+    }
+
+    /**
      *
      */
     public function actionDefault()
     {
         $this->template->userId         = $this->userId ?? '';
-        $this->template->token          = $this->token ?? '';
         $this->template->userSystemData = FALSE;
 
         if ($this->user->isLoggedIn()) {

@@ -11,16 +11,13 @@
 
         {import '../components/form.latte'}
         {if $user->isLoggedIn()}
-            <div class="col-md-5 text-center" style="line-height: 3rem">
+            <div class="col-md-10 text-center" style="line-height: 3rem">
                 <strong>UserId:</strong> {$userId}
-            </div>
-            <div class="col-md-5 text-center" style="line-height: 3rem">
-                <strong>Token:</strong> {$token}
             </div>
             <div class="col-md-2" style="line-height: 3rem">
                 {form logoutForm}
                     <div class="form-group"
-                         style="margin-bottom: 0">{input logout class=>"form-control btn btn-primary btn-sm"}</div>
+                         style="margin-bottom: 0">{input logout class=>"form-control btn btn-danger btn-sm"}</div>
                 {/form}
             </div>
 
@@ -33,6 +30,7 @@
                     <thead class="thead-inverse">
                     <tr>
                         <th>Name</th>
+                        <th>Token</th>
                         <th class="text-center" colspan="2">Authorization</th>
                         <th class="text-center">Authorized status</th>
                         <th class="text-center">Synchronize</th>
@@ -43,6 +41,7 @@
                     {foreach $installedSystems as $system}
                         <tr>
                             <td>{$system->getName()}</td>
+                            <td>{$system->getToken()}</td>
                             <td class="text-center">
                                 {form authorizationSettingForm}
                                     <div class="form-group"
@@ -76,6 +75,12 @@
                                 <div class="form-group" style="margin-bottom: 0">
                                     {input systems class => "form-control"}
                                 </div>
+                            </td>
+                            <td colspan="2">
+                                <div class="form-group" style="margin-bottom: 0">
+                                    {input token class => "form-control"}
+                                </div>
+                            </td>
                             <td>
                                 <div class="form-group"
                                      style="margin-bottom: 0">{input install class=>"form-control btn btn-primary"}</div>
@@ -103,6 +108,19 @@
                     {/if}
 
                 {/snippet}
+            </div>
+
+            <div class="clearfix"></div>
+
+            <hr>
+
+            <div class="col-md-12">
+
+                <h2>Switch token</h2>
+
+                {import '../components/form.latte'}
+                {include bootstrap-form switchTokenForm}
+
             </div>
 
         {else}

@@ -30,9 +30,9 @@ class NullAuthenticator implements IAuthenticator
      */
     function authenticate(array $credentials)
     {
-        [$userId, $token] = $credentials;
+        [$userId] = $credentials;
 
-        return new Identity($userId, NULL, ['token' => $token]);
+        return new Identity($userId, NULL);
     }
 
 }

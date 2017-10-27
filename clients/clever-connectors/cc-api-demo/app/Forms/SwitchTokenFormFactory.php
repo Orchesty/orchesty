@@ -2,25 +2,24 @@
 /**
  * Created by PhpStorm.
  * User: venca
- * Date: 25.10.17
- * Time: 12:10
+ * Date: 27.10.17
+ * Time: 13:20
  */
 
 namespace App\Forms;
 
-use CcApi\ApiEntity\System;
 use Nette\Application\UI\Form;
 
 /**
- * Class SystemActionFormFactory
+ * Class SwitchTokenFormFactory
  *
  * @package App\Forms
  */
-class SystemActionFormFactory
+class SwitchTokenFormFactory
 {
 
     /**
-     * @param array|System[] $systems
+     * @param array $systems
      *
      * @return Form
      */
@@ -33,16 +32,14 @@ class SystemActionFormFactory
             ->setPrompt('Choose system')
             ->setRequired('Choose any system.');
 
-        $form->addText('token', 'Token')
-            ->setRequired('Required field.')
-            ->setHtmlAttribute('placeholder', 'Clever Monitor token');
+        $form
+            ->addText('token', 'Token')
+            ->setHtmlAttribute('placeholder', 'Clever Monitor new token');
 
         $form
-            ->addSubmit('install', 'Install');
-
-        $form
-            ->addSubmit('uninstall', 'Uninstall');
+            ->addSubmit('switch_token', 'Switch token');
 
         return $form;
     }
+
 }

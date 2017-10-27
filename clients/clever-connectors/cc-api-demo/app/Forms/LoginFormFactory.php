@@ -25,10 +25,6 @@ class LoginFormFactory
             ->setHtmlAttribute('placeholder', 'Clever Monitor user ID');
 
         $form
-            ->addText('token', 'Token')
-            ->setHtmlAttribute('placeholder', 'Clever Monitor token');
-
-        $form
             ->addSubmit('login', 'Login');
 
         return $form;

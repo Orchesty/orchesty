@@ -58,5 +58,8 @@ services:
 	sync_form:
 		class: App\Forms\SyncFormFactory
 
+	switch_token:
+		class: App\Forms\SwitchTokenFormFactory
+
 extensions:
 	cc_api: CcApi\Bridges\DI\CcApiExtension
