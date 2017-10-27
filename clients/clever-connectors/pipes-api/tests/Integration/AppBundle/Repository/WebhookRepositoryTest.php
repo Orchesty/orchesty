@@ -9,6 +9,7 @@
 
 namespace Tests\Integration\AppBundle\Repository;
 
+use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Document\Webhook;
 use CleverConnectors\AppBundle\Repository\WebhookRepository;
 use Tests\DatabaseTestCaseAbstract;
@@ -95,6 +96,74 @@ final class WebhookRepositoryTest extends DatabaseTestCaseAbstract
         self::assertEquals(2, count($res));
         self::assertEquals('user1', $res[0]['user']);
         self::assertEquals('user2', $res[1]['user']);
+    }
+
+    /**
+     *
+     */
+    public function testGetWebhooksForUnsubscribe(): void
+    {
+        $system = new SystemInstall();
+        $system->setUser('2')->setSystem('sys');
+        /** @var WebhookRepository $repo */
+        $repo = $this->dm->getRepository(Webhook::class);
+
+        $wh = new Webhook();
+        $wh
+            ->setUser('2')
+            ->setSystemKey('sys')
+            ->setTopologyName('top')
+            ->setNodeName('nod')
+            ->setUnsubscribeFailed(TRUE)
+            ->setWebhookId('11');
+        $this->persistAndFlush($wh);
+        $this->dm->clear();
+
+        $res = $repo->getWebhooksForUnsubscribe($system);
+        self::assertEmpty($res);
+
+        $wh = new Webhook();
+        $wh
+            ->setUser('2')
+            ->setSystemKey('sys')
+            ->setTopologyName('top')
+            ->setNodeName('nod')
+            ->setUnsubscribeFailed(TRUE)
+            ->setWebhookId(NULL);
+        $this->persistAndFlush($wh);
+        $this->dm->clear();
+
+        $res = $repo->getWebhooksForUnsubscribe($system);
+        self::assertEmpty($res);
+
+        $wh = new Webhook();
+        $wh
+            ->setUser('2')
+            ->setSystemKey('sys')
+            ->setTopologyName('top')
+            ->setNodeName('nod')
+            ->setUnsubscribeFailed(FALSE)
+            ->setWebhookId(NULL);
+        $this->persistAndFlush($wh);
+        $this->dm->clear();
+
+        $res = $repo->getWebhooksForUnsubscribe($system);
+        self::assertEmpty($res);
+
+        $wh = new Webhook();
+        $wh
+            ->setUser('2')
+            ->setSystemKey('sys')
+            ->setTopologyName('top')
+            ->setNodeName('nod')
+            ->setUnsubscribeFailed(FALSE)
+            ->setWebhookId('11');
+        $this->persistAndFlush($wh);
+        $this->dm->clear();
+
+        $res = $repo->getWebhooksForUnsubscribe($system);
+        self::assertNotEmpty($res);
+        self::assertCount(1, $res);
     }
 
 }

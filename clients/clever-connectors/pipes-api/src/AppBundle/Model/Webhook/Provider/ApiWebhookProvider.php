@@ -152,13 +152,7 @@ class ApiWebhookProvider implements WebhookProviderInterface, LoggerAwareInterfa
     {
         $systemInstall = $this->getSystemInstall($system->getKey(), $userId);
 
-        /** @var Webhook[] $webhooks */
-        $webhooks = $this->webhookRepository->findBy([
-            'user'      => $userId,
-            'systemKey' => $system->getKey(),
-        ]);
-
-        foreach ($webhooks as $webhook) {
+        foreach ($this->webhookRepository->getWebhooksForUnsubscribe($systemInstall) as $webhook) {
             $req = $system->getUnsubscribeRequest($systemInstall, $webhook->getWebhookId() ?? '');
             try {
                 $res = $this->curl->send($req);

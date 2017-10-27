@@ -2,6 +2,8 @@
 
 namespace CleverConnectors\AppBundle\Repository;
 
+use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Document\Webhook;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 
 /**
@@ -50,6 +52,21 @@ class WebhookRepository extends DocumentRepository
             ->field('topologyName')->equals($topologyName)
             ->group(['user' => 1, 'systemKey' => 2], [])
             ->reduce('function (obj, prev) {}')
+            ->getQuery()->execute()->toArray(FALSE);
+    }
+
+    /**
+     * @param SystemInstall $systemInstall
+     *
+     * @return array|Webhook[]
+     */
+    public function getWebhooksForUnsubscribe(SystemInstall $systemInstall): array
+    {
+        return $this->createQueryBuilder()
+            ->field('user')->equals($systemInstall->getUser())
+            ->field('systemKey')->equals($systemInstall->getSystem())
+            ->field('webhookId')->notEqual(NULL)
+            ->field('unsubscribeFailed')->equals(FALSE)
             ->getQuery()->execute()->toArray(FALSE);
     }
 
