@@ -10,6 +10,7 @@ namespace App\Presenters;
 
 use App\Forms\AuthorizationSettingFormFactory;
 use App\Forms\AuthorizationSettingGeneratorFactory;
+use App\Forms\AuthorizeFormFactory;
 use App\Forms\LoginFormFactory;
 use App\Forms\LogoutFormFactory;
 use App\Forms\SystemActionFormFactory;
@@ -62,6 +63,11 @@ class SystemPresenter extends BasePresenter
     private $userSystem;
 
     /**
+     * @var AuthorizeFormFactory
+     */
+    private $authorizeFormFactory;
+
+    /**
      * HomepagePresenter constructor.
      *
      * @param ConnectorManager                     $connectorManager
@@ -70,11 +76,13 @@ class SystemPresenter extends BasePresenter
      * @param SystemActionFormFactory              $systemActionFormFactory
      * @param AuthorizationSettingFormFactory      $authorizationSettingFormFactory
      * @param AuthorizationSettingGeneratorFactory $authorizationSettingGeneratorFactory
+     * @param AuthorizeFormFactory                 $authorizeFormFactory
      */
     public function __construct(ConnectorManager $connectorManager, LoginFormFactory $loginFormFactory,
                                 LogoutFormFactory $logoutFormFactory, SystemActionFormFactory $systemActionFormFactory,
                                 AuthorizationSettingFormFactory $authorizationSettingFormFactory,
-                                AuthorizationSettingGeneratorFactory $authorizationSettingGeneratorFactory)
+                                AuthorizationSettingGeneratorFactory $authorizationSettingGeneratorFactory,
+                                AuthorizeFormFactory $authorizeFormFactory)
     {
         parent::__construct();
         $this->connectorManager                = $connectorManager;
@@ -83,6 +91,7 @@ class SystemPresenter extends BasePresenter
         $this->systemActionFormFactory         = $systemActionFormFactory;
         $this->authorizationSettingFormFactory = $authorizationSettingFormFactory;
         $this->authorizeGeneratorFactory       = $authorizationSettingGeneratorFactory;
+        $this->authorizeFormFactory            = $authorizeFormFactory;
     }
 
     /**
@@ -233,6 +242,32 @@ class SystemPresenter extends BasePresenter
         $this->connectorManager->saveUserSystemSetting($this->userId, $data['system_key'], $data);
 
         $this->redirect('System:');
+    }
+
+    /**
+     * @return SystemPresenter|\Nette\Application\UI\Form
+     */
+    public function createComponentAuthorizeForm()
+    {
+        $form = $this->authorizeFormFactory->create();
+
+        $form->onSuccess[] = [$this, 'processAuthorize'];
+
+        return $form;
+    }
+
+    /**
+     * @param Form $form
+     */
+    public function processAuthorize(Form $form)
+    {
+        $data = $form->getHttpData();
+
+        $this->connectorManager->authorizeUserSystem(
+            $this->userId,
+            $data['system_key'],
+            $this->getHttpRequest()->getUrl()->getAbsoluteUrl()
+        );
     }
 
     /**

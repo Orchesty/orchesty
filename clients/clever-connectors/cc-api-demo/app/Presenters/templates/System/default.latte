@@ -33,7 +33,7 @@
                     <thead class="thead-inverse">
                     <tr>
                         <th>Name</th>
-                        <th class="text-center">Authorize</th>
+                        <th class="text-center" colspan="2">Authorization</th>
                         <th class="text-center">Authorized status</th>
                         <th class="text-center">Synchronized</th>
                     </tr>
@@ -49,6 +49,13 @@
                                     <input type="hidden" name="system_key" value="{$system->getKey()}">
                                 {/form}
                             </td>
+                            <td class="text-center">
+                                {form authorizeForm}
+                                    <div class="form-group"
+                                         style="margin-bottom: 0">{input authorize class=>"form-control btn btn-primary btn-sm"}</div>
+                                    <input type="hidden" name="system_key" value="{$system->getKey()}">
+                                {/form}
+                            </td>
                             <td class="text-center">{$system->isAuthorized() ? 'true' : 'false'}</td>
                             <td class="text-center">{$system->isSynchronized() ? 'true' : 'false'}</td>
                         </tr>
@@ -57,7 +64,7 @@
                     <tfoot class="table-dark">
                     {form systemActionForm}
                         <tr>
-                            <td colspan="2">
+                            <td colspan="3">
                                 <div class="form-group" style="margin-bottom: 0">
                                     {input systems class => "form-control"}
                                 </div>

@@ -24,6 +24,7 @@ use GuzzleHttp\Psr7\Uri;
 use Nette\Utils\Json;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\UriInterface;
 
 /**
  * Class ConnectorManager
@@ -298,9 +299,11 @@ class ConnectorManager implements ConnectorInterface
      */
     public function authorizeUserSystem(string $userId, string $systemKey, string $redirectUrl): void
     {
+        $url = $this->curlSender->getConfig()['base_uri'] ?? '';
+
         header(sprintf(
             'Location: %s/user_systems/user/%s/system/%s/authorize_redirect/%s',
-            $this->curlSender->getConfig('base_uri'),
+            rtrim((string) $url, '/'),
             $userId,
             $systemKey,
             urlencode($redirectUrl)

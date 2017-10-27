@@ -102,13 +102,11 @@ class CurlSender
     }
 
     /**
-     * @param string $key
-     *
-     * @return null|string
+     * @return array
      */
-    public function getConfig(string $key): ?string
+    public function getConfig(): array
     {
-        return $this->clientFactory->create()->getConfig($key);
+        return $this->clientFactory->create()->getConfig();
     }
 
     /**

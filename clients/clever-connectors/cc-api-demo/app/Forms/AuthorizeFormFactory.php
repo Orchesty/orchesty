@@ -2,8 +2,8 @@
 /**
  * Created by PhpStorm.
  * User: venca
- * Date: 25.10.17
- * Time: 14:33
+ * Date: 27.10.17
+ * Time: 8:20
  */
 
 namespace App\Forms;
@@ -11,23 +11,21 @@ namespace App\Forms;
 use Nette\Application\UI\Form;
 
 /**
- * Class AuthorizedFormFactory
+ * Class AuthorizeFormFactory
  *
  * @package App\Forms
  */
-class AuthorizationSettingFormFactory
+class AuthorizeFormFactory
 {
-
     /**
      * @return Form
      */
     public function create(): Form
     {
         $form = new Form();
-        $form->getElementPrototype()->appendAttribute('class', 'ajax');
 
         $form
-            ->addSubmit('authorize_setting', 'Setting');
+            ->addSubmit('authorize', 'Authorize');
 
         return $form;
     }
