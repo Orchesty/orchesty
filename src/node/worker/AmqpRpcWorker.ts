@@ -32,7 +32,7 @@ interface IWaiting {
 class AmqpRpcWorker implements IWorker {
 
     public static readonly TEST_TYPE = "test";
-    public static readonly TEST_ID = "worker.amqprpc.test";
+    public static readonly TEST_ID = "pipes.worker.amqprpc.test";
 
     public static readonly BATCH_REQUEST_TYPE = "batch";
     public static readonly BATCH_END_TYPE = "batch_end";
@@ -57,7 +57,7 @@ class AmqpRpcWorker implements IWorker {
     ) {
         this.waiting = new Container();
         this.resultsQueue = {
-            name: `${settings.node_label.topology_id}.${settings.node_label.id}_reply`,
+            name: `pipes.${settings.node_label.topology_id}.${settings.node_label.id}_reply`,
             options: settings.publish_queue.options || { durable: false, exclusive: false, autoDelete: false },
             prefetch: 1,
         };
