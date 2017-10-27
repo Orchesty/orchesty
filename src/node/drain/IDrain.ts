@@ -6,8 +6,6 @@ interface IDrain {
 
     forward: DrainForwardFn;
 
-    getMessageBuffer(message: JobMessage): JobMessage[];
-
 }
 
 export default IDrain;

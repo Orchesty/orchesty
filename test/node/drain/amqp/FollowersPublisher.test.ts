@@ -38,7 +38,6 @@ const settings: IAmqpDrainSettings = {
             options: {},
         },
     },
-    resequencer: false,
     // All followers targets the same exchange and queue with the same RK
     followers: [
         {

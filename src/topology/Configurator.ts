@@ -33,7 +33,6 @@ export interface INodeConfigSkeleton {
     worker?: IWorkerConfig;
     faucet?: IFaucetConfig;
     drain?: IDrainConfig;
-    resequencer?: boolean;
     debug?: {
         port: number,
         host: string,
@@ -48,7 +47,6 @@ export interface INodeConfig {
     worker: IWorkerConfig;
     faucet: IFaucetConfig;
     drain: IDrainConfig;
-    resequencer: boolean;
     debug: {
         port: number,
         host: string,
@@ -110,12 +108,10 @@ class Configurator {
         isInitial: boolean = false,
     ): INodeConfig {
         const defaults: INodeConfig = Defaults.getNodeConfigDefaults(topoId, nodeSkeleton);
-        const isResequencer = nodeSkeleton.resequencer || defaults.resequencer;
 
         const faucetSettings = nodeSkeleton.faucet || defaults.faucet;
         const workerSettings = nodeSkeleton.worker || defaults.worker;
         const drainSettings = nodeSkeleton.drain || defaults.drain;
-        drainSettings.settings.resequencer = isResequencer;
 
         // add label to all node parts
         faucetSettings.settings.node_label = defaults.label;
@@ -129,7 +125,6 @@ class Configurator {
             worker: workerSettings,
             faucet: faucetSettings,
             drain: drainSettings,
-            resequencer: isResequencer,
             debug: nodeSkeleton.debug || defaults.debug,
             initial: isInitial,
         };

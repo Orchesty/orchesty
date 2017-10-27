@@ -16,7 +16,6 @@ const testTopology: ITopologyConfigSkeleton = {
     nodes: [
         {
             id: "node-a",
-            resequencer: true,
             debug: {
                 port: 4111,
                 host: "localhost",
@@ -26,7 +25,6 @@ const testTopology: ITopologyConfigSkeleton = {
         },
         {
             id: "node-b",
-            resequencer: true,
             worker: {
                 type: "splitter.json",
                 settings: {
@@ -42,7 +40,6 @@ const testTopology: ITopologyConfigSkeleton = {
         },
         {
             id: "node-c",
-            resequencer: true,
             worker: {
                 type: "worker.uppercase",
                 settings: {},

@@ -38,7 +38,6 @@ const settings: IAmqpDrainSettings = {
             options: {},
         },
     },
-    resequencer: false,
     followers: [
         {
             node_id: "follower1",
