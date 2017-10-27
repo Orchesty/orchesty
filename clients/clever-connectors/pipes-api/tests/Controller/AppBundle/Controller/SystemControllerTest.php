@@ -551,7 +551,7 @@ final class SystemControllerTest extends ControllerTestCaseAbstract
             'key'         => 'null.user.group',
             'name'        => 'NULL',
             'description' => 'Only for testing purposes',
-            'authType'    => 'oauth2',
+            'auth_type'    => 'oauth2',
         ];
 
         if ($systemInstall) {

@@ -49,13 +49,16 @@ class SystemFactoryTest extends TestCase
                     'type'        => 'type',
                     'name'        => 'name',
                     'description' => 'desc',
+                    'auth_type'   => 'oauth2',
                     'unknown'     => 'unknown',
                 ],
                 (new System())
                     ->setKey('key')
                     ->setType('type')
                     ->setName('name')
-                    ->setDescription('desc'),
+                    ->setDescription('desc')
+                    ->setAuthType('oauth2')
+                ,
             ],
         ];
     }

@@ -37,6 +37,11 @@ class System
     protected $type;
 
     /**
+     * @var string
+     */
+    protected $authType;
+
+    /**
      * @return string
      */
     public function getKey(): string
@@ -112,6 +117,26 @@ class System
     public function setType(string $type): self
     {
         $this->type = $type;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAuthType(): string
+    {
+        return $this->authType;
+    }
+
+    /**
+     * @param string $authType
+     *
+     * @return $this
+     */
+    public function setAuthType(string $authType): System
+    {
+        $this->authType = $authType;
 
         return $this;
     }

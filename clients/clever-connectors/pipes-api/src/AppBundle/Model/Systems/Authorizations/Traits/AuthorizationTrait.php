@@ -68,7 +68,7 @@ trait AuthorizationTrait
             'name'        => $this->getName(),
             'description' => $this->getDescription(),
             'type'        => $this->getType(),
-            'authType'    => $this->getAuthorizationType(),
+            'auth_type'    => $this->getAuthorizationType(),
         ];
 
         if ($systemInstall) {
