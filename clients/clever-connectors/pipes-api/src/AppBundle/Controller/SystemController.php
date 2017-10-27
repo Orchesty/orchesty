@@ -311,7 +311,11 @@ class SystemController extends FOSRestController
 
         $className = get_class($e);
         if ($className == SystemException::class) {
-            $sysNotFound = [SystemException::SYSTEM_NOT_FOUND, SystemException::SYSTEM_OR_USER_NOT_FOUND];
+            $sysNotFound = [
+                SystemException::SYSTEM_NOT_FOUND,
+                SystemException::SYSTEM_OR_USER_NOT_FOUND,
+                SystemException::SYSTEM_PROPERTY_NOT_FOUND,
+            ];
             if (in_array($e->getCode(), $sysNotFound)) {
                 $code = 404;
             }
