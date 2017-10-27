@@ -62,7 +62,7 @@ final class SystemControllerTest extends ControllerTestCaseAbstract
         $response = $this->sendGet('/systems', ['user' => 'unknown']);
         $res      = json_decode($response->content);
 
-        $this->assertEquals(500, $response->status);
+        $this->assertEquals(404, $response->status);
         $this->assertEquals(SystemException::class, $res->type);
         $this->assertEquals(2001, $res->error_code);
     }
@@ -92,7 +92,7 @@ final class SystemControllerTest extends ControllerTestCaseAbstract
         $this->loginUser('user@example.com', 'pass');
         $response = $this->sendGet('/systems', ['group' => 'unknown']);
         $res      = json_decode($response->content);
-        $this->assertEquals(500, $response->status);
+        $this->assertEquals(404, $response->status);
         $this->assertEquals(SystemException::class, $res->type);
         $this->assertEquals(2001, $res->error_code);
     }
