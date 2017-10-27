@@ -5,7 +5,6 @@ import Headers from "../../message/Headers";
 import JobMessage from "../../message/JobMessage";
 import {ResultCode, ResultCodeGroup} from "../../message/ResultCode";
 import {INodeLabel} from "../../topology/Configurator";
-import ADrain from "./ADrain";
 import CounterPublisher from "./amqp/CounterPublisher";
 import FollowersPublisher from "./amqp/FollowersPublisher";
 import IDrain from "./IDrain";
@@ -46,13 +45,12 @@ export interface IAmqpDrainSettings {
         },
     };
     followers: IFollower[];
-    resequencer: boolean;
 }
 
 /**
  * Drain is responsible for passing messages to following node and for informing counter
  */
-class AmqpDrain extends ADrain implements IDrain, IPartialForwarder {
+class AmqpDrain implements IDrain, IPartialForwarder {
 
     /**
      *
@@ -69,7 +67,6 @@ class AmqpDrain extends ADrain implements IDrain, IPartialForwarder {
         private nonStandardPublisher: AssertionPublisher,
         private metrics: IMetrics,
     ) {
-        super(settings.node_label.id, settings.resequencer);
         this.settings = settings;
     }
 
@@ -88,16 +85,13 @@ class AmqpDrain extends ADrain implements IDrain, IPartialForwarder {
             return;
         }
 
-        this.getMessageBuffer(message).forEach((bufMsg: JobMessage) => {
+        if (message.getResult().code === ResultCode.SUCCESS) {
+            this.forwardSuccessMessage(message);
+            return;
+        }
 
-            if (bufMsg.getResult().code === ResultCode.SUCCESS) {
-                this.forwardSuccessMessage(bufMsg);
-                return;
-            }
-
-            // On any error
-            this.forwardToCounterOnly(bufMsg);
-        });
+        // On any error
+        this.forwardToCounterOnly(message);
     }
 
     /**

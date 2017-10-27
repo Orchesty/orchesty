@@ -19,7 +19,6 @@ const testTopology: ITopologyConfigSkeleton = {
     nodes: [
         {
             id: "start-node",
-            resequencer: true,
             // This worker will send REPEAT result code first request
             worker: {
                 type: "worker.http",
@@ -42,7 +41,6 @@ const testTopology: ITopologyConfigSkeleton = {
         },
         {
             id: "end-node",
-            resequencer: true,
             worker: {
                 type: "worker.http",
                 settings: {
