@@ -7,6 +7,7 @@ use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\SystemTypeEnum;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\CMEvents\CMEventsManager;
+use CleverConnectors\AppBundle\Model\CMEvents\CMEventSystemInterface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\AuthorizationInterface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\OAuth1Interface;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
@@ -259,7 +260,7 @@ class SystemManager
 
         /** @var AuthorizationInterface $system */
         $system = $this->getSystem($systemKey);
-        $this->eventsManager->saveEventsForSystemInstall($systemInstall, $data);
+        $this->activateEvents($system, $systemInstall, $data);
         $system->setSettings($systemInstall, $data);
 
         $this->dm->flush();
@@ -420,6 +421,18 @@ class SystemManager
     /**
      * ------------------------------------- HELPERS ----------------------------------------
      */
+
+    /**
+     * @param SystemInterface $system
+     * @param SystemInstall   $systemInstall
+     * @param array           $data
+     */
+    protected function activateEvents(SystemInterface $system, SystemInstall $systemInstall, array &$data): void
+    {
+        if ($system instanceof CMEventSystemInterface) {
+            $this->eventsManager->saveEventsForSystemInstall($systemInstall, $data);
+        }
+    }
 
     /**
      * @param SystemInstall $systemInstall
