@@ -35,6 +35,7 @@ init-dev: .env
 	$(DE_DEVT) batch nohup php bin/console rabbit-mq:async-consumer batch &
 	$(DE_DEV) status-service composer install --ignore-platform-reqs
 	$(DE_DEVT) status-service nohup php bin/console rabbit-mq:consumer status-service &
+	$(DE_DEV) api-demo-fpm composer install
 	#$(DE_DEV) magento install-sampledata
 	#$(DE_DEV) magento install-magento
 
