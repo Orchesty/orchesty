@@ -16,14 +16,23 @@ services:
     hbpf.connector.quickbooks-create-customer-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\Connector\QuickbooksCreateCustomerConnector
         arguments:
+            - '@systems.quickbooks'
+            - '@cc.last_sync.manager'
+            - '@hbpf.transport.async_curl_factory'
 
     hbpf.connector.quickbooks-update-customer-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\Connector\QuickbooksUpdateCustomerConnector
         arguments:
+            - '@systems.quickbooks'
+            - '@cc.last_sync.manager'
+            - '@hbpf.transport.async_curl_factory'
 
     hbpf.connector.quickbooks-delete-customer-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\Connector\QuickbooksDeleteCustomerConnector
         arguments:
+            - '@systems.quickbooks'
+            - '@cc.last_sync.manager'
+            - '@hbpf.transport.async_curl_factory'
 
     hbpf.custom_node.quickbooks-customer-mapper:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\Mapper\QuickbooksCustomerMapper

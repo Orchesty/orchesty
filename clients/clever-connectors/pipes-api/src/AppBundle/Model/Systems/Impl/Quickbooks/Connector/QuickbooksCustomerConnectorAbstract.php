@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: michal.bartl
@@ -23,9 +23,14 @@ use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\BatchInterface;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
 use Psr\Http\Message\ResponseInterface;
 use React\EventLoop\LoopInterface;
-use function React\Promise\all;
 use React\Promise\PromiseInterface;
+use function React\Promise\all;
 
+/**
+ * Class QuickbooksCustomerConnectorAbstract
+ *
+ * @package CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\Connector
+ */
 abstract class QuickbooksCustomerConnectorAbstract implements BatchInterface, ConnectorInterface
 {
 
@@ -63,7 +68,7 @@ abstract class QuickbooksCustomerConnectorAbstract implements BatchInterface, Co
     /**
      * @param ProcessDto $dto
      *
-     * @return ProcessDto
+     * @return ProcessDto|void
      * @throws SystemException
      */
     public function processEvent(ProcessDto $dto): ProcessDto
@@ -74,7 +79,7 @@ abstract class QuickbooksCustomerConnectorAbstract implements BatchInterface, Co
     /**
      * @param ProcessDto $dto
      *
-     * @return ProcessDto
+     * @return ProcessDto|void
      * @throws SystemException
      */
     public function processAction(ProcessDto $dto): ProcessDto
@@ -118,9 +123,9 @@ abstract class QuickbooksCustomerConnectorAbstract implements BatchInterface, Co
         $systemInstall = $this->getSystemInstall($dto);
         $requestDto    = $this->system->getRequestDto($systemInstall, 'GET');
         $requestDto->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()));
-        $url     = new Uri($requestDto->getUri(TRUE) . 'query?query=' . urldecode($this->getTotalQuery($systemInstall,
+        $url     = new Uri($requestDto->getUri(TRUE) . 'query?query=' . urlencode($this->getTotalQuery($systemInstall,
                 $dto)));
-        $promise = $this->fetchData($sender, RequestDto::from($requestDto, $url), $systemInstall)->then(
+        $promise = $this->fetchData($sender, RequestDto::from($requestDto, $url))->then(
             function (ResponseInterface $response): int {
                 return $this->getTotalPages($response);
             }
@@ -134,6 +139,15 @@ abstract class QuickbooksCustomerConnectorAbstract implements BatchInterface, Co
     }
 
     /**
+     * @param SystemInstall $systemInstall
+     *
+     * @param ProcessDto    $dto
+     *
+     * @return void
+     */
+    abstract protected function afterFetch(SystemInstall $systemInstall, ProcessDto $dto): void;
+
+    /**
      * @param ProcessDto $dto
      *
      * @return SystemInstall
@@ -141,14 +155,12 @@ abstract class QuickbooksCustomerConnectorAbstract implements BatchInterface, Co
     abstract protected function getSystemInstall(ProcessDto $dto): SystemInstall;
 
     /**
-     * @param CurlSender    $sender
-     * @param RequestDto    $dto
-     *
-     * @param SystemInstall $systemInstall
+     * @param CurlSender $sender
+     * @param RequestDto $dto
      *
      * @return PromiseInterface
      */
-    protected function fetchData(CurlSender $sender, RequestDto $dto, SystemInstall $systemInstall): PromiseInterface
+    protected function fetchData(CurlSender $sender, RequestDto $dto): PromiseInterface
     {
         return $sender->send($dto);
 
@@ -186,16 +198,20 @@ abstract class QuickbooksCustomerConnectorAbstract implements BatchInterface, Co
      *
      * @return array
      */
-    private function doPageLoop(SystemInstall $systemInstall, ProcessDto $processDto, int $total, CurlSender $sender,
-                                callable $callbackItem, RequestDto $dto): array
+    private function doPageLoop(
+        SystemInstall $systemInstall,
+        ProcessDto $processDto,
+        int $total,
+        CurlSender $sender,
+        callable $callbackItem, RequestDto $dto): array
     {
         $requests = [];
         for ($i = 0; $i < $total; $i++) {
-            $url = new Uri($dto->getUri(TRUE) . 'query?query=' . urldecode($this->getDataQuery($systemInstall,
+            $url = new Uri($dto->getUri(TRUE) . 'query?query=' . urlencode($this->getDataQuery($systemInstall,
                     $processDto, $i * self::PAGE_LIMIT + 1, self::PAGE_LIMIT)));
 
             $requests[] = $this
-                ->fetchData($sender, RequestDto::from($dto, $url), $systemInstall)
+                ->fetchData($sender, RequestDto::from($dto, $url))
                 ->then(
                     function (ResponseInterface $response) use ($i): SuccessMessage {
                         return $this->createSuccessMessage($response, $i + 1);

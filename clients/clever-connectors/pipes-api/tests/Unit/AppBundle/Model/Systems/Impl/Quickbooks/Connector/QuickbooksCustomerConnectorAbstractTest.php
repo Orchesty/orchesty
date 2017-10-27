@@ -1,11 +1,9 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Tests\Unit\AppBundle\Model\Systems\Impl\Quickbooks\Connector;
 
-
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\LastSync\LastSyncManager;
-use CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\Connector\QuickbooksCreateCustomerConnector;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\Connector\QuickbooksCustomerConnectorAbstract;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\QuickbooksSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
@@ -19,9 +17,8 @@ use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
 use PHPUnit_Framework_MockObject_MockObject;
 use React\EventLoop\Factory;
-use function React\Promise\resolve;
 use Tests\ConnectorTestCaseAbstract;
-
+use function React\Promise\resolve;
 
 /**
  * Class QuickbooksCreateCustomerConnectorTest
@@ -57,6 +54,11 @@ abstract class QuickbooksCustomerConnectorAbstractTest extends ConnectorTestCase
     protected $sender;
 
     /**
+     * @var PHPUnit_Framework_MockObject_MockObject|DocumentManager
+     */
+    protected $mockDm;
+
+    /**
      * @covers ::processBatch()
      *
      * @return void
@@ -64,11 +66,11 @@ abstract class QuickbooksCustomerConnectorAbstractTest extends ConnectorTestCase
     public function testProcessBatch(): void
     {
         /** @var SuccessMessage $result */
-        $result = null;
+        $result = NULL;
         $this->initMocks();
 
         $promiseCount = resolve(new Response(200, [], $this->getRequest('QuickbooksCountCustomerResponse.json')));
-        $promiseData = resolve(new Response(200, [], $this->getRequest('QuickbooksCustomerResponse.json')));
+        $promiseData  = resolve(new Response(200, [], $this->getRequest('QuickbooksCustomerResponse.json')));
 
         $this->sender->expects($this->at(0))->method('send')->willReturn($promiseCount);
         $this->sender->expects($this->at(1))->method('send')->willReturn($promiseData);
@@ -85,7 +87,7 @@ abstract class QuickbooksCustomerConnectorAbstractTest extends ConnectorTestCase
             ->setHeaders([])
             ->setData(json_encode($dtoData));
 
-        $loop       = Factory::create();
+        $loop = Factory::create();
 
         $connector->processBatch($processDto, $loop, function (SuccessMessage $data) use (&$result): void {
             $result = $data;
@@ -108,8 +110,8 @@ abstract class QuickbooksCustomerConnectorAbstractTest extends ConnectorTestCase
         $this->systemInstall = $this->createMock(SystemInstallRepository::class);
         $this->systemInstall->method('setSyncTime')->willReturn(NULL);
 
-        $this->dm = $this->createMock(DocumentManager::class);
-        $this->dm
+        $this->mockDm = $this->createMock(DocumentManager::class);
+        $this->mockDm
             ->method('getRepository')
             ->willReturn($this->systemInstall);
 
@@ -124,11 +126,14 @@ abstract class QuickbooksCustomerConnectorAbstractTest extends ConnectorTestCase
         $this->system->method('getRequestDto')->willReturn($requestDto);
 
         $this->lastSyncManager = $this->createMock(LastSyncManager::class);
-        $this->sender = $this->createMock(CurlSender::class);
-        $this->factory = $this->createMock(CurlSenderFactory::class);
+        $this->sender          = $this->createMock(CurlSender::class);
+        $this->factory         = $this->createMock(CurlSenderFactory::class);
         $this->factory->method('create')->willReturn($this->sender);
     }
 
-
+    /**
+     * @return QuickbooksCustomerConnectorAbstract
+     */
     abstract protected function createConnector(): QuickbooksCustomerConnectorAbstract;
+
 }

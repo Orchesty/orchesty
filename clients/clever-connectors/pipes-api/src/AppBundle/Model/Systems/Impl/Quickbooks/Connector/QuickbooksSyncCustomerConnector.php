@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: michal.bartl
@@ -11,19 +11,22 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\Connector;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\LastSync\LastSyncManager;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\QuickbooksSystem;
+use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
+use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\DocumentRepository;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
-use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSender;
 use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSenderFactory;
-use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
-use React\Promise\PromiseInterface;
 
+/**
+ * Class QuickbooksSyncCustomerConnector
+ *
+ * @package CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\Connector
+ */
 class QuickbooksSyncCustomerConnector extends QuickbooksCustomerConnectorAbstract
 {
 
     /**
-     * @var DocumentRepository
+     * @var SystemInstallRepository|ObjectRepository
      */
     private $systemInstallRepository;
 
@@ -89,20 +92,13 @@ class QuickbooksSyncCustomerConnector extends QuickbooksCustomerConnectorAbstrac
     }
 
     /**
-     * @param CurlSender    $sender
-     * @param RequestDto    $dto
-     *
      * @param SystemInstall $systemInstall
-     *
-     * @return PromiseInterface
+     * @param ProcessDto    $dto
      */
-    protected function fetchData(CurlSender $sender, RequestDto $dto, SystemInstall $systemInstall): PromiseInterface
+    protected function afterFetch(SystemInstall $systemInstall, ProcessDto $dto): void
     {
-        $promise = parent::fetchData($sender, $dto, $systemInstall);
-
         $this->systemInstallRepository->setSyncTime($systemInstall);
 
-        return $promise;
     }
 
 }

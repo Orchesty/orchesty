@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: michal.bartl
@@ -8,12 +8,16 @@
 
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\Mapper;
 
-
 use CleverConnectors\AppBundle\Model\CM\SubscriptionConnector\CustomerObject\CMSubscriber;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
 
+/**
+ * Class QuickbooksCustomerMapper
+ *
+ * @package CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\Mapper
+ */
 class QuickbooksCustomerMapper implements CustomNodeInterface
 {
 
@@ -57,6 +61,8 @@ class QuickbooksCustomerMapper implements CustomNodeInterface
         $key           = CMHeaders::createKey(CMHeaders::RESULT_CODE);
         $headers[$key] = 1003;
         $dto->setHeaders($headers);
+
         return $dto;
     }
+
 }

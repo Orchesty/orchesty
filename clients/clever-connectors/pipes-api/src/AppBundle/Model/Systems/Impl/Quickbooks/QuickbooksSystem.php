@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks;
 
@@ -132,7 +132,7 @@ class QuickbooksSystem implements OAuth2Interface
     {
         $arr                     = $this->provider->getAccessToken($this->createDto($systemInstall), $data);
         $arr[self::REALM_ID_KEY] = $data[self::REALM_ID_KEY];
-        $expires = new DateTime();
+        $expires                 = new DateTime();
         $expires->setTimestamp($arr['expires']);
         $systemInstall->setExpires($expires);
         $this->setSettings($systemInstall, $arr);
@@ -218,4 +218,5 @@ class QuickbooksSystem implements OAuth2Interface
 
         return $dto;
     }
+
 }

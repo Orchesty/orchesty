@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: michal.bartl
@@ -8,10 +8,14 @@
 
 namespace Tests\Unit\AppBundle\Model\Systems\Impl\Quickbooks\Connector;
 
-
 use CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\Connector\QuickbooksCreateCustomerConnector;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\Connector\QuickbooksCustomerConnectorAbstract;
 
+/**
+ * Class QuickbooksCreateCustomerConnectorTest
+ *
+ * @package Tests\Unit\AppBundle\Model\Systems\Impl\Quickbooks\Connector
+ */
 class QuickbooksCreateCustomerConnectorTest extends QuickbooksCustomerConnectorAbstractTest
 {
 
@@ -42,4 +46,5 @@ class QuickbooksCreateCustomerConnectorTest extends QuickbooksCustomerConnectorA
             $this->factory
         );
     }
+
 }

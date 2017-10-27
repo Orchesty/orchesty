@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: michal.bartl
@@ -13,6 +13,11 @@ use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Nette\Utils\Json;
 use Tests\ConnectorTestCaseAbstract;
 
+/**
+ * Class QuickbooksCustomerMapperTest
+ *
+ * @package Tests\Unit\AppBundle\Model\Systems\Impl\Quickbooks\Mapper
+ */
 class QuickbooksCustomerMapperTest extends ConnectorTestCaseAbstract
 {
 

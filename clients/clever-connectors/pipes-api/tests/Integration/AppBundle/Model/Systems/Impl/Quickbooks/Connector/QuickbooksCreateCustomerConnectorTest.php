@@ -20,11 +20,11 @@ use React\EventLoop\Factory;
 use Tests\DatabaseTestCaseAbstract;
 
 /**
- * Class QuickbooksSyncCustomerConnectorTest
+ * Class QuickbooksCreateCustomerConnectorTest
  *
  * @package Tests\Integration\AppBundle\Model\Systems\Impl\Quickbooks\Connector
  */
-class QuickbooksSyncCustomerConnectorTest extends DatabaseTestCaseAbstract
+class QuickbooksCreateCustomerConnectorTest extends DatabaseTestCaseAbstract
 {
 
     /**
@@ -35,7 +35,7 @@ class QuickbooksSyncCustomerConnectorTest extends DatabaseTestCaseAbstract
         $this->markTestSkipped();
         /** @var SuccessMessage $result */
         $result    = NULL;
-        $connector = $this->container->get('hbpf.connector.quickbooks-sync-customer-connector');
+        $connector = $this->container->get('hbpf.connector.quickbooks-create-customer-connector');
 
         $topology = (new Topology())->setName('Topology');
         $this->persistAndFlush($topology);
@@ -55,16 +55,14 @@ class QuickbooksSyncCustomerConnectorTest extends DatabaseTestCaseAbstract
         $this->persistAndFlush($system);
 
         $dtoData = [
-            'data' => [
-                'system_install' => [
-                    '_id'               => $system->getId(),
-                    'user'              => $system->getUser(),
-                    'token'             => $system->getToken(),
-                    'system'            => $system->getSystem(),
-                    'encryptedSettings' => CryptManager::encrypt($settings),
-                ],
-                'topology'       => ['name' => 'top-name-ever'],
+            'system_install' => [
+                '_id'               => $system->getId(),
+                'user'              => $system->getUser(),
+                'token'             => $system->getToken(),
+                'system'            => $system->getSystem(),
+                'encryptedSettings' => CryptManager::encrypt($settings),
             ],
+            'topology'       => ['name' => 'top-name-ever'],
         ];
 
         $node = (new Node())
@@ -73,9 +71,11 @@ class QuickbooksSyncCustomerConnectorTest extends DatabaseTestCaseAbstract
         $this->persistAndFlush($node);
 
         $processDto = (new ProcessDto())->setData(Json::encode($dtoData))->setHeaders([
-            CMHeaders::createKey(CMHeaders::TOKEN)      => 't-456',
-            CMHeaders::createKey(CMHeaders::GUID)       => 'u_123',
-            CMHeaders::createKey(CMHeaders::SYSTEM_KEY) => 's_-666',
+            CMHeaders::createKey(CMHeaders::TOKEN)         => 't-456',
+            CMHeaders::createKey(CMHeaders::GUID)          => 'u_123',
+            CMHeaders::createKey(CMHeaders::SYSTEM_KEY)    => 's_-666',
+            CMHeaders::createKey(CMHeaders::TOPOLOGY_NAME) => 'top-name-ever',
+            CMHeaders::createKey(CMHeaders::NODE_NAME)     => 'node-name',
         ]);
 
         $loop = Factory::create();
@@ -91,12 +91,6 @@ class QuickbooksSyncCustomerConnectorTest extends DatabaseTestCaseAbstract
         $this->assertInstanceOf(SuccessMessage::class, $result);
         $data = json_decode($result->getData());
         $this->assertTrue(is_array($data));
-
-        $this->dm->clear();
-        /** @var SystemInstall $sys */
-        $sys = $this->dm->getRepository(SystemInstall::class)->find($system->getId());
-        $this->assertInstanceOf(SystemInstall::class, $sys);
-        $this->assertTrue($sys->isSynchronized());
     }
 
 }

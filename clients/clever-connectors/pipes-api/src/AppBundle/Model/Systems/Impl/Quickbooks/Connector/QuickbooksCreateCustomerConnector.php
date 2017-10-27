@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: michal.bartl
@@ -13,6 +13,11 @@ use CleverConnectors\AppBundle\Utils\CronUtils;
 use DateTime;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 
+/**
+ * Class QuickbooksCreateCustomerConnector
+ *
+ * @package CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\Connector
+ */
 class QuickbooksCreateCustomerConnector extends QuickbooksCustomerConnectorAbstract
 {
 
@@ -35,8 +40,9 @@ class QuickbooksCreateCustomerConnector extends QuickbooksCustomerConnectorAbstr
         $lastSync = $this->lastSyncManager->getLastSync($systemInstall, $dto->getHeaders());
         $times    = CronUtils::getTimes($lastSync);
 
-        $since = $times->getStart() ? sprintf(' AND MetaData.CreateTime >= \'%s\'', $times->getStart()->format(DateTime::ATOM)) : '';
-        $till = sprintf(' AND MetaData.CreateTime < \' % s\'', $times->getEnd()->format(DateTime::ATOM));
+        $since = $times->getStart() ? sprintf(' AND MetaData.CreateTime >= \'%s\'',
+            $times->getStart()->format(DateTime::ATOM)) : '';
+        $till  = sprintf(' AND MetaData.CreateTime < \'%s\'', $times->getEnd()->format(DateTime::ATOM));
 
         return $since . $till;
     }
@@ -75,4 +81,17 @@ class QuickbooksCreateCustomerConnector extends QuickbooksCustomerConnectorAbstr
     {
         return CronUtils::getSystemInstall($dto);
     }
+
+    /**
+     * @param SystemInstall $systemInstall
+     * @param ProcessDto    $dto
+     */
+    protected function afterFetch(SystemInstall $systemInstall, ProcessDto $dto): void
+    {
+        $lastSync = $this->lastSyncManager->getLastSync($systemInstall, $dto->getHeaders());
+        $times    = CronUtils::getTimes($lastSync);
+        $lastSync->setTimestamp($times->getEnd());
+        $this->lastSyncManager->updateLastSync($lastSync);
+    }
+
 }
