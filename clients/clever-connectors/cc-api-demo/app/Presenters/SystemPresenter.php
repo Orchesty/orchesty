@@ -13,6 +13,7 @@ use App\Forms\AuthorizationSettingGeneratorFactory;
 use App\Forms\AuthorizeFormFactory;
 use App\Forms\LoginFormFactory;
 use App\Forms\LogoutFormFactory;
+use App\Forms\SyncFormFactory;
 use App\Forms\SystemActionFormFactory;
 use CcApi\ApiEntity\UserSystem;
 use CcApi\Connector\ConnectorManager;
@@ -66,6 +67,10 @@ class SystemPresenter extends BasePresenter
      * @var AuthorizeFormFactory
      */
     private $authorizeFormFactory;
+    /**
+     * @var SyncFormFactory
+     */
+    private $syncFormFactory;
 
     /**
      * HomepagePresenter constructor.
@@ -77,12 +82,13 @@ class SystemPresenter extends BasePresenter
      * @param AuthorizationSettingFormFactory      $authorizationSettingFormFactory
      * @param AuthorizationSettingGeneratorFactory $authorizationSettingGeneratorFactory
      * @param AuthorizeFormFactory                 $authorizeFormFactory
+     * @param SyncFormFactory                      $syncFormFactory
      */
     public function __construct(ConnectorManager $connectorManager, LoginFormFactory $loginFormFactory,
                                 LogoutFormFactory $logoutFormFactory, SystemActionFormFactory $systemActionFormFactory,
                                 AuthorizationSettingFormFactory $authorizationSettingFormFactory,
                                 AuthorizationSettingGeneratorFactory $authorizationSettingGeneratorFactory,
-                                AuthorizeFormFactory $authorizeFormFactory)
+                                AuthorizeFormFactory $authorizeFormFactory, SyncFormFactory $syncFormFactory)
     {
         parent::__construct();
         $this->connectorManager                = $connectorManager;
@@ -92,6 +98,7 @@ class SystemPresenter extends BasePresenter
         $this->authorizationSettingFormFactory = $authorizationSettingFormFactory;
         $this->authorizeGeneratorFactory       = $authorizationSettingGeneratorFactory;
         $this->authorizeFormFactory            = $authorizeFormFactory;
+        $this->syncFormFactory                 = $syncFormFactory;
     }
 
     /**
@@ -268,6 +275,30 @@ class SystemPresenter extends BasePresenter
             $data['system_key'],
             $this->getHttpRequest()->getUrl()->getAbsoluteUrl()
         );
+    }
+
+    /**
+     * @return \Nette\Application\UI\Form
+     */
+    public function createComponentSyncForm()
+    {
+        $form = $this->syncFormFactory->create();
+
+        $form->onSuccess[] = [$this, 'processSync'];
+
+        return $form;
+    }
+
+    /**
+     * @param Form $form
+     */
+    public function processSync(Form $form)
+    {
+        $data = $form->getHttpData();
+
+        $this->connectorManager->synchronizeUserSystem($this->userId, $data['system_key']);
+
+        $this->sendJson(['start_sync' => TRUE]);
     }
 
     /**

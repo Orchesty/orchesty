@@ -35,7 +35,8 @@
                         <th>Name</th>
                         <th class="text-center" colspan="2">Authorization</th>
                         <th class="text-center">Authorized status</th>
-                        <th class="text-center">Synchronized</th>
+                        <th class="text-center">Synchronize</th>
+                        <th class="text-center">Synchronized status</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -57,6 +58,13 @@
                                 {/form}
                             </td>
                             <td class="text-center">{$system->isAuthorized() ? 'true' : 'false'}</td>
+                            <td class="text-center">
+                                {form syncForm}
+                                    <div class="form-group"
+                                         style="margin-bottom: 0">{input start_sync class=>"form-control btn btn-primary btn-sm"}</div>
+                                    <input type="hidden" name="system_key" value="{$system->getKey()}">
+                                {/form}
+                            </td>
                             <td class="text-center">{$system->isSynchronized() ? 'true' : 'false'}</td>
                         </tr>
                     {/foreach}

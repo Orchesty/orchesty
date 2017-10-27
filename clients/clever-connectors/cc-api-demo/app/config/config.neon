@@ -55,5 +55,8 @@ services:
 	authorize_form:
 		class: App\Forms\AuthorizeFormFactory
 
+	sync_form:
+		class: App\Forms\SyncFormFactory
+
 extensions:
 	cc_api: CcApi\Bridges\DI\CcApiExtension
