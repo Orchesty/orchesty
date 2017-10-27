@@ -29,7 +29,7 @@ final class TopologyNameUtilsTest extends KernelTestCaseAbstract
         );
 
         $this->expectException(LogicException::class);
-        TopologyNameUtils::getServiceTopologyName(TopologyNameUtils::CREATE_PERSON, 'sys');
+        TopologyNameUtils::getServiceTopologyName(TopologyNameUtils::CREATE_CONTACT, 'sys');
     }
 
     /**

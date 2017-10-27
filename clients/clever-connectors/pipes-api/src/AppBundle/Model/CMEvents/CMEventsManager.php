@@ -116,10 +116,16 @@ class CMEventsManager implements LoggerAwareInterface
         $request->headers->set(CMHeaders::createKey(CMHeaders::CM_EVENT_TYPE), $event);
         switch ($event) {
             case SystemInstall::EVENT_CREATE:
-                $const = TopologyNameUtils::CREATE_PERSON;
+                $const = TopologyNameUtils::CREATE_CONTACT;
+                break;
+            case SystemInstall::EVENT_UNSUBSCRIBE:
+                $const = TopologyNameUtils::UNSUBSCRIBE_CONTACT;
+                break;
+            case SystemInstall::EVENT_HARD_BOUNCE:
+                $const = TopologyNameUtils::HARD_BOUNCE_CONTACT;
                 break;
             default:
-                $const = TopologyNameUtils::UPDATE_PERSON;
+                $const = TopologyNameUtils::UPDATE_CONTACT;
                 break;
         }
 

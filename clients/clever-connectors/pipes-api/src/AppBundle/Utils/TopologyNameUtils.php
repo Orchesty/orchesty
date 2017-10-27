@@ -32,10 +32,10 @@ final class TopologyNameUtils
     public const UPDATED_SUBSCRIBERS = 'updated-subscribers';
     public const DELETED_SUBSCRIBERS = 'deleted-subscribers';
 
-    public const CREATE_PERSON  = 'create-prison';
-    public const UPDATE_PERSON  = 'update-prison';
-    public const CREATE_CONTACT = 'create-prison';
-    public const UPDATE_CONTACT = 'update-prison';
+    public const CREATE_CONTACT      = 'create-contact';
+    public const UPDATE_CONTACT      = 'update-contact';
+    public const UNSUBSCRIBE_CONTACT = 'unsubscribe-contact';
+    public const HARD_BOUNCE_CONTACT = 'hard-bounce-contact';
 
     /**
      * @var array
@@ -55,6 +55,8 @@ final class TopologyNameUtils
         self::DELETED_SUBSCRIBERS,
         self::CREATE_CONTACT,
         self::UPDATE_CONTACT,
+        self::UNSUBSCRIBE_CONTACT,
+        self::HARD_BOUNCE_CONTACT,
     ];
 
     /**
