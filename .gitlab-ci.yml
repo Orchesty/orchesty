@@ -95,7 +95,7 @@ stage-cm:
   stage: stage3
   when: manual
   script:
-    - rsync -av --delete --exclude 'clients/clever-connectors/pipes-api/var/secret' --exclude '.git' ./ ~/stage_cm
+    - rsync -av --delete --exclude 'clients/clever-connectors/pipes-api/var/secret' --exclude 'clients/clever-connectors/cc-api-demo/cert/' --exclude '.git' ./ ~/stage_cm
     - cd ~/stage_cm/clients/clever-connectors
     - export COMPOSE_PROJECT_NAME=stagecm
     - export NPM_INSTALL="yes"
