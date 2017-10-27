@@ -3,5 +3,6 @@ export default {
   defaultPageSize: 20,
   allowChangeServer: false,
   urlPrefix: null,
-  preferPaging: false
+  preferPaging: false,
+  mainPage: 'topology_list'
 }

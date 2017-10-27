@@ -31,17 +31,18 @@ export default {
     acceptUrl: (path, query) => path == '/activation' ? {args: {token: query.token}} : false,
     createUrl: page => ({path: '/activation', query: {token: page.args.token}})
   },
-  dashboard: {
-    id: 'dasboard',
-    caption: 'dashboard',
-    needAuth: true,
-    simpleRoute: '/'
-  }, 
+  // dashboard: {
+  //   id: 'dasboard',
+  //   caption: 'dashboard',
+  //   needAuth: true,
+  //   simpleRoute: '/'
+  // },
   topology_list: {
     id: 'topology_list',
     caption: 'Topology list',
     needAuth: true,
-    simpleRoute: '/topologies'
+    acceptUrl: path => path == '/topologies' || path == '/',
+    createUrl: page => '/'
   },
   topology_schema: {
     id: 'topology_scheme',

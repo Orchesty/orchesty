@@ -16,6 +16,7 @@ class TopologySchema extends React.Component {
     super(props);
     this.state = {state: stateType.NOT_LOADED};
     this.save = this.save.bind(this);
+    this.schemaImported = this.schemaImported.bind(this);
   }
 
   componentWillMount(){
@@ -49,15 +50,23 @@ class TopologySchema extends React.Component {
     });
   }
 
+  schemaImported(msg){
+    const {addSuccessNotification, onImport} = this.props;
+    addSuccessNotification(msg);
+    if (onImport){
+      onImport();
+    }
+  }
+
   render() {
-    const {schema, setActions, addErrorNotification , addSuccessNotification, saveProcessId} = this.props;
+    const {schema, setActions, addErrorNotification, saveProcessId} = this.props;
 
     return (
       <SimpleState state={this.state.state}>
         <BpmnIoComponent
           schema={schema}
           onError={addErrorNotification}
-          onImport={addSuccessNotification}
+          onImport={this.schemaImported}
           setActions={setActions}
           onSave={this.save}
           saveProcessId={saveProcessId}
@@ -76,6 +85,7 @@ TopologySchema.propTypes = {
   schemaId: PropTypes.string,
   saveTopologySchema: PropTypes.func.isRequired,
   onChangeTopology: PropTypes.func.isRequired,
+  onImport: PropTypes.func,
   saveProcessId: PropTypes.string
 };
 

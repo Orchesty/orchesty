@@ -27,6 +27,7 @@ class TopologyDetail extends React.Component {
   constructor(props) {
     super(props);
     this.changeTab = this.changeTab.bind(this);
+    this.schemaImported = this.schemaImported.bind(this);
     this._actions = {
       nodes: null,
       schema: null
@@ -94,6 +95,10 @@ class TopologyDetail extends React.Component {
     this.props.onChangeTab(tab.id);
   }
 
+  schemaImported(msg){
+    this.props.onChangeTab(tabItems[1].id);
+  }
+
   render() {
     const {topologyId, activeTab, setActions, onChangeTopology} = this.props;
     let activeIndex = tabItems.findIndex(tab => activeTab == tab.id);
@@ -103,7 +108,13 @@ class TopologyDetail extends React.Component {
         <TabBar items={tabItems} active={activeIndex} onChangeTab={this.changeTab}/>
         {activeTab == 'nodes' && <TopologyNodeListTable topologyId={topologyId} setActions={this.setActions.bind(this, 'nodes')}/>}
         <div className={'schema-wrapper' + ( schemaVisible ? '' : ' hidden')}>
-          <TopologySchema schemaId={topologyId} setActions={this.setActions.bind(this, 'schema')} onChangeTopology={onChangeTopology} visible={schemaVisible} />
+          <TopologySchema
+            schemaId={topologyId}
+            setActions={this.setActions.bind(this, 'schema')}
+            onChangeTopology={onChangeTopology}
+            visible={schemaVisible}
+            onImport={this.schemaImported}
+          />
         </div>
       </div>
     );
