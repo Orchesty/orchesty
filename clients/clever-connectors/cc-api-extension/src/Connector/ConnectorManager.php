@@ -24,7 +24,6 @@ use GuzzleHttp\Psr7\Uri;
 use Nette\Utils\Json;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\UriInterface;
 
 /**
  * Class ConnectorManager
