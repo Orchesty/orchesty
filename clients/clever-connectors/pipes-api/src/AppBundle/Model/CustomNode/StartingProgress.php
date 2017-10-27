@@ -10,9 +10,9 @@
 namespace CleverConnectors\AppBundle\Model\CustomNode;
 
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
+use CleverConnectors\AppBundle\Model\ProgressCounter\ProgressCounterService;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
-use Hanaboso\PipesFramework\Commons\ProgressCounter\ProgressCounterService;
 use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
 
 /**

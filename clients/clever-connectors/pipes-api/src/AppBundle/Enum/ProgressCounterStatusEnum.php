@@ -6,7 +6,9 @@
  * Time: 15:59
  */
 
-namespace Hanaboso\PipesFramework\Commons\Enum;
+namespace CleverConnectors\AppBundle\Enum;
+
+use Hanaboso\PipesFramework\Commons\Enum\EnumAbstract;
 
 /**
  * Class ProgressCounterStatusEnum

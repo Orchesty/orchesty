@@ -6,10 +6,10 @@
  * Time: 19:35
  */
 
-namespace Tests\Unit\Commons\ProgressCounter\Event;
+namespace Tests\Unit\AppBundle\Model\ProgressCounter\Event;
 
-use Hanaboso\PipesFramework\Commons\Enum\ProgressCounterStatusEnum;
-use Hanaboso\PipesFramework\Commons\ProgressCounter\Event\ProgressCounterEvent;
+use CleverConnectors\AppBundle\Enum\ProgressCounterStatusEnum;
+use CleverConnectors\AppBundle\Model\ProgressCounter\Event\ProgressCounterEvent;
 use PHPUnit\Framework\TestCase;
 
 /**

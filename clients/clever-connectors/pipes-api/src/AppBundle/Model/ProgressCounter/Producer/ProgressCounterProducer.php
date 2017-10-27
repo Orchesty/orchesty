@@ -6,14 +6,14 @@
  * Time: 9:49
  */
 
-namespace Hanaboso\PipesFramework\Commons\ProgressCounter\Producer;
+namespace CleverConnectors\AppBundle\Model\ProgressCounter\Producer;
 
 use Hanaboso\PipesFramework\RabbitMq\Producer\AbstractProducer;
 
 /**
  * Class ProgressCounterProducer
  *
- * @package Hanaboso\PipesFramework\Commons\ProgressCounter\Producer
+ * @package CleverConnectors\AppBundle\Model\ProgressCounter\Producer
  */
 class ProgressCounterProducer extends AbstractProducer
 {

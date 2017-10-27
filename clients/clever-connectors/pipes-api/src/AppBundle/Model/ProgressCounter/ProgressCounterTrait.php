@@ -6,12 +6,12 @@
  * Time: 18:47
  */
 
-namespace Hanaboso\PipesFramework\Commons\ProgressCounter;
+namespace CleverConnectors\AppBundle\Model\ProgressCounter;
 
 /**
  * Trait ProgressCounterTrait
  *
- * @package Hanaboso\PipesFramework\Commons\ProgressCounter
+ * @package CleverConnectors\AppBundle\Model\ProgressCounter
  */
 trait ProgressCounterTrait
 {

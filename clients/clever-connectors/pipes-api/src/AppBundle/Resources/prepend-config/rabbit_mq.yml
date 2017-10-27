@@ -12,8 +12,8 @@ rabbit-mq:
                   routing_key: pipes.stream
 
     producers:
-        cm_activator_stream:
-            class: CleverConnectors\AppBundle\Amq\CMActivatorProducer
+        progress_counter:
+            class: CleverConnectors\AppBundle\Model\ProgressCounter\Producer\ProgressCounterProducer
             exchange: pipes.stream
             content_type: application/json
             serializer: Hanaboso\PipesFramework\RabbitMq\Serializers\JsonSerializer

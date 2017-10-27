@@ -6,16 +6,16 @@
  * Time: 15:29
  */
 
-namespace Hanaboso\PipesFramework\Commons\ProgressCounter;
+namespace CleverConnectors\AppBundle\Model\ProgressCounter;
 
-use Hanaboso\PipesFramework\Commons\Enum\ProgressCounterStatusEnum;
+use CleverConnectors\AppBundle\Enum\ProgressCounterStatusEnum;
 use Hanaboso\PipesFramework\RabbitMq\Producer\AbstractProducer;
 use Predis\Client;
 
 /**
  * Class ProgressCounterAbstract
  *
- * @package Hanaboso\PipesFramework\Commons\ProgressCounter
+ * @package CleverConnectors\AppBundle\Model\ProgressCounter
  */
 abstract class ProgressCounterAbstract implements ProgressCounterInterface
 {

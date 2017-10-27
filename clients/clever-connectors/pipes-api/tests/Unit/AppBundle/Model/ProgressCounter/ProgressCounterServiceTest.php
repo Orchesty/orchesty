@@ -6,10 +6,10 @@
  * Time: 21:24
  */
 
-namespace Tests\Unit\Commons\ProgressCounter;
+namespace Tests\Unit\AppBundle\Model\ProgressCounter;
 
-use Hanaboso\PipesFramework\Commons\Enum\ProgressCounterStatusEnum;
-use Hanaboso\PipesFramework\Commons\ProgressCounter\ProgressCounterService;
+use CleverConnectors\AppBundle\Enum\ProgressCounterStatusEnum;
+use CleverConnectors\AppBundle\Model\ProgressCounter\ProgressCounterService;
 use Hanaboso\PipesFramework\RabbitMq\Producer\AbstractProducer;
 use PHPUnit\Framework\TestCase;
 use PHPUnit_Framework_MockObject_MockObject;

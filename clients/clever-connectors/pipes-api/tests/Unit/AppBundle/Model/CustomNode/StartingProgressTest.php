@@ -11,9 +11,9 @@ namespace Tests\Unit\AppBundle\Model\CustomNode;
 
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\CustomNode\StartingProgress;
+use CleverConnectors\AppBundle\Model\ProgressCounter\ProgressCounterService;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
-use Hanaboso\PipesFramework\Commons\ProgressCounter\ProgressCounterService;
 use PHPUnit\Framework\TestCase;
 use PHPUnit_Framework_MockObject_MockObject;
 

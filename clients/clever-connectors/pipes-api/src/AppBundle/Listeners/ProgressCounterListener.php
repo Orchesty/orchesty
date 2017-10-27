@@ -3,7 +3,7 @@
 namespace CleverConnectors\AppBundle\Listeners;
 
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
-use Hanaboso\PipesFramework\Commons\ProgressCounter\ProgressCounterService;
+use CleverConnectors\AppBundle\Model\ProgressCounter\ProgressCounterService;
 use Hanaboso\PipesFramework\Configurator\Event\ProcessStatusEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
