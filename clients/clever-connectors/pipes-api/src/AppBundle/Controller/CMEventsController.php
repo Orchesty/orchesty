@@ -24,7 +24,7 @@ use Symfony\Component\HttpFoundation\Response;
  *
  * @package CleverConnectors\AppBundle\Controller
  *
- * @Route(service="cc.cm_events.controller")
+ * @Route(service="cc.events.controller")
  */
 class CMEventsController extends FOSRestController
 {
