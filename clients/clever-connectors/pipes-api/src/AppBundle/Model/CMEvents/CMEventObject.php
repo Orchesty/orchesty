@@ -46,15 +46,9 @@ final class CMEventObject
      */
     public function __construct(string $field, string $event, string $url)
     {
+        SystemInstall::checkEvent($event);
         $this->field = $field;
         $this->url   = $url;
-
-        if (!SystemInstall::isEvent($event)) {
-            throw new CleverConnectorsException(
-                sprintf('Event type ["%s"] is not valid.', $event),
-                CleverConnectorsException::INVALID_ENUM_VALUE
-            );
-        }
         $this->event = $event;
     }
 

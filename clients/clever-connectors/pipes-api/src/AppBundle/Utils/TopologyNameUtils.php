@@ -62,13 +62,18 @@ final class TopologyNameUtils
     /**
      * @param string $const
      * @param string $systemKey
+     * @param string $user
      *
      * @return string
      */
-    public static function getServiceTopologyName(string $const, string $systemKey = ''): string
+    public static function getServiceTopologyName(string $const, string $systemKey = '', string $user = ''): string
     {
         if (!in_array($const, self::$service)) {
             throw new LogicException(sprintf('Const "%s" is not a valid const for service topology!', $const));
+        }
+
+        if ($systemKey && $user) {
+            return sprintf('%s-%s-%s', $user, $systemKey, $const);
         }
 
         if ($systemKey) {

@@ -27,6 +27,10 @@ final class TopologyNameUtilsTest extends KernelTestCaseAbstract
             'sys-refresh-token',
             TopologyNameUtils::getServiceTopologyName(TopologyNameUtils::REFRESH_TOKEN, 'sys')
         );
+        self::assertEquals(
+            'user-sys-refresh-token',
+            TopologyNameUtils::getServiceTopologyName(TopologyNameUtils::REFRESH_TOKEN, 'sys', 'user')
+        );
 
         $this->expectException(LogicException::class);
         TopologyNameUtils::getServiceTopologyName(TopologyNameUtils::CREATE_CONTACT, 'sys');

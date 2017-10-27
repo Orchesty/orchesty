@@ -3,6 +3,7 @@
 namespace CleverConnectors\AppBundle\Document;
 
 use CleverConnectors\AppBundle\Document\Traits\IdTrait;
+use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use DateTime;
 use DateTimeZone;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
@@ -371,11 +372,16 @@ class SystemInstall
     /**
      * @param string $event
      *
-     * @return bool
+     * @throws CleverConnectorsException
      */
-    public static function isEvent(string $event): bool
+    public static function checkEvent(string $event): void
     {
-        return in_array($event, [self::EVENT_CREATE, self::EVENT_UNSUBSCRIBE, self::EVENT_HARD_BOUNCE]);
+        if (!in_array($event, [self::EVENT_CREATE, self::EVENT_UNSUBSCRIBE, self::EVENT_HARD_BOUNCE])) {
+            throw new CleverConnectorsException(
+                sprintf('Event type ["%s"] is not valid.', $event),
+                CleverConnectorsException::INVALID_ENUM_VALUE
+            );
+        };
     }
 
     /**

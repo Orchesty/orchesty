@@ -10,6 +10,7 @@
 namespace Tests\Unit\AppBundle\Document;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use DateTime;
 use Hanaboso\PipesFramework\Commons\Crypt\CryptManager;
 use InvalidArgumentException;
@@ -64,10 +65,12 @@ final class SystemInstallTest extends TestCase
      */
     public function testIsEvent(): void
     {
-        self::assertTrue(SystemInstall::isEvent(SystemInstall::EVENT_HARD_BOUNCE));
-        self::assertTrue(SystemInstall::isEvent(SystemInstall::EVENT_CREATE));
-        self::assertTrue(SystemInstall::isEvent(SystemInstall::EVENT_UNSUBSCRIBE));
-        self::assertFalse(SystemInstall::isEvent(SystemInstall::TOKEN));
+        SystemInstall::checkEvent(SystemInstall::EVENT_HARD_BOUNCE);
+        SystemInstall::checkEvent(SystemInstall::EVENT_CREATE);
+        SystemInstall::checkEvent(SystemInstall::EVENT_UNSUBSCRIBE);
+
+        $this->expectException(CleverConnectorsException::class);
+        SystemInstall::checkEvent(SystemInstall::TOKEN);
     }
 
     /**

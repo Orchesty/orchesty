@@ -106,13 +106,7 @@ class CMEventsManager implements LoggerAwareInterface
      */
     public function runEvent(Request $request, string $userId, string $event): void
     {
-        if (!SystemInstall::isEvent($event)) {
-            throw new CleverConnectorsException(
-                sprintf('Event type ["%s"] is not valid.', $event),
-                CleverConnectorsException::INVALID_ENUM_VALUE
-            );
-        }
-
+        SystemInstall::checkEvent($event);
         $request->headers->set(CMHeaders::createKey(CMHeaders::CM_EVENT_TYPE), $event);
         switch ($event) {
             case SystemInstall::EVENT_CREATE:
@@ -195,7 +189,7 @@ class CMEventsManager implements LoggerAwareInterface
             TopologyNameUtils::getTopologyName($const, $systemInstall->getSystem(), $systemInstall->getUser())
         );
 
-        $name = TopologyNameUtils::getServiceTopologyName(TopologyNameUtils::ACTIVATE_EVENT);
+        $name = TopologyNameUtils::getTopologyName($const, $systemInstall->getSystem());
         $name = $system->getCustomTopologyName($name);
         if (empty($topologies)) {
             $topologies = $this->topologyRepo->getRunnableTopologies($name);
@@ -222,8 +216,20 @@ class CMEventsManager implements LoggerAwareInterface
     private function getTopologiesForSave(SystemInterface $system, SystemInstall $systemInstall): array
     {
         $topologies = $this->topologyRepo->getRunnableTopologies(
-            TopologyNameUtils::getServiceTopologyName(TopologyNameUtils::ACTIVATE_EVENT, $systemInstall->getSystem())
+            TopologyNameUtils::getServiceTopologyName(TopologyNameUtils::ACTIVATE_EVENT,
+                $systemInstall->getSystem(),
+                $systemInstall->getUser()
+            )
         );
+
+        if (empty($topologies)) {
+            $topologies = $this->topologyRepo->getRunnableTopologies(
+                TopologyNameUtils::getServiceTopologyName(
+                    TopologyNameUtils::ACTIVATE_EVENT,
+                    $systemInstall->getSystem()
+                )
+            );
+        }
 
         $name = TopologyNameUtils::getServiceTopologyName(TopologyNameUtils::ACTIVATE_EVENT);
         $name = $system->getCustomTopologyName($name);
@@ -232,14 +238,14 @@ class CMEventsManager implements LoggerAwareInterface
         }
 
         /** @var Topology $topology */
-        if ($topologies) {
-            return $topologies;
+        if (empty($topologies)) {
+            throw new CleverConnectorsException(
+                sprintf('Topology ["%s"] not found!', $name),
+                CleverConnectorsException::TOPOLOGY_NOT_FOUND
+            );
         }
 
-        throw new CleverConnectorsException(
-            sprintf('Topology ["%s"] not found!', $name),
-            CleverConnectorsException::TOPOLOGY_NOT_FOUND
-        );
+        return $topologies;
     }
 
     /**
