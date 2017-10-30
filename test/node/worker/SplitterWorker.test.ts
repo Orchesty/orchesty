@@ -31,7 +31,10 @@ describe("Splitter worker", () => {
         const msg = new JobMessage(node, headers.getRaw(), new Buffer("{}{}{}"));
         const worker = new SplitterWorker(settings, partialForwarder);
         return worker.processData(msg)
-            .then((outMsg: JobMessage) => {
+            .then((outMsgs: JobMessage[]) => {
+                assert.lengthOf(outMsgs, 1);
+                const outMsg: JobMessage = outMsgs[0];
+
                 assert.equal(outMsg.getResult().code, ResultCode.INVALID_CONTENT);
                 assert.include(outMsg.getResult().message, "Could not parse message content.");
             });
@@ -51,7 +54,10 @@ describe("Splitter worker", () => {
         const msg = new JobMessage(node, headers.getRaw(), body);
         const worker = new SplitterWorker(settings, partialForwarder);
         return worker.processData(msg)
-            .then((outMsg: JobMessage) => {
+            .then((outMsgs: JobMessage[]) => {
+                assert.lengthOf(outMsgs, 1);
+                const outMsg: JobMessage = outMsgs[0];
+
                 assert.equal(outMsg.getResult().code, ResultCode.INVALID_CONTENT);
                 assert.include(outMsg.getResult().message, "Message content must be json array");
             });
@@ -79,7 +85,10 @@ describe("Splitter worker", () => {
         };
         const worker = new SplitterWorker(settings, partialForwarder);
         return worker.processData(msg)
-            .then((outMsg: JobMessage) => {
+            .then((outMsgs: JobMessage[]) => {
+                assert.lengthOf(outMsgs, 1);
+                const outMsg: JobMessage = outMsgs[0];
+
                 assert.equal(outMsg.getResult().code, ResultCode.SUCCESS);
                 assert.equal(outMsg.getMultiplier(), 3);
                 assert.isFalse(outMsg.getForwardSelf());

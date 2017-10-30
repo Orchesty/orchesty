@@ -7,11 +7,16 @@ import IWorker from "./IWorker";
  */
 class UppercaseWorker implements IWorker {
 
-    public processData(msg: JobMessage): Promise<JobMessage> {
+    /**
+     *
+     * @param {JobMessage} msg
+     * @return {Promise<JobMessage[]>}
+     */
+    public processData(msg: JobMessage): Promise<JobMessage[]> {
         msg.setContent(msg.getContent().toUpperCase());
         msg.setResult({code: ResultCode.SUCCESS, message: "Uppercase worker OK"});
 
-        return Promise.resolve(msg);
+        return Promise.resolve([msg]);
     }
 
     /**

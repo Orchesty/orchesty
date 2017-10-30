@@ -55,6 +55,21 @@ class Resequencer {
     }
 
     /**
+     *
+     * @param {string} processId
+     * @return {number}
+     */
+    public getWaitingForSequenceId(processId: string): number {
+        if (this.buffer[processId]) {
+            const buf = this.buffer[processId];
+
+            return buf.waitingFor;
+        }
+
+        return Resequencer.START_SEQUENCE_ID;
+    }
+
+    /**
      * Returns existing buffer or creates new one
      *
      * @param {string} processId
