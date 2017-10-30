@@ -3,6 +3,8 @@
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Bigcommerce\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
+use CleverConnectors\AppBundle\Model\ProgressCounter\ProgressCounterService;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Bigcommerce\BigcommerceSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
@@ -50,17 +52,29 @@ class BigcommerceSyncCustomerConnector implements BatchInterface, ConnectorInter
     private $factory;
 
     /**
+     * @var ProgressCounterService
+     */
+    private $progressCounterService;
+
+    /**
      * BigcommerceSyncCustomerConnector constructor.
      *
-     * @param BigcommerceSystem $system
-     * @param DocumentManager   $dm
-     * @param CurlSenderFactory $factory
+     * @param BigcommerceSystem      $system
+     * @param DocumentManager        $dm
+     * @param CurlSenderFactory      $factory
+     * @param ProgressCounterService $progressCounterService
      */
-    public function __construct(BigcommerceSystem $system, DocumentManager $dm, CurlSenderFactory $factory)
+    public function __construct(
+        BigcommerceSystem $system,
+        DocumentManager $dm,
+        CurlSenderFactory $factory,
+        ProgressCounterService $progressCounterService
+    )
     {
         $this->system                  = $system;
         $this->systemInstallRepository = $dm->getRepository(SystemInstall::class);
         $this->factory                 = $factory;
+        $this->progressCounterService  = $progressCounterService;
     }
 
     /**
@@ -99,6 +113,7 @@ class BigcommerceSyncCustomerConnector implements BatchInterface, ConnectorInter
      * @param callable      $callbackItem
      *
      * @return PromiseInterface
+     * @throws CleverConnectorsException
      */
     public function processBatch(ProcessDto $dto, LoopInterface $loop, callable $callbackItem): PromiseInterface
     {
@@ -106,7 +121,16 @@ class BigcommerceSyncCustomerConnector implements BatchInterface, ConnectorInter
         $systemInstall = $this->systemInstallRepository->getSystemInstallFromHeaders($dto->getHeaders());
         $requestDto    = $this->system->getRequestDto($systemInstall, 'GET');
         $requestDto->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()));
-        $url = new Uri(sprintf('%s%s', $requestDto->getUri(TRUE), self::COUNT_URL));
+        $url                    = new Uri(sprintf('%s%s', $requestDto->getUri(TRUE), self::COUNT_URL));
+        $progressCounterService = $this->progressCounterService;
+        $processId              = CMHeaders::get(CMHeaders::PROCESS_ID, $dto->getHeaders());
+
+        if (!$processId) {
+            throw new CleverConnectorsException(
+                'Process ID not found.',
+                CleverConnectorsException::PROCESS_ID_NOT_FOUND
+            );
+        }
 
         $promise = $this->fetchData($sender, RequestDto::from($requestDto, $url))
             ->then(
@@ -114,7 +138,9 @@ class BigcommerceSyncCustomerConnector implements BatchInterface, ConnectorInter
                     return $this->getTotalPages($response);
                 }
             )->then(
-                function (int $total) use ($sender, $callbackItem, $requestDto) {
+                function (int $total) use ($sender, $callbackItem, $requestDto, $processId, $progressCounterService) {
+                    $progressCounterService->setTotal($processId, $total);
+
                     return all($this->doPageLoop($total, $sender, $callbackItem, $requestDto));
                 }
             );
