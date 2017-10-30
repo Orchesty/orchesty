@@ -225,6 +225,12 @@ class Generator implements GeneratorInterface
             case TypeEnum::CRON:
                 return $this->getNullWorkerConfig();
 
+            case TypeEnum::DEBUG:
+                return $this->getNullWorkerConfig();
+
+            case TypeEnum::RESEQUENCER:
+                return $this->getResequencerWorkerConfig();
+
             case TypeEnum::SPLITTER:
                 return $this->getJsonSplitterConfig();
 
@@ -329,6 +335,18 @@ class Generator implements GeneratorInterface
     {
         return [
             'type'     => 'worker.null',
+            'settings' => [],
+        ];
+    }
+
+    /**
+     *
+     * @return array
+     */
+    private function getResequencerWorkerConfig(): array
+    {
+        return [
+            'type'     => 'worker.resequencer',
             'settings' => [],
         ];
     }

@@ -16,9 +16,11 @@ class TypeEnum extends EnumAbstract
     public const CONNECTOR       = 'connector';
     public const CRON            = 'cron';
     public const CUSTOM          = 'custom';
+    public const DEBUG           = 'debug';
     public const EMAIL           = 'email';
     public const FTP             = 'ftp';
     public const MAPPER          = 'mapper';
+    public const RESEQUENCER     = 'resequencer';
     public const SIGNAL          = 'signal';
     public const SPLITTER        = 'splitter';
     public const TABLE_PARSER    = 'table_parser';
@@ -35,9 +37,11 @@ class TypeEnum extends EnumAbstract
         self::CONNECTOR       => self::CONNECTOR,
         self::CRON            => self::CRON,
         self::CUSTOM          => self::CUSTOM,
+        self::DEBUG           => self::DEBUG,
         self::EMAIL           => self::EMAIL,
         self::FTP             => self::FTP,
         self::MAPPER          => self::MAPPER,
+        self::RESEQUENCER     => self::RESEQUENCER,
         self::SIGNAL          => self::SIGNAL,
         self::SPLITTER        => self::SPLITTER,
         self::TABLE_PARSER    => self::TABLE_PARSER,
