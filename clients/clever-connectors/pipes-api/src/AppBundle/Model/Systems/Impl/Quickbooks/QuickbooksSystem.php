@@ -148,9 +148,7 @@ class QuickbooksSystem implements OAuth2Interface
      */
     public function refreshToken(SystemInstall $systemInstall): SystemInstall
     {
-        if (!$this->isAuthorized($systemInstall)) {
-            throw new SystemException('Quickbooks is not authorized!', SystemException::SYSTEM_IS_UNAUTHORIZED);
-        }
+        $this->continueOnAuthorized($systemInstall);
 
         $settings = $systemInstall->getSettings();
         $dto      = $this->createDto($systemInstall);
@@ -173,9 +171,7 @@ class QuickbooksSystem implements OAuth2Interface
      */
     public function getRequestDto(SystemInstall $systemInstall, string $method): RequestDto
     {
-        if (!$this->isAuthorized($systemInstall)) {
-            throw new SystemException('Quickbooks is not authorized!', SystemException::SYSTEM_IS_UNAUTHORIZED);
-        }
+        $this->continueOnAuthorized($systemInstall);
 
         $sett = $systemInstall->getSettings();
 
