@@ -59,7 +59,7 @@ class StartingProgress implements CustomNodeInterface
         $users  = $data['progress_users'] ?? [];
         $groups = $data['progress_groups'] ?? [];
 
-        $this->progressCounterService->start($progressId, $users, $groups);
+        $this->progressCounterService->start($progressId, 'sync-subscribers', $users, $groups);
 
         return $dto;
     }
