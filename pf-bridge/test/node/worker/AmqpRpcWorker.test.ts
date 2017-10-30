@@ -50,7 +50,8 @@ describe("AmqpRpcWorker", () => {
                 });
             },
             (msg: Message) => {
-                assert.equal(msg.properties.correlationId, AmqpRpcWorker.TEST_ID);
+                assert.typeOf(msg.properties.correlationId, "string");
+                assert.lengthOf(msg.properties.correlationId, 36); // is some uuid
                 assert.equal(
                     msg.properties.replyTo,
                     `pipes.${settings.node_label.topology_id}.${settings.node_label.id}_reply`,
@@ -202,7 +203,10 @@ describe("AmqpRpcWorker", () => {
 
                 return rpcWorker.processData(jobMsg);
             })
-            .then((outMsg: JobMessage) => {
+            .then((outMsgs: JobMessage[]) => {
+                assert.lengthOf(outMsgs, 1);
+                const outMsg: JobMessage = outMsgs[0];
+
                 assert.instanceOf(outMsg, JobMessage);
                 assert.equal(outMsg.getMultiplier(), 5);
                 assert.isFalse(outMsg.getForwardSelf());

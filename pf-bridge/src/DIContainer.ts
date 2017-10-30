@@ -13,6 +13,7 @@ import AppenderWorker, {IAppenderWorkerSettings} from "./node/worker/AppenderWor
 import HttpWorker, {IHttpWorkerSettings} from "./node/worker/HttpWorker";
 import HttpXmlParserWorker, {IHttpXmlParserWorkerSettings} from "./node/worker/HttpXmlParserWorker";
 import NullWorker from "./node/worker/NullWorker";
+import {default as ResequencerWorker, IResequencerWorkerSettings} from "./node/worker/ResequencerWorker";
 import SplitterWorker, {ISplitterWorkerSettings} from "./node/worker/SplitterWorker";
 import UppercaseWorker from "./node/worker/UppercaseWorker";
 
@@ -78,6 +79,9 @@ class DIContainer extends Container {
         });
         this.set(`${wPrefix}.null`, (settings: {}) => {
             return new NullWorker();
+        });
+        this.set(`${wPrefix}.resequencer`, (settings: IResequencerWorkerSettings) => {
+            return new ResequencerWorker(settings);
         });
         this.set(`${wPrefix}.uppercase`, (settings: {}) => {
             return new UppercaseWorker();

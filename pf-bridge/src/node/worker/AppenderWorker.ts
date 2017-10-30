@@ -19,13 +19,13 @@ class AppenderWorker implements IWorker {
      * Appends string given message content
      *
      * @param {JobMessage} msg
-     * @return {Promise<JobMessage>}
+     * @return {Promise<JobMessage[]>}
      */
-    public processData(msg: JobMessage): Promise<JobMessage> {
+    public processData(msg: JobMessage): Promise<JobMessage[]> {
         msg.setContent(`${msg.getContent()}${this.settings.suffix}`);
         msg.setResult({code: ResultCode.SUCCESS, message: "Appender worker OK"});
 
-        return Promise.resolve(msg);
+        return Promise.resolve([msg]);
     }
 
     /**

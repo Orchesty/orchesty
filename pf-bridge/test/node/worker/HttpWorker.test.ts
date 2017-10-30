@@ -111,7 +111,10 @@ describe("HttpWorker", () => {
         const worker = createHttpWorker(4020, "/ok");
 
         return worker.processData(msg)
-            .then((outMsg: JobMessage) => {
+            .then((outMsgs: JobMessage[]) => {
+                assert.lengthOf(outMsgs, 1);
+                const outMsg: JobMessage = outMsgs[0];
+
                 assert.equal(outMsg.getResult().code, ResultCode.SUCCESS);
                 assert.equal(outMsg.getContent(), JSON.stringify({ val: "modified" }));
             });
@@ -129,7 +132,10 @@ describe("HttpWorker", () => {
         const worker = createHttpWorker(4020, "/invalid-status-code");
 
         return worker.processData(msg)
-            .then((outMsg: JobMessage) => {
+            .then((outMsgs: JobMessage[]) => {
+                assert.lengthOf(outMsgs, 1);
+                const outMsg: JobMessage = outMsgs[0];
+
                 assert.equal(outMsg.getResult().code, ResultCode.HTTP_ERROR);
                 assert.equal(outMsg.getContent(), JSON.stringify({ val: "original" }));
             });
@@ -147,7 +153,10 @@ describe("HttpWorker", () => {
         const worker = createHttpWorker(4020, "/invalid-result-code");
 
         return worker.processData(msg)
-            .then((outMsg: JobMessage) => {
+            .then((outMsgs: JobMessage[]) => {
+                assert.lengthOf(outMsgs, 1);
+                const outMsg: JobMessage = outMsgs[0];
+
                 assert.equal(outMsg.getResult().code, ResultCode.MISSING_RESULT_CODE);
                 assert.equal(outMsg.getContent(), JSON.stringify({ val: "original" }));
             });
@@ -165,7 +174,10 @@ describe("HttpWorker", () => {
         const worker = createHttpWorker(4020, "/non-existing");
 
         return worker.processData(msg)
-            .then((outMsg: JobMessage) => {
+            .then((outMsgs: JobMessage[]) => {
+                assert.lengthOf(outMsgs, 1);
+                const outMsg: JobMessage = outMsgs[0];
+
                 assert.equal(outMsg.getResult().code, ResultCode.HTTP_ERROR);
                 assert.equal(outMsg.getContent(), JSON.stringify({ val: "original" }));
             });
@@ -183,7 +195,10 @@ describe("HttpWorker", () => {
         const worker = createHttpWorker(4020, "/empty-result-body");
 
         return worker.processData(msg)
-            .then((outMsg: JobMessage) => {
+            .then((outMsgs: JobMessage[]) => {
+                assert.lengthOf(outMsgs, 1);
+                const outMsg: JobMessage = outMsgs[0];
+
                 assert.equal(outMsg.getResult().code, ResultCode.SUCCESS);
                 assert.equal(outMsg.getContent(), "");
             });
@@ -232,7 +247,10 @@ describe("HttpWorker", () => {
         const worker = createHttpWorker(4020, "/ok-xml");
 
         return worker.processData(msg)
-            .then((outMsg: JobMessage) => {
+            .then((outMsgs: JobMessage[]) => {
+                assert.lengthOf(outMsgs, 1);
+                const outMsg: JobMessage = outMsgs[0];
+
                 assert.equal(outMsg.getResult().code, ResultCode.SUCCESS);
                 assert.equal(
                     outMsg.getContent(),
@@ -254,7 +272,10 @@ describe("HttpWorker", () => {
         const worker = createHttpWorker(4020, "/non-existing", "nonexistinghost");
 
         return worker.processData(msg)
-            .then((outMsg: JobMessage) => {
+            .then((outMsgs: JobMessage[]) => {
+                assert.lengthOf(outMsgs, 1);
+                const outMsg: JobMessage = outMsgs[0];
+
                 assert.equal(outMsg.getResult().code, ResultCode.HTTP_ERROR);
                 assert.equal(outMsg.getContent(), JSON.stringify({ val: "original" }));
             });

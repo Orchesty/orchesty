@@ -82,20 +82,18 @@ class Node {
     public open(): Promise<void> {
         this.nodeStatus = NODE_STATUS.READY;
 
-        const processFn = (msgIn: JobMessage): Promise<JobMessage> => {
+        const processFn = (msgIn: JobMessage): Promise<void> => {
             logger.info(`Bridge received message.`, logger.ctxFromMsg(msgIn));
 
             return this.worker.processData(msgIn)
-                .then((msgOut: JobMessage) => {
-                    this.sendProcessDurationMetric(msgOut);
-                    this.drain.forward(msgOut);
-
-                    return msgIn;
+                .then((msgsOut: JobMessage[]) => {
+                    msgsOut.forEach((msgOut: JobMessage) => {
+                        this.sendProcessDurationMetric(msgOut);
+                        this.drain.forward(msgOut);
+                    });
                 })
                 .catch((err: any) => {
                     logger.error(`Node process failed.`, logger.ctxFromMsg(msgIn, err));
-
-                    return msgIn;
                 });
         };
 

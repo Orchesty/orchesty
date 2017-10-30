@@ -32,9 +32,9 @@ class HttpWorker implements IWorker {
     /**
      *
      * @param {JobMessage} msg
-     * @return {Promise<JobMessage>}
+     * @return {Promise<JobMessage[]>}
      */
-    public processData(msg: JobMessage): Promise<JobMessage> {
+    public processData(msg: JobMessage): Promise<JobMessage[]> {
         const reqParams: any = this.getJobRequestParams(msg);
 
         return new Promise((resolve) => {
@@ -51,12 +51,12 @@ class HttpWorker implements IWorker {
 
                 if (err) {
                     this.onRequestError(msg, reqParams, err);
-                    return resolve(msg);
+                    return resolve([msg]);
                 }
 
                 if (!response.statusCode || response.statusCode !== 200) {
                     this.onInvalidStatusCode(msg, response.statusCode);
-                    return resolve(msg);
+                    return resolve([msg]);
                 }
 
                 const responseHeaders: any = response.headers;
@@ -64,7 +64,7 @@ class HttpWorker implements IWorker {
                     Headers.validateMandatoryHeaders(responseHeaders);
                 } catch (err) {
                     this.onInvalidResponseHeaders(msg);
-                    return resolve(msg);
+                    return resolve([msg]);
                 }
 
                 const cleanResponseHeaders = new Headers(Headers.getPFHeaders(responseHeaders));
@@ -74,12 +74,12 @@ class HttpWorker implements IWorker {
                     result = this.getResultFromResponse(cleanResponseHeaders);
                 } catch (err) {
                     this.onMissingResultCode(msg);
-                    return resolve(msg);
+                    return resolve([msg]);
                 }
 
                 this.onValidResponse(msg, body, cleanResponseHeaders, result);
 
-                return resolve(msg);
+                return resolve([msg]);
             });
         });
     }
