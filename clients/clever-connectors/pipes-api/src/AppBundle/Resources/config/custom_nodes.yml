@@ -22,11 +22,16 @@ services:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@cc.systems.loader'
 
-    hbpf.custom_node.progess-signal-event:
+    hbpf.custom_node.progress-signal-event:
         class: CleverConnectors\AppBundle\Model\CustomNode\StartingProgress
         arguments:
             - '@cc.progress_counter.progress_counter_service'
 
+
+    hbpf.custom_node.progress-incrementer:
+        class: CleverConnectors\AppBundle\Model\CustomNode\ProgressIncrementer
+        arguments:
+            - '@cc.progress_counter.progress_counter_service'
     hbpf.custom_node.cm-event-activator:
         class: CleverConnectors\AppBundle\Model\CMEvents\CMEventActivator
         arguments:
