@@ -38,6 +38,20 @@ class Users {
     }
 
     /**
+     * Returns userId by token or throws exception
+     *
+     * @param {string} token
+     * @return {string}
+     */
+    public getUserId(token: string): string {
+        if (this.users[token]) {
+            return this.users[token].userId;
+        }
+
+        throw new Error(`Token ${token} not found.`);
+    }
+
+    /**
      * Returns boolean whether user has valid token and if he can subscribe to given group
      *
      * @param {string} token

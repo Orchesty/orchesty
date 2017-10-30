@@ -141,6 +141,12 @@ class StreamServer {
      * @param {ISubscribeData} data
      */
     private subscribe(socket: SocketIO.Socket, data: ISubscribeData): void {
+        try {
+            socket.join(this.users.getUserId(data.token));
+        } catch (joinErr) {
+            logger.error(`Cannot join private room. Error: ${joinErr.message}`);
+        }
+
         if (data.groups && data.groups.length > 0) {
             data.groups.forEach((groupId) => {
                 if (this.users.canAccessGroup(data.token, groupId)) {
@@ -167,6 +173,12 @@ class StreamServer {
     private unsubscribe(socket: SocketIO.Socket, data: ISubscribeData): void {
         if (!this.users.isValidToken(data.token)) {
             logger.warn(`Trying to unsubscribe non-existing token: "${data.token}"`);
+            return;
+        }
+        try {
+            socket.leave(this.users.getUserId(data.token));
+        } catch (joinErr) {
+            logger.error(`Cannot leave private room. Error: ${joinErr.message}`);
             return;
         }
 
