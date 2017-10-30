@@ -22,3 +22,13 @@
     font-family: 'pipes';
     content: "\e902";
 }
+
+.bpmn-icon-pipes-resequencer-task:before {
+    font-family: 'pipes';
+    content: "\e903";
+}
+
+.bpmn-icon-pipes-debug-node:before {
+    font-family: 'pipes';
+    content: "\e904";
+}
