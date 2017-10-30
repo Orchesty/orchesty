@@ -4,13 +4,12 @@ import { default as BasicConsumer } from "lib-nodejs/dist/src/rabbitmq/Consumer"
 import logger from "../../../logger/Logger";
 import JobMessage from "../../../message/JobMessage";
 import {INodeLabel} from "../../../topology/Configurator";
-import { WorkerProcessFn } from "../../worker/IWorker";
 import {FaucetProcessMsgFn} from "../IFaucet";
 
 class Consumer extends BasicConsumer {
 
     private node: INodeLabel;
-    private processData: WorkerProcessFn;
+    private processData: FaucetProcessMsgFn;
 
     constructor(
         node: INodeLabel,
@@ -39,12 +38,20 @@ class Consumer extends BasicConsumer {
 
         this.processData(inMsg)
             .then(() => {
-                channel.ack(amqMsg);
-                logger.info("AmqpFaucet message ack");
+                try {
+                    channel.ack(amqMsg);
+                    logger.info("AmqpFaucet message ack");
+                } catch (ackErr) {
+                    logger.error(`Could not ack message. Error: ${ackErr}`);
+                }
             })
             .catch((error: Error) => {
-                logger.error(`AmqpFaucet requeue message`, logger.ctxFromMsg(inMsg, error));
-                channel.nack(amqMsg); // requeue due to processing error
+                try {
+                    logger.error(`AmqpFaucet requeue message`, logger.ctxFromMsg(inMsg, error));
+                    channel.nack(amqMsg); // requeue due to processing error
+                } catch (ackErr) {
+                    logger.error(`Could not nack message. Error: ${ackErr}`);
+                }
             });
     }
 

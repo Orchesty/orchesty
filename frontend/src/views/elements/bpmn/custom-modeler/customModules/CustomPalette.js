@@ -142,6 +142,12 @@ PaletteProvider.prototype.getPaletteEntries = function() {
     ),
     'create.splitter': createAction(
       'bpmn:Task', 'activity', 'bpmn-icon-pipes-splitter', 'Splitter', { pipesType: 'splitter'}
+    ),
+    'create.resequencer': createAction(
+      'bpmn:Task', 'activity', 'bpmn-icon-pipes-resequencer-task', 'Resequencer', { pipesType: 'resequencer'}
+    ),
+    'create.debug': createAction(
+      'bpmn:Task', 'activity', 'bpmn-icon-pipes-debug-node', 'Debug', { pipesType: 'debug'}
     )
   });
 

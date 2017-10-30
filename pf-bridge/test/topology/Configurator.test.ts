@@ -8,7 +8,6 @@ const testTopo: ITopologyConfigSkeleton = {
     nodes: [
         {
             id: "node_a",
-            resequencer: true,
             faucet: {
                 type: "faucet.http",
                 settings: {
@@ -25,7 +24,6 @@ const testTopo: ITopologyConfigSkeleton = {
                 node_name: "b",
                 topology_id: "test-topo",
             },
-            resequencer: true,
             worker: { type: "worker.appender", settings: { suffix: "| something"} },
             next: [],
         },
@@ -104,7 +102,6 @@ const expectedTopo: ITopologyConfig = {
                         node_name: "node_a_unknown",
                         topology_id: "test-topo",
                     },
-                    resequencer: true,
                 },
                 type: "drain.amqp",
             },
@@ -129,7 +126,6 @@ const expectedTopo: ITopologyConfig = {
                 topology_id: "test-topo",
             },
             next: ["node_b"],
-            resequencer: true,
             worker: {
                 settings: {
                     node_label: {
@@ -175,7 +171,6 @@ const expectedTopo: ITopologyConfig = {
                         node_name: "b",
                         topology_id: "test-topo",
                     },
-                    resequencer: true,
                 },
                 type: "drain.amqp",
             },
@@ -215,7 +210,6 @@ const expectedTopo: ITopologyConfig = {
                 topology_id: "test-topo",
             },
             next: [],
-            resequencer: true,
             worker: {
                 settings: {
                     node_label: {

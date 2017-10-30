@@ -107,9 +107,9 @@ class AmqpRpcWorker implements IWorker {
      * Accepts message, returns unsatisfied promise, which should be satisfied later
      *
      * @param {JobMessage} msg
-     * @return {Promise<JobMessage>}
+     * @return {Promise<JobMessage[]>}
      */
-    public processData(msg: JobMessage): Promise<JobMessage> {
+    public processData(msg: JobMessage): Promise<JobMessage[]> {
         const uuid = uuid4();
         const headersToSend = new Headers(msg.getHeaders().getRaw());
         headersToSend.setPFHeader(Headers.NODE_ID, this.settings.node_label.node_id);
@@ -140,7 +140,8 @@ class AmqpRpcWorker implements IWorker {
 
         if (this.waiting.has(uuid)) {
             this.onDuplicateMessage(msg);
-            return Promise.resolve(msg);
+
+            return Promise.resolve([msg]);
         }
 
         // resolve will be done with the last received result message
@@ -160,11 +161,17 @@ class AmqpRpcWorker implements IWorker {
      * @return {Promise<boolean>}
      */
     public isWorkerReady(): Promise<boolean> {
+        const testCorrelationId = uuid4();
+
         return new Promise((resolve) => {
-            const resolveTestFn = (msg: JobMessage) => {
-                // TODO - using static corrId only single simultaneous test message is valid, fix it!
-                if (msg.getCorrelationId() === AmqpRpcWorker.TEST_ID &&
-                    msg.getResult().code === ResultCode.SUCCESS) {
+            const resolveTestFn = (msgs: JobMessage[]) => {
+
+                if (!msgs[0]) {
+                    return resolve(false);
+                }
+
+                const msg: JobMessage = msgs[0];
+                if (msg.getCorrelationId() === AmqpRpcWorker.TEST_ID && msg.getResult().code === ResultCode.SUCCESS) {
                     resolve(true);
                 } else {
                     resolve(false);
@@ -179,14 +186,14 @@ class AmqpRpcWorker implements IWorker {
 
             const jobMsg = new JobMessage(this.settings.node_label, testHeaders.getRaw(), new Buffer(""));
             const t: IWaiting = { resolveFn: resolveTestFn, message: jobMsg, sequence: 0 };
-            this.waiting.set(AmqpRpcWorker.TEST_ID, t);
+            this.waiting.set(testCorrelationId, t);
 
             this.publisher.sendToQueue(
                 this.settings.publish_queue.name,
                 new Buffer("Is worker ready test message."),
                 {
                     type: AmqpRpcWorker.TEST_TYPE,
-                    correlationId: AmqpRpcWorker.TEST_ID,
+                    correlationId: testCorrelationId,
                     replyTo: this.resultsQueue.name,
                     headers: jobMsg.getHeaders().getRaw(),
                 },
@@ -288,7 +295,7 @@ class AmqpRpcWorker implements IWorker {
         stored.message.setResult({ code: resultCode, message: resultMessage });
 
         // Resolves waiting promise
-        stored.resolveFn(stored.message);
+        stored.resolveFn([stored.message]);
 
         this.waiting.delete(corrId);
     }

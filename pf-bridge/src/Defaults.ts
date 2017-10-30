@@ -23,7 +23,6 @@ class Defaults {
             worker: Defaults.getDefaultWorkerConfig(),
             faucet: Defaults.getDefaultFaucetConfig(topoId, node),
             drain: Defaults.getDefaultDrainConfig(topoId, node),
-            resequencer: false,
             debug: {
                 port: 8007,
                 host: node.id,
@@ -108,7 +107,6 @@ class Defaults {
                     routing_key: `${topoId}.${nextNode}`,
                 };
             }),
-            resequencer: true,
         };
 
         return { type, settings };

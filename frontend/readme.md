@@ -1,7 +1,7 @@
 Installation & run without docker
 
 1. Run `npm install`
-2. Run `npm start`
+2. Run `npm start` & check: http://127.0.0.4:8080
 
 Recommended tools for Chrome:
 

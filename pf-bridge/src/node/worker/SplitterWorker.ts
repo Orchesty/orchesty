@@ -30,9 +30,9 @@ class SplitterWorker implements IWorker {
      * Splits the the JSON data in the content into separate messages
      *
      * @param {JobMessage} msg
-     * @return {Promise<JobMessage>}
+     * @return {Promise<JobMessage[]>}
      */
-    public processData(msg: JobMessage): Promise<JobMessage> {
+    public processData(msg: JobMessage): Promise<JobMessage[]> {
 
         let content: any[];
 
@@ -40,12 +40,12 @@ class SplitterWorker implements IWorker {
             content = JSON.parse(msg.getContent());
         } catch (err) {
             this.setError(msg, "Could not parse message content. Is it valid JSON?", err);
-            return Promise.resolve(msg);
+            return Promise.resolve([msg]);
         }
 
         if (!Array.isArray(content) || content.length < 1) {
             this.setError(msg, "Message content must be json array.", null);
-            return Promise.resolve(msg);
+            return Promise.resolve([msg]);
         }
 
         return this.splitAndSendParts(msg, content)
@@ -63,13 +63,13 @@ class SplitterWorker implements IWorker {
                     logger.ctxFromMsg(msg),
                 );
 
-                return msg;
+                return [msg];
             })
             .catch(() => {
                 this.setError(msg, "One or multiple partial messages forward failed", {});
                 msg.setForwardSelf(false);
 
-                return msg;
+                return [msg];
             });
     }
 

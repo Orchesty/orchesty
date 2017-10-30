@@ -19,7 +19,6 @@ const testTopology: ITopologyConfigSkeleton = {
     nodes: [
         {
             id: "first",
-            resequencer: true,
             debug: {
                 port: 4001,
                 host: "localhost",
@@ -29,7 +28,6 @@ const testTopology: ITopologyConfigSkeleton = {
         },
         {
             id: "second",
-            resequencer: true,
             worker: {
                 type: "worker.http",
                 settings: {
@@ -51,7 +49,6 @@ const testTopology: ITopologyConfigSkeleton = {
         },
         {
             id: "third",
-            resequencer: true,
             worker: {
                 type: "worker.uppercase",
                 settings: {},
