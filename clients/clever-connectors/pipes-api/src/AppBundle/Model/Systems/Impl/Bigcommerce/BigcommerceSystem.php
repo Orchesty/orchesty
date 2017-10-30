@@ -4,19 +4,19 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\Bigcommerce;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\SystemTypeEnum;
-use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Form\Field;
 use CleverConnectors\AppBundle\Model\Form\Form;
+use CleverConnectors\AppBundle\Model\Requester\RequesterInterface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\AuthorizationInterface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\Traits\AuthorizationTrait;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
+use CleverConnectors\AppBundle\Model\Systems\Impl\Bigcommerce\Requester\BigcommerceSubscribeRequester;
+use CleverConnectors\AppBundle\Model\Systems\Impl\Bigcommerce\Requester\BigcommerceUnsubscribeRequester;
 use CleverConnectors\AppBundle\Model\Webhook\Traits\WebhookSystemTrait;
 use CleverConnectors\AppBundle\Model\Webhook\WebhookSubscribes;
 use CleverConnectors\AppBundle\Model\Webhook\WebhookSystemInterface;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
-use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
-use Nette\Utils\Json;
 
 /**
  * Class BigcommerceSystem
@@ -26,25 +26,13 @@ use Nette\Utils\Json;
 class BigcommerceSystem implements WebhookSystemInterface, AuthorizationInterface
 {
 
+    public const  STORE_ID     = 'store_id';
     private const SYSTEM_URL   = 'https://api.bigcommerce.com/stores/%s/v2/';
-    private const STORE_ID     = 'store_id';
     private const CLIENT_ID    = 'client_id';
     private const ACCESS_TOKEN = 'access_token';
 
-    private const WEBHOOK_SUBSCRIBE_URL   = 'https://api.bigcommerce.com/stores/%s/v2/hooks';
-    private const WEBHOOK_UNSUBSCRIBE_URL = 'https://api.bigcommerce.com/stores/%s/v2/hooks/%s';
-
     use AuthorizationTrait;
     use WebhookSystemTrait;
-
-    /**
-     * @var array
-     */
-    private $topics = [
-        'bigcommerce-create-customer-connector' => 'store/customer/created',
-        'bigcommerce-update-customer-connector' => 'store/customer/updated',
-        'bigcommerce-delete-customer-connector' => 'store/customer/deleted',
-    ];
 
     /**
      * BigcommerceSystem constructor.
@@ -53,23 +41,15 @@ class BigcommerceSystem implements WebhookSystemInterface, AuthorizationInterfac
     {
         $this->subscriptions[] = new WebhookSubscribes(
             'bigcommerce-create-customer-connector',
-            'bigcommerce-create-customer',
-            self::WEBHOOK_SUBSCRIBE_URL,
-            self::WEBHOOK_UNSUBSCRIBE_URL
+            'bigcommerce-create-customer'
         );
-
         $this->subscriptions[] = new WebhookSubscribes(
             'bigcommerce-update-customer-connector',
-            'bigcommerce-update-customer',
-            self::WEBHOOK_SUBSCRIBE_URL,
-            self::WEBHOOK_UNSUBSCRIBE_URL
+            'bigcommerce-update-customer'
         );
-
         $this->subscriptions[] = new WebhookSubscribes(
             'bigcommerce-delete-customer-connector',
-            'bigcommerce-delete-customer',
-            self::WEBHOOK_SUBSCRIBE_URL,
-            self::WEBHOOK_UNSUBSCRIBE_URL
+            'bigcommerce-delete-customer'
         );
     }
 
@@ -137,22 +117,6 @@ class BigcommerceSystem implements WebhookSystemInterface, AuthorizationInterfac
 
     /**
      * @param SystemInstall $systemInstall
-     * @param string        $method
-     *
-     * @return RequestDto
-     * @throws SystemException
-     */
-    public function getRequestDto(SystemInstall $systemInstall, string $method): RequestDto
-    {
-        $this->continueOnAuthorized($systemInstall);
-
-        return (new RequestDto($method, new Uri(sprintf(
-            self::SYSTEM_URL, $systemInstall->getSettings()[self::STORE_ID]
-        ))))->setHeaders($this->getHeaders($systemInstall));
-    }
-
-    /**
-     * @param SystemInstall $systemInstall
      *
      * @return array
      */
@@ -192,63 +156,48 @@ class BigcommerceSystem implements WebhookSystemInterface, AuthorizationInterfac
     }
 
     /**
-     * @param WebhookSubscribes $subscription
-     * @param SystemInstall     $systemInstall
-     * @param string            $url
+     * @param SystemInstall $systemInstall
      *
-     * @return RequestDto
+     * @return RequesterInterface
      */
-    public function getSubscribeRequest(
-        WebhookSubscribes $subscription,
-        SystemInstall $systemInstall,
-        string $url
-    ): RequestDto
+    public function getSubscribeRequester(SystemInstall $systemInstall): RequesterInterface
     {
-        return (new RequestDto(
-            'POST',
-            new Uri(sprintf($subscription->getSubscribeUrl(), $systemInstall->getSettings()[self::STORE_ID]))
-        ))->setBody(Json::encode([
-            'scope'       => $this->topics[$subscription->getNodeName()],
-            'destination' => $url,
-        ]))->setHeaders($this->getHeaders($systemInstall));
+        $this->continueOnAuthorized($systemInstall);
+
+        return new BigcommerceSubscribeRequester($systemInstall, $this->getHeaders($systemInstall));
     }
 
     /**
      * @param SystemInstall $systemInstall
-     * @param string        $webhookId
      *
-     * @return RequestDto
+     * @return RequesterInterface
      */
-    public function getUnsubscribeRequest(SystemInstall $systemInstall, string $webhookId): RequestDto
+    public function getUnsubscribeRequester(SystemInstall $systemInstall): RequesterInterface
     {
-        return (new RequestDto(
-            'DELETE',
-            new Uri(sprintf(
-                $this->subscriptions[0]->getUnSubscribeUrl(),
-                $systemInstall->getSettings()[self::STORE_ID],
-                $webhookId
-            ))
-        ))->setHeaders($this->getHeaders($systemInstall));
+        $this->continueOnAuthorized($systemInstall);
+
+        return new BigcommerceUnsubscribeRequester($systemInstall, $this->getHeaders($systemInstall));
     }
 
     /**
-     * @param ResponseDto $response
+     * @param SystemInstall $systemInstall
+     * @param string        $method
      *
-     * @return string
-     * @throws CleverConnectorsException
+     * @return RequestDto
+     * @throws SystemException
      */
-    public function getWebhookId(ResponseDto $response): string
+    public function getRequestDto(SystemInstall $systemInstall, string $method): RequestDto
     {
-        $data = Json::decode($response->getBody(), TRUE);
-        if (!$data || !array_key_exists('id', $data)) {
-            throw new CleverConnectorsException(
-                'Missing webhook id data in response.',
-                CleverConnectorsException::MISSING_DATA
-            );
-        }
+        $this->continueOnAuthorized($systemInstall);
 
-        return (string) $data['id'];
+        return (new RequestDto($method, new Uri(sprintf(
+            self::SYSTEM_URL, $systemInstall->getSettings()[self::STORE_ID]
+        ))))->setHeaders($this->getHeaders($systemInstall));
     }
+
+    /**
+     * ----------------------------------- HELPERS ------------------------------------
+     */
 
     /**
      * @param SystemInstall $systemInstall

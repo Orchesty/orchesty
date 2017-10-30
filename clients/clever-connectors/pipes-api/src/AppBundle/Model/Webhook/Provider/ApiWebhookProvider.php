@@ -11,6 +11,7 @@ namespace CleverConnectors\AppBundle\Model\Webhook\Provider;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Document\Webhook;
+use CleverConnectors\AppBundle\Model\Requester\RequesterInterface;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Webhook\WebhookSubscribes;
 use CleverConnectors\AppBundle\Model\Webhook\WebhookSystemInterface;
@@ -102,44 +103,28 @@ class ApiWebhookProvider implements WebhookProviderInterface, LoggerAwareInterfa
     public function subscribe(WebhookSystemInterface $system, string $userId, string $token, $isUpdate = FALSE): void
     {
         $systemInstall = $this->getSystemInstall($system->getKey(), $userId);
+        $requester     = $system->getSubscribeRequester($systemInstall);
 
         /** @var WebhookSubscribes $sub */
         foreach ($system->getWebhookSubscribes() as $sub) {
-            if (!$isUpdate && $this->webhookRepository->isWebhookRegistred(
-                    $userId,
-                    $system->getKey(),
-                    $sub->getTopologyName(),
-                    $sub->getNodeName()
-                )
-            ) {
+            if (!$isUpdate && $this->isSkippable($userId, $sub, $systemInstall)) {
                 continue;
             }
 
-            $url = WebhookUtils::getWebhookUrl(
-                $this->domain,
-                $userId,
-                $token,
-                $sub->getNodeName(),
-                $sub->getTopologyName()
-            );
-
-            $req = $system->getSubscribeRequest($sub, $systemInstall, $url);
             try {
-                $res = $this->curl->send($req);
-                $id  = $system->getWebhookId($res);
+                $requestDto  = $requester->getRequestDto([
+                    RequesterInterface::OBJECT      => $sub,
+                    RequesterInterface::WEBHOOK_URL => $this->getWebhookUrl($userId, $token, $sub),
+                ]);
+                $responseDto = $this->curl->send($requestDto);
+                $id          = $requester->processResponse($responseDto, $systemInstall);
             } catch (Exception $e) {
                 $this->logger->error(sprintf('Webhook (nodeName, topologyName, system) [%s, %s, %s] failed to subscribe.',
                     $sub->getNodeName(), $sub->getTopologyName(), $system->getKey()), ['exception' => $e]);
                 $id = NULL;
             }
 
-            $doc = new Webhook();
-            $doc->setUser($userId)
-                ->setNodeName($sub->getNodeName())
-                ->setSystemKey($system->getKey())
-                ->setTopologyName($sub->getTopologyName())
-                ->setWebhookId($id);
-            $this->dm->persist($doc);
+            $this->createWebhook($userId, $sub, $system->getKey(), $id);
         }
         $this->dm->flush();
     }
@@ -151,15 +136,18 @@ class ApiWebhookProvider implements WebhookProviderInterface, LoggerAwareInterfa
     public function unsubscribe(WebhookSystemInterface $system, string $userId): void
     {
         $systemInstall = $this->getSystemInstall($system->getKey(), $userId);
+        $requester     = $system->getUnsubscribeRequester($systemInstall);
 
         foreach ($this->webhookRepository->getWebhooksForUnsubscribe($systemInstall) as $webhook) {
-            $req = $system->getUnsubscribeRequest($systemInstall, $webhook->getWebhookId() ?? '');
             try {
-                $res = $this->curl->send($req);
-                if (in_array($res->getStatusCode(), [200, 204])) {
+                $request     = $requester->getRequestDto([
+                    RequesterInterface::WEBHOOK_ID => $webhook->getWebhookId() ?? '',
+                ]);
+                $responseDto = $this->curl->send($request);
+                if ($requester->processResponse($responseDto, $systemInstall)) {
                     $this->dm->remove($webhook);
                 } else {
-                    $this->unsubscribeFailed($webhook, NULL, $res);
+                    $this->unsubscribeFailed($webhook, NULL, $responseDto);
                 }
             } catch (Exception $e) {
                 $this->unsubscribeFailed($webhook, $e, NULL);
@@ -220,6 +208,58 @@ class ApiWebhookProvider implements WebhookProviderInterface, LoggerAwareInterfa
         }
 
         return $systemInstall;
+    }
+
+    /**
+     * @param string            $userId
+     * @param string            $token
+     * @param WebhookSubscribes $subscribes
+     *
+     * @return string
+     */
+    private function getWebhookUrl(string $userId, string $token, WebhookSubscribes $subscribes): string
+    {
+        return WebhookUtils::getWebhookUrl(
+            $this->domain,
+            $userId,
+            $token,
+            $subscribes->getNodeName(),
+            $subscribes->getTopologyName()
+        );
+    }
+
+    /**
+     * @param string            $userId
+     * @param WebhookSubscribes $sub
+     * @param SystemInstall     $system
+     *
+     * @return bool
+     */
+    private function isSkippable(string $userId, WebhookSubscribes $sub, SystemInstall $system): bool
+    {
+        return $this->webhookRepository->isWebhookRegistred(
+            $userId,
+            $system->getSystem(),
+            $sub->getTopologyName(),
+            $sub->getNodeName()
+        );
+    }
+
+    /**
+     * @param string            $user
+     * @param WebhookSubscribes $sub
+     * @param string            $key
+     * @param string|null       $id
+     */
+    private function createWebhook(string $user, WebhookSubscribes $sub, string $key, ?string $id = NULL): void
+    {
+        $webhook = new Webhook();
+        $webhook->setUser($user)
+            ->setNodeName($sub->getNodeName())
+            ->setSystemKey($key)
+            ->setTopologyName($sub->getTopologyName())
+            ->setWebhookId($id);
+        $this->dm->persist($webhook);
     }
 
 }

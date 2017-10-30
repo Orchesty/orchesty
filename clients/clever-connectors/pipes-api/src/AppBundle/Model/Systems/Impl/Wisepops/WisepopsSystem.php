@@ -4,18 +4,19 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\Wisepops;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\SystemTypeEnum;
-use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Form\Field;
 use CleverConnectors\AppBundle\Model\Form\Form;
+use CleverConnectors\AppBundle\Model\Requester\RequesterInterface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\AuthorizationInterface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\Traits\AuthorizationTrait;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
+use CleverConnectors\AppBundle\Model\Systems\Impl\Wisepops\Requester\WisepopsSubscribeRequester;
+use CleverConnectors\AppBundle\Model\Systems\Impl\Wisepops\Requester\WisepopsUnsubscribeRequester;
 use CleverConnectors\AppBundle\Model\Webhook\Traits\WebhookSystemTrait;
 use CleverConnectors\AppBundle\Model\Webhook\WebhookSubscribes;
 use CleverConnectors\AppBundle\Model\Webhook\WebhookSystemInterface;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
-use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 
 /**
  * Class WisepopsSystem
@@ -28,18 +29,16 @@ class WisepopsSystem implements WebhookSystemInterface, AuthorizationInterface
     use AuthorizationTrait;
     use WebhookSystemTrait;
 
-    private const API_KEY = 'api_key';
-
+    private const API_KEY     = 'api_key';
     private const BASE_URL    = 'https://app.wisepops.com/';
-    private const WEBHOOK_URL = 'https://app.wisepops.com/api1/hooks';
+    public const  WEBHOOK_URL = 'https://app.wisepops.com/api1/hooks';
 
     /**
      * WisepopsSystem constructor.
      */
     function __construct()
     {
-        $this->subscriptions[] = new WebhookSubscribes('wisepops-create-email-connector', 'wisepops-create-email',
-            self::WEBHOOK_URL, self::WEBHOOK_URL);
+        $this->subscriptions[] = new WebhookSubscribes('wisepops-create-email-connector', 'wisepops-create-email');
     }
 
     /**
@@ -139,62 +138,29 @@ class WisepopsSystem implements WebhookSystemInterface, AuthorizationInterface
     }
 
     /**
-     * @param WebhookSubscribes $subscription
-     * @param SystemInstall     $systemInstall
-     * @param string            $url
+     * @param SystemInstall $systemInstall
      *
-     * @return RequestDto
+     * @return RequesterInterface
      * @throws SystemException
      */
-    public function getSubscribeRequest(
-        WebhookSubscribes $subscription,
-        SystemInstall $systemInstall,
-        string $url
-    ): RequestDto
+    public function getSubscribeRequester(SystemInstall $systemInstall): RequesterInterface
     {
         $this->continueOnAuthorized($systemInstall);
 
-        $dto = new RequestDto('POST', new Uri($subscription->getSubscribeUrl()));
-        $dto->setHeaders($this->getHeaders($systemInstall));
-        $dto->setBody(sprintf('{"event":"email", "target_url":"%s"}', $url));
-
-        return $dto;
+        return new WisepopsSubscribeRequester($this->getHeaders($systemInstall));
     }
 
     /**
      * @param SystemInstall $systemInstall
-     * @param string        $webhookId
      *
-     * @return RequestDto
+     * @return RequesterInterface
      * @throws SystemException
      */
-    public function getUnsubscribeRequest(SystemInstall $systemInstall, string $webhookId): RequestDto
+    public function getUnsubscribeRequester(SystemInstall $systemInstall): RequesterInterface
     {
         $this->continueOnAuthorized($systemInstall);
 
-        $dto = new RequestDto('DELETE', new Uri(sprintf(self::WEBHOOK_URL . '?hook_id=%s', $webhookId)));
-        $dto->setHeaders($this->getHeaders($systemInstall));
-
-        return $dto;
-    }
-
-    /**
-     * @param ResponseDto $response
-     *
-     * @return string
-     * @throws CleverConnectorsException
-     */
-    public function getWebhookId(ResponseDto $response): string
-    {
-        $data = json_decode($response->getBody(), TRUE);
-        if (!isset($data['id'])) {
-            throw new CleverConnectorsException(
-                'Missing webhookId in response from subscription request.',
-                CleverConnectorsException::MISSING_DATA
-            );
-        }
-
-        return (string) $data['id'];
+        return new WisepopsUnsubscribeRequester($this->getHeaders($systemInstall));
     }
 
     /**

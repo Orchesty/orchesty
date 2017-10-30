@@ -19,7 +19,13 @@ use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 interface RequesterInterface
 {
 
+<<<<<<< f9762458354e140a163cc0f6960f05b0694ad1a7
     public const OBJECT = 'object';
+=======
+    public const OBJECT      = 'object';
+    public const WEBHOOK_URL = 'webhook_url';
+    public const WEBHOOK_ID  = 'webhook_id';
+>>>>>>> Webhooks: refactored
 
     /**
      * @param array $data

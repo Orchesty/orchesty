@@ -4,6 +4,7 @@ namespace Tests\Unit\AppBundle\Model\Systems\Impl\Bigcommerce;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
+use CleverConnectors\AppBundle\Model\Requester\RequesterInterface;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Bigcommerce\BigcommerceSystem;
 use CleverConnectors\AppBundle\Model\Webhook\WebhookSubscribes;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
@@ -53,12 +54,15 @@ final class BigcommerceSystemTest extends KernelTestCaseAbstract
      */
     public function testGetSubscribeRequest(): void
     {
-        $dto = $this->system->getSubscribeRequest(new WebhookSubscribes(
+        $webhook = new WebhookSubscribes(
             'bigcommerce-create-customer-connector',
-            'bigcommerce-create-customer',
-            'subscribeUrl',
-            'unSubscribeUrl'
-        ), $this->systemInstall, 'subscribeUrl');
+            'bigcommerce-create-customer'
+        );
+        $dto     = $this->system->getSubscribeRequester($this->systemInstall)
+            ->getRequestDto([
+                RequesterInterface::OBJECT      => $webhook,
+                RequesterInterface::WEBHOOK_URL => 'subscribeUrl',
+            ]);
 
         $this->assertInstanceOf(RequestDto::class, $dto);
         $this->assertEquals('POST', $dto->getMethod());
@@ -69,12 +73,16 @@ final class BigcommerceSystemTest extends KernelTestCaseAbstract
             'destination' => 'subscribeUrl',
         ], Json::decode($dto->getBody(), TRUE));
 
-        $dto = $this->system->getSubscribeRequest(new WebhookSubscribes(
+        $webhook = new WebhookSubscribes(
             'bigcommerce-update-customer-connector',
-            'bigcommerce-update-customer',
-            'subscribeUrl',
-            'unSubscribeUrl'
-        ), $this->systemInstall, 'subscribeUrl');
+            'bigcommerce-update-customer'
+        );
+
+        $dto = $this->system->getSubscribeRequester($this->systemInstall)
+            ->getRequestDto([
+                RequesterInterface::OBJECT      => $webhook,
+                RequesterInterface::WEBHOOK_URL => 'subscribeUrl',
+            ]);
 
         $this->assertInstanceOf(RequestDto::class, $dto);
         $this->assertEquals('POST', $dto->getMethod());
@@ -85,12 +93,16 @@ final class BigcommerceSystemTest extends KernelTestCaseAbstract
             'destination' => 'subscribeUrl',
         ], Json::decode($dto->getBody(), TRUE));
 
-        $dto = $this->system->getSubscribeRequest(new WebhookSubscribes(
+        $webhook = new WebhookSubscribes(
             'bigcommerce-delete-customer-connector',
-            'bigcommerce-delete-customer',
-            'subscribeUrl',
-            'unSubscribeUrl'
-        ), $this->systemInstall, 'subscribeUrl');
+            'bigcommerce-delete-customer'
+        );
+
+        $dto = $this->system->getSubscribeRequester($this->systemInstall)
+            ->getRequestDto([
+                RequesterInterface::OBJECT      => $webhook,
+                RequesterInterface::WEBHOOK_URL => 'subscribeUrl',
+            ]);
 
         $this->assertInstanceOf(RequestDto::class, $dto);
         $this->assertEquals('POST', $dto->getMethod());
@@ -107,7 +119,8 @@ final class BigcommerceSystemTest extends KernelTestCaseAbstract
      */
     public function testGetUnSubscribeRequest(): void
     {
-        $dto = $this->system->getUnsubscribeRequest($this->systemInstall, 'id');
+        $dto = $this->system->getUnsubscribeRequester($this->systemInstall)
+            ->getRequestDto([RequesterInterface::WEBHOOK_ID => 'id']);
 
         $this->assertInstanceOf(RequestDto::class, $dto);
         $this->assertEquals('DELETE', $dto->getMethod());
@@ -120,16 +133,25 @@ final class BigcommerceSystemTest extends KernelTestCaseAbstract
      */
     public function testGetWebHookId(): void
     {
-        $this->assertEquals(123456789, $this->system->getWebhookId(new ResponseDto(
+        $resp = new ResponseDto(
             200,
             'OK',
             file_get_contents(sprintf('%s/data/BigcommerceWebhookSubscriptionResponse.json', __DIR__)),
             []
-        )));
+        );
+
+        $systemInstall = new SystemInstall();
+        $systemInstall->setSettings(['store_id'     => 'store_id', 'client_id' => 'client_id',
+                                     'access_token' => 'access_token',
+        ]);
+
+        $this->assertEquals(123456789,
+            $this->system->getSubscribeRequester($systemInstall)->processResponse($resp, $systemInstall));
 
         $this->expectException(CleverConnectorsException::class);
         $this->expectExceptionCode(CleverConnectorsException::MISSING_DATA);
-        $this->system->getWebhookId(new ResponseDto(200, 'OK', '{}', []));
+        $this->system->getSubscribeRequester($systemInstall)->processResponse(new ResponseDto(200, 'OK', '{}', []),
+            $systemInstall);
     }
 
     /**

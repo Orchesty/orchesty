@@ -3,9 +3,8 @@
 namespace CleverConnectors\AppBundle\Model\Webhook;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Model\Requester\RequesterInterface;
 use CleverConnectors\AppBundle\Model\Systems\SystemInterface;
-use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
-use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 
 /**
  * Interface WebhookSystemInterface
@@ -21,32 +20,18 @@ interface WebhookSystemInterface extends SystemInterface
     public function getWebhookSubscribes(): array;
 
     /**
-     * @param WebhookSubscribes $subscription
-     * @param SystemInstall     $systemInstall
-     * @param string            $url
+     * @param SystemInstall $systemInstall
      *
-     * @return RequestDto
+     * @return RequesterInterface
      */
-    public function getSubscribeRequest(
-        WebhookSubscribes $subscription,
-        SystemInstall $systemInstall,
-        string $url
-    ): RequestDto;
+    public function getSubscribeRequester(SystemInstall $systemInstall): RequesterInterface;
 
     /**
      * @param SystemInstall $systemInstall
-     * @param string        $webhookId
      *
-     * @return RequestDto
+     * @return RequesterInterface
      */
-    public function getUnsubscribeRequest(SystemInstall $systemInstall, string $webhookId): RequestDto;
-
-    /**
-     * @param ResponseDto $response
-     *
-     * @return string
-     */
-    public function getWebhookId(ResponseDto $response): string;
+    public function getUnsubscribeRequester(SystemInstall $systemInstall): RequesterInterface;
 
     /**
      * @param WebhookSubscribes $sub

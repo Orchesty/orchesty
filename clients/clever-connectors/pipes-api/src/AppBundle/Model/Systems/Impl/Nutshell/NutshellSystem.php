@@ -6,6 +6,7 @@ use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\SystemTypeEnum;
 use CleverConnectors\AppBundle\Model\Form\Field;
 use CleverConnectors\AppBundle\Model\Form\Form;
+use CleverConnectors\AppBundle\Model\Requester\RequesterInterface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\AuthorizationInterface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\Traits\AuthorizationTrait;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
@@ -15,7 +16,6 @@ use CleverConnectors\AppBundle\Model\Webhook\WebhookSystemInterface;
 use CleverConnectors\AppBundle\Utils\WebhookUtils;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
-use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 
 /**
  * Class NutshellSystem
@@ -45,12 +45,7 @@ class NutshellSystem implements AuthorizationInterface, WebhookSystemInterface
     public function __construct(string $url)
     {
         $this->url             = $url;
-        $this->subscriptions[] = new WebhookSubscribes(
-            'nutshell-contact-connector',
-            'nutshell-contact',
-            '',
-            ''
-        );
+        $this->subscriptions[] = new WebhookSubscribes('nutshell-contact-connector', 'nutshell-contact');
     }
 
     /**
@@ -183,50 +178,29 @@ class NutshellSystem implements AuthorizationInterface, WebhookSystemInterface
     }
 
     /**
-     * @param WebhookSubscribes $subscription
-     * @param SystemInstall     $systemInstall
-     * @param string            $url
+     * @param SystemInstall $systemInstall
      *
-     * @return RequestDto|void
+     * @return RequesterInterface|void
      * @throws SystemException
      */
-    public function getSubscribeRequest(
-        WebhookSubscribes $subscription,
-        SystemInstall $systemInstall,
-        string $url
-    ): RequestDto
+    public function getSubscribeRequester(SystemInstall $systemInstall): RequesterInterface
     {
         throw new SystemException(
-            'Method [getSubscribeRequest] not implemented in Nutshell system.',
+            'Method [getSubscribeRequester] not implemented in Nutshell system.',
             SystemException::SYSTEM_METHOD_NOT_FOUND
         );
     }
 
     /**
      * @param SystemInstall $systemInstall
-     * @param string        $webhookId
      *
-     * @return RequestDto|void
+     * @return RequesterInterface|void
      * @throws SystemException
      */
-    public function getUnsubscribeRequest(SystemInstall $systemInstall, string $webhookId): RequestDto
+    public function getUnsubscribeRequester(SystemInstall $systemInstall): RequesterInterface
     {
         throw new SystemException(
-            'Method [getUnsubscribeRequest] not implemented in Nutshell system.',
-            SystemException::SYSTEM_METHOD_NOT_FOUND
-        );
-    }
-
-    /**
-     * @param ResponseDto $response
-     *
-     * @return string|void
-     * @throws SystemException
-     */
-    public function getWebhookId(ResponseDto $response): string
-    {
-        throw new SystemException(
-            'Method [getWebhookId] not implemented in Nutshell system.',
+            'Method [getUnsubscribeRequester] not implemented in Nutshell system.',
             SystemException::SYSTEM_METHOD_NOT_FOUND
         );
     }

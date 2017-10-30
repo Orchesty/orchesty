@@ -3,27 +3,30 @@
 /**
  * Created by PhpStorm.
  * User: radek.jirsa
- * Date: 26.10.17
- * Time: 10:15
+ * Date: 30.10.17
+ * Time: 13:17
  */
 
-namespace Tests\Integration\AppBundle\Model\Systems\Impl;
+namespace CleverConnectors\AppBundle\Model\Systems\Impl\Wisepops\Requester;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
-use CleverConnectors\AppBundle\Model\CMEvents\CMEventObject;
 use CleverConnectors\AppBundle\Model\Requester\RequesterInterface;
+use CleverConnectors\AppBundle\Model\Requester\RequesterTrait;
+use CleverConnectors\AppBundle\Model\Systems\Impl\Wisepops\WisepopsSystem;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 
 /**
- * Class NullRequester
+ * Class WisepopsUnsubscribeRequester
  *
- * @package Tests\Integration\AppBundle\Model\Systems\Impl
+ * @package CleverConnectors\AppBundle\Model\Systems\Impl\Wisepops\Requester
  */
-final class NullRequester implements RequesterInterface
+final class WisepopsUnsubscribeRequester implements RequesterInterface
 {
+
+    use RequesterTrait;
 
     /**
      * @var array
@@ -31,7 +34,7 @@ final class NullRequester implements RequesterInterface
     private $headers;
 
     /**
-     * NullRequester constructor.
+     * WisepopsUnsubscribeRequester constructor.
      *
      * @param array $headers
      */
@@ -47,13 +50,11 @@ final class NullRequester implements RequesterInterface
      */
     public function getRequestDto(array $data): RequestDto
     {
-        /** @var CMEventObject $obj */
-        $obj = $data[self::OBJECT];
+        $url = sprintf(WisepopsSystem::WEBHOOK_URL . '?hook_id=%s', $this->getWebhookId($data));
+        $dto = new RequestDto(CurlManager::METHOD_DELETE, new Uri($url));
+        $dto->setHeaders($this->headers);
 
-        $req = new RequestDto(CurlManager::METHOD_POST, new Uri($obj->getUrl()));
-        $req->setHeaders($this->headers);
-
-        return $req;
+        return $dto;
     }
 
     /**
@@ -64,7 +65,11 @@ final class NullRequester implements RequesterInterface
      */
     public function processResponse(ResponseDto $responseDto, SystemInstall $systemInstall)
     {
-        return '';
+        if ($responseDto->getStatusCode() == 200) {
+            return TRUE;
+        }
+
+        return FALSE;
     }
 
 }

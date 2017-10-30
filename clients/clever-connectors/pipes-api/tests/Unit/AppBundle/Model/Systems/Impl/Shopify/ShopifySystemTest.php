@@ -6,6 +6,7 @@ use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Form\Field;
 use CleverConnectors\AppBundle\Model\Form\Form;
+use CleverConnectors\AppBundle\Model\Requester\RequesterInterface;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\ShopifySystem;
 use CleverConnectors\AppBundle\Model\Webhook\WebhookSubscribes;
 use Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider;
@@ -58,9 +59,13 @@ final class ShopifySystemTest extends KernelTestCaseAbstract
      */
     public function testGetSubscribeRequest(): void
     {
-        $webhook = new WebhookSubscribes('shopify-create-customer-connector', 'top', 'regUrl', 'unregUrl');
+        $webhook = new WebhookSubscribes('shopify-create-customer-connector', 'top');
 
-        $dto = $this->system->getSubscribeRequest($webhook, $this->systemInstall, 'someUrl');
+        $dto = $this->system->getSubscribeRequester($this->systemInstall)
+            ->getRequestDto([
+                RequesterInterface::OBJECT      => $webhook,
+                RequesterInterface::WEBHOOK_URL => 'someUrl',
+            ]);
 
         self::assertInstanceOf(RequestDto::class, $dto);
         self::assertEquals(self::ACCESS_TOKEN, $dto->getHeaders()['X-Shopify-Access-Token']);
@@ -82,7 +87,8 @@ final class ShopifySystemTest extends KernelTestCaseAbstract
      */
     public function testGetUnsubscribeRequest(): void
     {
-        $dto = $this->system->getUnsubscribeRequest($this->systemInstall, '123');
+        $dto = $this->system->getUnsubscribeRequester($this->systemInstall)
+            ->getRequestDto([RequesterInterface::WEBHOOK_ID => '123']);
 
         self::assertInstanceOf(RequestDto::class, $dto);
         self::assertEquals(self::ACCESS_TOKEN, $dto->getHeaders()['X-Shopify-Access-Token']);
@@ -94,15 +100,17 @@ final class ShopifySystemTest extends KernelTestCaseAbstract
      */
     public function testGetWebhookId(): void
     {
+        $systemInstall = new SystemInstall();
+        $systemInstall->setSettings([OAuth2Provider::ACCESS_TOKEN => 'token', 'system_url' => 'aaa']);
         $res = file_get_contents(__DIR__ . '/data/ShopifyWebhookSubscriptionResponse.json');
         $dto = new ResponseDto(200, '', $res, []);
-        $id  = $this->system->getWebhookId($dto);
+        $id  = $this->system->getSubscribeRequester($systemInstall)->processResponse($dto, $systemInstall);
         self::assertEquals(29752623134, $id);
 
         $dto = new ResponseDto(200, '', '', []);
         $this->expectException(CleverConnectorsException::class);
         $this->expectExceptionCode(CleverConnectorsException::MISSING_DATA);
-        $this->system->getWebhookId($dto);
+        $this->system->getSubscribeRequester($systemInstall)->processResponse($dto, $systemInstall);
     }
 
     /**

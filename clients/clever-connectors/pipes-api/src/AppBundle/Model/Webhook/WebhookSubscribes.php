@@ -21,16 +21,6 @@ class WebhookSubscribes
     private $topologyName;
 
     /**
-     * @var string
-     */
-    private $subscribeUrl;
-
-    /**
-     * @var string
-     */
-    private $unSubscribeUrl;
-
-    /**
      * @var array|null
      */
     private $params = [];
@@ -45,23 +35,17 @@ class WebhookSubscribes
      *
      * @param string     $nodeName
      * @param string     $topologyName
-     * @param string     $subscribeUrl
-     * @param string     $unSubscribeUrl
      * @param array|null $params
      */
     public function __construct(
         string $nodeName,
         string $topologyName,
-        string $subscribeUrl,
-        string $unSubscribeUrl,
         ?array $params = []
     )
     {
-        $this->nodeName       = $nodeName;
-        $this->topologyName   = $topologyName;
-        $this->subscribeUrl   = $subscribeUrl;
-        $this->unSubscribeUrl = $unSubscribeUrl;
-        $this->params         = $params;
+        $this->nodeName     = $nodeName;
+        $this->topologyName = $topologyName;
+        $this->params       = $params;
     }
 
     /**
@@ -100,46 +84,6 @@ class WebhookSubscribes
     public function setTopologyName(string $topologyName): WebhookSubscribes
     {
         $this->topologyName = $topologyName;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getSubscribeUrl(): string
-    {
-        return $this->subscribeUrl;
-    }
-
-    /**
-     * @param string $subscribeUrl
-     *
-     * @return WebhookSubscribes
-     */
-    public function setSubscribeUrl(string $subscribeUrl): WebhookSubscribes
-    {
-        $this->subscribeUrl = $subscribeUrl;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getUnSubscribeUrl(): string
-    {
-        return $this->unSubscribeUrl;
-    }
-
-    /**
-     * @param string $unSubscribeUrl
-     *
-     * @return WebhookSubscribes
-     */
-    public function setUnSubscribeUrl(string $unSubscribeUrl): WebhookSubscribes
-    {
-        $this->unSubscribeUrl = $unSubscribeUrl;
 
         return $this;
     }

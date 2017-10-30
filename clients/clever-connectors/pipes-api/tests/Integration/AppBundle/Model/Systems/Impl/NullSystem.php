@@ -50,7 +50,7 @@ class NullSystem implements WebhookSystemInterface, OAuth2Interface, CMEventSyst
     function __construct(OAuth2Provider $provider)
     {
         $this->provider        = $provider;
-        $this->subscriptions[] = new WebhookSubscribes('node', 'top', 'uriReg', 'uriUnreg');
+        $this->subscriptions[] = new WebhookSubscribes('node', 'top');
         $this->cmEvents[]      = new CMEventObject('cm_hardbounce', SystemInstall::EVENT_HARD_BOUNCE, 'uriReq');
         $this->cmEvents[]      = new CMEventObject('cm_create', SystemInstall::EVENT_CREATE, 'uriReq');
     }
@@ -105,13 +105,12 @@ class NullSystem implements WebhookSystemInterface, OAuth2Interface, CMEventSyst
 
     /**
      * @param SystemInstall $systemInstall
-     * @param string        $webhookId
      *
-     * @return RequestDto
+     * @return RequesterInterface
      */
-    public function getUnsubscribeRequest(SystemInstall $systemInstall, string $webhookId): RequestDto
+    public function getUnsubscribeRequester(SystemInstall $systemInstall): RequesterInterface
     {
-        return new RequestDto('POST', new Uri('uriUnsub'));
+        return new NullRequester([]);
     }
 
     /**
@@ -121,7 +120,7 @@ class NullSystem implements WebhookSystemInterface, OAuth2Interface, CMEventSyst
      */
     public function getWebhookId(ResponseDto $response): string
     {
-        return '9';
+        return $response ? '9' : '9';
     }
 
     /**
@@ -226,19 +225,13 @@ class NullSystem implements WebhookSystemInterface, OAuth2Interface, CMEventSyst
     }
 
     /**
-     * @param WebhookSubscribes $subscription
-     * @param SystemInstall     $systemInstall
-     * @param string            $url
+     * @param SystemInstall $systemInstall
      *
-     * @return RequestDto
+     * @return RequesterInterface
      */
-    public function getSubscribeRequest(
-        WebhookSubscribes $subscription,
-        SystemInstall $systemInstall,
-        string $url
-    ): RequestDto
+    public function getSubscribeRequester(SystemInstall $systemInstall): RequesterInterface
     {
-        return new RequestDto('POST', new Uri('uriSub'));
+        return new NullRequester([]);
     }
 
     /**
@@ -248,7 +241,7 @@ class NullSystem implements WebhookSystemInterface, OAuth2Interface, CMEventSyst
      */
     public function getCMEventRequester(SystemInstall $systemInstall): ?RequesterInterface
     {
-        return new NullRequester();
+        return new NullRequester([]);
     }
 
 }
