@@ -25,6 +25,11 @@ trait CMEventSystemTrait
     protected $cmEvents;
 
     /**
+     * @var CMEventObject[]
+     */
+    private $indexedEvents = [];
+
+    /**
      * @param CMEventObject $eventObject
      */
     public function addCMEvent(CMEventObject $eventObject): void
@@ -47,13 +52,46 @@ trait CMEventSystemTrait
      */
     public function isEventAllowed(string $event): bool
     {
-        foreach ($this->cmEvents as $cmEvent) {
-            if ($cmEvent->getEvent() == $event) {
-                return TRUE;
+        $this->indexEvents();
+
+        return isset($this->indexedEvents[$event]);
+    }
+
+    /**
+     * @param string $event
+     *
+     * @return bool
+     */
+    public function isEventProcessAllowed(string $event): bool
+    {
+        $this->indexEvents();
+
+        return isset($this->indexedEvents[$event])
+            && !empty($this->indexedEvents[$event]->getUrl());
+    }
+
+    /**
+     * @param string $event
+     *
+     * @return CMEventObject
+     */
+    public function getEventObject(string $event): CMEventObject
+    {
+        $this->indexEvents();
+
+        return $this->indexedEvents[$event];
+    }
+
+    /**
+     *
+     */
+    private function indexEvents(): void
+    {
+        if (empty($this->indexedEvents)) {
+            foreach ($this->cmEvents as $cmEvent) {
+                $this->indexedEvents[$cmEvent->getEvent()] = $cmEvent;
             }
         }
-
-        return FALSE;
     }
 
 }

@@ -290,7 +290,7 @@ class CMEventsManager implements LoggerAwareInterface
     {
         if (array_key_exists($event, $data)) {
             if ($system->isEventAllowed($event) === TRUE) {
-                if ($systemInstall->getEventState($event) === FALSE && $data[$event] === TRUE) {
+                if ($systemInstall->getEventState($event) === FALSE && $data[$event] === TRUE && $system->isEventProcessAllowed($event)) {
                     $changed[] = $event;
                 }
 

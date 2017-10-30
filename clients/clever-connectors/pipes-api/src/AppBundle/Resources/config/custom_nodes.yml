@@ -26,3 +26,11 @@ services:
         class: CleverConnectors\AppBundle\Model\CustomNode\StartingProgress
         arguments:
             - '@hbpf.progress_counter.progress_counter_service'
+
+    hbpf.custom_node.cm-event-activator:
+        class: CleverConnectors\AppBundle\Model\CMEvents\CMEventActivator
+        arguments:
+            - '@cc.systems.manager'
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.transport.async_curl_factory'
+            - '@rabbit-mq.producer.cm_activator_stream'

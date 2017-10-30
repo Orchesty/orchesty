@@ -242,9 +242,11 @@ class NullSystem implements WebhookSystemInterface, OAuth2Interface, CMEventSyst
     }
 
     /**
-     * @return RequesterInterface
+     * @param SystemInstall $systemInstall
+     *
+     * @return RequesterInterface|null
      */
-    public function getCMEventRequester(): RequesterInterface
+    public function getCMEventRequester(SystemInstall $systemInstall): ?RequesterInterface
     {
         return new NullRequester();
     }

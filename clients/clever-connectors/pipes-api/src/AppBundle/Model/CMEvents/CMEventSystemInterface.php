@@ -9,6 +9,7 @@
 
 namespace CleverConnectors\AppBundle\Model\CMEvents;
 
+use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\Requester\RequesterInterface;
 
 /**
@@ -30,9 +31,11 @@ interface CMEventSystemInterface
     public function addCMEvent(CMEventObject $eventObject): void;
 
     /**
-     * @return RequesterInterface
+     * @param SystemInstall $systemInstall
+     *
+     * @return RequesterInterface|null
      */
-    public function getCMEventRequester(): RequesterInterface;
+    public function getCMEventRequester(SystemInstall $systemInstall): ?RequesterInterface;
 
     /**
      * @param string $event
@@ -40,5 +43,19 @@ interface CMEventSystemInterface
      * @return bool
      */
     public function isEventAllowed(string $event): bool;
+
+    /**
+     * @param string $event
+     *
+     * @return bool
+     */
+    public function isEventProcessAllowed(string $event): bool;
+
+    /**
+     * @param string $event
+     *
+     * @return CMEventObject
+     */
+    public function getEventObject(string $event): CMEventObject;
 
 }

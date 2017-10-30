@@ -19,6 +19,8 @@ use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 interface RequesterInterface
 {
 
+    public const OBJECT = 'object';
+
     /**
      * @param array $data
      *
