@@ -60,7 +60,7 @@ final class SystemControllerTest extends ControllerTestCaseAbstract
     {
         $this->loginUser('user@example.com', 'pass');
         $response = $this->sendGet('/systems', ['user' => 'unknown']);
-        $res      = json_decode($response->content);
+        $res      = $response->content;
 
         $this->assertEquals(404, $response->status);
         $this->assertEquals(SystemException::class, $res->type);
@@ -91,7 +91,7 @@ final class SystemControllerTest extends ControllerTestCaseAbstract
     {
         $this->loginUser('user@example.com', 'pass');
         $response = $this->sendGet('/systems', ['group' => 'unknown']);
-        $res      = json_decode($response->content);
+        $res      = $response->content;
         $this->assertEquals(404, $response->status);
         $this->assertEquals(SystemException::class, $res->type);
         $this->assertEquals(2001, $res->error_code);
@@ -283,7 +283,7 @@ final class SystemControllerTest extends ControllerTestCaseAbstract
         $response = $this->sendPost('/user_systems/user/someUser/system/unknown/install', [
             'token' => 'token',
         ]);
-        $res      = json_decode($response->content);
+        $res      = $response->content;
         $this->assertEquals(404, $response->status);
         $this->assertEquals(SystemException::class, $res->type);
         $this->assertEquals(2001, $res->error_code);
@@ -392,7 +392,7 @@ final class SystemControllerTest extends ControllerTestCaseAbstract
         $this->persistAndFlush($system);
 
         $response = $this->sendGet('/user_systems/user/someUser/system/unknown/uninstall');
-        $res      = json_decode($response->content);
+        $res      = $response->content;
         $this->assertEquals(404, $response->status);
         $this->assertEquals(SystemException::class, $res->type);
         $this->assertEquals(2001, $res->error_code);
@@ -411,7 +411,7 @@ final class SystemControllerTest extends ControllerTestCaseAbstract
         $this->persistAndFlush($system);
 
         $response = $this->sendGet('/user_systems/user/unknown/system/null.user.group/uninstall');
-        $res      = json_decode($response->content);
+        $res      = $response->content;
         $this->assertEquals(404, $response->status);
         $this->assertEquals(SystemException::class, $res->type);
         $this->assertEquals(2001, $res->error_code);
@@ -462,7 +462,7 @@ final class SystemControllerTest extends ControllerTestCaseAbstract
             '/user_systems/user/someUser/system/unknown/switch_token',
             ['token' => 'anotherToken']
         );
-        $res      = json_decode($response->content);
+        $res      = $response->content;
         $this->assertEquals(404, $response->status);
         $this->assertEquals(SystemException::class, $res->type);
         $this->assertEquals(2001, $res->error_code);
@@ -484,7 +484,7 @@ final class SystemControllerTest extends ControllerTestCaseAbstract
             '/user_systems/user/unknown/system/null.user.group/switch_token',
             ['token' => 'anotherToken']
         );
-        $res      = json_decode($response->content);
+        $res      = $response->content;
         $this->assertEquals(404, $response->status);
         $this->assertEquals(SystemException::class, $res->type);
         $this->assertEquals(2001, $res->error_code);

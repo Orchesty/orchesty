@@ -12,7 +12,6 @@ namespace CleverConnectors\AppBundle\Controller;
 use Exception;
 use FOS\RestBundle\Controller\Annotations\Route;
 use Hanaboso\PipesFramework\Utils\ControllerUtils;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
