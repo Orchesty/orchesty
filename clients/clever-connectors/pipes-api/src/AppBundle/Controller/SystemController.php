@@ -271,7 +271,7 @@ class SystemController extends FOSRestController
      */
     public function userSaveTokenAction(Request $request, string $userId, string $systemKey): Response
     {
-        $url = $this->handler->saveToken($userId, $systemKey, ['code' => $request->get('code')]);
+        $url = $this->handler->saveToken($userId, $systemKey, $request->query->all());
 
         return new RedirectResponse($url);
     }
@@ -295,7 +295,7 @@ class SystemController extends FOSRestController
         }
 
         $str = explode(':', Base64::base64UrlDecode($request->query->get('state')));
-        $url = $this->handler->saveToken($str[0], $str[1], ['code' => $request->get('code')]);
+        $url = $this->handler->saveToken($str[0], $str[1], $request->query->all());
 
         return new RedirectResponse($url);
     }
