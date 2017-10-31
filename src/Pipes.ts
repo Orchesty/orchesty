@@ -34,7 +34,7 @@ class Pipes {
      * @param {string} nodeId
      * @return {Promise<void>}
      */
-    public startNode(nodeId: string): Promise<void> {
+    public startNode(nodeId: string): Promise<Node> {
         const nodeConf = this.getNodeConfig(nodeId);
         const node: Node = this.createNode(nodeConf);
 
@@ -44,6 +44,8 @@ class Pipes {
             })
             .then(() => {
                 logger.info(`Node started`, { node_id: nodeId });
+
+                return node;
             });
     }
 

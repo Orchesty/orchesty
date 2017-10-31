@@ -78,6 +78,7 @@ class HttpWorker implements IWorker {
                 }
 
                 this.onValidResponse(msg, body, cleanResponseHeaders, result);
+                msg.setHeaders(cleanResponseHeaders);
 
                 return resolve([msg]);
             });
