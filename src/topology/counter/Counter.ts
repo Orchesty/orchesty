@@ -47,6 +47,7 @@ export interface ICounterProcessInfo {
     total: number;
     ok: number;
     nok: number;
+    success: boolean;
     messages: ICounterLog[];
     start_timestamp: number;
     end_timestamp: number;
@@ -85,6 +86,7 @@ export default class Counter {
             total: 1,
             ok: 0,
             nok: 0,
+            success: true,
             messages: [],
             start_timestamp: Date.now(),
             end_timestamp: 0,
@@ -102,6 +104,7 @@ export default class Counter {
             processInfo.ok += 1;
         } else {
             processInfo.nok += 1;
+            processInfo.success = false;
         }
 
         processInfo.total += cm.getMultiplier() * cm.getFollowing();
