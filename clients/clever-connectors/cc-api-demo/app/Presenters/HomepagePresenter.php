@@ -2,7 +2,9 @@
 
 namespace App\Presenters;
 
+use App\Forms\SystemFilterFormFactory;
 use CcApi\Connector\ConnectorManager;
+use Nette\Application\UI\Form;
 
 /**
  * Class HomepagePresenter
@@ -18,20 +20,55 @@ class HomepagePresenter extends BasePresenter
     private $connectorManager;
 
     /**
+     * @var SystemFilterFormFactory
+     */
+    private $systemFilterFormFactory;
+
+    /**
      * HomepagePresenter constructor.
      *
-     * @param ConnectorManager $connectorManager
+     * @param ConnectorManager        $connectorManager
+     * @param SystemFilterFormFactory $systemFilterFormFactory
      */
-    public function __construct(ConnectorManager $connectorManager)
+    public function __construct(ConnectorManager $connectorManager, SystemFilterFormFactory $systemFilterFormFactory)
     {
         parent::__construct();
-        $this->connectorManager = $connectorManager;
+        $this->connectorManager        = $connectorManager;
+        $this->systemFilterFormFactory = $systemFilterFormFactory;
+    }
+
+    /**
+     * @return Form
+     */
+    public function createComponentSystemFilterForm(): Form
+    {
+        $form = $this->systemFilterFormFactory->create();
+        $form->getElementPrototype()->setAttribute('class', 'ajax');
+
+        $form->onSuccess[] = [$this, 'processSystemFilter'];
+
+        return $form;
+    }
+
+    /**
+     * @param Form $form
+     */
+    public function processSystemFilter(Form $form): void
+    {
+        $data = $form->getValues(TRUE);
+
+        $this->template->systems = $this->connectorManager->getAllSystems(
+            $data['group'] ?? NULL,
+            $data['user_id'] ?? NULL
+        );
+
+        $this->redrawControl('allSystems');
     }
 
     /**
      *
      */
-    public function renderDefault()
+    public function actionDefault(): void
     {
         $systems = $this->connectorManager->getAllSystems();
 

@@ -43,7 +43,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
     {
         parent::beforeRender();
         $this->template->menuItems = [
-            'Connectors'   => 'Homepage:',
+            'Systems'      => 'Homepage:',
             'User Systems' => 'System:',
             'Stream'       => 'Stream:',
         ];

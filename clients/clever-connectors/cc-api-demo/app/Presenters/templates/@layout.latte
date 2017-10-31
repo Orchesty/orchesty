@@ -20,10 +20,14 @@
 <body>
     <div class="container">
         {block menu}
-            <ul class="nav" n:inner-foreach="$menuItems as $item => $link">
-                <li class="nav-item"><a class="nav-link" n:href="$link">{$item}</a></li>
-            </ul>
+            <div id="main-menu">
+                <ul class="nav" n:inner-foreach="$menuItems as $item => $link">
+                    <li class="nav-item"><a class="nav-link" n:href="$link">{$item}</a></li>
+                </ul>
+            </div>
         {/block menu}
+
+        <hr>
 
         <div n:foreach="$flashes as $flash" n:class="flash, $flash->type">{$flash->message}</div>
 

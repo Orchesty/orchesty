@@ -5,22 +5,22 @@
 {/block title}
 
 {block content}
-    <h1 class="text-center">CLEVER CONNECTORS API</h1>
+    <h1 class="text-center">SYSTEMS</h1>
 
     <hr>
 
-    <h5>GET /system?group=any-group&user=user-token</h5>
     <div class="col-md-12">
         <table class="table table-striped">
             <thead class="thead-inverse">
-                <tr>
-                    <th>Name</th>
-                    <th>Key</th>
-                    <th>Type</th>
-                    <th>Auth type</th>
-                    <th>Description</th>
-                </tr>
+            <tr>
+                <th>Name</th>
+                <th>Key</th>
+                <th>Type</th>
+                <th>Auth type</th>
+                <th>Description</th>
+            </tr>
             </thead>
+            <tbody n:snippet="allSystems">
             {foreach $systems as $system}
                 <tr>
                     <td>{$system->getName()}</td>
@@ -30,6 +30,28 @@
                     <td>{$system->getDescription()}</td>
                 </tr>
             {/foreach}
+            </tbody>
+            <tfoot class="table-dark">
+            {form systemFilterForm}
+                <tr>
+                    <td colspan="2">
+                        <div class="form-group" style="margin-bottom: 0">
+                            {input group class => "form-control"}
+                        </div>
+                    </td>
+                    <td colspan="2">
+                        <div class="form-group" style="margin-bottom: 0">
+                            {input user_id class => "form-control"}
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-group" style="margin-bottom: 0">
+                            {input filter class=>"form-control btn btn-primary"}
+                        </div>
+                    </td>
+                </tr>
+            {/form}
+            </tfoot>
         </table>
     </div>
 {/block}

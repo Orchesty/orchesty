@@ -34,6 +34,10 @@ services:
 	subscriber:
 		class: CmStream\Subscriber
 
+	# HOMEPAGE
+	system_filter_form:
+		class: App\Forms\SystemFilterFormFactory
+
 	publish_form_factory:
 		class: App\Forms\PublishFormFactory
 

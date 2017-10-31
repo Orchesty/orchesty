@@ -5,3 +5,11 @@
 #streamMessages {
     margin-top: 2em;
 }
+
+#main-menu {
+    margin-top: 20px;
+}
+
+#main-menu ul > li {
+    text-transform: uppercase;
+}
