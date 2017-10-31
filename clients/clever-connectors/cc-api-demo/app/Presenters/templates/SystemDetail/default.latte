@@ -1,0 +1,114 @@
+{block title}
+    USER SYSTEM DETAIL
+{/block title}
+
+{block content}
+    <h1 class="text-center">USER SYSTEM DETAIL</h1>
+
+    <hr>
+
+    {import '../components/form.latte'}
+    {if $user->isLoggedIn()}
+
+        <div class="row">
+            <div class="col-md-10 text-center" style="line-height: 3rem">
+                <strong>UserId:</strong> {$userId}
+            </div>
+            <div class="col-md-2" style="line-height: 3rem">
+                {form logoutForm}
+                    <div class="form-group" style="margin-bottom: 0">
+                        {input logout class=>"form-control btn btn-danger btn-sm"}
+                    </div>
+                {/form}
+            </div>
+
+        </div>
+
+        <hr>
+
+        {if $system}
+            <div class="row">
+
+                <div class="col-md-8">
+                    <h3>System info</h3>
+                </div>
+                <div class="col-md-2">
+                    {if $system->getAuthType() == 'oauth2'}
+                        <a n:href="authorize!" class="btn btn-info btn-sm btn-block">
+                            Authorize
+                        </a>
+                    {/if}
+                </div>
+                <div class="col-md-2">
+                    <a n:href="startSync!" class="btn btn-info btn-sm btn-block ajax">
+                        Sync
+                    </a>
+                </div>
+
+                <div class="clearfix"></div>
+
+                <div class="col-md-12">
+                    <table class="table table-striped">
+                        <tr>
+                            <th>System name</th>
+                            <td>{$system->getName()}</td>
+                        </tr>
+                        <tr>
+                            <th>Token</th>
+                            <td>{$system->getToken()}</td>
+                        </tr>
+                        <tr>
+                            <th>Auth type</th>
+                            <td>{$system->getAuthType()}</td>
+                        </tr>
+                        <tr>
+                            <th>Authorized</th>
+                            <td>{$system->isAuthorized() ? 'true' : 'false'}</td>
+                        </tr>
+                        <tr>
+                            <th>Synchronized</th>
+                            <td>{$system->isSynchronized() ? 'true' : 'false'}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            {if $system->getSettingFields()}
+                <hr>
+
+                <div class="row">
+                    <div class="col-md-12">
+
+                        <h3>Authorization</h3>
+
+                        {include bootstrap-form authorizationSettingGeneratorForm}
+                    </div>
+                </div>
+            {/if}
+
+            <hr>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <h2>Switch token</h2>
+
+                    {include bootstrap-form switchTokenForm}
+                </div>
+            </div>
+        {else}
+            <div class="row">
+                <div class="col-md-12">
+                    Missing $_GET parameter with system_key ?system_key=system_key
+                </div>
+            </div>
+        {/if}
+
+    {else}
+        <div class="row">
+            <div class="col-md-12">
+                {include bootstrap-form loginForm}
+            </div>
+        </div>
+    {/if}
+
+{/block}

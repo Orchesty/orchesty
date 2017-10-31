@@ -21,6 +21,7 @@ class UserSystemFactory
     private const DESC           = 'description';
     private const TYPE           = 'type';
     private const TOKEN          = 'token';
+    private const AUTH_TYPE      = 'auth_type';
     private const AUTHORIZED     = 'authorized';
     private const SYNCHRONIZED   = 'synchronized';
     private const SETTING_FIELDS = 'setting_fields';
@@ -40,6 +41,7 @@ class UserSystemFactory
             ->setDescription($data[self::DESC] ?? '')
             ->setType($data[self::TYPE] ?? '')
             ->setToken($data[self::TOKEN] ?? '')
+            ->setAuthType($data[self::AUTH_TYPE] ?? '')
             ->setAuthorized($data[self::AUTHORIZED] ?? FALSE)
             ->setSynchronized($data[self::SYNCHRONIZED] ?? FALSE);
 

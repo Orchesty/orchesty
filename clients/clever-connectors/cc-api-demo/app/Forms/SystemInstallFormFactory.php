@@ -16,7 +16,7 @@ use Nette\Application\UI\Form;
  *
  * @package App\Forms
  */
-class SystemActionFormFactory
+class SystemInstallFormFactory
 {
 
     /**
@@ -40,9 +40,7 @@ class SystemActionFormFactory
         $form
             ->addSubmit('install', 'Install');
 
-        $form
-            ->addSubmit('uninstall', 'Uninstall');
-
         return $form;
     }
+
 }

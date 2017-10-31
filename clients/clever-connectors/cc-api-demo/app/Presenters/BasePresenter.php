@@ -2,7 +2,10 @@
 
 namespace App\Presenters;
 
+use App\Forms\LoginFormFactory;
+use App\Forms\LogoutFormFactory;
 use Nette;
+use Nette\Application\UI\Form;
 use Nette\Security\Identity;
 
 /**
@@ -22,6 +25,16 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
     protected $token;
 
     /**
+     * @var LoginFormFactory @inject
+     */
+    public $loginFormFactory;
+
+    /**
+     * @var LogoutFormFactory @inject
+     */
+    public $logoutFormFactory;
+
+    /**
      *
      */
     public function startup()
@@ -34,6 +47,8 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
             $this->userId = $identity->getId();
             $this->token  = $identity->getData()['token'] ?? '';
         }
+
+        $this->template->userId = $this->userId ?? '';
     }
 
     /**
@@ -48,6 +63,49 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
             'Stream'       => 'Stream:',
         ];
         $this->template->host      = $this->context->getParameters()['ws']['host'];
+    }
+
+    /**
+     * @return \Nette\Application\UI\Form
+     */
+    public function createComponentLoginForm()
+    {
+        $form              = $this->loginFormFactory->create();
+        $form->onSuccess[] = [$this, 'processLogin'];
+
+        return $form;
+    }
+
+    /**
+     * @param Form $form
+     */
+    public function processLogin(Form $form)
+    {
+        $data = $form->getValues();
+        $this->user->login($data['user_id'], '');
+
+        $form->reset();
+        $this->redirect('System:');
+    }
+
+    /**
+     * @return \Nette\Application\UI\Form
+     */
+    public function createComponentLogoutForm()
+    {
+        $form              = $this->logoutFormFactory->create();
+        $form->onSuccess[] = [$this, 'processLogout'];
+
+        return $form;
+    }
+
+    /**
+     *
+     */
+    public function processLogout()
+    {
+        $this->user->logout();
+        $this->redirect('System:');
     }
 
 }

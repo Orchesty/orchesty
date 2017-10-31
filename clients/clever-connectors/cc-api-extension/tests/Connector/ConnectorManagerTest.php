@@ -142,7 +142,7 @@ class ConnectorManagerTest extends TestCase
             $this->assertSame(CurlSender::GET, $request->getMethod());
             $this->assertSame('/user_systems/user/123/system/key', $request->getUri()->getPath());
 
-            $content = '{"key":"key","type":"type","name":"name","description":"description","token":"token","synchronized":true,"authorized":false,';
+            $content = '{"key":"key","type":"type","name":"name","description":"description","token":"token","auth_type":"auth_type","synchronized":true,"authorized":false,';
             $content .= '"setting_fields":[{"key":"key","type":"type","value":"value","label":"label","required":true}]}';
 
             return new Response(200, [], $content);
@@ -156,6 +156,7 @@ class ConnectorManagerTest extends TestCase
         $this->assertSame('name', $userSystem->getName());
         $this->assertSame('description', $userSystem->getDescription());
         $this->assertSame('token', $userSystem->getToken());
+        $this->assertSame('auth_type', $userSystem->getAuthType());
         $this->assertSame(TRUE, $userSystem->isSynchronized());
         $this->assertSame(FALSE, $userSystem->isAuthorized());
 
@@ -177,7 +178,7 @@ class ConnectorManagerTest extends TestCase
             $this->assertSame(CurlSender::GET, $request->getMethod());
             $this->assertSame('/user_systems/user/123', $request->getUri()->getPath());
 
-            $content = '[{"key":"key","type":"type","name":"name","description":"description","token":"token","synchronized":true,"authorized":false}]';
+            $content = '[{"key":"key","type":"type","name":"name","description":"description","token":"token","auth_type":"auth_type","synchronized":true,"authorized":false}]';
 
             return new Response(200, [], $content);
         };
@@ -190,6 +191,7 @@ class ConnectorManagerTest extends TestCase
         $this->assertSame('name', $userSystems[0]->getName());
         $this->assertSame('description', $userSystems[0]->getDescription());
         $this->assertSame('token', $userSystems[0]->getToken());
+        $this->assertSame('auth_type', $userSystems[0]->getAuthType());
         $this->assertSame(TRUE, $userSystems[0]->isSynchronized());
         $this->assertSame(FALSE, $userSystems[0]->isAuthorized());
     }

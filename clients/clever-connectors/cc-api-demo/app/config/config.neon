@@ -28,42 +28,38 @@ services:
 	router: App\Router\RouterFactory::createRouter
 	authenticator:  \App\Model\NullAuthenticator
 
+	# STREAM EXTENSION
 	guzzle_client_factory:
 		class: CmStream\GuzzleClientFactory(%stream.host%)
 
 	subscriber:
 		class: CmStream\Subscriber
 
-	# HOMEPAGE
-	system_filter_form:
-		class: App\Forms\SystemFilterFormFactory
-
-	publish_form_factory:
-		class: App\Forms\PublishFormFactory
-
+	# BASE
 	login_form:
 		class: App\Forms\LoginFormFactory
 
 	logout_form:
 		class: App\Forms\LogoutFormFactory
 
-	system_action_form:
-		class: App\Forms\SystemActionFormFactory
+	# HOMEPAGE
+	system_filter_form:
+		class: App\Forms\SystemFilterFormFactory
 
-	authorize_setting_form:
-		class: App\Forms\AuthorizationSettingFormFactory
+	# USER SYSTEMS
+	system_install_form:
+		class: App\Forms\SystemInstallFormFactory
+
+	# USER SYSTEM DETAIL
+	switch_token:
+		class: App\Forms\SwitchTokenFormFactory
 
 	authorize_generator_form:
 		class: App\Forms\AuthorizationSettingGeneratorFactory
 
-	authorize_form:
-		class: App\Forms\AuthorizeFormFactory
-
-	sync_form:
-		class: App\Forms\SyncFormFactory
-
-	switch_token:
-		class: App\Forms\SwitchTokenFormFactory
+	# STREAM
+	publish_form_factory:
+		class: App\Forms\PublishFormFactory
 
 extensions:
 	cc_api: CcApi\Bridges\DI\CcApiExtension

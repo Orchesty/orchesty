@@ -19,18 +19,11 @@ class SwitchTokenFormFactory
 {
 
     /**
-     * @param array $systems
-     *
      * @return Form
      */
-    public function create(array $systems): Form
+    public function create(): Form
     {
         $form = new Form();
-
-        $form
-            ->addSelect('systems', 'Systems', $systems)
-            ->setPrompt('Choose system')
-            ->setRequired('Choose any system.');
 
         $form
             ->addText('token', 'Token')

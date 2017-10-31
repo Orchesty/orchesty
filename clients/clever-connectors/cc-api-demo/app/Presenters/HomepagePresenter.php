@@ -28,13 +28,13 @@ class HomepagePresenter extends BasePresenter
      * HomepagePresenter constructor.
      *
      * @param ConnectorManager        $connectorManager
-     * @param SystemFilterFormFactory $systemFilterFormFactory
+     * @param SystemFilterFormFactory $systemFilterGeneratorFactory
      */
-    public function __construct(ConnectorManager $connectorManager, SystemFilterFormFactory $systemFilterFormFactory)
+    public function __construct(ConnectorManager $connectorManager, SystemFilterFormFactory $systemFilterGeneratorFactory)
     {
         parent::__construct();
         $this->connectorManager        = $connectorManager;
-        $this->systemFilterFormFactory = $systemFilterFormFactory;
+        $this->systemFilterFormFactory = $systemFilterGeneratorFactory;
     }
 
     /**

@@ -16,8 +16,9 @@
             </div>
             <div class="col-md-2" style="line-height: 3rem">
                 {form logoutForm}
-                    <div class="form-group"
-                         style="margin-bottom: 0">{input logout class=>"form-control btn btn-danger btn-sm"}</div>
+                    <div class="form-group" style="margin-bottom: 0">
+                        {input logout class=>"form-control btn btn-danger btn-sm"}
+                    </div>
                 {/form}
             </div>
 
@@ -31,10 +32,10 @@
                     <tr>
                         <th>Name</th>
                         <th>Token</th>
-                        <th class="text-center" colspan="2">Authorization</th>
                         <th class="text-center">Authorized status</th>
-                        <th class="text-center">Synchronize</th>
                         <th class="text-center">Synchronized status</th>
+                        <th class="text-center">Detail</th>
+                        <th class="text-center">Uninstall</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -42,36 +43,25 @@
                         <tr>
                             <td>{$system->getName()}</td>
                             <td>{$system->getToken()}</td>
-                            <td class="text-center">
-                                {form authorizationSettingForm}
-                                    <div class="form-group"
-                                         style="margin-bottom: 0">{input authorize_setting class=>"form-control btn btn-primary btn-sm"}</div>
-                                    <input type="hidden" name="system_key" value="{$system->getKey()}">
-                                {/form}
-                            </td>
-                            <td class="text-center">
-                                {form authorizeForm}
-                                    <div class="form-group"
-                                         style="margin-bottom: 0">{input authorize class=>"form-control btn btn-primary btn-sm"}</div>
-                                    <input type="hidden" name="system_key" value="{$system->getKey()}">
-                                {/form}
-                            </td>
                             <td class="text-center">{$system->isAuthorized() ? 'true' : 'false'}</td>
-                            <td class="text-center">
-                                {form syncForm}
-                                    <div class="form-group"
-                                         style="margin-bottom: 0">{input start_sync class=>"form-control btn btn-primary btn-sm"}</div>
-                                    <input type="hidden" name="system_key" value="{$system->getKey()}">
-                                {/form}
-                            </td>
                             <td class="text-center">{$system->isSynchronized() ? 'true' : 'false'}</td>
+                            <td class="text-center">
+                                <a n:href="SystemDetail:, systemKey => $system->getKey()" class="btn btn-info btn-sm btn-block">
+                                    Detail
+                                </a>
+                            </td>
+                            <td class="text-center">
+                                <a n:href="uninstall!, systemKey => $system->getKey()" class="btn btn-info btn-sm btn-block">
+                                    Uninstall
+                                </a>
+                            </td>
                         </tr>
                     {/foreach}
                     </tbody>
                     <tfoot class="table-dark">
                     {form systemActionForm}
                         <tr>
-                            <td colspan="3">
+                            <td colspan="2">
                                 <div class="form-group" style="margin-bottom: 0">
                                     {input systems class => "form-control"}
                                 </div>
@@ -81,46 +71,15 @@
                                     {input token class => "form-control"}
                                 </div>
                             </td>
-                            <td>
-                                <div class="form-group"
-                                     style="margin-bottom: 0">{input install class=>"form-control btn btn-primary"}</div>
-                            </td>
-                            <td>
-                                <div class="form-group"
-                                     style="margin-bottom: 0">{input uninstall class=>"form-control btn btn-secondary"}</div>
+                            <td colspan="2">
+                                <div class="form-group" style="margin-bottom: 0">
+                                    {input install class=>"form-control btn btn-primary"}
+                                </div>
                             </td>
                         </tr>
                     {/form}
                     </tfoot>
                 </table>
-            </div>
-
-            <div class="clearfix"></div>
-
-            <div class="col-md-12">
-                {snippet systemData}
-
-                    {if $userSystemData}
-                        <h2>Authorization</h2>
-
-                        {import '../components/form.latte'}
-                        {include bootstrap-form authorizationSettingGeneratorForm}
-                    {/if}
-
-                {/snippet}
-            </div>
-
-            <div class="clearfix"></div>
-
-            <hr>
-
-            <div class="col-md-12">
-
-                <h2>Switch token</h2>
-
-                {import '../components/form.latte'}
-                {include bootstrap-form switchTokenForm}
-
             </div>
 
         {else}

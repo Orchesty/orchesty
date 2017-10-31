@@ -29,13 +29,13 @@ class StreamPresenter extends BasePresenter
      * StreamPresenter constructor.
      *
      * @param Subscriber         $subscriber
-     * @param PublishFormFactory $publishFormFactory
+     * @param PublishFormFactory $publishGeneratorFactory
      */
-    public function __construct(Subscriber $subscriber, PublishFormFactory $publishFormFactory)
+    public function __construct(Subscriber $subscriber, PublishFormFactory $publishGeneratorFactory)
     {
         parent::__construct();
         $this->subscriber         = $subscriber;
-        $this->publishFormFactory = $publishFormFactory;
+        $this->publishFormFactory = $publishGeneratorFactory;
     }
 
     /**
