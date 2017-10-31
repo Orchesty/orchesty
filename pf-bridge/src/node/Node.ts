@@ -105,6 +105,14 @@ class Node {
 
     /**
      *
+     * @return {IWorker}
+     */
+    public getWorker(): IWorker {
+        return this.worker;
+    }
+
+    /**
+     *
      * @param {JobMessage} msg
      */
     private sendProcessDurationMetric(msg: JobMessage): void {

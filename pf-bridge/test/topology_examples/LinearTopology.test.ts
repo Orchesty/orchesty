@@ -7,12 +7,12 @@ import * as express from "express";
 import Connection from "lib-nodejs/dist/src/rabbitmq/Connection";
 import Publisher from "lib-nodejs/dist/src/rabbitmq/Publisher";
 import SimpleConsumer from "lib-nodejs/dist/src/rabbitmq/SimpleConsumer";
-import * as config from "../src/config";
-import Headers from "../src/message/Headers";
-import {ResultCode} from "../src/message/ResultCode";
-import {ITopologyConfigSkeleton} from "../src/topology/Configurator";
-import {ICounterProcessInfo} from "../src/topology/counter/Counter";
-import Pipes from "./../src/Pipes";
+import * as config from "../../src/config";
+import Headers from "../../src/message/Headers";
+import {ResultCode} from "../../src/message/ResultCode";
+import {ITopologyConfigSkeleton} from "../../src/topology/Configurator";
+import {ICounterProcessInfo} from "../../src/topology/counter/Counter";
+import Pipes from "../../src/Pipes";
 
 const testTopology: ITopologyConfigSkeleton = {
     id: "linear-topo",

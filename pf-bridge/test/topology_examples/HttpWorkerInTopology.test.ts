@@ -1,0 +1,159 @@
+import { assert } from "chai";
+import "mocha";
+
+import {Channel, Message} from "amqplib";
+import * as bodyParser from "body-parser";
+import * as express from "express";
+import Connection from "lib-nodejs/dist/src/rabbitmq/Connection";
+import Publisher from "lib-nodejs/dist/src/rabbitmq/Publisher";
+import SimpleConsumer from "lib-nodejs/dist/src/rabbitmq/SimpleConsumer";
+import * as config from "../../src/config";
+import Headers from "../../src/message/Headers";
+import {ResultCode} from "../../src/message/ResultCode";
+import Pipes from "../../src/Pipes";
+import {ITopologyConfigSkeleton} from "../../src/topology/Configurator";
+import {ICounterProcessInfo} from "../../src/topology/counter/Counter";
+
+const testTopology: ITopologyConfigSkeleton = {
+    id: "topo-with-http-worker-node",
+    nodes: [
+        {
+            id: "http-worker-node",
+            worker: {
+                type: "worker.http",
+                settings: {
+                    host: "localhost",
+                    method: "post",
+                    port: 7600,
+                    process_path: "/process",
+                    status_path: "/status",
+                    secure: false,
+                    opts: {},
+                },
+            },
+            debug: {
+                port: 7601,
+                host: "localhost",
+                url: "http://localhost:7601/status",
+            },
+            next: ["capture-node"],
+        },
+        {
+            id: "capture-node",
+            worker: {
+                type: "worker.capture",
+                settings: {},
+            },
+            debug: {
+                port: 7602,
+                host: "localhost",
+                url: "http://localhost:7602/status",
+            },
+            next: [],
+        },
+    ],
+};
+
+const amqpConn = new Connection(config.amqpConnectionOptions);
+const firstQueue = `pipes.${testTopology.id}.${testTopology.nodes[0].id}`;
+
+const httpMock = express();
+httpMock.use(bodyParser.raw({
+    type: () => true,
+}));
+
+httpMock.post("/process", (req, resp) => {
+    const requestHeaders: any = req.headers;
+
+    assert.equal(req.body.toString(), "original content");
+    assert.isTrue(Headers.containsAllMandatory(requestHeaders));
+
+    const replyHeaders = new Headers(requestHeaders);
+    replyHeaders.setPFHeader(Headers.RESULT_CODE, `${ResultCode.SUCCESS}`);
+    replyHeaders.setPFHeader(Headers.RESULT_MESSAGE, "ok");
+    replyHeaders.setHeader(Headers.CONTENT_TYPE, "text/plain; charset=utf-8");
+
+    resp.set(replyHeaders.getRaw());
+    resp.status(200).send("changed content");
+});
+httpMock.listen(7600);
+
+describe("Topology with HttpWorker Node", () => {
+    it("Next node should receive changed content", async () => {
+        const pip = new Pipes(testTopology);
+
+        const [counter, httpNode, captureNode] = await Promise.all([
+            pip.startCounter(),
+            pip.startNode("http-worker-node"),
+            pip.startNode("capture-node"),
+        ]);
+
+        let resultMessagesReceived: number = 0;
+        const counterResultQueue = { name: `${testTopology.id}-results`, options: {} };
+        const resultConsumer = new SimpleConsumer(
+            amqpConn,
+            async (ch: Channel) => {
+                await ch.assertQueue(counterResultQueue.name, counterResultQueue.options);
+                await ch.purgeQueue(counterResultQueue.name);
+                await ch.bindQueue(
+                    counterResultQueue.name,
+                    pip.getTopologyConfig().counter.pub.exchange.name,
+                    pip.getTopologyConfig().counter.pub.routing_key,
+                );
+            },
+            (msg: Message) => {
+                // Check if every received result messages is processed without error
+                const data: ICounterProcessInfo = JSON.parse(msg.content.toString());
+                assert.isTrue(data.success);
+                assert.equal(data.total, pip.getTopologyConfig().nodes.length);
+                assert.equal(data.ok, pip.getTopologyConfig().nodes.length);
+                assert.equal(data.nok, 0);
+
+                resultMessagesReceived++;
+            },
+        );
+
+        await resultConsumer.consume(counterResultQueue.name, {});
+
+        const publisher = new Publisher(
+            amqpConn,
+            async (ch: Channel) => {
+                await ch.assertQueue(firstQueue, {});
+                await ch.purgeQueue(firstQueue);
+            },
+        );
+
+        for (let i: number = 0; i < 10; i++) {
+            const testMsgHeaders = new Headers();
+            testMsgHeaders.setPFHeader(Headers.CORRELATION_ID, `some-correlation-id-${i}`);
+            testMsgHeaders.setPFHeader(Headers.PROCESS_ID, `some-process-id-${i}`);
+            testMsgHeaders.setPFHeader(Headers.PARENT_ID, "");
+            testMsgHeaders.setPFHeader(Headers.SEQUENCE_ID, "0");
+            testMsgHeaders.setPFHeader(Headers.TOPOLOGY_ID, testTopology.id);
+            testMsgHeaders.setHeader(Headers.CONTENT_TYPE, "text/plain");
+
+            publisher.sendToQueue(firstQueue, new Buffer("original content"), { headers: testMsgHeaders.getRaw() });
+        }
+
+        const capturer: any = captureNode.getWorker();
+        const messages = await capturer.getCaptured(1000);
+
+        assert.lengthOf(messages, 10);
+        assert.equal(resultMessagesReceived, 10);
+
+        for (let j: number = 0; j < 10; j++) {
+            const msg: {body: string, headers: any} = messages[j];
+            assert.equal(msg.body, "changed content");
+            assert.isTrue(Headers.containsAllMandatory(msg.headers));
+
+            const h = new Headers(msg.headers);
+            assert.include(h.getPFHeader(Headers.CORRELATION_ID), `some-correlation-id-`);
+            assert.include(h.getPFHeader(Headers.PROCESS_ID), `some-process-id-`);
+            assert.equal(h.getPFHeader(Headers.PARENT_ID), "");
+            assert.equal(h.getPFHeader(Headers.SEQUENCE_ID), "0");
+            assert.equal(h.getPFHeader(Headers.TOPOLOGY_ID), testTopology.id);
+            assert.equal(h.getHeader(Headers.CONTENT_TYPE), "text/plain; charset=utf-8");
+        }
+    });
+
+});

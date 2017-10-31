@@ -15,6 +15,7 @@ import HttpXmlParserWorker, {IHttpXmlParserWorkerSettings} from "./node/worker/H
 import NullWorker from "./node/worker/NullWorker";
 import {default as ResequencerWorker, IResequencerWorkerSettings} from "./node/worker/ResequencerWorker";
 import SplitterWorker, {ISplitterWorkerSettings} from "./node/worker/SplitterWorker";
+import TestCaptureWorker from "./node/worker/TestCaptureWorker";
 import UppercaseWorker from "./node/worker/UppercaseWorker";
 
 class DIContainer extends Container {
@@ -93,6 +94,11 @@ class DIContainer extends Container {
         });
         this.set(`${sPrefix}.json`, (settings: ISplitterWorkerSettings, forwarder: IPartialForwarder) => {
             return new SplitterWorker(settings, forwarder);
+        });
+
+        // Test workers
+        this.set(`${wPrefix}.capture`, (settings: {}) => {
+            return new TestCaptureWorker();
         });
     }
 
