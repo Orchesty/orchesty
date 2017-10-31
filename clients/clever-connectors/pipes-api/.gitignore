@@ -13,6 +13,9 @@
 !/var/sessions
 /var/sessions/*
 !var/sessions/.gitkeep
+!var/secret
+var/secret/*
+!var/secret/.gitkeep
 !var/SymfonyRequirements.php
 /vendor/
 /web/bundles/
