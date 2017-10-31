@@ -13,6 +13,7 @@ use Exception;
 use FOS\RestBundle\Controller\Annotations\Route;
 use Hanaboso\PipesFramework\Utils\ControllerUtils;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Exception\MethodNotAllowedException;
@@ -29,9 +30,9 @@ class ExceptionController
     /**
      * @param Exception $exception
      *
-     * @return JsonResponse
+     * @return Response
      */
-    public function showAction(Exception $exception): JsonResponse
+    public function showAction(Exception $exception): Response
     {
         $code      = 500;
         $className = get_class($exception);
@@ -44,7 +45,7 @@ class ExceptionController
             $code = 405;
         }
 
-        return new JsonResponse(ControllerUtils::createExceptionData($exception), $code);
+        return new Response(ControllerUtils::createExceptionData($exception), $code);
     }
 
 }

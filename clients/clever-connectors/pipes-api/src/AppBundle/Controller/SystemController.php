@@ -303,9 +303,9 @@ class SystemController extends FOSRestController
     /**
      * @param Exception $e
      *
-     * @return JsonResponse
+     * @return Response
      */
-    private static function processException(Exception $e): JsonResponse
+    private static function processException(Exception $e): Response
     {
         $code = 500;
 
@@ -333,7 +333,7 @@ class SystemController extends FOSRestController
             }
         }
 
-        return new JsonResponse(ControllerUtils::createExceptionData($e), $code);
+        return new Response(ControllerUtils::createExceptionData($e), $code);
     }
 
 }
