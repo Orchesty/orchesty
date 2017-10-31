@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\AppBundle\Model\Systems\Impl\Hubspot\Connector;
 
+use CleverConnectors\AppBundle\Model\ProgressCounter\ProgressCounterService;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\Connector\HubspotSyncContactConnector;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\HubspotSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
@@ -32,13 +33,13 @@ final class HubspotSyncContactConnectorTest extends KernelTestCaseAbstract
         $dtoData = [
             'data' => [
                 'system_install' => ['user' => '123'],
-                'topology'       => ['name' => 'top-name-ever'],
             ],
         ];
 
         $headers[CMHeaders::createKey(CMHeaders::GUID)]       = 'user123';
         $headers[CMHeaders::createKey(CMHeaders::TOKEN)]      = 'token123';
         $headers[CMHeaders::createKey(CMHeaders::SYSTEM_KEY)] = 'system123';
+        $headers[CMHeaders::createKey(CMHeaders::PROCESS_ID)] = '123';
 
         $loop       = Factory::create();
         $processDto = new ProcessDto();
@@ -75,9 +76,12 @@ final class HubspotSyncContactConnectorTest extends KernelTestCaseAbstract
 
         $sender = $this->createMock(CurlSenderFactory::class);
 
+        $progressCounter = $this->createMock(ProgressCounterService::class);
+        $progressCounter->method('setTotal')->willReturn(TRUE);
+
         $syncConn = $this->getMockBuilder(HubspotSyncContactConnector::class)
             ->setMethods(['fetchData'])
-            ->setConstructorArgs([$this->mockSystem(), $dm, $sender])
+            ->setConstructorArgs([$this->mockSystem(), $dm, $sender, $progressCounter])
             ->getMock();
 
         $contacts = [

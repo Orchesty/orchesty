@@ -122,9 +122,8 @@ class BigcommerceSyncCustomerConnector implements BatchInterface, ConnectorInter
         $systemInstall = $this->systemInstallRepository->getSystemInstallFromHeaders($dto->getHeaders());
         $requestDto    = $this->system->getRequestDto($systemInstall, 'GET');
         $requestDto->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()));
-        $url                    = new Uri(sprintf('%s%s', $requestDto->getUri(TRUE), self::COUNT_URL));
-        $progressCounterService = $this->progressCounterService;
-        $processId              = CMHeaders::get(CMHeaders::PROCESS_ID, $dto->getHeaders());
+        $url       = new Uri(sprintf('%s%s', $requestDto->getUri(TRUE), self::COUNT_URL));
+        $processId = CMHeaders::get(CMHeaders::PROCESS_ID, $dto->getHeaders());
 
         if (!$processId) {
             throw new CleverConnectorsException(
@@ -139,8 +138,8 @@ class BigcommerceSyncCustomerConnector implements BatchInterface, ConnectorInter
                     return $this->getTotalPages($response);
                 }
             )->then(
-                function (int $total) use ($sender, $callbackItem, $requestDto, $processId, $progressCounterService) {
-                    $progressCounterService->setTotal($processId, $total * self::PER_PAGE);
+                function (int $total) use ($sender, $callbackItem, $requestDto, $processId) {
+                    $this->progressCounterService->setTotal($processId, $total * self::PER_PAGE);
 
                     return all($this->doPageLoop($total, $sender, $callbackItem, $requestDto));
                 }

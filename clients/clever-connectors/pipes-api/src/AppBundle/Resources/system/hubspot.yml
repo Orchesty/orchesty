@@ -23,6 +23,7 @@ services:
             - '@systems.hubspot'
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.transport.async_curl_factory'
+            - '@cc.progress_counter.progress_counter_service'
 
     hbpf.custom_node.hubspot-create-contact-mapper:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\Mapper\HubspotCreateContactMapper

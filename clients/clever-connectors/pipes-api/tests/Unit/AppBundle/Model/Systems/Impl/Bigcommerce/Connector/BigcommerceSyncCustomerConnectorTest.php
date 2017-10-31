@@ -3,9 +3,11 @@
 namespace Tests\Unit\AppBundle\Model\Systems\Impl\Bigcommerce\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Model\ProgressCounter\ProgressCounterService;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Bigcommerce\BigcommerceSystem;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Bigcommerce\Connector\BigcommerceSyncCustomerConnector;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
+use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\Uri;
@@ -31,9 +33,11 @@ final class BigcommerceSyncCustomerConnectorTest extends ConnectorTestCaseAbstra
      */
     public function testProcessBatch(): void
     {
+        $headers[CMHeaders::createKey(CMHeaders::PROCESS_ID)] = '123';
+
         $loop       = Factory::create();
         $processDto = (new ProcessDto())
-            ->setHeaders([])
+            ->setHeaders($headers)
             ->setData(Json::encode(['data' => ['system_install' => []], ['settings' => [], 'user' => '123']]));
 
         $this->getConnectorMock()->processBatch($processDto, $loop, function (): void {
@@ -64,9 +68,12 @@ final class BigcommerceSyncCustomerConnectorTest extends ConnectorTestCaseAbstra
 
         $senderFactory = $this->createMock(CurlSenderFactory::class);
 
+        $progressCounter = $this->createMock(ProgressCounterService::class);
+        $progressCounter->method('setTotal')->willReturn(TRUE);
+
         $connector = $this->getMockBuilder(BigcommerceSyncCustomerConnector::class)
             ->setMethods(['fetchData'])
-            ->setConstructorArgs([$this->getSystemMock(), $documentManager, $senderFactory])
+            ->setConstructorArgs([$this->getSystemMock(), $documentManager, $senderFactory, $progressCounter])
             ->getMock();
 
         $connector->expects($this->at(0))

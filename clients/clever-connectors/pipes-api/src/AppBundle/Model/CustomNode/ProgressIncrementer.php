@@ -1,4 +1,5 @@
-<?php
+<?php declare(strict_types=1);
+
 /**
  * Created by PhpStorm.
  * User: lukas.hlavac
@@ -14,6 +15,11 @@ use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
 
+/**
+ * Class ProgressIncrementer
+ *
+ * @package CleverConnectors\AppBundle\Model\CustomNode
+ */
 class ProgressIncrementer implements CustomNodeInterface
 {
 
@@ -55,4 +61,5 @@ class ProgressIncrementer implements CustomNodeInterface
 
         return $dto;
     }
+
 }
