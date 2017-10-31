@@ -44,21 +44,21 @@ class StatusServiceCallback extends SyncCallbackAbstract
      */
     function handle($data, Message $message): CallbackStatus
     {
-        if (empty($data['process_id'] ?? '')) {
+        if (!isset($data['process_id'])) {
             throw new CleverConnectorsException(
-                'Missing message\'s content in StatusServiceCallback [process_id].',
+                'Missing message\'s content in StatusServiceCallback [process_id]. ',
                 CleverConnectorsException::MISSING_DATA
             );
         }
 
-        if (empty($data['success'] ?? '')) {
+        if (!isset($data['success'])) {
             throw new CleverConnectorsException(
                 'Missing message\'s content in StatusServiceCallback [success].',
                 CleverConnectorsException::MISSING_DATA
             );
         }
 
-        $event = new ProcessStatusEvent($data['process_id'] ?? '', (bool) $data['success'] ?? FALSE);
+        $event = new ProcessStatusEvent($data['process_id'], (bool) $data['success']);
 
         $this->eventDispatcher->dispatch(ProcessStatusEvent::PROCESS_FINISHED, $event);
 
