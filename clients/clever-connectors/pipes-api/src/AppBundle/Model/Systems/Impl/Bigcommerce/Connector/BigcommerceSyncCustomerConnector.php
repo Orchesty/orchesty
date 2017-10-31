@@ -3,7 +3,6 @@
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Bigcommerce\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
-use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\ProgressCounter\ProgressCounterService;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Bigcommerce\BigcommerceSystem;
@@ -114,7 +113,6 @@ class BigcommerceSyncCustomerConnector implements BatchInterface, ConnectorInter
      * @param callable      $callbackItem
      *
      * @return PromiseInterface
-     * @throws CleverConnectorsException
      */
     public function processBatch(ProcessDto $dto, LoopInterface $loop, callable $callbackItem): PromiseInterface
     {
@@ -123,14 +121,7 @@ class BigcommerceSyncCustomerConnector implements BatchInterface, ConnectorInter
         $requestDto    = $this->system->getRequestDto($systemInstall, 'GET');
         $requestDto->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()));
         $url       = new Uri(sprintf('%s%s', $requestDto->getUri(TRUE), self::COUNT_URL));
-        $processId = CMHeaders::get(CMHeaders::PROCESS_ID, $dto->getHeaders());
-
-        if (!$processId) {
-            throw new CleverConnectorsException(
-                'Process ID not found.',
-                CleverConnectorsException::PROCESS_ID_NOT_FOUND
-            );
-        }
+        $processId = CMHeaders::get(CMHeaders::PROCESS_ID, $dto->getHeaders()) ?? '';
 
         $promise = $this->fetchData($sender, RequestDto::from($requestDto, $url))
             ->then(

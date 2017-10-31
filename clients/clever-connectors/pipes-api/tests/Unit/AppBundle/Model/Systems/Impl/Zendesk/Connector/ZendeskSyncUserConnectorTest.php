@@ -4,6 +4,7 @@ namespace Tests\Unit\AppBundle\Model\Systems\Impl\Zendesk\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\LastSync\LastSyncManager;
+use CleverConnectors\AppBundle\Model\ProgressCounter\ProgressCounterService;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Zendesk\Connector\ZendeskSyncUserConnector;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -68,11 +69,15 @@ final class ZendeskSyncUserConnectorTest extends ConnectorTestCaseAbstract
      */
     private function mockResponses(): ZendeskSyncUserConnector
     {
+        $processCounter = $this->createMock(ProgressCounterService::class);
+        $processCounter->method('setTotal')->willReturn(TRUE);
+
         $conn = $this->getMockBuilder(ZendeskSyncUserConnector::class)->setConstructorArgs([
             $this->container->get('systems.zendesk'),
             $this->createMock(LastSyncManager::class),
             $this->createMock(CurlSenderFactory::class),
             $this->mockDm(),
+            $processCounter,
         ])->setMethods(['fetchData'])->getMock();
 
         $test = $this;
@@ -81,7 +86,7 @@ final class ZendeskSyncUserConnectorTest extends ConnectorTestCaseAbstract
             ->method('fetchData')->will($this->returnCallback(
                 function ($sender, RequestDto $dto) use ($test) {
                     $expt = new RequestDto('GET',
-                        new Uri('https://hbpf.zendesk.com/api/v2/users.json'));
+                        new Uri('https://hbpf.zendesk.com/api/v2/users.json?per_page=50'));
                     $expt->setHeaders([
                         'Content-Type'  => 'application/json',
                         'Authorization' => $this->auth,

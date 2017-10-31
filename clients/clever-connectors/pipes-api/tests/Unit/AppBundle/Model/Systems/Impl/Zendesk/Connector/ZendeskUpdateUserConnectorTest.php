@@ -5,6 +5,7 @@ namespace Tests\Unit\AppBundle\Model\Systems\Impl\Zendesk\Connector;
 use CleverConnectors\AppBundle\Document\LastSync;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\LastSync\LastSyncManager;
+use CleverConnectors\AppBundle\Model\ProgressCounter\ProgressCounterService;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Zendesk\Connector\ZendeskUpdateUserConnector;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use DateTime;
@@ -113,11 +114,15 @@ final class ZendeskUpdateUserConnectorTest extends ConnectorTestCaseAbstract
      */
     private function mockResponses(): ZendeskUpdateUserConnector
     {
+        $processCounter = $this->createMock(ProgressCounterService::class);
+        $processCounter->method('setTotal')->willReturn(TRUE);
+
         $conn = $this->getMockBuilder(ZendeskUpdateUserConnector::class)->setConstructorArgs([
             $this->container->get('systems.zendesk'),
             $this->mockLastSync(),
             $this->createMock(CurlSenderFactory::class),
             $this->mockDm(),
+            $processCounter,
         ])->setMethods(['fetchData'])->getMock();
 
         $test = $this;

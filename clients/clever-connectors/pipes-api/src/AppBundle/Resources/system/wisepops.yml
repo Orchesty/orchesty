@@ -10,6 +10,7 @@ services:
             - '@systems.wisepops'
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.transport.async_curl_factory'
+            - '@cc.progress_counter.progress_counter_service'
 
     hbpf.connector.wisepops-create-email-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Wisepops\Connector\WisepopsCreateEmailConnector

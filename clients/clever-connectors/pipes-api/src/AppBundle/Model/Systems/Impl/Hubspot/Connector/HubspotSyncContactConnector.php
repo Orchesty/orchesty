@@ -121,18 +121,9 @@ class HubspotSyncContactConnector implements BatchInterface, ConnectorInterface
         $systemInstall = $this->systemInstallRepository->getSystemInstallFromHeaders($dto->getHeaders());
         $requestDto    = $this->system->getRequestDto($systemInstall, 'GET');
         $requestDto->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()));
-
-        $processId = CMHeaders::get(CMHeaders::PROCESS_ID, $dto->getHeaders());
-
-        if (!$processId) {
-            throw new CleverConnectorsException(
-                'Process ID not found.',
-                CleverConnectorsException::PROCESS_ID_NOT_FOUND
-            );
-        }
-
-        $url     = new Uri(sprintf('%s%s', $requestDto->getUri(TRUE), self::CONTACTS_URL));
-        $promise = $this->getPage($sender, $callbackItem, $requestDto, $url, 1, $processId);
+        $processId = CMHeaders::get(CMHeaders::PROCESS_ID, $dto->getHeaders()) ?? '';
+        $url       = new Uri(sprintf('%s%s', $requestDto->getUri(TRUE), self::CONTACTS_URL));
+        $promise   = $this->getPage($sender, $callbackItem, $requestDto, $url, 1, $processId);
 
         $this->systemInstallRepository->setSyncTime($systemInstall);
 

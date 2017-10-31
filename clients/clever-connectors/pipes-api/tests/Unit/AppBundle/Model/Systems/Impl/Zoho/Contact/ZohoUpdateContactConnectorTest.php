@@ -4,6 +4,7 @@ namespace Tests\Unit\AppBundle\Model\Systems\Impl\Zoho\Contact;
 
 use CleverConnectors\AppBundle\Document\LastSync;
 use CleverConnectors\AppBundle\Model\LastSync\LastSyncManager;
+use CleverConnectors\AppBundle\Model\ProgressCounter\ProgressCounterService;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Zoho\Connector\ZohoUpdateContactConnector;
 use DateTime;
 use GuzzleHttp\Psr7\Response;
@@ -79,10 +80,14 @@ final class ZohoUpdateContactConnectorTest extends ConnectorTestCaseAbstract
      */
     private function mockResponses(): ZohoUpdateContactConnector
     {
+        $processCounter = $this->createMock(ProgressCounterService::class);
+        $processCounter->method('setTotal')->willReturn(TRUE);
+
         $conn = $this->getMockBuilder(ZohoUpdateContactConnector::class)->setConstructorArgs([
             $this->container->get('systems.zoho'),
             $this->createMock(CurlSenderFactory::class),
             $this->mockLastSync(),
+            $processCounter,
         ])->setMethods(['fetchData'])->getMock();
 
         $test = $this;

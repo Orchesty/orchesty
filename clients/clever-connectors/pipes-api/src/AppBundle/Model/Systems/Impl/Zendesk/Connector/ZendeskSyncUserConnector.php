@@ -19,7 +19,7 @@ use React\Promise\PromiseInterface;
 class ZendeskSyncUserConnector extends ZendeskUserConnectorAbstract
 {
 
-    private const USERS_URL = 'api/v2/users.json';
+    private const USERS_URL = 'api/v2/users.json?per_page=' . self::PER_PAGE;
 
     /**
      * @return string
@@ -42,9 +42,9 @@ class ZendeskSyncUserConnector extends ZendeskUserConnectorAbstract
         $systemInstall = $this->systemInstallRepository->getSystemInstallFromHeaders($dto->getHeaders());
         $requestDto    = $this->system->getRequestDto($systemInstall, 'GET');
         $requestDto->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()));
-        $url = new Uri(rtrim($requestDto->getUri(TRUE)) . self::USERS_URL);
-
-        $promise = $this->getPage($sender, $callbackItem, RequestDto::from($requestDto, $url));
+        $url       = new Uri(rtrim($requestDto->getUri(TRUE)) . self::USERS_URL);
+        $processId = CMHeaders::get(CMHeaders::PROCESS_ID, $dto->getHeaders());
+        $promise   = $this->getPage($sender, $callbackItem, RequestDto::from($requestDto, $url), 1, $processId);
 
         $this->systemInstallRepository->setSyncTime($systemInstall);
 

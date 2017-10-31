@@ -3,6 +3,7 @@
 namespace Tests\Unit\AppBundle\Model\Systems\Impl\Pipedrive\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Model\ProgressCounter\ProgressCounterService;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Pipedrive\Connector\PipedriveSyncPersonConnector;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -65,10 +66,14 @@ final class PipedriveSyncPersonConnectorTest extends ConnectorTestCaseAbstract
      */
     private function mockSync(): PipedriveSyncPersonConnector
     {
+        $processCounter = $this->createMock(ProgressCounterService::class);
+        $processCounter->method('setTotal')->willReturn(TRUE);
+
         $conn = $this->getMockBuilder(PipedriveSyncPersonConnector::class)->setConstructorArgs([
             $this->container->get('systems.pipedrive'),
             $this->mockDm(),
             $this->createMock(CurlSenderFactory::class),
+            $processCounter,
         ])->setMethods(['fetchData'])->getMock();
 
         $test = $this;
@@ -77,7 +82,7 @@ final class PipedriveSyncPersonConnectorTest extends ConnectorTestCaseAbstract
             ->method('fetchData')->will($this->returnCallback(
                 function ($sender, RequestDto $dto) use ($test) {
                     $expt = new RequestDto('GET',
-                        new Uri('https://api.pipedrive.com/v1/persons?start=0&api_token=' . self::API_TOKEN));
+                        new Uri('https://api.pipedrive.com/v1/persons?start=0&limit=50&api_token=' . self::API_TOKEN));
                     $expt->setHeaders([
                         'Content-Type' => 'application/json',
                     ]);

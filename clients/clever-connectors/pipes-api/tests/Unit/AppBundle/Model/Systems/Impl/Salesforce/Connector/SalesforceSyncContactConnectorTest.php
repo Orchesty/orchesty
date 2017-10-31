@@ -9,6 +9,7 @@
 
 namespace Tests\Unit\AppBundle\Model\Systems\Impl\Salesforce\Connector;
 
+use CleverConnectors\AppBundle\Model\ProgressCounter\ProgressCounterService;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Salesforce\Connector\SalesforceSyncContactConnector;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Salesforce\SalesforceSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
@@ -81,9 +82,14 @@ final class SalesforceSyncContactConnectorTest extends KernelTestCaseAbstract
 
         $sender = $this->createMock(CurlSenderFactory::class);
 
+        $processCounter = $this->createMock(ProgressCounterService::class);
+        $processCounter->method('setTotal')->willReturn(TRUE);
+
         $syncConn = $this->getMockBuilder(SalesforceSyncContactConnector::class)
             ->setMethods(['fetchData'])
-            ->setConstructorArgs([$this->mockSystem(), $this->container->get('cc.last_sync.manager'), $sender, $dm])
+            ->setConstructorArgs([
+                $this->mockSystem(), $this->container->get('cc.last_sync.manager'), $sender, $dm, $processCounter,
+            ])
             ->getMock();
 
         $syncConn->expects($this->at(0))

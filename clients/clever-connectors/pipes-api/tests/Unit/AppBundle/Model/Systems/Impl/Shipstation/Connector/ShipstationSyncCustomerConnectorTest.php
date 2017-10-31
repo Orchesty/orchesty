@@ -5,6 +5,7 @@ namespace Tests\Unit\AppBundle\Model\Systems\Impl\Shipstation\Connector;
 use CleverConnectors\AppBundle\Document\LastSync;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\LastSync\LastSyncManager;
+use CleverConnectors\AppBundle\Model\ProgressCounter\ProgressCounterService;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Shipstation\Connector\ShipstationSyncCustomerConnector;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Shipstation\ShipstationSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
@@ -80,9 +81,12 @@ final class ShipstationSyncCustomerConnectorTest extends KernelTestCaseAbstract
 
         $sender = $this->createMock(CurlSenderFactory::class);
 
+        $processCounter = $this->createMock(ProgressCounterService::class);
+        $processCounter->method('setTotal')->willReturn(TRUE);
+
         $syncConn = $this->getMockBuilder(ShipstationSyncCustomerConnector::class)
             ->setMethods(['fetchData'])
-            ->setConstructorArgs([$this->mockSystem(), $lastSync, $sender, $dm])
+            ->setConstructorArgs([$this->mockSystem(), $lastSync, $sender, $dm, $processCounter])
             ->getMock();
 
         $syncConn->expects($this->at(0))

@@ -14,6 +14,7 @@ services:
             - '@cc.last_sync.manager'
             - '@hbpf.transport.async_curl_factory'
             - '@doctrine_mongodb.odm.default_document_manager'
+            - '@cc.progress_counter.progress_counter_service'
 
     hbpf.connector.magento2-update-customer-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Magento2\Connector\Magento2UpdateCustomerConnector

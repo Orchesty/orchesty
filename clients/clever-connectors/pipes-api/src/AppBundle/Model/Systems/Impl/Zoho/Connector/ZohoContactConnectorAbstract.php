@@ -2,6 +2,7 @@
 
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Zoho\Connector;
 
+use CleverConnectors\AppBundle\Model\ProgressCounter\ProgressCounterService;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Zoho\ZohoSystem;
 use DateTime;
@@ -38,18 +39,26 @@ abstract class ZohoContactConnectorAbstract implements ConnectorInterface, Batch
     protected $factory;
 
     /**
+     * @var ProgressCounterService
+     */
+    private $counterService;
+
+    /**
      * ZohoContactConnectorAbstract constructor.
      *
-     * @param ZohoSystem        $system
-     * @param CurlSenderFactory $factory
+     * @param ZohoSystem             $system
+     * @param CurlSenderFactory      $factory
+     * @param ProgressCounterService $counterService
      */
     public function __construct(
         ZohoSystem $system,
-        CurlSenderFactory $factory
+        CurlSenderFactory $factory,
+        ProgressCounterService $counterService
     )
     {
-        $this->system  = $system;
-        $this->factory = $factory;
+        $this->system         = $system;
+        $this->factory        = $factory;
+        $this->counterService = $counterService;
     }
 
     /**
@@ -91,6 +100,7 @@ abstract class ZohoContactConnectorAbstract implements ConnectorInterface, Batch
      * @param callable      $callbackItem
      * @param int           $page
      * @param DateTime|null $from
+     * @param null|string   $processId
      *
      * @return PromiseInterface
      */
@@ -99,19 +109,24 @@ abstract class ZohoContactConnectorAbstract implements ConnectorInterface, Batch
         RequestDto $requestDto,
         callable $callbackItem,
         int $page,
-        ?DateTime $from = NULL
+        ?DateTime $from = NULL,
+        ?string $processId = NULL
     ): PromiseInterface
     {
         $uri = $this->getUri($requestDto, $page, $from);
 
         return $this->fetchData($sender, RequestDto::from($requestDto, $uri))->then(
-            function (ResponseInterface $response) use ($sender, $requestDto, $callbackItem, $page, $from) {
+            function (ResponseInterface $response) use ($sender, $requestDto, $callbackItem, $page, $from, $processId) {
                 $data = json_decode($response->getBody()->getContents(), TRUE);
                 if (!$this->isEmpty($data)) {
                     $callbackItem($this->createSuccessMessage($data, $page));
 
-                    return $this->getPage($sender, $requestDto, $callbackItem, $page + 1, $from);
+                    return $this->getPage($sender, $requestDto, $callbackItem, $page + 1, $from, $processId);
                 } else {
+                    if ($processId) {
+                        $this->counterService->setTotal($processId, $page * self::ITEMS_PER_PAGE);
+                    }
+
                     return resolve();
                 }
             }
