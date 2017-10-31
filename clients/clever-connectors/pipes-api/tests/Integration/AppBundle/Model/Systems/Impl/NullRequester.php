@@ -10,7 +10,9 @@
 namespace Tests\Integration\AppBundle\Model\Systems\Impl;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Model\CMEvents\CMEventObject;
 use CleverConnectors\AppBundle\Model\Requester\RequesterInterface;
+use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
@@ -30,8 +32,11 @@ class NullRequester implements RequesterInterface
      */
     public function getRequestDto(array $data): RequestDto
     {
-        $req = new RequestDto(CurlManager::METHOD_POST, $data['uri']);
-        $req->setHeaders($data['headers']);
+        /** @var CMEventObject $obj */
+        $obj = $data[self::OBJECT];
+
+        $req = new RequestDto(CurlManager::METHOD_POST, new Uri($obj->getUrl()));
+        $req->setHeaders([]);
 
         return $req;
     }

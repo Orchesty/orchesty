@@ -2,8 +2,10 @@
 
 namespace CleverConnectors\AppBundle\DependencyInjection;
 
+use RuntimeException;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 
@@ -12,8 +14,24 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
  *
  * @link http://symfony.com/doc/current/cookbook/bundles/extension.html
  */
-class AppExtension extends Extension
+class AppExtension extends Extension implements PrependExtensionInterface
 {
+
+    /**
+     * Allow an extension to prepend the extension configurations.
+     *
+     * @param ContainerBuilder $container
+     */
+    public function prepend(ContainerBuilder $container): void
+    {
+        if (!$container->hasExtension('rabbit-mq')) {
+            throw new RuntimeException('You must register HbPFRabbitMqBundle before.');
+        };
+
+        $loader = new YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/prepend-config'));
+        $loader->load('rabbit_mq.yml');
+    }
+
 
     /**
      * @param array            $configs
