@@ -31,4 +31,18 @@ class ProgressCounterStatusEnum extends EnumAbstract
         self::FAILED      => 'failed',
     ];
 
+    /**
+     * @param bool $state
+     *
+     * @return ProgressCounterStatusEnum
+     */
+    public static function from(bool $state): ProgressCounterStatusEnum
+    {
+        if ($state) {
+            return new ProgressCounterStatusEnum(self::SUCCESS);
+        }
+
+        return new ProgressCounterStatusEnum(self::FAILED);
+    }
+
 }

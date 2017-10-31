@@ -2,6 +2,7 @@
 
 namespace CleverConnectors\AppBundle\Listeners;
 
+use CleverConnectors\AppBundle\Enum\ProgressCounterStatusEnum;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\ProgressCounter\ProgressCounterService;
 use Hanaboso\PipesFramework\Configurator\Event\ProcessStatusEvent;
@@ -37,15 +38,10 @@ class ProgressCounterListener implements EventSubscriberInterface
      */
     public function updateStatus(ProcessStatusEvent $ev): void
     {
-        $data = $ev->getData();
-        if (empty($data['process_id'] ?? '') || empty($data['status'] ?? '')) {
-            throw new CleverConnectorsException(
-                'Missing message\'s content in ProcessStatusEvent [process_id].',
-                CleverConnectorsException::MISSING_DATA
-            );
-        }
-
-        $this->counter->setStatus($data['process_id'], $data['status']);
+        $this->counter->setStatus(
+            $ev->getProcessId(),
+            ProgressCounterStatusEnum::from($ev->getStatus())
+        );
     }
 
     /**

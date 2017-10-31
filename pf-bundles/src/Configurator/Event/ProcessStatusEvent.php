@@ -15,26 +15,41 @@ class ProcessStatusEvent extends Event
     public const PROCESS_FINISHED = 'finished';
 
     /**
-     * @var mixed
+     * @var string
      */
-    private $data;
+    private $processId;
+
+    /**
+     * @var bool
+     */
+    private $status;
 
     /**
      * ProcessStatusEvent constructor.
      *
-     * @param mixed $data
+     * @param string $processId
+     * @param bool $status
      */
-    public function __construct($data)
+    public function __construct(string $processId, bool $status)
     {
-        $this->data = $data;
+        $this->processId = $processId;
+        $this->status    = $status;
     }
 
     /**
-     * @return mixed
+     * @return string
      */
-    public function getData()
+    public function getProcessId(): string
     {
-        return $this->data;
+        return $this->processId;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getStatus(): bool
+    {
+        return $this->status;
     }
 
 }

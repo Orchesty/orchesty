@@ -33,8 +33,9 @@ use function React\Promise\all;
 class BigcommerceSyncCustomerConnector implements BatchInterface, ConnectorInterface
 {
 
+    private const PER_PAGE      = 50;
     private const COUNT_URL     = 'customers/count';
-    private const CUSTOMERS_URL = 'customers?page=%s&limit=50';
+    private const CUSTOMERS_URL = 'customers?page=%s&limit=' . self::PER_PAGE;
 
     /**
      * @var BigcommerceSystem
@@ -139,7 +140,7 @@ class BigcommerceSyncCustomerConnector implements BatchInterface, ConnectorInter
                 }
             )->then(
                 function (int $total) use ($sender, $callbackItem, $requestDto, $processId, $progressCounterService) {
-                    $progressCounterService->setTotal($processId, $total);
+                    $progressCounterService->setTotal($processId, $total * self::PER_PAGE);
 
                     return all($this->doPageLoop($total, $sender, $callbackItem, $requestDto));
                 }
@@ -178,7 +179,7 @@ class BigcommerceSyncCustomerConnector implements BatchInterface, ConnectorInter
             );
         }
 
-        $total = (int) ceil($data['count'] / 50);
+        $total = (int) ceil($data['count'] / self::PER_PAGE);
         unset($data);
 
         return $total;

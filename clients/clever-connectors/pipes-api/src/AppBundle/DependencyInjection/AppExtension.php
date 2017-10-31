@@ -67,15 +67,4 @@ class AppExtension extends Extension implements PrependExtensionInterface
         $loader->load('zoho.yml');
     }
 
-    /**
-     * Allow an extension to prepend the extension configurations.
-     *
-     * @param ContainerBuilder $container
-     */
-    public function prepend(ContainerBuilder $container): void
-    {
-        $loader = new YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/prepend-config'));
-        $loader->load('rabbit_mq.yml');
-    }
-
 }
