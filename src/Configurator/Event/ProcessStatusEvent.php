@@ -28,7 +28,7 @@ class ProcessStatusEvent extends Event
      * ProcessStatusEvent constructor.
      *
      * @param string $processId
-     * @param bool $status
+     * @param bool   $status
      */
     public function __construct(string $processId, bool $status)
     {

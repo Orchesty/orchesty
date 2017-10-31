@@ -3,7 +3,7 @@
 namespace Hanaboso\PipesFramework\Configurator\StatusService;
 
 use Bunny\Message;
-use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
+use Hanaboso\PipesFramework\Commons\Exception\PipesFrameworkException;
 use Hanaboso\PipesFramework\Configurator\Event\ProcessStatusEvent;
 use Hanaboso\PipesFramework\RabbitMq\CallbackStatus;
 use Hanaboso\PipesFramework\RabbitMq\Consumer\SyncCallbackAbstract;
@@ -40,21 +40,21 @@ class StatusServiceCallback extends SyncCallbackAbstract
      *
      * @return CallbackStatus
      *
-     * @throws CleverConnectorsException
+     * @throws PipesFrameworkException
      */
     function handle($data, Message $message): CallbackStatus
     {
         if (!isset($data['process_id'])) {
-            throw new CleverConnectorsException(
-                'Missing message\'s content in StatusServiceCallback [process_id]. ',
-                CleverConnectorsException::MISSING_DATA
+            throw new PipesFrameworkException(
+                'Missing message\'s content in StatusServiceCallback [process_id].',
+                PipesFrameworkException::REQUIRED_PARAMETER_NOT_FOUND
             );
         }
 
         if (!isset($data['success'])) {
-            throw new CleverConnectorsException(
+            throw new PipesFrameworkException(
                 'Missing message\'s content in StatusServiceCallback [success].',
-                CleverConnectorsException::MISSING_DATA
+                PipesFrameworkException::REQUIRED_PARAMETER_NOT_FOUND
             );
         }
 
