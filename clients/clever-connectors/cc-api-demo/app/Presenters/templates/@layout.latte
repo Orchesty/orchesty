@@ -18,24 +18,25 @@
 </head>
 
 <body>
-    <div class="container">
-        {block menu}
-            <div id="main-menu">
-                <ul class="nav" n:inner-foreach="$menuItems as $item => $link">
-                    <li class="nav-item"><a class="nav-link" n:href="$link">{$item}</a></li>
-                </ul>
-            </div>
-        {/block menu}
+<div class="container">
+    {block menu}
+        <div id="main-menu">
+            <ul class="nav" n:inner-foreach="$menuItems as $item => $link">
+                <li class="nav-item"><a class="nav-link" n:href="$link">{$item}</a></li>
+            </ul>
+        </div>
+    {/block menu}
 
-        <hr>
+    <hr>
 
-        <div n:foreach="$flashes as $flash" n:class="flash, $flash->type">{$flash->message}</div>
+    <div n:foreach="$flashes as $flash" n:class="flash, $flash->type">{$flash->message}</div>
 
-        {include content}
-    </div>
+    {include content}
+</div>
 {block scripts}
     <script type="text/javascript">
 		var wsHost = {$host};
+		var isLogged = !!{$userId};
     </script>
 
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>

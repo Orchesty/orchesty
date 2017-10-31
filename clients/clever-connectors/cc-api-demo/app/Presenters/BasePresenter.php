@@ -49,6 +49,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
         }
 
         $this->template->userId = $this->userId ?? '';
+
     }
 
     /**

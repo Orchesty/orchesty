@@ -9,6 +9,31 @@ $(function () {
 
 	socket.on('connect', function () {
 		console.log('Connection to websockets created.');
+
+		var streamToken = localStorage.getItem("stream-token");
+		if (isLogged === true) {
+			if (streamToken === null) {
+				$.ajax({
+					url: "/api-demo/stream?do=subscribe",
+					type: "post",
+					contentType: "application/json"
+				}).done(function (data) {
+					token = data.token;
+					console.log('Subscribe with new token: ' + token);
+					localStorage.setItem('stream-token', token);
+					socket.emit('subscribe', {token: token});
+				});
+			} else {
+				// subscribe
+				console.log('Subscribe to stream with token: ' + streamToken);
+				socket.emit('subscribe', {token: streamToken});
+			}
+		} else {
+			if (streamToken !== null) {
+				console.log('Remove token: ' + streamToken);
+				localStorage.removeItem('stream-token');
+			}
+		}
 	});
 
 	socket.on('disconnect', function () {
@@ -37,13 +62,14 @@ $(function () {
 		}
 	});
 
+	// DEMO
 	$("#subscribeStream").on("click", function () {
 		var userId = $("input#userId").val();
 		var groupsString = $("input#groups").val();
 		groups = groupsString.split(',');
 
 		$.ajax({
-			url: "subscribe",
+			url: "subscribe-demo",
 			type: "post",
 			contentType: "application/json",
 			data: JSON.stringify({userId: userId, groups: groupsString})
@@ -61,7 +87,7 @@ $(function () {
 		socket.emit('unsubscribe', {token: token, groups: groups});
 
 		$.ajax({
-			url: "unsubscribe",
+			url: "unsubscribe-demo",
 			type: "post",
 			contentType: "application/json",
 			data: JSON.stringify({token: token})

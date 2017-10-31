@@ -46,9 +46,31 @@ class StreamPresenter extends BasePresenter
     }
 
     /**
+     * Action after login
+     */
+    public function handleSubscribe(): void
+    {
+        $token = $this->subscriber->subscribe($this->userId);
+
+        $this->sendJson(['token' => $token]);
+    }
+
+    /**
+     * Action after logout
+     *
+     * @param $token
+     */
+    public function handleUnSubscribe($token): void
+    {
+        $this->subscriber->unsubscribe($token);
+
+        $this->sendJson([]);
+    }
+
+    /**
      *
      */
-    public function actionSubscribe(): void
+    public function actionSubscribeDemo(): void
     {
         $data = json_decode($this->getHttpRequest()->getRawBody(), TRUE);
 
@@ -60,7 +82,7 @@ class StreamPresenter extends BasePresenter
     /**
      *
      */
-    public function actionUnsubscribe(): void
+    public function actionUnsubscribeDemo(): void
 
     {
         $data = json_decode($this->getHttpRequest()->getRawBody(), TRUE);
@@ -75,8 +97,8 @@ class StreamPresenter extends BasePresenter
      */
     protected function createComponentPublishForm()
     {
-        $form              = $this->publishFormFactory->create();
-        $form->getElementPrototype()->appendAttribute( 'class', 'ajax' );
+        $form = $this->publishFormFactory->create();
+        $form->getElementPrototype()->appendAttribute('class', 'ajax');
         $form->onSuccess[] = [$this, 'processPublishForm'];
 
         return $form;
@@ -106,7 +128,7 @@ class StreamPresenter extends BasePresenter
                 'stream'
             );
 
-        if($this->isAjax()) {
+        if ($this->isAjax()) {
             $form->reset();
             $this->terminate();
         }
