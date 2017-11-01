@@ -3,11 +3,11 @@
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Pipedrive\Connector;
 
 /**
- * Class PipedriveDeletePersonConnector
+ * Class PipedriveDeletedPersonConnector
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Pipedrive\Connector
  */
-class PipedriveDeletePersonConnector extends PipedrivePersonConnectorAbstract
+class PipedriveDeletedPersonConnector extends PipedriveWebhookPersonConnectorAbstract
 {
 
     /**
@@ -15,7 +15,7 @@ class PipedriveDeletePersonConnector extends PipedrivePersonConnectorAbstract
      */
     public function getId(): string
     {
-        return 'pipedrive-delete-person-connector';
+        return 'pipedrive-deleted-person-connector';
     }
 
 }

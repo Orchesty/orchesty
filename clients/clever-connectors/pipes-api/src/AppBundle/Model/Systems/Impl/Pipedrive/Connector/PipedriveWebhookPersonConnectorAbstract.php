@@ -8,11 +8,11 @@ use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
 
 /**
- * Class PipedrivePersonConnectorAbstract
+ * Class PipedriveWebhookPersonConnectorAbstract
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Pipedrive\Connector
  */
-abstract class PipedrivePersonConnectorAbstract implements ConnectorInterface
+abstract class PipedriveWebhookPersonConnectorAbstract implements ConnectorInterface
 {
 
     /**
@@ -25,7 +25,7 @@ abstract class PipedrivePersonConnectorAbstract implements ConnectorInterface
     {
         throw new ConnectorException(
             'Pipedrive has no support for action.',
-            ConnectorException::CONNECTOR_DOES_NOT_HAVE_PROCESS_BATCH
+            ConnectorException::CONNECTOR_DOES_NOT_HAVE_PROCESS_ACTION
         );
     }
 

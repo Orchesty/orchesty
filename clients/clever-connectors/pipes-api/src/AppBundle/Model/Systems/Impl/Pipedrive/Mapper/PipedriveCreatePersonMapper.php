@@ -7,18 +7,17 @@ use CleverConnectors\AppBundle\Enum\CleverCustomKeysEnum;
 use CleverConnectors\AppBundle\Enum\CleverFieldsEnum;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
-use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
 
 /**
- * Class PipedriveUpdatePersonMapper
+ * Class PipedriveCreatePersonMapper
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Pipedrive\Mapper
  */
-class PipedriveUpdatePersonMapper implements CustomNodeInterface
+class PipedriveCreatePersonMapper implements CustomNodeInterface
 {
 
     /**
@@ -45,17 +44,33 @@ class PipedriveUpdatePersonMapper implements CustomNodeInterface
     {
         $systemInstall = $this->systemInstallRepository->getSystemInstallFromHeaders($dto->getHeaders());
 
+        $fields = [];
+
         $data = json_decode($dto->getData(), TRUE);
+        if (!empty($data[CleverFieldsEnum::EMAIL] ?? '')) {
+            $fields['email'] = $data[CleverFieldsEnum::EMAIL];
+        }
+        if (!empty($data[CleverFieldsEnum::FIRST_NAME] ?? '')) {
+            $fields['name'] = $data[CleverFieldsEnum::FIRST_NAME];
+        }
+        if (!empty($data[CleverFieldsEnum::LAST_NAME] ?? '')) {
+            if (!empty($fields['name']) ?? '') {
+                $fields['name'] .= ' ';
+            }
+            $fields['name'] .= $data[CleverFieldsEnum::LAST_NAME];
+        }
 
-        $field = CMHeaders::get(CMHeaders::CM_EVENT_TYPE, $dto->getHeaders()) ?? '';
-        $hash  = $this->getHash(CleverCustomKeysEnum::getFromType($field), $systemInstall);
+        try {
+            $unHash   = $this->getHash(CleverCustomKeysEnum::UNSUBSCRIBE, $systemInstall);
+            $hardHash = $this->getHash(CleverCustomKeysEnum::HARD_BOUNCE, $systemInstall);
 
-        return $dto->setData(json_encode([
-            'id'   => $data[CleverFieldsEnum::FOREIGN_ID],
-            'body' => json_encode([
-                $hash => 'true',
-            ]),
-        ]));
+            $fields[$hardHash] = 'false';
+            $fields[$unHash]   = 'false';
+        } catch (SystemException $e) {
+            //Ignore missing fields
+        }
+
+        return $dto->setData(json_encode($fields));
     }
 
     /**

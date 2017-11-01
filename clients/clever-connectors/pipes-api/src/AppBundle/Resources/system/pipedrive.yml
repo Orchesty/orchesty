@@ -2,6 +2,7 @@ services:
     systems.pipedrive:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Pipedrive\PipedriveSystem
         arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
         tags: ['%systems%']
 
     hbpf.connector.pipedrive-sync-person-connector:
@@ -12,23 +13,59 @@ services:
             - '@hbpf.transport.async_curl_factory'
             - '@cc.progress_counter.progress_counter_service'
 
+    hbpf.connector.pipedrive-updated-person-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Pipedrive\Connector\PipedriveUpdatedPersonConnector
+        arguments:
+
+    hbpf.connector.pipedrive-deleted-person-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Pipedrive\Connector\PipedriveDeletedPersonConnector
+        arguments:
+
+    hbpf.connector.pipedrive-create-person-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Pipedrive\Connector\PipedriveCreatePersonConnector
+        arguments:
+            - '@systems.pipedrive'
+            - '@hbpf.transport.curl_manager'
+            - '@doctrine_mongodb.odm.default_document_manager'
+
     hbpf.connector.pipedrive-update-person-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Pipedrive\Connector\PipedriveUpdatePersonConnector
         arguments:
+            - '@systems.pipedrive'
+            - '@hbpf.transport.curl_manager'
+            - '@doctrine_mongodb.odm.default_document_manager'
 
-    hbpf.connector.pipedrive-delete-person-connector:
-        class: CleverConnectors\AppBundle\Model\Systems\Impl\Pipedrive\Connector\PipedriveDeletePersonConnector
+    hbpf.custom_node.pipedrive-updated-person-mapper:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Pipedrive\Mapper\PipedriveUpdatedPersonMapper
         arguments:
 
-    hbpf.custom_node.pipedrive-update-person-mapper:
-        class: CleverConnectors\AppBundle\Model\Systems\Impl\Pipedrive\Mapper\PipedriveUpdatePersonMapper
-        arguments:
-
-    hbpf.custom_node.pipedrive-delete-person-mapper:
-        class: CleverConnectors\AppBundle\Model\Systems\Impl\Pipedrive\Mapper\PipedriveDeletePersonMapper
+    hbpf.custom_node.pipedrive-deleted-person-mapper:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Pipedrive\Mapper\PipedriveDeletedPersonMapper
         arguments:
 
     hbpf.custom_node.pipedrive-sync-person-mapper:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Pipedrive\Mapper\PipedriveSyncPersonMapper
         arguments:
+
+    hbpf.custom_node.pipedrive-created-person-mapper:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Pipedrive\Mapper\PipedriveCreatedPersonMapper
+        arguments:
+
+    hbpf.custom_node.pipedrive-update-person-mapper:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Pipedrive\Mapper\PipedriveUpdatePersonMapper
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+
+    hbpf.custom_node.pipedrive-create-person-mapper:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Pipedrive\Mapper\PipedriveCreatePersonMapper
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+
+    hbpf.custom_node.pipedrive-cm-event-activator:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Pipedrive\CMActivator\PipedriveCMActivator
+        arguments:
+            - '@cc.systems.manager'
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.transport.async_curl_factory'
+            - '@rabbit-mq.producer.cm_activator_stream'
 

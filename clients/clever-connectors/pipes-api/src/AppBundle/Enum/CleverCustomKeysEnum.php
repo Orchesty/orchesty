@@ -48,4 +48,24 @@ final class CleverCustomKeysEnum extends EnumAbstract
         }
     }
 
+    /**
+     * @param string $fieldName
+     *
+     * @return string
+     * @throws CleverConnectorsException
+     */
+    public static function getType(string $fieldName): string
+    {
+        switch ($fieldName) {
+            case self::UNSUBSCRIBE:
+                return SystemInstall::EVENT_UNSUBSCRIBE;
+
+            case self::HARD_BOUNCE:
+                return SystemInstall::EVENT_HARD_BOUNCE;
+
+            default:
+                return '__NONE__';
+        }
+    }
+
 }

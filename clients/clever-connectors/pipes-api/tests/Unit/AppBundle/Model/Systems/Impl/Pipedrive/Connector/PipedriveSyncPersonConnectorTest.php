@@ -84,6 +84,7 @@ final class PipedriveSyncPersonConnectorTest extends ConnectorTestCaseAbstract
                     $expt = new RequestDto('GET',
                         new Uri('https://api.pipedrive.com/v1/persons?start=0&limit=50&api_token=' . self::API_TOKEN));
                     $expt->setHeaders([
+                        'Accept'       => 'application/json',
                         'Content-Type' => 'application/json',
                     ]);
 

@@ -36,27 +36,27 @@ class CMEventActivator implements BatchInterface, CustomNodeInterface
     /**
      * @var SystemManager
      */
-    private $manager;
+    protected $manager;
 
     /**
      * @var SystemInstallRepository|ObjectRepository
      */
-    private $systemInstallRepository;
+    protected $systemInstallRepository;
 
     /**
      * @var CurlSenderFactory
      */
-    private $factory;
+    protected $factory;
 
     /**
      * @var CMActivatorProducer
      */
-    private $streamProducer;
+    protected $streamProducer;
 
     /**
      * @var DocumentManager
      */
-    private $dm;
+    protected $dm;
 
     /**
      * CMEventActivator constructor.
@@ -74,6 +74,16 @@ class CMEventActivator implements BatchInterface, CustomNodeInterface
         $this->factory                 = $factory;
         $this->streamProducer          = $streamProducer;
         $this->dm                      = $dm;
+    }
+
+    /**
+     * @param ProcessDto $dto
+     *
+     * @return ProcessDto|void
+     */
+    public function process(ProcessDto $dto): ProcessDto
+    {
+        throw new RuntimeException('The process method is not implemented.');
     }
 
     /**
@@ -100,29 +110,8 @@ class CMEventActivator implements BatchInterface, CustomNodeInterface
         foreach ($data as $index => $eventKey) {
             $event = $system->getEventObject($eventKey);
 
-            $requests[] = $this
-                ->fetchData($sender, $requester->getRequestDto([RequesterInterface::OBJECT => $event]))
-                ->then(
-                    function (ResponseInterface $response) use ($requester, $index, $systemInstall, $event, $results
-                    ): SuccessMessage {
-                        $responseDto = new ResponseDto(
-                            $response->getStatusCode(),
-                            $response->getReasonPhrase(),
-                            $response->getBody()->getContents(),
-                            $response->getHeaders()
-                        );
-
-                        $requester->processResponse($responseDto, $systemInstall);
-
-                        $done = $systemInstall->getEventState($event->getEvent());
-
-                        $res  = new ResultDto(ResultDto::statusFromBool($done), $event->getEvent(),
-                            sprintf('%s custom field status', $systemInstall->getSystem()));
-                        $results[] = $res;
-
-                        return $this->createSuccessMessage($res, $index);
-                    })
-                ->then($callbackItem);
+            $requests[] = $this->processField($sender, $requester, $event, $systemInstall, $index, $callbackItem,
+                $results);
         }
 
         $promise = all($requests);
@@ -139,12 +128,67 @@ class CMEventActivator implements BatchInterface, CustomNodeInterface
     }
 
     /**
+     * @param CurlSender         $sender
+     * @param RequesterInterface $requester
+     * @param CMEventObject      $event
+     * @param SystemInstall      $systemInstall
+     * @param int                $index
+     * @param callable           $callbackItem
+     * @param array              $results
+     *
+     * @return PromiseInterface
+     */
+    protected function processField(
+        CurlSender $sender,
+        RequesterInterface $requester,
+        CMEventObject $event,
+        SystemInstall $systemInstall,
+        int $index,
+        callable $callbackItem,
+        array &$results
+    ): PromiseInterface
+    {
+        return $this
+            ->fetchData($sender, $requester->getRequestDto([RequesterInterface::OBJECT => $event]))
+            ->then(
+                function (ResponseInterface $response) use ($requester, $index, $systemInstall, $event, $results
+                ): SuccessMessage {
+                    $responseDto = $this->createDtoFromResponse($response);
+                    $requester->processResponse($responseDto, $systemInstall);
+
+                    $done = $systemInstall->getEventState($event->getEvent());
+
+                    $res       = new ResultDto(ResultDto::statusFromBool($done), $event->getEvent(),
+                        sprintf('%s custom field status', $systemInstall->getSystem()));
+                    $results[] = $res;
+
+                    return $this->createSuccessMessage($res, $index);
+                })
+            ->then($callbackItem);
+    }
+
+    /**
+     * @param ResponseInterface $response
+     *
+     * @return ResponseDto
+     */
+    protected function createDtoFromResponse(ResponseInterface $response): ResponseDto
+    {
+        return new ResponseDto(
+            $response->getStatusCode(),
+            $response->getReasonPhrase(),
+            $response->getBody()->getContents(),
+            $response->getHeaders()
+        );
+    }
+
+    /**
      * @param CurlSender $sender
      * @param RequestDto $dto
      *
      * @return PromiseInterface
      */
-    private function fetchData(CurlSender $sender, RequestDto $dto): PromiseInterface
+    protected function fetchData(CurlSender $sender, RequestDto $dto): PromiseInterface
     {
         return $sender->send($dto);
     }
@@ -155,7 +199,7 @@ class CMEventActivator implements BatchInterface, CustomNodeInterface
      *
      * @return SuccessMessage
      */
-    private function createSuccessMessage(ResultDto $dto, int $i): SuccessMessage
+    protected function createSuccessMessage(ResultDto $dto, int $i): SuccessMessage
     {
         $successMessage = new SuccessMessage($i);
         $successMessage->setData(sprintf('%s, status: %s, action: %s.',
@@ -165,16 +209,6 @@ class CMEventActivator implements BatchInterface, CustomNodeInterface
         ));
 
         return $successMessage;
-    }
-
-    /**
-     * @param ProcessDto $dto
-     *
-     * @return ProcessDto|void
-     */
-    public function process(ProcessDto $dto): ProcessDto
-    {
-        throw new RuntimeException('The process method is not implemented.');
     }
 
 }
