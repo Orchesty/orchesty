@@ -2,9 +2,9 @@
 
 /**
  * Created by PhpStorm.
- * User: stanislav.kundrat
- * Date: 10/12/17
- * Time: 4:55 PM
+ * User: lukas.hlavac
+ * Date: 10/27/17
+ * Time: 3:55 PM
  */
 
 namespace CleverConnectors\AppBundle\Model\CustomNode;
@@ -16,11 +16,11 @@ use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
 
 /**
- * Class StartingProgress
+ * Class ProgressIncrementer
  *
  * @package CleverConnectors\AppBundle\Model\CustomNode
  */
-class StartingProgress implements CustomNodeInterface
+class ProgressIncrementer implements CustomNodeInterface
 {
 
     /**
@@ -35,6 +35,7 @@ class StartingProgress implements CustomNodeInterface
      */
     public function __construct(ProgressCounterService $progressCounterService)
     {
+
         $this->progressCounterService = $progressCounterService;
     }
 
@@ -42,24 +43,21 @@ class StartingProgress implements CustomNodeInterface
      * @param ProcessDto $dto
      *
      * @return ProcessDto
+     *
      * @throws CleverConnectorsException
      */
     public function process(ProcessDto $dto): ProcessDto
     {
-        $progressId = CMHeaders::get(CMHeaders::PROCESS_ID, $dto->getHeaders());
+        $processId = CMHeaders::get(CMHeaders::PROCESS_ID, $dto->getHeaders());
 
-        if (!$progressId) {
+        if (!$processId) {
             throw new CleverConnectorsException(
                 'Process ID not found.',
                 CleverConnectorsException::PROCESS_ID_NOT_FOUND
             );
         }
 
-        $data   = json_decode($dto->getData(), TRUE);
-        $users  = $data['progress_users'] ?? [];
-        $groups = $data['progress_groups'] ?? [];
-
-        $this->progressCounterService->start($progressId, 'sync-subscribers', $users, $groups);
+        $this->progressCounterService->increment($processId);
 
         return $dto;
     }

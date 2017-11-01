@@ -2,7 +2,6 @@
 
 namespace Tests\Unit\AppBundle\Listeners;
 
-use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use Hanaboso\PipesFramework\Configurator\Event\ProcessStatusEvent;
 use Tests\KernelTestCaseAbstract;
 
@@ -20,9 +19,7 @@ final class ProgressCounterListenerTest extends KernelTestCaseAbstract
     public function testMissingData(): void
     {
         $prov = $this->container->get('cc.progress_counter.listener');
-        $this->expectException(CleverConnectorsException::class);
-        $this->expectExceptionCode(CleverConnectorsException::MISSING_DATA);
-        $prov->updateStatus(new ProcessStatusEvent([]));
+        $prov->updateStatus(new ProcessStatusEvent('123456', FALSE));
     }
 
 }

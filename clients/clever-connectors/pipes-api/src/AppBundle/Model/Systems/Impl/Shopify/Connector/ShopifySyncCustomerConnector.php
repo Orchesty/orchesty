@@ -10,6 +10,7 @@
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Model\ProgressCounter\ProgressCounterService;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\ShopifySystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
@@ -37,8 +38,9 @@ use function React\Promise\all;
 class ShopifySyncCustomerConnector implements BatchInterface, ConnectorInterface
 {
 
+    private const PER_PAGE      = 50;
     private const COUNT_URL     = 'admin/customers/count.json';
-    private const CUSTOMERS_URL = 'admin/customers.json?limit=50&page=';
+    private const CUSTOMERS_URL = 'admin/customers.json?limit=' . self::PER_PAGE . '&page=';
 
     /**
      * @var ShopifySystem
@@ -56,17 +58,29 @@ class ShopifySyncCustomerConnector implements BatchInterface, ConnectorInterface
     private $factory;
 
     /**
+     * @var ProgressCounterService
+     */
+    private $counterService;
+
+    /**
      * ShopifySyncConnector constructor.
      *
-     * @param ShopifySystem     $system
-     * @param DocumentManager   $dm
-     * @param CurlSenderFactory $factory
+     * @param ShopifySystem          $system
+     * @param DocumentManager        $dm
+     * @param CurlSenderFactory      $factory
+     * @param ProgressCounterService $counterService
      */
-    public function __construct(ShopifySystem $system, DocumentManager $dm, CurlSenderFactory $factory)
+    public function __construct(
+        ShopifySystem $system,
+        DocumentManager $dm,
+        CurlSenderFactory $factory,
+        ProgressCounterService $counterService
+    )
     {
         $this->system                  = $system;
         $this->systemInstallRepository = $dm->getRepository(SystemInstall::class);
         $this->factory                 = $factory;
+        $this->counterService          = $counterService;
     }
 
     /**
@@ -112,14 +126,18 @@ class ShopifySyncCustomerConnector implements BatchInterface, ConnectorInterface
         $systemInstall = $this->systemInstallRepository->getSystemInstallFromHeaders($dto->getHeaders());
         $requestDto    = $this->system->getRequestDto($systemInstall, 'GET');
         $requestDto->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()));
-        $url     = new Uri(sprintf('%s%s', $requestDto->getUri(TRUE), self::COUNT_URL));
+        $url       = new Uri(sprintf('%s%s', $requestDto->getUri(TRUE), self::COUNT_URL));
+        $processId = CMHeaders::get(CMHeaders::PROCESS_ID, $dto->getHeaders()) ?? '';
+
         $promise = $this->fetchData($sender, RequestDto::from($requestDto, $url))
             ->then(
                 function (ResponseInterface $response): int {
                     return $this->getTotalPages($response);
                 }
             )->then(
-                function (int $total) use ($sender, $callbackItem, $requestDto) {
+                function (int $total) use ($sender, $callbackItem, $requestDto, $processId) {
+                    $this->counterService->setTotal($processId, $total * self::PER_PAGE);
+
                     return all($this->doPageLoop($total, $sender, $callbackItem, $requestDto));
                 }
             );

@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\AppBundle\Model\Systems\Impl\Wisepops\Connector;
 
+use CleverConnectors\AppBundle\Model\ProgressCounter\ProgressCounterService;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\Connector\ShopifySyncCustomerConnector;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Wisepops\Connector\WisepopsSyncEmailConnector;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Wisepops\WisepopsSystem;
@@ -76,9 +77,12 @@ final class WisepopsSyncEmailConnectorTest extends KernelTestCaseAbstract
 
         $sender = $this->createMock(CurlSenderFactory::class);
 
+        $processCounter = $this->createMock(ProgressCounterService::class);
+        $processCounter->method('setTotal')->willReturn(TRUE);
+
         $syncConn = $this->getMockBuilder(WisepopsSyncEmailConnector::class)
             ->setMethods(['fetchData'])
-            ->setConstructorArgs([$this->mockSystem(), $dm, $sender])
+            ->setConstructorArgs([$this->mockSystem(), $dm, $sender, $processCounter])
             ->getMock();
 
         $syncConn->expects($this->at(0))

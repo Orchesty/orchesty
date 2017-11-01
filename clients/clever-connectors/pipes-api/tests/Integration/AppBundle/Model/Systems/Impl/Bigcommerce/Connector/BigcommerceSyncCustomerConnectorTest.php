@@ -53,6 +53,7 @@ final class BigcommerceSyncCustomerConnectorTest extends DatabaseTestCaseAbstrac
             'pf-guid'       => $system->getUser(),
             'pf-token'      => $system->getToken(),
             'pf-system-key' => $system->getSystem(),
+            'pf-process-id' => '123456',
         ]);
 
         $connector->processBatch($processDto, $loop, function (SuccessMessage $message): void {

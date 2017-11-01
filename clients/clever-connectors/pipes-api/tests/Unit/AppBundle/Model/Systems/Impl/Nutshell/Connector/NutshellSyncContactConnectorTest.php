@@ -3,6 +3,7 @@
 namespace Tests\Unit\AppBundle\Model\Systems\Impl\Nutshell\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Model\ProgressCounter\ProgressCounterService;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Nutshell\Connector\NutshellSyncContactConnector;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Nutshell\NutshellSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
@@ -64,9 +65,12 @@ final class NutshellSyncContactConnectorTest extends ConnectorTestCaseAbstract
 
         $senderFactory = $this->createMock(CurlSenderFactory::class);
 
+        $processCounter = $this->createMock(ProgressCounterService::class);
+        $processCounter->method('setTotal')->willReturn(TRUE);
+
         $connector = $this->getMockBuilder(NutshellSyncContactConnector::class)
             ->setMethods(['fetchData'])
-            ->setConstructorArgs([$this->getSystemMock(), $documentManager, $senderFactory])
+            ->setConstructorArgs([$this->getSystemMock(), $documentManager, $senderFactory, $processCounter])
             ->getMock();
 
         $connector->expects($this->at(0))

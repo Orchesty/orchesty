@@ -11,6 +11,7 @@ services:
             - '@cc.last_sync.manager'
             - '@hbpf.transport.async_curl_factory'
             - '@doctrine_mongodb.odm.default_document_manager'
+            - '@cc.progress_counter.progress_counter_service'
 
     hbpf.connector.zendesk-update-user-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Zendesk\Connector\ZendeskUpdateUserConnector
@@ -19,6 +20,7 @@ services:
             - '@cc.last_sync.manager'
             - '@hbpf.transport.async_curl_factory'
             - '@doctrine_mongodb.odm.default_document_manager'
+            - '@cc.progress_counter.progress_counter_service'
 
     hbpf.custom_node.zendesk-update-user-mapper:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Zendesk\Mapper\ZendeskUpdateUserMapper

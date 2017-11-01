@@ -4,6 +4,7 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\Zendesk\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\LastSync\LastSyncManager;
+use CleverConnectors\AppBundle\Model\ProgressCounter\ProgressCounterService;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Zendesk\ZendeskSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use Doctrine\Common\Persistence\ObjectRepository;
@@ -29,6 +30,8 @@ use function React\Promise\resolve;
 abstract class ZendeskUserConnectorAbstract implements ConnectorInterface, BatchInterface
 {
 
+    protected const PER_PAGE = 50;
+
     /**
      * @var ZendeskSystem
      */
@@ -50,24 +53,32 @@ abstract class ZendeskUserConnectorAbstract implements ConnectorInterface, Batch
     protected $systemInstallRepository;
 
     /**
+     * @var ProgressCounterService
+     */
+    private $counterService;
+
+    /**
      * ZendeskSyncUserConnector constructor.
      *
-     * @param ZendeskSystem     $system
-     * @param LastSyncManager   $lastSyncManager
-     * @param CurlSenderFactory $factory
-     * @param DocumentManager   $dm
+     * @param ZendeskSystem          $system
+     * @param LastSyncManager        $lastSyncManager
+     * @param CurlSenderFactory      $factory
+     * @param DocumentManager        $dm
+     * @param ProgressCounterService $counterService
      */
     public function __construct(
         ZendeskSystem $system,
         LastSyncManager $lastSyncManager,
         CurlSenderFactory $factory,
-        DocumentManager $dm
+        DocumentManager $dm,
+        ProgressCounterService $counterService
     )
     {
         $this->system                  = $system;
         $this->lastSyncManager         = $lastSyncManager;
         $this->factory                 = $factory;
         $this->systemInstallRepository = $dm->getRepository(SystemInstall::class);
+        $this->counterService          = $counterService;
     }
 
     /**
@@ -108,23 +119,35 @@ abstract class ZendeskUserConnectorAbstract implements ConnectorInterface, Batch
      * @param callable   $callbackItem
      * @param RequestDto $requestDto
      * @param int        $page
+     * @param string     $processId
      *
      * @return PromiseInterface
      */
-    protected function getPage(CurlSender $sender, callable $callbackItem, RequestDto $requestDto,
-                               int $page = 1): PromiseInterface
+    protected function getPage(
+        CurlSender $sender,
+        callable $callbackItem,
+        RequestDto $requestDto,
+        int $page = 1,
+        ?string $processId = NULL
+    ): PromiseInterface
     {
         $res = $this->fetchData($sender, $requestDto)->then(
-            function (ResponseInterface $response) use ($sender, $callbackItem, $requestDto, $page) {
+            function (ResponseInterface $response) use ($sender, $callbackItem, $requestDto, $page, $processId) {
                 $data = json_decode($response->getBody()->getContents(), TRUE);
                 $callbackItem($this->createSuccessMessage($data, $page));
 
-                if (array_key_exists('next_page', $data)
-                    && !is_null($data['next_page'])
-                ) {
-                    return $this->getPage($sender, $callbackItem,
-                        RequestDto::from($requestDto, new Uri($data['next_page'])), $page + 1);
+                if (array_key_exists('next_page', $data) && !is_null($data['next_page'])) {
+                    return $this->getPage(
+                        $sender,
+                        $callbackItem,
+                        RequestDto::from($requestDto, new Uri($data['next_page'])),
+                        ++$page
+                    );
                 } else {
+                    if ($processId) {
+                        $this->counterService->setTotal($processId, $page * self::PER_PAGE);
+                    }
+
                     return resolve();
                 }
             }

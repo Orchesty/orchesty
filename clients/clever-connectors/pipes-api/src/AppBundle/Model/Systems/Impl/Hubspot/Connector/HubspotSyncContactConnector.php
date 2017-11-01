@@ -3,6 +3,8 @@
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
+use CleverConnectors\AppBundle\Model\ProgressCounter\ProgressCounterService;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\HubspotSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
@@ -30,8 +32,9 @@ use function React\Promise\resolve;
 class HubspotSyncContactConnector implements BatchInterface, ConnectorInterface
 {
 
-    private const CONTACTS_URL        = '/contacts/v1/lists/all/contacts/all?count=50';
-    private const CONTACTS_URL_OFFSET = '/contacts/v1/lists/all/contacts/all?count=50&vidOffset=%s';
+    private const PER_PAGE            = 50;
+    private const CONTACTS_URL        = '/contacts/v1/lists/all/contacts/all?count=' . self::PER_PAGE;
+    private const CONTACTS_URL_OFFSET = '/contacts/v1/lists/all/contacts/all?count=' . self::PER_PAGE . '&vidOffset=%s';
 
     /**
      * @var HubspotSystem
@@ -49,17 +52,29 @@ class HubspotSyncContactConnector implements BatchInterface, ConnectorInterface
     private $factory;
 
     /**
+     * @var ProgressCounterService
+     */
+    private $counterService;
+
+    /**
      * HubspotSyncConnector constructor.
      *
-     * @param HubspotSystem     $system
-     * @param DocumentManager   $dm
-     * @param CurlSenderFactory $factory
+     * @param HubspotSystem          $system
+     * @param DocumentManager        $dm
+     * @param CurlSenderFactory      $factory
+     * @param ProgressCounterService $counterService
      */
-    public function __construct(HubspotSystem $system, DocumentManager $dm, CurlSenderFactory $factory)
+    public function __construct(
+        HubspotSystem $system,
+        DocumentManager $dm,
+        CurlSenderFactory $factory,
+        ProgressCounterService $counterService
+    )
     {
         $this->system                  = $system;
         $this->factory                 = $factory;
         $this->systemInstallRepository = $dm->getRepository(SystemInstall::class);
+        $this->counterService          = $counterService;
     }
 
     /**
@@ -98,6 +113,7 @@ class HubspotSyncContactConnector implements BatchInterface, ConnectorInterface
      * @param callable      $callbackItem
      *
      * @return PromiseInterface
+     * @throws CleverConnectorsException
      */
     public function processBatch(ProcessDto $dto, LoopInterface $loop, callable $callbackItem): PromiseInterface
     {
@@ -105,9 +121,9 @@ class HubspotSyncContactConnector implements BatchInterface, ConnectorInterface
         $systemInstall = $this->systemInstallRepository->getSystemInstallFromHeaders($dto->getHeaders());
         $requestDto    = $this->system->getRequestDto($systemInstall, 'GET');
         $requestDto->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()));
-
-        $url     = new Uri(sprintf('%s%s', $requestDto->getUri(TRUE), self::CONTACTS_URL));
-        $promise = $this->getPage($sender, $callbackItem, $requestDto, $url, 1);
+        $processId = CMHeaders::get(CMHeaders::PROCESS_ID, $dto->getHeaders()) ?? '';
+        $url       = new Uri(sprintf('%s%s', $requestDto->getUri(TRUE), self::CONTACTS_URL));
+        $promise   = $this->getPage($sender, $callbackItem, $requestDto, $url, 1, $processId);
 
         $this->systemInstallRepository->setSyncTime($systemInstall);
 
@@ -131,6 +147,7 @@ class HubspotSyncContactConnector implements BatchInterface, ConnectorInterface
      * @param RequestDto $dto
      * @param Uri        $url
      * @param int        $page
+     * @param string     $processId
      *
      * @return PromiseInterface
      */
@@ -139,13 +156,14 @@ class HubspotSyncContactConnector implements BatchInterface, ConnectorInterface
         callable $callbackItem,
         RequestDto $dto,
         Uri $url,
-        int $page
+        int $page,
+        string $processId
     ): PromiseInterface
     {
         $res = $this->fetchData($sender, RequestDto::from($dto, $url))
             ->then(
-                function (ResponseInterface $response) use ($sender, $callbackItem, $dto, $url, $page) {
-
+                function (ResponseInterface $response)
+                use ($sender, $callbackItem, $dto, $url, $page, $processId) {
                     $body   = json_decode($response->getBody()->getContents(), TRUE);
                     $parsed = $this->checkParsedResponseData($body);
                     $callbackItem($this->createSuccessMessage($body, $page));
@@ -154,7 +172,9 @@ class HubspotSyncContactConnector implements BatchInterface, ConnectorInterface
                         $query = sprintf(self::CONTACTS_URL_OFFSET, $parsed['vid-offset']);
                         $url   = new Uri(sprintf('%s%s', $dto->getUri(TRUE), $query));
 
-                        return $this->getPage($sender, $callbackItem, $dto, $url, $page);
+                        return $this->getPage($sender, $callbackItem, $dto, $url, ++$page, $processId);
+                    } else {
+                        $this->counterService->setTotal($processId, $page * self::PER_PAGE);
                     }
 
                     return resolve();

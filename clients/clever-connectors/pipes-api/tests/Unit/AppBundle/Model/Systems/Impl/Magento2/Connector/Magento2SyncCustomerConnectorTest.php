@@ -5,6 +5,7 @@ namespace Tests\Unit\AppBundle\Model\Systems\Impl\Magento2\Connector;
 use CleverConnectors\AppBundle\Document\LastSync;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\LastSync\LastSyncManager;
+use CleverConnectors\AppBundle\Model\ProgressCounter\ProgressCounterService;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Magento2\Connector\Magento2SyncCustomerConnector;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Magento2\Magento2System;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
@@ -80,9 +81,12 @@ final class Magento2SyncCustomerConnectorTest extends KernelTestCaseAbstract
 
         $sender = $this->createMock(CurlSenderFactory::class);
 
+        $processCounter = $this->createMock(ProgressCounterService::class);
+        $processCounter->method('setTotal')->willReturn(TRUE);
+
         $syncConn = $this->getMockBuilder(Magento2SyncCustomerConnector::class)
             ->setMethods(['fetchData'])
-            ->setConstructorArgs([$this->mockSystem(), $lastSync, $sender, $dm])
+            ->setConstructorArgs([$this->mockSystem(), $lastSync, $sender, $dm, $processCounter])
             ->getMock();
 
         $syncConn->expects($this->at(0))

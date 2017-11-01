@@ -3,6 +3,7 @@
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Nutshell\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Model\ProgressCounter\ProgressCounterService;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Nutshell\NutshellSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
@@ -32,6 +33,8 @@ use function React\Promise\resolve;
 class NutshellSyncContactConnector implements BatchInterface, ConnectorInterface
 {
 
+    private const PER_PAGE = 50;
+
     /**
      * @var NutshellSystem
      */
@@ -48,17 +51,29 @@ class NutshellSyncContactConnector implements BatchInterface, ConnectorInterface
     private $factory;
 
     /**
+     * @var ProgressCounterService
+     */
+    private $counterService;
+
+    /**
      * NutshellSyncContactConnector constructor.
      *
-     * @param NutshellSystem    $system
-     * @param DocumentManager   $dm
-     * @param CurlSenderFactory $factory
+     * @param NutshellSystem         $system
+     * @param DocumentManager        $dm
+     * @param CurlSenderFactory      $factory
+     * @param ProgressCounterService $counterService
      */
-    public function __construct(NutshellSystem $system, DocumentManager $dm, CurlSenderFactory $factory)
+    public function __construct(
+        NutshellSystem $system,
+        DocumentManager $dm,
+        CurlSenderFactory $factory,
+        ProgressCounterService $counterService
+    )
     {
         $this->system                  = $system;
         $this->systemInstallRepository = $dm->getRepository(SystemInstall::class);
         $this->factory                 = $factory;
+        $this->counterService          = $counterService;
     }
 
     /**
@@ -104,10 +119,11 @@ class NutshellSyncContactConnector implements BatchInterface, ConnectorInterface
         $systemInstall = $this->systemInstallRepository->getSystemInstallFromHeaders($dto->getHeaders());
         $requestDto    = $this->system->getRequestDto($systemInstall, 'GET');
         $requestDto->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()));
+        $processId = CMHeaders::get(CMHeaders::PROCESS_ID, $dto->getHeaders()) ?? '';
 
         /** @var Uri $url */
         $url     = $requestDto->getUri();
-        $promise = $this->getPage($sender, $requestDto, $url, $callbackItem, 1);
+        $promise = $this->getPage($sender, $requestDto, $url, $callbackItem, 1, $processId);
 
         $this->systemInstallRepository->setSyncTime($systemInstall);
 
@@ -131,6 +147,7 @@ class NutshellSyncContactConnector implements BatchInterface, ConnectorInterface
      * @param Uri        $baseUrl
      * @param callable   $callbackItem
      * @param int        $page
+     * @param string     $processId
      *
      * @return PromiseInterface
      */
@@ -139,17 +156,19 @@ class NutshellSyncContactConnector implements BatchInterface, ConnectorInterface
         RequestDto $requestDto,
         Uri $baseUrl,
         callable $callbackItem,
-        int $page
+        int $page,
+        string $processId
     ): PromiseInterface
     {
         $contactsDto = RequestDto::from($requestDto, $baseUrl, 'POST')->setBody(sprintf(
             '{"jsonrpc":"2.0","method":"findContacts","params":{"limit":%s,"page":%s},"id":"id"}',
-            50,
+            self::PER_PAGE,
             $page
         ));
 
         $promise = $this->fetchData($sender, $contactsDto)->then(
-            function (ResponseInterface $response) use ($sender, $requestDto, $baseUrl, $callbackItem, $page) {
+            function (ResponseInterface $response) use ($sender, $requestDto, $baseUrl, $callbackItem, $page, $processId
+            ) {
                 $data = Json::decode($response->getBody()->getContents(), TRUE);
                 if (isset($data['result']) && count($data['result']) > 0) {
                     return all($this->doPageLoop(
@@ -160,12 +179,14 @@ class NutshellSyncContactConnector implements BatchInterface, ConnectorInterface
                         $baseUrl,
                         $page
                     ))->then(function (array $promises) use (
-                        $data, $sender, $requestDto, $baseUrl, $callbackItem, $page
+                        $data, $sender, $requestDto, $baseUrl, $callbackItem, $page, $processId
                     ) {
-                        if (count($data['result']) < 50) {
+                        if (count($data['result']) < self::PER_PAGE) {
+                            $this->counterService->setTotal($processId, $page * self::PER_PAGE);
+
                             return resolve();
                         } else {
-                            return $this->getPage($sender, $requestDto, $baseUrl, $callbackItem, $page + 1);
+                            return $this->getPage($sender, $requestDto, $baseUrl, $callbackItem, ++$page, $processId);
                         }
                     });
                 } else {
@@ -207,7 +228,7 @@ class NutshellSyncContactConnector implements BatchInterface, ConnectorInterface
                     function (ResponseInterface $response) use ($page, $i): SuccessMessage {
                         $data = Json::decode($response->getBody()->getContents(), TRUE);
 
-                        return $this->createSuccessMessage($data, ($page - 1) * 50 + $i + 1);
+                        return $this->createSuccessMessage($data, ($page - 1) * self::PER_PAGE + $i + 1);
                     })
                 ->then($callbackItem);
         }

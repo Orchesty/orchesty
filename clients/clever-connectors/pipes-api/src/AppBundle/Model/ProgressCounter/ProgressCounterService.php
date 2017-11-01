@@ -6,12 +6,12 @@
  * Time: 14:44
  */
 
-namespace Hanaboso\PipesFramework\Commons\ProgressCounter;
+namespace CleverConnectors\AppBundle\Model\ProgressCounter;
 
 /**
  * Class ProgressCounterService
  *
- * @package Hanaboso\PipesFramework\Commons\ProgressCounter
+ * @package CleverConnectors\AppBundle\Model\ProgressCounter
  */
 class ProgressCounterService extends ProgressCounterAbstract
 {

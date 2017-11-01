@@ -9,6 +9,7 @@ services:
             - '@systems.pipedrive'
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.transport.async_curl_factory'
+            - '@cc.progress_counter.progress_counter_service'
 
     hbpf.connector.pipedrive-update-person-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Pipedrive\Connector\PipedriveUpdatePersonConnector
