@@ -27,11 +27,14 @@ services:
         arguments:
             - '@cc.progress_counter.progress_counter_service'
 
-
     hbpf.custom_node.progress-incrementer:
         class: CleverConnectors\AppBundle\Model\CustomNode\ProgressIncrementer
         arguments:
             - '@cc.progress_counter.progress_counter_service'
+
+    hbpf.custom_node.signal-event:
+        class: CleverConnectors\AppBundle\Model\CustomNode\SignalEvent
+        arguments:
 
     hbpf.custom_node.cm-event-activator:
         class: CleverConnectors\AppBundle\Model\CMEvents\CMEventActivator
