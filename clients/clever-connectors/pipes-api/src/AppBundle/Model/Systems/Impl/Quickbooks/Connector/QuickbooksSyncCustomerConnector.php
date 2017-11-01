@@ -10,12 +10,20 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\LastSync\LastSyncManager;
+use CleverConnectors\AppBundle\Model\ProgressCounter\ProgressCounterService;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\QuickbooksSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
+use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSenderFactory;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
+use Psr\Http\Message\ResponseInterface;
+use React\EventLoop\LoopInterface;
+use React\Promise\PromiseInterface;
+use function React\Promise\all;
 
 /**
  * Class QuickbooksSyncCustomerConnector
@@ -31,22 +39,30 @@ class QuickbooksSyncCustomerConnector extends QuickbooksCustomerConnectorAbstrac
     private $systemInstallRepository;
 
     /**
+     * @var ProgressCounterService
+     */
+    private $counterService;
+
+    /**
      * QuickbooksSyncCustomerConnector constructor.
      *
-     * @param QuickbooksSystem  $system
-     * @param LastSyncManager   $lastSyncManager
-     * @param CurlSenderFactory $factory
-     * @param DocumentManager   $dm
+     * @param QuickbooksSystem       $system
+     * @param LastSyncManager        $lastSyncManager
+     * @param CurlSenderFactory      $factory
+     * @param DocumentManager        $dm
+     * @param ProgressCounterService $counterService
      */
     public function __construct(
         QuickbooksSystem $system,
         LastSyncManager $lastSyncManager,
         CurlSenderFactory $factory,
-        DocumentManager $dm
+        DocumentManager $dm,
+        ProgressCounterService $counterService
     )
     {
         parent::__construct($system, $lastSyncManager, $factory);
         $this->systemInstallRepository = $dm->getRepository(SystemInstall::class);
+        $this->counterService          = $counterService;
     }
 
     /**
@@ -55,6 +71,38 @@ class QuickbooksSyncCustomerConnector extends QuickbooksCustomerConnectorAbstrac
     public function getId(): string
     {
         return 'quickbooks-sync-customer-connector';
+    }
+
+    /**
+     * @param ProcessDto    $dto
+     * @param LoopInterface $loop
+     * @param callable      $callbackItem
+     *
+     * @return PromiseInterface
+     */
+    public function processBatch(ProcessDto $dto, LoopInterface $loop, callable $callbackItem): PromiseInterface
+    {
+        $sender        = $this->factory->create($loop);
+        $systemInstall = $this->getSystemInstall($dto);
+        $requestDto    = $this->system->getRequestDto($systemInstall, 'GET');
+        $requestDto->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()));
+        $processId = CMHeaders::get(CMHeaders::PROCESS_ID, $dto->getHeaders()) ?? '';
+        $url       = new Uri(
+            $requestDto->getUri(TRUE) . 'query?query=' . urlencode($this->getTotalQuery($systemInstall, $dto))
+        );
+        $promise   = $this->fetchData($sender, RequestDto::from($requestDto, $url))->then(
+            function (ResponseInterface $response): int {
+                return $this->getTotalPages($response);
+            }
+        )->then(
+            function (int $total) use ($systemInstall, $dto, $sender, $callbackItem, $requestDto, $processId) {
+                $this->counterService->setTotal($processId, $total * self::PAGE_LIMIT);
+
+                return all($this->doPageLoop($systemInstall, $dto, $total, $sender, $callbackItem, $requestDto));
+            }
+        );
+
+        return $promise;
     }
 
     /**

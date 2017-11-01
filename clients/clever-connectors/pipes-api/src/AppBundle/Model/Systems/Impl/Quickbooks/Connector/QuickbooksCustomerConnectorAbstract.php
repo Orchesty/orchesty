@@ -39,12 +39,12 @@ abstract class QuickbooksCustomerConnectorAbstract implements BatchInterface, Co
     /**
      * @var QuickbooksSystem
      */
-    private $system;
+    protected $system;
 
     /**
      * @var CurlSenderFactory
      */
-    private $factory;
+    protected $factory;
 
     /**
      * @var LastSyncManager
@@ -198,7 +198,7 @@ abstract class QuickbooksCustomerConnectorAbstract implements BatchInterface, Co
      *
      * @return array
      */
-    private function doPageLoop(
+    protected function doPageLoop(
         SystemInstall $systemInstall,
         ProcessDto $processDto,
         int $total,

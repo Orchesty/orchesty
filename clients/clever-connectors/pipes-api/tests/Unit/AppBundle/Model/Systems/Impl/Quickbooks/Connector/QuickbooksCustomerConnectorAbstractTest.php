@@ -4,6 +4,7 @@ namespace Tests\Unit\AppBundle\Model\Systems\Impl\Quickbooks\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\LastSync\LastSyncManager;
+use CleverConnectors\AppBundle\Model\ProgressCounter\ProgressCounterService;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\Connector\QuickbooksCustomerConnectorAbstract;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\QuickbooksSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
@@ -57,6 +58,11 @@ abstract class QuickbooksCustomerConnectorAbstractTest extends ConnectorTestCase
      * @var PHPUnit_Framework_MockObject_MockObject|DocumentManager
      */
     protected $mockDm;
+
+    /**
+     * @var PHPUnit_Framework_MockObject_MockObject|ProgressCounterService
+     */
+    protected $counterService;
 
     /**
      * @covers ::processBatch()
@@ -129,6 +135,9 @@ abstract class QuickbooksCustomerConnectorAbstractTest extends ConnectorTestCase
         $this->sender          = $this->createMock(CurlSender::class);
         $this->factory         = $this->createMock(CurlSenderFactory::class);
         $this->factory->method('create')->willReturn($this->sender);
+
+        $this->counterService = $this->createMock(ProgressCounterService::class);
+        $this->counterService->method('setTotal')->willReturn(TRUE);
     }
 
     /**
