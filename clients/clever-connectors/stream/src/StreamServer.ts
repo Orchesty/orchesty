@@ -154,6 +154,7 @@ class StreamServer {
             socket.join(userId);
 
             logger.info(`User[token=${data.token}, userId=${userId}] subscribed to group '${userId}'`);
+            socket.emit(STREAM_EVENTS.INFO_MESSAGE, `You subscribed to group "${userId}"`);
         } catch (joinErr) {
             logger.error(`Could not find userId for token "${data.token}". Error: ${joinErr.message}`);
             socket.emit(STREAM_EVENTS.ERROR_MESSAGE, `Trying to subscribe with invalid token "${data.token}."`);
@@ -194,7 +195,7 @@ class StreamServer {
         let userId: string;
         try {
             userId = this.users.getUserId(data.token);
-            socket.leave(userId);
+            // socket.leave(userId);
         } catch (joinErr) {
             logger.error(`Cannot find user. Error: ${joinErr.message}`);
             return;
