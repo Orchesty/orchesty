@@ -31,7 +31,7 @@ class BasecrmCreateContactConnector extends BasecrmUpdateContactConnectorAbstrac
      * @return ProcessDto
      * @throws CleverConnectorsException
      */
-    public function processEvent(ProcessDto $dto): ProcessDto
+    public function processAction(ProcessDto $dto): ProcessDto
     {
         $systemInstall = $this->systemInstallRepository->getSystemInstallFromHeaders($dto->getHeaders());
         $requestDto    = $this->system->getRequestDtoNonSync($systemInstall, 'POST');

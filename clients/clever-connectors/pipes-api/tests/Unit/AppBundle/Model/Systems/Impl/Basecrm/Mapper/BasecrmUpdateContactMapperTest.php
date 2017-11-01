@@ -35,7 +35,7 @@ class BasecrmUpdateContactMapperTest extends KernelTestCaseAbstract
         self::assertEquals(json_encode([
             'data' => [
                 'custom_fields' => [
-                    CleverCustomKeysEnum::HARD_BOUNCE => FALSE,
+                    CleverCustomKeysEnum::HARD_BOUNCE => TRUE,
                 ],
             ],
         ]), json_decode($res->getData())->body);

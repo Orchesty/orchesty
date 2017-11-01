@@ -47,7 +47,7 @@ class BasecrmCreateContactConnectorTest extends ConnectorTestCaseAbstract
         $dto  = new ProcessDto();
         $dto->setHeaders([])->setData(json_encode($data));
 
-        $conn->processEvent($dto);
+        $conn->processAction($dto);
     }
 
     /**

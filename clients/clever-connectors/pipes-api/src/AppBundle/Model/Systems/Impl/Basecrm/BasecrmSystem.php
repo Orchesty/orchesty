@@ -41,6 +41,9 @@ class BasecrmSystem implements AuthorizationInterface, CMEventSystemInterface
         $this->addCMEvent(new CMEventObject('', SystemInstall::EVENT_CREATE, ''));
         $this->addCMEvent(new CMEventObject(CleverCustomKeysEnum::HARD_BOUNCE, SystemInstall::EVENT_HARD_BOUNCE, ''));
         $this->addCMEvent(new CMEventObject(CleverCustomKeysEnum::UNSUBSCRIBE, SystemInstall::EVENT_UNSUBSCRIBE, ''));
+
+        $this->topologyNames['basecrm-unsubscribe-contact'] = 'basecrm-update-contact';
+        $this->topologyNames['basecrm-hard-bounce-contact'] = 'basecrm-update-contact';
     }
 
     /**
@@ -150,8 +153,35 @@ class BasecrmSystem implements AuthorizationInterface, CMEventSystemInterface
             TRUE
         );
 
+        $field2 = new Field(
+            Field::CHECKBOX,
+            SystemInstall::EVENT_CREATE,
+            'Create event',
+            $systemInstall->isEventCreate(),
+            TRUE
+        );
+
+        $field3 = new Field(
+            Field::CHECKBOX,
+            SystemInstall::EVENT_UNSUBSCRIBE,
+            'Unsubscribe event',
+            $systemInstall->isEventUnsubscribe(),
+            TRUE
+        );
+
+        $field4 = new Field(
+            Field::CHECKBOX,
+            SystemInstall::EVENT_HARD_BOUNCE,
+            'Hard bounce event',
+            $systemInstall->isEventHardBounce(),
+            TRUE
+        );
+
         $form = new Form();
-        $form->addField($field1);
+        $form->addField($field1)
+            ->addField($field2)
+            ->addField($field3)
+            ->addField($field4);
 
         return $form->toArray();
     }
@@ -180,9 +210,11 @@ class BasecrmSystem implements AuthorizationInterface, CMEventSystemInterface
     }
 
     /**
-     * @return RequesterInterface
+     * @param SystemInstall $systemInstall
+     *
+     * @return RequesterInterface|null
      */
-    public function getCMEventRequester(): ?RequesterInterface
+    public function getCMEventRequester(SystemInstall $systemInstall): ?RequesterInterface
     {
         return NULL;
     }

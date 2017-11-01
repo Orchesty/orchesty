@@ -39,7 +39,7 @@ class BasecrmUpdateContactMapper implements CustomNodeInterface
             'body' => json_encode([
                 'data' => [
                     'custom_fields' => [
-                        CleverCustomKeysEnum::getFromType($key) => FALSE,
+                        CleverCustomKeysEnum::getFromType($key) => TRUE,
                     ],
                 ],
             ]),

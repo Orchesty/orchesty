@@ -9,7 +9,6 @@ services:
         arguments:
             - '@systems.basecrm'
             - '@hbpf.transport.async_curl_factory'
-            - '@doctrine_mongodb.odm.default_document_manager'
 
     hbpf.connector.basecrm-queue-contact-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Basecrm\Connector\BasecrmQueueContactConnector

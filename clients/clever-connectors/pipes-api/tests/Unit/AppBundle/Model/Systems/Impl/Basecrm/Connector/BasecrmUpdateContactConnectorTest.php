@@ -51,7 +51,7 @@ class BasecrmUpdateContactConnectorTest extends ConnectorTestCaseAbstract
             $this->mockCurl($data)
         );
 
-        $conn->processEvent($dto);
+        $conn->processAction($dto);
     }
 
     /**

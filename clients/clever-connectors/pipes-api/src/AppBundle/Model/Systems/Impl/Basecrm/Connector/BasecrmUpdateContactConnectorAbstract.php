@@ -55,10 +55,10 @@ abstract class BasecrmUpdateContactConnectorAbstract implements ConnectorInterfa
      * @return ProcessDto|void
      * @throws ConnectorException
      */
-    public function processAction(ProcessDto $dto): ProcessDto
+    public function processEvent(ProcessDto $dto): ProcessDto
     {
-        throw new ConnectorException('BaseCRM has no support for action, updateContactConnector.',
-            ConnectorException::CONNECTOR_DOES_NOT_HAVE_PROCESS_ACTION);
+        throw new ConnectorException('BaseCRM has no support for event, updateContactConnector.',
+            ConnectorException::CONNECTOR_DOES_NOT_HAVE_PROCESS_EVENT);
     }
 
 }
