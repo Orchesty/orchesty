@@ -162,7 +162,7 @@ services:
           - RABBITMQ_HOST=rabbitmq
           - STREAM_WS_PORT=80
           - STREAM_HTTP_PORT=3030
-          - STREAM_QUEUE=stream
+          - STREAM_QUEUE=pipes.stream
         ports:
           - ${DEV_IP}:3030:3030
         # - ${DEV_IP}:8080:80
