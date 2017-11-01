@@ -11,11 +11,11 @@ use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 
 /**
- * Class ZendeskRequester
+ * Class ZendeskCmEventRequester
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Zendesk\Requester
  */
-class ZendeskRequester implements RequesterInterface
+class ZendeskCmEventRequester implements RequesterInterface
 {
 
     use RequesterTrait;

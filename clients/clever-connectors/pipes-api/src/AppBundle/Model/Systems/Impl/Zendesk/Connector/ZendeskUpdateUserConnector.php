@@ -60,7 +60,7 @@ class ZendeskUpdateUserConnector implements ConnectorInterface
      */
     public function getId(): string
     {
-        return 'zendesk-create-user-connector';
+        return 'zendesk-update-user-connector';
     }
 
     /**
@@ -100,7 +100,8 @@ class ZendeskUpdateUserConnector implements ConnectorInterface
         $field = CMHeaders::get(CMHeaders::CM_EVENT_TYPE, $dto->getHeaders()) ?? '';
 
         if ($res->getStatusCode() === 404) {
-            throw new CleverConnectorsException('User with given id [%s] does not exist, Zendesk updateUserConnector.',
+            throw new CleverConnectorsException(
+                sprintf('User with given id [%s] does not exist, Zendesk updateUserConnector.', $data['id']),
                 CleverConnectorsException::REQUEST_FAILED);
         } else if (!array_key_exists('user', $data)
             || !array_key_exists('user_fields', $data['user'])

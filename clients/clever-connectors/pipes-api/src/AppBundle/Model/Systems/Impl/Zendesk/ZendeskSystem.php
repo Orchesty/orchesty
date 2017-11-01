@@ -14,7 +14,7 @@ use CleverConnectors\AppBundle\Model\Requester\RequesterInterface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\AuthorizationInterface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\Traits\AuthorizationTrait;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
-use CleverConnectors\AppBundle\Model\Systems\Impl\Zendesk\Requester\ZendeskRequester;
+use CleverConnectors\AppBundle\Model\Systems\Impl\Zendesk\Requester\ZendeskCmEventRequester;
 use CleverConnectors\AppBundle\Model\Systems\SystemInterface;
 use CleverConnectors\AppBundle\Model\Webhook\Traits\WebhookSystemTrait;
 use GuzzleHttp\Psr7\Uri;
@@ -208,7 +208,7 @@ class ZendeskSystem implements SystemInterface, AuthorizationInterface, CMEventS
      */
     public function getCMEventRequester(SystemInstall $systemInstall): ?RequesterInterface
     {
-        return new ZendeskRequester($systemInstall, $this->getHeaders($systemInstall));
+        return new ZendeskCmEventRequester($systemInstall, $this->getHeaders($systemInstall));
     }
 
     /**

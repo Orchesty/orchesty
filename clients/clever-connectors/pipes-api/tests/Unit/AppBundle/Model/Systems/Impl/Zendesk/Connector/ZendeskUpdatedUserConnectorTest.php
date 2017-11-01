@@ -151,7 +151,7 @@ final class ZendeskUpdatedUserConnectorTest extends ConnectorTestCaseAbstract
                     $t = rtrim($test->time->format(DateTime::ISO8601), '+0000');
 
                     $expt = new RequestDto('GET',
-                        new Uri(sprintf('https://hbpf.zendesk.com/api/v2/search?query=type:user&updated>%sZ', $t)));
+                        new Uri(sprintf('https://hbpf.zendesk.com/api/v2/search?query=type:user updated>%sZ', $t)));
                     $expt->setHeaders([
                         'Accept'        => 'application/json',
                         'Content-Type'  => 'application/json',
