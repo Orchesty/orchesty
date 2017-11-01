@@ -36,30 +36,33 @@ services:
 		class: CmStream\Subscriber
 
 	# BASE
-	login_form:
+	login_form_factory:
 		class: App\Forms\LoginFormFactory
 
-	logout_form:
+	logout_form_factory:
 		class: App\Forms\LogoutFormFactory
 
 	# HOMEPAGE
-	system_filter_form:
+	system_filter_form_factory:
 		class: App\Forms\SystemFilterFormFactory
 
 	# USER SYSTEMS
-	system_install_form:
+	system_install_form_factory:
 		class: App\Forms\SystemInstallFormFactory
 
 	# USER SYSTEM DETAIL
-	switch_token:
+	switch_token_form_factory:
 		class: App\Forms\SwitchTokenFormFactory
 
-	authorize_generator_form:
+	authorize_generator_form_factory:
 		class: App\Forms\AuthorizationSettingGeneratorFactory
 
 	# STREAM
 	publish_form_factory:
 		class: App\Forms\PublishFormFactory
+
+	subscribe_form_factory:
+		class: App\Forms\SubscribeFormFactory
 
 extensions:
 	cc_api: CcApi\Bridges\DI\CcApiExtension

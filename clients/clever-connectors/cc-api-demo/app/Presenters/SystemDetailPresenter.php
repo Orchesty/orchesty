@@ -92,7 +92,8 @@ class SystemDetailPresenter extends BasePresenter
     {
         $this->connectorManager->synchronizeUserSystem($this->userId, $this->userSystem->getKey());
 
-        $this->sendJson(['start_sync' => TRUE]);
+        $this->flashMessage('Sync was started.');
+        $this->redrawControl('flashMessages');
     }
 
     /**
@@ -114,7 +115,9 @@ class SystemDetailPresenter extends BasePresenter
     {
         $data = $form->getValues(TRUE);
 
-        if (isset($data['password'])) {
+        $password = (isset($data['password']) && $data['password'] !== '');
+
+        if ($password) {
             $this->connectorManager->setUserSystemPassword($this->userId, $this->userSystem->getKey(),
                 $data['password']);
 
@@ -122,6 +125,8 @@ class SystemDetailPresenter extends BasePresenter
         }
 
         $this->connectorManager->saveUserSystemSetting($this->userId, $this->userSystem->getKey(), $data);
+
+        $this->flashMessage('Setting was saved.');
 
         $this->redirect('SystemDetail:', ['systemKey' => $this->userSystem->getKey()]);
     }
@@ -147,6 +152,7 @@ class SystemDetailPresenter extends BasePresenter
 
         $this->connectorManager->switchUserSystemToken($this->userId, $this->userSystem->getKey(), $data['token']);
 
+        $this->flashMessage('Token was switched.');
         $this->redirect('SystemDetail:', ['systemKey' => $this->userSystem->getKey()]);
     }
 

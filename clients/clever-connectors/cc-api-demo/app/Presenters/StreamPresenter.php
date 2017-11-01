@@ -3,6 +3,7 @@
 namespace App\Presenters;
 
 use App\Forms\PublishFormFactory;
+use App\Forms\SubscribeFormFactory;
 use Bunny\Client;
 use CmStream\Subscriber;
 use Nette\Forms\Form;
@@ -26,23 +27,24 @@ class StreamPresenter extends BasePresenter
     private $publishFormFactory;
 
     /**
-     * StreamPresenter constructor.
-     *
-     * @param Subscriber         $subscriber
-     * @param PublishFormFactory $publishGeneratorFactory
+     * @var SubscribeFormFactory
      */
-    public function __construct(Subscriber $subscriber, PublishFormFactory $publishGeneratorFactory)
-    {
-        parent::__construct();
-        $this->subscriber         = $subscriber;
-        $this->publishFormFactory = $publishGeneratorFactory;
-    }
+    private $subscribeFormFactory;
 
     /**
+     * StreamPresenter constructor.
      *
+     * @param Subscriber           $subscriber
+     * @param PublishFormFactory   $publishGeneratorFactory
+     * @param SubscribeFormFactory $subscribeFormFactory
      */
-    public function renderDefault(): void
+    public function __construct(Subscriber $subscriber, PublishFormFactory $publishGeneratorFactory,
+                                SubscribeFormFactory $subscribeFormFactory)
     {
+        parent::__construct();
+        $this->subscriber           = $subscriber;
+        $this->publishFormFactory   = $publishGeneratorFactory;
+        $this->subscribeFormFactory = $subscribeFormFactory;
     }
 
     /**
@@ -95,6 +97,20 @@ class StreamPresenter extends BasePresenter
     /**
      * @return Form
      */
+    protected function createComponentSubscribeForm()
+    {
+        $form = $this->subscribeFormFactory->create();
+
+        if ($this->userId) {
+            $form['user_id']->setDefaultValue($this->userId);
+        }
+
+        return $form;
+    }
+
+    /**
+     * @return Form
+     */
     protected function createComponentPublishForm()
     {
         $form = $this->publishFormFactory->create();
@@ -128,10 +144,12 @@ class StreamPresenter extends BasePresenter
                 'stream'
             );
 
-        if ($this->isAjax()) {
-            $form->reset();
-            $this->terminate();
-        }
+        $form->reset();
+        $form->setDefaults(['event' => 'demo_event']);
+
+        $this->flashMessage('Message was published.');
+        $this->redrawControl('flashMessages');
+        $this->redrawControl('publishForm');
     }
 
 }

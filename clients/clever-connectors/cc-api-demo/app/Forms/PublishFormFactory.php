@@ -22,14 +22,18 @@ class PublishFormFactory
 
         $form
             ->addText('event', 'Event')
-            ->setHtmlAttribute('placeholder', 'my_event');
+            ->setRequired('The event name is required.')
+            ->setHtmlAttribute('placeholder', 'my_event')
+            ->setDefaultValue('demo_event');
 
         $form
             ->addText('content', 'Content')
+            ->setRequired('The content is required')
             ->setHtmlAttribute('placeholder', 'My message');
 
         $form
             ->addText('groups', 'Group')
+            ->setRequired('The group(s) is required.')
             ->setHtmlAttribute('placeholder', 'groupA,groupB,...');
 
         $form
