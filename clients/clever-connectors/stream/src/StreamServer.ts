@@ -131,6 +131,7 @@ class StreamServer {
 
         // Send to ws clients
         body.groups.forEach((group: string) => {
+            logger.info(`Sending message[event=${body.event}, groups=${body.groups.join(",")}]`);
             this.stream.to(group).emit(STREAM_EVENTS.MESSAGE, { event: body.event, content: body.content });
         });
     }
@@ -141,10 +142,21 @@ class StreamServer {
      * @param {ISubscribeData} data
      */
     private subscribe(socket: SocketIO.Socket, data: ISubscribeData): void {
+        if (!this.users.isValidToken(data.token)) {
+            logger.warn(`Trying to subscribe with invalid token: "${data.token}"`);
+
+            return;
+        }
+
+        let userId: string;
         try {
-            socket.join(this.users.getUserId(data.token));
+            userId = this.users.getUserId(data.token);
+            socket.join(userId);
         } catch (joinErr) {
-            logger.error(`Cannot join private room. Error: ${joinErr.message}`);
+            logger.error(`Could not find userId for token "${data.token}". Error: ${joinErr.message}`);
+            socket.emit(STREAM_EVENTS.ERROR_MESSAGE, `Trying to subscribe with invalid token "${data.token}."`);
+
+            return;
         }
 
         if (data.groups && data.groups.length > 0) {
@@ -172,9 +184,11 @@ class StreamServer {
      */
     private unsubscribe(socket: SocketIO.Socket, data: ISubscribeData): void {
         if (!this.users.isValidToken(data.token)) {
-            logger.warn(`Trying to unsubscribe non-existing token: "${data.token}"`);
+            logger.warn(`Trying to unsubscribe with invalid token: "${data.token}"`);
+
             return;
         }
+
         try {
             socket.leave(this.users.getUserId(data.token));
         } catch (joinErr) {
