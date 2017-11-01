@@ -11,4 +11,3 @@ cert/*
 !cert/.gitkeep
 # Exclude local config
 .env
-app/config/config.local.neon
