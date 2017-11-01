@@ -37,7 +37,6 @@ class HbPFConfiguratorExtension extends Extension implements PrependExtensionInt
         $loader->load('starting-point.yml');
         $loader->load('doctrine_mongo.yml');
         $loader->load('snc_redis.yml');
-        $loader->load('rabbit_mq.yml');
         $loader->load('status_service.yml');
 
         $container->setParameter('src_dir', __DIR__ . '/../..');

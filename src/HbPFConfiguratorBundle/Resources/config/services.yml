@@ -20,18 +20,6 @@ services:
             - '@hbpf.rabbit_mq.handler.rabbit_mq_handler'
             - '@hbpf.docker_compose.volume_path_definition_factory'
 
-    hbpf.progress_counter.progress_counter_service:
-        class: Hanaboso\PipesFramework\Commons\ProgressCounter\ProgressCounterService
-        arguments:
-            - '@snc_redis.default'
-            - '@rabbit-mq.producer.progress_counter'
-
-    hbpf.progress_counter.listener.progress_counter_listener:
-        class: Hanaboso\PipesFramework\Commons\ProgressCounter\Listener\ProgressCounterListener
-        arguments: ['@hbpf.progress_counter.progress_counter_service']
-        tags:
-            - { name: kernel.event_subscriber }
-
     hbpf.topology_generator.request.request_handler:
         class: Hanaboso\PipesFramework\TopologyGenerator\Request\RequestHandler
         arguments:

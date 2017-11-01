@@ -69,7 +69,6 @@ abstract class SyncCallbackAbstract implements LoggerAwareInterface
 
         switch ($result->getStatus()) {
             case CallbackStatus::SUCCESS:
-                $channel->ack($message);
                 //TODO: what else
                 break;
             case CallbackStatus::FAILED:
@@ -82,7 +81,6 @@ abstract class SyncCallbackAbstract implements LoggerAwareInterface
 
                     $this->getRepeater()->add($message);
                 }
-                $channel->ack($message);
                 break;
             default:
                 $this->logger->error('BaseCallback::handleMessage', $prepareMessage);
