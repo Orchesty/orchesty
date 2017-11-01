@@ -51,7 +51,7 @@ class ProgressCounterServiceTest extends TestCase
     public function testSetTotal(): void
     {
         $this->redis->method('set')->with('aEcBuFkS12345:total', 6)->willReturn(NULL);
-        $this->redis->expects($this->exactly(5))->method('get');
+        $this->redis->expects($this->exactly(4))->method('get');
         $this->producer->expects($this->once())->method('publish')->willReturn(TRUE);
 
         $processStatus = new ProgressCounterService($this->redis, $this->producer);
@@ -64,7 +64,7 @@ class ProgressCounterServiceTest extends TestCase
     public function testIncrement(): void
     {
         $this->redis->expects($this->once())->method('incr')->with('aEcBuFkS12345:progress')->willReturn(NULL);
-        $this->redis->expects($this->exactly(5))->method('get');
+        $this->redis->expects($this->exactly(4))->method('get');
         $this->producer->expects($this->once())->method('publish')->willReturn(TRUE);
 
         $processStatus = new ProgressCounterService($this->redis, $this->producer);
@@ -81,7 +81,7 @@ class ProgressCounterServiceTest extends TestCase
             ->method('set')
             ->with('aEcBuFkS12345:status', ProgressCounterStatusEnum::FAILED)
             ->willReturn(NULL);
-        $this->redis->expects($this->exactly(5))->method('get');
+        $this->redis->expects($this->exactly(4))->method('get');
         $this->producer->expects($this->once())->method('publish')->willReturn(TRUE);
 
         $processStatus = new ProgressCounterService($this->redis, $this->producer);
@@ -111,7 +111,7 @@ class ProgressCounterServiceTest extends TestCase
                 'aEcBuFkS12345:metadata',
             ])
             ->willReturn(NULL);
-        $this->redis->expects($this->exactly(5))->method('get');
+        $this->redis->expects($this->exactly(4))->method('get');
         $this->producer->expects($this->once())->method('publish')->willReturn(TRUE);
 
         $processStatus = new ProgressCounterService($this->redis, $this->producer);
@@ -129,7 +129,7 @@ class ProgressCounterServiceTest extends TestCase
             ->willReturn('sync_event');
         $this->redis
             ->expects($this->at(1))
-            ->method('get')
+            ->method('hgetall')
             ->willReturn(['user_id', 'admins']);
         $this->redis
             ->expects($this->at(2))

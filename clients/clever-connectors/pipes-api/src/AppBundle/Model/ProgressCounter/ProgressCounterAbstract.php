@@ -101,6 +101,11 @@ abstract class ProgressCounterAbstract implements ProgressCounterInterface
         $this->redis->set($this->getKey($processId, self::PROGRESS_COUNTER_EVENT), $eventName);
         $this->redis->hmset($this->getKey($processId, self::PROGRESS_COUNTER_GROUPS), $groups);
         $this->redis->set($this->getKey($processId, self::PROGRESS_COUNTER_TOTAL), $total);
+        $this->redis->set($this->getKey($processId, self::PROGRESS_COUNTER_PROGRESS), 0);
+        $this->redis->set(
+            $this->getKey($processId, self::PROGRESS_COUNTER_STATUS),
+            ProgressCounterStatusEnum::IN_PROGRESS
+        );
         $this->redis->hmset($this->getKey($processId, self::PROGRESS_COUNTER_METADATA), $metadata);
 
         $this->producer->publish($this->prepareMessage($processId));
@@ -169,7 +174,7 @@ abstract class ProgressCounterAbstract implements ProgressCounterInterface
      */
     private function getGroups(string $processId): array
     {
-        $groups = $this->redis->get(self::getKey($processId, self::PROGRESS_COUNTER_GROUPS));
+        $groups = $this->redis->hgetall(self::getKey($processId, self::PROGRESS_COUNTER_GROUPS));
 
         if (!is_array($groups)) {
             return [];
@@ -185,7 +190,7 @@ abstract class ProgressCounterAbstract implements ProgressCounterInterface
      */
     private function getMetaData(string $processId): array
     {
-        $metadata = $this->redis->hgetall(self::getKey($processId, self::PROGRESS_COUNTER_STATUS));
+        $metadata = $this->redis->hgetall(self::getKey($processId, self::PROGRESS_COUNTER_METADATA));
 
         if (!is_array($metadata)) {
             return [];
