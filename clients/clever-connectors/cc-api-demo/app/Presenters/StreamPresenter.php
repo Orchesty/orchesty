@@ -136,14 +136,14 @@ class StreamPresenter extends BasePresenter
             ->publish(
                 json_encode([
                     'event'   => $event,
-                    'content' => $data['content'],
+                    'content' => json_decode($data['content'], true),
                     'groups'  => explode(',', $data['groups']),
                 ]),
                 [
                     'content-type' => 'application/json',
                 ],
                 '',
-                'stream'
+                $this->template->host      = $this->context->getParameters()['stream']['queue']
             );
 
         //$form->reset();

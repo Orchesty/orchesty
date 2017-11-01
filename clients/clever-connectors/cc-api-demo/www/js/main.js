@@ -219,7 +219,7 @@ $(function () {
 	function addDemoMessage(type, message) {
 		var d = new Date();
 		$("#streamMessages tbody").prepend(
-			"<tr><td>" + type + "</td><td>" + message + "</td><td>" + d.toString() + "</td></tr>"
+			"<tr><td>" + type + "</td><td>" + JSON.stringify(message) + "</td><td>" + d.toString() + "</td></tr>"
 		);
 	}
 
@@ -231,14 +231,13 @@ $(function () {
 	 * @param data
 	 */
 	function addSyncMessage(data) {
-		data = JSON.parse(data);
 
 		syncData[data.process_id] = data;
 
-		var itemHtml = '<div class="col-md-4">PROCESS ID: {ID}</div>' +
-			'<div class="col-md-8">' +
+		var itemHtml = '<div class="col-md-6">PROCESS ID: {ID}</div>' +
+			'<div class="col-md-6">' +
 			'<div class="progress">' +
-			'<div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: {PROGRESS}%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>' +
+			'<div class="progress-bar progress-bar-striped progress-bar-animated {BG}" role="progressbar" style="width: {PROGRESS}%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>' +
 			'</div>' +
 			'</div>' +
 			'<div class="clearfix"></div>';
@@ -254,6 +253,20 @@ $(function () {
 			}
 
 			var data = itemHtml;
+
+			switch (item.status) {
+				case "success":
+					data = data.replace("{BG}", 'bg-success');
+					break;
+				case "failed":
+					data = data.replace("{BG}", 'bg-danger');
+					progress = 100;
+					break;
+				default:
+					data = data.replace("{BG}", 'bg-info');
+					break;
+			}
+
 			data = data.replace("{ID}", processId);
 			data = data.replace("{PROGRESS}", progress);
 

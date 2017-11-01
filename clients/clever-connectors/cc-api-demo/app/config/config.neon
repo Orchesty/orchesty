@@ -11,6 +11,7 @@ parameters:
 
 	stream:
 		host: "http://stream:3030"
+		queue: pipes.stream
 
 cc_api:
 	base_uri: 'https://cleverconn.stage.hanaboso.net/'

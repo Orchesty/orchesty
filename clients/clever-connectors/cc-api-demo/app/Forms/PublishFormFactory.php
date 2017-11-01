@@ -29,7 +29,7 @@ class PublishFormFactory
         $form
             ->addText('content', 'Content')
             ->setRequired('The content is required')
-            ->setHtmlAttribute('placeholder', 'My message');
+            ->setHtmlAttribute('placeholder', 'Must be JSON!!!');
 
         $form
             ->addText('groups', 'Group')
