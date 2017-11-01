@@ -90,13 +90,14 @@ class QuickbooksSyncCustomerConnector extends QuickbooksCustomerConnectorAbstrac
         $url       = new Uri(
             $requestDto->getUri(TRUE) . 'query?query=' . urlencode($this->getTotalQuery($systemInstall, $dto))
         );
+        $counterService = $this->counterService;
         $promise   = $this->fetchData($sender, RequestDto::from($requestDto, $url))->then(
             function (ResponseInterface $response): int {
                 return $this->getTotalPages($response);
             }
         )->then(
-            function (int $total) use ($systemInstall, $dto, $sender, $callbackItem, $requestDto, $processId) {
-                $this->counterService->setTotal($processId, $total * self::PAGE_LIMIT);
+            function (int $total) use ($systemInstall, $dto, $sender, $callbackItem, $requestDto, $processId, $counterService) {
+                $counterService->setTotal($processId, $total * self::PAGE_LIMIT);
 
                 return all($this->doPageLoop($systemInstall, $dto, $total, $sender, $callbackItem, $requestDto));
             }
