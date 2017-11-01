@@ -4,34 +4,34 @@ namespace Tests\Unit\AppBundle\Model\Systems\Impl\Hubspot\Mapper;
 
 use CleverConnectors\AppBundle\Enum\CleverFieldsEnum;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
-use CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\Mapper\HubspotUpdateContactMapper;
+use CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\Mapper\HubspotUpdatedContactMapper;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Nette\Utils\Json;
 use Tests\ConnectorTestCaseAbstract;
 
 /**
- * Class HubspotUpdateContactMapperTest
+ * Class HubspotUpdatedContactMapperTest
  *
  * @package Tests\Unit\AppBundle\Model\Systems\Impl\Hubspot\Mapper
  */
-final class HubspotUpdateContactMapperTest extends ConnectorTestCaseAbstract
+final class HubspotUpdatedContactMapperTest extends ConnectorTestCaseAbstract
 {
 
     /**
-     * @var HubspotUpdateContactMapper|object
+     * @var HubspotUpdatedContactMapper|object
      */
     private $mapper;
 
     /**
-     * @covers HubspotUpdateContactMapper::process()
+     * @covers HubspotUpdatedContactMapper::process()
      */
     public function testProcess(): void
     {
         $response = Json::decode(
             $this->getMapper()
                 ->process((new ProcessDto())
-                    ->setData($this->getRequest('HubspotUpdateContactMapper.json'))
+                    ->setData($this->getRequest('HubspotUpdatedContactMapper.json'))
                     ->setHeaders([]))
                 ->getData(),
             TRUE
@@ -47,7 +47,7 @@ final class HubspotUpdateContactMapperTest extends ConnectorTestCaseAbstract
     }
 
     /**
-     * @covers HubspotUpdateContactMapper::process()
+     * @covers HubspotUpdatedContactMapper::process()
      */
     public function testProcessFail(): void
     {
@@ -58,7 +58,7 @@ final class HubspotUpdateContactMapperTest extends ConnectorTestCaseAbstract
     }
 
     /**
-     * @covers HubspotUpdateContactMapper::process()
+     * @covers HubspotUpdatedContactMapper::process()
      */
     public function testProcessFail1(): void
     {
@@ -162,12 +162,12 @@ final class HubspotUpdateContactMapperTest extends ConnectorTestCaseAbstract
     }
 
     /**
-     * @return HubspotUpdateContactMapper|object
+     * @return HubspotUpdatedContactMapper|object
      */
     private function getMapper()
     {
         if (!$this->mapper) {
-            return $this->container->get('hbpf.custom_node.hubspot-update-contact-mapper');
+            return $this->container->get('hbpf.custom_node.hubspot-updated-contact-mapper');
         }
 
         return $this->mapper;

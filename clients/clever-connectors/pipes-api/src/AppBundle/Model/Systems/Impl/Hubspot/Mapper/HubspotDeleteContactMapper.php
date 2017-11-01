@@ -6,14 +6,13 @@ use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\CM\SubscriptionConnector\CustomerObject\CMSubscriber;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\HubspotSystem;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
-use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
 
 /**
  * Class HubspotDeleteContactMapper
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\Mapper
  */
-class HubspotDeleteContactMapper extends HubspotMapperAbstract implements CustomNodeInterface
+class HubspotDeleteContactMapper extends HubspotMapperAbstract
 {
 
     /**

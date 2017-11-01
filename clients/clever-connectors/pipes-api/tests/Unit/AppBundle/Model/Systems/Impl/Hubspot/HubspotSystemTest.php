@@ -139,7 +139,7 @@ final class HubspotSystemTest extends KernelTestCaseAbstract
         /** @var Form $form */
         $form = $this->system->getSettingFields($this->systemInstall);
 
-        self::assertEquals(2, count($form));
+        self::assertEquals(5, count($form));
         self::assertEquals('app_id', $form[0]['key']);
         self::assertEquals(Field::TEXT, $form[0]['type']);
         self::assertEquals('webhook_url', $form[1]['key']);

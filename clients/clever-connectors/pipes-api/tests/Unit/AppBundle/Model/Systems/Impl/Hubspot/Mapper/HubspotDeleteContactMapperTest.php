@@ -5,7 +5,7 @@ namespace Tests\Unit\AppBundle\Model\Systems\Impl\Hubspot\Mapper;
 use CleverConnectors\AppBundle\Enum\CleverFieldsEnum;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\Mapper\HubspotDeleteContactMapper;
-use CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\Mapper\HubspotUpdateContactMapper;
+use CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\Mapper\HubspotUpdatedContactMapper;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Nette\Utils\Json;
@@ -48,7 +48,7 @@ final class HubspotDeleteContactMapperTest extends ConnectorTestCaseAbstract
     }
 
     /**
-     * @covers HubspotUpdateContactMapper::process()
+     * @covers HubspotUpdatedContactMapper::process()
      */
     public function testProcessFail(): void
     {

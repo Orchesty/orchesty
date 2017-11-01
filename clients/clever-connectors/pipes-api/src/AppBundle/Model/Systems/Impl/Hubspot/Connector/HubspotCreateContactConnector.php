@@ -3,7 +3,6 @@
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
-use CleverConnectors\AppBundle\Enum\CleverCustomKeysEnum;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\HubspotSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
@@ -17,14 +16,14 @@ use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
 
 /**
- * Class HubspotUpdateContactConnector
+ * Class HubspotCreateContactConnector
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\Connector
  */
-class HubspotUpdateContactConnector implements ConnectorInterface
+class HubspotCreateContactConnector implements ConnectorInterface
 {
 
-    private const SUB_URL = '/contacts/v1/contact/vid/%s/profile?hapikey=%s';
+    private const SUB_URL = '/contacts/v1/contact/?hapikey=%s';
 
     /**
      * @var SystemInstallRepository|ObjectRepository
@@ -60,7 +59,7 @@ class HubspotUpdateContactConnector implements ConnectorInterface
      */
     public function getId(): string
     {
-        return 'hubspot-update-contact-connector';
+        return 'hubspot-create-contact-connector';
     }
 
     /**
@@ -72,7 +71,7 @@ class HubspotUpdateContactConnector implements ConnectorInterface
     public function processEvent(ProcessDto $dto): ProcessDto
     {
         throw new ConnectorException(
-            'ProcessEvent is not implemented, Hubspot updateContactConnector.',
+            'ProcessEvent is not implemented, Hubspot createContactConnector.',
             ConnectorException::CONNECTOR_DOES_NOT_HAVE_PROCESS_ACTION
         );
     }
@@ -86,43 +85,25 @@ class HubspotUpdateContactConnector implements ConnectorInterface
     public function processAction(ProcessDto $dto): ProcessDto
     {
         $systemInstall = $this->systemInstallRepository->getSystemInstallFromHeaders($dto->getHeaders());
-        $data          = json_decode($dto->getData(), TRUE);
+        $requestDto    = $this->system->getRequestDto($systemInstall, 'POST');
+        $query         = sprintf(self::SUB_URL, HubspotSystem::HAPI_KEY);
+        $uri           = new Uri(rtrim($requestDto->getUri(TRUE), '/') . $query);
 
-        $requestDto = $this->system->getRequestDto($systemInstall, 'POST');
-        $query      = sprintf(self::SUB_URL, $data['id'], HubspotSystem::HAPI_KEY);
-        $uri        = new Uri(sprintf(rtrim($requestDto->getUri(TRUE), '/') . $query));
-
-        $requestDto
-            ->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()))
+        $requestDto->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()))
             ->setUri($uri)
-            ->setBody($data['body']);
+            ->setBody($dto->getData());
 
-        $res   = $this->curl->send($requestDto);
-        $data  = json_decode($res->getBody(), TRUE);
-        $field = CMHeaders::get(CMHeaders::CM_EVENT_TYPE, $dto->getHeaders()) ?? '';
+        $res = $this->curl->send($requestDto);
 
-        if ($res->getStatusCode() === 404) {
+        if ($res->getStatusCode() !== 200) {
             throw new CleverConnectorsException(
-                sprintf('User with given id [%s] does not exist, Hubspot updateContactConnector.', $data['id']),
+                'Failed to create new contact / email already taken, Hubspot createContactConnector.',
                 CleverConnectorsException::REQUEST_FAILED
-            );
-        } else if (
-            !array_key_exists('properties', $data) ||
-            !array_key_exists('property', $data['properties'][0]) ||
-            !array_key_exists(CleverCustomKeysEnum::getFromType($field), $data['properties']['property'][0])
-        ) {
-            throw new CleverConnectorsException(
-                'CM field does not exist, Hubspot updateContactConnector.',
-                CleverConnectorsException::MISSING_DATA
-            );
-        } else if ($res->getStatusCode() !== 204) {
-            throw new CleverConnectorsException(
-                'Failed to update contact - unknown error, Hubspot updateContactConnector.',
-                CleverConnectorsException::MISSING_DATA
             );
         }
 
         return $dto->setData($res->getBody());
+
     }
 
 }

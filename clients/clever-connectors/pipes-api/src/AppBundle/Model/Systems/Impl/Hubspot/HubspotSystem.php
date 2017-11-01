@@ -3,13 +3,18 @@
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Enum\CleverCustomKeysEnum;
 use CleverConnectors\AppBundle\Enum\SystemTypeEnum;
+use CleverConnectors\AppBundle\Model\CMEvents\CMEventObject;
+use CleverConnectors\AppBundle\Model\CMEvents\CMEventSystemInterface;
+use CleverConnectors\AppBundle\Model\CMEvents\Traits\CMEventSystemTrait;
 use CleverConnectors\AppBundle\Model\Form\Field;
 use CleverConnectors\AppBundle\Model\Form\Form;
 use CleverConnectors\AppBundle\Model\Requester\RequesterInterface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\OAuth2Interface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\Traits\AuthorizationTrait;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
+use CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\Requester\HubspotRequester;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\Requester\HubspotSubscribeRequester;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\Requester\HubspotUnsubscribeRequester;
 use CleverConnectors\AppBundle\Model\Webhook\Traits\WebhookSystemTrait;
@@ -31,22 +36,24 @@ use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot
  */
-class HubspotSystem implements WebhookSystemInterface, OAuth2Interface
+class HubspotSystem implements WebhookSystemInterface, OAuth2Interface, CMEventSystemInterface
 {
 
     use AuthorizationTrait;
     use WebhookSystemTrait;
+    use CMEventSystemTrait;
 
-    public const  APP_ID   = 'app_id';
-    public const  USER_ID  = 4846078;
-    public const  HAPI_KEY = 'abab4202-0a4b-4099-8b61-fe325790d7cd';
+    public const APP_ID   = 'app_id';
+    public const USER_ID  = 4846078;
+    public const HAPI_KEY = 'abab4202-0a4b-4099-8b61-fe325790d7cd';
 
-    private const WEBHOOK_URL   = 'webhook_url';
-    private const CLIENT_ID     = '91caba3e-b12b-44d9-8e37-93e50918efa9';
-    private const CLIENT_SECRET = '35b03ce5-1c1c-4292-a089-655692392b28';
-    private const AUTHORIZE_URL = 'https://app.hubspot.com/oauth/authorize';
-    private const BASE_URL      = 'https://api.hubapi.com';
-    private const TOKEN_URL     = 'https://api.hubapi.com/oauth/v1/token';
+    private const WEBHOOK_URL       = 'webhook_url';
+    private const CLIENT_ID         = '91caba3e-b12b-44d9-8e37-93e50918efa9';
+    private const CLIENT_SECRET     = '35b03ce5-1c1c-4292-a089-655692392b28';
+    private const AUTHORIZE_URL     = 'https://app.hubspot.com/oauth/authorize';
+    private const BASE_URL          = 'https://api.hubapi.com';
+    private const TOKEN_URL         = 'https://api.hubapi.com/oauth/v1/token';
+    private const CUSTOM_FIELDS_URL = 'https://api.hubapi.com/properties/v1/contacts/properties?hapikey=%s';
 
     public const OBJECT_ID_KEY         = 'objectId';
     public const SUBSCRIPTION_TYPE_KEY = 'subscriptionType';
@@ -81,6 +88,12 @@ class HubspotSystem implements WebhookSystemInterface, OAuth2Interface
     {
         $this->provider = $provider;
         $this->domain   = $domain;
+
+        $this->addCMEvent(new CMEventObject('', SystemInstall::EVENT_CREATE, ''));
+        $this->addCMEvent(new CMEventObject(CleverCustomKeysEnum::UNSUBSCRIBE,
+            SystemInstall::EVENT_UNSUBSCRIBE, self::CUSTOM_FIELDS_URL));
+        $this->addCMEvent(new CMEventObject(CleverCustomKeysEnum::HARD_BOUNCE,
+            SystemInstall::EVENT_HARD_BOUNCE, self::CUSTOM_FIELDS_URL));
 
         $this->subscriptions[] = $this->prepareWebhookSubscription(self::SUBSCRIPTION_TYPE_CREATE);
         $this->subscriptions[] = $this->prepareWebhookSubscription(self::SUBSCRIPTION_TYPE_DELETE);
@@ -251,9 +264,36 @@ class HubspotSystem implements WebhookSystemInterface, OAuth2Interface
             TRUE
         );
 
+        $field3 = new Field(
+            Field::CHECKBOX,
+            SystemInstall::EVENT_CREATE,
+            'Create event',
+            $systemInstall->isEventCreate(),
+            TRUE
+        );
+
+        $field4 = new Field(
+            Field::CHECKBOX,
+            SystemInstall::EVENT_UNSUBSCRIBE,
+            'Unsubscribe event',
+            $systemInstall->isEventUnsubscribe(),
+            TRUE
+        );
+
+        $field5 = new Field(
+            Field::CHECKBOX,
+            SystemInstall::EVENT_HARD_BOUNCE,
+            'Hard bounce events',
+            $systemInstall->isEventHardBounce(),
+            TRUE
+        );
+
         $form = (new Form())
             ->addField($field1)
-            ->addField($field2);
+            ->addField($field2)
+            ->addField($field3)
+            ->addField($field4)
+            ->addField($field5);
 
         return $form->toArray();
     }
@@ -268,7 +308,7 @@ class HubspotSystem implements WebhookSystemInterface, OAuth2Interface
     {
         $this->continueOnAuthorized($systemInstall);
 
-        return new HubspotSubscribeRequester($systemInstall, $this->getHeadersForWebhook());
+        return new HubspotSubscribeRequester($systemInstall, $this->getHeadersWithoutAuth());
     }
 
     /**
@@ -281,7 +321,17 @@ class HubspotSystem implements WebhookSystemInterface, OAuth2Interface
     {
         $this->continueOnAuthorized($systemInstall);
 
-        return new HubspotUnsubscribeRequester($systemInstall, $this->getHeadersForWebhook());
+        return new HubspotUnsubscribeRequester($systemInstall, $this->getHeadersWithoutAuth());
+    }
+
+    /**
+     * @param SystemInstall $systemInstall
+     *
+     * @return RequesterInterface|null
+     */
+    public function getCMEventRequester(SystemInstall $systemInstall): ?RequesterInterface
+    {
+        return new HubspotRequester($this->getHeadersWithoutAuth());
     }
 
     /******************************************  HELPERS  ****************************************/
@@ -323,7 +373,7 @@ class HubspotSystem implements WebhookSystemInterface, OAuth2Interface
     /**
      * @return array
      */
-    private function getHeadersForWebhook(): array
+    private function getHeadersWithoutAuth(): array
     {
         return [
             'Content-Type' => 'application/json',
@@ -355,7 +405,7 @@ class HubspotSystem implements WebhookSystemInterface, OAuth2Interface
      */
     private function getNodeName(): string
     {
-        return sprintf('%s-update-contact-connector', $this->getKey());
+        return sprintf('%s-updated-contact-connector', $this->getKey());
     }
 
 }

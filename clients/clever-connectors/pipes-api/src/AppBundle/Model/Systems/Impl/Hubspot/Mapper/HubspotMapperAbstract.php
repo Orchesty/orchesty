@@ -5,13 +5,14 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\Mapper;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
 
 /**
  * Class HubspotMapperAbstract
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\Mapper
  */
-class HubspotMapperAbstract
+abstract class HubspotMapperAbstract implements CustomNodeInterface
 {
 
     /**
@@ -72,6 +73,20 @@ class HubspotMapperAbstract
         $dto->setHeaders($headers);
 
         return $dto;
+    }
+
+    /**
+     * @param string $property
+     * @param mixed  $value
+     *
+     * @return array
+     */
+    protected function prepareProperty(string $property, $value): array
+    {
+        return [
+            'property' => $property,
+            'value'    => $value,
+        ];
     }
 
 }
