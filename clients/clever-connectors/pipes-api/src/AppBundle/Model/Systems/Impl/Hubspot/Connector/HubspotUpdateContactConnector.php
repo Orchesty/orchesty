@@ -3,7 +3,6 @@
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
-use CleverConnectors\AppBundle\Enum\CleverCustomKeysEnum;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\HubspotSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
@@ -97,22 +96,16 @@ class HubspotUpdateContactConnector implements ConnectorInterface
             ->setUri($uri)
             ->setBody($data['body']);
 
-        $res   = $this->curl->send($requestDto);
-        $data  = json_decode($res->getBody(), TRUE);
-        $field = CMHeaders::get(CMHeaders::CM_EVENT_TYPE, $dto->getHeaders()) ?? '';
+        $res = $this->curl->send($requestDto);
 
         if ($res->getStatusCode() === 404) {
             throw new CleverConnectorsException(
                 sprintf('User with given id [%s] does not exist, Hubspot updateContactConnector.', $data['id']),
                 CleverConnectorsException::REQUEST_FAILED
             );
-        } else if (
-            !array_key_exists('properties', $data) ||
-            !array_key_exists('property', $data['properties'][0]) ||
-            !array_key_exists(CleverCustomKeysEnum::getFromType($field), $data['properties']['property'][0])
-        ) {
+        } else if ($res->getStatusCode() === 400) {
             throw new CleverConnectorsException(
-                'CM field does not exist, Hubspot updateContactConnector.',
+                'There is a problem with the data in the request body, Hubspot updateContactConnector.',
                 CleverConnectorsException::MISSING_DATA
             );
         } else if ($res->getStatusCode() !== 204) {
