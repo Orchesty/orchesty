@@ -152,6 +152,8 @@ class StreamServer {
         try {
             userId = this.users.getUserId(data.token);
             socket.join(userId);
+
+            logger.info(`User[token=${data.token}, userId=${userId}] subscribed to group '${userId}'`);
         } catch (joinErr) {
             logger.error(`Could not find userId for token "${data.token}". Error: ${joinErr.message}`);
             socket.emit(STREAM_EVENTS.ERROR_MESSAGE, `Trying to subscribe with invalid token "${data.token}."`);
@@ -165,10 +167,10 @@ class StreamServer {
                     socket.join(groupId);
                     socket.emit(STREAM_EVENTS.INFO_MESSAGE, `You subscribed to group "${groupId}"`);
 
-                    logger.info(`Token '${data.token}' subscribed to group '${groupId}'`);
+                    logger.info(`User[token=${data.token}, userId=${userId}] subscribed to group '${groupId}'`);
                 } else {
                     socket.emit(STREAM_EVENTS.ERROR_MESSAGE, `You are not allowed to subscribe to group "${groupId}"`);
-                    logger.warn(`Token '${data.token}' is not allowed to subscribe to group '${groupId}'`);
+                    logger.warn(`User[token=${data.token}, userId=${userId}] not allowed to subscribe '${groupId}'`);
                 }
             });
 
@@ -189,10 +191,12 @@ class StreamServer {
             return;
         }
 
+        let userId: string;
         try {
-            socket.leave(this.users.getUserId(data.token));
+            userId = this.users.getUserId(data.token);
+            socket.leave(userId);
         } catch (joinErr) {
-            logger.error(`Cannot leave private room. Error: ${joinErr.message}`);
+            logger.error(`Cannot find user. Error: ${joinErr.message}`);
             return;
         }
 
@@ -203,6 +207,7 @@ class StreamServer {
                 socket.emit(STREAM_EVENTS.INFO_MESSAGE, `You unsubscribed from group "${groupId}"`);
                 socket.leave(groupId);
 
+                logger.info(`User[token=${data.token}, userId=${userId}] unsubscribed from group '${groupId}'`);
                 logger.info(`Token '${data.token}' unsubscribed from group '${groupId}'`);
             });
         }
