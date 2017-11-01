@@ -1,129 +1,89 @@
 <?php declare(strict_types=1);
 
-/**
- * Created by PhpStorm.
- * User: radekj
- * Date: 9.10.17
- * Time: 13:52
- */
-
 namespace Tests\Unit\AppBundle\Model\Systems\Impl\Salesforce\Connector;
 
-use CleverConnectors\AppBundle\Document\LastSync;
 use CleverConnectors\AppBundle\Document\SystemInstall;
-use CleverConnectors\AppBundle\Model\LastSync\LastSyncManager;
+use CleverConnectors\AppBundle\Enum\CleverFieldsEnum;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Salesforce\Connector\SalesforceUpdateContactConnector;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Salesforce\SalesforceSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
-use DateTime;
-use GuzzleHttp\Psr7\Response;
+use CleverConnectors\AppBundle\Utils\CMHeaders;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
-use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSenderFactory;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
-use Hanaboso\PipesFramework\Configurator\Document\Node;
-use Hanaboso\PipesFramework\Configurator\Repository\NodeRepository;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
+use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
+use Nette\Utils\Json;
 use PHPUnit_Framework_MockObject_MockObject;
-use React\EventLoop\Factory;
-use Tests\KernelTestCaseAbstract;
-use function React\Promise\resolve;
+use Tests\ConnectorTestCaseAbstract;
 
 /**
  * Class SalesforceUpdateContactConnectorTest
  *
  * @package Tests\Unit\AppBundle\Model\Systems\Impl\Salesforce\Connector
  */
-final class SalesforceUpdateContactConnectorTest extends KernelTestCaseAbstract
+final class SalesforceUpdateContactConnectorTest extends ConnectorTestCaseAbstract
 {
 
     /**
+     *
      */
-    public function testProcessBatch(): void
+    public function testProcessAction(): void
     {
-        $dtoData = [
-            'system_install' => ['user' => '123'],
-            'topology'       => ['name' => 'top-name-ever'],
-        ];
+        $result = Json::decode($this->getConnectorMock()->processAction(
+            (new ProcessDto())->setData(Json::encode([
+                CleverFieldsEnum::FOREIGN_ID => '0031I0000044B1kQAE',
+            ]))->setHeaders([
+                CMHeaders::createKey(CMHeaders::CM_EVENT_TYPE) => SystemInstall::EVENT_UNSUBSCRIBE,
+            ])
+        )->getData(), TRUE);
 
-        $loop = Factory::create();
-
-        $processDto = new ProcessDto();
-        $processDto
-            ->setHeaders(['node_id' => '2234-adawad'])
-            ->setData(json_encode($dtoData));
-
-        /** @var SalesforceUpdateContactConnector $syncConn */
-        $syncConn = $this->mockSync();
-        $data     = $syncConn->processBatch($processDto, $loop, function (): void {
-        });
-
-        $data->then(
-            function (): void {
-                $this->assertTrue(TRUE);
-            },
-            function (): void {
-                $this->assertTrue(FALSE);
-            }
-        )->done();
-
-        $loop->run();
+        $this->assertEmpty($result);
     }
 
     /**
-     * @return PHPUnit_Framework_MockObject_MockObject|SalesforceUpdateContactConnector
+     * @return SalesforceUpdateContactConnector
      */
-    private function mockSync()
+    private function getConnectorMock(): SalesforceUpdateContactConnector
     {
-        $node = $this->createMock(NodeRepository::class);
-        $node->method('findOneBy')->willReturn((new Node())->setTopology('123456789')->setName('NAME'));
+        $systemInstall = $this->createMock(SystemInstallRepository::class);
+        $systemInstall->method('getSystemInstall')->willReturn((new SystemInstall()));
 
-        $systemInstal = $this->createMock(SystemInstallRepository::class);
-        $systemInstal->method('getSystemInstall')->willReturn((new SystemInstall())->setUser('12')->setToken('12')
-            ->setSystem('123'));
+        /** @var PHPUnit_Framework_MockObject_MockObject|DocumentManager $documentManager */
+        $documentManager = $this->createMock(DocumentManager::class);
+        $documentManager->method('getRepository')->willReturn($systemInstall);
 
-        $lastSync = $this->createMock(LastSyncManager::class);
+        /** @var CurlManagerInterface|PHPUnit_Framework_MockObject_MockObject $curlManager */
+        $curlManager = $this->createMock(CurlManagerInterface::class);
+        $curlManager->method('send')
+            ->will($this->returnCallback(function (RequestDto $dto, array $options = []) {
+                $this->assertEquals(
+                    new Uri('https://na73.salesforce.com/services/data/v40.0/sobjects/Contact/id/0031I0000044B1kQAE'),
+                    $dto->getUri()
+                );
 
-        $lastSync
-            ->method('getLastSync')
-            ->willReturn((new LastSync())->setTimestamp(new DateTime()));
+                return new ResponseDto(200, 'OK', '{}', []);
+            }));
 
-        $lastSync
-            ->method('updateLastSync')
-            ->willReturn(NULL);
-
-        $sender = $this->createMock(CurlSenderFactory::class);
-
-        $syncConn = $this->getMockBuilder(SalesforceUpdateContactConnector::class)
-            ->setMethods(['fetchData'])
-            ->setConstructorArgs([$this->mockSystem(), $lastSync, $sender])
-            ->getMock();
-
-        $syncConn->expects($this->at(0))
-            ->method('fetchData')
-            ->willReturn(resolve(new Response(200, [], json_encode(['totalSize' => 1]))));
-
-        $syncConn->expects($this->at(1))
-            ->method('fetchData')
-            ->willReturn(resolve(new Response(200, [], json_encode(['records' => [['email' => 'aa@aa.com']]]))));
-
-        return $syncConn;
+        return new SalesforceUpdateContactConnector($this->getSystemMock(), $documentManager, $curlManager);
     }
 
     /**
      * @return PHPUnit_Framework_MockObject_MockObject|SalesforceSystem
      */
-    private function mockSystem()
+    private function getSystemMock()
     {
-        $requestDto = new RequestDto('GET', new Uri('http://salesforce.com/'));
-        $requestDto->setHeaders([
+        $requestDto = (new RequestDto('POST', new Uri('https://na73.salesforce.com')))->setHeaders([
+            'Authorization' => 'Bearer 00D1I000001WyE7!ARAAQCPw1z3hchprOA9t08aqFqrY4RdcjNaEmRBHf170davnludWxhbo4WjBgWptw9OSk1yi1c4lfZm5RVo8h9sNsoGEysPd',
             'Content-Type'  => 'application/json',
             'Accept'        => 'application/json',
-            'Authorization' => 'Bearer token123',
         ]);
-        $mock = $this->createMock(SalesforceSystem::class);
-        $mock->method('getRequestDto')->willReturn($requestDto);
 
-        return $mock;
+        $system = $this->createMock(SalesforceSystem::class);
+        $system->method('getRequestDto')->willReturn($requestDto);
+
+        return $system;
     }
 
 }
