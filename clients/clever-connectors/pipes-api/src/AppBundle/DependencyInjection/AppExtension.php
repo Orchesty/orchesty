@@ -66,6 +66,7 @@ class AppExtension extends Extension implements PrependExtensionInterface
         $loader->load('mailmunch.yml');
         $loader->load('zoho.yml');
         $loader->load('quickbooks.yml');
+        $loader->load('zapier.yml');
     }
 
 }

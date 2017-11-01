@@ -1,0 +1,22 @@
+services:
+    systems.zapier:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Zapier\ZapierSystem
+        arguments:
+            - '%backend_host%'
+        tags: ['%systems%']
+
+    hbpf.connector.zapier-created-subscriber-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Zapier\Connector\ZapierCreatedSubscriberConnector
+        arguments:
+
+    hbpf.connector.zapier-updated-subscriber-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Zapier\Connector\ZapierUpdatedSubscriberConnector
+        arguments:
+
+    hbpf.connector.zapier-deleted-subscriber-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Zapier\Connector\ZapierDeletedSubscriberConnector
+        arguments:
+
+    hbpf.custom_node.zapier-subscriber-mapper:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Zapier\Mapper\ZapierSubscriberMapper
+        arguments:

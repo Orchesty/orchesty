@@ -34,7 +34,7 @@ class NutshellContactConnector implements ConnectorInterface
     {
         throw new ConnectorException(
             'Nutshell has no support for action!',
-            ConnectorException::CONNECTOR_DOES_NOT_HAVE_PROCESS_BATCH
+            ConnectorException::CONNECTOR_DOES_NOT_HAVE_PROCESS_ACTION
         );
     }
 
