@@ -6,15 +6,15 @@
  * Time: 18:24
  */
 
-namespace Hanaboso\PipesFramework\Commons\ProgressCounter\Event;
+namespace CleverConnectors\AppBundle\Model\ProgressCounter\Event;
 
-use Hanaboso\PipesFramework\Commons\Enum\ProgressCounterStatusEnum;
+use CleverConnectors\AppBundle\Enum\ProgressCounterStatusEnum;
 use Symfony\Component\EventDispatcher\Event;
 
 /**
  * Class ProgressCounterEvent
  *
- * @package Hanaboso\PipesFramework\Commons\ProgressCounter\Event
+ * @package CleverConnectors\AppBundle\Model\ProgressCounter\Event
  */
 class ProgressCounterEvent extends Event
 {

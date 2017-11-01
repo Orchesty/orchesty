@@ -2,7 +2,7 @@
 
 /**
  * Created by PhpStorm.
- * User: stanislav.kundrat
+ * User: lukas.hlavac
  * Date: 10/13/17
  * Time: 9:53 AM
  */
@@ -10,7 +10,7 @@
 namespace Tests\Unit\AppBundle\Model\CustomNode;
 
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
-use CleverConnectors\AppBundle\Model\CustomNode\StartingProgress;
+use CleverConnectors\AppBundle\Model\CustomNode\ProgressIncrementer;
 use CleverConnectors\AppBundle\Model\ProgressCounter\ProgressCounterService;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
@@ -22,36 +22,30 @@ use PHPUnit_Framework_MockObject_MockObject;
  *
  * @package Tests\Unit\AppBundle\Model\CustomNode
  */
-final class StartingProgressTest extends TestCase
+final class ProgressIncrementerTest extends TestCase
 {
-
-    /**
-     * @var PHPUnit_Framework_MockObject_MockObject|ProgressCounterService
-     */
-    private $progressCounterService;
-
-    /**
-     *
-     */
-    public function setUp(): void
-    {
-        $this->progressCounterService = $this->getMockBuilder(ProgressCounterService::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $this->progressCounterService->method('start');
-    }
 
     /**
      * @covers StartingProgress::process()
      */
     public function testProcess(): void
     {
+        /** @var PHPUnit_Framework_MockObject_MockObject|ProgressCounterService $progressCounterService */
+        $progressCounterService = $this->getMockBuilder(ProgressCounterService::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $progressCounterService
+            ->expects($this->once())
+            ->method('increment')
+            ->with('abc');
+        
         $dto = new ProcessDto();
         $dto
             ->setData(json_encode(['data' => []]))
             ->setHeaders([CMHeaders::createKey(CMHeaders::PROCESS_ID) => 'abc']);
 
-        $startingProgress = new StartingProgress($this->progressCounterService);
+        $startingProgress = new ProgressIncrementer($progressCounterService);
         $startingProgress->process($dto);
     }
 
@@ -60,6 +54,11 @@ final class StartingProgressTest extends TestCase
      */
     public function testProcessFail(): void
     {
+        /** @var PHPUnit_Framework_MockObject_MockObject|ProgressCounterService $progressCounterService */
+        $progressCounterService = $this->getMockBuilder(ProgressCounterService::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
         $dto = new ProcessDto();
         $dto
             ->setData(json_encode(['data' => []]))
@@ -68,7 +67,7 @@ final class StartingProgressTest extends TestCase
         self::expectException(CleverConnectorsException::class);
         self::expectExceptionCode(CleverConnectorsException::PROCESS_ID_NOT_FOUND);
 
-        $startingProgress = new StartingProgress($this->progressCounterService);
+        $startingProgress = new ProgressIncrementer($progressCounterService);
         $startingProgress->process($dto);
     }
 

@@ -4,6 +4,7 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\Shipstation\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\LastSync\LastSyncManager;
+use CleverConnectors\AppBundle\Model\ProgressCounter\ProgressCounterService;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Shipstation\ShipstationSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
@@ -32,22 +33,30 @@ class ShipstationSyncCustomerConnector extends ShipstationCustomerConnectorAbstr
     private $systemInstallRepository;
 
     /**
+     * @var ProgressCounterService
+     */
+    private $counterService;
+
+    /**
      * ShipstationSyncCustomerConnector constructor.
      *
-     * @param ShipstationSystem $system
-     * @param LastSyncManager   $lastSyncManager
-     * @param CurlSenderFactory $factory
-     * @param DocumentManager   $dm
+     * @param ShipstationSystem      $system
+     * @param LastSyncManager        $lastSyncManager
+     * @param CurlSenderFactory      $factory
+     * @param DocumentManager        $dm
+     * @param ProgressCounterService $counterService
      */
     public function __construct(
         ShipstationSystem $system,
         LastSyncManager $lastSyncManager,
         CurlSenderFactory $factory,
-        DocumentManager $dm
+        DocumentManager $dm,
+        ProgressCounterService $counterService
     )
     {
         parent::__construct($system, $lastSyncManager, $factory);
         $this->systemInstallRepository = $dm->getRepository(SystemInstall::class);
+        $this->counterService          = $counterService;
     }
 
     /**
@@ -63,6 +72,7 @@ class ShipstationSyncCustomerConnector extends ShipstationCustomerConnectorAbstr
         $systemInstall = $this->systemInstallRepository->getSystemInstallFromHeaders($dto->getHeaders());
         $requestDto    = $this->system->getRequestDto($systemInstall, 'GET');
         $requestDto->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()));
+        $processId = CMHeaders::get(CMHeaders::PROCESS_ID, $dto->getHeaders()) ?? '';
 
         $promise = $this->fetchData($sender, $this->createCountRequest($requestDto))
             ->then(
@@ -70,7 +80,9 @@ class ShipstationSyncCustomerConnector extends ShipstationCustomerConnectorAbstr
                     return $this->getTotalPages($response);
                 }
             )->then(
-                function (int $total) use ($sender, $callbackItem, $requestDto) {
+                function (int $total) use ($sender, $callbackItem, $requestDto, $processId) {
+                    $this->counterService->setTotal($processId, $total * self::PAGE_LIMIT);
+
                     return all($this->doPageLoop($total, $sender, $callbackItem, $requestDto));
                 }
             );

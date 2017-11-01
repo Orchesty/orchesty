@@ -3,6 +3,7 @@
 namespace Hanaboso\PipesFramework\Configurator\StatusService;
 
 use Bunny\Message;
+use Hanaboso\PipesFramework\Commons\Exception\PipesFrameworkException;
 use Hanaboso\PipesFramework\Configurator\Event\ProcessStatusEvent;
 use Hanaboso\PipesFramework\RabbitMq\CallbackStatus;
 use Hanaboso\PipesFramework\RabbitMq\Consumer\SyncCallbackAbstract;
@@ -38,10 +39,28 @@ class StatusServiceCallback extends SyncCallbackAbstract
      * @param Message $message
      *
      * @return CallbackStatus
+     *
+     * @throws PipesFrameworkException
      */
     function handle($data, Message $message): CallbackStatus
     {
-        $this->eventDispatcher->dispatch(ProcessStatusEvent::PROCESS_FINISHED, new ProcessStatusEvent($data));
+        if (!isset($data['process_id'])) {
+            throw new PipesFrameworkException(
+                'Missing message\'s content in StatusServiceCallback [process_id].',
+                PipesFrameworkException::REQUIRED_PARAMETER_NOT_FOUND
+            );
+        }
+
+        if (!isset($data['success'])) {
+            throw new PipesFrameworkException(
+                'Missing message\'s content in StatusServiceCallback [success].',
+                PipesFrameworkException::REQUIRED_PARAMETER_NOT_FOUND
+            );
+        }
+
+        $event = new ProcessStatusEvent($data['process_id'], (bool) $data['success']);
+
+        $this->eventDispatcher->dispatch(ProcessStatusEvent::PROCESS_FINISHED, $event);
 
         return new CallbackStatus(CallbackStatus::SUCCESS);
     }

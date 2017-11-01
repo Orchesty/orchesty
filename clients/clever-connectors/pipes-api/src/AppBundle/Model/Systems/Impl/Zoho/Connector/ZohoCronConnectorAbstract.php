@@ -3,6 +3,7 @@
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Zoho\Connector;
 
 use CleverConnectors\AppBundle\Model\LastSync\LastSyncManager;
+use CleverConnectors\AppBundle\Model\ProgressCounter\ProgressCounterService;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Zoho\ZohoSystem;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use CleverConnectors\AppBundle\Utils\CronUtils;
@@ -28,17 +29,19 @@ abstract class ZohoCronConnectorAbstract extends ZohoContactConnectorAbstract
     /**
      * ZohoContactConnectorAbstract constructor.
      *
-     * @param ZohoSystem        $system
-     * @param CurlSenderFactory $factory
-     * @param LastSyncManager   $lastSyncManager
+     * @param ZohoSystem             $system
+     * @param CurlSenderFactory      $factory
+     * @param LastSyncManager        $lastSyncManager
+     * @param ProgressCounterService $counterService
      */
     public function __construct(
         ZohoSystem $system,
         CurlSenderFactory $factory,
-        LastSyncManager $lastSyncManager
+        LastSyncManager $lastSyncManager,
+        ProgressCounterService $counterService
     )
     {
-        parent::__construct($system, $factory);
+        parent::__construct($system, $factory, $counterService);
         $this->lastSyncManager = $lastSyncManager;
     }
 

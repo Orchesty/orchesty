@@ -3,6 +3,7 @@
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Zoho\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Model\ProgressCounter\ProgressCounterService;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Zoho\ZohoSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
@@ -34,13 +35,19 @@ class ZohoSyncContactConnector extends ZohoContactConnectorAbstract
     /**
      * ZohoContactConnectorAbstract constructor.
      *
-     * @param ZohoSystem        $system
-     * @param CurlSenderFactory $factory
-     * @param DocumentManager   $dm
+     * @param ZohoSystem             $system
+     * @param CurlSenderFactory      $factory
+     * @param DocumentManager        $dm
+     * @param ProgressCounterService $counterService
      */
-    public function __construct(ZohoSystem $system, CurlSenderFactory $factory, DocumentManager $dm)
+    public function __construct(
+        ZohoSystem $system,
+        CurlSenderFactory $factory,
+        DocumentManager $dm,
+        ProgressCounterService $counterService
+    )
     {
-        parent::__construct($system, $factory);
+        parent::__construct($system, $factory, $counterService);
         $this->systemInstallRepository = $dm->getRepository(SystemInstall::class);
     }
 
@@ -65,8 +72,9 @@ class ZohoSyncContactConnector extends ZohoContactConnectorAbstract
         $systemInstall = $this->systemInstallRepository->getSystemInstallFromHeaders($dto->getHeaders());
         $requestDto    = $this->system->getRequestDto($systemInstall, 'GET');
         $requestDto->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()));
+        $processId = CMHeaders::get(CMHeaders::PROCESS_ID, $dto->getHeaders());
 
-        $promise = $this->getPage($sender, $requestDto, $callbackItem, 1);
+        $promise = $this->getPage($sender, $requestDto, $callbackItem, 1, NULL, $processId);
 
         $this->systemInstallRepository->setSyncTime($systemInstall);
 

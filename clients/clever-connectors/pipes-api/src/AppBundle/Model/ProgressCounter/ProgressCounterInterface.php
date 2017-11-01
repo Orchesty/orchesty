@@ -6,14 +6,14 @@
  * Time: 14:52
  */
 
-namespace Hanaboso\PipesFramework\Commons\ProgressCounter;
+namespace CleverConnectors\AppBundle\Model\ProgressCounter;
 
-use Hanaboso\PipesFramework\Commons\Enum\ProgressCounterStatusEnum;
+use CleverConnectors\AppBundle\Enum\ProgressCounterStatusEnum;
 
 /**
  * Interface ProgressCounterInterface
  *
- * @package Hanaboso\PipesFramework\Commons\ProgressCounter
+ * @package CleverConnectors\AppBundle\Model\ProgressCounter
  */
 interface ProgressCounterInterface
 {

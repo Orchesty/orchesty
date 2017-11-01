@@ -3,6 +3,7 @@
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Wisepops\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Model\ProgressCounter\ProgressCounterService;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Wisepops\WisepopsSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
@@ -30,6 +31,8 @@ use function React\Promise\resolve;
 class WisepopsSyncEmailConnector implements BatchInterface, ConnectorInterface
 {
 
+    private const PER_PAGE = 100;
+
     /**
      * @var WisepopsSystem
      */
@@ -46,17 +49,29 @@ class WisepopsSyncEmailConnector implements BatchInterface, ConnectorInterface
     private $factory;
 
     /**
+     * @var ProgressCounterService
+     */
+    private $counterService;
+
+    /**
      * ShopifySyncConnector constructor.
      *
-     * @param WisepopsSystem    $system
-     * @param DocumentManager   $dm
-     * @param CurlSenderFactory $factory
+     * @param WisepopsSystem         $system
+     * @param DocumentManager        $dm
+     * @param CurlSenderFactory      $factory
+     * @param ProgressCounterService $counterService
      */
-    public function __construct(WisepopsSystem $system, DocumentManager $dm, CurlSenderFactory $factory)
+    public function __construct(
+        WisepopsSystem $system,
+        DocumentManager $dm,
+        CurlSenderFactory $factory,
+        ProgressCounterService $counterService
+    )
     {
         $this->system                  = $system;
         $this->systemInstallRepository = $dm->getRepository(SystemInstall::class);
         $this->factory                 = $factory;
+        $this->counterService          = $counterService;
     }
 
     /**
@@ -80,9 +95,10 @@ class WisepopsSyncEmailConnector implements BatchInterface, ConnectorInterface
         $systemInstall = $this->systemInstallRepository->getSystemInstallFromHeaders($dto->getHeaders());
         $requestDto    = $this->system->getRequestDto($systemInstall, 'GET');
         $requestDto->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()));
-        $baseUrl = $requestDto->getUri(TRUE) . 'api1/emails';
+        $baseUrl   = $requestDto->getUri(TRUE) . 'api1/emails';
+        $processId = CMHeaders::get(CMHeaders::PROCESS_ID, $dto->getHeaders()) ?? '';
 
-        $promise = $this->getPage($sender, $requestDto, $baseUrl, $callbackItem, 1);
+        $promise = $this->getPage($sender, $requestDto, $baseUrl, $callbackItem, 1, $processId);
 
         $this->systemInstallRepository->setSyncTime($systemInstall);
 
@@ -132,25 +148,35 @@ class WisepopsSyncEmailConnector implements BatchInterface, ConnectorInterface
      * @param string     $baseUrl
      * @param callable   $callbackItem
      * @param int        $page
+     * @param string     $processId
      *
      * @return PromiseInterface
      */
-    private function getPage(CurlSender $sender, RequestDto $requestDto, string $baseUrl, callable $callbackItem,
-                             int $page): PromiseInterface
+    private function getPage(
+        CurlSender $sender,
+        RequestDto $requestDto,
+        string $baseUrl,
+        callable $callbackItem,
+        int $page,
+        string $processId
+    ): PromiseInterface
     {
         $url = new Uri(sprintf('%s?page=%s', $baseUrl, $page));
 
         $res = $this->fetchData($sender, RequestDto::from($requestDto, $url))->then(
-            function (ResponseInterface $response) use ($sender, $requestDto, $baseUrl, $callbackItem, $page) {
+            function (ResponseInterface $response) use ($sender, $requestDto, $baseUrl, $callbackItem, $page, $processId
+            ) {
                 $data = json_decode($response->getBody()->getContents());
                 if (count($data) > 0) {
                     $callbackItem($this->createSuccessMessage($data, $page));
 
-                    if (count($data) < 100) {
+                    if (count($data) < self::PER_PAGE) {
+                        $this->counterService->setTotal($processId, $page * self::PER_PAGE);
+
                         return resolve();
                     }
 
-                    return $this->getPage($sender, $requestDto, $baseUrl, $callbackItem, $page + 1);
+                    return $this->getPage($sender, $requestDto, $baseUrl, $callbackItem, $page + 1, $processId);
                 } else {
                     return resolve();
                 }

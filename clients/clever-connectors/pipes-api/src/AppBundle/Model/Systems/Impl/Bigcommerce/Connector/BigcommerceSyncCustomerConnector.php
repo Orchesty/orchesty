@@ -3,6 +3,7 @@
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Bigcommerce\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Model\ProgressCounter\ProgressCounterService;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Bigcommerce\BigcommerceSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
@@ -31,8 +32,9 @@ use function React\Promise\all;
 class BigcommerceSyncCustomerConnector implements BatchInterface, ConnectorInterface
 {
 
+    private const PER_PAGE      = 50;
     private const COUNT_URL     = 'customers/count';
-    private const CUSTOMERS_URL = 'customers?page=%s&limit=50';
+    private const CUSTOMERS_URL = 'customers?page=%s&limit=' . self::PER_PAGE;
 
     /**
      * @var BigcommerceSystem
@@ -50,17 +52,29 @@ class BigcommerceSyncCustomerConnector implements BatchInterface, ConnectorInter
     private $factory;
 
     /**
+     * @var ProgressCounterService
+     */
+    private $progressCounterService;
+
+    /**
      * BigcommerceSyncCustomerConnector constructor.
      *
-     * @param BigcommerceSystem $system
-     * @param DocumentManager   $dm
-     * @param CurlSenderFactory $factory
+     * @param BigcommerceSystem      $system
+     * @param DocumentManager        $dm
+     * @param CurlSenderFactory      $factory
+     * @param ProgressCounterService $progressCounterService
      */
-    public function __construct(BigcommerceSystem $system, DocumentManager $dm, CurlSenderFactory $factory)
+    public function __construct(
+        BigcommerceSystem $system,
+        DocumentManager $dm,
+        CurlSenderFactory $factory,
+        ProgressCounterService $progressCounterService
+    )
     {
         $this->system                  = $system;
         $this->systemInstallRepository = $dm->getRepository(SystemInstall::class);
         $this->factory                 = $factory;
+        $this->progressCounterService  = $progressCounterService;
     }
 
     /**
@@ -106,7 +120,8 @@ class BigcommerceSyncCustomerConnector implements BatchInterface, ConnectorInter
         $systemInstall = $this->systemInstallRepository->getSystemInstallFromHeaders($dto->getHeaders());
         $requestDto    = $this->system->getRequestDto($systemInstall, 'GET');
         $requestDto->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()));
-        $url = new Uri(sprintf('%s%s', $requestDto->getUri(TRUE), self::COUNT_URL));
+        $url       = new Uri(sprintf('%s%s', $requestDto->getUri(TRUE), self::COUNT_URL));
+        $processId = CMHeaders::get(CMHeaders::PROCESS_ID, $dto->getHeaders()) ?? '';
 
         $promise = $this->fetchData($sender, RequestDto::from($requestDto, $url))
             ->then(
@@ -114,7 +129,9 @@ class BigcommerceSyncCustomerConnector implements BatchInterface, ConnectorInter
                     return $this->getTotalPages($response);
                 }
             )->then(
-                function (int $total) use ($sender, $callbackItem, $requestDto) {
+                function (int $total) use ($sender, $callbackItem, $requestDto, $processId) {
+                    $this->progressCounterService->setTotal($processId, $total * self::PER_PAGE);
+
                     return all($this->doPageLoop($total, $sender, $callbackItem, $requestDto));
                 }
             );
@@ -152,7 +169,7 @@ class BigcommerceSyncCustomerConnector implements BatchInterface, ConnectorInter
             );
         }
 
-        $total = (int) ceil($data['count'] / 50);
+        $total = (int) ceil($data['count'] / self::PER_PAGE);
         unset($data);
 
         return $total;

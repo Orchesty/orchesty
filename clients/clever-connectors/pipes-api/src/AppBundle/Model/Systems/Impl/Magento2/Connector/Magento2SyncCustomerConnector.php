@@ -3,7 +3,9 @@
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Magento2\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\LastSync\LastSyncManager;
+use CleverConnectors\AppBundle\Model\ProgressCounter\ProgressCounterService;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Magento2\Magento2System;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
@@ -32,22 +34,30 @@ class Magento2SyncCustomerConnector extends Magento2ConnectorAbstract
     private $systemInstallRepository;
 
     /**
+     * @var ProgressCounterService
+     */
+    private $counterService;
+
+    /**
      * SalesForceSyncConnector constructor.
      *
-     * @param Magento2System    $system
-     * @param LastSyncManager   $lastSyncManager
-     * @param CurlSenderFactory $factory
-     * @param DocumentManager   $dm
+     * @param Magento2System         $system
+     * @param LastSyncManager        $lastSyncManager
+     * @param CurlSenderFactory      $factory
+     * @param DocumentManager        $dm
+     * @param ProgressCounterService $counterService
      */
     public function __construct(
         Magento2System $system,
         LastSyncManager $lastSyncManager,
         CurlSenderFactory $factory,
-        DocumentManager $dm
+        DocumentManager $dm,
+        ProgressCounterService $counterService
     )
     {
         parent::__construct($system, $lastSyncManager, $factory);
         $this->systemInstallRepository = $dm->getRepository(SystemInstall::class);
+        $this->counterService          = $counterService;
     }
 
     /**
@@ -56,6 +66,7 @@ class Magento2SyncCustomerConnector extends Magento2ConnectorAbstract
      * @param callable      $callbackItem
      *
      * @return PromiseInterface
+     * @throws CleverConnectorsException
      */
     public function processBatch(ProcessDto $dto, LoopInterface $loop, callable $callbackItem): PromiseInterface
     {
@@ -64,6 +75,7 @@ class Magento2SyncCustomerConnector extends Magento2ConnectorAbstract
         $systemInstall = $this->systemInstallRepository->getSystemInstallFromHeaders($dto->getHeaders());
         $requestDto    = $this->system->getRequestDto($systemInstall, 'GET');
         $requestDto->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()));
+        $processId = CMHeaders::get(CMHeaders::PROCESS_ID, $dto->getHeaders()) ?? '';
 
         $promise = $this->fetchData($sender, $this->createCountRequest($requestDto))
             ->then(
@@ -71,7 +83,9 @@ class Magento2SyncCustomerConnector extends Magento2ConnectorAbstract
                     return $this->getTotalPages($response);
                 }
             )->then(
-                function (int $total) use ($sender, $callbackItem, $requestDto) {
+                function (int $total) use ($sender, $callbackItem, $requestDto, $processId) {
+                    $this->counterService->setTotal($processId, $total + self::PAGE_LIMIT);
+
                     return all($this->doPageLoop($total, $sender, $callbackItem, $requestDto));
                 }
             );

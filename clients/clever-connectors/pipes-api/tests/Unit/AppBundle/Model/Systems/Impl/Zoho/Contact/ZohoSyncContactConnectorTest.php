@@ -3,6 +3,7 @@
 namespace Tests\Unit\AppBundle\Model\Systems\Impl\Zoho\Contact;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Model\ProgressCounter\ProgressCounterService;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Zoho\Connector\ZohoSyncContactConnector;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -74,10 +75,14 @@ final class ZohoSyncContactConnectorTest extends ConnectorTestCaseAbstract
      */
     private function mockResponses(): ZohoSyncContactConnector
     {
+        $processCounter = $this->createMock(ProgressCounterService::class);
+        $processCounter->method('setTotal')->willReturn(TRUE);
+
         $conn = $this->getMockBuilder(ZohoSyncContactConnector::class)->setConstructorArgs([
             $this->container->get('systems.zoho'),
             $this->createMock(CurlSenderFactory::class),
             $this->mockDM(),
+            $processCounter,
         ])->setMethods(['fetchData'])->getMock();
 
         $test = $this;

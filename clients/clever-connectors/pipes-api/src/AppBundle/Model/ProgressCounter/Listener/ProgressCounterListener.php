@@ -6,11 +6,11 @@
  * Time: 18:18
  */
 
-namespace Hanaboso\PipesFramework\Commons\ProgressCounter\Listener;
+namespace CleverConnectors\AppBundle\Model\ProgressCounter\Listener;
 
-use Hanaboso\PipesFramework\Commons\ProgressCounter\Event\ProgressCounterEvent;
-use Hanaboso\PipesFramework\Commons\ProgressCounter\ProgressCounterAbstract;
-use Hanaboso\PipesFramework\Commons\ProgressCounter\ProgressCounterTrait;
+use CleverConnectors\AppBundle\Model\ProgressCounter\Event\ProgressCounterEvent;
+use CleverConnectors\AppBundle\Model\ProgressCounter\ProgressCounterAbstract;
+use CleverConnectors\AppBundle\Model\ProgressCounter\ProgressCounterTrait;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
