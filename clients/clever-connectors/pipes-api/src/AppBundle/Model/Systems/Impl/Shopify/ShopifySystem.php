@@ -4,21 +4,23 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\Shopify;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\SystemTypeEnum;
-use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Form\Field;
 use CleverConnectors\AppBundle\Model\Form\Form;
+use CleverConnectors\AppBundle\Model\Requester\RequesterInterface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\OAuth2Interface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\Traits\AuthorizationTrait;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
+use CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\Requester\ShopifySubscribeRequester;
+use CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\Requester\ShopifyUnsubscribeRequester;
 use CleverConnectors\AppBundle\Model\Webhook\Traits\WebhookSystemTrait;
 use CleverConnectors\AppBundle\Model\Webhook\WebhookSubscribes;
 use CleverConnectors\AppBundle\Model\Webhook\WebhookSystemInterface;
 use CleverConnectors\AppBundle\Utils\AuthorizationUtils;
+use CleverConnectors\AppBundle\Utils\TopologyNameUtils;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Authorization\Provider\Dto\OAuth2Dto;
 use Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
-use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 
 /**
  * Class ShopifySystem
@@ -28,13 +30,10 @@ use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 class ShopifySystem implements WebhookSystemInterface, OAuth2Interface
 {
 
-    private const SYSTEM_URL = 'system_url';
+    public const SYSTEM_URL = 'system_url';
 
     private const API_KEY    = '91f0d11786afbe82fc72d519356bc7f2';
     private const API_SECRET = '469a399914df80fab1e223b18d9d95bc';
-
-    private const WEBHOOK_SUBSCRIBE_URL   = 'https://%s.myshopify.com/admin/webhooks.json';
-    private const WEBHOOK_UNSUBSCRIBE_URL = 'https://%s.myshopify.com/admin/webhooks/%s.json';
 
     use AuthorizationTrait;
     use WebhookSystemTrait;
@@ -43,15 +42,6 @@ class ShopifySystem implements WebhookSystemInterface, OAuth2Interface
      * @var OAuth2Provider
      */
     private $provider;
-
-    /**
-     * @var array
-     */
-    private $topics = [
-        'shopify-create-customer-connector' => 'customers/create',
-        'shopify-update-customer-connector' => 'customers/update',
-        'shopify-delete-customer-connector' => 'customers/delete',
-    ];
 
     /**
      * @var array
@@ -69,14 +59,18 @@ class ShopifySystem implements WebhookSystemInterface, OAuth2Interface
     {
         $this->provider = $provider;
 
-        $this->subscriptions[] = new WebhookSubscribes('shopify-create-customer-connector', 'shopify-create-customer',
-            self::WEBHOOK_SUBSCRIBE_URL, self::WEBHOOK_UNSUBSCRIBE_URL);
-
-        $this->subscriptions[] = new WebhookSubscribes('shopify-update-customer-connector', 'shopify-update-customer',
-            self::WEBHOOK_SUBSCRIBE_URL, self::WEBHOOK_UNSUBSCRIBE_URL);
-
-        $this->subscriptions[] = new WebhookSubscribes('shopify-delete-customer-connector', 'shopify-delete-customer',
-            self::WEBHOOK_SUBSCRIBE_URL, self::WEBHOOK_UNSUBSCRIBE_URL);
+        $this->subscriptions[] = new WebhookSubscribes(
+            'shopify-create-customer-connector',
+            TopologyNameUtils::getTopologyName(TopologyNameUtils::CREATED_SUBSCRIBERS, $this->getKey())
+        );
+        $this->subscriptions[] = new WebhookSubscribes(
+            'shopify-update-customer-connector',
+            TopologyNameUtils::getTopologyName(TopologyNameUtils::UPDATED_SUBSCRIBERS, $this->getKey())
+        );
+        $this->subscriptions[] = new WebhookSubscribes(
+            'shopify-delete-customer-connector',
+            TopologyNameUtils::getTopologyName(TopologyNameUtils::DELETED_SUBSCRIBERS, $this->getKey())
+        );
     }
 
     /**
@@ -120,74 +114,37 @@ class ShopifySystem implements WebhookSystemInterface, OAuth2Interface
     }
 
     /**
-     * @param WebhookSubscribes $subs
-     * @param SystemInstall     $systemInstall
-     * @param string            $url
-     *
-     * @return RequestDto
-     * @throws SystemException
+     * @return string
      */
-    public function getSubscribeRequest(WebhookSubscribes $subs, SystemInstall $systemInstall, string $url): RequestDto
+    public function getAuthorizationType(): string
     {
-        $this->continueOnAuthorized($systemInstall);
-
-        $sett      = $systemInstall->getSettings();
-        $systemUrl = $sett[self::SYSTEM_URL];
-        $topic     = $this->topics[$subs->getNodeName()];
-
-        $dto = new RequestDto('POST', new Uri(sprintf($subs->getSubscribeUrl(), $systemUrl)));
-
-        $dto->setBody(json_encode([
-            'webhook' => [
-                'topic'   => $topic,
-                'address' => $url,
-                'format'  => 'json',
-            ],
-        ]));
-
-        $dto->setHeaders($this->getHeaders($systemInstall));
-
-        return $dto;
+        return self::OAUTH2;
     }
 
     /**
      * @param SystemInstall $systemInstall
-     * @param string        $webhookId
      *
-     * @return RequestDto
+     * @return RequesterInterface
      * @throws SystemException
      */
-    public function getUnsubscribeRequest(SystemInstall $systemInstall, string $webhookId): RequestDto
+    public function getSubscribeRequester(SystemInstall $systemInstall): RequesterInterface
     {
         $this->continueOnAuthorized($systemInstall);
 
-        $sett = $systemInstall->getSettings();
-        $dto  = new RequestDto('DELETE',
-            new Uri(sprintf($this->subscriptions[0]->getUnSubscribeUrl(),
-                $sett[self::SYSTEM_URL], $webhookId)));
-
-        $dto->setHeaders($this->getHeaders($systemInstall));
-
-        return $dto;
+        return new ShopifySubscribeRequester($systemInstall, $this->getHeaders($systemInstall));
     }
 
     /**
-     * @param ResponseDto $response
+     * @param SystemInstall $systemInstall
      *
-     * @return string
-     * @throws CleverConnectorsException
+     * @return RequesterInterface
+     * @throws SystemException
      */
-    public function getWebhookId(ResponseDto $response): string
+    public function getUnsubscribeRequester(SystemInstall $systemInstall): RequesterInterface
     {
-        $body = json_decode($response->getBody(), TRUE);
-        if (!$body || !array_key_exists('webhook', $body) || !array_key_exists('id', $body['webhook'])) {
-            throw new CleverConnectorsException(
-                'Missing webhook id data in response.',
-                CleverConnectorsException::MISSING_DATA
-            );
-        }
+        $this->continueOnAuthorized($systemInstall);
 
-        return (string) $body['webhook']['id'];
+        return new ShopifyUnsubscribeRequester($systemInstall, $this->getHeaders($systemInstall));
     }
 
     /**
@@ -201,14 +158,6 @@ class ShopifySystem implements WebhookSystemInterface, OAuth2Interface
 
         return !empty($sett[OAuth2Provider::ACCESS_TOKEN] ?? '')
             && !empty($sett[self::SYSTEM_URL] ?? '');
-    }
-
-    /**
-     * @return string
-     */
-    public function getAuthorizationType(): string
-    {
-        return self::OAUTH2;
     }
 
     /**
@@ -301,6 +250,10 @@ class ShopifySystem implements WebhookSystemInterface, OAuth2Interface
 
         return $dto;
     }
+
+    /**
+     * -------------------------------------- HELPERS -----------------------------------
+     */
 
     /**
      * @param SystemInstall $systemInstall

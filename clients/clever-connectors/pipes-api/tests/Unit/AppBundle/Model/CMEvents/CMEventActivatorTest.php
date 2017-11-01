@@ -104,7 +104,7 @@ class CMEventActivatorTest extends KernelTestCaseAbstract
         $curl = $this->createMock(CurlSender::class);
         $curl->expects($this->at(0))
             ->method('send')->will($this->returnCallback(function (RequestDto $requestDto) use ($test) {
-                $expt = new RequestDto('POST', new Uri('uriReq'));
+                $expt = new RequestDto('POST', new Uri(''));
                 $expt->setHeaders([])
                     ->setBody('');
 
@@ -114,7 +114,7 @@ class CMEventActivatorTest extends KernelTestCaseAbstract
             }));
         $curl->expects($this->at(1))
             ->method('send')->will($this->returnCallback(function (RequestDto $requestDto) use ($test) {
-                $expt = new RequestDto('POST', new Uri('uriReq'));
+                $expt = new RequestDto('POST', new Uri(''));
                 $expt->setHeaders([])
                     ->setBody('');
 

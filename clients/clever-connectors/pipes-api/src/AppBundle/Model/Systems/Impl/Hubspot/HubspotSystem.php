@@ -4,16 +4,19 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\SystemTypeEnum;
-use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Form\Field;
 use CleverConnectors\AppBundle\Model\Form\Form;
+use CleverConnectors\AppBundle\Model\Requester\RequesterInterface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\OAuth2Interface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\Traits\AuthorizationTrait;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
+use CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\Requester\HubspotSubscribeRequester;
+use CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\Requester\HubspotUnsubscribeRequester;
 use CleverConnectors\AppBundle\Model\Webhook\Traits\WebhookSystemTrait;
 use CleverConnectors\AppBundle\Model\Webhook\WebhookSubscribes;
 use CleverConnectors\AppBundle\Model\Webhook\WebhookSystemInterface;
 use CleverConnectors\AppBundle\Utils\AuthorizationUtils;
+use CleverConnectors\AppBundle\Utils\TopologyNameUtils;
 use CleverConnectors\AppBundle\Utils\WebhookUtils;
 use DateTime;
 use DateTimeZone;
@@ -22,7 +25,6 @@ use Hanaboso\PipesFramework\Authorization\Provider\Dto\OAuth2Dto;
 use Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider;
 use Hanaboso\PipesFramework\Authorization\Utils\ScopeFormatter;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
-use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 
 /**
  * Class HubspotSystem
@@ -35,17 +37,16 @@ class HubspotSystem implements WebhookSystemInterface, OAuth2Interface
     use AuthorizationTrait;
     use WebhookSystemTrait;
 
-    private const APP_ID                          = 'app_id';
-    private const WEBHOOK_URL                     = 'webhook_url';
-    private const USER_ID                         = 4846078;
-    private const HAPI_KEY                        = 'abab4202-0a4b-4099-8b61-fe325790d7cd';
-    private const CLIENT_ID                       = '91caba3e-b12b-44d9-8e37-93e50918efa9';
-    private const CLIENT_SECRET                   = '35b03ce5-1c1c-4292-a089-655692392b28';
-    private const AUTHORIZE_URL                   = 'https://app.hubspot.com/oauth/authorize';
-    private const BASE_URL                        = 'https://api.hubapi.com';
-    private const TOKEN_URL                       = 'https://api.hubapi.com/oauth/v1/token';
-    private const WEBHOOK_SUBSCRIPTION_CREATE_URL = 'https://api.hubapi.com/webhooks/v1/%s/subscriptions?hapikey=%s&userId=%s';
-    private const WEBHOOK_SUBSCRIPTION_DELETE_URL = 'https://api.hubapi.com/webhooks/v1/%s/subscriptions/%s?hapikey=%s&userId=%s';
+    public const  APP_ID   = 'app_id';
+    public const  USER_ID  = 4846078;
+    public const  HAPI_KEY = 'abab4202-0a4b-4099-8b61-fe325790d7cd';
+
+    private const WEBHOOK_URL   = 'webhook_url';
+    private const CLIENT_ID     = '91caba3e-b12b-44d9-8e37-93e50918efa9';
+    private const CLIENT_SECRET = '35b03ce5-1c1c-4292-a089-655692392b28';
+    private const AUTHORIZE_URL = 'https://app.hubspot.com/oauth/authorize';
+    private const BASE_URL      = 'https://api.hubapi.com';
+    private const TOKEN_URL     = 'https://api.hubapi.com/oauth/v1/token';
 
     public const OBJECT_ID_KEY         = 'objectId';
     public const SUBSCRIPTION_TYPE_KEY = 'subscriptionType';
@@ -238,7 +239,7 @@ class HubspotSystem implements WebhookSystemInterface, OAuth2Interface
             $systemInstall->getUser(),
             $systemInstall->getToken(),
             $this->getNodeName(),
-            $this->getTopologyName()
+            TopologyNameUtils::getTopologyName(TopologyNameUtils::UPDATED_SUBSCRIBERS, $this->getKey())
         );
 
         $field2 = new Field(
@@ -258,79 +259,29 @@ class HubspotSystem implements WebhookSystemInterface, OAuth2Interface
     }
 
     /**
-     * @param WebhookSubscribes $subscription
-     * @param SystemInstall     $systemInstall
-     * @param string            $url
+     * @param SystemInstall $systemInstall
      *
-     * @return RequestDto
+     * @return RequesterInterface
      * @throws SystemException
      */
-    public function getSubscribeRequest(
-        WebhookSubscribes $subscription,
-        SystemInstall $systemInstall,
-        string $url
-    ): RequestDto
+    public function getSubscribeRequester(SystemInstall $systemInstall): RequesterInterface
     {
         $this->continueOnAuthorized($systemInstall);
 
-        $sett       = $systemInstall->getSettings();
-        $requestUrl = sprintf($subscription->getSubscribeUrl(), $sett[self::APP_ID], self::HAPI_KEY, self::USER_ID);
-        $dto        = new RequestDto('POST', new Uri($requestUrl));
-
-        $body = [
-            'subscriptionDetails' => $subscription->getParams(),
-            'enabled'             => TRUE,
-        ];
-
-        $dto->setBody(json_encode($body));
-        $dto->setHeaders($this->getHeadersForWebhook());
-
-        return $dto;
+        return new HubspotSubscribeRequester($systemInstall, $this->getHeadersForWebhook());
     }
 
     /**
      * @param SystemInstall $systemInstall
-     * @param string        $webhookId
      *
-     * @return RequestDto
+     * @return RequesterInterface
      * @throws SystemException
      */
-    public function getUnsubscribeRequest(SystemInstall $systemInstall, string $webhookId): RequestDto
+    public function getUnsubscribeRequester(SystemInstall $systemInstall): RequesterInterface
     {
         $this->continueOnAuthorized($systemInstall);
 
-        $sett = $systemInstall->getSettings();
-        $url  = sprintf(
-            $this->subscriptions[0]->getUnSubscribeUrl(),
-            $sett[self::APP_ID],
-            $webhookId,
-            self::HAPI_KEY,
-            self::USER_ID
-        );
-        $dto  = new RequestDto('DELETE', new Uri($url));
-
-        $dto->setHeaders($this->getHeadersForWebhook());
-
-        return $dto;
-    }
-
-    /**
-     * @param ResponseDto $response
-     *
-     * @return string
-     * @throws CleverConnectorsException
-     */
-    public function getWebhookId(ResponseDto $response): string
-    {
-        $body = json_decode($response->getBody(), TRUE);
-        if (!$body || !array_key_exists('id', $body)) {
-            throw new CleverConnectorsException(
-                'Missing webhook id data in response.',
-                CleverConnectorsException::MISSING_DATA
-            );
-        }
-
-        return (string) $body['id'];
+        return new HubspotUnsubscribeRequester($systemInstall, $this->getHeadersForWebhook());
     }
 
     /******************************************  HELPERS  ****************************************/
@@ -351,9 +302,7 @@ class HubspotSystem implements WebhookSystemInterface, OAuth2Interface
 
         return new WebhookSubscribes(
             $this->getNodeName(),
-            $this->getTopologyName(),
-            self::WEBHOOK_SUBSCRIPTION_CREATE_URL,
-            self::WEBHOOK_SUBSCRIPTION_DELETE_URL,
+            TopologyNameUtils::getTopologyName(TopologyNameUtils::UPDATED_SUBSCRIBERS, $this->getKey()),
             $params
         );
     }
@@ -407,14 +356,6 @@ class HubspotSystem implements WebhookSystemInterface, OAuth2Interface
     private function getNodeName(): string
     {
         return sprintf('%s-update-contact-connector', $this->getKey());
-    }
-
-    /**
-     * @return string
-     */
-    private function getTopologyName(): string
-    {
-        return sprintf('%s-update-contact', $this->getKey());
     }
 
 }

@@ -6,6 +6,7 @@ use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Form\Field;
 use CleverConnectors\AppBundle\Model\Form\Form;
+use CleverConnectors\AppBundle\Model\Requester\RequesterInterface;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\HubspotSystem;
 use CleverConnectors\AppBundle\Model\Webhook\WebhookSubscribes;
 use Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider;
@@ -67,9 +68,10 @@ final class HubspotSystemTest extends KernelTestCaseAbstract
             'propertyName'     => 'firstname',
         ];
 
-        $webhook = new WebhookSubscribes('buhspot-create-customer-connector', 'top', 'regUrl', 'unregUrl', $params);
+        $webhook = new WebhookSubscribes('buhspot-create-customer-connector', 'top', $params);
 
-        $dto = $this->system->getSubscribeRequest($webhook, $this->systemInstall, 'someUrl');
+        $dto = $this->system->getSubscribeRequester($this->systemInstall)
+            ->getRequestDto([RequesterInterface::OBJECT => $webhook]);
 
         self::assertInstanceOf(RequestDto::class, $dto);
         self::assertArrayNotHasKey('Authorization', $dto->getHeaders());
@@ -88,7 +90,8 @@ final class HubspotSystemTest extends KernelTestCaseAbstract
      */
     public function testGetUnsubscribeRequest(): void
     {
-        $dto = $this->system->getUnsubscribeRequest($this->systemInstall, '123');
+        $dto = $this->system->getUnsubscribeRequester($this->systemInstall)
+            ->getRequestDto([RequesterInterface::WEBHOOK_ID => '1']);
 
         self::assertInstanceOf(RequestDto::class, $dto);
         self::assertArrayNotHasKey('Authorization', $dto->getHeaders());
@@ -100,15 +103,20 @@ final class HubspotSystemTest extends KernelTestCaseAbstract
      */
     public function testGetWebhookId(): void
     {
+        $sytemInstall = new SystemInstall();
+        $sytemInstall->setSettings([
+            'access_token' => self::ACCESS_TOKEN,
+            'app_id'       => 12345,
+        ]);
         $res = file_get_contents(__DIR__ . '/data/HubspotWebhookSubscriptionResponse.json');
         $dto = new ResponseDto(200, '', $res, []);
-        $id  = $this->system->getWebhookId($dto);
+        $id  = $this->system->getSubscribeRequester($sytemInstall)->processResponse($dto, $sytemInstall);
         self::assertEquals(25, $id);
 
         $dto = new ResponseDto(200, '', '', []);
         $this->expectException(CleverConnectorsException::class);
         $this->expectExceptionCode(CleverConnectorsException::MISSING_DATA);
-        $this->system->getWebhookId($dto);
+        $this->system->getSubscribeRequester($sytemInstall)->processResponse($dto, $sytemInstall);
     }
 
     /**

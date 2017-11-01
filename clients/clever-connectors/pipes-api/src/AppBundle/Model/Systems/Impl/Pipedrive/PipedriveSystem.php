@@ -4,18 +4,20 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\Pipedrive;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\SystemTypeEnum;
-use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Form\Field;
 use CleverConnectors\AppBundle\Model\Form\Form;
+use CleverConnectors\AppBundle\Model\Requester\RequesterInterface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\AuthorizationInterface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\Traits\AuthorizationTrait;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
+use CleverConnectors\AppBundle\Model\Systems\Impl\Pipedrive\Requester\PipedriveSubscribeRequester;
+use CleverConnectors\AppBundle\Model\Systems\Impl\Pipedrive\Requester\PipedriveUnsubscribeRequester;
 use CleverConnectors\AppBundle\Model\Webhook\Traits\WebhookSystemTrait;
 use CleverConnectors\AppBundle\Model\Webhook\WebhookSubscribes;
 use CleverConnectors\AppBundle\Model\Webhook\WebhookSystemInterface;
+use CleverConnectors\AppBundle\Utils\TopologyNameUtils;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
-use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 
 /**
  * Class PipedriveSystem
@@ -28,33 +30,22 @@ class PipedriveSystem implements WebhookSystemInterface, AuthorizationInterface
     use AuthorizationTrait;
     use WebhookSystemTrait;
 
-    public const API_TOKEN = 'api_token';
-
-    private const WEBHOOK_SUBSCRIPTION_URL   = 'https://api.pipedrive.com/v1/webhooks?api_token=%s';
-    private const WEBHOOK_UNSUBSCRIPTION_URL = 'https://api.pipedrive.com/v1/webhooks/%s?api_token=%s';
-    private const BASE_URL                   = 'https://api.pipedrive.com/v1/';
-
-    /**
-     * @var array
-     */
-    private $events = [
-        'pipedrive-update-person-connector' => [
-            'updated', 'person',
-        ],
-        'pipedrive-delete-person-connector' => [
-            'deleted', 'person',
-        ],
-    ];
+    public const  API_TOKEN = 'api_token';
+    private const BASE_URL  = 'https://api.pipedrive.com/v1/';
 
     /**
      * PipedriveSystem constructor.
      */
     function __construct()
     {
-        $this->subscriptions[] = new WebhookSubscribes('pipedrive-update-person-connector', 'pipedrive-update-person',
-            self::WEBHOOK_SUBSCRIPTION_URL, self::WEBHOOK_UNSUBSCRIPTION_URL);
-        $this->subscriptions[] = new WebhookSubscribes('pipedrive-delete-person-connector', 'pipedrive-delete-person',
-            self::WEBHOOK_SUBSCRIPTION_URL, self::WEBHOOK_UNSUBSCRIPTION_URL);
+        $this->subscriptions[] = new WebhookSubscribes(
+            'pipedrive-update-person-connector',
+            TopologyNameUtils::getTopologyName(TopologyNameUtils::UPDATED_SUBSCRIBERS, $this->getKey())
+        );
+        $this->subscriptions[] = new WebhookSubscribes(
+            'pipedrive-delete-person-connector',
+            TopologyNameUtils::getTopologyName(TopologyNameUtils::DELETED_SUBSCRIBERS, $this->getKey())
+        );
     }
 
     /**
@@ -133,69 +124,28 @@ class PipedriveSystem implements WebhookSystemInterface, AuthorizationInterface
     }
 
     /**
-     * @param WebhookSubscribes $subscription
-     * @param SystemInstall     $systemInstall
-     * @param string            $url
+     * @param SystemInstall $systemInstall
      *
-     * @return RequestDto
+     * @return RequesterInterface
      * @throws SystemException
      */
-    public function getSubscribeRequest(
-        WebhookSubscribes $subscription,
-        SystemInstall $systemInstall,
-        string $url
-    ): RequestDto
+    public function getSubscribeRequester(SystemInstall $systemInstall): RequesterInterface
     {
         $this->continueOnAuthorized($systemInstall);
 
-        $event = $this->events[$subscription->getNodeName()];
-        $sett  = $systemInstall->getSettings();
-
-        $dto = new RequestDto('POST', new Uri(sprintf($subscription->getSubscribeUrl(), $sett[self::API_TOKEN])));
-        $dto->setHeaders($this->getHeaders())
-            ->setBody(json_encode([
-                'subscription_url' => $url,
-                'event_action'     => $event[0],
-                'event_object'     => $event[1],
-            ]));
-
-        return $dto;
+        return new PipedriveSubscribeRequester($systemInstall, $this->getHeaders());
     }
 
     /**
      * @param SystemInstall $systemInstall
-     * @param string        $webhookId
      *
-     * @return RequestDto
+     * @return RequesterInterface
      */
-    public function getUnsubscribeRequest(SystemInstall $systemInstall, string $webhookId): RequestDto
+    public function getUnsubscribeRequester(SystemInstall $systemInstall): RequesterInterface
     {
-        $sett = $systemInstall->getSettings();
+        $this->continueOnAuthorized($systemInstall);
 
-        $dto = new RequestDto('DELETE', new Uri(sprintf($this->subscriptions[0]->getUnSubscribeUrl(), $webhookId, $sett[self::API_TOKEN])));
-        $dto->setHeaders($this->getHeaders());
-
-        return $dto;
-    }
-
-    /**
-     * @param ResponseDto $response
-     *
-     * @return string
-     * @throws CleverConnectorsException
-     */
-    public function getWebhookId(ResponseDto $response): string
-    {
-        $body = json_decode($response->getBody(), TRUE);
-
-        if (!array_key_exists('data', $body) || !array_key_exists('id', $body['data'])) {
-            throw new CleverConnectorsException(
-                'Missing webhook data in response.',
-                CleverConnectorsException::MISSING_DATA
-            );
-        }
-
-        return (string) $body['data']['id'];
+        return new PipedriveUnsubscribeRequester($systemInstall, $this->getHeaders());
     }
 
     /**

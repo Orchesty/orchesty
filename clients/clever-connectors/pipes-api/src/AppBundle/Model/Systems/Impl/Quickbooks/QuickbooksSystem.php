@@ -30,8 +30,7 @@ class QuickbooksSystem implements OAuth2Interface
     private const AUTHORIZE_URL = 'https://appcenter.intuit.com/connect/oauth2';
     private const TOKEN_URL     = 'https://oauth.platform.intuit.com/oauth2/v1/tokens/bearer';
     private const API_URL       = 'https://sandbox-quickbooks.api.intuit.com/v3/company/%s/';
-
-    private const REALM_ID_KEY = 'realmId';
+    private const REALM_ID_KEY  = 'realmId';
 
     /**
      * @var array
