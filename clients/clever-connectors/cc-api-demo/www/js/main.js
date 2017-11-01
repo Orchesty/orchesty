@@ -30,8 +30,14 @@ $(function () {
 			}
 		} else {
 			if (streamToken !== null) {
-				console.log('Remove token: ' + streamToken);
-				localStorage.removeItem('stream-token');
+				$.ajax({
+					url: "/api-demo/stream?do=unsubscribe&token=" + streamToken,
+					type: "post",
+					contentType: "application/json"
+				}).done(function () {
+					console.log('Unsubscribe and remove token: ' + streamToken);
+					localStorage.removeItem('stream-token');
+				});
 			}
 		}
 	});
