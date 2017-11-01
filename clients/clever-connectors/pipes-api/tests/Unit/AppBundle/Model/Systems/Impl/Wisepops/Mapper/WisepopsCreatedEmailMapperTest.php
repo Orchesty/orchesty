@@ -9,11 +9,11 @@ use Nette\Utils\Json;
 use Tests\ConnectorTestCaseAbstract;
 
 /**
- * Class WisepopsCreateEmailMapperTest
+ * Class WisepopsCreatedEmailMapperTest
  *
  * @package Tests\Unit\AppBundle\Model\Systems\Impl\Wisepops\Mapper
  */
-final class WisepopsCreateEmailMapperTest extends ConnectorTestCaseAbstract
+final class WisepopsCreatedEmailMapperTest extends ConnectorTestCaseAbstract
 {
 
     /**
@@ -21,7 +21,7 @@ final class WisepopsCreateEmailMapperTest extends ConnectorTestCaseAbstract
      */
     public function testProcessEvent(): void
     {
-        $connector = $this->container->get('hbpf.custom_node.wisepops-create-email-mapper');
+        $connector = $this->container->get('hbpf.custom_node.wisepops-created-email-mapper');
 
         $response = Json::decode(
             $connector->process((new ProcessDto())->setData($this->getRequest('WisepopsCreatedEmailItem.json')))

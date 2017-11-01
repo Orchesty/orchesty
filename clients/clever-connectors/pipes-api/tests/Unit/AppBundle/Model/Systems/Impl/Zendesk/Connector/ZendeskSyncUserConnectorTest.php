@@ -89,6 +89,7 @@ final class ZendeskSyncUserConnectorTest extends ConnectorTestCaseAbstract
                         new Uri('https://hbpf.zendesk.com/api/v2/users.json?per_page=50'));
                     $expt->setHeaders([
                         'Content-Type'  => 'application/json',
+                        'Accept'        => 'application/json',
                         'Authorization' => $this->auth,
                     ]);
 

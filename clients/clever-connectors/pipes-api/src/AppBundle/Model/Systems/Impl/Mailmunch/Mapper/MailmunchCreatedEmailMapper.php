@@ -9,11 +9,11 @@ use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
 use function GuzzleHttp\Psr7\parse_query;
 
 /**
- * Class MailmunchCreateEmailMapper
+ * Class MailmunchCreatedEmailMapper
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Mailmunch\Mapper
  */
-class MailmunchCreateEmailMapper implements CustomNodeInterface
+class MailmunchCreatedEmailMapper implements CustomNodeInterface
 {
 
     /**

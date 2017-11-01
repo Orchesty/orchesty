@@ -7,11 +7,11 @@ use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Tests\KernelTestCaseAbstract;
 
 /**
- * Class MailmunchCreateEmailMapperTest
+ * Class MailmunchCreatedEmailMapperTest
  *
  * @package Tests\Unit\AppBundle\Model\Systems\Impl\Mailmunch\Mapper
  */
-final class MailmunchCreateEmailMapperTest extends KernelTestCaseAbstract
+class MailmunchCreatedEmailMapperTest extends KernelTestCaseAbstract
 {
 
     /**
@@ -23,7 +23,7 @@ final class MailmunchCreateEmailMapperTest extends KernelTestCaseAbstract
         $dto  = new ProcessDto();
         $dto->setData($data);
 
-        $mapper = $this->container->get('hbpf.custom_node.mailmunch-create-email-mapper');
+        $mapper = $this->container->get('hbpf.custom_node.mailmunch-created-email-mapper');
         $res    = $mapper->process($dto);
 
         $expt = [

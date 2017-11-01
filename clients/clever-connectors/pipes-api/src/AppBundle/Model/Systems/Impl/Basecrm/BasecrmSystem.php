@@ -58,7 +58,7 @@ class BasecrmSystem implements SystemInterface, AuthorizationInterface
      */
     public function getDescription(): string
     {
-        return 'BaseCRM system';
+        return 'BaseCRM';
     }
 
     /**

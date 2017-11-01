@@ -40,7 +40,7 @@ class WisepopsSystem implements WebhookSystemInterface, AuthorizationInterface
     public function __construct()
     {
         $this->subscriptions[] = new WebhookSubscribes(
-            'wisepops-create-email-connector',
+            'wisepops-created-email-connector',
             TopologyNameUtils::getTopologyName(TopologyNameUtils::CREATED_SUBSCRIBERS, $this->getKey())
         );
     }
@@ -74,7 +74,7 @@ class WisepopsSystem implements WebhookSystemInterface, AuthorizationInterface
      */
     public function getDescription(): string
     {
-        return 'WisePOPS system.';
+        return 'WisePOPS.';
     }
 
     /**

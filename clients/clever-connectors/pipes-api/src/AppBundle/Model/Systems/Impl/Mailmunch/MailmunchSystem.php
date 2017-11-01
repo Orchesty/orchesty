@@ -41,7 +41,7 @@ class MailmunchSystem implements WebhookSystemInterface, AuthorizationInterface
     {
         $this->domain          = $domain;
         $this->subscriptions[] = new WebhookSubscribes(
-            'mailmunch-create-email-connector',
+            'mailmunch-created-email-connector',
             TopologyNameUtils::getTopologyName(TopologyNameUtils::CREATED_SUBSCRIBERS, $this->getKey())
         );
     }
@@ -119,8 +119,8 @@ class MailmunchSystem implements WebhookSystemInterface, AuthorizationInterface
                 $this->domain,
                 $systemInstall->getUser(),
                 $systemInstall->getToken(),
-                'mailmunch-create-email-connector',
-                'mailmunch-create-email'
+                'mailmunch-created-email-connector',
+                TopologyNameUtils::getTopologyName(TopologyNameUtils::CREATED_SUBSCRIBERS, $this->getKey())
             ),
             FALSE,
             TRUE

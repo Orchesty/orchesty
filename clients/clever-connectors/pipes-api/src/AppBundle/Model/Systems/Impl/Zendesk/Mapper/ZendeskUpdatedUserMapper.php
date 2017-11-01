@@ -1,18 +1,16 @@
 <?php declare(strict_types=1);
 
-namespace CleverConnectors\AppBundle\Model\Systems\Impl\Wisepops\Mapper;
+namespace CleverConnectors\AppBundle\Model\Systems\Impl\Zendesk\Mapper;
 
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
-use CleverConnectors\AppBundle\Model\CM\SubscriptionConnector\CustomerObject\CMSubscriber;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
-use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
 
 /**
- * Class WisepopsCreateEmailMapper
+ * Class ZendeskUpdatedUserMapper
  *
- * @package CleverConnectors\AppBundle\Model\Systems\Impl\Wisepops\Mapper
+ * @package CleverConnectors\AppBundle\Model\Systems\Impl\Zendesk\Mapper
  */
-class WisepopsCreateEmailMapper implements CustomNodeInterface
+class ZendeskUpdatedUserMapper extends ZendeskUpdatedUserMapperAbstract
 {
 
     /**
@@ -32,8 +30,7 @@ class WisepopsCreateEmailMapper implements CustomNodeInterface
             );
         }
 
-        $obj = new CMSubscriber();
-        $obj->setEmail($data['email']);
+        $obj = $this->createSubscriber($data);
 
         return $dto->setData(json_encode($obj->toArray()));
     }

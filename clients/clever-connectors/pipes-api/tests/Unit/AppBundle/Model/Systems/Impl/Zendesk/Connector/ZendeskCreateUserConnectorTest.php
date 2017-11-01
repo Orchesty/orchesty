@@ -3,10 +3,8 @@
 namespace Tests\Unit\AppBundle\Model\Systems\Impl\Zendesk\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
-use CleverConnectors\AppBundle\Enum\CleverCustomKeysEnum;
-use CleverConnectors\AppBundle\Model\Systems\Impl\Zendesk\Connector\ZendeskUpdateUserConnector;
+use CleverConnectors\AppBundle\Model\Systems\Impl\Zendesk\Connector\ZendeskCreateUserConnector;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
-use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
@@ -17,11 +15,11 @@ use PHPUnit_Framework_MockObject_MockObject;
 use Tests\ConnectorTestCaseAbstract;
 
 /**
- * Class ZendeskUpdateUserConnectorTest
+ * Class ZendeskCreateUserConnectorTest
  *
  * @package Tests\Unit\AppBundle\Model\Systems\Impl\Zendesk\Connector
  */
-final class ZendeskUpdateUserConnectorTest extends ConnectorTestCaseAbstract
+final class ZendeskCreateUserConnectorTest extends ConnectorTestCaseAbstract
 {
 
     /**
@@ -35,24 +33,18 @@ final class ZendeskUpdateUserConnectorTest extends ConnectorTestCaseAbstract
     public function testConnector(): void
     {
         $this->auth = base64_encode('eml@eml.com/token:smToken');
-        $conn       = new ZendeskUpdateUserConnector(
+        $conn       = new ZendeskCreateUserConnector(
             $this->container->get('systems.zendesk'),
             $this->mockDm(),
             $this->mockCurl()
         );
 
         $dto = new ProcessDto();
-        $dto->setHeaders([
-            CMHeaders::createKey(CMHeaders::CM_EVENT_TYPE) => SystemInstall::EVENT_UNSUBSCRIBE,
-        ])->setData(json_encode([
-            'body' => json_encode([
-                'user' => [
-                    'user_fields' => [
-                        CleverCustomKeysEnum::UNSUBSCRIBE => FALSE,
-                    ],
-                ],
-            ]),
-            'id'   => '123456',
+        $dto->setHeaders([])->setData(json_encode([
+            'user' => [
+                'email' => 'eml@eml.com',
+                'name'  => 'first last',
+            ],
         ]));
 
         $conn->processAction($dto);
@@ -89,22 +81,21 @@ final class ZendeskUpdateUserConnectorTest extends ConnectorTestCaseAbstract
         $curl = $this->createMock(CurlManagerInterface::class);
         $curl->expects($this->once())
             ->method('send')->will($this->returnCallback(function (RequestDto $requestDto) {
-                $expt = new RequestDto('PUT', new Uri('https://hbpf.zendesk.com/api/v2/users/123456.json'));
+                $expt = new RequestDto('POST', new Uri('https://hbpf.zendesk.com/api/v2/users.json'));
                 $expt->setHeaders([
                     'Content-Type'  => 'application/json',
                     'Accept'        => 'application/json',
                     'Authorization' => 'Basic ' . $this->auth,
                 ])->setBody(json_encode([
                     'user' => [
-                        'user_fields' => [
-                            CleverCustomKeysEnum::UNSUBSCRIBE => FALSE,
-                        ],
+                        'email' => 'eml@eml.com',
+                        'name'  => 'first last',
                     ],
                 ]));
 
                 self::assertEquals($expt, $requestDto);
 
-                return new ResponseDto(200, '', $this->getRequest('updateUser.json'), []);
+                return new ResponseDto(201, '', '', []);
             }));
 
         return $curl;
