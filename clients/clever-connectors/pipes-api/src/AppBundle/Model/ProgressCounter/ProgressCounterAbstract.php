@@ -75,31 +75,33 @@ abstract class ProgressCounterAbstract implements ProgressCounterInterface
     public const PROGRESS_COUNTER_EVENT = 'event';
 
     /**
+     * @var string
+     */
+    public const PROGRESS_COUNTER_METADATA = 'metadata';
+
+    /**
      * @param string   $processId
-     * @param string   $actionName
-     * @param array    $users
+     * @param string   $eventName
      * @param array    $groups
      * @param int|NULL $total
+     * @param array    $metadata
      */
     public function start(
         string $processId,
-        string $actionName,
-        array $users = [],
+        string $eventName,
         array $groups = [],
-        ?int $total = NULL
+        ?int $total = NULL,
+        array $metadata = []
     ): void
     {
-        if (count($users)) {
-            $this->redis->sadd($this->getKey($processId, self::PROGRESS_COUNTER_USERS), $users);
-        }
-        if (count($groups)) {
-            $this->redis->sadd($this->getKey($processId, self::PROGRESS_COUNTER_GROUPS), $groups);
-        }
-        if ($total) {
-            $this->redis->set($this->getKey($processId, self::PROGRESS_COUNTER_TOTAL), $total);
+        if ($total === NULL) {
+            $total = 0;
         }
 
-        $this->redis->set($this->getKey($processId, self::PROGRESS_COUNTER_EVENT), $actionName);
+        $this->redis->set($this->getKey($processId, self::PROGRESS_COUNTER_EVENT), $eventName);
+        $this->redis->hmset($this->getKey($processId, self::PROGRESS_COUNTER_GROUPS), $groups);
+        $this->redis->set($this->getKey($processId, self::PROGRESS_COUNTER_TOTAL), $total);
+        $this->redis->hmset($this->getKey($processId, self::PROGRESS_COUNTER_METADATA), $metadata);
 
         $this->producer->publish($this->prepareMessage($processId));
     }
@@ -145,15 +147,51 @@ abstract class ProgressCounterAbstract implements ProgressCounterInterface
      *
      * @return array
      */
-    protected function prepareMessage(string $processId): array
+    public function prepareMessage(string $processId): array
     {
         return [
-            'process_id' => $processId,
-            'total'      => $this->redis->get(self::getKey($processId, self::PROGRESS_COUNTER_TOTAL)),
-            'progress'   => $this->redis->get(self::getKey($processId, self::PROGRESS_COUNTER_PROGRESS)),
-            'status'     => $this->redis->get(self::getKey($processId, self::PROGRESS_COUNTER_STATUS)),
-            'event'      => $this->redis->get(self::getKey($processId, self::PROGRESS_COUNTER_EVENT)),
+            'event'   => $this->redis->get(self::getKey($processId, self::PROGRESS_COUNTER_EVENT)),
+            'groups'  => $this->getGroups($processId),
+            'content' => [
+                'process_id' => $processId,
+                'total'      => $this->redis->get(self::getKey($processId, self::PROGRESS_COUNTER_TOTAL)),
+                'progress'   => $this->redis->get(self::getKey($processId, self::PROGRESS_COUNTER_PROGRESS)),
+                'status'     => $this->redis->get(self::getKey($processId, self::PROGRESS_COUNTER_STATUS)),
+                'metadata'   => $this->getMetaData($processId),
+            ],
         ];
+    }
+
+    /**
+     * @param string $processId
+     *
+     * @return array
+     */
+    private function getGroups(string $processId): array
+    {
+        $groups = $this->redis->get(self::getKey($processId, self::PROGRESS_COUNTER_GROUPS));
+
+        if (!is_array($groups)) {
+            return [];
+        }
+
+        return $groups;
+    }
+
+    /**
+     * @param string $processId
+     *
+     * @return array
+     */
+    private function getMetaData(string $processId): array
+    {
+        $metadata = $this->redis->hgetall(self::getKey($processId, self::PROGRESS_COUNTER_STATUS));
+
+        if (!is_array($metadata)) {
+            return [];
+        }
+
+        return $metadata;
     }
 
     /**
@@ -168,6 +206,7 @@ abstract class ProgressCounterAbstract implements ProgressCounterInterface
             self::getKey($processId, self::PROGRESS_COUNTER_PROGRESS),
             self::getKey($processId, self::PROGRESS_COUNTER_TOTAL),
             self::getKey($processId, self::PROGRESS_COUNTER_EVENT),
+            self::getKey($processId, self::PROGRESS_COUNTER_METADATA),
         ]);
     }
 

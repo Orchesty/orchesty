@@ -14,7 +14,6 @@ use Hanaboso\PipesFramework\RabbitMq\Producer\AbstractProducer;
 use PHPUnit\Framework\TestCase;
 use PHPUnit_Framework_MockObject_MockObject;
 use Predis\Client;
-use Tests\PrivateTrait;
 
 /**
  * Class ProgressCounterServiceTest
@@ -23,8 +22,6 @@ use Tests\PrivateTrait;
  */
 class ProgressCounterServiceTest extends TestCase
 {
-
-    use PrivateTrait;
 
     /**
      * @var PHPUnit_Framework_MockObject_MockObject|Client
@@ -42,7 +39,9 @@ class ProgressCounterServiceTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
-        $this->redis    = $this->getMockBuilder(Client::class)->setMethods(['set', 'get', 'incr', 'del'])->getMock();
+        $this->redis    = $this->getMockBuilder(Client::class)->setMethods([
+            'set', 'get', 'incr', 'del', 'hmset', 'hgetall',
+        ])->getMock();
         $this->producer = $this->getMockBuilder(AbstractProducer::class)->disableOriginalConstructor()->getMock();
     }
 
@@ -52,7 +51,7 @@ class ProgressCounterServiceTest extends TestCase
     public function testSetTotal(): void
     {
         $this->redis->method('set')->with('aEcBuFkS12345:total', 6)->willReturn(NULL);
-        $this->redis->expects($this->exactly(4))->method('get');
+        $this->redis->expects($this->exactly(5))->method('get');
         $this->producer->expects($this->once())->method('publish')->willReturn(TRUE);
 
         $processStatus = new ProgressCounterService($this->redis, $this->producer);
@@ -65,7 +64,7 @@ class ProgressCounterServiceTest extends TestCase
     public function testIncrement(): void
     {
         $this->redis->expects($this->once())->method('incr')->with('aEcBuFkS12345:progress')->willReturn(NULL);
-        $this->redis->expects($this->exactly(4))->method('get');
+        $this->redis->expects($this->exactly(5))->method('get');
         $this->producer->expects($this->once())->method('publish')->willReturn(TRUE);
 
         $processStatus = new ProgressCounterService($this->redis, $this->producer);
@@ -82,7 +81,7 @@ class ProgressCounterServiceTest extends TestCase
             ->method('set')
             ->with('aEcBuFkS12345:status', ProgressCounterStatusEnum::FAILED)
             ->willReturn(NULL);
-        $this->redis->expects($this->exactly(4))->method('get');
+        $this->redis->expects($this->exactly(5))->method('get');
         $this->producer->expects($this->once())->method('publish')->willReturn(TRUE);
 
         $processStatus = new ProgressCounterService($this->redis, $this->producer);
@@ -109,9 +108,10 @@ class ProgressCounterServiceTest extends TestCase
                 'aEcBuFkS12345:progress',
                 'aEcBuFkS12345:total',
                 'aEcBuFkS12345:event',
+                'aEcBuFkS12345:metadata',
             ])
             ->willReturn(NULL);
-        $this->redis->expects($this->exactly(4))->method('get');
+        $this->redis->expects($this->exactly(5))->method('get');
         $this->producer->expects($this->once())->method('publish')->willReturn(TRUE);
 
         $processStatus = new ProgressCounterService($this->redis, $this->producer);
@@ -126,28 +126,42 @@ class ProgressCounterServiceTest extends TestCase
         $this->redis
             ->expects($this->at(0))
             ->method('get')
-            ->willReturn(5);
+            ->willReturn('sync_event');
         $this->redis
             ->expects($this->at(1))
             ->method('get')
-            ->willReturn(3);
+            ->willReturn(['user_id', 'admins']);
         $this->redis
             ->expects($this->at(2))
             ->method('get')
-            ->willReturn(ProgressCounterStatusEnum::FAILED);
+            ->willReturn(5);
         $this->redis
             ->expects($this->at(3))
             ->method('get')
-            ->willReturn('sync-subscribers');
+            ->willReturn(3);
+        $this->redis
+            ->expects($this->at(4))
+            ->method('get')
+            ->willReturn(ProgressCounterStatusEnum::FAILED);
+        $this->redis
+            ->expects($this->at(5))
+            ->method('hgetAll')
+            ->willReturn(['system_key' => 'system_key']);
         $processStatus = new ProgressCounterService($this->redis, $this->producer);
-        $message       = $this->invokeMethod($processStatus, 'prepareMessage', ['aEcBuFkS12345']);
+        $message = $processStatus->prepareMessage('aEcBuFkS12345');
         $this->assertEquals(
             [
-                'total'      => 5,
-                'progress'   => 3,
-                'status'     => 'failed',
-                'process_id' => 'aEcBuFkS12345',
-                'event'      => 'sync-subscribers',
+                'event'   => 'sync_event',
+                'groups'  => ['user_id', 'admins'],
+                'content' => [
+                    'process_id' => 'aEcBuFkS12345',
+                    'total'      => 5,
+                    'progress'   => 3,
+                    'status'     => 'failed',
+                    'metadata'   => [
+                        'system_key' => 'system_key',
+                    ],
+                ],
             ],
             $message
         );

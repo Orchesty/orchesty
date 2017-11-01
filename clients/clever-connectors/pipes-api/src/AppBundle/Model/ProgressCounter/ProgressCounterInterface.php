@@ -20,17 +20,17 @@ interface ProgressCounterInterface
 
     /**
      * @param string   $processId
-     * @param string   $actionName
-     * @param array    $users
+     * @param string   $eventName
      * @param array    $groups
      * @param int|NULL $number
+     * @param array    $metadata
      */
     public function start(
         string $processId,
-        string $actionName,
-        array $users = [],
+        string $eventName,
         array $groups = [],
-        ?int $number = NULL
+        ?int $number = NULL,
+        array $metadata = []
     ): void;
 
     /**

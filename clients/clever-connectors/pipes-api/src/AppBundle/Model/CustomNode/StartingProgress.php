@@ -55,11 +55,15 @@ class StartingProgress implements CustomNodeInterface
             );
         }
 
-        $data   = json_decode($dto->getData(), TRUE);
-        $users  = $data['progress_users'] ?? [];
-        $groups = $data['progress_groups'] ?? [];
+        $groups = [
+            CMHeaders::get(CMHeaders::GUID, $dto->getHeaders()),
+        ];
 
-        $this->progressCounterService->start($progressId, 'sync-subscribers', $users, $groups);
+        $metadata = [
+            'system_key' => CMHeaders::get(CMHeaders::SYSTEM_KEY, $dto->getHeaders()),
+        ];
+
+        $this->progressCounterService->start($progressId, 'sync_event', $groups, NULL, $metadata);
 
         return $dto;
     }
