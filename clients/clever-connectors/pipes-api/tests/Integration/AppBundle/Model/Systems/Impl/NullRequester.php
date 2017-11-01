@@ -50,7 +50,7 @@ final class NullRequester implements RequesterInterface
         /** @var CMEventObject $obj */
         $obj = $data[self::OBJECT];
 
-        $req = new RequestDto(CurlManager::METHOD_POST, new Uri($obj->getUrl()));
+        $req = new RequestDto(CurlManager::METHOD_POST, new Uri(''));
         $req->setHeaders($this->headers);
 
         return $req;

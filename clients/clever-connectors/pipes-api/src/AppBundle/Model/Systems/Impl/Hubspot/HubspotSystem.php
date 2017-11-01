@@ -16,6 +16,7 @@ use CleverConnectors\AppBundle\Model\Webhook\Traits\WebhookSystemTrait;
 use CleverConnectors\AppBundle\Model\Webhook\WebhookSubscribes;
 use CleverConnectors\AppBundle\Model\Webhook\WebhookSystemInterface;
 use CleverConnectors\AppBundle\Utils\AuthorizationUtils;
+use CleverConnectors\AppBundle\Utils\TopologyNameUtils;
 use CleverConnectors\AppBundle\Utils\WebhookUtils;
 use DateTime;
 use DateTimeZone;
@@ -238,7 +239,7 @@ class HubspotSystem implements WebhookSystemInterface, OAuth2Interface
             $systemInstall->getUser(),
             $systemInstall->getToken(),
             $this->getNodeName(),
-            $this->getTopologyName()
+            TopologyNameUtils::getTopologyName(TopologyNameUtils::UPDATED_SUBSCRIBERS, $this->getKey())
         );
 
         $field2 = new Field(
@@ -301,7 +302,7 @@ class HubspotSystem implements WebhookSystemInterface, OAuth2Interface
 
         return new WebhookSubscribes(
             $this->getNodeName(),
-            $this->getTopologyName(),
+            TopologyNameUtils::getTopologyName(TopologyNameUtils::UPDATED_SUBSCRIBERS, $this->getKey()),
             $params
         );
     }
@@ -355,14 +356,6 @@ class HubspotSystem implements WebhookSystemInterface, OAuth2Interface
     private function getNodeName(): string
     {
         return sprintf('%s-update-contact-connector', $this->getKey());
-    }
-
-    /**
-     * @return string
-     */
-    private function getTopologyName(): string
-    {
-        return sprintf('%s-update-contact', $this->getKey());
     }
 
 }

@@ -16,6 +16,7 @@ use CleverConnectors\AppBundle\Model\Webhook\Traits\WebhookSystemTrait;
 use CleverConnectors\AppBundle\Model\Webhook\WebhookSubscribes;
 use CleverConnectors\AppBundle\Model\Webhook\WebhookSystemInterface;
 use CleverConnectors\AppBundle\Utils\AuthorizationUtils;
+use CleverConnectors\AppBundle\Utils\TopologyNameUtils;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Authorization\Provider\Dto\OAuth2Dto;
 use Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider;
@@ -58,9 +59,18 @@ class ShopifySystem implements WebhookSystemInterface, OAuth2Interface
     {
         $this->provider = $provider;
 
-        $this->subscriptions[] = new WebhookSubscribes('shopify-create-customer-connector', 'shopify-create-customer');
-        $this->subscriptions[] = new WebhookSubscribes('shopify-update-customer-connector', 'shopify-update-customer');
-        $this->subscriptions[] = new WebhookSubscribes('shopify-delete-customer-connector', 'shopify-delete-customer');
+        $this->subscriptions[] = new WebhookSubscribes(
+            'shopify-create-customer-connector',
+            TopologyNameUtils::getTopologyName(TopologyNameUtils::CREATED_SUBSCRIBERS, $this->getKey())
+        );
+        $this->subscriptions[] = new WebhookSubscribes(
+            'shopify-update-customer-connector',
+            TopologyNameUtils::getTopologyName(TopologyNameUtils::UPDATED_SUBSCRIBERS, $this->getKey())
+        );
+        $this->subscriptions[] = new WebhookSubscribes(
+            'shopify-delete-customer-connector',
+            TopologyNameUtils::getTopologyName(TopologyNameUtils::DELETED_SUBSCRIBERS, $this->getKey())
+        );
     }
 
     /**

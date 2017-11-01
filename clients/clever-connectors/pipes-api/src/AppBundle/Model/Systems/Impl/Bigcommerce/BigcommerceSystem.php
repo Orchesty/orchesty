@@ -15,6 +15,7 @@ use CleverConnectors\AppBundle\Model\Systems\Impl\Bigcommerce\Requester\Bigcomme
 use CleverConnectors\AppBundle\Model\Webhook\Traits\WebhookSystemTrait;
 use CleverConnectors\AppBundle\Model\Webhook\WebhookSubscribes;
 use CleverConnectors\AppBundle\Model\Webhook\WebhookSystemInterface;
+use CleverConnectors\AppBundle\Utils\TopologyNameUtils;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 
@@ -41,15 +42,15 @@ class BigcommerceSystem implements WebhookSystemInterface, AuthorizationInterfac
     {
         $this->subscriptions[] = new WebhookSubscribes(
             'bigcommerce-create-customer-connector',
-            'bigcommerce-create-customer'
+            TopologyNameUtils::getTopologyName(TopologyNameUtils::CREATED_SUBSCRIBERS, $this->getKey())
         );
         $this->subscriptions[] = new WebhookSubscribes(
             'bigcommerce-update-customer-connector',
-            'bigcommerce-update-customer'
+            TopologyNameUtils::getTopologyName(TopologyNameUtils::UPDATED_SUBSCRIBERS, $this->getKey())
         );
         $this->subscriptions[] = new WebhookSubscribes(
             'bigcommerce-delete-customer-connector',
-            'bigcommerce-delete-customer'
+            TopologyNameUtils::getTopologyName(TopologyNameUtils::DELETED_SUBSCRIBERS, $this->getKey())
         );
     }
 

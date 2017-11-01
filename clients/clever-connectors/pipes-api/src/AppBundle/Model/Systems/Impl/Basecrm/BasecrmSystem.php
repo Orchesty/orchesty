@@ -23,9 +23,9 @@ class BasecrmSystem implements SystemInterface, AuthorizationInterface
 
     use AuthorizationTrait;
 
-    public const QUE_ID    = 'que_id';
-    public const SYNC_UUID = 'sync_uuid';
-    public const SYSTEM_URL   = 'https://api.getbase.com/';
+    public const QUE_ID     = 'que_id';
+    public const SYNC_UUID  = 'sync_uuid';
+    public const SYSTEM_URL = 'https://api.getbase.com/';
 
     private const ACCESS_TOKEN = 'access_token';
 

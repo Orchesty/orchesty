@@ -13,6 +13,7 @@ use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Webhook\Traits\WebhookSystemTrait;
 use CleverConnectors\AppBundle\Model\Webhook\WebhookSubscribes;
 use CleverConnectors\AppBundle\Model\Webhook\WebhookSystemInterface;
+use CleverConnectors\AppBundle\Utils\TopologyNameUtils;
 use CleverConnectors\AppBundle\Utils\WebhookUtils;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 
@@ -38,8 +39,11 @@ class MailmunchSystem implements WebhookSystemInterface, AuthorizationInterface
      */
     function __construct(string $domain)
     {
-        $this->subscriptions[] = new WebhookSubscribes('mailmunch-create-email-connector', 'mailmunch-create-email');
         $this->domain          = $domain;
+        $this->subscriptions[] = new WebhookSubscribes(
+            'mailmunch-create-email-connector',
+            TopologyNameUtils::getTopologyName(TopologyNameUtils::CREATED_SUBSCRIBERS, $this->getKey())
+        );
     }
 
     /**

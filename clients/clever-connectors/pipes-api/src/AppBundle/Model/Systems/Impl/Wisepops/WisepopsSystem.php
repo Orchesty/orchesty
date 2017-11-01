@@ -15,6 +15,7 @@ use CleverConnectors\AppBundle\Model\Systems\Impl\Wisepops\Requester\WisepopsUns
 use CleverConnectors\AppBundle\Model\Webhook\Traits\WebhookSystemTrait;
 use CleverConnectors\AppBundle\Model\Webhook\WebhookSubscribes;
 use CleverConnectors\AppBundle\Model\Webhook\WebhookSystemInterface;
+use CleverConnectors\AppBundle\Utils\TopologyNameUtils;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 
@@ -36,9 +37,12 @@ class WisepopsSystem implements WebhookSystemInterface, AuthorizationInterface
     /**
      * WisepopsSystem constructor.
      */
-    function __construct()
+    public function __construct()
     {
-        $this->subscriptions[] = new WebhookSubscribes('wisepops-create-email-connector', 'wisepops-create-email');
+        $this->subscriptions[] = new WebhookSubscribes(
+            'wisepops-create-email-connector',
+            TopologyNameUtils::getTopologyName(TopologyNameUtils::CREATED_SUBSCRIBERS, $this->getKey())
+        );
     }
 
     /**

@@ -13,6 +13,7 @@ use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Webhook\Traits\WebhookSystemTrait;
 use CleverConnectors\AppBundle\Model\Webhook\WebhookSubscribes;
 use CleverConnectors\AppBundle\Model\Webhook\WebhookSystemInterface;
+use CleverConnectors\AppBundle\Utils\TopologyNameUtils;
 use CleverConnectors\AppBundle\Utils\WebhookUtils;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
@@ -45,7 +46,10 @@ class NutshellSystem implements AuthorizationInterface, WebhookSystemInterface
     public function __construct(string $url)
     {
         $this->url             = $url;
-        $this->subscriptions[] = new WebhookSubscribes('nutshell-contact-connector', 'nutshell-contact');
+        $this->subscriptions[] = new WebhookSubscribes(
+            'nutshell-contact-connector',
+            TopologyNameUtils::getTopologyName(TopologyNameUtils::UPDATED_SUBSCRIBERS, $this->getKey())
+        );
     }
 
     /**

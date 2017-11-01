@@ -15,6 +15,7 @@ use CleverConnectors\AppBundle\Model\Systems\Impl\Pipedrive\Requester\PipedriveU
 use CleverConnectors\AppBundle\Model\Webhook\Traits\WebhookSystemTrait;
 use CleverConnectors\AppBundle\Model\Webhook\WebhookSubscribes;
 use CleverConnectors\AppBundle\Model\Webhook\WebhookSystemInterface;
+use CleverConnectors\AppBundle\Utils\TopologyNameUtils;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 
@@ -37,8 +38,14 @@ class PipedriveSystem implements WebhookSystemInterface, AuthorizationInterface
      */
     function __construct()
     {
-        $this->subscriptions[] = new WebhookSubscribes('pipedrive-update-person-connector', 'pipedrive-update-person');
-        $this->subscriptions[] = new WebhookSubscribes('pipedrive-delete-person-connector', 'pipedrive-delete-person');
+        $this->subscriptions[] = new WebhookSubscribes(
+            'pipedrive-update-person-connector',
+            TopologyNameUtils::getTopologyName(TopologyNameUtils::UPDATED_SUBSCRIBERS, $this->getKey())
+        );
+        $this->subscriptions[] = new WebhookSubscribes(
+            'pipedrive-delete-person-connector',
+            TopologyNameUtils::getTopologyName(TopologyNameUtils::DELETED_SUBSCRIBERS, $this->getKey())
+        );
     }
 
     /**
