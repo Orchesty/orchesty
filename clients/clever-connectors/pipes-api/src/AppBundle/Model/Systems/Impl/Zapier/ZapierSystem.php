@@ -14,7 +14,6 @@ use CleverConnectors\AppBundle\Model\Webhook\Traits\WebhookSystemTrait;
 use CleverConnectors\AppBundle\Model\Webhook\WebhookSubscribes;
 use CleverConnectors\AppBundle\Model\Webhook\WebhookSystemInterface;
 use CleverConnectors\AppBundle\Utils\TopologyNameUtils;
-use CleverConnectors\AppBundle\Utils\WebhookUtils;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 
 /**
@@ -29,16 +28,10 @@ class ZapierSystem implements WebhookSystemInterface, AuthorizationInterface
     use AuthorizationTrait;
 
     /**
-     * @var string
-     */
-    private $backend;
-
-    /**
      * ZapierSystem constructor.
      *
-     * @param string $backend
      */
-    public function __construct(string $backend)
+    public function __construct()
     {
         $this->subscriptions[] = new WebhookSubscribes(
             'zapier-created-subscriber-connector',
@@ -52,7 +45,6 @@ class ZapierSystem implements WebhookSystemInterface, AuthorizationInterface
             'zapier-deleted-subscriber-connector',
             TopologyNameUtils::getTopologyName(TopologyNameUtils::DELETED_SUBSCRIBERS, $this->getKey())
         );
-        $this->backend = $backend;
     }
 
     /**
@@ -135,53 +127,20 @@ class ZapierSystem implements WebhookSystemInterface, AuthorizationInterface
      */
     public function getSettingFields(SystemInstall $systemInstall): array
     {
-        $webhookUrlCreate = WebhookUtils::getWebhookUrl(
-            $this->backend,
-            $systemInstall->getUser(),
-            $systemInstall->getToken(),
-            'zapier-created-subscriber-connector',
-            TopologyNameUtils::getTopologyName(TopologyNameUtils::CREATED_SUBSCRIBERS, $this->getKey())
-        );
-
         $field1 = new Field(
             Field::TEXT,
-            'webhook_created_subscriber_url',
-            'Webhook created url',
-            $webhookUrlCreate,
+            'user',
+            'User',
+            $systemInstall->getUser(),
             FALSE,
             TRUE
-        );
-
-        $webhookUrlUpdate = WebhookUtils::getWebhookUrl(
-            $this->backend,
-            $systemInstall->getUser(),
-            $systemInstall->getToken(),
-            'zapier-updated-subscriber-connector',
-            TopologyNameUtils::getTopologyName(TopologyNameUtils::UPDATED_SUBSCRIBERS, $this->getKey())
         );
 
         $field2 = new Field(
             Field::TEXT,
-            'webhook_updated_subscriber_url',
-            'Webhook updated url',
-            $webhookUrlUpdate,
-            FALSE,
-            TRUE
-        );
-
-        $webhookUrlDelete = WebhookUtils::getWebhookUrl(
-            $this->backend,
-            $systemInstall->getUser(),
+            'token',
+            'Token',
             $systemInstall->getToken(),
-            'zapier-deleted-subscriber-connector',
-            TopologyNameUtils::getTopologyName(TopologyNameUtils::DELETED_SUBSCRIBERS, $this->getKey())
-        );
-
-        $field3 = new Field(
-            Field::TEXT,
-            'webhook_deleted_subscriber_url',
-            'Webhook deleted url',
-            $webhookUrlDelete,
             FALSE,
             TRUE
         );
@@ -189,8 +148,8 @@ class ZapierSystem implements WebhookSystemInterface, AuthorizationInterface
         return (new Form())
             ->addField($field1)
             ->addField($field2)
-            ->addField($field3)
             ->toArray();
+
     }
 
     /**

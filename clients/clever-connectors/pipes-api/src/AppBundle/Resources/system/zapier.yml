@@ -2,7 +2,6 @@ services:
     systems.zapier:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Zapier\ZapierSystem
         arguments:
-            - '%backend_host%'
         tags: ['%systems%']
 
     hbpf.connector.zapier-created-subscriber-connector:
