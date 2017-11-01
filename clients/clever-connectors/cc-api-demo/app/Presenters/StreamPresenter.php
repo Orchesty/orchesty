@@ -127,13 +127,15 @@ class StreamPresenter extends BasePresenter
     {
         $data = $form->getValues(TRUE);
 
+        $event = $data['event'];
+
         $client = new Client($this->context->getParameters()['rabbit-mq']);
         $client
             ->connect()
             ->channel()
             ->publish(
                 json_encode([
-                    'event'   => $data['event'],
+                    'event'   => $event,
                     'content' => $data['content'],
                     'groups'  => explode(',', $data['groups']),
                 ]),
@@ -144,8 +146,8 @@ class StreamPresenter extends BasePresenter
                 'stream'
             );
 
-        $form->reset();
-        $form->setDefaults(['event' => 'demo_event']);
+        //$form->reset();
+        $form->setDefaults(['event' => $event]);
 
         $this->flashMessage('Message was published.');
         $this->redrawControl('flashMessages');

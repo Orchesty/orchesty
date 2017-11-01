@@ -32,20 +32,23 @@ $(function () {
 	// Error messages from stream server
 	socket.on('error_message', function (data) {
 		console.log(data);
-		addMessage("error", data);
+		addDemoMessage("error", data);
 	});
 
 	// Info messages from stream server
 	socket.on('info_message', function (data) {
 		console.log(data);
-		addMessage("info", data);
+		addDemoMessage("info", data);
 	});
 
 	// Main switch for stream messages
 	socket.on('message', function (data) {
 		switch (data.event) {
 			case "demo_event":
-				addMessage(data.event, data.content);
+				addDemoMessage(data.event, data.content);
+				break;
+			case "sync_event":
+				addSyncMessage(data.content);
 				break;
 			default:
 				console.log(data);
@@ -213,11 +216,55 @@ $(function () {
 	 * @param type
 	 * @param message
 	 */
-	function addMessage(type, message) {
+	function addDemoMessage(type, message) {
 		var d = new Date();
 		$("#streamMessages tbody").prepend(
 			"<tr><td>" + type + "</td><td>" + message + "</td><td>" + d.toString() + "</td></tr>"
 		);
+	}
+
+	var syncData = {};
+
+	/**
+	 * Show stream progress
+	 *
+	 * @param data
+	 */
+	function addSyncMessage(data) {
+		data = JSON.parse(data);
+
+		syncData[data.process_id] = data;
+
+		var itemHtml = '<div class="col-md-4">PROCESS ID: {ID}</div>' +
+			'<div class="col-md-8">' +
+			'<div class="progress">' +
+			'<div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: {PROGRESS}%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>' +
+			'</div>' +
+			'</div>' +
+			'<div class="clearfix"></div>';
+
+		var html = '';
+		Object.keys(syncData).forEach(function (processId) {
+
+			var item = syncData[processId];
+			var progress = (item.progress / item.total) * 100;
+
+			if (progress > 100) {
+				progress = 100;
+			}
+
+			var data = itemHtml;
+			data = data.replace("{ID}", processId);
+			data = data.replace("{PROGRESS}", progress);
+
+			if (item.status !== 'in_progress') {
+				delete(syncData[processId]);
+			}
+
+			html += data;
+		});
+
+		$("#sync-stream").html(html);
 	}
 
 });
