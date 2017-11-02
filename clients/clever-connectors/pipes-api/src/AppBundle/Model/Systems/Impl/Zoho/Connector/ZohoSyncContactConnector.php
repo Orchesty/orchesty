@@ -14,6 +14,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSenderFactory;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
 use React\EventLoop\LoopInterface;
@@ -70,7 +71,7 @@ class ZohoSyncContactConnector extends ZohoContactConnectorAbstract
     {
         $sender        = $this->factory->create($loop);
         $systemInstall = $this->systemInstallRepository->getSystemInstallFromHeaders($dto->getHeaders());
-        $requestDto    = $this->system->getRequestDto($systemInstall, 'GET');
+        $requestDto    = $this->system->getRequestDto($systemInstall, CurlManager::METHOD_GET);
         $requestDto->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()));
         $processId = CMHeaders::get(CMHeaders::PROCESS_ID, $dto->getHeaders());
 

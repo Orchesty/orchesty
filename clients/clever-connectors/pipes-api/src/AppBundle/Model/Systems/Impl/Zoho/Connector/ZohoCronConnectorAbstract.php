@@ -10,6 +10,7 @@ use CleverConnectors\AppBundle\Utils\CronUtils;
 use DateTime;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSenderFactory;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use React\EventLoop\LoopInterface;
 use React\Promise\PromiseInterface;
 
@@ -56,7 +57,7 @@ abstract class ZohoCronConnectorAbstract extends ZohoContactConnectorAbstract
     {
         $sender        = $this->factory->create($loop);
         $systemInstall = CronUtils::getSystemInstall($dto);
-        $requestDto    = $this->system->getRequestDto($systemInstall, 'GET');
+        $requestDto    = $this->system->getRequestDto($systemInstall, CurlManager::METHOD_GET);
         $requestDto->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()));
         $lastSync = $this->lastSyncManager->getLastSync($systemInstall, $dto->getHeaders());
         $times    = CronUtils::getTimes($lastSync);

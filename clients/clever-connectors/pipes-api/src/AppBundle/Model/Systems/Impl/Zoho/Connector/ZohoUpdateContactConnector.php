@@ -13,6 +13,7 @@ use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
@@ -86,7 +87,7 @@ class ZohoUpdateContactConnector implements ConnectorInterface
         /** @var string $eventType */
         $eventType     = CMHeaders::get(CMHeaders::CM_EVENT_TYPE, $dto->getHeaders());
         $systemInstall = $this->systemInstallRepository->getSystemInstallFromHeaders($dto->getHeaders());
-        $requestDto    = $this->system->getRequestDto($systemInstall, 'POST');
+        $requestDto    = $this->system->getRequestDto($systemInstall, CurlManager::METHOD_POST);
         $url           = sprintf(
             self::URL,
             urldecode($requestDto->getUri(TRUE)),
