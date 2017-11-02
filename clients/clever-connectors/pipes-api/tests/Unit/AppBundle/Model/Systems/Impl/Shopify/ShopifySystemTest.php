@@ -59,7 +59,7 @@ final class ShopifySystemTest extends KernelTestCaseAbstract
      */
     public function testGetSubscribeRequest(): void
     {
-        $webhook = new WebhookSubscribes('shopify-create-customer-connector', 'top');
+        $webhook = new WebhookSubscribes('shopify-created-customer-connector', 'top');
 
         $dto = $this->system->getSubscribeRequester($this->systemInstall)
             ->getRequestDto([

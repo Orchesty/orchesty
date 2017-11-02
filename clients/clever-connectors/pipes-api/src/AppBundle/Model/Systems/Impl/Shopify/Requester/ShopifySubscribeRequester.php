@@ -35,9 +35,9 @@ final class ShopifySubscribeRequester implements RequesterInterface
      * @var array
      */
     private $topics = [
-        'shopify-create-customer-connector' => 'customers/create',
-        'shopify-update-customer-connector' => 'customers/update',
-        'shopify-delete-customer-connector' => 'customers/delete',
+        'shopify-created-customer-connector' => 'customers/create',
+        'shopify-updated-customer-connector' => 'customers/update',
+        'shopify-deleted-customer-connector' => 'customers/delete',
     ];
 
     /**

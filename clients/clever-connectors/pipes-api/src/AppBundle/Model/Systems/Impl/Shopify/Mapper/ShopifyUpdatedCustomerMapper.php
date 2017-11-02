@@ -8,11 +8,11 @@ use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
 
 /**
- * Class ShopifyDeleteCustomerMapper
+ * Class ShopifyUpdatedCustomerMapper
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\Mapper
  */
-class ShopifyDeleteCustomerMapper implements CustomNodeInterface
+class ShopifyUpdatedCustomerMapper implements CustomNodeInterface
 {
 
     /**
@@ -25,19 +25,27 @@ class ShopifyDeleteCustomerMapper implements CustomNodeInterface
     {
         $data = json_decode($dto->getData(), TRUE);
 
-        if (!array_key_exists('id', $data)) {
+        if (!array_key_exists('email', $data)) {
             throw new CleverConnectorsException(
-                'Missing required id field in data.',
+                'Missing required email field in data.',
                 CleverConnectorsException::MISSING_DATA
             );
         }
 
         $obj = new CMSubscriber();
-        $obj
-            ->setForeignId($data['id'])
-            //TODO Shopify does not send email that is required by cm...
-            ->setEmail((string) $data['id'])
-            ->setReactivate(FALSE);
+        $obj->setEmail($data['email']);
+
+        if (array_key_exists('first_name', $data)) {
+            $obj->setFirstName($data['first_name']);
+        }
+
+        if (array_key_exists('last_name', $data)) {
+            $obj->setLastName($data['last_name']);
+        }
+
+        if (array_key_exists('id', $data)) {
+            $obj->setForeignId($data['id']);
+        }
 
         return $dto->setData(json_encode($obj->toArray()));
     }

@@ -13,22 +13,22 @@ services:
             - '@hbpf.transport.async_curl_factory'
             - '@cc.progress_counter.async_progress_counter_service'
 
-    hbpf.connector.shopify-create-customer-connector:
-        class: CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\Connector\ShopifyCreateCustomerConnector
+    hbpf.connector.shopify-created-customer-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\Connector\ShopifyCreatedCustomerConnector
         arguments:
 
-    hbpf.connector.shopify-update-customer-connector:
-        class: CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\Connector\ShopifyUpdateCustomerConnector
+    hbpf.connector.shopify-updated-customer-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\Connector\ShopifyUpdatedCustomerConnector
         arguments:
 
-    hbpf.connector.shopify-delete-customer-connector:
-        class: CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\Connector\ShopifyDeleteCustomerConnector
+    hbpf.connector.shopify-deleted-customer-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\Connector\ShopifyDeletedCustomerConnector
         arguments:
 
-    hbpf.custom_node.shopify-update-customer-mapper:
-        class: CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\Mapper\ShopifyUpdateCustomerMapper
+    hbpf.custom_node.shopify-updated-customer-mapper:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\Mapper\ShopifyUpdatedCustomerMapper
         arguments:
 
-    hbpf.custom_node.shopify-delete-customer-mapper:
-        class: CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\Mapper\ShopifyDeleteCustomerMapper
+    hbpf.custom_node.shopify-deleted-customer-mapper:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\Mapper\ShopifyDeletedCustomerMapper
         arguments:

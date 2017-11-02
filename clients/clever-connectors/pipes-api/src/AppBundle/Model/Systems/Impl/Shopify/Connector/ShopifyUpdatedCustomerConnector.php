@@ -3,11 +3,11 @@
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\Connector;
 
 /**
- * Class ShopifyCreateCustomerConnector
+ * Class ShopifyUpdatedCustomerConnector
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\Connector
  */
-class ShopifyCreateCustomerConnector extends ShopifyCustomerConnectorAbstract
+class ShopifyUpdatedCustomerConnector extends ShopifyCustomerConnectorAbstract
 {
 
     /**
@@ -15,7 +15,7 @@ class ShopifyCreateCustomerConnector extends ShopifyCustomerConnectorAbstract
      */
     public function getId(): string
     {
-        return 'shopify-create-customer-connector';
+        return 'shopify-updated-customer-connector';
     }
 
 }

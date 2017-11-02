@@ -8,11 +8,11 @@ use Nette\Utils\Json;
 use Tests\ConnectorTestCaseAbstract;
 
 /**
- * Class ShopifyUpdateCustomerMapperTest
+ * Class ShopifyUpdatedCustomerMapperTest
  *
  * @package Tests\Unit\AppBundle\Model\Systems\Impl\Shopify\Mapper
  */
-final class ShopifyUpdateCustomerMapperTest extends ConnectorTestCaseAbstract
+final class ShopifyUpdatedCustomerMapperTest extends ConnectorTestCaseAbstract
 {
 
     /**
@@ -20,10 +20,10 @@ final class ShopifyUpdateCustomerMapperTest extends ConnectorTestCaseAbstract
      */
     public function testProcessEvent(): void
     {
-        $connector = $this->container->get('hbpf.custom_node.shopify-update-customer-mapper');
+        $connector = $this->container->get('hbpf.custom_node.shopify-updated-customer-mapper');
 
         $response = Json::decode(
-            $connector->process((new ProcessDto())->setData($this->getRequest('ShopifyUpdateCustomerMapper.json')))
+            $connector->process((new ProcessDto())->setData($this->getRequest('ShopifyUpdatedCustomerMapper.json')))
                 ->getData(),
             TRUE
         );

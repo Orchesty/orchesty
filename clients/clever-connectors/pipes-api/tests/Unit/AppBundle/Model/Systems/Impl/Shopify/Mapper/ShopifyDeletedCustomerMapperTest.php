@@ -8,11 +8,11 @@ use Nette\Utils\Json;
 use Tests\ConnectorTestCaseAbstract;
 
 /**
- * Class ShopifyDeleteCustomerMapperTest
+ * Class ShopifyDeletedCustomerMapperTest
  *
  * @package Tests\Unit\AppBundle\Model\Systems\Impl\Shopify\Mapper
  */
-final class ShopifyDeleteCustomerMapperTest extends ConnectorTestCaseAbstract
+final class ShopifyDeletedCustomerMapperTest extends ConnectorTestCaseAbstract
 {
 
     /**
@@ -20,10 +20,10 @@ final class ShopifyDeleteCustomerMapperTest extends ConnectorTestCaseAbstract
      */
     public function testProcessEvent(): void
     {
-        $connector = $this->container->get('hbpf.custom_node.shopify-delete-customer-mapper');
+        $connector = $this->container->get('hbpf.custom_node.shopify-deleted-customer-mapper');
 
         $response = Json::decode(
-            $connector->process((new ProcessDto())->setData($this->getRequest('ShopifyDeleteCustomerMapper.json')))
+            $connector->process((new ProcessDto())->setData($this->getRequest('ShopifyDeletedCustomerMapper.json')))
                 ->getData(),
             TRUE
         );
