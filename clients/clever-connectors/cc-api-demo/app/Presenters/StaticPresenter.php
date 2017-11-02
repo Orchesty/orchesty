@@ -2,11 +2,13 @@
 
 namespace App\Presenters;
 
-use Nette;
 use Nette\Application\Responses;
-use Tracy\ILogger;
 
-
+/**
+ * Class StaticPresenter
+ *
+ * @package App\Presenters
+ */
 class StaticPresenter extends BasePresenter
 {
 	public function actionDefault()

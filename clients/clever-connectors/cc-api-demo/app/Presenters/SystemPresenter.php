@@ -8,13 +8,8 @@
 
 namespace App\Presenters;
 
-use App\Forms\AuthorizationSettingGeneratorFactory;
-use App\Forms\AuthorizeFormFactory;
-use App\Forms\SwitchTokenFormFactory;
-use App\Forms\SyncFormFactory;
 use App\Forms\SystemInstallFormFactory;
 use CcApi\Connector\ConnectorManager;
-use Nette\Forms\Controls\SubmitButton;
 use Nette\Forms\Form;
 
 /**

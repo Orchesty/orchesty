@@ -9,9 +9,7 @@
 namespace App\Presenters;
 
 use App\Forms\AuthorizationSettingGeneratorFactory;
-use App\Forms\AuthorizeFormFactory;
 use App\Forms\SwitchTokenFormFactory;
-use App\Forms\SyncFormFactory;
 use CcApi\ApiEntity\UserSystem;
 use CcApi\Connector\ConnectorManager;
 use Nette\Application\UI\Form;
