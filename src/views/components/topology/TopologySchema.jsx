@@ -59,12 +59,13 @@ class TopologySchema extends React.Component {
   }
 
   render() {
-    const {schema, setActions, addErrorNotification, saveProcessId} = this.props;
+    const {schema, setActions, topology, addErrorNotification, saveProcessId} = this.props;
 
     return (
       <SimpleState state={this.state.state}>
         <BpmnIoComponent
           schema={schema}
+          schemaTitle={topology ? `${topology.name}-${topology.version}` : null}
           onError={addErrorNotification}
           onImport={this.schemaImported}
           setActions={setActions}
@@ -83,6 +84,7 @@ TopologySchema.propTypes = {
   setActions: PropTypes.func.isRequired,
   schema: PropTypes.string,
   schemaId: PropTypes.string,
+  topology: PropTypes.object,
   saveTopologySchema: PropTypes.func.isRequired,
   onChangeTopology: PropTypes.func.isRequired,
   onImport: PropTypes.func,

@@ -100,7 +100,7 @@ class TopologyDetail extends React.Component {
   }
 
   render() {
-    const {topologyId, activeTab, setActions, onChangeTopology} = this.props;
+    const {topologyId, activeTab, setActions, topology, onChangeTopology} = this.props;
     let activeIndex = tabItems.findIndex(tab => activeTab == tab.id);
     const schemaVisible = activeTab == 'schema';
     return (
@@ -110,6 +110,7 @@ class TopologyDetail extends React.Component {
         <div className={'schema-wrapper' + ( schemaVisible ? '' : ' hidden')}>
           <TopologySchema
             schemaId={topologyId}
+            topology={topology}
             setActions={this.setActions.bind(this, 'schema')}
             onChangeTopology={onChangeTopology}
             visible={schemaVisible}
@@ -144,7 +145,14 @@ function mapActionsToProps(dispatch, ownProps){
   const {topologyId} = ownProps;
   return {
     edit: () => dispatch(applicationActions.openModal('topology_edit', {topologyId})),
-    testTopology: () => dispatch(topologyActions.testTopology(ownProps.topologyId)),
+    testTopology: () => {
+      dispatch(topologyActions.testTopology(ownProps.topologyId)).then(result => {
+        if (result){
+          ownProps.onChangeTab(tabItems[0].id);
+        }
+        return result;
+      })
+    },
     clone: () => dispatch(topologyActions.cloneTopology(topologyId)).then(topology => {
       if (topology && topology._id != topologyId){
         ownProps.onChangeTopology(topology._id);
