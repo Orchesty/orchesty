@@ -11,7 +11,7 @@ use Tests\KernelTestCaseAbstract;
  *
  * @package Tests\Unit\AppBundle\Model\Systems\Impl\Mailmunch\Mapper
  */
-class MailmunchCreatedEmailMapperTest extends KernelTestCaseAbstract
+final class MailmunchCreatedEmailMapperTest extends KernelTestCaseAbstract
 {
 
     /**
