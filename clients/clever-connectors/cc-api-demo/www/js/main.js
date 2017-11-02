@@ -232,6 +232,8 @@ $(function () {
 	 */
 	function addSyncMessage(data) {
 
+		console.log(data);
+
 		syncData[data.process_id] = data;
 
 		var itemHtml = '<div class="col-md-6">PROCESS ID: {ID}</div>' +
