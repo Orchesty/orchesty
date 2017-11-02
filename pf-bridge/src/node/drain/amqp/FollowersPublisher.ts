@@ -1,6 +1,6 @@
 import {Channel, Options} from "amqplib";
-import Connection from "lib-nodejs/dist/src/rabbitmq/Connection";
-import Publisher from "lib-nodejs/dist/src/rabbitmq/Publisher";
+import Connection from "amqplib-plus/dist/lib/Connection";
+import Publisher from "amqplib-plus/dist/lib/Publisher";
 import logger from "../../../logger/Logger";
 import Headers from "../../../message/Headers";
 import JobMessage from "../../../message/JobMessage";

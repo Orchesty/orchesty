@@ -1,8 +1,8 @@
 import {Channel, Message as AmqpMessage} from "amqplib";
+import Connection from "amqplib-plus/dist/lib/Connection";
+import Publisher from "amqplib-plus/dist/lib/Publisher";
+import SimpleConsumer from "amqplib-plus/dist/lib/SimpleConsumer";
 import Container from "lib-nodejs/dist/src/container/Container";
-import Connection from "lib-nodejs/dist/src/rabbitmq/Connection";
-import Publisher from "lib-nodejs/dist/src/rabbitmq/Publisher";
-import SimpleConsumer from "lib-nodejs/dist/src/rabbitmq/SimpleConsumer";
 import * as uuid4 from "uuid/v4";
 import logger from "../../logger/Logger";
 import Headers from "../../message/Headers";

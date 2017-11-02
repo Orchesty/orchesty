@@ -1,7 +1,7 @@
 import { assert } from "chai";
 import "mocha";
 
-import AssertionPublisher from "lib-nodejs/dist/src/rabbitmq/AssertPublisher";
+import AssertionPublisher from "amqplib-plus/dist/lib/AssertPublisher";
 import * as mock from "ts-mockito";
 import Headers from "../../../src/message/Headers";
 import JobMessage from "../../../src/message/JobMessage";
