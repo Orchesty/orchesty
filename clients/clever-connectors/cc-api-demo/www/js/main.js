@@ -259,6 +259,7 @@ $(function () {
 			switch (item.status) {
 				case "success":
 					data = data.replace("{BG}", 'bg-success');
+					progress = 100;
 					break;
 				case "failed":
 					data = data.replace("{BG}", 'bg-danger');
