@@ -4,7 +4,7 @@ namespace Tests\Unit\AppBundle\Model\Systems\Impl\Hubspot\Mapper;
 
 use CleverConnectors\AppBundle\Enum\CleverFieldsEnum;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
-use CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\Mapper\HubspotDeleteContactMapper;
+use CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\Mapper\HubspotDeletedContactMapper;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\Mapper\HubspotUpdatedContactMapper;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
@@ -12,25 +12,25 @@ use Nette\Utils\Json;
 use Tests\ConnectorTestCaseAbstract;
 
 /**
- * Class HubspotDeleteContactMapperTest
+ * Class HubspotDeletedContactMapperTest
  *
  * @package Tests\Unit\AppBundle\Model\Systems\Impl\Hubspot\Mapper
  */
-final class HubspotDeleteContactMapperTest extends ConnectorTestCaseAbstract
+final class HubspotDeletedContactMapperTest extends ConnectorTestCaseAbstract
 {
 
     /**
-     * @var HubspotDeleteContactMapper|object
+     * @var HubspotDeletedContactMapper|object
      */
     private $mapper;
 
     /**
-     * @covers HubspotDeleteContactMapper::process()
+     * @covers HubspotDeletedContactMapper::process()
      */
     public function testProcess(): void
     {
         $dto = (new ProcessDto())
-            ->setData($this->getRequest('HubspotDeleteContactMapper.json'))
+            ->setData($this->getRequest('HubspotDeletedContactMapper.json'))
             ->setHeaders([CMHeaders::createKey(CMHeaders::RESULT_CODE) => '0']);
 
         $res      = $this->getMapper()->process($dto);
@@ -159,7 +159,7 @@ final class HubspotDeleteContactMapperTest extends ConnectorTestCaseAbstract
     }
 
     /**
-     * @return HubspotDeleteContactMapper|object
+     * @return HubspotDeletedContactMapper|object
      */
     private function getMapper()
     {

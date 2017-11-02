@@ -8,11 +8,11 @@ use CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\HubspotSystem;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 
 /**
- * Class HubspotDeleteContactMapper
+ * Class HubspotDeletedContactMapper
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\Mapper
  */
-class HubspotDeleteContactMapper extends HubspotMapperAbstract
+class HubspotDeletedContactMapper extends HubspotMapperAbstract
 {
 
     /**
