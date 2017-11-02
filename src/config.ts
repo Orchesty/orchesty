@@ -1,4 +1,4 @@
-import {IOptions} from "lib-nodejs/dist/src/rabbitmq/Connection";
+import {IConnectionOptions} from "amqplib-plus/dist/lib/Connection";
 import {IMongoMessageStorageSettings} from "./repeater/MongoMessageStorage";
 import {IRepeaterSettings} from "./repeater/Repeater";
 import {IProbeSettings} from "./topology/Probe";
@@ -8,7 +8,7 @@ if (process.env.NODE_ENV === "test") {
     process.env.REPEATER_CHECK_TIMEOUT = "500";
 }
 
-export const amqpConnectionOptions: IOptions = {
+export const amqpConnectionOptions: IConnectionOptions = {
     host: process.env.RABBITMQ_HOST || "rabbitmq",
     user: process.env.RABBITMQ_USER || "guest",
     pass: process.env.RABBITMQ_PASS || "guest",

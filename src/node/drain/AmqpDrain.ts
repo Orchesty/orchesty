@@ -1,5 +1,5 @@
+import AssertionPublisher from "amqplib-plus/dist/lib/AssertPublisher";
 import IMetrics from "lib-nodejs/dist/src/metrics/IMetrics";
-import AssertionPublisher from "lib-nodejs/dist/src/rabbitmq/AssertPublisher";
 import logger from "../../logger/Logger";
 import Headers from "../../message/Headers";
 import JobMessage from "../../message/JobMessage";

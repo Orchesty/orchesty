@@ -1,6 +1,6 @@
 import { Channel, Message } from "amqplib";
-import Connection from "lib-nodejs/dist/src/rabbitmq/Connection";
-import { default as BasicConsumer } from "lib-nodejs/dist/src/rabbitmq/Consumer";
+import Connection from "amqplib-plus/dist/lib/Connection";
+import { default as BasicConsumer } from "amqplib-plus/dist/lib/Consumer";
 import logger from "../../../logger/Logger";
 import JobMessage from "../../../message/JobMessage";
 import {INodeLabel} from "../../../topology/Configurator";

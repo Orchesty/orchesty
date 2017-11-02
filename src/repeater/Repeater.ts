@@ -1,7 +1,7 @@
 import {Channel, Message, Options} from "amqplib";
-import AssertionPublisher from "lib-nodejs/dist/src/rabbitmq/AssertPublisher";
-import AMQPConnection, {PrepareFn} from "lib-nodejs/dist/src/rabbitmq/Connection";
-import SimpleConsumer from "lib-nodejs/dist/src/rabbitmq/SimpleConsumer";
+import AssertionPublisher from "amqplib-plus/dist/lib/AssertPublisher";
+import AMQPConnection, {createChannelCallback} from "amqplib-plus/dist/lib/Connection";
+import SimpleConsumer from "amqplib-plus/dist/lib/SimpleConsumer";
 import ObjectUtils from "lib-nodejs/dist/src/utils/ObjectUtils";
 import Headers from "../message/Headers";
 import logger from "./../logger/Logger";
@@ -114,7 +114,7 @@ class Repeater {
      * @return {SimpleConsumer}
      */
     private createConsumer() {
-        const prepareFn: PrepareFn = (ch: Channel) => {
+        const prepareFn: createChannelCallback = (ch: Channel) => {
             return new Promise((resolve) => {
                 ch.assertQueue(this.settings.input.queue.name, this.settings.input.queue.options)
                     .then(() => {

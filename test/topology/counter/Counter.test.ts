@@ -2,11 +2,11 @@ import { assert } from "chai";
 import "mocha";
 
 import {Channel, Message} from "amqplib";
+import Connection from "amqplib-plus/dist/lib/Connection";
+import Publisher from "amqplib-plus/dist/lib/Publisher";
+import SimpleConsumer from "amqplib-plus/dist/lib/SimpleConsumer";
 import {Replies} from "amqplib/properties";
 import logger from "lib-nodejs/dist/src/logger/Logger";
-import Connection from "lib-nodejs/dist/src/rabbitmq/Connection";
-import Publisher from "lib-nodejs/dist/src/rabbitmq/Publisher";
-import SimpleConsumer from "lib-nodejs/dist/src/rabbitmq/SimpleConsumer";
 import {amqpConnectionOptions} from "../../../src/config";
 import {ResultCode} from "../../../src/message/ResultCode";
 import {default as Counter, ICounterProcessInfo} from "../../../src/topology/counter/Counter";
