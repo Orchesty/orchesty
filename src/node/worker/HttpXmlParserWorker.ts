@@ -1,4 +1,4 @@
-import IMetrics from "lib-nodejs/dist/src/metrics/IMetrics";
+import {IMetrics} from "metrics-sender/dist/lib/metrics/IMetrics";
 import Headers from "../../message/Headers";
 import JobMessage from "../../message/JobMessage";
 import HttpWorker, {IHttpWorkerSettings} from "./HttpWorker";

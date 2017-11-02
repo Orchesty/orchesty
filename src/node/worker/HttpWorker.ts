@@ -1,5 +1,5 @@
-import IMetrics from "lib-nodejs/dist/src/metrics/IMetrics";
-import TimeUtils from "lib-nodejs/dist/src/utils/TimeUtils";
+import {TimeUtils} from "hb-utils/dist/lib/TimeUtils";
+import {IMetrics} from "metrics-sender/dist/lib/metrics/IMetrics";
 import * as request from "request";
 import logger from "../../logger/Logger";
 import Headers from "../../message/Headers";

@@ -1,7 +1,7 @@
 import { Channel, Message, Options } from "amqplib";
 import Connection from "amqplib-plus/dist/lib/Connection";
 import Publisher from "amqplib-plus/dist/lib/Publisher";
-import IMetrics from "lib-nodejs/dist/src/metrics/IMetrics";
+import {IMetrics} from "metrics-sender/dist/lib/metrics/IMetrics";
 import logger from "../../logger/Logger";
 import {default as CounterMessage} from "../../message/CounterMessage";
 import Headers from "../../message/Headers";

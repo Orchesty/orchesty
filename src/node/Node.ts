@@ -1,5 +1,5 @@
 import * as express from "express";
-import IMetrics from "lib-nodejs/dist/src/metrics/IMetrics";
+import {IMetrics} from "metrics-sender/dist/lib/metrics/IMetrics";
 import logger from "../logger/Logger";
 import JobMessage from "../message/JobMessage";
 import IDrain from "./drain/IDrain";

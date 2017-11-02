@@ -1,5 +1,5 @@
 import AssertionPublisher from "amqplib-plus/dist/lib/AssertPublisher";
-import IMetrics from "lib-nodejs/dist/src/metrics/IMetrics";
+import {IMetrics} from "metrics-sender/dist/lib/metrics/IMetrics";
 import logger from "../../logger/Logger";
 import Headers from "../../message/Headers";
 import JobMessage from "../../message/JobMessage";

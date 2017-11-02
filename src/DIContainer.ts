@@ -1,7 +1,7 @@
 import AssertionPublisher from "amqplib-plus/dist/lib/AssertPublisher";
 import { default as Connection } from "amqplib-plus/dist/lib/Connection";
-import Container from "lib-nodejs/dist/src/container/Container";
-import Metrics from "lib-nodejs/dist/src/metrics/Metrics";
+import {Container} from "hb-utils/dist/lib/Container";
+import {Metrics} from "metrics-sender/dist/lib/metrics/Metrics";
 import {amqpConnectionOptions, metricsOptions} from "./config";
 import CounterPublisher from "./node/drain/amqp/CounterPublisher";
 import FollowersPublisher from "./node/drain/amqp/FollowersPublisher";
