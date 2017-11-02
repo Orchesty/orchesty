@@ -2,6 +2,7 @@ services:
     systems.basecrm:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Basecrm\BasecrmSystem
         arguments:
+        tags: ['%systems%']
 
     hbpf.connector.basecrm-contact-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Basecrm\Connector\BasecrmContactConnector

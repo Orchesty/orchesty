@@ -2,6 +2,7 @@ services:
     systems.zoho:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Zoho\ZohoSystem
         arguments:
+        tags: ['%systems%']
 
     hbpf.connector.zoho-sync-contact-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Zoho\Connector\ZohoSyncContactConnector
