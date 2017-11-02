@@ -45,7 +45,7 @@ final class CMEventsManagerTest extends KernelTestCaseAbstract
         $sysRepo = $this->createMock(SystemInstallRepository::class);
         $sysRepo->expects($this->once())
             ->method('getSystemInstallByEvent')->willReturn([
-                (new SystemInstall())->setUser('usgfhr')->setSystem('null.user'),
+                (new SystemInstall())->setUser('usgfhr')->setSystem('null.user')->setToken('tok'),
             ]);
 
         $topRepo = $this->createMock(TopologyRepository::class);
@@ -82,7 +82,7 @@ final class CMEventsManagerTest extends KernelTestCaseAbstract
         $sysRepo = $this->createMock(SystemInstallRepository::class);
         $sysRepo->expects($this->once())
             ->method('getSystemInstallByEvent')->willReturn([
-                (new SystemInstall())->setUser('usr')->setSystem('null.user'),
+                (new SystemInstall())->setUser('usr')->setSystem('null.user')->setToken('tok'),
             ]);
 
         $topRepo = $this->createMock(TopologyRepository::class);
@@ -118,7 +118,7 @@ final class CMEventsManagerTest extends KernelTestCaseAbstract
         $sysRepo = $this->createMock(SystemInstallRepository::class);
         $sysRepo->expects($this->once())
             ->method('getSystemInstallByEvent')->willReturn([
-                (new SystemInstall())->setUser('usr')->setSystem('null.user'),
+                (new SystemInstall())->setUser('usr')->setSystem('null.user')->setToken('tok'),
             ]);
 
         $topRepo = $this->createMock(TopologyRepository::class);

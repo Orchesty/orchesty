@@ -3,8 +3,6 @@
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Salesforce\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
-use CleverConnectors\AppBundle\Enum\CleverCustomKeysEnum;
-use CleverConnectors\AppBundle\Enum\CleverFieldsEnum;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Salesforce\SalesforceSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
@@ -13,23 +11,21 @@ use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
-use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlException;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
 use Nette\Utils\Json;
-use Nette\Utils\Strings;
 
 /**
- * Class SalesforceUpdateContactConnector
+ * Class SalesforceCreateContactConnector
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Salesforce\Connector
  */
-class SalesforceUpdateContactConnector implements ConnectorInterface
+class SalesforceCreateContactConnector implements ConnectorInterface
 {
 
-    private const URL = '%s/services/data/v40.0/sobjects/Contact/id/%s';
+    private const URL = '%s/services/data/v40.0/sobjects/Contact';
 
     /**
      * @var SalesforceSystem
@@ -47,7 +43,7 @@ class SalesforceUpdateContactConnector implements ConnectorInterface
     private $systemInstallRepository;
 
     /**
-     * SalesforceUpdateContactConnector constructor.
+     * SalesforceCreateContactConnector constructor.
      *
      * @param SalesforceSystem     $system
      * @param DocumentManager      $dm
@@ -65,7 +61,7 @@ class SalesforceUpdateContactConnector implements ConnectorInterface
      */
     public function getId(): string
     {
-        return 'salesforce-update-contact-connector';
+        return 'salesforce-create-contact-connector';
     }
 
     /**
@@ -73,43 +69,28 @@ class SalesforceUpdateContactConnector implements ConnectorInterface
      *
      * @return ProcessDto
      * @throws CleverConnectorsException
-     * @throws CurlException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {
         $data = Json::decode($dto->getData(), TRUE);
 
-        if (!is_array($data) || !array_key_exists(CleverFieldsEnum::FOREIGN_ID, $data)) {
+        if (!is_array($data) || !array_key_exists('email', $data)) {
             throw new CleverConnectorsException(
-                'Missing data or required field _foreign_id',
+                'Missing data or required field email',
                 CleverConnectorsException::MISSING_DATA
             );
         }
 
-        /** @var string $eventType */
-        $eventType     = CMHeaders::get(CMHeaders::CM_EVENT_TYPE, $dto->getHeaders());
         $systemInstall = $this->systemInstallRepository->getSystemInstallFromHeaders($dto->getHeaders());
-        $requestDto    = $this->system->getRequestDto($systemInstall, CurlManager::METHOD_PATCH);
+        $requestDto    = $this->system->getRequestDto($systemInstall, CurlManager::METHOD_POST);
         $requestDto
-            ->setUri(new Uri(sprintf(self::URL, $requestDto->getUri(), $data[CleverFieldsEnum::FOREIGN_ID])))
-            ->setBody(Json::encode([sprintf('%s__c', CleverCustomKeysEnum::getFromType($eventType)) => 1]))
+            ->setUri(new Uri(sprintf(self::URL, $requestDto->getUri())))
+            ->setBody($dto->getData())
             ->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()));
 
-        try {
-            $response = $this->manager->send($requestDto);
+        $response = $this->manager->send($requestDto);
 
-            return $dto->setData($response->getBody());
-        } catch (CurlException $e) {
-            if (Strings::contains($e->getMessage(), '"errorCode":"INVALID_FIELD"')) {
-                throw new CleverConnectorsException(
-                    'Missing required field cm_unsubscribe or cm_hard_bounce',
-                    CleverConnectorsException::MISSING_DATA
-                );
-            }
-
-            throw $e;
-        }
-
+        return $dto->setData($response->getBody());
     }
 
     /**
@@ -121,8 +102,8 @@ class SalesforceUpdateContactConnector implements ConnectorInterface
     public function processEvent(ProcessDto $dto): ProcessDto
     {
         throw new ConnectorException(
-            'Salesforce has no support for event!',
-            ConnectorException::CONNECTOR_DOES_NOT_HAVE_PROCESS_EVENT
+            'Salesforce has no support for action!',
+            ConnectorException::CONNECTOR_DOES_NOT_HAVE_PROCESS_BATCH
         );
     }
 

@@ -6,13 +6,14 @@ use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\CM\SubscriptionConnector\CustomerObject\CMSubscriber;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
+use Nette\Utils\Json;
 
 /**
- * Class SalesforceDeleteContactMapper
+ * Class SalesforceDeletedContactMapper
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Salesforce\Mapper
  */
-class SalesforceDeleteContactMapper implements CustomNodeInterface
+class SalesforceDeletedContactMapper implements CustomNodeInterface
 {
 
     /**
@@ -23,25 +24,24 @@ class SalesforceDeleteContactMapper implements CustomNodeInterface
      */
     public function process(ProcessDto $dto): ProcessDto
     {
-        $data = json_decode($dto->getData(), TRUE);
+        $data = Json::decode($dto->getData(), TRUE);
 
-        if (!array_key_exists('Email', $data)) {
+        if (!is_array($data) || !array_key_exists('Email', $data)) {
             throw new CleverConnectorsException(
-                'Missing required email field in data.',
+                'Missing data or required field email',
                 CleverConnectorsException::MISSING_DATA
             );
         }
 
-        $obj = new CMSubscriber();
-        $obj
+        $subscriber = (new CMSubscriber())
             ->setEmail($data['Email'])
             ->setReactivate(FALSE);
 
         if (array_key_exists('Id', $data)) {
-            $obj->setForeignId($data['Id']);
+            $subscriber->setForeignId($data['Id']);
         }
 
-        return $dto->setData(json_encode($obj->toArray()));
+        return $dto->setData(Json::encode($subscriber->toArray()));
     }
 
 }

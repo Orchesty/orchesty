@@ -125,6 +125,7 @@ class CMEventsManager implements LoggerAwareInterface
 
         /** @var SystemInstall $systemInstall */
         foreach ($this->systemRepo->getSystemInstallByEvent($event, $userId) as $systemInstall) {
+            InnerRequestUtils::addCMHeaders($systemInstall, $request);
             $system     = $this->loader->getSystem($systemInstall->getSystem());
             $topologies = $this->getTopologiesForRun($system, $systemInstall, $const);
             foreach ($topologies as $topology) {

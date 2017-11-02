@@ -10,7 +10,14 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\Salesforce;
  */
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Enum\CleverCustomKeysEnum;
 use CleverConnectors\AppBundle\Enum\SystemTypeEnum;
+use CleverConnectors\AppBundle\Model\CMEvents\CMEventObject;
+use CleverConnectors\AppBundle\Model\CMEvents\CMEventSystemInterface;
+use CleverConnectors\AppBundle\Model\CMEvents\Traits\CMEventSystemTrait;
+use CleverConnectors\AppBundle\Model\Form\Field;
+use CleverConnectors\AppBundle\Model\Form\Form;
+use CleverConnectors\AppBundle\Model\Requester\RequesterInterface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\OAuth2Interface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\Traits\AuthorizationTrait;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
@@ -25,9 +32,10 @@ use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Salesforce
  */
-class SalesforceSystem implements OAuth2Interface
+class SalesforceSystem implements OAuth2Interface, CMEventSystemInterface
 {
 
+    use CMEventSystemTrait;
     use AuthorizationTrait;
 
     private const CLIENT_ID     = '3MVG9g9rbsTkKnAW3CCxLnJW_55kKZ67XIZboIqeXL93kTR7hQMuU8ZPRgtzK79H0Xo44sZIqZENW.POc.lpJ';
@@ -50,6 +58,13 @@ class SalesforceSystem implements OAuth2Interface
     public function __construct(OAuth2Provider $provider)
     {
         $this->provider = $provider;
+        $this->addCMEvent(new CMEventObject('', SystemInstall::EVENT_CREATE, ''));
+        $this->addCMEvent(new CMEventObject(CleverCustomKeysEnum::UNSUBSCRIBE, SystemInstall::EVENT_UNSUBSCRIBE, ''));
+        $this->addCMEvent(new CMEventObject(CleverCustomKeysEnum::HARD_BOUNCE, SystemInstall::EVENT_HARD_BOUNCE, ''));
+
+        $this->topologyNames['salesforce-unsubscribe-contact'] = 'salesforce-update-contact';
+        $this->topologyNames['salesforce-hard-bounce-contact'] = 'salesforce-update-contact';
+
     }
 
     /**
@@ -184,7 +199,32 @@ class SalesforceSystem implements OAuth2Interface
      */
     public function getSettingFields(SystemInstall $systemInstall): array
     {
-        return [];
+        $field1 = new Field(
+            Field::CHECKBOX,
+            SystemInstall::EVENT_CREATE,
+            'Create event',
+            $systemInstall->isEventCreate()
+        );
+
+        $field2 = new Field(
+            Field::CHECKBOX,
+            SystemInstall::EVENT_UNSUBSCRIBE,
+            'UnSubscribe event',
+            $systemInstall->isEventUnsubscribe()
+        );
+
+        $field3 = new Field(
+            Field::CHECKBOX,
+            SystemInstall::EVENT_HARD_BOUNCE,
+            'Hard Bounce event',
+            $systemInstall->isEventHardBounce()
+        );
+
+        return (new Form())
+            ->addField($field1)
+            ->addField($field2)
+            ->addField($field3)
+            ->toArray();
     }
 
     /**
@@ -204,6 +244,16 @@ class SalesforceSystem implements OAuth2Interface
         $dto->setCustomAppDependencies($systemInstall->getUser(), $systemInstall->getSystem());
 
         return $dto;
+    }
+
+    /**
+     * @param SystemInstall $systemInstall
+     *
+     * @return RequesterInterface|null ?RequesterInterface
+     */
+    public function getCMEventRequester(SystemInstall $systemInstall): ?RequesterInterface
+    {
+        return NULL;
     }
 
 }

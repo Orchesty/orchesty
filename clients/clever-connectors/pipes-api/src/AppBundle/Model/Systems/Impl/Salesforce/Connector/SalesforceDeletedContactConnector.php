@@ -6,6 +6,7 @@ use CleverConnectors\AppBundle\Utils\CMHeaders;
 use CleverConnectors\AppBundle\Utils\CronUtils;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Psr\Http\Message\ResponseInterface;
 use React\EventLoop\LoopInterface;
@@ -13,21 +14,21 @@ use React\Promise\PromiseInterface;
 use function React\Promise\all;
 
 /**
- * Class SalesforceDeleteContactConnector
+ * Class SalesforceDeletedContactConnector
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Salesforce\Connector
  */
-class SalesforceDeleteContactConnector extends SalesforceContactConnectorAbstract
+class SalesforceDeletedContactConnector extends SalesforceContactConnectorAbstract
 {
 
-    protected const   QUERY_URL = '%s/services/data/v40.0/queryAll?q=%s';
+    protected const QUERY_URL = '%s/services/data/v40.0/queryAll?q=%s';
 
     /**
      * @return string
      */
     public function getId(): string
     {
-        return 'salesforce-delete-contact-connector';
+        return 'salesforce-deleted-contact-connector';
     }
 
     /**
@@ -41,7 +42,7 @@ class SalesforceDeleteContactConnector extends SalesforceContactConnectorAbstrac
     {
         $browser       = $this->factory->create($loop);
         $systemInstall = CronUtils::getSystemInstall($dto);
-        $requestDto    = $this->system->getRequestDto($systemInstall, 'GET');
+        $requestDto    = $this->system->getRequestDto($systemInstall, CurlManager::METHOD_GET);
         $requestDto->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()));
         $lastSync  = $this->lastSyncManager->getLastSync($systemInstall, $dto->getHeaders());
         $times     = CronUtils::getTimes($lastSync);

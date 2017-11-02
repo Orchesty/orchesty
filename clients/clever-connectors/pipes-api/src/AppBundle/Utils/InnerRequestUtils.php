@@ -32,6 +32,18 @@ final class InnerRequestUtils
     public static function getRequest(SystemInstall $systemInstall, $data): Request
     {
         $request = new Request([], [], [], [], [], [], json_encode($data));
+
+        return self::addCMHeaders($systemInstall, $request);
+    }
+
+    /**
+     * @param SystemInstall $systemInstall
+     * @param Request       $request
+     *
+     * @return Request
+     */
+    public static function addCMHeaders(SystemInstall $systemInstall, Request $request): Request
+    {
         $request->headers->set(CMHeaders::createKey(CMHeaders::GUID), $systemInstall->getUser());
         $request->headers->set(CMHeaders::createKey(CMHeaders::SYSTEM_KEY), $systemInstall->getSystem());
         $request->headers->set(CMHeaders::createKey(CMHeaders::TOKEN), $systemInstall->getToken());
