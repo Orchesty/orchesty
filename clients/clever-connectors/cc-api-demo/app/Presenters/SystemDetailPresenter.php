@@ -81,7 +81,12 @@ class SystemDetailPresenter extends BasePresenter
         $this->connectorManager->authorizeUserSystem(
             $this->userId,
             $this->userSystem->getKey(),
-            $this->getHttpRequest()->getUrl()->getAbsoluteUrl()
+            sprintf(
+                '%s://%s%s',
+                $this->getHttpRequest()->getUrl()->getScheme(),
+                $this->getHttpRequest()->getUrl()->getDomain(),
+                $this->getHttpRequest()->getUrl()->getPath()
+            )
         );
     }
 
