@@ -13,6 +13,13 @@ services:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.transport.curl_manager'
 
+    hbpf.connector.hubspot-update-contact-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\Connector\HubspotUpdateContactConnector
+        arguments:
+            - '@systems.hubspot'
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.transport.curl_manager'
+
     hbpf.connector.hubspot-updated-contact-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\Connector\HubspotUpdatedContactConnector
         arguments:

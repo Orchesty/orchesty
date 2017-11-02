@@ -23,7 +23,7 @@ use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
 class HubspotUpdateContactConnector implements ConnectorInterface
 {
 
-    private const SUB_URL = '/contacts/v1/contact/vid/%s/profile?hapikey=%s';
+    private const SUB_URL = '/contacts/v1/contact/vid/%s/profile';
 
     /**
      * @var SystemInstallRepository|ObjectRepository
@@ -88,7 +88,7 @@ class HubspotUpdateContactConnector implements ConnectorInterface
         $data          = json_decode($dto->getData(), TRUE);
 
         $requestDto = $this->system->getRequestDto($systemInstall, 'POST');
-        $query      = sprintf(self::SUB_URL, $data['id'], HubspotSystem::HAPI_KEY);
+        $query      = sprintf(self::SUB_URL, $data['id']);
         $uri        = new Uri(sprintf(rtrim($requestDto->getUri(TRUE), '/') . $query));
 
         $requestDto

@@ -53,7 +53,7 @@ class HubspotSystem implements WebhookSystemInterface, OAuth2Interface, CMEventS
     private const AUTHORIZE_URL     = 'https://app.hubspot.com/oauth/authorize';
     private const BASE_URL          = 'https://api.hubapi.com';
     private const TOKEN_URL         = 'https://api.hubapi.com/oauth/v1/token';
-    private const CUSTOM_FIELDS_URL = 'https://api.hubapi.com/properties/v1/contacts/properties?hapikey=%s';
+    private const CUSTOM_FIELDS_URL = 'https://api.hubapi.com/properties/v1/contacts/properties';
 
     public const OBJECT_ID_KEY         = 'objectId';
     public const SUBSCRIPTION_TYPE_KEY = 'subscriptionType';
@@ -99,6 +99,8 @@ class HubspotSystem implements WebhookSystemInterface, OAuth2Interface, CMEventS
         $this->subscriptions[] = $this->prepareWebhookSubscription(self::SUBSCRIPTION_TYPE_DELETE);
         $this->subscriptions[] = $this->prepareWebhookSubscription(self::SUBSCRIPTION_TYPE_UPDATE, 'firstname');
         $this->subscriptions[] = $this->prepareWebhookSubscription(self::SUBSCRIPTION_TYPE_UPDATE, 'lastname');
+
+        $this->topologyNames['hubspot-hard-bounce-contact'] = 'hubspot-unsubscribe-contact';
     }
 
     /**
@@ -331,7 +333,7 @@ class HubspotSystem implements WebhookSystemInterface, OAuth2Interface, CMEventS
      */
     public function getCMEventRequester(SystemInstall $systemInstall): ?RequesterInterface
     {
-        return new HubspotRequester($this->getHeadersWithoutAuth());
+        return new HubspotRequester($this->getHeaders($systemInstall));
     }
 
     /******************************************  HELPERS  ****************************************/

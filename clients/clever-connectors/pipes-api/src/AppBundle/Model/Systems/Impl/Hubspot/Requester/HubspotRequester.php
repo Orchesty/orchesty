@@ -47,13 +47,11 @@ class HubspotRequester implements RequesterInterface
         $dto = new RequestDto('POST', new Uri(sprintf($object->getUrl(), HubspotSystem::HAPI_KEY)));
         $dto->setHeaders($this->headers)
             ->setBody(json_encode([
-                'user_field' => [
-                    'type'      => 'string',
-                    'fieldType' => 'booleancheckbox',
-                    'name'      => $object->getField(),
-                    'label'     => $object->getField(),
-                    'groupName' => 'contactinformation',
-                ],
+                'type'      => 'string',
+                'fieldType' => 'booleancheckbox',
+                'name'      => $object->getField(),
+                'label'     => $object->getField(),
+                'groupName' => 'contactinformation',
             ]));
 
         return $dto;

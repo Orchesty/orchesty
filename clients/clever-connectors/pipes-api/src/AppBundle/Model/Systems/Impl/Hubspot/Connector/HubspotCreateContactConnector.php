@@ -23,7 +23,7 @@ use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
 class HubspotCreateContactConnector implements ConnectorInterface
 {
 
-    private const SUB_URL = '/contacts/v1/contact/?hapikey=%s';
+    private const SUB_URL = '/contacts/v1/contact';
 
     /**
      * @var SystemInstallRepository|ObjectRepository
@@ -86,8 +86,7 @@ class HubspotCreateContactConnector implements ConnectorInterface
     {
         $systemInstall = $this->systemInstallRepository->getSystemInstallFromHeaders($dto->getHeaders());
         $requestDto    = $this->system->getRequestDto($systemInstall, 'POST');
-        $query         = sprintf(self::SUB_URL, HubspotSystem::HAPI_KEY);
-        $uri           = new Uri(rtrim($requestDto->getUri(TRUE), '/') . $query);
+        $uri           = new Uri(rtrim($requestDto->getUri(TRUE), '/') . self::SUB_URL);
 
         $requestDto->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()))
             ->setUri($uri)
@@ -95,15 +94,22 @@ class HubspotCreateContactConnector implements ConnectorInterface
 
         $res = $this->curl->send($requestDto);
 
-        if ($res->getStatusCode() !== 200) {
+        if ($res->getStatusCode() === 409) {
+            throw new CleverConnectorsException(
+                'Contact already exists, Hubspot createContactConnector.',
+                CleverConnectorsException::REQUEST_FAILED
+            );
+        } elseif ($res->getStatusCode() !== 200) {
             throw new CleverConnectorsException(
                 'Failed to create new contact / email already taken, Hubspot createContactConnector.',
                 CleverConnectorsException::REQUEST_FAILED
             );
         }
 
-        return $dto->setData($res->getBody());
+        $tmp                     = json_decode($res->getBody(), TRUE);
+        $tmp['subscriptionType'] = 'contact.creation';
 
+        return $dto->setData(json_encode($tmp));
     }
 
 }

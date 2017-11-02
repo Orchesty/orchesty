@@ -84,7 +84,7 @@ final class HubspotCreateContactConnectorTest extends ConnectorTestCaseAbstract
         $curl = $this->createMock(CurlManagerInterface::class);
         $curl->expects($this->once())
             ->method('send')->will($this->returnCallback(function (RequestDto $requestDto) {
-                $url  = new Uri('https://api.hubapi.com/contacts/v1/contact/?hapikey=abab4202-0a4b-4099-8b61-fe325790d7cd');
+                $url  = new Uri('https://api.hubapi.com/contacts/v1/contact');
                 $expt = new RequestDto('POST', $url);
                 $expt->setHeaders([
                     'Content-Type'  => 'application/json',

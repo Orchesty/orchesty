@@ -8,15 +8,16 @@
 
 namespace Hanaboso\PipesFramework\HbPFConnectorBundle\Controller;
 
+use Exception;
 use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Controller\FOSRestController;
-use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
 use Hanaboso\PipesFramework\HbPFConnectorBundle\Handler\ConnectorHandler;
 use Hanaboso\PipesFramework\Utils\ControllerUtils;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Throwable;
 
 /**
  * Class ConnectorController
@@ -54,7 +55,7 @@ class ConnectorController extends FOSRestController
                 ControllerUtils::createHeaders($data->getHeaders()
                 )
             );
-        } catch (ConnectorException $e) {
+        } catch (Exception|Throwable $e) {
             $response = new Response(
                 ControllerUtils::createExceptionData($e),
                 500,
@@ -81,7 +82,7 @@ class ConnectorController extends FOSRestController
         try {
             $this->handler->processTest($id);
             $response = new JsonResponse('', 200);
-        } catch (ConnectorException $e) {
+        } catch (Exception|Throwable $e) {
             $response = new JsonResponse(
                 ControllerUtils::createExceptionData($e),
                 500,
@@ -112,7 +113,7 @@ class ConnectorController extends FOSRestController
                 200,
                 ControllerUtils::createHeaders($data->getHeaders()),
                 TRUE);
-        } catch (ConnectorException $e) {
+        } catch (Exception|Throwable $e) {
             $response = new JsonResponse(
                 ControllerUtils::createExceptionData($e),
                 500,
@@ -139,7 +140,7 @@ class ConnectorController extends FOSRestController
         try {
             $this->handler->processTest($id);
             $response = new JsonResponse('', 200);
-        } catch (ConnectorException $e) {
+        } catch (Exception|Throwable $e) {
             $response = new JsonResponse(
                 ControllerUtils::createExceptionData($e),
                 500,
