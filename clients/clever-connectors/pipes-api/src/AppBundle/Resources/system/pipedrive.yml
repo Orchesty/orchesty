@@ -2,6 +2,7 @@ services:
     systems.pipedrive:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Pipedrive\PipedriveSystem
         arguments:
+        tags: ['%systems%']
 
     hbpf.connector.pipedrive-sync-person-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Pipedrive\Connector\PipedriveSyncPersonConnector

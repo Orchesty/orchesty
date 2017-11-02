@@ -3,6 +3,7 @@ services:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Zendesk\ZendeskSystem
         arguments:
             - '@hbpf.providers.oauth2_provider'
+        tags: ['%systems%']
 
     hbpf.connector.zendesk-sync-user-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Zendesk\Connector\ZendeskSyncUserConnector
