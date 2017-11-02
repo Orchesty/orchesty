@@ -123,6 +123,8 @@ export default class Counter {
      * @private
      */
     private static isProcessFinished(job: ICounterProcessInfo) {
+        logger.info(`Counter is process finished called. Data: ${JSON.stringify(job)}`);
+
         if (job.nok + job.ok === job.total) {
             return true;
         }
