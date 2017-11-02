@@ -107,7 +107,7 @@ class Magento2System implements OAuth2Interface
      */
     public function getName(): string
     {
-        return 'Magento2 system';
+        return 'Magento2';
     }
 
     /**

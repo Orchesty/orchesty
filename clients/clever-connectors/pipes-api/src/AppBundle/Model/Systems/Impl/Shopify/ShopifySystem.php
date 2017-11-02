@@ -102,7 +102,7 @@ class ShopifySystem implements WebhookSystemInterface, OAuth2Interface
      */
     public function getDescription(): string
     {
-        return 'Shopify system';
+        return 'Shopify';
     }
 
     /**

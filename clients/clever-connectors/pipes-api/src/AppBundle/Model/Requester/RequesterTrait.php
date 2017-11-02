@@ -10,6 +10,7 @@
 namespace CleverConnectors\AppBundle\Model\Requester;
 
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
+use CleverConnectors\AppBundle\Model\CMEvents\CMEventObject;
 use CleverConnectors\AppBundle\Model\Webhook\WebhookSubscribes;
 
 /**
@@ -60,6 +61,19 @@ trait RequesterTrait
         $url = $this->getKey($data, RequesterInterface::WEBHOOK_ID);
 
         return $url;
+    }
+
+    /**
+     * @param array $data
+     *
+     * @return CMEventObject
+     */
+    public function getCMEventObject(array $data): CMEventObject
+    {
+        /** @var CMEventObject $event */
+        $event = $this->getKey($data, RequesterInterface::OBJECT);
+
+        return $event;
     }
 
     /**

@@ -2,18 +2,16 @@
 
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Zendesk\Mapper;
 
-use CleverConnectors\AppBundle\Enum\CleverCustomKeysEnum;
 use CleverConnectors\AppBundle\Enum\CleverFieldsEnum;
-use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
 
 /**
- * Class ZendeskUpdateUserMapper
+ * Class ZendeskCreateUserMapper
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Zendesk\Mapper
  */
-class ZendeskUpdateUserMapper implements CustomNodeInterface
+class ZendeskCreateUserMapper implements CustomNodeInterface
 {
 
     /**
@@ -24,20 +22,17 @@ class ZendeskUpdateUserMapper implements CustomNodeInterface
     public function process(ProcessDto $dto): ProcessDto
     {
         $data = json_decode($dto->getData(), TRUE);
-        $field = CMHeaders::get(CMHeaders::CM_EVENT_TYPE, $dto->getHeaders()) ?? '';
+        $name = $data[CleverFieldsEnum::FIRST_NAME] === '' ? '' : $data[CleverFieldsEnum::FIRST_NAME] . ' ';
+        $name .= $data[CleverFieldsEnum::LAST_NAME];
 
         $contact = [
             'user' => [
-                'user_fields' => [
-                    CleverCustomKeysEnum::getFromType($field) => TRUE,
-                ],
+                'email' => $data[CleverFieldsEnum::EMAIL] ?? '',
+                'name'  => $name,
             ],
         ];
 
-        return $dto->setData(json_encode([
-            'id'   => $data[CleverFieldsEnum::FOREIGN_ID],
-            'body' => json_encode($contact),
-        ]));
+        return $dto->setData(json_encode($contact));
     }
 
 }

@@ -2,39 +2,48 @@
 
 namespace Tests\Unit\AppBundle\Model\Systems\Impl\Zendesk\Mapper;
 
+use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Enum\CleverCustomKeysEnum;
 use CleverConnectors\AppBundle\Enum\CleverFieldsEnum;
+use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
-use Nette\Utils\Json;
-use Tests\ConnectorTestCaseAbstract;
+use Tests\DatabaseTestCaseAbstract;
 
 /**
  * Class ZendeskUpdateUserMapperTest
  *
  * @package Tests\Unit\AppBundle\Model\Systems\Impl\Zendesk\Mapper
  */
-final class ZendeskUpdateUserMapperTest extends ConnectorTestCaseAbstract
+final class ZendeskUpdateUserMapperTest extends DatabaseTestCaseAbstract
 {
 
     /**
      *
      */
-    public function testProcessEvent(): void
+    public function testMapper(): void
     {
-        $connector = $this->container->get('hbpf.custom_node.zendesk-update-user-mapper');
+        $mapper = $this->container->get('hbpf.custom_node.zendesk-update-user-mapper');
 
-        $response = Json::decode(
-            $connector->process((new ProcessDto())->setData($this->getRequest('singleItemSync.json')))
-                ->getData(),
-            TRUE
-        );
+        $dto = new ProcessDto();
+        $dto->setData(json_encode([
+            CleverFieldsEnum::FOREIGN_ID => '123456',
+        ]))->setHeaders([
+            CMHeaders::createKey(CMHeaders::CM_EVENT_TYPE) => SystemInstall::EVENT_UNSUBSCRIBE,
+        ]);
 
-        $this->assertEquals([
-            CleverFieldsEnum::EMAIL      => 'customer@example.com',
-            CleverFieldsEnum::FIRST_NAME => 'Sample',
-            CleverFieldsEnum::LAST_NAME  => 'customer',
-            CleverFieldsEnum::FOREIGN_ID => '115316687153',
-            CleverFieldsEnum::REACTIVATE => TRUE,
-        ], $response);
+        /** @var ProcessDto $res */
+        $res = $mapper->process($dto);
+
+        self::assertEquals(json_encode([
+            'id'   => '123456',
+            'body' => json_encode([
+                'user' => [
+                    'user_fields' => [
+                        CleverCustomKeysEnum::UNSUBSCRIBE => TRUE,
+                    ],
+                ],
+            ]),
+        ]), $res->getData());
     }
 
 }

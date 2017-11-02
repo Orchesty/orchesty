@@ -3,12 +3,18 @@
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Zendesk;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Enum\CleverCustomKeysEnum;
 use CleverConnectors\AppBundle\Enum\SystemTypeEnum;
+use CleverConnectors\AppBundle\Model\CMEvents\CMEventObject;
+use CleverConnectors\AppBundle\Model\CMEvents\CMEventSystemInterface;
+use CleverConnectors\AppBundle\Model\CMEvents\Traits\CMEventSystemTrait;
 use CleverConnectors\AppBundle\Model\Form\Field;
 use CleverConnectors\AppBundle\Model\Form\Form;
+use CleverConnectors\AppBundle\Model\Requester\RequesterInterface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\AuthorizationInterface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\Traits\AuthorizationTrait;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
+use CleverConnectors\AppBundle\Model\Systems\Impl\Zendesk\Requester\ZendeskCmEventRequester;
 use CleverConnectors\AppBundle\Model\Systems\SystemInterface;
 use CleverConnectors\AppBundle\Model\Webhook\Traits\WebhookSystemTrait;
 use GuzzleHttp\Psr7\Uri;
@@ -19,17 +25,35 @@ use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Zendesk
  */
-class ZendeskSystem implements SystemInterface, AuthorizationInterface
+class ZendeskSystem implements SystemInterface, AuthorizationInterface, CMEventSystemInterface
 {
 
     use AuthorizationTrait;
     use WebhookSystemTrait;
+    use CMEventSystemTrait;
 
-    private const DOMAIN    = 'domain';
+    public const DOMAIN = 'domain';
+
     private const USER      = 'user_email';
     private const API_TOKEN = 'api_token';
 
-    private const BASE_URL = 'https://%s.zendesk.com/';
+    private const BASE_URL          = 'https://%s.zendesk.com/';
+    private const CUSTOM_FIELDS_URL = 'https://%s.zendesk.com/api/v2/user_fields.json';
+
+    /**
+     * ZendeskSystem constructor.
+     */
+    function __construct()
+    {
+        $this->addCMEvent(new CMEventObject('', SystemInstall::EVENT_CREATE, ''));
+        $this->addCMEvent(new CMEventObject(CleverCustomKeysEnum::UNSUBSCRIBE,
+            SystemInstall::EVENT_UNSUBSCRIBE, self::CUSTOM_FIELDS_URL));
+        $this->addCMEvent(new CMEventObject(CleverCustomKeysEnum::HARD_BOUNCE,
+            SystemInstall::EVENT_HARD_BOUNCE, self::CUSTOM_FIELDS_URL));
+
+        $this->topologyNames['zendesk-unsubscribe-contact'] = 'zendesk-update-contact';
+        $this->topologyNames['zendesk-hard-bounce-contact'] = 'zendesk-update-contact';
+    }
 
     /**
      * @return string
@@ -60,7 +84,7 @@ class ZendeskSystem implements SystemInterface, AuthorizationInterface
      */
     public function getDescription(): string
     {
-        return 'Zendesk system';
+        return 'Zendesk';
     }
 
     /**
@@ -103,7 +127,7 @@ class ZendeskSystem implements SystemInterface, AuthorizationInterface
         $this->continueOnAuthorized($systemInstall);
 
         $sett = $systemInstall->getSettings();
-        $dto  = new RequestDto('GET', new Uri(sprintf(self::BASE_URL, $sett[self::DOMAIN])));
+        $dto  = new RequestDto($method, new Uri(sprintf(self::BASE_URL, $sett[self::DOMAIN])));
         $dto->setHeaders($this->getHeaders($systemInstall));
 
         return $dto;
@@ -142,12 +166,49 @@ class ZendeskSystem implements SystemInterface, AuthorizationInterface
             TRUE
         );
 
+        $field4 = new Field(
+            Field::CHECKBOX,
+            SystemInstall::EVENT_CREATE,
+            'Create event',
+            $systemInstall->isEventCreate(),
+            TRUE
+        );
+
+        $field5 = new Field(
+            Field::CHECKBOX,
+            SystemInstall::EVENT_UNSUBSCRIBE,
+            'Unsubscribe event',
+            $systemInstall->isEventUnsubscribe(),
+            TRUE
+        );
+
+        $field6 = new Field(
+            Field::CHECKBOX,
+            SystemInstall::EVENT_HARD_BOUNCE,
+            'Hard bounce events',
+            $systemInstall->isEventHardBounce(),
+            TRUE
+        );
+
         $form = new Form();
         $form->addField($field1)
             ->addField($field2)
-            ->addField($field3);
+            ->addField($field3)
+            ->addField($field4)
+            ->addField($field5)
+            ->addField($field6);
 
         return $form->toArray();
+    }
+
+    /**
+     * @param SystemInstall $systemInstall
+     *
+     * @return RequesterInterface|null
+     */
+    public function getCMEventRequester(SystemInstall $systemInstall): ?RequesterInterface
+    {
+        return new ZendeskCmEventRequester($systemInstall, $this->getHeaders($systemInstall));
     }
 
     /**
@@ -166,6 +227,7 @@ class ZendeskSystem implements SystemInterface, AuthorizationInterface
 
         return [
             'Content-Type'  => 'application/json',
+            'Accept'        => 'application/json',
             'Authorization' => sprintf('Basic %s', $token),
         ];
     }

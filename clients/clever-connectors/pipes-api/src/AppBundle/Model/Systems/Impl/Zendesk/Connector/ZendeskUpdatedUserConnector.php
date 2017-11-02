@@ -4,6 +4,8 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\Zendesk\Connector;
 
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
+use CleverConnectors\AppBundle\Utils\CronUtils;
+use DateTime;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
@@ -13,21 +15,19 @@ use React\EventLoop\LoopInterface;
 use React\Promise\PromiseInterface;
 
 /**
- * Class ZendeskSyncUserConnector
+ * Class ZendeskUpdatedUserConnector
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Zendesk\Connector
  */
-class ZendeskSyncUserConnector extends ZendeskUserConnectorAbstract
+class ZendeskUpdatedUserConnector extends ZendeskUserConnectorAbstract
 {
-
-    private const USERS_URL = 'api/v2/users.json?per_page=' . self::PER_PAGE;
 
     /**
      * @return string
      */
     public function getId(): string
     {
-        return 'zendesk-sync-user-connector';
+        return 'zendesk-updated-user-connector';
     }
 
     /**
@@ -40,14 +40,19 @@ class ZendeskSyncUserConnector extends ZendeskUserConnectorAbstract
     public function processBatch(ProcessDto $dto, LoopInterface $loop, callable $callbackItem): PromiseInterface
     {
         $sender        = $this->factory->create($loop);
-        $systemInstall = $this->systemInstallRepository->getSystemInstallFromHeaders($dto->getHeaders());
+        $systemInstall = CronUtils::getSystemInstall($dto);
         $requestDto    = $this->system->getRequestDto($systemInstall, CurlManager::METHOD_GET);
         $requestDto->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()));
-        $url       = new Uri(rtrim($requestDto->getUri(TRUE)) . self::USERS_URL);
-        $processId = CMHeaders::get(CMHeaders::PROCESS_ID, $dto->getHeaders());
-        $promise   = $this->getPage($sender, $callbackItem, RequestDto::from($requestDto, $url), 1, $processId);
+        $lastSync = $this->lastSyncManager->getLastSync($systemInstall, $dto->getHeaders());
+        $times    = CronUtils::getTimes($lastSync);
 
-        $this->systemInstallRepository->setSyncTime($systemInstall);
+        $url = new Uri(sprintf('%s/api/v2/search?%s', rtrim($requestDto->getUri(TRUE), '/'),
+            $this->getTimeQuery($times->getStart())));
+
+        $promise = $this->getPage($sender, $callbackItem, RequestDto::from($requestDto, $url));
+
+        $lastSync->setTimestamp($times->getEnd());
+        $this->lastSyncManager->updateLastSync($lastSync);
 
         return $promise;
     }
@@ -61,9 +66,9 @@ class ZendeskSyncUserConnector extends ZendeskUserConnectorAbstract
      */
     protected function createSuccessMessage($data, int $page): SuccessMessage
     {
-        if (array_key_exists('users', $data)) {
+        if (array_key_exists('results', $data)) {
             $successMessage = new SuccessMessage($page);
-            $successMessage->setData(json_encode($data['users']));
+            $successMessage->setData(json_encode($data['results']));
             unset($data);
 
             return $successMessage;
@@ -73,6 +78,21 @@ class ZendeskSyncUserConnector extends ZendeskUserConnectorAbstract
                 SystemException::MISSING_RESPONSE_DATA
             );
         }
+    }
+
+    /**
+     * @param DateTime|null $start
+     *
+     * @return string
+     */
+    private function getTimeQuery(?DateTime $start): string
+    {
+        if (!$start) {
+            return 'query=type:user';
+        }
+        $time = rtrim($start->format(DateTime::ISO8601), '+0000') . 'Z';
+
+        return 'query=type:user updated>' . $time;
     }
 
 }

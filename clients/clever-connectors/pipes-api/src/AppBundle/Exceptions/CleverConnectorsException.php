@@ -22,5 +22,6 @@ class CleverConnectorsException extends Exception
     public const UNKNOWN_SUBSCRIPTION_TYPE    = 10;
     public const DISALLOWED_SUBSCRIPTION_TYPE = 11;
     public const INVALID_ENUM_VALUE           = 12;
+    public const REQUEST_FAILED               = 13;
 
 }
