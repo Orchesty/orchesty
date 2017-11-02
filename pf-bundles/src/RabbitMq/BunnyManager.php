@@ -70,6 +70,14 @@ class BunnyManager
     }
 
     /**
+     * @return array
+     */
+    public function getConfig(): array
+    {
+        return $this->config;
+    }
+
+    /**
      * @return Client
      */
     private function createClient(): Client
