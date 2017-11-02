@@ -20,7 +20,7 @@ class HubspotUpdatedContactConnector implements ConnectorInterface
      */
     public function getId(): string
     {
-        return 'hubspot-update-contact-connector';
+        return 'hubspot-updated-contact-connector';
     }
 
     /**
