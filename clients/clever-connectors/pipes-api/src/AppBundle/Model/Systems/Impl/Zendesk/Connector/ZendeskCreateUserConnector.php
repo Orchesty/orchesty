@@ -11,6 +11,7 @@ use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
@@ -85,7 +86,7 @@ class ZendeskCreateUserConnector implements ConnectorInterface
     public function processAction(ProcessDto $dto): ProcessDto
     {
         $systemInstall = $this->systemInstallRepository->getSystemInstallFromHeaders($dto->getHeaders());
-        $requestDto    = $this->system->getRequestDto($systemInstall, 'POST');
+        $requestDto    = $this->system->getRequestDto($systemInstall, CurlManager::METHOD_POST);
         $uri           = new Uri(rtrim($requestDto->getUri(TRUE), '/') . self::SUB_URL);
 
         $requestDto->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()))
