@@ -8,15 +8,16 @@
 
 namespace Hanaboso\PipesFramework\HbPFCustomNodeBundle\Controller;
 
+use Exception;
 use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Controller\FOSRestController;
-use Hanaboso\PipesFramework\HbPFCustomNodeBundle\Exception\CustomNodeException;
 use Hanaboso\PipesFramework\HbPFCustomNodeBundle\Handler\CustomNodeHandler;
 use Hanaboso\PipesFramework\Utils\ControllerUtils;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Throwable;
 
 /**
  * Class CustomNodeController
@@ -61,7 +62,7 @@ class CustomNodeController extends FOSRestController
                 200,
                 ControllerUtils::createHeaders($data->getHeaders())
             );
-        } catch (CustomNodeException $e) {
+        } catch (Exception|Throwable $e) {
             $response = new Response(
                 ControllerUtils::createExceptionData($e),
                 500,
@@ -85,7 +86,7 @@ class CustomNodeController extends FOSRestController
         try {
             $this->handler->processTest($nodeId);
             $response = new JsonResponse([], 200);
-        } catch (CustomNodeException $e) {
+        } catch (Exception|Throwable $e) {
             $response = new JsonResponse(ControllerUtils::createExceptionData($e), 500);
         }
 
