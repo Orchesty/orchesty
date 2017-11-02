@@ -13,9 +13,9 @@ services:
             - '@cc.progress_counter.progress_counter_service'
 
     hbpf.connector.wisepops-create-email-connector:
-        class: CleverConnectors\AppBundle\Model\Systems\Impl\Wisepops\Connector\WisepopsCreatedEmailConnector
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Wisepops\Connector\WisepopsCreateEmailConnector
         arguments:
 
     hbpf.custom_node.wisepops-create-email-mapper:
-        class: CleverConnectors\AppBundle\Model\Systems\Impl\Wisepops\Mapper\WisepopsCreatedEmailMapper
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Wisepops\Mapper\WisepopsCreateEmailMapper
         arguments:

@@ -6,9 +6,9 @@ services:
         tags: ['%systems%']
 
     hbpf.connector.mailmunch-create-email-connector:
-        class: CleverConnectors\AppBundle\Model\Systems\Impl\Mailmunch\Connector\MailmunchCreatedEmailConnector
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Mailmunch\Connector\MailmunchCreateEmailConnector
         arguments:
 
     hbpf.custom_node.mailmunch-create-email-mapper:
-        class: CleverConnectors\AppBundle\Model\Systems\Impl\Mailmunch\Mapper\MailmunchCreatedEmailMapper
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Mailmunch\Mapper\MailmunchCreateEmailMapper
         arguments:
