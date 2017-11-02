@@ -100,7 +100,8 @@ export default class Counter {
      * @return {ICounterProcessInfo}
      */
     private static updateProcessInfo(processInfo: ICounterProcessInfo, cm: CounterMessage): ICounterProcessInfo {
-        if (cm.getResultCode() === ResultCode.SUCCESS) {
+        if (cm.getResultCode() === ResultCode.SUCCESS ||
+            cm.getResultCode() === ResultCode.DO_NOT_CONTINUE) {
             processInfo.ok += 1;
         } else {
             processInfo.nok += 1;
