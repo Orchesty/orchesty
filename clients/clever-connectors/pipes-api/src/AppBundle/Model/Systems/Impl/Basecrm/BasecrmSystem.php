@@ -36,14 +36,13 @@ class BasecrmSystem implements AuthorizationInterface, CMEventSystemInterface
     /**
      * BasecrmSystem constructor.
      */
-    function __construct()
+    public function __construct()
     {
         $this->addCMEvent(new CMEventObject('', SystemInstall::EVENT_CREATE, ''));
         $this->addCMEvent(new CMEventObject(CleverCustomKeysEnum::HARD_BOUNCE, SystemInstall::EVENT_HARD_BOUNCE, ''));
         $this->addCMEvent(new CMEventObject(CleverCustomKeysEnum::UNSUBSCRIBE, SystemInstall::EVENT_UNSUBSCRIBE, ''));
 
-        $this->topologyNames['basecrm-unsubscribe-contact'] = 'basecrm-update-contact';
-        $this->topologyNames['basecrm-hard-bounce-contact'] = 'basecrm-update-contact';
+        $this->topologyNames['basecrm-hard-bounce-contact'] = 'basecrm-unsubscribe-contact';
     }
 
     /**

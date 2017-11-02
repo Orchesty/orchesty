@@ -14,7 +14,7 @@ use Tests\KernelTestCaseAbstract;
  *
  * @package Tests\Unit\AppBundle\Model\Systems\Impl\Basecrm\Mapper
  */
-class BasecrmUpdateContactMapperTest extends KernelTestCaseAbstract
+final class BasecrmUpdateContactMapperTest extends KernelTestCaseAbstract
 {
 
     /**

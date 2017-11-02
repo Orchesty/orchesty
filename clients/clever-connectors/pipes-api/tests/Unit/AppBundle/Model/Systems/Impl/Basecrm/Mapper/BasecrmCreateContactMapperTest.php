@@ -2,7 +2,6 @@
 
 namespace Tests\Unit\AppBundle\Model\Systems\Impl\Basecrm\Mapper;
 
-use CleverConnectors\AppBundle\Enum\CleverCustomKeysEnum;
 use CleverConnectors\AppBundle\Enum\CleverFieldsEnum;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Tests\KernelTestCaseAbstract;
@@ -12,7 +11,7 @@ use Tests\KernelTestCaseAbstract;
  *
  * @package Tests\Unit\AppBundle\Model\Systems\Impl\Basecrm\Mapper
  */
-class BasecrmCreateContactMapperTest extends KernelTestCaseAbstract
+final class BasecrmCreateContactMapperTest extends KernelTestCaseAbstract
 {
 
     /**
@@ -24,8 +23,6 @@ class BasecrmCreateContactMapperTest extends KernelTestCaseAbstract
             CleverFieldsEnum::EMAIL       => 'eml@eml.com',
             CleverFieldsEnum::FIRST_NAME  => 'first',
             CleverFieldsEnum::LAST_NAME   => 'last',
-            CleverFieldsEnum::HARD_BOUNCE => FALSE,
-            CleverFieldsEnum::UNSUBSCRIBE => TRUE,
         ];
 
         $dto = new ProcessDto();
@@ -39,10 +36,6 @@ class BasecrmCreateContactMapperTest extends KernelTestCaseAbstract
                 'email'         => 'eml@eml.com',
                 'first_name'    => 'first',
                 'last_name'     => 'last',
-                'custom_fields' => [
-                    CleverCustomKeysEnum::UNSUBSCRIBE => TRUE,
-                    CleverCustomKeysEnum::HARD_BOUNCE => FALSE,
-                ],
             ],
         ];
 

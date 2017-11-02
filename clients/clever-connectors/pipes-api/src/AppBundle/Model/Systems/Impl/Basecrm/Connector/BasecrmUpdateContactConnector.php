@@ -7,6 +7,7 @@ use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 
 /**
  * Class BasecrmUpdateContactConnector
@@ -35,7 +36,7 @@ class BasecrmUpdateContactConnector extends BasecrmUpdateContactConnectorAbstrac
     public function processAction(ProcessDto $dto): ProcessDto
     {
         $systemInstall = $this->systemInstallRepository->getSystemInstallFromHeaders($dto->getHeaders());
-        $requestDto    = $this->system->getRequestDtoNonSync($systemInstall, 'PUT');
+        $requestDto    = $this->system->getRequestDtoNonSync($systemInstall, CurlManager::METHOD_PUT);
 
         $data = json_decode($dto->getData(), TRUE);
 

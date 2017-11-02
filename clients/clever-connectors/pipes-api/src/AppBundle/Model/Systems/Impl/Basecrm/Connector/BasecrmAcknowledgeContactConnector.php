@@ -10,6 +10,7 @@ use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Commons\Utils\PipesHeaders;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
@@ -104,7 +105,7 @@ class BasecrmAcknowledgeContactConnector implements ConnectorInterface
             $dto->setHeaders(array_merge($dto->getHeaders(), $headers));
         } else {
             $systemInstall = $this->systemInstallRepository->getSystemInstallFromHeaders($dto->getHeaders());
-            $requestDto    = $this->system->getRequestDto($systemInstall, 'POST');
+            $requestDto    = $this->system->getRequestDto($systemInstall, CurlManager::METHOD_POST);
             $requestDto->setBody(json_encode([
                 'data' => [
                     'ack_keys' => [

@@ -13,6 +13,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Crypt\CryptManager;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
@@ -101,7 +102,7 @@ class BasecrmQueueContactConnector implements ConnectorInterface
     private function createQueue(ProcessDto $processDto, SystemInstall $systemInstall): void
     {
         $uuid = uniqid();
-        $dto  = $this->system->getRequestDtoNonSync($systemInstall, 'POST');
+        $dto  = $this->system->getRequestDtoNonSync($systemInstall, CurlManager::METHOD_POST);
         $dto->setDebugInfo(CMHeaders::debugInfo($processDto->getHeaders()))
             ->setHeaders(array_merge($dto->getHeaders(), [
                 'X-Basecrm-Device-UUID' => $uuid,

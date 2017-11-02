@@ -6,6 +6,7 @@ use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 
 /**
  * Class BasecrmCreateContactConnector
@@ -34,7 +35,7 @@ class BasecrmCreateContactConnector extends BasecrmUpdateContactConnectorAbstrac
     public function processAction(ProcessDto $dto): ProcessDto
     {
         $systemInstall = $this->systemInstallRepository->getSystemInstallFromHeaders($dto->getHeaders());
-        $requestDto    = $this->system->getRequestDtoNonSync($systemInstall, 'POST');
+        $requestDto    = $this->system->getRequestDtoNonSync($systemInstall, CurlManager::METHOD_POST);
         $uri           = new Uri(rtrim($requestDto->getUri(TRUE), '/') . self::SUB_URL);
 
         $requestDto->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()))
