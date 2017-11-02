@@ -1,5 +1,5 @@
-import Container from "lib-nodejs/dist/src/container/Container";
-import IMetrics from "lib-nodejs/dist/src/metrics/IMetrics";
+import {Container} from "hb-utils/dist/lib/Container";
+import {IMetrics} from "metrics-sender/dist/lib/metrics/IMetrics";
 import * as os from "os";
 import {mongoStorageOptions, probeOptions, repeaterOptions} from "./config";
 import DIContainer from "./DIContainer";

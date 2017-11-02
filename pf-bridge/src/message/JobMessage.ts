@@ -1,4 +1,4 @@
-import TimeUtils from "lib-nodejs/dist/src/utils/TimeUtils";
+import {TimeUtils} from "hb-utils/dist/lib/TimeUtils";
 import {INodeLabel} from "../topology/Configurator";
 import AMessage from "./AMessage";
 import Headers from "./Headers";

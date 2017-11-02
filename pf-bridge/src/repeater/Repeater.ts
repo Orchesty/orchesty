@@ -2,7 +2,7 @@ import {Channel, Message, Options} from "amqplib";
 import AssertionPublisher from "amqplib-plus/dist/lib/AssertPublisher";
 import AMQPConnection, {createChannelCallback} from "amqplib-plus/dist/lib/Connection";
 import SimpleConsumer from "amqplib-plus/dist/lib/SimpleConsumer";
-import ObjectUtils from "lib-nodejs/dist/src/utils/ObjectUtils";
+import {ObjectUtils} from "hb-utils/dist/lib/ObjectUtils";
 import Headers from "../message/Headers";
 import logger from "./../logger/Logger";
 import IMessageStorage from "./IMessageStorage";

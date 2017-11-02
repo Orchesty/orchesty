@@ -6,7 +6,6 @@ import Connection from "amqplib-plus/dist/lib/Connection";
 import Publisher from "amqplib-plus/dist/lib/Publisher";
 import SimpleConsumer from "amqplib-plus/dist/lib/SimpleConsumer";
 import {Replies} from "amqplib/properties";
-import logger from "lib-nodejs/dist/src/logger/Logger";
 import {amqpConnectionOptions} from "../../../src/config";
 import {ResultCode} from "../../../src/message/ResultCode";
 import {default as Counter, ICounterProcessInfo} from "../../../src/topology/counter/Counter";
@@ -272,8 +271,6 @@ describe("Counter", () => {
 
         let resultsReceived = 0;
         const evaluateTest = (info: ICounterProcessInfo) => {
-            logger.info("Result message received", info);
-
             switch (info.process_id) {
                 case "test_job_123":
                     assert.equal(info.total, 3);
@@ -361,13 +358,9 @@ describe("Counter", () => {
                     promises.push(
                         publisher.sendToQueue(counterSettings.sub.queue.name, new Buffer(JSON.stringify(ev[0])), ev[1]),
                     );
-                    logger.info("Node message published.", JSON.stringify(ev[1]), JSON.stringify(ev[0]));
                 });
 
                 return Promise.all(promises);
-            })
-            .then(() => {
-                logger.info("All event messages published.");
             });
     });
 });

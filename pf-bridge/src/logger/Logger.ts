@@ -1,4 +1,4 @@
-import Sender from "lib-nodejs/dist/src/udp/Sender";
+import {Sender} from "metrics-sender/dist/lib/udp/Sender";
 import * as os from "os";
 import {loggerOptions} from "../config";
 import JobMessage from "../message/JobMessage";
