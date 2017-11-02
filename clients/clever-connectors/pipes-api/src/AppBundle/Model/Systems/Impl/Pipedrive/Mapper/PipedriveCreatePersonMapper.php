@@ -60,14 +60,14 @@ class PipedriveCreatePersonMapper implements CustomNodeInterface
             $fields['name'] .= $data[CleverFieldsEnum::LAST_NAME];
         }
 
-        try {
-            $unHash   = $this->getHash(CleverCustomKeysEnum::UNSUBSCRIBE, $systemInstall);
-            $hardHash = $this->getHash(CleverCustomKeysEnum::HARD_BOUNCE, $systemInstall);
+        $unHash   = $this->getHash(CleverCustomKeysEnum::UNSUBSCRIBE, $systemInstall);
+        $hardHash = $this->getHash(CleverCustomKeysEnum::HARD_BOUNCE, $systemInstall);
 
+        if (!empty($unHash)) {
+            $fields[$unHash] = 'false';
+        }
+        if (!empty($hardHash)) {
             $fields[$hardHash] = 'false';
-            $fields[$unHash]   = 'false';
-        } catch (SystemException $e) {
-            //Ignore missing fields
         }
 
         return $dto->setData(json_encode($fields));
@@ -83,10 +83,6 @@ class PipedriveCreatePersonMapper implements CustomNodeInterface
     private function getHash(string $key, SystemInstall $systemInstall): string
     {
         $hash = $systemInstall->getSettings()[$key] ?? '';
-        if (empty($hash)) {
-            throw new SystemException('Missing custom_field\'s hash in Pipedrive systemInstall.',
-                SystemException::MISSING_DATA);
-        }
 
         return $hash;
     }

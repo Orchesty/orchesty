@@ -11,6 +11,7 @@ use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
@@ -72,7 +73,7 @@ class PipedriveUpdatePersonConnector implements ConnectorInterface
     {
         $systemInstall = $this->systemInstallRepository->getSystemInstallFromHeaders($dto->getHeaders());
         $sett          = $systemInstall->getSettings();
-        $requestDto    = $this->system->getRequestDto($systemInstall, 'PUT');
+        $requestDto    = $this->system->getRequestDto($systemInstall, CurlManager::METHOD_PUT);
         $requestDto->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()));
 
         $data = json_decode($dto->getData(), TRUE);
