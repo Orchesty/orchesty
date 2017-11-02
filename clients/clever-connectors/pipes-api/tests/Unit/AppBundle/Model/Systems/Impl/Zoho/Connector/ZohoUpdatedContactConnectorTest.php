@@ -1,12 +1,13 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Unit\AppBundle\Model\Systems\Impl\Zoho\Contact;
+namespace Tests\Unit\AppBundle\Model\Systems\Impl\Zoho\Connector;
 
-use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Document\LastSync;
+use CleverConnectors\AppBundle\Model\LastSync\LastSyncManager;
 use CleverConnectors\AppBundle\Model\ProgressCounter\ProgressCounterService;
-use CleverConnectors\AppBundle\Model\Systems\Impl\Zoho\Connector\ZohoSyncContactConnector;
-use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
-use Doctrine\ODM\MongoDB\DocumentManager;
+use CleverConnectors\AppBundle\Model\Systems\Impl\Zoho\Connector\ZohoUpdatedContactConnector;
+use DateTime;
+use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Crypt\CryptManager;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
@@ -14,17 +15,21 @@ use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSenderFactory;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use PHPUnit_Framework_MockObject_MockObject;
 use React\EventLoop\Factory;
-use RingCentral\Psr7\Response;
 use Tests\ConnectorTestCaseAbstract;
 use function React\Promise\resolve;
 
 /**
- * Class ZohoSyncContactConnectorTest
+ * Class ZohoUpdatedContactConnectorTest
  *
  * @package Tests\Unit\AppBundle\Model\Systems\Impl\Zoho\Contact
  */
-final class ZohoSyncContactConnectorTest extends ConnectorTestCaseAbstract
+final class ZohoUpdatedContactConnectorTest extends ConnectorTestCaseAbstract
 {
+
+    /**
+     * @var DateTime
+     */
+    private $lastTime;
 
     /**
      *
@@ -71,17 +76,17 @@ final class ZohoSyncContactConnectorTest extends ConnectorTestCaseAbstract
     }
 
     /**
-     * @return ZohoSyncContactConnector|PHPUnit_Framework_MockObject_MockObject
+     * @return ZohoUpdatedContactConnector|PHPUnit_Framework_MockObject_MockObject
      */
-    private function mockResponses(): ZohoSyncContactConnector
+    private function mockResponses(): ZohoUpdatedContactConnector
     {
         $processCounter = $this->createMock(ProgressCounterService::class);
         $processCounter->method('setTotal')->willReturn(TRUE);
 
-        $conn = $this->getMockBuilder(ZohoSyncContactConnector::class)->setConstructorArgs([
+        $conn = $this->getMockBuilder(ZohoUpdatedContactConnector::class)->setConstructorArgs([
             $this->container->get('systems.zoho'),
             $this->createMock(CurlSenderFactory::class),
-            $this->mockDM(),
+            $this->mockLastSync(),
             $processCounter,
         ])->setMethods(['fetchData'])->getMock();
 
@@ -91,7 +96,10 @@ final class ZohoSyncContactConnectorTest extends ConnectorTestCaseAbstract
             ->method('fetchData')->will($this->returnCallback(
                 function ($sender, RequestDto $dto) use ($test) {
                     $expt = new RequestDto('GET',
-                        new Uri('https://crm.zoho.eu/crm/private/json/Contacts/getRecords?authtoken=token&scope=crmapi&fromIndex=0&toIndex=49'));
+                        new Uri(sprintf(
+                            'https://crm.zoho.eu/crm/private/json/Contacts/getRecords?authtoken=token&scope=crmapi&fromIndex=0&toIndex=49&lastModifiedTime=%s',
+                            $this->lastTime->format('Y-m-d+H:i:s')
+                        )));
                     $expt->setHeaders([
                         'Content-Type' => 'application/json',
                     ]);
@@ -106,7 +114,10 @@ final class ZohoSyncContactConnectorTest extends ConnectorTestCaseAbstract
             ->method('fetchData')->will($this->returnCallback(
                 function ($sender, RequestDto $dto) use ($test) {
                     $expt = new RequestDto('GET',
-                        new Uri('https://crm.zoho.eu/crm/private/json/Contacts/getRecords?authtoken=token&scope=crmapi&fromIndex=50&toIndex=99'));
+                        new Uri(sprintf(
+                            'https://crm.zoho.eu/crm/private/json/Contacts/getRecords?authtoken=token&scope=crmapi&fromIndex=50&toIndex=99&lastModifiedTime=%s',
+                            $this->lastTime->format('Y-m-d+H:i:s')
+                        )));
                     $expt->setHeaders([
                         'Content-Type' => 'application/json',
                     ]);
@@ -121,23 +132,16 @@ final class ZohoSyncContactConnectorTest extends ConnectorTestCaseAbstract
     }
 
     /**
-     * @return DocumentManager|PHPUnit_Framework_MockObject_MockObject
+     * @return LastSyncManager|PHPUnit_Framework_MockObject_MockObject
      */
-    private function mockDM(): DocumentManager
+    private function mockLastSync(): LastSyncManager
     {
-        $sys = new SystemInstall();
-        $sys->setUser('user')
-            ->setToken('token')
-            ->setSystem('system')
-            ->setSettings(['auth_token' => 'token']);
+        $this->lastTime = new DateTime('-5 days');
 
-        $repo = $this->createMock(SystemInstallRepository::class);
-        $repo->method('getSystemInstallFromHeaders')->willReturn($sys);
+        $last = $this->createMock(LastSyncManager::class);
+        $last->method('getLastSync')->willReturn((new LastSync())->setTimestamp($this->lastTime));
 
-        $dm = $this->createMock(DocumentManager::class);
-        $dm->method('getRepository')->willReturn($repo);
-
-        return $dm;
+        return $last;
     }
 
 }

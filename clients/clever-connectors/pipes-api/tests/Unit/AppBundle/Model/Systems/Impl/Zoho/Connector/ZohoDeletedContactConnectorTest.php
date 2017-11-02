@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Unit\AppBundle\Model\Systems\Impl\Zoho\Contact;
+namespace Tests\Unit\AppBundle\Model\Systems\Impl\Zoho\Connector;
 
 use CleverConnectors\AppBundle\Document\LastSync;
 use CleverConnectors\AppBundle\Model\LastSync\LastSyncManager;
 use CleverConnectors\AppBundle\Model\ProgressCounter\ProgressCounterService;
-use CleverConnectors\AppBundle\Model\Systems\Impl\Zoho\Connector\ZohoDeleteContactConnector;
+use CleverConnectors\AppBundle\Model\Systems\Impl\Zoho\Connector\ZohoDeletedContactConnector;
 use DateTime;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\Uri;
@@ -19,11 +19,11 @@ use Tests\ConnectorTestCaseAbstract;
 use function React\Promise\resolve;
 
 /**
- * Class ZohoDeleteContactConnectorTest
+ * Class ZohoDeletedContactConnectorTest
  *
  * @package Tests\Unit\AppBundle\Model\Systems\Impl\Zoho\Contact
  */
-final class ZohoDeleteContactConnectorTest extends ConnectorTestCaseAbstract
+final class ZohoDeletedContactConnectorTest extends ConnectorTestCaseAbstract
 {
 
     /**
@@ -76,14 +76,14 @@ final class ZohoDeleteContactConnectorTest extends ConnectorTestCaseAbstract
     }
 
     /**
-     * @return ZohoDeleteContactConnector|PHPUnit_Framework_MockObject_MockObject
+     * @return ZohoDeletedContactConnector|PHPUnit_Framework_MockObject_MockObject
      */
-    private function mockResponses(): ZohoDeleteContactConnector
+    private function mockResponses(): ZohoDeletedContactConnector
     {
         $processCounter = $this->createMock(ProgressCounterService::class);
         $processCounter->method('setTotal')->willReturn(TRUE);
 
-        $conn = $this->getMockBuilder(ZohoDeleteContactConnector::class)->setConstructorArgs([
+        $conn = $this->getMockBuilder(ZohoDeletedContactConnector::class)->setConstructorArgs([
             $this->container->get('systems.zoho'),
             $this->createMock(CurlSenderFactory::class),
             $this->mockLastSync(),

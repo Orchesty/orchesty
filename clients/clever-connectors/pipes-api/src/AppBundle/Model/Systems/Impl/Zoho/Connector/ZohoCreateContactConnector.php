@@ -3,8 +3,6 @@
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Zoho\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
-use CleverConnectors\AppBundle\Enum\CleverCustomKeysEnum;
-use CleverConnectors\AppBundle\Enum\CleverFieldsEnum;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Zoho\ZohoSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
@@ -17,16 +15,17 @@ use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
 use Nette\Utils\Json;
+use Nette\Utils\Strings;
 
 /**
- * Class ZohoUpdateContactConnector
+ * Class ZohoCreateContactConnector
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Zoho\Connector
  */
-class ZohoUpdateContactConnector implements ConnectorInterface
+class ZohoCreateContactConnector implements ConnectorInterface
 {
 
-    private const URL = '%s&id=%s&newFormat=1&xmlData=%s';
+    private const URL = '%s&newFormat=1&xmlData=%s';
 
     /**
      * @var ZohoSystem
@@ -62,7 +61,7 @@ class ZohoUpdateContactConnector implements ConnectorInterface
      */
     public function getId(): string
     {
-        return 'zoho-update-contact-connector';
+        return 'zoho-create-contact-connector';
     }
 
     /**
@@ -73,36 +72,33 @@ class ZohoUpdateContactConnector implements ConnectorInterface
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {
-
         $data = Json::decode($dto->getData(), TRUE);
 
-        if (!is_array($data) || !array_key_exists(CleverFieldsEnum::FOREIGN_ID, $data)) {
+        if (!is_array($data) || !array_key_exists('xml', $data) || !Strings::contains($data['xml'], 'Email')) {
             throw new CleverConnectorsException(
-                'Missing data or required field _foreign_id',
+                'Missing data or required field email',
                 CleverConnectorsException::MISSING_DATA
             );
         }
 
-        /** @var string $eventType */
-        $eventType     = CMHeaders::get(CMHeaders::CM_EVENT_TYPE, $dto->getHeaders());
         $systemInstall = $this->systemInstallRepository->getSystemInstallFromHeaders($dto->getHeaders());
         $requestDto    = $this->system->getRequestDto($systemInstall, 'POST');
-        $url           = sprintf(
-            self::URL,
-            urldecode($requestDto->getUri(TRUE)),
-            $data[CleverFieldsEnum::FOREIGN_ID],
-            sprintf(
-                '<Contacts><row no="1"><FL val="%s">1</FL></row></Contacts>',
-                CleverCustomKeysEnum::getFromType($eventType)
-            )
-        );
+        $url           = sprintf(self::URL, urldecode($requestDto->getUri(TRUE)), $data['xml']);
         $requestDto
-            ->setUri(new Uri(sprintf($url, 'updateRecords')))
+            ->setUri(new Uri(sprintf($url, 'insertRecords')))
             ->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()));
 
-        $response = $this->manager->send($requestDto);
+        $response  = $this->manager->send($requestDto);
+        $innerData = Json::decode($response->getBody(), TRUE);
 
-        return $dto->setData($response->getBody());
+        if (!is_array($innerData) || !isset($innerData['response']['result']['recorddetail']['FL'][0]['content'])) {
+            throw new CleverConnectorsException(
+                'Missing data or required field response_result_recorddetail_FL_0_content',
+                CleverConnectorsException::MISSING_DATA
+            );
+        }
+
+        return $dto->setData(Json::encode(['id' => $innerData['response']['result']['recorddetail']['FL'][0]['content']]));
     }
 
     /**

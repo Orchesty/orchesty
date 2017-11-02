@@ -8,11 +8,11 @@ use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
 
 /**
- * Class ZohoDeleteContactMapper
+ * Class ZohoDeletedContactMapper
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Zoho\Mapper
  */
-class ZohoDeleteContactMapper implements CustomNodeInterface
+class ZohoDeletedContactMapper implements CustomNodeInterface
 {
 
     /**

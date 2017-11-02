@@ -1,0 +1,74 @@
+{
+  "response": {
+    "result": {
+      "Contacts": {
+        "row": {
+          "no": "1",
+          "FL": [
+            {
+              "val": "CONTACTID",
+              "content": "76762000000075653"
+            },
+            {
+              "val": "SMOWNERID",
+              "content": "76762000000075011"
+            },
+            {
+              "val": "Contact Owner",
+              "content": "Radek M"
+            },
+            {
+              "val": "First Name",
+              "content": "a"
+            },
+            {
+              "val": "Last Name",
+              "content": "a"
+            },
+            {
+              "val": "Full Name",
+              "content": "a a"
+            },
+            {
+              "val": "Email",
+              "content": "a@a.com"
+            },
+            {
+              "val": "Email Opt Out",
+              "content": "false"
+            },
+            {
+              "val": "SMCREATORID",
+              "content": "76762000000075011"
+            },
+            {
+              "val": "Created By",
+              "content": "Radek M"
+            },
+            {
+              "val": "MODIFIEDBY",
+              "content": "76762000000075011"
+            },
+            {
+              "val": "Modified By",
+              "content": "Radek M"
+            },
+            {
+              "val": "Created Time",
+              "content": "2017-10-31 14:27:38"
+            },
+            {
+              "val": "Modified Time",
+              "content": "2017-10-31 14:27:38"
+            },
+            {
+              "val": "Last Activity Time",
+              "content": "2017-10-31 14:27:38"
+            }
+          ]
+        }
+      }
+    },
+    "uri": "/crm/private/json/Contacts/getRecordById"
+  }
+}

@@ -3,9 +3,14 @@
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Zoho;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Enum\CleverCustomKeysEnum;
 use CleverConnectors\AppBundle\Enum\SystemTypeEnum;
+use CleverConnectors\AppBundle\Model\CMEvents\CMEventObject;
+use CleverConnectors\AppBundle\Model\CMEvents\CMEventSystemInterface;
+use CleverConnectors\AppBundle\Model\CMEvents\Traits\CMEventSystemTrait;
 use CleverConnectors\AppBundle\Model\Form\Field;
 use CleverConnectors\AppBundle\Model\Form\Form;
+use CleverConnectors\AppBundle\Model\Requester\RequesterInterface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\AuthorizationInterface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\Traits\AuthorizationTrait;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
@@ -18,12 +23,26 @@ use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Zoho
  */
-class ZohoSystem implements SystemInterface, AuthorizationInterface
+class ZohoSystem implements SystemInterface, AuthorizationInterface, CMEventSystemInterface
 {
 
     use AuthorizationTrait;
+    use CMEventSystemTrait;
 
     public const AUTH_TOKEN = 'auth_token';
+
+    /**
+     * ZohoSystem constructor.
+     */
+    public function __construct()
+    {
+        $this->addCMEvent(new CMEventObject('', SystemInstall::EVENT_CREATE, ''));
+        $this->addCMEvent(new CMEventObject(CleverCustomKeysEnum::UNSUBSCRIBE, SystemInstall::EVENT_UNSUBSCRIBE, ''));
+        $this->addCMEvent(new CMEventObject(CleverCustomKeysEnum::HARD_BOUNCE, SystemInstall::EVENT_HARD_BOUNCE, ''));
+
+        $this->topologyNames['zoho-unsubscribe-contact'] = 'zoho-update-contact';
+        $this->topologyNames['zoho-hard-bounce-contact'] = 'zoho-update-contact';
+    }
 
     /**
      * @return string
@@ -54,7 +73,7 @@ class ZohoSystem implements SystemInterface, AuthorizationInterface
      */
     public function getDescription(): string
     {
-        return 'ZOHO system';
+        return 'ZOHO';
     }
 
     /**
@@ -92,14 +111,13 @@ class ZohoSystem implements SystemInterface, AuthorizationInterface
      */
     public function getRequestDto(SystemInstall $systemInstall, string $method): RequestDto
     {
-        if (!$this->isAuthorized($systemInstall)) {
-            throw new SystemException('ZOHO system is unauthorize.', SystemException::SYSTEM_IS_UNAUTHORIZED);
-        }
+        $this->continueOnAuthorized($systemInstall);
 
         $sett = $systemInstall->getSettings();
-        $dto = new RequestDto('GET', new Uri(
-            sprintf('https://crm.zoho.eu/crm/private/json/Contacts/%%s?authtoken=%s&scope=crmapi', $sett[self::AUTH_TOKEN])
-        ));
+        $dto  = new RequestDto('GET', new Uri(sprintf(
+            'https://crm.zoho.eu/crm/private/json/Contacts/%%s?authtoken=%s&scope=crmapi',
+            $sett[self::AUTH_TOKEN]
+        )));
         $dto->setHeaders($this->getHeaders());
 
         return $dto;
@@ -120,10 +138,33 @@ class ZohoSystem implements SystemInterface, AuthorizationInterface
             TRUE
         );
 
-        $form = new Form();
-        $form->addField($field1);
+        $field2 = new Field(
+            Field::CHECKBOX,
+            SystemInstall::EVENT_CREATE,
+            'Create event',
+            $systemInstall->isEventCreate()
+        );
 
-        return $form->toArray();
+        $field3 = new Field(
+            Field::CHECKBOX,
+            SystemInstall::EVENT_UNSUBSCRIBE,
+            'UnSubscribe event',
+            $systemInstall->isEventUnsubscribe()
+        );
+
+        $field4 = new Field(
+            Field::CHECKBOX,
+            SystemInstall::EVENT_HARD_BOUNCE,
+            'Hard Bounce event',
+            $systemInstall->isEventHardBounce()
+        );
+
+        return (new Form())
+            ->addField($field1)
+            ->addField($field2)
+            ->addField($field3)
+            ->addField($field4)
+            ->toArray();
     }
 
     /**
@@ -138,6 +179,16 @@ class ZohoSystem implements SystemInterface, AuthorizationInterface
         return [
             'Content-Type' => 'application/json',
         ];
+    }
+
+    /**
+     * @param SystemInstall $systemInstall
+     *
+     * @return RequesterInterface|null
+     */
+    public function getCMEventRequester(SystemInstall $systemInstall): ?RequesterInterface
+    {
+        return NULL;
     }
 
 }

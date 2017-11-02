@@ -11,7 +11,7 @@ use Tests\ConnectorTestCaseAbstract;
  *
  * @package Tests\Unit\AppBundle\Model\Systems\Impl\Zoho\Mapper
  */
-final class ZohoUpdateContactMapperTest extends ConnectorTestCaseAbstract
+final class ZohoUpdatedContactMapperTest extends ConnectorTestCaseAbstract
 {
 
     /**
@@ -19,7 +19,7 @@ final class ZohoUpdateContactMapperTest extends ConnectorTestCaseAbstract
      */
     public function testProcess(): void
     {
-        $node = $this->container->get('hbpf.custom_node.zoho-update-contact-mapper');
+        $node = $this->container->get('hbpf.custom_node.zoho-updated-contact-mapper');
 
         $response = json_decode(
             $node->process((new ProcessDto())->setData($this->getRequest('singleContact.json')))

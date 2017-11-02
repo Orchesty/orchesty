@@ -9,11 +9,11 @@ use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
 
 /**
- * Class ZohoDeleteContactConnector
+ * Class ZohoDeletedContactConnector
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Zoho\Connector
  */
-class ZohoDeleteContactConnector extends ZohoCronConnectorAbstract
+class ZohoDeletedContactConnector extends ZohoCronConnectorAbstract
 {
 
     /**
@@ -21,7 +21,7 @@ class ZohoDeleteContactConnector extends ZohoCronConnectorAbstract
      */
     public function getId(): string
     {
-        return 'zoho-sync-contact-connector';
+        return 'zoho-deleted-contact-connector';
     }
 
     /**

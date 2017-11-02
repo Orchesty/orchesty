@@ -12,26 +12,51 @@ services:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@cc.progress_counter.progress_counter_service'
 
+    hbpf.connector.zoho-get-contact-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Zoho\Connector\ZohoGetContactConnector
+        arguments:
+            - '@systems.zoho'
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.transport.curl_manager'
+
+    hbpf.connector.zoho-create-contact-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Zoho\Connector\ZohoCreateContactConnector
+        arguments:
+            - '@systems.zoho'
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.transport.curl_manager'
+
     hbpf.connector.zoho-update-contact-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Zoho\Connector\ZohoUpdateContactConnector
         arguments:
             - '@systems.zoho'
-            - '@hbpf.transport.async_curl_factory'
-            - '@cc.last_sync.manager'
-            - '@cc.progress_counter.progress_counter_service'
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.transport.curl_manager'
 
-    hbpf.connector.zoho-delete-contact-connector:
-        class: CleverConnectors\AppBundle\Model\Systems\Impl\Zoho\Connector\ZohoUpdateContactConnector
+    hbpf.connector.zoho-updated-contact-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Zoho\Connector\ZohoUpdatedContactConnector
         arguments:
             - '@systems.zoho'
             - '@hbpf.transport.async_curl_factory'
             - '@cc.last_sync.manager'
             - '@cc.progress_counter.progress_counter_service'
 
-    hbpf.custom_node.zoho-update-contact-mapper:
-        class: CleverConnectors\AppBundle\Model\Systems\Impl\Zoho\Mapper\ZohoUpdateContactMapper
+    hbpf.connector.zoho-deleted-contact-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Zoho\Connector\ZohoUpdatedContactConnector
+        arguments:
+            - '@systems.zoho'
+            - '@hbpf.transport.async_curl_factory'
+            - '@cc.last_sync.manager'
+            - '@cc.progress_counter.progress_counter_service'
+
+    hbpf.custom_node.zoho-create-contact-mapper:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Zoho\Mapper\ZohoCreateContactMapper
         arguments:
 
-    hbpf.custom_node.zoho-delete-contact-mapper:
-        class: CleverConnectors\AppBundle\Model\Systems\Impl\Zoho\Mapper\ZohoDeleteContactMapper
+    hbpf.custom_node.zoho-updated-contact-mapper:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Zoho\Mapper\ZohoUpdatedContactMapper
+        arguments:
+
+    hbpf.custom_node.zoho-deleted-contact-mapper:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Zoho\Mapper\ZohoDeletedContactMapper
         arguments:

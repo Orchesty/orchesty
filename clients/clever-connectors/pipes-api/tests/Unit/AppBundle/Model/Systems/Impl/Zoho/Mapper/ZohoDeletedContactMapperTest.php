@@ -7,11 +7,11 @@ use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Tests\ConnectorTestCaseAbstract;
 
 /**
- * Class ZohoDeleteContactMapperTest
+ * Class ZohoDeletedContactMapperTest
  *
  * @package Tests\Unit\AppBundle\Model\Systems\Impl\Zoho\Mapper
  */
-final class ZohoDeleteContactMapperTest extends ConnectorTestCaseAbstract
+final class ZohoDeletedContactMapperTest extends ConnectorTestCaseAbstract
 {
 
     /**
@@ -19,7 +19,7 @@ final class ZohoDeleteContactMapperTest extends ConnectorTestCaseAbstract
      */
     public function testProcess(): void
     {
-        $node = $this->container->get('hbpf.custom_node.zoho-delete-contact-mapper');
+        $node = $this->container->get('hbpf.custom_node.zoho-deleted-contact-mapper');
 
         $response = json_decode(
             $node->process((new ProcessDto())->setData($this->getRequest('singleDeletedContactId.json')))

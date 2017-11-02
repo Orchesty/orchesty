@@ -1,0 +1,32 @@
+{
+  "response": {
+    "result": {
+      "recorddetail": {
+        "FL": [
+          {
+            "val": "Id",
+            "content": "76762000000080046"
+          },
+          {
+            "val": "Created Time",
+            "content": "2017-10-30 16:44:26"
+          },
+          {
+            "val": "Modified Time",
+            "content": "2017-10-31 10:38:46"
+          },
+          {
+            "val": "Created By",
+            "content": "Radek M"
+          },
+          {
+            "val": "Modified By",
+            "content": "Radek M"
+          }
+        ]
+      },
+      "message": "Record(s) updated successfully"
+    },
+    "uri": "/crm/private/json/Contacts/updateRecords"
+  }
+}
