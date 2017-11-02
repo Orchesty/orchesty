@@ -3,13 +3,18 @@
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Shopify;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Enum\CleverCustomKeysEnum;
 use CleverConnectors\AppBundle\Enum\SystemTypeEnum;
+use CleverConnectors\AppBundle\Model\CMEvents\CMEventObject;
+use CleverConnectors\AppBundle\Model\CMEvents\CMEventSystemInterface;
+use CleverConnectors\AppBundle\Model\CMEvents\Traits\CMEventSystemTrait;
 use CleverConnectors\AppBundle\Model\Form\Field;
 use CleverConnectors\AppBundle\Model\Form\Form;
 use CleverConnectors\AppBundle\Model\Requester\RequesterInterface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\OAuth2Interface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\Traits\AuthorizationTrait;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
+use CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\Requester\ShopifyCmEventRequester;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\Requester\ShopifySubscribeRequester;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\Requester\ShopifyUnsubscribeRequester;
 use CleverConnectors\AppBundle\Model\Webhook\Traits\WebhookSystemTrait;
@@ -27,16 +32,20 @@ use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Shopify
  */
-class ShopifySystem implements WebhookSystemInterface, OAuth2Interface
+class ShopifySystem implements WebhookSystemInterface, OAuth2Interface, CMEventSystemInterface
 {
+
+    use AuthorizationTrait;
+    use WebhookSystemTrait;
+    use CMEventSystemTrait;
 
     public const SYSTEM_URL = 'system_url';
 
     private const API_KEY    = '91f0d11786afbe82fc72d519356bc7f2';
     private const API_SECRET = '469a399914df80fab1e223b18d9d95bc';
 
-    use AuthorizationTrait;
-    use WebhookSystemTrait;
+    private const BASE_URL          = 'https://%s.myshopify.com/';
+    private const CUSTOM_FIELDS_URL = ''; // TODO
 
     /**
      * @var OAuth2Provider
@@ -58,6 +67,22 @@ class ShopifySystem implements WebhookSystemInterface, OAuth2Interface
     function __construct(OAuth2Provider $provider)
     {
         $this->provider = $provider;
+
+        $this->addCMEvent(new CMEventObject('', SystemInstall::EVENT_CREATE, ''));
+        $this->addCMEvent(
+            new CMEventObject(
+                CleverCustomKeysEnum::UNSUBSCRIBE,
+                SystemInstall::EVENT_UNSUBSCRIBE,
+                self::CUSTOM_FIELDS_URL
+            )
+        );
+        $this->addCMEvent(
+            new CMEventObject(
+                CleverCustomKeysEnum::HARD_BOUNCE,
+                SystemInstall::EVENT_HARD_BOUNCE,
+                self::CUSTOM_FIELDS_URL
+            )
+        );
 
         $this->subscriptions[] = new WebhookSubscribes(
             'shopify-create-customer-connector',
@@ -177,8 +202,35 @@ class ShopifySystem implements WebhookSystemInterface, OAuth2Interface
             TRUE
         );
 
+        $field2 = new Field(
+            Field::CHECKBOX,
+            SystemInstall::EVENT_CREATE,
+            'Create event',
+            $systemInstall->isEventCreate(),
+            TRUE
+        );
+
+        $field3 = new Field(
+            Field::CHECKBOX,
+            SystemInstall::EVENT_UNSUBSCRIBE,
+            'Unsubscribe event',
+            $systemInstall->isEventUnsubscribe(),
+            TRUE
+        );
+
+        $field4 = new Field(
+            Field::CHECKBOX,
+            SystemInstall::EVENT_HARD_BOUNCE,
+            'Hard bounce events',
+            $systemInstall->isEventHardBounce(),
+            TRUE
+        );
+
         $form = (new Form())
-            ->addField($field1);
+            ->addField($field1)
+            ->addField($field2)
+            ->addField($field3)
+            ->addField($field4);
 
         return $form->toArray();
     }
@@ -244,11 +296,21 @@ class ShopifySystem implements WebhookSystemInterface, OAuth2Interface
 
         $sett = $systemInstall->getSettings();
 
-        $url = sprintf('https://%s.myshopify.com/', $sett[self::SYSTEM_URL]);
+        $url = sprintf(self::BASE_URL, $sett[self::SYSTEM_URL]);
         $dto = new RequestDto($method, new Uri($url));
         $dto->setHeaders($this->getHeaders($systemInstall));
 
         return $dto;
+    }
+
+    /**
+     * @param SystemInstall $systemInstall
+     *
+     * @return RequesterInterface|null
+     */
+    public function getCMEventRequester(SystemInstall $systemInstall): ?RequesterInterface
+    {
+        return new ShopifyCmEventRequester($systemInstall, $this->getHeaders($systemInstall));
     }
 
     /**
@@ -281,8 +343,8 @@ class ShopifySystem implements WebhookSystemInterface, OAuth2Interface
             self::API_KEY,
             self::API_SECRET,
             AuthorizationUtils::generateUrl(),
-            sprintf('https://%s.myshopify.com/admin/oauth/authorize', $sett[self::SYSTEM_URL]),
-            sprintf('https://%s.myshopify.com/admin/oauth/access_token', $sett[self::SYSTEM_URL])
+            sprintf(self::BASE_URL . 'admin/oauth/authorize', $sett[self::SYSTEM_URL]),
+            sprintf(self::BASE_URL . 'admin/oauth/access_token', $sett[self::SYSTEM_URL])
         );
 
         $dto->setCustomAppDependencies($systemInstall->getUser(), $this->getKey());
