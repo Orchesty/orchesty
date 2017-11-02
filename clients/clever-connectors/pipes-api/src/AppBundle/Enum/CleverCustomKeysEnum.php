@@ -33,15 +33,19 @@ final class CleverCustomKeysEnum extends EnumAbstract
      */
     public static function getFromType(string $eventType): string
     {
-        if ($eventType === SystemInstall::EVENT_UNSUBSCRIBE) {
-            return self::UNSUBSCRIBE;
-        } else if ($eventType === SystemInstall::EVENT_HARD_BOUNCE) {
-            return self::HARD_BOUNCE;
-        }
+        switch ($eventType) {
+            case SystemInstall::EVENT_UNSUBSCRIBE:
+                return self::UNSUBSCRIBE;
 
-        throw new CleverConnectorsException(
-            sprintf('Not valid option for field key [%s]', $eventType), CleverConnectorsException::INVALID_ENUM_VALUE
-        );
+            case SystemInstall::EVENT_HARD_BOUNCE:
+                return self::HARD_BOUNCE;
+
+            default:
+                throw new CleverConnectorsException(
+                    sprintf('Not valid option for field key [%s]', $eventType),
+                    CleverConnectorsException::INVALID_ENUM_VALUE
+                );
+        }
     }
 
 }
