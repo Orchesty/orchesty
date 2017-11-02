@@ -50,7 +50,7 @@ final class SystemManagerTest extends DatabaseTestCaseAbstract
      */
     public function testGetSystemsBySystems(): void
     {
-        $this->assertEquals(13, count($this->manager->getSystems()));
+        $this->assertEquals(18, count($this->manager->getSystems()));
     }
 
     /**

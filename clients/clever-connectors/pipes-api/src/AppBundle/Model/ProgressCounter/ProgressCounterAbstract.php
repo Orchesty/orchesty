@@ -8,11 +8,11 @@
 
 namespace CleverConnectors\AppBundle\Model\ProgressCounter;
 
+use Bunny\Client as BunnyClient;
 use CleverConnectors\AppBundle\Enum\ProgressCounterStatusEnum;
 use Hanaboso\PipesFramework\RabbitMq\BunnyManager;
 use Hanaboso\PipesFramework\RabbitMq\Producer\AbstractProducer;
 use Predis\Client;
-use Bunny\Client as BunnyClient;
 
 /**
  * Class ProgressCounterAbstract

@@ -103,6 +103,8 @@ class QuickbooksSyncCustomerConnector extends QuickbooksCustomerConnectorAbstrac
             }
         );
 
+        $this->afterFetch($systemInstall, $dto);
+
         return $promise;
     }
 

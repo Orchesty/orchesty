@@ -135,6 +135,8 @@ abstract class QuickbooksCustomerConnectorAbstract implements BatchInterface, Co
             }
         );
 
+        $this->afterFetch($systemInstall, $dto);
+
         return $promise;
     }
 
