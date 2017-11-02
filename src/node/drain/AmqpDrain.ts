@@ -209,6 +209,7 @@ class AmqpDrain implements IDrain, IPartialForwarder {
      * @param {JobMessage} message
      */
     private forwardToCounterOnly(message: JobMessage): void {
+        message.setMultiplier(0);
         this.counterPublisher.send(message)
             .then(() => {
                 message.setPublishedTime();
