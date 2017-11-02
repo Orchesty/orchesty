@@ -183,6 +183,6 @@ describe("Node with repeater test", () => {
             );
             return publisher.sendToQueue(firstQueue, new Buffer(testMsgContent), { headers: testMsgHeaders.getRaw() });
         });
-    });
+    }).timeout(5000);
 
 });
