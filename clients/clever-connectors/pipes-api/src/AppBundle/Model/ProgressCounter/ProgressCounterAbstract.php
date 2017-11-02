@@ -9,6 +9,7 @@
 namespace CleverConnectors\AppBundle\Model\ProgressCounter;
 
 use CleverConnectors\AppBundle\Enum\ProgressCounterStatusEnum;
+use Hanaboso\PipesFramework\RabbitMq\BunnyManager;
 use Hanaboso\PipesFramework\RabbitMq\Producer\AbstractProducer;
 use Predis\Client;
 
@@ -31,17 +32,23 @@ abstract class ProgressCounterAbstract implements ProgressCounterInterface
      * @var AbstractProducer
      */
     protected $producer;
+    /**
+     * @var BunnyManager
+     */
+    private $bunnyManager;
 
     /**
      * ProgressCounterService constructor.
      *
      * @param Client           $redis
      * @param AbstractProducer $producer
+     * @param BunnyManager     $bunnyManager
      */
-    public function __construct(Client $redis, AbstractProducer $producer)
+    public function __construct(Client $redis, AbstractProducer $producer, BunnyManager $bunnyManager)
     {
-        $this->redis    = $redis;
-        $this->producer = $producer;
+        $this->redis        = $redis;
+        $this->producer     = $producer;
+        $this->bunnyManager = $bunnyManager;
     }
 
     /**
@@ -119,7 +126,13 @@ abstract class ProgressCounterAbstract implements ProgressCounterInterface
     {
         $this->redis->set($this->getKey($processId, self::PROGRESS_COUNTER_TOTAL), $total);
 
-        $this->producer->publish($this->prepareMessage($processId));
+        $this->bunnyManager->createChannel()
+            ->publish(
+                json_encode($this->prepareMessage($processId)),
+                ['content-type' => 'application/json'],
+                '',
+                'pipes.stream'
+            );
     }
 
     /**
