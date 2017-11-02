@@ -9,11 +9,11 @@ use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
 use Nette\Utils\Json;
 
 /**
- * Class BigcommerceUpdateCustomerMapper
+ * Class BigcommerceUpdatedCustomerMapper
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Bigcommerce\Mapper
  */
-class BigcommerceUpdateCustomerMapper implements CustomNodeInterface
+class BigcommerceUpdatedCustomerMapper implements CustomNodeInterface
 {
 
     /**

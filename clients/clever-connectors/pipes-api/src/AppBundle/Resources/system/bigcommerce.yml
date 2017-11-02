@@ -22,19 +22,30 @@ services:
     hbpf.connector.bigcommerce-create-customer-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Bigcommerce\Connector\BigcommerceCreateCustomerConnector
         arguments:
+            - '@systems.bigcommerce'
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.transport.curl_manager'
 
-    hbpf.connector.bigcommerce-update-customer-connector:
-        class: CleverConnectors\AppBundle\Model\Systems\Impl\Bigcommerce\Connector\BigcommerceUpdateCustomerConnector
+    hbpf.connector.bigcommerce-created-customer-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Bigcommerce\Connector\BigcommerceCreatedCustomerConnector
         arguments:
 
-    hbpf.connector.bigcommerce-delete-customer-connector:
-        class: CleverConnectors\AppBundle\Model\Systems\Impl\Bigcommerce\Connector\BigcommerceDeleteCustomerConnector
+    hbpf.connector.bigcommerce-updated-customer-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Bigcommerce\Connector\BigcommerceUpdatedCustomerConnector
         arguments:
 
-    hbpf.custom_node.bigcommerce-update-customer-mapper:
-        class: CleverConnectors\AppBundle\Model\Systems\Impl\Bigcommerce\Mapper\BigcommerceUpdateCustomerMapper
+    hbpf.connector.bigcommerce-deleted-customer-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Bigcommerce\Connector\BigcommerceDeletedCustomerConnector
         arguments:
 
-    hbpf.custom_node.bigcommerce-delete-customer-mapper:
-        class: CleverConnectors\AppBundle\Model\Systems\Impl\Bigcommerce\Mapper\BigcommerceDeleteCustomerMapper
+    hbpf.custom_node.bigcommerce-updated-customer-mapper:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Bigcommerce\Mapper\BigcommerceUpdatedCustomerMapper
+        arguments:
+
+    hbpf.custom_node.bigcommerce-deleted-customer-mapper:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Bigcommerce\Mapper\BigcommerceDeletedCustomerMapper
+        arguments:
+
+    hbpf.custom_node.bigcommerce-create-customer-mapper:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Bigcommerce\Mapper\BigcommerceCreateCustomerMapper
         arguments:

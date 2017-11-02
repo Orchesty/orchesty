@@ -4,6 +4,9 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\Bigcommerce;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\SystemTypeEnum;
+use CleverConnectors\AppBundle\Model\CMEvents\CMEventObject;
+use CleverConnectors\AppBundle\Model\CMEvents\CMEventSystemInterface;
+use CleverConnectors\AppBundle\Model\CMEvents\Traits\CMEventSystemTrait;
 use CleverConnectors\AppBundle\Model\Form\Field;
 use CleverConnectors\AppBundle\Model\Form\Form;
 use CleverConnectors\AppBundle\Model\Requester\RequesterInterface;
@@ -24,7 +27,7 @@ use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Bigcommerce
  */
-class BigcommerceSystem implements WebhookSystemInterface, AuthorizationInterface
+class BigcommerceSystem implements WebhookSystemInterface, AuthorizationInterface, CMEventSystemInterface
 {
 
     public const  STORE_ID     = 'store_id';
@@ -34,6 +37,7 @@ class BigcommerceSystem implements WebhookSystemInterface, AuthorizationInterfac
 
     use AuthorizationTrait;
     use WebhookSystemTrait;
+    use CMEventSystemTrait;
 
     /**
      * BigcommerceSystem constructor.
@@ -41,17 +45,19 @@ class BigcommerceSystem implements WebhookSystemInterface, AuthorizationInterfac
     public function __construct()
     {
         $this->subscriptions[] = new WebhookSubscribes(
-            'bigcommerce-create-customer-connector',
+            'bigcommerce-created-customer-connector',
             TopologyNameUtils::getTopologyName(TopologyNameUtils::CREATED_SUBSCRIBERS, $this->getKey())
         );
         $this->subscriptions[] = new WebhookSubscribes(
-            'bigcommerce-update-customer-connector',
+            'bigcommerce-updated-customer-connector',
             TopologyNameUtils::getTopologyName(TopologyNameUtils::UPDATED_SUBSCRIBERS, $this->getKey())
         );
         $this->subscriptions[] = new WebhookSubscribes(
-            'bigcommerce-delete-customer-connector',
+            'bigcommerce-deleted-customer-connector',
             TopologyNameUtils::getTopologyName(TopologyNameUtils::DELETED_SUBSCRIBERS, $this->getKey())
         );
+
+        $this->addCMEvent(new CMEventObject('', SystemInstall::EVENT_CREATE, ''));
     }
 
     /**
@@ -149,10 +155,19 @@ class BigcommerceSystem implements WebhookSystemInterface, AuthorizationInterfac
             TRUE
         );
 
+        $field4 = new Field(
+            Field::CHECKBOX,
+            SystemInstall::EVENT_CREATE,
+            'CM create event',
+            $systemInstall->isEventCreate(),
+            TRUE
+        );
+
         return (new Form())
             ->addField($field1)
             ->addField($field2)
             ->addField($field3)
+            ->addField($field4)
             ->toArray();
     }
 
@@ -194,6 +209,16 @@ class BigcommerceSystem implements WebhookSystemInterface, AuthorizationInterfac
         return (new RequestDto($method, new Uri(sprintf(
             self::SYSTEM_URL, $systemInstall->getSettings()[self::STORE_ID]
         ))))->setHeaders($this->getHeaders($systemInstall));
+    }
+
+    /**
+     * @param SystemInstall $systemInstall
+     *
+     * @return RequesterInterface|null
+     */
+    public function getCMEventRequester(SystemInstall $systemInstall): ?RequesterInterface
+    {
+        return NULL;
     }
 
     /**

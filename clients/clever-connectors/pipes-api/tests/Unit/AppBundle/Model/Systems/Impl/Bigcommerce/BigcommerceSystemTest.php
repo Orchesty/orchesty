@@ -171,7 +171,7 @@ final class BigcommerceSystemTest extends KernelTestCaseAbstract
     {
         $form = $this->system->getSettingFields($this->systemInstall);
 
-        $this->assertEquals(3, count($form));
+        $this->assertEquals(4, count($form));
         $this->assertEquals([
             0 => [
                 'type'        => 'text',
@@ -198,6 +198,16 @@ final class BigcommerceSystemTest extends KernelTestCaseAbstract
                 'key'         => 'access_token',
                 'label'       => 'Access Token',
                 'value'       => '7ndpkdbqb0h1wycrxhtw43ye0yprtn9',
+                'required'    => TRUE,
+                'read_only'   => FALSE,
+                'disabled'    => FALSE,
+                'description' => '',
+            ],
+            3 => [
+                'type'        => 'checkbox',
+                'key'         => 'eventCreate',
+                'label'       => 'CM create event',
+                'value'       => FALSE,
                 'required'    => TRUE,
                 'read_only'   => FALSE,
                 'disabled'    => FALSE,

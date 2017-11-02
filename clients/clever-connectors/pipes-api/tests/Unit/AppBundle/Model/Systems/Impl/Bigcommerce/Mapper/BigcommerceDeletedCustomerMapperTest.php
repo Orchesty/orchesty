@@ -8,11 +8,11 @@ use Nette\Utils\Json;
 use Tests\ConnectorTestCaseAbstract;
 
 /**
- * Class BigcommerceDeleteCustomerMapperTest
+ * Class BigcommerceDeletedCustomerMapperTest
  *
  * @package Tests\Unit\AppBundle\Model\Systems\Impl\Bigcommerce\Mapper
  */
-final class BigcommerceDeleteCustomerMapperTest extends ConnectorTestCaseAbstract
+final class BigcommerceDeletedCustomerMapperTest extends ConnectorTestCaseAbstract
 {
 
     /**
@@ -20,7 +20,7 @@ final class BigcommerceDeleteCustomerMapperTest extends ConnectorTestCaseAbstrac
      */
     public function testProcess(): void
     {
-        $connector = $this->container->get('hbpf.custom_node.bigcommerce-delete-customer-mapper');
+        $connector = $this->container->get('hbpf.custom_node.bigcommerce-deleted-customer-mapper');
 
         $response = Json::decode($connector->process((new ProcessDto())->setData('{"id":1}'))->getData(), TRUE);
 

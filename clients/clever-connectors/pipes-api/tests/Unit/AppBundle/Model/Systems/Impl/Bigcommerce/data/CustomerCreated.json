@@ -1,0 +1,22 @@
+{
+  "id": 3,
+  "company": "",
+  "first_name": "qwe",
+  "last_name": "asd",
+  "email": "emlf@eml.com",
+  "phone": "",
+  "form_fields": null,
+  "date_created": "Thu, 02 Nov 2017 08:06:45 +0000",
+  "date_modified": "Thu, 02 Nov 2017 08:06:45 +0000",
+  "store_credit": "0.0000",
+  "registration_ip_address": "",
+  "customer_group_id": 0,
+  "notes": "",
+  "tax_exempt_category": "",
+  "reset_pass_on_login": false,
+  "accepts_marketing": false,
+  "addresses": {
+    "url": "https://api.bigcommerce.com/stores/6wwnlbv5q0/v2/customers/3/addresses",
+    "resource": "/customers/3/addresses"
+  }
+}

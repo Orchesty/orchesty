@@ -3,11 +3,11 @@
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Bigcommerce\Connector;
 
 /**
- * Class BigcommerceUpdateCustomerConnector
+ * Class BigcommerceDeletedCustomerConnector
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Bigcommerce\Connector
  */
-class BigcommerceUpdateCustomerConnector extends BigcommerceCustomerConnectorAbstract
+class BigcommerceDeletedCustomerConnector extends BigcommerceCustomerConnectorAbstract
 {
 
     /**
@@ -15,7 +15,7 @@ class BigcommerceUpdateCustomerConnector extends BigcommerceCustomerConnectorAbs
      */
     public function getId(): string
     {
-        return 'bigcommerce-update-customer-connector';
+        return 'bigcommerce-deleted-customer-connector';
     }
 
 }

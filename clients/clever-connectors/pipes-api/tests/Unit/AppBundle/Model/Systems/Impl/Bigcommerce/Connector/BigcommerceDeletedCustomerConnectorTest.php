@@ -2,17 +2,17 @@
 
 namespace Tests\Unit\AppBundle\Model\Systems\Impl\Bigcommerce\Connector;
 
-use CleverConnectors\AppBundle\Model\Systems\Impl\Bigcommerce\Connector\BigcommerceUpdateCustomerConnector;
+use CleverConnectors\AppBundle\Model\Systems\Impl\Bigcommerce\Connector\BigcommerceDeletedCustomerConnector;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Nette\Utils\Json;
 use Tests\ConnectorTestCaseAbstract;
 
 /**
- * Class BigcommerceUpdateCustomerConnectorTest
+ * Class BigcommerceDeletedCustomerConnectorTest
  *
  * @package Tests\Unit\AppBundle\Model\Systems\Impl\Bigcommerce\Connector
  */
-final class BigcommerceUpdateCustomerConnectorTest extends ConnectorTestCaseAbstract
+final class BigcommerceDeletedCustomerConnectorTest extends ConnectorTestCaseAbstract
 {
 
     /**
@@ -20,7 +20,7 @@ final class BigcommerceUpdateCustomerConnectorTest extends ConnectorTestCaseAbst
      */
     public function testProcessEvent(): void
     {
-        $result = Json::decode((new BigcommerceUpdateCustomerConnector())->processEvent(
+        $result = Json::decode((new BigcommerceDeletedCustomerConnector())->processEvent(
             (new ProcessDto())->setData($this->getRequest('BigcommerceWebhookResponse.json'))->setHeaders([])
         )->getData(), TRUE);
 

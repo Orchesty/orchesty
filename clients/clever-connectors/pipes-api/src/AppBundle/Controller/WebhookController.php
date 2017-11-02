@@ -48,7 +48,7 @@ class WebhookController extends FOSRestController
     {
         $this->handler->runWithRequest($request, $topologyName, $nodeName);
 
-        return new Response('res', 200);
+        return new Response('', 200);
     }
 
 }
