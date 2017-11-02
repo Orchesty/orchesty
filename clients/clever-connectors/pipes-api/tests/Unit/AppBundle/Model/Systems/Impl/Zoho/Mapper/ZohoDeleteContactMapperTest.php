@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\AppBundle\Model\Systems\Impl\Zoho\Mapper;
 
+use CleverConnectors\AppBundle\Enum\CleverFieldsEnum;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Tests\ConnectorTestCaseAbstract;
 
@@ -27,9 +28,9 @@ final class ZohoDeleteContactMapperTest extends ConnectorTestCaseAbstract
         );
 
         $expt = [
-            'email'       => '',
-            '_foreign_id' => '85896000000078215',
-            'reactivate'  => FALSE,
+            CleverFieldsEnum::EMAIL       => '',
+            CleverFieldsEnum::FOREIGN_ID  => '85896000000078215',
+            CleverFieldsEnum::REACTIVATE  => FALSE,
         ];
 
         self::assertEquals($expt, $response);

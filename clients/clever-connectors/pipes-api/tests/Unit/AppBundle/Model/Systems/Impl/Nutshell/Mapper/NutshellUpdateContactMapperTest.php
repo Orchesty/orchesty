@@ -4,7 +4,6 @@ namespace Tests\Unit\AppBundle\Model\Systems\Impl\Nutshell\Mapper;
 
 use CleverConnectors\AppBundle\Enum\CleverFieldsEnum;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
-use Hanaboso\PipesFramework\Commons\Utils\PipesHeaders;
 use Nette\Utils\Json;
 use Tests\ConnectorTestCaseAbstract;
 
@@ -23,40 +22,23 @@ final class NutshellUpdateContactMapperTest extends ConnectorTestCaseAbstract
     {
         $connector = $this->container->get('hbpf.custom_node.nutshell-update-contact-mapper');
 
-        $response = Json::decode($connector->process(
-            (new ProcessDto())->setData(
-                str_replace('"create"', '"update"', $this->getRequest('NutshellWebhookResponse.json'))
-            ))->getData(), TRUE
-        );
+        $response = Json::decode($connector->process((new ProcessDto())->setData(Json::encode([
+            CleverFieldsEnum::FOREIGN_ID => 1,
+            'result'                     => ['rev' => 1],
+        ])))->getData(), TRUE);
 
         $this->assertEquals([
-            CleverFieldsEnum::EMAIL      => 'User01@User01.com',
-            CleverFieldsEnum::FIRST_NAME => 'User01',
-            CleverFieldsEnum::LAST_NAME  => 'User01',
-            CleverFieldsEnum::FOREIGN_ID => '1',
-            CleverFieldsEnum::REACTIVATE => TRUE,
+            'jsonrpc' => '2.0',
+            'id'      => 'contact',
+            'method'  => 'editContact',
+            'params'  => [
+                'contactId' => 1,
+                'rev'       => 1,
+                'contact'   => [
+                    'customFields' => [],
+                ],
+            ],
         ], $response);
-    }
-
-    /**
-     *
-     */
-    public function testProcessInvalid(): void
-    {
-        $connector = $this->container->get('hbpf.custom_node.nutshell-update-contact-mapper');
-
-        $dto = $connector->process(
-            (new ProcessDto())->setData(
-                $this->getRequest('NutshellWebhookResponse.json')
-            )->setHeaders([])
-        );
-
-        $this->assertEquals([
-            PipesHeaders::createKey(PipesHeaders::RESULT_CODE)    => 1003,
-            PipesHeaders::createKey(PipesHeaders::RESULT_STATUS)  => 'DO_NOT_CONTINUE',
-            PipesHeaders::createKey(PipesHeaders::RESULT_MESSAGE) => 'Data does not contains contact update event',
-            PipesHeaders::createKey(PipesHeaders::RESULT_DETAIL)  => '',
-        ], $dto->getHeaders());
     }
 
 }

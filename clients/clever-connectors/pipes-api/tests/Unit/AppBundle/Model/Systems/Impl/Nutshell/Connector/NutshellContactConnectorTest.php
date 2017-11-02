@@ -2,7 +2,7 @@
 
 namespace Tests\Unit\AppBundle\Model\Systems\Impl\Nutshell\Connector;
 
-use CleverConnectors\AppBundle\Model\Systems\Impl\Nutshell\Connector\NutshellContactConnector;
+use CleverConnectors\AppBundle\Model\Systems\Impl\Nutshell\Connector\NutshellUpdatedContactConnector;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Nette\Utils\Json;
 use Tests\ConnectorTestCaseAbstract;
@@ -20,7 +20,7 @@ final class NutshellContactConnectorTest extends ConnectorTestCaseAbstract
      */
     public function testProcessEvent(): void
     {
-        $result = Json::decode((new NutshellContactConnector())->processEvent(
+        $result = Json::decode((new NutshellUpdatedContactConnector())->processEvent(
             (new ProcessDto())->setData($this->getRequest('NutshellWebhookResponse.json'))->setHeaders([])
         )->getData(), TRUE);
 

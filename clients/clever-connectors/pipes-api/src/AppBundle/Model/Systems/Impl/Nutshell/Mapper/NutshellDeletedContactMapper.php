@@ -5,11 +5,11 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\Nutshell\Mapper;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 
 /**
- * Class NutshellDeleteContactMapper
+ * Class NutshellDeletedContactMapper
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Nutshell\Mapper
  */
-class NutshellDeleteContactMapper extends NutshellContactMapperAbstract
+class NutshellDeletedContactMapper extends NutshellContactMapperAbstract
 {
 
     /**

@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\AppBundle\Model\Systems\Impl\Zoho\Mapper;
 
+use CleverConnectors\AppBundle\Enum\CleverFieldsEnum;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Tests\ConnectorTestCaseAbstract;
 
@@ -27,11 +28,11 @@ final class ZohoUpdateContactMapperTest extends ConnectorTestCaseAbstract
         );
 
         $expt = [
-            'email'       => 'john-buttbenton@gmail.com',
-            'first_name'  => 'John',
-            'last_name'   => 'Butt',
-            '_foreign_id' => '85896000000078213',
-            'reactivate'  => TRUE,
+            CleverFieldsEnum::EMAIL       => 'john-buttbenton@gmail.com',
+            CleverFieldsEnum::FIRST_NAME  => 'John',
+            CleverFieldsEnum::LAST_NAME   => 'Butt',
+            CleverFieldsEnum::FOREIGN_ID  => '85896000000078213',
+            CleverFieldsEnum::REACTIVATE  => TRUE,
         ];
 
         self::assertEquals($expt, $response);

@@ -14,7 +14,7 @@ use Tests\ControllerTestCaseAbstract;
  *
  * @package Tests\Integration\AppBundle\Controller
  */
-class CMEventsControllerTest extends ControllerTestCaseAbstract
+final class CMEventsControllerTest extends ControllerTestCaseAbstract
 {
 
     /**

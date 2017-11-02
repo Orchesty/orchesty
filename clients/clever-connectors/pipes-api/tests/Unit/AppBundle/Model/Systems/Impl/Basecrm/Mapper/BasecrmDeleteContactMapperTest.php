@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\AppBundle\Model\Systems\Impl\Basecrm\Mapper;
 
+use CleverConnectors\AppBundle\Enum\CleverFieldsEnum;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Nette\Utils\Json;
 use Tests\ConnectorTestCaseAbstract;
@@ -28,9 +29,9 @@ final class BasecrmDeleteContactMapperTest extends ConnectorTestCaseAbstract
         );
 
         $expt = [
-            'email'       => '',
-            '_foreign_id' => '187643117',
-            'reactivate'  => FALSE,
+            CleverFieldsEnum::EMAIL       => '',
+            CleverFieldsEnum::FOREIGN_ID  => '187643117',
+            CleverFieldsEnum::REACTIVATE  => FALSE,
         ];
 
         self::assertEquals($expt, $response);

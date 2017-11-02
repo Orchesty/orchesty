@@ -12,7 +12,7 @@ use Tests\DatabaseTestCaseAbstract;
  *
  * @package Tests\Integration\AppBundle\Repository
  */
-class LastSyncRepositoryTest extends DatabaseTestCaseAbstract
+final class LastSyncRepositoryTest extends DatabaseTestCaseAbstract
 {
 
     /**

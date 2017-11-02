@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\AppBundle\Model\Systems\Impl\Mailmunch\Mapper;
 
+use CleverConnectors\AppBundle\Enum\CleverFieldsEnum;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Tests\KernelTestCaseAbstract;
 
@@ -10,7 +11,7 @@ use Tests\KernelTestCaseAbstract;
  *
  * @package Tests\Unit\AppBundle\Model\Systems\Impl\Mailmunch\Mapper
  */
-class MailmunchCreateEmailMapperTest extends KernelTestCaseAbstract
+final class MailmunchCreateEmailMapperTest extends KernelTestCaseAbstract
 {
 
     /**
@@ -26,9 +27,9 @@ class MailmunchCreateEmailMapperTest extends KernelTestCaseAbstract
         $res    = $mapper->process($dto);
 
         $expt = [
-            'email'      => 'asd@asd.com',
-            'first_name' => 'sdf',
-            'reactivate' => TRUE,
+            CleverFieldsEnum::EMAIL       => 'asd@asd.com',
+            CleverFieldsEnum::FIRST_NAME  => 'sdf',
+            CleverFieldsEnum::REACTIVATE  => TRUE,
         ];
 
         self::assertEquals($expt, json_decode($res->getData(), TRUE));

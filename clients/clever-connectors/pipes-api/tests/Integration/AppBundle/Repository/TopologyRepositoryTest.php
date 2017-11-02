@@ -11,7 +11,7 @@ use Tests\DatabaseTestCaseAbstract;
  *
  * @package Tests\Integration\AppBundle\Repository
  */
-class TopologyRepositoryTest extends DatabaseTestCaseAbstract
+final class TopologyRepositoryTest extends DatabaseTestCaseAbstract
 {
 
     /**

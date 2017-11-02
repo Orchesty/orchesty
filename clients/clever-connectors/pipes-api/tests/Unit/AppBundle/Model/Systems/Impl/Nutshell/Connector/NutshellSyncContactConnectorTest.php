@@ -29,6 +29,7 @@ final class NutshellSyncContactConnectorTest extends ConnectorTestCaseAbstract
 {
 
     /**
+     *
      */
     public function testProcessBatch(): void
     {

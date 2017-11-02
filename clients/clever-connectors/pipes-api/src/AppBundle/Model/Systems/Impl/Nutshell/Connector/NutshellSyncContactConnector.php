@@ -14,6 +14,7 @@ use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSender;
 use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSenderFactory;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\BatchInterface;
@@ -117,7 +118,7 @@ class NutshellSyncContactConnector implements BatchInterface, ConnectorInterface
     {
         $sender        = $this->factory->create($loop);
         $systemInstall = $this->systemInstallRepository->getSystemInstallFromHeaders($dto->getHeaders());
-        $requestDto    = $this->system->getRequestDto($systemInstall, 'GET');
+        $requestDto    = $this->system->getRequestDto($systemInstall, CurlManager::METHOD_GET);
         $requestDto->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()));
         $processId = CMHeaders::get(CMHeaders::PROCESS_ID, $dto->getHeaders()) ?? '';
 
@@ -218,7 +219,7 @@ class NutshellSyncContactConnector implements BatchInterface, ConnectorInterface
     {
         $requests = [];
         for ($i = 0; $i < count($contacts); $i++) {
-            $innerDto = RequestDto::from($requestDto, $baseUrl, 'POST')->setBody(sprintf(
+            $innerDto = RequestDto::from($requestDto, $baseUrl, CurlManager::METHOD_POST)->setBody(sprintf(
                 '{"jsonrpc":"2.0","method":"getContact","params":{"contactId":%s},"id":"email"}',
                 $contacts[$i]['id']
             ));

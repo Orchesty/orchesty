@@ -9,11 +9,11 @@ use Nette\Utils\Json;
 use Tests\ConnectorTestCaseAbstract;
 
 /**
- * Class NutshellUCreateContactMapperTest
+ * Class NutshellDeletedContactMapperTest
  *
  * @package Tests\Unit\AppBundle\Model\Systems\Impl\Nutshell\Mapper
  */
-final class NutshellUCreateContactMapperTest extends ConnectorTestCaseAbstract
+final class NutshellDeletedContactMapperTest extends ConnectorTestCaseAbstract
 {
 
     /**
@@ -21,20 +21,20 @@ final class NutshellUCreateContactMapperTest extends ConnectorTestCaseAbstract
      */
     public function testProcess(): void
     {
-        $connector = $this->container->get('hbpf.custom_node.nutshell-create-contact-mapper');
+        $connector = $this->container->get('hbpf.custom_node.nutshell-deleted-contact-mapper');
 
         $response = Json::decode($connector->process(
             (new ProcessDto())->setData(
-                $this->getRequest('NutshellWebhookResponse.json')
+                str_replace('"create"', '"delete"', $this->getRequest('NutshellWebhookResponse.json'))
             ))->getData(), TRUE
         );
 
         $this->assertEquals([
-            CleverFieldsEnum::EMAIL      => 'User01@User01.com',
-            CleverFieldsEnum::FIRST_NAME => 'User01',
-            CleverFieldsEnum::LAST_NAME  => 'User01',
-            CleverFieldsEnum::FOREIGN_ID => '1',
-            CleverFieldsEnum::REACTIVATE => TRUE,
+            CleverFieldsEnum::EMAIL       => 'User01@User01.com',
+            CleverFieldsEnum::FIRST_NAME  => 'User01',
+            CleverFieldsEnum::LAST_NAME   => 'User01',
+            CleverFieldsEnum::FOREIGN_ID  => '1',
+            CleverFieldsEnum::REACTIVATE  => TRUE,
         ], $response);
     }
 
@@ -43,18 +43,18 @@ final class NutshellUCreateContactMapperTest extends ConnectorTestCaseAbstract
      */
     public function testProcessInvalid(): void
     {
-        $connector = $this->container->get('hbpf.custom_node.nutshell-create-contact-mapper');
+        $connector = $this->container->get('hbpf.custom_node.nutshell-deleted-contact-mapper');
 
         $dto = $connector->process(
             (new ProcessDto())->setData(
-                str_replace('"create"', '"update"', $this->getRequest('NutshellWebhookResponse.json'))
+                $this->getRequest('NutshellWebhookResponse.json')
             )->setHeaders([])
         );
 
         $this->assertEquals([
             PipesHeaders::createKey(PipesHeaders::RESULT_CODE)    => 1003,
             PipesHeaders::createKey(PipesHeaders::RESULT_STATUS)  => 'DO_NOT_CONTINUE',
-            PipesHeaders::createKey(PipesHeaders::RESULT_MESSAGE) => 'Data does not contains contact create event',
+            PipesHeaders::createKey(PipesHeaders::RESULT_MESSAGE) => 'Data does not contains contact delete event',
             PipesHeaders::createKey(PipesHeaders::RESULT_DETAIL)  => '',
         ], $dto->getHeaders());
     }

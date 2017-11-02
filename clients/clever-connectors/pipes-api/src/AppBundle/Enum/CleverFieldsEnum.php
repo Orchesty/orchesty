@@ -19,23 +19,27 @@ use Hanaboso\PipesFramework\Commons\Enum\EnumAbstract;
 final class CleverFieldsEnum extends EnumAbstract
 {
 
-    public const FOREIGN_ID = '_foreign_id';
-    public const EMAIL      = 'email';
-    public const FIRST_NAME = 'first_name';
-    public const LAST_NAME  = 'last_name';
-    public const REACTIVATE = 'reactivate';
-    public const SYSTEM_KEY = 'system_key';
+    public const FOREIGN_ID  = '_foreign_id';
+    public const EMAIL       = 'email';
+    public const FIRST_NAME  = 'first_name';
+    public const LAST_NAME   = 'last_name';
+    public const REACTIVATE  = 'reactivate';
+    public const SYSTEM_KEY  = 'system_key';
+    public const UNSUBSCRIBE = 'unsubscribe';
+    public const HARD_BOUNCE = 'hard_bounce';
 
     /**
      * @var string[]
      */
     protected static $choices = [
-        self::FOREIGN_ID => '_foreign_id',
-        self::EMAIL      => 'email',
-        self::FIRST_NAME => 'first_name',
-        self::LAST_NAME  => 'last_name',
-        self::REACTIVATE => 'reactivate',
-        self::SYSTEM_KEY => 'system_key',
+        self::FOREIGN_ID  => '_foreign_id',
+        self::EMAIL       => 'email',
+        self::FIRST_NAME  => 'first_name',
+        self::LAST_NAME   => 'last_name',
+        self::REACTIVATE  => 'reactivate',
+        self::SYSTEM_KEY  => 'system_key',
+        self::UNSUBSCRIBE => 'unsubscribe',
+        self::HARD_BOUNCE => 'hard_bounce',
     ];
 
 }

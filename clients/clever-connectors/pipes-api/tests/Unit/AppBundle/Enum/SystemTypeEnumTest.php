@@ -10,7 +10,7 @@ use Tests\KernelTestCaseAbstract;
  *
  * @package Tests\Unit\AppBundle\Enum
  */
-class SystemTypeEnumTest extends KernelTestCaseAbstract
+final class SystemTypeEnumTest extends KernelTestCaseAbstract
 {
 
     /**

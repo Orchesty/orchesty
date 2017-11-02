@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\AppBundle\Model\Systems\Impl\Wisepops\Mapper;
 
+use CleverConnectors\AppBundle\Enum\CleverFieldsEnum;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Wisepops\Mapper\WisepopsCreateEmailMapper;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Nette\Utils\Json;
@@ -29,8 +30,8 @@ final class WisepopsCreateEmailMapperTest extends ConnectorTestCaseAbstract
         );
 
         $this->assertEquals([
-            'email'      => 'sfg@sfd.cfg',
-            'reactivate' => TRUE,
+            CleverFieldsEnum::EMAIL       => 'sfg@sfd.cfg',
+            CleverFieldsEnum::REACTIVATE  => TRUE,
         ], $response);
     }
 

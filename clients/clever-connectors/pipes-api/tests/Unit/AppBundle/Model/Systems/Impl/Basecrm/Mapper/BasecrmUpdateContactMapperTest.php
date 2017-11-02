@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\AppBundle\Model\Systems\Impl\Basecrm\Mapper;
 
+use CleverConnectors\AppBundle\Enum\CleverFieldsEnum;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Nette\Utils\Json;
 use Tests\ConnectorTestCaseAbstract;
@@ -28,10 +29,10 @@ final class BasecrmUpdateContactMapperTest extends ConnectorTestCaseAbstract
         );
 
         $expt = [
-            'email'       => 'asd@asd.com',
-            'first_name'  => 'Base',
-            '_foreign_id' => '187596661',
-            'reactivate'  => TRUE,
+            CleverFieldsEnum::EMAIL       => 'asd@asd.com',
+            CleverFieldsEnum::FIRST_NAME  => 'Base',
+            CleverFieldsEnum::FOREIGN_ID  => '187596661',
+            CleverFieldsEnum::REACTIVATE  => TRUE,
         ];
 
         self::assertEquals($expt, $response);

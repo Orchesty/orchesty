@@ -3,7 +3,11 @@
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Nutshell;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Enum\CleverCustomKeysEnum;
 use CleverConnectors\AppBundle\Enum\SystemTypeEnum;
+use CleverConnectors\AppBundle\Model\CMEvents\CMEventObject;
+use CleverConnectors\AppBundle\Model\CMEvents\CMEventSystemInterface;
+use CleverConnectors\AppBundle\Model\CMEvents\Traits\CMEventSystemTrait;
 use CleverConnectors\AppBundle\Model\Form\Field;
 use CleverConnectors\AppBundle\Model\Form\Form;
 use CleverConnectors\AppBundle\Model\Requester\RequesterInterface;
@@ -23,10 +27,11 @@ use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Nutshell
  */
-class NutshellSystem implements AuthorizationInterface, WebhookSystemInterface
+class NutshellSystem implements AuthorizationInterface, CMEventSystemInterface, WebhookSystemInterface
 {
 
     use AuthorizationTrait;
+    use CMEventSystemTrait;
     use WebhookSystemTrait;
 
     private const SYSTEM_URL = 'https://app.nutshell.com/api/v1/json';
@@ -47,9 +52,19 @@ class NutshellSystem implements AuthorizationInterface, WebhookSystemInterface
     {
         $this->url             = $url;
         $this->subscriptions[] = new WebhookSubscribes(
-            'nutshell-contact-connector',
+            'nutshell-updated-contact-connector',
             TopologyNameUtils::getTopologyName(TopologyNameUtils::UPDATED_SUBSCRIBERS, $this->getKey())
         );
+
+        $this->addCMEvent(new CMEventObject('', SystemInstall::EVENT_CREATE, ''));
+        $this->addCMEvent(new CMEventObject(CleverCustomKeysEnum::UNSUBSCRIBE, SystemInstall::EVENT_UNSUBSCRIBE, ''));
+        $this->addCMEvent(new CMEventObject(CleverCustomKeysEnum::HARD_BOUNCE, SystemInstall::EVENT_HARD_BOUNCE, ''));
+
+        $unSubscribeKey = TopologyNameUtils::getTopologyName(TopologyNameUtils::UNSUBSCRIBE_CONTACT, $this->getKey());
+        $hardBounceKey  = TopologyNameUtils::getTopologyName(TopologyNameUtils::HARD_BOUNCE_CONTACT, $this->getKey());
+
+        $this->topologyNames[$unSubscribeKey] = 'nutshell-update-contact';
+        $this->topologyNames[$hardBounceKey]  = 'nutshell-update-contact';
     }
 
     /**
@@ -93,7 +108,7 @@ class NutshellSystem implements AuthorizationInterface, WebhookSystemInterface
      */
     public function getName(): string
     {
-        return 'Nutshell system';
+        return 'Nutshell';
     }
 
     /**
@@ -167,17 +182,41 @@ class NutshellSystem implements AuthorizationInterface, WebhookSystemInterface
                 $this->url,
                 $systemInstall->getUser(),
                 $systemInstall->getToken(),
-                'nutshell-contact-connector',
-                'nutshell-contact'
+                'nutshell-updated-contact-connector',
+                TopologyNameUtils::getTopologyName(TopologyNameUtils::UPDATED_SUBSCRIBERS, $this->getKey())
             ),
             FALSE,
             TRUE
+        );
+
+        $field4 = new Field(
+            Field::CHECKBOX,
+            SystemInstall::EVENT_CREATE,
+            'Create event',
+            $systemInstall->isEventCreate()
+        );
+
+        $field5 = new Field(
+            Field::CHECKBOX,
+            SystemInstall::EVENT_UNSUBSCRIBE,
+            'UnSubscribe event',
+            $systemInstall->isEventUnsubscribe()
+        );
+
+        $field6 = new Field(
+            Field::CHECKBOX,
+            SystemInstall::EVENT_HARD_BOUNCE,
+            'Hard Bounce event',
+            $systemInstall->isEventHardBounce()
         );
 
         return (new Form())
             ->addField($field1)
             ->addField($field2)
             ->addField($field3)
+            ->addField($field4)
+            ->addField($field5)
+            ->addField($field6)
             ->toArray();
     }
 
@@ -207,6 +246,16 @@ class NutshellSystem implements AuthorizationInterface, WebhookSystemInterface
             'Method [getUnsubscribeRequester] not implemented in Nutshell system.',
             SystemException::SYSTEM_METHOD_NOT_FOUND
         );
+    }
+
+    /**
+     * @param SystemInstall $systemInstall
+     *
+     * @return RequesterInterface|null
+     */
+    public function getCMEventRequester(SystemInstall $systemInstall): ?RequesterInterface
+    {
+        return NULL;
     }
 
 }

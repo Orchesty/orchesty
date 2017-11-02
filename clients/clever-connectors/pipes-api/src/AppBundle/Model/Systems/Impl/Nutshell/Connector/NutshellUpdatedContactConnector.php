@@ -9,11 +9,11 @@ use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
 use Nette\Utils\Json;
 
 /**
- * Class NutshellContactConnector
+ * Class NutshellUpdatedContactConnector
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Nutshell\Connector
  */
-class NutshellContactConnector implements ConnectorInterface
+class NutshellUpdatedContactConnector implements ConnectorInterface
 {
 
     /**
@@ -21,7 +21,7 @@ class NutshellContactConnector implements ConnectorInterface
      */
     public function getId(): string
     {
-        return 'nutshell-contact-connector';
+        return 'nutshell-updated-contact-connector';
     }
 
     /**
