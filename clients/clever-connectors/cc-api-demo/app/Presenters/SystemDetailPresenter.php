@@ -82,10 +82,10 @@ class SystemDetailPresenter extends BasePresenter
             $this->userId,
             $this->userSystem->getKey(),
             sprintf(
-                '%s://%s%s',
-                $this->getHttpRequest()->getUrl()->getScheme(),
-                $this->getHttpRequest()->getUrl()->getDomain(),
-                $this->getHttpRequest()->getUrl()->getPath()
+                '%s%s?systemKey=%s',
+                $this->getHttpRequest()->getUrl()->getHostUrl(),
+                $this->getHttpRequest()->getUrl()->getPath(),
+                $this->getHttpRequest()->getUrl()->getQueryParameter('systemKey')
             )
         );
     }
