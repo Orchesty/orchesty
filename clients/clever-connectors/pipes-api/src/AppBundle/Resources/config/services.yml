@@ -56,3 +56,4 @@ services:
         arguments:
             - '@snc_redis.default'
             - '@rabbit-mq.producer.progress_counter'
+            - '@rabbit-mq.manager'
