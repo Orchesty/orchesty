@@ -17,7 +17,11 @@ function check(dispatch, response) {
     } else {
       response.json()
         .then(errorData => {
-          dispatch(notificationActions.addNotification('error', `Error in server request: ${errorData.error_code} - ${errorData.message}`));
+          if (typeof errorData == 'object'){
+            dispatch(notificationActions.addNotification('error', `Error in server request: ${errorData.error_code} - ${errorData.message}`));
+          } else {
+            dispatch(notificationActions.addNotification('error', `Error in server request: ${response.status} - ${response.statusText}`));
+          }
         })
         .catch(parserError => {
           dispatch(notificationActions.addNotification('error', `Error in server request: ${response.status} - ${response.statusText}`));

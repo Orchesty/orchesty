@@ -99,7 +99,8 @@ class BpmnIoComponent extends React.Component {
           err && this.props.onError(String(err));
         }
         else{
-          download(xml, 'export.bpmn', 'application/bpmn+xml');
+          const {schemaTitle} = this.props;
+          download(xml, (schemaTitle ? schemaTitle : 'export') + '.bpmn', 'application/bpmn+xml');
         }
       })
     }
@@ -112,7 +113,8 @@ class BpmnIoComponent extends React.Component {
           err && this.props.onError(String(err));
         }
         else {
-          download(svg, 'export.svg', 'image/svg+xml');
+          const {schemaTitle} = this.props;
+          download(svg, (schemaTitle ? schemaTitle : 'export') + '.svg', 'image/svg+xml');
         }
       });
     }
@@ -122,7 +124,7 @@ class BpmnIoComponent extends React.Component {
     if (this._modeler){
       this._modeler.saveXML((err, xml) => {
         if (err){
-          err && this.props.onError(STring(err));
+          err && this.props.onError(String(err));
         }
         else if (this.props.onSave){
           this.props.onSave(xml);
@@ -165,6 +167,7 @@ class BpmnIoComponent extends React.Component {
 BpmnIoComponent.propTypes = {
   onSave: PropTypes.func,
   schema: PropTypes.string,
+  schemaTitle: PropTypes.string,
   onError: PropTypes.func.isRequired,
   onImport: PropTypes.func.isRequired,
   setActions: PropTypes.func.isRequired,

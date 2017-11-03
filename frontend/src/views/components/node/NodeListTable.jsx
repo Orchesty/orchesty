@@ -60,7 +60,7 @@ class NodeListTable extends React.Component {
             }
           }
         ] : null;
-        const test = withNodeTest && tests[item._id] ? tests[item._id].code == 200 : null;
+        const test = withNodeTest && tests[item._id] ? tests[item._id] : null;
 
         return (
           <tr key={item._id}>
@@ -71,7 +71,7 @@ class NodeListTable extends React.Component {
             <td>{item.handler}</td>
             <td>{item.service}</td>
             <td><BoolValue value={item.enabled}/></td>
-            {withNodeTest && <td>{test !== null ? <BoolValue color value={test}/> : '-'}</td>}
+            {withNodeTest && <td>{test !== null ? <BoolValue color value={test.code == 200} title={test.message}/> : '-'}</td>}
             <td><ActionButtonPanel items={menuItems} right={true}/></td>
           </tr>
         )
