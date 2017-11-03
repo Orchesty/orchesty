@@ -14,11 +14,11 @@ use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
 
 /**
- * Class QuickbooksCustomerMapper
+ * Class QuickbooksUpdatedCustomerMapper
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\Mapper
  */
-class QuickbooksCustomerMapper implements CustomNodeInterface
+class QuickbooksUpdatedCustomerMapper implements CustomNodeInterface
 {
 
     /**
@@ -30,7 +30,20 @@ class QuickbooksCustomerMapper implements CustomNodeInterface
     {
         $data = json_decode($dto->getData(), TRUE);
 
-        if (!array_key_exists('PrimaryEmailAddr', $data) || !array_key_exists('Address', $data['PrimaryEmailAddr'])) {
+        return $this->processData($data, $dto);
+    }
+
+    /**
+     * @param array      $data
+     * @param ProcessDto $dto
+     *
+     * @return ProcessDto
+     */
+    protected function processData(array $data, ProcessDto $dto): ProcessDto
+    {
+        if (empty($data)
+            || !array_key_exists('PrimaryEmailAddr', $data)
+            || !array_key_exists('Address', $data['PrimaryEmailAddr'])) {
             return $this->setHeadersToStop($dto);
         }
 
@@ -40,11 +53,11 @@ class QuickbooksCustomerMapper implements CustomNodeInterface
         $obj->setReactivate($data['Active']);
 
         if (array_key_exists('GivenName', $data)) {
-            $obj->setFirstName($data['GivenName']);
+            $obj->setFirstName($data['GivenName'] ?? '');
         }
 
         if (array_key_exists('FamilyName', $data)) {
-            $obj->setLastName($data['FamilyName']);
+            $obj->setLastName($data['FamilyName'] ?? '');
         }
 
         return $dto->setData(json_encode($obj->toArray()));

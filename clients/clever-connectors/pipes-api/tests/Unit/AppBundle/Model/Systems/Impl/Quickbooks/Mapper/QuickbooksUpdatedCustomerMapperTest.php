@@ -14,11 +14,11 @@ use Nette\Utils\Json;
 use Tests\ConnectorTestCaseAbstract;
 
 /**
- * Class QuickbooksCustomerMapperTest
+ * Class QuickbooksUpdatedCustomerMapperTest
  *
  * @package Tests\Unit\AppBundle\Model\Systems\Impl\Quickbooks\Mapper
  */
-class QuickbooksCustomerMapperTest extends ConnectorTestCaseAbstract
+final class QuickbooksUpdatedCustomerMapperTest extends ConnectorTestCaseAbstract
 {
 
     /**
@@ -26,7 +26,7 @@ class QuickbooksCustomerMapperTest extends ConnectorTestCaseAbstract
      */
     public function testProcessEvent(): void
     {
-        $connector = $this->container->get('hbpf.custom_node.quickbooks-customer-mapper');
+        $connector = $this->container->get('hbpf.custom_node.quickbooks-updated-customer-mapper');
 
         $response = Json::decode(
             $connector->process((new ProcessDto())->setData($this->getRequest('QuickbooksCustomerMapper.json')))

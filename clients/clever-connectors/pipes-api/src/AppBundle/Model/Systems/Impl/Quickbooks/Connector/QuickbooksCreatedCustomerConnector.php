@@ -14,11 +14,11 @@ use DateTime;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 
 /**
- * Class QuickbooksUpdateCustomerConnector
+ * Class QuickbooksCreatedCustomerConnector
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\Connector
  */
-class QuickbooksUpdateCustomerConnector extends QuickbooksCustomerConnectorAbstract
+class QuickbooksCreatedCustomerConnector extends QuickbooksCustomerConnectorAbstract
 {
 
     /**
@@ -26,7 +26,7 @@ class QuickbooksUpdateCustomerConnector extends QuickbooksCustomerConnectorAbstr
      */
     public function getId(): string
     {
-        return 'quickbooks-update-customer-connector';
+        return 'quickbooks-created-customer-connector';
     }
 
     /**
@@ -40,9 +40,9 @@ class QuickbooksUpdateCustomerConnector extends QuickbooksCustomerConnectorAbstr
         $lastSync = $this->lastSyncManager->getLastSync($systemInstall, $dto->getHeaders());
         $times    = CronUtils::getTimes($lastSync);
 
-        $since = $times->getStart() ? sprintf(' AND MetaData.LastUpdatedTime >= \'%s\'',
+        $since = $times->getStart() ? sprintf(' AND MetaData.CreateTime >= \'%s\'',
             $times->getStart()->format(DateTime::ATOM)) : '';
-        $till  = sprintf(' AND MetaData.LastUpdatedTime < \'%s\'', $times->getEnd()->format(DateTime::ATOM));
+        $till  = sprintf(' AND MetaData.CreateTime < \'%s\'', $times->getEnd()->format(DateTime::ATOM));
 
         return $since . $till;
     }

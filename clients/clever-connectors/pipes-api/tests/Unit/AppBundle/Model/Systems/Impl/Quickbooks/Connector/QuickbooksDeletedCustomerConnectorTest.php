@@ -9,14 +9,14 @@
 namespace Tests\Unit\AppBundle\Model\Systems\Impl\Quickbooks\Connector;
 
 use CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\Connector\QuickbooksCustomerConnectorAbstract;
-use CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\Connector\QuickbooksDeleteCustomerConnector;
+use CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\Connector\QuickbooksDeletedCustomerConnector;
 
 /**
- * Class QuickbooksDeleteCustomerConnectorTest
+ * Class QuickbooksDeletedCustomerConnectorTest
  *
  * @package Tests\Unit\AppBundle\Model\Systems\Impl\Quickbooks\Connector
  */
-class QuickbooksDeleteCustomerConnectorTest extends QuickbooksCustomerConnectorAbstractTest
+final class QuickbooksDeletedCustomerConnectorTest extends QuickbooksCustomerConnectorAbstractTest
 {
 
     /**
@@ -32,7 +32,7 @@ class QuickbooksDeleteCustomerConnectorTest extends QuickbooksCustomerConnectorA
 
         $id = $connector->getId();
 
-        $this->assertEquals('quickbooks-delete-customer-connector', $id);
+        $this->assertEquals('quickbooks-deleted-customer-connector', $id);
     }
 
     /**
@@ -40,7 +40,7 @@ class QuickbooksDeleteCustomerConnectorTest extends QuickbooksCustomerConnectorA
      */
     protected function createConnector(): QuickbooksCustomerConnectorAbstract
     {
-        return new QuickbooksDeleteCustomerConnector(
+        return new QuickbooksDeletedCustomerConnector(
             $this->system,
             $this->lastSyncManager,
             $this->factory

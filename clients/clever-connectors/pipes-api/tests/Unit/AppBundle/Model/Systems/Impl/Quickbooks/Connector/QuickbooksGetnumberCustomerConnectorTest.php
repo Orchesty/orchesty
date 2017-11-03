@@ -3,7 +3,7 @@
 namespace Tests\Unit\AppBundle\Model\Systems\Impl\Quickbooks\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
-use CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\Connector\QuickbooksCreateCustomerConnector;
+use CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\Connector\QuickbooksGetnumberCustomerConnector;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\Mapper\QuickbooksCreateCustomerMapper;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -14,41 +14,54 @@ use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
 use PHPUnit_Framework_MockObject_MockObject;
-use Tests\KernelTestCaseAbstract;
+use Tests\ConnectorTestCaseAbstract;
 
 /**
- * Class QuickbooksCreateCustomerConnectorTest
+ * Class QuickbooksGetnumberCustomerConnectorTest
  *
  * @package Tests\Unit\AppBundle\Model\Systems\Impl\Quickbooks\Connector
  */
-final class QuickbooksCreateCustomerConnectorTest extends KernelTestCaseAbstract
+final class QuickbooksGetnumberCustomerConnectorTest extends ConnectorTestCaseAbstract
 {
 
     /**
      *
      */
-    public function testConnector(): void
+    public function testProcessConnector(): void
     {
-        $conn = new QuickbooksCreateCustomerConnector(
+        $dto = new ProcessDto();
+        $dto->setHeaders([])
+            ->setData(json_encode([
+                QuickbooksCreateCustomerMapper::SUCCESS => FALSE,
+                QuickbooksCreateCustomerMapper::ATTEMPT => TRUE,
+                'body'                                  => json_encode([
+                    'PrimaryEmailAddr'                         => [
+                        'Address' => 'eml@eml.com',
+                    ],
+                    QuickbooksCreateCustomerMapper::FIRST_NAME => 'nao',
+                    QuickbooksCreateCustomerMapper::LAST_NAME  => 'namae',
+                ]),
+            ]));
+
+        $conn = new QuickbooksGetnumberCustomerConnector(
             $this->mockDm(),
             $this->container->get('systems.quickbooks'),
             $this->mockCurl()
         );
 
-        $dto = new ProcessDto();
-        $dto->setData(json_encode([
+        $res = $conn->processAction($dto);
+
+        self::assertEquals(json_encode([
             QuickbooksCreateCustomerMapper::SUCCESS => FALSE,
             QuickbooksCreateCustomerMapper::ATTEMPT => TRUE,
             'body'                                  => json_encode([
-                'PrimaryEmailAddr' => [
-                    'Address' => 'eml',
+                'PrimaryEmailAddr'                         => [
+                    'Address' => 'eml@eml.com',
                 ],
-                'GivenName'        => 'namae',
-                'FamilyName'       => 'last',
+                QuickbooksCreateCustomerMapper::FIRST_NAME => 'nao',
+                QuickbooksCreateCustomerMapper::LAST_NAME  => 'namae#3',
             ]),
-        ]))->setHeaders([]);
-
-        $conn->processAction($dto);
+        ]), $res->getData());
     }
 
     /**
@@ -82,23 +95,18 @@ final class QuickbooksCreateCustomerConnectorTest extends KernelTestCaseAbstract
         $curl->expects($this->once())
             ->method('send')->will($this->returnCallback(
                 function (RequestDto $requestDto) {
-                    $expt = new RequestDto(CurlManager::METHOD_POST,
-                        new Uri('https://sandbox-quickbooks.api.intuit.com/v3/company/realm/customer'));
+                    $expt = new RequestDto(CurlManager::METHOD_GET,
+                        new Uri('https://sandbox-quickbooks.api.intuit.com/v3/company/realm/query?query=SELECT+COUNT%28%2A%29+FROM+CUSTOMER+WHERE+GivenName%3D\'nao\'+AND+FamilyName+LIKE+\'namae%23%25\'')
+                    );
                     $expt->setHeaders([
                         'Accept'        => 'application/json',
                         'Content-Type'  => 'application/json',
                         'Authorization' => 'Bearer token',
-                    ])->setBody(json_encode([
-                        'PrimaryEmailAddr' => [
-                            'Address' => 'eml',
-                        ],
-                        'GivenName'        => 'namae',
-                        'FamilyName'       => 'last',
-                    ]));
+                    ]);
 
                     self::assertEquals($expt, $requestDto);
 
-                    return new ResponseDto(200, '', '', []);
+                    return new ResponseDto(200, '', $this->getRequest('QueryForNameCount.json'), []);
                 }
             ));
 
