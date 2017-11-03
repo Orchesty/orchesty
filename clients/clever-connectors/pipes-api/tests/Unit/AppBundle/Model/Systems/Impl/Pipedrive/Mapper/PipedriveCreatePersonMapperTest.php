@@ -5,20 +5,18 @@ namespace Tests\Unit\AppBundle\Model\Systems\Impl\Pipedrive\Mapper;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\CleverCustomKeysEnum;
 use CleverConnectors\AppBundle\Enum\CleverFieldsEnum;
-use CleverConnectors\AppBundle\Model\Systems\Impl\Pipedrive\Mapper\PipedriveUpdatePersonMapper;
+use CleverConnectors\AppBundle\Model\Systems\Impl\Pipedrive\Mapper\PipedriveCreatePersonMapper;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
-use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
-use PHPUnit_Framework_MockObject_MockObject;
 use Tests\ConnectorTestCaseAbstract;
 
 /**
- * Class PipedriveUpdatePersonMapperTest
+ * Class PipedriveCreatePersonMapperTest
  *
  * @package Tests\Unit\AppBundle\Model\Systems\Impl\Pipedrive\Mapper
  */
-final class PipedriveUpdatePersonMapperTest extends ConnectorTestCaseAbstract
+final class PipedriveCreatePersonMapperTest extends ConnectorTestCaseAbstract
 {
 
     /**
@@ -27,24 +25,25 @@ final class PipedriveUpdatePersonMapperTest extends ConnectorTestCaseAbstract
     public function testProccess(): void
     {
         $data = [
-            CleverFieldsEnum::FOREIGN_ID => 'pid',
+            CleverFieldsEnum::EMAIL       => 'asd@asd.com',
+            CleverFieldsEnum::FIRST_NAME  => 'qwe',
+            CleverFieldsEnum::LAST_NAME   => 'asd',
+            CleverFieldsEnum::REACTIVATE  => TRUE,
         ];
 
-        $conn = new PipedriveUpdatePersonMapper($this->mockDM());
-        $res  = $conn->process((new ProcessDto())->setData(json_encode($data))->setHeaders([
-            CMHeaders::createKey(CMHeaders::CM_EVENT_TYPE) => SystemInstall::EVENT_HARD_BOUNCE,
-        ]));
+        $conn = new PipedriveCreatePersonMapper($this->mockDM());
+        $res  = $conn->process((new ProcessDto())->setData(json_encode($data))->setHeaders([]));
 
         self::assertEquals([
-            'id'   => 'pid',
-            'body' => json_encode([
-                'hrd' => 'true',
-            ]),
+            'email' => 'asd@asd.com',
+            'name'  => 'qwe asd',
+            'hrd'   => 'false',
+            'un'    => 'false',
         ], json_decode($res->getData(), TRUE));
     }
 
     /**
-     * @return DocumentManager|PHPUnit_Framework_MockObject_MockObject
+     * @return DocumentManager|\PHPUnit_Framework_MockObject_MockObject
      */
     private function mockDM(): DocumentManager
     {

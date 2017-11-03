@@ -9,11 +9,11 @@ use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
 use Nette\Utils\Json;
 
 /**
- * Class PipedriveDeletePersonMapper
+ * Class PipedriveUpdatedPersonMapper
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Pipedrive\Mapper
  */
-class PipedriveDeletePersonMapper implements CustomNodeInterface
+class PipedriveUpdatedPersonMapper implements CustomNodeInterface
 {
 
     /**
@@ -26,19 +26,29 @@ class PipedriveDeletePersonMapper implements CustomNodeInterface
     {
         $data = Json::decode($dto->getData(), TRUE);
 
-        if (!array_key_exists('previous', $data)
-            || !array_key_exists('email', $data['previous'])) {
+        if (!array_key_exists('current', $data)
+            || !array_key_exists('email', $data['current'])
+            || empty($data['current']['email'][0])
+            || !array_key_exists('value', $data['current']['email'][0])
+        ) {
             throw new CleverConnectorsException(
                 'Missing required email field in data.',
                 CleverConnectorsException::MISSING_DATA
             );
         }
 
-        $data = $data['previous'];
+        $data = $data['current'];
 
         $obj = new CMSubscriber();
-        $obj->setEmail($data['email'])
-            ->setReactivate(FALSE);
+        $obj->setEmail($data['email'][0]['value']);
+
+        if (array_key_exists('first_name', $data)) {
+            $obj->setFirstName($data['first_name']);
+        }
+
+        if (array_key_exists('last_name', $data)) {
+            $obj->setLastName($data['last_name'] ?? '');
+        }
 
         if (array_key_exists('id', $data)) {
             $obj->setForeignId($data['id']);

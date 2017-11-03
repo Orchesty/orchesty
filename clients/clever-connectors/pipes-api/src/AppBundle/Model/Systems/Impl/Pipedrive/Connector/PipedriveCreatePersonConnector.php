@@ -17,29 +17,29 @@ use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
 
 /**
- * Class PipedriveUpdatePersonConnector
+ * Class PipedriveCreatePersonConnector
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Pipedrive\Connector
  */
-class PipedriveUpdatePersonConnector implements ConnectorInterface
+class PipedriveCreatePersonConnector implements ConnectorInterface
 {
 
-    private const SUB_URL = '/persons/%s?api_token=%s';
+    private const SUB_URL = '/persons?api_token=%s';
 
     /**
      * @var PipedriveSystem
      */
-    private $system;
+    protected $system;
 
     /**
      * @var CurlManagerInterface
      */
-    private $curl;
+    protected $curl;
 
     /**
      * @var SystemInstallRepository|ObjectRepository
      */
-    private $systemInstallRepository;
+    protected $systemInstallRepository;
 
     /**
      * PipedriveCreatePersonConnector constructor.
@@ -60,7 +60,7 @@ class PipedriveUpdatePersonConnector implements ConnectorInterface
      */
     public function getId(): string
     {
-        return 'pipesdrive-update-person-connector';
+        return 'pipedrive-create-person-connector';
     }
 
     /**
@@ -73,26 +73,22 @@ class PipedriveUpdatePersonConnector implements ConnectorInterface
     {
         $systemInstall = $this->systemInstallRepository->getSystemInstallFromHeaders($dto->getHeaders());
         $sett          = $systemInstall->getSettings();
-        $requestDto    = $this->system->getRequestDto($systemInstall, CurlManager::METHOD_PUT);
-        $requestDto->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()));
 
-        $data = json_decode($dto->getData(), TRUE);
-        $uri  = new Uri(sprintf(rtrim($requestDto->getUri(TRUE), '/') . self::SUB_URL,
-            $data['id'],
-            $sett[PipedriveSystem::API_TOKEN]
-        ));
+        $requestDto = $this->system->getRequestDto($systemInstall, CurlManager::METHOD_POST);
 
-        $requestDto->setBody($data['body'])
-            ->setUri($uri);
+        $requestDto->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()))
+            ->setBody($dto->getData())
+            ->setUri(new Uri(sprintf(rtrim($requestDto->getUri(TRUE), '/') . self::SUB_URL,
+                $sett[PipedriveSystem::API_TOKEN])));
 
         $res = $this->curl->send($requestDto);
 
-        if ($res->getStatusCode() != 200) {
-            throw new CleverConnectorsException('Failed to update contact / missing field, PipeDrive.',
+        if ($res->getStatusCode() != 201) {
+            throw new CleverConnectorsException('Failed to create new contact in Pipedrive.',
                 CleverConnectorsException::REQUEST_FAILED);
         }
 
-        return $dto;
+        return $dto->setData($res->getBody());
     }
 
     /**

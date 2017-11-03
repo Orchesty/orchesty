@@ -8,11 +8,11 @@ use Nette\Utils\Json;
 use Tests\ConnectorTestCaseAbstract;
 
 /**
- * Class PipedriveDeletePersonMapperTest
+ * Class PipedriveDeletedPersonMapperTest
  *
  * @package Tests\Unit\AppBundle\Model\Systems\Impl\Pipedrive\Mapper
  */
-final class PipedriveDeletePersonMapperTest extends ConnectorTestCaseAbstract
+final class PipedriveDeletedPersonMapperTest extends ConnectorTestCaseAbstract
 {
 
     /**
@@ -20,7 +20,7 @@ final class PipedriveDeletePersonMapperTest extends ConnectorTestCaseAbstract
      */
     public function testProcessEvent(): void
     {
-        $connector = $this->container->get('hbpf.custom_node.pipedrive-delete-person-mapper');
+        $connector = $this->container->get('hbpf.custom_node.pipedrive-deleted-person-mapper');
 
         $response = Json::decode(
             $connector->process((new ProcessDto())->setData($this->getRequest('personDeleteWebhook.json')))
