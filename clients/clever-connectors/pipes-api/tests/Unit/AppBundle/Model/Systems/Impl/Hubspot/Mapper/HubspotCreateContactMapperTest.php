@@ -3,157 +3,50 @@
 namespace Tests\Unit\AppBundle\Model\Systems\Impl\Hubspot\Mapper;
 
 use CleverConnectors\AppBundle\Enum\CleverFieldsEnum;
-use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
-use CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\Mapper\HubspotCreateContactMapper;
-use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
-use Nette\Utils\Json;
-use Tests\ConnectorTestCaseAbstract;
+use Tests\DatabaseTestCaseAbstract;
 
 /**
  * Class HubspotCreateContactMapperTest
  *
  * @package Tests\Unit\AppBundle\Model\Systems\Impl\Hubspot\Mapper
  */
-final class HubspotCreateContactMapperTest extends ConnectorTestCaseAbstract
+final class HubspotCreateContactMapperTest extends DatabaseTestCaseAbstract
 {
 
     /**
-     * @var HubspotCreateContactMapper|object
-     */
-    private $mapper;
-
-    /**
-     * @covers HubspotCreateContactMapper::process()
-     */
-    public function testProcess(): void
-    {
-        $response = Json::decode(
-            $this->getMapper()
-                ->process((new ProcessDto())
-                    ->setData($this->getRequest('HubspotCreateContactMapper.json'))
-                    ->setHeaders([]))
-                ->getData(),
-            TRUE
-        );
-
-        $this->assertEquals([
-            CleverFieldsEnum::EMAIL      => 'testingapis@hubspot.com',
-            CleverFieldsEnum::FIRST_NAME => 'Codey',
-            CleverFieldsEnum::LAST_NAME  => 'Huang',
-            CleverFieldsEnum::FOREIGN_ID => 3234574,
-            CleverFieldsEnum::REACTIVATE => TRUE,
-        ], $response);
-    }
-
-    /**
-     * @covers HubspotCreateContactMapper::process()
-     */
-    public function testProcessFail(): void
-    {
-        $this->expectException(CleverConnectorsException::class);
-        $this->expectExceptionCode(CleverConnectorsException::MISSING_DATA);
-
-        $this->getMapper()->process((new ProcessDto())->setData(json_encode([])))->getData();
-    }
-
-    /**
-     * @covers HubspotCreateContactMapper::process()
-     */
-    public function testProcessFail1(): void
-    {
-        $this->expectException(CleverConnectorsException::class);
-        $this->expectExceptionCode(CleverConnectorsException::UNKNOWN_SUBSCRIPTION_TYPE);
-
-        $data = [
-            'subscriptionType' => '',
-            'properties'       => [
-                'email' => [
-                    'value' => '',
-                ],
-            ],
-        ];
-
-        $this->getMapper()->process((new ProcessDto())->setData(json_encode($data)))->getData();
-    }
-
-    /**
      *
      */
-    public function testProcessFail2(): void
+    public function testMapper(): void
     {
-        $data = [
-            'vid'               => 123,
-            'subscriptionType'  => 'contact.creation',
-            'properties'        => [],
-            'identity-profiles' => [
+        $mapper = $this->container->get('hbpf.custom_node.hubspot-create-contact-mapper');
+
+        $dto = new ProcessDto();
+        $dto->setData(json_encode([
+            CleverFieldsEnum::EMAIL      => 'eml@eml.com',
+            CleverFieldsEnum::FIRST_NAME => 'first',
+            CleverFieldsEnum::LAST_NAME  => 'last',
+        ]));
+
+        /** @var ProcessDto $res */
+        $res = $mapper->process($dto);
+
+        self::assertEquals(json_encode([
+            'properties' => [
                 [
-                    'vid'        => 123,
-                    'identities' => [
-                        [
-                            'type'  => 'EMAIL',
-                            'value' => 'email@email.com',
-                        ],
-                    ],
+                    'property' => 'email',
+                    'value'    => 'eml@eml.com',
+                ],
+                [
+                    'property' => 'firstname',
+                    'value'    => 'first',
+                ],
+                [
+                    'property' => 'lastname',
+                    'value'    => 'last',
                 ],
             ],
-        ];
-
-        $this->getMapper()->process((new ProcessDto())->setData(json_encode($data))->setHeaders([]))->getData();
-
-        unset($data['subscriptionType']);
-
-        $this->expectException(CleverConnectorsException::class);
-        $this->expectExceptionCode(CleverConnectorsException::MISSING_DATA);
-
-        $this->getMapper()->process((new ProcessDto())->setData(json_encode($data)))->getData();
-    }
-
-    /**
-     *
-     */
-    public function testProcessFail3(): void
-    {
-        $data = [
-            'vid'              => 123,
-            'subscriptionType' => 'contact.propertyChange',
-        ];
-
-        $res        = $this->getMapper()->process((new ProcessDto())->setData(json_encode($data))->setHeaders([]));
-        $resultCode = $res->getHeader(CMHeaders::createKey(CMHeaders::RESULT_CODE));
-
-        self::assertEquals(1003, $resultCode);
-    }
-
-    /**
-     *
-     */
-    public function testProcessSetHeadersToStop(): void
-    {
-        $data = [
-            'subscriptionType' => 'contact.deletion',
-        ];
-
-        $dto        = (new ProcessDto())
-            ->setData(json_encode($data))
-            ->setHeaders([]);
-
-        $this->expectException(CleverConnectorsException::class);
-        $this->expectExceptionCode(CleverConnectorsException::DISALLOWED_SUBSCRIPTION_TYPE);
-
-        $this->getMapper()->process($dto);
-    }
-
-    /**
-     * @return HubspotCreateContactMapper|object
-     */
-    private function getMapper()
-    {
-        if (!$this->mapper) {
-            return $this->container->get('hbpf.custom_node.hubspot-create-contact-mapper');
-        }
-
-        return $this->mapper;
+        ]), $res->getData());
     }
 
 }

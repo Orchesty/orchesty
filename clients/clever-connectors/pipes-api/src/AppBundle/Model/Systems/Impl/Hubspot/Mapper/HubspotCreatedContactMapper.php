@@ -4,14 +4,15 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\Mapper;
 
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\CM\SubscriptionConnector\CustomerObject\CMSubscriber;
+use CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\HubspotSystem;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 
 /**
- * Class HubspotSyncContactMapper
+ * Class HubspotCreatedContactMapper
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\Mapper
  */
-class HubspotSyncContactMapper extends HubspotMapperAbstract
+class HubspotCreatedContactMapper extends HubspotMapperAbstract
 {
 
     /**
@@ -24,11 +25,27 @@ class HubspotSyncContactMapper extends HubspotMapperAbstract
     {
         $data = json_decode($dto->getData(), TRUE);
 
+        $this->continueAfterDataCheck(HubspotSystem::SUBSCRIPTION_TYPE_KEY, $data);
+
+        // we do not want propertyChange/deletion to continue
+        if ($data[HubspotSystem::SUBSCRIPTION_TYPE_KEY] == HubspotSystem::SUBSCRIPTION_TYPE_UPDATE) {
+            return $this->setHeadersToStop($dto);
+        } elseif ($data[HubspotSystem::SUBSCRIPTION_TYPE_KEY] == HubspotSystem::SUBSCRIPTION_TYPE_DELETE) {
+            throw new CleverConnectorsException(
+                sprintf('Disallowed subscription type "%s"', $data[HubspotSystem::SUBSCRIPTION_TYPE_KEY]),
+                CleverConnectorsException::DISALLOWED_SUBSCRIPTION_TYPE
+            );
+        } elseif ($data[HubspotSystem::SUBSCRIPTION_TYPE_KEY] != HubspotSystem::SUBSCRIPTION_TYPE_CREATE) {
+            throw new CleverConnectorsException(
+                sprintf('Unknown subscription type "%s"', $data[HubspotSystem::SUBSCRIPTION_TYPE_KEY]),
+                CleverConnectorsException::UNKNOWN_SUBSCRIPTION_TYPE
+            );
+        }
+
         $this->continueAfterDataCheck('properties', $data);
 
         $properties = $data['properties'];
-
-        $email = $this->getEmail($data);
+        $email      = $this->getEmail($data);
 
         $obj = new CMSubscriber();
         $obj->setEmail($email);

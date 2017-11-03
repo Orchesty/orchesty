@@ -6,8 +6,22 @@ services:
             - '%backend_host%'
         tags: ['%systems%']
 
+    hbpf.connector.hubspot-create-contact-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\Connector\HubspotCreateContactConnector
+        arguments:
+            - '@systems.hubspot'
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.transport.curl_manager'
+
     hbpf.connector.hubspot-update-contact-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\Connector\HubspotUpdateContactConnector
+        arguments:
+            - '@systems.hubspot'
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.transport.curl_manager'
+
+    hbpf.connector.hubspot-updated-contact-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\Connector\HubspotUpdatedContactConnector
         arguments:
 
     hbpf.connector.hubspot-get-contact-connector:
@@ -25,8 +39,16 @@ services:
             - '@hbpf.transport.async_curl_factory'
             - '@cc.progress_counter.progress_counter_service'
 
+    hbpf.custom_node.hubspot-created-contact-mapper:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\Mapper\HubspotCreatedContactMapper
+        arguments:
+
     hbpf.custom_node.hubspot-create-contact-mapper:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\Mapper\HubspotCreateContactMapper
+        arguments:
+
+    hbpf.custom_node.hubspot-updated-contact-mapper:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\Mapper\HubspotUpdatedContactMapper
         arguments:
 
     hbpf.custom_node.hubspot-update-contact-mapper:
@@ -37,6 +59,6 @@ services:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\Mapper\HubspotSyncContactMapper
         arguments:
 
-    hbpf.custom_node.hubspot-delete-contact-mapper:
-        class: CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\Mapper\HubspotDeleteContactMapper
+    hbpf.custom_node.hubspot-deleted-contact-mapper:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\Mapper\HubspotDeletedContactMapper
         arguments:

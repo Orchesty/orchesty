@@ -17,14 +17,14 @@ use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
 
 /**
- * Class HubspotUpdateContactConnector
+ * Class HubspotCreateContactConnector
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\Connector
  */
-class HubspotUpdateContactConnector implements ConnectorInterface
+class HubspotCreateContactConnector implements ConnectorInterface
 {
 
-    private const SUB_URL = '/contacts/v1/contact/vid/%s/profile';
+    private const SUB_URL = '/contacts/v1/contact';
 
     /**
      * @var SystemInstallRepository|ObjectRepository
@@ -60,7 +60,7 @@ class HubspotUpdateContactConnector implements ConnectorInterface
      */
     public function getId(): string
     {
-        return 'hubspot-update-contact-connector';
+        return 'hubspot-create-contact-connector';
     }
 
     /**
@@ -72,7 +72,7 @@ class HubspotUpdateContactConnector implements ConnectorInterface
     public function processEvent(ProcessDto $dto): ProcessDto
     {
         throw new ConnectorException(
-            'ProcessEvent is not implemented, Hubspot updateContactConnector.',
+            'ProcessEvent is not implemented, Hubspot createContactConnector.',
             ConnectorException::CONNECTOR_DOES_NOT_HAVE_PROCESS_ACTION
         );
     }
@@ -86,37 +86,31 @@ class HubspotUpdateContactConnector implements ConnectorInterface
     public function processAction(ProcessDto $dto): ProcessDto
     {
         $systemInstall = $this->systemInstallRepository->getSystemInstallFromHeaders($dto->getHeaders());
-        $data          = json_decode($dto->getData(), TRUE);
+        $requestDto    = $this->system->getRequestDto($systemInstall, CurlManager::METHOD_POST);
+        $uri           = new Uri(rtrim($requestDto->getUri(TRUE), '/') . self::SUB_URL);
 
-        $requestDto = $this->system->getRequestDto($systemInstall, CurlManager::METHOD_POST);
-        $query      = sprintf(self::SUB_URL, $data['id']);
-        $uri        = new Uri(sprintf(rtrim($requestDto->getUri(TRUE), '/') . $query));
-
-        $requestDto
-            ->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()))
+        $requestDto->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()))
             ->setUri($uri)
-            ->setBody($data['body']);
+            ->setBody($dto->getData());
 
         $res = $this->curl->send($requestDto);
 
-        if ($res->getStatusCode() === 404) {
+        if ($res->getStatusCode() === 409) {
             throw new CleverConnectorsException(
-                sprintf('User with given id [%s] does not exist, Hubspot updateContactConnector.', $data['id']),
+                'Contact already exists, Hubspot createContactConnector.',
                 CleverConnectorsException::REQUEST_FAILED
             );
-        } else if ($res->getStatusCode() === 400) {
+        } elseif ($res->getStatusCode() !== 200) {
             throw new CleverConnectorsException(
-                'There is a problem with the data in the request body, Hubspot updateContactConnector.',
-                CleverConnectorsException::MISSING_DATA
-            );
-        } else if ($res->getStatusCode() !== 204) {
-            throw new CleverConnectorsException(
-                'Failed to update contact - unknown error, Hubspot updateContactConnector.',
-                CleverConnectorsException::MISSING_DATA
+                'Failed to create new contact / email already taken, Hubspot createContactConnector.',
+                CleverConnectorsException::REQUEST_FAILED
             );
         }
 
-        return $dto->setData($res->getBody());
+        $tmp                     = json_decode($res->getBody(), TRUE);
+        $tmp['subscriptionType'] = 'contact.creation';
+
+        return $dto->setData(json_encode($tmp));
     }
 
 }
