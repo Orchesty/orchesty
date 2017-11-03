@@ -111,7 +111,7 @@ class PipedriveSystem implements WebhookSystemInterface, AuthorizationInterface,
      */
     public function getDescription(): string
     {
-        return 'Pipedrive system.';
+        return 'Pipedrive';
     }
 
     /**

@@ -16,6 +16,7 @@ final class SystemTypeEnum extends EnumAbstract
     public const WEBHOOK    = 'webhook';
     public const UI_WEBHOOK = 'ui_webhook';
     public const PLUGIN     = 'plugin';
+
     /**
      * @var string[]
      */

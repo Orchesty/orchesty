@@ -93,7 +93,7 @@ class MailmunchSystem implements WebhookSystemInterface, AuthorizationInterface
      */
     public function getDescription(): string
     {
-        return 'Mailmunch system';
+        return 'Mailmunch';
     }
 
     /**

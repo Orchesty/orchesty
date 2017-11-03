@@ -31,7 +31,6 @@ services:
         arguments:
             - '@doctrine_mongodb.odm.default_document_manager'
 
-
     cc.events.controller:
         class: CleverConnectors\AppBundle\Controller\CMEventsController
         arguments:
@@ -72,3 +71,13 @@ services:
             arguments:
                 - '@snc_redis.default'
                 - '@cc.progress_counter.async_publisher'
+
+    cc.open_source_plugins.controller:
+        class: CleverConnectors\AppBundle\Controller\OpenSourcePluginsController
+        arguments:
+
+    cc.open_source_plugins.security_manager:
+        class: CleverConnectors\AppBundle\Model\OpenSourcePlugins\OpenSourcePluginsSecurityManager
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+

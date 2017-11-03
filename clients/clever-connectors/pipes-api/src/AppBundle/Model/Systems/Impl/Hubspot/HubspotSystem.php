@@ -132,7 +132,7 @@ class HubspotSystem implements WebhookSystemInterface, OAuth2Interface, CMEventS
      */
     public function getDescription(): string
     {
-        return 'Hubspot system';
+        return 'Hubspot';
     }
 
     /**
