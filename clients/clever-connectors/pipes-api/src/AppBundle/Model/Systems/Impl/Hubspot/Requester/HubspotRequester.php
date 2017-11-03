@@ -4,9 +4,10 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\Requester;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\Requester\RequesterInterface;
-use CleverConnectors\AppBundle\Model\Requester\Traits\CMEventRequesterTrait;
+use CleverConnectors\AppBundle\Model\Requester\RequesterTrait;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\HubspotSystem;
 use GuzzleHttp\Psr7\Uri;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 
@@ -18,7 +19,7 @@ use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 class HubspotRequester implements RequesterInterface
 {
 
-    use CMEventRequesterTrait;
+    use RequesterTrait;
 
     /**
      * @var array
@@ -42,9 +43,9 @@ class HubspotRequester implements RequesterInterface
      */
     public function getRequestDto(array $data): RequestDto
     {
-        $object = $this->getObject($data);
+        $object = $this->getCMEventObject($data);
 
-        $dto = new RequestDto('POST', new Uri(sprintf($object->getUrl(), HubspotSystem::HAPI_KEY)));
+        $dto = new RequestDto(CurlManager::METHOD_POST, new Uri(sprintf($object->getUrl(), HubspotSystem::HAPI_KEY)));
         $dto->setHeaders($this->headers)
             ->setBody(json_encode([
                 'type'      => 'string',

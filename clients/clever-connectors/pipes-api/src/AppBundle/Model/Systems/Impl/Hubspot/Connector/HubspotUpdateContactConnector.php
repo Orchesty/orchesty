@@ -11,6 +11,7 @@ use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
@@ -87,7 +88,7 @@ class HubspotUpdateContactConnector implements ConnectorInterface
         $systemInstall = $this->systemInstallRepository->getSystemInstallFromHeaders($dto->getHeaders());
         $data          = json_decode($dto->getData(), TRUE);
 
-        $requestDto = $this->system->getRequestDto($systemInstall, 'POST');
+        $requestDto = $this->system->getRequestDto($systemInstall, CurlManager::METHOD_POST);
         $query      = sprintf(self::SUB_URL, $data['id']);
         $uri        = new Uri(sprintf(rtrim($requestDto->getUri(TRUE), '/') . $query));
 
