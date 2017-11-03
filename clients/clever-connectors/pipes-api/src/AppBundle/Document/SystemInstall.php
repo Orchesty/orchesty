@@ -122,6 +122,13 @@ class SystemInstall
     protected $eventHardBounce = FALSE;
 
     /**
+     * @var null|string
+     *
+     * @ODM\Field(type="string")
+     */
+    protected $pluginVersion = NULL;
+
+    /**
      * SystemInstall constructor.
      */
     public function __construct()
@@ -345,6 +352,26 @@ class SystemInstall
     public function setEventHardBounce(bool $eventHardBounce): SystemInstall
     {
         $this->eventHardBounce = $eventHardBounce;
+
+        return $this;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getPluginVersion(): ?string
+    {
+        return $this->pluginVersion;
+    }
+
+    /**
+     * @param string $pluginVersion
+     *
+     * @return SystemInstall
+     */
+    public function setPluginVersion(string $pluginVersion): SystemInstall
+    {
+        $this->pluginVersion = $pluginVersion;
 
         return $this;
     }
