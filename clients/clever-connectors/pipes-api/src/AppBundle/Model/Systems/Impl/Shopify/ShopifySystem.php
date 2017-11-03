@@ -4,7 +4,6 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\Shopify;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\SystemTypeEnum;
-use CleverConnectors\AppBundle\Model\CMEvents\CMEventSystemInterface;
 use CleverConnectors\AppBundle\Model\CMEvents\Traits\CMEventSystemTrait;
 use CleverConnectors\AppBundle\Model\Form\Field;
 use CleverConnectors\AppBundle\Model\Form\Form;
@@ -12,7 +11,6 @@ use CleverConnectors\AppBundle\Model\Requester\RequesterInterface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\OAuth2Interface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\Traits\AuthorizationTrait;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
-use CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\Requester\ShopifyCmEventRequester;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\Requester\ShopifySubscribeRequester;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\Requester\ShopifyUnsubscribeRequester;
 use CleverConnectors\AppBundle\Model\Webhook\Traits\WebhookSystemTrait;
@@ -30,7 +28,7 @@ use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Shopify
  */
-class ShopifySystem implements WebhookSystemInterface, OAuth2Interface, CMEventSystemInterface
+class ShopifySystem implements WebhookSystemInterface, OAuth2Interface
 {
 
     use AuthorizationTrait;
@@ -286,16 +284,6 @@ class ShopifySystem implements WebhookSystemInterface, OAuth2Interface, CMEventS
         $dto->setHeaders($this->getHeaders($systemInstall));
 
         return $dto;
-    }
-
-    /**
-     * @param SystemInstall $systemInstall
-     *
-     * @return RequesterInterface|null
-     */
-    public function getCMEventRequester(SystemInstall $systemInstall): ?RequesterInterface
-    {
-        return new ShopifyCmEventRequester($systemInstall, $this->getHeaders($systemInstall));
     }
 
     /**
