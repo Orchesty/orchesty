@@ -15,7 +15,7 @@ parameters:
 
 cc_api:
 	base_uri: 'https://cleverconn.stage.hanaboso.net/'
-	cert: %appDir%/../cert/stage-staf.pem
+	cert: %appDir%/../cert/stage-staff.pem
 
 application:
 	errorPresenter: Error
