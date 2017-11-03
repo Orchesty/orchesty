@@ -66,8 +66,12 @@ class CMEventActivator implements BatchInterface, CustomNodeInterface
      * @param CurlSenderFactory   $factory
      * @param CMActivatorProducer $streamProducer
      */
-    function __construct(SystemManager $manager, DocumentManager $dm, CurlSenderFactory $factory,
-                         CMActivatorProducer $streamProducer)
+    function __construct(
+        SystemManager $manager,
+        DocumentManager $dm,
+        CurlSenderFactory $factory,
+        CMActivatorProducer $streamProducer
+    )
     {
         $this->systemInstallRepository = $dm->getRepository(SystemInstall::class);
         $this->manager                 = $manager;
