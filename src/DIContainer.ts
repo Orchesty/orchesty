@@ -1,5 +1,5 @@
-import AssertionPublisher from "amqplib-plus/dist/lib/AssertPublisher";
-import { default as Connection } from "amqplib-plus/dist/lib/Connection";
+import {AssertionPublisher} from "amqplib-plus/dist/lib/AssertPublisher";
+import {Connection} from "amqplib-plus/dist/lib/Connection";
 import {Container} from "hb-utils/dist/lib/Container";
 import {Metrics} from "metrics-sender/dist/lib/metrics/Metrics";
 import {amqpConnectionOptions, metricsOptions} from "./config";

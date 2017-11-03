@@ -1,7 +1,7 @@
 import {Channel, Message, Options} from "amqplib";
-import AssertionPublisher from "amqplib-plus/dist/lib/AssertPublisher";
-import AMQPConnection, {createChannelCallback} from "amqplib-plus/dist/lib/Connection";
-import SimpleConsumer from "amqplib-plus/dist/lib/SimpleConsumer";
+import {AssertionPublisher} from "amqplib-plus/dist/lib/AssertPublisher";
+import {Connection, createChannelCallback} from "amqplib-plus/dist/lib/Connection";
+import {SimpleConsumer} from "amqplib-plus/dist/lib/SimpleConsumer";
 import {ObjectUtils} from "hb-utils/dist/lib/ObjectUtils";
 import Headers from "../message/Headers";
 import logger from "./../logger/Logger";
@@ -25,12 +25,12 @@ class Repeater {
     /**
      *
      * @param {IRepeaterSettings} settings
-     * @param {AMQPConnection} amqpCon
+     * @param {Connection} amqpCon
      * @param {IMessageStorage} storage
      */
     constructor(
         private settings: IRepeaterSettings,
-        private amqpCon: AMQPConnection,
+        private amqpCon: Connection,
         private storage: IMessageStorage,
     ) {
         this.consumer = this.createConsumer();

@@ -1,4 +1,4 @@
-import AssertionPublisher from "amqplib-plus/dist/lib/AssertPublisher";
+import {AssertionPublisher} from "amqplib-plus/dist/lib/AssertPublisher";
 import {IMetrics} from "metrics-sender/dist/lib/metrics/IMetrics";
 import logger from "../../logger/Logger";
 import Headers from "../../message/Headers";

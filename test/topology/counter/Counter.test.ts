@@ -2,9 +2,9 @@ import { assert } from "chai";
 import "mocha";
 
 import {Channel, Message} from "amqplib";
-import Connection from "amqplib-plus/dist/lib/Connection";
-import Publisher from "amqplib-plus/dist/lib/Publisher";
-import SimpleConsumer from "amqplib-plus/dist/lib/SimpleConsumer";
+import {Connection} from "amqplib-plus/dist/lib/Connection";
+import {Publisher} from "amqplib-plus/dist/lib/Publisher";
+import {SimpleConsumer} from "amqplib-plus/dist/lib/SimpleConsumer";
 import {Replies} from "amqplib/properties";
 import {amqpConnectionOptions} from "../../../src/config";
 import {ResultCode} from "../../../src/message/ResultCode";
