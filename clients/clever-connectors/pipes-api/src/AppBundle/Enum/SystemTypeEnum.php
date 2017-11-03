@@ -15,6 +15,7 @@ final class SystemTypeEnum extends EnumAbstract
     public const CRON       = 'cron';
     public const WEBHOOK    = 'webhook';
     public const UI_WEBHOOK = 'ui_webhook';
+    public const PLUGIN     = 'plugin';
     /**
      * @var string[]
      */
@@ -22,6 +23,7 @@ final class SystemTypeEnum extends EnumAbstract
         self::CRON       => 'cron',
         self::WEBHOOK    => 'webhook',
         self::UI_WEBHOOK => 'ui_webhook',
+        self::PLUGIN     => 'plugin',
     ];
 
     /**
