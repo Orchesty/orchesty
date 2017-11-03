@@ -2,8 +2,8 @@ import { assert } from "chai";
 import "mocha";
 
 import {Channel, Message, Options} from "amqplib";
-import Connection from "amqplib-plus/dist/lib/Connection";
-import SimpleConsumer from "amqplib-plus/dist/lib/SimpleConsumer";
+import {Connection} from "amqplib-plus/dist/lib/Connection";
+import {SimpleConsumer} from "amqplib-plus/dist/lib/SimpleConsumer";
 import {amqpConnectionOptions} from "../../../../src/config";
 import Headers from "../../../../src/message/Headers";
 import JobMessage from "../../../../src/message/JobMessage";

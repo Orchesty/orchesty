@@ -1,6 +1,6 @@
 import { Channel, Message } from "amqplib";
-import Connection from "amqplib-plus/dist/lib/Connection";
-import { default as BasicConsumer } from "amqplib-plus/dist/lib/Consumer";
+import {Connection} from "amqplib-plus/dist/lib/Connection";
+import { Consumer as BasicConsumer } from "amqplib-plus/dist/lib/Consumer";
 import logger from "../../../logger/Logger";
 import JobMessage from "../../../message/JobMessage";
 import {INodeLabel} from "../../../topology/Configurator";

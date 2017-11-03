@@ -1,6 +1,6 @@
 import {Channel, Options} from "amqplib";
-import Connection from "amqplib-plus/dist/lib/Connection";
-import Publisher from "amqplib-plus/dist/lib/Publisher";
+import {Connection} from "amqplib-plus/dist/lib/Connection";
+import {Publisher} from "amqplib-plus/dist/lib/Publisher";
 import logger from "../../../logger/Logger";
 import CounterMessage from "../../../message/CounterMessage";
 import JobMessage from "../../../message/JobMessage";

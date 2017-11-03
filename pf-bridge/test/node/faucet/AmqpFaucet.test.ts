@@ -2,8 +2,8 @@ import { assert } from "chai";
 import "mocha";
 
 import {Channel} from "amqplib";
-import Connection from "amqplib-plus/dist/lib/Connection";
-import Publisher from "amqplib-plus/dist/lib/Publisher";
+import {Connection} from "amqplib-plus/dist/lib/Connection";
+import {Publisher} from "amqplib-plus/dist/lib/Publisher";
 import {amqpConnectionOptions} from "../../../src/config";
 import Headers from "../../../src/message/Headers";
 import JobMessage from "../../../src/message/JobMessage";

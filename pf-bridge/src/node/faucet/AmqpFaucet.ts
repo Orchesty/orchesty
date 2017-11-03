@@ -1,5 +1,5 @@
-import { Channel } from "amqplib";
-import Connection from "amqplib-plus/dist/lib/Connection";
+import {Channel} from "amqplib";
+import {Connection} from "amqplib-plus/dist/lib/Connection";
 import logger from "../../logger/Logger";
 import {INodeLabel} from "../../topology/Configurator";
 import Consumer from "./amqp/AMQPConsumer";
