@@ -20,7 +20,7 @@ use Tests\KernelTestCaseAbstract;
  *
  * @package Tests\Unit\AppBundle\Model\Systems\Impl\Pipedrive\Connector
  */
-class PipedriveCreatePersonConnectorTest extends KernelTestCaseAbstract
+final class PipedriveCreatePersonConnectorTest extends KernelTestCaseAbstract
 {
 
     /**

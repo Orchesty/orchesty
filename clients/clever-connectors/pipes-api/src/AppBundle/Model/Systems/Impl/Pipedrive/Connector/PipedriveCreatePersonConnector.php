@@ -48,7 +48,7 @@ class PipedriveCreatePersonConnector implements ConnectorInterface
      * @param CurlManagerInterface $curl
      * @param DocumentManager      $dm
      */
-    function __construct(PipedriveSystem $system, CurlManagerInterface $curl, DocumentManager $dm)
+    public function __construct(PipedriveSystem $system, CurlManagerInterface $curl, DocumentManager $dm)
     {
         $this->system                  = $system;
         $this->curl                    = $curl;

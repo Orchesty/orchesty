@@ -30,7 +30,7 @@ class PipedriveCreatePersonMapper implements CustomNodeInterface
      *
      * @param DocumentManager $dm
      */
-    function __construct(DocumentManager $dm)
+    public function __construct(DocumentManager $dm)
     {
         $this->systemInstallRepository = $dm->getRepository(SystemInstall::class);
     }
