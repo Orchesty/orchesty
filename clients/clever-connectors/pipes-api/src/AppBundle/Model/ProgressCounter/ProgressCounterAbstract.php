@@ -8,7 +8,6 @@
 
 namespace CleverConnectors\AppBundle\Model\ProgressCounter;
 
-use Bunny\Client as BunnyClient;
 use CleverConnectors\AppBundle\Enum\ProgressCounterStatusEnum;
 use CleverConnectors\AppBundle\Model\ProgressCounter\Publisher\IProgressPublisher;
 use Predis\Client;
