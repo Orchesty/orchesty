@@ -10,8 +10,7 @@ namespace CleverConnectors\AppBundle\Model\ProgressCounter;
 
 use Bunny\Client as BunnyClient;
 use CleverConnectors\AppBundle\Enum\ProgressCounterStatusEnum;
-use Hanaboso\PipesFramework\RabbitMq\BunnyManager;
-use Hanaboso\PipesFramework\RabbitMq\Producer\AbstractProducer;
+use CleverConnectors\AppBundle\Model\ProgressCounter\Publisher\IProgressPublisher;
 use Predis\Client;
 
 /**
@@ -24,68 +23,46 @@ abstract class ProgressCounterAbstract implements ProgressCounterInterface
 
     use ProgressCounterTrait;
 
+    public const PROGRESS_COUNTER          = 'progress_counter';
+    public const PROGRESS_COUNTER_USERS    = 'users';
+    public const PROGRESS_COUNTER_GROUPS   = 'groups';
+    public const PROGRESS_COUNTER_TOTAL    = 'total';
+    public const PROGRESS_COUNTER_PROGRESS = 'progress';
+    public const PROGRESS_COUNTER_STATUS   = 'status';
+    public const PROGRESS_COUNTER_EVENT    = 'event';
+    public const PROGRESS_COUNTER_METADATA = 'metadata';
+
     /**
      * @var Client
      */
     protected $redis;
 
     /**
-     * @var AbstractProducer
+     * @var IProgressPublisher
      */
-    protected $producer;
-    /**
-     * @var BunnyManager
-     */
-    private $bunnyManager;
+    private $progressPublisher;
 
     /**
      * ProgressCounterService constructor.
      *
-     * @param Client           $redis
-     * @param AbstractProducer $producer
-     * @param BunnyManager     $bunnyManager
+     * @param Client             $redis
+     * @param IProgressPublisher $progressPublisher
      */
-    public function __construct(Client $redis, AbstractProducer $producer, BunnyManager $bunnyManager)
+    public function __construct(Client $redis, IProgressPublisher $progressPublisher)
     {
-        $this->redis        = $redis;
-        $this->producer     = $producer;
-        $this->bunnyManager = $bunnyManager;
+        $this->redis             = $redis;
+        $this->progressPublisher = $progressPublisher;
     }
 
     /**
-     * @var string
+     * @param string $processId
+     *
+     * @return string
      */
-    public const PROGRESS_COUNTER_USERS = 'users';
-
-    /**
-     * @var string
-     */
-    public const PROGRESS_COUNTER_GROUPS = 'groups';
-
-    /**
-     * @var string
-     */
-    public const PROGRESS_COUNTER_TOTAL = 'total';
-
-    /**
-     * @var string
-     */
-    public const PROGRESS_COUNTER_PROGRESS = 'progress';
-
-    /**
-     * @var string
-     */
-    public const PROGRESS_COUNTER_STATUS = 'status';
-
-    /**
-     * @var string
-     */
-    public const PROGRESS_COUNTER_EVENT = 'event';
-
-    /**
-     * @var string
-     */
-    public const PROGRESS_COUNTER_METADATA = 'metadata';
+    private function createKey(string $processId): string
+    {
+        return $this->getKey($processId, self::PROGRESS_COUNTER);
+    }
 
     /**
      * @param string   $processId
@@ -106,17 +83,16 @@ abstract class ProgressCounterAbstract implements ProgressCounterInterface
             $total = 0;
         }
 
-        $this->redis->set($this->getKey($processId, self::PROGRESS_COUNTER_EVENT), $eventName);
-        $this->redis->hmset($this->getKey($processId, self::PROGRESS_COUNTER_GROUPS), $groups);
-        $this->redis->set($this->getKey($processId, self::PROGRESS_COUNTER_TOTAL), $total);
-        $this->redis->set($this->getKey($processId, self::PROGRESS_COUNTER_PROGRESS), 0);
-        $this->redis->set(
-            $this->getKey($processId, self::PROGRESS_COUNTER_STATUS),
-            ProgressCounterStatusEnum::IN_PROGRESS
-        );
-        $this->redis->hmset($this->getKey($processId, self::PROGRESS_COUNTER_METADATA), $metadata);
+        $this->redis->hmset($this->createKey($processId), [
+            self::PROGRESS_COUNTER_EVENT    => $eventName,
+            self::PROGRESS_COUNTER_GROUPS   => json_encode($groups),
+            self::PROGRESS_COUNTER_TOTAL    => $total,
+            self::PROGRESS_COUNTER_PROGRESS => 0,
+            self::PROGRESS_COUNTER_STATUS   => ProgressCounterStatusEnum::IN_PROGRESS,
+            self::PROGRESS_COUNTER_METADATA => json_encode($metadata),
+        ]);
 
-        $this->producer->publish($this->prepareMessage($processId));
+        $this->progressPublisher->publish($this->prepareMessage($processId));
     }
 
     /**
@@ -125,17 +101,9 @@ abstract class ProgressCounterAbstract implements ProgressCounterInterface
      */
     public function setTotal(string $processId, int $total): void
     {
-        $this->redis->set($this->getKey($processId, self::PROGRESS_COUNTER_TOTAL), $total);
+        $this->redis->hset($this->createKey($processId), self::PROGRESS_COUNTER_TOTAL, $total);
 
-        $client = new BunnyClient($this->bunnyManager->getConfig());
-        $client->connect();
-        $client->channel()->publish(
-            json_encode($this->prepareMessage($processId)),
-            ['content-type' => 'application/json'],
-            '',
-            'pipes.stream'
-        );
-        $client->disconnect();
+        $this->progressPublisher->publish($this->prepareMessage($processId));
     }
 
     /**
@@ -143,9 +111,9 @@ abstract class ProgressCounterAbstract implements ProgressCounterInterface
      */
     public function increment(string $processId): void
     {
-        $this->redis->incr(self::getKey($processId, self::PROGRESS_COUNTER_PROGRESS));
+        $this->redis->hincrby($this->createKey($processId), self::PROGRESS_COUNTER_PROGRESS, 1);
 
-        $this->producer->publish($this->prepareMessage($processId));
+        $this->progressPublisher->publish($this->prepareMessage($processId));
     }
 
     /**
@@ -154,9 +122,9 @@ abstract class ProgressCounterAbstract implements ProgressCounterInterface
      */
     public function setStatus(string $processId, ProgressCounterStatusEnum $status): void
     {
-        $this->redis->set(self::getKey($processId, self::PROGRESS_COUNTER_STATUS), $status->getValue());
+        $this->redis->hset($this->createKey($processId), self::PROGRESS_COUNTER_STATUS, $status->getValue());
 
-        $this->producer->publish($this->prepareMessage($processId));
+        $this->progressPublisher->publish($this->prepareMessage($processId));
 
         if ($status->getValue() == ProgressCounterStatusEnum::SUCCESS) {
             $this->garbageData($processId);
@@ -170,15 +138,17 @@ abstract class ProgressCounterAbstract implements ProgressCounterInterface
      */
     public function prepareMessage(string $processId): array
     {
+        $data = $this->getData($processId);
+
         return [
-            'event'   => $this->redis->get(self::getKey($processId, self::PROGRESS_COUNTER_EVENT)),
-            'groups'  => $this->getGroups($processId),
+            'event'   => $data[self::PROGRESS_COUNTER_EVENT] ?? '',
+            'groups'  => json_decode($data[self::PROGRESS_COUNTER_GROUPS] ?? '', TRUE),
             'content' => [
                 'process_id' => $processId,
-                'total'      => $this->redis->get(self::getKey($processId, self::PROGRESS_COUNTER_TOTAL)),
-                'progress'   => $this->redis->get(self::getKey($processId, self::PROGRESS_COUNTER_PROGRESS)),
-                'status'     => $this->redis->get(self::getKey($processId, self::PROGRESS_COUNTER_STATUS)),
-                'metadata'   => $this->getMetaData($processId),
+                'total'      => $data[self::PROGRESS_COUNTER_TOTAL] ?? '',
+                'progress'   => $data[self::PROGRESS_COUNTER_PROGRESS] ?? '',
+                'status'     => $data[self::PROGRESS_COUNTER_STATUS] ?? '',
+                'metadata'   => json_decode($data[self::PROGRESS_COUNTER_METADATA] ?? '', TRUE),
             ],
         ];
     }
@@ -188,31 +158,15 @@ abstract class ProgressCounterAbstract implements ProgressCounterInterface
      *
      * @return array
      */
-    private function getGroups(string $processId): array
+    private function getData(string $processId): array
     {
-        $groups = $this->redis->hgetall(self::getKey($processId, self::PROGRESS_COUNTER_GROUPS));
+        $data = $this->redis->hgetall($this->createKey($processId));
 
-        if (!is_array($groups)) {
+        if (!is_array($data)) {
             return [];
         }
 
-        return $groups;
-    }
-
-    /**
-     * @param string $processId
-     *
-     * @return array
-     */
-    private function getMetaData(string $processId): array
-    {
-        $metadata = $this->redis->hgetall(self::getKey($processId, self::PROGRESS_COUNTER_METADATA));
-
-        if (!is_array($metadata)) {
-            return [];
-        }
-
-        return $metadata;
+        return $data;
     }
 
     /**
@@ -220,15 +174,7 @@ abstract class ProgressCounterAbstract implements ProgressCounterInterface
      */
     protected function garbageData(string $processId): void
     {
-        $this->redis->del([
-            self::getKey($processId, self::PROGRESS_COUNTER_GROUPS),
-            self::getKey($processId, self::PROGRESS_COUNTER_USERS),
-            self::getKey($processId, self::PROGRESS_COUNTER_STATUS),
-            self::getKey($processId, self::PROGRESS_COUNTER_PROGRESS),
-            self::getKey($processId, self::PROGRESS_COUNTER_TOTAL),
-            self::getKey($processId, self::PROGRESS_COUNTER_EVENT),
-            self::getKey($processId, self::PROGRESS_COUNTER_METADATA),
-        ]);
+        $this->redis->del([$this->createKey($processId)]);
     }
 
 }

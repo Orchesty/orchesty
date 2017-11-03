@@ -51,9 +51,24 @@ services:
         calls:
             - [setLogger, ['@monolog.logger']]
 
+    cc.progress_counter.sync_publisher:
+        class: CleverConnectors\AppBundle\Model\ProgressCounter\Publisher\SyncPublisher
+        arguments:
+            - "@rabbit-mq.producer.progress_counter"
+
+    cc.progress_counter.async_publisher:
+        class: CleverConnectors\AppBundle\Model\ProgressCounter\Publisher\AsyncPublisher
+        arguments:
+            - '@rabbit-mq.manager'
+
     cc.progress_counter.progress_counter_service:
         class: CleverConnectors\AppBundle\Model\ProgressCounter\ProgressCounterService
         arguments:
             - '@snc_redis.default'
-            - '@rabbit-mq.producer.progress_counter'
-            - '@rabbit-mq.manager'
+            - '@cc.progress_counter.sync_publisher'
+
+    cc.progress_counter.async_progress_counter_service:
+            class: CleverConnectors\AppBundle\Model\ProgressCounter\ProgressCounterService
+            arguments:
+                - '@snc_redis.default'
+                - '@cc.progress_counter.async_publisher'

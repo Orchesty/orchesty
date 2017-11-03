@@ -10,7 +10,7 @@ services:
             - '@systems.zoho'
             - '@hbpf.transport.async_curl_factory'
             - '@doctrine_mongodb.odm.default_document_manager'
-            - '@cc.progress_counter.progress_counter_service'
+            - '@cc.progress_counter.async_progress_counter_service'
 
     hbpf.connector.zoho-get-contact-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Zoho\Connector\ZohoGetContactConnector
