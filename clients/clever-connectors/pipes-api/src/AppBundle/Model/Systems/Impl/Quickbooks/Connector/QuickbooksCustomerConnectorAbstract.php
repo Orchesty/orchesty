@@ -17,6 +17,7 @@ use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSender;
 use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSenderFactory;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\BatchInterface;
@@ -121,7 +122,7 @@ abstract class QuickbooksCustomerConnectorAbstract implements BatchInterface, Co
     {
         $sender        = $this->factory->create($loop);
         $systemInstall = $this->getSystemInstall($dto);
-        $requestDto    = $this->system->getRequestDto($systemInstall, 'GET');
+        $requestDto    = $this->system->getRequestDto($systemInstall, CurlManager::METHOD_GET);
         $requestDto->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()));
         $url     = new Uri($requestDto->getUri(TRUE) . 'query?query=' . urlencode($this->getTotalQuery($systemInstall,
                 $dto)));

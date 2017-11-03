@@ -1,0 +1,35 @@
+{
+  "Customer": {
+    "Taxable": true,
+    "Job": false,
+    "BillWithParent": false,
+    "Balance": 0,
+    "BalanceWithJobs": 0,
+    "CurrencyRef": {
+      "value": "USD",
+      "name": "United States Dollar"
+    },
+    "PreferredDeliveryMethod": "Print",
+    "domain": "QBO",
+    "sparse": false,
+    "Id": "58",
+    "SyncToken": "0",
+    "MetaData": {
+      "CreateTime": "2017-11-02T04:11:22-07:00",
+      "LastUpdatedTime": "2017-11-02T04:11:22-07:00"
+    },
+    "GivenName": "Ichi",
+    "FamilyName": "Ni",
+    "FullyQualifiedName": "Ichi Ni",
+    "DisplayName": "Ichi Ni",
+    "PrintOnCheckName": "Ichi Ni",
+    "Active": true,
+    "PrimaryEmailAddr": {
+      "Address": "eml@emlm.com"
+    },
+    "DefaultTaxCodeRef": {
+      "value": "2"
+    }
+  },
+  "time": "2017-11-02T04:11:22.478-07:00"
+}

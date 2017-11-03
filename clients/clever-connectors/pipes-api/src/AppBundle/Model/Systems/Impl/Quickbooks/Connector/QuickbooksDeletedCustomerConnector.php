@@ -14,11 +14,11 @@ use DateTime;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 
 /**
- * Class QuickbooksDeleteCustomerConnector
+ * Class QuickbooksDeletedCustomerConnector
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\Connector
  */
-class QuickbooksDeleteCustomerConnector extends QuickbooksCustomerConnectorAbstract
+class QuickbooksDeletedCustomerConnector extends QuickbooksCustomerConnectorAbstract
 {
 
     /**
@@ -26,7 +26,7 @@ class QuickbooksDeleteCustomerConnector extends QuickbooksCustomerConnectorAbstr
      */
     public function getId(): string
     {
-        return 'quickbooks-delete-customer-connector';
+        return 'quickbooks-deleted-customer-connector';
     }
 
     /**

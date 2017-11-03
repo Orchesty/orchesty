@@ -4,6 +4,10 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\SystemTypeEnum;
+use CleverConnectors\AppBundle\Model\CMEvents\CMEventObject;
+use CleverConnectors\AppBundle\Model\CMEvents\CMEventSystemInterface;
+use CleverConnectors\AppBundle\Model\CMEvents\Traits\CMEventSystemTrait;
+use CleverConnectors\AppBundle\Model\Requester\RequesterInterface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\OAuth2Interface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\Traits\AuthorizationTrait;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
@@ -20,10 +24,11 @@ use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
  * Date: 10/20/17
  * Time: 3:03 PM
  */
-class QuickbooksSystem implements OAuth2Interface
+class QuickbooksSystem implements OAuth2Interface, CMEventSystemInterface
 {
 
     use AuthorizationTrait;
+    use CMEventSystemTrait;
 
     private const CLIENT_ID     = 'Q0VXajrrB3de6wDpxacbHRq1u1qWz4QHPjt5ypHzd49IPr36xa';
     private const CLIENT_SECRET = 'NUVTEc0Q13kP3tD2lHmwfHfuJplnpYwxsRA7FXJ8';
@@ -52,6 +57,7 @@ class QuickbooksSystem implements OAuth2Interface
     public function __construct(OAuth2Provider $provider)
     {
         $this->provider = $provider;
+        $this->addCMEvent(new CMEventObject('', SystemInstall::EVENT_CREATE, ''));
     }
 
     /**
@@ -193,6 +199,16 @@ class QuickbooksSystem implements OAuth2Interface
     public function getSettingFields(SystemInstall $systemInstall): array
     {
         return [];
+    }
+
+    /**
+     * @param SystemInstall $systemInstall
+     *
+     * @return RequesterInterface|null
+     */
+    public function getCMEventRequester(SystemInstall $systemInstall): ?RequesterInterface
+    {
+        return NULL;
     }
 
     /**

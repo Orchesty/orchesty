@@ -10,7 +10,6 @@ use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Exception;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
@@ -19,14 +18,14 @@ use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
 
 /**
- * Class QuickbooksCreateCustomerConnector
+ * Class QuickbooksGetnumberCustomerConnector
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\Connector
  */
-class QuickbooksCreateCustomerConnector implements ConnectorInterface
+class QuickbooksGetnumberCustomerConnector implements ConnectorInterface
 {
 
-    private const SUB_URL = '/customer';
+    private const SUB_URL = '/query?query=';
 
     /**
      * @var CurlManagerInterface
@@ -62,7 +61,7 @@ class QuickbooksCreateCustomerConnector implements ConnectorInterface
      */
     public function getId(): string
     {
-        return 'quickbooks-create-customer-connector';
+        return 'quickbooks-getnumber-customer-connector';
     }
 
     /**
@@ -74,7 +73,7 @@ class QuickbooksCreateCustomerConnector implements ConnectorInterface
     public function processEvent(ProcessDto $dto): ProcessDto
     {
         throw new ConnectorException(
-            'Pipedrive has no support for event.',
+            'Quickbooks has no support for event, getnumberCustomerConnector',
             ConnectorException::CONNECTOR_DOES_NOT_HAVE_PROCESS_EVENT
         );
     }
@@ -89,33 +88,53 @@ class QuickbooksCreateCustomerConnector implements ConnectorInterface
     {
         $data = json_decode($dto->getData(), TRUE);
 
-        if (!$data[QuickbooksCreateCustomerMapper::SUCCESS]) {
-            $systemInstall = $this->systemInstallRepository->getSystemInstallFromHeaders($dto->getHeaders());
-            $requestDto    = $this->system->getRequestDto($systemInstall, CurlManager::METHOD_POST);
-            $requestDto->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()))
-                ->setBody($data['body'])
-                ->setUri(new Uri(rtrim($requestDto->getUri(TRUE), '/') . self::SUB_URL));
-
-            try {
-                $res = $this->curl->send($requestDto);
-
-                $data[QuickbooksCreateCustomerMapper::SUCCESS] = TRUE;
-                $data['body']                                  = $res->getBody();
-            } catch (Exception $e) {
-                if ($data[QuickbooksCreateCustomerMapper::ATTEMPT]
-                ) {
-                    throw new CleverConnectorsException(
-                        'Failed to create new customer, Quickbooks createCustomer.',
-                        CleverConnectorsException::REQUEST_FAILED
-                    );
-                }
-            }
-
-            $data[QuickbooksCreateCustomerMapper::ATTEMPT] = TRUE;
-            $dto->setData(json_encode($data));
+        if ($data[QuickbooksCreateCustomerMapper::SUCCESS]) {
+            return $dto;
         }
 
-        return $dto;
+        $body = json_decode($data['body'], TRUE);
+
+        $systemInstall = $this->systemInstallRepository->getSystemInstallFromHeaders($dto->getHeaders());
+        $requestDto    = $this->system->getRequestDto($systemInstall, CurlManager::METHOD_GET);
+        $requestDto->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()))
+            ->setUri(new Uri(rtrim($requestDto->getUri(TRUE), '/') . $this->getQuery($body)));
+
+        $res     = $this->curl->send($requestDto);
+        $resBody = json_decode($res->getBody(), TRUE);
+
+        if ($res->getStatusCode() !== 200
+            || !array_key_exists('QueryResponse', $resBody)
+            || !array_key_exists('totalCount', $resBody['QueryResponse'])
+        ) {
+            throw new CleverConnectorsException(
+                'Failed to query name index, QuickbooksGetnumberConnector.',
+                CleverConnectorsException::REQUEST_FAILED
+            );
+        }
+
+        $body[QuickbooksCreateCustomerMapper::LAST_NAME] .= '#' . (string) ($resBody['QueryResponse']['totalCount'] + 1);
+
+        $data['body'] = json_encode($body);
+
+        return $dto->setData(json_encode($data));
+    }
+
+    /**
+     * @param array $data
+     *
+     * @return string
+     */
+    private function getQuery(array $data): string
+    {
+        return sprintf(
+            '%s%s\'%s\'%s\'%s%s\'',
+            self::SUB_URL,
+            urlencode('SELECT COUNT(*) FROM CUSTOMER WHERE GivenName='),
+            $data[QuickbooksCreateCustomerMapper::FIRST_NAME],
+            urlencode(' AND FamilyName LIKE '),
+            $data[QuickbooksCreateCustomerMapper::LAST_NAME],
+            urlencode('#%')
+        );
     }
 
 }

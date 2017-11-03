@@ -14,27 +14,49 @@ services:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@cc.progress_counter.async_progress_counter_service'
 
+    hbpf.connector.quickbooks-created-customer-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\Connector\QuickbooksCreatedCustomerConnector
+        arguments:
+            - '@systems.quickbooks'
+            - '@cc.last_sync.manager'
+            - '@hbpf.transport.async_curl_factory'
+
+    hbpf.connector.quickbooks-updated-customer-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\Connector\QuickbooksUpdatedCustomerConnector
+        arguments:
+            - '@systems.quickbooks'
+            - '@cc.last_sync.manager'
+            - '@hbpf.transport.async_curl_factory'
+
     hbpf.connector.quickbooks-create-customer-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\Connector\QuickbooksCreateCustomerConnector
         arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
             - '@systems.quickbooks'
-            - '@cc.last_sync.manager'
-            - '@hbpf.transport.async_curl_factory'
+            - '@hbpf.transport.curl_manager'
 
-    hbpf.connector.quickbooks-update-customer-connector:
-        class: CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\Connector\QuickbooksUpdateCustomerConnector
+    hbpf.connector.quickbooks-getnumber-customer-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\Connector\QuickbooksGetnumberCustomerConnector
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@systems.quickbooks'
+            - '@hbpf.transport.curl_manager'
+
+    hbpf.connector.quickbooks-deleted-customer-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\Connector\QuickbooksDeletedCustomerConnector
         arguments:
             - '@systems.quickbooks'
             - '@cc.last_sync.manager'
             - '@hbpf.transport.async_curl_factory'
 
-    hbpf.connector.quickbooks-delete-customer-connector:
-        class: CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\Connector\QuickbooksDeleteCustomerConnector
+    hbpf.custom_node.quickbooks-updated-customer-mapper:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\Mapper\QuickbooksUpdatedCustomerMapper
         arguments:
-            - '@systems.quickbooks'
-            - '@cc.last_sync.manager'
-            - '@hbpf.transport.async_curl_factory'
 
-    hbpf.custom_node.quickbooks-customer-mapper:
-        class: CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\Mapper\QuickbooksCustomerMapper
+    hbpf.custom_node.quickbooks-created-customer-mapper:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\Mapper\QuickbooksCreatedCustomerMapper
+        arguments:
+
+    hbpf.custom_node.quickbooks-create-customer-mapper:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\Mapper\QuickbooksCreateCustomerMapper
         arguments:
