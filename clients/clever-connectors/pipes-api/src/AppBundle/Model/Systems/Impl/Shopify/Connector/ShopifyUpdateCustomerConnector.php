@@ -3,7 +3,6 @@
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
-use CleverConnectors\AppBundle\Enum\CleverCustomKeysEnum;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\ShopifySystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
@@ -96,19 +95,15 @@ class ShopifyUpdateCustomerConnector implements ConnectorInterface
             ->setUri($uri)
             ->setBody($data['body']);
 
-        $res   = $this->curl->send($requestDto);
-        $data  = json_decode($res->getBody(), TRUE);
-        $field = CMHeaders::get(CMHeaders::CM_EVENT_TYPE, $dto->getHeaders()) ?? '';
+        $res  = $this->curl->send($requestDto);
+        $data = json_decode($res->getBody(), TRUE);
 
         if ($res->getStatusCode() === 404) {
             throw new CleverConnectorsException(
                 sprintf('Customer with given id [%s] does not exist, Shopify updateCustomerConnector.', $data['id']),
                 CleverConnectorsException::REQUEST_FAILED
             );
-        } else if (!array_key_exists('user', $data)
-            || !array_key_exists('user_fields', $data['user'])
-            || !array_key_exists(CleverCustomKeysEnum::getFromType($field), $data['user']['user_fields'])
-        ) {
+        } else if (!array_key_exists('customer', $data)) {
             throw new CleverConnectorsException(
                 'CM field does not exist, Shopify updateCustomerConnector.',
                 CleverConnectorsException::MISSING_DATA
@@ -120,7 +115,7 @@ class ShopifyUpdateCustomerConnector implements ConnectorInterface
             );
         }
 
-        return $dto->setData($res->getBody());
+        return $dto->setData(json_encode($data['customer']));
     }
 
 }

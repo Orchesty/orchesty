@@ -132,7 +132,7 @@ final class ShopifySystemTest extends KernelTestCaseAbstract
     {
         /** @var Form $form */
         $form = $this->system->getSettingFields($this->systemInstall);
-        self::assertEquals(1, count($form));
+        self::assertEquals(4, count($form));
         self::assertEquals('system_url', $form[0]['key']);
         self::assertEquals(Field::TEXT, $form[0]['type']);
     }

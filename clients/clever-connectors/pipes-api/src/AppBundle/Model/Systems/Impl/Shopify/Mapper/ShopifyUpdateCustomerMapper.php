@@ -30,10 +30,12 @@ class ShopifyUpdateCustomerMapper implements CustomNodeInterface
             'customer' => [
                 'id'         => $data[CleverFieldsEnum::FOREIGN_ID],
                 'metafields' => [
-                    'key'        => CleverCustomKeysEnum::getFromType($field),
-                    'value'      => 1,
-                    'value_type' => 'integer',
-                    'namespace'  => 'global',
+                    [
+                        'key'        => CleverCustomKeysEnum::getFromType($field),
+                        'value'      => 1,
+                        'value_type' => 'integer',
+                        'namespace'  => 'global',
+                    ],
                 ],
             ],
         ];

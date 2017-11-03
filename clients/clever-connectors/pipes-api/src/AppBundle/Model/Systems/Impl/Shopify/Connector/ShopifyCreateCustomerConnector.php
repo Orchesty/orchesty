@@ -93,16 +93,22 @@ class ShopifyCreateCustomerConnector implements ConnectorInterface
             ->setUri($uri)
             ->setBody($dto->getData());
 
-        $res = $this->curl->send($requestDto);
+        $res     = $this->curl->send($requestDto);
+        $resBody = json_decode($res->getBody(), TRUE);
 
         if ($res->getStatusCode() !== 201) {
             throw new CleverConnectorsException(
                 'Failed to create new customer / email already taken, Shopify createCustomerConnector.',
                 CleverConnectorsException::REQUEST_FAILED
             );
+        } elseif (!array_key_exists('customer', $resBody)) {
+            throw new CleverConnectorsException(
+                'Missing key "customer" in response data, Shopify createCustomerConnector.',
+                CleverConnectorsException::MISSING_DATA
+            );
         }
 
-        return $dto->setData($res->getBody());
+        return $dto->setData(json_encode($resBody['customer']));
     }
 
 }

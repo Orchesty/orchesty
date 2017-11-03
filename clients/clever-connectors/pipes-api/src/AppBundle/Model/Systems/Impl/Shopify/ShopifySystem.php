@@ -3,9 +3,7 @@
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Shopify;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
-use CleverConnectors\AppBundle\Enum\CleverCustomKeysEnum;
 use CleverConnectors\AppBundle\Enum\SystemTypeEnum;
-use CleverConnectors\AppBundle\Model\CMEvents\CMEventObject;
 use CleverConnectors\AppBundle\Model\CMEvents\CMEventSystemInterface;
 use CleverConnectors\AppBundle\Model\CMEvents\Traits\CMEventSystemTrait;
 use CleverConnectors\AppBundle\Model\Form\Field;
@@ -44,8 +42,7 @@ class ShopifySystem implements WebhookSystemInterface, OAuth2Interface, CMEventS
     private const API_KEY    = '91f0d11786afbe82fc72d519356bc7f2';
     private const API_SECRET = '469a399914df80fab1e223b18d9d95bc';
 
-    private const BASE_URL          = 'https://%s.myshopify.com/';
-    private const CUSTOM_FIELDS_URL = ''; // TODO
+    private const BASE_URL = 'https://%s.myshopify.com/';
 
     /**
      * @var OAuth2Provider
@@ -68,34 +65,22 @@ class ShopifySystem implements WebhookSystemInterface, OAuth2Interface, CMEventS
     {
         $this->provider = $provider;
 
-        $this->addCMEvent(new CMEventObject('', SystemInstall::EVENT_CREATE, ''));
-        $this->addCMEvent(
-            new CMEventObject(
-                CleverCustomKeysEnum::UNSUBSCRIBE,
-                SystemInstall::EVENT_UNSUBSCRIBE,
-                self::CUSTOM_FIELDS_URL
-            )
-        );
-        $this->addCMEvent(
-            new CMEventObject(
-                CleverCustomKeysEnum::HARD_BOUNCE,
-                SystemInstall::EVENT_HARD_BOUNCE,
-                self::CUSTOM_FIELDS_URL
-            )
-        );
-
         $this->subscriptions[] = new WebhookSubscribes(
-            'shopify-create-customer-connector',
+            'shopify-created-customer-connector',
             TopologyNameUtils::getTopologyName(TopologyNameUtils::CREATED_SUBSCRIBERS, $this->getKey())
         );
         $this->subscriptions[] = new WebhookSubscribes(
-            'shopify-update-customer-connector',
+            'shopify-updated-customer-connector',
             TopologyNameUtils::getTopologyName(TopologyNameUtils::UPDATED_SUBSCRIBERS, $this->getKey())
         );
         $this->subscriptions[] = new WebhookSubscribes(
-            'shopify-delete-customer-connector',
+            'shopify-deleted-customer-connector',
             TopologyNameUtils::getTopologyName(TopologyNameUtils::DELETED_SUBSCRIBERS, $this->getKey())
         );
+
+        $this->topologyNames['shopify-create-contact']      = 'shopify-create-customer';
+        $this->topologyNames['shopify-unsubscribe-contact'] = 'shopify-unsubscribe-customer';
+        $this->topologyNames['shopify-hard-bounce-contact'] = 'shopify-unsubscribe-customer';
     }
 
     /**
