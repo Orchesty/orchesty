@@ -17,40 +17,6 @@ services:
           - mongo
           - rabbitmq
 
-    # Frontend
-    frontend:
-        image: dkr.hanaboso.net/pipes/pipes/nodejs-build:dev
-        user: ${DEV_UID}:${DEV_GID}
-        working_dir: /var/www/pipes/frontend
-        environment:
-          DEV_UID: ${DEV_UID}
-          DEV_GID: ${DEV_GID}
-          PHP_WEBROOT: /var/www/pipes/clients/clever-connectors/web
-        ports:
-          - ${DEV_IP}:80:80
-          #- ${DEV_IP}:81:8080
-        volumes:
-          - ../../../:/var/www/pipes
-          - ${SSH_AUTH_SOCK}:/ssh-agent
-        depends_on:
-          - cm-api
-        #command: bash -c "npm install && npm start"
-
-    # Backend
-    app:
-        image: dkr.hanaboso.net/pipes/pipes/php-dev:dev
-        user: ${DEV_UID}:${DEV_GID}
-        working_dir: /var/www/pipes/clients/clever-connectors/pipes-api
-        environment:
-          DEV_UID: ${DEV_UID}
-          DEV_GID: ${DEV_GID}
-        volumes:
-          - ../../../:/var/www/pipes
-          - ${SSH_AUTH_SOCK}:/ssh-agent
-        depends_on:
-          - mongo
-          - rabbitmq
-
     # Nginx
     nginx:
         image: nginx
@@ -81,9 +47,9 @@ services:
     redis:
         image: redis:3.2-alpine
         ports:
-        - ${DEV_IP}:6379:6379
+          - ${DEV_IP}:6379:6379
         volumes:
-        - redis:/data
+          - redis:/data
 
 volumes:
   mongo: {}
