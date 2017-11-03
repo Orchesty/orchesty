@@ -103,7 +103,7 @@ class BigcommerceSystem implements WebhookSystemInterface, AuthorizationInterfac
      */
     public function getName(): string
     {
-        return 'Bigcommerce System';
+        return 'Bigcommerce';
     }
 
     /**

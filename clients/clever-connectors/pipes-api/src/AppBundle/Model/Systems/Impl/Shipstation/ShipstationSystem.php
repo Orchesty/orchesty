@@ -67,7 +67,7 @@ class ShipstationSystem implements AuthorizationInterface
      */
     public function getName(): string
     {
-        return 'Shipstation system';
+        return 'Shipstation';
     }
 
     /**
