@@ -87,13 +87,16 @@ trait AuthorizationTrait
             'name'        => $this->getName(),
             'description' => $this->getDescription(),
             'type'        => $this->getType(),
-            'auth_type'    => $this->getAuthorizationType(),
+            'auth_type'   => $this->getAuthorizationType(),
         ];
 
         if ($systemInstall) {
-            $arr['authorized']   = $this->isAuthorized($systemInstall);
-            $arr['token']        = $systemInstall->getToken();
-            $arr['synchronized'] = $systemInstall->isSynchronized();
+            $arr['authorized']                     = $this->isAuthorized($systemInstall);
+            $arr[SystemInstall::TOKEN]             = $systemInstall->getToken();
+            $arr[SystemInstall::SYNCHRONIZED]      = $systemInstall->isSynchronized();
+            $arr[SystemInstall::EVENT_CREATE]      = $systemInstall->isEventCreate();
+            $arr[SystemInstall::EVENT_UNSUBSCRIBE] = $systemInstall->isEventUnsubscribe();
+            $arr[SystemInstall::EVENT_HARD_BOUNCE] = $systemInstall->isEventHardBounce();
         }
 
         return $arr;

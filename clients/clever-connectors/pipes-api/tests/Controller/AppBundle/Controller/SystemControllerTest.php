@@ -236,8 +236,8 @@ final class SystemControllerTest extends ControllerTestCaseAbstract
         $this->assertEquals(200, $response->status);
         $this->assertEquals(
             (object) array_merge($this->getArrayDataForAssert($system), [
-                'authorized'     => FALSE,
-                'setting_fields' => [
+                'authorized'       => FALSE,
+                'setting_fields'   => [
                     (object) [
                         'type'        => 'url',
                         'key'         => 'field1',
@@ -551,10 +551,13 @@ final class SystemControllerTest extends ControllerTestCaseAbstract
             'key'         => 'null.user.group',
             'name'        => 'NULL',
             'description' => 'Only for testing purposes',
-            'auth_type'    => 'oauth2',
+            'auth_type'   => 'oauth2',
         ];
 
         if ($systemInstall) {
+            $arr[SystemInstall::EVENT_CREATE]      = $systemInstall->isEventCreate();
+            $arr[SystemInstall::EVENT_UNSUBSCRIBE] = $systemInstall->isEventUnsubscribe();
+            $arr[SystemInstall::EVENT_HARD_BOUNCE] = $systemInstall->isEventHardBounce();
             $arr['token']        = $systemInstall->getToken();
             $arr['synchronized'] = $systemInstall->isSynchronized();
         }

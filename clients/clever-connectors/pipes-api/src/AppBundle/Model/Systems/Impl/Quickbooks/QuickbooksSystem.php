@@ -7,6 +7,8 @@ use CleverConnectors\AppBundle\Enum\SystemTypeEnum;
 use CleverConnectors\AppBundle\Model\CMEvents\CMEventObject;
 use CleverConnectors\AppBundle\Model\CMEvents\CMEventSystemInterface;
 use CleverConnectors\AppBundle\Model\CMEvents\Traits\CMEventSystemTrait;
+use CleverConnectors\AppBundle\Model\Form\Field;
+use CleverConnectors\AppBundle\Model\Form\Form;
 use CleverConnectors\AppBundle\Model\Requester\RequesterInterface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\OAuth2Interface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\Traits\AuthorizationTrait;
@@ -198,7 +200,16 @@ class QuickbooksSystem implements OAuth2Interface, CMEventSystemInterface
      */
     public function getSettingFields(SystemInstall $systemInstall): array
     {
-        return [];
+        $field1 = new Field(
+            Field::CHECKBOX,
+            SystemInstall::EVENT_CREATE,
+            'Create event',
+            $systemInstall->isEventCreate()
+        );
+
+        return (new Form())
+            ->addField($field1)
+            ->toArray();
     }
 
     /**
