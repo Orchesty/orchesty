@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace CleverConnectors\AppBundle\Model\OpenSourcePlugins;
+namespace CleverConnectors\AppBundle\Model\Plugins;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
@@ -10,11 +10,11 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Exception;
 
 /**
- * Class OpenSourcePluginsSecurityManager
+ * Class PluginsSecurityManager
  *
- * @package CleverConnectors\AppBundle\Model\OpenSourcePlugins
+ * @package CleverConnectors\AppBundle\Model\Plugins
  */
-class OpenSourcePluginsSecurityManager
+class PluginsSecurityManager
 {
 
     /**

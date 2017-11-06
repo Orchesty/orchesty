@@ -72,12 +72,19 @@ services:
                 - '@snc_redis.default'
                 - '@cc.progress_counter.async_publisher'
 
-    cc.open_source_plugins.controller:
-        class: CleverConnectors\AppBundle\Controller\OpenSourcePluginsController
+    cc.plugins.controller:
+        class: CleverConnectors\AppBundle\Controller\PluginsController
         arguments:
 
-    cc.open_source_plugins.security_manager:
-        class: CleverConnectors\AppBundle\Model\OpenSourcePlugins\OpenSourcePluginsSecurityManager
+    cc.plugins.security_manager:
+        class: CleverConnectors\AppBundle\Model\Plugins\PluginsSecurityManager
         arguments:
             - '@doctrine_mongodb.odm.default_document_manager'
+
+    cc.plugins.manager:
+        class: CleverConnectors\AppBundle\Model\Plugins\PluginsManager
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.starting_point.starting_point'
+            - '@cc.systems.manager'
 

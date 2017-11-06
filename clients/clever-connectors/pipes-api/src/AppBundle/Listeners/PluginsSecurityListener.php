@@ -2,32 +2,32 @@
 
 namespace CleverConnectors\AppBundle\Listeners;
 
-use CleverConnectors\AppBundle\Controller\OpenSourcePluginsController;
+use CleverConnectors\AppBundle\Controller\PluginsController;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
-use CleverConnectors\AppBundle\Model\OpenSourcePlugins\OpenSourcePluginsSecurityManager;
+use CleverConnectors\AppBundle\Model\Plugins\PluginsSecurityManager;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 
 /**
- * Class OpenSourcePluginsSecurityListener
+ * Class PluginsSecurityListener
  *
  * @package CleverConnectors\AppBundle\Listeners
  */
-class OpenSourcePluginsSecurityListener implements EventSubscriberInterface
+class PluginsSecurityListener implements EventSubscriberInterface
 {
 
     /**
-     * @var OpenSourcePluginsSecurityManager
+     * @var PluginsSecurityManager
      */
     private $security;
 
     /**
      * PluginSecurityListener constructor.
      *
-     * @param OpenSourcePluginsSecurityManager $security
+     * @param PluginsSecurityManager $security
      */
-    function __construct(OpenSourcePluginsSecurityManager $security)
+    function __construct(PluginsSecurityManager $security)
     {
         $this->security = $security;
     }
@@ -44,7 +44,7 @@ class OpenSourcePluginsSecurityListener implements EventSubscriberInterface
             return;
         }
 
-        if ($inf[0] instanceof OpenSourcePluginsController) {
+        if ($inf[0] instanceof PluginsController) {
             $headers = $ev->getRequest()->headers;
             $this->security->checkSystemInstall($headers->all());
         }

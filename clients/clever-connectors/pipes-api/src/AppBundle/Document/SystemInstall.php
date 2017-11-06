@@ -35,6 +35,8 @@ class SystemInstall
     public const  EVENT_CREATE       = 'eventCreate';
     public const  EVENT_UNSUBSCRIBE  = 'eventUnsubscribe';
     public const  EVENT_HARD_BOUNCE  = 'eventHardBounce';
+    public const  PLUGIN_VERSION     = 'pluginVersion';
+    public const  SYSTEM_URL         = 'system_url';
 
     use IdTrait;
 
@@ -365,11 +367,11 @@ class SystemInstall
     }
 
     /**
-     * @param string $pluginVersion
+     * @param string|null $pluginVersion
      *
      * @return SystemInstall
      */
-    public function setPluginVersion(string $pluginVersion): SystemInstall
+    public function setPluginVersion(?string $pluginVersion): SystemInstall
     {
         $this->pluginVersion = $pluginVersion;
 
@@ -480,6 +482,7 @@ class SystemInstall
             ->setEventCreate((bool) ($data[self::EVENT_CREATE] ?? FALSE))
             ->setEventUnsubscribe((bool) ($data[self::EVENT_UNSUBSCRIBE] ?? FALSE))
             ->setEventHardBounce((bool) ($data[self::EVENT_HARD_BOUNCE] ?? FALSE))
+            ->setPluginVersion($data[self::PLUGIN_VERSION] ?? NULL)
             ->setSettings([]);
 
         if (isset($data[self::ENCRYPTED_SETTINGS])) {
