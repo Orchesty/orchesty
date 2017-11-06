@@ -92,7 +92,10 @@ final class SystemManagerTest extends TestCase
             $this->requestHandler,
             $this->eventsManager
         );
-        $manager->synchronizeSubscriptions('user', 'system');
+
+        $res = $manager->synchronizeSubscriptions('user', 'system');
+
+        self::assertEquals(1, $res);
     }
 
     /**

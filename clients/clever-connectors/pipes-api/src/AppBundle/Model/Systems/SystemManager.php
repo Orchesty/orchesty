@@ -294,9 +294,10 @@ class SystemManager
      * @param string $user
      * @param string $system
      *
+     * @return int
      * @throws CleverConnectorsException
      */
-    public function synchronizeSubscriptions(string $user, string $system): void
+    public function synchronizeSubscriptions(string $user, string $system): int
     {
         $systemInstall = $this->getSystemInstall($user, $system);
         $system        = $this->systemLoader->getSystem($system);
@@ -320,6 +321,8 @@ class SystemManager
             $node = $this->nodeRepository->getStartingNode($topology);
             $this->startingPoint->runWithRequest($request, $topology, $node);
         }
+
+        return count($topologies);
     }
 
     /**

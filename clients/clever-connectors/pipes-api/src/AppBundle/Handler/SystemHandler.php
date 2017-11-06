@@ -169,10 +169,14 @@ class SystemHandler
     /**
      * @param string $user
      * @param string $system
+     *
+     * @return array
      */
-    public function synchronizeSubscriptions(string $user, string $system): void
+    public function synchronizeSubscriptions(string $user, string $system): array
     {
-        $this->manager->synchronizeSubscriptions($user, $system);
+        $runningTopologies = $this->manager->synchronizeSubscriptions($user, $system);
+
+        return ['running_topologies' => $runningTopologies];
     }
 
     /**
