@@ -48,18 +48,16 @@ class HostMapper
     public function getHost(TypeEnum $enum): string
     {
         switch ($enum->getValue()) {
-            case TypeEnum::CONNECTOR:
-                return 'connector-api';
-            case TypeEnum::MAPPER:
-                return 'mapper-api';
             case TypeEnum::XML_PARSER:
                 return 'xml-parser-api';
-            case TypeEnum::API:
-                return 'monolith-api';
             case TypeEnum::FTP:
                 return 'ftp-api';
             case TypeEnum::EMAIL:
                 return 'mailer-api';
+            case TypeEnum::MAPPER:
+                return 'mapper-api';
+            case TypeEnum::API:
+            case TypeEnum::CONNECTOR:
             case TypeEnum::WEBHOOK:
             case TypeEnum::CUSTOM:
             case TypeEnum::SIGNAL:
