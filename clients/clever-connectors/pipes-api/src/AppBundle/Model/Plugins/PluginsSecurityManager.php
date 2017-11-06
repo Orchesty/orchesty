@@ -44,7 +44,7 @@ class PluginsSecurityManager
      */
     public function checkSystemInstall(array $headers): void
     {
-        $this->systemInstall = $this->systemInstallRepository->getSystemInstallFromHeaders($headers);
+        $this->systemInstall = $this->systemInstallRepository->getSystemInstallFromPluginHeaders($headers);
     }
 
     /**

@@ -67,14 +67,15 @@ services:
             - '@cc.progress_counter.sync_publisher'
 
     cc.progress_counter.async_progress_counter_service:
-            class: CleverConnectors\AppBundle\Model\ProgressCounter\ProgressCounterService
-            arguments:
-                - '@snc_redis.default'
-                - '@cc.progress_counter.async_publisher'
+        class: CleverConnectors\AppBundle\Model\ProgressCounter\ProgressCounterService
+        arguments:
+            - '@snc_redis.default'
+            - '@cc.progress_counter.async_publisher'
 
     cc.plugins.controller:
         class: CleverConnectors\AppBundle\Controller\PluginsController
         arguments:
+            - '@cc.plugins.handler'
 
     cc.plugins.security_manager:
         class: CleverConnectors\AppBundle\Model\Plugins\PluginsSecurityManager
@@ -87,4 +88,12 @@ services:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.starting_point.starting_point'
             - '@cc.systems.manager'
+            - '@hbpf.handler.starting_point'
+
+    cc.plugins.handler:
+        class: CleverConnectors\AppBundle\Handler\PluginsHandler
+        arguments:
+            - '@cc.plugins.manager'
+            - '@cc.plugins.security_manager'
+            - '@cc.systems.handler'
 

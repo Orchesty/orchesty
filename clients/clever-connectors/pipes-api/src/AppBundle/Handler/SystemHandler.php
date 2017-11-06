@@ -106,17 +106,7 @@ class SystemHandler
     {
         ControllerUtils::checkParameters(['token'], $data);
 
-        $systemInstall = $this->dm->getRepository(SystemInstall::class)->findOneBy([
-            'user'   => $user,
-            'system' => $system,
-        ]);
-
-        if ($systemInstall) {
-            throw new CleverConnectorsException(
-                'Requested system has already been installed for current user.',
-                CleverConnectorsException::SYSTEM_ALREADY_INSTALLED
-            );
-        }
+        $this->isSystemInstalled($user, $system);
 
         $systemInstall = $this->manager->installSystem($user, $system, $data['token']);
 
@@ -216,6 +206,27 @@ class SystemHandler
         $systemInstall = $this->manager->saveToken($user, $systemKey, $data);
 
         return $systemInstall->getSettings()[OAuth1Interface::FRONTEND_REDIRECT_URL];
+    }
+
+    /**
+     * @param string $user
+     * @param string $system
+     *
+     * @throws CleverConnectorsException
+     */
+    public function isSystemInstalled(string $user, string $system): void
+    {
+        $systemInstall = $this->dm->getRepository(SystemInstall::class)->findOneBy([
+            'user'   => $user,
+            'system' => $system,
+        ]);
+
+        if ($systemInstall) {
+            throw new CleverConnectorsException(
+                'Requested system has already been installed for current user.',
+                CleverConnectorsException::SYSTEM_ALREADY_INSTALLED
+            );
+        }
     }
 
 }
