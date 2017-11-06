@@ -8,11 +8,11 @@ use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
 
 /**
- * Class ShopifyDeleteCustomerMapper
+ * Class ShopifyDeletedCustomerMapper
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\Mapper
  */
-class ShopifyDeleteCustomerMapper implements CustomNodeInterface
+class ShopifyDeletedCustomerMapper implements CustomNodeInterface
 {
 
     /**

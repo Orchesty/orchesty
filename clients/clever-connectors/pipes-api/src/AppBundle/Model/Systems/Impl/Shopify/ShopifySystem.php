@@ -4,6 +4,7 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\Shopify;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\SystemTypeEnum;
+use CleverConnectors\AppBundle\Model\CMEvents\Traits\CMEventSystemTrait;
 use CleverConnectors\AppBundle\Model\Form\Field;
 use CleverConnectors\AppBundle\Model\Form\Form;
 use CleverConnectors\AppBundle\Model\Requester\RequesterInterface;
@@ -30,13 +31,16 @@ use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 class ShopifySystem implements WebhookSystemInterface, OAuth2Interface
 {
 
+    use AuthorizationTrait;
+    use WebhookSystemTrait;
+    use CMEventSystemTrait;
+
     public const SYSTEM_URL = 'system_url';
 
     private const API_KEY    = '91f0d11786afbe82fc72d519356bc7f2';
     private const API_SECRET = '469a399914df80fab1e223b18d9d95bc';
 
-    use AuthorizationTrait;
-    use WebhookSystemTrait;
+    private const BASE_URL = 'https://%s.myshopify.com/';
 
     /**
      * @var OAuth2Provider
@@ -60,17 +64,21 @@ class ShopifySystem implements WebhookSystemInterface, OAuth2Interface
         $this->provider = $provider;
 
         $this->subscriptions[] = new WebhookSubscribes(
-            'shopify-create-customer-connector',
+            'shopify-created-customer-connector',
             TopologyNameUtils::getTopologyName(TopologyNameUtils::CREATED_SUBSCRIBERS, $this->getKey())
         );
         $this->subscriptions[] = new WebhookSubscribes(
-            'shopify-update-customer-connector',
+            'shopify-updated-customer-connector',
             TopologyNameUtils::getTopologyName(TopologyNameUtils::UPDATED_SUBSCRIBERS, $this->getKey())
         );
         $this->subscriptions[] = new WebhookSubscribes(
-            'shopify-delete-customer-connector',
+            'shopify-deleted-customer-connector',
             TopologyNameUtils::getTopologyName(TopologyNameUtils::DELETED_SUBSCRIBERS, $this->getKey())
         );
+
+        $this->topologyNames['shopify-create-contact']      = 'shopify-create-customer';
+        $this->topologyNames['shopify-unsubscribe-contact'] = 'shopify-unsubscribe-customer';
+        $this->topologyNames['shopify-hard-bounce-contact'] = 'shopify-unsubscribe-customer';
     }
 
     /**
@@ -177,8 +185,35 @@ class ShopifySystem implements WebhookSystemInterface, OAuth2Interface
             TRUE
         );
 
+        $field2 = new Field(
+            Field::CHECKBOX,
+            SystemInstall::EVENT_CREATE,
+            'Create event',
+            $systemInstall->isEventCreate(),
+            TRUE
+        );
+
+        $field3 = new Field(
+            Field::CHECKBOX,
+            SystemInstall::EVENT_UNSUBSCRIBE,
+            'Unsubscribe event',
+            $systemInstall->isEventUnsubscribe(),
+            TRUE
+        );
+
+        $field4 = new Field(
+            Field::CHECKBOX,
+            SystemInstall::EVENT_HARD_BOUNCE,
+            'Hard bounce events',
+            $systemInstall->isEventHardBounce(),
+            TRUE
+        );
+
         $form = (new Form())
-            ->addField($field1);
+            ->addField($field1)
+            ->addField($field2)
+            ->addField($field3)
+            ->addField($field4);
 
         return $form->toArray();
     }
@@ -244,7 +279,7 @@ class ShopifySystem implements WebhookSystemInterface, OAuth2Interface
 
         $sett = $systemInstall->getSettings();
 
-        $url = sprintf('https://%s.myshopify.com/', $sett[self::SYSTEM_URL]);
+        $url = sprintf(self::BASE_URL, $sett[self::SYSTEM_URL]);
         $dto = new RequestDto($method, new Uri($url));
         $dto->setHeaders($this->getHeaders($systemInstall));
 
@@ -281,8 +316,8 @@ class ShopifySystem implements WebhookSystemInterface, OAuth2Interface
             self::API_KEY,
             self::API_SECRET,
             AuthorizationUtils::generateUrl(),
-            sprintf('https://%s.myshopify.com/admin/oauth/authorize', $sett[self::SYSTEM_URL]),
-            sprintf('https://%s.myshopify.com/admin/oauth/access_token', $sett[self::SYSTEM_URL])
+            sprintf(self::BASE_URL . 'admin/oauth/authorize', $sett[self::SYSTEM_URL]),
+            sprintf(self::BASE_URL . 'admin/oauth/access_token', $sett[self::SYSTEM_URL])
         );
 
         $dto->setCustomAppDependencies($systemInstall->getUser(), $this->getKey());

@@ -2,8 +2,9 @@
 
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\Mapper;
 
-use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
-use CleverConnectors\AppBundle\Model\CM\SubscriptionConnector\CustomerObject\CMSubscriber;
+use CleverConnectors\AppBundle\Enum\CleverCustomKeysEnum;
+use CleverConnectors\AppBundle\Enum\CleverFieldsEnum;
+use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
 
@@ -19,35 +20,30 @@ class ShopifyUpdateCustomerMapper implements CustomNodeInterface
      * @param ProcessDto $dto
      *
      * @return ProcessDto
-     * @throws CleverConnectorsException
      */
     public function process(ProcessDto $dto): ProcessDto
     {
-        $data = json_decode($dto->getData(), TRUE);
+        $data  = json_decode($dto->getData(), TRUE);
+        $field = CMHeaders::get(CMHeaders::CM_EVENT_TYPE, $dto->getHeaders()) ?? '';
 
-        if (!array_key_exists('email', $data)) {
-            throw new CleverConnectorsException(
-                'Missing required email field in data.',
-                CleverConnectorsException::MISSING_DATA
-            );
-        }
+        $contact = [
+            'customer' => [
+                'id'         => $data[CleverFieldsEnum::FOREIGN_ID],
+                'metafields' => [
+                    [
+                        'key'        => CleverCustomKeysEnum::getFromType($field),
+                        'value'      => 1,
+                        'value_type' => 'integer',
+                        'namespace'  => 'global',
+                    ],
+                ],
+            ],
+        ];
 
-        $obj = new CMSubscriber();
-        $obj->setEmail($data['email']);
-
-        if (array_key_exists('first_name', $data)) {
-            $obj->setFirstName($data['first_name']);
-        }
-
-        if (array_key_exists('last_name', $data)) {
-            $obj->setLastName($data['last_name']);
-        }
-
-        if (array_key_exists('id', $data)) {
-            $obj->setForeignId($data['id']);
-        }
-
-        return $dto->setData(json_encode($obj->toArray()));
+        return $dto->setData(json_encode([
+            'id'   => $data[CleverFieldsEnum::FOREIGN_ID],
+            'body' => json_encode($contact),
+        ]));
     }
 
 }

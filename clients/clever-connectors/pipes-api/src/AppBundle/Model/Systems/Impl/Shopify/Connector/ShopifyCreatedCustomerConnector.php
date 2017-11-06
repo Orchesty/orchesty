@@ -3,11 +3,11 @@
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\Connector;
 
 /**
- * Class ShopifyDeleteCustomerConnector
+ * Class ShopifyCreatedCustomerConnector
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\Connector
  */
-class ShopifyDeleteCustomerConnector extends ShopifyCustomerConnectorAbstract
+class ShopifyCreatedCustomerConnector extends ShopifyCustomerConnectorAbstract
 {
 
     /**
@@ -15,7 +15,7 @@ class ShopifyDeleteCustomerConnector extends ShopifyCustomerConnectorAbstract
      */
     public function getId(): string
     {
-        return 'shopify-delete-customer-connector';
+        return 'shopify-created-customer-connector';
     }
 
 }
