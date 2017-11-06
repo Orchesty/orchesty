@@ -67,11 +67,11 @@ class PluginsManager
         $headers = $request->headers->all();
 
         $system = $this->manager->installSystem(
-            $headers[PluginHeadersEnum::GUID] ?? '',
-            $headers[PluginHeadersEnum::SYSTEM] ?? '',
-            $headers[PluginHeadersEnum::TOKEN] ?? ''
+            PluginHeadersEnum::get(PluginHeadersEnum::GUID, $headers),
+            PluginHeadersEnum::get(PluginHeadersEnum::SYSTEM, $headers),
+            PluginHeadersEnum::get(PluginHeadersEnum::TOKEN, $headers)
         );
-        $system->setPluginVersion($headers[PluginHeadersEnum::VERSION] ?? '')
+        $system->setPluginVersion(PluginHeadersEnum::get(PluginHeadersEnum::VERSION, $headers))
             ->setSettings([
                 SystemInstall::SYSTEM_URL => $url,
             ]);
@@ -94,12 +94,6 @@ class PluginsManager
 
         if (!$systemInstall->getPluginVersion()) {
             $systemInstall->setPluginVersion($body[SystemInstall::PLUGIN_VERSION]);
-        } else if ($systemInstall->getPluginVersion() !== $body[SystemInstall::PLUGIN_VERSION]) {
-            throw new LogicException(
-                sprintf('Version of installed system [%s] does not match plugin\'s version [%s].',
-                    $systemInstall->getPluginVersion(), $body[SystemInstall::PLUGIN_VERSION]
-                )
-            );
         }
 
         $url = $this->getUrl($request);

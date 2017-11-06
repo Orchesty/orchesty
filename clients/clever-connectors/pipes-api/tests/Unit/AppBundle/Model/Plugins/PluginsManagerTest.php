@@ -97,26 +97,6 @@ final class PluginsManagerTest extends KernelTestCaseAbstract
     /**
      * @covers PluginsManager::check()
      */
-    public function testWrongVersion(): void
-    {
-        $plug = $this->mockPluginsManager();
-        $sys  = new SystemInstall();
-        $sys->setPluginVersion('ver')
-            ->setSettings([
-                SystemInstall::SYSTEM_URL => 'https://:/',
-            ]);
-
-        $this->expectException(LogicException::class);
-        $this->expectExceptionMessage('Version of installed system [ver] does not match plugin\'s version [wrongVer].');
-
-        $plug->check($sys, new Request([], [], [], [], [], [], json_encode([
-            SystemInstall::PLUGIN_VERSION => 'wrongVer',
-        ])));
-    }
-
-    /**
-     * @covers PluginsManager::check()
-     */
     public function testWrongUrl(): void
     {
         $plug = $this->mockPluginsManager();
