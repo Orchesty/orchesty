@@ -41,7 +41,7 @@ class HostMapperTest extends TestCase
         return [
             [TypeEnum::XML_PARSER, 'xml-parser-api'],
             [TypeEnum::MAPPER, 'mapper-api'],
-            [TypeEnum::CONNECTOR, 'connector-api'],
+            [TypeEnum::CONNECTOR, 'monolith-api'],
         ];
     }
 
