@@ -31,30 +31,42 @@ class AuthorizationSettingGeneratorFactory
         if ($userSystem) {
             foreach ($userSystem->getSettingFields() as $field) {
 
-                if ($field->getType() !== 'password') {
-                    $form->addText($field->getKey(), $field->getLabel());
+                switch ($field->getType()) {
+                    case 'password':
+                        $form
+                            ->addPassword($field->getKey(), $field->getLabel());
 
-                    if ($field->getDescription() != '') {
-                        $form[$field->getKey()]->setOption('description', $field->getDescription());
-                    }
-                } else {
-                    $form->addText($field->getKey(), $field->getLabel());
+                        if ($field->getValue()) {
+                            $message = 'Password exists.';
+                        } else {
+                            $message = 'Password not exists.';
+                        }
 
-                    if ($field->getValue()) {
-                        $message = 'Password exists.';
-                    } else {
-                        $message = 'Password not exists.';
-                    }
+                        if ($field->getDescription() != '') {
+                            $form[$field->getKey()]
+                                ->setOption('description', $message . ' - ' . $field->getDescription());
+                        } else {
+                            $form[$field->getKey()]
+                                ->setOption('description', $message);
+                        }
+                        break;
+                    case 'checkbox':
+                        $form
+                            ->addCheckbox($field->getKey(), $field->getLabel());
+                        break;
+                    default:
+                        $form
+                            ->addText($field->getKey(), $field->getLabel())
+                            ->setType($field->getType());
 
-                    if ($field->getDescription() != '') {
-                        $form[$field->getKey()]->setOption('description', $message . ' - ' . $field->getDescription());
-                    } else {
-                        $form[$field->getKey()]->setOption('description', $message);
-                    }
+                        if ($field->getDescription() != '') {
+                            $form[$field->getKey()]
+                                ->setOption('description', $field->getDescription());
+                        }
+                        break;
                 }
 
                 $form[$field->getKey()]
-                    ->setHtmlType($field->getType())
                     ->setDefaultValue($field->getValue());
 
                 if ($field->isRequired()) {

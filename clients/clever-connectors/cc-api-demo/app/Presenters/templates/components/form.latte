@@ -17,7 +17,7 @@
 {/define}
 
 
-{* for Bootstrap v3 *}
+{* for Bootstrap v4 *}
 {define bootstrap-form $form}
     <form n:name=$form>
         <ul class=error n:if="$form->ownErrors">
@@ -28,28 +28,38 @@
                 n:if="!$input->getOption(rendered) && $input->getOption(type) !== hidden"
                 n:class="form-group, row, $input->required ? required, $input->error ? has-error">
 
-            {if $input->getOption(type) in [button]}
-                <div class="col-md-3"></div>
+            {if $input->getOption(type) in [checkbox, radio]}
+                <div class="col-md-12">
+                    <div class="form-check">
+                        <label class="form-check-label" for="{$input->getHtmlId()}">
+                            {input $input->getName(): class => form-check-input}
+                            {$input->caption}
+                        </label>
+                    </div>
+
+                    <span class="form-text text-muted" n:ifcontent>{$input->error ?: $input->getOption(description)}</span>
+                </div>
             {else}
-                {label $input class=>"col-md-3 col-form-label"}
-            {/if}
 
-
-            <div n:class="col-md-9, $input->getOption(type) in [button] ? text-left">
-                {if $input->getOption(type) in [text, select, textarea]}
-                    {input $input class => form-control}
-                {elseif $input->getOption(type) === button}
-                    {input $input class => "btn btn-primary"}
-                {elseif $input->getOption(type) === checkbox}
-                    <div class="checkbox">{input $input}</div>
-                {elseif $input->getOption(type) === radio}
-                    <div class="radio">{input $input}</div>
+                {if $input->getOption(type) in [button]}
+                    <div class="col-md-3"></div>
                 {else}
-                    {input $input}
+                    {label $input class=>"col-md-3 col-form-label"}
                 {/if}
 
-                <span class="form-text text-muted" n:ifcontent>{$input->error ?: $input->getOption(description)}</span>
-            </div>
+                <div n:class="col-md-9, $input->getOption(type) in [button] ? text-left">
+                    {if $input->getOption(type) in [text, select, textarea]}
+                        {input $input class => form-control}
+                    {elseif $input->getOption(type) === button}
+                        {input $input class => "btn btn-primary"}
+                    {else}
+                        {input $input}
+                    {/if}
+
+                    <span class="form-text text-muted" n:ifcontent>{$input->error ?: $input->getOption(description)}</span>
+                </div>
+
+            {/if}
 
         </div>
     </form>
