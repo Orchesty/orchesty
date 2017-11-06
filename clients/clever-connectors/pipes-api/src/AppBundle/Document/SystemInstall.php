@@ -35,6 +35,8 @@ class SystemInstall
     public const  EVENT_CREATE       = 'eventCreate';
     public const  EVENT_UNSUBSCRIBE  = 'eventUnsubscribe';
     public const  EVENT_HARD_BOUNCE  = 'eventHardBounce';
+    public const  PLUGIN_VERSION     = 'plugin_vesion';
+    public const  SYSTEM_URL         = 'system_url';
 
     use IdTrait;
 

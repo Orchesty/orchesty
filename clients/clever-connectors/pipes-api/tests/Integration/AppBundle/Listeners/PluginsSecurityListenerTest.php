@@ -2,9 +2,9 @@
 
 namespace Tests\Integration\AppBundle\Listeners;
 
-use CleverConnectors\AppBundle\Controller\OpenSourcePluginsController;
+use CleverConnectors\AppBundle\Controller\PluginsController;
 use CleverConnectors\AppBundle\Document\SystemInstall;
-use CleverConnectors\AppBundle\Listeners\OpenSourcePluginsSecurityListener;
+use CleverConnectors\AppBundle\Listeners\PluginsSecurityListener;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use LogicException;
 use PHPUnit_Framework_MockObject_MockObject;
@@ -13,11 +13,11 @@ use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
 use Tests\DatabaseTestCaseAbstract;
 
 /**
- * Class OpenSourcePluginsSecurityListenerTest
+ * Class PluginsSecurityListenerTest
  *
  * @package Tests\Integration\AppBundle\Listeners
  */
-final class OpenSourcePluginsSecurityListenerTest extends DatabaseTestCaseAbstract
+final class PluginsSecurityListenerTest extends DatabaseTestCaseAbstract
 {
 
     /**
@@ -29,7 +29,7 @@ final class OpenSourcePluginsSecurityListenerTest extends DatabaseTestCaseAbstra
         $sys->setToken('tok')->setUser('usr')->setSystem('sys');
         $this->persistAndFlush($sys);
 
-        $listener = new OpenSourcePluginsSecurityListener($this->container->get('cc.open_source_plugins.security_manager'));
+        $listener = new PluginsSecurityListener($this->container->get('cc.plugins.security_manager'));
 
         $request = new Request();
         $request->headers->set(CMHeaders::createKey(CMHeaders::GUID), 'usr');
@@ -38,7 +38,7 @@ final class OpenSourcePluginsSecurityListenerTest extends DatabaseTestCaseAbstra
 
         /** @var FilterControllerEvent|PHPUnit_Framework_MockObject_MockObject $ev */
         $ev = $this->createMock(FilterControllerEvent::class);
-        $ev->method('getController')->willReturn([$this->createMock(OpenSourcePluginsController::class)]);
+        $ev->method('getController')->willReturn([$this->createMock(PluginsController::class)]);
         $ev->method('getRequest')->willReturn($request);
 
         $listener->checkSecurity($ev);
@@ -53,7 +53,7 @@ final class OpenSourcePluginsSecurityListenerTest extends DatabaseTestCaseAbstra
         $sys->setToken('tok')->setUser('usr')->setSystem('sys');
         $this->persistAndFlush($sys);
 
-        $listener = new OpenSourcePluginsSecurityListener($this->container->get('cc.open_source_plugins.security_manager'));
+        $listener = new PluginsSecurityListener($this->container->get('cc.plugins.security_manager'));
 
         $request = new Request();
         $request->headers->set(CMHeaders::createKey(CMHeaders::GUID), 'usr456');
@@ -62,7 +62,7 @@ final class OpenSourcePluginsSecurityListenerTest extends DatabaseTestCaseAbstra
 
         /** @var FilterControllerEvent|PHPUnit_Framework_MockObject_MockObject $ev */
         $ev = $this->createMock(FilterControllerEvent::class);
-        $ev->method('getController')->willReturn([$this->createMock(OpenSourcePluginsController::class)]);
+        $ev->method('getController')->willReturn([$this->createMock(PluginsController::class)]);
         $ev->method('getRequest')->willReturn($request);
 
         $this->expectException(LogicException::class);

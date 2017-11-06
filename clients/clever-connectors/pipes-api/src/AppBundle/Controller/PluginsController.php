@@ -6,13 +6,13 @@ use FOS\RestBundle\Controller\FOSRestController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 
 /**
- * Class OpenSourcePluginsController
+ * Class PluginsController
  *
  * @package CleverConnectors\AppBundle\Controller
  *
- * @Route(service="cc.open_source_plugins.controller")
+ * @Route(service="cc.plugins.controller")
  */
-class OpenSourcePluginsController extends FOSRestController
+class PluginsController extends FOSRestController
 {
 
 }

@@ -20,8 +20,8 @@ services:
             - '%clevermonitor%'
         tags: ['kernel.event_subscriber']
 
-    cc.open_source_plugins.security.listener:
-        class: CleverConnectors\AppBundle\Listeners\OpenSourcePluginsSecurityListener
+    cc.plugins.security.listener:
+        class: CleverConnectors\AppBundle\Listeners\PluginsSecurityListener
         arguments:
-            - '@cc.open_source_plugins.security_manager'
+            - '@cc.plugins.security_manager'
         tags: ['kernel.event_subscriber']
