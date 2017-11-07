@@ -5,16 +5,15 @@ namespace CleverConnectors\AppBundle\Controller;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Handler\PluginsHandler;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
-use Exception;
 use FOS\RestBundle\Controller\FOSRestController;
 use Hanaboso\PipesFramework\Commons\Exception\PipesFrameworkException;
-use Hanaboso\PipesFramework\Utils\ControllerUtils;
 use LogicException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Throwable;
 
 /**
  * Class PluginsController
@@ -53,7 +52,7 @@ class PluginsController extends FOSRestController
     {
         try {
             return new JsonResponse($this->handler->install($request), 200);
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             return self::processException($e);
         }
     }
@@ -70,7 +69,7 @@ class PluginsController extends FOSRestController
     {
         try {
             return new JsonResponse($this->handler->check($request), 200);
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             return self::processException($e);
         }
     }
@@ -89,7 +88,7 @@ class PluginsController extends FOSRestController
             $this->handler->createSubscriber($request->request->all());
 
             return new JsonResponse('', 200);
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             return self::processException($e);
         }
     }
@@ -108,7 +107,7 @@ class PluginsController extends FOSRestController
             $this->handler->updateSubscriber($request->request->all());
 
             return new JsonResponse('', 200);
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             return self::processException($e);
         }
     }
@@ -127,19 +126,19 @@ class PluginsController extends FOSRestController
             $this->handler->deleteSubscriber($request->request->all());
 
             return new JsonResponse('', 200);
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             return self::processException($e);
         }
     }
 
     /**
-     * @param Exception $e
+     * @param Throwable $e
      *
      * @return Response
      */
-    private static function processException(Exception $e): Response
+    private static function processException(Throwable $e): Response
     {
-        $code = 500;
+        $code      = 500;
         $className = get_class($e);
 
         if ($className === SystemException::class) {
@@ -158,7 +157,10 @@ class PluginsController extends FOSRestController
             $code = 400;
         }
 
-        return new Response(ControllerUtils::createExceptionData($e), $code);
+        return new Response(json_encode([
+            'status'  => 'ERROR',
+            'message' => $e->getMessage(),
+        ]), $code);
     }
 
 }

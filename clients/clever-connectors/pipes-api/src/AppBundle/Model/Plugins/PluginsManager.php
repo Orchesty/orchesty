@@ -102,13 +102,6 @@ class PluginsManager
 
         if (!$systemInstall->getPluginVersion()) {
             $systemInstall->setPluginVersion($body[SystemInstall::PLUGIN_VERSION]);
-        } else if ($systemInstall->getPluginVersion() !== $body[SystemInstall::PLUGIN_VERSION]) {
-            throw new SystemException(
-                sprintf('Version of installed system [%s] does not match plugin\'s version [%s].',
-                    $systemInstall->getPluginVersion(), $body[SystemInstall::PLUGIN_VERSION]
-                ),
-                SystemException::MISMATCH_VERSION
-            );
         }
 
         $url = $this->getUrl($request);
@@ -185,12 +178,7 @@ class PluginsManager
      */
     private function getUrl(Request $request): string
     {
-        $url = $request->getUri();
-        if ($request->getScheme() === 'http') {
-            $url = 'https' . substr($url, 4);
-        }
-
-        return $url;
+        return 'https://' . $request->getHost();
     }
 
     /**
@@ -203,11 +191,14 @@ class PluginsManager
         $sett = $systemInstall->getSettings();
 
         return [
-            'key'            => $systemInstall->getSystem(),
-            'token'          => $systemInstall->getToken(),
-            'synchronized'   => $systemInstall->isSynchronized(),
-            'plugin_version' => $systemInstall->getPluginVersion(),
-            'system_url'     => $sett[SystemInstall::SYSTEM_URL],
+            SystemInstall::SYSTEM            => $systemInstall->getSystem(),
+            SystemInstall::TOKEN             => $systemInstall->getToken(),
+            SystemInstall::SYNCHRONIZED      => $systemInstall->isSynchronized(),
+            SystemInstall::PLUGIN_VERSION    => $systemInstall->getPluginVersion(),
+            SystemInstall::SYSTEM_URL        => $sett[SystemInstall::SYSTEM_URL],
+            SystemInstall::EVENT_CREATE      => $systemInstall->isEventCreate(),
+            SystemInstall::EVENT_UNSUBSCRIBE => $systemInstall->isEventUnsubscribe(),
+            SystemInstall::EVENT_HARD_BOUNCE => $systemInstall->isEventHardBounce(),
         ];
     }
 

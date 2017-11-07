@@ -51,11 +51,14 @@ final class PluginsManagerTest extends KernelTestCaseAbstract
 
         $res = $plug->install($req);
         self::assertEquals([
-            'key'            => 'sys',
-            'token'          => 'tkn',
-            'synchronized'   => FALSE,
-            'plugin_version' => 'ver',
-            'system_url'     => 'https://:/',
+            'system'           => 'sys',
+            'token'            => 'tkn',
+            'synchronized'     => FALSE,
+            'pluginVersion'    => 'ver',
+            'system_url'       => 'https://',
+            'eventCreate'      => FALSE,
+            'eventUnsubscribe' => FALSE,
+            'eventHardBounce'  => FALSE,
         ], $res);
     }
 
@@ -72,7 +75,7 @@ final class PluginsManagerTest extends KernelTestCaseAbstract
             ->setUser('usr')
             ->setToken('tkn')
             ->setSettings([
-                SystemInstall::SYSTEM_URL => 'https://:/',
+                SystemInstall::SYSTEM_URL => 'https://',
             ]);
 
         $res = $plug->check($sys, new Request([], [], [], [], [], [], json_encode([
@@ -80,32 +83,15 @@ final class PluginsManagerTest extends KernelTestCaseAbstract
         ])));
 
         self::assertEquals([
-            'key'            => 'sys',
-            'token'          => 'tkn',
-            'synchronized'   => FALSE,
-            'plugin_version' => 'ver',
-            'system_url'     => 'https://:/',
+            'system'           => 'sys',
+            'token'            => 'tkn',
+            'synchronized'     => FALSE,
+            'pluginVersion'    => 'ver',
+            'system_url'       => 'https://',
+            'eventCreate'      => FALSE,
+            'eventUnsubscribe' => FALSE,
+            'eventHardBounce'  => FALSE,
         ], $res);
-    }
-
-    /**
-     * @covers PluginsManager::check()
-     */
-    public function testWrongVersion(): void
-    {
-        $plug = $this->mockPluginsManager();
-        $sys  = new SystemInstall();
-        $sys->setPluginVersion('ver')
-            ->setSettings([
-                SystemInstall::SYSTEM_URL => 'https://:/',
-            ]);
-
-        $this->expectException(SystemException::class);
-        $this->expectExceptionMessage('Version of installed system [ver] does not match plugin\'s version [wrongVer].');
-
-        $plug->check($sys, new Request([], [], [], [], [], [], json_encode([
-            SystemInstall::PLUGIN_VERSION => 'wrongVer',
-        ])));
     }
 
     /**
@@ -121,7 +107,7 @@ final class PluginsManagerTest extends KernelTestCaseAbstract
             ]);
 
         $this->expectException(SystemException::class);
-        $this->expectExceptionMessage('System url from request [https://:/] does not matched saved url in systemInstall [https://yoru/].');
+        $this->expectExceptionMessage('System url from request [https://] does not matched saved url in systemInstall [https://yoru/].');
 
         $plug->check($sys, new Request([], [], [], [], [], [], json_encode([
             SystemInstall::PLUGIN_VERSION => 'ver',
