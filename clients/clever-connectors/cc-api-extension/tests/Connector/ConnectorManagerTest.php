@@ -267,13 +267,13 @@ class ConnectorManagerTest extends TestCase
             $this->assertSame('/user_systems/user/123/system/key/sync', $request->getUri()->getPath());
             $this->assertSame('', $request->getBody()->getContents());
 
-            return new Response(200, [], '');
+            return new Response(200, [], '{"running_topologies":2}');
         };
 
         $cm = new ConnectorManager($this->createSuccessResponse($cb));
 
-        $cm->synchronizeUserSystem('123', 'key');
-        $this->assertTrue(TRUE);
+        $count = $cm->synchronizeUserSystem('123', 'key');
+        $this->assertSame(2, $count);
     }
 
     /**

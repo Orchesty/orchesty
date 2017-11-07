@@ -73,8 +73,10 @@ interface ConnectorInterface
     /**
      * @param string $userId
      * @param string $systemKey
+     *
+     * @return int
      */
-    public function synchronizeUserSystem(string $userId, string $systemKey): void;
+    public function synchronizeUserSystem(string $userId, string $systemKey): int;
 
     /**
      * @param string $userId

@@ -93,9 +93,9 @@ class SystemDetailPresenter extends BasePresenter
      */
     public function handleStartSync()
     {
-        $this->connectorManager->synchronizeUserSystem($this->userId, $this->userSystem->getKey());
+        $count = $this->connectorManager->synchronizeUserSystem($this->userId, $this->userSystem->getKey());
 
-        $this->flashMessage('Sync was started.');
+        $this->flashMessage(sprintf('It was started %s synchronizations.', $count));
         $this->redrawControl('flashMessages');
     }
 

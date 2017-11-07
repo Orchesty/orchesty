@@ -246,8 +246,10 @@ class ConnectorManager implements ConnectorInterface
     /**
      * @param string $userId
      * @param string $systemKey
+     *
+     * @return int
      */
-    public function synchronizeUserSystem(string $userId, string $systemKey): void
+    public function synchronizeUserSystem(string $userId, string $systemKey): int
     {
         $request = new Request(
             CurlSender::GET,
@@ -255,7 +257,9 @@ class ConnectorManager implements ConnectorInterface
             $this->getDefaultHeaders()->getHeaders()
         );
 
-        $this->send($request);
+        $data = $this->parseBody($this->send($request));
+
+        return $data['running_topologies'] ?? 0;
     }
 
     /**
