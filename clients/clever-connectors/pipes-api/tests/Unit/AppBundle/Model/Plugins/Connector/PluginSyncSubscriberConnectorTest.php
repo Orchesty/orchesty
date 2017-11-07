@@ -1,0 +1,123 @@
+<?php declare(strict_types=1);
+
+namespace Tests\Unit\AppBundle\Model\Plugins\Connector;
+
+use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Model\Plugins\Connector\PluginSyncSubscriberConnector;
+use CleverConnectors\AppBundle\Model\ProgressCounter\ProgressCounterService;
+use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
+use Doctrine\ODM\MongoDB\DocumentManager;
+use GuzzleHttp\Psr7\Response;
+use GuzzleHttp\Psr7\Uri;
+use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSender;
+use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSenderFactory;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
+use PHPUnit_Framework_MockObject_MockObject;
+use React\EventLoop\Factory;
+use Tests\ConnectorTestCaseAbstract;
+use function React\Promise\resolve;
+
+/**
+ * Class PluginSyncSubscriberConnectorTest
+ *
+ * @package Tests\Unit\AppBundle\Model\Plugins\Connector
+ */
+final class PluginSyncSubscriberConnectorTest extends ConnectorTestCaseAbstract
+{
+
+    /**
+     *
+     */
+    public function testConnector(): void
+    {
+        /** @var ProgressCounterService|PHPUnit_Framework_MockObject_MockObject $counter */
+        $counter = $this->createMock(ProgressCounterService::class);
+        $counter->method('setTotal')->willReturn('');
+
+        $conn = new PluginSyncSubscriberConnector(
+            $this->container->get('systems.null.user.group'),
+            $this->mockDm(),
+            $this->mockCurl(),
+            $counter
+        );
+
+        $loop = Factory::create();
+
+        $dto = new ProcessDto();
+        $dto->setHeaders([])->setData('');
+
+        $data = $conn->processBatch($dto, $loop, function (): void {
+        });
+
+        $data->then(
+            function (): void {
+                $this->assertTrue(TRUE);
+            },
+            function (): void {
+                $this->assertTrue(FALSE);
+            }
+        )->done();
+
+        $loop->run();
+    }
+
+    /**
+     * @return DocumentManager|PHPUnit_Framework_MockObject_MockObject
+     */
+    private function mockDm(): DocumentManager
+    {
+        $sys = new SystemInstall();
+        $sys->setSettings([
+            SystemInstall::SYSTEM_URL => 'https://aso.ko/',
+        ]);
+
+        $repo = $this->createMock(SystemInstallRepository::class);
+        $repo->expects($this->once())
+            ->method('getSystemInstallFromHeaders')->willReturn($sys);
+
+        $dm = $this->createMock(DocumentManager::class);
+        $dm->expects($this->once())
+            ->method('getRepository')->willReturn($repo);
+
+        return $dm;
+    }
+
+    /**
+     * @return CurlSenderFactory|PHPUnit_Framework_MockObject_MockObject
+     */
+    private function mockCurl(): CurlSenderFactory
+    {
+        $sender = $this->createMock(CurlSender::class);
+        $sender->expects($this->at(0))
+            ->method('send')->will($this->returnCallback(
+                function (RequestDto $requestDto) {
+                    $dto = new RequestDto('GET',
+                        new Uri('https://aso.ko/clever_connector/subscriber?page=1&limit=50'));
+
+                    self::assertEquals($dto, $requestDto);
+
+                    return resolve(new Response(200, [], $this->getRequest('syncPage.json')));
+                }
+            ));
+        $sender->expects($this->at(1))
+            ->method('send')->will($this->returnCallback(
+                function (RequestDto $requestDto) {
+                    $dto = new RequestDto('GET',
+                        new Uri('https://aso.ko/clever_connector/subscriber?page=2&limit=50'));
+
+                    self::assertEquals($dto, $requestDto);
+
+                    return resolve(new Response(200, [], $this->getRequest('syncPage.json')));
+                }
+            ));
+
+        /** @var CurlSenderFactory|PHPUnit_Framework_MockObject_MockObject $curl */
+        $curl = $this->createMock(CurlSenderFactory::class);
+        $curl->expects($this->once())
+            ->method('create')->willReturn($sender);
+
+        return $curl;
+    }
+
+}

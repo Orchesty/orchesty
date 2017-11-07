@@ -88,7 +88,7 @@ services:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.starting_point.starting_point'
             - '@cc.systems.manager'
-            - '@hbpf.handler.starting_point'
+            - '@cc.systems.loader'
 
     cc.plugins.handler:
         class: CleverConnectors\AppBundle\Handler\PluginsHandler

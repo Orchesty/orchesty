@@ -221,7 +221,7 @@ class NullSystem implements WebhookSystemInterface, OAuth2Interface, CMEventSyst
      */
     public function getRequestDto(SystemInstall $systemInstall, string $method): RequestDto
     {
-        return new RequestDto('POST', new Uri(''));
+        return new RequestDto($method, new Uri(''));
     }
 
     /**

@@ -12,8 +12,8 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Repository\NodeRepository;
+use Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository;
 use Hanaboso\PipesFramework\Configurator\StartingPoint\StartingPoint;
-use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\StartingPointHandler;
 use PHPUnit_Framework_MockObject_MockObject;
 use Symfony\Component\HttpFoundation\Request;
 use Tests\KernelTestCaseAbstract;
@@ -42,7 +42,7 @@ final class PluginsManagerTest extends KernelTestCaseAbstract
         $manager->expects($this->once())
             ->method('installSystem')->willReturn($sys);
 
-        $plug = $this->mockPluginsManager(NULL, NULL, NULL, $manager);
+        $plug = $this->mockPluginsManager(NULL, NULL, $manager);
         $req  = new Request();
         $req->headers->set(PluginHeadersEnum::TOKEN, 'tkn');
         $req->headers->set(PluginHeadersEnum::GUID, 'usr');
@@ -121,7 +121,7 @@ final class PluginsManagerTest extends KernelTestCaseAbstract
     public function testCreateSubscriber(): void
     {
         $sys = new SystemInstall();
-        $sys->setSystem('sys');
+        $sys->setSystem('null.user.group')->setUser('usr');
 
         $sp = $this->mockStartingPoint(
             'sys-' . TopologyNameUtils::CREATED_SUBSCRIBERS,
@@ -129,10 +129,9 @@ final class PluginsManagerTest extends KernelTestCaseAbstract
             '{"data":"data"}'
         );
 
-        $dm      = $this->mockDm();
-        $handler = $this->mockStartingPointHandler(TopologyNameUtils::CREATED_SUBSCRIBERS);
+        $dm = $this->mockDm(TopologyNameUtils::CREATED_SUBSCRIBERS);
 
-        $plug = $this->mockPluginsManager($sp, $dm, $handler);
+        $plug = $this->mockPluginsManager($sp, $dm);
         $plug->createSubscriber($sys, ['data' => 'data']);
     }
 
@@ -143,7 +142,7 @@ final class PluginsManagerTest extends KernelTestCaseAbstract
     public function testUpdateSubscriber(): void
     {
         $sys = new SystemInstall();
-        $sys->setSystem('sys');
+        $sys->setSystem('null.user.group')->setUser('usr');
 
         $sp = $this->mockStartingPoint(
             'sys-' . TopologyNameUtils::UPDATED_SUBSCRIBERS,
@@ -151,10 +150,9 @@ final class PluginsManagerTest extends KernelTestCaseAbstract
             '{"data":"data"}'
         );
 
-        $dm      = $this->mockDm();
-        $handler = $this->mockStartingPointHandler(TopologyNameUtils::UPDATED_SUBSCRIBERS);
+        $dm = $this->mockDm(TopologyNameUtils::UPDATED_SUBSCRIBERS);
 
-        $plug = $this->mockPluginsManager($sp, $dm, $handler);
+        $plug = $this->mockPluginsManager($sp, $dm);
         $plug->createSubscriber($sys, ['data' => 'data']);
     }
 
@@ -165,7 +163,7 @@ final class PluginsManagerTest extends KernelTestCaseAbstract
     public function testDeleteSubscriber(): void
     {
         $sys = new SystemInstall();
-        $sys->setSystem('sys');
+        $sys->setSystem('null.user.group')->setUser('usr');
 
         $sp = $this->mockStartingPoint(
             'sys-' . TopologyNameUtils::DELETED_SUBSCRIBERS,
@@ -173,10 +171,9 @@ final class PluginsManagerTest extends KernelTestCaseAbstract
             '{"data":"data"}'
         );
 
-        $dm      = $this->mockDm();
-        $handler = $this->mockStartingPointHandler(TopologyNameUtils::DELETED_SUBSCRIBERS);
+        $dm = $this->mockDm(TopologyNameUtils::DELETED_SUBSCRIBERS);
 
-        $plug = $this->mockPluginsManager($sp, $dm, $handler);
+        $plug = $this->mockPluginsManager($sp, $dm);
         $plug->createSubscriber($sys, ['data' => 'data']);
     }
 
@@ -208,47 +205,39 @@ final class PluginsManagerTest extends KernelTestCaseAbstract
     }
 
     /**
+     * @param string $type
+     *
      * @return DocumentManager|PHPUnit_Framework_MockObject_MockObject
      */
-    private function mockDm(): DocumentManager
+    private function mockDm(string $type = ''): DocumentManager
     {
         $nodeRepo = $this->createMock(NodeRepository::class);
         $nodeRepo->expects($this->once())
             ->method('getStartingNode')->willReturn((new Node)->setName('sys-start-node'));
 
+        $topRepo = $this->createMock(TopologyRepository::class);
+        $topRepo->expects($this->once())
+            ->method('getRunnableTopologies')->willReturn([(new Topology())->setName('sys-' . $type)]);
+
         $dm = $this->createMock(DocumentManager::class);
-        $dm->expects($this->once())
+        $dm->expects($this->at(0))
+            ->method('getRepository')->willReturn($topRepo);
+        $dm->expects($this->at(1))
             ->method('getRepository')->willReturn($nodeRepo);
 
         return $dm;
     }
 
     /**
-     * @param string $type
-     *
-     * @return StartingPointHandler|PHPUnit_Framework_MockObject_MockObject
-     */
-    private function mockStartingPointHandler(string $type): StartingPointHandler
-    {
-        $handler = $this->createMock(StartingPointHandler::class);
-        $handler->expects($this->once())
-            ->method('getTopologies')->willReturn([(new Topology())->setName('sys-' . $type)]);
-
-        return $handler;
-    }
-
-    /**
-     * @param StartingPoint|null        $start
-     * @param DocumentManager|null      $dm
-     * @param StartingPointHandler|null $handler
-     * @param SystemManager|null        $manager
+     * @param StartingPoint|null   $start
+     * @param DocumentManager|null $dm
+     * @param SystemManager|null   $manager
      *
      * @return PluginsManager|PHPUnit_Framework_MockObject_MockObject
      */
     private function mockPluginsManager(
         ?StartingPoint $start = NULL,
         ?DocumentManager $dm = NULL,
-        ?StartingPointHandler $handler = NULL,
         ?SystemManager $manager = NULL
     ): PluginsManager
     {
@@ -267,12 +256,9 @@ final class PluginsManagerTest extends KernelTestCaseAbstract
             $start = $this->createMock(StartingPoint::class);
         }
 
-        if (!$handler) {
-            /** @var StartingPointHandler|PHPUnit_Framework_MockObject_MockObject $handler */
-            $handler = $this->createMock(StartingPointHandler::class);
-        }
+        $loader = $this->container->get('cc.systems.loader');
 
-        return new PluginsManager($dm, $start, $manager, $handler);
+        return new PluginsManager($dm, $start, $manager, $loader);
     }
 
 }
