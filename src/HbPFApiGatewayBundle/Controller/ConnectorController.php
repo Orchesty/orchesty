@@ -5,7 +5,7 @@ namespace Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller;
 use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Controller\FOSRestController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class ConnectorController
@@ -23,13 +23,13 @@ class ConnectorController extends FOSRestController
      *
      * @param string $id
      *
-     * @return JsonResponse
+     * @return Response
      */
-    public function processEvent(string $id): JsonResponse
+    public function processEvent(string $id): Response
     {
         $data = $this->forward('HbPFConnectorBundle:Connector:processEvent', ['id' => $id]);
 
-        return new JsonResponse(json_decode($data->getContent()), $data->getStatusCode(), $data->headers->all());
+        return new Response($data->getContent(), $data->getStatusCode(), $data->headers->all());
     }
 
     /**
@@ -38,13 +38,13 @@ class ConnectorController extends FOSRestController
      *
      * @param string $id
      *
-     * @return JsonResponse
+     * @return Response
      */
-    public function processAction(string $id): JsonResponse
+    public function processAction(string $id): Response
     {
         $data = $this->forward('HbPFConnectorBundle:Connector:processAction', ['id' => $id]);
 
-        return new JsonResponse(json_decode($data->getContent()), $data->getStatusCode(), $data->headers->all());
+        return new Response($data->getContent(), $data->getStatusCode(), $data->headers->all());
     }
 
 }
