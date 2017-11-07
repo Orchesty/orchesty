@@ -4,15 +4,14 @@ namespace CleverConnectors\AppBundle\Model\Plugins;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\PluginHeadersEnum;
+use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\SystemManager;
 use CleverConnectors\AppBundle\Utils\TopologyNameUtils;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
-use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Repository\NodeRepository;
-use Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository;
 use Hanaboso\PipesFramework\Configurator\StartingPoint\StartingPoint;
-use LogicException;
+use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\StartingPointHandler;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -39,21 +38,29 @@ class PluginsManager
     private $manager;
 
     /**
+     * @var StartingPointHandler
+     */
+    private $handler;
+
+    /**
      * OpenSourcePluginsManager constructor.
      *
-     * @param DocumentManager $dm
-     * @param StartingPoint   $startingPoint
-     * @param SystemManager   $manager
+     * @param DocumentManager      $dm
+     * @param StartingPoint        $startingPoint
+     * @param SystemManager        $manager
+     * @param StartingPointHandler $handler
      */
     public function __construct(
         DocumentManager $dm,
         StartingPoint $startingPoint,
-        SystemManager $manager
+        SystemManager $manager,
+        StartingPointHandler $handler
     )
     {
         $this->dm            = $dm;
         $this->startingPoint = $startingPoint;
         $this->manager       = $manager;
+        $this->handler       = $handler;
     }
 
     /**
@@ -86,6 +93,7 @@ class PluginsManager
      * @param Request       $request
      *
      * @return array
+     * @throws SystemException
      */
     public function check(SystemInstall $systemInstall, Request $request): array
     {
@@ -100,10 +108,11 @@ class PluginsManager
         if (!array_key_exists(SystemInstall::SYSTEM_URL, $sett)) {
             $sett[SystemInstall::SYSTEM_URL] = $url;
         } else if ($sett[SystemInstall::SYSTEM_URL] !== $url) {
-            throw new LogicException(
+            throw new SystemException(
                 sprintf('System url from request [%s] does not matched saved url in systemInstall [%s].',
                     $url, $sett[SystemInstall::SYSTEM_URL]
-                )
+                ),
+                SystemException::MISMATCH_URL
             );
         }
 
@@ -151,11 +160,7 @@ class PluginsManager
         $topName = TopologyNameUtils::getTopologyName($topology,
             $systemInstall->getSystem());
 
-        /** @var TopologyRepository $repo */
-        $repo = $this->dm->getRepository(Topology::class);
-
-        /** @var Topology[] $topologies */
-        $topologies = $repo->getRunnableTopologies($topName);
+        $topologies = $this->handler->getTopologies($topName);
 
         foreach ($topologies as $topology) {
             /** @var NodeRepository $repo */
@@ -173,12 +178,7 @@ class PluginsManager
      */
     private function getUrl(Request $request): string
     {
-        $url = $request->getUri();
-        if ($request->getScheme() === 'http') {
-            $url = 'https' . substr($url, 4);
-        }
-
-        return $url;
+        return 'https://' . $request->getHost();
     }
 
     /**
@@ -191,11 +191,14 @@ class PluginsManager
         $sett = $systemInstall->getSettings();
 
         return [
-            'key'            => $systemInstall->getSystem(),
-            'token'          => $systemInstall->getToken(),
-            'synchronized'   => $systemInstall->isSynchronized(),
-            'plugin_version' => $systemInstall->getPluginVersion(),
-            'system_url'     => $sett[SystemInstall::SYSTEM_URL],
+            SystemInstall::SYSTEM            => $systemInstall->getSystem(),
+            SystemInstall::TOKEN             => $systemInstall->getToken(),
+            SystemInstall::SYNCHRONIZED      => $systemInstall->isSynchronized(),
+            SystemInstall::PLUGIN_VERSION    => $systemInstall->getPluginVersion(),
+            SystemInstall::SYSTEM_URL        => $sett[SystemInstall::SYSTEM_URL],
+            SystemInstall::EVENT_CREATE      => $systemInstall->isEventCreate(),
+            SystemInstall::EVENT_UNSUBSCRIBE => $systemInstall->isEventUnsubscribe(),
+            SystemInstall::EVENT_HARD_BOUNCE => $systemInstall->isEventHardBounce(),
         ];
     }
 

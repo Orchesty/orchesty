@@ -5,15 +5,15 @@ namespace Tests\Unit\AppBundle\Model\Plugins;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\PluginHeadersEnum;
 use CleverConnectors\AppBundle\Model\Plugins\PluginsManager;
+use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\SystemManager;
 use CleverConnectors\AppBundle\Utils\TopologyNameUtils;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Repository\NodeRepository;
-use Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository;
 use Hanaboso\PipesFramework\Configurator\StartingPoint\StartingPoint;
-use LogicException;
+use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\StartingPointHandler;
 use PHPUnit_Framework_MockObject_MockObject;
 use Symfony\Component\HttpFoundation\Request;
 use Tests\KernelTestCaseAbstract;
@@ -42,13 +42,7 @@ final class PluginsManagerTest extends KernelTestCaseAbstract
         $manager->expects($this->once())
             ->method('installSystem')->willReturn($sys);
 
-        /** @var DocumentManager|PHPUnit_Framework_MockObject_MockObject $dm */
-        $dm = $this->createMock(DocumentManager::class);
-
-        /** @var StartingPoint|PHPUnit_Framework_MockObject_MockObject $start */
-        $start = $this->createMock(StartingPoint::class);
-
-        $plug = new PluginsManager($dm, $start, $manager);
+        $plug = $this->mockPluginsManager(NULL, NULL, NULL, $manager);
         $req  = new Request();
         $req->headers->set(PluginHeadersEnum::TOKEN, 'tkn');
         $req->headers->set(PluginHeadersEnum::GUID, 'usr');
@@ -57,11 +51,14 @@ final class PluginsManagerTest extends KernelTestCaseAbstract
 
         $res = $plug->install($req);
         self::assertEquals([
-            'key'            => 'sys',
-            'token'          => 'tkn',
-            'synchronized'   => FALSE,
-            'plugin_version' => 'ver',
-            'system_url'     => 'https://:/',
+            'system'           => 'sys',
+            'token'            => 'tkn',
+            'synchronized'     => FALSE,
+            'pluginVersion'    => 'ver',
+            'system_url'       => 'https://',
+            'eventCreate'      => FALSE,
+            'eventUnsubscribe' => FALSE,
+            'eventHardBounce'  => FALSE,
         ], $res);
     }
 
@@ -78,7 +75,7 @@ final class PluginsManagerTest extends KernelTestCaseAbstract
             ->setUser('usr')
             ->setToken('tkn')
             ->setSettings([
-                SystemInstall::SYSTEM_URL => 'https://:/',
+                SystemInstall::SYSTEM_URL => 'https://',
             ]);
 
         $res = $plug->check($sys, new Request([], [], [], [], [], [], json_encode([
@@ -86,11 +83,14 @@ final class PluginsManagerTest extends KernelTestCaseAbstract
         ])));
 
         self::assertEquals([
-            'key'            => 'sys',
-            'token'          => 'tkn',
-            'synchronized'   => FALSE,
-            'plugin_version' => 'ver',
-            'system_url'     => 'https://:/',
+            'system'           => 'sys',
+            'token'            => 'tkn',
+            'synchronized'     => FALSE,
+            'pluginVersion'    => 'ver',
+            'system_url'       => 'https://',
+            'eventCreate'      => FALSE,
+            'eventUnsubscribe' => FALSE,
+            'eventHardBounce'  => FALSE,
         ], $res);
     }
 
@@ -106,8 +106,8 @@ final class PluginsManagerTest extends KernelTestCaseAbstract
                 SystemInstall::SYSTEM_URL => 'https://yoru/',
             ]);
 
-        $this->expectException(LogicException::class);
-        $this->expectExceptionMessage('System url from request [https://:/] does not matched saved url in systemInstall [https://yoru/].');
+        $this->expectException(SystemException::class);
+        $this->expectExceptionMessage('System url from request [https://] does not matched saved url in systemInstall [https://yoru/].');
 
         $plug->check($sys, new Request([], [], [], [], [], [], json_encode([
             SystemInstall::PLUGIN_VERSION => 'ver',
@@ -129,14 +129,15 @@ final class PluginsManagerTest extends KernelTestCaseAbstract
             '{"data":"data"}'
         );
 
-        $dm = $this->mockDm(TopologyNameUtils::CREATED_SUBSCRIBERS);
+        $dm      = $this->mockDm();
+        $handler = $this->mockStartingPointHandler(TopologyNameUtils::CREATED_SUBSCRIBERS);
 
-        $plug = $this->mockPluginsManager($sp, $dm);
+        $plug = $this->mockPluginsManager($sp, $dm, $handler);
         $plug->createSubscriber($sys, ['data' => 'data']);
     }
 
     /**
-     * @covers PluginsManager::createSubscriber()
+     * @covers PluginsManager::updateSubscriber()
      * @covers PluginsManager::startTopologies()
      */
     public function testUpdateSubscriber(): void
@@ -150,14 +151,15 @@ final class PluginsManagerTest extends KernelTestCaseAbstract
             '{"data":"data"}'
         );
 
-        $dm = $this->mockDm(TopologyNameUtils::UPDATED_SUBSCRIBERS);
+        $dm      = $this->mockDm();
+        $handler = $this->mockStartingPointHandler(TopologyNameUtils::UPDATED_SUBSCRIBERS);
 
-        $plug = $this->mockPluginsManager($sp, $dm);
+        $plug = $this->mockPluginsManager($sp, $dm, $handler);
         $plug->createSubscriber($sys, ['data' => 'data']);
     }
 
     /**
-     * @covers PluginsManager::createSubscriber()
+     * @covers PluginsManager::deleteSubscriber()
      * @covers PluginsManager::startTopologies()
      */
     public function testDeleteSubscriber(): void
@@ -171,9 +173,10 @@ final class PluginsManagerTest extends KernelTestCaseAbstract
             '{"data":"data"}'
         );
 
-        $dm = $this->mockDm(TopologyNameUtils::DELETED_SUBSCRIBERS);
+        $dm      = $this->mockDm();
+        $handler = $this->mockStartingPointHandler(TopologyNameUtils::DELETED_SUBSCRIBERS);
 
-        $plug = $this->mockPluginsManager($sp, $dm);
+        $plug = $this->mockPluginsManager($sp, $dm, $handler);
         $plug->createSubscriber($sys, ['data' => 'data']);
     }
 
@@ -205,39 +208,54 @@ final class PluginsManagerTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @param string $type
-     *
      * @return DocumentManager|PHPUnit_Framework_MockObject_MockObject
      */
-    private function mockDm(string $type): DocumentManager
+    private function mockDm(): DocumentManager
     {
-        $topRepo = $this->createMock(TopologyRepository::class);
-        $topRepo->expects($this->once())
-            ->method('getRunnableTopologies')->willReturn([(new Topology())->setName('sys-' . $type)]);
-
         $nodeRepo = $this->createMock(NodeRepository::class);
         $nodeRepo->expects($this->once())
             ->method('getStartingNode')->willReturn((new Node)->setName('sys-start-node'));
 
         $dm = $this->createMock(DocumentManager::class);
-        $dm->expects($this->at(0))
-            ->method('getRepository')->willReturn($topRepo);
-        $dm->expects($this->at(1))
+        $dm->expects($this->once())
             ->method('getRepository')->willReturn($nodeRepo);
 
         return $dm;
     }
 
     /**
-     * @param StartingPoint|NULL   $start
-     * @param DocumentManager|NULL $dm
+     * @param string $type
+     *
+     * @return StartingPointHandler|PHPUnit_Framework_MockObject_MockObject
+     */
+    private function mockStartingPointHandler(string $type): StartingPointHandler
+    {
+        $handler = $this->createMock(StartingPointHandler::class);
+        $handler->expects($this->once())
+            ->method('getTopologies')->willReturn([(new Topology())->setName('sys-' . $type)]);
+
+        return $handler;
+    }
+
+    /**
+     * @param StartingPoint|null        $start
+     * @param DocumentManager|null      $dm
+     * @param StartingPointHandler|null $handler
+     * @param SystemManager|null        $manager
      *
      * @return PluginsManager|PHPUnit_Framework_MockObject_MockObject
      */
-    private function mockPluginsManager(?StartingPoint $start = NULL, ?DocumentManager $dm = NULL): PluginsManager
+    private function mockPluginsManager(
+        ?StartingPoint $start = NULL,
+        ?DocumentManager $dm = NULL,
+        ?StartingPointHandler $handler = NULL,
+        ?SystemManager $manager = NULL
+    ): PluginsManager
     {
-        /** @var SystemManager|PHPUnit_Framework_MockObject_MockObject $manager */
-        $manager = $this->createMock(SystemManager::class);
+        if (!$manager) {
+            /** @var SystemManager|PHPUnit_Framework_MockObject_MockObject $manager */
+            $manager = $this->createMock(SystemManager::class);
+        }
 
         if (!$dm) {
             /** @var DocumentManager|PHPUnit_Framework_MockObject_MockObject $dm */
@@ -249,7 +267,12 @@ final class PluginsManagerTest extends KernelTestCaseAbstract
             $start = $this->createMock(StartingPoint::class);
         }
 
-        return new PluginsManager($dm, $start, $manager);
+        if (!$handler) {
+            /** @var StartingPointHandler|PHPUnit_Framework_MockObject_MockObject $handler */
+            $handler = $this->createMock(StartingPointHandler::class);
+        }
+
+        return new PluginsManager($dm, $start, $manager, $handler);
     }
 
 }

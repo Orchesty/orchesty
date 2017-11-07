@@ -191,8 +191,35 @@ class PipedriveSystem implements WebhookSystemInterface, AuthorizationInterface,
             TRUE
         );
 
+        $field2 = new Field(
+            Field::CHECKBOX,
+            SystemInstall::EVENT_CREATE,
+            'Hard bounce',
+            $systemInstall->isEventHardBounce(),
+            TRUE
+        );
+
+        $field3 = new Field(
+            Field::CHECKBOX,
+            SystemInstall::EVENT_UNSUBSCRIBE,
+            'Hard bounce',
+            $systemInstall->isEventHardBounce(),
+            TRUE
+        );
+
+        $field4 = new Field(
+            Field::CHECKBOX,
+            SystemInstall::EVENT_HARD_BOUNCE,
+            'Hard bounce',
+            $systemInstall->isEventHardBounce(),
+            TRUE
+        );
+
         $form = new Form();
-        $form->addField($field1);
+        $form->addField($field1)
+            ->addField($field2)
+            ->addField($field3)
+            ->addField($field4);
 
         return $form->toArray();
     }

@@ -19,5 +19,7 @@ final class SystemException extends Exception
     public const SYSTEM_IS_UNAUTHORIZED    = 5;
     public const MISSING_RESPONSE_DATA     = 6;
     public const MISSING_DATA              = 7;
+    public const MISMATCH_URL              = 8;
+    public const MISMATCH_VERSION          = 9;
 
 }

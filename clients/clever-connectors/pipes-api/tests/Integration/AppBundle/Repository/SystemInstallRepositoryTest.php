@@ -10,6 +10,7 @@
 namespace Tests\Integration\AppBundle\Repository;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Enum\PluginHeadersEnum;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
@@ -75,6 +76,33 @@ final class SystemInstallRepositoryTest extends DatabaseTestCaseAbstract
         /** @var SystemInstallRepository $repo */
         $repo = $this->dm->getRepository(SystemInstall::class);
         $sys  = $repo->getSystemInstallFromHeaders($arr);
+        $this->assertInstanceOf(SystemInstall::class, $sys);
+    }
+
+    /**
+     * @covers SystemInstallRepository::getSystemInstallFromPluginHeaders()
+     */
+    public function testGetSystemInstallFromPluginHeaders(): void
+    {
+        $system = new SystemInstall();
+        $system
+            ->setUser('u-123')
+            ->setToken('t-456')
+            ->setSystem('s-789');
+
+        $this->dm->persist($system);
+        $this->dm->flush($system);
+        $this->dm->clear();
+
+        $arr = [
+            PluginHeadersEnum::GUID     => $system->getUser(),
+            PluginHeadersEnum::TOKEN      => $system->getToken(),
+            PluginHeadersEnum::SYSTEM => $system->getSystem(),
+        ];
+
+        /** @var SystemInstallRepository $repo */
+        $repo = $this->dm->getRepository(SystemInstall::class);
+        $sys  = $repo->getSystemInstallFromPluginHeaders($arr);
         $this->assertInstanceOf(SystemInstall::class, $sys);
     }
 

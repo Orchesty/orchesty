@@ -44,7 +44,7 @@ class PluginsSecurityListener implements EventSubscriberInterface
             return;
         }
 
-        if ($inf[0] instanceof PluginsController) {
+        if ($inf[0] instanceof PluginsController && $inf[1] !== 'installAction') {
             $headers = $ev->getRequest()->headers;
             $this->security->checkSystemInstall($headers->all());
         }

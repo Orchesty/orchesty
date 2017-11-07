@@ -3,6 +3,7 @@
 namespace CleverConnectors\AppBundle\Repository;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Enum\PluginHeadersEnum;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use DateTime;
@@ -53,6 +54,25 @@ class SystemInstallRepository extends DocumentRepository
         $user   = CMHeaders::get(CMHeaders::GUID, $headers) ?? '';
         $token  = CMHeaders::get(CMHeaders::TOKEN, $headers) ?? '';
         $system = CMHeaders::get(CMHeaders::SYSTEM_KEY, $headers) ?? '';
+
+        if (empty($user) || empty($token) || empty($system)) {
+            throw new LogicException('User or Token or System is missing in header.');
+        }
+
+        return $this->getSystemInstall($user, $token, $system);
+    }
+
+    /**
+     * @param array $headers
+     *
+     * @return SystemInstall
+     * @throws LogicException
+     */
+    public function getSystemInstallFromPluginHeaders(array $headers): SystemInstall
+    {
+        $user   = PluginHeadersEnum::get(PluginHeadersEnum::GUID, $headers);
+        $token  = PluginHeadersEnum::get(PluginHeadersEnum::TOKEN, $headers);
+        $system = PluginHeadersEnum::get(PluginHeadersEnum::SYSTEM, $headers);
 
         if (empty($user) || empty($token) || empty($system)) {
             throw new LogicException('User or Token or System is missing in header.');

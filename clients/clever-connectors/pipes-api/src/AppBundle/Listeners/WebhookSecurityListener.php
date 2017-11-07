@@ -34,6 +34,7 @@ class WebhookSecurityListener implements EventSubscriberInterface
      * @var CurlManagerInterface
      */
     private $curl;
+
     /**
      * @var array
      */
