@@ -9,6 +9,7 @@ services:
       - ${SSH_AUTH_SOCK}:/tmp/bound-ssh-agent
       - ./topology:${GENERATOR_PATH}
       - ${DOCKER_SOCKET_PATH}:/var/run/docker.sock
+      - ${HOME}/.composer:/srv/.composer
     environment:
       - DEV_UID=${DEV_UID}
       - DEV_GID=${DEV_GID}
