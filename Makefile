@@ -1,4 +1,4 @@
-.PHONY: docker-up .env docker-up-force docker-down-clean test codesniffer phpstan phpunit
+.PHONY: docker-up docker-up-force docker-down-clean test codesniffer phpstan phpunit
 
 DC=docker-compose
 DE=docker-compose exec -T php-dev
@@ -87,11 +87,9 @@ database-create:
 	$(DE) php bin/console doctrine:schema:create
 
 .env:
-	@if ! [ -f .env ]; then \
-		sed -e "s|{DEV_UID}|$(shell id -u)|g" \
-			-e "s|{DEV_GID}|$(shell id -u)|g" \
-			-e "s|{PROJECT_SOURCE_PATH}|$(shell pwd)|g" \
-			-e "s|{DOCKER_GID}|$(shell getent group docker /etc/group | awk -F ':' '{print $$3}')|g" \
-			-e "s|{DOCKER_SOCKET_PATH}|$(shell test -S /var/run/docker-$${USER}.sock && echo /var/run/docker-$${USER}.sock || echo /var/run/docker.sock)|g" \
-			.env.dist >> .env; \
-	fi;
+	sed -e "s|{DEV_UID}|$(shell id -u)|g" \
+		-e "s|{DEV_GID}|$(shell id -u)|g" \
+		-e "s|{PROJECT_SOURCE_PATH}|$(shell pwd)|g" \
+		-e "s|{DOCKER_GID}|$(shell getent group docker /etc/group | awk -F ':' '{print $$3}')|g" \
+		-e "s|{DOCKER_SOCKET_PATH}|$(shell test -S /var/run/docker-$${USER}.sock && echo /var/run/docker-$${USER}.sock || echo /var/run/docker.sock)|g" \
+		.env.dist >> .env; \
