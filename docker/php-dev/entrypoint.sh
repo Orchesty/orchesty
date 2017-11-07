@@ -1,7 +1,16 @@
 #!/usr/bin/env bash
 
+DEV_UID=$(id -u)
+DEV_GID=$(id -g)
+
 getent passwd dev || groupadd dev -g ${DEV_GID} && useradd -m -u ${DEV_UID} -g ${DEV_GID} dev
 export HOME=/home/dev
+
+# Create a symlink to /srv/.composer instead of binding a volume directly to home
+# to avoid preliminary creation of the home directory before the useradd is called
+[ -d /srv/.composer ] || mkdir /srv/.composer
+sudo chown dev:dev /srv/.composer
+ln -s /srv/.composer /home/dev/.composer
 
 # Add Hanaboso gitlab as known host
 mkdir -p $HOME/.ssh
