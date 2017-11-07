@@ -31,7 +31,7 @@ class TopologyRunForm extends React.Component {
 
   onSubmit(data){
     const {body} = data;
-    this.props.commitAction(body ? JSON.parse(body) : null).then(
+    this.props.commitAction(body ? JSON.parse(body) : {}).then(
       response => {
         const {onSuccess} = this.props;
         if (response){
