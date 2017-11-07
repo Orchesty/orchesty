@@ -1,4 +1,4 @@
-.PHONY: init-dev init-prod generate build-monolith-fpm
+.PHONY: init-dev init-prod generate build-monolith-fpm push-monolith-fpm
 
 # Client-specific vars
 
@@ -18,9 +18,6 @@ DEV_YML?="docker-compose.dev.yml"
 DC_DEV=docker-compose -f $(DEV_YML)
 DE_DEV=docker-compose -f $(DEV_YML) exec -T
 DE_DEVT=docker-compose -f $(DEV_YML) exec
-DC_PROD=docker-compose -f docker-compose.prod.yml
-DE_PROD=docker-compose -f docker-compose.prod.yml exec -T
-
 
 .env:
 	sed -e "s|{DEV_UID}|$(shell id -u)|g" \
@@ -32,6 +29,10 @@ DE_PROD=docker-compose -f docker-compose.prod.yml exec -T
 
 docker-pull-dev:
 	$(DC_DEV) pull
+
+up: .env
+	$(DC_DEV) pull
+	$(DC_DEV) up -d --force-recreate --remove-orphans
 
 init-dev: .env
 	$(DC_DEV) pull

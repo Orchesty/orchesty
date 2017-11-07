@@ -9,5 +9,8 @@ logs/*
 vendor
 cert/*
 !cert/.gitkeep
+
 # Exclude local config
 .env
+composer.prod.json
+composer.prod.lock

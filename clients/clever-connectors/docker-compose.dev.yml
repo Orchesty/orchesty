@@ -1,16 +1,14 @@
 ---
 
-version: '2'
+version: '3.2'
 
 services:
     # Nodes
+    ## BEGIN DEV
     batch:
         image: dkr.hanaboso.net/pipes/pipes/php-dev:dev
         user: ${DEV_UID}:${DEV_GID}
         working_dir: /var/www/pipes/clients/clever-connectors/pipes-api
-        environment:
-          DEV_UID: ${DEV_UID}
-          DEV_GID: ${DEV_GID}
         volumes:
           - ../../:/var/www/pipes
           - ${SSH_AUTH_SOCK}:/tmp/bound-ssh-agent
@@ -19,14 +17,22 @@ services:
           - mongo
           - rabbitmq
         command: bash -c 'while ! [ -f vendor/autoload.php ];do sleep 1; echo "sleep 1"; done; bin/console rabbit-mq:async-consumer batch'
+    ## END DEV
+    ## BEGIN STAGE
+    #batch:
+    #    image: dkr.hanaboso.net/pipes/client-cm/monolith-fpm:prod-images
+    #    command: bin/console rabbit-mq:async-consumer batch
+    #    depends_on:
+    #      - mongo
+    #      - rabbitmq
+    ## END STAGE
 
+
+    ## BEGIN DEV
     batch-connector:
         image: dkr.hanaboso.net/pipes/pipes/php-dev:dev
         user: ${DEV_UID}:${DEV_GID}
         working_dir: /var/www/pipes/clients/clever-connectors/pipes-api
-        environment:
-          DEV_UID: ${DEV_UID}
-          DEV_GID: ${DEV_GID}
         volumes:
           - ../../:/var/www/pipes
           - ${SSH_AUTH_SOCK}:/tmp/bound-ssh-agent
@@ -35,7 +41,18 @@ services:
           - mongo
           - rabbitmq
         command: bash -c 'while ! [ -f vendor/autoload.php ];do sleep 1; echo "sleep 1"; done; bin/console rabbit-mq:async-consumer batch-connector'
+    ## END DEV
+    ## BEGIN STAGE
+    #batch-connector:
+    #    image: dkr.hanaboso.net/pipes/client-cm/monolith-fpm:prod-images
+    #    command: bin/console rabbit-mq:async-consumer batch-connector
+    #    depends_on:
+    #      - mongo
+    #      - rabbitmq
+    ## END STAGE
 
+    ## BEGIN DEV
+    # Wont be run in staging until we resolve how to do it
     topology-controlling-consumer:
         image: dkr.hanaboso.net/pipes/pipes/php-dev:dev
         user: ${DEV_UID}:${DEV_GID}
@@ -59,14 +76,13 @@ services:
         group_add:
           - ${DOCKER_GID}
         command: bash -c 'while ! [ -f vendor/autoload.php ];do sleep 1; echo "sleep 1"; done; bin/console rabbit-mq:consumer topology-controlling'
+    ## END DEV
 
+    ## BEGIN DEV
     status-service:
         image: dkr.hanaboso.net/pipes/pipes/php-dev:dev
         user: ${DEV_UID}:${DEV_GID}
         working_dir: /var/www/pipes/clients/clever-connectors/pipes-api
-        environment:
-          DEV_UID: ${DEV_UID}
-          DEV_GID: ${DEV_GID}
         volumes:
           - ../../:/var/www/pipes
           - ${SSH_AUTH_SOCK}:/tmp/bound-ssh-agent
@@ -75,6 +91,15 @@ services:
           - mongo
           - rabbitmq
         command: bash -c 'while ! [ -f vendor/autoload.php ];do sleep 1; echo "sleep 1"; done; bin/console rabbit-mq:consumer status-service'
+    ## END DEV
+    ## BEGIN STAGE
+    #status-service:
+    #    image: dkr.hanaboso.net/pipes/client-cm/monolith-fpm:prod-images
+    #    command: bin/console rabbit-mq:consumer status-service
+    #    depends_on:
+    #      - mongo
+    #      - rabbitmq
+    ## END STAGE
 
     multi-probe:
       image: 'dkr.hanaboso.net/pipes/pipes/multi-probe:dev'
@@ -91,6 +116,7 @@ services:
     multi-counter:
       image: 'dkr.hanaboso.net/pipes/pipes/pf-bridge:dev'
       user: ${DEV_UID}:${DEV_GID}
+      command: './dist/src/bin/pipes.js start multi_counter'
       environment:
         RABBITMQ_HOST: rabbitmq
         RABBITMQ_PORT: '5672'
@@ -103,18 +129,16 @@ services:
         REDIS_DB: '0'
       ports:
         - ${DEV_IP}:8005:8005
+      # TODO: unify usages and remove the alias
       networks:
         default:
           aliases:
             - multi-counter-api
-      depends_on:
-        - rabbitmq
-        - redis
-      command: './dist/src/bin/pipes.js start multi_counter'
 
     repeater:
       image: 'dkr.hanaboso.net/pipes/pipes/pf-bridge:dev'
       user: ${DEV_UID}:${DEV_GID}
+      command: './dist/src/bin/pipes.js start repeater'
       environment:
         RABBITMQ_HOST: rabbitmq
         RABBITMQ_PORT: '5672'
@@ -123,19 +147,13 @@ services:
         RABBITMQ_VHOST: /
         MONGO_HOST: mongo
         REPEATER_CHECK_TIMEOUT: '5000'
-      depends_on:
-        - mongo
-        - rabbitmq
-      command: './dist/src/bin/pipes.js start repeater'
 
     # PHP Services monolith
+    ## BEGIN DEV
     monolith-fpm:
         image: dkr.hanaboso.net/pipes/pipes/php-dev:dev
         user: ${DEV_UID}:${DEV_GID}
         working_dir: /var/www/pipes/clients/clever-connectors/pipes-api
-        environment:
-          DEV_UID: ${DEV_UID}
-          DEV_GID: ${DEV_GID}
         volumes:
           - ../../:/var/www/pipes
           - ${SSH_AUTH_SOCK}:/tmp/bound-ssh-agent
@@ -144,15 +162,22 @@ services:
           - mongo
           - rabbitmq
           - cron-api
+    ## END DEV
+    ## BEGIN STAGE
+    #monolith-fpm:
+    #    image: dkr.hanaboso.net/pipes/client-cm/monolith-fpm:prod-images
+    #    depends_on:
+    #      - mongo
+    #      - rabbitmq
+    ## END STAGE
 
     # Services
+    ## BEGIN DEV
     topology-fpm:
         image: dkr.hanaboso.net/pipes/pipes/php-dev:dev
         user: ${DEV_UID}:${DEV_GID}
         working_dir: /var/www/pipes/clients/clever-connectors/pipes-api
         environment:
-          DEV_UID: ${DEV_UID}
-          DEV_GID: ${DEV_GID}
           GENERATOR_PATH: ${GENERATOR_PATH}
           DOCKER_NETWORK: ${COMPOSE_PROJECT_NAME}_default
           PROJECT_SOURCE_PATH: ${PROJECT_SOURCE_PATH}
@@ -167,6 +192,15 @@ services:
           - mongo
         group_add:
           - ${DOCKER_GID}
+    ## END DEV
+    ## BEGIN STAGE
+    #topology-fpm:
+    #    image: dkr.hanaboso.net/pipes/client-cm/monolith-fpm:prod-images
+    #    depends_on:
+    #      - mongo
+    #      - rabbitmq
+    ## END STAGE
+
 
     xml-parser-api:
         image: 'dkr.hanaboso.net/pipes/pipes/python-xml-parser:prod'
@@ -185,8 +219,6 @@ services:
         user: ${DEV_UID}:${DEV_GID}
         working_dir: /var/www/pipes/frontend
         environment:
-          DEV_UID: ${DEV_UID}
-          DEV_GID: ${DEV_GID}
           PHP_WEBROOT: /var/www/pipes/clients/clever-connectors/pipes-api/web
           NPM_INSTALL: ${NPM_INSTALL}
           NPM_START: "yes" # webpackserver
@@ -200,9 +232,10 @@ services:
     ## BEGIN STAGE
     #    image: dkr.hanaboso.net/pipes/pipes/frontend:dev
     #    environment:
-    #      BACKEND_URL: https://cleverconn.stage.hanaboso.net/api
-    #      PHP_APP_INDEX: app.php
-    #      PHP_WEBROOT: /var/www/pipes/clients/clever-connectors/pipes-api/web
+    #      BACKEND_URL: https://clever-conn2.stage.hanaboso.net/api
+    #      PHP_WEBROOT: /var/www/html/web
+    #    ports:
+    #      - 6541:80
     ## END STAGE
         networks:
           default:
@@ -276,8 +309,11 @@ services:
     logstash:
         image: docker.elastic.co/logstash/logstash:5.6.0
         command: --log.level debug
+        ## TODO: replace with configmap (?)
+        ## BEGIN DEV
         volumes:
           - ./logstash.conf:/usr/share/logstash/pipeline/logstash.conf
+        # END DEV
 
     # Metrics
 
@@ -298,7 +334,10 @@ services:
           - ${DEV_IP}:8089:8089/udp
         volumes:
           - influxdb:/var/lib/influxdb
+          ## TODO: replace with configmap (?)
+          ## BEGIN DEV
           - ./influxdb.conf:/etc/influxdb/influxdb.conf
+          ## END DEV
     
     telegraf:
         image: telegraf:1.4.2
@@ -323,16 +362,12 @@ services:
         - ${DEV_IP}:8090:3000
 
     api-demo-fpm:
-        image: dkr.hanaboso.net/pipes/pipes/php-dev:dev
-        user: ${DEV_UID}:${DEV_GID}
-        working_dir: /var/www/pipes/clients/clever-connectors/cc-api-demo
-        environment:
-          DEV_UID: ${DEV_UID}
-          DEV_GID: ${DEV_GID}
+        image: dkr.hanaboso.net/pipes/client-cm/api-demo:latest
+        ## TODO: replace with secret
+        ## BEGIN DEV
         volumes:
-          - ../../:/var/www/pipes
-          - ${SSH_AUTH_SOCK}:/tmp/bound-ssh-agent
-          - ${HOME}/.composer:/srv/.composer
+          - ./cc-api-demo/cert:/var/www/html/cert
+        ## END DEV
         depends_on:
           - rabbitmq
 
@@ -350,9 +385,51 @@ services:
           - mongo
 
 volumes:
+  ## BEGIN DEV
   elasticsearch: {}
   grafana: {}
   influxdb: {}
   mongodb: {}
   rabbitmq: {}
   redis: {}
+  ## END DEV
+
+  ## BEGIN STAGE
+  #elasticsearch:
+  #  driver: local
+  #  driver_opts:
+  #    type: none
+  #    device: /mnt/docker-volumes/cc-stage1/elasticsearch
+  #    o: bind
+  #grafana:
+  #  driver: local
+  #  driver_opts:
+  #    type: none
+  #    device: /mnt/docker-volumes/cc-stage1/grafana
+  #    o: bind
+  #influxdb:
+  #  driver: local
+  #  driver_opts:
+  #    type: none
+  #    device: /mnt/docker-volumes/cc-stage1/influxdb
+  #    o: bind
+  #mongodb:
+  #  driver: local
+  #  driver_opts:
+  #    type: none
+  #    device: /mnt/docker-volumes/cc-stage1/mongodb
+  #    o: bind
+  #rabbitmq:
+  #  driver: local
+  #  driver_opts:
+  #    type: none
+  #    device: /mnt/docker-volumes/cc-stage1/rabbitmq
+  #    o: bind
+  #redis:
+  #  driver: local
+  #  driver_opts:
+  #    type: none
+  #    device: /mnt/docker-volumes/cc-stage1/redis
+  #    o: bind
+  ## END STAGE
+

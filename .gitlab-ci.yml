@@ -137,11 +137,11 @@ stage-cm:
   stage: stage3
   when: manual
   script:
-    - rsync -av --delete --exclude 'clients/clever-connectors/pipes-api/var/secret' --exclude 'clients/clever-connectors/cc-api-demo/cert/' --exclude '.git' ./ ~/stage_cm
-    - cd ~/stage_cm/clients/clever-connectors
-    - export COMPOSE_PROJECT_NAME=stagecm
-    - export NPM_INSTALL="yes"
-    - make docker-compose.ci.yml init-dev DEV_YML=docker-compose.ci.yml
+    - cd clients/clever-connectors
+    - make docker-compose.ci.yml
+    - export DOCKER_HOST=192.168.10.31:2376
+    - export DOCKER_TLS_VERIFY=1
+    - docker stack deploy --with-registry-auth -c docker-compose.ci.yml cc-stage2
 
 git-cm:
   stage: stage3

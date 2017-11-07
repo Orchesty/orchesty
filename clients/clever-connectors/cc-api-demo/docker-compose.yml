@@ -18,16 +18,19 @@ services:
       - ${DEV_IP}:3030:3030
       - ${DEV_IP}:8080:80
 
-  webserver:
-    build:
-        context: .
-        args:
-            DEV_USERNAME: ${DEV_USERNAME}
-            DEV_UID: ${DEV_UID}
+  app:
+    image: dkr.hanaboso.net/pipes/pipes/php-dev:dev
+    user: ${DEV_UID}:${DEV_GID}
+    working_dir: /var/www/html/clients/clever-connectors/cc-api-demo
     volumes:
-      - ./:/var/www/html
-      - ../cc-api-extension/:/var/www/cc-api-extension
-      - ../cm-stream/:/var/www/cm-stream
+      - ../../../:/var/www/html
+      - ${HOME}/.composer:/srv/.composer
+
+  webserver:
+    image: nginx
+    volumes:
+      - ./nginx-site-dev.conf:/etc/nginx/conf.d/default.conf
     ports:
       - ${DEV_IP}:80:80
-  
+    depends_on:
+      - app
