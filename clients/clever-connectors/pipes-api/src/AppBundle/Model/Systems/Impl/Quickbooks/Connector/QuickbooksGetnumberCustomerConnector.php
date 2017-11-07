@@ -129,7 +129,7 @@ class QuickbooksGetnumberCustomerConnector implements ConnectorInterface
         return sprintf(
             '%s%s\'%s\'%s\'%s%s\'',
             self::SUB_URL,
-            urlencode('SELECT COUNT(*) FROM CUSTOMER WHERE GivenName='),
+            urlencode('SELECT COUNT(*) FROM CUSTOMER WHERE Active IN (true, false) GivenName='),
             $data[QuickbooksCreateCustomerMapper::FIRST_NAME],
             urlencode(' AND FamilyName LIKE '),
             $data[QuickbooksCreateCustomerMapper::LAST_NAME],
