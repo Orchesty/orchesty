@@ -210,14 +210,16 @@ class NutshellSystem implements AuthorizationInterface, CMEventSystemInterface, 
             $systemInstall->isEventHardBounce()
         );
 
-        return (new Form())
+        $form = new Form();
+        $form
             ->addField($field1)
             ->addField($field2)
             ->addField($field3)
             ->addField($field4)
             ->addField($field5)
-            ->addField($field6)
-            ->toArray();
+            ->addField($field6);
+
+        return $form->toArray();
     }
 
     /**

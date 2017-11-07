@@ -133,10 +133,12 @@ class ShipstationSystem implements AuthorizationInterface
             TRUE
         );
 
-        return (new Form())
+        $form = new Form();
+        $form
             ->addField($field1)
-            ->addField($field2)
-            ->toArray();
+            ->addField($field2);
+
+        return $form->toArray();
     }
 
 }

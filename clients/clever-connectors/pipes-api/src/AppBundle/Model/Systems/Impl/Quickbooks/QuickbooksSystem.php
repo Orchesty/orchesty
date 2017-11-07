@@ -207,9 +207,11 @@ class QuickbooksSystem implements OAuth2Interface, CMEventSystemInterface
             $systemInstall->isEventCreate()
         );
 
-        return (new Form())
-            ->addField($field1)
-            ->toArray();
+        $form = new Form();
+        $form
+            ->addField($field1);
+
+        return $form->toArray();
     }
 
     /**

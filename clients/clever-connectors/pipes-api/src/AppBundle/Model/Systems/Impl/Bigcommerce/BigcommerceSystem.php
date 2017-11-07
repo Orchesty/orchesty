@@ -159,16 +159,17 @@ class BigcommerceSystem implements WebhookSystemInterface, AuthorizationInterfac
             Field::CHECKBOX,
             SystemInstall::EVENT_CREATE,
             'CM create event',
-            $systemInstall->isEventCreate(),
-            TRUE
+            $systemInstall->isEventCreate()
         );
 
-        return (new Form())
+        $form = new Form();
+        $form
             ->addField($field1)
             ->addField($field2)
             ->addField($field3)
-            ->addField($field4)
-            ->toArray();
+            ->addField($field4);
+
+        return $form->toArray();
     }
 
     /**

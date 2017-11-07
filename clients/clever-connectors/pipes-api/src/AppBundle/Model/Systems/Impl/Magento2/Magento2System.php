@@ -135,8 +135,6 @@ class Magento2System implements OAuth2Interface
         $token = $res->getBody();
 
         $this->saveToken($systemInstall, [$token]);
-        //@TODO make better
-        //$this->redirect->make($systemInstall->getSettings()[self::FRONTEND_REDIRECT_URL]);
     }
 
     /**
@@ -190,7 +188,8 @@ class Magento2System implements OAuth2Interface
             TRUE
         );
 
-        $form = (new Form())
+        $form = new Form();
+        $form
             ->addField($field1)
             ->addField($field2)
             ->addField($field3);

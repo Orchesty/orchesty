@@ -141,8 +141,9 @@ final class BigcommerceSystemTest extends KernelTestCaseAbstract
         );
 
         $systemInstall = new SystemInstall();
-        $systemInstall->setSettings(['store_id'     => 'store_id', 'client_id' => 'client_id',
-                                     'access_token' => 'access_token',
+        $systemInstall->setSettings([
+            'store_id'     => 'store_id', 'client_id' => 'client_id',
+            'access_token' => 'access_token',
         ]);
 
         $this->assertEquals(123456789,
@@ -208,7 +209,7 @@ final class BigcommerceSystemTest extends KernelTestCaseAbstract
                 'key'         => 'eventCreate',
                 'label'       => 'CM create event',
                 'value'       => FALSE,
-                'required'    => TRUE,
+                'required'    => FALSE,
                 'read_only'   => FALSE,
                 'disabled'    => FALSE,
                 'description' => '',

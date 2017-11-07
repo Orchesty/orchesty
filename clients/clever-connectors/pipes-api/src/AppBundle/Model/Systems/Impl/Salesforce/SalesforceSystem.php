@@ -209,7 +209,7 @@ class SalesforceSystem implements OAuth2Interface, CMEventSystemInterface
         $field2 = new Field(
             Field::CHECKBOX,
             SystemInstall::EVENT_UNSUBSCRIBE,
-            'UnSubscribe event',
+            'Unsubscribe event',
             $systemInstall->isEventUnsubscribe()
         );
 
@@ -220,11 +220,13 @@ class SalesforceSystem implements OAuth2Interface, CMEventSystemInterface
             $systemInstall->isEventHardBounce()
         );
 
-        return (new Form())
+        $form = new Form();
+        $form
             ->addField($field1)
             ->addField($field2)
-            ->addField($field3)
-            ->toArray();
+            ->addField($field3);
+
+        return $form->toArray();
     }
 
     /**

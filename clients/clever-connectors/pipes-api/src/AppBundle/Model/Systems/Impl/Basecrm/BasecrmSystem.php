@@ -148,36 +148,33 @@ class BasecrmSystem implements AuthorizationInterface, CMEventSystemInterface
             Field::TEXT,
             self::ACCESS_TOKEN,
             'Access token',
-            $this->prepareValue(self::ACCESS_TOKEN, $systemInstall->getSettings()),
-            TRUE
+            $this->prepareValue(self::ACCESS_TOKEN, $systemInstall->getSettings())
         );
 
         $field2 = new Field(
             Field::CHECKBOX,
             SystemInstall::EVENT_CREATE,
             'Create event',
-            $systemInstall->isEventCreate(),
-            TRUE
+            $systemInstall->isEventCreate()
         );
 
         $field3 = new Field(
             Field::CHECKBOX,
             SystemInstall::EVENT_UNSUBSCRIBE,
             'Unsubscribe event',
-            $systemInstall->isEventUnsubscribe(),
-            TRUE
+            $systemInstall->isEventUnsubscribe()
         );
 
         $field4 = new Field(
             Field::CHECKBOX,
             SystemInstall::EVENT_HARD_BOUNCE,
             'Hard bounce event',
-            $systemInstall->isEventHardBounce(),
-            TRUE
+            $systemInstall->isEventHardBounce()
         );
 
         $form = new Form();
-        $form->addField($field1)
+        $form
+            ->addField($field1)
             ->addField($field2)
             ->addField($field3)
             ->addField($field4);

@@ -270,27 +270,25 @@ class HubspotSystem implements WebhookSystemInterface, OAuth2Interface, CMEventS
             Field::CHECKBOX,
             SystemInstall::EVENT_CREATE,
             'Create event',
-            $systemInstall->isEventCreate(),
-            TRUE
+            $systemInstall->isEventCreate()
         );
 
         $field4 = new Field(
             Field::CHECKBOX,
             SystemInstall::EVENT_UNSUBSCRIBE,
             'Unsubscribe event',
-            $systemInstall->isEventUnsubscribe(),
-            TRUE
+            $systemInstall->isEventUnsubscribe()
         );
 
         $field5 = new Field(
             Field::CHECKBOX,
             SystemInstall::EVENT_HARD_BOUNCE,
             'Hard bounce events',
-            $systemInstall->isEventHardBounce(),
-            TRUE
+            $systemInstall->isEventHardBounce()
         );
 
-        $form = (new Form())
+        $form = new Form();
+        $form
             ->addField($field1)
             ->addField($field2)
             ->addField($field3)
