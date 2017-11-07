@@ -96,7 +96,7 @@ final class QuickbooksGetnumberCustomerConnectorTest extends ConnectorTestCaseAb
             ->method('send')->will($this->returnCallback(
                 function (RequestDto $requestDto) {
                     $expt = new RequestDto(CurlManager::METHOD_GET,
-                        new Uri('https://sandbox-quickbooks.api.intuit.com/v3/company/realm/query?query=SELECT+COUNT%28%2A%29+FROM+CUSTOMER+WHERE+Active+IN+%28true%2C+false%29+GivenName%3D\'nao\'+AND+FamilyName+LIKE+\'namae%23%25\'')
+                        new Uri('https://sandbox-quickbooks.api.intuit.com/v3/company/realm/query?query=SELECT+COUNT%28%2A%29+FROM+CUSTOMER+WHERE+Active+IN+%28true%2C+false%29+AND+GivenName%3D\'nao\'+AND+FamilyName+LIKE+\'namae%23%25\'')
                     );
                     $expt->setHeaders([
                         'Accept'        => 'application/json',
