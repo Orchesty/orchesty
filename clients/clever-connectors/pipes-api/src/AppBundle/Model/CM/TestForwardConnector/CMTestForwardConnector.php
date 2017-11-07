@@ -27,7 +27,7 @@ class CMTestForwardConnector implements ConnectorInterface
      */
     public function getId(): string
     {
-        return 'CleverMonitorsWebhook';
+        return 'test-forward-connector';
     }
 
     /**

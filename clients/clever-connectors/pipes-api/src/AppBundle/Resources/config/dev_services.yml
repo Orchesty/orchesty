@@ -17,3 +17,12 @@ services:
         arguments:
             - '@hbpf.providers.oauth2_provider'
         tags: ['%systems%', '%systems.dev%', '%systems.user.some_user%', '%systems.group.some_group%']
+
+
+    hbpf.connector.test-forward-connector:
+        class: CleverConnectors\AppBundle\Model\CM\TestForwardConnector\CMTestForwardConnector
+
+    hbpf.connector.test-repeater-connector:
+        class: CleverConnectors\AppBundle\Model\CM\TestRepeaterConnector\CMTestRepeaterConnector
+        arguments:
+            - '@snc_redis.default'

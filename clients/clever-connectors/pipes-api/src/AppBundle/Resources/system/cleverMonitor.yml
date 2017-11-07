@@ -22,6 +22,3 @@ services:
             - '%clevermonitor%'
         calls:
             - ['setLogger', ['@monolog.logger.commons']]
-
-    hbpf.connector.cleverconnectors-forward-connector:
-        class: CleverConnectors\AppBundle\Model\CM\TestForwardConnector\CMTestForwardConnector
