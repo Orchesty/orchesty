@@ -65,7 +65,7 @@ class TopologySchema extends React.Component {
       <SimpleState state={this.state.state}>
         <BpmnIoComponent
           schema={schema}
-          schemaTitle={topology ? `${topology.name}-${topology.version}` : null}
+          topologyName={topology ? topology.name : null}
           onError={addErrorNotification}
           onImport={this.schemaImported}
           setActions={setActions}
