@@ -3,7 +3,10 @@
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Shopify;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Enum\CleverCustomKeysEnum;
 use CleverConnectors\AppBundle\Enum\SystemTypeEnum;
+use CleverConnectors\AppBundle\Model\CMEvents\CMEventObject;
+use CleverConnectors\AppBundle\Model\CMEvents\CMEventSystemInterface;
 use CleverConnectors\AppBundle\Model\CMEvents\Traits\CMEventSystemTrait;
 use CleverConnectors\AppBundle\Model\Form\Field;
 use CleverConnectors\AppBundle\Model\Form\Form;
@@ -28,7 +31,7 @@ use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Shopify
  */
-class ShopifySystem implements WebhookSystemInterface, OAuth2Interface
+class ShopifySystem implements WebhookSystemInterface, OAuth2Interface, CMEventSystemInterface
 {
 
     use AuthorizationTrait;
@@ -75,6 +78,10 @@ class ShopifySystem implements WebhookSystemInterface, OAuth2Interface
             'shopify-deleted-customer-connector',
             TopologyNameUtils::getTopologyName(TopologyNameUtils::DELETED_SUBSCRIBERS, $this->getKey())
         );
+
+        $this->addCMEvent(new CMEventObject('', SystemInstall::EVENT_CREATE, ''));
+        $this->addCMEvent(new CMEventObject(CleverCustomKeysEnum::HARD_BOUNCE, SystemInstall::EVENT_HARD_BOUNCE, ''));
+        $this->addCMEvent(new CMEventObject(CleverCustomKeysEnum::UNSUBSCRIBE, SystemInstall::EVENT_UNSUBSCRIBE, ''));
 
         $this->topologyNames['shopify-create-contact']      = 'shopify-create-customer';
         $this->topologyNames['shopify-unsubscribe-contact'] = 'shopify-unsubscribe-customer';
@@ -321,6 +328,16 @@ class ShopifySystem implements WebhookSystemInterface, OAuth2Interface
         $dto->setCustomAppDependencies($systemInstall->getUser(), $this->getKey());
 
         return $dto;
+    }
+
+    /**
+     * @param SystemInstall $systemInstall
+     *
+     * @return RequesterInterface|null
+     */
+    public function getCMEventRequester(SystemInstall $systemInstall): ?RequesterInterface
+    {
+        return NULL;
     }
 
 }
