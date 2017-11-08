@@ -5,11 +5,11 @@ namespace CleverConnectors\AppBundle\Model\Plugins\Connector;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\CleverFieldsEnum;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
+use CleverConnectors\AppBundle\Model\Plugins\PluginSystemAbstract;
 use CleverConnectors\AppBundle\Model\Systems\SystemLoader;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
@@ -76,12 +76,12 @@ abstract class PluginSubscriberConnectorAbstract implements ConnectorInterface
     public function processAction(ProcessDto $dto): ProcessDto
     {
         $systemInstall = $this->systemInstallRepository->getSystemInstallFromHeaders($dto->getHeaders());
-        $uri           = $this->getUri($systemInstall, $dto);
-
+        /** @var PluginSystemAbstract $system */
         $system = $this->loader->getSystem($systemInstall->getSystem());
-
-        $reqDto = $system->getRequestDto($systemInstall, CurlManager::METHOD_POST);
-        $reqDto->setBody($this->getBody($dto))
+        $uri    = $system->createUri($systemInstall, $this->getUri($system, $dto));
+        $reqDto = $system->getRequestDto($systemInstall, $this->getMethod());
+        $reqDto
+            ->setBody($this->getBody($dto))
             ->setUri($uri);
 
         $res = $this->curl->send($reqDto);
@@ -95,6 +95,10 @@ abstract class PluginSubscriberConnectorAbstract implements ConnectorInterface
 
         return $dto->setData($res->getBody());
     }
+
+    /**
+     * -------------------------------------- HELPERS ---------------------------------------
+     */
 
     /**
      * @param ProcessDto $dto
@@ -118,6 +122,14 @@ abstract class PluginSubscriberConnectorAbstract implements ConnectorInterface
     }
 
     /**
+     * @return string
+     */
+    protected function getMethod(): string
+    {
+        return CurlManager::METHOD_POST;
+    }
+
+    /**
      * @param ProcessDto $dto
      *
      * @return string
@@ -125,11 +137,11 @@ abstract class PluginSubscriberConnectorAbstract implements ConnectorInterface
     abstract protected function getBody(ProcessDto $dto): string;
 
     /**
-     * @param SystemInstall $systemInstall
-     * @param ProcessDto    $dto
+     * @param PluginSystemAbstract $system
+     * @param ProcessDto           $dto
      *
-     * @return Uri
+     * @return string
      */
-    abstract protected function getUri(SystemInstall $systemInstall, ProcessDto $dto): Uri;
+    abstract protected function getUri(PluginSystemAbstract $system, ProcessDto $dto): string;
 
 }

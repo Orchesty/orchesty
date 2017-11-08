@@ -4,6 +4,7 @@ namespace CleverConnectors\AppBundle\Model\Plugins\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
+use CleverConnectors\AppBundle\Model\Plugins\PluginSystemAbstract;
 use CleverConnectors\AppBundle\Model\ProgressCounter\ProgressCounterService;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\SystemLoader;
@@ -34,9 +35,6 @@ use function React\Promise\resolve;
  */
 class PluginSyncSubscriberConnector implements ConnectorInterface, BatchInterface
 {
-
-    private const PER_PAGE = 50;
-    private const SUB_URL  = 'clever_connector/subscriber?page=%s&limit=%s';
 
     /**
      * @var SystemInstallRepository|ObjectRepository
@@ -98,17 +96,19 @@ class PluginSyncSubscriberConnector implements ConnectorInterface, BatchInterfac
     {
         $sender        = $this->factory->create($loop);
         $systemInstall = $this->systemInstallRepository->getSystemInstallFromHeaders($dto->getHeaders());
-        $system        = $this->loader->getSystem($systemInstall->getSystem());
-        $requestDto    = $system->getRequestDto($systemInstall, CurlManager::METHOD_GET);
+        /** @var PluginSystemAbstract $system */
+        $system     = $this->loader->getSystem($systemInstall->getSystem());
+        $requestDto = $system->getRequestDto($systemInstall, CurlManager::METHOD_GET);
         $requestDto->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()));
         $processId = CMHeaders::get(CMHeaders::PROCESS_ID, $dto->getHeaders()) ?? '';
-
-        $promise = $this->getFirstPage(
+        $promise   = $this->getFirstPage(
             $sender,
             $requestDto,
             $callbackItem,
-            $systemInstall->getSettings()[SystemInstall::SYSTEM_URL],
-            $processId);
+            $system,
+            $systemInstall,
+            $processId
+        );
 
         $this->systemInstallRepository->setSyncTime($systemInstall);
 
@@ -159,11 +159,12 @@ class PluginSyncSubscriberConnector implements ConnectorInterface, BatchInterfac
     }
 
     /**
-     * @param CurlSender $sender
-     * @param RequestDto $requestDto
-     * @param callable   $callbackItem
-     * @param string     $baseUrl
-     * @param string     $processId
+     * @param CurlSender           $sender
+     * @param RequestDto           $requestDto
+     * @param callable             $callbackItem
+     * @param PluginSystemAbstract $system
+     * @param SystemInstall        $systemInstall
+     * @param string               $processId
      *
      * @return PromiseInterface
      */
@@ -171,16 +172,16 @@ class PluginSyncSubscriberConnector implements ConnectorInterface, BatchInterfac
         CurlSender $sender,
         RequestDto $requestDto,
         callable $callbackItem,
-        string $baseUrl,
+        PluginSystemAbstract $system,
+        SystemInstall $systemInstall,
         string $processId
     ): PromiseInterface
     {
-        $uri = $this->getUri($baseUrl, 1);
-
+        $uri = $this->getUri($system, $systemInstall, 1);
         $res = $this->fetchData($sender, RequestDto::from($requestDto, $uri))
             ->then(
                 function (ResponseInterface $response) use (
-                    $sender, $requestDto, $callbackItem, $baseUrl, $processId
+                    $sender, $requestDto, $callbackItem, $system, $systemInstall, $processId
                 ) {
                     $data = json_decode($response->getBody()->getContents(), TRUE);
 
@@ -195,12 +196,12 @@ class PluginSyncSubscriberConnector implements ConnectorInterface, BatchInterfac
 
                     $total = $data['total_page'];
                     $callbackItem($this->createSuccessMessage($data, 1));
-                    $this->counterService->setTotal($processId, $total * self::PER_PAGE);
+                    $this->counterService->setTotal($processId, $total * $system->getLimit());
 
                     if ($total <= 1) {
                         return resolve();
                     } else {
-                        return $this->getPages($sender, $requestDto, $callbackItem, $baseUrl, $total);
+                        return $this->getPages($sender, $requestDto, $callbackItem, $system, $systemInstall, $total);
                     }
                 }
             );
@@ -209,11 +210,12 @@ class PluginSyncSubscriberConnector implements ConnectorInterface, BatchInterfac
     }
 
     /**
-     * @param CurlSender $sender
-     * @param RequestDto $requestDto
-     * @param callable   $callbackItem
-     * @param string     $baseUrl
-     * @param int        $total
+     * @param CurlSender           $sender
+     * @param RequestDto           $requestDto
+     * @param callable             $callbackItem
+     * @param PluginSystemAbstract $system
+     * @param SystemInstall        $systemInstall
+     * @param int                  $total
      *
      * @return PromiseInterface
      */
@@ -221,14 +223,15 @@ class PluginSyncSubscriberConnector implements ConnectorInterface, BatchInterfac
         CurlSender $sender,
         RequestDto $requestDto,
         callable $callbackItem,
-        string $baseUrl,
+        PluginSystemAbstract $system,
+        SystemInstall $systemInstall,
         int $total
     ): PromiseInterface
     {
         $requests = [];
 
         for ($i = 2; $i <= $total; $i++) {
-            $uri = $this->getUri($baseUrl, $i);
+            $uri = $this->getUri($system, $systemInstall, $i);
 
             $requests[] = $this->fetchData($sender, RequestDto::from($requestDto, $uri))
                 ->then(function (ResponseInterface $response) use ($i): SuccessMessage {
@@ -264,18 +267,15 @@ class PluginSyncSubscriberConnector implements ConnectorInterface, BatchInterfac
     }
 
     /**
-     * @param string $baseUrl
-     * @param int    $page
+     * @param PluginSystemAbstract $system
+     * @param SystemInstall        $systemInstall
+     * @param int                  $page
      *
      * @return Uri
      */
-    private function getUri(string $baseUrl, int $page): Uri
+    private function getUri(PluginSystemAbstract $system, SystemInstall $systemInstall, int $page): Uri
     {
-        return new Uri(sprintf(
-            '%s/%s',
-            $baseUrl,
-            sprintf(self::SUB_URL, $page, self::PER_PAGE)
-        ));
+        return $system->createUri($systemInstall, sprintf($system->getSyncUrl(), $page, $system->getLimit()));
     }
 
 }

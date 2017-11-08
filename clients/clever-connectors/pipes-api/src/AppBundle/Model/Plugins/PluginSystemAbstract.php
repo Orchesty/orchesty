@@ -12,6 +12,7 @@ use CleverConnectors\AppBundle\Model\Form\Form;
 use CleverConnectors\AppBundle\Model\Requester\RequesterInterface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\AuthorizationInterface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\Traits\AuthorizationTrait;
+use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 
 /**
@@ -24,6 +25,12 @@ abstract class PluginSystemAbstract implements AuthorizationInterface, CMEventSy
 
     use AuthorizationTrait;
     use CMEventSystemTrait;
+
+    protected const CREATE_SUBSCRIBER_URL      = 'clever_connector/subscriber/create';
+    protected const UNSUBSCRIBE_SUBSCRIBER_URL = 'clever_connector/subscriber/unsubscribe?id=%s';
+    protected const HARD_BOUNCE_SUBSCRIBER_URL = 'clever_connector/subscriber/hard_bounce?id=%s';
+    protected const SYNC_URL                   = 'clever_connector/subscriber?page=%s&limit=%s';
+    protected const LIMIT_PER_PAGE             = 50;
 
     /**
      * @param SystemInstall $systemInstall
@@ -73,7 +80,7 @@ abstract class PluginSystemAbstract implements AuthorizationInterface, CMEventSy
     {
         $this->continueOnAuthorized($systemInstall);
 
-        $dto = new RequestDto($method, $systemInstall->getSettings()[SystemInstall::SYSTEM_URL]);;
+        $dto = new RequestDto($method, new Uri());
         $dto->setHeaders([
             'Content-Type'           => 'application/json',
             PluginHeadersEnum::GUID  => $systemInstall->getUser(),
@@ -81,6 +88,23 @@ abstract class PluginSystemAbstract implements AuthorizationInterface, CMEventSy
         ]);
 
         return $dto;
+    }
+
+    /**
+     * @param SystemInstall $systemInstall
+     * @param string        $append
+     *
+     * @return Uri
+     */
+    public function createUri(SystemInstall $systemInstall, string $append): Uri
+    {
+        return new Uri(
+            sprintf(
+                '%s/%s',
+                rtrim($systemInstall->getSettings()[SystemInstall::SYSTEM_URL], '/'),
+                ltrim($append, '/')
+            )
+        );
     }
 
     /**
@@ -118,6 +142,46 @@ abstract class PluginSystemAbstract implements AuthorizationInterface, CMEventSy
             ->addField($field3);
 
         return $form->toArray();
+    }
+
+    /**
+     * @return string
+     */
+    public function getCreateSubscriberUrl(): string
+    {
+        return self::CREATE_SUBSCRIBER_URL;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUsubscribeSubscriberUrl(): string
+    {
+        return self::UNSUBSCRIBE_SUBSCRIBER_URL;
+    }
+
+    /**
+     * @return string
+     */
+    public function getHardBounceSubscriberUrl(): string
+    {
+        return self::HARD_BOUNCE_SUBSCRIBER_URL;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSyncUrl(): string
+    {
+        return self::SYNC_URL;
+    }
+
+    /**
+     * @return int
+     */
+    public function getLimit(): int
+    {
+        return self::LIMIT_PER_PAGE;
     }
 
 }

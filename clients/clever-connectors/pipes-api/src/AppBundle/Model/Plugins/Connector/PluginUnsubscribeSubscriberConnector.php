@@ -2,8 +2,7 @@
 
 namespace CleverConnectors\AppBundle\Model\Plugins\Connector;
 
-use CleverConnectors\AppBundle\Document\SystemInstall;
-use GuzzleHttp\Psr7\Uri;
+use CleverConnectors\AppBundle\Model\Plugins\PluginSystemAbstract;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 
 /**
@@ -13,8 +12,6 @@ use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
  */
 class PluginUnsubscribeSubscriberConnector extends PluginSubscriberConnectorAbstract
 {
-
-    protected const SUB_URL = 'clever_connector/subscriber/%s/unsubscribe';
 
     /**
      * @return string
@@ -35,17 +32,14 @@ class PluginUnsubscribeSubscriberConnector extends PluginSubscriberConnectorAbst
     }
 
     /**
-     * @param SystemInstall $systemInstall
-     * @param ProcessDto    $dto
+     * @param PluginSystemAbstract $system
+     * @param ProcessDto           $dto
      *
-     * @return Uri
+     * @return string
      */
-    protected function getUri(SystemInstall $systemInstall, ProcessDto $dto): Uri
+    protected function getUri(PluginSystemAbstract $system, ProcessDto $dto): string
     {
-        return new Uri(sprintf('%s/%s',
-            $systemInstall->getSettings()[SystemInstall::SYSTEM_URL],
-            sprintf(static::SUB_URL, $this->getIdFromDto($dto))
-        ));
+        return sprintf($system->getUsubscribeSubscriberUrl(), $this->getIdFromDto($dto));
     }
 
 }

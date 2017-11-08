@@ -74,7 +74,7 @@ final class PluginUnsubscribeSubscriberConnectorTest extends KernelTestCaseAbstr
             ->method('send')->will($this->returnCallback(
                 function (RequestDto $requestDto) {
                     $dto = new RequestDto(CurlManager::METHOD_POST,
-                        new Uri('https://neco.com/clever_connector/subscriber/someId/unsubscribe'));
+                        new Uri('https://neco.com/clever_connector/subscriber/unsubscribe?id=someId'));
                     $dto->setHeaders([]);
 
                     self::assertEquals($dto, $requestDto);

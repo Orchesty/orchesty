@@ -9,6 +9,7 @@ use CleverConnectors\AppBundle\Model\CMEvents\CMEventSystemInterface;
 use CleverConnectors\AppBundle\Model\CMEvents\Traits\CMEventSystemTrait;
 use CleverConnectors\AppBundle\Model\Form\Field;
 use CleverConnectors\AppBundle\Model\Form\Form;
+use CleverConnectors\AppBundle\Model\Plugins\PluginSystemAbstract;
 use CleverConnectors\AppBundle\Model\Requester\RequesterInterface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\OAuth2Interface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\Traits\AuthorizationTrait;
@@ -26,7 +27,7 @@ use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
  *
  * @package Tests\Integration\AppBundle\Model\Systems\Impl
  */
-class NullSystem implements WebhookSystemInterface, OAuth2Interface, CMEventSystemInterface
+class NullSystem extends PluginSystemAbstract implements WebhookSystemInterface, OAuth2Interface, CMEventSystemInterface
 {
 
     use AuthorizationTrait;
