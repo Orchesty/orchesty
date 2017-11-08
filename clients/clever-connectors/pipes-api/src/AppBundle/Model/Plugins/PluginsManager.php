@@ -5,13 +5,17 @@ namespace CleverConnectors\AppBundle\Model\Plugins;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\PluginHeadersEnum;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
+use CleverConnectors\AppBundle\Model\Systems\SystemLoader;
 use CleverConnectors\AppBundle\Model\Systems\SystemManager;
 use CleverConnectors\AppBundle\Utils\TopologyNameUtils;
+use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Exception;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
+use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Repository\NodeRepository;
+use Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository;
 use Hanaboso\PipesFramework\Configurator\StartingPoint\StartingPoint;
-use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\StartingPointHandler;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -38,29 +42,35 @@ class PluginsManager
     private $manager;
 
     /**
-     * @var StartingPointHandler
+     * @var TopologyRepository|ObjectRepository
      */
-    private $handler;
+    private $topologyRepository;
+
+    /**
+     * @var SystemLoader
+     */
+    private $loader;
 
     /**
      * OpenSourcePluginsManager constructor.
      *
-     * @param DocumentManager      $dm
-     * @param StartingPoint        $startingPoint
-     * @param SystemManager        $manager
-     * @param StartingPointHandler $handler
+     * @param DocumentManager $dm
+     * @param StartingPoint   $startingPoint
+     * @param SystemManager   $manager
+     * @param SystemLoader    $loader
      */
     public function __construct(
         DocumentManager $dm,
         StartingPoint $startingPoint,
         SystemManager $manager,
-        StartingPointHandler $handler
+        SystemLoader $loader
     )
     {
-        $this->dm            = $dm;
-        $this->startingPoint = $startingPoint;
-        $this->manager       = $manager;
-        $this->handler       = $handler;
+        $this->dm                 = $dm;
+        $this->startingPoint      = $startingPoint;
+        $this->manager            = $manager;
+        $this->topologyRepository = $dm->getRepository(Topology::class);
+        $this->loader             = $loader;
     }
 
     /**
@@ -154,13 +164,31 @@ class PluginsManager
      * @param SystemInstall $systemInstall
      * @param string        $topology
      * @param array         $data
+     *
+     * @throws Exception
      */
     private function startTopologies(SystemInstall $systemInstall, string $topology, array $data): void
     {
-        $topName = TopologyNameUtils::getTopologyName($topology,
-            $systemInstall->getSystem());
+        $system = $this->loader->getSystem($systemInstall->getSystem());
 
-        $topologies = $this->handler->getTopologies($topName);
+        $topologies = $this->topologyRepository->getRunnableTopologies(
+            TopologyNameUtils::getTopologyName(
+                $topology,
+                $systemInstall->getSystem(),
+                $systemInstall->getUser()
+            )
+        );
+
+        if (empty($topologies)) {
+            $name       = $system->getCustomTopologyName(
+                TopologyNameUtils::getTopologyName($topology, $systemInstall->getSystem())
+            );
+            $topologies = $this->topologyRepository->getRunnableTopologies($name);
+
+            if (empty($topologies)) {
+                throw new Exception(sprintf('No topology with name [%s] has been found.', $name));
+            }
+        }
 
         foreach ($topologies as $topology) {
             /** @var NodeRepository $repo */
@@ -178,7 +206,7 @@ class PluginsManager
      */
     private function getUrl(Request $request): string
     {
-        return 'https://' . $request->getHost();
+        return rtrim('https://' . $request->getHost(), '/');
     }
 
     /**

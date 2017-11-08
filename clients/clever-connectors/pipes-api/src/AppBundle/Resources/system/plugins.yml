@@ -1,0 +1,42 @@
+services:
+
+    hbpf.connector.plugin-created-subscriber-connector:
+        class: CleverConnectors\AppBundle\Model\Plugins\Connector\PluginCreatedSubscriberConnector
+        arguments:
+
+    hbpf.connector.plugin-updated-subscriber-connector:
+        class: CleverConnectors\AppBundle\Model\Plugins\Connector\PluginUpdatedSubscriberConnector
+        arguments:
+
+    hbpf.connector.plugin-deleted-subscriber-connector:
+        class: CleverConnectors\AppBundle\Model\Plugins\Connector\PluginDeletedSubscriberConnector
+        arguments:
+
+    hbpf.connector.plugin-create-subscriber-connector:
+        class: CleverConnectors\AppBundle\Model\Plugins\Connector\PluginCreateSubscriberConnector
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.transport.curl_manager'
+            - '@cc.systems.loader'
+
+    hbpf.connector.plugin-hard-bounce-subscriber-connector:
+        class: CleverConnectors\AppBundle\Model\Plugins\Connector\PluginHardBounceSubscriberConnector
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.transport.curl_manager'
+            - '@cc.systems.loader'
+
+    hbpf.connector.plugin-unsubscribe-subscriber-connector:
+        class: CleverConnectors\AppBundle\Model\Plugins\Connector\PluginUnsubscribeSubscriberConnector
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.transport.curl_manager'
+            - '@cc.systems.loader'
+
+    hbpf.connector.plugin-sync-subscriber-connector:
+        class: CleverConnectors\AppBundle\Model\Plugins\Connector\PluginSyncSubscriberConnector
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.transport.async_curl_factory'
+            - '@cc.progress_counter.async_progress_counter_service'
+            - '@cc.systems.loader'
