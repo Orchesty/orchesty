@@ -99,8 +99,8 @@ class BpmnIoComponent extends React.Component {
           err && this.props.onError(String(err));
         }
         else{
-          const {schemaTitle} = this.props;
-          download(xml, (schemaTitle ? schemaTitle : 'export') + '.bpmn', 'application/bpmn+xml');
+          const {topologyName} = this.props;
+          download(xml, (topologyName ? topologyName : 'export') + '.tplg', 'application/bpmn+xml');
         }
       })
     }
@@ -113,8 +113,8 @@ class BpmnIoComponent extends React.Component {
           err && this.props.onError(String(err));
         }
         else {
-          const {schemaTitle} = this.props;
-          download(svg, (schemaTitle ? schemaTitle : 'export') + '.svg', 'image/svg+xml');
+          const {topologyName} = this.props;
+          download(svg, (topologyName ? topologyName : 'export') + '.svg', 'image/svg+xml');
         }
       });
     }
@@ -167,7 +167,7 @@ class BpmnIoComponent extends React.Component {
 BpmnIoComponent.propTypes = {
   onSave: PropTypes.func,
   schema: PropTypes.string,
-  schemaTitle: PropTypes.string,
+  topologyName: PropTypes.string,
   onError: PropTypes.func.isRequired,
   onImport: PropTypes.func.isRequired,
   setActions: PropTypes.func.isRequired,
