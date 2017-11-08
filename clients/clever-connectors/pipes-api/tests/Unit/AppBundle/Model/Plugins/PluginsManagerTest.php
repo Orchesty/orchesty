@@ -55,7 +55,7 @@ final class PluginsManagerTest extends KernelTestCaseAbstract
             'token'            => 'tkn',
             'synchronized'     => FALSE,
             'pluginVersion'    => 'ver',
-            'system_url'       => 'https://',
+            'system_url'       => 'https:',
             'eventCreate'      => FALSE,
             'eventUnsubscribe' => FALSE,
             'eventHardBounce'  => FALSE,
@@ -75,7 +75,7 @@ final class PluginsManagerTest extends KernelTestCaseAbstract
             ->setUser('usr')
             ->setToken('tkn')
             ->setSettings([
-                SystemInstall::SYSTEM_URL => 'https://',
+                SystemInstall::SYSTEM_URL => 'https:',
             ]);
 
         $res = $plug->check($sys, new Request([], [], [], [], [], [], json_encode([
@@ -87,7 +87,7 @@ final class PluginsManagerTest extends KernelTestCaseAbstract
             'token'            => 'tkn',
             'synchronized'     => FALSE,
             'pluginVersion'    => 'ver',
-            'system_url'       => 'https://',
+            'system_url'       => 'https:',
             'eventCreate'      => FALSE,
             'eventUnsubscribe' => FALSE,
             'eventHardBounce'  => FALSE,
@@ -103,11 +103,11 @@ final class PluginsManagerTest extends KernelTestCaseAbstract
         $sys  = new SystemInstall();
         $sys->setPluginVersion('ver')
             ->setSettings([
-                SystemInstall::SYSTEM_URL => 'https://yoru/',
+                SystemInstall::SYSTEM_URL => 'https://yoru',
             ]);
 
         $this->expectException(SystemException::class);
-        $this->expectExceptionMessage('System url from request [https://] does not matched saved url in systemInstall [https://yoru/].');
+        $this->expectExceptionMessage('System url from request [https:] does not matched saved url in systemInstall [https://yoru].');
 
         $plug->check($sys, new Request([], [], [], [], [], [], json_encode([
             SystemInstall::PLUGIN_VERSION => 'ver',

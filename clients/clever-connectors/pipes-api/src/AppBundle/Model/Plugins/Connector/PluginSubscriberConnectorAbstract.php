@@ -4,15 +4,14 @@ namespace CleverConnectors\AppBundle\Model\Plugins\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\CleverFieldsEnum;
-use CleverConnectors\AppBundle\Enum\PluginHeadersEnum;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
+use CleverConnectors\AppBundle\Model\Systems\SystemLoader;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
-use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
@@ -36,15 +35,22 @@ abstract class PluginSubscriberConnectorAbstract implements ConnectorInterface
     private $curl;
 
     /**
-     * PluginCreateContactConnector constructor.
+     * @var SystemLoader
+     */
+    private $loader;
+
+    /**
+     * PluginSubscriberConnectorAbstract constructor.
      *
      * @param DocumentManager      $dm
      * @param CurlManagerInterface $curl
+     * @param SystemLoader         $loader
      */
-    function __construct(DocumentManager $dm, CurlManagerInterface $curl)
+    function __construct(DocumentManager $dm, CurlManagerInterface $curl, SystemLoader $loader)
     {
         $this->systemInstallRepository = $dm->getRepository(SystemInstall::class);
         $this->curl                    = $curl;
+        $this->loader                  = $loader;
     }
 
     /**
@@ -69,16 +75,14 @@ abstract class PluginSubscriberConnectorAbstract implements ConnectorInterface
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {
-        $system = $this->systemInstallRepository->getSystemInstallFromHeaders($dto->getHeaders());
-        $uri    = $this->getUri($system, $dto);
+        $systemInstall = $this->systemInstallRepository->getSystemInstallFromHeaders($dto->getHeaders());
+        $uri           = $this->getUri($systemInstall, $dto);
 
-        $reqDto = new RequestDto(CurlManager::METHOD_POST, $uri);
+        $system = $this->loader->getSystem($systemInstall->getSystem());
+
+        $reqDto = $system->getRequestDto($systemInstall, CurlManager::METHOD_POST);
         $reqDto->setBody($this->getBody($dto))
-            ->setHeaders([
-                'Content-Type'           => 'application/json',
-                PluginHeadersEnum::GUID  => $system->getUser(),
-                PluginHeadersEnum::TOKEN => $system->getToken(),
-            ]);
+            ->setUri($uri);
 
         $res = $this->curl->send($reqDto);
 
@@ -101,7 +105,7 @@ abstract class PluginSubscriberConnectorAbstract implements ConnectorInterface
     protected function getIdFromDto(ProcessDto $dto): string
     {
         $body = json_decode($dto->getData(), TRUE);
-        $id = $body[CleverFieldsEnum::FOREIGN_ID] ?? '';
+        $id   = $body[CleverFieldsEnum::FOREIGN_ID] ?? '';
 
         if (empty($id)) {
             throw new CleverConnectorsException(

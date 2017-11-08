@@ -31,7 +31,8 @@ final class PluginHardBounceSubscriberConnectorTest extends KernelTestCaseAbstra
     {
         $conn = new PluginHardBounceSubscriberConnector(
             $this->mockDm(),
-            $this->mockCurl()
+            $this->mockCurl(),
+            $this->container->get('cc.systems.loader')
         );
 
         $dto = new ProcessDto();
@@ -49,8 +50,8 @@ final class PluginHardBounceSubscriberConnectorTest extends KernelTestCaseAbstra
     {
         $sys = new SystemInstall();
         $sys->setSettings([
-            SystemInstall::SYSTEM_URL => 'https://neco.com/',
-        ])->setUser('guid')->setToken('tkn');
+            SystemInstall::SYSTEM_URL => 'https://neco.com',
+        ])->setUser('guid')->setToken('tkn')->setSystem('null.user.group');
 
         $repo = $this->createMock(SystemInstallRepository::class);
         $repo->expects($this->once())
@@ -74,11 +75,7 @@ final class PluginHardBounceSubscriberConnectorTest extends KernelTestCaseAbstra
                 function (RequestDto $requestDto) {
                     $dto = new RequestDto(CurlManager::METHOD_POST,
                         new Uri('https://neco.com/clever_connector/subscriber/someId/hard_bounce'));
-                    $dto->setHeaders([
-                        'Content-Type' => 'application/json',
-                        'cm-guid'      => 'guid',
-                        'cm-token'     => 'tkn',
-                    ]);
+                    $dto->setHeaders([]);
 
                     self::assertEquals($dto, $requestDto);
 

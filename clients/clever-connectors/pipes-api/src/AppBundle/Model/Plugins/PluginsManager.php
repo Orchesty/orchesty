@@ -206,7 +206,7 @@ class PluginsManager
      */
     private function getUrl(Request $request): string
     {
-        return 'https://' . $request->getHost();
+        return rtrim('https://' . $request->getHost(), '/');
     }
 
     /**

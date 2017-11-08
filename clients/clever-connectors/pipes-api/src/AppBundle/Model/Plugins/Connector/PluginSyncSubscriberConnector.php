@@ -6,7 +6,7 @@ use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\ProgressCounter\ProgressCounterService;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
-use CleverConnectors\AppBundle\Model\Systems\SystemInterface;
+use CleverConnectors\AppBundle\Model\Systems\SystemLoader;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Doctrine\Common\Persistence\ObjectRepository;
@@ -36,12 +36,7 @@ class PluginSyncSubscriberConnector implements ConnectorInterface, BatchInterfac
 {
 
     private const PER_PAGE = 50;
-    private const SUB_URL  = '/clever_connector/subscriber?page=%s&limit=%s';
-
-    /**
-     * @var SystemInterface
-     */
-    private $system;
+    private const SUB_URL  = 'clever_connector/subscriber?page=%s&limit=%s';
 
     /**
      * @var SystemInstallRepository|ObjectRepository
@@ -59,24 +54,29 @@ class PluginSyncSubscriberConnector implements ConnectorInterface, BatchInterfac
     private $counterService;
 
     /**
+     * @var SystemLoader
+     */
+    private $loader;
+
+    /**
      * PluginSyncSubscriberConnector constructor.
      *
-     * @param SystemInterface        $system
      * @param DocumentManager        $dm
      * @param CurlSenderFactory      $factory
      * @param ProgressCounterService $counterService
+     * @param SystemLoader           $loader
      */
     public function __construct(
-        SystemInterface $system,
         DocumentManager $dm,
         CurlSenderFactory $factory,
-        ProgressCounterService $counterService
+        ProgressCounterService $counterService,
+        SystemLoader $loader
     )
     {
-        $this->system                  = $system;
         $this->systemInstallRepository = $dm->getRepository(SystemInstall::class);
         $this->factory                 = $factory;
         $this->counterService          = $counterService;
+        $this->loader                  = $loader;
     }
 
     /**
@@ -98,7 +98,8 @@ class PluginSyncSubscriberConnector implements ConnectorInterface, BatchInterfac
     {
         $sender        = $this->factory->create($loop);
         $systemInstall = $this->systemInstallRepository->getSystemInstallFromHeaders($dto->getHeaders());
-        $requestDto    = $this->system->getRequestDto($systemInstall, CurlManager::METHOD_GET);
+        $system        = $this->loader->getSystem($systemInstall->getSystem());
+        $requestDto    = $system->getRequestDto($systemInstall, CurlManager::METHOD_GET);
         $requestDto->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()));
         $processId = CMHeaders::get(CMHeaders::PROCESS_ID, $dto->getHeaders()) ?? '';
 
@@ -272,8 +273,8 @@ class PluginSyncSubscriberConnector implements ConnectorInterface, BatchInterfac
     {
         return new Uri(sprintf(
             '%s/%s',
-            rtrim($baseUrl, '/'),
-            ltrim(sprintf(self::SUB_URL, $page, self::PER_PAGE), '/')
+            $baseUrl,
+            sprintf(self::SUB_URL, $page, self::PER_PAGE)
         ));
     }
 

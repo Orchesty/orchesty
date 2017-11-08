@@ -43,8 +43,8 @@ class PluginUnsubscribeSubscriberConnector extends PluginSubscriberConnectorAbst
     protected function getUri(SystemInstall $systemInstall, ProcessDto $dto): Uri
     {
         return new Uri(sprintf('%s/%s',
-            rtrim($systemInstall->getSettings()[SystemInstall::SYSTEM_URL], '/'),
-            sprintf(ltrim(static::SUB_URL, '/'), $this->getIdFromDto($dto))
+            $systemInstall->getSettings()[SystemInstall::SYSTEM_URL],
+            sprintf(static::SUB_URL, $this->getIdFromDto($dto))
         ));
     }
 

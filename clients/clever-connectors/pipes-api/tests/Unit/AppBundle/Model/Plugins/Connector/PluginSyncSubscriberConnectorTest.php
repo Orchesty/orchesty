@@ -36,10 +36,10 @@ final class PluginSyncSubscriberConnectorTest extends ConnectorTestCaseAbstract
         $counter->method('setTotal')->willReturn('');
 
         $conn = new PluginSyncSubscriberConnector(
-            $this->container->get('systems.null.user.group'),
             $this->mockDm(),
             $this->mockCurl(),
-            $counter
+            $counter,
+            $this->container->get('cc.systems.loader')
         );
 
         $loop = Factory::create();
@@ -69,8 +69,8 @@ final class PluginSyncSubscriberConnectorTest extends ConnectorTestCaseAbstract
     {
         $sys = new SystemInstall();
         $sys->setSettings([
-            SystemInstall::SYSTEM_URL => 'https://aso.ko/',
-        ]);
+            SystemInstall::SYSTEM_URL => 'https://aso.ko',
+        ])->setSystem('null.user.group');
 
         $repo = $this->createMock(SystemInstallRepository::class);
         $repo->expects($this->once())

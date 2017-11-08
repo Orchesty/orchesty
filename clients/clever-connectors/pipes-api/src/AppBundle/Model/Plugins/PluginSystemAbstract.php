@@ -3,6 +3,7 @@
 namespace CleverConnectors\AppBundle\Model\Plugins;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Enum\PluginHeadersEnum;
 use CleverConnectors\AppBundle\Enum\SystemTypeEnum;
 use CleverConnectors\AppBundle\Model\CMEvents\CMEventSystemInterface;
 use CleverConnectors\AppBundle\Model\CMEvents\Traits\CMEventSystemTrait;
@@ -31,7 +32,9 @@ abstract class PluginSystemAbstract implements AuthorizationInterface, CMEventSy
      */
     public function isAuthorized(SystemInstall $systemInstall): bool
     {
-        return TRUE;
+        return !empty($systemInstall->getSettings()[SystemInstall::SYSTEM_URL] ?? '')
+            && !empty($systemInstall->getToken())
+            && !empty($systemInstall->getUser());
     }
 
     /**
@@ -68,7 +71,16 @@ abstract class PluginSystemAbstract implements AuthorizationInterface, CMEventSy
      */
     public function getRequestDto(SystemInstall $systemInstall, string $method): RequestDto
     {
-        return new RequestDto($method, $systemInstall->getSettings()[SystemInstall::SYSTEM_URL]);
+        $this->continueOnAuthorized($systemInstall);
+
+        $dto = new RequestDto($method, $systemInstall->getSettings()[SystemInstall::SYSTEM_URL]);;
+        $dto->setHeaders([
+            'Content-Type'           => 'application/json',
+            PluginHeadersEnum::GUID  => $systemInstall->getUser(),
+            PluginHeadersEnum::TOKEN => $systemInstall->getToken(),
+        ]);
+
+        return $dto;
     }
 
     /**
