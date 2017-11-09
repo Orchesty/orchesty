@@ -32,9 +32,18 @@ final class TopologiesComparatorTest extends DatabaseTestCaseAbstract
         $topology = new Topology();
         $topology
             ->setName('file')
+            ->setRawBpmn($this->load('file.tplg'))
             ->setEnabled(TRUE)
             ->setVisibility(TopologyStatusEnum::PUBLIC);
         $this->dm->persist($topology);
+
+        $topology3 = new Topology();
+        $topology3
+            ->setName('file2')
+            ->setRawBpmn($this->load('file2.tplg', FALSE))
+            ->setEnabled(TRUE)
+            ->setVisibility(TopologyStatusEnum::PUBLIC);
+        $this->dm->persist($topology3);
 
         $topology2 = new Topology();
         $topology2
@@ -60,6 +69,23 @@ final class TopologiesComparatorTest extends DatabaseTestCaseAbstract
         self::assertInstanceOf(SplFileInfo::class, reset($create));
         self::assertInstanceOf(SplFileInfo::class, reset($update));
         self::assertInstanceOf(Topology::class, reset($delete));
+    }
+
+    /**
+     * @param string $name
+     * @param bool   $change
+     *
+     * @return string
+     */
+    private function load(string $name, bool $change = TRUE): string
+    {
+        $content = file_get_contents(sprintf('%s/data/%s', __DIR__, $name));
+
+        if (!$change) {
+            return $content;
+        }
+
+        return str_replace('salesforce-create-contact-mapper', 'salesforce-updaet-contact-mapper', $content);
     }
 
 }

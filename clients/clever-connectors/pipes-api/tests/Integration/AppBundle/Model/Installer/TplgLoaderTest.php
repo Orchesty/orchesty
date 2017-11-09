@@ -29,9 +29,10 @@ final class TplgLoaderTest extends TestCase
         $loader = new TplgLoader();
         $files  = $loader->load(sprintf('%s/data', __DIR__));
 
-        self::assertCount(2, $files);
+        self::assertCount(3, $files);
         self::assertInstanceOf(SplFileInfo::class, reset($files));
         self::assertArrayHasKey('file', $files);
+        self::assertArrayHasKey('file2', $files);
         self::assertArrayHasKey('inner-file', $files);
     }
 
