@@ -2,6 +2,11 @@ cc:
     resource: '@AppBundle/Controller/'
     type: annotation
 
+cc_plugins:
+    resource: '@AppBundle/Controller/PluginsController.php'
+    type: annotation
+    prefix: /plugins
+
 hb_pf_api_gateway:
     resource: '@HbPFApiGatewayBundle/Controller'
     type:     annotation

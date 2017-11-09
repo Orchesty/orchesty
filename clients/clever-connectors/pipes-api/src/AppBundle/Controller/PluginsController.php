@@ -20,7 +20,7 @@ use Throwable;
  *
  * @package CleverConnectors\AppBundle\Controller
  *
- * @Route(service="cc.plugins.controller")
+ * @Route(service="cc_plugins.plugins.controller")
  */
 class PluginsController extends FOSRestController
 {

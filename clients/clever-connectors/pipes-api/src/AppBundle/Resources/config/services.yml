@@ -72,7 +72,7 @@ services:
             - '@snc_redis.default'
             - '@cc.progress_counter.async_publisher'
 
-    cc.plugins.controller:
+    cc_plugins.plugins.controller:
         class: CleverConnectors\AppBundle\Controller\PluginsController
         arguments:
             - '@cc.plugins.handler'

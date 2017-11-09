@@ -12,6 +12,9 @@ security:
                 property: email
 
     firewalls:
+        unsecured_plugin:
+            pattern: ^/(plugins)
+            security: false
         unsecured_user:
             pattern: ^/(api/user/login|api/user/logout|api/user/\w+/activate|api/user/\w+/set_password|api/user/reset_password)
             security: false
