@@ -37,7 +37,7 @@ final class PluginsSecurityListenerTest extends DatabaseTestCaseAbstract
 
         /** @var FilterControllerEvent|PHPUnit_Framework_MockObject_MockObject $ev */
         $ev = $this->createMock(FilterControllerEvent::class);
-        $ev->method('getController')->willReturn([$this->container->get('cc.plugins.controller'), 'checkEvent']);
+        $ev->method('getController')->willReturn([$this->container->get('cc_plugins.plugins.controller'), 'checkEvent']);
         $ev->method('getRequest')->willReturn($request);
 
         $listener->checkSecurity($ev);
@@ -61,7 +61,7 @@ final class PluginsSecurityListenerTest extends DatabaseTestCaseAbstract
 
         /** @var FilterControllerEvent|PHPUnit_Framework_MockObject_MockObject $ev */
         $ev = $this->createMock(FilterControllerEvent::class);
-        $ev->method('getController')->willReturn([$this->container->get('cc.plugins.controller'), 'checkEvent']);
+        $ev->method('getController')->willReturn([$this->container->get('cc_plugins.plugins.controller'), 'checkEvent']);
         $ev->method('getRequest')->willReturn($request);
 
         $this->expectException(LogicException::class);
