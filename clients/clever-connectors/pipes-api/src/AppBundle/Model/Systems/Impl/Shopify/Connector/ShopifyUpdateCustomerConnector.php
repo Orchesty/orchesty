@@ -9,19 +9,24 @@ use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Exception;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
+use Nette\Utils\Strings;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 
 /**
  * Class ShopifyUpdateCustomerConnector
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\Connector
  */
-class ShopifyUpdateCustomerConnector implements ConnectorInterface
+class ShopifyUpdateCustomerConnector implements ConnectorInterface, LoggerAwareInterface
 {
 
     private const SUB_URL = '/admin/customers/%s.json';
@@ -42,6 +47,11 @@ class ShopifyUpdateCustomerConnector implements ConnectorInterface
     private $curl;
 
     /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    /**
      * ShopifyUpdateCustomerConnector constructor.
      *
      * @param ShopifySystem        $system
@@ -53,6 +63,15 @@ class ShopifyUpdateCustomerConnector implements ConnectorInterface
         $this->systemInstallRepository = $dm->getRepository(SystemInstall::class);
         $this->system                  = $system;
         $this->curl                    = $curl;
+        $this->logger                  = new NullLogger();
+    }
+
+    /**
+     * @param LoggerInterface $logger
+     */
+    public function setLogger(LoggerInterface $logger): void
+    {
+        $this->logger = $logger;
     }
 
     /**
@@ -82,6 +101,7 @@ class ShopifyUpdateCustomerConnector implements ConnectorInterface
      *
      * @return ProcessDto
      * @throws CleverConnectorsException
+     * @throws Exception
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {
@@ -95,7 +115,17 @@ class ShopifyUpdateCustomerConnector implements ConnectorInterface
             ->setUri($uri)
             ->setBody($data['body']);
 
-        $res  = $this->curl->send($requestDto);
+        try {
+            $res = $this->curl->send($requestDto);
+        } catch (Exception $exception) {
+            if (Strings::contains($exception->getMessage(), '422 Unprocessable Entity')) {
+                $this->logger->info('ShopifyUpdateCustomerConnector: custom field already exists and is set.');
+                return $dto;
+            }
+
+            throw $exception;
+        }
+
         $data = json_decode($res->getBody(), TRUE);
 
         if ($res->getStatusCode() === 404) {

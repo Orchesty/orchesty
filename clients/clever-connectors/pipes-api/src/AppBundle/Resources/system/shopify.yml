@@ -26,6 +26,8 @@ services:
             - '@systems.shopify'
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.transport.curl_manager'
+        calls:
+            - ['setLogger', ['@monolog.logger.commons']]
 
     hbpf.custom_node.shopify-create-customer-mapper:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\Mapper\ShopifyCreateCustomerMapper
