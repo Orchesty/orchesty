@@ -9,10 +9,12 @@ use CleverConnectors\AppBundle\Model\CMEvents\CMEventSystemInterface;
 use CleverConnectors\AppBundle\Model\CMEvents\Traits\CMEventSystemTrait;
 use CleverConnectors\AppBundle\Model\Form\Field;
 use CleverConnectors\AppBundle\Model\Form\Form;
+use CleverConnectors\AppBundle\Model\Plugins\Requester\SwitchTokenRequester;
 use CleverConnectors\AppBundle\Model\Requester\RequesterInterface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\AuthorizationInterface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\Traits\AuthorizationTrait;
 use GuzzleHttp\Psr7\Uri;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 
 /**
@@ -26,6 +28,7 @@ abstract class PluginSystemAbstract implements AuthorizationInterface, CMEventSy
     use AuthorizationTrait;
     use CMEventSystemTrait;
 
+    protected const SWITCH_TOKEN               = 'clever_connector/switch_token';
     protected const CREATE_SUBSCRIBER_URL      = 'clever_connector/subscriber/create';
     protected const UNSUBSCRIBE_SUBSCRIBER_URL = 'clever_connector/subscriber/unsubscribe?id=%s';
     protected const HARD_BOUNCE_SUBSCRIBER_URL = 'clever_connector/subscriber/hard_bounce?id=%s';
@@ -182,6 +185,24 @@ abstract class PluginSystemAbstract implements AuthorizationInterface, CMEventSy
     public function getLimit(): int
     {
         return self::LIMIT_PER_PAGE;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSwitchTokenUrl(): string
+    {
+        return self::SWITCH_TOKEN;
+    }
+
+    /**
+     * @param SystemInstall $systemInstall
+     *
+     * @return RequesterInterface
+     */
+    public function getSwitchTokenRequester(SystemInstall $systemInstall): RequesterInterface
+    {
+        return new SwitchTokenRequester($this->getRequestDto($systemInstall, CurlManager::METHOD_POST));
     }
 
 }

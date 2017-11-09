@@ -281,11 +281,12 @@ class SystemManager
     public function switchToken(string $user, string $system, string $token): SystemInstall
     {
         $systemInstall = $this->getSystemInstall($user, $system);
-
+        $oldToken      = $systemInstall->getToken();
         $systemInstall->setToken($token);
         $this->dm->flush();
 
         $this->updateWebhooks($systemInstall);
+        $this->runSwitchTokenTopologies($systemInstall, $oldToken);
 
         return $systemInstall;
     }
@@ -299,28 +300,7 @@ class SystemManager
      */
     public function synchronizeSubscriptions(string $user, string $system): int
     {
-        $systemInstall = $this->getSystemInstall($user, $system);
-        $system        = $this->systemLoader->getSystem($system);
-        $request       = InnerRequestUtils::getRequest($systemInstall, '');
-        $topologies    = $this->topologyRepository->getRunnableTopologies(
-            TopologyNameUtils::getTopologyName(
-                TopologyNameUtils::SYNC,
-                $systemInstall->getSystem(),
-                $systemInstall->getUser()
-            )
-        );
-
-        if (empty($topologies)) {
-            $name       = $system->getCustomTopologyName(
-                TopologyNameUtils::getTopologyName(TopologyNameUtils::SYNC, $systemInstall->getSystem())
-            );
-            $topologies = $this->topologyRepository->getRunnableTopologies($name);
-        }
-
-        foreach ($topologies as $topology) {
-            $node = $this->nodeRepository->getStartingNode($topology);
-            $this->startingPoint->runWithRequest($request, $topology, $node);
-        }
+        $topologies = $this->runTopologies($user, $system, TopologyNameUtils::SYNC, '');
 
         return count($topologies);
     }
@@ -477,6 +457,56 @@ class SystemManager
             $webhookSystem = $systemService;
             $this->webhookManager->unsubscribe($webhookSystem, $systemInstall->getUser());
         }
+    }
+
+    /**
+     * @param string $user
+     * @param string $system
+     * @param string $topology
+     * @param string $data
+     *
+     * @return array
+     */
+    private function runTopologies(string $user, string $system, string $topology, string $data): array
+    {
+        $systemInstall = $this->getSystemInstall($user, $system);
+        $system        = $this->systemLoader->getSystem($system);
+        $request       = InnerRequestUtils::getRequest($systemInstall, $data);
+        $topologies    = $this->topologyRepository->getRunnableTopologies(
+            TopologyNameUtils::getTopologyName(
+                $topology,
+                $systemInstall->getSystem(),
+                $systemInstall->getUser()
+            )
+        );
+
+        if (empty($topologies)) {
+            $name       = $system->getCustomTopologyName(
+                TopologyNameUtils::getTopologyName($topology, $systemInstall->getSystem())
+            );
+            $topologies = $this->topologyRepository->getRunnableTopologies($name);
+        }
+
+        foreach ($topologies as $topology) {
+            $node = $this->nodeRepository->getStartingNode($topology);
+            $this->startingPoint->runWithRequest($request, $topology, $node);
+        }
+
+        return $topologies;
+    }
+
+    /**
+     * @param SystemInstall $systemInstall
+     * @param string        $token
+     */
+    private function runSwitchTokenTopologies(SystemInstall $systemInstall, string $token): void
+    {
+        $this->runTopologies(
+            $systemInstall->getUser(),
+            $systemInstall->getSystem(),
+            TopologyNameUtils::SWITCH_TOKEN,
+            json_encode(['token' => $token])
+        );
     }
 
 }

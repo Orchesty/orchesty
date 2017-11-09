@@ -40,3 +40,10 @@ services:
             - '@hbpf.transport.async_curl_factory'
             - '@cc.progress_counter.async_progress_counter_service'
             - '@cc.systems.loader'
+
+    hbpf.connector.plugin-switch-token-connector:
+        class: CleverConnectors\AppBundle\Model\Plugins\Connector\PluginSwitchTokenConnector
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.transport.curl_manager'
+            - '@cc.systems.loader'
