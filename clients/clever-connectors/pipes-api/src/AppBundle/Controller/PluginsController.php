@@ -75,7 +75,7 @@ class PluginsController extends FOSRestController
     }
 
     /**
-     * @Route("/subscriber")
+     * @Route("/subscriber/create")
      * @Method({"POST"})
      *
      * @param Request $request
@@ -94,8 +94,8 @@ class PluginsController extends FOSRestController
     }
 
     /**
-     * @Route("/subscriber")
-     * @Method({"PUT"})
+     * @Route("/subscriber/update")
+     * @Method({"POST"})
      *
      * @param Request $request
      *
@@ -113,8 +113,8 @@ class PluginsController extends FOSRestController
     }
 
     /**
-     * @Route("/subscriber")
-     * @Method({"DELETE"})
+     * @Route("/subscriber/delete")
+     * @Method({"POST"})
      *
      * @param Request $request
      *
