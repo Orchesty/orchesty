@@ -67,4 +67,32 @@ final class TopologyRepositoryTest extends DatabaseTestCaseAbstract
 
     }
 
+    /**
+     *
+     */
+    public function testGetTopologies(): void
+    {
+        /** @var TopologyRepository $repo */
+        $repo   = $this->dm->getRepository(Topology::class);
+        $result = $repo->getTopologies();
+
+        self::assertCount(0, $result);
+
+        for ($i = 0; $i < 2; $i++) {
+            $topology = new Topology();
+            $topology
+                ->setName(sprintf('name-%s', $i))
+                ->setEnabled(TRUE)
+                ->setVisibility(TopologyStatusEnum::PUBLIC);
+            $this->dm->persist($topology);
+        }
+
+        $this->dm->flush();
+
+        $result = $repo->getTopologies();
+
+        self::assertCount(2, $result);
+
+    }
+
 }

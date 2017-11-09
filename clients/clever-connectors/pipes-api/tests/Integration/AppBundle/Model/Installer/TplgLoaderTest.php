@@ -27,7 +27,7 @@ final class TplgLoaderTest extends TestCase
     public function testLoad(): void
     {
         $loader = new TplgLoader();
-        $files  = $loader->load(__DIR__ . '/data');
+        $files  = $loader->load(sprintf('%s/data', __DIR__));
 
         self::assertCount(2, $files);
         self::assertInstanceOf(SplFileInfo::class, reset($files));
