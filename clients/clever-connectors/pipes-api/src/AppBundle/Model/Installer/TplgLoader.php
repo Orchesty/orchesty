@@ -10,6 +10,7 @@
 namespace CleverConnectors\AppBundle\Model\Installer;
 
 use Symfony\Component\Finder\Finder;
+use Symfony\Component\Finder\SplFileInfo;
 
 /**
  * Class TplgLoader
@@ -20,6 +21,16 @@ class TplgLoader
 {
 
     public const TPLG = '.tplg';
+
+    /**
+     * @param SplFileInfo $file
+     *
+     * @return string
+     */
+    public static function getName(SplFileInfo $file): string
+    {
+        return str_replace(self::TPLG, '', $file->getFilename());
+    }
 
     /**
      * @param string $dir
@@ -33,7 +44,7 @@ class TplgLoader
         $finder->name(sprintf('*%s', self::TPLG))->in($dir);
 
         foreach ($finder as $file) {
-            $key         = str_replace(self::TPLG, '', $file->getFilename());
+            $key         = self::getName($file);
             $files[$key] = $file;
         }
         unset($finder);

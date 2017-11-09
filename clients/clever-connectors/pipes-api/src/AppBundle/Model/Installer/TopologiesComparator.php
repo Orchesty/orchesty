@@ -10,6 +10,7 @@
 namespace CleverConnectors\AppBundle\Model\Installer;
 
 use CleverConnectors\AppBundle\Model\Installer\Dto\CompareResultDto;
+use CleverConnectors\AppBundle\Model\Installer\Dto\UpdateObject;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository;
@@ -57,7 +58,7 @@ class TopologiesComparator
         foreach ($files as $name => $file) {
             if (array_key_exists($name, $db)) {
                 if (!$this->isEqual($db[$name], $files[$name])) {
-                    $result->addUpdate($file);
+                    $result->addUpdate(new UpdateObject($db[$name], $files[$name]));
                 }
                 unset($db[$name]);
             } else {
