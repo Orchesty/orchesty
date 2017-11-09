@@ -59,6 +59,9 @@ phpunit:
 phpintergration: #database-create
 	$(DE) ./vendor/bin/phpunit -c phpunit.xml.dist --colors --stderr tests/Integration
 
+phplive: #database-create
+	$(DE) ./vendor/bin/phpunit -c phpunit.xml.dist --colors --stderr tests/Live
+
 phpcontroller: #database-create
 	$(DE) ./vendor/bin/phpunit -c phpunit.xml.dist --colors --stderr tests/Controller
 
