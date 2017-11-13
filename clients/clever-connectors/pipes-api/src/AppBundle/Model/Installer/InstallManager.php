@@ -21,7 +21,6 @@ use Predis\Client;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
-use Symfony\Component\Finder\SplFileInfo;
 use Throwable;
 
 /**
@@ -106,7 +105,7 @@ class InstallManager implements LoggerAwareInterface
      *
      * @return void
      */
-    public function setLogger(LoggerInterface $logger)
+    public function setLogger(LoggerInterface $logger): void
     {
         $this->logger = $logger;
     }
@@ -119,13 +118,13 @@ class InstallManager implements LoggerAwareInterface
      *
      * @return array
      */
-    public function prepareInstall(bool $makeCreate, bool $makeUpdate, bool $makeDelete, bool $force = TRUE): array
+    public function prepareInstall(bool $makeCreate, bool $makeUpdate, bool $makeDelete, bool $force = FALSE): array
     {
         $result = $this->comparator->compare();
-        $this->client->set(self::AUTO_INSTALL_KEY, json_encode($result));
+        $this->client->set(self::AUTO_INSTALL_KEY, serialize($result));
 
         if ($force) {
-            $this->makeInstall($makeCreate, $makeUpdate, $makeDelete);
+            return $this->makeInstall($makeCreate, $makeUpdate, $makeDelete);
         }
 
         return $this->generateOutput($result, $makeCreate, $makeUpdate, $makeDelete);
@@ -136,9 +135,10 @@ class InstallManager implements LoggerAwareInterface
      * @param bool $makeUpdate
      * @param bool $makeDelete
      *
+     * @return array
      * @throws CleverConnectorsException
      */
-    public function makeInstall(bool $makeCreate, bool $makeUpdate, bool $makeDelete): void
+    public function makeInstall(bool $makeCreate, bool $makeUpdate, bool $makeDelete): array
     {
         $record = $this->client->get(self::AUTO_INSTALL_KEY);
 
@@ -147,19 +147,24 @@ class InstallManager implements LoggerAwareInterface
         }
 
         /** @var CompareResultDto $result */
-        $result = json_decode($record);
+        $result = unserialize($record);
+        $errors = [];
 
         if ($makeCreate) {
-            $this->makeCreate($result);
+            $errors[self::CREATE] = $this->makeCreate($result);
         }
 
         if ($makeUpdate) {
-            $this->makeUpdate($result);
+            $errors[self::UPDATE] = $this->makeUpdate($result);
         }
 
         if ($makeDelete) {
-            $this->makeDelete($result);
+            $errors[self::DELETE] = $this->makeDelete($result);
         }
+
+        $this->client->del([self::AUTO_INSTALL_KEY]);
+
+        return $errors;
     }
 
     /**
@@ -181,27 +186,36 @@ class InstallManager implements LoggerAwareInterface
 
     /**
      * @param CompareResultDto $dto
+     *
+     * @return array
      */
-    private function makeCreate(CompareResultDto $dto): void
+    private function makeCreate(CompareResultDto $dto): array
     {
-        /** @var SplFileInfo $file */
+        $errors = [];
+
         foreach ($dto->getCreate() as $file) {
             try {
                 $topology = $this->topologyManager->createTopology(
-                    ['name' => TplgLoader::getName($file), 'enabled' => TRUE]
+                    ['name' => TplgLoader::getName($file->getName()), 'enabled' => TRUE]
                 );
                 $this->makeRunnable($topology, $file->getContents());
             } catch (Throwable $e) {
                 $this->logException($e, self::CREATE);
+                $errors[TplgLoader::getName($file->getName())] = $e->getMessage();
             }
         }
+
+        return $errors;
     }
 
     /**
      * @param CompareResultDto $dto
+     *
+     * @return array
      */
-    private function makeUpdate(CompareResultDto $dto): void
+    private function makeUpdate(CompareResultDto $dto): array
     {
+        $errors = [];
         /** @var UpdateObject $obj */
         foreach ($dto->getUpdate() as $obj) {
             try {
@@ -214,15 +228,21 @@ class InstallManager implements LoggerAwareInterface
                 }
             } catch (Throwable $e) {
                 $this->logException($e, self::UPDATE);
+                $errors[$obj->getTopology()->getName()] = $e->getMessage();
             }
         }
+
+        return $errors;
     }
 
     /**
      * @param CompareResultDto $dto
+     *
+     * @return array
      */
-    private function makeDelete(CompareResultDto $dto): void
+    private function makeDelete(CompareResultDto $dto): array
     {
+        $errors = [];
         /** @var Topology $topology */
         foreach ($dto->getDelete() as $topology) {
             try {
@@ -230,8 +250,11 @@ class InstallManager implements LoggerAwareInterface
                 $this->makeDeletable($topology);
             } catch (Throwable $e) {
                 $this->logException($e, self::DELETE);
+                $errors[$topology->getName()] = $e->getMessage();
             }
         }
+
+        return $errors;
     }
 
     /**
@@ -242,8 +265,8 @@ class InstallManager implements LoggerAwareInterface
      */
     private function makeRunnable(Topology $topology, string $content): Topology
     {
-        $this->topologyManager->publishTopology($topology);
         $topology = $this->topologyManager->saveTopologySchema($topology, $content, $this->xml->decode($content));
+        $this->topologyManager->publishTopology($topology);
         $this->requestHandler->runTopology($topology->getId());
 
         return $topology;
@@ -265,7 +288,7 @@ class InstallManager implements LoggerAwareInterface
      */
     private function logException(Throwable $e, string $action): void
     {
-        $this->logger->error(sprintf('Error occurred after %s action.', $action), ['exception' => $e]);
+        $this->logger->error(sprintf('Error occurred during %s action.', $action), ['exception' => $e]);
     }
 
 }

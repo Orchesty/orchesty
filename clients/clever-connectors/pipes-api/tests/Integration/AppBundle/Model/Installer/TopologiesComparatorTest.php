@@ -10,10 +10,11 @@
 namespace Tests\Integration\AppBundle\Model\Installer;
 
 use CleverConnectors\AppBundle\Model\Installer\Dto\CompareResultDto;
+use CleverConnectors\AppBundle\Model\Installer\Dto\TopologyFile;
+use CleverConnectors\AppBundle\Model\Installer\Dto\UpdateObject;
 use CleverConnectors\AppBundle\Model\Installer\TopologiesComparator;
 use Hanaboso\PipesFramework\Commons\Enum\TopologyStatusEnum;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
-use Symfony\Component\Finder\SplFileInfo;
 use Tests\DatabaseTestCaseAbstract;
 
 /**
@@ -66,8 +67,10 @@ final class TopologiesComparatorTest extends DatabaseTestCaseAbstract
         self::assertCount(1, $update);
         self::assertCount(1, $delete);
 
-        self::assertInstanceOf(SplFileInfo::class, reset($create));
-        self::assertInstanceOf(SplFileInfo::class, reset($update));
+        self::assertInstanceOf(TopologyFile::class, reset($create));
+        self::assertInstanceOf(UpdateObject::class, reset($update));
+        self::assertInstanceOf(TopologyFile::class, $update[0]->getFile());
+        self::assertInstanceOf(Topology::class, $update[0]->getTopology());
         self::assertInstanceOf(Topology::class, reset($delete));
     }
 

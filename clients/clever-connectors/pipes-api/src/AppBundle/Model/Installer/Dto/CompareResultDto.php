@@ -11,7 +11,6 @@ namespace CleverConnectors\AppBundle\Model\Installer\Dto;
 
 use CleverConnectors\AppBundle\Model\Installer\TplgLoader;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
-use Symfony\Component\Finder\SplFileInfo;
 
 /**
  * Class CompareResultDto
@@ -27,12 +26,12 @@ final class CompareResultDto
     private $delete = [];
 
     /**
-     * @var array|SplFileInfo
+     * @var array|TopologyFile[]
      */
     private $create = [];
 
     /**
-     * @var array|UpdateObject
+     * @var array|UpdateObject[]
      */
     private $update = [];
 
@@ -45,9 +44,9 @@ final class CompareResultDto
     }
 
     /**
-     * @param SplFileInfo $file
+     * @param TopologyFile $file
      */
-    public function addCreate(SplFileInfo $file): void
+    public function addCreate(TopologyFile $file): void
     {
         $this->create[] = $file;
     }
@@ -69,7 +68,7 @@ final class CompareResultDto
     }
 
     /**
-     * @return array|SplFileInfo[]
+     * @return array|TopologyFile[]
      */
     public function getCreate(): array
     {
@@ -111,11 +110,11 @@ final class CompareResultDto
     }
 
     /**
-     * --------------------------------------- HELPERS ------------------------------
+     * --------------------------------------- HELPERS --------------------------------------------
      */
 
     /**
-     * @param array| SplFileInfo[] $arr
+     * @param array| TopologyFile[] $arr
      *
      * @return array
      */
@@ -124,7 +123,7 @@ final class CompareResultDto
         $ret = [];
 
         foreach ($arr as $item) {
-            $ret[] = TplgLoader::getName($item);
+            $ret[] = TplgLoader::getName($item->getName());
         }
 
         return $ret;

@@ -10,8 +10,12 @@
 namespace CleverConnectors\AppBundle\Model\Installer\Dto;
 
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
-use Symfony\Component\Finder\SplFileInfo;
 
+/**
+ * Class UpdateObject
+ *
+ * @package CleverConnectors\AppBundle\Model\Installer\Dto
+ */
 final class UpdateObject
 {
 
@@ -21,17 +25,17 @@ final class UpdateObject
     private $topology;
 
     /**
-     * @var SplFileInfo
+     * @var TopologyFile
      */
     private $file;
 
     /**
      * UpdateObject constructor.
      *
-     * @param Topology    $topology
-     * @param SplFileInfo $file
+     * @param Topology     $topology
+     * @param TopologyFile $file
      */
-    public function __construct(Topology $topology, SplFileInfo $file)
+    public function __construct(Topology $topology, TopologyFile $file)
     {
         $this->topology = $topology;
         $this->file     = $file;
@@ -46,9 +50,9 @@ final class UpdateObject
     }
 
     /**
-     * @return SplFileInfo
+     * @return TopologyFile
      */
-    public function getFile(): SplFileInfo
+    public function getFile(): TopologyFile
     {
         return $this->file;
     }
