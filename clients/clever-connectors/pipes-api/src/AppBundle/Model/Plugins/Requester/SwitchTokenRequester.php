@@ -3,10 +3,10 @@
 namespace CleverConnectors\AppBundle\Model\Plugins\Requester;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Enum\PluginHeadersEnum;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Requester\RequesterInterface;
 use CleverConnectors\AppBundle\Model\Requester\RequesterTrait;
-use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 
@@ -43,11 +43,11 @@ class SwitchTokenRequester implements RequesterInterface
     public function getRequestDto(array $data): RequestDto
     {
         $headers  = $this->dto->getHeaders();
-        $newToken = CMHeaders::get(CMHeaders::createKey(CMHeaders::TOKEN), $headers);
+        $newToken = PluginHeadersEnum::get(PluginHeadersEnum::TOKEN, $headers);
         $body     = json_decode($data['body'], TRUE);
         $oldToken = $body['token'];
 
-        $headers[CMHeaders::createKey(CMHeaders::TOKEN)] = $oldToken;
+        $headers[PluginHeadersEnum::TOKEN] = $oldToken;
         $this->dto->setHeaders($headers);
 
         $body['token'] = $newToken;

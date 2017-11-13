@@ -62,7 +62,7 @@ class PluginSwitchTokenConnector implements ConnectorInterface
     /**
      * @param ProcessDto $dto
      *
-     * @return ProcessDto
+     * @return ProcessDto|void
      * @throws ConnectorException
      */
     public function processEvent(ProcessDto $dto): ProcessDto

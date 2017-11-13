@@ -3,7 +3,9 @@
 namespace Tests\Unit\AppBundle\Model\Plugins\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Enum\PluginHeadersEnum;
 use CleverConnectors\AppBundle\Model\Plugins\Connector\PluginSwitchTokenConnector;
+use CleverConnectors\AppBundle\Model\Systems\SystemLoader;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Uri;
@@ -13,6 +15,7 @@ use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
 use PHPUnit_Framework_MockObject_MockObject;
+use Tests\Integration\AppBundle\Model\Systems\Impl\NullSystem;
 use Tests\KernelTestCaseAbstract;
 
 /**
@@ -31,7 +34,7 @@ final class PluginSwitchTokenConnectorTest extends KernelTestCaseAbstract
         $conn = new PluginSwitchTokenConnector(
             $this->mockDm(),
             $this->mockCurl(),
-            $this->container->get('cc.systems.loader')
+            $this->mockLoader()
         );
 
         $dto = new ProcessDto();
@@ -56,20 +59,49 @@ final class PluginSwitchTokenConnectorTest extends KernelTestCaseAbstract
                 SystemInstall::TOKEN      => 'header-token',
             ])
             ->setUser('guid')
-            ->setToken('tkn')
+            ->setToken('header-token')
             ->setSystem('null.user.group');
 
-        // TODO mock method getRequestDto in NullSystem so it does the same as in PluginSystemAbstract::getRequestDto
-
         $repo = $this->createMock(SystemInstallRepository::class);
-        $repo->expects($this->once())
+        $repo
+            ->expects($this->once())
             ->method('getSystemInstallFromHeaders')->willReturn($sys);
 
         $dm = $this->createMock(DocumentManager::class);
-        $dm->expects($this->once())
+        $dm
+            ->expects($this->once())
             ->method('getRepository')->willReturn($repo);
 
         return $dm;
+    }
+
+    /**
+     * @return SystemLoader|PHPUnit_Framework_MockObject_MockObject
+     */
+    private function mockLoader(): SystemLoader
+    {
+        $system = $this->createPartialMock(NullSystem::class, ['getRequestDto']);
+        $system
+            ->expects($this->once())
+            ->method('getRequestDto')
+            ->willReturnCallback(
+                function (SystemInstall $systemInstall) {
+                    $dto = new RequestDto(CurlManager::METHOD_POST, new Uri());
+                    $dto->setHeaders([
+                        PluginHeadersEnum::TOKEN => $systemInstall->getToken(),
+                    ]);
+
+                    return $dto;
+                }
+            );
+
+        $loader = $this->createMock(SystemLoader::class);
+        $loader
+            ->expects($this->once())
+            ->method('getSystem')
+            ->willReturn($system);
+
+        return $loader;
     }
 
     /**
@@ -86,7 +118,7 @@ final class PluginSwitchTokenConnectorTest extends KernelTestCaseAbstract
                         new Uri('https://neco.com/clever_connector/switch_token')
                     );
                     $dto
-                        ->setHeaders(['pf-token' => 'body-token'])
+                        ->setHeaders(['cm-token' => 'body-token'])
                         ->setBody('{"token":"header-token"}');
 
                     self::assertEquals($dto, $requestDto);
