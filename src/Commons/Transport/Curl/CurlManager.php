@@ -4,6 +4,7 @@ namespace Hanaboso\PipesFramework\Commons\Transport\Curl;
 
 use Exception;
 use GuzzleHttp\Psr7\Request;
+use GuzzleHttp\Psr7\Response;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
@@ -17,7 +18,7 @@ use Psr\Log\NullLogger;
  *
  * @package Hanaboso\PipesFramework\Commons\Transport\Curl
  */
-final class CurlManager implements CurlManagerInterface, LoggerAwareInterface
+class CurlManager implements CurlManagerInterface, LoggerAwareInterface
 {
 
     public const METHOD_GET     = 'GET';
@@ -97,7 +98,7 @@ final class CurlManager implements CurlManagerInterface, LoggerAwareInterface
             ));
 
             $client      = $this->curlClientFactory->create();
-            $psrResponse = $client->send($request, $options);
+            $psrResponse = $client->send($request, $this->prepareOptions($options));
 
             $response = new ResponseDto(
                 $psrResponse->getStatusCode(),
@@ -124,6 +125,16 @@ final class CurlManager implements CurlManagerInterface, LoggerAwareInterface
         }
 
         return $response;
+    }
+
+    /**
+     * @param array $options
+     *
+     * @return array
+     */
+    protected function prepareOptions(array $options): array
+    {
+        return $options;
     }
 
 }
