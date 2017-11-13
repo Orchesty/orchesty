@@ -82,7 +82,7 @@ class PluginSyncSubscriberConnector implements ConnectorInterface, BatchInterfac
      */
     public function getId(): string
     {
-        return 'plugin-sync-subscribers';
+        return 'plugin-sync-subscriber';
     }
 
     /**

@@ -19,10 +19,24 @@ abstract class PluginWebhookSubscriberConnectorAbstract implements ConnectorInte
     /**
      * @param ProcessDto $dto
      *
+     * @return ProcessDto|void
+     * @throws ConnectorException
+     */
+    public function processEvent(ProcessDto $dto): ProcessDto
+    {
+        throw new ConnectorException(
+            'Plugin sync has no support for event.',
+            ConnectorException::CONNECTOR_DOES_NOT_HAVE_PROCESS_EVENT
+        );
+    }
+
+    /**
+     * @param ProcessDto $dto
+     *
      * @return ProcessDto
      * @throws CleverConnectorsException
      */
-    public function processEvent(ProcessDto $dto): ProcessDto
+    public function processAction(ProcessDto $dto): ProcessDto
     {
         $data = json_decode($dto->getData(), TRUE);
         if (empty($data) || !is_array($data) || !array_key_exists(CleverFieldsEnum::EMAIL, $data)) {
@@ -33,20 +47,6 @@ abstract class PluginWebhookSubscriberConnectorAbstract implements ConnectorInte
         }
 
         return $dto;
-    }
-
-    /**
-     * @param ProcessDto $dto
-     *
-     * @return ProcessDto|void
-     * @throws ConnectorException
-     */
-    public function processAction(ProcessDto $dto): ProcessDto
-    {
-        throw new ConnectorException(
-            'Plugin sync has no support for action.',
-            ConnectorException::CONNECTOR_DOES_NOT_HAVE_PROCESS_ACTION
-        );
     }
 
 }

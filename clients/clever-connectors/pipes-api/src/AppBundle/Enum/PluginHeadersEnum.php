@@ -2,7 +2,9 @@
 
 namespace CleverConnectors\AppBundle\Enum;
 
+use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Hanaboso\PipesFramework\Commons\Enum\EnumAbstract;
+use LogicException;
 
 /**
  * Class PluginHeadersEnum
@@ -42,6 +44,25 @@ final class PluginHeadersEnum extends EnumAbstract
         }
 
         return $val;
+    }
+
+    /**
+     * @param string $key
+     *
+     * @return string
+     */
+    public static function toCMHeaders(string $key): string
+    {
+        switch ($key) {
+            case self::GUID:
+                return CMHeaders::GUID;
+            case self::TOKEN:
+                return CMHeaders::TOKEN;
+            case self::SYSTEM:
+                return CMHeaders::SYSTEM_KEY;
+            default:
+                throw new LogicException(sprintf('Invalid header key [%s].', $key));
+        }
     }
 
 }

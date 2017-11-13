@@ -15,7 +15,7 @@ class PluginUpdatedSubscriberConnector extends PluginWebhookSubscriberConnectorA
      */
     public function getId(): string
     {
-        return 'plugin-updated-subscribers';
+        return 'plugin-updated-subscriber';
     }
 
 }
