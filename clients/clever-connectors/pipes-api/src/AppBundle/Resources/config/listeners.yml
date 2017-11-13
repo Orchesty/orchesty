@@ -23,4 +23,5 @@ services:
         class: CleverConnectors\AppBundle\Listeners\PluginsSecurityListener
         arguments:
             - '@cc.plugins.security_manager'
+            - '@cc.transport.curl.manager'
         tags: ['kernel.event_subscriber']
