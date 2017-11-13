@@ -33,7 +33,7 @@ final class CMDeleteSubscriptionConnectorTest extends KernelTestCaseAbstract
         $fac = $this->createMock(CurlClientFactory::class);
         $fac->expects($this->at(0))->method('create')->willReturn(new Client($opt));
         $curl = new CurlManager($fac);
-        $conn = new CMDeleteSubscriptionConnector($curl, []);
+        $conn = new CMDeleteSubscriptionConnector($curl);
 
         $conn->processAction((new ProcessDto())->setData('{"email":"eml@eml.com"}')->setHeaders([
             'pf_token' => '-3*QYg*3H-5+vaez_K7_N-4K1YhCn88k',

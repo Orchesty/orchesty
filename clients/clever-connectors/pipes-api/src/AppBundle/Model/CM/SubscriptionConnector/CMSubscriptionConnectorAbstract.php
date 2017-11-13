@@ -15,7 +15,6 @@ use CleverConnectors\AppBundle\Exceptions\Exception;
 use CleverConnectors\AppBundle\Model\CM\CMAuthorization;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use GuzzleHttp\Psr7\Uri;
-use GuzzleHttp\RequestOptions;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
@@ -43,22 +42,13 @@ abstract class CMSubscriptionConnectorAbstract extends CMAuthorization implement
     protected $logger;
 
     /**
-     * Authority and client certificate.
-     *
-     * @var array
-     */
-    private $secret;
-
-    /**
      * CMSubscriptionConnectorAbstract constructor.
      *
      * @param CurlManagerInterface $curl
-     * @param array                $secret
      */
-    function __construct(CurlManagerInterface $curl, array $secret)
+    function __construct(CurlManagerInterface $curl)
     {
-        $this->curl   = $curl;
-        $this->secret = $secret;
+        $this->curl = $curl;
     }
 
     /**
@@ -124,11 +114,7 @@ abstract class CMSubscriptionConnectorAbstract extends CMAuthorization implement
         $req->setBody(json_encode($this->getData($dto, $system)));
 
         try {
-            $res = $this->curl->send($req, [
-                RequestOptions::CERT    => $this->secret['cert'],
-                RequestOptions::SSL_KEY => $this->secret['cert'],
-                RequestOptions::VERIFY  => $this->secret['ca'],
-            ]);
+            $res = $this->curl->send($req);
         } catch (Exception $e) {
             $this->logger->error(sprintf('CM %s subscription failed.', $method), ['exception' => $e]);
             throw new ConnectorException(
@@ -186,6 +172,7 @@ abstract class CMSubscriptionConnectorAbstract extends CMAuthorization implement
         if (array_key_exists(CleverFieldsEnum::SYSTEM_KEY, $data)) {
             unset($data[CleverFieldsEnum::SYSTEM_KEY]);
         }
+
         // -----------------------------------------------
 
         return $data;

@@ -52,7 +52,7 @@ final class WebhookSecurityListenerTest extends KernelTestCaseAbstract
             'userId'       => 'userId',
         ]));
 
-        $security = new WebhookSecurityListener($documentManager, $curlManager, ['cert' => '', 'ca' => '']);
+        $security = new WebhookSecurityListener($documentManager, $curlManager);
         $security->checkSecurity($controllerEvent);
         $headers = $controllerEvent->getRequest()->headers;
 

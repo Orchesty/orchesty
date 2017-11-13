@@ -24,7 +24,7 @@ final class CMUpdateSubscriptionConnectorTest extends KernelTestCaseAbstract
     {
         $curl = $this->createMock(CurlManagerInterface::class);
         $curl->method('send')->willReturn(new ResponseDto(200, '', 'someBody', []));
-        $conn = new CMUpdateSubscriptionConnector($curl, ['cert' => '', 'ca' => '']);
+        $conn = new CMUpdateSubscriptionConnector($curl);
 
         $res = $conn->processAction((new ProcessDto())
             ->setData('{"email":"eml@eml.com"}')

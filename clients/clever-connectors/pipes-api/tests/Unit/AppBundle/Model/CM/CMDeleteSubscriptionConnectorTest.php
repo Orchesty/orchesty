@@ -24,7 +24,7 @@ final class CMDeleteSubscriptionConnectorTest extends KernelTestCaseAbstract
     {
         $curl = $this->createMock(CurlManagerInterface::class);
         $curl->method('send')->willReturn(new ResponseDto(200, '', 'someBody', []));
-        $conn = new CMDeleteSubscriptionConnector($curl, ['cert' => '', 'ca' => '']);
+        $conn = new CMDeleteSubscriptionConnector($curl);
 
         $res = $conn->processAction((new ProcessDto())
             ->setData('{"email":"eml@eml.com"}')
