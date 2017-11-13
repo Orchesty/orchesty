@@ -37,6 +37,8 @@ final class TopologyNameUtils
     public const UNSUBSCRIBE_CONTACT = 'unsubscribe-contact';
     public const HARD_BOUNCE_CONTACT = 'hard-bounce-contact';
 
+    public const SWITCH_TOKEN = 'switch-token';
+
     /**
      * @var array
      */
@@ -57,6 +59,7 @@ final class TopologyNameUtils
         self::UPDATE_CONTACT,
         self::UNSUBSCRIBE_CONTACT,
         self::HARD_BOUNCE_CONTACT,
+        self::SWITCH_TOKEN,
     ];
 
     /**
