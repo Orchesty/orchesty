@@ -16,8 +16,7 @@ services:
         class: CleverConnectors\AppBundle\Listeners\WebhookSecurityListener
         arguments:
             - '@doctrine_mongodb.odm.default_document_manager'
-            - '@hbpf.transport.curl_manager'
-            - '%clevermonitor%'
+            - '@cc.transport.curl.manager'
         tags: ['kernel.event_subscriber']
 
     cc.plugins.security.listener:

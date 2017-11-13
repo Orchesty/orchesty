@@ -10,7 +10,6 @@ use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Exception;
 use GuzzleHttp\Psr7\Uri;
-use GuzzleHttp\RequestOptions;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -36,22 +35,15 @@ class WebhookSecurityListener implements EventSubscriberInterface
     private $curl;
 
     /**
-     * @var array
-     */
-    private $secret;
-
-    /**
      * WebhookSecurityListener constructor.
      *
      * @param DocumentManager      $dm
      * @param CurlManagerInterface $curl
-     * @param array                $secret
      */
-    function __construct(DocumentManager $dm, CurlManagerInterface $curl, array $secret)
+    function __construct(DocumentManager $dm, CurlManagerInterface $curl)
     {
-        $this->repo   = $dm->getRepository(Webhook::class);
-        $this->curl   = $curl;
-        $this->secret = $secret;
+        $this->repo = $dm->getRepository(Webhook::class);
+        $this->curl = $curl;
     }
 
     /**
@@ -79,6 +71,7 @@ class WebhookSecurityListener implements EventSubscriberInterface
                 'nodeName'     => $params['nodeName'],
                 'topologyName' => $params['topologyName'],
             ]);
+
             if (!$res) {
                 throw new CleverConnectorsException(
                     sprintf('Webhook with (nodeName, topologyName) [%s, %s] was not found.',
@@ -96,24 +89,23 @@ class WebhookSecurityListener implements EventSubscriberInterface
                 'Accept'    => 'application/json',
                 'X-Api-Key' => sprintf('%s:%s', $params['userId'], $params['token']),
             ]);
-            try {
-                $req = $this->curl->send($req, [
-                    RequestOptions::CERT    => $this->secret['cert'],
-                    RequestOptions::SSL_KEY => $this->secret['cert'],
-                    RequestOptions::VERIFY  => $this->secret['ca'],
-                ]);
 
-                $req  = $req->getStatusCode();
+            try {
+                $req  = $this->curl->send($req);
+                $code = $req->getStatusCode();
                 $text = '';
             } catch (Exception $e) {
-                $req  = 400;
+                $code = 400;
                 $text = $e->getMessage();
             }
 
-            if ($req != 200) {
+            if ($code != 200) {
                 throw new CleverConnectorsException(
-                    sprintf('User [%s] with token [%s] was not found. || ' . $text,
-                        $params['userId'], $params['token']),
+                    sprintf(
+                        'User [%s] with token [%s] was not found. || ' . $text,
+                        $params['userId'],
+                        $params['token']
+                    ),
                     CleverConnectorsException::USER_TOKEN_NOT_EXISTS
                 );
             }

@@ -97,3 +97,8 @@ services:
             - '@cc.plugins.security_manager'
             - '@cc.systems.handler'
 
+    cc.transport.curl.manager:
+        class: CleverConnectors\AppBundle\Transport\Curl\CMCurlManager
+        arguments:
+            - '@hbpf.transport.curl_client_factory'
+            - '%clevermonitor%'

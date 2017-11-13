@@ -32,7 +32,7 @@ final class WebhookControllerTest extends ControllerTestCaseAbstract
             ->disableOriginalConstructor()
             ->getMock();
         $curl->method('send')->willReturn($resp);
-        $this->client->getContainer()->set('hbpf.transport.curl_manager', $curl);
+        $this->client->getContainer()->set('cc.transport.curl.manager', $curl);
 
         $web = (new Webhook())
             ->setSystemKey('systemKey')
