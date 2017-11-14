@@ -8,6 +8,7 @@ use CleverConnectors\AppBundle\Model\Plugins\PluginsSecurityManager;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
 use PHPUnit_Framework_MockObject_MockObject;
+use Symfony\Component\HttpFoundation\HeaderBag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
 use Tests\KernelTestCaseAbstract;
@@ -35,20 +36,23 @@ final class PluginsSecurityListenerTest extends KernelTestCaseAbstract
         /** @var PluginsSecurityManager|PHPUnit_Framework_MockObject_MockObject $security */
         $security = $this->createMock(PluginsSecurityManager::class);
 
+        $request          = new Request();
+        $request->headers = new HeaderBag([
+            'cm-token' => 'token',
+            'cm-guid'  => 'userId',
+        ]);
+
         /** @var FilterControllerEvent|PHPUnit_Framework_MockObject_MockObject $controllerEvent */
         $controllerEvent = $this->createMock(FilterControllerEvent::class);
         $controllerEvent->method('getController')->willReturn([$controller, 'installAction']);
-        $controllerEvent->method('getRequest')->willReturn(new Request([], [], [
-            'token'  => 'token',
-            'userId' => 'userId',
-        ]));
+        $controllerEvent->method('getRequest')->willReturn($request);
 
         $security = new PluginsSecurityListener($security, $curlManager);
         $security->checkSecurity($controllerEvent);
         $headers = $controllerEvent->getRequest()->headers;
 
-        $this->assertEquals('userId', $headers->get('pf-guid'));
-        $this->assertEquals('token', $headers->get('pf-token'));
+        $this->assertEquals('userId', $headers->get('cm-guid'));
+        $this->assertEquals('token', $headers->get('cm-token'));
     }
 
 }
