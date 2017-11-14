@@ -5,6 +5,7 @@ namespace CleverConnectors\AppBundle\Listeners;
 use CleverConnectors\AppBundle\Controller\PluginsController;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Plugins\PluginsSecurityManager;
+use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Exception;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
@@ -62,6 +63,9 @@ class PluginsSecurityListener implements EventSubscriberInterface
 
                 $userId = $eventReq->attributes->get('userId');
                 $token  = $eventReq->attributes->get('token');
+
+                $ev->getRequest()->headers->set(CMHeaders::createKey(CMHeaders::GUID), $userId);
+                $ev->getRequest()->headers->set(CMHeaders::createKey(CMHeaders::TOKEN), $token);
 
                 $req = new RequestDto('GET', new Uri('https://api.dev.clevermonitor.com/v1.2'));
                 $req->setHeaders([
