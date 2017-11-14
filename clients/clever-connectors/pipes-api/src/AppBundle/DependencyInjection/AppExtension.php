@@ -44,6 +44,7 @@ class AppExtension extends Extension implements PrependExtensionInterface
 
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('parameters.yml');
+        $loader->load('commands.yml');
         $loader->load('dev_services.yml');
         $loader->load('listeners.yml');
         $loader->load('custom_nodes.yml');
