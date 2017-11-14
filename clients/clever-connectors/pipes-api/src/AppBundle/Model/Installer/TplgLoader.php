@@ -22,6 +22,16 @@ class TplgLoader
     public const TPLG = '.tplg';
 
     /**
+     * @param string $name
+     *
+     * @return string
+     */
+    public static function getName(string $name): string
+    {
+        return str_replace(self::TPLG, '', $name);
+    }
+
+    /**
      * @param string $dir
      *
      * @return array
@@ -33,7 +43,7 @@ class TplgLoader
         $finder->name(sprintf('*%s', self::TPLG))->in($dir);
 
         foreach ($finder as $file) {
-            $key         = str_replace(self::TPLG, '', $file->getFilename());
+            $key         = self::getName($file->getFilename());
             $files[$key] = $file;
         }
         unset($finder);

@@ -9,8 +9,8 @@
 
 namespace CleverConnectors\AppBundle\Model\Installer\Dto;
 
+use CleverConnectors\AppBundle\Model\Installer\TplgLoader;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
-use Symfony\Component\Finder\SplFileInfo;
 
 /**
  * Class CompareResultDto
@@ -26,12 +26,12 @@ final class CompareResultDto
     private $delete = [];
 
     /**
-     * @var array|SplFileInfo
+     * @var array|TopologyFile[]
      */
     private $create = [];
 
     /**
-     * @var array|SplFileInfo
+     * @var array|UpdateObject[]
      */
     private $update = [];
 
@@ -44,17 +44,17 @@ final class CompareResultDto
     }
 
     /**
-     * @param SplFileInfo $file
+     * @param TopologyFile $file
      */
-    public function addCreate(SplFileInfo $file): void
+    public function addCreate(TopologyFile $file): void
     {
         $this->create[] = $file;
     }
 
     /**
-     * @param SplFileInfo $file
+     * @param UpdateObject $file
      */
-    public function addUpdate(SplFileInfo $file): void
+    public function addUpdate(UpdateObject $file): void
     {
         $this->update[] = $file;
     }
@@ -68,7 +68,7 @@ final class CompareResultDto
     }
 
     /**
-     * @return array|SplFileInfo
+     * @return array|TopologyFile[]
      */
     public function getCreate(): array
     {
@@ -76,11 +76,89 @@ final class CompareResultDto
     }
 
     /**
-     * @return array|SplFileInfo
+     * @return array|UpdateObject[]
      */
     public function getUpdate(): array
     {
         return $this->update;
+    }
+
+    /**
+     * @param bool $create
+     * @param bool $update
+     * @param bool $delete
+     *
+     * @return array
+     */
+    public function toArray(bool $create, bool $update, bool $delete): array
+    {
+        $ret = [];
+
+        if ($create) {
+            $ret['create'] = $this->getArrayFromFiles($this->create);
+        }
+
+        if ($update) {
+            $ret['update'] = $this->getArrayFromUpdateObj($this->update);
+        }
+
+        if ($delete) {
+            $ret['delete'] = $this->getArrayFromTopologies($this->delete);
+        }
+
+        return $ret;
+    }
+
+    /**
+     * --------------------------------------- HELPERS --------------------------------------------
+     */
+
+    /**
+     * @param array| TopologyFile[] $arr
+     *
+     * @return array
+     */
+    private function getArrayFromFiles(array $arr): array
+    {
+        $ret = [];
+
+        foreach ($arr as $item) {
+            $ret[] = TplgLoader::getName($item->getName());
+        }
+
+        return $ret;
+    }
+
+    /**
+     * @param array| Topology[] $arr
+     *
+     * @return array
+     */
+    private function getArrayFromTopologies(array $arr): array
+    {
+        $ret = [];
+
+        foreach ($arr as $item) {
+            $ret[] = $item->getName();
+        }
+
+        return $ret;
+    }
+
+    /**
+     * @param array| UpdateObject[] $arr
+     *
+     * @return array
+     */
+    private function getArrayFromUpdateObj(array $arr): array
+    {
+        $ret = [];
+
+        foreach ($arr as $item) {
+            $ret[] = $item->getTopology()->getName();
+        }
+
+        return $ret;
     }
 
 }

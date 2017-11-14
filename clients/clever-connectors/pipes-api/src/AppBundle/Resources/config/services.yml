@@ -102,3 +102,14 @@ services:
         arguments:
             - '@hbpf.transport.curl_client_factory'
             - '%clevermonitor%'
+
+    cc.install.manager:
+        class: CleverConnectors\AppBundle\Model\Installer\InstallManager
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@snc_redis.default'
+            - '@hbpf.configurator.manager.topology'
+            - '@hbpf.topology_generator.request.request_handler'
+            - ['%connectors_topologies%']
+        calls:
+            - [setLogger, ['@monolog.logger']]
