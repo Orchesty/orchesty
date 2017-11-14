@@ -106,7 +106,12 @@ class SystemHandler
     {
         ControllerUtils::checkParameters(['token'], $data);
 
-        $this->isSystemInstalled($user, $system);
+        if ($this->isSystemInstalled($user, $system)) {
+            throw new CleverConnectorsException(
+                'Requested system has already been installed for current user.',
+                CleverConnectorsException::SYSTEM_ALREADY_INSTALLED
+            );
+        }
 
         $systemInstall = $this->manager->installSystem($user, $system, $data['token']);
 
@@ -212,21 +217,17 @@ class SystemHandler
      * @param string $user
      * @param string $system
      *
+     * @return bool
      * @throws CleverConnectorsException
      */
-    public function isSystemInstalled(string $user, string $system): void
+    public function isSystemInstalled(string $user, string $system): bool
     {
         $systemInstall = $this->dm->getRepository(SystemInstall::class)->findOneBy([
             'user'   => $user,
             'system' => $system,
         ]);
 
-        if ($systemInstall) {
-            throw new CleverConnectorsException(
-                'Requested system has already been installed for current user.',
-                CleverConnectorsException::SYSTEM_ALREADY_INSTALLED
-            );
-        }
+        return $systemInstall ? TRUE : FALSE;
     }
 
 }

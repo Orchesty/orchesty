@@ -77,25 +77,41 @@ class PluginsManager
      * @param Request $request
      *
      * @return array
+     * @throws SystemException
      */
     public function install(Request $request): array
     {
         $url     = $this->getUrl($request);
         $headers = $request->headers->all();
 
-        $system = $this->manager->installSystem(
-            PluginHeadersEnum::get(PluginHeadersEnum::GUID, $headers),
-            PluginHeadersEnum::get(PluginHeadersEnum::SYSTEM, $headers),
-            PluginHeadersEnum::get(PluginHeadersEnum::TOKEN, $headers)
-        );
-        $system->setPluginVersion(PluginHeadersEnum::get(PluginHeadersEnum::VERSION, $headers))
-            ->setSettings([
-                SystemInstall::SYSTEM_URL => $url,
-            ]);
+        $guid   = PluginHeadersEnum::get(PluginHeadersEnum::GUID, $headers);
+        $system = PluginHeadersEnum::get(PluginHeadersEnum::SYSTEM, $headers);
+        $token  = PluginHeadersEnum::get(PluginHeadersEnum::TOKEN, $headers);
+
+        $systemInstall = $this->manager->getSystemInstallOrNull($guid, $system);
+
+        if ($systemInstall) {
+            $settings = $systemInstall->getSettings();
+            if ($systemInstall->getToken() !== $token) {
+                throw new SystemException('Authorization failed, check token used.', SystemException::MISMATCH_TOKEN);
+            } elseif ($this->checkUrl($url, $settings) === FALSE) {
+                throw new SystemException(
+                    'This connector is already in use. Uninstall the connector and install it again with the new location.',
+                    SystemException::MISMATCH_URL
+                );
+            } else {
+                return $this->systemToArray($systemInstall);
+            }
+        }
+
+        $systemInstall = $this->manager->installSystem($guid, $system, $token);
+        $systemInstall
+            ->setPluginVersion(PluginHeadersEnum::get(PluginHeadersEnum::VERSION, $headers))
+            ->setSettings([SystemInstall::SYSTEM_URL => $url]);
 
         $this->dm->flush();
 
-        return $this->systemToArray($system);
+        return $this->systemToArray($systemInstall);
     }
 
     /**
@@ -107,24 +123,26 @@ class PluginsManager
      */
     public function check(SystemInstall $systemInstall, Request $request): array
     {
-        $body = json_decode($request->getContent(), TRUE);
-        $sett = $systemInstall->getSettings();
+        $body     = json_decode($request->getContent(), TRUE);
+        $settings = $systemInstall->getSettings();
+        $url      = $this->getUrl($request);
 
         if (!$systemInstall->getPluginVersion()) {
             $systemInstall->setPluginVersion($body[SystemInstall::PLUGIN_VERSION]);
         }
 
-        $url = $this->getUrl($request);
-        if (!array_key_exists(SystemInstall::SYSTEM_URL, $sett)) {
-            $sett[SystemInstall::SYSTEM_URL] = $url;
-        } else if ($sett[SystemInstall::SYSTEM_URL] !== $url) {
+        if ($this->checkUrl($url, $settings) === FALSE) {
             throw new SystemException(
                 sprintf('System url from request [%s] does not matched saved url in systemInstall [%s].',
-                    $url, $sett[SystemInstall::SYSTEM_URL]
+                    $this->getUrl($request), $systemInstall->getSettings()[SystemInstall::SYSTEM_URL]
                 ),
                 SystemException::MISMATCH_URL
             );
         }
+
+        $settings[SystemInstall::SYSTEM_URL] = $url;
+        $systemInstall->setSettings($settings);
+        $this->dm->flush();
 
         return $this->systemToArray($systemInstall);
     }
@@ -228,6 +246,24 @@ class PluginsManager
             SystemInstall::EVENT_UNSUBSCRIBE => $systemInstall->isEventUnsubscribe(),
             SystemInstall::EVENT_HARD_BOUNCE => $systemInstall->isEventHardBounce(),
         ];
+    }
+
+    /**
+     * @param string $url
+     * @param array  $settings
+     *
+     * @return bool
+     */
+    private function checkUrl(string $url, array $settings): bool
+    {
+        if (
+            array_key_exists(SystemInstall::SYSTEM_URL, $settings) &&
+            $settings[SystemInstall::SYSTEM_URL] !== $url
+        ) {
+            return FALSE;
+        } else {
+            return TRUE;
+        }
     }
 
 }

@@ -27,20 +27,26 @@ final class PluginsManagerTest extends KernelTestCaseAbstract
 {
 
     /**
-     * @covers PluginsManager::install()
-     * @covers PluginsManager::getUrl()
+     *
      */
     public function testInstall(): void
     {
         $sys = new SystemInstall();
         $sys->setUser('usr')
             ->setToken('tkn')
-            ->setSystem('sys');
+            ->setSystem('sys')
+            ->setSettings(['system_url' => 'https://abc']);
 
         /** @var SystemManager|PHPUnit_Framework_MockObject_MockObject $manager */
         $manager = $this->createMock(SystemManager::class);
-        $manager->expects($this->once())
-            ->method('installSystem')->willReturn($sys);
+        $manager
+            ->expects($this->once())
+            ->method('installSystem')
+            ->willReturn($sys);
+        $manager
+            ->expects($this->exactly(1))
+            ->method('getSystemInstallOrNull')
+            ->willReturn(NULL);
 
         $plug = $this->mockPluginsManager(NULL, NULL, $manager);
         $req  = new Request();
@@ -48,6 +54,7 @@ final class PluginsManagerTest extends KernelTestCaseAbstract
         $req->headers->set(PluginHeadersEnum::GUID, 'usr');
         $req->headers->set(PluginHeadersEnum::SYSTEM, 'sys');
         $req->headers->set(PluginHeadersEnum::VERSION, 'ver');
+        $req->headers->set('HOST', 'abc');
 
         $res = $plug->install($req);
         self::assertEquals([
@@ -55,11 +62,127 @@ final class PluginsManagerTest extends KernelTestCaseAbstract
             'token'            => 'tkn',
             'synchronized'     => FALSE,
             'pluginVersion'    => 'ver',
-            'system_url'       => 'https:',
+            'system_url'       => 'https://abc',
             'eventCreate'      => FALSE,
             'eventUnsubscribe' => FALSE,
             'eventHardBounce'  => FALSE,
         ], $res);
+    }
+
+    /**
+     * @covers PluginsManager::install()
+     * @covers PluginsManager::getUrl()
+     */
+    public function testInstall2(): void
+    {
+        $sys = new SystemInstall();
+        $sys->setUser('usr')
+            ->setToken('tkn')
+            ->setSystem('sys')
+            ->setSettings(['system_url' => 'https://abc']);
+
+        /** @var SystemManager|PHPUnit_Framework_MockObject_MockObject $manager */
+        $manager = $this->createMock(SystemManager::class);
+        $manager
+            ->expects($this->exactly(0))
+            ->method('installSystem')
+            ->willReturn($sys);
+        $manager
+            ->expects($this->once())
+            ->method('getSystemInstallOrNull')
+            ->willReturn($sys);
+
+        $plug = $this->mockPluginsManager(NULL, NULL, $manager);
+        $req  = new Request();
+        $req->headers->set(PluginHeadersEnum::TOKEN, 'tkn');
+        $req->headers->set(PluginHeadersEnum::GUID, 'usr');
+        $req->headers->set(PluginHeadersEnum::SYSTEM, 'sys');
+        $req->headers->set(PluginHeadersEnum::VERSION, 'ver');
+        $req->headers->set('HOST', 'abc');
+
+        $res = $plug->install($req);
+        self::assertEquals([
+            'system'           => 'sys',
+            'token'            => 'tkn',
+            'synchronized'     => FALSE,
+            'pluginVersion'    => NULL,
+            'system_url'       => 'https://abc',
+            'eventCreate'      => FALSE,
+            'eventUnsubscribe' => FALSE,
+            'eventHardBounce'  => FALSE,
+        ], $res);
+    }
+
+    /**
+     *
+     */
+    public function testInstall3(): void
+    {
+        $sys = new SystemInstall();
+        $sys->setUser('usr')
+            ->setToken('tkn_abc')
+            ->setSystem('sys')
+            ->setSettings(['system_url' => 'https://abc']);
+
+        /** @var SystemManager|PHPUnit_Framework_MockObject_MockObject $manager */
+        $manager = $this->createMock(SystemManager::class);
+        $manager
+            ->expects($this->exactly(0))
+            ->method('installSystem')
+            ->willReturn($sys);
+        $manager
+            ->expects($this->exactly(1))
+            ->method('getSystemInstallOrNull')
+            ->willReturn($sys);
+
+        $plug = $this->mockPluginsManager(NULL, NULL, $manager);
+        $req  = new Request();
+        $req->headers->set(PluginHeadersEnum::TOKEN, 'tkn');
+        $req->headers->set(PluginHeadersEnum::GUID, 'usr');
+        $req->headers->set(PluginHeadersEnum::SYSTEM, 'sys');
+        $req->headers->set(PluginHeadersEnum::VERSION, 'ver');
+        $req->headers->set('HOST', 'abc');
+
+        $this->expectException(SystemException::class);
+        $this->expectExceptionCode(SystemException::MISMATCH_TOKEN);
+
+        $plug->install($req);
+    }
+
+    /**
+     *
+     */
+    public function testInstall4(): void
+    {
+        $sys = new SystemInstall();
+        $sys->setUser('usr')
+            ->setToken('tkn')
+            ->setSystem('sys')
+            ->setSettings(['system_url' => 'https://abc_xyz']);
+
+        /** @var SystemManager|PHPUnit_Framework_MockObject_MockObject $manager */
+        $manager = $this->createMock(SystemManager::class);
+        $manager
+            ->expects($this->exactly(0))
+            ->method('installSystem')
+            ->willReturn($sys);
+        $manager
+            ->expects($this->exactly(1))
+            ->method('getSystemInstallOrNull')
+            ->willReturn($sys);
+
+        $plug = $this->mockPluginsManager(NULL, NULL, $manager);
+        $req  = new Request();
+        $req->headers->set(PluginHeadersEnum::TOKEN, 'tkn');
+        $req->headers->set(PluginHeadersEnum::GUID, 'usr');
+        $req->headers->set(PluginHeadersEnum::SYSTEM, 'sys');
+        $req->headers->set(PluginHeadersEnum::VERSION, 'ver');
+        $req->headers->set('HOST', 'abc');
+
+        $this->expectException(SystemException::class);
+        $this->expectExceptionCode(SystemException::MISMATCH_URL);
+
+        $plug->install($req);
     }
 
     /**

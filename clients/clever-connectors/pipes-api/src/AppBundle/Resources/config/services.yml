@@ -95,7 +95,6 @@ services:
         arguments:
             - '@cc.plugins.manager'
             - '@cc.plugins.security_manager'
-            - '@cc.systems.handler'
 
     cc.transport.curl.manager:
         class: CleverConnectors\AppBundle\Transport\Curl\CMCurlManager
