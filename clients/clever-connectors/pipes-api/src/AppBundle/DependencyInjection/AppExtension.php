@@ -69,6 +69,7 @@ class AppExtension extends Extension implements PrependExtensionInterface
         $loader->load('zapier.yml');
         $loader->load('prestashop.yml');
         $loader->load('plugins.yml');
+        $loader->load('opencart.yml');
     }
 
 }
