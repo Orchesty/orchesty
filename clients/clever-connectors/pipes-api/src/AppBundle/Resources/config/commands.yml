@@ -1,0 +1,34 @@
+services:
+    clever_connectors.cron.get_system_callback:
+        class: CleverConnectors\AppBundle\Command\GetSystemsCommand
+        arguments:
+            - '@doctrine.odm.mongodb.document_manager'
+        tags:
+            -  { name: console.command }
+
+    clever_connector.async_command_factory:
+        class: CleverConnectors\AppBundle\Model\Command\AsyncCommandFactory
+        arguments:
+            - '%kernel.project_dir%'
+
+    clever_connectors.cron.get_topology_callback:
+        class: CleverConnectors\AppBundle\Command\GetTopologyCommand
+        arguments:
+            - '@doctrine.odm.mongodb.document_manager'
+        tags:
+            -  { name: console.command }
+
+    clever_connectors.cron.get_installs_by_expires_command:
+        class: CleverConnectors\AppBundle\Command\GetInstallsBeforeExpirationCommand
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '%access_token_refresh_interval%'
+        tags:
+            -  { name: console.command }
+
+    clever_connectors.install_topology_command:
+        class: CleverConnectors\AppBundle\Command\InstallTopologyCommand
+        arguments:
+            - '@cc.install.manager'
+        tags:
+            -  { name: console.command }
