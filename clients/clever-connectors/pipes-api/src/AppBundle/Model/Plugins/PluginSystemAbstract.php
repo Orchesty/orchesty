@@ -3,8 +3,10 @@
 namespace CleverConnectors\AppBundle\Model\Plugins;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Enum\CleverCustomKeysEnum;
 use CleverConnectors\AppBundle\Enum\PluginHeadersEnum;
 use CleverConnectors\AppBundle\Enum\SystemTypeEnum;
+use CleverConnectors\AppBundle\Model\CMEvents\CMEventObject;
 use CleverConnectors\AppBundle\Model\CMEvents\CMEventSystemInterface;
 use CleverConnectors\AppBundle\Model\CMEvents\Traits\CMEventSystemTrait;
 use CleverConnectors\AppBundle\Model\Form\Field;
@@ -13,6 +15,7 @@ use CleverConnectors\AppBundle\Model\Plugins\Requester\SwitchTokenRequester;
 use CleverConnectors\AppBundle\Model\Requester\RequesterInterface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\AuthorizationInterface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\Traits\AuthorizationTrait;
+use CleverConnectors\AppBundle\Utils\TopologyNameUtils;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
@@ -34,6 +37,29 @@ abstract class PluginSystemAbstract implements AuthorizationInterface, CMEventSy
     protected const HARD_BOUNCE_SUBSCRIBER_URL = 'clever_connector/subscriber/hard_bounce?id=%s';
     protected const SYNC_URL                   = 'clever_connector/subscriber?page=%s&limit=%s';
     protected const LIMIT_PER_PAGE             = 50;
+
+    /**
+     * PluginSystemAbstract constructor.
+     */
+    public function __construct()
+    {
+        $this->addCMEvent(new CMEventObject('', SystemInstall::EVENT_CREATE, ''));
+        $this->addCMEvent(new CMEventObject(CleverCustomKeysEnum::UNSUBSCRIBE, SystemInstall::EVENT_UNSUBSCRIBE, ''));
+        $this->addCMEvent(new CMEventObject(CleverCustomKeysEnum::HARD_BOUNCE, SystemInstall::EVENT_HARD_BOUNCE, ''));
+
+        $this->topologyNames[TopologyNameUtils::getTopologyName(TopologyNameUtils::CREATED_SUBSCRIBERS,
+            $this->getKey())] = TopologyNameUtils::getTopologyName(TopologyNameUtils::CREATED_SUBSCRIBERS, 'plugins');
+        $this->topologyNames[TopologyNameUtils::getTopologyName(TopologyNameUtils::UPDATED_SUBSCRIBERS,
+            $this->getKey())] = TopologyNameUtils::getTopologyName(TopologyNameUtils::UPDATED_SUBSCRIBERS, 'plugins');
+        $this->topologyNames[TopologyNameUtils::getTopologyName(TopologyNameUtils::SYNC,
+            $this->getKey())] = TopologyNameUtils::getTopologyName(TopologyNameUtils::SYNC, 'plugins');
+        $this->topologyNames[TopologyNameUtils::getTopologyName(TopologyNameUtils::CREATE_CONTACT,
+            $this->getKey())] = TopologyNameUtils::getTopologyName(TopologyNameUtils::CREATE_CONTACT, 'plugins');
+        $this->topologyNames[TopologyNameUtils::getTopologyName(TopologyNameUtils::UNSUBSCRIBE_CONTACT,
+            $this->getKey())] = TopologyNameUtils::getTopologyName(TopologyNameUtils::UNSUBSCRIBE_CONTACT, 'plugins');
+        $this->topologyNames[TopologyNameUtils::getTopologyName(TopologyNameUtils::HARD_BOUNCE_CONTACT,
+            $this->getKey())] = TopologyNameUtils::getTopologyName(TopologyNameUtils::HARD_BOUNCE_CONTACT, 'plugins');
+    }
 
     /**
      * @param SystemInstall $systemInstall
@@ -152,7 +178,7 @@ abstract class PluginSystemAbstract implements AuthorizationInterface, CMEventSy
      */
     public function getCreateSubscriberUrl(): string
     {
-        return self::CREATE_SUBSCRIBER_URL;
+        return static::CREATE_SUBSCRIBER_URL;
     }
 
     /**
@@ -160,7 +186,7 @@ abstract class PluginSystemAbstract implements AuthorizationInterface, CMEventSy
      */
     public function getUsubscribeSubscriberUrl(): string
     {
-        return self::UNSUBSCRIBE_SUBSCRIBER_URL;
+        return static::UNSUBSCRIBE_SUBSCRIBER_URL;
     }
 
     /**
@@ -168,7 +194,7 @@ abstract class PluginSystemAbstract implements AuthorizationInterface, CMEventSy
      */
     public function getHardBounceSubscriberUrl(): string
     {
-        return self::HARD_BOUNCE_SUBSCRIBER_URL;
+        return static::HARD_BOUNCE_SUBSCRIBER_URL;
     }
 
     /**
@@ -176,7 +202,7 @@ abstract class PluginSystemAbstract implements AuthorizationInterface, CMEventSy
      */
     public function getSyncUrl(): string
     {
-        return self::SYNC_URL;
+        return static::SYNC_URL;
     }
 
     /**
@@ -184,7 +210,7 @@ abstract class PluginSystemAbstract implements AuthorizationInterface, CMEventSy
      */
     public function getLimit(): int
     {
-        return self::LIMIT_PER_PAGE;
+        return static::LIMIT_PER_PAGE;
     }
 
     /**

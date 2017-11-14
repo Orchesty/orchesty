@@ -85,7 +85,7 @@ class PluginsController extends FOSRestController
     public function createSubscriberAction(Request $request): Response
     {
         try {
-            $this->handler->createSubscriber($request->request->all());
+            $this->handler->createSubscriber($request);
 
             return new JsonResponse('', 200);
         } catch (Throwable $e) {
@@ -104,7 +104,7 @@ class PluginsController extends FOSRestController
     public function updateSubscriberAction(Request $request): Response
     {
         try {
-            $this->handler->updateSubscriber($request->request->all());
+            $this->handler->updateSubscriber($request);
 
             return new JsonResponse('', 200);
         } catch (Throwable $e) {
@@ -123,7 +123,7 @@ class PluginsController extends FOSRestController
     public function deleteSubscriberAction(Request $request): Response
     {
         try {
-            $this->handler->deleteSubscriber($request->request->all());
+            $this->handler->deleteSubscriber($request);
 
             return new JsonResponse('', 200);
         } catch (Throwable $e) {

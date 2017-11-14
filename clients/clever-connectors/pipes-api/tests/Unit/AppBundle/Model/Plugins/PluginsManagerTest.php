@@ -125,14 +125,13 @@ final class PluginsManagerTest extends KernelTestCaseAbstract
 
         $sp = $this->mockStartingPoint(
             'sys-' . TopologyNameUtils::CREATED_SUBSCRIBERS,
-            'sys-start-node',
-            '{"data":"data"}'
+            'sys-start-node'
         );
 
         $dm = $this->mockDm(TopologyNameUtils::CREATED_SUBSCRIBERS);
 
         $plug = $this->mockPluginsManager($sp, $dm);
-        $plug->createSubscriber($sys, ['data' => 'data']);
+        $plug->createSubscriber($sys, new Request());
     }
 
     /**
@@ -146,14 +145,13 @@ final class PluginsManagerTest extends KernelTestCaseAbstract
 
         $sp = $this->mockStartingPoint(
             'sys-' . TopologyNameUtils::UPDATED_SUBSCRIBERS,
-            'sys-start-node',
-            '{"data":"data"}'
+            'sys-start-node'
         );
 
         $dm = $this->mockDm(TopologyNameUtils::UPDATED_SUBSCRIBERS);
 
         $plug = $this->mockPluginsManager($sp, $dm);
-        $plug->createSubscriber($sys, ['data' => 'data']);
+        $plug->createSubscriber($sys, new Request());
     }
 
     /**
@@ -167,14 +165,13 @@ final class PluginsManagerTest extends KernelTestCaseAbstract
 
         $sp = $this->mockStartingPoint(
             'sys-' . TopologyNameUtils::DELETED_SUBSCRIBERS,
-            'sys-start-node',
-            '{"data":"data"}'
+            'sys-start-node'
         );
 
         $dm = $this->mockDm(TopologyNameUtils::DELETED_SUBSCRIBERS);
 
         $plug = $this->mockPluginsManager($sp, $dm);
-        $plug->createSubscriber($sys, ['data' => 'data']);
+        $plug->createSubscriber($sys, new Request());
     }
 
     /**
@@ -184,20 +181,18 @@ final class PluginsManagerTest extends KernelTestCaseAbstract
     /**
      * @param string $topology
      * @param string $node
-     * @param string $data
      *
      * @return StartingPoint|PHPUnit_Framework_MockObject_MockObject
      */
-    private function mockStartingPoint(string $topology, string $node, string $data): StartingPoint
+    private function mockStartingPoint(string $topology, string $node): StartingPoint
     {
         $sp = $this->createMock(StartingPoint::class);
         $sp->expects($this->once())
-            ->method('run')->will($this->returnCallback(
-                function (Topology $fTopology, Node $fNode, string $fData)
-                use ($topology, $node, $data): void {
+            ->method('runWithRequest')->will($this->returnCallback(
+                function (Request $fRequest, Topology $fTopology, Node $fNode)
+                use ($topology, $node): void {
                     self::assertEquals($topology, $fTopology->getName());
                     self::assertEquals($node, $fNode->getName());
-                    self::assertEquals($data, $fData);
                 }
             ));
 

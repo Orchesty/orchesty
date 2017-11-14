@@ -222,7 +222,7 @@ final class CMEventsManagerTest extends KernelTestCaseAbstract
         self::assertArrayHasKey('settings', $data);
         self::assertTrue($systemInstall->isEventHardBounce());
         self::assertTrue($systemInstall->isEventCreate());
-        self::assertFalse($systemInstall->isEventUnsubscribe());
+        self::assertTrue($systemInstall->isEventUnsubscribe());
     }
 
     /**

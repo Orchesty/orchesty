@@ -67,6 +67,8 @@ class AppExtension extends Extension implements PrependExtensionInterface
         $loader->load('zoho.yml');
         $loader->load('quickbooks.yml');
         $loader->load('zapier.yml');
+        $loader->load('prestashop.yml');
+        $loader->load('plugins.yml');
     }
 
 }

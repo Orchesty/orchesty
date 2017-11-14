@@ -131,29 +131,29 @@ class PluginsManager
 
     /**
      * @param SystemInstall $systemInstall
-     * @param array         $data
+     * @param Request       $request
      */
-    public function createSubscriber(SystemInstall $systemInstall, array $data): void
+    public function createSubscriber(SystemInstall $systemInstall, Request $request): void
     {
-        $this->startTopologies($systemInstall, TopologyNameUtils::CREATED_SUBSCRIBERS, $data);
+        $this->startTopologies($systemInstall, TopologyNameUtils::CREATED_SUBSCRIBERS, $request);
     }
 
     /**
      * @param SystemInstall $systemInstall
-     * @param array         $data
+     * @param Request       $request
      */
-    public function updateSubscriber(SystemInstall $systemInstall, array $data): void
+    public function updateSubscriber(SystemInstall $systemInstall, Request $request): void
     {
-        $this->startTopologies($systemInstall, TopologyNameUtils::UPDATED_SUBSCRIBERS, $data);
+        $this->startTopologies($systemInstall, TopologyNameUtils::UPDATED_SUBSCRIBERS, $request);
     }
 
     /**
      * @param SystemInstall $systemInstall
-     * @param array         $data
+     * @param Request       $request
      */
-    public function deleteSubscriber(SystemInstall $systemInstall, array $data): void
+    public function deleteSubscriber(SystemInstall $systemInstall, Request $request): void
     {
-        $this->startTopologies($systemInstall, TopologyNameUtils::DELETED_SUBSCRIBERS, $data);
+        $this->startTopologies($systemInstall, TopologyNameUtils::DELETED_SUBSCRIBERS, $request);
     }
 
     /**
@@ -163,11 +163,11 @@ class PluginsManager
     /**
      * @param SystemInstall $systemInstall
      * @param string        $topology
-     * @param array         $data
+     * @param Request       $request
      *
      * @throws Exception
      */
-    private function startTopologies(SystemInstall $systemInstall, string $topology, array $data): void
+    private function startTopologies(SystemInstall $systemInstall, string $topology, Request $request): void
     {
         $system = $this->loader->getSystem($systemInstall->getSystem());
 
@@ -195,7 +195,7 @@ class PluginsManager
             $repo = $this->dm->getRepository(Node::class);
             $node = $repo->getStartingNode($topology);
 
-            $this->startingPoint->run($topology, $node, json_encode($data));
+            $this->startingPoint->runWithRequest($request, $topology, $node);
         }
     }
 

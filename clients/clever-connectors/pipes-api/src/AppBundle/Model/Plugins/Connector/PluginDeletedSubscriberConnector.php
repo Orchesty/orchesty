@@ -15,7 +15,7 @@ class PluginDeletedSubscriberConnector extends PluginWebhookSubscriberConnectorA
      */
     public function getId(): string
     {
-        return 'plugin-deleted-subscribers';
+        return 'plugin-deleted-subscriber';
     }
 
 }

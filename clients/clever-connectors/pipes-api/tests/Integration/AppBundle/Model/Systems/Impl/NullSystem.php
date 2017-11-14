@@ -50,6 +50,7 @@ class NullSystem extends PluginSystemAbstract implements WebhookSystemInterface,
      */
     function __construct(OAuth2Provider $provider)
     {
+        parent::__construct();
         $this->provider        = $provider;
         $this->subscriptions[] = new WebhookSubscribes('node', 'top');
         $this->cmEvents[]      = new CMEventObject('cm_hardbounce', SystemInstall::EVENT_HARD_BOUNCE, 'uriReq');
