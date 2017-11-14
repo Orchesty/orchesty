@@ -190,8 +190,7 @@ class SystemManager
      */
     public function getSystemInstall(string $user, string $system): SystemInstall
     {
-        /** @var SystemInstall $systemInstall */
-        $systemInstall = $this->systemRepository->findOneBy(['user' => $user, 'system' => $system]);
+        $systemInstall = $this->getSystemInstallOrNull($user, $system);
 
         if (!$systemInstall) {
             throw new SystemException(
@@ -199,6 +198,21 @@ class SystemManager
                 SystemException::SYSTEM_OR_USER_NOT_FOUND
             );
         }
+
+        return $systemInstall;
+    }
+
+    /**
+     * @param string $user
+     * @param string $system
+     *
+     * @return SystemInstall|null
+     * @throws SystemException
+     */
+    public function getSystemInstallOrNull(string $user, string $system): ?SystemInstall
+    {
+        /** @var SystemInstall $systemInstall */
+        $systemInstall = $this->systemRepository->findOneBy(['user' => $user, 'system' => $system]);
 
         return $systemInstall;
     }

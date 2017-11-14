@@ -27,22 +27,15 @@ class PluginsHandler
     private $security;
 
     /**
-     * @var SystemHandler
-     */
-    private $handler;
-
-    /**
      * PluginsHandler constructor.
      *
      * @param PluginsManager         $manager
      * @param PluginsSecurityManager $security
-     * @param SystemHandler          $handler
      */
-    public function __construct(PluginsManager $manager, PluginsSecurityManager $security, SystemHandler $handler)
+    public function __construct(PluginsManager $manager, PluginsSecurityManager $security)
     {
         $this->manager  = $manager;
         $this->security = $security;
-        $this->handler  = $handler;
     }
 
     /**
@@ -52,12 +45,6 @@ class PluginsHandler
      */
     public function install(Request $request): array
     {
-        $headers = $request->headers->all();
-        $this->handler->isSystemInstalled(
-            PluginHeadersEnum::get(PluginHeadersEnum::GUID, $headers),
-            PluginHeadersEnum::get(PluginHeadersEnum::SYSTEM, $headers)
-        );
-
         return $this->manager->install($request);
     }
 

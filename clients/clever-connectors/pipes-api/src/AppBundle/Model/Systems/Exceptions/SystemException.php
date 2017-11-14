@@ -21,5 +21,6 @@ final class SystemException extends Exception
     public const MISSING_DATA              = 7;
     public const MISMATCH_URL              = 8;
     public const MISMATCH_VERSION          = 9;
+    public const MISMATCH_TOKEN            = 10;
 
 }
