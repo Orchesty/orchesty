@@ -246,4 +246,18 @@ class NullSystem extends PluginSystemAbstract implements WebhookSystemInterface,
         return new NullRequester([]);
     }
 
+    /**
+     * @param SystemInstall $systemInstall
+     * @param array         $data
+     *
+     * @return array
+     */
+    public function customAction(SystemInstall $systemInstall, array $data): array
+    {
+        $data['processed'] = TRUE;
+        $data['user']      = $systemInstall->getUser();
+
+        return $data;
+    }
+
 }

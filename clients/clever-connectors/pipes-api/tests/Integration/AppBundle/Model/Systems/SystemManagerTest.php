@@ -396,4 +396,42 @@ final class SystemManagerTest extends DatabaseTestCaseAbstract
         self::assertEmpty($this->dm->getRepository(Node::class)->findBy(['topology' => $top->getId()]));
     }
 
+    /**
+     *
+     */
+    public function testRunCustomAction(): void
+    {
+        $sysInstall = new SystemInstall();
+        $sysInstall
+            ->setSystem('null.user.group')
+            ->setUser('123');
+        $this->persistAndFlush($sysInstall);
+
+        $manager = $this->container->get('cc.systems.manager');
+        $result  = $manager->runCustomAction('null.user.group', '123', 'customAction', []);
+
+        self::assertTrue(is_array($result));
+        self::assertNotEmpty($result);
+        self::assertArrayHasKey('processed', $result);
+        self::assertArrayHasKey('user', $result);
+        self::assertTrue($result['processed']);
+        self::assertEquals($sysInstall->getUser(), $result['user']);
+    }
+
+    /**
+     *
+     */
+    public function testRunCustomActionEx(): void
+    {
+        $sysInstall = new SystemInstall();
+        $sysInstall
+            ->setSystem('null.user.group')
+            ->setUser('123');
+        $this->persistAndFlush($sysInstall);
+
+        $manager = $this->container->get('cc.systems.manager');
+        $this->expectException(SystemException::class);
+        $manager->runCustomAction('null.user.group', '123', 'nonExistAction', []);
+    }
+
 }

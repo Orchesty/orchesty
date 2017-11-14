@@ -416,6 +416,28 @@ class SystemManager
     }
 
     /**
+     * @param string $systemKey
+     * @param string $user
+     * @param string $action
+     * @param array  $data
+     *
+     * @return array
+     * @throws SystemException
+     */
+    public function runCustomAction(string $systemKey, string $user, string $action, array $data = []): array
+    {
+        $systemInstall = $this->getSystemInstall($user, $systemKey);
+        /** @var SystemInterface $system */
+        $system = $this->systemLoader->getSystem($systemKey);
+
+        if (method_exists($system, $action)) {
+            return $system->$action($systemInstall, $data);
+        }
+
+        throw new SystemException(sprintf('Action "%s" does not exit for "%s" system.', $action, $systemKey));
+    }
+
+    /**
      * ------------------------------------- HELPERS ----------------------------------------
      */
 
