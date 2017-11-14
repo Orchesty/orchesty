@@ -101,7 +101,7 @@ final class SystemLoaderTest extends KernelTestCaseAbstract
      */
     public function testGetSystemsBySystems(): void
     {
-        $this->assertEquals(18, count($this->loader->getSystems()));
+        $this->assertEquals(20, count($this->loader->getSystems()));
     }
 
 }
