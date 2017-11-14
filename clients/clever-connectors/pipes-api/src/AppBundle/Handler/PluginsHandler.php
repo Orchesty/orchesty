@@ -6,7 +6,6 @@ use CleverConnectors\AppBundle\Enum\PluginHeadersEnum;
 use CleverConnectors\AppBundle\Model\Plugins\PluginsManager;
 use CleverConnectors\AppBundle\Model\Plugins\PluginsSecurityManager;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
-use Hanaboso\PipesFramework\Commons\Utils\PipesHeaders;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -137,8 +136,7 @@ class PluginsHandler
     private function prefixHeader(Request $request, string $key, ?string $toKey = NULL): void
     {
         if ($request->headers->has($key)) {
-            $request->headers->set(CMHeaders::createKey($toKey ?? $key),
-                $request->headers->get($key));
+            $request->headers->set(CMHeaders::createKey($toKey ?? $key), $request->headers->get($key));
             $request->headers->remove($key);
         }
     }
