@@ -114,7 +114,7 @@ class ApiWebhookProvider implements WebhookProviderInterface, LoggerAwareInterfa
             try {
                 $requestDto  = $requester->getRequestDto([
                     RequesterInterface::OBJECT      => $sub,
-                    RequesterInterface::WEBHOOK_URL => $this->getWebhookUrl($userId, $token, $sub),
+                    RequesterInterface::WEBHOOK_URL => $this->getWebhookUrl($systemInstall, $sub),
                 ]);
                 $responseDto = $this->curl->send($requestDto);
                 $id          = $requester->processResponse($responseDto, $systemInstall);
@@ -211,18 +211,16 @@ class ApiWebhookProvider implements WebhookProviderInterface, LoggerAwareInterfa
     }
 
     /**
-     * @param string            $userId
-     * @param string            $token
+     * @param SystemInstall     $systemInstall
      * @param WebhookSubscribes $subscribes
      *
      * @return string
      */
-    private function getWebhookUrl(string $userId, string $token, WebhookSubscribes $subscribes): string
+    private function getWebhookUrl(SystemInstall $systemInstall, WebhookSubscribes $subscribes): string
     {
         return WebhookUtils::getWebhookUrl(
             $this->domain,
-            $userId,
-            $token,
+            $systemInstall,
             $subscribes->getNodeName(),
             $subscribes->getTopologyName()
         );

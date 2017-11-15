@@ -2,6 +2,7 @@
 
 namespace CleverConnectors\AppBundle\Model\Form;
 
+use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 
 /**
@@ -17,11 +18,17 @@ class Field
     public const NUMBER   = 'number';
     public const PASSWORD = 'password';
     public const CHECKBOX = 'checkbox';
+    public const SELECT   = 'select';
 
     /**
      * @var string
      */
     private $type;
+
+    /**
+     * @var string
+     */
+    private $key;
 
     /**
      * @var string
@@ -36,12 +43,7 @@ class Field
     /**
      * @var bool
      */
-    private $required;
-
-    /**
-     * @var string
-     */
-    private $key;
+    private $required = FALSE;
 
     /**
      * @var bool
@@ -59,6 +61,16 @@ class Field
     private $description = '';
 
     /**
+     * @var array
+     */
+    private $choices = [];
+
+    /**
+     * @var string
+     */
+    private $actionUrl = '';
+
+    /**
      * Field constructor.
      *
      * @param string     $type
@@ -66,7 +78,6 @@ class Field
      * @param string     $label
      * @param mixed|null $value
      * @param bool       $required
-     * @param bool       $readOnly
      *
      * @throws CleverConnectorsException
      */
@@ -75,8 +86,7 @@ class Field
         string $key,
         string $label,
         $value = NULL,
-        bool $required = FALSE,
-        bool $readOnly = FALSE
+        bool $required = FALSE
     )
     {
         if (!in_array($type, $this->getTypes())) {
@@ -86,12 +96,11 @@ class Field
             );
         }
 
-        $this->type        = $type;
-        $this->key         = $key;
-        $this->label       = $label;
-        $this->value       = $value;
-        $this->required    = $required;
-        $this->readOnly    = $readOnly;
+        $this->type     = $type;
+        $this->key      = $key;
+        $this->label    = $label;
+        $this->value    = $value;
+        $this->required = $required;
     }
 
     /**
@@ -233,6 +242,54 @@ class Field
     /**
      * @return array
      */
+    public function getChoices(): array
+    {
+        return $this->choices;
+    }
+
+    /**
+     * @param array $choices
+     *
+     * @return Field
+     */
+    public function setChoices(array $choices): Field
+    {
+        $this->choices = $choices;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getActionUrl(): string
+    {
+        return $this->actionUrl;
+    }
+
+    /**
+     * @param SystemInstall $systemInstall
+     * @param string        $host
+     * @param string        $action
+     *
+     * @return Field
+     */
+    public function setAction(SystemInstall $systemInstall, string $host, string $action): Field
+    {
+        $this->actionUrl = sprintf(
+            '%s/system/%s/user/%s/action/%s',
+            rtrim($host),
+            $systemInstall->getSystem(),
+            $systemInstall->getUser(),
+            $action
+        );
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
     public function toArray(): array
     {
         $field = [
@@ -244,6 +301,8 @@ class Field
             'read_only'   => $this->readOnly,
             'disabled'    => $this->disabled,
             'description' => $this->description,
+            'choices'     => $this->choices,
+            'action'      => $this->actionUrl,
         ];
 
         if ($this->type === Field::PASSWORD) {
@@ -264,6 +323,7 @@ class Field
             self::NUMBER,
             self::PASSWORD,
             self::CHECKBOX,
+            self::SELECT,
         ];
     }
 

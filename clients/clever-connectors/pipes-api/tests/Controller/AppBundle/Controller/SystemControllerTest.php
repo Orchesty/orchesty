@@ -173,6 +173,8 @@ final class SystemControllerTest extends ControllerTestCaseAbstract
                         'read_only'   => FALSE,
                         'disabled'    => FALSE,
                         'description' => '',
+                        'action'      => '',
+                        'choices'     => [],
                     ],
                     (object) [
                         'type'        => 'text',
@@ -183,6 +185,8 @@ final class SystemControllerTest extends ControllerTestCaseAbstract
                         'read_only'   => FALSE,
                         'disabled'    => FALSE,
                         'description' => '',
+                        'action'      => '',
+                        'choices'     => [],
                     ],
                     (object) [
                         'type'        => 'password',
@@ -193,6 +197,8 @@ final class SystemControllerTest extends ControllerTestCaseAbstract
                         'read_only'   => FALSE,
                         'disabled'    => FALSE,
                         'description' => '',
+                        'action'      => '',
+                        'choices'     => [],
                     ],
                 ],
             ]),
@@ -236,8 +242,8 @@ final class SystemControllerTest extends ControllerTestCaseAbstract
         $this->assertEquals(200, $response->status);
         $this->assertEquals(
             (object) array_merge($this->getArrayDataForAssert($system), [
-                'authorized'       => FALSE,
-                'setting_fields'   => [
+                'authorized'     => FALSE,
+                'setting_fields' => [
                     (object) [
                         'type'        => 'url',
                         'key'         => 'field1',
@@ -247,6 +253,8 @@ final class SystemControllerTest extends ControllerTestCaseAbstract
                         'read_only'   => FALSE,
                         'disabled'    => FALSE,
                         'description' => '',
+                        'action'      => '',
+                        'choices'     => [],
                     ],
                     (object) [
                         'type'        => 'text',
@@ -257,6 +265,8 @@ final class SystemControllerTest extends ControllerTestCaseAbstract
                         'read_only'   => FALSE,
                         'disabled'    => FALSE,
                         'description' => '',
+                        'action'      => '',
+                        'choices'     => [],
                     ],
                     (object) [
                         'type'        => 'password',
@@ -267,6 +277,8 @@ final class SystemControllerTest extends ControllerTestCaseAbstract
                         'read_only'   => FALSE,
                         'disabled'    => FALSE,
                         'description' => '',
+                        'action'      => '',
+                        'choices'     => [],
                     ],
                 ],
             ]),
@@ -558,8 +570,8 @@ final class SystemControllerTest extends ControllerTestCaseAbstract
             $arr[SystemInstall::EVENT_CREATE]      = $systemInstall->isEventCreate();
             $arr[SystemInstall::EVENT_UNSUBSCRIBE] = $systemInstall->isEventUnsubscribe();
             $arr[SystemInstall::EVENT_HARD_BOUNCE] = $systemInstall->isEventHardBounce();
-            $arr['token']        = $systemInstall->getToken();
-            $arr['synchronized'] = $systemInstall->isSynchronized();
+            $arr['token']                          = $systemInstall->getToken();
+            $arr['synchronized']                   = $systemInstall->isSynchronized();
         }
 
         return $arr;

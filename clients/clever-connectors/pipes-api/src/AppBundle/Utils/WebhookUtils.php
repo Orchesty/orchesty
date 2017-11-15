@@ -9,6 +9,7 @@
 
 namespace CleverConnectors\AppBundle\Utils;
 
+use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Traits\StaticTrait;
 
 /**
@@ -22,23 +23,28 @@ final class WebhookUtils
     use StaticTrait;
 
     /**
-     * @param string $domain
-     * @param string $userId
-     * @param string $token
-     * @param string $nodeName
-     * @param string $topologyName
+     * @param string        $domain
+     * @param SystemInstall $systemInstall
+     * @param string        $nodeName
+     * @param string        $topologyName
      *
      * @return string
      */
     public static function getWebhookUrl(
         string $domain,
-        string $userId,
-        string $token,
+        SystemInstall $systemInstall,
         string $nodeName,
         string $topologyName
     ): string
     {
-        return sprintf('%s/webhook/%s/%s/%s/%s', rtrim($domain, '/'), $userId, $token, $nodeName, $topologyName);
+        return sprintf(
+            '%s/webhook/%s/%s/%s/%s',
+            rtrim($domain, '/'),
+            $systemInstall->getUser(),
+            $systemInstall->getToken(),
+            $nodeName,
+            $topologyName
+        );
     }
 
 }
