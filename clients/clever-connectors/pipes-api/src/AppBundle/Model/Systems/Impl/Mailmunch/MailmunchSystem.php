@@ -117,14 +117,12 @@ class MailmunchSystem implements WebhookSystemInterface, AuthorizationInterface
             'Webhook url',
             WebhookUtils::getWebhookUrl(
                 $this->domain,
-                $systemInstall->getUser(),
-                $systemInstall->getToken(),
+                $systemInstall,
                 'mailmunch-created-email-connector',
                 TopologyNameUtils::getTopologyName(TopologyNameUtils::CREATED_SUBSCRIBERS, $this->getKey())
-            ),
-            FALSE,
-            TRUE
+            )
         );
+        $field1->setReadOnly(TRUE);
 
         $form = new Form();
         $form->addField($field1);

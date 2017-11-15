@@ -174,20 +174,20 @@ class NutshellSystem implements AuthorizationInterface, CMEventSystemInterface, 
             TRUE
         );
 
+        $webhookUrl = WebhookUtils::getWebhookUrl(
+            $this->url,
+            $systemInstall,
+            'nutshell-updated-contact-connector',
+            TopologyNameUtils::getTopologyName(TopologyNameUtils::UPDATED_SUBSCRIBERS, $this->getKey())
+        );
+
         $field3 = new Field(
             Field::URL,
             'webhook_url',
             'Webhook url',
-            WebhookUtils::getWebhookUrl(
-                $this->url,
-                $systemInstall->getUser(),
-                $systemInstall->getToken(),
-                'nutshell-updated-contact-connector',
-                TopologyNameUtils::getTopologyName(TopologyNameUtils::UPDATED_SUBSCRIBERS, $this->getKey())
-            ),
-            FALSE,
-            TRUE
+            $webhookUrl
         );
+        $field3->setReadOnly(TRUE);
 
         $field4 = new Field(
             Field::CHECKBOX,

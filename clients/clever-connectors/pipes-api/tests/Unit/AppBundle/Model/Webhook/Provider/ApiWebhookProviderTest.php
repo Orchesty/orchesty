@@ -77,8 +77,10 @@ final class ApiWebhookProviderTest extends KernelTestCaseAbstract
         $webhookRepo->method('isWebhookRegistred')->willReturn(FALSE);
         $webhookRepo->method('findBy')->willReturn([$webhook]);
 
+        $systemInstall = (new SystemInstall())->setSystem('systems.null.user')->setUser('1')->setToken('2');
+
         $systemRepo = $this->createMock(SystemInstallRepository::class);
-        $systemRepo->method('findOneBy')->willReturn((new SystemInstall())->setSystem('systems.null.user'));
+        $systemRepo->method('findOneBy')->willReturn($systemInstall);
 
         $dm = $this->createMock(DocumentManager::class);
         $dm->method('persist')->willReturn(NULL);

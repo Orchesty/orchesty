@@ -251,8 +251,7 @@ class HubspotSystem implements WebhookSystemInterface, OAuth2Interface, CMEventS
 
         $webhookUrl = WebhookUtils::getWebhookUrl(
             $this->domain,
-            $systemInstall->getUser(),
-            $systemInstall->getToken(),
+            $systemInstall,
             $this->getNodeName(),
             TopologyNameUtils::getTopologyName(TopologyNameUtils::UPDATED_SUBSCRIBERS, $this->getKey())
         );
@@ -260,11 +259,12 @@ class HubspotSystem implements WebhookSystemInterface, OAuth2Interface, CMEventS
         $field2 = new Field(
             Field::URL,
             self::WEBHOOK_URL,
-            'Url where client\'s app should send webhook messages to.',
-            $webhookUrl,
-            FALSE,
-            TRUE
+            'Url',
+            $webhookUrl
         );
+        $field2
+            ->setDescription('Url where client\'s app should send webhook messages to.')
+            ->setRequired(TRUE);
 
         $field3 = new Field(
             Field::CHECKBOX,

@@ -9,6 +9,7 @@
 
 namespace Tests\Unit\AppBundle\Utils;
 
+use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Utils\WebhookUtils;
 use PHPUnit\Framework\TestCase;
 
@@ -25,8 +26,13 @@ final class WebhookUtilsTest extends TestCase
      */
     public function testGetUrl(): void
     {
+        $systemInstalll = new SystemInstall();
+        $systemInstalll
+            ->setUser('usr-guid')
+            ->setToken('tok-en');
+
         $expected = 'http://127.0.0.1/webhook/usr-guid/tok-en/node-name/topo-name';
-        $result   = WebhookUtils::getWebhookUrl('http://127.0.0.1/', 'usr-guid', 'tok-en', 'node-name', 'topo-name');
+        $result   = WebhookUtils::getWebhookUrl('http://127.0.0.1/', $systemInstalll, 'node-name', 'topo-name');
 
         self::assertEquals($expected, $result);
     }

@@ -183,6 +183,8 @@ final class BigcommerceSystemTest extends KernelTestCaseAbstract
                 'read_only'   => FALSE,
                 'disabled'    => FALSE,
                 'description' => '',
+                'action'      => '',
+                'choices'     => [],
             ],
             1 => [
                 'type'        => 'text',
@@ -193,6 +195,8 @@ final class BigcommerceSystemTest extends KernelTestCaseAbstract
                 'read_only'   => FALSE,
                 'disabled'    => FALSE,
                 'description' => '',
+                'action'      => '',
+                'choices'     => [],
             ],
             2 => [
                 'type'        => 'text',
@@ -203,6 +207,8 @@ final class BigcommerceSystemTest extends KernelTestCaseAbstract
                 'read_only'   => FALSE,
                 'disabled'    => FALSE,
                 'description' => '',
+                'action'      => '',
+                'choices'     => [],
             ],
             3 => [
                 'type'        => 'checkbox',
@@ -213,6 +219,8 @@ final class BigcommerceSystemTest extends KernelTestCaseAbstract
                 'read_only'   => FALSE,
                 'disabled'    => FALSE,
                 'description' => '',
+                'action'      => '',
+                'choices'     => [],
             ],
         ], $form);
     }
