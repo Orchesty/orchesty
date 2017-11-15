@@ -1,0 +1,21 @@
+services:
+    systems.shoptet:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Shoptet\ShoptetSystem
+        arguments:
+        tags: ['%systems%']
+
+    hbpf.connector.shoptet-sync-customer-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Shoptet\Connector\ShoptetSyncCustomerConnector
+        arguments:
+            - '@systems.shoptet'
+            - '@hbpf.transport.async_curl_factory'
+            - '@doctrine_mongodb.odm.default_document_manager'
+
+    hbpf.custom_node.shoptet-updated-customer-splitter:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Shoptet\Splitter\ShoptetUpdatedCustomerSplitter
+        arguments:
+            - '@cc.progress_counter.async_progress_counter_service'
+
+    hbpf.custom_node.shoptet-updated-customer-mapper:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Shoptet\Mapper\ShoptetUpdatedCustomerMapper
+        arguments:
