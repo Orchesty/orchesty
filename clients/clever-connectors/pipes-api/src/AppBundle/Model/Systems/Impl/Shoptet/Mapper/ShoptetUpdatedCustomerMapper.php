@@ -23,29 +23,23 @@ class ShoptetUpdatedCustomerMapper implements CustomNodeInterface
      */
     public function process(ProcessDto $dto): ProcessDto
     {
-        $data = json_decode($dto->getData(), TRUE);
+        $customer = json_decode($dto->getData(), TRUE);
 
-        if (!is_array($data) || !array_key_exists('CUSTOMER', $data)) {
-            throw new CleverConnectorsException(
-                'Missing required CUSTOMER field in data.',
-                CleverConnectorsException::MISSING_DATA
-            );
+        if (!is_array($customer)) {
+            throw new CleverConnectorsException('Missing fields in data.', CleverConnectorsException::MISSING_DATA);
         }
 
-        $customer = $data['CUSTOMER'];
-        $guid     = '';
-        $email    = '';
+        $guid  = '';
+        $email = '';
 
-        // takes the first email - can be modified to take the main one (if there is one)
-        if (array_key_exists('ACCOUNTS', $data['CUSTOMER'])) {
-            foreach ($customer['ACCOUNTS'] as $account) {
-                if (array_key_exists('EMAIL', $account) && !empty($account['EMAIL'])) {
-                    $email = $account['EMAIL'];
-                    if (array_key_exists('GUID', $account)) {
-                        $guid = $account['GUID'];
-                    }
-                    break;
-                }
+        if (array_key_exists('ACCOUNT', $customer) &&
+            array_key_exists('EMAIL', $customer['ACCOUNT']) &&
+            !empty($customer['ACCOUNT']['EMAIL'])
+        ) {
+            $account = $customer['ACCOUNT'];
+            $email   = $this->getValue($account['EMAIL']);
+            if (array_key_exists('GUID', $account)) {
+                $guid = $this->getValue($account['GUID']);
             }
         }
 
@@ -62,7 +56,7 @@ class ShoptetUpdatedCustomerMapper implements CustomNodeInterface
         if (array_key_exists('BILLING_ADDRESS', $customer) &&
             array_key_exists('FULL_NAME', $customer['BILLING_ADDRESS'])
         ) {
-            $fullName  = explode(' ', $customer['BILLING_ADDRESS']['FULL_NAME']);
+            $fullName  = explode(' ', $this->getValue($customer['BILLING_ADDRESS']['FULL_NAME']));
             $firstName = $fullName[0] ?? '';
             $lastName  = $fullName[1] ?? '';
 
@@ -75,6 +69,27 @@ class ShoptetUpdatedCustomerMapper implements CustomNodeInterface
         }
 
         return $dto->setData(json_encode($obj->toArray()));
+    }
+
+    /**
+     * @param string $key
+     * @param array  $haystack
+     *
+     * @return bool
+     */
+    private function hasValue(string $key, array $haystack): bool
+    {
+        return array_key_exists($key, $haystack) && array_key_exists('#', $haystack[$key]);
+    }
+
+    /**
+     * @param array $haystack
+     *
+     * @return string
+     */
+    private function getValue(array $haystack): string
+    {
+        return $haystack['#'];
     }
 
 }

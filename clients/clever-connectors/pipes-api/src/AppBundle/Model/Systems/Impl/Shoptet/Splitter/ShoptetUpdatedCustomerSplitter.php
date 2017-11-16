@@ -61,12 +61,14 @@ class ShoptetUpdatedCustomerSplitter implements CustomNodeInterface, BatchInterf
 
         foreach ($customers as $customer) {
             if (array_key_exists('ACCOUNTS', $customer) && is_array($customer['ACCOUNTS'])) {
+
+                $accounts = $customer['ACCOUNTS']['ACCOUNT'];
+                unset($customer['ACCOUNTS']);
                 $newCustomer = $customer;
 
-                $accounts = $customer['ACCOUNTS'];
                 foreach ($accounts as $key => $account) {
                     if (array_key_exists('EMAIL', $account)) {
-                        $newCustomer['ACCOUNTS'] = ['ACCOUNT' => $account];
+                        $newCustomer['ACCOUNT'] = $account;
 
                         $callbackItem($this->createSuccessMessage($newCustomer, $i));
                         unset($accounts[$key]);
@@ -103,18 +105,15 @@ class ShoptetUpdatedCustomerSplitter implements CustomNodeInterface, BatchInterf
      */
     protected function createSuccessMessage(array $customer, int $page): SuccessMessage
     {
-        if (is_array($customer) && array_key_exists('CUSTOMER', $customer)) {
+        if (is_array($customer)) {
             $successMessage = new SuccessMessage($page);
-            $successMessage->setData(json_encode($customer['CUSTOMER']));
+            $successMessage->setData(json_encode($customer));
             unset($customer);
 
             return $successMessage;
         }
 
-        throw new SystemException(
-            'Missing [CUSTOMER] key in response data from Shoptet.',
-            SystemException::MISSING_DATA
-        );
+        throw new SystemException('Missing response data from Shoptet.', SystemException::MISSING_DATA);
     }
 
 }

@@ -11,6 +11,13 @@ services:
             - '@hbpf.transport.async_curl_factory'
             - '@doctrine_mongodb.odm.default_document_manager'
 
+    hbpf.connector.shoptet-updated-customer-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Shoptet\Connector\ShoptetUpdatedCustomerConnector
+        arguments:
+            - '@systems.shoptet'
+            - '@hbpf.transport.async_curl_factory'
+            - '@doctrine_mongodb.odm.default_document_manager'
+
     hbpf.custom_node.shoptet-updated-customer-splitter:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Shoptet\Splitter\ShoptetUpdatedCustomerSplitter
         arguments:
