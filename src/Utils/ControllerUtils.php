@@ -56,7 +56,7 @@ class ControllerUtils
             PipesHeaders::createKey(PipesHeaders::RESULT_DETAIL)  => $detail,
         ];
 
-        return array_merge($array, $headers);
+        return array_merge($array, PipesHeaders::clear($headers));
     }
 
     /**
