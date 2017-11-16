@@ -2,9 +2,9 @@
 
 namespace Hanaboso\PipesFramework\Utils;
 
-use Exception;
 use Hanaboso\PipesFramework\Commons\Exception\PipesFrameworkException;
 use Hanaboso\PipesFramework\Commons\Utils\PipesHeaders;
+use Throwable;
 
 /**
  * Class ControllerUtils
@@ -15,11 +15,11 @@ class ControllerUtils
 {
 
     /**
-     * @param Exception $exception
+     * @param Throwable $exception
      *
      * @return string
      */
-    public static function createExceptionData(Exception $exception): string
+    public static function createExceptionData(Throwable $exception): string
     {
         return json_encode([
             'status'     => 'ERROR',
@@ -31,11 +31,11 @@ class ControllerUtils
 
     /**
      * @param array          $headers
-     * @param Exception|null $e
+     * @param Throwable|null $e
      *
      * @return array
      */
-    public static function createHeaders(array $headers = [], ?Exception $e = NULL): array
+    public static function createHeaders(array $headers = [], ?Throwable $e = NULL): array
     {
         $code    = 0;
         $status  = 'OK';
