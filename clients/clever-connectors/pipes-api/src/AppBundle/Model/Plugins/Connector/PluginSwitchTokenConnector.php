@@ -7,6 +7,7 @@ use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Plugins\PluginSystemAbstract;
 use CleverConnectors\AppBundle\Model\Systems\SystemLoader;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
+use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
@@ -90,7 +91,9 @@ class PluginSwitchTokenConnector implements ConnectorInterface
             'uri'  => $system->createUri($systemInstall, $system->getSwitchTokenUrl()),
         ];
         $requester = $system->getSwitchTokenRequester($systemInstall);
-        $res       = $this->curl->send($requester->getRequestDto($params));
+        $req       = $requester->getRequestDto($params);
+        $req->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()));
+        $res = $this->curl->send($req);
 
         $requester->processResponse($res, $systemInstall);
 

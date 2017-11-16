@@ -8,6 +8,7 @@ use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Plugins\PluginSystemAbstract;
 use CleverConnectors\AppBundle\Model\Systems\SystemLoader;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
+use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
@@ -81,6 +82,7 @@ abstract class PluginSubscriberConnectorAbstract implements ConnectorInterface
         $uri    = $system->createUri($systemInstall, $this->getUri($system, $dto));
         $reqDto = $system->getRequestDto($systemInstall, $this->getMethod());
         $reqDto
+            ->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()))
             ->setBody($this->getBody($dto))
             ->setUri($uri);
 
