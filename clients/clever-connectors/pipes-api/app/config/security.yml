@@ -25,7 +25,7 @@ security:
             pattern: ^/(event/*)
             security: false
         unsecured_clever_monitor:
-            pattern: ^/(user_systems/*|systems/*)
+            pattern: ^/(user_systems/*|systems/*|system/*)
             security: false
         unsecured_starting_point:
             pattern: ^/(topologies/\w+/nodes/[\w-]+/run|api/topologies/\w+/nodes/[\w-]+/run)

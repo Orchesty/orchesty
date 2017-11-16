@@ -299,6 +299,29 @@ class SystemController extends FOSRestController
     }
 
     /**
+     * @Route("/system/{system}/user/{user}/action/{action}")
+     * @Method({"GET", "POST","OPTIONS"})
+     *
+     * @param Request $request
+     * @param string  $system
+     * @param string  $user
+     * @param string  $action
+     *
+     * @return Response
+     */
+    public function runCustomActionAction(Request $request, string $system, string $user, string $action): Response
+    {
+        try {
+            $data = $request->request->all();
+            $data = $this->handler->runCustomAction($system, $user, $action, $data);
+
+            return new JsonResponse($data, 200);
+        } catch (SystemException $e) {
+            return self::processException($e);
+        }
+    }
+
+    /**
      * @param Exception $e
      *
      * @return Response
@@ -311,6 +334,7 @@ class SystemController extends FOSRestController
         if ($className == SystemException::class) {
             $sysNotFound = [
                 SystemException::SYSTEM_NOT_FOUND,
+                SystemException::SYSTEM_METHOD_NOT_FOUND,
                 SystemException::SYSTEM_OR_USER_NOT_FOUND,
                 SystemException::SYSTEM_PROPERTY_NOT_FOUND,
             ];
