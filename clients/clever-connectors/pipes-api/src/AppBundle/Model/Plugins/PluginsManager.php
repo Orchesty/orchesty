@@ -221,10 +221,18 @@ class PluginsManager
      * @param Request $request
      *
      * @return string
+     * @throws SystemException
      */
     private function getUrl(Request $request): string
     {
-        return rtrim('https://' . $request->getClientIp(), '/');
+        if (!$request->request->has('remote_host')) {
+            throw new SystemException('Missing parameter "remote_host" in body!');
+        }
+
+        $host = $request->request->get('remote_host');
+        $host = preg_replace('#^https?://#', '', rtrim($host, '/'));
+
+        return sprintf('https://%s', $host);
     }
 
     /**

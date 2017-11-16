@@ -54,7 +54,7 @@ final class PluginsManagerTest extends KernelTestCaseAbstract
         $req->headers->set(PluginHeadersEnum::GUID, 'usr');
         $req->headers->set(PluginHeadersEnum::SYSTEM, 'sys');
         $req->headers->set(PluginHeadersEnum::VERSION, 'ver');
-        $req->server->set('REMOTE_ADDR', 'abc');
+        $req->request->set('remote_host', 'abc');
 
         $res = $plug->install($req);
         self::assertEquals([
@@ -98,7 +98,7 @@ final class PluginsManagerTest extends KernelTestCaseAbstract
         $req->headers->set(PluginHeadersEnum::GUID, 'usr');
         $req->headers->set(PluginHeadersEnum::SYSTEM, 'sys');
         $req->headers->set(PluginHeadersEnum::VERSION, 'ver');
-        $req->server->set('REMOTE_ADDR', 'abc');
+        $req->request->set('remote_host', 'http://abc');
 
         $res = $plug->install($req);
         self::assertEquals([
@@ -141,7 +141,7 @@ final class PluginsManagerTest extends KernelTestCaseAbstract
         $req->headers->set(PluginHeadersEnum::GUID, 'usr');
         $req->headers->set(PluginHeadersEnum::SYSTEM, 'sys');
         $req->headers->set(PluginHeadersEnum::VERSION, 'ver');
-        $req->server->set('REMOTE_ADDR', 'abc');;
+        $req->request->set('remote_host', 'http://abc');
 
         $this->expectException(SystemException::class);
         $this->expectExceptionCode(SystemException::MISMATCH_TOKEN);
@@ -177,7 +177,7 @@ final class PluginsManagerTest extends KernelTestCaseAbstract
         $req->headers->set(PluginHeadersEnum::GUID, 'usr');
         $req->headers->set(PluginHeadersEnum::SYSTEM, 'sys');
         $req->headers->set(PluginHeadersEnum::VERSION, 'ver');
-        $req->server->set('REMOTE_ADDR', 'abc');
+        $req->request->set('remote_host', 'http://abc');
 
         $this->expectException(SystemException::class);
         $this->expectExceptionCode(SystemException::MISMATCH_URL);
@@ -198,19 +198,19 @@ final class PluginsManagerTest extends KernelTestCaseAbstract
             ->setUser('usr')
             ->setToken('tkn')
             ->setSettings([
-                SystemInstall::SYSTEM_URL => 'https:',
+                SystemInstall::SYSTEM_URL => 'https://abc',
             ]);
 
-        $res = $plug->check($sys, new Request([], [], [], [], [], [], json_encode([
-            SystemInstall::PLUGIN_VERSION => 'ver',
-        ])));
+        $req = new Request([], [], [], [], [], [], json_encode([SystemInstall::PLUGIN_VERSION => 'ver']));
+        $req->request->set('remote_host', 'http://abc');
+        $res = $plug->check($sys, $req);
 
         self::assertEquals([
             'system'           => 'sys',
             'token'            => 'tkn',
             'synchronized'     => FALSE,
             'pluginVersion'    => 'ver',
-            'system_url'       => 'https:',
+            'system_url'       => 'https://abc',
             'eventCreate'      => FALSE,
             'eventUnsubscribe' => FALSE,
             'eventHardBounce'  => FALSE,
@@ -230,11 +230,11 @@ final class PluginsManagerTest extends KernelTestCaseAbstract
             ]);
 
         $this->expectException(SystemException::class);
-        $this->expectExceptionMessage('System url from request [https:] does not matched saved url in systemInstall [https://yoru].');
+        $this->expectExceptionMessage('System url from request [https://abc] does not matched saved url in systemInstall [https://yoru].');
 
-        $plug->check($sys, new Request([], [], [], [], [], [], json_encode([
-            SystemInstall::PLUGIN_VERSION => 'ver',
-        ])));
+        $req = new Request([], [], [], [], [], [], json_encode([SystemInstall::PLUGIN_VERSION => 'ver']));
+        $req->request->set('remote_host', 'http://abc');
+        $plug->check($sys, $req);
     }
 
     /**
