@@ -9,6 +9,7 @@
 
 namespace CleverConnectors\AppBundle\Controller;
 
+use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use Exception;
 use FOS\RestBundle\Controller\Annotations\Route;
 use Hanaboso\PipesFramework\Utils\ControllerUtils;
@@ -42,6 +43,14 @@ class ExceptionController
             $code = 404;
         } elseif (in_array($className, [MethodNotAllowedException::class])) {
             $code = 405;
+        } elseif (
+            in_array($className, [CleverConnectorsException::class])
+            && $exception->getCode() == CleverConnectorsException::USER_TOKEN_NOT_EXISTS) {
+            $code = 403;
+        } elseif (
+            in_array($className, [CleverConnectorsException::class])
+            && $exception->getCode() == CleverConnectorsException::WEBHOOK_NOT_FOUND) {
+            $code = 404;
         }
 
         return new Response(ControllerUtils::createExceptionData($exception), $code);

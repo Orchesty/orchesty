@@ -72,7 +72,7 @@ final class WebhookControllerTest extends ControllerTestCaseAbstract
 
         $this->client->request('POST', '/webhook/userId/token/nodeName/topName', [], [], []);
         $res = $this->client->getResponse();
-        self::assertNotEquals(200, $res->getStatusCode());
+        self::assertEquals(403, $res->getStatusCode());
     }
 
     /**
@@ -99,7 +99,7 @@ final class WebhookControllerTest extends ControllerTestCaseAbstract
 
         $this->client->request('POST', '/webhook/userId/token/nodeName/topName', [], [], []);
         $res = $this->client->getResponse();
-        self::assertNotEquals(200, $res->getStatusCode());
+        self::assertEquals(404, $res->getStatusCode());
     }
 
 }

@@ -54,7 +54,7 @@ final class PluginsManagerTest extends KernelTestCaseAbstract
         $req->headers->set(PluginHeadersEnum::GUID, 'usr');
         $req->headers->set(PluginHeadersEnum::SYSTEM, 'sys');
         $req->headers->set(PluginHeadersEnum::VERSION, 'ver');
-        $req->headers->set('HOST', 'abc');
+        $req->server->set('REMOTE_ADDR', 'abc');
 
         $res = $plug->install($req);
         self::assertEquals([
@@ -98,7 +98,7 @@ final class PluginsManagerTest extends KernelTestCaseAbstract
         $req->headers->set(PluginHeadersEnum::GUID, 'usr');
         $req->headers->set(PluginHeadersEnum::SYSTEM, 'sys');
         $req->headers->set(PluginHeadersEnum::VERSION, 'ver');
-        $req->headers->set('HOST', 'abc');
+        $req->server->set('REMOTE_ADDR', 'abc');
 
         $res = $plug->install($req);
         self::assertEquals([
@@ -141,7 +141,7 @@ final class PluginsManagerTest extends KernelTestCaseAbstract
         $req->headers->set(PluginHeadersEnum::GUID, 'usr');
         $req->headers->set(PluginHeadersEnum::SYSTEM, 'sys');
         $req->headers->set(PluginHeadersEnum::VERSION, 'ver');
-        $req->headers->set('HOST', 'abc');
+        $req->server->set('REMOTE_ADDR', 'abc');;
 
         $this->expectException(SystemException::class);
         $this->expectExceptionCode(SystemException::MISMATCH_TOKEN);
@@ -177,7 +177,7 @@ final class PluginsManagerTest extends KernelTestCaseAbstract
         $req->headers->set(PluginHeadersEnum::GUID, 'usr');
         $req->headers->set(PluginHeadersEnum::SYSTEM, 'sys');
         $req->headers->set(PluginHeadersEnum::VERSION, 'ver');
-        $req->headers->set('HOST', 'abc');
+        $req->server->set('REMOTE_ADDR', 'abc');
 
         $this->expectException(SystemException::class);
         $this->expectExceptionCode(SystemException::MISMATCH_URL);
