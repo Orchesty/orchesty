@@ -434,7 +434,10 @@ class SystemManager
             return $system->$action($systemInstall, $data);
         }
 
-        throw new SystemException(sprintf('Action "%s" does not exit for "%s" system.', $action, $systemKey));
+        throw new SystemException(
+            sprintf('Action "%s" does not exist for "%s" system.', $action, $systemKey),
+            SystemException::SYSTEM_METHOD_NOT_FOUND
+        );
     }
 
     /**

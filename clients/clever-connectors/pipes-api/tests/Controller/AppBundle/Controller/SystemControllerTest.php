@@ -20,7 +20,6 @@ final class SystemControllerTest extends ControllerTestCaseAbstract
      */
     public function testGetSystem(): void
     {
-        $this->loginUser('user@example.com', 'pass');
         $response = $this->sendGet('/systems/null.user.group');
         $this->assertEquals(200, $response->status);
         $this->assertEquals((object) $this->getArrayDataForAssert(), $response->content);
@@ -31,7 +30,6 @@ final class SystemControllerTest extends ControllerTestCaseAbstract
      */
     public function testGetSystemNotFound(): void
     {
-        $this->loginUser('user@example.com', 'pass');
         $response = $this->sendGet('/systems/unknown');
         $this->assertEquals(404, $response->status);
     }
@@ -41,7 +39,6 @@ final class SystemControllerTest extends ControllerTestCaseAbstract
      */
     public function testGetSystemsByUser(): void
     {
-        $this->loginUser('user@example.com', 'pass');
         $response = $this->sendGet('/systems', ['user' => 'someUser']);
         $this->assertEquals(200, $response->status);
         $this->assertEquals(
@@ -58,7 +55,6 @@ final class SystemControllerTest extends ControllerTestCaseAbstract
      */
     public function testGetSystemsByUserNotFound(): void
     {
-        $this->loginUser('user@example.com', 'pass');
         $response = $this->sendGet('/systems', ['user' => 'unknown']);
         $res      = $response->content;
 
@@ -72,7 +68,6 @@ final class SystemControllerTest extends ControllerTestCaseAbstract
      */
     public function testGetSystemsByGroup(): void
     {
-        $this->loginUser('user@example.com', 'pass');
         $response = $this->sendGet('/systems', ['group' => 'someGroup']);
         $this->assertEquals(200, $response->status);
         $this->assertEquals(
@@ -89,7 +84,6 @@ final class SystemControllerTest extends ControllerTestCaseAbstract
      */
     public function testGetSystemsByGroupNotFound(): void
     {
-        $this->loginUser('user@example.com', 'pass');
         $response = $this->sendGet('/systems', ['group' => 'unknown']);
         $res      = $response->content;
         $this->assertEquals(404, $response->status);
@@ -102,7 +96,6 @@ final class SystemControllerTest extends ControllerTestCaseAbstract
      */
     public function testGetSystemsByUserAndGroup(): void
     {
-        $this->loginUser('user@example.com', 'pass');
         $response = $this->sendGet('/systems', ['user' => 'someUser', 'group' => 'someGroup']);
         $this->assertEquals(200, $response->status);
         $this->assertEquals(
@@ -116,7 +109,6 @@ final class SystemControllerTest extends ControllerTestCaseAbstract
      */
     public function testGetUserSystems(): void
     {
-        $this->loginUser('user@example.com', 'pass');
         $system1 = (new SystemInstall())
             ->setUser('someUser')
             ->setSystem('null.user.group')
@@ -145,7 +137,6 @@ final class SystemControllerTest extends ControllerTestCaseAbstract
      */
     public function testGetUserSystem(): void
     {
-        $this->loginUser('user@example.com', 'pass');
         $system1 = (new SystemInstall())
             ->setUser('someUser')
             ->setSystem('null.user.group')
@@ -211,7 +202,6 @@ final class SystemControllerTest extends ControllerTestCaseAbstract
      */
     public function testGetUserSystemsNotFound(): void
     {
-        $this->loginUser('user@example.com', 'pass');
         $system = (new SystemInstall())
             ->setUser('someUser')
             ->setSystem('null.user.group')
@@ -228,7 +218,6 @@ final class SystemControllerTest extends ControllerTestCaseAbstract
      */
     public function testInstallSystem(): void
     {
-        $this->loginUser('user@example.com', 'pass');
         $response = $this->sendPost('/user_systems/user/someUser/system/null.user.group/install', [
             'token' => 'token',
         ]);
@@ -291,7 +280,6 @@ final class SystemControllerTest extends ControllerTestCaseAbstract
      */
     public function testInstallSystemNotFound(): void
     {
-        $this->loginUser('user@example.com', 'pass');
         $response = $this->sendPost('/user_systems/user/someUser/system/unknown/install', [
             'token' => 'token',
         ]);
@@ -306,7 +294,6 @@ final class SystemControllerTest extends ControllerTestCaseAbstract
      */
     public function testSaveSystemSettings(): void
     {
-        $this->loginUser('user@example.com', 'pass');
         $system = (new SystemInstall())
             ->setUser('someUser')
             ->setSystem('null.user.group')
@@ -372,7 +359,6 @@ final class SystemControllerTest extends ControllerTestCaseAbstract
      */
     public function testUninstallSystem(): void
     {
-        $this->loginUser('user@example.com', 'pass');
         $system = (new SystemInstall())
             ->setUser('someUser')
             ->setSystem('null.user.group')
@@ -396,7 +382,6 @@ final class SystemControllerTest extends ControllerTestCaseAbstract
      */
     public function testUninstallSystemNotFoundSystem(): void
     {
-        $this->loginUser('user@example.com', 'pass');
         $system = (new SystemInstall())
             ->setUser('someUser')
             ->setSystem('null.user.group')
@@ -415,7 +400,6 @@ final class SystemControllerTest extends ControllerTestCaseAbstract
      */
     public function testUninstallSystemNotFoundUser(): void
     {
-        $this->loginUser('user@example.com', 'pass');
         $system = (new SystemInstall())
             ->setUser('someUser')
             ->setSystem('null.user.group')
@@ -434,7 +418,6 @@ final class SystemControllerTest extends ControllerTestCaseAbstract
      */
     public function testSwitchToken(): void
     {
-        $this->loginUser('user@example.com', 'pass');
         $system = (new SystemInstall())
             ->setUser('someUser')
             ->setSystem('null.user.group')
@@ -463,7 +446,6 @@ final class SystemControllerTest extends ControllerTestCaseAbstract
      */
     public function testSwitchTokenNotFoundSystem(): void
     {
-        $this->loginUser('user@example.com', 'pass');
         $system = (new SystemInstall())
             ->setUser('someUser')
             ->setSystem('null.user.group')
@@ -485,7 +467,6 @@ final class SystemControllerTest extends ControllerTestCaseAbstract
      */
     public function testSwitchTokenNotFoundUser(): void
     {
-        $this->loginUser('user@example.com', 'pass');
         $system = (new SystemInstall())
             ->setUser('someUser')
             ->setSystem('null.user.group')
@@ -524,8 +505,6 @@ final class SystemControllerTest extends ControllerTestCaseAbstract
      */
     public function testSetPassword(): void
     {
-        $this->loginUser('user@example.com', 'pass');
-
         $system = (new SystemInstall())
             ->setUser('someUser')
             ->setSystem('null.user.group')
@@ -549,6 +528,84 @@ final class SystemControllerTest extends ControllerTestCaseAbstract
 
         $this->assertEquals(1, count($systems));
         $this->assertEquals('pass2', $systems[0]->getSettings()['password']);
+    }
+
+    /**
+     *
+     */
+    public function testRunCustomActionPost(): void
+    {
+        $system = (new SystemInstall())
+            ->setUser('someUser')
+            ->setSystem('null.user.group')
+            ->setToken('token');
+        $this->persistAndFlush($system);
+
+        $response = $this->sendPost(
+            '/system/null.user.group/user/someUser/action/customAction',
+            ['password' => 'pass2']
+        );
+
+        $this->assertEquals(200, $response->status);
+
+        $arr = [
+            'processed' => TRUE,
+            'user'      => $system->getUser(),
+            'password'  => 'pass2',
+        ];
+
+        $this->assertEquals($arr, (array) $response->content);
+    }
+
+    /**
+     *
+     */
+    public function testRunCustomActionGet(): void
+    {
+        $system = (new SystemInstall())
+            ->setUser('someUser')
+            ->setSystem('null.user.group')
+            ->setToken('token');
+        $this->persistAndFlush($system);
+
+        $response = $this->sendGet('/system/null.user.group/user/someUser/action/customAction');
+
+        $this->assertEquals(200, $response->status);
+
+        $arr = [
+            'processed' => TRUE,
+            'user'      => $system->getUser(),
+        ];
+
+        $this->assertEquals($arr, (array) $response->content);
+    }
+
+    /**
+     *
+     */
+    public function testRunCustomActionEx(): void
+    {
+        $system = (new SystemInstall())
+            ->setUser('someUser')
+            ->setSystem('null.user.group')
+            ->setToken('token');
+        $this->persistAndFlush($system);
+
+        $response = $this->sendPost(
+            '/system/null.user.group/user/someUser/action/customActionNon',
+            ['password' => 'pass2']
+        );
+
+        $this->assertEquals(404, $response->status);
+
+        $arr = [
+            'status'     => 'ERROR',
+            'error_code' => 2001,
+            'type'       => SystemException::class,
+            'message'    => 'Action "customActionNon" does not exist for "null.user.group" system.',
+        ];
+
+        $this->assertEquals($arr, (array) $response->content);
     }
 
     /**

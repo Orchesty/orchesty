@@ -230,4 +230,17 @@ class SystemHandler
         return $systemInstall ? TRUE : FALSE;
     }
 
+    /**
+     * @param string $systemKey
+     * @param string $user
+     * @param string $action
+     * @param array  $data
+     *
+     * @return array
+     */
+    public function runCustomAction(string $systemKey, string $user, string $action, array $data = []): array
+    {
+        return $this->manager->runCustomAction($systemKey, $user, $action, $data);
+    }
+
 }
