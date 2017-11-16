@@ -13,6 +13,7 @@ use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Controller\FOSRestController;
 use Hanaboso\PipesFramework\HbPFConnectorBundle\Handler\ConnectorHandler;
 use Hanaboso\PipesFramework\Utils\ControllerUtils;
+use Psr\Log\LoggerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -33,6 +34,11 @@ class ConnectorController extends FOSRestController
      * @var ConnectorHandler
      */
     private $handler;
+
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
 
     /**
      * @Route("/connector/{id}/webhook")
@@ -56,6 +62,7 @@ class ConnectorController extends FOSRestController
                 )
             );
         } catch (Exception|Throwable $e) {
+            $this->logger->error($e->getMessage(), ['exception' => $e]);
             $response = new Response(
                 ControllerUtils::createExceptionData($e),
                 500,
@@ -83,6 +90,7 @@ class ConnectorController extends FOSRestController
             $this->handler->processTest($id);
             $response = new JsonResponse('', 200);
         } catch (Exception|Throwable $e) {
+            $this->logger->error($e->getMessage(), ['exception' => $e]);
             $response = new JsonResponse(
                 ControllerUtils::createExceptionData($e),
                 500,
@@ -114,6 +122,7 @@ class ConnectorController extends FOSRestController
                 ControllerUtils::createHeaders($data->getHeaders()),
                 TRUE);
         } catch (Exception|Throwable $e) {
+            $this->logger->error($e->getMessage(), ['exception' => $e]);
             $response = new JsonResponse(
                 ControllerUtils::createExceptionData($e),
                 500,
@@ -141,6 +150,7 @@ class ConnectorController extends FOSRestController
             $this->handler->processTest($id);
             $response = new JsonResponse('', 200);
         } catch (Exception|Throwable $e) {
+            $this->logger->error($e->getMessage(), ['exception' => $e]);
             $response = new JsonResponse(
                 ControllerUtils::createExceptionData($e),
                 500,
@@ -158,6 +168,10 @@ class ConnectorController extends FOSRestController
     {
         if (!$this->handler) {
             $this->handler = $this->container->get('hbpf.handler.connector');
+        }
+
+        if (!$this->logger) {
+            $this->logger = $this->container->get('monolog.logger.commons');
         }
     }
 
