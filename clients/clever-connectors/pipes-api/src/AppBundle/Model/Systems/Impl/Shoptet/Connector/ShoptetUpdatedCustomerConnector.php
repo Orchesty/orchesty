@@ -7,6 +7,7 @@ use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Shoptet\ShoptetSystem;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use CleverConnectors\AppBundle\Utils\CronUtils;
+use CleverConnectors\AppBundle\Utils\Dto\Times;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSender;
 use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSenderFactory;
@@ -76,11 +77,9 @@ class ShoptetUpdatedCustomerConnector implements ConnectorInterface, BatchInterf
         $lastSync = $this->lastSyncManager->getLastSync($systemInstall, $dto->getHeaders());
         $times    = CronUtils::getTimes($lastSync);
 
-        // TODO put lastsync (start - first time will be null) into headers/body
-
         $promise = $this->fetchData($sender, $requestDto)
-            ->then(function (ResponseInterface $response): SuccessMessage {
-                return $this->createSuccessMessage($response);
+            ->then(function (ResponseInterface $response) use ($times): SuccessMessage {
+                return $this->createSuccessMessage($response, $times);
             })->then($callbackItem);
 
         $lastSync->setTimestamp($times->getEnd());
@@ -134,13 +133,17 @@ class ShoptetUpdatedCustomerConnector implements ConnectorInterface, BatchInterf
      * @param ResponseInterface $response
      *
      * @return SuccessMessage
-     * @throws SystemException
      */
-    protected function createSuccessMessage(ResponseInterface $response): SuccessMessage
+    protected function createSuccessMessage(ResponseInterface $response, Times $times): SuccessMessage
     {
+        $xml = simplexml_load_string($response->getBody()->getContents());
+        $xml->addChild('LAST_SYNC', strval($times->getStart()->getTimestamp()));
+
         // receives xml in body
         $successMessage = new SuccessMessage(1);
-        $successMessage->setData($response->getBody()->getContents());
+        $successMessage->setData($xml->asXML());
+
+        var_dump($xml->children()->asXML());
 
         return $successMessage;
     }
