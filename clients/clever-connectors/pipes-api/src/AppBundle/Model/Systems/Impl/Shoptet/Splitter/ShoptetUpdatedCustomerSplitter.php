@@ -48,7 +48,6 @@ class ShoptetUpdatedCustomerSplitter implements CustomNodeInterface, BatchInterf
     public function processBatch(ProcessDto $dto, LoopInterface $loop, callable $callbackItem): PromiseInterface
     {
         $data = json_decode($dto->getData(), TRUE);
-        var_dump($data['LAST_SYNC']);
 
         if (!is_array($data) || !array_key_exists('CUSTOMERS', $data) || !is_array($data['CUSTOMERS'])) {
             throw new CleverConnectorsException(
@@ -71,20 +70,15 @@ class ShoptetUpdatedCustomerSplitter implements CustomNodeInterface, BatchInterf
                 if (array_key_exists('GUID', $accounts)) {
                     if (array_key_exists('EMAIL', $accounts)) {
                         $newCustomer['ACCOUNT'] = $accounts;
-
                         $callbackItem($this->createSuccessMessage($newCustomer, $i));
-                        //unset($accounts[$key]);
-
                         $i++;
                     }
                 } else {
                     foreach ($accounts as $key => $account) {
                         if (array_key_exists('EMAIL', $account)) {
                             $newCustomer['ACCOUNT'] = $account;
-
                             $callbackItem($this->createSuccessMessage($newCustomer, $i));
                             unset($accounts[$key]);
-
                             $i++;
                         }
                     }
@@ -101,7 +95,7 @@ class ShoptetUpdatedCustomerSplitter implements CustomNodeInterface, BatchInterf
     /**
      * @param ProcessDto $dto
      *
-     * @return ProcessDto
+     * @return ProcessDto|void
      * @throws SystemException
      */
     public function process(ProcessDto $dto): ProcessDto

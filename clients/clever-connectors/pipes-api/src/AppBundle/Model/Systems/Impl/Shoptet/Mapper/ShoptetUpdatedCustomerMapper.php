@@ -72,23 +72,20 @@ class ShoptetUpdatedCustomerMapper implements CustomNodeInterface
     }
 
     /**
-     * @param string $key
-     * @param array  $haystack
-     *
-     * @return bool
-     */
-    private function hasValue(string $key, array $haystack): bool
-    {
-        return array_key_exists($key, $haystack) && array_key_exists('#', $haystack[$key]);
-    }
-
-    /**
      * @param array $haystack
      *
      * @return string
+     * @throws CleverConnectorsException
      */
     private function getValue(array $haystack): string
     {
+        if (!array_key_exists('#', $haystack)) {
+            throw new CleverConnectorsException(
+                'Missing [#] key in data.',
+                CleverConnectorsException::MISSING_DATA
+            );
+        }
+
         return $haystack['#'];
     }
 
