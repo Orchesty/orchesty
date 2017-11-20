@@ -220,7 +220,7 @@ abstract class PluginSystemAbstract implements AuthorizationInterface, CMEventSy
      */
     public function getSwitchTokenUrl(): string
     {
-        return self::SWITCH_TOKEN;
+        return static::SWITCH_TOKEN;
     }
 
     /**

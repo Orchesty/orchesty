@@ -12,6 +12,7 @@ use CleverConnectors\AppBundle\Model\Plugins\PluginSystemAbstract;
 class PrestashopSystem extends PluginSystemAbstract
 {
 
+    protected const SWITCH_TOKEN               = 'index.php?fc=module&module=cleverconnector&controller=switch_token';
     protected const SYNC_URL                   = 'index.php?fc=module&module=cleverconnector&controller=subscriber&page=%s&limit=%s';
     protected const CREATE_SUBSCRIBER_URL      = 'index.php?fc=module&module=cleverconnector&controller=subscriber&action=create';
     protected const UNSUBSCRIBE_SUBSCRIBER_URL = 'index.php?fc=module&module=cleverconnector&controller=subscriber&action=unsubscribe&id=%s';

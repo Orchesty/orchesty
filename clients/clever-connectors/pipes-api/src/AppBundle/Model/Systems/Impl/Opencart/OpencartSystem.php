@@ -12,6 +12,7 @@ use CleverConnectors\AppBundle\Model\Plugins\PluginSystemAbstract;
 class OpencartSystem extends PluginSystemAbstract
 {
 
+    protected const SWITCH_TOKEN               = 'index.php?route=extension/module/clever_connectors/switch_token';
     protected const CREATE_SUBSCRIBER_URL      = 'index.php?route=extension/module/clever_connectors/subscriber_create';
     protected const UNSUBSCRIBE_SUBSCRIBER_URL = 'index.php?route=extension/module/clever_connectors/subscriber_unsubscribe&id=%s';
     protected const HARD_BOUNCE_SUBSCRIBER_URL = 'index.php?route=extension/module/clever_connectors/subscriber_hard_bounce&id=%s';

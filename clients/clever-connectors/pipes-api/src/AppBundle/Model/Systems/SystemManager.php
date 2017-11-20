@@ -314,7 +314,7 @@ class SystemManager
      */
     public function synchronizeSubscriptions(string $user, string $system): int
     {
-        $topologies = $this->runTopologies($user, $system, TopologyNameUtils::SYNC, '');
+        $topologies = $this->runTopologies($user, $system, TopologyNameUtils::SYNC, []);
 
         return count($topologies);
     }
@@ -502,11 +502,11 @@ class SystemManager
      * @param string $user
      * @param string $system
      * @param string $topology
-     * @param string $data
+     * @param array  $data
      *
      * @return array
      */
-    private function runTopologies(string $user, string $system, string $topology, string $data): array
+    private function runTopologies(string $user, string $system, string $topology, array $data): array
     {
         $systemInstall = $this->getSystemInstall($user, $system);
         $system        = $this->systemLoader->getSystem($system);
@@ -544,7 +544,7 @@ class SystemManager
             $systemInstall->getUser(),
             $systemInstall->getSystem(),
             TopologyNameUtils::SWITCH_TOKEN,
-            json_encode(['token' => $token])
+            ['token' => $token]
         );
     }
 
