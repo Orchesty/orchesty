@@ -94,7 +94,7 @@ class DataLayout
      *
      * @return DataLayout
      */
-    public function addField(LayoutField $field)
+    public function addField(LayoutField $field): DataLayout
     {
         $this->fields[] = $field;
 
