@@ -72,7 +72,7 @@ class SystemPresenter extends BasePresenter
 
         $this->connectorManager->installUserSystem($this->userId, $data['systems'], $data['token']);
 
-        $this->redirect('System:');
+        $this->redirect('//System:');
     }
 
     /**
@@ -82,7 +82,7 @@ class SystemPresenter extends BasePresenter
     {
         $this->connectorManager->uninstallUserSystem($this->userId, $systemKey);
 
-        $this->redirect('System:');
+        $this->redirect('//System:');
     }
 
     /**

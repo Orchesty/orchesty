@@ -131,7 +131,7 @@ class SystemDetailPresenter extends BasePresenter
 
         $this->flashMessage('Setting was saved.');
 
-        $this->redirect('SystemDetail:', ['systemKey' => $this->userSystem->getKey()]);
+        $this->redirect('//SystemDetail:', ['systemKey' => $this->userSystem->getKey()]);
     }
 
     /**
@@ -156,7 +156,7 @@ class SystemDetailPresenter extends BasePresenter
         $this->connectorManager->switchUserSystemToken($this->userId, $this->userSystem->getKey(), $data['token']);
 
         $this->flashMessage('Token was switched.');
-        $this->redirect('SystemDetail:', ['systemKey' => $this->userSystem->getKey()]);
+        $this->redirect('//SystemDetail:', ['systemKey' => $this->userSystem->getKey()]);
     }
 
 }

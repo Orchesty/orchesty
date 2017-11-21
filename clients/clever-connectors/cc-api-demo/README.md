@@ -3,13 +3,17 @@ NETTE DEMO FOR CLEVER CONNECTORS
 
 LOCAL DEVELOPMENT
 -----------------
-1. Create local config
+* Create local config
 ```bash
 cp -f app/config/config.local.neon.dist app/config/config.local.neon
 ```
-2. Copy certificate for stage to cert folder
-3. Run app
+* Create cert
+```bash
+openssl pkcs12 -in stage-staff.p12 -out stage-staff.pem -nodes
+```
+* Copy certificate for stage to cert folder
+* Run app
 ```bash
 make init
 ```
-4. Go to 127.0.0.44/api-demo
+* Go to 127.0.0.44/api-demo

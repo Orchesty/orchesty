@@ -86,7 +86,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
         $this->user->login($data['user_id'], '');
 
         $form->reset();
-        $this->redirect('System:');
+        $this->redirect('//System:');
     }
 
     /**
@@ -106,7 +106,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
     public function processLogout()
     {
         $this->user->logout();
-        $this->redirect('System:');
+        $this->redirect('//System:');
     }
 
 }
