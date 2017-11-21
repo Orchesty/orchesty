@@ -132,6 +132,23 @@ class PluginsController extends FOSRestController
     }
 
     /**
+     * @Route("/get-distribution-list")
+     * @Method({"GET"})
+     *
+     * @param Request $request
+     *
+     * @return Response
+     */
+    public function getDistributionListsAction(Request $request): Response
+    {
+        try {
+            return new JsonResponse($this->handler->getDistributionLists($request), 200);
+        } catch (Throwable $e) {
+            return self::processException($e);
+        }
+    }
+
+    /**
      * @param Throwable $e
      *
      * @return Response

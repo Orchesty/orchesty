@@ -111,7 +111,7 @@ class PluginsManager
                     SystemException::MISMATCH_URL
                 );
             } else {
-                return $this->systemToArray($systemInstall, $this->getDistributionLists($guid, $token));
+                return $this->systemToArray($systemInstall, $this->getDistributionLists($request->headers->all()));
             }
         }
 
@@ -122,7 +122,7 @@ class PluginsManager
 
         $this->dm->flush();
 
-        return $this->systemToArray($systemInstall, $this->getDistributionLists($guid, $token));
+        return $this->systemToArray($systemInstall, $this->getDistributionLists($request->headers->all()));
     }
 
     /**
@@ -186,17 +186,16 @@ class PluginsManager
     }
 
     /**
-     * @param string $guid
-     * @param string $token
+     * @param array $headers
      *
      * @return array
      */
-    public function getDistributionLists(string $guid, string $token): array
+    public function getDistributionLists(array $headers): array
     {
         $dto = new ProcessDto();
         $dto->setHeaders([
-            CMHeaders::createKey(CMHeaders::GUID)  => $guid,
-            CMHeaders::createKey(CMHeaders::TOKEN) => $token,
+            CMHeaders::createKey(CMHeaders::GUID)  => PluginHeadersEnum::get(PluginHeadersEnum::GUID, $headers),
+            CMHeaders::createKey(CMHeaders::TOKEN) => PluginHeadersEnum::get(PluginHeadersEnum::TOKEN, $headers),
         ]);
 
         return $this->distConn->getDistributionsArray($dto);
