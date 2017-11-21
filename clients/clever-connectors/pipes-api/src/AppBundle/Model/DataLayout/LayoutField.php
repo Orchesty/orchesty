@@ -18,7 +18,7 @@ class LayoutField
     private $key;
 
     /**
-     * @var TypeEnum
+     * @var string
      */
     private $type;
 
@@ -31,7 +31,7 @@ class LayoutField
     public function __construct(string $key, TypeEnum $type)
     {
         $this->key  = $key;
-        $this->type = $type;
+        $this->type = $type->getValue();
     }
 
     /**
@@ -43,11 +43,22 @@ class LayoutField
     }
 
     /**
-     * @return TypeEnum
+     * @return string
      */
-    public function getType(): TypeEnum
+    public function getType(): string
     {
         return $this->type;
+    }
+
+    /**
+     * @return array
+     */
+    public function toArray(): array
+    {
+        return [
+            'key'  => $this->getKey(),
+            'type' => $this->getType(),
+        ];
     }
 
 }

@@ -4,18 +4,22 @@ namespace CleverConnectors\AppBundle\Document;
 
 use CleverConnectors\AppBundle\Document\Traits\IdTrait;
 use CleverConnectors\AppBundle\Enum\DataLayoutActionEnum;
-use CleverConnectors\AppBundle\Model\DataLayout\LayoutField;
+use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
+use CleverConnectors\AppBundle\Model\MapTemplate\MapField;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 /**
- * Class DataLayout
+ * Class MapTemplate
  *
  * @package CleverConnectors\AppBundle\Document
  *
- * @ODM\Document(repositoryClass="CleverConnectors\AppBundle\Repository\DataLayoutRepository")
+ * @ODM\Document(repositoryClass="CleverConnectors\AppBundle\Repository\MapTemplateRepository")
  */
-class DataLayout
+class MapTemplate
 {
+
+    public const DIRECTION_IN  = 'in';
+    public const DIRECTION_OUT = 'out';
 
     use IdTrait;
 
@@ -31,10 +35,17 @@ class DataLayout
      *
      * @ODM\Field(type="string")
      */
+    protected $direction;
+
+    /**
+     * @var string
+     *
+     * @ODM\Field(type="string")
+     */
     protected $systemInstall;
 
     /**
-     * @var LayoutField[]|array
+     * @var MapField[]|array
      *
      * @ODM\Field(type="array")
      */
@@ -51,9 +62,9 @@ class DataLayout
     /**
      * @param DataLayoutActionEnum $action
      *
-     * @return DataLayout
+     * @return MapTemplate
      */
-    public function setAction(DataLayoutActionEnum $action): DataLayout
+    public function setAction(DataLayoutActionEnum $action): MapTemplate
     {
         $this->action = $action->getValue();
 
@@ -69,11 +80,39 @@ class DataLayout
     }
 
     /**
+     * @param string $direction
+     *
+     * @return MapTemplate
+     * @throws CleverConnectorsException
+     */
+    public function setDirection(string $direction): MapTemplate
+    {
+        if (!in_array($direction, [self::DIRECTION_IN, self::DIRECTION_OUT])) {
+            throw new CleverConnectorsException(
+                sprintf('Invalid direction type "%s".', $direction),
+                CleverConnectorsException::INVALID_DIRECTION_TYPE
+            );
+        }
+
+        $this->direction = $direction;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDirection(): string
+    {
+        return $this->direction;
+    }
+
+    /**
      * @param SystemInstall $systemInstall
      *
-     * @return DataLayout
+     * @return MapTemplate
      */
-    public function setSystemInstall(SystemInstall $systemInstall): DataLayout
+    public function setSystemInstall(SystemInstall $systemInstall): MapTemplate
     {
         $this->systemInstall = $systemInstall->getId();
 
@@ -89,11 +128,11 @@ class DataLayout
     }
 
     /**
-     * @param LayoutField $field
+     * @param MapField $field
      *
-     * @return DataLayout
+     * @return MapTemplate
      */
-    public function addField(LayoutField $field): DataLayout
+    public function addField(MapField $field): MapTemplate
     {
         $this->fields[] = $field;
 
@@ -101,7 +140,7 @@ class DataLayout
     }
 
     /**
-     * @return LayoutField[]|array
+     * @return MapField[]|array
      */
     public function getFields(): array
     {
@@ -123,6 +162,7 @@ class DataLayout
 
         return [
             'action'         => $this->getAction(),
+            'direction'      => $this->getDirection(),
             'system_install' => $this->getSystemInstall(),
             'fields'         => $out,
         ];
