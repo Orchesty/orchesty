@@ -146,10 +146,8 @@ final class PluginsManagerTest extends KernelTestCaseAbstract
         $req->headers->set(PluginHeadersEnum::VERSION, 'ver');
         $req->request->set('remote_host', 'http://abc');
 
-        $this->expectException(SystemException::class);
-        $this->expectExceptionCode(SystemException::MISMATCH_TOKEN);
-
-        $plug->install($req);
+        $res = $plug->install($req);
+        self::assertEquals('tkn', $res['token']);
     }
 
     /**
