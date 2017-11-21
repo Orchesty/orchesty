@@ -36,7 +36,7 @@ class MapField
     public function __construct(string $name, TypeEnum $type)
     {
         $this->name = $name;
-        $this->type = $type;
+        $this->type = $type->getValue();
     }
 
     /**
