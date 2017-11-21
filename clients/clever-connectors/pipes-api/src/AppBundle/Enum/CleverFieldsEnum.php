@@ -24,6 +24,7 @@ final class CleverFieldsEnum extends EnumAbstract
     public const FIRST_NAME  = 'first_name';
     public const LAST_NAME   = 'last_name';
     public const REACTIVATE  = 'reactivate';
+    public const LISTS       = 'lists';
     public const SYSTEM_KEY  = 'system_key';
     public const UNSUBSCRIBE = 'unsubscribe';
     public const HARD_BOUNCE = 'hard_bounce';
@@ -37,6 +38,7 @@ final class CleverFieldsEnum extends EnumAbstract
         self::FIRST_NAME  => 'first_name',
         self::LAST_NAME   => 'last_name',
         self::REACTIVATE  => 'reactivate',
+        self::LISTS       => 'lists',
         self::SYSTEM_KEY  => 'system_key',
         self::UNSUBSCRIBE => 'unsubscribe',
         self::HARD_BOUNCE => 'hard_bounce',
