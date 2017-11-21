@@ -2,7 +2,7 @@
 
 namespace CleverConnectors\AppBundle\Model\DataLayout;
 
-use Hanaboso\PipesFramework\Commons\Enum\TypeEnum;
+use CleverConnectors\AppBundle\Enum\TypeEnum;
 
 /**
  * Class LayoutField
