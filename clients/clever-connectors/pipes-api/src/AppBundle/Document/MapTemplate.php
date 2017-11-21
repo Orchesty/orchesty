@@ -7,13 +7,17 @@ use CleverConnectors\AppBundle\Enum\DataLayoutActionEnum;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\MapTemplate\MapField;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Nette\Utils\Json;
 
 /**
  * Class MapTemplate
  *
  * @package CleverConnectors\AppBundle\Document
  *
+ * @ODM\UniqueIndex(keys={"systemInstall"="asc", "action"="asc", "direction"="asc"})
  * @ODM\Document(repositoryClass="CleverConnectors\AppBundle\Repository\MapTemplateRepository")
+ *
+ * @ODM\HasLifecycleCallbacks
  */
 class MapTemplate
 {
@@ -45,19 +49,16 @@ class MapTemplate
     protected $systemInstall;
 
     /**
-     * @var MapField[]|array
+     * @var string
      *
-     * @ODM\Field(type="array")
+     * @ODM\Field(type="string")
      */
-    protected $fields;
+    protected $jsonFields = '[]';
 
     /**
-     * DataLayout constructor.
+     * @var MapField[]
      */
-    public function __construct()
-    {
-        $this->fields = [];
-    }
+    protected $fields = [];
 
     /**
      * @param DataLayoutActionEnum $action
@@ -140,6 +141,18 @@ class MapTemplate
     }
 
     /**
+     * @param array $fields
+     *
+     * @return MapTemplate
+     */
+    public function setFields(array $fields): MapTemplate
+    {
+        $this->fields = $fields;
+
+        return $this;
+    }
+
+    /**
      * @return MapField[]|array
      */
     public function getFields(): array
@@ -166,6 +179,31 @@ class MapTemplate
             'system_install' => $this->getSystemInstall(),
             'fields'         => $out,
         ];
+    }
+
+    /**
+     * @ODM\PreFlush()
+     */
+    public function encode(): void
+    {
+        $fields = [];
+        foreach ($this->fields as $field) {
+            $fields[] = $field->toArray();
+        }
+        $this->jsonFields = Json::encode($fields);
+    }
+
+    /**
+     * @ODM\PostLoad()
+     */
+    public function decode(): void
+    {
+        foreach (Json::decode($this->jsonFields, TRUE) as $field) {
+            $mapField = MapField::from($field);
+            if ($mapField) {
+                $this->addField($mapField);
+            }
+        }
     }
 
 }

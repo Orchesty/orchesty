@@ -100,6 +100,26 @@ class MapField
     }
 
     /**
+     * @param array $data
+     *
+     * @return MapField|null
+     */
+    public static function from(array $data): ?MapField
+    {
+        if (array_key_exists('name', $data) && array_key_exists('type', $data)) {
+
+            $mapField = new MapField($data['name'], new TypeEnum($data['type']));
+            if (array_key_exists('items', $data) && is_array($data['items'])) {
+                foreach ($data['items'] as $item) {
+                    $mapField->addItem($item);
+                }
+            }
+        }
+
+        return $mapField ?? NULL;
+    }
+
+    /**
      * @return array
      */
     public function toArray(): array
