@@ -37,6 +37,7 @@ class SystemInstall
     public const  EVENT_HARD_BOUNCE  = 'eventHardBounce';
     public const  PLUGIN_VERSION     = 'pluginVersion';
     public const  SYSTEM_URL         = 'system_url';
+    public const  DISTRIBUTION_LISTS = 'distribution_lists';
 
     use IdTrait;
 

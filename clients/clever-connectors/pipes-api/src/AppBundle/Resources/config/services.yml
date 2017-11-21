@@ -89,6 +89,7 @@ services:
             - '@hbpf.starting_point.starting_point'
             - '@cc.systems.manager'
             - '@cc.systems.loader'
+            - '@hbpf.connector.cleverconnectors-get-distributions-connector'
 
     cc.plugins.handler:
         class: CleverConnectors\AppBundle\Handler\PluginsHandler
