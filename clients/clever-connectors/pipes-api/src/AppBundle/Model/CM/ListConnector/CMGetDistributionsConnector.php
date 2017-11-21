@@ -93,6 +93,7 @@ class CMGetDistributionsConnector extends CMAuthorization implements ConnectorIn
             );
         }
         $req = new RequestDto(CurlManager::METHOD_GET, new Uri(''));
+        $req->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()));
         $req->setHeaders($this->getAuthorizationHeaders($user, $token));
 
         return $this->getLists($req);

@@ -23,4 +23,4 @@ services:
     hbpf.connector.cleverconnectors-get-distributions-connector:
         class: CleverConnectors\AppBundle\Model\CM\ListConnector\CMGetDistributionsConnector
         arguments:
-        calls:
+            - '@cc.transport.curl.manager'
