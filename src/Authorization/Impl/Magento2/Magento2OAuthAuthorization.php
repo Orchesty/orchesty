@@ -22,7 +22,7 @@ use Psr\Log\NullLogger;
 /**
  * Class Magento2OAuthAuthorization
  *
- * @package Hanaboso\PipesFramework\Authorization\Impl\Magento2
+ * @package Hanaboso\PipesFramework\Authorization\Impl\Magento2Old
  */
 class Magento2OAuthAuthorization extends OAuthAuthorizationAbstract implements Magento2AuthorizationInterface, LoggerAwareInterface
 {
@@ -114,8 +114,8 @@ class Magento2OAuthAuthorization extends OAuthAuthorizationAbstract implements M
     public function getHeaders(string $method, string $url): array
     {
         if (!$this->isAuthorized()) {
-            $this->logger->error('Magento2 OAuth not authorized');
-            throw new AuthorizationException('Magento2 OAuth not authorized');
+            $this->logger->error('Magento2Old OAuth not authorized');
+            throw new AuthorizationException('Magento2Old OAuth not authorized');
         }
 
         $settings = $this->authorization->getSettings();

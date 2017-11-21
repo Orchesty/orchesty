@@ -7,7 +7,7 @@ use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 /**
  * Class Magento2ModulesConnector
  *
- * @package Hanaboso\PipesFramework\Connector\Impl\Magento2
+ * @package Hanaboso\PipesFramework\Connector\Impl\Magento2Old
  */
 class Magento2ModulesConnector extends Magento2Base
 {

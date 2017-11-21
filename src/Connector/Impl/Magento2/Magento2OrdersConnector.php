@@ -14,7 +14,7 @@ use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 /**
  * Class Magento2OrdersConnector
  *
- * @package Hanaboso\PipesFramework\Connector\Impl\Magento2
+ * @package Hanaboso\PipesFramework\Connector\Impl\Magento2Old
  */
 class Magento2OrdersConnector extends Magento2Base
 {
