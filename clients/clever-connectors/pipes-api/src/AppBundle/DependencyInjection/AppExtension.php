@@ -72,6 +72,8 @@ class AppExtension extends Extension implements PrependExtensionInterface
         $loader->load('plugins.yml');
         $loader->load('opencart.yml');
         $loader->load('shoptet.yml');
+        $loader->load('shopware.yml');
+        $loader->load('wordpress.yml');
     }
 
 }
