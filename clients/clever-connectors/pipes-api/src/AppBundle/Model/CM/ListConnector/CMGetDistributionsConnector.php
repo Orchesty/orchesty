@@ -1,0 +1,147 @@
+<?php declare(strict_types=1);
+
+namespace CleverConnectors\AppBundle\Model\CM\ListConnector;
+
+use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
+use CleverConnectors\AppBundle\Model\CM\CMAuthorization;
+use CleverConnectors\AppBundle\Utils\CMHeaders;
+use GuzzleHttp\Psr7\Uri;
+use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
+use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
+use Hanaboso\PipesFramework\Connector\ConnectorInterface;
+use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
+
+/**
+ * Class CMGetDistributionsConnector
+ *
+ * @package CleverConnectors\AppBundle\Model\CM\ListConnector
+ */
+class CMGetDistributionsConnector extends CMAuthorization implements ConnectorInterface
+{
+
+    private const URL   = 'https://api.dev.clevermonitor.com/v1.2/lists?count=%s&offset=%s';
+    private const LIMIT = 50;
+
+    /**
+     * @var CurlManagerInterface
+     */
+    private $curl;
+
+    /**
+     * CMGetDistributionsConnector constructor.
+     *
+     * @param CurlManagerInterface $curl
+     */
+    public function __construct(CurlManagerInterface $curl)
+    {
+        $this->curl = $curl;
+    }
+
+    /**
+     * @return string
+     */
+    public function getId(): string
+    {
+        return 'clevermonitors-get-distributions-connector';
+    }
+
+    /**
+     * @param ProcessDto $dto
+     *
+     * @return ProcessDto|void
+     * @throws ConnectorException
+     */
+    public function processEvent(ProcessDto $dto): ProcessDto
+    {
+        throw new ConnectorException(
+            'CMDistributions has no support for event.',
+            ConnectorException::CONNECTOR_DOES_NOT_HAVE_PROCESS_EVENT
+        );
+    }
+
+    /**
+     * @param ProcessDto $dto
+     *
+     * @return ProcessDto
+     * @throws CleverConnectorsException
+     * @throws ConnectorException
+     */
+    public function processAction(ProcessDto $dto): ProcessDto
+    {
+        $dto->setData(json_encode($this->getDistributionsArray($dto)));
+
+        return $dto;
+    }
+
+    /**
+     * @param ProcessDto $dto
+     *
+     * @return array
+     * @throws CleverConnectorsException
+     */
+    public function getDistributionsArray(ProcessDto $dto): array
+    {
+        $user  = CMHeaders::get(CMHeaders::GUID, $dto->getHeaders());
+        $token = CMHeaders::get(CMHeaders::TOKEN, $dto->getHeaders());
+
+        if (!isset($user) || !isset($token)) {
+            throw new CleverConnectorsException(
+                'User or Token is missing in header.',
+                CleverConnectorsException::MISSING_DATA
+            );
+        }
+        $req = new RequestDto(CurlManager::METHOD_GET, new Uri(''));
+        $req->setHeaders($this->getAuthorizationHeaders($user, $token));
+
+        return $this->getLists($req);
+    }
+
+    /**
+     * @param RequestDto $req
+     *
+     * @return array
+     * @throws CleverConnectorsException
+     */
+    private function getLists(RequestDto $req): array
+    {
+        $page  = 0;
+        $lists = [];
+        while (TRUE) {
+            $res = $this->curl->send(RequestDto::from($req, new Uri($this->getUrl($page++))));
+
+            if ($res->getStatusCode() === 200) {
+                $data = json_decode($res->getBody(), TRUE);
+                if (empty($data)) {
+                    break;
+                }
+
+                $lists = array_merge($lists, $data);
+                if (count($data) < self::LIMIT) {
+                    break;
+                }
+            } else {
+                throw new CleverConnectorsException(
+                    sprintf('Request to CM distribution list failed. Code: [%s], Message: [%s].',
+                        $res->getStatusCode(), $res->getBody()
+                    ),
+                    CleverConnectorsException::REQUEST_FAILED
+                );
+            }
+        }
+
+        return $lists;
+    }
+
+    /**
+     * @param int $page
+     *
+     * @return string
+     */
+    private function getUrl(int $page = 0): string
+    {
+        return sprintf(self::URL, self::LIMIT, self::LIMIT * $page);
+    }
+
+}
