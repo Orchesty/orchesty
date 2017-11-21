@@ -104,7 +104,7 @@ class PluginsManager
         if ($systemInstall) {
             $settings = $systemInstall->getSettings();
             if ($systemInstall->getToken() !== $token) {
-                throw new SystemException('Authorization failed, check token used.', SystemException::MISMATCH_TOKEN);
+                $systemInstall->setToken($token);
             } elseif ($this->checkUrl($url, $settings) === FALSE) {
                 throw new SystemException(
                     'This connector is already in use. Uninstall the connector and install it again with the new location.',
@@ -113,12 +113,12 @@ class PluginsManager
             } else {
                 return $this->systemToArray($systemInstall, $this->getDistributionLists($guid, $token));
             }
+        } else {
+            $systemInstall = $this->manager->installSystem($guid, $system, $token);
+            $systemInstall
+                ->setPluginVersion(PluginHeadersEnum::get(PluginHeadersEnum::VERSION, $headers))
+                ->setSettings([SystemInstall::SYSTEM_URL => $url]);
         }
-
-        $systemInstall = $this->manager->installSystem($guid, $system, $token);
-        $systemInstall
-            ->setPluginVersion(PluginHeadersEnum::get(PluginHeadersEnum::VERSION, $headers))
-            ->setSettings([SystemInstall::SYSTEM_URL => $url]);
 
         $this->dm->flush();
 
@@ -294,14 +294,8 @@ class PluginsManager
      */
     private function checkUrl(string $url, array $settings): bool
     {
-        if (
-            array_key_exists(SystemInstall::SYSTEM_URL, $settings) &&
-            $settings[SystemInstall::SYSTEM_URL] !== $url
-        ) {
-            return FALSE;
-        } else {
-            return TRUE;
-        }
+        return !(array_key_exists(SystemInstall::SYSTEM_URL, $settings) &&
+            $settings[SystemInstall::SYSTEM_URL] !== $url);
     }
 
 }
