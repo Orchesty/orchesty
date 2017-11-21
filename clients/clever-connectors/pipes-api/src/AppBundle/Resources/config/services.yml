@@ -113,3 +113,8 @@ services:
             - ['%connectors_topologies%', '%plugins_topologies%', '%service_topologies%']
         calls:
             - [setLogger, ['@monolog.logger']]
+
+    cc.layout.manager:
+        class: CleverConnectors\AppBundle\Model\DataLayout\LayoutManager
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'

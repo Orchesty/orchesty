@@ -4,8 +4,10 @@ namespace CleverConnectors\AppBundle\Document;
 
 use CleverConnectors\AppBundle\Document\Traits\IdTrait;
 use CleverConnectors\AppBundle\Enum\DataLayoutActionEnum;
+use CleverConnectors\AppBundle\Enum\TypeEnum;
 use CleverConnectors\AppBundle\Model\DataLayout\LayoutField;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Nette\Utils\Json;
 
 /**
  * Class DataLayout
@@ -13,6 +15,8 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
  * @package CleverConnectors\AppBundle\Document
  *
  * @ODM\Document(repositoryClass="CleverConnectors\AppBundle\Repository\DataLayoutRepository")
+ *
+ * @ODM\HasLifecycleCallbacks
  */
 class DataLayout
 {
@@ -34,19 +38,16 @@ class DataLayout
     protected $systemInstall;
 
     /**
-     * @var LayoutField[]|array
+     * @var string
      *
-     * @ODM\Field(type="array")
+     * @ODM\Field(type="string")
      */
-    protected $fields;
+    protected $jsonFields = '[]';
 
     /**
-     * DataLayout constructor.
+     * @var LayoutField[]
      */
-    public function __construct()
-    {
-        $this->fields = [];
-    }
+    protected $fields = [];
 
     /**
      * @param DataLayoutActionEnum $action
@@ -109,6 +110,18 @@ class DataLayout
     }
 
     /**
+     * @param LayoutField[] $fields
+     *
+     * @return DataLayout
+     */
+    public function setFields(array $fields): DataLayout
+    {
+        $this->fields = $fields;
+
+        return $this;
+    }
+
+    /**
      * @return array
      */
     public function toArray(): array
@@ -126,6 +139,28 @@ class DataLayout
             'system_install' => $this->getSystemInstall(),
             'fields'         => $out,
         ];
+    }
+
+    /**
+     * @ODM\PreFlush
+     */
+    public function encode(): void
+    {
+        $fields = [];
+        foreach ($this->fields as $field) {
+            $fields[] = $field->toArray();
+        }
+        $this->jsonFields = Json::encode($fields, TRUE);
+    }
+
+    /**
+     * @ODM\PostLoad
+     */
+    public function decode(): void
+    {
+        foreach (Json::decode($this->jsonFields, TRUE) as $field) {
+            $this->addField(new LayoutField($field['key'], new TypeEnum($field['type'])));
+        }
     }
 
 }
