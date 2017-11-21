@@ -33,6 +33,7 @@
         "symfony/polyfill-apcu": "^1.5",
         "symfony/swiftmailer-bundle": "^3.0",
         "symfony/symfony": "^3.3",
+        "snc/redis-bundle": "^2.0",
         "twig/twig": "^2.4"
     },
     "require-dev": {

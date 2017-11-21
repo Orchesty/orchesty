@@ -16,6 +16,7 @@ services:
         volumes:
           - ../../:/var/www/pipes
           - ${SSH_AUTH_SOCK}:/ssh-agent
+          - ${HOME}/.composer:/srv/.composer
         depends_on:
           - mongo
           - rabbitmq
@@ -36,6 +37,7 @@ services:
           - ../../:/var/www/pipes
           - ${SSH_AUTH_SOCK}:/ssh-agent
           - ./../topology:${GENERATOR_PATH}
+          - ${HOME}/.composer:/srv/.composer
         depends_on:
           - mongo
         networks:
@@ -78,7 +80,7 @@ services:
         environment:
           DEV_UID: ${DEV_UID}
           DEV_GID: ${DEV_GID}
-          PHP_WEBROOT: /var/www/pipes/clients/demo/pipes-api/web
+          PHP_WEBROOT: /var/www/pipes/clients/clever-connectors/pipes-api/web
           NPM_INSTALL: ${NPM_INSTALL}
           NPM_START: "yes" # webpackserver
         ports:
@@ -96,9 +98,25 @@ services:
               - mapper-api
               - monolith-api
               - topology-api
+              - stream
+              - api-demo-fpm
         depends_on:
           - monolith-fpm
           - topology-fpm
+          - api-demo-fpm
+          - grafana
+          - kibana
+
+    stream:
+        image: dkr.hanaboso.net/pipes/pipes/stream:dev
+        environment:
+          - RABBITMQ_HOST=rabbitmq
+          - STREAM_WS_PORT=80
+          - STREAM_HTTP_PORT=3030
+          - STREAM_QUEUE=pipes.stream
+        ports:
+          - ${DEV_IP}:3030:3030
+        # - ${DEV_IP}:8080:80
 
     # RabbitMQ
     rabbitmq:
@@ -187,34 +205,25 @@ services:
         networks:
           - pipesdemo_default
 
-    requestbin:
-        image: agaveapi/requestbin:master
-        ports:
-          - ${DEV_IP}:5000:5000
-        networks:
-          - pipesdemo_default
-
-    # Fake API editor
-    swagger-ui:
-        image: swaggerapi/swagger-ui
-        ports:
-          - ${DEV_IP}:8087:8080
-        networks:
-          - pipesdemo_default
-
-    swagger-editor:
-        image: swaggerapi/swagger-editor
-        ports:
-          - ${DEV_IP}:8088:8080
-        networks:
-          - pipesdemo_default
-
     redis:
         image: redis:3.2-alpine
         ports:
         - ${DEV_IP}:6379:6379
         volumes:
         - redis:/data
+
+    api-demo-fpm:
+        image: dkr.hanaboso.net/pipes/pipes/php-dev:dev
+        user: ${DEV_UID}:${DEV_GID}
+        working_dir: /var/www/pipes/clients/clever-connectors/cc-api-demo
+        environment:
+          DEV_UID: ${DEV_UID}
+          DEV_GID: ${DEV_GID}
+        volumes:
+          - ../../:/var/www/pipes
+          - ${SSH_AUTH_SOCK}:/ssh-agent
+        depends_on:
+          - rabbitmq
 
 volumes:
   elasticsearch: {}
@@ -223,6 +232,7 @@ volumes:
   mongodb: {}
   rabbitmq: {}
   redis: {}
+  telegraf: {}
 
 networks:
   pipesdemo_default:
