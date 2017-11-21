@@ -89,6 +89,16 @@ class PluginsHandler
     }
 
     /**
+     * @param Request $request
+     *
+     * @return array
+     */
+    public function getDistributionLists(Request $request): array
+    {
+        return $this->manager->getDistributionLists($request->headers->all());
+    }
+
+    /**
      * ----------------------------------------- HELPERS -----------------------------------------
      */
 
