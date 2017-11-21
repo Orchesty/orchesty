@@ -1,0 +1,18 @@
+[
+  {
+    "list_id": "5ff42ca6-1965-49ed-97d0-b2b568c88bfd",
+    "name": "Name 1",
+    "note": "Description 1",
+    "subscribers": 30001,
+    "date_from": "2016-01-07T00:00:00+01:00",
+    "parent_id": null
+  },
+  {
+    "list_id": "c2d73a4d-b66b-17c3-801e-8769f22e1fc2",
+    "name": "Name 2",
+    "note": "Description 2",
+    "subscribers": 0,
+    "date_from": "2016-01-23T00:00:00+01:00",
+    "parent_id": null
+  }
+]

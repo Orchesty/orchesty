@@ -19,3 +19,8 @@ services:
             - '@cc.transport.curl.manager'
         calls:
             - ['setLogger', ['@monolog.logger.commons']]
+
+    hbpf.connector.cleverconnectors-get-distributions-connector:
+        class: CleverConnectors\AppBundle\Model\CM\ListConnector\CMGetDistributionsConnector
+        arguments:
+            - '@cc.transport.curl.manager'
