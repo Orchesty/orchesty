@@ -12,6 +12,7 @@ use CleverConnectors\AppBundle\Model\Systems\Authorizations\Traits\Authorization
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Wisepops\Requester\WisepopsSubscribeRequester;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Wisepops\Requester\WisepopsUnsubscribeRequester;
+use CleverConnectors\AppBundle\Model\Systems\Traits\SystemTrait;
 use CleverConnectors\AppBundle\Model\Webhook\Traits\WebhookSystemTrait;
 use CleverConnectors\AppBundle\Model\Webhook\WebhookSubscribes;
 use CleverConnectors\AppBundle\Model\Webhook\WebhookSystemInterface;
@@ -27,6 +28,7 @@ use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 class WisepopsSystem implements WebhookSystemInterface, AuthorizationInterface
 {
 
+    use SystemTrait;
     use AuthorizationTrait;
     use WebhookSystemTrait;
 

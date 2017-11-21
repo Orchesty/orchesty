@@ -13,6 +13,7 @@ use CleverConnectors\AppBundle\Model\Requester\RequesterInterface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\OAuth2Interface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\Traits\AuthorizationTrait;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
+use CleverConnectors\AppBundle\Model\Systems\Traits\SystemTrait;
 use CleverConnectors\AppBundle\Utils\AuthorizationUtils;
 use DateTime;
 use GuzzleHttp\Psr7\Uri;
@@ -29,6 +30,7 @@ use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 class QuickbooksSystem implements OAuth2Interface, CMEventSystemInterface
 {
 
+    use SystemTrait;
     use AuthorizationTrait;
     use CMEventSystemTrait;
 

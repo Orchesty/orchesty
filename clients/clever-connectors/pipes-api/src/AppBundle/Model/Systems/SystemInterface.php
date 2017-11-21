@@ -39,6 +39,16 @@ interface SystemInterface
     public function getLogo(): string;
 
     /**
+     * @return bool
+     */
+    public function isDynamicMapper(): bool;
+
+    /**
+     * @return array
+     */
+    public function getAllowedActions(): array;
+
+    /**
      * @param SystemInstall $systemInstall
      * @param string        $method
      *

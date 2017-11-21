@@ -16,6 +16,7 @@ use CleverConnectors\AppBundle\Model\Systems\Authorizations\Traits\Authorization
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Zendesk\Requester\ZendeskCmEventRequester;
 use CleverConnectors\AppBundle\Model\Systems\SystemInterface;
+use CleverConnectors\AppBundle\Model\Systems\Traits\SystemTrait;
 use CleverConnectors\AppBundle\Model\Webhook\Traits\WebhookSystemTrait;
 use CleverConnectors\AppBundle\Utils\TopologyNameUtils;
 use GuzzleHttp\Psr7\Uri;
@@ -29,6 +30,7 @@ use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 class ZendeskSystem implements SystemInterface, AuthorizationInterface, CMEventSystemInterface
 {
 
+    use SystemTrait;
     use AuthorizationTrait;
     use WebhookSystemTrait;
     use CMEventSystemTrait;
