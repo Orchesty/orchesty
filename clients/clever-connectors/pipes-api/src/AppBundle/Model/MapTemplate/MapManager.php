@@ -5,6 +5,7 @@ namespace CleverConnectors\AppBundle\Model\MapTemplate;
 use CleverConnectors\AppBundle\Document\MapTemplate;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\DataLayoutActionEnum;
+use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Repository\MapTemplateRepository;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -36,6 +37,26 @@ class MapManager
     {
         $this->dm                    = $documentManager;
         $this->mapTemplateRepository = $this->dm->getRepository(MapTemplate::class);
+    }
+
+    /**
+     * @param string $id
+     *
+     * @return MapTemplate
+     * @throws CleverConnectorsException
+     */
+    public function get(string $id): MapTemplate
+    {
+        $mapTemplate = $this->mapTemplateRepository->find($id);
+
+        if (!$mapTemplate) {
+            throw new CleverConnectorsException(
+                'Map template not found',
+                CleverConnectorsException::MAP_TEMPLATE_NOT_FOUND
+            );
+        }
+
+        return $mapTemplate;
     }
 
     /**

@@ -24,5 +24,6 @@ class CleverConnectorsException extends Exception
     public const INVALID_ENUM_VALUE           = 12;
     public const REQUEST_FAILED               = 13;
     public const INVALID_DIRECTION_TYPE       = 14;
+    public const MAP_TEMPLATE_NOT_FOUND       = 15;
 
 }
