@@ -109,6 +109,6 @@ services:
             - '@snc_redis.default'
             - '@hbpf.configurator.manager.topology'
             - '@hbpf.topology_generator.request.request_handler'
-            - ['%connectors_topologies%']
+            - ['%connectors_topologies%', '%plugins_topologies%', '%service_topologies%']
         calls:
             - [setLogger, ['@monolog.logger']]

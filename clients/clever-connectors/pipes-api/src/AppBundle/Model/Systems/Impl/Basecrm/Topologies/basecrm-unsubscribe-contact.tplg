@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:pipes="http://www.omg.org/spec/Pipes/20100524/MODEL" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn">
+  <bpmn:process id="Process_1" isExecutable="false">
+    <bpmn:event id="Event_1duls59" pipes:pipesType="signal" name="signal-event">
+      <bpmn:outgoing>SequenceFlow_0f0g8my</bpmn:outgoing>
+    </bpmn:event>
+    <bpmn:task id="Task_0bhcuza" pipes:pipesType="custom" name="basecrm-update-contact-mapper">
+      <bpmn:incoming>SequenceFlow_0f0g8my</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1ieoshs</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_16n52do" pipes:pipesType="connector" name="basecrm-update-contact-connector">
+      <bpmn:incoming>SequenceFlow_1ieoshs</bpmn:incoming>
+    </bpmn:task>
+    <bpmn:sequenceFlow id="SequenceFlow_0f0g8my" sourceRef="Event_1duls59" targetRef="Task_0bhcuza" />
+    <bpmn:sequenceFlow id="SequenceFlow_1ieoshs" sourceRef="Task_0bhcuza" targetRef="Task_16n52do" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_1">
+      <bpmndi:BPMNShape id="Event_1duls59_di" bpmnElement="Event_1duls59">
+        <dc:Bounds x="312" y="339" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="299" y="379" width="62" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_0bhcuza_di" bpmnElement="Task_0bhcuza">
+        <dc:Bounds x="406" y="317" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_16n52do_di" bpmnElement="Task_16n52do">
+        <dc:Bounds x="555" y="317" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0f0g8my_di" bpmnElement="SequenceFlow_0f0g8my">
+        <di:waypoint xsi:type="dc:Point" x="348" y="357" />
+        <di:waypoint xsi:type="dc:Point" x="406" y="357" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="377" y="336" width="0" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_1ieoshs_di" bpmnElement="SequenceFlow_1ieoshs">
+        <di:waypoint xsi:type="dc:Point" x="506" y="357" />
+        <di:waypoint xsi:type="dc:Point" x="555" y="357" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="530.5" y="336" width="0" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

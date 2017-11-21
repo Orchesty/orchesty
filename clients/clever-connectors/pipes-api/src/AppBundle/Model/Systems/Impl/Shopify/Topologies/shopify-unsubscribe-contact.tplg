@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:pipes="http://www.omg.org/spec/Pipes/20100524/MODEL" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn">
+  <bpmn:process id="Process_1" isExecutable="false">
+    <bpmn:event id="Event_1rhzivl" pipes:pipesType="signal" name="signal-event">
+      <bpmn:outgoing>SequenceFlow_0u1h3zi</bpmn:outgoing>
+    </bpmn:event>
+    <bpmn:task id="Task_0w2vsy0" pipes:pipesType="custom" name="shopify-update-customer-mapper">
+      <bpmn:incoming>SequenceFlow_0u1h3zi</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_19ne6qk</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:sequenceFlow id="SequenceFlow_0u1h3zi" sourceRef="Event_1rhzivl" targetRef="Task_0w2vsy0" />
+    <bpmn:task id="Task_087byw0" pipes:pipesType="connector" name="shopify-update-customer-connector">
+      <bpmn:incoming>SequenceFlow_19ne6qk</bpmn:incoming>
+    </bpmn:task>
+    <bpmn:sequenceFlow id="SequenceFlow_19ne6qk" sourceRef="Task_0w2vsy0" targetRef="Task_087byw0" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_1">
+      <bpmndi:BPMNShape id="Event_1rhzivl_di" bpmnElement="Event_1rhzivl">
+        <dc:Bounds x="290" y="194" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="277" y="234" width="62" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_0w2vsy0_di" bpmnElement="Task_0w2vsy0">
+        <dc:Bounds x="424" y="172" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0u1h3zi_di" bpmnElement="SequenceFlow_0u1h3zi">
+        <di:waypoint xsi:type="dc:Point" x="326" y="212" />
+        <di:waypoint xsi:type="dc:Point" x="424" y="212" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="375" y="191" width="0" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Task_087byw0_di" bpmnElement="Task_087byw0">
+        <dc:Bounds x="591" y="172" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_19ne6qk_di" bpmnElement="SequenceFlow_19ne6qk">
+        <di:waypoint xsi:type="dc:Point" x="524" y="212" />
+        <di:waypoint xsi:type="dc:Point" x="591" y="212" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="557.5" y="191" width="0" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

@@ -17,6 +17,7 @@ use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Zendesk\Requester\ZendeskCmEventRequester;
 use CleverConnectors\AppBundle\Model\Systems\SystemInterface;
 use CleverConnectors\AppBundle\Model\Webhook\Traits\WebhookSystemTrait;
+use CleverConnectors\AppBundle\Utils\TopologyNameUtils;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 
@@ -51,8 +52,9 @@ class ZendeskSystem implements SystemInterface, AuthorizationInterface, CMEventS
         $this->addCMEvent(new CMEventObject(CleverCustomKeysEnum::HARD_BOUNCE,
             SystemInstall::EVENT_HARD_BOUNCE, self::CUSTOM_FIELDS_URL));
 
-        $this->topologyNames['zendesk-unsubscribe-contact'] = 'zendesk-update-contact';
-        $this->topologyNames['zendesk-hard-bounce-contact'] = 'zendesk-update-contact';
+        $this->topologyNames[TopologyNameUtils::getTopologyName(TopologyNameUtils::HARD_BOUNCE_CONTACT,
+            $this->getKey())] = TopologyNameUtils::getTopologyName(TopologyNameUtils::UNSUBSCRIBE_CONTACT,
+            $this->getKey());
     }
 
     /**

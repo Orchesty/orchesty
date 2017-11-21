@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:pipes="http://www.omg.org/spec/Pipes/20100524/MODEL" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn">
+  <bpmn:process id="Process_1" isExecutable="false">
+    <bpmn:event id="Event_0fg3mvs" pipes:pipesType="signal" name="signal-event">
+      <bpmn:outgoing>SequenceFlow_0xg1431</bpmn:outgoing>
+    </bpmn:event>
+    <bpmn:task id="Task_1ucd0f3" pipes:pipesType="connector" name="nutshell-get-contact-connector">
+      <bpmn:incoming>SequenceFlow_0xg1431</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1tton68</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:sequenceFlow id="SequenceFlow_0xg1431" sourceRef="Event_0fg3mvs" targetRef="Task_1ucd0f3" />
+    <bpmn:task id="Task_162gg1i" pipes:pipesType="custom" name="nutshell-update-contact-mapper">
+      <bpmn:incoming>SequenceFlow_1tton68</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0tveand</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:sequenceFlow id="SequenceFlow_1tton68" sourceRef="Task_1ucd0f3" targetRef="Task_162gg1i" />
+    <bpmn:task id="Task_19p849y" pipes:pipesType="connector" name="nutshell-update-contact-connector">
+      <bpmn:incoming>SequenceFlow_0tveand</bpmn:incoming>
+    </bpmn:task>
+    <bpmn:sequenceFlow id="SequenceFlow_0tveand" sourceRef="Task_162gg1i" targetRef="Task_19p849y" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_1">
+      <bpmndi:BPMNShape id="Event_0fg3mvs_di" bpmnElement="Event_0fg3mvs">
+        <dc:Bounds x="161" y="61" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="149" y="101" width="59" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_1ucd0f3_di" bpmnElement="Task_1ucd0f3">
+        <dc:Bounds x="240" y="39" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0xg1431_di" bpmnElement="SequenceFlow_0xg1431">
+        <di:waypoint xsi:type="dc:Point" x="197" y="79" />
+        <di:waypoint xsi:type="dc:Point" x="240" y="79" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="218.5" y="58" width="0" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Task_162gg1i_di" bpmnElement="Task_162gg1i">
+        <dc:Bounds x="388" y="39" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_1tton68_di" bpmnElement="SequenceFlow_1tton68">
+        <di:waypoint xsi:type="dc:Point" x="340" y="79" />
+        <di:waypoint xsi:type="dc:Point" x="388" y="79" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="364" y="58" width="0" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Task_19p849y_di" bpmnElement="Task_19p849y">
+        <dc:Bounds x="537" y="39" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0tveand_di" bpmnElement="SequenceFlow_0tveand">
+        <di:waypoint xsi:type="dc:Point" x="488" y="79" />
+        <di:waypoint xsi:type="dc:Point" x="537" y="79" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="512.5" y="58" width="0" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

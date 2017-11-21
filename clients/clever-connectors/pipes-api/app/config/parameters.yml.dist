@@ -41,3 +41,5 @@ parameters:
     access_token_refresh_interval: 3600
 
     connectors_topologies: '%kernel.project_dir%/src/AppBundle/Model/Systems/Impl'
+    plugins_topologies: '%kernel.project_dir%/src/AppBundle/Model/Plugins/Topologies'
+    service_topologies: '%kernel.project_dir%/src/AppBundle/Model/ServiceTopologies'
