@@ -45,6 +45,11 @@ final class CMSubscriber
     private $reactivate = TRUE;
 
     /**
+     * @var array
+     */
+    private $lists = [];
+
+    /**
      * @return string
      */
     public function getEmail(): string
@@ -147,6 +152,26 @@ final class CMSubscriber
     /**
      * @return array
      */
+    public function getLists(): array
+    {
+        return $this->lists;
+    }
+
+    /**
+     * @param array $lists
+     *
+     * @return CMSubscriber
+     */
+    public function setLists(array $lists): CMSubscriber
+    {
+        $this->lists = $lists;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
     public function toArray(): array
     {
         $res = [
@@ -162,6 +187,9 @@ final class CMSubscriber
         }
         if (!empty($this->foreignId)) {
             $res[CleverFieldsEnum::FOREIGN_ID] = $this->foreignId;
+        }
+        if (!empty($this->lists)) {
+            $res[CleverFieldsEnum::LISTS] = $this->lists;
         }
 
         return $res;
