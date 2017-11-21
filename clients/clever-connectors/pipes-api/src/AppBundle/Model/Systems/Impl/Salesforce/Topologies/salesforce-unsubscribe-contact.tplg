@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:pipes="http://www.omg.org/spec/Pipes/20100524/MODEL" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn">
+  <bpmn:process id="Process_1" isExecutable="false">
+    <bpmn:event id="Event_18rlzva" pipes:pipesType="signal" name="signal-event">
+      <bpmn:outgoing>SequenceFlow_10aku39</bpmn:outgoing>
+    </bpmn:event>
+    <bpmn:task id="Task_0cjdktl" pipes:pipesType="connector" name="salesforce-update-contact-connector">
+      <bpmn:incoming>SequenceFlow_10aku39</bpmn:incoming>
+    </bpmn:task>
+    <bpmn:sequenceFlow id="SequenceFlow_10aku39" sourceRef="Event_18rlzva" targetRef="Task_0cjdktl" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_1">
+      <bpmndi:BPMNShape id="Event_18rlzva_di" bpmnElement="Event_18rlzva">
+        <dc:Bounds x="157" y="48" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="145" y="88" width="59" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_0cjdktl_di" bpmnElement="Task_0cjdktl">
+        <dc:Bounds x="235" y="26" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_10aku39_di" bpmnElement="SequenceFlow_10aku39">
+        <di:waypoint xsi:type="dc:Point" x="193" y="66" />
+        <di:waypoint xsi:type="dc:Point" x="235" y="66" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="214" y="45" width="0" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

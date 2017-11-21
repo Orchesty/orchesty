@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:pipes="http://www.omg.org/spec/Pipes/20100524/MODEL" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn">
+  <bpmn:process id="Process_1" isExecutable="false">
+    <bpmn:event id="Event_0y6evii" pipes:pipesType="signal" name="signal-event">
+      <bpmn:outgoing>SequenceFlow_01hytyp</bpmn:outgoing>
+    </bpmn:event>
+    <bpmn:task id="Task_1g9120i" pipes:pipesType="connector" name="plugin-hard-bounce-subscriber-connector">
+      <bpmn:incoming>SequenceFlow_01hytyp</bpmn:incoming>
+    </bpmn:task>
+    <bpmn:sequenceFlow id="SequenceFlow_01hytyp" sourceRef="Event_0y6evii" targetRef="Task_1g9120i" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_1">
+      <bpmndi:BPMNShape id="Event_0y6evii_di" bpmnElement="Event_0y6evii">
+        <dc:Bounds x="317" y="305" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="304" y="345" width="62" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_1g9120i_di" bpmnElement="Task_1g9120i">
+        <dc:Bounds x="429" y="283" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_01hytyp_di" bpmnElement="SequenceFlow_01hytyp">
+        <di:waypoint xsi:type="dc:Point" x="353" y="323" />
+        <di:waypoint xsi:type="dc:Point" x="429" y="323" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="391" y="302" width="0" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

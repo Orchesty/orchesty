@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:pipes="http://www.omg.org/spec/Pipes/20100524/MODEL" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn">
+  <bpmn:process id="Process_1" name="progress-incrementer" isExecutable="false">
+    <bpmn:event id="Event_1qtci1b" pipes:pipesType="signal" name="starting-progress">
+      <bpmn:outgoing>SequenceFlow_1p5vltm</bpmn:outgoing>
+    </bpmn:event>
+    <bpmn:task id="Task_1jf71qa" pipes:pipesType="batch_connector" name="shoptet-sync-customer-connector">
+      <bpmn:incoming>SequenceFlow_1p5vltm</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1u0tn9d</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_03q3xpl" pipes:pipesType="custom" name="shoptet-updated-customer-mapper">
+      <bpmn:incoming>SequenceFlow_1bjsqrz</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1ih1xph</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_088bsgp" pipes:pipesType="connector" name="cleverconnectors-create-subscriptions-connector">
+      <bpmn:incoming>SequenceFlow_1ih1xph</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1kor41h</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:sequenceFlow id="SequenceFlow_1p5vltm" sourceRef="Event_1qtci1b" targetRef="Task_1jf71qa" />
+    <bpmn:task id="Task_18iun13" pipes:pipesType="custom" name="progress-incrementer">
+      <bpmn:incoming>SequenceFlow_1kor41h</bpmn:incoming>
+    </bpmn:task>
+    <bpmn:sequenceFlow id="SequenceFlow_1ih1xph" sourceRef="Task_03q3xpl" targetRef="Task_088bsgp" />
+    <bpmn:sequenceFlow id="SequenceFlow_1kor41h" sourceRef="Task_088bsgp" targetRef="Task_18iun13" />
+    <bpmn:task id="Task_0jyigy8" pipes:pipesType="xml_parser" name="xml-to-json">
+      <bpmn:incoming>SequenceFlow_1u0tn9d</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_105vr2v</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_0aa7kvj" pipes:pipesType="batch" name="shoptet-updated-customer-splitter">
+      <bpmn:incoming>SequenceFlow_105vr2v</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1bjsqrz</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:sequenceFlow id="SequenceFlow_105vr2v" sourceRef="Task_0jyigy8" targetRef="Task_0aa7kvj" />
+    <bpmn:sequenceFlow id="SequenceFlow_1bjsqrz" sourceRef="Task_0aa7kvj" targetRef="Task_03q3xpl" />
+    <bpmn:sequenceFlow id="SequenceFlow_1u0tn9d" sourceRef="Task_1jf71qa" targetRef="Task_0jyigy8" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_1">
+      <bpmndi:BPMNShape id="Event_1qtci1b_di" bpmnElement="Event_1qtci1b">
+        <dc:Bounds x="177" y="370" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="152" y="410" width="86" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_1jf71qa_di" bpmnElement="Task_1jf71qa">
+        <dc:Bounds x="278" y="348" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_03q3xpl_di" bpmnElement="Task_03q3xpl">
+        <dc:Bounds x="789" y="348" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_088bsgp_di" bpmnElement="Task_088bsgp">
+        <dc:Bounds x="941" y="348" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_1p5vltm_di" bpmnElement="SequenceFlow_1p5vltm">
+        <di:waypoint xsi:type="dc:Point" x="213" y="388" />
+        <di:waypoint xsi:type="dc:Point" x="278" y="388" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="200.5" y="367" width="90" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Task_18iun13_di" bpmnElement="Task_18iun13">
+        <dc:Bounds x="1116" y="348" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_1ih1xph_di" bpmnElement="SequenceFlow_1ih1xph">
+        <di:waypoint xsi:type="dc:Point" x="889" y="388" />
+        <di:waypoint xsi:type="dc:Point" x="941" y="388" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="870" y="367" width="90" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_1kor41h_di" bpmnElement="SequenceFlow_1kor41h">
+        <di:waypoint xsi:type="dc:Point" x="1041" y="388" />
+        <di:waypoint xsi:type="dc:Point" x="1116" y="388" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1033.5" y="367" width="90" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Task_0jyigy8_di" bpmnElement="Task_0jyigy8">
+        <dc:Bounds x="457" y="348" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_0aa7kvj_di" bpmnElement="Task_0aa7kvj">
+        <dc:Bounds x="633" y="348" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_105vr2v_di" bpmnElement="SequenceFlow_105vr2v">
+        <di:waypoint xsi:type="dc:Point" x="557" y="388" />
+        <di:waypoint xsi:type="dc:Point" x="633" y="388" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="595" y="367" width="0" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_1bjsqrz_di" bpmnElement="SequenceFlow_1bjsqrz">
+        <di:waypoint xsi:type="dc:Point" x="733" y="388" />
+        <di:waypoint xsi:type="dc:Point" x="789" y="388" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="761" y="367" width="0" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_1u0tn9d_di" bpmnElement="SequenceFlow_1u0tn9d">
+        <di:waypoint xsi:type="dc:Point" x="378" y="388" />
+        <di:waypoint xsi:type="dc:Point" x="457" y="388" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="417.5" y="367" width="0" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
