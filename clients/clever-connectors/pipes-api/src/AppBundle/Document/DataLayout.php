@@ -5,7 +5,6 @@ namespace CleverConnectors\AppBundle\Document;
 use CleverConnectors\AppBundle\Document\Traits\IdTrait;
 use CleverConnectors\AppBundle\Enum\DataLayoutActionEnum;
 use CleverConnectors\AppBundle\Model\DataLayout\LayoutField;
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 /**
@@ -35,7 +34,7 @@ class DataLayout
     protected $systemInstall;
 
     /**
-     * @var LayoutField[]|ArrayCollection
+     * @var LayoutField[]|array
      *
      * @ODM\Field(type="collection")
      */
@@ -46,7 +45,7 @@ class DataLayout
      */
     public function __construct()
     {
-        $this->fields = new ArrayCollection();
+        $this->fields = [];
     }
 
     /**
@@ -102,9 +101,9 @@ class DataLayout
     }
 
     /**
-     * @return LayoutField[]|ArrayCollection
+     * @return LayoutField[]|array
      */
-    public function getFields()
+    public function getFields(): array
     {
         return $this->fields;
     }
