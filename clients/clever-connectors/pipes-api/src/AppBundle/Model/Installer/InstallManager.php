@@ -191,21 +191,23 @@ class InstallManager implements LoggerAwareInterface
      */
     private function makeCreate(CompareResultDto $dto): array
     {
-        $errors = [];
+        $output = [];
 
         foreach ($dto->getCreate() as $file) {
             try {
+                $message  = '';
                 $topology = $this->topologyManager->createTopology(
                     ['name' => TplgLoader::getName($file->getName()), 'enabled' => TRUE]
                 );
                 $this->makeRunnable($topology, $file->getContents());
             } catch (Throwable $e) {
                 $this->logException($e, self::CREATE);
-                $errors[TplgLoader::getName($file->getName())] = $e->getMessage();
+                $message = $e->getMessage();
             }
+            $output[TplgLoader::getName($file->getName())] = $message;
         }
 
-        return $errors;
+        return $output;
     }
 
     /**
@@ -219,6 +221,7 @@ class InstallManager implements LoggerAwareInterface
         /** @var UpdateObject $obj */
         foreach ($dto->getUpdate() as $obj) {
             try {
+                $message     = '';
                 $oldTopology = $obj->getTopology();
                 $this->dm->persist($oldTopology);
                 $topology = $this->makeRunnable($oldTopology, $obj->getFile()->getContents());
@@ -228,8 +231,9 @@ class InstallManager implements LoggerAwareInterface
                 }
             } catch (Throwable $e) {
                 $this->logException($e, self::UPDATE);
-                $errors[$obj->getTopology()->getName()] = $e->getMessage();
+                $message = $e->getMessage();
             }
+            $errors[$obj->getTopology()->getName()] = $message;
         }
 
         return $errors;
@@ -246,12 +250,14 @@ class InstallManager implements LoggerAwareInterface
         /** @var Topology $topology */
         foreach ($dto->getDelete() as $topology) {
             try {
+                $message = '';
                 $this->dm->persist($topology);
                 $this->makeDeletable($topology);
             } catch (Throwable $e) {
                 $this->logException($e, self::DELETE);
-                $errors[$topology->getName()] = $e->getMessage();
+                $message = $e->getMessage();
             }
+            $errors[$topology->getName()] = $message;
         }
 
         return $errors;
@@ -267,6 +273,7 @@ class InstallManager implements LoggerAwareInterface
     {
         $topology = $this->topologyManager->saveTopologySchema($topology, $content, $this->xml->decode($content));
         $this->topologyManager->publishTopology($topology);
+        $this->requestHandler->generateTopology($topology->getId());
         $this->requestHandler->runTopology($topology->getId());
 
         return $topology;
