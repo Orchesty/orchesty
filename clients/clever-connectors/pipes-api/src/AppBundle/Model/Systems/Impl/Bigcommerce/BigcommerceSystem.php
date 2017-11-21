@@ -15,6 +15,7 @@ use CleverConnectors\AppBundle\Model\Systems\Authorizations\Traits\Authorization
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Bigcommerce\Requester\BigcommerceSubscribeRequester;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Bigcommerce\Requester\BigcommerceUnsubscribeRequester;
+use CleverConnectors\AppBundle\Model\Systems\Traits\SystemTrait;
 use CleverConnectors\AppBundle\Model\Webhook\Traits\WebhookSystemTrait;
 use CleverConnectors\AppBundle\Model\Webhook\WebhookSubscribes;
 use CleverConnectors\AppBundle\Model\Webhook\WebhookSystemInterface;
@@ -35,6 +36,7 @@ class BigcommerceSystem implements WebhookSystemInterface, AuthorizationInterfac
     private const CLIENT_ID    = 'client_id';
     private const ACCESS_TOKEN = 'access_token';
 
+    use SystemTrait;
     use AuthorizationTrait;
     use WebhookSystemTrait;
     use CMEventSystemTrait;

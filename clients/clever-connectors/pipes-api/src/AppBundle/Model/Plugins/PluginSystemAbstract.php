@@ -15,6 +15,7 @@ use CleverConnectors\AppBundle\Model\Plugins\Requester\SwitchTokenRequester;
 use CleverConnectors\AppBundle\Model\Requester\RequesterInterface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\AuthorizationInterface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\Traits\AuthorizationTrait;
+use CleverConnectors\AppBundle\Model\Systems\Traits\SystemTrait;
 use CleverConnectors\AppBundle\Utils\TopologyNameUtils;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
@@ -28,6 +29,7 @@ use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 abstract class PluginSystemAbstract implements AuthorizationInterface, CMEventSystemInterface
 {
 
+    use SystemTrait;
     use AuthorizationTrait;
     use CMEventSystemTrait;
 

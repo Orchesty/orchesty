@@ -9,6 +9,7 @@ use CleverConnectors\AppBundle\Model\Form\Form;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\AuthorizationInterface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\Traits\AuthorizationTrait;
 use CleverConnectors\AppBundle\Model\Systems\SystemInterface;
+use CleverConnectors\AppBundle\Model\Systems\Traits\SystemTrait;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 
@@ -20,6 +21,7 @@ use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 class ShoptetSystem implements SystemInterface, AuthorizationInterface
 {
 
+    use SystemTrait;
     use AuthorizationTrait;
 
     public const URL = 'url';

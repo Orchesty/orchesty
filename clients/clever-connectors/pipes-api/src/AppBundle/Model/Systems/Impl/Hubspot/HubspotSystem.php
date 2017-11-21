@@ -17,6 +17,7 @@ use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\Requester\HubspotRequester;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\Requester\HubspotSubscribeRequester;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\Requester\HubspotUnsubscribeRequester;
+use CleverConnectors\AppBundle\Model\Systems\Traits\SystemTrait;
 use CleverConnectors\AppBundle\Model\Webhook\Traits\WebhookSystemTrait;
 use CleverConnectors\AppBundle\Model\Webhook\WebhookSubscribes;
 use CleverConnectors\AppBundle\Model\Webhook\WebhookSystemInterface;
@@ -39,6 +40,7 @@ use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 class HubspotSystem implements WebhookSystemInterface, OAuth2Interface, CMEventSystemInterface
 {
 
+    use SystemTrait;
     use AuthorizationTrait;
     use WebhookSystemTrait;
     use CMEventSystemTrait;
