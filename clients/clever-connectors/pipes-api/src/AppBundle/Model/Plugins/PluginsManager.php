@@ -4,13 +4,16 @@ namespace CleverConnectors\AppBundle\Model\Plugins;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\PluginHeadersEnum;
+use CleverConnectors\AppBundle\Model\CM\ListConnector\CMGetDistributionsConnector;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\SystemLoader;
 use CleverConnectors\AppBundle\Model\Systems\SystemManager;
+use CleverConnectors\AppBundle\Utils\CMHeaders;
 use CleverConnectors\AppBundle\Utils\TopologyNameUtils;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Exception;
+use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Repository\NodeRepository;
@@ -52,18 +55,25 @@ class PluginsManager
     private $loader;
 
     /**
+     * @var CMGetDistributionsConnector
+     */
+    private $distConn;
+
+    /**
      * OpenSourcePluginsManager constructor.
      *
-     * @param DocumentManager $dm
-     * @param StartingPoint   $startingPoint
-     * @param SystemManager   $manager
-     * @param SystemLoader    $loader
+     * @param DocumentManager             $dm
+     * @param StartingPoint               $startingPoint
+     * @param SystemManager               $manager
+     * @param SystemLoader                $loader
+     * @param CMGetDistributionsConnector $distConn
      */
     public function __construct(
         DocumentManager $dm,
         StartingPoint $startingPoint,
         SystemManager $manager,
-        SystemLoader $loader
+        SystemLoader $loader,
+        CMGetDistributionsConnector $distConn
     )
     {
         $this->dm                 = $dm;
@@ -71,6 +81,7 @@ class PluginsManager
         $this->manager            = $manager;
         $this->topologyRepository = $dm->getRepository(Topology::class);
         $this->loader             = $loader;
+        $this->distConn           = $distConn;
     }
 
     /**
@@ -100,7 +111,7 @@ class PluginsManager
                     SystemException::MISMATCH_URL
                 );
             } else {
-                return $this->systemToArray($systemInstall);
+                return $this->systemToArray($systemInstall, $this->getDistributionLists($guid, $token));
             }
         }
 
@@ -111,7 +122,7 @@ class PluginsManager
 
         $this->dm->flush();
 
-        return $this->systemToArray($systemInstall);
+        return $this->systemToArray($systemInstall, $this->getDistributionLists($guid, $token));
     }
 
     /**
@@ -172,6 +183,23 @@ class PluginsManager
     public function deleteSubscriber(SystemInstall $systemInstall, Request $request): void
     {
         $this->startTopologies($systemInstall, TopologyNameUtils::DELETED_SUBSCRIBERS, $request);
+    }
+
+    /**
+     * @param string $guid
+     * @param string $token
+     *
+     * @return array
+     */
+    public function getDistributionLists(string $guid, string $token): array
+    {
+        $dto = new ProcessDto();
+        $dto->setHeaders([
+            CMHeaders::createKey(CMHeaders::GUID)  => $guid,
+            CMHeaders::createKey(CMHeaders::TOKEN) => $token,
+        ]);
+
+        return $this->distConn->getDistributionsArray($dto);
     }
 
     /**
@@ -237,22 +265,24 @@ class PluginsManager
 
     /**
      * @param SystemInstall $systemInstall
+     * @param array         $distLists
      *
      * @return array
      */
-    private function systemToArray(SystemInstall $systemInstall): array
+    private function systemToArray(SystemInstall $systemInstall, array $distLists = []): array
     {
         $sett = $systemInstall->getSettings();
 
         return [
-            SystemInstall::SYSTEM            => $systemInstall->getSystem(),
-            SystemInstall::TOKEN             => $systemInstall->getToken(),
-            SystemInstall::SYNCHRONIZED      => $systemInstall->isSynchronized(),
-            SystemInstall::PLUGIN_VERSION    => $systemInstall->getPluginVersion(),
-            SystemInstall::SYSTEM_URL        => $sett[SystemInstall::SYSTEM_URL],
-            SystemInstall::EVENT_CREATE      => $systemInstall->isEventCreate(),
-            SystemInstall::EVENT_UNSUBSCRIBE => $systemInstall->isEventUnsubscribe(),
-            SystemInstall::EVENT_HARD_BOUNCE => $systemInstall->isEventHardBounce(),
+            SystemInstall::SYSTEM             => $systemInstall->getSystem(),
+            SystemInstall::TOKEN              => $systemInstall->getToken(),
+            SystemInstall::SYNCHRONIZED       => $systemInstall->isSynchronized(),
+            SystemInstall::PLUGIN_VERSION     => $systemInstall->getPluginVersion(),
+            SystemInstall::SYSTEM_URL         => $sett[SystemInstall::SYSTEM_URL],
+            SystemInstall::EVENT_CREATE       => $systemInstall->isEventCreate(),
+            SystemInstall::EVENT_UNSUBSCRIBE  => $systemInstall->isEventUnsubscribe(),
+            SystemInstall::EVENT_HARD_BOUNCE  => $systemInstall->isEventHardBounce(),
+            SystemInstall::DISTRIBUTION_LISTS => $distLists,
         ];
     }
 

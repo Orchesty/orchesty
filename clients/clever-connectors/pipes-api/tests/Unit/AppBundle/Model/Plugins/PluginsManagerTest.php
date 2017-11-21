@@ -4,6 +4,7 @@ namespace Tests\Unit\AppBundle\Model\Plugins;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\PluginHeadersEnum;
+use CleverConnectors\AppBundle\Model\CM\ListConnector\CMGetDistributionsConnector;
 use CleverConnectors\AppBundle\Model\Plugins\PluginsManager;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\SystemManager;
@@ -58,14 +59,15 @@ final class PluginsManagerTest extends KernelTestCaseAbstract
 
         $res = $plug->install($req);
         self::assertEquals([
-            'system'           => 'sys',
-            'token'            => 'tkn',
-            'synchronized'     => FALSE,
-            'pluginVersion'    => 'ver',
-            'system_url'       => 'https://abc',
-            'eventCreate'      => FALSE,
-            'eventUnsubscribe' => FALSE,
-            'eventHardBounce'  => FALSE,
+            'system'             => 'sys',
+            'token'              => 'tkn',
+            'synchronized'       => FALSE,
+            'pluginVersion'      => 'ver',
+            'system_url'         => 'https://abc',
+            'eventCreate'        => FALSE,
+            'eventUnsubscribe'   => FALSE,
+            'eventHardBounce'    => FALSE,
+            'distribution_lists' => [],
         ], $res);
     }
 
@@ -102,14 +104,15 @@ final class PluginsManagerTest extends KernelTestCaseAbstract
 
         $res = $plug->install($req);
         self::assertEquals([
-            'system'           => 'sys',
-            'token'            => 'tkn',
-            'synchronized'     => FALSE,
-            'pluginVersion'    => NULL,
-            'system_url'       => 'https://abc',
-            'eventCreate'      => FALSE,
-            'eventUnsubscribe' => FALSE,
-            'eventHardBounce'  => FALSE,
+            'system'             => 'sys',
+            'token'              => 'tkn',
+            'synchronized'       => FALSE,
+            'pluginVersion'      => NULL,
+            'system_url'         => 'https://abc',
+            'eventCreate'        => FALSE,
+            'eventUnsubscribe'   => FALSE,
+            'eventHardBounce'    => FALSE,
+            'distribution_lists' => [],
         ], $res);
     }
 
@@ -206,14 +209,15 @@ final class PluginsManagerTest extends KernelTestCaseAbstract
         $res = $plug->check($sys, $req);
 
         self::assertEquals([
-            'system'           => 'sys',
-            'token'            => 'tkn',
-            'synchronized'     => FALSE,
-            'pluginVersion'    => 'ver',
-            'system_url'       => 'https://abc',
-            'eventCreate'      => FALSE,
-            'eventUnsubscribe' => FALSE,
-            'eventHardBounce'  => FALSE,
+            'system'             => 'sys',
+            'token'              => 'tkn',
+            'synchronized'       => FALSE,
+            'pluginVersion'      => 'ver',
+            'system_url'         => 'https://abc',
+            'eventCreate'        => FALSE,
+            'eventUnsubscribe'   => FALSE,
+            'eventHardBounce'    => FALSE,
+            'distribution_lists' => [],
         ], $res);
     }
 
@@ -374,9 +378,13 @@ final class PluginsManagerTest extends KernelTestCaseAbstract
             $start = $this->createMock(StartingPoint::class);
         }
 
+        /** @var CMGetDistributionsConnector|PHPUnit_Framework_MockObject_MockObject $distConn */
+        $distConn = $this->createMock(CMGetDistributionsConnector::class);
+        $distConn->method('getDistributionsArray')->willReturn([]);
+
         $loader = $this->container->get('cc.systems.loader');
 
-        return new PluginsManager($dm, $start, $manager, $loader);
+        return new PluginsManager($dm, $start, $manager, $loader, $distConn);
     }
 
 }
