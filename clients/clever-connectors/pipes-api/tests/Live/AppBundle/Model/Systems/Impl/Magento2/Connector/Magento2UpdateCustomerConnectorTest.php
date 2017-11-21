@@ -15,7 +15,7 @@ use Tests\DatabaseTestCaseAbstract;
 /**
  * Class Magento2UpdateCustomerConnectorTest
  *
- * @package Tests\Live\AppBundle\Model\Systems\Impl\Magento2\Connector
+ * @package Tests\Live\AppBundle\Model\Systems\Impl\Magento2Old\Connector
  */
 final class Magento2UpdateCustomerConnectorTest extends DatabaseTestCaseAbstract
 {

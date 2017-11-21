@@ -14,7 +14,7 @@ use Nette\Utils\Json;
 /**
  * Class Magento2Authorization
  *
- * @package Hanaboso\PipesFramework\Authorization\Impl\Magento2
+ * @package Hanaboso\PipesFramework\Authorization\Impl\Magento2Old
  */
 class Magento2Authorization extends AuthorizationAbstract implements Magento2AuthorizationInterface
 {

@@ -12,7 +12,7 @@ namespace Hanaboso\PipesFramework\Authorization\Impl\Magento2;
 /**
  * Interface Magento2AuthorizationInterface
  *
- * @package Hanaboso\PipesFramework\Authorization\Impl\Magento2
+ * @package Hanaboso\PipesFramework\Authorization\Impl\Magento2Old
  */
 interface Magento2AuthorizationInterface
 {
