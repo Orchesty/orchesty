@@ -1,5 +1,5 @@
 services:
-    # Magento2
+    # Magento2Old
     hbpf.connector.magento2.orders:
         class: Hanaboso\PipesFramework\Connector\Impl\Magento2\Magento2OrdersConnector
         arguments:

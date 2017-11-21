@@ -23,7 +23,7 @@ use Tests\PrivateTrait;
 /**
  * Class Magento2OAuthAuthorizationTest
  *
- * @package Tests\Unit\Authorization\Impl\Magento2
+ * @package Tests\Unit\Authorization\Impl\Magento2Old
  */
 final class Magento2OAuthAuthorizationTest extends KernelTestCaseAbstract
 {

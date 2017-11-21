@@ -21,7 +21,7 @@ use Psr\Http\Message\StreamInterface;
 /**
  * Class Magento2Base
  *
- * @package Hanaboso\PipesFramework\Connector\Impl\Magento2
+ * @package Hanaboso\PipesFramework\Connector\Impl\Magento2Old
  */
 abstract class Magento2Base implements ConnectorInterface
 {
@@ -64,7 +64,7 @@ abstract class Magento2Base implements ConnectorInterface
     public function processEvent(ProcessDto $dto): ProcessDto
     {
         throw new ConnectorException(
-            'Magento2 has no support for webhooks!',
+            'Magento2Old has no support for webhooks!',
             ConnectorException::CONNECTOR_DOES_NOT_HAVE_PROCESS_EVENT
         );
     }
