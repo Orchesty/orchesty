@@ -69,9 +69,9 @@ final class InstallManagerTest extends DatabaseTestCaseAbstract
         self::assertArrayHasKey('create', $output);
         self::assertArrayHasKey('update', $output);
         self::assertArrayHasKey('delete', $output);
-        self::assertEmpty($output['create']);
-        self::assertEmpty($output['update']);
-        self::assertEmpty($output['delete']);
+        self::assertEquals(1, count($output['create']));
+        self::assertEquals(1, count($output['update']));
+        self::assertEquals(1, count($output['delete']));
 
         $res = $this->redis->get(InstallManager::AUTO_INSTALL_KEY);
         self::assertEmpty($res);

@@ -65,7 +65,7 @@ final class InstallManagerTest extends TestCase
         self::assertArrayHasKey('create', $output);
         self::assertArrayHasKey('update', $output);
         self::assertArrayHasKey('delete', $output);
-        self::assertEmpty($output['delete']);
+        self::assertNotEmpty($output['delete']);
     }
 
     /**
