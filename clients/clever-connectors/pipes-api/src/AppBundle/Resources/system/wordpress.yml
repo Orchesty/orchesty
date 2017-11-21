@@ -1,0 +1,5 @@
+services:
+    systems.wordpress:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Wordpress\WordpressSystem
+        arguments:
+        tags: ['%systems%']
