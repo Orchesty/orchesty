@@ -56,7 +56,7 @@ final class MapControllerTest extends ControllerTestCaseAbstract
         $this->assertEquals(200, $response->status);
 
         $content = Json::decode(Json::encode($response->content), TRUE);
-        $this->assertEquals(array_merge($params, ['system_install' => $system->getId()]), $content);
+        $this->assertEquals($params, $content);
     }
 
     /**
@@ -105,7 +105,7 @@ final class MapControllerTest extends ControllerTestCaseAbstract
         $this->assertEquals(200, $response->status);
 
         $content = Json::decode(Json::encode($response->content), TRUE);
-        $this->assertEquals(array_merge($params, ['system_install' => $system->getId()]), $content);
+        $this->assertEquals($params, $content);
     }
 
     /**
