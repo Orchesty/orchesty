@@ -83,7 +83,7 @@ final class MapManagerTest extends DatabaseTestCaseAbstract
         $data   = $this->getDataUpdate();
         $result = $this->manager->update($result, $data);
 
-        $this->assertResult($result, $data, $systemInstall);
+        $this->assertResult($result, $data, $systemInstall, TRUE);
 
         $this->manager->delete($result);
 
@@ -94,15 +94,23 @@ final class MapManagerTest extends DatabaseTestCaseAbstract
      * @param MapTemplate   $result
      * @param array         $data
      * @param SystemInstall $systemInstall
+     * @param bool          $assertOnlyFields
      */
-    private function assertResult(MapTemplate $result, array $data, SystemInstall $systemInstall): void
+    private function assertResult(
+        MapTemplate $result,
+        array $data,
+        SystemInstall $systemInstall,
+        bool $assertOnlyFields = FALSE
+    ): void
     {
         $this->assertInstanceOf(MapTemplate::class, $result);
         $this->assertCount(1, $this->dm->getRepository(MapTemplate::class)->findAll());
 
-        $this->assertEquals($data['action'], $result->getAction());
-        $this->assertEquals($data['direction'], $result->getDirection());
-        $this->assertEquals($systemInstall->getId(), $result->getSystemInstall());
+        if (!$assertOnlyFields) {
+            $this->assertEquals($data['action'], $result->getAction());
+            $this->assertEquals($data['direction'], $result->getDirection());
+            $this->assertEquals($systemInstall->getId(), $result->getSystemInstall());
+        }
 
         $fields = $result->getFields();
         $this->assertEquals(count($data['fields']), count($fields));
@@ -174,9 +182,7 @@ final class MapManagerTest extends DatabaseTestCaseAbstract
     private function getDataUpdate(): array
     {
         return [
-            'action'    => DataLayoutActionEnum::CAMPAIGN,
-            'direction' => MapTemplate::DIRECTION_OUT,
-            'fields'    => [
+            'fields' => [
                 [
                     'name'  => 'aaa',
                     'type'  => TypeEnum::URL,

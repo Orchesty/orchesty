@@ -66,7 +66,7 @@ class MapHandler
     {
         $this->systemManager->getSystemInstall($user, $system);
 
-        ControllerUtils::checkParameters(['action', 'direction', 'fields'], $data);
+        ControllerUtils::checkParameters(['fields'], $data);
 
         $mapTemplate = $this->mapMmanager->update($this->mapMmanager->get($id), $data);
 

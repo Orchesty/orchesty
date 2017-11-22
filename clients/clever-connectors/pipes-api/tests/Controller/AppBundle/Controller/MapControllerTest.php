@@ -73,8 +73,8 @@ final class MapControllerTest extends ControllerTestCaseAbstract
         $this->persistAndFlush($system);
 
         $params = [
-            'action'    => DataLayoutActionEnum::SUBSCRIBER,
-            'direction' => MapTemplate::DIRECTION_IN,
+            'action'    => DataLayoutActionEnum::CAMPAIGN,
+            'direction' => MapTemplate::DIRECTION_OUT,
             'fields'    => [
                 [
                     'name'  => 'abc',

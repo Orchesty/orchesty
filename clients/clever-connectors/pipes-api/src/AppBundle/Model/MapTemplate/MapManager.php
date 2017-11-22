@@ -79,7 +79,10 @@ class MapManager
 
         $mapTemplate = new MapTemplate();
         $mapTemplate = $this->fillMapTemplate($mapTemplate, $data);
-        $mapTemplate->setSystemInstall($systemInstall);
+        $mapTemplate
+            ->setAction(new DataLayoutActionEnum($data['action']))
+            ->setDirection($data['direction'])
+            ->setSystemInstall($systemInstall);
 
         $this->dm->persist($mapTemplate);
         $this->dm->flush();
@@ -119,10 +122,6 @@ class MapManager
      */
     private function fillMapTemplate(MapTemplate $mapTemplate, array $data): MapTemplate
     {
-        $mapTemplate
-            ->setAction(new DataLayoutActionEnum($data['action']))
-            ->setDirection($data['direction']);
-
         $mapTemplate->setFields([]);
         if (array_key_exists('fields', $data) && !empty($data['fields'])) {
             foreach ($data['fields'] as $field) {
