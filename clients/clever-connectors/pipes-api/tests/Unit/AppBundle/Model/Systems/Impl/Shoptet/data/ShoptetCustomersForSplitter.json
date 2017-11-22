@@ -1,0 +1,412 @@
+{
+  "CUSTOMERS": {
+    "CUSTOMER": [
+      {
+        "REMARK": {
+          "#": null
+        },
+        "BILLING_ADDRESS": {
+          "CITY": {
+            "#": null
+          },
+          "DISTRICT": {
+            "#": null
+          },
+          "ZIP": {
+            "#": null
+          },
+          "HOUSE_NUMBER": {
+            "#": null
+          },
+          "COUNTRY": {
+            "#": "u010cesku00e1 republika"
+          },
+          "COMPANY": {
+            "#": null
+          },
+          "COMPANY_ID": {
+            "#": null
+          },
+          "VAT_ID": {
+            "#": null
+          },
+          "STREET": {
+            "#": null
+          },
+          "FULL_NAME": {
+            "#": "test 2211001"
+          }
+        },
+        "CUSTOMER_GROUP": {
+          "#": "Koncovu00fd zu00e1kaznu00edk"
+        },
+        "REGISTRATION_DATE": {
+          "#": "2017-11-22 09:34:56"
+        },
+        "SHIPPING_ADDRESSES": {
+          "#": "n        "
+        },
+        "ACCOUNTS": {
+          "ACCOUNT": [
+            {
+              "EMAIL_VERIFIED": {
+                "#": "0"
+              },
+              "GUID": {
+                "#": "595291fe-cf62-11e7-8216-002590dad85e"
+              },
+              "IS_ADMIN": {
+                "#": "0"
+              },
+              "EMAIL": {
+                "#": "test2211003@shoptet.com"
+              },
+              "PHONE": {
+                "#": null
+              }
+            },
+            {
+              "EMAIL_VERIFIED": {
+                "#": "0"
+              },
+              "GUID": {
+                "#": "342aa78f-cf62-11e7-8216-002590dad85e"
+              },
+              "IS_ADMIN": {
+                "#": "0"
+              },
+              "EMAIL": {
+                "#": "test2211002@shoptet.com"
+              },
+              "PHONE": {
+                "#": null
+              }
+            },
+            {
+              "EMAIL_VERIFIED": {
+                "#": "0"
+              },
+              "GUID": {
+                "#": "05235bf4-cf60-11e7-8216-002590dad85e"
+              },
+              "IS_ADMIN": {
+                "#": "0"
+              },
+              "EMAIL": {
+                "#": "test2211001@shoptet.com"
+              },
+              "PHONE": {
+                "#": null
+              }
+            }
+          ]
+        },
+        "DISCOUNT_PERCENT": {
+          "#": "0"
+        },
+        "PRICELIST": {
+          "#": "Hlavnu00ed cenu00edk"
+        },
+        "GUID": {
+          "#": "052128a9-cf60-11e7-8216-002590dad85e"
+        }
+      },
+      {
+        "REMARK": {
+          "#": null
+        },
+        "BILLING_ADDRESS": {
+          "CITY": {
+            "#": null
+          },
+          "DISTRICT": {
+            "#": null
+          },
+          "ZIP": {
+            "#": null
+          },
+          "HOUSE_NUMBER": {
+            "#": null
+          },
+          "COUNTRY": {
+            "#": "u010cesku00e1 republika"
+          },
+          "COMPANY": {
+            "#": null
+          },
+          "COMPANY_ID": {
+            "#": null
+          },
+          "VAT_ID": {
+            "#": null
+          },
+          "STREET": {
+            "#": null
+          },
+          "FULL_NAME": {
+            "#": "test 2111003"
+          }
+        },
+        "CUSTOMER_GROUP": {
+          "#": "Koncovu00fd zu00e1kaznu00edk"
+        },
+        "REGISTRATION_DATE": {
+          "#": "2017-11-21 14:00:21"
+        },
+        "SHIPPING_ADDRESSES": {
+          "#": "n        "
+        },
+        "ACCOUNTS": {
+          "ACCOUNT": {
+            "EMAIL_VERIFIED": {
+              "#": "0"
+            },
+            "GUID": {
+              "#": "ee52a7d4-cebb-11e7-8216-002590dad85e"
+            },
+            "IS_ADMIN": {
+              "#": "0"
+            },
+            "EMAIL": {
+              "#": "test2111003@shoptet.com"
+            },
+            "PHONE": {
+              "#": null
+            }
+          }
+        },
+        "DISCOUNT_PERCENT": {
+          "#": "0"
+        },
+        "PRICELIST": {
+          "#": "Hlavnu00ed cenu00edk"
+        },
+        "GUID": {
+          "#": "ee510259-cebb-11e7-8216-002590dad85e"
+        }
+      },
+      {
+        "REMARK": {
+          "#": null
+        },
+        "BILLING_ADDRESS": {
+          "CITY": {
+            "#": null
+          },
+          "DISTRICT": {
+            "#": null
+          },
+          "ZIP": {
+            "#": null
+          },
+          "HOUSE_NUMBER": {
+            "#": null
+          },
+          "COUNTRY": {
+            "#": "u010cesku00e1 republika"
+          },
+          "COMPANY": {
+            "#": null
+          },
+          "COMPANY_ID": {
+            "#": null
+          },
+          "VAT_ID": {
+            "#": null
+          },
+          "STREET": {
+            "#": null
+          },
+          "FULL_NAME": {
+            "#": "test 2111002"
+          }
+        },
+        "CUSTOMER_GROUP": {
+          "#": "Koncovu00fd zu00e1kaznu00edk"
+        },
+        "REGISTRATION_DATE": {
+          "#": "2017-11-21 13:20:26"
+        },
+        "SHIPPING_ADDRESSES": {
+          "#": "n        "
+        },
+        "ACCOUNTS": {
+          "ACCOUNT": {
+            "EMAIL_VERIFIED": {
+              "#": "0"
+            },
+            "GUID": {
+              "#": "5b45ff19-ceb6-11e7-8216-002590dad85e"
+            },
+            "IS_ADMIN": {
+              "#": "0"
+            },
+            "EMAIL": {
+              "#": "test2111002@shoptet.com"
+            },
+            "PHONE": {
+              "#": null
+            }
+          }
+        },
+        "DISCOUNT_PERCENT": {
+          "#": "0"
+        },
+        "PRICELIST": {
+          "#": "Hlavnu00ed cenu00edk"
+        },
+        "GUID": {
+          "#": "5b42cb88-ceb6-11e7-8216-002590dad85e"
+        }
+      },
+      {
+        "REMARK": {
+          "#": null
+        },
+        "BILLING_ADDRESS": {
+          "CITY": {
+            "#": null
+          },
+          "DISTRICT": {
+            "#": null
+          },
+          "ZIP": {
+            "#": null
+          },
+          "HOUSE_NUMBER": {
+            "#": null
+          },
+          "COUNTRY": {
+            "#": "u010cesku00e1 republika"
+          },
+          "COMPANY": {
+            "#": null
+          },
+          "COMPANY_ID": {
+            "#": null
+          },
+          "VAT_ID": {
+            "#": null
+          },
+          "STREET": {
+            "#": null
+          },
+          "FULL_NAME": {
+            "#": "test 2111001"
+          }
+        },
+        "CUSTOMER_GROUP": {
+          "#": "Koncovu00fd zu00e1kaznu00edk"
+        },
+        "REGISTRATION_DATE": {
+          "#": "2017-11-21 12:41:23"
+        },
+        "SHIPPING_ADDRESSES": {
+          "#": "n        "
+        },
+        "ACCOUNTS": {
+          "ACCOUNT": {
+            "EMAIL_VERIFIED": {
+              "#": "0"
+            },
+            "GUID": {
+              "#": "e63ffbb1-ceb0-11e7-8216-002590dad85e"
+            },
+            "IS_ADMIN": {
+              "#": "0"
+            },
+            "EMAIL": {
+              "#": "test2111001@shoptet.com"
+            },
+            "PHONE": {
+              "#": null
+            }
+          }
+        },
+        "DISCOUNT_PERCENT": {
+          "#": "0"
+        },
+        "PRICELIST": {
+          "#": "Hlavnu00ed cenu00edk"
+        },
+        "GUID": {
+          "#": "e63d1f40-ceb0-11e7-8216-002590dad85e"
+        }
+      },
+      {
+        "REMARK": {
+          "#": null
+        },
+        "BILLING_ADDRESS": {
+          "CITY": {
+            "#": null
+          },
+          "DISTRICT": {
+            "#": null
+          },
+          "ZIP": {
+            "#": null
+          },
+          "HOUSE_NUMBER": {
+            "#": null
+          },
+          "COUNTRY": {
+            "#": "u010cesku00e1 republika"
+          },
+          "COMPANY": {
+            "#": null
+          },
+          "COMPANY_ID": {
+            "#": null
+          },
+          "VAT_ID": {
+            "#": null
+          },
+          "STREET": {
+            "#": "asdasdasd"
+          },
+          "FULL_NAME": {
+            "#": "asd asddd"
+          }
+        },
+        "CUSTOMER_GROUP": {
+          "#": "Koncovu00fd zu00e1kaznu00edk"
+        },
+        "REGISTRATION_DATE": {
+          "#": "2017-10-19 08:09:13"
+        },
+        "SHIPPING_ADDRESSES": {
+          "#": "n        "
+        },
+        "ACCOUNTS": {
+          "ACCOUNT": {
+            "EMAIL_VERIFIED": {
+              "#": "0"
+            },
+            "GUID": {
+              "#": "146278be-ca07-11e7-8216-002590dad85e"
+            },
+            "IS_ADMIN": {
+              "#": "0"
+            },
+            "EMAIL": {
+              "#": "abc@abc.com"
+            },
+            "PHONE": {
+              "#": "123"
+            }
+          }
+        },
+        "DISCOUNT_PERCENT": {
+          "#": "0"
+        },
+        "PRICELIST": {
+          "#": "Hlavnu00ed cenu00edk"
+        },
+        "GUID": {
+          "#": "07af2d07-b494-11e7-819d-002590dc5efc"
+        }
+      }
+    ]
+  }
+}
