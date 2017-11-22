@@ -273,6 +273,7 @@ class InstallManager implements LoggerAwareInterface
     {
         $topology = $this->topologyManager->saveTopologySchema($topology, $content, $this->xml->decode($content));
         $this->topologyManager->publishTopology($topology);
+        $this->topologyManager->updateTopology($topology, ['enabled' => TRUE]);
         $this->requestHandler->generateTopology($topology->getId());
         $this->requestHandler->runTopology($topology->getId());
 
