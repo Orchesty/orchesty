@@ -32,6 +32,30 @@ final class MapManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
+     * @covers MapManager::removeBySystemInstall()
+     */
+    public function testRemoveBySystemInstall(): void
+    {
+        $systemInstall = $this->prepareSystemInstall();
+
+        $map = (new MapTemplate())
+            ->setAction(new DataLayoutActionEnum(DataLayoutActionEnum::SUBSCRIBER))
+            ->setDirection(MapTemplate::DIRECTION_IN)
+            ->setSystemInstall($systemInstall);
+        $this->persistAndFlush($map);
+
+        $this->assertCount(1,
+            $this->dm->getRepository(MapTemplate::class)->findBy(['systemInstall' => $systemInstall->getId()]));
+
+        $this->manager->removeBySystemInstall($systemInstall);
+
+        $this->dm->clear();
+
+        $this->assertCount(0,
+            $this->dm->getRepository(MapTemplate::class)->findBy(['systemInstall' => $systemInstall->getId()]));
+    }
+
+    /**
      * @covers MapManager::create()
      */
     public function testCreate(): void

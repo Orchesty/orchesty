@@ -55,6 +55,24 @@ class LayoutManager
 
     /**
      * @param SystemInstall $systemInstall
+     */
+    public function removeBySystemInstall(SystemInstall $systemInstall): void
+    {
+        $dataLayouts = $this->dm->getRepository(DataLayout::class)->findBy([
+            'systemInstall' => $systemInstall->getId(),
+        ]);
+
+        if ($dataLayouts) {
+            foreach ($dataLayouts as $dataLayout) {
+                $this->dm->remove($dataLayout);
+            }
+
+            $this->dm->flush();
+        }
+    }
+
+    /**
+     * @param SystemInstall $systemInstall
      * @param array         $data
      *
      * @return DataLayout

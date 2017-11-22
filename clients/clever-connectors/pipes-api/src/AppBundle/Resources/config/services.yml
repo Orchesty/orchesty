@@ -20,6 +20,8 @@ services:
             - '@hbpf.starting_point.starting_point'
             - '@hbpf.topology_generator.request.request_handler'
             - '@cc.events.manager'
+            - '@cc.map_template.manager'
+            - '@cc.layout.manager'
 
     cc.systems.loader:
         class: CleverConnectors\AppBundle\Model\Systems\SystemLoader

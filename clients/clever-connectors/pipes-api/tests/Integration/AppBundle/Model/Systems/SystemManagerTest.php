@@ -2,6 +2,7 @@
 
 namespace Tests\Integration\AppBundle\Model\Systems;
 
+use CleverConnectors\AppBundle\Document\DataLayout;
 use CleverConnectors\AppBundle\Document\MapTemplate;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\DataLayoutActionEnum;
@@ -299,9 +300,32 @@ final class SystemManagerTest extends DatabaseTestCaseAbstract
             ->setToken('token');
         $this->persistAndFlush($system);
 
+        $map = (new MapTemplate())
+            ->setAction(new DataLayoutActionEnum(DataLayoutActionEnum::SUBSCRIBER))
+            ->setDirection(MapTemplate::DIRECTION_IN)
+            ->setSystemInstall($system);
+        $this->persistAndFlush($map);
+
+        $layout = (new DataLayout())
+            ->setAction(new DataLayoutActionEnum(DataLayoutActionEnum::SUBSCRIBER))
+            ->setSystemInstall($system);
+        $this->persistAndFlush($layout);
+
+        $this->dm->clear();
+
+        $this->assertNotEmpty($this->repository->findBy(['user' => 'user', 'system' => 'null.user.group']));
+        $this->assertNotEmpty($this->dm->getRepository(MapTemplate::class)
+            ->findBy(['systemInstall' => $system->getId()]));
+        $this->assertNotEmpty($this->dm->getRepository(DataLayout::class)
+            ->findBy(['systemInstall' => $system->getId()]));
+
         $this->manager->uninstallSystem('user', 'null.user.group');
 
+        $this->dm->clear();
+
         $this->assertEmpty($this->repository->findBy(['user' => 'user', 'system' => 'null.user.group']));
+        $this->assertEmpty($this->dm->getRepository(MapTemplate::class)->findBy(['systemInstall' => $system->getId()]));
+        $this->assertEmpty($this->dm->getRepository(DataLayout::class)->findBy(['systemInstall' => $system->getId()]));
     }
 
     /**

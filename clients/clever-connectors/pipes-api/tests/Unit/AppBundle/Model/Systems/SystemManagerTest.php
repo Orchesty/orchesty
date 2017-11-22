@@ -11,6 +11,8 @@ namespace Tests\Unit\AppBundle\Model\Systems;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\CMEvents\CMEventsManager;
+use CleverConnectors\AppBundle\Model\DataLayout\LayoutManager;
+use CleverConnectors\AppBundle\Model\MapTemplate\MapManager;
 use CleverConnectors\AppBundle\Model\Systems\SystemLoader;
 use CleverConnectors\AppBundle\Model\Systems\SystemManager;
 use CleverConnectors\AppBundle\Model\Webhook\WebhookManager;
@@ -64,6 +66,16 @@ final class SystemManagerTest extends TestCase
     private $eventsManager;
 
     /**
+     * @var PHPUnit_Framework_MockObject_MockObject|MapManager
+     */
+    private $mapManager;
+
+    /**
+     * @var PHPUnit_Framework_MockObject_MockObject|LayoutManager
+     */
+    private $layoutManager;
+
+    /**
      *
      */
     public function setUp(): void
@@ -74,6 +86,8 @@ final class SystemManagerTest extends TestCase
         $this->startingPoint  = $this->getClassMock(StartingPoint::class);
         $this->requestHandler = $this->getClassMock(RequestHandler::class);
         $this->eventsManager  = $this->getClassMock(CMEventsManager::class);
+        $this->mapManager     = $this->getClassMock(MapManager::class);
+        $this->layoutManager  = $this->getClassMock(LayoutManager::class);
         $this->startingPoint->method('runWithRequest');
     }
 
@@ -90,7 +104,9 @@ final class SystemManagerTest extends TestCase
             $this->webhookManager,
             $this->startingPoint,
             $this->requestHandler,
-            $this->eventsManager
+            $this->eventsManager,
+            $this->mapManager,
+            $this->layoutManager
         );
 
         $res = $manager->synchronizeSubscriptions('user', 'system');
