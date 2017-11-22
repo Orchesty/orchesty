@@ -75,7 +75,9 @@ final class PluginHardBounceSubscriberConnectorTest extends KernelTestCaseAbstra
                 function (RequestDto $requestDto) {
                     $dto = new RequestDto(CurlManager::METHOD_POST,
                         new Uri('https://neco.com/clever_connector/subscriber/hard_bounce?id=someId'));
-                    $dto->setHeaders([]);
+                    $dto
+                        ->setBody('{}')
+                        ->setHeaders([]);
 
                     self::assertEquals($dto, $requestDto);
 

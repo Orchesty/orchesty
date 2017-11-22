@@ -28,7 +28,7 @@ class PluginHardBounceSubscriberConnector extends PluginSubscriberConnectorAbstr
      */
     protected function getBody(ProcessDto $dto): string
     {
-        return '';
+        return '{}';
     }
 
     /**

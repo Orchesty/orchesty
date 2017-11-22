@@ -28,7 +28,7 @@ class PluginUnsubscribeSubscriberConnector extends PluginSubscriberConnectorAbst
      */
     protected function getBody(ProcessDto $dto): string
     {
-        return '';
+        return '{}';
     }
 
     /**
