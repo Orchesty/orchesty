@@ -100,7 +100,7 @@ class TopologiesComparator
      */
     private function isEqual(Topology $topology, SplFileInfo $file): bool
     {
-        return md5($topology->getRawBpmn()) == md5($file->getContents());
+        return md5(trim($topology->getRawBpmn())) == md5(trim($file->getContents()));
     }
 
     /**
