@@ -98,6 +98,14 @@ class NullSystem extends PluginSystemAbstract implements WebhookSystemInterface,
     }
 
     /**
+     * @return bool
+     */
+    public function isDynamicMapper(): bool
+    {
+        return TRUE;
+    }
+
+    /**
      * @return string
      */
     public function getAuthorizationType(): string

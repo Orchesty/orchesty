@@ -2,7 +2,9 @@
 
 namespace CleverConnectors\AppBundle\Model\Systems;
 
+use CleverConnectors\AppBundle\Document\DataLayout;
 use CleverConnectors\AppBundle\Document\LastSync;
+use CleverConnectors\AppBundle\Document\MapTemplate;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\SystemTypeEnum;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
@@ -156,6 +158,11 @@ class SystemManager
         $system                 = $this->systemLoader->getSystem($systemInstall->getSystem());
         $data                   = $system->toArray($systemInstall);
         $data['setting_fields'] = $system->getSettingFields($systemInstall);
+
+        if ($system->isDynamicMapper()) {
+            $data['data_layouts']  = $this->getSystemInstallDataLayoutsArray($systemInstall->getId());
+            $data['map_templates'] = $this->getSystemInstallMapTemplatesArray($systemInstall->getId());
+        }
 
         return $data;
     }
@@ -546,6 +553,44 @@ class SystemManager
             TopologyNameUtils::SWITCH_TOKEN,
             ['token' => $token]
         );
+    }
+
+    /**
+     * @param string $id
+     *
+     * @return array
+     */
+    private function getSystemInstallDataLayoutsArray(string $id): array
+    {
+        $dataLayouts = $this->dm->getRepository(DataLayout::class)->findBy([
+            'systemInstall' => $id,
+        ]);
+
+        $dataLayoutArray = [];
+        foreach ($dataLayouts as $dataLayout) {
+            $dataLayoutArray[] = $dataLayout->toArray();
+        }
+
+        return $dataLayoutArray;
+    }
+
+    /**
+     * @param string $id
+     *
+     * @return array
+     */
+    private function getSystemInstallMapTemplatesArray(string $id): array
+    {
+        $mapTemplates = $this->dm->getRepository(MapTemplate::class)->findBy([
+            'systemInstall' => $id,
+        ]);
+
+        $mapTemplatesArray = [];
+        foreach ($mapTemplates as $mapTemplate) {
+            $mapTemplatesArray[] = $mapTemplate->toArray();
+        }
+
+        return $mapTemplatesArray;
     }
 
 }
