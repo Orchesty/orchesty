@@ -52,7 +52,7 @@ abstract class PluginWebhookSubscriberConnectorAbstract implements ConnectorInte
             ->setLastName($data[CleverFieldsEnum::LAST_NAME] ?? '')
             ->setFirstName($data[CleverFieldsEnum::FIRST_NAME] ?? '')
             ->setEmail($data[CleverFieldsEnum::EMAIL] ?? '')
-            ->setLists($data[CleverFieldsEnum::PLUGINS_LISTS] ? [$data[CleverFieldsEnum::PLUGINS_LISTS]] : []);
+            ->setLists(isset($data[CleverFieldsEnum::PLUGINS_LISTS]) ? [$data[CleverFieldsEnum::PLUGINS_LISTS]] : []);
 
         return $dto->setData(json_encode($obj->toArray()));
     }
