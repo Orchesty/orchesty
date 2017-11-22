@@ -2,7 +2,10 @@
 
 namespace Tests\Integration\AppBundle\Model\Systems;
 
+use CleverConnectors\AppBundle\Document\MapTemplate;
 use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Enum\DataLayoutActionEnum;
+use CleverConnectors\AppBundle\Enum\TypeEnum;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\SystemManager;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
@@ -132,6 +135,134 @@ final class SystemManagerTest extends DatabaseTestCaseAbstract
         $this->persistAndFlush($system);
 
         $this->manager->getUserSystems('user');
+    }
+
+    /**
+     *
+     */
+    public function testGetUserSystem(): void
+    {
+        $system = (new SystemInstall())
+            ->setUser('user')
+            ->setSystem('null.user.group')
+            ->setToken('token');
+        $this->persistAndFlush($system);
+
+        $dataLayoutManager = $this->container->get('cc.layout.manager');
+        $dataLayoutManager->createDataLayout($system, [
+            'action' => DataLayoutActionEnum::SUBSCRIBER,
+            'fields' => [
+                ['key' => 'key-text', 'type' => TypeEnum::TEXT],
+                ['key' => 'key-date', 'type' => TypeEnum::DATE],
+                ['key' => 'key-bool', 'type' => TypeEnum::BOOL],
+            ],
+        ]);
+
+        $mapTemplateManager = $this->container->get('cc.map_template.manager');
+        $mapTemplateManager->create($system, [
+            'action'    => DataLayoutActionEnum::SUBSCRIBER,
+            'direction' => MapTemplate::DIRECTION_IN,
+            'fields'    => [
+                [
+                    'name'  => 'abc',
+                    'type'  => TypeEnum::TEXT,
+                    'items' => ['Item One', 'Item Two'],
+                ],
+            ],
+        ]);
+
+        $this->assertEquals([
+            'key'              => 'null.user.group',
+            'name'             => 'NULL',
+            'description'      => 'Only for testing purposes',
+            'type'             => 'cron',
+            'auth_type'        => 'oauth2',
+            'authorized'       => FALSE,
+            'token'            => 'token',
+            'synchronized'     => FALSE,
+            'eventCreate'      => FALSE,
+            'eventUnsubscribe' => FALSE,
+            'eventHardBounce'  => FALSE,
+            'setting_fields'   => [
+                0        => [
+                    'type'        => 'url',
+                    'key'         => 'field1',
+                    'label'       => '',
+                    'value'       => NULL,
+                    'required'    => TRUE,
+                    'read_only'   => FALSE,
+                    'disabled'    => FALSE,
+                    'description' => '',
+                    'choices'     =>
+                        [
+                        ],
+                    'action'      => '',
+                ], 1     =>
+                    [
+                        'type'        => 'text',
+                        'key'         => 'field2',
+                        'label'       => '',
+                        'value'       => NULL,
+                        'required'    => TRUE,
+                        'read_only'   => FALSE,
+                        'disabled'    => FALSE,
+                        'description' => '',
+                        'choices'     =>
+                            [
+                            ],
+                        'action'      => '',
+                    ], 2 =>
+                    [
+                        'type'        => 'password',
+                        'key'         => 'field3',
+                        'label'       => '',
+                        'value'       => FALSE,
+                        'required'    => TRUE,
+                        'read_only'   => FALSE,
+                        'disabled'    => FALSE,
+                        'description' => '',
+                        'choices'     =>
+                            [
+                            ],
+                        'action'      => '',
+                    ],
+            ], 'data_layouts'  => [
+                0 => [
+                    'action' => 'subscriber',
+                    'fields' => [
+                        0        =>
+                            [
+                                'key'  => 'key-text',
+                                'type' => 'text',
+                            ], 1 =>
+                            [
+                                'key'  => 'key-date',
+                                'type' => 'date',
+                            ], 2 =>
+                            [
+                                'key'  => 'key-bool',
+                                'type' => 'bool',
+                            ],
+                    ],
+                ],
+            ],
+            'map_templates'    => [
+                0 => [
+                    'action'    => 'subscriber',
+                    'direction' => 'in',
+                    'fields'    => [
+                        0 => [
+                            'name'  => 'abc',
+                            'type'  => 'text',
+                            'items' => [
+                                0 => 'Item One',
+                                1 => 'Item Two',
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ], $this->manager->getUserSystem($system));
     }
 
     /**

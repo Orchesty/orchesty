@@ -192,6 +192,8 @@ final class SystemControllerTest extends ControllerTestCaseAbstract
                         'choices'     => [],
                     ],
                 ],
+                'data_layouts'   => [],
+                'map_templates'  => [],
             ]),
             $response->content
         );
@@ -270,6 +272,8 @@ final class SystemControllerTest extends ControllerTestCaseAbstract
                         'choices'     => [],
                     ],
                 ],
+                'data_layouts'   => [],
+                'map_templates'  => [],
             ]),
             $response->content
         );
