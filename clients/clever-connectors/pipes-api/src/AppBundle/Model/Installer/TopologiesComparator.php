@@ -100,7 +100,21 @@ class TopologiesComparator
      */
     private function isEqual(Topology $topology, SplFileInfo $file): bool
     {
-        return md5(trim($topology->getRawBpmn())) == md5(trim($file->getContents()));
+        return md5($this->removeWhiteSpace($topology->getRawBpmn())) == md5($this->removeWhiteSpace($file->getContents()));
+    }
+
+    /**
+     * @param string $string
+     *
+     * @return string
+     */
+    private function removeWhiteSpace(string $string): string
+    {
+        $string = preg_replace('/[\t\n\r\0\x0B]/', '', $string);
+        $string = preg_replace('/([\s])\1+/', ' ', $string);
+        $string = trim($string);
+
+        return $string;
     }
 
     /**

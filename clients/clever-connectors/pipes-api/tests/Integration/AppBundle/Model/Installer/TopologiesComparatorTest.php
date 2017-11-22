@@ -41,7 +41,7 @@ final class TopologiesComparatorTest extends DatabaseTestCaseAbstract
         $topology3 = new Topology();
         $topology3
             ->setName('file2')
-            ->setRawBpmn($this->load('file2.tplg', FALSE))
+            ->setRawBpmn(file_get_contents(sprintf('%s/%s', __DIR__, 'file2.tplg')))
             ->setEnabled(TRUE)
             ->setVisibility(TopologyStatusEnum::PUBLIC);
         $this->dm->persist($topology3);
