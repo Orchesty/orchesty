@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:pipes="http://www.omg.org/spec/Pipes/20100524/MODEL" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn">
-  <bpmn:process id="Process_1" isExecutable="false">
+  <bpmn:process id="Process_1" name="progress-incrementer" isExecutable="false">
     <bpmn:event id="Event_0foniyz" pipes:pipesType="signal" name="starting-progress">
       <bpmn:outgoing>SequenceFlow_0fgenn1</bpmn:outgoing>
     </bpmn:event>
@@ -14,27 +14,27 @@
       <bpmn:outgoing>SequenceFlow_0s5slrh</bpmn:outgoing>
     </bpmn:task>
     <bpmn:sequenceFlow id="SequenceFlow_0gab8o9" sourceRef="Task_0lrtdf1" targetRef="Task_1lgobox" />
-    <bpmn:task id="Task_0tsfo7k" pipes:pipesType="custom" name="bigcommerce-updated-customer-mapper">
+    <bpmn:task id="Task_0tsfo7k" pipes:pipesType="custom" name="bigcommerce-update-customer-mapper">
       <bpmn:incoming>SequenceFlow_0s5slrh</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_074kf9u</bpmn:outgoing>
     </bpmn:task>
     <bpmn:sequenceFlow id="SequenceFlow_0s5slrh" sourceRef="Task_1lgobox" targetRef="Task_0tsfo7k" />
-    <bpmn:task id="Task_0nvpg98" pipes:pipesType="connector" name="cleverconnectors-create-subscriptions-connector">
+    <bpmn:task id="Task_0nvpg98" pipes:pipesType="connector" name="cleverconnectors-update-subscriptions-connector">
       <bpmn:incoming>SequenceFlow_074kf9u</bpmn:incoming>
-      <bpmn:outgoing>SequenceFlow_1t89sab</bpmn:outgoing>
+      <bpmn:outgoing>SequenceFlow_0xubcm4</bpmn:outgoing>
     </bpmn:task>
     <bpmn:sequenceFlow id="SequenceFlow_074kf9u" sourceRef="Task_0tsfo7k" targetRef="Task_0nvpg98" />
-    <bpmn:task id="Task_034eq9v" pipes:pipesType="custom" name="progress-incrementer">
-      <bpmn:incoming>SequenceFlow_1t89sab</bpmn:incoming>
+    <bpmn:task id="Task_0cv0ghk" pipes:pipesType="custom" name="progress-incrementer">
+      <bpmn:incoming>SequenceFlow_0xubcm4</bpmn:incoming>
     </bpmn:task>
-    <bpmn:sequenceFlow id="SequenceFlow_1t89sab" sourceRef="Task_0nvpg98" targetRef="Task_034eq9v" />
+    <bpmn:sequenceFlow id="SequenceFlow_0xubcm4" sourceRef="Task_0nvpg98" targetRef="Task_0cv0ghk" />
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_1">
       <bpmndi:BPMNShape id="Event_0foniyz_di" bpmnElement="Event_0foniyz">
         <dc:Bounds x="196" y="98" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="171" y="138" width="86" height="12" />
+          <dc:Bounds x="183" y="138" width="62" height="12" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Task_0lrtdf1_di" bpmnElement="Task_0lrtdf1">
@@ -77,14 +77,14 @@
           <dc:Bounds x="803.5" y="95" width="0" height="12" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="Task_034eq9v_di" bpmnElement="Task_034eq9v">
-        <dc:Bounds x="1006" y="76" width="100" height="80" />
+      <bpmndi:BPMNShape id="Task_0cv0ghk_di" bpmnElement="Task_0cv0ghk">
+        <dc:Bounds x="1037" y="76" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="SequenceFlow_1t89sab_di" bpmnElement="SequenceFlow_1t89sab">
+      <bpmndi:BPMNEdge id="SequenceFlow_0xubcm4_di" bpmnElement="SequenceFlow_0xubcm4">
         <di:waypoint xsi:type="dc:Point" x="946" y="116" />
-        <di:waypoint xsi:type="dc:Point" x="1006" y="116" />
+        <di:waypoint xsi:type="dc:Point" x="1037" y="116" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="976" y="95" width="0" height="12" />
+          <dc:Bounds x="991.5" y="95" width="0" height="12" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
