@@ -19,6 +19,8 @@ use Throwable;
  * Class MapController
  *
  * @package CleverConnectors\AppBundle\Controller
+ *
+ * @Route(service="cc.map_template.controller")
  */
 class MapController extends FOSRestController
 {
@@ -62,6 +64,7 @@ class MapController extends FOSRestController
      * @Method({"PUT", "OPTIONS"})
      *
      * @param Request $request
+     * @param string  $id
      * @param string  $userId
      * @param string  $systemKey
      *
@@ -80,6 +83,7 @@ class MapController extends FOSRestController
      * @Route("map/{id}/user/{userId}/system/{systemKey}")
      * @Method({"DELETE", "OPTIONS"})
      *
+     * @param string $id
      * @param string $userId
      * @param string $systemKey
      *

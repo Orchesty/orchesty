@@ -119,12 +119,6 @@ services:
         arguments:
             - '@doctrine_mongodb.odm.default_document_manager'
 
-
-    cc.map_template.manager:
-        class: CleverConnectors\AppBundle\Model\MapTemplate\MapManager
-        arguments:
-            - '@doctrine_mongodb.odm.default_document_manager'
-
     cc.map_template.controller:
         class: CleverConnectors\AppBundle\Controller\MapController
         arguments:
@@ -134,7 +128,7 @@ services:
         class: CleverConnectors\AppBundle\Handler\MapHandler
         arguments:
             - '@cc.map_template.manager'
-            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@cc.systems.manager'
 
     cc.map_template.manager:
         class: CleverConnectors\AppBundle\Model\MapTemplate\MapManager

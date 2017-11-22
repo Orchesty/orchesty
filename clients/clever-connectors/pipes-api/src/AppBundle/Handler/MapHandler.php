@@ -4,7 +4,6 @@ namespace CleverConnectors\AppBundle\Handler;
 
 use CleverConnectors\AppBundle\Model\MapTemplate\MapManager;
 use CleverConnectors\AppBundle\Model\Systems\SystemManager;
-use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\PipesFramework\Utils\ControllerUtils;
 
 /**
@@ -28,11 +27,10 @@ class MapHandler
     /**
      * SystemHandler constructor.
      *
-     * @param MapManager      $mapManager
-     * @param SystemManager   $systemManager
-     * @param DocumentManager $dm
+     * @param MapManager    $mapManager
+     * @param SystemManager $systemManager
      */
-    public function __construct(MapManager $mapManager, SystemManager $systemManager, DocumentManager $dm)
+    public function __construct(MapManager $mapManager, SystemManager $systemManager)
     {
         $this->mapMmanager   = $mapManager;
         $this->systemManager = $systemManager;
@@ -49,7 +47,7 @@ class MapHandler
     {
         $systemInstall = $this->systemManager->getSystemInstall($user, $system);
 
-        ControllerUtils::checkParameters(['action', 'direction', 'system_install', 'fields'], $data);
+        ControllerUtils::checkParameters(['action', 'direction', 'fields'], $data);
 
         $mapTemplate = $this->mapMmanager->create($systemInstall, $data);
 
@@ -68,7 +66,7 @@ class MapHandler
     {
         $this->systemManager->getSystemInstall($user, $system);
 
-        ControllerUtils::checkParameters(['action', 'direction', 'system_install', 'fields'], $data);
+        ControllerUtils::checkParameters(['action', 'direction', 'fields'], $data);
 
         $mapTemplate = $this->mapMmanager->update($this->mapMmanager->get($id), $data);
 
