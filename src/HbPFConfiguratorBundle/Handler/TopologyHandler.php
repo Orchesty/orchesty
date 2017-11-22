@@ -5,12 +5,15 @@ namespace Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\PipesFramework\Commons\DatabaseManager\DatabaseManagerLocator;
+use Hanaboso\PipesFramework\Commons\Enum\TopologyStatusEnum;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Commons\Utils\UriParams;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyManager;
 use Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository;
+use Hanaboso\PipesFramework\TopologyGenerator\Request\RequestHandler;
 use Hanaboso\PipesFramework\Utils\ControllerUtils;
 
 /**
@@ -47,22 +50,30 @@ class TopologyHandler
     protected $curlManager;
 
     /**
+     * @var RequestHandler
+     */
+    protected $requestHandler;
+
+    /**
      * TopologyHandler constructor.
      *
      * @param DatabaseManagerLocator $dml
      * @param TopologyManager        $manager
      * @param GeneratorHandler       $generatorHandler
+     * @param RequestHandler         $requestHandler
      */
     public function __construct(
         DatabaseManagerLocator $dml,
         TopologyManager $manager,
-        GeneratorHandler $generatorHandler
+        GeneratorHandler $generatorHandler,
+        RequestHandler $requestHandler
     )
     {
         $this->dm                 = $dml->getDm();
         $this->topologyRepository = $this->dm->getRepository(Topology::class);
         $this->manager            = $manager;
         $this->generatorHandler   = $generatorHandler;
+        $this->requestHandler     = $requestHandler;
     }
 
     /**
@@ -163,14 +174,25 @@ class TopologyHandler
     /**
      * @param string $id
      *
-     * @return string[]
+     * @return ResponseDto
      */
-    public function publishTopology(string $id): array
+    public function publishTopology(string $id): ResponseDto
     {
         $topology = $this->getTopologyById($id);
         $this->manager->publishTopology($topology);
+        $data = $this->getTopologyData($topology);
 
-        return $this->getTopologyData($topology);
+        $generateResult = $this->requestHandler->generateTopology($id);
+        $runResult      = $this->requestHandler->runTopology($id);
+
+        if ($generateResult->getStatusCode() !== 200 || $runResult->getStatusCode() !== 200) {
+            return new ResponseDto(400, '', json_encode([
+                'generate_result' => $generateResult->getBody(),
+                'run_result'      => $runResult->getBody(),
+            ]), []);
+        } else {
+            return new ResponseDto(200, '', json_encode($data), []);
+        }
     }
 
     /**
@@ -189,14 +211,20 @@ class TopologyHandler
     /**
      * @param string $id
      *
-     * @return bool
+     * @return ResponseDto
      */
-    public function deleteTopology(string $id): bool
+    public function deleteTopology(string $id): ResponseDto
     {
         $topology = $this->getTopologyById($id);
+        $res      = new ResponseDto(200, '', '', []);
+
+        if ($topology->getVisibility() === TopologyStatusEnum::PUBLIC) {
+            $res = $this->requestHandler->deleteTopology($id);
+        }
+
         $this->manager->deleteTopology($topology);
 
-        return TRUE;
+        return $res;
     }
 
     /**
