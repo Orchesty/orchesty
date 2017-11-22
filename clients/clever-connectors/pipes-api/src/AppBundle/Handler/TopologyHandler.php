@@ -14,6 +14,7 @@ use Hanaboso\PipesFramework\Configurator\Model\TopologyManager;
 use Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\GeneratorHandler;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler as HbPFTopologyHandler;
+use Hanaboso\PipesFramework\TopologyGenerator\Request\RequestHandler;
 
 /**
  * Class TopologyHandler
@@ -35,15 +36,17 @@ class TopologyHandler extends HbPFTopologyHandler
      * @param TopologyManager        $manager
      * @param GeneratorHandler       $generatorHandler
      * @param SystemManager          $sysManager
+     * @param RequestHandler         $requestHandler
      */
     public function __construct(
         DatabaseManagerLocator $dml,
         TopologyManager $manager,
         GeneratorHandler $generatorHandler,
-        SystemManager $sysManager
+        SystemManager $sysManager,
+        RequestHandler $requestHandler
     )
     {
-        parent::__construct($dml, $manager, $generatorHandler);
+        parent::__construct($dml, $manager, $generatorHandler, $requestHandler);
         $this->sysManager = $sysManager;
     }
 

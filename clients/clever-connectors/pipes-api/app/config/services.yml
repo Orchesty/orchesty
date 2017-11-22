@@ -6,3 +6,4 @@ services:
             - '@hbpf.configurator.manager.topology'
             - '@hbpf.handler.generator_handler'
             - '@cc.systems.manager'
+            - '@hbpf.topology_generator.request.request_handler'
