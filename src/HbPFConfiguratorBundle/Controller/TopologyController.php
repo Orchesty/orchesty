@@ -6,7 +6,6 @@ use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Controller\FOSRestController;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler;
-use Hanaboso\PipesFramework\TopologyGenerator\Request\RequestHandler;
 use Hanaboso\PipesFramework\Utils\ControllerUtils;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\JsonResponse;
