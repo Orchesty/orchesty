@@ -134,12 +134,12 @@ class PluginsManager
      */
     public function check(SystemInstall $systemInstall, Request $request): array
     {
-        $body     = json_decode($request->getContent(), TRUE);
         $settings = $systemInstall->getSettings();
         $url      = $this->getUrl($request);
 
         if (!$systemInstall->getPluginVersion()) {
-            $systemInstall->setPluginVersion($body[SystemInstall::PLUGIN_VERSION]);
+            $systemInstall->setPluginVersion(PluginHeadersEnum::get(PluginHeadersEnum::VERSION,
+                $request->headers->all()));
         }
 
         if ($this->checkUrl($url, $settings) === FALSE) {
@@ -252,11 +252,11 @@ class PluginsManager
      */
     private function getUrl(Request $request): string
     {
-        if (!$request->request->has('remote_host')) {
-            throw new SystemException('Missing parameter "remote_host" in body!');
+        if (!$request->request->has(SystemInstall::REMOTE_HOST)) {
+            throw new SystemException(sprintf('Missing parameter "%s" in body!', SystemInstall::REMOTE_HOST));
         }
 
-        $host = $request->request->get('remote_host');
+        $host = $request->request->get(SystemInstall::REMOTE_HOST);
         $host = preg_replace('#^https?://#', '', rtrim($host, '/'));
 
         return sprintf('https://%s', $host);
