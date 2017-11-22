@@ -66,9 +66,8 @@ final class LayoutManagerTest extends DatabaseTestCaseAbstract
 
         $this->assertInstanceOf(DataLayout::class, $dataLayout);
         $this->assertEquals([
-            'action'         => 'subscriber',
-            'system_install' => $systemInstall->getId(),
-            'fields'         => [
+            'action' => 'subscriber',
+            'fields' => [
                 0 => [
                     'key'  => 'key-text',
                     'type' => 'text',
@@ -113,9 +112,8 @@ final class LayoutManagerTest extends DatabaseTestCaseAbstract
         $dataLayout = $this->repository->find($dataLayout->getId());
         $this->assertInstanceOf(DataLayout::class, $dataLayout);
         $this->assertEquals([
-            'action'         => 'subscriber',
-            'system_install' => $dataLayout->getSystemInstall(),
-            'fields'         => [
+            'action' => 'subscriber',
+            'fields' => [
                 0 => [
                     'key'  => 'key-text-update',
                     'type' => 'text',

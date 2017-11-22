@@ -114,6 +114,17 @@ services:
         calls:
             - [setLogger, ['@monolog.logger']]
 
+    cc.layout.controller:
+        class: CleverConnectors\AppBundle\Controller\LayoutController
+        arguments:
+            - '@cc.layout.handler'
+
+    cc.layout.handler:
+        class: CleverConnectors\AppBundle\Handler\LayoutHandler
+        arguments:
+            - '@cc.layout.manager'
+            - '@cc.systems.manager'
+
     cc.layout.manager:
         class: CleverConnectors\AppBundle\Model\DataLayout\LayoutManager
         arguments:

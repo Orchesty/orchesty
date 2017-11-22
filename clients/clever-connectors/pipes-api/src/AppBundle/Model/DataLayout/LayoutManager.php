@@ -6,6 +6,7 @@ use CleverConnectors\AppBundle\Document\DataLayout;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\DataLayoutActionEnum;
 use CleverConnectors\AppBundle\Enum\TypeEnum;
+use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\DataLayout\Exceptions\LayoutException;
 use Doctrine\ODM\MongoDB\DocumentManager;
 
@@ -30,6 +31,26 @@ class LayoutManager
     public function __construct(DocumentManager $dm)
     {
         $this->dm = $dm;
+    }
+
+    /**
+     * @param string $id
+     *
+     * @return DataLayout
+     * @throws CleverConnectorsException
+     */
+    public function get(string $id): DataLayout
+    {
+        $layout = $this->dm->getRepository(DataLayout::class)->find($id);
+
+        if (!$layout) {
+            throw new CleverConnectorsException(
+                'DataLayout not found',
+                CleverConnectorsException::DATALAYOUT_NOT_FOUND
+            );
+        }
+
+        return $layout;
     }
 
     /**

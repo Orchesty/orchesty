@@ -135,9 +135,8 @@ class DataLayout
         }
 
         return [
-            'action'         => $this->getAction(),
-            'system_install' => $this->getSystemInstall(),
-            'fields'         => $out,
+            'action' => $this->getAction(),
+            'fields' => $out,
         ];
     }
 
