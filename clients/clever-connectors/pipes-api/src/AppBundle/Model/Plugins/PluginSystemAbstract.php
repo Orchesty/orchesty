@@ -53,6 +53,8 @@ abstract class PluginSystemAbstract implements AuthorizationInterface, CMEventSy
             $this->getKey())] = TopologyNameUtils::getTopologyName(TopologyNameUtils::CREATED_SUBSCRIBERS, 'plugins');
         $this->topologyNames[TopologyNameUtils::getTopologyName(TopologyNameUtils::UPDATED_SUBSCRIBERS,
             $this->getKey())] = TopologyNameUtils::getTopologyName(TopologyNameUtils::UPDATED_SUBSCRIBERS, 'plugins');
+        $this->topologyNames[TopologyNameUtils::getTopologyName(TopologyNameUtils::DELETED_SUBSCRIBERS,
+            $this->getKey())] = TopologyNameUtils::getTopologyName(TopologyNameUtils::DELETED_SUBSCRIBERS, 'plugins');
         $this->topologyNames[TopologyNameUtils::getTopologyName(TopologyNameUtils::SYNC,
             $this->getKey())] = TopologyNameUtils::getTopologyName(TopologyNameUtils::SYNC, 'plugins');
         $this->topologyNames[TopologyNameUtils::getTopologyName(TopologyNameUtils::CREATE_CONTACT,
