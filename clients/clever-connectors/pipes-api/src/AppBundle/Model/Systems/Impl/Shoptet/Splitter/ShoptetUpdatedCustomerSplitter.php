@@ -57,32 +57,15 @@ class ShoptetUpdatedCustomerSplitter implements CustomNodeInterface, BatchInterf
         }
 
         $i         = 0;
-        $customers = $data['CUSTOMERS'];
+        $customers = $data['CUSTOMERS']['CUSTOMER'];
 
-        foreach ($customers as $customer) {
-            if (array_key_exists('ACCOUNTS', $customer) && is_array($customer['ACCOUNTS'])) {
-
-                $accounts = $customer['ACCOUNTS']['ACCOUNT'];
-                unset($customer['ACCOUNTS']);
-                $newCustomer = $customer;
-
-                // when there is exactly 1 account
-                if (array_key_exists('GUID', $accounts)) {
-                    if (array_key_exists('EMAIL', $accounts)) {
-                        $newCustomer['ACCOUNT'] = $accounts;
-                        $callbackItem($this->createSuccessMessage($newCustomer, $i));
-                        $i++;
-                    }
-                } else {
-                    foreach ($accounts as $key => $account) {
-                        if (array_key_exists('EMAIL', $account)) {
-                            $newCustomer['ACCOUNT'] = $account;
-                            $callbackItem($this->createSuccessMessage($newCustomer, $i));
-                            unset($accounts[$key]);
-                            $i++;
-                        }
-                    }
-                }
+        // when there is exactly 1 customer
+        if (array_key_exists('GUID', $customers)) {
+            $this->processCustomer($customers, $callbackItem, $i);
+        } else {
+            foreach ($customers as $key => $customer) {
+                $this->processCustomer($customer, $callbackItem, $i);
+                unset($customers[$key]);
             }
         }
 
@@ -121,6 +104,46 @@ class ShoptetUpdatedCustomerSplitter implements CustomNodeInterface, BatchInterf
         }
 
         throw new SystemException('Missing response data from Shoptet.', SystemException::MISSING_DATA);
+    }
+
+    /**
+     * @param array    $customer
+     * @param callable $callbackItem
+     * @param int      $i
+     */
+    private function processCustomer(array $customer, callable $callbackItem, int &$i): void
+    {
+        if (array_key_exists('ACCOUNTS', $customer) && is_array($customer['ACCOUNTS'])) {
+
+            $accounts = $customer['ACCOUNTS']['ACCOUNT'];
+            unset($customer['ACCOUNTS']);
+            $newCustomer = $customer;
+
+            // when there is exactly 1 account
+            if (array_key_exists('GUID', $accounts)) {
+                $this->processAccount($accounts, $newCustomer, $callbackItem, $i);
+            } else {
+                foreach ($accounts as $key2 => $account) {
+                    $this->processAccount($account, $newCustomer, $callbackItem, $i);
+                    unset($accounts[$key2]);
+                }
+            }
+        }
+    }
+
+    /**
+     * @param array    $account
+     * @param array    $newCustomer
+     * @param callable $callbackItem
+     * @param int      $i
+     */
+    public function processAccount(array $account, array $newCustomer, callable $callbackItem, int &$i): void
+    {
+        if (array_key_exists('EMAIL', $account)) {
+            $newCustomer['ACCOUNT'] = $account;
+            $callbackItem($this->createSuccessMessage($newCustomer, $i));
+            $i++;
+        }
     }
 
 }

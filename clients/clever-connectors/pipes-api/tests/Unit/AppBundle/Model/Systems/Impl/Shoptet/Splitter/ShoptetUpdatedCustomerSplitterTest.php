@@ -95,4 +95,41 @@ final class ShoptetUpdatedCustomerSplitterTest extends ConnectorTestCaseAbstract
         $this->assertEquals(1, $this->i);
     }
 
+    /**
+     * @covers ShoptetUpdatedCustomerSplitter::processBatch()
+     */
+    public function testProcessBatchMoreCustomers(): void
+    {
+        $splitter = $this->container->get('hbpf.custom_node.shoptet-updated-customer-splitter');
+        $loop     = Factory::create();
+
+        $this->i  = 0;
+        $callback = function (SuccessMessage $successMessage): void {
+            $result = Json::decode($successMessage->getData(), TRUE);
+
+            $this->assertArrayHasKey('BILLING_ADDRESS', $result);
+            $this->assertArrayHasKey('FULL_NAME', $result['BILLING_ADDRESS']);
+            $this->assertArrayHasKey('#', $result['BILLING_ADDRESS']['FULL_NAME']);
+            $this->assertArrayHasKey('ACCOUNT', $result);
+            $this->assertArrayHasKey('GUID', $result['ACCOUNT']);
+            $this->assertArrayHasKey('#', $result['ACCOUNT']['GUID']);
+            $this->assertArrayHasKey('EMAIL', $result['ACCOUNT']);
+            $this->assertArrayHasKey('#', $result['ACCOUNT']['EMAIL']);
+
+            $this->i++;
+        };
+
+        $splitter->processBatch(
+            (new ProcessDto())
+                ->setData($this->getRequest('ShoptetCustomersForSplitter.json'))
+                ->setHeaders([]),
+            $loop,
+            $callback
+        );
+
+        $loop->run();
+
+        $this->assertEquals(7, $this->i);
+    }
+
 }
