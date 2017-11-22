@@ -61,6 +61,24 @@ class MapManager
 
     /**
      * @param SystemInstall $systemInstall
+     */
+    public function removeBySystemInstall(SystemInstall $systemInstall): void
+    {
+        $mapTemplates = $this->mapTemplateRepository->findBy([
+            'systemInstall' => $systemInstall->getId(),
+        ]);
+
+        if ($mapTemplates) {
+            foreach ($mapTemplates as $mapTemplate) {
+                $this->dm->remove($mapTemplate);
+            }
+
+            $this->dm->flush();
+        }
+    }
+
+    /**
+     * @param SystemInstall $systemInstall
      * @param array         $data
      *
      * @return MapTemplate

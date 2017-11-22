@@ -41,6 +41,30 @@ final class LayoutManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
+     * @covers LayoutManager::removeBySystemInstall()
+     */
+    public function testRemoveBySystemInstall(): void
+    {
+        $systemInstall = new SystemInstall();
+        $this->persistAndFlush($systemInstall);
+
+        $this->manager->createDataLayout($systemInstall, [
+            'action' => DataLayoutActionEnum::SUBSCRIBER,
+            'fields' => [
+                ['key' => 'key-text', 'type' => TypeEnum::TEXT],
+            ],
+        ]);
+
+        $this->assertCount(1, $this->repository->findBy(['systemInstall' => $systemInstall->getId()]));
+
+        $this->manager->removeBySystemInstall($systemInstall);
+
+        $this->dm->clear();
+
+        $this->assertCount(0, $this->repository->findBy(['systemInstall' => $systemInstall->getId()]));
+    }
+
+    /**
      *
      */
     public function testCreateDataLayout(): void

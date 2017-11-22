@@ -8,6 +8,8 @@ use CleverConnectors\AppBundle\Enum\SystemTypeEnum;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\CMEvents\CMEventsManager;
 use CleverConnectors\AppBundle\Model\CMEvents\CMEventSystemInterface;
+use CleverConnectors\AppBundle\Model\DataLayout\LayoutManager;
+use CleverConnectors\AppBundle\Model\MapTemplate\MapManager;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\AuthorizationInterface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\OAuth1Interface;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
@@ -79,6 +81,16 @@ class SystemManager
     private $eventsManager;
 
     /**
+     * @var MapManager
+     */
+    private $mapManager;
+
+    /**
+     * @var LayoutManager
+     */
+    private $layoutManager;
+
+    /**
      * SystemManager constructor.
      *
      * @param DocumentManager $dm
@@ -87,6 +99,8 @@ class SystemManager
      * @param StartingPoint   $startingPoint
      * @param RequestHandler  $requestHandler
      * @param CMEventsManager $eventsManager
+     * @param MapManager      $mapManager
+     * @param LayoutManager   $layoutManager
      */
     public function __construct(
         DocumentManager $dm,
@@ -94,7 +108,9 @@ class SystemManager
         WebhookManager $webhookManager,
         StartingPoint $startingPoint,
         RequestHandler $requestHandler,
-        CMEventsManager $eventsManager
+        CMEventsManager $eventsManager,
+        MapManager $mapManager,
+        LayoutManager $layoutManager
     )
     {
         $this->dm                 = $dm;
@@ -106,6 +122,8 @@ class SystemManager
         $this->startingPoint      = $startingPoint;
         $this->requestHandler     = $requestHandler;
         $this->eventsManager      = $eventsManager;
+        $this->mapManager         = $mapManager;
+        $this->layoutManager      = $layoutManager;
     }
 
     /**
@@ -253,6 +271,8 @@ class SystemManager
         $systemInstall = $this->getSystemInstall($user, $system);
 
         $this->unSubscribeWebhooks($systemInstall);
+        $this->mapManager->removeBySystemInstall($systemInstall);
+        $this->layoutManager->removeBySystemInstall($systemInstall);
 
         $this->dm->remove($systemInstall);
         $this->dm->flush();
