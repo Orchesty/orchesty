@@ -5,6 +5,7 @@ namespace CleverConnectors\AppBundle\Model\MapTemplate;
 use CleverConnectors\AppBundle\Document\MapTemplate;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\DataLayoutActionEnum;
+use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Repository\MapTemplateRepository;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -39,6 +40,26 @@ class MapManager
     }
 
     /**
+     * @param string $id
+     *
+     * @return MapTemplate
+     * @throws CleverConnectorsException
+     */
+    public function get(string $id): MapTemplate
+    {
+        $mapTemplate = $this->mapTemplateRepository->find($id);
+
+        if (!$mapTemplate) {
+            throw new CleverConnectorsException(
+                'Map template not found',
+                CleverConnectorsException::MAP_TEMPLATE_NOT_FOUND
+            );
+        }
+
+        return $mapTemplate;
+    }
+
+    /**
      * @param SystemInstall $systemInstall
      * @param array         $data
      *
@@ -58,7 +79,10 @@ class MapManager
 
         $mapTemplate = new MapTemplate();
         $mapTemplate = $this->fillMapTemplate($mapTemplate, $data);
-        $mapTemplate->setSystemInstall($systemInstall);
+        $mapTemplate
+            ->setAction(new DataLayoutActionEnum($data['action']))
+            ->setDirection($data['direction'])
+            ->setSystemInstall($systemInstall);
 
         $this->dm->persist($mapTemplate);
         $this->dm->flush();
@@ -98,10 +122,6 @@ class MapManager
      */
     private function fillMapTemplate(MapTemplate $mapTemplate, array $data): MapTemplate
     {
-        $mapTemplate
-            ->setAction(new DataLayoutActionEnum($data['action']))
-            ->setDirection($data['direction']);
-
         $mapTemplate->setFields([]);
         if (array_key_exists('fields', $data) && !empty($data['fields'])) {
             foreach ($data['fields'] as $field) {

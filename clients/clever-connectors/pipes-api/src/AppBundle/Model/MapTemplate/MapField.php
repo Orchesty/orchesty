@@ -25,7 +25,7 @@ class MapField
     /**
      * @var string[]|array
      */
-    private $items;
+    private $items = [];
 
     /**
      * MapField constructor.

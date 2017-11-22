@@ -174,10 +174,9 @@ class MapTemplate
         }
 
         return [
-            'action'         => $this->getAction(),
-            'direction'      => $this->getDirection(),
-            'system_install' => $this->getSystemInstall(),
-            'fields'         => $out,
+            'action'    => $this->getAction(),
+            'direction' => $this->getDirection(),
+            'fields'    => $out,
         ];
     }
 
