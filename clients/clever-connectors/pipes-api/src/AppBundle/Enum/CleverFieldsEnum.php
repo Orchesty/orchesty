@@ -19,29 +19,31 @@ use Hanaboso\PipesFramework\Commons\Enum\EnumAbstract;
 final class CleverFieldsEnum extends EnumAbstract
 {
 
-    public const FOREIGN_ID  = '_foreign_id';
-    public const EMAIL       = 'email';
-    public const FIRST_NAME  = 'first_name';
-    public const LAST_NAME   = 'last_name';
-    public const REACTIVATE  = 'reactivate';
-    public const LISTS       = 'lists';
-    public const SYSTEM_KEY  = 'system_key';
-    public const UNSUBSCRIBE = 'unsubscribe';
-    public const HARD_BOUNCE = 'hard_bounce';
+    public const FOREIGN_ID    = '_foreign_id';
+    public const EMAIL         = 'email';
+    public const FIRST_NAME    = 'first_name';
+    public const LAST_NAME     = 'last_name';
+    public const REACTIVATE    = 'reactivate';
+    public const LISTS         = 'lists';
+    public const SYSTEM_KEY    = 'system_key';
+    public const UNSUBSCRIBE   = 'unsubscribe';
+    public const HARD_BOUNCE   = 'hard_bounce';
+    public const PLUGINS_LISTS = 'distribution_list';
 
     /**
      * @var string[]
      */
     protected static $choices = [
-        self::FOREIGN_ID  => '_foreign_id',
-        self::EMAIL       => 'email',
-        self::FIRST_NAME  => 'first_name',
-        self::LAST_NAME   => 'last_name',
-        self::REACTIVATE  => 'reactivate',
-        self::LISTS       => 'lists',
-        self::SYSTEM_KEY  => 'system_key',
-        self::UNSUBSCRIBE => 'unsubscribe',
-        self::HARD_BOUNCE => 'hard_bounce',
+        self::FOREIGN_ID    => '_foreign_id',
+        self::EMAIL         => 'email',
+        self::FIRST_NAME    => 'first_name',
+        self::LAST_NAME     => 'last_name',
+        self::REACTIVATE    => 'reactivate',
+        self::LISTS         => 'lists',
+        self::SYSTEM_KEY    => 'system_key',
+        self::UNSUBSCRIBE   => 'unsubscribe',
+        self::HARD_BOUNCE   => 'hard_bounce',
+        self::PLUGINS_LISTS => 'distribution_list',
     ];
 
 }

@@ -6,7 +6,6 @@ use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Controller\FOSRestController;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler;
-use Hanaboso\PipesFramework\TopologyGenerator\Request\RequestHandler;
 use Hanaboso\PipesFramework\Utils\ControllerUtils;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -27,11 +26,6 @@ class TopologyController extends FOSRestController
      * @var TopologyHandler
      */
     private $topologyHandler;
-
-    /**
-     * @var RequestHandler
-     */
-    private $requestHandler;
 
     /**
      * @Route("/topologies")
@@ -176,16 +170,9 @@ class TopologyController extends FOSRestController
     public function publishTopologyAction(string $id): Response
     {
         $this->construct();
-        $data = $this->topologyHandler->publishTopology($id);
+        $res = $this->topologyHandler->publishTopology($id);
 
-        $generateResult = $this->requestHandler->generateTopology($id);
-        $runResult      = $this->requestHandler->runTopology($id);
-
-        if ($generateResult->getStatusCode() == 200 && $runResult->getStatusCode() == 200) {
-            return new JsonResponse($data, 200);
-        }
-
-        return new JsonResponse($data, 400);
+        return new JsonResponse($res->getBody(), $res->getStatusCode());
     }
 
     /**
@@ -215,14 +202,9 @@ class TopologyController extends FOSRestController
     public function deleteTopologyAction(string $id): Response
     {
         $this->construct();
-        $deleteResult = $this->requestHandler->deleteTopology($id);
-        $this->topologyHandler->deleteTopology($id);
+        $res = $this->topologyHandler->deleteTopology($id);
 
-        if ($deleteResult->getStatusCode() == 200) {
-            return new JsonResponse([], 200);
-        }
-
-        return new JsonResponse([], 400);
+        return new JsonResponse($res->getBody(), $res->getStatusCode());
     }
 
     /**
@@ -233,11 +215,6 @@ class TopologyController extends FOSRestController
         if (!$this->topologyHandler) {
             $this->topologyHandler = $this->container->get('hbpf.configurator.handler.topology');
         }
-
-        if (!$this->requestHandler) {
-            $this->requestHandler = $this->container->get('hbpf.topology_generator.request.request_handler');
-        }
-
     }
 
 }

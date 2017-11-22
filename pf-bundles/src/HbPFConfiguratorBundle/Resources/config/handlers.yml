@@ -5,6 +5,7 @@ services:
                 - '@hbpf.database_manager_locator'
                 - '@hbpf.configurator.manager.topology'
                 - '@hbpf.handler.generator_handler'
+                - '@hbpf.topology_generator.request.request_handler'
 
     hbpf.configurator.handler.node:
         class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\NodeHandler
