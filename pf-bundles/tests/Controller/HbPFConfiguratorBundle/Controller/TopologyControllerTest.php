@@ -6,7 +6,6 @@ use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler;
-use Hanaboso\PipesFramework\TopologyGenerator\Request\RequestHandler;
 use Nette\Utils\Json;
 use stdClass;
 use Tests\ControllerTestCaseAbstract;
@@ -365,8 +364,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
      */
     public function testDeleteTopology(): void
     {
-        $this->mockHandler('deleteTopology', TRUE);
-        $this->mockRequestHandler('deleteTopology', new ResponseDto(200, '', '', []));
+        $this->mockHandler('deleteTopology', new ResponseDto(200, '', '', []));
 
         $this->client->request(
             'DELETE',
@@ -449,21 +447,6 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
         $configuratorHandlerMock->method($methodName)->willReturn($res);
 
         $this->client->getContainer()->set('hbpf.configurator.handler.topology', $configuratorHandlerMock);
-    }
-
-    /**
-     * @param string      $methodName
-     * @param ResponseDto $response
-     */
-    private function mockRequestHandler(string $methodName, ResponseDto $response): void
-    {
-        $requestHandlerMock = $this->getMockBuilder(RequestHandler::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $requestHandlerMock->method($methodName)->willReturn($response);
-
-        $this->client->getContainer()->set('hbpf.topology_generator.request.request_handler', $requestHandlerMock);
     }
 
 }

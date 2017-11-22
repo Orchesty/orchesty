@@ -4,6 +4,7 @@ namespace CleverConnectors\AppBundle\Model\Plugins\Connector;
 
 use CleverConnectors\AppBundle\Enum\CleverFieldsEnum;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
+use CleverConnectors\AppBundle\Model\CM\SubscriptionConnector\CustomerObject\CMSubscriber;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
@@ -46,7 +47,14 @@ abstract class PluginWebhookSubscriberConnectorAbstract implements ConnectorInte
             );
         }
 
-        return $dto;
+        $obj = new CMSubscriber();
+        $obj->setForeignId($data[CleverFieldsEnum::FOREIGN_ID] ?? '')
+            ->setLastName($data[CleverFieldsEnum::LAST_NAME] ?? '')
+            ->setFirstName($data[CleverFieldsEnum::FIRST_NAME] ?? '')
+            ->setEmail($data[CleverFieldsEnum::EMAIL] ?? '')
+            ->setLists($data[CleverFieldsEnum::PLUGINS_LISTS] ? [$data[CleverFieldsEnum::PLUGINS_LISTS]] : []);
+
+        return $dto->setData(json_encode($obj->toArray()));
     }
 
 }
