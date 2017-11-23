@@ -15,6 +15,7 @@ use Hanaboso\PipesFramework\Configurator\Document\Embed\EmbedNode;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Exception\NodeException;
+use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\GeneratorHandler;
 use Hanaboso\PipesFramework\TopologyGenerator\Actions\GenerateTopologyActions;
 use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\Generator;
 use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\VolumePathDefinitionFactory;
@@ -69,7 +70,7 @@ class GenerateTopologyActionsTest extends TestCase
 
         $this->actions = $this
             ->getMockBuilder(GenerateTopologyActions::class)
-            ->setConstructorArgs([$this->dockerHandler, $this->volumePathDefinitionFactory])
+            ->setConstructorArgs([$this->dockerHandler, $this->volumePathDefinitionFactory, GeneratorHandler::MODE_SWARM])
             ->setMethods(['getGenerator'])
             ->getMock();
     }
@@ -92,7 +93,7 @@ class GenerateTopologyActionsTest extends TestCase
             ->with($this->configDir, $network, $this->volumePathDefinitionFactory)
             ->willReturn($generator);
 
-        $this->assertEquals($result, $this->actions->generateTopology($topology, $nodes, $this->configDir, $network));
+        $this->assertEquals($result, $this->actions->generateTopology($topology, $nodes, $this->configDir, $network, 'cc'));
     }
 
     /**

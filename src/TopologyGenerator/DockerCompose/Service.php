@@ -9,6 +9,7 @@
 
 namespace Hanaboso\PipesFramework\TopologyGenerator\DockerCompose;
 
+use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\Directives\Configs;
 use Hanaboso\PipesFramework\TopologyGenerator\GeneratorUtils;
 
 /**
@@ -68,6 +69,11 @@ class Service
      * @var array
      */
     protected $dependsOn = [];
+
+    /**
+     * @var array
+     */
+    protected $configs = [];
 
     /**
      * Service constructor.
@@ -265,6 +271,26 @@ class Service
     public function addDependOn(string $dependsOn): Service
     {
         $this->dependsOn[] = $dependsOn;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getConfigs(): array
+    {
+        return $this->configs;
+    }
+
+    /**
+     * @param Configs $configs
+     *
+     * @return Service
+     */
+    public function addConfigs(Configs $configs): Service
+    {
+        $this->configs[] = $configs;
 
         return $this;
     }

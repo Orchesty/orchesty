@@ -15,6 +15,7 @@ use Hanaboso\PipesFramework\Configurator\Document\Embed\EmbedNode;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Exception\NodeException;
+use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\GeneratorHandler;
 use Hanaboso\PipesFramework\RabbitMq\Handler\RabbitMqHandler;
 use Hanaboso\PipesFramework\TopologyGenerator\Actions\DestroyTopologyActions;
 use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\DockerComposeCli;
@@ -74,13 +75,13 @@ class DestroyTopologyActionsTest extends TestCase
 
         $this->actions = $this
             ->getMockBuilder(DestroyTopologyActions::class)
-            ->setConstructorArgs([$this->dockerHandler, $this->rabbitMqHandler])
+            ->setConstructorArgs([$this->dockerHandler, $this->rabbitMqHandler, GeneratorHandler::MODE_SWARM])
             ->setMethods(['getDockerComposeCli'])
             ->getMock();
 
         $this->dockerComposeCli = $this->getMockBuilder(DockerComposeCli::class)
             ->setMethods(['destroy'])
-            ->setConstructorArgs([$this->configDir])
+            ->setConstructorArgs([$this->configDir, 'cc'])
             ->getMock();
     }
 
@@ -104,7 +105,7 @@ class DestroyTopologyActionsTest extends TestCase
             ->with($this->configDir . '/' . $id . '-' . $name)
             ->willReturn($this->dockerComposeCli);
 
-        $this->assertEquals($result, $this->actions->deleteTopologyDir($topology, $this->configDir));
+        $this->assertEquals($result, $this->actions->deleteTopologyDir($topology, $this->configDir, 'cc'));
     }
 
     /**

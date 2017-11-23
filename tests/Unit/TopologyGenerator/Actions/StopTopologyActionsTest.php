@@ -11,6 +11,7 @@ namespace Tests\Unit\TopologyGenerator\Actions;
 
 use Hanaboso\PipesFramework\Commons\Docker\Handler\DockerHandler;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
+use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\GeneratorHandler;
 use Hanaboso\PipesFramework\TopologyGenerator\Actions\StopTopologyActions;
 use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\DockerComposeCli;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -57,13 +58,13 @@ class StopTopologyActionsTest extends TestCase
         $this->dockerHandler = $this->getMockBuilder(DockerHandler::class)->disableOriginalConstructor()->getMock();
 
         $this->actions = $this->getMockBuilder(StopTopologyActions::class)
-            ->setConstructorArgs([$this->dockerHandler])
+            ->setConstructorArgs([$this->dockerHandler, GeneratorHandler::MODE_SWARM])
             ->setMethods(['getDockerComposeCli'])
             ->getMock();
 
         $this->dockerComposeCli = $this->getMockBuilder(DockerComposeCli::class)
             ->setMethods(['stop'])
-            ->setConstructorArgs([$this->configDir])
+            ->setConstructorArgs([$this->configDir, 'cc'])
             ->getMock();
     }
 
@@ -87,7 +88,7 @@ class StopTopologyActionsTest extends TestCase
             ->with($this->configDir . '/' . $id . '-' . $name)
             ->willReturn($this->dockerComposeCli);
 
-        $this->assertEquals($result, $this->actions->stopTopology($topology, $this->configDir));
+        $this->assertEquals($result, $this->actions->stopTopology($topology, $this->configDir, 'cc'));
     }
 
     /**

@@ -61,4 +61,29 @@ class DockerHandler
         return $containers->list([], $filters);
     }
 
+    /**
+     * @param string      $stackName
+     * @param null|string $status
+     *
+     * @return array
+     */
+    public function getTopologyStackInfo(string $stackName, ?string $status = NULL): array
+    {
+        /** @var Containers $containers */
+        $containers = $this->docker->getEndpoint(Docker::COINTAINERS);
+
+        $filters = [
+            'label' =>
+                [
+                    0 => 'com.docker.stack.namespace=' . $stackName,
+                ],
+        ];
+
+        if ($status) {
+            $filters['status'] = [0 => $status];
+        }
+
+        return $containers->list([], $filters);
+    }
+
 }

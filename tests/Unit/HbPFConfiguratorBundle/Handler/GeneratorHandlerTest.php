@@ -69,7 +69,7 @@ class GeneratorHandlerTest extends TestCase
         }
 
         /** @var TopologyActionsFactory $topologyActionFactory */
-        $handler = new GeneratorHandler($dm, '/srv/directory', 'demo_network', $topologyActionFactory);
+        $handler = new GeneratorHandler($dm, '/srv/directory', 'demo_network', $topologyActionFactory, 'cc');
         $this->assertEquals($topologyActionReturn, $handler->generateTopology("ABCD123456"));
     }
 
@@ -117,7 +117,7 @@ class GeneratorHandlerTest extends TestCase
         }
 
         /** @var TopologyActionsFactory $topologyActionFactory */
-        $handler = new GeneratorHandler($dm, '/srv/directory', 'demo_network', $topologyActionFactory);
+        $handler = new GeneratorHandler($dm, '/srv/directory', 'demo_network', $topologyActionFactory, 'cc');
         $this->assertEquals($getTopologyInfo, $handler->runTopology("ABCD123456"));
     }
 
@@ -165,7 +165,7 @@ class GeneratorHandlerTest extends TestCase
         }
 
         /** @var TopologyActionsFactory $topologyActionFactory */
-        $handler = new GeneratorHandler($dm, '/srv/directory', 'demo_network', $topologyActionFactory);
+        $handler = new GeneratorHandler($dm, '/srv/directory', 'demo_network', $topologyActionFactory, 'cc');
         $this->assertEquals($getTopologyInfo, $handler->stopTopology("ABCD123456"));
     }
 
@@ -213,7 +213,7 @@ class GeneratorHandlerTest extends TestCase
         }
 
         /** @var TopologyActionsFactory $topologyActionFactory */
-        $handler = new GeneratorHandler($dm, '/srv/directory', 'demo_network', $topologyActionFactory);
+        $handler = new GeneratorHandler($dm, '/srv/directory', 'demo_network', $topologyActionFactory, 'cc');
         $this->assertEquals($getTopologyInfo, $handler->destroyTopology("ABCD123456"));
     }
 
@@ -255,7 +255,7 @@ class GeneratorHandlerTest extends TestCase
         }
 
         /** @var TopologyActionsFactory $topologyActionFactory */
-        $handler = new GeneratorHandler($dm, '/srv/directory', 'demo_network', $topologyActionFactory);
+        $handler = new GeneratorHandler($dm, '/srv/directory', 'demo_network', $topologyActionFactory, 'cc');
         $this->assertEquals($getTopologyInfo, $handler->infoTopology("ABCD123456"));
     }
 

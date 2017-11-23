@@ -9,6 +9,7 @@
 
 namespace Hanaboso\PipesFramework\TopologyGenerator\DockerCompose;
 
+use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\Directives\Configs;
 use Symfony\Component\Yaml\Yaml;
 
 /**
@@ -26,9 +27,14 @@ class ComposeBuilder
      */
     public function build(Compose $compose): string
     {
-        $composeNetworks = [];
+        $composeConfigs = $composeNetworks = [];
         foreach ($compose->getNetworks() as $network) {
             $composeNetworks[$network] = ['external' => TRUE];
+        }
+
+        /** @var Configs $config */
+        foreach ($compose->getConfigs() as $config) {
+            $composeConfigs[$config->getSource('config')] = ['external' => $config->isExternal()];
         }
 
         $services = [];
@@ -57,6 +63,28 @@ class ComposeBuilder
                 $services[$service->getName()]['depends_on'][] = $dependOn;
             }
 
+            /** @var Configs $config */
+            foreach ($service->getConfigs() as $config) {
+                $rows = [];
+                if ($config->getSource()) {
+                    $rows['source'] = $config->getSource('config');
+                }
+                if ($config->getTarget()) {
+                    $rows['target'] = $config->getTarget();
+                }
+                if ($config->getGid()) {
+                    $rows['gui'] = $config->getGid();
+                }
+                if ($config->getUid()) {
+                    $rows['uid'] = $config->getUid();
+                }
+                if ($config->getMode()) {
+                    $rows['mode'] = $config->getMode();
+                }
+
+                $services[$service->getName()]['configs'][] = $rows;
+            }
+
             ($service->getWorkDir()) ?: $services[$service->getName()]['command'] = $service->getCommand();
         }
 
@@ -67,6 +95,10 @@ class ComposeBuilder
 
         if (!empty($composeNetworks)) {
             $composeData['networks'] = $composeNetworks;
+        }
+
+        if (!empty($composeConfigs)) {
+            $composeData['configs'] = $composeConfigs;
         }
 
         return Yaml::dump($composeData, 4, 2);

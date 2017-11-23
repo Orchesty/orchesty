@@ -33,10 +33,12 @@ class GenerateTopologyActions extends ActionsAbstract
      *
      * @param DockerHandler               $dockerHandler
      * @param VolumePathDefinitionFactory $volumePathDefinition
+     * @param string                      $mode
      */
-    public function __construct(DockerHandler $dockerHandler, VolumePathDefinitionFactory $volumePathDefinition)
+    public function __construct(DockerHandler $dockerHandler, VolumePathDefinitionFactory $volumePathDefinition,
+                                string $mode)
     {
-        parent::__construct($dockerHandler);
+        parent::__construct($dockerHandler, $mode);
         $this->volumePathDefinition = $volumePathDefinition;
     }
 
@@ -45,13 +47,21 @@ class GenerateTopologyActions extends ActionsAbstract
      * @param array    $nodes
      * @param string   $dstDirectory
      * @param string   $network
+     * @param string   $topologyPrefix
      *
      * @return bool
      * @throws \Exception
      */
-    public function generateTopology(Topology $topology, array $nodes, string $dstDirectory, string $network): bool
+    public function generateTopology(Topology $topology, array $nodes, string $dstDirectory, string $network,
+                                     string $topologyPrefix): bool
     {
-        $generator = $this->getGenerator($dstDirectory, $network, $this->volumePathDefinition);
+        $generator = $this->getGenerator(
+            $dstDirectory,
+            $network,
+            $this->volumePathDefinition,
+            $topologyPrefix,
+            $this->mode
+        );
 
         $generator->setMultiMode(TRUE);
         $generator->generate($topology, $nodes);
@@ -63,19 +73,25 @@ class GenerateTopologyActions extends ActionsAbstract
      * @param string                      $dstDirectory
      * @param string                      $network
      * @param VolumePathDefinitionFactory $volumePathDefinition
+     * @param string                      $topologyPrefix
+     * @param string                      $topologyMode
      *
      * @return Generator
      */
     protected function getGenerator(
         string $dstDirectory,
         string $network,
-        VolumePathDefinitionFactory $volumePathDefinition
+        VolumePathDefinitionFactory $volumePathDefinition,
+        string $topologyPrefix,
+        string $topologyMode
     ): Generator
     {
         $generator = new GeneratorFactory(
             $dstDirectory,
             $network,
-            $volumePathDefinition
+            $volumePathDefinition,
+            $topologyPrefix,
+            $topologyMode
         );
 
         return $generator->create();

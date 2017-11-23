@@ -23,15 +23,16 @@ class StopTopologyActions extends ActionsAbstract
     /**
      * @param Topology $topology
      * @param string   $dstDirectory
+     * @param string   $topologyprefix
      *
      * @return bool
      */
-    public function stopTopology(Topology $topology, string $dstDirectory): bool
+    public function stopTopology(Topology $topology, string $dstDirectory, string $topologyprefix): bool
     {
         $dstTopologyDirectory = Generator::getTopologyDir($topology, $dstDirectory);
-        $cli                  = $this->getDockerComposeCli($dstTopologyDirectory);
+        $cli                  = $this->getDockerComposeCli($dstTopologyDirectory, $topologyprefix);
 
-        return $cli->stop();
+        return $cli->stop($this->mode);
     }
 
 }

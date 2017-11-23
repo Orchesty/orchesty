@@ -34,3 +34,5 @@ services:
         arguments:
             - '@hbpf.database_manager_locator'
             - '@hbpf.configurator.manager.category'
+            - '%deployment_prefix%'
+            - '%topology_mode%'

@@ -34,10 +34,11 @@ class DestroyTopologyActions extends ActionsAbstract
      *
      * @param DockerHandler   $dockerHandler
      * @param RabbitMqHandler $rabbitMqHandler
+     * @param string          $mode
      */
-    public function __construct(DockerHandler $dockerHandler, RabbitMqHandler $rabbitMqHandler)
+    public function __construct(DockerHandler $dockerHandler, RabbitMqHandler $rabbitMqHandler, string $mode)
     {
-        parent::__construct($dockerHandler);
+        parent::__construct($dockerHandler, $mode);
         $this->rabbitMqHandler = $rabbitMqHandler;
     }
 
@@ -55,7 +56,7 @@ class DestroyTopologyActions extends ActionsAbstract
         }
 
         if (count($queues)) {
-                $this->rabbitMqHandler->deleteQueues($queues);
+            $this->rabbitMqHandler->deleteQueues($queues);
         }
 
         $this->rabbitMqHandler->deleteExchange(StartingPoint::createExchangeName($topology));
@@ -64,13 +65,14 @@ class DestroyTopologyActions extends ActionsAbstract
     /**
      * @param Topology $topology
      * @param string   $dstDirectory
+     * @param string   $topologyPrefix
      *
      * @return bool
      */
-    public function deleteTopologyDir(Topology $topology, string $dstDirectory): bool
+    public function deleteTopologyDir(Topology $topology, string $dstDirectory, string $topologyPrefix): bool
     {
         $dstTopologyDirectory = Generator::getTopologyDir($topology, $dstDirectory);
-        $cli                  = $this->getDockerComposeCli($dstTopologyDirectory);
+        $cli                  = $this->getDockerComposeCli($dstTopologyDirectory, $topologyPrefix);
 
         return $cli->destroy();
     }

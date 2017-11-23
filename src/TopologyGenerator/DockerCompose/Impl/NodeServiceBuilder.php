@@ -24,6 +24,8 @@ use Hanaboso\PipesFramework\TopologyGenerator\GeneratorUtils;
 class NodeServiceBuilder implements ServiceBuilderInterface
 {
 
+    use ServiceTrait;
+
     protected const IMAGE = 'pf-bridge:dev';
 
     /**
@@ -47,24 +49,39 @@ class NodeServiceBuilder implements ServiceBuilderInterface
     protected $volumePathDefinition;
 
     /**
+     * @var string
+     */
+    private $topologyPrefix;
+    /**
+     * @var string
+     */
+    private $topologyMode;
+
+    /**
      * NodeServiceBuilder constructor.
      *
      * @param Environment          $environment
      * @param string               $registry
      * @param string               $network
      * @param VolumePathDefinition $volumePathDefinition
+     * @param string               $topologyPrefix
+     * @param string               $topologyMode
      */
     public function __construct(
         Environment $environment,
         string $registry,
         string $network,
-        VolumePathDefinition $volumePathDefinition
+        VolumePathDefinition $volumePathDefinition,
+        string $topologyPrefix,
+        string $topologyMode
     )
     {
         $this->environment          = $environment;
         $this->registry             = $registry;
         $this->network              = $network;
         $this->volumePathDefinition = $volumePathDefinition;
+        $this->topologyPrefix       = $topologyPrefix;
+        $this->topologyMode         = $topologyMode;
     }
 
     /**
@@ -82,7 +99,8 @@ class NodeServiceBuilder implements ServiceBuilderInterface
             ->addEnvironment(Environment::RABBITMQ_USER, $this->environment->getRabbitMqUser())
             ->addEnvironment(Environment::RABBITMQ_PASS, $this->environment->getRabbitMqPass())
             ->addEnvironment(Environment::RABBITMQ_VHOST, $this->environment->getRabbitMqVHost())
-            ->addVolume($this->volumePathDefinition->getSourceVolume('topology.json') . ':/srv/app/topology/topology.json')
+            //            ->addConfigs(new Configs($this->topologyprefix, '/srv/app/topology/topology.json'))
+            //            ->addVolume($this->volumePathDefinition->getSourceVolume('topology.json') . ':/srv/app/topology/topology.json')
             ->setCommand(sprintf(
                     './dist/src/bin/pipes.js start bridge --id %s',
                     GeneratorUtils::createNormalizedServiceName($node->getId(), $node->getName())
@@ -90,7 +108,18 @@ class NodeServiceBuilder implements ServiceBuilderInterface
             )
             ->addNetwork($this->network);
 
+        $this->addServiceEnvironment($service, $this->topologyMode, $this->topologyPrefix,
+            $this->volumePathDefinition->getSourceVolume('topology.json'));
+
         return $service;
+    }
+
+    /**
+     * @return VolumePathDefinition
+     */
+    public function getVolumePathDefinition(): VolumePathDefinition
+    {
+        return $this->volumePathDefinition;
     }
 
 }
