@@ -20,7 +20,8 @@ RUN chmod u+s /usr/sbin/useradd && \
 # "dialout" collides with osx default user group
 RUN deluser node && delgroup dialout
 
-RUN npm i -g gulp
+RUN mkdir /srv/.npm && \
+    NPM_CONFIG_CACHE=/srv/.npm npm i -g gulp
 
 # sudo for dev user
 RUN echo "dev ALL=NOPASSWD: ALL" > /etc/sudoers.d/dev

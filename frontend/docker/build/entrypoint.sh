@@ -6,7 +6,6 @@ DEV_GID=$(id -g)
 getent passwd dev || groupadd dev -g ${DEV_GID} && useradd -m -u ${DEV_UID} -g ${DEV_GID} dev
 export HOME=/home/dev
 
-[ -d /srv/.npm ] || mkdir /srv/.npm
 sudo chown dev:dev /srv/.npm
 ln -s /srv/.npm /home/dev/.npm
 
