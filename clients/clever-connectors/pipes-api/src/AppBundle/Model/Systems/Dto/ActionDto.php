@@ -16,17 +16,17 @@ class ActionDto
     private $action;
 
     /**
-     * @var null|string
+     * @var string
      */
     private $direction;
 
     /**
      * ActionDto constructor.
      *
-     * @param string      $action
-     * @param null|string $direction
+     * @param string $action
+     * @param string $direction
      */
-    public function __construct(string $action, ?string $direction = NULL)
+    public function __construct(string $action, string $direction)
     {
         $this->action    = $action;
         $this->direction = $direction;
@@ -41,9 +41,9 @@ class ActionDto
     }
 
     /**
-     * @return null|string
+     * @return string
      */
-    public function getDirection(): ?string
+    public function getDirection(): string
     {
         return $this->direction;
     }

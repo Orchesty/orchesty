@@ -88,7 +88,7 @@ class MapTemplate
      */
     public function setDirection(ActionDto $dto): MapTemplate
     {
-        $direction = $dto->getDirection() ?? '';
+        $direction = $dto->getDirection();
         if (!in_array($direction, [self::DIRECTION_IN, self::DIRECTION_OUT])) {
             throw new CleverConnectorsException(
                 sprintf('Invalid direction type "%s".', $direction),

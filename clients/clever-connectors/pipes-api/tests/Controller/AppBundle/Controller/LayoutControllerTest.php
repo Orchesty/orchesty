@@ -4,6 +4,7 @@ namespace Tests\Controller\AppBundle\Controller;
 
 use CleverConnectors\AppBundle\Controller\LayoutController;
 use CleverConnectors\AppBundle\Document\DataLayout;
+use CleverConnectors\AppBundle\Document\MapTemplate;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\TypeEnum;
 use CleverConnectors\AppBundle\Model\DataLayout\LayoutField;
@@ -82,7 +83,7 @@ final class LayoutControllerTest extends ControllerTestCaseAbstract
         ];
 
         $action = TopologyNameUtils::getTopologyName(TopologyNameUtils::UPDATE_CONTACT, $system->getSystem());
-        $dto    = new ActionDto($action);
+        $dto    = new ActionDto($action, MapTemplate::DIRECTION_IN);
 
         $field  = new LayoutField('aaa', new TypeEnum(TypeEnum::BOOL));
         $layout = new DataLayout();
@@ -125,7 +126,7 @@ final class LayoutControllerTest extends ControllerTestCaseAbstract
         $this->persistAndFlush($system);
 
         $action = TopologyNameUtils::getTopologyName(TopologyNameUtils::UPDATE_CONTACT, $system->getSystem());
-        $dto    = new ActionDto($action);
+        $dto    = new ActionDto($action, MapTemplate::DIRECTION_IN);
 
         $field  = new LayoutField('aaa', new TypeEnum(TypeEnum::BOOL));
         $layout = new DataLayout();
