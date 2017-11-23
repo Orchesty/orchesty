@@ -4,10 +4,11 @@ namespace Tests\Integration\AppBundle\Model\MapTemplate;
 
 use CleverConnectors\AppBundle\Document\MapTemplate;
 use CleverConnectors\AppBundle\Document\SystemInstall;
-use CleverConnectors\AppBundle\Enum\DataLayoutActionEnum;
 use CleverConnectors\AppBundle\Enum\TypeEnum;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\MapTemplate\MapManager;
+use CleverConnectors\AppBundle\Model\Systems\Dto\ActionDto;
+use CleverConnectors\AppBundle\Utils\TopologyNameUtils;
 use Tests\DatabaseTestCaseAbstract;
 
 /**
@@ -39,9 +40,14 @@ final class MapManagerTest extends DatabaseTestCaseAbstract
     {
         $systemInstall = $this->prepareSystemInstall();
 
+        $dto = new ActionDto(
+            TopologyNameUtils::getTopologyName(TopologyNameUtils::UPDATED_SUBSCRIBERS, $systemInstall->getSystem()),
+            MapTemplate::DIRECTION_IN
+        );
+
         $map = (new MapTemplate())
-            ->setAction(new DataLayoutActionEnum(DataLayoutActionEnum::SUBSCRIBER))
-            ->setDirection(MapTemplate::DIRECTION_IN)
+            ->setAction($dto)
+            ->setDirection($dto)
             ->setSystemInstall($systemInstall);
         $this->persistAndFlush($map);
 
@@ -185,8 +191,10 @@ final class MapManagerTest extends DatabaseTestCaseAbstract
      */
     private function getData(): array
     {
+        $action = TopologyNameUtils::getTopologyName(TopologyNameUtils::UPDATED_SUBSCRIBERS, 'null.user.group');
+
         return [
-            'action'    => DataLayoutActionEnum::SUBSCRIBER,
+            'action'    => $action,
             'direction' => MapTemplate::DIRECTION_IN,
             'fields'    => [
                 [
@@ -203,8 +211,10 @@ final class MapManagerTest extends DatabaseTestCaseAbstract
      */
     private function getDataCreate2Update(): array
     {
+        $action = TopologyNameUtils::getTopologyName(TopologyNameUtils::UPDATED_SUBSCRIBERS, 'null.user.group');
+
         return [
-            'action'    => DataLayoutActionEnum::SUBSCRIBER,
+            'action'    => $action,
             'direction' => MapTemplate::DIRECTION_IN,
             'fields'    => [
                 [

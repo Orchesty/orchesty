@@ -4,11 +4,11 @@ namespace CleverConnectors\AppBundle\Model\DataLayout;
 
 use CleverConnectors\AppBundle\Document\DataLayout;
 use CleverConnectors\AppBundle\Document\SystemInstall;
-use CleverConnectors\AppBundle\Enum\DataLayoutActionEnum;
 use CleverConnectors\AppBundle\Enum\TypeEnum;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\DataLayout\Exceptions\LayoutException;
 use CleverConnectors\AppBundle\Model\Systems\SystemLoader;
+use CleverConnectors\AppBundle\Model\Systems\Traits\MapTrait;
 use Doctrine\ODM\MongoDB\DocumentManager;
 
 /**
@@ -18,6 +18,8 @@ use Doctrine\ODM\MongoDB\DocumentManager;
  */
 class LayoutManager
 {
+
+    use MapTrait;
 
     /**
      * @var DocumentManager
@@ -88,11 +90,13 @@ class LayoutManager
      */
     public function createDataLayout(SystemInstall $systemInstall, array $data): DataLayout
     {
-        $this->checkDynamicMapping($systemInstall);
+        $system = $this->systemLoader->getSystem($systemInstall->getSystem());
+        $this->checkDynamicMapping($system);
+        $actionDto = $this->checkAction($system, $data);
 
         $dataLayout = $this->dm->getRepository(DataLayout::class)->findOneBy([
             'systemInstall' => $systemInstall->getId(),
-            'action'        => $data['action'],
+            'action'        => $actionDto->getAction(),
         ]);
 
         if ($dataLayout) {
@@ -100,7 +104,7 @@ class LayoutManager
                 sprintf(
                     'System Install \'%s\' already has DataLayout for action \'%s\'',
                     $systemInstall->getId(),
-                    $data['action']
+                    $actionDto->getAction()
                 ),
                 LayoutException::DATA_LAYOUT_ALREADY_EXISTS
             );
@@ -108,7 +112,7 @@ class LayoutManager
 
         $dataLayout = (new DataLayout())
             ->setSystemInstall($systemInstall)
-            ->setAction(new DataLayoutActionEnum($data['action']));
+            ->setAction($actionDto);
 
         foreach ($data['fields'] as $field) {
             if (isset($field['key']) && isset($field['type'])) {
@@ -155,22 +159,6 @@ class LayoutManager
         $this->dm->flush();
 
         return [];
-    }
-
-    /**
-     * @param SystemInstall $systemInstall
-     *
-     * @throws CleverConnectorsException
-     */
-    private function checkDynamicMapping(SystemInstall $systemInstall): void
-    {
-        $system = $this->systemLoader->getSystem($systemInstall->getSystem());
-        if (!$system->isDynamicMapper()) {
-            throw new CleverConnectorsException(
-                sprintf('System "%s" does not support dynamic mapping', $systemInstall->getSystem()),
-                CleverConnectorsException::DYNAMIC_MAPPING_NOT_ALLOWED
-            );
-        }
     }
 
 }
