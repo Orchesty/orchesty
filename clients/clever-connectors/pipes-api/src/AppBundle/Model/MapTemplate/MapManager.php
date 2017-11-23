@@ -6,6 +6,7 @@ use CleverConnectors\AppBundle\Document\MapTemplate;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\DataLayoutActionEnum;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
+use CleverConnectors\AppBundle\Model\Systems\SystemLoader;
 use CleverConnectors\AppBundle\Repository\MapTemplateRepository;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -29,14 +30,21 @@ class MapManager
     private $mapTemplateRepository;
 
     /**
+     * @var SystemLoader
+     */
+    private $systemLoader;
+
+    /**
      * MapManager constructor.
      *
      * @param DocumentManager $documentManager
+     * @param SystemLoader    $systemLoader
      */
-    public function __construct(DocumentManager $documentManager)
+    public function __construct(DocumentManager $documentManager, SystemLoader $systemLoader)
     {
         $this->dm                    = $documentManager;
         $this->mapTemplateRepository = $this->dm->getRepository(MapTemplate::class);
+        $this->systemLoader          = $systemLoader;
     }
 
     /**
@@ -82,9 +90,12 @@ class MapManager
      * @param array         $data
      *
      * @return MapTemplate
+     * @throws CleverConnectorsException
      */
     public function create(SystemInstall $systemInstall, array $data): MapTemplate
     {
+        $this->checkDynamicMapping($systemInstall);
+
         $mapTemplate = $this->mapTemplateRepository->findUnique(
             $systemInstall,
             new DataLayoutActionEnum($data['action']),
@@ -130,6 +141,22 @@ class MapManager
     {
         $this->dm->remove($mapTemplate);
         $this->dm->flush();
+    }
+
+    /**
+     * @param SystemInstall $systemInstall
+     *
+     * @throws CleverConnectorsException
+     */
+    private function checkDynamicMapping(SystemInstall $systemInstall): void
+    {
+        $system = $this->systemLoader->getSystem($systemInstall->getSystem());
+        if (!$system->isDynamicMapper()) {
+            throw new CleverConnectorsException(
+                sprintf('System "%s" does not support dynamic mapping', $systemInstall->getSystem()),
+                CleverConnectorsException::DYNAMIC_MAPPING_NOT_ALLOWED
+            );
+        }
     }
 
     /**

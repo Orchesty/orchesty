@@ -53,7 +53,7 @@ final class LayoutControllerTest extends ControllerTestCaseAbstract
         $this->assertEquals(200, $response->status);
 
         $content = Json::decode(Json::encode($response->content), TRUE);
-        $this->assertEquals($params, $content);
+        $this->assertEquals(array_merge($params, ['_id' => $layout->getId()]), $content);
     }
 
     /**
@@ -99,7 +99,8 @@ final class LayoutControllerTest extends ControllerTestCaseAbstract
         $this->assertEquals(200, $response->status);
 
         $content = Json::decode(Json::encode($response->content), TRUE);
-        $this->assertEquals(array_merge($params, ['action' => DataLayoutActionEnum::CAMPAIGN]), $content);
+        $this->assertEquals(array_merge(array_merge($params, ['_id' => $layout->getId()]),
+            ['action' => DataLayoutActionEnum::CAMPAIGN]), $content);
     }
 
     /**

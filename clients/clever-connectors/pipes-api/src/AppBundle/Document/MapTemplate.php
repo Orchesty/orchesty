@@ -174,6 +174,7 @@ class MapTemplate
         }
 
         return [
+            '_id'       => $this->getId(),
             'action'    => $this->getAction(),
             'direction' => $this->getDirection(),
             'fields'    => $out,

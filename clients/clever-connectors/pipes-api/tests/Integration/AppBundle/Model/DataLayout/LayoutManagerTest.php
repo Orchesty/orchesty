@@ -6,6 +6,7 @@ use CleverConnectors\AppBundle\Document\DataLayout;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\DataLayoutActionEnum;
 use CleverConnectors\AppBundle\Enum\TypeEnum;
+use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\DataLayout\Exceptions\LayoutException;
 use CleverConnectors\AppBundle\Model\DataLayout\LayoutManager;
 use CleverConnectors\AppBundle\Repository\DataLayoutRepository;
@@ -46,6 +47,7 @@ final class LayoutManagerTest extends DatabaseTestCaseAbstract
     public function testRemoveBySystemInstall(): void
     {
         $systemInstall = new SystemInstall();
+        $systemInstall->setSystem('null.user.group');
         $this->persistAndFlush($systemInstall);
 
         $this->manager->createDataLayout($systemInstall, [
@@ -70,6 +72,7 @@ final class LayoutManagerTest extends DatabaseTestCaseAbstract
     public function testCreateDataLayout(): void
     {
         $systemInstall = new SystemInstall();
+        $systemInstall->setSystem('null.user.group');
         $this->persistAndFlush($systemInstall);
 
         $this->manager->createDataLayout($systemInstall, [
@@ -90,6 +93,7 @@ final class LayoutManagerTest extends DatabaseTestCaseAbstract
 
         $this->assertInstanceOf(DataLayout::class, $dataLayout);
         $this->assertEquals([
+            '_id'    => $dataLayout->getId(),
             'action' => 'subscriber',
             'fields' => [
                 0 => [
@@ -119,6 +123,28 @@ final class LayoutManagerTest extends DatabaseTestCaseAbstract
     /**
      *
      */
+    public function testCreateFailed(): void
+    {
+        $systemInstall = new SystemInstall();
+        $systemInstall->setSystem('shoptet');
+        $this->persistAndFlush($systemInstall);
+
+        $this->expectException(CleverConnectorsException::class);
+        $this->expectExceptionCode(CleverConnectorsException::DYNAMIC_MAPPING_NOT_ALLOWED);
+
+        $this->manager->createDataLayout($systemInstall, [
+            'action' => DataLayoutActionEnum::SUBSCRIBER,
+            'fields' => [
+                ['key' => 'key-text', 'type' => TypeEnum::TEXT],
+                ['key' => 'key-date', 'type' => TypeEnum::DATE],
+                ['key' => 'key-bool', 'type' => TypeEnum::BOOL],
+            ],
+        ]);
+    }
+
+    /**
+     *
+     */
     public function testUpdateDataLayout(): void
     {
         $dataLayout = $this->prepareDataLayout();
@@ -136,6 +162,7 @@ final class LayoutManagerTest extends DatabaseTestCaseAbstract
         $dataLayout = $this->repository->find($dataLayout->getId());
         $this->assertInstanceOf(DataLayout::class, $dataLayout);
         $this->assertEquals([
+            '_id'    => $dataLayout->getId(),
             'action' => 'subscriber',
             'fields' => [
                 0 => [
@@ -170,6 +197,7 @@ final class LayoutManagerTest extends DatabaseTestCaseAbstract
     private function prepareDataLayout(): DataLayout
     {
         $systemInstall = new SystemInstall();
+        $systemInstall->setSystem('null.user.group');
         $this->persistAndFlush($systemInstall);
 
         $this->manager->createDataLayout($systemInstall, [
