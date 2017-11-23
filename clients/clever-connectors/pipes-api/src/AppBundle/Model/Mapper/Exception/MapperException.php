@@ -19,6 +19,9 @@ use Exception;
 final class MapperException extends Exception
 {
 
-    public const PARSE_ERROR = 1;
+    public const PARSE_ERROR      = 1;
+    public const BAD_FIELD_TYPE   = 2;
+    public const BAD_ITEMS_FORMAT = 3;
+    public const MISSING_KEY      = 4;
 
 }

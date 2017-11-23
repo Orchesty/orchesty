@@ -9,13 +9,17 @@
 
 namespace CleverConnectors\AppBundle\Model\Mapper;
 
+use CleverConnectors\AppBundle\Traits\StaticTrait;
+
 /**
  * Class FieldKeyGenerator
  *
  * @package CleverConnectors\AppBundle\Model\Mapper
  */
-class FieldKeyGenerator
+final class FieldKeyGenerator
 {
+
+    use StaticTrait;
 
     public const DELIMITER = '.';
 
@@ -28,7 +32,7 @@ class FieldKeyGenerator
     {
         $exploded = explode(self::DELIMITER, $key);
 
-        return $exploded;
+        return array_filter($exploded);
     }
 
 }

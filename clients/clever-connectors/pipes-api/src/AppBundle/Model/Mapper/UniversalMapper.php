@@ -27,6 +27,23 @@ class UniversalMapper implements MapperInterface
 {
 
     /**
+     * @var bool
+     */
+    private $allowedEmptyValues = FALSE;
+
+    /**
+     * @param bool $allowedEmptyValues
+     *
+     * @return UniversalMapper
+     */
+    public function setAllowedEmptyValues(bool $allowedEmptyValues): UniversalMapper
+    {
+        $this->allowedEmptyValues = $allowedEmptyValues;
+
+        return $this;
+    }
+
+    /**
      * @param MapTemplate $template
      * @param ProcessDto  $dto
      *
@@ -56,7 +73,11 @@ class UniversalMapper implements MapperInterface
     {
         $output = [];
         foreach ($template->getFields() as $field) {
-            $output[$field->getKey()] = $this->getDataFromInputFields($field, $data);
+            $value = $this->getDataFromInputFields($field, $data);
+            if ($this->isEmptyAndNotAllowed($value)) {
+                continue;
+            }
+            $output[$field->getKey()] = $value;
         }
 
         return $output;
@@ -76,7 +97,8 @@ class UniversalMapper implements MapperInterface
         foreach ($field->getItems() as $item) {
             if (!is_scalar($item)) {
                 throw new MapperException(
-                    sprintf('Item "%s" must be a string fo field "%s"', serialize($item), $field)
+                    sprintf('Item "%s" must be a string fo field "%s"', serialize($item), $field),
+                    MapperException::BAD_ITEMS_FORMAT
                 );
             }
 
@@ -88,6 +110,10 @@ class UniversalMapper implements MapperInterface
                 $output .= $this->getDataWithInnerKey($key, $data);
             }
 
+        }
+
+        if ($this->isEmptyAndNotAllowed($output)) {
+            return $output;
         }
 
         return $this->reformatOutputData($field, $output);
@@ -112,7 +138,10 @@ class UniversalMapper implements MapperInterface
             return $data[$firstKey];
         }
 
-        throw new MapperException(sprintf('Key "%s" not found in data!', $firstKey));
+        throw new MapperException(
+            sprintf('Key "%s" not found in data!', $firstKey),
+            MapperException::MISSING_KEY
+        );
     }
 
     /**
@@ -142,7 +171,8 @@ class UniversalMapper implements MapperInterface
                 return $this->formatNumber($data);
             default:
                 throw new MapperException(
-                    sprintf('Type "%s" is not supported for field "%s"', $field->getType(), $field->getKey())
+                    sprintf('Type "%s" is not supported for field "%s"', $field->getType(), $field->getKey()),
+                    MapperException::BAD_FIELD_TYPE
                 );
         }
     }
@@ -224,6 +254,16 @@ class UniversalMapper implements MapperInterface
     protected function encodeData(array $data): string
     {
         return json_encode($data);
+    }
+
+    /**
+     * @param mixed $data
+     *
+     * @return bool
+     */
+    private function isEmptyAndNotAllowed($data): bool
+    {
+        return empty($data) && !$this->allowedEmptyValues;
     }
 
 }
