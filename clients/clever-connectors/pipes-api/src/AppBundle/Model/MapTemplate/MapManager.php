@@ -4,9 +4,9 @@ namespace CleverConnectors\AppBundle\Model\MapTemplate;
 
 use CleverConnectors\AppBundle\Document\MapTemplate;
 use CleverConnectors\AppBundle\Document\SystemInstall;
-use CleverConnectors\AppBundle\Enum\DataLayoutActionEnum;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Systems\SystemLoader;
+use CleverConnectors\AppBundle\Model\Systems\Traits\MapTrait;
 use CleverConnectors\AppBundle\Repository\MapTemplateRepository;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -18,6 +18,8 @@ use Doctrine\ODM\MongoDB\DocumentManager;
  */
 class MapManager
 {
+
+    use MapTrait;
 
     /**
      * @var DocumentManager
@@ -94,13 +96,10 @@ class MapManager
      */
     public function create(SystemInstall $systemInstall, array $data): MapTemplate
     {
-        $this->checkDynamicMapping($systemInstall);
-
-        $mapTemplate = $this->mapTemplateRepository->findUnique(
-            $systemInstall,
-            new DataLayoutActionEnum($data['action']),
-            $data['direction']
-        );
+        $system = $this->systemLoader->getSystem($systemInstall->getSystem());
+        $this->checkDynamicMapping($system);
+        $actionDto   = $this->checkAction($system, $data);
+        $mapTemplate = $this->mapTemplateRepository->findUnique($systemInstall, $actionDto);
 
         if ($mapTemplate) {
             return $this->update($mapTemplate, $data);
@@ -109,8 +108,8 @@ class MapManager
         $mapTemplate = new MapTemplate();
         $mapTemplate = $this->fillMapTemplate($mapTemplate, $data);
         $mapTemplate
-            ->setAction(new DataLayoutActionEnum($data['action']))
-            ->setDirection($data['direction'])
+            ->setAction($actionDto)
+            ->setDirection($actionDto)
             ->setSystemInstall($systemInstall);
 
         $this->dm->persist($mapTemplate);
@@ -141,22 +140,6 @@ class MapManager
     {
         $this->dm->remove($mapTemplate);
         $this->dm->flush();
-    }
-
-    /**
-     * @param SystemInstall $systemInstall
-     *
-     * @throws CleverConnectorsException
-     */
-    private function checkDynamicMapping(SystemInstall $systemInstall): void
-    {
-        $system = $this->systemLoader->getSystem($systemInstall->getSystem());
-        if (!$system->isDynamicMapper()) {
-            throw new CleverConnectorsException(
-                sprintf('System "%s" does not support dynamic mapping', $systemInstall->getSystem()),
-                CleverConnectorsException::DYNAMIC_MAPPING_NOT_ALLOWED
-            );
-        }
     }
 
     /**

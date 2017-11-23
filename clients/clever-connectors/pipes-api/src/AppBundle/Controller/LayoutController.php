@@ -130,7 +130,7 @@ class LayoutController extends FOSRestController
                 $code = 404;
             }
         } else if ($className === LayoutException::class && $e->getCode() == LayoutException::DATA_LAYOUT_ALREADY_EXISTS) {
-            $code = 404;
+            $code = 400;
         }
 
         return new Response(json_encode([

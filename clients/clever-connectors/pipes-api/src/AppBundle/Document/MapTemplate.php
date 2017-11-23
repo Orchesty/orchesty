@@ -3,9 +3,9 @@
 namespace CleverConnectors\AppBundle\Document;
 
 use CleverConnectors\AppBundle\Document\Traits\IdTrait;
-use CleverConnectors\AppBundle\Enum\DataLayoutActionEnum;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\MapTemplate\MapField;
+use CleverConnectors\AppBundle\Model\Systems\Dto\ActionDto;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Nette\Utils\Json;
 
@@ -61,13 +61,13 @@ class MapTemplate
     protected $fields = [];
 
     /**
-     * @param DataLayoutActionEnum $action
+     * @param ActionDto $dto
      *
      * @return MapTemplate
      */
-    public function setAction(DataLayoutActionEnum $action): MapTemplate
+    public function setAction(ActionDto $dto): MapTemplate
     {
-        $this->action = $action->getValue();
+        $this->action = $dto->getAction();
 
         return $this;
     }
@@ -81,13 +81,14 @@ class MapTemplate
     }
 
     /**
-     * @param string $direction
+     * @param ActionDto $dto
      *
      * @return MapTemplate
      * @throws CleverConnectorsException
      */
-    public function setDirection(string $direction): MapTemplate
+    public function setDirection(ActionDto $dto): MapTemplate
     {
+        $direction = $dto->getDirection();
         if (!in_array($direction, [self::DIRECTION_IN, self::DIRECTION_OUT])) {
             throw new CleverConnectorsException(
                 sprintf('Invalid direction type "%s".', $direction),

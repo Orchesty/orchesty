@@ -3,9 +3,9 @@
 namespace CleverConnectors\AppBundle\Document;
 
 use CleverConnectors\AppBundle\Document\Traits\IdTrait;
-use CleverConnectors\AppBundle\Enum\DataLayoutActionEnum;
 use CleverConnectors\AppBundle\Enum\TypeEnum;
 use CleverConnectors\AppBundle\Model\DataLayout\LayoutField;
+use CleverConnectors\AppBundle\Model\Systems\Dto\ActionDto;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Nette\Utils\Json;
 
@@ -50,13 +50,13 @@ class DataLayout
     protected $fields = [];
 
     /**
-     * @param DataLayoutActionEnum $action
+     * @param ActionDto $dto
      *
      * @return DataLayout
      */
-    public function setAction(DataLayoutActionEnum $action): DataLayout
+    public function setAction(ActionDto $dto): DataLayout
     {
-        $this->action = $action->getValue();
+        $this->action = $dto->getAction();
 
         return $this;
     }

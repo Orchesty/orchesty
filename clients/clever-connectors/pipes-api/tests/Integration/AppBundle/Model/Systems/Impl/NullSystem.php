@@ -2,6 +2,7 @@
 
 namespace Tests\Integration\AppBundle\Model\Systems\Impl;
 
+use CleverConnectors\AppBundle\Document\MapTemplate;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\SystemTypeEnum;
 use CleverConnectors\AppBundle\Model\CMEvents\CMEventObject;
@@ -13,9 +14,11 @@ use CleverConnectors\AppBundle\Model\Plugins\PluginSystemAbstract;
 use CleverConnectors\AppBundle\Model\Requester\RequesterInterface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\OAuth2Interface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\Traits\AuthorizationTrait;
+use CleverConnectors\AppBundle\Model\Systems\Dto\ActionDto;
 use CleverConnectors\AppBundle\Model\Webhook\Traits\WebhookSystemTrait;
 use CleverConnectors\AppBundle\Model\Webhook\WebhookSubscribes;
 use CleverConnectors\AppBundle\Model\Webhook\WebhookSystemInterface;
+use CleverConnectors\AppBundle\Utils\TopologyNameUtils;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Authorization\Provider\Dto\OAuth2Dto;
 use Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider;
@@ -51,10 +54,14 @@ class NullSystem extends PluginSystemAbstract implements WebhookSystemInterface,
     function __construct(OAuth2Provider $provider)
     {
         parent::__construct();
+
         $this->provider        = $provider;
         $this->subscriptions[] = new WebhookSubscribes('node', 'top');
         $this->cmEvents[]      = new CMEventObject('cm_hardbounce', SystemInstall::EVENT_HARD_BOUNCE, 'uriReq');
         $this->cmEvents[]      = new CMEventObject('cm_create', SystemInstall::EVENT_CREATE, 'uriReq');
+
+        $topologyName = TopologyNameUtils::getTopologyName(TopologyNameUtils::UPDATED_SUBSCRIBERS, $this->getKey());
+        $this->addAllowedAction(new ActionDto($topologyName, MapTemplate::DIRECTION_IN));
     }
 
     /**

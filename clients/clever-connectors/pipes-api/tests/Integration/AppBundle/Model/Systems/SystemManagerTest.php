@@ -5,11 +5,12 @@ namespace Tests\Integration\AppBundle\Model\Systems;
 use CleverConnectors\AppBundle\Document\DataLayout;
 use CleverConnectors\AppBundle\Document\MapTemplate;
 use CleverConnectors\AppBundle\Document\SystemInstall;
-use CleverConnectors\AppBundle\Enum\DataLayoutActionEnum;
 use CleverConnectors\AppBundle\Enum\TypeEnum;
+use CleverConnectors\AppBundle\Model\Systems\Dto\ActionDto;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\SystemManager;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
+use CleverConnectors\AppBundle\Utils\TopologyNameUtils;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
@@ -149,9 +150,11 @@ final class SystemManagerTest extends DatabaseTestCaseAbstract
             ->setToken('token');
         $this->persistAndFlush($system);
 
+        $action = TopologyNameUtils::getTopologyName(TopologyNameUtils::UPDATED_SUBSCRIBERS, $system->getSystem());
+
         $dataLayoutManager = $this->container->get('cc.layout.manager');
         $datalayout        = $dataLayoutManager->createDataLayout($system, [
-            'action' => DataLayoutActionEnum::SUBSCRIBER,
+            'action' => $action,
             'fields' => [
                 ['key' => 'key-text', 'type' => TypeEnum::TEXT],
                 ['key' => 'key-date', 'type' => TypeEnum::DATE],
@@ -161,7 +164,7 @@ final class SystemManagerTest extends DatabaseTestCaseAbstract
 
         $mapTemplateManager = $this->container->get('cc.map_template.manager');
         $map                = $mapTemplateManager->create($system, [
-            'action'    => DataLayoutActionEnum::SUBSCRIBER,
+            'action'    => $action,
             'direction' => MapTemplate::DIRECTION_IN,
             'fields'    => [
                 [
@@ -227,10 +230,11 @@ final class SystemManagerTest extends DatabaseTestCaseAbstract
                             ],
                         'action'      => '',
                     ],
-            ], 'data_layouts'  => [
+            ],
+            'data_layouts'     => [
                 0 => [
                     '_id'    => $datalayout->getId(),
-                    'action' => 'subscriber',
+                    'action' => $action,
                     'fields' => [
                         0        =>
                             [
@@ -251,7 +255,7 @@ final class SystemManagerTest extends DatabaseTestCaseAbstract
             'map_templates'    => [
                 0 => [
                     '_id'       => $map->getId(),
-                    'action'    => 'subscriber',
+                    'action'    => $action,
                     'direction' => 'in',
                     'fields'    => [
                         0 => [
@@ -264,6 +268,9 @@ final class SystemManagerTest extends DatabaseTestCaseAbstract
                         ],
                     ],
                 ],
+            ],
+            'actions'          => [
+                $action,
             ],
         ], $this->manager->getUserSystem($system));
     }
@@ -302,14 +309,19 @@ final class SystemManagerTest extends DatabaseTestCaseAbstract
             ->setToken('token');
         $this->persistAndFlush($system);
 
+        $dto = new ActionDto(
+            TopologyNameUtils::getTopologyName(TopologyNameUtils::UPDATED_SUBSCRIBERS, $system->getSystem()),
+            MapTemplate::DIRECTION_IN
+        );
+
         $map = (new MapTemplate())
-            ->setAction(new DataLayoutActionEnum(DataLayoutActionEnum::SUBSCRIBER))
-            ->setDirection(MapTemplate::DIRECTION_IN)
+            ->setAction($dto)
+            ->setDirection($dto)
             ->setSystemInstall($system);
         $this->persistAndFlush($map);
 
         $layout = (new DataLayout())
-            ->setAction(new DataLayoutActionEnum(DataLayoutActionEnum::SUBSCRIBER))
+            ->setAction($dto)
             ->setSystemInstall($system);
         $this->persistAndFlush($layout);
 

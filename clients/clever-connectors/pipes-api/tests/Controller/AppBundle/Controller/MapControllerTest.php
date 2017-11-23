@@ -5,9 +5,10 @@ namespace Tests\Controller\AppBundle\Controller;
 use CleverConnectors\AppBundle\Controller\MapController;
 use CleverConnectors\AppBundle\Document\MapTemplate;
 use CleverConnectors\AppBundle\Document\SystemInstall;
-use CleverConnectors\AppBundle\Enum\DataLayoutActionEnum;
 use CleverConnectors\AppBundle\Enum\TypeEnum;
 use CleverConnectors\AppBundle\Model\MapTemplate\MapField;
+use CleverConnectors\AppBundle\Model\Systems\Dto\ActionDto;
+use CleverConnectors\AppBundle\Utils\TopologyNameUtils;
 use Nette\Utils\Json;
 use Tests\ControllerTestCaseAbstract;
 
@@ -32,8 +33,10 @@ final class MapControllerTest extends ControllerTestCaseAbstract
             ->setToken('token123');
         $this->persistAndFlush($system);
 
+        $action = TopologyNameUtils::getTopologyName(TopologyNameUtils::UPDATED_SUBSCRIBERS, $system->getSystem());
+
         $params = [
-            'action'    => DataLayoutActionEnum::SUBSCRIBER,
+            'action'    => $action,
             'direction' => MapTemplate::DIRECTION_IN,
             'fields'    => [
                 [
@@ -48,7 +51,7 @@ final class MapControllerTest extends ControllerTestCaseAbstract
 
         $map = $this->dm->getRepository(MapTemplate::class)->findOneBy([
             'systemInstall' => $system->getId(),
-            'action'        => DataLayoutActionEnum::SUBSCRIBER,
+            'action'        => $action,
             'direction'     => MapTemplate::DIRECTION_IN,
         ]);
 
@@ -72,8 +75,11 @@ final class MapControllerTest extends ControllerTestCaseAbstract
             ->setToken('token1234');
         $this->persistAndFlush($system);
 
+        $action = TopologyNameUtils::getTopologyName(TopologyNameUtils::UPDATE_CONTACT, $system->getSystem());
+        $dto    = new ActionDto($action, MapTemplate::DIRECTION_OUT);
+
         $params = [
-            'action'    => DataLayoutActionEnum::CAMPAIGN,
+            'action'    => $action,
             'direction' => MapTemplate::DIRECTION_OUT,
             'fields'    => [
                 [
@@ -89,8 +95,8 @@ final class MapControllerTest extends ControllerTestCaseAbstract
 
         $map = new MapTemplate();
         $map
-            ->setAction(new DataLayoutActionEnum(DataLayoutActionEnum::CAMPAIGN))
-            ->setDirection(MapTemplate::DIRECTION_OUT)
+            ->setAction($dto)
+            ->setDirection($dto)
             ->setSystemInstall($system)
             ->addField($field);
         $this->persistAndFlush($map);
@@ -124,10 +130,13 @@ final class MapControllerTest extends ControllerTestCaseAbstract
         $field = new MapField('aaa', new TypeEnum(TypeEnum::BOOL));
         $field->addItem('bbb');
 
+        $action = TopologyNameUtils::getTopologyName(TopologyNameUtils::UPDATE_CONTACT, $system->getSystem());
+        $dto    = new ActionDto($action, MapTemplate::DIRECTION_OUT);
+
         $map = new MapTemplate();
         $map
-            ->setAction(new DataLayoutActionEnum(DataLayoutActionEnum::CAMPAIGN))
-            ->setDirection(MapTemplate::DIRECTION_OUT)
+            ->setAction($dto)
+            ->setDirection($dto)
             ->setSystemInstall($system)
             ->addField($field);
         $this->persistAndFlush($map);
