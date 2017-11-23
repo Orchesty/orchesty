@@ -49,6 +49,11 @@ interface SystemInterface
     public function getAllowedActions(): array;
 
     /**
+     * @return array
+     */
+    public function getAllowedActionsArray(): array;
+
+    /**
      * @param SystemInstall $systemInstall
      * @param string        $method
      *

@@ -178,6 +178,7 @@ class SystemManager
         $data['setting_fields'] = $system->getSettingFields($systemInstall);
 
         if ($system->isDynamicMapper()) {
+            $data['actions']       = $system->getAllowedActionsArray();
             $data['data_layouts']  = $this->getSystemInstallDataLayoutsArray($systemInstall->getId());
             $data['map_templates'] = $this->getSystemInstallMapTemplatesArray($systemInstall->getId());
         }

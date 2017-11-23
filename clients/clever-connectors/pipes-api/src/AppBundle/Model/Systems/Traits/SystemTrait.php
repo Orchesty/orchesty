@@ -3,6 +3,7 @@
 namespace CleverConnectors\AppBundle\Model\Systems\Traits;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Model\Systems\Dto\ActionDto;
 
 /**
  * Class SystemTrait
@@ -16,6 +17,11 @@ trait SystemTrait
      * @var array
      */
     protected $topologyNames = [];
+
+    /**
+     * @var ActionDto[]
+     */
+    protected $allowedActions = [];
 
     /**
      * @param string $name
@@ -40,11 +46,34 @@ trait SystemTrait
     }
 
     /**
-     * @return array
+     * @return ActionDto[]
      */
     public function getAllowedActions(): array
     {
-        return [];
+        return $this->allowedActions;
+    }
+
+    /**
+     * @return array
+     */
+    public function getAllowedActionsArray(): array
+    {
+        $actions = [];
+        if ($this->allowedActions) {
+            foreach ($this->allowedActions as $allowedAction) {
+                $actions[] = $allowedAction->getAction();
+            }
+        }
+
+        return $actions;
+    }
+
+    /**
+     * @param ActionDto $dto
+     */
+    public function addAllowedAction(ActionDto $dto): void
+    {
+        $this->allowedActions[$dto->getAction()] = $dto;
     }
 
     /**

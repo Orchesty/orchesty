@@ -4,7 +4,7 @@ namespace CleverConnectors\AppBundle\Repository;
 
 use CleverConnectors\AppBundle\Document\MapTemplate;
 use CleverConnectors\AppBundle\Document\SystemInstall;
-use CleverConnectors\AppBundle\Enum\DataLayoutActionEnum;
+use CleverConnectors\AppBundle\Model\Systems\Dto\ActionDto;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 
 /**
@@ -16,19 +16,18 @@ class MapTemplateRepository extends DocumentRepository
 {
 
     /**
-     * @param SystemInstall        $systemInstall
-     * @param DataLayoutActionEnum $action
-     * @param string               $direction
+     * @param SystemInstall $systemInstall
+     * @param ActionDto     $dto
      *
      * @return MapTemplate|null
      */
-    public function findUnique(SystemInstall $systemInstall, DataLayoutActionEnum $action, string $direction): ?MapTemplate
+    public function findUnique(SystemInstall $systemInstall, ActionDto $dto): ?MapTemplate
     {
         /** @var MapTemplate|null $result */
         $result = $this->createQueryBuilder()
             ->field('systemInstall')->equals($systemInstall->getId())
-            ->field('action')->equals($action->getValue())
-            ->field('direction')->equals($direction)
+            ->field('action')->equals($dto->getAction())
+            ->field('direction')->equals($dto->getDirection())
             ->getQuery()->getSingleResult();
 
         return $result ?? NULL;

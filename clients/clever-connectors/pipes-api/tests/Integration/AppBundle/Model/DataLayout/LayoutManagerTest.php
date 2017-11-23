@@ -4,12 +4,12 @@ namespace Tests\Integration\AppBundle\Model\DataLayout;
 
 use CleverConnectors\AppBundle\Document\DataLayout;
 use CleverConnectors\AppBundle\Document\SystemInstall;
-use CleverConnectors\AppBundle\Enum\DataLayoutActionEnum;
 use CleverConnectors\AppBundle\Enum\TypeEnum;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\DataLayout\Exceptions\LayoutException;
 use CleverConnectors\AppBundle\Model\DataLayout\LayoutManager;
 use CleverConnectors\AppBundle\Repository\DataLayoutRepository;
+use CleverConnectors\AppBundle\Utils\TopologyNameUtils;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Tests\DatabaseTestCaseAbstract;
 
@@ -50,8 +50,13 @@ final class LayoutManagerTest extends DatabaseTestCaseAbstract
         $systemInstall->setSystem('null.user.group');
         $this->persistAndFlush($systemInstall);
 
+        $action = TopologyNameUtils::getTopologyName(
+            TopologyNameUtils::UPDATED_SUBSCRIBERS,
+            $systemInstall->getSystem()
+        );
+
         $this->manager->createDataLayout($systemInstall, [
-            'action' => DataLayoutActionEnum::SUBSCRIBER,
+            'action' => $action,
             'fields' => [
                 ['key' => 'key-text', 'type' => TypeEnum::TEXT],
             ],
@@ -75,8 +80,13 @@ final class LayoutManagerTest extends DatabaseTestCaseAbstract
         $systemInstall->setSystem('null.user.group');
         $this->persistAndFlush($systemInstall);
 
+        $action = TopologyNameUtils::getTopologyName(
+            TopologyNameUtils::UPDATED_SUBSCRIBERS,
+            $systemInstall->getSystem()
+        );
+
         $this->manager->createDataLayout($systemInstall, [
-            'action' => DataLayoutActionEnum::SUBSCRIBER,
+            'action' => $action,
             'fields' => [
                 ['key' => 'key-text', 'type' => TypeEnum::TEXT],
                 ['key' => 'key-date', 'type' => TypeEnum::DATE],
@@ -88,13 +98,13 @@ final class LayoutManagerTest extends DatabaseTestCaseAbstract
         /** @var DataLayout $dataLayout */
         $dataLayout = $this->repository->findOneBy([
             'systemInstall' => $systemInstall->getId(),
-            'action'        => DataLayoutActionEnum::SUBSCRIBER,
+            'action'        => $action,
         ]);
 
         $this->assertInstanceOf(DataLayout::class, $dataLayout);
         $this->assertEquals([
             '_id'    => $dataLayout->getId(),
-            'action' => 'subscriber',
+            'action' => $action,
             'fields' => [
                 0 => [
                     'key'  => 'key-text',
@@ -115,7 +125,7 @@ final class LayoutManagerTest extends DatabaseTestCaseAbstract
         $this->expectExceptionCode(LayoutException::DATA_LAYOUT_ALREADY_EXISTS);
 
         $this->manager->createDataLayout($systemInstall, [
-            'action' => DataLayoutActionEnum::SUBSCRIBER,
+            'action' => $action,
             'fields' => [],
         ]);
     }
@@ -132,8 +142,13 @@ final class LayoutManagerTest extends DatabaseTestCaseAbstract
         $this->expectException(CleverConnectorsException::class);
         $this->expectExceptionCode(CleverConnectorsException::DYNAMIC_MAPPING_NOT_ALLOWED);
 
+        $action = TopologyNameUtils::getTopologyName(
+            TopologyNameUtils::UPDATED_SUBSCRIBERS,
+            $systemInstall->getSystem()
+        );
+
         $this->manager->createDataLayout($systemInstall, [
-            'action' => DataLayoutActionEnum::SUBSCRIBER,
+            'action' => $action,
             'fields' => [
                 ['key' => 'key-text', 'type' => TypeEnum::TEXT],
                 ['key' => 'key-date', 'type' => TypeEnum::DATE],
@@ -163,7 +178,7 @@ final class LayoutManagerTest extends DatabaseTestCaseAbstract
         $this->assertInstanceOf(DataLayout::class, $dataLayout);
         $this->assertEquals([
             '_id'    => $dataLayout->getId(),
-            'action' => 'subscriber',
+            'action' => $dataLayout->getAction(),
             'fields' => [
                 0 => [
                     'key'  => 'key-text-update',
@@ -200,8 +215,13 @@ final class LayoutManagerTest extends DatabaseTestCaseAbstract
         $systemInstall->setSystem('null.user.group');
         $this->persistAndFlush($systemInstall);
 
+        $action = TopologyNameUtils::getTopologyName(
+            TopologyNameUtils::UPDATED_SUBSCRIBERS,
+            $systemInstall->getSystem()
+        );
+
         $this->manager->createDataLayout($systemInstall, [
-            'action' => DataLayoutActionEnum::SUBSCRIBER,
+            'action' => $action,
             'fields' => [
                 ['key' => 'key-text', 'type' => TypeEnum::TEXT],
                 ['key' => 'key-date', 'type' => TypeEnum::DATE],
@@ -212,7 +232,7 @@ final class LayoutManagerTest extends DatabaseTestCaseAbstract
         /** @var DataLayout $dataLayout */
         $dataLayout = $this->repository->findOneBy([
             'systemInstall' => $systemInstall->getId(),
-            'action'        => DataLayoutActionEnum::SUBSCRIBER,
+            'action'        => $action,
         ]);
 
         return $dataLayout;

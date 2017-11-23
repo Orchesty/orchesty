@@ -5,9 +5,10 @@ namespace Tests\Controller\AppBundle\Controller;
 use CleverConnectors\AppBundle\Controller\LayoutController;
 use CleverConnectors\AppBundle\Document\DataLayout;
 use CleverConnectors\AppBundle\Document\SystemInstall;
-use CleverConnectors\AppBundle\Enum\DataLayoutActionEnum;
 use CleverConnectors\AppBundle\Enum\TypeEnum;
 use CleverConnectors\AppBundle\Model\DataLayout\LayoutField;
+use CleverConnectors\AppBundle\Model\Systems\Dto\ActionDto;
+use CleverConnectors\AppBundle\Utils\TopologyNameUtils;
 use Nette\Utils\Json;
 use Tests\ControllerTestCaseAbstract;
 
@@ -32,8 +33,10 @@ final class LayoutControllerTest extends ControllerTestCaseAbstract
             ->setToken('token123');
         $this->persistAndFlush($system);
 
+        $action = TopologyNameUtils::getTopologyName(TopologyNameUtils::UPDATED_SUBSCRIBERS, $system->getSystem());
+
         $params = [
-            'action' => DataLayoutActionEnum::SUBSCRIBER,
+            'action' => $action,
             'fields' => [
                 [
                     'key'  => 'abc',
@@ -46,7 +49,7 @@ final class LayoutControllerTest extends ControllerTestCaseAbstract
 
         $layout = $this->dm->getRepository(DataLayout::class)->findOneBy([
             'systemInstall' => $system->getId(),
-            'action'        => DataLayoutActionEnum::SUBSCRIBER,
+            'action'        => $action,
         ]);
 
         $this->assertEquals(1, count($layout));
@@ -78,11 +81,14 @@ final class LayoutControllerTest extends ControllerTestCaseAbstract
             ],
         ];
 
+        $action = TopologyNameUtils::getTopologyName(TopologyNameUtils::UPDATE_CONTACT, $system->getSystem());
+        $dto    = new ActionDto($action);
+
         $field  = new LayoutField('aaa', new TypeEnum(TypeEnum::BOOL));
         $layout = new DataLayout();
         $layout
             ->setSystemInstall($system)
-            ->setAction(new DataLayoutActionEnum(DataLayoutActionEnum::CAMPAIGN))
+            ->setAction($dto)
             ->addField($field);
         $this->persistAndFlush($layout);
 
@@ -99,8 +105,10 @@ final class LayoutControllerTest extends ControllerTestCaseAbstract
         $this->assertEquals(200, $response->status);
 
         $content = Json::decode(Json::encode($response->content), TRUE);
-        $this->assertEquals(array_merge(array_merge($params, ['_id' => $layout->getId()]),
-            ['action' => DataLayoutActionEnum::CAMPAIGN]), $content);
+        $this->assertEquals(
+            array_merge(array_merge($params, ['_id' => $layout->getId()]), ['action' => $action]),
+            $content
+        );
     }
 
     /**
@@ -116,11 +124,14 @@ final class LayoutControllerTest extends ControllerTestCaseAbstract
             ->setToken('token123');
         $this->persistAndFlush($system);
 
+        $action = TopologyNameUtils::getTopologyName(TopologyNameUtils::UPDATE_CONTACT, $system->getSystem());
+        $dto    = new ActionDto($action);
+
         $field  = new LayoutField('aaa', new TypeEnum(TypeEnum::BOOL));
         $layout = new DataLayout();
         $layout
             ->setSystemInstall($system)
-            ->setAction(new DataLayoutActionEnum(DataLayoutActionEnum::CAMPAIGN))
+            ->setAction($dto)
             ->addField($field);
         $this->persistAndFlush($layout);
 
