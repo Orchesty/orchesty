@@ -22,10 +22,6 @@ RUN deluser node && delgroup dialout
 
 RUN npm i -g gulp
 
-# User's cache must be set AFTER all npm i. 
-# Otherwise cache will have root permissions which will collide with entrypoint.
-ENV NPM_CONFIG_CACHE=/srv/.npm
-
 # sudo for dev user
 RUN echo "dev ALL=NOPASSWD: ALL" > /etc/sudoers.d/dev
 
