@@ -1,5 +1,38 @@
-version: '2'
+version: '3.3'
 services:
+<<<<<<< HEAD
+=======
+  1_probe:
+    image: 'dkr.hanaboso.net/pipes/pipes/pf-bridge:dev'
+    working_dir: ''
+    user: ''
+    environment:
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: '5672'
+      RABBITMQ_USER: guest
+      RABBITMQ_PASS: guest
+      RABBITMQ_VHOST: /
+    networks:
+      - demo_defualt
+    configs:
+      - { source: preffix_config, target: /srv/app/topology/topology.json }
+    command: './dist/src/bin/pipes.js start probe'
+  1_counter:
+    image: 'dkr.hanaboso.net/pipes/pipes/pf-bridge:dev'
+    working_dir: ''
+    user: ''
+    environment:
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: '5672'
+      RABBITMQ_USER: guest
+      RABBITMQ_PASS: guest
+      RABBITMQ_VHOST: /
+    networks:
+      - demo_defualt
+    configs:
+      - { source: preffix_config, target: /srv/app/topology/topology.json }
+    command: './dist/src/bin/pipes.js start counter'
+>>>>>>> Prepare to run in docker swarm mode and in compose
   1-mag-cus:
     image: 'dkr.hanaboso.net/pipes/pipes/pf-bridge:dev'
     working_dir: ''
@@ -10,11 +43,16 @@ services:
       RABBITMQ_USER: guest
       RABBITMQ_PASS: guest
       RABBITMQ_VHOST: /
-    volumes:
-      - './topology.json:/srv/app/topology/topology.json'
     networks:
+<<<<<<< HEAD
       - demo_default
     command: './dist/src/bin/pipes.js start bridge --id 1-mag-cus'
+=======
+      - demo_defualt
+    configs:
+      - { source: preffix_config, target: /srv/app/topology/topology.json }
+    command: './dist/src/bin/pipes.js start node --id 1-mag-cus'
+>>>>>>> Prepare to run in docker swarm mode and in compose
   2-xml-par:
     image: 'dkr.hanaboso.net/pipes/pipes/pf-bridge:dev'
     working_dir: ''
@@ -25,11 +63,16 @@ services:
       RABBITMQ_USER: guest
       RABBITMQ_PASS: guest
       RABBITMQ_VHOST: /
-    volumes:
-      - './topology.json:/srv/app/topology/topology.json'
     networks:
+<<<<<<< HEAD
       - demo_default
     command: './dist/src/bin/pipes.js start bridge --id 2-xml-par'
+=======
+      - demo_defualt
+    configs:
+      - { source: preffix_config, target: /srv/app/topology/topology.json }
+    command: './dist/src/bin/pipes.js start node --id 2-xml-par'
+>>>>>>> Prepare to run in docker swarm mode and in compose
   3-map-1:
     image: 'dkr.hanaboso.net/pipes/pipes/pf-bridge:dev'
     working_dir: ''
@@ -40,11 +83,16 @@ services:
       RABBITMQ_USER: guest
       RABBITMQ_PASS: guest
       RABBITMQ_VHOST: /
-    volumes:
-      - './topology.json:/srv/app/topology/topology.json'
     networks:
+<<<<<<< HEAD
       - demo_default
     command: './dist/src/bin/pipes.js start bridge --id 3-map-1'
+=======
+      - demo_defualt
+    configs:
+      - { source: preffix_config, target: /srv/app/topology/topology.json }
+    command: './dist/src/bin/pipes.js start node --id 3-map-1'
+>>>>>>> Prepare to run in docker swarm mode and in compose
   4-mai:
     image: 'dkr.hanaboso.net/pipes/pipes/pf-bridge:dev'
     working_dir: ''
@@ -55,11 +103,16 @@ services:
       RABBITMQ_USER: guest
       RABBITMQ_PASS: guest
       RABBITMQ_VHOST: /
-    volumes:
-      - './topology.json:/srv/app/topology/topology.json'
     networks:
+<<<<<<< HEAD
       - demo_default
     command: './dist/src/bin/pipes.js start bridge --id 4-mai'
+=======
+      - demo_defualt
+    configs:
+      - { source: preffix_config, target: /srv/app/topology/topology.json }
+    command: './dist/src/bin/pipes.js start node --id 4-mai'
+>>>>>>> Prepare to run in docker swarm mode and in compose
   5-ftp:
     image: 'dkr.hanaboso.net/pipes/pipes/pf-bridge:dev'
     working_dir: ''
@@ -70,11 +123,16 @@ services:
       RABBITMQ_USER: guest
       RABBITMQ_PASS: guest
       RABBITMQ_VHOST: /
-    volumes:
-      - './topology.json:/srv/app/topology/topology.json'
     networks:
+<<<<<<< HEAD
       - demo_default
     command: './dist/src/bin/pipes.js start bridge --id 5-ftp'
+=======
+      - demo_defualt
+    configs:
+      - { source: preffix_config, target: /srv/app/topology/topology.json }
+    command: './dist/src/bin/pipes.js start node --id 5-ftp'
+>>>>>>> Prepare to run in docker swarm mode and in compose
   6-api:
     image: 'dkr.hanaboso.net/pipes/pipes/pf-bridge:dev'
     working_dir: ''
@@ -85,11 +143,19 @@ services:
       RABBITMQ_USER: guest
       RABBITMQ_PASS: guest
       RABBITMQ_VHOST: /
-    volumes:
-      - './topology.json:/srv/app/topology/topology.json'
     networks:
+<<<<<<< HEAD
       - demo_default
     command: './dist/src/bin/pipes.js start bridge --id 6-api'
+=======
+      - demo_defualt
+    configs:
+      - { source: preffix_config, target: /srv/app/topology/topology.json }
+    command: './dist/src/bin/pipes.js start node --id 6-api'
+>>>>>>> Prepare to run in docker swarm mode and in compose
 networks:
-  demo_default:
+  demo_defualt:
+    external: true
+configs:
+  preffix_config:
     external: true

@@ -28,6 +28,10 @@ use Hanaboso\PipesFramework\TopologyGenerator\Exception\TopologyGeneratorExcepti
 class GeneratorHandler
 {
 
+    public const MODE_SWARM = 'swarm';
+
+    public const MODE_COMPOSE = 'compose';
+
     /**
      * @var DocumentManager
      */
@@ -49,24 +53,40 @@ class GeneratorHandler
     protected $actionsFactory;
 
     /**
+     * @var string
+     */
+    protected $deploymentPrefix;
+
+    /**
+     * @var string
+     */
+    protected $mode;
+
+    /**
      * GeneratorHandler constructor.
      *
      * @param DocumentManager        $dm
      * @param string                 $dstDirectory
      * @param string                 $network
      * @param TopologyActionsFactory $actionsFactory
+     * @param string                 $deploymentPrefix
+     * @param string                 $mode
      */
     public function __construct(
         DocumentManager $dm,
         string $dstDirectory,
         string $network,
-        TopologyActionsFactory $actionsFactory
+        TopologyActionsFactory $actionsFactory,
+        string $deploymentPrefix,
+        string $mode = self::MODE_SWARM
     )
     {
-        $this->dm             = $dm;
-        $this->dstDirectory   = $dstDirectory;
-        $this->network        = $network;
-        $this->actionsFactory = $actionsFactory;
+        $this->dm               = $dm;
+        $this->dstDirectory     = $dstDirectory;
+        $this->network          = $network;
+        $this->actionsFactory   = $actionsFactory;
+        $this->deploymentPrefix = $deploymentPrefix;
+        $this->mode             = $mode;
     }
 
     /**
@@ -77,6 +97,7 @@ class GeneratorHandler
      */
     public function generateTopology(string $topologyId): bool
     {
+
         $topology = $this->dm->getRepository(Topology::class)->find($topologyId);
         $nodes    = $this->dm->getRepository(Node::class)->findBy([
             'topology' => $topologyId,
@@ -84,8 +105,15 @@ class GeneratorHandler
 
         if ($topology && !empty($nodes)) {
             /** @var GenerateTopologyActions $actions */
-            $actions = $this->actionsFactory->getTopologyAction(TopologyActionsFactory::GENERATE);
-            $res     = $actions->generateTopology($topology, $nodes, $this->dstDirectory, $this->network);
+            $actions = $this->actionsFactory->getTopologyAction(TopologyActionsFactory::GENERATE, $this->getMode());
+            //TODO: add two generate choices
+            $res = $actions->generateTopology(
+                $topology,
+                $nodes,
+                $this->dstDirectory,
+                $this->network,
+                self::getStackName($this->deploymentPrefix, $topologyId)
+            );
 
             return $res;
         }
@@ -108,11 +136,15 @@ class GeneratorHandler
 
         if ($topology) {
             /** @var StartTopologyActions $actions */
-            $actions = $this->actionsFactory->getTopologyAction(TopologyActionsFactory::START);
-            $res     = $actions->runTopology($topology, $this->dstDirectory);
+            $actions = $this->actionsFactory->getTopologyAction(TopologyActionsFactory::START, $this->getMode());
+            $res     = $actions->runTopology(
+                $topology,
+                $this->dstDirectory,
+                self::getStackName($this->deploymentPrefix, $topologyId)
+            );
 
             if ($res) {
-                $dockerInfo = $actions->getTopologyInfo($topology);
+                $dockerInfo = $actions->getTopologyInfo($topology, $this->deploymentPrefix);
 
                 return $dockerInfo;
             } else {
@@ -146,11 +178,15 @@ class GeneratorHandler
 
         if ($topology) {
             /** @var StopTopologyActions $actions */
-            $actions = $this->actionsFactory->getTopologyAction(TopologyActionsFactory::STOP);
-            $res     = $actions->stopTopology($topology, $this->dstDirectory);
+            $actions = $this->actionsFactory->getTopologyAction(TopologyActionsFactory::STOP, $this->getMode());
+            $res     = $actions->stopTopology(
+                $topology,
+                $this->dstDirectory,
+                self::getStackName($this->deploymentPrefix, $topologyId)
+            );
 
             if ($res) {
-                $dockerInfo = $actions->getTopologyInfo($topology);
+                $dockerInfo = $actions->getTopologyInfo($topology, $this->deploymentPrefix);
 
                 return $dockerInfo;
             } else {
@@ -187,8 +223,8 @@ class GeneratorHandler
 
         if ($topology && !empty($nodes)) {
             /** @var DestroyTopologyActions $actions */
-            $actions = $this->actionsFactory->getTopologyAction(TopologyActionsFactory::DESTROY);
-            $res     = $actions->deleteTopologyDir($topology, $this->dstDirectory);
+            $actions = $this->actionsFactory->getTopologyAction(TopologyActionsFactory::DESTROY, $this->getMode());
+            $res     = $actions->deleteTopologyDir($topology, $this->dstDirectory, $this->deploymentPrefix);
             $actions->deleteQueues($topology, $nodes);
 
             return $res;
@@ -212,8 +248,8 @@ class GeneratorHandler
 
         if ($topology) {
             /** @var StopTopologyActions $actions */
-            $actions    = $this->actionsFactory->getTopologyAction(TopologyActionsFactory::START);
-            $dockerInfo = $actions->getTopologyInfo($topology);
+            $actions    = $this->actionsFactory->getTopologyAction(TopologyActionsFactory::START, $this->getMode());
+            $dockerInfo = $actions->getTopologyInfo($topology, $this->deploymentPrefix);
 
             return $dockerInfo;
         }
@@ -230,6 +266,33 @@ class GeneratorHandler
     public function setNetwork(string $network): void
     {
         $this->network = $network;
+    }
+
+    /**
+     * @param string $prefix
+     * @param string $topologyId
+     *
+     * @return string
+     */
+    public static function getStackName(string $prefix, string $topologyId): string
+    {
+        return sprintf('%s_%s', $prefix, substr($topologyId, 8));
+    }
+
+    /**
+     * @return string
+     */
+    public function getMode(): string
+    {
+        return $this->mode;
+    }
+
+    /**
+     * @param string $mode
+     */
+    public function setMode(string $mode): void
+    {
+        $this->mode = $mode;
     }
 
 }

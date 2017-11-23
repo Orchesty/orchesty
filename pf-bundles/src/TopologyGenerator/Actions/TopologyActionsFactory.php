@@ -10,6 +10,7 @@
 namespace Hanaboso\PipesFramework\TopologyGenerator\Actions;
 
 use Hanaboso\PipesFramework\Commons\Docker\Handler\DockerHandler;
+use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\GeneratorHandler;
 use Hanaboso\PipesFramework\RabbitMq\Handler\RabbitMqHandler;
 use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\VolumePathDefinitionFactory;
 use Hanaboso\PipesFramework\TopologyGenerator\Exception\TopologyGeneratorException;
@@ -82,27 +83,28 @@ class TopologyActionsFactory
 
     /**
      * @param string $action
+     * @param string $mode
      *
      * @return ActionsAbstract
      * @throws TopologyGeneratorException
      */
-    public function getTopologyAction(string $action): ActionsAbstract
+    public function getTopologyAction(string $action, string $mode = GeneratorHandler::MODE_SWARM): ActionsAbstract
     {
         if ($action == self::START) {
             if (!$this->startAction) {
-                $this->startAction = new StartTopologyActions($this->dockerHandler);
+                $this->startAction = new StartTopologyActions($this->dockerHandler, $mode);
             }
 
             return $this->startAction;
         } elseif ($action == self::STOP) {
             if (!$this->stopAction) {
-                $this->stopAction = new StopTopologyActions($this->dockerHandler);
+                $this->stopAction = new StopTopologyActions($this->dockerHandler, $mode);
             }
 
             return $this->stopAction;
         } elseif ($action == self::DESTROY) {
             if (!$this->destroyAction) {
-                $this->destroyAction = new DestroyTopologyActions($this->dockerHandler, $this->rabbitMqHandler);
+                $this->destroyAction = new DestroyTopologyActions($this->dockerHandler, $this->rabbitMqHandler, $mode);
             }
 
             return $this->destroyAction;
@@ -110,7 +112,8 @@ class TopologyActionsFactory
             if (!$this->generateAction) {
                 $this->generateAction = new GenerateTopologyActions(
                     $this->dockerHandler,
-                    $this->volumePathDefinitionFactory
+                    $this->volumePathDefinitionFactory,
+                    $mode
                 );
             }
 

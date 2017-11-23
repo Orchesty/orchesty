@@ -8,6 +8,8 @@ RUN apt-get update && \
        $(lsb_release -cs) \
        stable"
 
+
+
 RUN apt-get update && \
     apt-get install -y git mc sudo docker-ce libpng-dev && \
     curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer && \

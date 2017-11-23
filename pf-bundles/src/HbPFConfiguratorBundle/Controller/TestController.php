@@ -77,24 +77,27 @@ class TestController extends FOSRestController
     }
 
     /**
-     * @Route("/test/topology/generate/{network}")
+     * @Route("/test/topology/generate/{network}/prefix/{prefix}")
      * @Method({"GET"})
      *
      * @param string $network
      *
+     * @param string $prefix
+     *
      * @return Response
      */
-    public function runAction(string $network = 'demo_default'): Response
+    public function runAction(string $network = 'demo_default', string $prefix = 'cc'): Response
     {
-        $this->generateTopology($network);
+        $this->generateTopology($network, $prefix);
 
         return $this->getResponse([]);
     }
 
     /**
      * @param string $network
+     * @param string $prefix
      */
-    public function generateTopology(string $network): void
+    public function generateTopology(string $network, string $prefix): void
     {
         if (file_exists($this->rootDir . '/' . self::FILE_NAME)) {
             $topologyId = file_get_contents($this->rootDir . '/' . self::FILE_NAME);
@@ -105,7 +108,8 @@ class TestController extends FOSRestController
                 'topology' => $topologyId,
             ]);
 
-            $generatorFactory = new GeneratorFactory($this->rootDir, $network, $this->volumePathDefinitionFactory);
+            $generatorFactory = new GeneratorFactory($this->rootDir, $network, $this->volumePathDefinitionFactory,
+                $prefix);
             $generator        = $generatorFactory->create();
             $generator->generate($topology, $nodes);
         } else {
@@ -175,7 +179,7 @@ class TestController extends FOSRestController
 
             file_put_contents($this->rootDir . '/' . self::FILE_NAME, $topology->getId());
 
-            $generatorFactory = new GeneratorFactory($this->rootDir, $network, $this->volumePathDefinitionFactory);
+            $generatorFactory = new GeneratorFactory($this->rootDir, $network, $this->volumePathDefinitionFactory, $prefix);
             $generator        = $generatorFactory->create();
 
             $generator->generate($topology, $nodes);

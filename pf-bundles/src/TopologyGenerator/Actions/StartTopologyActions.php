@@ -24,14 +24,16 @@ class StartTopologyActions extends ActionsAbstract
      * @param Topology $topology
      * @param string   $dstDirectory
      *
+     * @param string   $topologyPrefix
+     *
      * @return bool
      */
-    public function runTopology(Topology $topology, string $dstDirectory): bool
+    public function runTopology(Topology $topology, string $dstDirectory, string $topologyPrefix): bool
     {
         $dstTopologyDirectory = Generator::getTopologyDir($topology, $dstDirectory);
-        $cli                  = $this->getDockerComposeCli($dstTopologyDirectory);
+        $cli                  = $this->getDockerComposeCli($dstTopologyDirectory, $topologyPrefix);
 
-        return $cli->up();
+        return $cli->up($this->mode);
     }
 
 }

@@ -67,6 +67,16 @@ class Generator implements GeneratorInterface
     private $multiModeEnabled = FALSE;
 
     /**
+     * @var string
+     */
+    private $topologyprefix;
+
+    /**
+     * @var string
+     */
+    private $topologyMode;
+
+    /**
      * Generator constructor.
      *
      * @param Environment                 $environment
@@ -74,13 +84,17 @@ class Generator implements GeneratorInterface
      * @param string                      $targetDir
      * @param string                      $network
      * @param VolumePathDefinitionFactory $volumePathDefinitionFactory
+     * @param string                      $topologyprefix
+     * @param string                      $topologyMode
      */
     public function __construct(
         Environment $environment,
         HostMapper $hostMapper,
         string $targetDir,
         string $network,
-        VolumePathDefinitionFactory $volumePathDefinitionFactory
+        VolumePathDefinitionFactory $volumePathDefinitionFactory,
+        string $topologyprefix,
+        string $topologyMode
     )
     {
         $this->environment                 = $environment;
@@ -89,6 +103,8 @@ class Generator implements GeneratorInterface
         $this->network                     = $network;
         $this->composeBuilder              = new ComposeBuilder();
         $this->volumePathDefinitionFactory = $volumePathDefinitionFactory;
+        $this->topologyprefix              = $topologyprefix;
+        $this->topologyMode                = $topologyMode;
     }
 
     /**
@@ -238,7 +254,8 @@ class Generator implements GeneratorInterface
                     $this->environment,
                     self::REGISTRY,
                     $this->network,
-                    $volumePD
+                    $volumePD,
+                    $this->topologyMode
                 );
                 $compose->addService($builder->build($node));
             }

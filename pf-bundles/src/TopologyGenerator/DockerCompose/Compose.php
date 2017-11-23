@@ -9,6 +9,8 @@
 
 namespace Hanaboso\PipesFramework\TopologyGenerator\DockerCompose;
 
+use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\Directives\Configs;
+
 /**
  * Class Compose
  *
@@ -20,7 +22,7 @@ class Compose
     /**
      * @var string
      */
-    protected $version = '2';
+    protected $version = '3.3';
 
     /**
      * @var Service[]
@@ -31,6 +33,11 @@ class Compose
      * @var array
      */
     protected $networks = [];
+
+    /**
+     * @var
+     */
+    protected $configs = [];
 
     /**
      * @return string
@@ -90,6 +97,27 @@ class Compose
         $this->networks[] = $network;
 
         return $this;
+    }
+
+    /**
+     * @param string $topologyprefix
+     * @param bool   $external
+     *
+     * @return Compose
+     */
+    public function addConfigs(string $topologyprefix, bool $external): Compose
+    {
+        $this->configs[] = new Configs($topologyprefix, NULL, $external);
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getConfigs(): array
+    {
+        return $this->configs;
     }
 
 }

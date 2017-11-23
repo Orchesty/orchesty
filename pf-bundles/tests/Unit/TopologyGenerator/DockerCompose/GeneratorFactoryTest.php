@@ -27,7 +27,7 @@ class GeneratorFactoryTest extends TestCase
      */
     public function testCreate(): void
     {
-        $generatorFactory = new GeneratorFactory(__DIR__, 'demo', new VolumePathDefinitionFactory());
+        $generatorFactory = new GeneratorFactory(__DIR__, 'demo', new VolumePathDefinitionFactory(), 'cc');
 
         $this->assertInstanceOf(Generator::class, $generatorFactory->create());
     }

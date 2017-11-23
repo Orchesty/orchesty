@@ -18,6 +18,7 @@ services:
       - PROJECT_SOURCE_PATH=${PROJECT_SOURCE_PATH}
       - DOCKER_GID=${DOCKER_GID}
       - DOCKER_SOCKET_PATH=${DOCKER_SOCKET_PATH}
+      - DEPLOYMENT_PREFIX=${DEPLOYMENT_PREFIX}
     depends_on:
       - mongo
       - rabbitmq

@@ -12,6 +12,9 @@ security:
                 property: email
 
     firewalls:
+        unsecured_test:
+            pattern: ^/(test/*)
+            security: false
         unsecured_map_template:
             pattern: ^/(map)
             security: false
