@@ -135,6 +135,7 @@ class DataLayout
         }
 
         return [
+            '_id'    => $this->getId(),
             'action' => $this->getAction(),
             'fields' => $out,
         ];

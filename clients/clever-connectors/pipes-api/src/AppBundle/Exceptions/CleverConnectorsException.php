@@ -26,5 +26,6 @@ class CleverConnectorsException extends Exception
     public const INVALID_DIRECTION_TYPE       = 14;
     public const MAP_TEMPLATE_NOT_FOUND       = 15;
     public const DATALAYOUT_NOT_FOUND         = 16;
+    public const DYNAMIC_MAPPING_NOT_ALLOWED  = 17;
 
 }

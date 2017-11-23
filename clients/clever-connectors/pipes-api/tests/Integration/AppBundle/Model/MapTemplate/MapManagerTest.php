@@ -6,6 +6,7 @@ use CleverConnectors\AppBundle\Document\MapTemplate;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\DataLayoutActionEnum;
 use CleverConnectors\AppBundle\Enum\TypeEnum;
+use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\MapTemplate\MapManager;
 use Tests\DatabaseTestCaseAbstract;
 
@@ -68,6 +69,21 @@ final class MapManagerTest extends DatabaseTestCaseAbstract
         $result = $this->manager->create($systemInstall, $data);
 
         $this->assertResult($result, $data, $systemInstall);
+    }
+
+    /**
+     * @covers MapManager::create()
+     */
+    public function testCreateFailed(): void
+    {
+        $systemInstall = new SystemInstall();
+        $systemInstall->setSystem('shoptet');
+        $this->persistAndFlush($systemInstall);
+
+        $this->expectException(CleverConnectorsException::class);
+        $this->expectExceptionCode(CleverConnectorsException::DYNAMIC_MAPPING_NOT_ALLOWED);
+
+        $this->manager->create($systemInstall, $this->getData());
     }
 
     /**
@@ -154,7 +170,7 @@ final class MapManagerTest extends DatabaseTestCaseAbstract
     {
         $systemInstall = new SystemInstall();
         $systemInstall
-            ->setSystem('sys')
+            ->setSystem('null.user.group')
             ->setUser('user')
             ->setToken('tok');
 

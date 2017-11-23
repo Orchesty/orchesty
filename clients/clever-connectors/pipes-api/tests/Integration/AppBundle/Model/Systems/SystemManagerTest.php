@@ -150,7 +150,7 @@ final class SystemManagerTest extends DatabaseTestCaseAbstract
         $this->persistAndFlush($system);
 
         $dataLayoutManager = $this->container->get('cc.layout.manager');
-        $dataLayoutManager->createDataLayout($system, [
+        $datalayout        = $dataLayoutManager->createDataLayout($system, [
             'action' => DataLayoutActionEnum::SUBSCRIBER,
             'fields' => [
                 ['key' => 'key-text', 'type' => TypeEnum::TEXT],
@@ -160,7 +160,7 @@ final class SystemManagerTest extends DatabaseTestCaseAbstract
         ]);
 
         $mapTemplateManager = $this->container->get('cc.map_template.manager');
-        $mapTemplateManager->create($system, [
+        $map                = $mapTemplateManager->create($system, [
             'action'    => DataLayoutActionEnum::SUBSCRIBER,
             'direction' => MapTemplate::DIRECTION_IN,
             'fields'    => [
@@ -229,6 +229,7 @@ final class SystemManagerTest extends DatabaseTestCaseAbstract
                     ],
             ], 'data_layouts'  => [
                 0 => [
+                    '_id'    => $datalayout->getId(),
                     'action' => 'subscriber',
                     'fields' => [
                         0        =>
@@ -249,6 +250,7 @@ final class SystemManagerTest extends DatabaseTestCaseAbstract
             ],
             'map_templates'    => [
                 0 => [
+                    '_id'       => $map->getId(),
                     'action'    => 'subscriber',
                     'direction' => 'in',
                     'fields'    => [

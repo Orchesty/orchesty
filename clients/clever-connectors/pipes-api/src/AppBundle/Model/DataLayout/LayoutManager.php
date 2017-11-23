@@ -8,6 +8,7 @@ use CleverConnectors\AppBundle\Enum\DataLayoutActionEnum;
 use CleverConnectors\AppBundle\Enum\TypeEnum;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\DataLayout\Exceptions\LayoutException;
+use CleverConnectors\AppBundle\Model\Systems\SystemLoader;
 use Doctrine\ODM\MongoDB\DocumentManager;
 
 /**
@@ -24,13 +25,20 @@ class LayoutManager
     private $dm;
 
     /**
+     * @var SystemLoader
+     */
+    private $systemLoader;
+
+    /**
      * LayoutManager constructor.
      *
      * @param DocumentManager $dm
+     * @param SystemLoader    $systemLoader
      */
-    public function __construct(DocumentManager $dm)
+    public function __construct(DocumentManager $dm, SystemLoader $systemLoader)
     {
-        $this->dm = $dm;
+        $this->dm           = $dm;
+        $this->systemLoader = $systemLoader;
     }
 
     /**
@@ -80,6 +88,8 @@ class LayoutManager
      */
     public function createDataLayout(SystemInstall $systemInstall, array $data): DataLayout
     {
+        $this->checkDynamicMapping($systemInstall);
+
         $dataLayout = $this->dm->getRepository(DataLayout::class)->findOneBy([
             'systemInstall' => $systemInstall->getId(),
             'action'        => $data['action'],
@@ -145,6 +155,22 @@ class LayoutManager
         $this->dm->flush();
 
         return [];
+    }
+
+    /**
+     * @param SystemInstall $systemInstall
+     *
+     * @throws CleverConnectorsException
+     */
+    private function checkDynamicMapping(SystemInstall $systemInstall): void
+    {
+        $system = $this->systemLoader->getSystem($systemInstall->getSystem());
+        if (!$system->isDynamicMapper()) {
+            throw new CleverConnectorsException(
+                sprintf('System "%s" does not support dynamic mapping', $systemInstall->getSystem()),
+                CleverConnectorsException::DYNAMIC_MAPPING_NOT_ALLOWED
+            );
+        }
     }
 
 }
