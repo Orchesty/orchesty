@@ -15,6 +15,7 @@ build:
 	  -e DEV_GID=$(shell id -g) \
 	  -e SSH_AUTH_SOCK=/tmp/ssh-agent \
 	  -u $(shell id -u):$(shell id -g) \
+	  -v ${HOME}/.npm:/srv/.npm \
 	  $(BUILD_IMAGE) \
 	  bash -E -c "socat UNIX-LISTEN:/tmp/ssh-agent,reuseaddr,fork TCP:$(SSH_AUTH_HOST):2214 & sleep .2 && ssh-add -l && npm install && npm run build"
 
