@@ -1,12 +1,15 @@
 FROM dkr.hanaboso.net/hanaboso/symfony3-base
 
 RUN apt-get update && \
-    apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D && \
-    echo "deb https://apt.dockerproject.org/repo debian-jessie main"  > /etc/apt/sources.list.d/docker.list && \
-    apt-get install -y apt-transport-https ca-certificates
+    apt-get install -y apt-transport-https ca-certificates curl gnupg2 software-properties-common && \
+    curl -fsSL https://download.docker.com/linux/$(. /etc/os-release; echo "$ID")/gpg | apt-key add - && \
+    add-apt-repository \
+       "deb [arch=amd64] https://download.docker.com/linux/$(. /etc/os-release; echo "$ID") \
+       $(lsb_release -cs) \
+       stable"
 
 RUN apt-get update && \
-    apt-get install -y git mc sudo docker-engine && \
+    apt-get install -y git mc sudo docker-ce && \
     curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer && \
     composer global require "hirak/prestissimo:^0.3" && \
     pecl install xdebug && \
