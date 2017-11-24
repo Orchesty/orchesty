@@ -32,3 +32,11 @@ services:
             - '@cc.install.manager'
         tags:
             -  { name: console.command }
+
+    clever_connectors.run_topology_command:
+        class: CleverConnectors\AppBundle\Command\RunTopologyCommand
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.topology_generator.request.request_handler'
+        tags:
+            -  { name: console.command }
