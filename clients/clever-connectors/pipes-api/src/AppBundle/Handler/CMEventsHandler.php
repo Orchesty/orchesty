@@ -70,4 +70,15 @@ class CMEventsHandler
         $this->manager->runEvent($request, $userId, SystemInstall::EVENT_HARD_BOUNCE);
     }
 
+    /**
+     * @param Request $request
+     * @param string  $userId
+     *
+     * @throws CleverConnectorsException
+     */
+    public function subscribeEvent(Request $request, string $userId): void
+    {
+        $this->manager->runEvent($request, $userId, SystemInstall::EVENT_SUBSCRIBE);
+    }
+
 }

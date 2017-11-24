@@ -149,6 +149,25 @@ class PluginsController extends FOSRestController
     }
 
     /**
+     * @Route("/subscriber/validate")
+     * @Method({"POST"})
+     *
+     * @param Request $request
+     *
+     * @return Response
+     */
+    public function validateSubscriberAction(Request $request): Response
+    {
+        try {
+            $this->handler->validateSubscriber($request);
+
+            return new JsonResponse('', 200);
+        } catch (Throwable $e) {
+            return self::processException($e);
+        }
+    }
+
+    /**
      * @param Throwable $e
      *
      * @return Response

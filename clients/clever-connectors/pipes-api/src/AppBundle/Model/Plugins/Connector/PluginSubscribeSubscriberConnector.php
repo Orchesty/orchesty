@@ -6,11 +6,11 @@ use CleverConnectors\AppBundle\Model\Plugins\PluginSystemAbstract;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 
 /**
- * Class PluginUnsubscribeSubscriberConnector
+ * Class PluginSubscribeSubscriberConnector
  *
  * @package CleverConnectors\AppBundle\Model\Plugins\Connector
  */
-class PluginUnsubscribeSubscriberConnector extends PluginSubscriberConnectorAbstract
+class PluginSubscribeSubscriberConnector extends PluginSubscriberConnectorAbstract
 {
 
     /**
@@ -18,7 +18,7 @@ class PluginUnsubscribeSubscriberConnector extends PluginSubscriberConnectorAbst
      */
     public function getId(): string
     {
-        return 'plugin-unsubscribe-contact';
+        return 'plugin-subscribe-contact';
     }
 
     /**
@@ -39,7 +39,7 @@ class PluginUnsubscribeSubscriberConnector extends PluginSubscriberConnectorAbst
      */
     protected function getUri(PluginSystemAbstract $system, ProcessDto $dto): string
     {
-        return sprintf($system->getUnsubscribeSubscriberUrl(), $this->getIdFromDto($dto));
+        return sprintf($system->getSubscribeSubscriberUrl(), $this->getIdFromDto($dto));
     }
 
 }

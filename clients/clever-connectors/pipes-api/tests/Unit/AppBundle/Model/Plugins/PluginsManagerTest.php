@@ -300,6 +300,26 @@ final class PluginsManagerTest extends KernelTestCaseAbstract
     }
 
     /**
+     * @covers PluginsManager::validateSubscriber()
+     * @covers PluginsManager::startTopologies()
+     */
+    public function testValidateSubscriber(): void
+    {
+        $sys = new SystemInstall();
+        $sys->setSystem('null.user.group')->setUser('usr');
+
+        $sp = $this->mockStartingPoint(
+            'sys-' . TopologyNameUtils::VALIDATE_SUBSCRIBERS,
+            'sys-start-node'
+        );
+
+        $dm = $this->mockDm(TopologyNameUtils::VALIDATE_SUBSCRIBERS);
+
+        $plug = $this->mockPluginsManager($sp, $dm);
+        $plug->createSubscriber($sys, new Request());
+    }
+
+    /**
      * -------------------------------------- HELPERS --------------------------------------
      */
 

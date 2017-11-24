@@ -27,15 +27,17 @@ final class TopologyNameUtils
     public const ACTIVATE_EVENT = 'activate-event';
 
     //Systems-topologies
-    public const SYNC                = 'sync-subscribers';
-    public const CREATED_SUBSCRIBERS = 'created-subscribers';
-    public const UPDATED_SUBSCRIBERS = 'updated-subscribers';
-    public const DELETED_SUBSCRIBERS = 'deleted-subscribers';
+    public const SYNC                 = 'sync-subscribers';
+    public const CREATED_SUBSCRIBERS  = 'created-subscribers';
+    public const UPDATED_SUBSCRIBERS  = 'updated-subscribers';
+    public const DELETED_SUBSCRIBERS  = 'deleted-subscribers';
+    public const VALIDATE_SUBSCRIBERS = 'validate-subscribers';
 
     public const CREATE_CONTACT      = 'create-contact';
     public const UPDATE_CONTACT      = 'update-contact';
     public const UNSUBSCRIBE_CONTACT = 'unsubscribe-contact';
     public const HARD_BOUNCE_CONTACT = 'hard-bounce-contact';
+    public const SUBSCRIBE_CONTACT   = 'subscribe-contact';
 
     public const SWITCH_TOKEN = 'switch-token';
 
@@ -55,10 +57,12 @@ final class TopologyNameUtils
         self::CREATED_SUBSCRIBERS,
         self::UPDATED_SUBSCRIBERS,
         self::DELETED_SUBSCRIBERS,
+        self::VALIDATE_SUBSCRIBERS,
         self::CREATE_CONTACT,
         self::UPDATE_CONTACT,
         self::UNSUBSCRIBE_CONTACT,
         self::HARD_BOUNCE_CONTACT,
+        self::SUBSCRIBE_CONTACT,
         self::SWITCH_TOKEN,
     ];
 

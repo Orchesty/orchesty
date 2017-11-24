@@ -105,6 +105,26 @@ class CMEventsController extends FOSRestController
     }
 
     /**
+     * @Route("/event/user/{userId}/subscribe")
+     * @Method("POST")
+     *
+     * @param Request $request
+     * @param string  $userId
+     *
+     * @return Response
+     */
+    public function subscribeAction(Request $request, string $userId): Response
+    {
+        try {
+            $this->handler->subscribeEvent($request, $userId);
+        } catch (CleverConnectorsException $e) {
+            return self::processException($e);
+        }
+
+        return new Response('', 200);
+    }
+
+    /**
      * @param Exception $e
      *
      * @return Response

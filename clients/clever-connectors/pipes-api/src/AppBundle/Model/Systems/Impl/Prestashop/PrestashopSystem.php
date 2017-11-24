@@ -17,6 +17,7 @@ class PrestashopSystem extends PluginSystemAbstract
     protected const CREATE_SUBSCRIBER_URL      = 'index.php?fc=module&module=cleverconnector&controller=subscriber&action=create';
     protected const UNSUBSCRIBE_SUBSCRIBER_URL = 'index.php?fc=module&module=cleverconnector&controller=subscriber&action=unsubscribe&id=%s';
     protected const HARD_BOUNCE_SUBSCRIBER_URL = 'index.php?fc=module&module=cleverconnector&controller=subscriber&action=hard_bounce&id=%s';
+    protected const SUBSCRIBE_SUBSCRIBER_URL   = 'index.php?fc=module&module=cleverconnector&controller=subscriber&action=subscribe&id=%s';
 
     /**
      * @return string

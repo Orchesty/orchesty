@@ -90,6 +90,16 @@ class PluginsHandler
 
     /**
      * @param Request $request
+     */
+    public function validateSubscriber(Request $request): void
+    {
+        $this->addHeaderPrefix($request);
+
+        $this->manager->validateSubscriber($this->security->getSystemInstall(), $request);
+    }
+
+    /**
+     * @param Request $request
      *
      * @return array
      */

@@ -118,6 +118,9 @@ class CMEventsManager implements LoggerAwareInterface
             case SystemInstall::EVENT_HARD_BOUNCE:
                 $const = TopologyNameUtils::HARD_BOUNCE_CONTACT;
                 break;
+            case SystemInstall::EVENT_SUBSCRIBE:
+                $const = TopologyNameUtils::SUBSCRIBE_CONTACT;
+                break;
             default:
                 $const = TopologyNameUtils::UPDATE_CONTACT;
                 break;

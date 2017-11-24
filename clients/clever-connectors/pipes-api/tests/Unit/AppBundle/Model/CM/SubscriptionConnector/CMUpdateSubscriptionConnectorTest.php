@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Unit\AppBundle\Model\CM;
+namespace Tests\Unit\AppBundle\Model\CM\SubscriptionConnector;
 
 use CleverConnectors\AppBundle\Model\CM\SubscriptionConnector\CMUpdateSubscriptionConnector;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
@@ -12,7 +12,7 @@ use Tests\KernelTestCaseAbstract;
 /**
  * Class CMUpdateSubscriptionConnectorTest
  *
- * @package Tests\Unit\AppBundle\Model\CM
+ * @package Tests\Unit\AppBundle\Model\CM\SubscriptionConnector
  */
 final class CMUpdateSubscriptionConnectorTest extends KernelTestCaseAbstract
 {
