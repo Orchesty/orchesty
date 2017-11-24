@@ -199,6 +199,7 @@ final class MapManagerTest extends DatabaseTestCaseAbstract
             'fields'    => [
                 [
                     'name'  => 'abc',
+                    'key'   => 'abc',
                     'type'  => TypeEnum::TEXT,
                     'items' => ['def', 'ghi'],
                 ],
@@ -218,6 +219,7 @@ final class MapManagerTest extends DatabaseTestCaseAbstract
             'direction' => MapTemplate::DIRECTION_IN,
             'fields'    => [
                 [
+                    'key'   => 'aaa',
                     'name'  => 'aaa',
                     'type'  => TypeEnum::URL,
                     'items' => ['bbb', 'ccc'],
@@ -234,6 +236,7 @@ final class MapManagerTest extends DatabaseTestCaseAbstract
         return [
             'fields' => [
                 [
+                    'key'   => 'aaa',
                     'name'  => 'aaa',
                     'type'  => TypeEnum::URL,
                     'items' => ['bbb', 'ccc'],

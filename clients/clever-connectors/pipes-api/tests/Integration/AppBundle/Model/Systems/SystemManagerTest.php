@@ -168,6 +168,7 @@ final class SystemManagerTest extends DatabaseTestCaseAbstract
             'direction' => MapTemplate::DIRECTION_IN,
             'fields'    => [
                 [
+                    'key'   => 'abc',
                     'name'  => 'abc',
                     'type'  => TypeEnum::TEXT,
                     'items' => ['Item One', 'Item Two'],
@@ -259,6 +260,7 @@ final class SystemManagerTest extends DatabaseTestCaseAbstract
                     'direction' => 'in',
                     'fields'    => [
                         0 => [
+                            'key'   => 'abc',
                             'name'  => 'abc',
                             'type'  => 'text',
                             'items' => [

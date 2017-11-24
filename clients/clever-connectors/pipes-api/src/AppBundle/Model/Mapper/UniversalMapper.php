@@ -97,7 +97,7 @@ class UniversalMapper implements MapperInterface
         foreach ($field->getItems() as $item) {
             if (!is_scalar($item)) {
                 throw new MapperException(
-                    sprintf('Item "%s" must be a string fo field "%s"', serialize($item), $field),
+                    sprintf('Item "%s" must be a string fo field "%s"', serialize($item), $field->getKey()),
                     MapperException::BAD_ITEMS_FORMAT
                 );
             }
@@ -105,7 +105,7 @@ class UniversalMapper implements MapperInterface
             $key = FieldKeyGenerator::parseKey($item);
 
             if (count($key) == 1) {
-                $output .= $data[reset($key)] ?? '';
+                $output .= $this->getDataWithFlatKey(reset($key), $data);
             } else {
                 $output .= $this->getDataWithInnerKey($key, $data);
             }
@@ -117,6 +117,25 @@ class UniversalMapper implements MapperInterface
         }
 
         return $this->reformatOutputData($field, $output);
+    }
+
+    /**
+     * @param string $key
+     * @param array  $data
+     *
+     * @return mixed
+     * @throws MapperException
+     */
+    private function getDataWithFlatKey(string $key, array $data)
+    {
+        if (array_key_exists($key, $data)) {
+            return $data[$key];
+        }
+
+        throw new MapperException(
+            sprintf('Key "%s" not found in data!', $key),
+            MapperException::MISSING_KEY
+        );
     }
 
     /**
