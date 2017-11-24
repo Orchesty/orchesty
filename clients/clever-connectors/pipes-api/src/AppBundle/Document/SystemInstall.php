@@ -35,6 +35,7 @@ class SystemInstall
     public const  EVENT_CREATE       = 'eventCreate';
     public const  EVENT_UNSUBSCRIBE  = 'eventUnsubscribe';
     public const  EVENT_HARD_BOUNCE  = 'eventHardBounce';
+    public const  EVENT_SUBSCRIBE    = 'eventSubscribe';
     public const  PLUGIN_VERSION     = 'pluginVersion';
     public const  SYSTEM_URL         = 'system_url';
     public const  DISTRIBUTION_LISTS = 'distribution_lists';
@@ -124,6 +125,13 @@ class SystemInstall
      * @ODM\Field(type="bool")
      */
     protected $eventHardBounce = FALSE;
+
+    /**
+     * @var bool
+     *
+     * @ODM\Field(type="bool")
+     */
+    protected $eventSubscribe = FALSE;
 
     /**
      * @var null|string
@@ -361,6 +369,26 @@ class SystemInstall
     }
 
     /**
+     * @return bool
+     */
+    public function isEventSubscribe(): bool
+    {
+        return $this->eventUnsubscribe;
+    }
+
+    /**
+     * @param bool $eventSubscribe
+     *
+     * @return SystemInstall
+     */
+    public function setEventSubscribe(bool $eventSubscribe): SystemInstall
+    {
+        $this->eventSubscribe = $eventSubscribe;
+
+        return $this;
+    }
+
+    /**
      * @return null|string
      */
     public function getPluginVersion(): ?string
@@ -407,7 +435,7 @@ class SystemInstall
      */
     public static function checkEvent(string $event): void
     {
-        if (!in_array($event, [self::EVENT_CREATE, self::EVENT_UNSUBSCRIBE, self::EVENT_HARD_BOUNCE])) {
+        if (!in_array($event, [self::EVENT_CREATE, self::EVENT_UNSUBSCRIBE, self::EVENT_HARD_BOUNCE, self::EVENT_SUBSCRIBE])) {
             throw new CleverConnectorsException(
                 sprintf('Event type ["%s"] is not valid.', $event),
                 CleverConnectorsException::INVALID_ENUM_VALUE

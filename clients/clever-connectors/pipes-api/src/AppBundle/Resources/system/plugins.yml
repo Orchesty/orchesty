@@ -12,6 +12,10 @@ services:
         class: CleverConnectors\AppBundle\Model\Plugins\Connector\PluginDeletedSubscriberConnector
         arguments:
 
+    hbpf.connector.plugin-validate-subscriber-connector:
+        class: CleverConnectors\AppBundle\Model\Plugins\Connector\PluginValidateSubscriberConnector
+        arguments:
+
     hbpf.connector.plugin-create-subscriber-connector:
         class: CleverConnectors\AppBundle\Model\Plugins\Connector\PluginCreateSubscriberConnector
         arguments:
@@ -43,6 +47,13 @@ services:
 
     hbpf.connector.plugin-switch-token-connector:
         class: CleverConnectors\AppBundle\Model\Plugins\Connector\PluginSwitchTokenConnector
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.transport.curl_manager'
+            - '@cc.systems.loader'
+
+    hbpf.connector.plugin-subscribe-subscriber-connector:
+        class: CleverConnectors\AppBundle\Model\Plugins\Connector\PluginSubscribeSubscriberConnector
         arguments:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.transport.curl_manager'

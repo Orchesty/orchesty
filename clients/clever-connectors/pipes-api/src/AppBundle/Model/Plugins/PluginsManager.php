@@ -186,6 +186,15 @@ class PluginsManager
     }
 
     /**
+     * @param SystemInstall $systemInstall
+     * @param Request       $request
+     */
+    public function validateSubscriber(SystemInstall $systemInstall, Request $request): void
+    {
+        $this->startTopologies($systemInstall, TopologyNameUtils::VALIDATE_SUBSCRIBERS, $request);
+    }
+
+    /**
      * @param array $headers
      *
      * @return array

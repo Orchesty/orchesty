@@ -37,6 +37,7 @@ abstract class PluginSystemAbstract implements AuthorizationInterface, CMEventSy
     protected const CREATE_SUBSCRIBER_URL      = 'clever_connector/subscriber/create';
     protected const UNSUBSCRIBE_SUBSCRIBER_URL = 'clever_connector/subscriber/unsubscribe?id=%s';
     protected const HARD_BOUNCE_SUBSCRIBER_URL = 'clever_connector/subscriber/hard_bounce?id=%s';
+    protected const SUBSCRIBE_SUBSCRIBER_URL   = 'clever_connector/subscriber/subscribe?id=%s';
     protected const SYNC_URL                   = 'clever_connector/subscriber?page=%s&limit=%s';
     protected const LIMIT_PER_PAGE             = 50;
 
@@ -48,6 +49,7 @@ abstract class PluginSystemAbstract implements AuthorizationInterface, CMEventSy
         $this->addCMEvent(new CMEventObject('', SystemInstall::EVENT_CREATE, ''));
         $this->addCMEvent(new CMEventObject(CleverCustomKeysEnum::UNSUBSCRIBE, SystemInstall::EVENT_UNSUBSCRIBE, ''));
         $this->addCMEvent(new CMEventObject(CleverCustomKeysEnum::HARD_BOUNCE, SystemInstall::EVENT_HARD_BOUNCE, ''));
+        $this->addCMEvent(new CMEventObject('', SystemInstall::EVENT_SUBSCRIBE, ''));
 
         $this->topologyNames[TopologyNameUtils::getTopologyName(TopologyNameUtils::CREATED_SUBSCRIBERS,
             $this->getKey())] = TopologyNameUtils::getTopologyName(TopologyNameUtils::CREATED_SUBSCRIBERS, 'plugins');
@@ -55,6 +57,8 @@ abstract class PluginSystemAbstract implements AuthorizationInterface, CMEventSy
             $this->getKey())] = TopologyNameUtils::getTopologyName(TopologyNameUtils::UPDATED_SUBSCRIBERS, 'plugins');
         $this->topologyNames[TopologyNameUtils::getTopologyName(TopologyNameUtils::DELETED_SUBSCRIBERS,
             $this->getKey())] = TopologyNameUtils::getTopologyName(TopologyNameUtils::DELETED_SUBSCRIBERS, 'plugins');
+        $this->topologyNames[TopologyNameUtils::getTopologyName(TopologyNameUtils::VALIDATE_SUBSCRIBERS,
+            $this->getKey())] = TopologyNameUtils::getTopologyName(TopologyNameUtils::VALIDATE_SUBSCRIBERS, 'plugins');
         $this->topologyNames[TopologyNameUtils::getTopologyName(TopologyNameUtils::SYNC,
             $this->getKey())] = TopologyNameUtils::getTopologyName(TopologyNameUtils::SYNC, 'plugins');
         $this->topologyNames[TopologyNameUtils::getTopologyName(TopologyNameUtils::CREATE_CONTACT,
@@ -190,7 +194,7 @@ abstract class PluginSystemAbstract implements AuthorizationInterface, CMEventSy
     /**
      * @return string
      */
-    public function getUsubscribeSubscriberUrl(): string
+    public function getUnsubscribeSubscriberUrl(): string
     {
         return static::UNSUBSCRIBE_SUBSCRIBER_URL;
     }
@@ -201,6 +205,14 @@ abstract class PluginSystemAbstract implements AuthorizationInterface, CMEventSy
     public function getHardBounceSubscriberUrl(): string
     {
         return static::HARD_BOUNCE_SUBSCRIBER_URL;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSubscribeSubscriberUrl(): string
+    {
+        return static::SUBSCRIBE_SUBSCRIBER_URL;
     }
 
     /**
