@@ -75,7 +75,7 @@ class TopologyRepository extends DocumentRepository
     }
 
     /**
-     * @return array
+     * @return Topology[]
      */
     public function getTopologies(): array
     {
@@ -97,6 +97,25 @@ class TopologyRepository extends DocumentRepository
         }
 
         return $res;
+    }
+
+    /**
+     * @return Topology[]
+     */
+    public function getPublicEnabledTopologies(): array
+    {
+        /** @var Cursor $result */
+        $result = $this->createQueryBuilder()
+            ->field('visibility')
+            ->equals(TopologyStatusEnum::PUBLIC)
+            ->field('enabled')
+            ->equals(TRUE)
+            ->field('deleted')
+            ->equals(FALSE)
+            ->getQuery()
+            ->execute();
+
+        return $result->toArray(TRUE);
     }
 
 }
