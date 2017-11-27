@@ -12,6 +12,7 @@ use Hanaboso\PipesFramework\Commons\Enum\TypeEnum;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\Impl\CounterServiceBuilder;
+use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\Impl\MultiNodeServiceBuilder;
 use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\Impl\NodeServiceBuilder;
 use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\Impl\ProbeServiceBuilder;
 use Hanaboso\PipesFramework\TopologyGenerator\Environment;
@@ -28,6 +29,8 @@ class Generator implements GeneratorInterface
 {
 
     public const REGISTRY = 'dkr.hanaboso.net/pipes/pipes';
+
+    public const RUN_BRIDGES_SEPARATELY = FALSE;
 
     /**
      * @var ComposeBuilder
@@ -158,15 +161,7 @@ class Generator implements GeneratorInterface
         $counterService = $builder->build(new Node());
         $compose->addServices($counterService);
 
-        foreach ($nodes as $node) {
-            $builder = new NodeServiceBuilder(
-                $this->environment,
-                self::REGISTRY,
-                $this->network,
-                $volumePathDefinition
-            );
-            $compose->addServices($builder->build($node));
-        }
+        $this->addBridgeServices($compose, $nodes, $volumePathDefinition);
 
         return $this->composeBuilder->build($compose);
     }
@@ -206,6 +201,36 @@ class Generator implements GeneratorInterface
             $targetDir,
             GeneratorUtils::normalizeName($topology->getId(), $topology->getName())
         );
+    }
+
+    /**
+     * @param Compose              $compose
+     * @param iterable             $nodes
+     * @param VolumePathDefinition $volumePD
+     */
+    private function addBridgeServices(Compose $compose, iterable $nodes, VolumePathDefinition $volumePD): void
+    {
+        if (self::RUN_BRIDGES_SEPARATELY) {
+            // Run every bridge in dedicated container
+            foreach ($nodes as $node) {
+                $builder = new NodeServiceBuilder(
+                    $this->environment,
+                    self::REGISTRY,
+                    $this->network,
+                    $volumePD
+                );
+                $compose->addServices($builder->build($node));
+            }
+        } else {
+            // Run all topology bridges is single container
+            $builder = new MultiNodeServiceBuilder(
+                $this->environment,
+                self::REGISTRY,
+                $this->network,
+                $volumePD
+            );
+            $compose->addServices($builder->build($nodes[0]));
+        }
     }
 
     /**
