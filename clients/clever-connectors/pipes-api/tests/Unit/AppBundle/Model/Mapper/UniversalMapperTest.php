@@ -291,7 +291,7 @@ final class UniversalMapperTest extends TestCase
         $numField = new MapField(TypeEnum::NUMBER, new TypeEnum(TypeEnum::NUMBER));
         $numField = $this->fillItems($numField, $number);
 
-        $actionDto = new ActionDto('action', 'in');
+        $actionDto = new ActionDto('action', MapTemplate::DIRECTION_IN);
         $map       = new MapTemplate();
         $map
             ->setAction($actionDto)
