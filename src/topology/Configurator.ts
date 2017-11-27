@@ -1,5 +1,6 @@
 import { default as Defaults } from "../Defaults";
 import { ICounterSettings } from "./counter/Counter";
+import {port} from "_debugger";
 
 export interface IWorkerConfig {
     type: string;
@@ -77,15 +78,14 @@ class Configurator {
      * @param {ITopologyConfigSkeleton} topologySkeleton
      * @return {ITopologyConfig}
      */
-    public static createConfigFromSkeleton(
-        topologySkeleton: ITopologyConfigSkeleton,
-    ): ITopologyConfig {
+    public static createConfigFromSkeleton(topologySkeleton: ITopologyConfigSkeleton): ITopologyConfig {
         const nodes: INodeConfig[] = [];
 
-        let i = 0;
+        let position = 0;
         topologySkeleton.nodes.forEach((nodeSkeleton: INodeConfigSkeleton) => {
-            nodes.push(Configurator.createNodeConfig(topologySkeleton.id, nodeSkeleton, i === 0));
-            i++;
+            const node = Configurator.createNodeConfig(topologySkeleton.id, nodeSkeleton, position);
+            nodes.push(node);
+            position++;
         });
 
         return {
@@ -99,15 +99,15 @@ class Configurator {
      *
      * @param {string} topoId
      * @param {INodeConfigSkeleton} nodeSkeleton
-     * @param {boolean} isInitial
+     * @param {number} nodePosition
      * @return {INodeConfig}
      */
     private static createNodeConfig(
         topoId: string,
         nodeSkeleton: INodeConfigSkeleton,
-        isInitial: boolean = false,
+        nodePosition: number,
     ): INodeConfig {
-        const defaults: INodeConfig = Defaults.getNodeConfigDefaults(topoId, nodeSkeleton);
+        const defaults: INodeConfig = Defaults.getNodeConfigDefaults(topoId, nodeSkeleton, nodePosition);
 
         const faucetSettings = nodeSkeleton.faucet || defaults.faucet;
         const workerSettings = nodeSkeleton.worker || defaults.worker;
@@ -126,7 +126,7 @@ class Configurator {
             faucet: faucetSettings,
             drain: drainSettings,
             debug: nodeSkeleton.debug || defaults.debug,
-            initial: isInitial,
+            initial: nodePosition === 0,
         };
     }
 

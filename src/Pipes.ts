@@ -21,6 +21,10 @@ class Pipes {
     private topology: ITopologyConfig;
     private dic: DIContainer;
 
+    /**
+     *
+     * @param {ITopologyConfig | ITopologyConfigSkeleton} topology
+     */
     constructor(topology: ITopologyConfig | ITopologyConfigSkeleton) {
         this.nodes = new Container();
         this.dic = new DIContainer();
@@ -47,6 +51,23 @@ class Pipes {
 
                 return node;
             });
+    }
+
+    /**
+     *
+     * @return {Promise<Node[]>}
+     */
+    public startAllNodes(): Promise<Node[]> {
+        const proms: Node[] = [];
+
+        for (const nodeCfg of this.topology.nodes) {
+            this.startNode(nodeCfg.id)
+                .then((node: Node) => {
+                    proms.push(node);
+                });
+        }
+
+        return Promise.all(proms);
     }
 
     /**

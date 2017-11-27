@@ -10,7 +10,16 @@ import { ICounterSettings} from "./topology/counter/Counter";
 
 class Defaults {
 
-    public static getNodeConfigDefaults(topoId: string, node: INodeConfigSkeleton): INodeConfig {
+    /**
+     *
+     * @param {string} topoId
+     * @param {INodeConfigSkeleton} node
+     * @param {number} position
+     * @return {INodeConfig}
+     */
+    public static getNodeConfigDefaults(topoId: string, node: INodeConfigSkeleton, position?: number): INodeConfig {
+        const port = position ? 8007 + position : 8007;
+
         return {
             id: node.id,
             label: {
@@ -24,9 +33,9 @@ class Defaults {
             faucet: Defaults.getDefaultFaucetConfig(topoId, node),
             drain: Defaults.getDefaultDrainConfig(topoId, node),
             debug: {
-                port: 8007,
+                port,
                 host: node.id,
-                url: `http://${node.id}:8007/status`,
+                url: `http://${node.id}:${port}/status`,
             },
             initial: false,
         };
