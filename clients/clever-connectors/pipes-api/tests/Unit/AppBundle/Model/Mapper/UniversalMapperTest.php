@@ -132,6 +132,7 @@ final class UniversalMapperTest extends TestCase
      * @covers \CleverConnectors\AppBundle\Model\Mapper\UniversalMapper::process()
      * @covers \CleverConnectors\AppBundle\Model\Mapper\UniversalMapper::getDataFromInputFields()
      * @covers \CleverConnectors\AppBundle\Model\Mapper\UniversalMapper::getDataWithFlatKey()
+     * @covers \CleverConnectors\AppBundle\Model\Mapper\UniversalMapper::formatEmail()
      */
     public function testProcessItemFlat(): void
     {
@@ -143,6 +144,7 @@ final class UniversalMapperTest extends TestCase
             'date_from' => $date->format(DateTime::W3C),
             'boolean'   => TRUE,
             'int'       => 10101,
+            'eml'       => 'aa@dd.com',
         ];
 
         $template = $this->getMap(
@@ -150,7 +152,8 @@ final class UniversalMapperTest extends TestCase
             ['uri'],
             ['date_from'],
             ['boolean'],
-            ['int']
+            ['int'],
+            ['eml']
         );
 
         $dto    = $this->getDto(json_encode($data));
@@ -166,12 +169,14 @@ final class UniversalMapperTest extends TestCase
         self::assertArrayHasKey(TypeEnum::DATE, $data);
         self::assertArrayHasKey(TypeEnum::BOOL, $data);
         self::assertArrayHasKey(TypeEnum::NUMBER, $data);
+        self::assertArrayHasKey(TypeEnum::EMAIL, $data);
 
         self::assertEquals('string', $data[TypeEnum::TEXT]);
         self::assertEquals('http://example.com', $data[TypeEnum::URL]);
         self::assertEquals($date->format(DateTime::ISO8601), $data[TypeEnum::DATE]);
         self::assertEquals(TRUE, $data[TypeEnum::BOOL]);
         self::assertEquals(10101, $data[TypeEnum::NUMBER]);
+        self::assertEquals('aa@dd.com', $data[TypeEnum::EMAIL]);
     }
 
     /**
@@ -198,17 +203,19 @@ final class UniversalMapperTest extends TestCase
      * @covers \CleverConnectors\AppBundle\Model\Mapper\UniversalMapper::process()
      * @covers \CleverConnectors\AppBundle\Model\Mapper\UniversalMapper::getDataFromInputFields()
      * @covers \CleverConnectors\AppBundle\Model\Mapper\UniversalMapper::getDataWithInnerKey()
+     * @covers \CleverConnectors\AppBundle\Model\Mapper\UniversalMapper::formatEmail()
      */
     public function testProcessItemInner(): void
     {
         $date = new DateTime('2016-02-26T00:00:00+01:00');
 
         $data = [
-            'inner'    => ['string' => 'string'],
+            'inner'     => ['string' => 'string'],
             'uri'       => 'http://example.com',
             'date_from' => $date->format(DateTime::W3C),
             'boolean'   => TRUE,
             'int'       => 10101,
+            'eml'       => 'not a email',
         ];
 
         $template = $this->getMap(
@@ -216,7 +223,8 @@ final class UniversalMapperTest extends TestCase
             ['uri'],
             ['date_from'],
             ['boolean'],
-            ['int']
+            ['int'],
+            ['eml']
         );
 
         $dto    = $this->getDto(json_encode($data));
@@ -232,12 +240,14 @@ final class UniversalMapperTest extends TestCase
         self::assertArrayHasKey(TypeEnum::DATE, $data);
         self::assertArrayHasKey(TypeEnum::BOOL, $data);
         self::assertArrayHasKey(TypeEnum::NUMBER, $data);
+        self::assertArrayHasKey(TypeEnum::EMAIL, $data);
 
         self::assertEquals('string', $data[TypeEnum::TEXT]);
         self::assertEquals('http://example.com', $data[TypeEnum::URL]);
         self::assertEquals($date->format(DateTime::ISO8601), $data[TypeEnum::DATE]);
         self::assertEquals(TRUE, $data[TypeEnum::BOOL]);
         self::assertEquals(10101, $data[TypeEnum::NUMBER]);
+        self::assertEquals('', $data[TypeEnum::EMAIL]);
     }
 
     /**
@@ -247,7 +257,7 @@ final class UniversalMapperTest extends TestCase
      */
     public function testProcessItemInnerNonExist(): void
     {
-        $data     = ['inner'    => ['string' => 'string'],];
+        $data     = ['inner' => ['string' => 'string'],];
         $template = $this->getMap(['inner.bad_key']);
 
         $dto    = $this->getDto(json_encode($data));
@@ -271,10 +281,11 @@ final class UniversalMapperTest extends TestCase
      * @param array $date
      * @param array $bool
      * @param array $number
+     * @param array $email
      *
      * @return MapTemplate
      */
-    private function getMap($text = [], $url = [], $date = [], $bool = [], $number = []): MapTemplate
+    private function getMap($text = [], $url = [], $date = [], $bool = [], $number = [], $email = []): MapTemplate
     {
         $textField = new MapField(TypeEnum::TEXT, new TypeEnum(TypeEnum::TEXT));
         $textField = $this->fillItems($textField, $text);
@@ -291,6 +302,9 @@ final class UniversalMapperTest extends TestCase
         $numField = new MapField(TypeEnum::NUMBER, new TypeEnum(TypeEnum::NUMBER));
         $numField = $this->fillItems($numField, $number);
 
+        $emlField = new MapField(TypeEnum::EMAIL, new TypeEnum(TypeEnum::EMAIL));
+        $emlField = $this->fillItems($emlField, $email);
+
         $actionDto = new ActionDto('action', MapTemplate::DIRECTION_IN);
         $map       = new MapTemplate();
         $map
@@ -300,7 +314,8 @@ final class UniversalMapperTest extends TestCase
             ->addField($urlField)
             ->addField($dateField)
             ->addField($boolField)
-            ->addField($numField);
+            ->addField($numField)
+            ->addField($emlField);
 
         return $map;
     }

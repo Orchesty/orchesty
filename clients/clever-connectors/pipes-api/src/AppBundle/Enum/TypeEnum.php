@@ -17,6 +17,7 @@ class TypeEnum extends EnumAbstract
     public const DATE   = 'date';
     public const BOOL   = 'bool';
     public const NUMBER = 'number';
+    public const EMAIL  = 'email';
 
     /**
      * @var string[]
@@ -27,6 +28,7 @@ class TypeEnum extends EnumAbstract
         self::DATE   => 'date',
         self::BOOL   => 'bool',
         self::NUMBER => 'number',
+        self::EMAIL  => 'email',
     ];
 
 }

@@ -188,6 +188,8 @@ class UniversalMapper implements MapperInterface
                 return $this->formatBool($data);
             case TypeEnum::NUMBER:
                 return $this->formatNumber($data);
+            case TypeEnum::EMAIL:
+                return $this->formatEmail($data);
             default:
                 throw new MapperException(
                     sprintf('Type "%s" is not supported for field "%s"', $field->getType(), $field->getKey()),
@@ -244,6 +246,20 @@ class UniversalMapper implements MapperInterface
     protected function formatNumber($data)
     {
         return floatval($data);
+    }
+
+    /**
+     * @param mixed $data
+     *
+     * @return string
+     */
+    protected function formatEmail($data): string
+    {
+        if (!filter_var($data, FILTER_VALIDATE_EMAIL)) {
+            return '';
+        }
+
+        return (string) $data;
     }
 
     /**
