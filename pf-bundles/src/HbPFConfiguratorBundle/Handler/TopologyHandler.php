@@ -241,6 +241,7 @@ class TopologyHandler
             'status'     => $topology->getStatus(),
             'visibility' => $topology->getVisibility(),
             'version'    => $topology->getVersion(),
+            'category'   => $topology->getCategory(),
             'enabled'    => $topology->isEnabled(),
         ];
     }

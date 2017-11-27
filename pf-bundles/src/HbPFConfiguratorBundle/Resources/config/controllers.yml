@@ -25,3 +25,7 @@ services:
         arguments:
             - '@hbpf.handler.generator_handler'
             - '@monolog.logger.security'
+
+    hbpf.configurator.controller.category:
+        class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\CategoryController
+        arguments:

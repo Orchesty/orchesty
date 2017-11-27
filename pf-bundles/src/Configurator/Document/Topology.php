@@ -3,6 +3,7 @@
 namespace Hanaboso\PipesFramework\Configurator\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
+use Doctrine\ODM\MongoDB\Mapping\Annotations\Index;
 use Hanaboso\PipesFramework\Commons\Enum\StatusEnum;
 use Hanaboso\PipesFramework\Commons\Enum\TopologyStatusEnum;
 use Hanaboso\PipesFramework\Commons\Traits\Document\DeletedTrait;
@@ -83,6 +84,14 @@ class Topology
      * @MongoDB\Field(type="string")
      */
     protected $rawBpmn = '';
+
+    /**
+     * @var string
+     *
+     * @MongoDB\Field(type="string")
+     * @Index()
+     */
+    protected $category;
 
     /**
      * Topology constructor.
@@ -259,6 +268,26 @@ class Topology
     public function setRawBpmn(string $rawBpmn): Topology
     {
         $this->rawBpmn = $rawBpmn;
+
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getCategory(): ?string
+    {
+        return $this->category;
+    }
+
+    /**
+     * @param string|null $category
+     *
+     * @return Topology
+     */
+    public function setCategory(?string $category): Topology
+    {
+        $this->category = $category;
 
         return $this;
     }
