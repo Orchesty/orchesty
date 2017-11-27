@@ -162,7 +162,7 @@ class UserManager
 
         $token = $this->tokenManager->create($user);
         $user->setToken($token);
-        $token->setUser($user);
+        $token->setTmpUser($user);
         $this->dm->flush();
 
         $message = new RegisterMessage($user);
