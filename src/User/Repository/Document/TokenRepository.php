@@ -17,17 +17,15 @@ class TokenRepository extends DocumentRepository
 {
 
     /**
-     * @param string $id
+     * @param string $hash
      *
      * @return Token|array|object|null
      */
-    public function getFreshToken(string $id): ?Token
+    public function getFreshToken(string $hash): ?Token
     {
         return $this->createQueryBuilder()
-            ->field('id')
-            ->equals($id)
-            ->field('created')
-            ->gte(new DateTime('-1 Day'))
+            ->field('hash')->equals($hash)
+            ->field('created')->gte(new DateTime('-1 Day'))
             ->getQuery()
             ->getSingleResult();
     }

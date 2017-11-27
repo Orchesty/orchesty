@@ -88,8 +88,7 @@ class TokenManagerTest extends DatabaseTestCaseAbstract
         $this->persistAndFlush($token);
 
         /** @var Token $token */
-        $token = $this->tokenRepository->find($token->getId());
-        $token = $this->tokenManager->validate($token->getId());
+        $token = $this->tokenManager->validate($token->getHash());
         $this->assertInstanceOf(Token::class, $token);
     }
 

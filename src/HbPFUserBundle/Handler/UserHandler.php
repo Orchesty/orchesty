@@ -97,13 +97,13 @@ class UserHandler implements LogoutSuccessHandlerInterface, EventSubscriberInter
     }
 
     /**
-     * @param string $id
+     * @param string $token
      *
      * @return array
      */
-    public function activate(string $id): array
+    public function activate(string $token): array
     {
-        $this->userManager->activate($id);
+        $this->userManager->activate($token);
 
         return [];
     }

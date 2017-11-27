@@ -29,14 +29,15 @@ class TokenRepositoryTest extends DatabaseTestCaseAbstract
         $em->flush($token);
         $em->clear();
 
-        self::assertNotNull($em->getRepository(Token::class)->getFreshToken($token->getId()));
+        self::assertNotNull($em->getRepository(Token::class)->getFreshToken($token->getHash()));
 
+        $token = new Token();
         $this->setProperty($token, 'created', new DateTime('-2 days'));
         $em->persist($token);
         $em->flush($token);
         $em->clear();
 
-        self::assertNull($em->getRepository(Token::class)->getFreshToken($token->getId()));
+        self::assertNull($em->getRepository(Token::class)->getFreshToken($token->getHash()));
     }
 
 }

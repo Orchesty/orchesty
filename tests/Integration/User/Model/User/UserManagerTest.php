@@ -130,7 +130,7 @@ class UserManagerTest extends DatabaseTestCaseAbstract
         $this->assertInstanceOf(TmpUser::class, $tmpUsers[0]);
         $this->assertEquals('email@example.com', $tmpUsers[0]->getEmail());
 
-        $this->userManager->activate($token->getId());
+        $this->userManager->activate($token->getHash());
 
         $users    = $this->userRepository->findBy(['email' => 'email@example.com']);
         $tmpUsers = $this->tmpUserRepository->findBy(['email' => 'email@example.com']);
@@ -155,7 +155,7 @@ class UserManagerTest extends DatabaseTestCaseAbstract
 
         $this->expectException(TokenManagerException::class);
         $this->expectExceptionCode(TokenManagerException::TOKEN_NOT_VALID);
-        $this->userManager->activate($token->getId());
+        $this->userManager->activate($token->getHash());
     }
 
     /**
@@ -186,7 +186,7 @@ class UserManagerTest extends DatabaseTestCaseAbstract
         $token = (new Token())->setUser($user);
         $this->persistAndFlush($token);
 
-        $this->userManager->setPassword($token->getId(), ['password' => 'passw0rd']);
+        $this->userManager->setPassword($token->getHash(), ['password' => 'passw0rd']);
 
         /** @var User[] $users */
         $users = $this->userRepository->findBy(['email' => 'email@example.com']);
@@ -211,7 +211,7 @@ class UserManagerTest extends DatabaseTestCaseAbstract
 
         $this->expectException(TokenManagerException::class);
         $this->expectExceptionCode(TokenManagerException::TOKEN_NOT_VALID);
-        $this->userManager->setPassword($token->getId(), ['password' => 'passw0rd']);
+        $this->userManager->setPassword($token->getHash(), ['password' => 'passw0rd']);
     }
 
 }
