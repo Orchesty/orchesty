@@ -23,27 +23,27 @@ use Hanaboso\PipesFramework\TopologyGenerator\GeneratorUtils;
 class NodeServiceBuilder implements ServiceBuilderInterface
 {
 
-    private const IMAGE = 'pf-bridge:dev';
+    protected const IMAGE = 'pf-bridge:dev';
 
     /**
      * @var Environment
      */
-    private $environment;
+    protected $environment;
 
     /**
      * @var string
      */
-    private $registry;
+    protected $registry;
 
     /**
      * @var string
      */
-    private $network;
+    protected $network;
 
     /**
      * @var VolumePathDefinition
      */
-    private $volumePathDefinition;
+    protected $volumePathDefinition;
 
     /**
      * NodeServiceBuilder constructor.
