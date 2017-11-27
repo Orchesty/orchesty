@@ -160,7 +160,10 @@ class UserManager
             $this->dm->flush();
         }
 
-        $this->tokenManager->create($user);
+        $token = $this->tokenManager->create($user);
+        $user->setToken($token);
+        $token->setUser($user);
+        $this->dm->flush();
 
         $message = new RegisterMessage($user);
         $this->mailerProducer->publish($message->getMessage());
@@ -169,11 +172,11 @@ class UserManager
     }
 
     /**
-     * @param string $id
+     * @param string $token
      */
-    public function activate(string $id): void
+    public function activate(string $token): void
     {
-        $token = $this->tokenManager->validate($id);
+        $token = $this->tokenManager->validate($token);
 
         /** @var OdmUser|OrmUser $class */
         $class = $this->provider->getResource(ResourceEnum::USER);

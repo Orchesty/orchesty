@@ -163,7 +163,7 @@ class UserControllerTest extends ControllerTestCaseAbstract
         $token = (new Token())->setTmpUser($user);
         $this->persistAndFlush($token);
 
-        $response = $this->sendPost(sprintf('/api/user/%s/activate', $token->getId()), []);
+        $response = $this->sendPost(sprintf('/api/user/%s/activate', $token->getHash()), []);
 
         $this->assertEquals(200, $response->status);
     }
@@ -179,7 +179,7 @@ class UserControllerTest extends ControllerTestCaseAbstract
         $token = (new Token())->setTmpUser($user);
         $this->persistAndFlush($token);
 
-        $response = $this->sendPost(sprintf('/api/user/%s/activate', Strings::substring($token->getId(), 1)),
+        $response = $this->sendPost(sprintf('/api/user/%s/activate', Strings::substring($token->getHash(), 1)),
             []);
 
         $this->assertEquals(500, $response->status);
@@ -201,7 +201,7 @@ class UserControllerTest extends ControllerTestCaseAbstract
         $token = (new Token())->setUser($user);
         $this->persistAndFlush($token);
 
-        $response = $this->sendPost(sprintf('/api/user/%s/set_password', $token->getId()),
+        $response = $this->sendPost(sprintf('/api/user/%s/set_password', $token->getHash()),
             ['password' => 'newPassword']);
 
         $this->assertEquals(200, $response->status);
@@ -221,7 +221,7 @@ class UserControllerTest extends ControllerTestCaseAbstract
         $this->persistAndFlush($token);
 
         $response = $this->sendPost(sprintf('/api/user/%s/set_password',
-            Strings::substring($token->getId(), 1)), ['password' => 'newPassword']);
+            Strings::substring($token->getHash(), 1)), ['password' => 'newPassword']);
 
         $this->assertEquals(500, $response->status);
         $content = json_decode($response->content);

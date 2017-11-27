@@ -51,4 +51,9 @@ interface TokenInterface
      */
     public function getId(): string;
 
+    /**
+     * @return string
+     */
+    public function getHash(): string;
+
 }

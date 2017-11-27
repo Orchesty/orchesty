@@ -63,20 +63,20 @@ class TokenManager
     }
 
     /**
-     * @param string $id
+     * @param string $hash
      *
      * @return TokenInterface
      * @throws TokenManagerException
      */
-    public function validate(string $id): TokenInterface
+    public function validate(string $hash): TokenInterface
     {
         /** @var EntityTokenRepository|DocumentTokenRepository $repo */
         $repo  = $this->dm->getRepository($this->provider->getResource(ResourceEnum::TOKEN));
-        $token = $repo->getFreshToken($id);
+        $token = $repo->getFreshToken($hash);
 
         if (!$token) {
             throw new TokenManagerException(
-                sprintf('Token \'%s\' not valid.', $id),
+                sprintf('Token \'%s\' not valid.', $hash),
                 TokenManagerException::TOKEN_NOT_VALID
             );
         }

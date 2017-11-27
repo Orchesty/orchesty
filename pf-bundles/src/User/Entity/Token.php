@@ -42,11 +42,19 @@ class Token implements TokenInterface
     private $tmpUser;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(type="string")
+     */
+    private $hash;
+
+    /**
      * Token constructor.
      */
     public function __construct()
     {
         $this->created = new DateTime();
+        $this->hash    = uniqid();
     }
 
     /**
@@ -109,6 +117,14 @@ class Token implements TokenInterface
         } else {
             throw new LogicException('User is not set.');
         }
+    }
+
+    /**
+     * @return string
+     */
+    public function getHash(): string
+    {
+        return $this->hash;
     }
 
 }

@@ -13,7 +13,7 @@ use Tests\PrivateTrait;
  *
  * @package Tests\Integration\User\Repository\Document
  */
-class TokenRepositoryTest extends DatabaseTestCaseAbstract
+final class TokenRepositoryTest extends DatabaseTestCaseAbstract
 {
 
     use PrivateTrait;
@@ -29,8 +29,9 @@ class TokenRepositoryTest extends DatabaseTestCaseAbstract
 
         /** @var TokenRepository $rep */
         $rep = $this->dm->getRepository(Token::class);
-        self::assertNotNull($rep->getFreshToken($token->getId()));
+        self::assertNotNull($rep->getFreshToken($token->getHash()));
 
+        $token = new Token();
         $this->setProperty($token, 'created', new DateTime('-2 days'));
         $this->persistAndFlush($token);
         $this->dm->clear();
