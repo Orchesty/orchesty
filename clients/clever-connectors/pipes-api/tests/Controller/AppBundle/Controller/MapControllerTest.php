@@ -40,6 +40,7 @@ final class MapControllerTest extends ControllerTestCaseAbstract
             'direction' => MapTemplate::DIRECTION_IN,
             'fields'    => [
                 [
+                    'key'  => 'abc',
                     'name'  => 'abc',
                     'type'  => TypeEnum::TEXT,
                     'items' => ['def', 'ghi'],
@@ -83,6 +84,7 @@ final class MapControllerTest extends ControllerTestCaseAbstract
             'direction' => MapTemplate::DIRECTION_OUT,
             'fields'    => [
                 [
+                    'key'  => 'abc',
                     'name'  => 'abc',
                     'type'  => TypeEnum::TEXT,
                     'items' => ['def', 'ghi'],

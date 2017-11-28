@@ -12,6 +12,16 @@ use CleverConnectors\AppBundle\Enum\TypeEnum;
 class MapField
 {
 
+    private const KEY   = 'key';
+    private const NAME  = 'name';
+    private const TYPE  = 'type';
+    private const ITEMS = 'items';
+
+    /**
+     * @var string
+     */
+    private $key;
+
     /**
      * @var string
      */
@@ -30,13 +40,35 @@ class MapField
     /**
      * MapField constructor.
      *
-     * @param string   $name
+     * @param string   $key
      * @param TypeEnum $type
+     * @param string   $name
      */
-    public function __construct(string $name, TypeEnum $type)
+    public function __construct(string $key, TypeEnum $type, string $name = '')
     {
+        $this->key  = $key;
         $this->name = $name;
         $this->type = $type->getValue();
+    }
+
+    /**
+     * @return string
+     */
+    public function getKey(): string
+    {
+        return $this->key;
+    }
+
+    /**
+     * @param string $key
+     *
+     * @return MapField
+     */
+    public function setKey(string $key): MapField
+    {
+        $this->key = $key;
+
+        return $this;
     }
 
     /**
@@ -106,11 +138,11 @@ class MapField
      */
     public static function from(array $data): ?MapField
     {
-        if (array_key_exists('name', $data) && array_key_exists('type', $data)) {
+        if (array_key_exists(self::KEY, $data) && array_key_exists(self::TYPE, $data)) {
 
-            $mapField = new MapField($data['name'], new TypeEnum($data['type']));
-            if (array_key_exists('items', $data) && is_array($data['items'])) {
-                foreach ($data['items'] as $item) {
+            $mapField = new MapField($data[self::KEY], new TypeEnum($data[self::TYPE]), $data[self::NAME] ?? '');
+            if (array_key_exists(self::ITEMS, $data) && is_array($data[self::ITEMS])) {
+                foreach ($data[self::ITEMS] as $item) {
                     $mapField->addItem($item);
                 }
             }
@@ -125,9 +157,10 @@ class MapField
     public function toArray(): array
     {
         return [
-            'name'  => $this->getName(),
-            'type'  => $this->getType(),
-            'items' => $this->getItems(),
+            self::KEY   => $this->getKey(),
+            self::NAME  => $this->getName(),
+            self::TYPE  => $this->getType(),
+            self::ITEMS => $this->getItems(),
         ];
     }
 
