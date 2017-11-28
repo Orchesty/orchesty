@@ -30,8 +30,6 @@ class Generator implements GeneratorInterface
 
     public const REGISTRY = 'dkr.hanaboso.net/pipes/pipes';
 
-    public const RUN_BRIDGES_SEPARATELY = FALSE;
-
     /**
      * @var ComposeBuilder
      */
@@ -63,6 +61,11 @@ class Generator implements GeneratorInterface
     private $volumePathDefinitionFactory;
 
     /**
+     * @var boolean
+     */
+    private $bridgesInSeparateContainers = TRUE;
+
+    /**
      * Generator constructor.
      *
      * @param Environment                 $environment
@@ -85,6 +88,14 @@ class Generator implements GeneratorInterface
         $this->network                     = $network;
         $this->composeBuilder              = new ComposeBuilder();
         $this->volumePathDefinitionFactory = $volumePathDefinitionFactory;
+    }
+
+    /**
+     * @param bool $bridgesInSeparateContainers
+     */
+    public function setBridgesInSeparateContainers(bool $bridgesInSeparateContainers): void
+    {
+        $this->bridgesInSeparateContainers = $bridgesInSeparateContainers;
     }
 
     /**
@@ -161,7 +172,7 @@ class Generator implements GeneratorInterface
         $counterService = $builder->build(new Node());
         $compose->addServices($counterService);
 
-        $this->addBridgeServices($compose, $nodes, $volumePathDefinition);
+        $this->addBridges($compose, $topology, $nodes, $volumePathDefinition);
 
         return $this->composeBuilder->build($compose);
     }
@@ -205,12 +216,18 @@ class Generator implements GeneratorInterface
 
     /**
      * @param Compose              $compose
+     * @param Topology             $topology
      * @param iterable             $nodes
      * @param VolumePathDefinition $volumePD
      */
-    private function addBridgeServices(Compose $compose, iterable $nodes, VolumePathDefinition $volumePD): void
+    private function addBridges(
+        Compose $compose,
+        Topology $topology,
+        iterable $nodes,
+        VolumePathDefinition $volumePD
+    ): void
     {
-        if (self::RUN_BRIDGES_SEPARATELY) {
+        if ($this->bridgesInSeparateContainers) {
             // Run every bridge in dedicated container
             foreach ($nodes as $node) {
                 $builder = new NodeServiceBuilder(
@@ -224,12 +241,14 @@ class Generator implements GeneratorInterface
         } else {
             // Run all topology bridges is single container
             $builder = new MultiNodeServiceBuilder(
+                $topology,
                 $this->environment,
                 self::REGISTRY,
                 $this->network,
                 $volumePD
             );
-            $compose->addServices($builder->build($nodes[0]));
+
+            $compose->addServices($builder->build(new Node()));
         }
     }
 

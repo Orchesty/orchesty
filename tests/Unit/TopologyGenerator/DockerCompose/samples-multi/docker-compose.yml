@@ -1,0 +1,50 @@
+version: '2'
+services:
+  1_probe:
+    image: 'dkr.hanaboso.net/pipes/pipes/pf-bridge:dev'
+    working_dir: ''
+    user: ''
+    environment:
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: '5672'
+      RABBITMQ_USER: guest
+      RABBITMQ_PASS: guest
+      RABBITMQ_VHOST: /
+    volumes:
+      - './topology.json:/srv/app/topology/topology.json'
+    networks:
+      - demo_default
+    command: './dist/src/bin/pipes.js start probe'
+  1_counter:
+    image: 'dkr.hanaboso.net/pipes/pipes/pf-bridge:dev'
+    working_dir: ''
+    user: ''
+    environment:
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: '5672'
+      RABBITMQ_USER: guest
+      RABBITMQ_PASS: guest
+      RABBITMQ_VHOST: /
+    volumes:
+      - './topology.json:/srv/app/topology/topology.json'
+    networks:
+      - demo_default
+    command: './dist/src/bin/pipes.js start counter'
+  1_multi_bridge:
+    image: 'dkr.hanaboso.net/pipes/pipes/pf-bridge:dev'
+    working_dir: ''
+    user: ''
+    environment:
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: '5672'
+      RABBITMQ_USER: guest
+      RABBITMQ_PASS: guest
+      RABBITMQ_VHOST: /
+    volumes:
+      - './topology.json:/srv/app/topology/topology.json'
+    networks:
+      - demo_default
+    command: './dist/src/bin/pipes.js start all_nodes'
+networks:
+  demo_default:
+    external: true
