@@ -12,11 +12,11 @@ use CleverConnectors\AppBundle\Model\Plugins\PluginSystemAbstract;
 class WordpressSystem extends PluginSystemAbstract
 {
 
-    protected const SWITCH_TOKEN               = 'wp-json/cm-plugin/v1/clever_monitor/switch_token';
-    protected const SYNC_URL                   = 'wp-json/cm-plugin/v1/clever_monitor/subscriber?page=%s&limit=%s';
-    protected const CREATE_SUBSCRIBER_URL      = 'wp-json/cm-plugin/v1/clever_monitor/create';
-    protected const UNSUBSCRIBE_SUBSCRIBER_URL = 'wp-json/cm-plugin/v1/clever_monitor/unsubscribe?id=%s';
-    protected const HARD_BOUNCE_SUBSCRIBER_URL = 'wp-json/cm-plugin/v1/clever_monitor/hard_bounce?id=%s';
+    protected const SWITCH_TOKEN               = 'wp-json/cm-plugin/v1/clever_connector/switch_token';
+    protected const SYNC_URL                   = 'wp-json/cm-plugin/v1/clever_connector/subscriber?page=%s&limit=%s';
+    protected const CREATE_SUBSCRIBER_URL      = 'wp-json/cm-plugin/v1/clever_connector/create';
+    protected const UNSUBSCRIBE_SUBSCRIBER_URL = 'wp-json/cm-plugin/v1/clever_connector/unsubscribe?id=%s';
+    protected const HARD_BOUNCE_SUBSCRIBER_URL = 'wp-json/cm-plugin/v1/clever_connector/hard_bounce?id=%s';
 
     /**
      * @return string
