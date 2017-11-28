@@ -80,7 +80,7 @@ services:
         environment:
           DEV_UID: ${DEV_UID}
           DEV_GID: ${DEV_GID}
-          PHP_WEBROOT: /var/www/pipes/clients/clever-connectors/pipes-api/web
+          PHP_WEBROOT: /var/www/pipes/clients/demo/pipes-api/web
           NPM_INSTALL: ${NPM_INSTALL}
           NPM_START: "yes" # webpackserver
         ports:
