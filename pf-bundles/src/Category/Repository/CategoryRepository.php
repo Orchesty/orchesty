@@ -22,7 +22,7 @@ class CategoryRepository extends DocumentRepository
     public function childrenLevelUp(Category $category): void
     {
         $this->createQueryBuilder()
-            ->findAndUpdate()
+            ->updateMany()
             ->field('parent')->equals($category->getId())
             ->field('parent')->set($category->getParent())
             ->getQuery()
