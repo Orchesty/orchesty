@@ -373,7 +373,7 @@ class SystemInstall
      */
     public function isEventSubscribe(): bool
     {
-        return $this->eventUnsubscribe;
+        return $this->eventSubscribe;
     }
 
     /**
