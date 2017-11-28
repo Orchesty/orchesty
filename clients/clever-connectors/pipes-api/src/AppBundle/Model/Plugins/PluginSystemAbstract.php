@@ -174,11 +174,19 @@ abstract class PluginSystemAbstract implements AuthorizationInterface, CMEventSy
             $systemInstall->isEventHardBounce()
         );
 
+        $field4 = new Field(
+            Field::CHECKBOX,
+            SystemInstall::EVENT_SUBSCRIBE,
+            'Subscribe event',
+            $systemInstall->isEventSubscribe()
+        );
+
         $form = new Form();
         $form
             ->addField($field1)
             ->addField($field2)
-            ->addField($field3);
+            ->addField($field3)
+            ->addField($field4);
 
         return $form->toArray();
     }
