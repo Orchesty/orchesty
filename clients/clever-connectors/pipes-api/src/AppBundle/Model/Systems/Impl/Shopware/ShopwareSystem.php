@@ -17,6 +17,7 @@ class ShopwareSystem extends PluginSystemAbstract
     protected const CREATE_SUBSCRIBER_URL      = 'clever_monitor/create';
     protected const UNSUBSCRIBE_SUBSCRIBER_URL = 'clever_monitor/unsubscribe?id=%s';
     protected const HARD_BOUNCE_SUBSCRIBER_URL = 'clever_monitor/hard_bounce?id=%s';
+    protected const SUBSCRIBE_SUBSCRIBER_URL   = 'clever_monitor/subscriber/subscribe?id=%s';
 
     /**
      * @return string
