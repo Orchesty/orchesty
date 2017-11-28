@@ -273,6 +273,7 @@ class CMEventsManager implements LoggerAwareInterface
 
         $this->processEventData($system, $systemInstall, $data, $changed, SystemInstall::EVENT_UNSUBSCRIBE);
         $this->processEventData($system, $systemInstall, $data, $changed, SystemInstall::EVENT_HARD_BOUNCE);
+        $this->processEventData($system, $systemInstall, $data, $changed, SystemInstall::EVENT_SUBSCRIBE);
 
         return $changed;
     }
