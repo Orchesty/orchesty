@@ -7,3 +7,8 @@ doctrine_mongodb:
                     is_bundle: false
                     dir: "%src_dir%/Configurator/Document"
                     prefix: Hanaboso\PipesFramework\Configurator\Document
+                CategoryDocument:
+                    type: annotation
+                    is_bundle: false
+                    dir: "%src_dir%/Category/Document"
+                    prefix: Hanaboso\PipesFramework\Category\Document

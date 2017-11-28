@@ -8,6 +8,7 @@
 
 namespace Hanaboso\PipesFramework\Category\Document;
 
+use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\Index;
 use Hanaboso\PipesFramework\Commons\Traits\Document\IdTrait;
 
@@ -17,7 +18,7 @@ use Hanaboso\PipesFramework\Commons\Traits\Document\IdTrait;
  *
  * @package Hanaboso\PipesFramework\Category\Document
  *
- * @ODM\Document(repositoryClass="Hanaboso\PipesFramework\Category\Repository\CategoryRepository")
+ * @MongoDB\Document(repositoryClass="Hanaboso\PipesFramework\Category\Repository\CategoryRepository")
  */
 class Category
 {
@@ -61,19 +62,19 @@ class Category
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getParent(): string
+    public function getParent(): ?string
     {
         return $this->parent;
     }
 
     /**
-     * @param string $parent
+     * @param string|null $parent
      *
      * @return Category
      */
-    public function setParent(string $parent): Category
+    public function setParent(?string $parent): Category
     {
         $this->parent = $parent;
 

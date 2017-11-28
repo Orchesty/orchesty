@@ -13,6 +13,7 @@ use FOS\RestBundle\Controller\FOSRestController;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\CategoryHandler;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -41,6 +42,22 @@ class CategoryController extends FOSRestController
     {
         $this->construct();
         $data = $this->categoryHandler->getCategories();
+
+        return new JsonResponse($data, 200);
+    }
+
+    /**
+     * @Route("/categories")
+     * @Method({"POST", "OPTIONS"})
+     *
+     * @param Request $request
+     *
+     * @return Response
+     */
+    public function createCategoryAction(Request $request): Response
+    {
+        $this->construct();
+        $data = $this->categoryHandler->createCategory($request->request->all());
 
         return new JsonResponse($data, 200);
     }
