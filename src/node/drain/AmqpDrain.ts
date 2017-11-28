@@ -212,7 +212,7 @@ class AmqpDrain implements IDrain, IPartialForwarder {
         message.setMultiplier(0);
         this.counterPublisher.send(message)
             .then(() => {
-                message.setPublishedTime();
+                message.setForwardedTime();
                 this.sendTotalDurationMetric(message);
             });
     }
@@ -228,7 +228,7 @@ class AmqpDrain implements IDrain, IPartialForwarder {
                 return this.followersPublisher.send(message);
             })
             .then(() => {
-                message.setPublishedTime();
+                message.setForwardedTime();
                 this.sendTotalDurationMetric(message);
             })
             .catch((err: Error) => {

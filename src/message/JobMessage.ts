@@ -16,9 +16,10 @@ export interface IResult {
 class JobMessage extends AMessage implements IMessage {
 
     // timestamps
+    private publishedTime: number;
     private receivedTime: number;
     private processedTime: number;
-    private publishedTime: number;
+    private forwardedTime: number;
 
     private multiplier: number;
     private forwardSelf: boolean;
@@ -38,7 +39,7 @@ class JobMessage extends AMessage implements IMessage {
     ) {
         super(node, headers, body);
 
-        this.receivedTime = TimeUtils.nowMili();
+        this.receivedTime = TimeUtils.nowMili();;
         this.multiplier = 1;
         this.forwardSelf = true;
 
@@ -112,10 +113,37 @@ class JobMessage extends AMessage implements IMessage {
     }
 
     /**
+     * Sets the timestamp when messgae was originally published in previous node
+     *
+     * @param {number} timestamp
+     */
+    public setPublishedTime(timestamp: number) {
+        if (!timestamp || timestamp < 0) {
+            timestamp = 0;
+        }
+
+        this.publishedTime = timestamp;
+    }
+
+    /**
      * Marks the message as published
      */
-    public setPublishedTime(): void {
-        this.publishedTime = TimeUtils.nowMili();
+    public setForwardedTime(): void {
+        this.forwardedTime = TimeUtils.nowMili();
+    }
+
+    /**
+     * Returns the duration how long message was in broker,
+     * between it's publishing in previous node and accepting in this node [ms]
+     *
+     * @return {number}
+     */
+    public getWaitingTime(): number {
+        if (!this.publishedTime) {
+            return 0;
+        }
+
+        return this.receivedTime - this.publishedTime;
     }
 
     /**
@@ -137,8 +165,8 @@ class JobMessage extends AMessage implements IMessage {
      * @return {number}
      */
     public getTotalDuration(): number {
-        if (this.publishedTime && this.receivedTime) {
-            return this.publishedTime - this.receivedTime;
+        if (this.forwardedTime && this.receivedTime) {
+            return this.forwardedTime - this.receivedTime;
         }
 
         return 0;
