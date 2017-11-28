@@ -435,7 +435,9 @@ class SystemInstall
      */
     public static function checkEvent(string $event): void
     {
-        if (!in_array($event, [self::EVENT_CREATE, self::EVENT_UNSUBSCRIBE, self::EVENT_HARD_BOUNCE, self::EVENT_SUBSCRIBE])) {
+        if (
+        !in_array($event, [self::EVENT_CREATE, self::EVENT_UNSUBSCRIBE, self::EVENT_HARD_BOUNCE, self::EVENT_SUBSCRIBE])
+        ) {
             throw new CleverConnectorsException(
                 sprintf('Event type ["%s"] is not valid.', $event),
                 CleverConnectorsException::INVALID_ENUM_VALUE
@@ -457,6 +459,8 @@ class SystemInstall
                 return $this->isEventUnsubscribe();
             case self::EVENT_HARD_BOUNCE:
                 return $this->isEventHardBounce();
+            case self::EVENT_SUBSCRIBE:
+                return $this->isEventSubscribe();
             default:
                 throw new InvalidArgumentException(sprintf('Unsupported event type "%s"', $event));
         }
@@ -479,6 +483,9 @@ class SystemInstall
                 break;
             case self::EVENT_HARD_BOUNCE:
                 $this->setEventHardBounce($value);
+                break;
+            case self::EVENT_SUBSCRIBE:
+                $this->setEventSubscribe($value);
                 break;
             default:
                 throw new InvalidArgumentException(sprintf('Unsupported event type "%s"', $event));
@@ -512,6 +519,7 @@ class SystemInstall
             ->setEventCreate((bool) ($data[self::EVENT_CREATE] ?? FALSE))
             ->setEventUnsubscribe((bool) ($data[self::EVENT_UNSUBSCRIBE] ?? FALSE))
             ->setEventHardBounce((bool) ($data[self::EVENT_HARD_BOUNCE] ?? FALSE))
+            ->setEventSubscribe((bool) ($data[self::EVENT_SUBSCRIBE] ?? FALSE))
             ->setPluginVersion($data[self::PLUGIN_VERSION] ?? NULL)
             ->setSettings([]);
 

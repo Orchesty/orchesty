@@ -145,6 +145,7 @@ class SystemInstallRepository extends DocumentRepository
                     SystemInstall::EVENT_CREATE       => $systemInstall->isEventCreate(),
                     SystemInstall::EVENT_UNSUBSCRIBE  => $systemInstall->isEventUnsubscribe(),
                     SystemInstall::EVENT_HARD_BOUNCE  => $systemInstall->isEventHardBounce(),
+                    SystemInstall::EVENT_SUBSCRIBE    => $systemInstall->isEventSubscribe(),
                     SystemInstall::PLUGIN_VERSION     => $systemInstall->getPluginVersion(),
                 ]
             );

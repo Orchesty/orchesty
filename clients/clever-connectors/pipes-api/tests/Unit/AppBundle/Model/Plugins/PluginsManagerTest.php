@@ -67,6 +67,7 @@ final class PluginsManagerTest extends KernelTestCaseAbstract
             'eventCreate'        => FALSE,
             'eventUnsubscribe'   => FALSE,
             'eventHardBounce'    => FALSE,
+            'eventSubscribe'     => FALSE,
             'distribution_lists' => [],
         ], $res);
     }
@@ -112,6 +113,7 @@ final class PluginsManagerTest extends KernelTestCaseAbstract
             'eventCreate'        => FALSE,
             'eventUnsubscribe'   => FALSE,
             'eventHardBounce'    => FALSE,
+            'eventSubscribe'     => FALSE,
             'distribution_lists' => [],
         ], $res);
     }
@@ -215,6 +217,7 @@ final class PluginsManagerTest extends KernelTestCaseAbstract
             'eventCreate'        => FALSE,
             'eventUnsubscribe'   => FALSE,
             'eventHardBounce'    => FALSE,
+            'eventSubscribe'     => FALSE,
             'distribution_lists' => [],
         ], $res);
     }

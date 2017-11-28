@@ -98,6 +98,7 @@ trait SystemTrait
             $arr[SystemInstall::EVENT_CREATE]      = $systemInstall->isEventCreate();
             $arr[SystemInstall::EVENT_UNSUBSCRIBE] = $systemInstall->isEventUnsubscribe();
             $arr[SystemInstall::EVENT_HARD_BOUNCE] = $systemInstall->isEventHardBounce();
+            $arr[SystemInstall::EVENT_SUBSCRIBE]   = $systemInstall->isEventSubscribe();
         }
 
         return $arr;

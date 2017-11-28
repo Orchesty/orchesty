@@ -290,6 +290,7 @@ class PluginsManager
             SystemInstall::EVENT_CREATE       => $systemInstall->isEventCreate(),
             SystemInstall::EVENT_UNSUBSCRIBE  => $systemInstall->isEventUnsubscribe(),
             SystemInstall::EVENT_HARD_BOUNCE  => $systemInstall->isEventHardBounce(),
+            SystemInstall::EVENT_SUBSCRIBE    => $systemInstall->isEventSubscribe(),
             SystemInstall::DISTRIBUTION_LISTS => $distLists,
         ];
     }

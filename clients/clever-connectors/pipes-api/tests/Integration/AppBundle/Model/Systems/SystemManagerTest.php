@@ -188,6 +188,7 @@ final class SystemManagerTest extends DatabaseTestCaseAbstract
             'eventCreate'      => FALSE,
             'eventUnsubscribe' => FALSE,
             'eventHardBounce'  => FALSE,
+            'eventSubscribe'   => FALSE,
             'setting_fields'   => [
                 0        => [
                     'type'        => 'url',
