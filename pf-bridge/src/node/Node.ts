@@ -118,11 +118,11 @@ class Node {
     private sendProcessDurationMetric(msg: JobMessage): void {
         logger.info(
             `Node worker result["status="${msg.getResult().code}", message="${msg.getResult().message}". \
-            process_duration="${msg.getProcessDuration()}"].`,
+            process_duration="${msg.getMeasurement().getNodeDuration()}"].`,
             logger.ctxFromMsg(msg),
         );
 
-        this.metrics.send({node_process_duration: msg.getProcessDuration()})
+        this.metrics.send({node_process_duration: msg.getMeasurement().getNodeDuration()})
             .catch((err) => {
                 logger.warn("Unable to send metrics", logger.ctxFromMsg(msg, err));
             });

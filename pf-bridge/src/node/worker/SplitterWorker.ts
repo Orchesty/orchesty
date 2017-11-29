@@ -33,6 +33,7 @@ class SplitterWorker implements IWorker {
      * @return {Promise<JobMessage[]>}
      */
     public processData(msg: JobMessage): Promise<JobMessage[]> {
+        msg.getMeasurement().markWorkerStart();
 
         let content: any[];
 
@@ -48,7 +49,7 @@ class SplitterWorker implements IWorker {
             return Promise.resolve([msg]);
         }
 
-        return this.splitAndSendParts(msg, content)
+        return this.splitMessage(msg, content)
             .then((splits: void[]) => {
                 msg.setForwardSelf(false);
                 msg.setMultiplier(splits.length);
@@ -103,21 +104,21 @@ class SplitterWorker implements IWorker {
      * @param {any[]} content
      * @return {Promise<void[]>}
      */
-    private splitAndSendParts(msg: JobMessage, content: any[]): Promise<void[]> {
+    private splitMessage(msg: JobMessage, content: any[]): Promise<void[]> {
         const splitPromises: Array<Promise<void>> = [];
         let i: number = Resequencer.START_SEQUENCE_ID;
 
         content.forEach((item: any) => {
+            const body = new Buffer(JSON.stringify(item));
             const headers = new Headers(msg.getHeaders().getRaw());
             headers.setPFHeader(Headers.SEQUENCE_ID, `${i}`);
             headers.setHeader("content-type", "application/json");
 
-            const splitMsg = new JobMessage(
-                this.settings.node_label,
-                headers.getRaw(),
-                new Buffer(JSON.stringify(item)),
-                { code: ResultCode.SUCCESS, message: `Json split ${i}/${content.length - 1}.`},
-            );
+            const splitMsg = new JobMessage(this.settings.node_label, headers.getRaw(), body);
+            splitMsg.getMeasurement().setPublished(msg.getMeasurement().getPublished());
+            splitMsg.getMeasurement().setReceived(msg.getMeasurement().getReceived());
+            splitMsg.getMeasurement().setWorkerStart(msg.getMeasurement().getWorkerStart());
+            splitMsg.setResult({ code: ResultCode.SUCCESS, message: `Json split ${i}/${content.length - 1}.`});
 
             splitPromises.push(this.partialForwarder.forwardPart(splitMsg));
 
