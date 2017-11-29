@@ -275,7 +275,6 @@ class HttpWorker implements IWorker {
         msg.setResult({ code: ResultCode.MISSING_RESULT_CODE, message: "Missing result code header"});
     }
 
-
 }
 
 export default HttpWorker;
