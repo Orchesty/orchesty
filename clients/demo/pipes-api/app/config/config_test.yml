@@ -1,7 +1,7 @@
 imports:
     - { resource: config_dev.yml }
 
-parmeters:
+parameters:
     stdout_path: "%kernel.logs_dir%/stdout_%kernel.environment%.log"
 
 framework:

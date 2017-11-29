@@ -4,7 +4,7 @@ fos_rest:
             - { path: '^/api/topologies/\w+/schema.bpmn', methods: ['PUT', 'POST'], priorities: ['xml'] }
             - { path: '^/topologies/\w+/schema.bpmn', methods: ['PUT', 'POST'], priorities: ['xml'] }
             - { path: '^/api', priorities: ['json'] }
-            - { path: '^/webhook', priorities: ['json', 'xml', 'html'] }
+            - { path: '^/webhook', priorities: ['json', 'xml'] }
             - { path: '^/', priorities: ['json'] }
 
     body_converter:
@@ -14,7 +14,6 @@ fos_rest:
         decoders:
             json: fos_rest.decoder.json
             xml: fos_rest.decoder.xml
-            hmml: fos_rest.decoder.html
 
     exception:
         enabled: true

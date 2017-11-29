@@ -2,6 +2,7 @@
 
 DC=docker-compose
 DE=docker-compose exec -T pipes-api
+DEC=docker-compose exec -T pipes-api composer
 
 .env:
 	@if ! [ -f .env ]; then \
@@ -14,13 +15,15 @@ docker-up: .env
 	$(DC) up -d
 
 docker-up-force: .env
-	$(DC) up -d --force-recreate
+	$(DC) up -d --force-recreate --remove-orphans
 
 composer-install:
-	$(DE) composer install --ignore-platform-reqs
+	$(DEC) global require hirak/prestissimo
+	$(DEC) install --ignore-platform-reqs
 
 composer-update:
-	$(DE) composer update --ignore-platform-reqs
+	$(DEC) global require hirak/prestissimo
+	$(DEC) update --ignore-platform-reqs
 
 codesniffer:
 	$(DE) php ./vendor/bin/phpcs --standard=./ruleset.xml --colors -p src/ tests/

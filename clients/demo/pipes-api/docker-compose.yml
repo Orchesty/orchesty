@@ -13,3 +13,4 @@ services:
     volumes:
       - ../../../:/var/www/pipes
       - ${SSH_AUTH_SOCK}:/ssh-agent
+      - ${HOME}/.composer:/srv/.composer

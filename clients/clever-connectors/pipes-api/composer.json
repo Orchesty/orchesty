@@ -34,8 +34,8 @@
   },
   "require-dev": {
     "pipes/php-check-utils": "^1.0",
-    "sensio/generator-bundle": "^3.0",
-    "symfony/phpunit-bridge": "^3.0"
+    "sensio/generator-bundle": "^3.1",
+    "symfony/phpunit-bridge": "^3.3"
   },
   "scripts": {
     "symfony-scripts": [
