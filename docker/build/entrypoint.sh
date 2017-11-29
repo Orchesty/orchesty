@@ -21,4 +21,8 @@ if [ -n "$NPM_START" ]; then
   npm start &
 fi
 
+if [ -n "$NPM_BUILD" ]; then
+  npm run build &
+fi
+
 exec "$@"
