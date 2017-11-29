@@ -3,7 +3,8 @@
 ## Setup
 
 1. Create network: `docker network create pipesdemo_default`
-1. Init services: `make init-dev`
+1. Start services: `make init-dev`
+1. Stop services: `make down-dev`
 
 ## Run after first start-up
 1. Create user: `docker-compose -f docker-compose.dev.yml exec monolith-fpm php bin/console user:create`

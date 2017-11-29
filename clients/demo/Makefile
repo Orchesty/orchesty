@@ -28,6 +28,9 @@ init-dev: .env
 destroy-dev:
 	$(DC_DEV) down -v
 
+down-dev:
+	$(DC_DEV) down
+
 composer-update-dev:
 	$(DE_DEV) monolith-fpm composer global require hirak/prestissimo
 	$(DE_DEV) monolith-fpm composer update --ignore-platform-reqs
