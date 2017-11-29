@@ -23,7 +23,7 @@ class ActionButton extends React.Component {
   toggleMenu(e){
     e.preventDefault();
     e.stopPropagation();
-    this.setState(previousState => {return {collapsed: !previousState.collapsed}});
+    this.setState(previousState => ({collapsed: !previousState.collapsed}));
   }
 
   closeMenu(){
@@ -62,9 +62,9 @@ class ActionButton extends React.Component {
           return (
             <div className="btn-group">
               <button className={`btn btn-${size} btn-danger dropdown-toggle`} type="button" aria-expanded="true" onClick={this.toggleMenu}>
-                {caption}<span className="caret" />
+                {caption} <span className="caret" />
               </button>
-              {!this.state.collapsed && <ToggleLocalMenu items={items} right={right} onClose={this.closeMenu}></ToggleLocalMenu>}
+              {!this.state.collapsed && <ToggleLocalMenu items={items} right={right} onClose={this.closeMenu} />}
             </div>
           )
       }

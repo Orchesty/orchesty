@@ -7,6 +7,7 @@ import notification from './notification';
 import topology from './topology';
 import topologyGroup from './topologyGroup';
 import node from './node';
+import category from './category';
 import authorization from './authorization';
 import auth from './auth';
 import process from './process';
@@ -19,6 +20,7 @@ const rootReducer = combineReducers({
   topology,
   topologyGroup,
   node,
+  category,
   authorization,
   process,
   server,
