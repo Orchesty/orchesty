@@ -44,6 +44,12 @@ export default {
     acceptUrl: path => path == '/topologies' || path == '/',
     createUrl: page => '/'
   },
+  topology_list_all: {
+    id: 'topology_list_all',
+    caption: 'Topology list',
+    needAuth: true,
+    simpleRoute: '/topologies/all'
+  },
   topology_schema: {
     id: 'topology_scheme',
     caption: 'Topology schema',

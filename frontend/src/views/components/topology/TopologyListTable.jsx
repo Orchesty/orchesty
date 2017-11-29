@@ -8,7 +8,7 @@ import * as applicationActions from 'actions/applicationActions';
 import StateComponent from 'wrappers/StateComponent';
 import BoolValue from 'elements/BoolValue';
 import SortTh from 'elements/table/SortTh';
-import ActionButtonPanel from 'elements/actions/ActionButtonPanel';
+import ActionButton from 'elements/actions/ActionButton';
 import ListPagination from 'elements/table/ListPagination';
 import TopologyListFilter from './TopologyListFilter';
 
@@ -42,11 +42,10 @@ class TopologyListTable extends React.Component {
     const {list: {sort}} = this.props;
     return (
       <tr>
-        <SortTh name="_id" state={sort} onChangeSort={this.changeSort}>#</SortTh>
-        <SortTh name="visibility" state={sort} onChangeSort={this.changeSort}>Visibility</SortTh>
         <SortTh name="name" state={sort} onChangeSort={this.changeSort}>Name</SortTh>
         <SortTh name="version" state={sort} onChangeSort={this.changeSort}>Version</SortTh>
         <SortTh name="descr" state={sort} onChangeSort={this.changeSort}>Description</SortTh>
+        <SortTh name="visibility" state={sort} onChangeSort={this.changeSort}>Visibility</SortTh>
         <SortTh name="enabled" state={sort} onChangeSort={this.changeSort}>Enabled</SortTh>
         <th>Actions</th>
       </tr>
@@ -96,13 +95,12 @@ class TopologyListTable extends React.Component {
           }
           return (
             <tr key={item._id}>
-              <td>{item._id}</td>
-              <td>{item.visibility}</td>
               <td>{item.name}</td>
               <td>{item.version}</td>
               <td>{item.descr}</td>
+              <td>{item.visibility}</td>
               <td><BoolValue value={item.enabled}/></td>
-              <td><ActionButtonPanel items={menuItems} right={true} size="sm" /></td>
+              <td><ActionButton item={menuItems} right={true} size="sm" /></td>
             </tr>
           )
         }
