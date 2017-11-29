@@ -63,6 +63,39 @@ class CategoryController extends FOSRestController
     }
 
     /**
+     * @Route("/categories/{id}", defaults={}, requirements={"id": "\w+"})
+     * @Method({"PUT", "PATCH", "OPTIONS"})
+     *
+     * @param Request $request
+     * @param string  $id
+     *
+     * @return Response
+     */
+    public function updateCategoryAction(Request $request, string $id): Response
+    {
+        $this->construct();
+        $data = $this->categoryHandler->updateCategory($id, $request->request->all());
+
+        return new JsonResponse($data, 200);
+    }
+
+    /**
+     * @Route("/categories/{id}", defaults={}, requirements={"id": "\w+"})
+     * @Method({"DELETE", "OPTIONS"})
+     *
+     * @param string $id
+     *
+     * @return Response
+     */
+    public function deleteCategoryAction(string $id): Response
+    {
+        $this->construct();
+        $data = $this->categoryHandler->deleteCategory($id);
+
+        return new JsonResponse($data, 200);
+    }
+
+    /**
      *
      */
     private function construct(): void

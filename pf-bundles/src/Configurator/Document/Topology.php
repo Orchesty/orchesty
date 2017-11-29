@@ -86,7 +86,7 @@ class Topology
     protected $rawBpmn = '';
 
     /**
-     * @var string
+     * @var string|null
      *
      * @MongoDB\Field(type="string")
      * @Index()

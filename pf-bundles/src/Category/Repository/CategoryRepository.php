@@ -19,6 +19,9 @@ use Hanaboso\PipesFramework\Category\Document\Category;
 class CategoryRepository extends DocumentRepository
 {
 
+    /**
+     * @param Category $category
+     */
     public function childrenLevelUp(Category $category): void
     {
         $this->createQueryBuilder()
