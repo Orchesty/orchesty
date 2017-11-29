@@ -1,6 +1,5 @@
 import { default as Defaults } from "../Defaults";
 import { ICounterSettings } from "./counter/Counter";
-import {port} from "_debugger";
 
 export interface IWorkerConfig {
     type: string;
