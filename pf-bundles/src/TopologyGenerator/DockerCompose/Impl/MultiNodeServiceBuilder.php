@@ -1,69 +1,45 @@
 <?php declare(strict_types=1);
-/**
- * Created by PhpStorm.
- * User: venca
- * Date: 9/5/17
- * Time: 3:17 PM
- */
 
 namespace Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\Impl;
 
 use Hanaboso\PipesFramework\Configurator\Document\Node;
+use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\Service;
-use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\ServiceBuilderInterface;
 use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\VolumePathDefinition;
 use Hanaboso\PipesFramework\TopologyGenerator\Environment;
-use Hanaboso\PipesFramework\TopologyGenerator\GeneratorUtils;
 
 /**
- * Class NodeServiceBuilder
+ * Class MultiNodeServiceBuilder
  *
  * @package Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\Impl
  */
-class NodeServiceBuilder implements ServiceBuilderInterface
+class MultiNodeServiceBuilder extends NodeServiceBuilder
 {
 
-    protected const IMAGE = 'pf-bridge:dev';
-
     /**
-     * @var Environment
+     * @var Topology
      */
-    protected $environment;
-
-    /**
-     * @var string
-     */
-    protected $registry;
-
-    /**
-     * @var string
-     */
-    protected $network;
-
-    /**
-     * @var VolumePathDefinition
-     */
-    protected $volumePathDefinition;
+    private $topology;
 
     /**
      * NodeServiceBuilder constructor.
      *
+     * @param Topology             $topology
      * @param Environment          $environment
      * @param string               $registry
      * @param string               $network
      * @param VolumePathDefinition $volumePathDefinition
      */
     public function __construct(
+        Topology $topology,
         Environment $environment,
         string $registry,
         string $network,
         VolumePathDefinition $volumePathDefinition
     )
     {
-        $this->environment          = $environment;
-        $this->registry             = $registry;
-        $this->network              = $network;
-        $this->volumePathDefinition = $volumePathDefinition;
+        $this->topology = $topology;
+        parent::__construct($environment, $registry, $network, $volumePathDefinition);
     }
 
     /**
@@ -73,7 +49,7 @@ class NodeServiceBuilder implements ServiceBuilderInterface
      */
     public function build(Node $node): Service
     {
-        $service = new Service(GeneratorUtils::normalizeName($node->getId(), $node->getName()));
+        $service = new Service(sprintf('%s_multi_bridge', $this->topology->getId()));
         $service
             ->setImage($this->registry . '/' . self::IMAGE)
             ->addEnvironment(Environment::RABBITMQ_HOST, $this->environment->getRabbitMqHost())
@@ -82,11 +58,7 @@ class NodeServiceBuilder implements ServiceBuilderInterface
             ->addEnvironment(Environment::RABBITMQ_PASS, $this->environment->getRabbitMqPass())
             ->addEnvironment(Environment::RABBITMQ_VHOST, $this->environment->getRabbitMqVHost())
             ->addVolume($this->volumePathDefinition->getSourceVolume('topology.json') . ':/srv/app/topology/topology.json')
-            ->setCommand(sprintf(
-                    './dist/src/bin/pipes.js start node --id %s',
-                    GeneratorUtils::createServiceName(GeneratorUtils::normalizeName($node->getId(), $node->getName()))
-                )
-            )
+            ->setCommand('./dist/src/bin/pipes.js start all_nodes')
             ->addNetwork($this->network);
 
         return $service;

@@ -13,7 +13,7 @@ services:
     volumes:
       - './topology.json:/srv/app/topology/topology.json'
     networks:
-      - demo_defualt
+      - demo_default
     command: './dist/src/bin/pipes.js start probe'
   1_counter:
     image: 'dkr.hanaboso.net/pipes/pipes/pf-bridge:dev'
@@ -28,7 +28,7 @@ services:
     volumes:
       - './topology.json:/srv/app/topology/topology.json'
     networks:
-      - demo_defualt
+      - demo_default
     command: './dist/src/bin/pipes.js start counter'
   1-mag-cus:
     image: 'dkr.hanaboso.net/pipes/pipes/pf-bridge:dev'
@@ -43,7 +43,7 @@ services:
     volumes:
       - './topology.json:/srv/app/topology/topology.json'
     networks:
-      - demo_defualt
+      - demo_default
     command: './dist/src/bin/pipes.js start node --id 1-mag-cus'
   2-xml-par:
     image: 'dkr.hanaboso.net/pipes/pipes/pf-bridge:dev'
@@ -58,7 +58,7 @@ services:
     volumes:
       - './topology.json:/srv/app/topology/topology.json'
     networks:
-      - demo_defualt
+      - demo_default
     command: './dist/src/bin/pipes.js start node --id 2-xml-par'
   3-map-1:
     image: 'dkr.hanaboso.net/pipes/pipes/pf-bridge:dev'
@@ -73,7 +73,7 @@ services:
     volumes:
       - './topology.json:/srv/app/topology/topology.json'
     networks:
-      - demo_defualt
+      - demo_default
     command: './dist/src/bin/pipes.js start node --id 3-map-1'
   4-mai:
     image: 'dkr.hanaboso.net/pipes/pipes/pf-bridge:dev'
@@ -88,7 +88,7 @@ services:
     volumes:
       - './topology.json:/srv/app/topology/topology.json'
     networks:
-      - demo_defualt
+      - demo_default
     command: './dist/src/bin/pipes.js start node --id 4-mai'
   5-ftp:
     image: 'dkr.hanaboso.net/pipes/pipes/pf-bridge:dev'
@@ -103,7 +103,7 @@ services:
     volumes:
       - './topology.json:/srv/app/topology/topology.json'
     networks:
-      - demo_defualt
+      - demo_default
     command: './dist/src/bin/pipes.js start node --id 5-ftp'
   6-api:
     image: 'dkr.hanaboso.net/pipes/pipes/pf-bridge:dev'
@@ -118,8 +118,8 @@ services:
     volumes:
       - './topology.json:/srv/app/topology/topology.json'
     networks:
-      - demo_defualt
+      - demo_default
     command: './dist/src/bin/pipes.js start node --id 6-api'
 networks:
-  demo_defualt:
+  demo_default:
     external: true

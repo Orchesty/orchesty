@@ -12,6 +12,7 @@ use Hanaboso\PipesFramework\Commons\Enum\TypeEnum;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\Impl\CounterServiceBuilder;
+use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\Impl\MultiNodeServiceBuilder;
 use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\Impl\NodeServiceBuilder;
 use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\Impl\ProbeServiceBuilder;
 use Hanaboso\PipesFramework\TopologyGenerator\Environment;
@@ -60,6 +61,11 @@ class Generator implements GeneratorInterface
     private $volumePathDefinitionFactory;
 
     /**
+     * @var boolean
+     */
+    private $bridgesInSeparateContainers = TRUE;
+
+    /**
      * Generator constructor.
      *
      * @param Environment                 $environment
@@ -82,6 +88,14 @@ class Generator implements GeneratorInterface
         $this->network                     = $network;
         $this->composeBuilder              = new ComposeBuilder();
         $this->volumePathDefinitionFactory = $volumePathDefinitionFactory;
+    }
+
+    /**
+     * @param bool $bridgesInSeparateContainers
+     */
+    public function setBridgesInSeparateContainers(bool $bridgesInSeparateContainers): void
+    {
+        $this->bridgesInSeparateContainers = $bridgesInSeparateContainers;
     }
 
     /**
@@ -158,15 +172,7 @@ class Generator implements GeneratorInterface
         $counterService = $builder->build(new Node());
         $compose->addServices($counterService);
 
-        foreach ($nodes as $node) {
-            $builder = new NodeServiceBuilder(
-                $this->environment,
-                self::REGISTRY,
-                $this->network,
-                $volumePathDefinition
-            );
-            $compose->addServices($builder->build($node));
-        }
+        $this->addBridges($compose, $topology, $nodes, $volumePathDefinition);
 
         return $this->composeBuilder->build($compose);
     }
@@ -206,6 +212,44 @@ class Generator implements GeneratorInterface
             $targetDir,
             GeneratorUtils::normalizeName($topology->getId(), $topology->getName())
         );
+    }
+
+    /**
+     * @param Compose              $compose
+     * @param Topology             $topology
+     * @param iterable             $nodes
+     * @param VolumePathDefinition $volumePD
+     */
+    private function addBridges(
+        Compose $compose,
+        Topology $topology,
+        iterable $nodes,
+        VolumePathDefinition $volumePD
+    ): void
+    {
+        if ($this->bridgesInSeparateContainers) {
+            // Run every bridge in dedicated container
+            foreach ($nodes as $node) {
+                $builder = new NodeServiceBuilder(
+                    $this->environment,
+                    self::REGISTRY,
+                    $this->network,
+                    $volumePD
+                );
+                $compose->addServices($builder->build($node));
+            }
+        } else {
+            // Run all topology bridges is single container
+            $builder = new MultiNodeServiceBuilder(
+                $topology,
+                $this->environment,
+                self::REGISTRY,
+                $this->network,
+                $volumePD
+            );
+
+            $compose->addServices($builder->build(new Node()));
+        }
     }
 
     /**

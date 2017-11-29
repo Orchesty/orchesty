@@ -33,7 +33,7 @@ class GeneratorTest extends TestCase
     /**
      * Generator::generate
      */
-    public function testGenerate(): void
+    public function testGenerateSeparateBridges(): void
     {
         $topology = new Topology();
         $this->setProperty($topology, 'id', '1');
@@ -90,8 +90,15 @@ class GeneratorTest extends TestCase
         $nodes[] = $node5;
         $nodes[] = $node6;
 
-        $generator = new Generator(new Environment(), new HostMapper(), __DIR__ . '/output', 'demo_defualt',
-            new VolumePathDefinitionFactory());
+        $generator = new Generator(
+            new Environment(),
+            new HostMapper(),
+            __DIR__ . '/output',
+            'demo_default',
+            new VolumePathDefinitionFactory()
+        );
+
+        $generator->setBridgesInSeparateContainers(TRUE);
 
         $generator->generate($topology, $nodes);
 
@@ -108,6 +115,63 @@ class GeneratorTest extends TestCase
             file_get_contents(__DIR__ . '/samples/topology.json'),
             file_get_contents(
                 __DIR__ . '/output/' .
+                GeneratorUtils::normalizeName($topology->getId(), $topology->getName()) .
+                '/topology.json'
+            )
+        );
+    }
+
+    /**
+     * Generator::generate
+     */
+    public function testGenerateMultiBridge(): void
+    {
+        $topology = new Topology();
+        $this->setProperty($topology, 'id', '1');
+        $topology->setName('topology');
+
+        $node1 = new Node();
+        $this->setProperty($node1, 'id', '1');
+        $node1
+            ->setName('magento2-customer')
+            ->setType(TypeEnum::CONNECTOR);
+
+        $node2 = new Node();
+        $this->setProperty($node2, 'id', '2');
+        $node2
+            ->setName('xml-parser')
+            ->setType(TypeEnum::XML_PARSER);
+
+        $node1->addNext(EmbedNode::from($node2));
+
+        $nodes[] = $node1;
+        $nodes[] = $node2;
+
+        $generator = new Generator(
+            new Environment(),
+            new HostMapper(),
+            __DIR__ . '/output-multi',
+            'demo_default',
+            new VolumePathDefinitionFactory()
+        );
+
+        $generator->setBridgesInSeparateContainers(FALSE);
+
+        $generator->generate($topology, $nodes);
+
+        $this->assertSame(
+            file_get_contents(__DIR__ . '/samples-multi/docker-compose.yml'),
+            file_get_contents(
+                __DIR__ . '/output-multi/' .
+                GeneratorUtils::normalizeName($topology->getId(), $topology->getName()) .
+                '/docker-compose.yml'
+            )
+        );
+
+        $this->assertSame(
+            file_get_contents(__DIR__ . '/samples-multi/topology.json'),
+            file_get_contents(
+                __DIR__ . '/output-multi/' .
                 GeneratorUtils::normalizeName($topology->getId(), $topology->getName()) .
                 '/topology.json'
             )
