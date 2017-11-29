@@ -12,12 +12,12 @@ use CleverConnectors\AppBundle\Model\Plugins\PluginSystemAbstract;
 class ShopwareSystem extends PluginSystemAbstract
 {
 
-    protected const SWITCH_TOKEN               = 'clever_monitor/switch_token';
-    protected const SYNC_URL                   = 'clever_monitor/subscriber?page=%s&limit=%s';
-    protected const CREATE_SUBSCRIBER_URL      = 'clever_monitor/create';
-    protected const UNSUBSCRIBE_SUBSCRIBER_URL = 'clever_monitor/unsubscribe?id=%s';
-    protected const HARD_BOUNCE_SUBSCRIBER_URL = 'clever_monitor/hard_bounce?id=%s';
-    protected const SUBSCRIBE_SUBSCRIBER_URL   = 'clever_monitor/subscriber/subscribe?id=%s';
+    protected const SWITCH_TOKEN               = 'clever_connector/switch_token';
+    protected const SYNC_URL                   = 'clever_connector/subscriber?page=%s&limit=%s';
+    protected const CREATE_SUBSCRIBER_URL      = 'clever_connector/create';
+    protected const UNSUBSCRIBE_SUBSCRIBER_URL = 'clever_connector/unsubscribe?id=%s';
+    protected const HARD_BOUNCE_SUBSCRIBER_URL = 'clever_connector/hard_bounce?id=%s';
+    protected const SUBSCRIBE_SUBSCRIBER_URL   = 'clever_connector/subscribe?id=%s';
 
     /**
      * @return string
