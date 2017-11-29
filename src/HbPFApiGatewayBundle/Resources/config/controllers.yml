@@ -26,3 +26,7 @@ services:
     hbpf.api_gateway.controller.generator:
         class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\GeneratorController
         arguments:
+
+    hbpf.api_gateway.controller.category:
+        class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\CategoryController
+        arguments:

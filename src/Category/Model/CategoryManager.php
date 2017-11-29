@@ -11,8 +11,10 @@ namespace Hanaboso\PipesFramework\Category\Model;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\PipesFramework\Category\Document\Category;
 use Hanaboso\PipesFramework\Category\Exception\CategoryException;
+use Hanaboso\PipesFramework\Category\Repository\CategoryRepository;
 use Hanaboso\PipesFramework\Commons\DatabaseManager\DatabaseManagerLocator;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
+use Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository;
 
 /**
  * Class CategoryManager
@@ -72,9 +74,13 @@ class CategoryManager
      */
     public function deleteCategory(Category $category): void
     {
-        $topologies = $this->dm->getRepository(Topology::class)->getTopologiesByCategory($category);
+        /** @var TopologyRepository $topologyRepository */
+        $topologyRepository = $this->dm->getRepository(Topology::class);
+        $topologies = $topologyRepository->getTopologiesByCategory($category);
         if (count($topologies) == 0) {
-            $this->dm->getRepository(Category::class)->childrenLevelUp($category);
+            /** @var CategoryRepository $categoryRepository */
+            $categoryRepository = $this->dm->getRepository(Category::class);
+            $categoryRepository->childrenLevelUp($category);
             $this->dm->remove($category);
             $this->dm->flush();
         } else {
@@ -108,6 +114,5 @@ class CategoryManager
         }
         return $category;
     }
-
 
 }

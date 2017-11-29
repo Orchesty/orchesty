@@ -61,7 +61,7 @@ class CategoryHandler
         $data['total']  = count($categories);
         $data['limit']  = NULL;
         $data['count']  = count($categories);
-        $data['offset'] = NULL;
+        $data['offset'] = 0;
 
         return $data;
     }
