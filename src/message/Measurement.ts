@@ -84,7 +84,7 @@ export class Measurement {
      *
      * @return {number}
      */
-    public getNodeDuration(): number {
+    public getNodeTotalDuration(): number {
         if (this.finished <= this.received) {
             return 0;
         }

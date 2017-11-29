@@ -23,15 +23,14 @@ class Consumer extends BasicConsumer {
     }
 
     public processMessage(amqMsg: Message, channel: Channel): void {
-        logger.info(`AmqpFaucet received message. \
-            Headers: ${JSON.stringify(amqMsg.properties)}, Body: ${amqMsg.content.toString()}`);
-
         let inMsg: JobMessage;
         try {
             inMsg = new JobMessage(this.node, amqMsg.properties.headers, amqMsg.content);
             inMsg.getMeasurement().markReceived();
             inMsg.getMeasurement().setPublished(amqMsg.properties.timestamp);
             inMsg.getHeaders().setHeader("content-type", amqMsg.properties.contentType);
+
+            logger.info(`AmqpFaucet received message.`, logger.ctxFromMsg(inMsg));
         } catch (e) {
             logger.error(`AmqpFaucet dead-lettering message`, {node_id: this.node.id, error: e});
             channel.nack(amqMsg, false, false); // dead-letter due to invalid message
@@ -42,9 +41,9 @@ class Consumer extends BasicConsumer {
             .then(() => {
                 try {
                     channel.ack(amqMsg);
-                    logger.info("AmqpFaucet message ack");
+                    logger.info("AmqpFaucet message ack", logger.ctxFromMsg(inMsg));
                 } catch (ackErr) {
-                    logger.error(`Could not ack message. Error: ${ackErr}`);
+                    logger.error(`Could not ack message. Error: ${ackErr}`, logger.ctxFromMsg(inMsg));
                 }
             })
             .catch((error: Error) => {
@@ -52,7 +51,7 @@ class Consumer extends BasicConsumer {
                     logger.error(`AmqpFaucet requeue message`, logger.ctxFromMsg(inMsg, error));
                     channel.nack(amqMsg); // requeue due to processing error
                 } catch (ackErr) {
-                    logger.error(`Could not nack message. Error: ${ackErr}`);
+                    logger.error(`Could not nack message. Error: ${ackErr}`, logger.ctxFromMsg(inMsg));
                 }
             });
     }
