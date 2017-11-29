@@ -82,8 +82,7 @@ services:
           DEV_GID: ${DEV_GID}
           PHP_WEBROOT: /var/www/pipes/clients/demo/pipes-api/web
           NPM_INSTALL: ${NPM_INSTALL}
-          NPM_START: "no" # webpackserver
-          NPM_BUILD: "yes" # webpackserver
+          NPM_START: "yes" # webpackserver
         ports:
           - ${DEV_IP}:80:80
           - ${DEV_IP}:81:8080
