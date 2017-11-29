@@ -108,7 +108,7 @@ final class PluginsManagerTest extends KernelTestCaseAbstract
             'system'             => 'sys',
             'token'              => 'tkn',
             'synchronized'       => FALSE,
-            'pluginVersion'      => NULL,
+            'pluginVersion'      => 'ver',
             'system_url'         => 'https://abc',
             'eventCreate'        => FALSE,
             'eventUnsubscribe'   => FALSE,

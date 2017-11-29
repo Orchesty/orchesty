@@ -110,15 +110,14 @@ class PluginsManager
                     'This connector is already in use. Uninstall the connector and install it again with the new location.',
                     SystemException::MISMATCH_URL
                 );
-            } else {
-                return $this->systemToArray($systemInstall, $this->getDistributionLists($request->headers->all()));
             }
         } else {
             $systemInstall = $this->manager->installSystem($guid, $system, $token);
-            $systemInstall
-                ->setPluginVersion(PluginHeadersEnum::get(PluginHeadersEnum::VERSION, $headers))
-                ->setSettings([SystemInstall::SYSTEM_URL => $url]);
         }
+
+        $systemInstall
+            ->setPluginVersion(PluginHeadersEnum::get(PluginHeadersEnum::VERSION, $headers))
+            ->setSettings([SystemInstall::SYSTEM_URL => $url]);
 
         $this->dm->flush();
 
