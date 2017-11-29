@@ -1,8 +1,8 @@
-import {TimeUtils} from "hb-utils/dist/lib/TimeUtils";
 import {INodeLabel} from "../topology/Configurator";
 import AMessage from "./AMessage";
 import Headers from "./Headers";
 import IMessage from "./IMessage";
+import {Measurement} from "./Measurement";
 import {ResultCode, ResultCodeGroup} from "./ResultCode";
 
 export interface IResult {
@@ -15,12 +15,8 @@ export interface IResult {
  */
 class JobMessage extends AMessage implements IMessage {
 
-    // timestamps
-    private publishedTime: number;
-    private receivedTime: number;
-    private processedTime: number;
-    private forwardedTime: number;
-
+    private result: IResult;
+    private measurement: Measurement;
     private multiplier: number;
     private forwardSelf: boolean;
 
@@ -29,17 +25,15 @@ class JobMessage extends AMessage implements IMessage {
      * @param {INodeLabel} node
      * @param {{}} headers
      * @param {Buffer} body
-     * @param {IResult} result
      */
     constructor(
         node: INodeLabel,
         headers: { [key: string]: string },
         body: Buffer,
-        private result?: IResult,
     ) {
         super(node, headers, body);
 
-        this.receivedTime = TimeUtils.nowMili();;
+        this.measurement = new Measurement();
         this.multiplier = 1;
         this.forwardSelf = true;
 
@@ -76,7 +70,7 @@ class JobMessage extends AMessage implements IMessage {
      * @param {IResult} result
      */
     public setResult(result: IResult): void {
-        this.processedTime = TimeUtils.nowMili();
+        this.measurement.markWorkerEnd();
         this.result = result;
     }
 
@@ -113,63 +107,11 @@ class JobMessage extends AMessage implements IMessage {
     }
 
     /**
-     * Sets the timestamp when messgae was originally published in previous node
      *
-     * @param {number} timestamp
+     * @return {Measurement}
      */
-    public setPublishedTime(timestamp: number) {
-        if (!timestamp || timestamp < 0) {
-            timestamp = 0;
-        }
-
-        this.publishedTime = timestamp;
-    }
-
-    /**
-     * Marks the message as published
-     */
-    public setForwardedTime(): void {
-        this.forwardedTime = TimeUtils.nowMili();
-    }
-
-    /**
-     * Returns the duration how long message was in broker,
-     * between it's publishing in previous node and accepting in this node [ms]
-     *
-     * @return {number}
-     */
-    public getWaitingTime(): number {
-        if (!this.publishedTime) {
-            return 0;
-        }
-
-        return this.receivedTime - this.publishedTime;
-    }
-
-    /**
-     * Returns in [ms] the time needed to process message
-     *
-     * @return {number}
-     */
-    public getProcessDuration(): number {
-        if (this.processedTime && this.receivedTime) {
-            return this.processedTime - this.receivedTime;
-        }
-
-        return 0;
-    }
-
-    /**
-     * Returns in [ms] the time needed to process and publish message
-     *
-     * @return {number}
-     */
-    public getTotalDuration(): number {
-        if (this.forwardedTime && this.receivedTime) {
-            return this.forwardedTime - this.receivedTime;
-        }
-
-        return 0;
+    public getMeasurement(): Measurement {
+        return this.measurement;
     }
 
 }

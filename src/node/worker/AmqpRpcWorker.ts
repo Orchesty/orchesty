@@ -110,6 +110,8 @@ class AmqpRpcWorker implements IWorker {
      * @return {Promise<JobMessage[]>}
      */
     public processData(msg: JobMessage): Promise<JobMessage[]> {
+        msg.getMeasurement().markWorkerStart();
+
         const uuid = uuid4();
         const headersToSend = new Headers(msg.getHeaders().getRaw());
         headersToSend.setPFHeader(Headers.NODE_ID, this.settings.node_label.node_id);
@@ -248,11 +250,11 @@ class AmqpRpcWorker implements IWorker {
         stored.message.setMultiplier(stored.message.getMultiplier() + 1);
 
         try {
-            const splitMsg = new JobMessage(
-                this.settings.node_label,
-                resultMsg.properties.headers,
-                resultMsg.content,
-            );
+            const splitMsg = new JobMessage(this.settings.node_label, resultMsg.properties.headers, resultMsg.content);
+
+            splitMsg.getMeasurement().setPublished(stored.message.getMeasurement().getPublished());
+            splitMsg.getMeasurement().setReceived(stored.message.getMeasurement().getReceived());
+            splitMsg.getMeasurement().setWorkerStart(stored.message.getMeasurement().getWorkerStart());
 
             splitMsg.setResult({
                 code: parseInt(splitMsg.getHeaders().getPFHeader(Headers.RESULT_CODE), 10),
