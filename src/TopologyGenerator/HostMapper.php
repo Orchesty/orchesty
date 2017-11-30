@@ -8,6 +8,7 @@
 
 namespace Hanaboso\PipesFramework\TopologyGenerator;
 
+use Exception;
 use Hanaboso\PipesFramework\Commons\Enum\TypeEnum;
 use InvalidArgumentException;
 
@@ -43,7 +44,7 @@ class HostMapper
      * @param TypeEnum $enum
      *
      * @return string
-     * @throws \Exception
+     * @throws Exception
      */
     public function getHost(TypeEnum $enum): string
     {
@@ -111,6 +112,7 @@ class HostMapper
      * @param string   $serviceId
      *
      * @return string
+     * @throws Exception
      */
     public function getUrl(TypeEnum $enum, string $serviceId): string
     {

@@ -71,4 +71,15 @@ class GeneratorUtils
         return substr(implode('-', $pieces), 0, 64);
     }
 
+    /**
+     * @param string $id
+     * @param string $name
+     *
+     * @return string
+     */
+    public static function createNormalizedServiceName(string $id, string $name): string
+    {
+        return self::createServiceName(self::normalizeName($id, $name));
+    }
+
 }
