@@ -18,6 +18,7 @@ use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Exception;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
 use Psr\Log\LoggerAwareInterface;
@@ -82,6 +83,7 @@ class UniversalMapperNode implements CustomNodeInterface, LoggerAwareInterface
      * @param ProcessDto $dto
      *
      * @return ProcessDto
+     * @throws Exception
      */
     public function process(ProcessDto $dto): ProcessDto
     {
@@ -91,10 +93,15 @@ class UniversalMapperNode implements CustomNodeInterface, LoggerAwareInterface
             return $dto;
         }
 
-        $mapper = new UniversalMapper();
-        $dto    = $mapper
-            ->setAllowedEmptyValues(TRUE)
-            ->process($template, $dto);
+        try {
+            $mapper = new UniversalMapper();
+            $dto    = $mapper
+                ->setAllowedEmptyValues(TRUE)
+                ->process($template, $dto);
+        } catch (Exception $exception) {
+            $this->logger->error($exception->getMessage());
+            throw $exception;
+        }
 
         return $dto;
     }

@@ -10,6 +10,7 @@ use CleverConnectors\AppBundle\Model\Form\Form;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\AuthorizationInterface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\Traits\AuthorizationTrait;
 use CleverConnectors\AppBundle\Model\Systems\Dto\ActionDto;
+use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Traits\SystemTrait;
 use CleverConnectors\AppBundle\Utils\TopologyNameUtils;
 use GuzzleHttp\Psr7\Uri;
@@ -37,6 +38,9 @@ class AirtableSystem implements AuthorizationInterface
     public function __construct()
     {
         $topologyName = TopologyNameUtils::getTopologyName(TopologyNameUtils::SYNC, $this->getKey());
+        $this->addAllowedAction(new ActionDto($topologyName, MapTemplate::DIRECTION_IN));
+
+        $topologyName = TopologyNameUtils::getTopologyName(TopologyNameUtils::CRON, $this->getKey());
         $this->addAllowedAction(new ActionDto($topologyName, MapTemplate::DIRECTION_IN));
     }
 
@@ -113,6 +117,7 @@ class AirtableSystem implements AuthorizationInterface
      * @param string        $method
      *
      * @return RequestDto
+     * @throws SystemException
      */
     public function getRequestDto(SystemInstall $systemInstall, string $method): RequestDto
     {

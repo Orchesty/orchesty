@@ -12,3 +12,11 @@ services:
             - '@hbpf.transport.async_curl_factory'
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@cc.progress_counter.async_progress_counter_service'
+
+    hbpf.connector.airtable-updated-contact-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Airtable\Connector\AirtableUpdatedContactConnector
+        arguments:
+            - '@systems.airtable'
+            - '@cc.last_sync.manager'
+            - '@hbpf.transport.async_curl_factory'
+            - '@doctrine_mongodb.odm.default_document_manager'

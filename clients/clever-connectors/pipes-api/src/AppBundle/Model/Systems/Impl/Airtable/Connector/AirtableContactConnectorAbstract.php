@@ -2,10 +2,14 @@
 
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Airtable\Connector;
 
+use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\LastSync\LastSyncManager;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Airtable\AirtableSystem;
+use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use DateTime;
+use Doctrine\Common\Persistence\ObjectRepository;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSender;
@@ -43,17 +47,29 @@ abstract class AirtableContactConnectorAbstract implements BatchInterface, Conne
     protected $factory;
 
     /**
+     * @var SystemInstallRepository|ObjectRepository
+     */
+    protected $systemInstallRepository;
+
+    /**
      * AirtableContactConnectorAbstract constructor.
      *
-     * @param AirtableSystem $system
+     * @param AirtableSystem    $system
      * @param LastSyncManager   $lastSyncManager
      * @param CurlSenderFactory $factory
+     * @param DocumentManager   $dm
      */
-    public function __construct(AirtableSystem $system, LastSyncManager $lastSyncManager, CurlSenderFactory $factory)
+    public function __construct(
+        AirtableSystem $system,
+        LastSyncManager $lastSyncManager,
+        CurlSenderFactory $factory,
+        DocumentManager $dm
+    )
     {
-        $this->system          = $system;
-        $this->lastSyncManager = $lastSyncManager;
-        $this->factory         = $factory;
+        $this->system                  = $system;
+        $this->lastSyncManager         = $lastSyncManager;
+        $this->factory                 = $factory;
+        $this->systemInstallRepository = $dm->getRepository(SystemInstall::class);
     }
 
     /**
@@ -100,8 +116,11 @@ abstract class AirtableContactConnectorAbstract implements BatchInterface, Conne
         if ($offset) {
             $uri .= sprintf('&offset=%s', $offset);
         }
+        if ($from) {
+            $uri .= sprintf('&filterByFormula=CREATED_TIME()>\'%s\'', urlencode($from->format(DATE_ISO8601)));
+        }
         if ($query) {
-            $uri .= sprintf('&', $query);
+            $uri .= sprintf('&%s', $query);
         }
 
         return new Uri($uri);
@@ -135,7 +154,6 @@ abstract class AirtableContactConnectorAbstract implements BatchInterface, Conne
      * @param array $data
      *
      * @return bool
-     * @throws SystemException
      */
     protected function hasOffset(array $data): bool
     {
@@ -144,6 +162,16 @@ abstract class AirtableContactConnectorAbstract implements BatchInterface, Conne
         }
 
         return FALSE;
+    }
+
+    /**
+     * @param array $data
+     *
+     * @return string
+     */
+    protected function getOffset(array $data): string
+    {
+        return $data['offset'];
     }
 
     /**

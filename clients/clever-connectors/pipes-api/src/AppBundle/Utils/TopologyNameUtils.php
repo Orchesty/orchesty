@@ -28,6 +28,7 @@ final class TopologyNameUtils
 
     //Systems-topologies
     public const SYNC                 = 'sync-subscribers';
+    public const CRON                 = 'cron-subscribers';
     public const CREATED_SUBSCRIBERS  = 'created-subscribers';
     public const UPDATED_SUBSCRIBERS  = 'updated-subscribers';
     public const DELETED_SUBSCRIBERS  = 'deleted-subscribers';
@@ -54,6 +55,7 @@ final class TopologyNameUtils
      */
     private static $system = [
         self::SYNC,
+        self::CRON,
         self::CREATED_SUBSCRIBERS,
         self::UPDATED_SUBSCRIBERS,
         self::DELETED_SUBSCRIBERS,

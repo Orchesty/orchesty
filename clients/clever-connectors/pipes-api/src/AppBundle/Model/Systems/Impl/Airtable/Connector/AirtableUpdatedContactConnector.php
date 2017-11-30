@@ -2,15 +2,13 @@
 
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Airtable\Connector;
 
-use CleverConnectors\AppBundle\Model\LastSync\LastSyncManager;
-use CleverConnectors\AppBundle\Model\ProgressCounter\ProgressCounterService;
+use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
-use CleverConnectors\AppBundle\Model\Systems\Impl\Airtable\AirtableSystem;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
-use Doctrine\ODM\MongoDB\DocumentManager;
+use CleverConnectors\AppBundle\Utils\CronUtils;
+use DateTime;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSender;
-use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSenderFactory;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Psr\Http\Message\ResponseInterface;
 use React\EventLoop\LoopInterface;
@@ -18,46 +16,19 @@ use React\Promise\PromiseInterface;
 use function React\Promise\resolve;
 
 /**
- * Class AirtableSyncContactConnector
+ * Class AirtableUpdatedContactConnector
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Airtable\Connector
  */
-class AirtableSyncContactConnector extends AirtableContactConnectorAbstract
+class AirtableUpdatedContactConnector extends AirtableContactConnectorAbstract
 {
-
-    /**
-     * @var ProgressCounterService
-     */
-    private $counterService;
-
-    /**
-     * ShipstationSyncCustomerConnector constructor.
-     *
-     * @param AirtableSystem         $system
-     * @param LastSyncManager        $lastSyncManager
-     * @param CurlSenderFactory      $factory
-     * @param DocumentManager        $dm
-     * @param ProgressCounterService $counterService
-     */
-    public function __construct(
-        AirtableSystem $system,
-        LastSyncManager $lastSyncManager,
-        CurlSenderFactory $factory,
-        DocumentManager $dm,
-        ProgressCounterService $counterService
-    )
-    {
-        parent::__construct($system, $lastSyncManager, $factory, $dm);
-
-        $this->counterService = $counterService;
-    }
 
     /**
      * @return string
      */
     public function getId(): string
     {
-        return 'airtable-sync-contact-connector';
+        return 'airtable-updated-contact-connector';
     }
 
     /**
@@ -67,29 +38,32 @@ class AirtableSyncContactConnector extends AirtableContactConnectorAbstract
      *
      * @return PromiseInterface
      * @throws SystemException
+     * @throws CleverConnectorsException
      */
     public function processBatch(ProcessDto $dto, LoopInterface $loop, callable $callbackItem): PromiseInterface
     {
         $sender        = $this->factory->create($loop);
-        $systemInstall = $this->systemInstallRepository->getSystemInstallFromHeaders($dto->getHeaders());
+        $systemInstall = CronUtils::getSystemInstall($dto);
         $requestDto    = $this->system->getRequestDto($systemInstall, 'GET');
         $requestDto->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()));
-        $processId = CMHeaders::get(CMHeaders::PROCESS_ID, $dto->getHeaders()) ?? '';
+        $lastSync = $this->lastSyncManager->getLastSync($systemInstall, $dto->getHeaders());
+        $times    = CronUtils::getTimes($lastSync);
 
-        $promise = $this->getPage($sender, $requestDto, $callbackItem, 1, NULL, $processId);
+        $promise = $this->getPage($sender, $requestDto, $callbackItem, 1, NULL, $times->getStart());
 
-        $this->systemInstallRepository->setSyncTime($systemInstall);
+        $lastSync->setTimestamp($times->getEnd());
+        $this->lastSyncManager->updateLastSync($lastSync);
 
         return $promise;
     }
 
     /**
-     * @param CurlSender  $sender
-     * @param RequestDto  $requestDto
-     * @param callable    $callbackItem
-     * @param int         $page
-     * @param null|string $offset
-     * @param null|string $processId
+     * @param CurlSender    $sender
+     * @param RequestDto    $requestDto
+     * @param callable      $callbackItem
+     * @param int           $page
+     * @param string  |null $offset
+     * @param DateTime|null $from
      *
      * @return PromiseInterface
      */
@@ -99,13 +73,13 @@ class AirtableSyncContactConnector extends AirtableContactConnectorAbstract
         callable $callbackItem,
         int $page,
         ?string $offset = NULL,
-        ?string $processId = NULL
+        ?DateTime $from = NULL
     ): PromiseInterface
     {
-        $uri = $this->getUri($requestDto, $offset);
+        $uri = $this->getUri($requestDto, $offset, $from);
 
         return $this->fetchData($sender, RequestDto::from($requestDto, $uri))->then(
-            function (ResponseInterface $response) use ($sender, $requestDto, $callbackItem, $page, $processId) {
+            function (ResponseInterface $response) use ($sender, $requestDto, $callbackItem, $page, $from) {
                 $data = json_decode($response->getBody()->getContents(), TRUE);
                 $callbackItem($this->createSuccessMessage($data, $page));
 
@@ -116,13 +90,9 @@ class AirtableSyncContactConnector extends AirtableContactConnectorAbstract
                         $callbackItem,
                         $page + 1,
                         $this->getOffset($data),
-                        $processId
+                        $from
                     );
                 } else {
-                    if ($processId) {
-                        $this->counterService->setTotal($processId, $page * self::PAGE_LIMIT);
-                    }
-
                     return resolve();
                 }
             }
