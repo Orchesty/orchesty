@@ -51,11 +51,11 @@ class NodeServiceBuilder implements ServiceBuilderInterface
     /**
      * @var string
      */
-    private $topologyPrefix;
+    protected $topologyPrefix;
     /**
      * @var string
      */
-    private $topologyMode;
+    protected $topologyMode;
 
     /**
      * NodeServiceBuilder constructor.
