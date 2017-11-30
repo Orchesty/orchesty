@@ -50,6 +50,11 @@ final class CMSubscriber
     private $lists = [];
 
     /**
+     * @var bool
+     */
+    private $sendOptin = FALSE;
+
+    /**
      * @return string
      */
     public function getEmail(): string
@@ -170,6 +175,26 @@ final class CMSubscriber
     }
 
     /**
+     * @return bool
+     */
+    public function isSendOptin(): bool
+    {
+        return $this->sendOptin;
+    }
+
+    /**
+     * @param bool $sendOptin
+     *
+     * @return CMSubscriber
+     */
+    public function setSendOptin(bool $sendOptin): CMSubscriber
+    {
+        $this->sendOptin = $sendOptin;
+
+        return $this;
+    }
+
+    /**
      * @return array
      */
     public function toArray(): array
@@ -177,17 +202,21 @@ final class CMSubscriber
         $res = [
             CleverFieldsEnum::EMAIL      => $this->email,
             CleverFieldsEnum::REACTIVATE => $this->reactivate,
+            CleverFieldsEnum::SEND_OPTIN => $this->sendOptin,
         ];
 
         if (!empty($this->firstName)) {
             $res[CleverFieldsEnum::FIRST_NAME] = $this->firstName;
         }
+
         if (!empty($this->lastName)) {
             $res[CleverFieldsEnum::LAST_NAME] = $this->lastName;
         }
+
         if (!empty($this->foreignId)) {
             $res[CleverFieldsEnum::FOREIGN_ID] = $this->foreignId;
         }
+
         if (!empty($this->lists)) {
             $res[CleverFieldsEnum::LISTS] = $this->lists;
         }

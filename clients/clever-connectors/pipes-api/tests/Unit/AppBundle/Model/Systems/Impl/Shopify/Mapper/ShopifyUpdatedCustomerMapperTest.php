@@ -34,6 +34,7 @@ final class ShopifyUpdatedCustomerMapperTest extends ConnectorTestCaseAbstract
             CleverFieldsEnum::LAST_NAME  => 'Last',
             CleverFieldsEnum::FOREIGN_ID => '129715699742',
             CleverFieldsEnum::REACTIVATE => TRUE,
+            CleverFieldsEnum::SEND_OPTIN => FALSE,
         ], $response);
     }
 

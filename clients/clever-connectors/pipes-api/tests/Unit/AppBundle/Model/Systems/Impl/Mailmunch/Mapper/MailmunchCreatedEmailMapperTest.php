@@ -27,9 +27,10 @@ final class MailmunchCreatedEmailMapperTest extends KernelTestCaseAbstract
         $res    = $mapper->process($dto);
 
         $expt = [
-            CleverFieldsEnum::EMAIL       => 'asd@asd.com',
-            CleverFieldsEnum::FIRST_NAME  => 'sdf',
-            CleverFieldsEnum::REACTIVATE  => TRUE,
+            CleverFieldsEnum::EMAIL      => 'asd@asd.com',
+            CleverFieldsEnum::FIRST_NAME => 'sdf',
+            CleverFieldsEnum::REACTIVATE => TRUE,
+            CleverFieldsEnum::SEND_OPTIN => FALSE,
         ];
 
         self::assertEquals($expt, json_decode($res->getData(), TRUE));

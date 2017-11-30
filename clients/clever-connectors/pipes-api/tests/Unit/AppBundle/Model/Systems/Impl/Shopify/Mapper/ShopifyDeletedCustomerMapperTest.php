@@ -32,6 +32,7 @@ final class ShopifyDeletedCustomerMapperTest extends ConnectorTestCaseAbstract
             CleverFieldsEnum::EMAIL      => '131244785694',
             CleverFieldsEnum::FOREIGN_ID => '131244785694',
             CleverFieldsEnum::REACTIVATE => FALSE,
+            CleverFieldsEnum::SEND_OPTIN => FALSE,
         ], $response);
     }
 

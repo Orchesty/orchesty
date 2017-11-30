@@ -40,6 +40,7 @@ final class HubspotDeletedContactMapperTest extends ConnectorTestCaseAbstract
             CleverFieldsEnum::EMAIL      => 1246965,
             CleverFieldsEnum::FOREIGN_ID => 1246965,
             CleverFieldsEnum::REACTIVATE => FALSE,
+            CleverFieldsEnum::SEND_OPTIN => FALSE,
         ], $response);
 
         $resultCode = $res->getHeader(CMHeaders::createKey(CMHeaders::RESULT_CODE));

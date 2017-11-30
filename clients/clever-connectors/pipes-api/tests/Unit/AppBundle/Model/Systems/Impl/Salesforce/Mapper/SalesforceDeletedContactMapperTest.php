@@ -29,9 +29,10 @@ final class SalesforceDeletedContactMapperTest extends ConnectorTestCaseAbstract
         );
 
         $this->assertEquals([
-            CleverFieldsEnum::EMAIL       => 'email@example.com',
-            CleverFieldsEnum::FOREIGN_ID  => '123456789',
-            CleverFieldsEnum::REACTIVATE  => FALSE,
+            CleverFieldsEnum::EMAIL      => 'email@example.com',
+            CleverFieldsEnum::FOREIGN_ID => '123456789',
+            CleverFieldsEnum::REACTIVATE => FALSE,
+            CleverFieldsEnum::SEND_OPTIN => FALSE,
         ], $response);
     }
 

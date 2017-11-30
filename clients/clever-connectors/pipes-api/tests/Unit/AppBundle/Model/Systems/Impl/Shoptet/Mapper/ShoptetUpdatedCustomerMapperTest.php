@@ -35,6 +35,7 @@ class ShoptetUpdatedCustomerMapperTest extends ConnectorTestCaseAbstract
             CleverFieldsEnum::LAST_NAME  => 'asddd',
             CleverFieldsEnum::FOREIGN_ID => '146278be-ca07-11e7-8216-002590dad85e',
             CleverFieldsEnum::REACTIVATE => TRUE,
+            CleverFieldsEnum::SEND_OPTIN => FALSE,
         ], $response);
     }
 

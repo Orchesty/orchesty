@@ -43,6 +43,7 @@ final class HubspotUpdatedContactMapperTest extends ConnectorTestCaseAbstract
             CleverFieldsEnum::LAST_NAME  => 'Huang',
             CleverFieldsEnum::FOREIGN_ID => 3234574,
             CleverFieldsEnum::REACTIVATE => TRUE,
+            CleverFieldsEnum::SEND_OPTIN => FALSE,
         ], $response);
     }
 
@@ -133,7 +134,7 @@ final class HubspotUpdatedContactMapperTest extends ConnectorTestCaseAbstract
             'subscriptionType' => 'contact.deletion',
         ];
 
-        $dto        = (new ProcessDto())
+        $dto = (new ProcessDto())
             ->setData(json_encode($data))
             ->setHeaders([CMHeaders::createKey(CMHeaders::RESULT_CODE) => '0']);
 

@@ -38,6 +38,7 @@ final class QuickbooksUpdatedCustomerMapperTest extends ConnectorTestCaseAbstrac
             CleverFieldsEnum::EMAIL      => 'jdrew2@myemail.com',
             CleverFieldsEnum::FIRST_NAME => 'James2',
             CleverFieldsEnum::LAST_NAME  => 'King2',
+            CleverFieldsEnum::SEND_OPTIN => FALSE,
             CleverFieldsEnum::FOREIGN_ID => '2',
             CleverFieldsEnum::REACTIVATE => TRUE,
         ], $response);

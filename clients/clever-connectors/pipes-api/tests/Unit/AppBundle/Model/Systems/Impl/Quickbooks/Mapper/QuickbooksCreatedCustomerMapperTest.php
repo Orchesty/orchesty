@@ -32,6 +32,7 @@ final class QuickbooksCreatedCustomerMapperTest extends ConnectorTestCaseAbstrac
         self::assertEquals(json_encode([
             CleverFieldsEnum::EMAIL      => 'eml@emlm.com',
             CleverFieldsEnum::REACTIVATE => TRUE,
+            CleverFieldsEnum::SEND_OPTIN => FALSE,
             CleverFieldsEnum::FIRST_NAME => 'Ichi',
             CleverFieldsEnum::LAST_NAME  => 'Ni',
             CleverFieldsEnum::FOREIGN_ID => '58',

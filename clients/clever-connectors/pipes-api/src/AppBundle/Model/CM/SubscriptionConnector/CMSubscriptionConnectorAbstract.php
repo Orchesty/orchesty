@@ -11,7 +11,6 @@ namespace CleverConnectors\AppBundle\Model\CM\SubscriptionConnector;
 
 use CleverConnectors\AppBundle\Enum\CleverFieldsEnum;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
-use CleverConnectors\AppBundle\Exceptions\Exception;
 use CleverConnectors\AppBundle\Model\CM\CMAuthorization;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use GuzzleHttp\Psr7\Uri;
@@ -22,6 +21,7 @@ use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
+use Throwable;
 
 /**
  * Class CMSubscriptionConnectorAbstract
@@ -115,7 +115,7 @@ abstract class CMSubscriptionConnectorAbstract extends CMAuthorization implement
 
         try {
             $res = $this->curl->send($req);
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $this->logger->error(sprintf('CM %s subscription failed.', $method), ['exception' => $e]);
             throw new ConnectorException(
                 sprintf('%s subscription failed.', $method),
@@ -164,13 +164,17 @@ abstract class CMSubscriptionConnectorAbstract extends CMAuthorization implement
 
         $data[CleverFieldsEnum::SYSTEM_KEY] = $system;
 
-        //@TODO: až bude implementováno u C-M tak smazat
+        //@TODO: až bude implementováno u C-M, tak smazat
         if (array_key_exists(CleverFieldsEnum::FOREIGN_ID, $data)) {
             unset($data[CleverFieldsEnum::FOREIGN_ID]);
         }
 
         if (array_key_exists(CleverFieldsEnum::SYSTEM_KEY, $data)) {
             unset($data[CleverFieldsEnum::SYSTEM_KEY]);
+        }
+
+        if (array_key_exists(CleverFieldsEnum::SEND_OPTIN, $data)) {
+            unset($data[CleverFieldsEnum::SEND_OPTIN]);
         }
 
         // -----------------------------------------------

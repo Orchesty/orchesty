@@ -40,6 +40,7 @@ class ZapierSubscriberMapperTest extends ConnectorTestCaseAbstract
             CleverFieldsEnum::LAST_NAME  => 'Barel',
             CleverFieldsEnum::FOREIGN_ID => '6',
             CleverFieldsEnum::REACTIVATE => TRUE,
+            CleverFieldsEnum::SEND_OPTIN => FALSE,
         ], $response);
     }
 

@@ -29,9 +29,10 @@ final class BasecrmDeletedContactMapperTest extends ConnectorTestCaseAbstract
         );
 
         $expt = [
-            CleverFieldsEnum::EMAIL       => '',
-            CleverFieldsEnum::FOREIGN_ID  => '187643117',
-            CleverFieldsEnum::REACTIVATE  => FALSE,
+            CleverFieldsEnum::EMAIL      => '',
+            CleverFieldsEnum::FOREIGN_ID => '187643117',
+            CleverFieldsEnum::REACTIVATE => FALSE,
+            'send_optin'                 => FALSE,
         ];
 
         self::assertEquals($expt, $response);

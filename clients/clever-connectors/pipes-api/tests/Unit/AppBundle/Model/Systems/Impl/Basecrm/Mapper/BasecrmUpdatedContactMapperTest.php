@@ -32,6 +32,7 @@ final class BasecrmUpdatedContactMapperTest extends ConnectorTestCaseAbstract
             'first_name'  => 'Base',
             '_foreign_id' => '187596661',
             'reactivate'  => TRUE,
+            'send_optin'  => FALSE,
         ];
 
         self::assertEquals($expt, $response);

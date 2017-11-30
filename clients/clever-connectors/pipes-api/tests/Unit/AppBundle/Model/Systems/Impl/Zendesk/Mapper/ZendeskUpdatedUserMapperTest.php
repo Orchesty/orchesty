@@ -34,6 +34,7 @@ final class ZendeskUpdatedUserMapperTest extends ConnectorTestCaseAbstract
             CleverFieldsEnum::LAST_NAME  => 'customer',
             CleverFieldsEnum::FOREIGN_ID => '115316687153',
             CleverFieldsEnum::REACTIVATE => TRUE,
+            CleverFieldsEnum::SEND_OPTIN => FALSE,
         ], $response);
     }
 

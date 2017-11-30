@@ -29,6 +29,7 @@ final class CleverFieldsEnum extends EnumAbstract
     public const UNSUBSCRIBE   = 'unsubscribe';
     public const HARD_BOUNCE   = 'hard_bounce';
     public const PLUGINS_LISTS = 'distribution_list';
+    public const SEND_OPTIN    = 'send_optin';
 
     /**
      * @var string[]
@@ -44,6 +45,7 @@ final class CleverFieldsEnum extends EnumAbstract
         self::UNSUBSCRIBE   => 'unsubscribe',
         self::HARD_BOUNCE   => 'hard_bounce',
         self::PLUGINS_LISTS => 'distribution_list',
+        self::SEND_OPTIN    => 'send_optin',
     ];
 
 }

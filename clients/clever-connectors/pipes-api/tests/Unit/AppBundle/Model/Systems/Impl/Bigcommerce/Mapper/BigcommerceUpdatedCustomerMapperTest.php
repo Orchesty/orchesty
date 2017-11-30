@@ -34,6 +34,7 @@ final class BigcommerceUpdatedCustomerMapperTest extends ConnectorTestCaseAbstra
             CleverFieldsEnum::LAST_NAME  => 'User01',
             CleverFieldsEnum::FOREIGN_ID => '1',
             CleverFieldsEnum::REACTIVATE => TRUE,
+            CleverFieldsEnum::SEND_OPTIN => FALSE,
         ], $response);
     }
 

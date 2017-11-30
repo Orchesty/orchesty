@@ -29,11 +29,12 @@ final class NutshellSyncUpdateContactMapperTest extends ConnectorTestCaseAbstrac
         );
 
         $this->assertEquals([
-            CleverFieldsEnum::EMAIL       => 'User01@User01.com',
-            CleverFieldsEnum::FIRST_NAME  => 'User01',
-            CleverFieldsEnum::LAST_NAME   => 'User01',
-            CleverFieldsEnum::FOREIGN_ID  => '1',
-            CleverFieldsEnum::REACTIVATE  => TRUE,
+            CleverFieldsEnum::EMAIL      => 'User01@User01.com',
+            CleverFieldsEnum::FIRST_NAME => 'User01',
+            CleverFieldsEnum::LAST_NAME  => 'User01',
+            CleverFieldsEnum::FOREIGN_ID => '1',
+            CleverFieldsEnum::REACTIVATE => TRUE,
+            CleverFieldsEnum::SEND_OPTIN => FALSE,
         ], $response);
     }
 

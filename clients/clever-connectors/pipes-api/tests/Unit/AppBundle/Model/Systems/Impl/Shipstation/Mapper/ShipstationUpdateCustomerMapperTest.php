@@ -34,6 +34,7 @@ final class ShipstationUpdateCustomerMapperTest extends ConnectorTestCaseAbstrac
             CleverFieldsEnum::LAST_NAME  => 'Doe',
             CleverFieldsEnum::FOREIGN_ID => '108140195',
             CleverFieldsEnum::REACTIVATE => TRUE,
+            CleverFieldsEnum::SEND_OPTIN => FALSE,
         ], $response);
     }
 

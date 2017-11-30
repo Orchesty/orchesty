@@ -28,6 +28,7 @@ final class BigcommerceDeletedCustomerMapperTest extends ConnectorTestCaseAbstra
             CleverFieldsEnum::EMAIL      => '1',
             CleverFieldsEnum::FOREIGN_ID => '1',
             CleverFieldsEnum::REACTIVATE => FALSE,
+            CleverFieldsEnum::SEND_OPTIN => FALSE,
         ], $response);
     }
 

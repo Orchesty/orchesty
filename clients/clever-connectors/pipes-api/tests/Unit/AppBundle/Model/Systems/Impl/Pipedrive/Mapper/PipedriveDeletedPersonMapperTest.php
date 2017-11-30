@@ -32,6 +32,7 @@ final class PipedriveDeletedPersonMapperTest extends ConnectorTestCaseAbstract
             CleverFieldsEnum::EMAIL      => 'asd@asd.com',
             CleverFieldsEnum::FOREIGN_ID => '6',
             CleverFieldsEnum::REACTIVATE => FALSE,
+            CleverFieldsEnum::SEND_OPTIN => FALSE,
         ], $response);
     }
 

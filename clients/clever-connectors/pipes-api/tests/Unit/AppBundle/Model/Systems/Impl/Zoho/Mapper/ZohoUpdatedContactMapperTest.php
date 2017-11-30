@@ -28,11 +28,12 @@ final class ZohoUpdatedContactMapperTest extends ConnectorTestCaseAbstract
         );
 
         $expt = [
-            CleverFieldsEnum::EMAIL       => 'john-buttbenton@gmail.com',
-            CleverFieldsEnum::FIRST_NAME  => 'John',
-            CleverFieldsEnum::LAST_NAME   => 'Butt',
-            CleverFieldsEnum::FOREIGN_ID  => '85896000000078213',
-            CleverFieldsEnum::REACTIVATE  => TRUE,
+            CleverFieldsEnum::EMAIL      => 'john-buttbenton@gmail.com',
+            CleverFieldsEnum::FIRST_NAME => 'John',
+            CleverFieldsEnum::LAST_NAME  => 'Butt',
+            CleverFieldsEnum::FOREIGN_ID => '85896000000078213',
+            CleverFieldsEnum::REACTIVATE => TRUE,
+            CleverFieldsEnum::SEND_OPTIN => FALSE,
         ];
 
         self::assertEquals($expt, $response);

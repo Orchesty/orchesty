@@ -30,8 +30,9 @@ final class WisepopsCreatedEmailMapperTest extends ConnectorTestCaseAbstract
         );
 
         $this->assertEquals([
-            CleverFieldsEnum::EMAIL       => 'sfg@sfd.cfg',
-            CleverFieldsEnum::REACTIVATE  => TRUE,
+            CleverFieldsEnum::EMAIL      => 'sfg@sfd.cfg',
+            CleverFieldsEnum::REACTIVATE => TRUE,
+            CleverFieldsEnum::SEND_OPTIN => FALSE,
         ], $response);
     }
 

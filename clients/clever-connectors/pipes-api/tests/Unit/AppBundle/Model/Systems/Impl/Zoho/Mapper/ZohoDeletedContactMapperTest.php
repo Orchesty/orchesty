@@ -28,9 +28,10 @@ final class ZohoDeletedContactMapperTest extends ConnectorTestCaseAbstract
         );
 
         $expt = [
-            CleverFieldsEnum::EMAIL       => '',
-            CleverFieldsEnum::FOREIGN_ID  => '85896000000078215',
-            CleverFieldsEnum::REACTIVATE  => FALSE,
+            CleverFieldsEnum::EMAIL      => '',
+            CleverFieldsEnum::FOREIGN_ID => '85896000000078215',
+            CleverFieldsEnum::REACTIVATE => FALSE,
+            CleverFieldsEnum::SEND_OPTIN => FALSE,
         ];
 
         self::assertEquals($expt, $response);

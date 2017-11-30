@@ -33,6 +33,7 @@ final class PipedriveUpdatedPersonMapperTest extends ConnectorTestCaseAbstract
             CleverFieldsEnum::FIRST_NAME => 'yvxc',
             CleverFieldsEnum::FOREIGN_ID => '6',
             CleverFieldsEnum::REACTIVATE => TRUE,
+            CleverFieldsEnum::SEND_OPTIN => FALSE,
         ], $response);
     }
 

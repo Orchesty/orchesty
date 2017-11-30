@@ -55,6 +55,7 @@ final class PluginValidateSubscriberTest extends KernelTestCaseAbstract
             'email'             => 'doiufoaosr',
             'first_name'        => 'doiufoaosr',
             'last_name'         => 'doiufoaosr',
+            'send_optin'        => FALSE,
             'distribution_list' => '5ff42ca6-1965-49ed-97d0-b2b568c88bfd',
         ]));
 
@@ -63,6 +64,7 @@ final class PluginValidateSubscriberTest extends KernelTestCaseAbstract
         self::assertEquals(json_encode([
             'email'       => 'doiufoaosr',
             'reactivate'  => TRUE,
+            'send_optin'  => FALSE,
             'first_name'  => 'doiufoaosr',
             'last_name'   => 'doiufoaosr',
             '_foreign_id' => 'de9f2c7fd25e1b3afad3e85a0bd17d9b100db4b3',
