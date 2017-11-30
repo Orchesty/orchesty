@@ -11,6 +11,7 @@ namespace Hanaboso\PipesFramework\Configurator\StartingPoint;
 use Bunny\Channel;
 use DateTime;
 use DateTimeZone;
+use Exception;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
@@ -91,8 +92,8 @@ class StartingPoint implements LoggerAwareInterface
     {
         return sprintf(
             self::QUEUE_PATTERN,
-            GeneratorUtils::createServiceName(GeneratorUtils::normalizeName($topology->getId(), $topology->getName())),
-            GeneratorUtils::createServiceName(GeneratorUtils::normalizeName($node->getId(), $node->getName()))
+            GeneratorUtils::createNormalizedServiceName($topology->getId(), $topology->getName()),
+            GeneratorUtils::createNormalizedServiceName($node->getId(), $node->getName())
         );
     }
 
@@ -105,7 +106,7 @@ class StartingPoint implements LoggerAwareInterface
     {
         return sprintf(
             self::QUEUE_PATTERN,
-            GeneratorUtils::createServiceName(GeneratorUtils::normalizeName($topology->getId(), $topology->getName())),
+            GeneratorUtils::createNormalizedServiceName($topology->getId(), $topology->getName()),
             'counter'
         );
     }
@@ -119,7 +120,7 @@ class StartingPoint implements LoggerAwareInterface
     {
         return sprintf(
             self::EXCHANGE_PATTERN,
-            GeneratorUtils::createServiceName(GeneratorUtils::normalizeName($topology->getId(), $topology->getName()))
+            GeneratorUtils::createNormalizedServiceName($topology->getId(), $topology->getName())
         );
     }
 
@@ -128,7 +129,7 @@ class StartingPoint implements LoggerAwareInterface
      * @param Node     $node
      *
      * @return bool
-     * @throws \Exception
+     * @throws Exception
      */
     public function validateTopology(Topology $topology, Node $node): bool
     {
@@ -216,6 +217,8 @@ class StartingPoint implements LoggerAwareInterface
      * @param Request  $request
      * @param Topology $topology
      * @param Node     $node
+     *
+     * @throws Exception
      */
     public function runWithRequest(Request $request, Topology $topology, Node $node): void
     {
@@ -232,6 +235,8 @@ class StartingPoint implements LoggerAwareInterface
      * @param Topology    $topology
      * @param Node        $node
      * @param null|string $body
+     *
+     * @throws Exception
      */
     public function run(Topology $topology, Node $node, ?string $body = NULL): void
     {
@@ -243,6 +248,8 @@ class StartingPoint implements LoggerAwareInterface
      * @param Node     $node
      * @param Headers  $headers
      * @param string   $content
+     *
+     * @throws Exception
      */
     protected function runTopology(Topology $topology, Node $node, Headers $headers, string $content = ''): void
     {

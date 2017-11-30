@@ -5,7 +5,7 @@ namespace Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller;
 use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Controller\FOSRestController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class UserController
@@ -22,13 +22,11 @@ class UserController extends FOSRestController
      * @Route("/user/login")
      * @Method({"POST", "OPTIONS"})
      *
-     * @return JsonResponse
+     * @return Response
      */
-    public function loginAction(): JsonResponse
+    public function loginAction(): Response
     {
-        $data = $this->forward('HbPFUserBundle:User:login');
-
-        return new JsonResponse(json_decode($data->getContent()), $data->getStatusCode(), $data->headers->all());
+        return $this->forward('HbPFUserBundle:User:login');
     }
 
     /**
@@ -36,13 +34,11 @@ class UserController extends FOSRestController
      * @Route("/user/logout")
      * @Method({"POST", "OPTIONS"})
      *
-     * @return JsonResponse
+     * @return Response
      */
-    public function logoutAction(): JsonResponse
+    public function logoutAction(): Response
     {
-        $data = $this->forward('HbPFUserBundle:User:logout');
-
-        return new JsonResponse(json_decode($data->getContent()), $data->getStatusCode(), $data->headers->all());
+        return $this->forward('HbPFUserBundle:User:logout');
     }
 
     /**
@@ -50,13 +46,11 @@ class UserController extends FOSRestController
      * @Route("/user/register")
      * @Method({"POST", "OPTIONS"})
      *
-     * @return JsonResponse
+     * @return Response
      */
-    public function registerAction(): JsonResponse
+    public function registerAction(): Response
     {
-        $data = $this->forward('HbPFUserBundle:User:register');
-
-        return new JsonResponse(json_decode($data->getContent()), $data->getStatusCode(), $data->headers->all());
+        return $this->forward('HbPFUserBundle:User:register');
     }
 
     /**
@@ -66,13 +60,11 @@ class UserController extends FOSRestController
      *
      * @param string $token
      *
-     * @return JsonResponse
+     * @return Response
      */
-    public function activateAction(string $token): JsonResponse
+    public function activateAction(string $token): Response
     {
-        $data = $this->forward('HbPFUserBundle:User:activate', ['token' => $token]);
-
-        return new JsonResponse(json_decode($data->getContent()), $data->getStatusCode(), $data->headers->all());
+        return $this->forward('HbPFUserBundle:User:activate', ['token' => $token]);
     }
 
     /**
@@ -82,26 +74,22 @@ class UserController extends FOSRestController
      *
      * @param string $token
      *
-     * @return JsonResponse
+     * @return Response
      */
-    public function setPasswordAction(string $token): JsonResponse
+    public function setPasswordAction(string $token): Response
     {
-        $data = $this->forward('HbPFUserBundle:User:setPassword', ['token' => $token]);
-
-        return new JsonResponse(json_decode($data->getContent()), $data->getStatusCode(), $data->headers->all());
+        return $this->forward('HbPFUserBundle:User:setPassword', ['token' => $token]);
     }
 
     /**
      * @Route("/user/change_password")
      * @Method({"POST", "OPTIONS"})
      *
-     * @return JsonResponse
+     * @return Response
      */
-    public function changePasswordAction(): JsonResponse
+    public function changePasswordAction(): Response
     {
-        $data = $this->forward('HbPFUserBundle:User:changePassword');
-
-        return new JsonResponse(json_decode($data->getContent()), $data->getStatusCode(), $data->headers->all());
+        return $this->forward('HbPFUserBundle:User:changePassword');
     }
 
     /**
@@ -109,13 +97,11 @@ class UserController extends FOSRestController
      * @Route("/user/reset_password")
      * @Method({"POST", "OPTIONS"})
      *
-     * @return JsonResponse
+     * @return Response
      */
-    public function resetPasswordAction(): JsonResponse
+    public function resetPasswordAction(): Response
     {
-        $data = $this->forward('HbPFUserBundle:User:resetPassword');
-
-        return new JsonResponse(json_decode($data->getContent()), $data->getStatusCode(), $data->headers->all());
+        return $this->forward('HbPFUserBundle:User:resetPassword');
     }
 
     /**
@@ -125,13 +111,11 @@ class UserController extends FOSRestController
      *
      * @param string $id
      *
-     * @return JsonResponse
+     * @return Response
      */
-    public function deleteAction(string $id): JsonResponse
+    public function deleteAction(string $id): Response
     {
-        $data = $this->forward('HbPFUserBundle:User:delete', ['id' => $id]);
-
-        return new JsonResponse(json_decode($data->getContent()), $data->getStatusCode(), $data->headers->all());
+        return $this->forward('HbPFUserBundle:User:delete', ['id' => $id]);
     }
 
 }

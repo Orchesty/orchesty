@@ -1,0 +1,20 @@
+services:
+
+    hbpf.metrics.metrics_client:
+        class: Hanaboso\PipesFramework\Metrics\Client\MetricsClient
+        arguments:
+            - "%influx.host%"
+            - "%influx.port%"
+            - "%influx.user%"
+            - "%influx.password%"
+            - "%influx.database%"
+
+    hbpf.metrics.handler.metrics:
+        class: Hanaboso\PipesFramework\HbPFMetricsBundle\Handler\MetricsHandler
+        arguments:
+
+    hbpf.metrics.manager.metrics:
+        class: Hanaboso\PipesFramework\Metrics\MetricsManager
+        arguments:
+            - "@hbpf.metrics.metrics_client"
+            - "%influx.table%"
