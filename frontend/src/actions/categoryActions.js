@@ -41,6 +41,14 @@ function treeReceive(treeId, root){
   }
 }
 
+function treeSelect(treeId, itemId){
+  return {
+    type: types.CATEGORY_TREE_SELECT,
+    id: treeId,
+    itemId
+  }
+}
+
 function loadList(listId){
   return (dispatch, getState) => {
     dispatch(listLoading(listId));
@@ -69,10 +77,11 @@ export function needCategoryList(listId, forced = false) {
   }
 }
 
-function buildTreeFromList(list, id){
+function buildTreeFromList(elements, list, id){
   return {
     id: id,
-    items: list.items.filter(item => item.parent === id).map(item => buildTreeFromList(list, item.id))
+    open: true,
+    items: list.items.filter(childId => elements[childId].parent === id).map(childId => buildTreeFromList(elements, list, childId))
   }
 }
 
@@ -81,8 +90,9 @@ function loadTree(treeId, force = false) {
     dispatch(treeLoading(treeId));
     return dispatch(needCategoryList('complete', force)).then(ok => {
       if (ok) {
-        const list = getState().category.lists['complete'];
-        dispatch(treeReceive(treeId, buildTreeFromList(list, null)));
+        const category = getState().category;
+        const list = category.lists['complete'];
+        dispatch(treeReceive(treeId, buildTreeFromList(category.elements, list, null)));
       } else {
         dispatch(treeError(treeId));
       }
@@ -104,3 +114,17 @@ export function needCategoryTree(treeId, forced = false) {
     }
   }
 }
+
+export function treeItemClick(treeId, itemId, successCallback) {
+  return(dispatch, getState) => {
+    const tree = getState().category.trees[treeId];
+    if (tree.selectedId !== itemId){
+      const res = dispatch(treeSelect(treeId, itemId));
+      if (typeof successCallback == 'function') {
+        successCallback(itemId);
+      }
+      return res;
+    }
+  }
+}
+

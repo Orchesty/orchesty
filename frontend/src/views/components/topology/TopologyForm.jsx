@@ -99,7 +99,7 @@ function mapStateToProps(state, ownProps) {
 function mapActionsToProps(dispatch, ownProps){
   return {
     commitAction: (data) => dispatch(
-      ownProps.addNew ? topologyActions.topologyCreate(data, ownProps.newProcessId) : topologyActions.topologyUpdate(ownProps.topologyId, data)
+      ownProps.addNew ? topologyActions.topologyCreate(Object.assign(data, {category: ownProps.categoryId ? ownProps.categoryId : null}), ownProps.newProcessId) : topologyActions.topologyUpdate(ownProps.topologyId, data)
     )
   }
 }
