@@ -83,13 +83,15 @@ class Node {
         this.nodeStatus = NODE_STATUS.READY;
 
         const processFn = (msgIn: JobMessage): Promise<void> => {
-            logger.info(`Bridge received message.`, logger.ctxFromMsg(msgIn));
+            msgIn.getMeasurement().markWorkerStart();
 
             return this.worker.processData(msgIn)
                 .then((msgsOut: JobMessage[]) => {
                     msgsOut.forEach((msgOut: JobMessage) => {
-                        this.sendProcessDurationMetric(msgOut);
+                        msgOut.getMeasurement().markWorkerEnd();
                         this.drain.forward(msgOut);
+                        msgOut.getMeasurement().markFinished();
+                        this.sendBridgeMetrics(msgOut);
                     });
                 })
                 .catch((err: any) => {
@@ -115,14 +117,17 @@ class Node {
      *
      * @param {JobMessage} msg
      */
-    private sendProcessDurationMetric(msg: JobMessage): void {
-        logger.info(
-            `Node worker result["status="${msg.getResult().code}", message="${msg.getResult().message}". \
-            process_duration="${msg.getProcessDuration()}"].`,
-            logger.ctxFromMsg(msg),
-        );
+    private sendBridgeMetrics(msg: JobMessage): void {
 
-        this.metrics.send({node_process_duration: msg.getProcessDuration()})
+        const measurements = {
+            bridge_job_waiting_duration: msg.getMeasurement().getWaitingDuration(),
+            bridge_job_worker_duration: msg.getMeasurement().getWorkerDuration(),
+            bridge_job_total_duration: msg.getMeasurement().getNodeTotalDuration(),
+        };
+
+        logger.info(`Sending metrics: ${JSON.stringify(measurements)}`, logger.ctxFromMsg(msg));
+
+        this.metrics.send(measurements)
             .catch((err) => {
                 logger.warn("Unable to send metrics", logger.ctxFromMsg(msg, err));
             });

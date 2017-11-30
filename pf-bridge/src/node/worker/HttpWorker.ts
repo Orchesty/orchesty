@@ -47,7 +47,6 @@ class HttpWorker implements IWorker {
 
             const sent = TimeUtils.nowMili();
             request(reqParams, (err: any, response: request.RequestResponse, body: string) => {
-                this.sendHttpRequestMetrics(msg, err, response, sent);
 
                 if (err) {
                     this.onRequestError(msg, reqParams, err);
@@ -274,30 +273,6 @@ class HttpWorker implements IWorker {
             logger.ctxFromMsg(msg),
         );
         msg.setResult({ code: ResultCode.MISSING_RESULT_CODE, message: "Missing result code header"});
-    }
-
-    /**
-     *
-     * @param {JobMessage} msg
-     * @param err
-     * @param {request.RequestResponse} response
-     * @param {number} sent
-     */
-    private sendHttpRequestMetrics(msg: JobMessage, err: any, response: request.RequestResponse, sent: number) {
-        const duration = TimeUtils.nowMili() - sent;
-
-        let resultCode: any;
-        if (!err && response.headers && response.headers[Headers.RESULT_CODE]) {
-            resultCode = response.headers[Headers.RESULT_CODE];
-        }
-
-        this.metrics.send({
-            http_worker_process_duration: duration,
-            http_worker_error: !!err,
-            http_worker_result_code: parseInt(resultCode, 10),
-        }).catch((mErr) => {
-                logger.warn("Unable to send metrics", logger.ctxFromMsg(msg, mErr));
-            });
     }
 
 }
