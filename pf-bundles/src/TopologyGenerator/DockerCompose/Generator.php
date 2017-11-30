@@ -15,6 +15,8 @@ use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\Impl\MultiNodeServiceBuilder;
 use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\Impl\NodeServiceBuilder;
+use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\Impl\ProbeServiceBuilder;
+use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\Impl\ServiceTrait;
 use Hanaboso\PipesFramework\TopologyGenerator\Environment;
 use Hanaboso\PipesFramework\TopologyGenerator\GeneratorInterface;
 use Hanaboso\PipesFramework\TopologyGenerator\GeneratorUtils;
@@ -28,6 +30,8 @@ use stdClass;
  */
 class Generator implements GeneratorInterface
 {
+
+    use ServiceTrait;
 
     public const REGISTRY = 'dkr.hanaboso.net/pipes/pipes';
 
@@ -69,7 +73,7 @@ class Generator implements GeneratorInterface
     /**
      * @var string
      */
-    private $topologyprefix;
+    private $topologyPrefix;
 
     /**
      * @var string
@@ -84,7 +88,7 @@ class Generator implements GeneratorInterface
      * @param string                      $targetDir
      * @param string                      $network
      * @param VolumePathDefinitionFactory $volumePathDefinitionFactory
-     * @param string                      $topologyprefix
+     * @param string                      $topologyPrefix
      * @param string                      $topologyMode
      */
     public function __construct(
@@ -93,7 +97,7 @@ class Generator implements GeneratorInterface
         string $targetDir,
         string $network,
         VolumePathDefinitionFactory $volumePathDefinitionFactory,
-        string $topologyprefix,
+        string $topologyPrefix,
         string $topologyMode
     )
     {
@@ -103,7 +107,7 @@ class Generator implements GeneratorInterface
         $this->network                     = $network;
         $this->composeBuilder              = new ComposeBuilder();
         $this->volumePathDefinitionFactory = $volumePathDefinitionFactory;
-        $this->topologyprefix              = $topologyprefix;
+        $this->topologyPrefix              = $topologyPrefix;
         $this->topologyMode                = $topologyMode;
     }
 
@@ -255,6 +259,7 @@ class Generator implements GeneratorInterface
                     self::REGISTRY,
                     $this->network,
                     $volumePD,
+                    $this->topologyPrefix,
                     $this->topologyMode
                 );
                 $compose->addService($builder->build($node));

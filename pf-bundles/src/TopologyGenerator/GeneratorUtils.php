@@ -71,7 +71,7 @@ class GeneratorUtils
             $i++;
         };
 
-        return substr(implode('-', $pieces), 0, 64);
+        return substr(implode('-', $pieces), 0, 63);
     }
 
     /**

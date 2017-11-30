@@ -37,22 +37,22 @@ class DockerComposeCli
     /**
      * @var string
      */
-    private const DOCKER_STACK_DEPLOY = 'sudo docker stack deploy -c {config} {topologyprefix}';
+    private const DOCKER_STACK_DEPLOY = 'docker stack deploy -c {config} {topologyprefix}';
 
     /**
      * @var string
      */
-    private const DOCKER_STACK_REMOVE = 'sudo docker stack rm {stack}';
+    private const DOCKER_STACK_REMOVE = 'docker stack rm {stack}';
 
     /**
      * @var string
      */
-    private const DOCKER_CONFIG_REMOVE = 'sudo docker config rm {stack}_config';
+    private const DOCKER_CONFIG_REMOVE = 'docker config rm {stack}_config';
 
     /**
      * @var string
      */
-    private const DOCKER_CONFIG_CREATE = 'sudo docker config create {topologyprefix}_config {file}';
+    private const DOCKER_CONFIG_CREATE = 'docker config create {topologyprefix}_config {file}';
 
     /**
      * @var string

@@ -184,17 +184,11 @@ services:
         working_dir: /var/www/pipes/clients/clever-connectors/pipes-api
         environment:
           GENERATOR_PATH: ${GENERATOR_PATH}
-          ## BEGIN DEV
           DOCKER_NETWORK: ${COMPOSE_PROJECT_NAME}_default
-          ## END DEV
-          ## BEGIN STAGE
-          #DOCKER_NETWORK: ${DEPLOYMENT_PREFIX}_default
-          ## END STAGE
           PROJECT_SOURCE_PATH: ${PROJECT_SOURCE_PATH}
           DOCKER_GID: ${DOCKER_GID}
           DOCKER_SOCKET_PATH: ${DOCKER_SOCKET_PATH}
-          DEPLOYMENT_PREFIX: ${DEPLOYMENT_PREFIX}
-          TOPOLOGY_MODE: ${TOPOLOGY_MODE}
+          TOPOLOGY_MODE: compose
         volumes:
           - ../../:/var/www/pipes
           - ${SSH_AUTH_SOCK}:/tmp/bound-ssh-agent
@@ -208,9 +202,22 @@ services:
     ## BEGIN STAGE
     #topology-fpm:
     #    image: dkr.hanaboso.net/pipes/client-cm/monolith-fpm:prod-images
+    #    environment:
+    #      DEPLOYMENT_PREFIX: ${DEPLOYMENT_PREFIX}
+    #      DOCKER_NETWORK: ${DEPLOYMENT_PREFIX}_default
+    #      GENERATOR_PATH: /srv/topology
+    #      DOCKER_HOST: 192.168.10.31:2376
+    #      DOCKER_TLS_VERIFY: 1
+    #      DOCKER_CERT_PATH: /srv/docker-pki
+    #    secrets:
+    #      - source: docker-ca.pem
+    #        target: /srv/docker-pki/ca.pem
+    #      - source: docker-client-cert.pem
+    #        target: /srv/docker-pki/cert.pem
+    #      - source: docker-client-key.pem
+    #        target: /srv/docker-pki/key.pem
     #    depends_on:
     #      - mongo
-    #      - rabbitmq
     ## END STAGE
 
     xml-parser-api:
@@ -463,6 +470,12 @@ services:
 #
 #secrets:
 #  stage-staff.pem:
+#    external: true
+#  docker-ca.pem:
+#    external: true
+#  docker-client-cert.pem:
+#    external: true
+#  docker-client-key.pem:
 #    external: true
 ## END STAGE
 
