@@ -17,8 +17,13 @@ class TopologyListFilter extends React.Component {
   }
 
   clearFilter(e){
+    const {changeFilter, filter} = this.props;
     e.preventDefault();
-    this.props.changeFilter({});
+    changeFilter(Object.assign({}, filter, {
+      visibility: null,
+      name: null,
+      enabled: null
+    }));
   }
 
   preventDefault(e){

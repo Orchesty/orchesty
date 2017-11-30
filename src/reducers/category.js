@@ -32,7 +32,6 @@ function addElements(oldElements, newElements){
 function reducer(state, action){
   switch (action.type){
     case types.CATEGORY_RECEIVE_ITEMS:
-      console.log(action);
       return Object.assign({}, state, {
         elements: addElements(state.elements, action.items)
       });
@@ -48,7 +47,8 @@ function reducer(state, action){
           [action.id]: {
             id: action.id,
             state: stateType.NOT_LOADED,
-            root: null
+            root: null,
+            selectedId: null
           }
         })
       });
@@ -77,6 +77,15 @@ function reducer(state, action){
           [action.id]: Object.assign({}, state.trees[action.id], {
             state: stateType.SUCCESS,
             root: action.root
+          })
+        })
+      });
+
+    case types.CATEGORY_TREE_SELECT:
+      return Object.assign({}, state, {
+        trees: Object.assign({}, state.trees, {
+          [action.id]: Object.assign({}, state.trees[action.id], {
+            selectedId: action.itemId
           })
         })
       });
