@@ -146,12 +146,8 @@ describe("FollowersPublisher", () => {
                 headers.setPFHeader(Headers.PARENT_ID, "");
                 headers.setPFHeader(Headers.SEQUENCE_ID, `${msgSeqId}`);
 
-                const msg: JobMessage = new JobMessage(
-                    node,
-                    headers.getRaw(),
-                    new Buffer(JSON.stringify(msgBody)),
-                    { code: ResultCode.SUCCESS, message: ""},
-                );
+                const msg: JobMessage = new JobMessage(node, headers.getRaw(), new Buffer(JSON.stringify(msgBody)));
+                msg.setResult({ code: ResultCode.SUCCESS, message: ""});
 
                 // This should send 3 messages
                 publisher.send(msg);

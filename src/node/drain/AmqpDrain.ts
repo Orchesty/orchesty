@@ -212,8 +212,7 @@ class AmqpDrain implements IDrain, IPartialForwarder {
         message.setMultiplier(0);
         this.counterPublisher.send(message)
             .then(() => {
-                message.setPublishedTime();
-                this.sendTotalDurationMetric(message);
+                message.getMeasurement().markFinished();
             });
     }
 
@@ -228,22 +227,11 @@ class AmqpDrain implements IDrain, IPartialForwarder {
                 return this.followersPublisher.send(message);
             })
             .then(() => {
-                message.setPublishedTime();
-                this.sendTotalDurationMetric(message);
+                message.getMeasurement().markFinished();
             })
             .catch((err: Error) => {
+                message.getMeasurement().markFinished();
                 logger.error("AmqpDrain could not forward message", logger.ctxFromMsg(message, err));
-            });
-    }
-
-    /**
-     *
-     * @param {JobMessage} msg
-     */
-    private sendTotalDurationMetric(msg: JobMessage): void {
-        this.metrics.send({node_total_duration: msg.getTotalDuration()})
-            .catch((err) => {
-                logger.warn("Unable to send node metrics", logger.ctxFromMsg(msg, err));
             });
     }
 

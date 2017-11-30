@@ -83,12 +83,8 @@ describe("CounterPublisher", () => {
         headers.setPFHeader(Headers.PARENT_ID, "");
         headers.setPFHeader(Headers.SEQUENCE_ID, `${msgSeqId}`);
 
-        const msg: JobMessage = new JobMessage(
-            node,
-            headers.getRaw(),
-            msgBody,
-            { code: ResultCode.SUCCESS, message: ""},
-        );
+        const msg: JobMessage = new JobMessage(node, headers.getRaw(), msgBody);
+        msg.setResult({ code: ResultCode.SUCCESS, message: ""});
 
         // Overrides the parental function to check the data being sent easily
         publisher.sendToQueue = (q: string, body: Buffer, opts: Options.Publish) => {
@@ -175,12 +171,9 @@ describe("CounterPublisher", () => {
         consumer.consume(settings.counter.queue.name, {})
             .then(() => {
                 const node: INodeLabel = {id: "nodeId", node_id: "nodeId", node_name: "nodeName", topology_id: "topId"};
-                const msg: JobMessage = new JobMessage(
-                    node,
-                    headers.getRaw(),
-                    new Buffer(JSON.stringify(msgBody)),
-                    { code: ResultCode.SUCCESS, message: ""},
-                );
+                const msg: JobMessage = new JobMessage(node, headers.getRaw(), new Buffer(JSON.stringify(msgBody)));
+                msg.setResult({ code: ResultCode.SUCCESS, message: ""});
+
                 publisher.send(msg);
             });
     });

@@ -7,6 +7,7 @@ import {Publisher} from "amqplib-plus/dist/lib/Publisher";
 import {SimpleConsumer} from "amqplib-plus/dist/lib/SimpleConsumer";
 import * as bodyParser from "body-parser";
 import * as express from "express";
+import {TimeUtils} from "hb-utils/dist/lib/TimeUtils";
 import * as config from "../../src/config";
 import Headers from "../../src/message/Headers";
 import {ResultCode} from "../../src/message/ResultCode";
@@ -132,7 +133,9 @@ describe("Topology with HttpWorker Node", () => {
             testMsgHeaders.setPFHeader(Headers.TOPOLOGY_ID, testTopology.id);
             testMsgHeaders.setHeader(Headers.CONTENT_TYPE, "text/plain");
 
-            publisher.sendToQueue(firstQueue, new Buffer("original content"), { headers: testMsgHeaders.getRaw() });
+            const properties = { headers: testMsgHeaders.getRaw(), timestamp: TimeUtils.nowMili() };
+
+            publisher.sendToQueue(firstQueue, new Buffer("original content"), properties);
         }
 
         const capturer: any = captureNode.getWorker();
