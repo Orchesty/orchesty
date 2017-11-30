@@ -40,7 +40,6 @@ init-dev: .env
 	$(DC_DEV) up -d --force-recreate --remove-orphans
 #	$(DE_DEV) monolith-fpm composer global require hirak/prestissimo
 	$(DE_DEV) monolith-fpm composer install --ignore-platform-reqs
-	$(DE_DEV) api-demo-fpm composer install
 
 destroy-dev:
 	$(DC_DEV) down -v
@@ -78,7 +77,7 @@ docker-compose.ci.yml:
 	# Comment out any port forwarding
 	sed -r 's/^(\s+ports:)$$/#\1/g; s/^(\s+- \$$\{DEV_IP\}.*)$$/#\1/g;' docker-compose.dev.yml > docker-compose.ci.yml
 	# Comment/uncomment DEV/STAGE sections
-	sed -r '/# BEGIN DEV$$/,/# END DEV$$/d; /# BEGIN STAGE$$/,/# END STAGE$$/s/^(\s+)#/\1/g;' -i docker-compose.ci.yml
+	sed -r '/# BEGIN DEV$$/,/# END DEV$$/d; /# BEGIN STAGE$$/,/# END STAGE$$/s/^(\s*)#/\1/g;' -i docker-compose.ci.yml
 
 generate:
 	curl -X POST -H content-type=application/json http://127.0.0.66/api/gateway/test/topology/generate

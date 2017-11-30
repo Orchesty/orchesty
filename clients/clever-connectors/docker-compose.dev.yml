@@ -1,6 +1,6 @@
 ---
 
-version: '3.2'
+version: '3.3'
 
 services:
     # Nodes
@@ -190,8 +190,6 @@ services:
           - ${DOCKER_SOCKET_PATH}:/var/run/docker.sock
         depends_on:
           - mongo
-        group_add:
-          - ${DOCKER_GID}
     ## END DEV
     ## BEGIN STAGE
     #topology-fpm:
@@ -230,7 +228,7 @@ services:
           - ${SSH_AUTH_SOCK}:/tmp/bound-ssh-agent
     ## END DEV
     ## BEGIN STAGE
-    #    image: dkr.hanaboso.net/pipes/pipes/frontend:dev
+    #    image: dkr.hanaboso.net/pipes/pipes/frontend:prod-images
     #    environment:
     #      BACKEND_URL: https://clever-conn2.stage.hanaboso.net/api
     #      PHP_WEBROOT: /var/www/html/web
@@ -309,11 +307,15 @@ services:
     logstash:
         image: docker.elastic.co/logstash/logstash:5.6.0
         command: --log.level debug
-        ## TODO: replace with configmap (?)
         ## BEGIN DEV
         volumes:
-          - ./logstash.conf:/usr/share/logstash/pipeline/logstash.conf
-        # END DEV
+          - ./stack/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
+        ## END DEV
+        ## BEGIN STAGE
+        #configs:
+        #  - source: logstash.conf
+        #    target: /usr/share/logstash/pipeline/logstash.conf
+        ## END STAGE
 
     # Metrics
 
@@ -334,16 +336,26 @@ services:
           - ${DEV_IP}:8089:8089/udp
         volumes:
           - influxdb:/var/lib/influxdb
-          ## TODO: replace with configmap (?)
-          ## BEGIN DEV
-          - ./influxdb.conf:/etc/influxdb/influxdb.conf
-          ## END DEV
+        ## BEGIN DEV
+          - ./stack/influxdb.conf:/etc/influxdb/influxdb.conf
+        ## END DEV
+        ## BEGIN STAGE
+        #configs:
+        #  - source: influxdb.conf
+        #    target: /etc/influxdb/influxdb.conf
+        ## END STAGE
     
     telegraf:
         image: telegraf:1.4.2
+        ## BEGIN DEV
         volumes:
-          - ./telegraf.conf:/etc/telegraf/telegraf.conf
-
+          - ./stack/telegraf.conf:/etc/telegraf/telegraf.conf
+        ## END DEV
+        ## BEGIN STAGE
+        #configs:
+        #  - source: telegraf.conf
+        #    target: /etc/telegraf/telegraf.conf
+        ## END STAGE
 
     # Fake Services
     mailhog:
@@ -363,73 +375,81 @@ services:
 
     api-demo-fpm:
         image: dkr.hanaboso.net/pipes/client-cm/api-demo:latest
-        ## TODO: replace with secret
         ## BEGIN DEV
         volumes:
           - ./cc-api-demo/cert:/var/www/html/cert
         ## END DEV
+        ## BEGIN STAGE
+        #secrets:
+        #  - source: stage-staff.pem
+        #    target: /var/www/html/cert/stage-staff.pem
+        #    mode: 0644
+        ## END STAGE
         depends_on:
           - rabbitmq
 
     cron-api:
-        user: ${DEV_UID}:${DEV_GID}
         image: dkr.hanaboso.net/pipes/pipes/python-cron:dev
+        ## BEGIN DEV
+        user: ${DEV_UID}:${DEV_GID}
         environment:
           - DEV_UID={DEV_UID}
           - DEV_GID={DEV_GID}
+        ## END DEV
         ports:
           - ${DEV_IP}:5000:5000
         links:
           - mongo
-        depends_on:
-          - mongo
 
-volumes:
-  ## BEGIN DEV
-  elasticsearch: {}
-  grafana: {}
-  influxdb: {}
-  mongodb: {}
-  rabbitmq: {}
-  redis: {}
-  ## END DEV
-
-  ## BEGIN STAGE
-  #elasticsearch:
-  #  driver: local
-  #  driver_opts:
-  #    type: none
-  #    device: /mnt/docker-volumes/cc-stage1/elasticsearch
-  #    o: bind
-  #grafana:
-  #  driver: local
-  #  driver_opts:
-  #    type: none
-  #    device: /mnt/docker-volumes/cc-stage1/grafana
-  #    o: bind
-  #influxdb:
-  #  driver: local
-  #  driver_opts:
-  #    type: none
-  #    device: /mnt/docker-volumes/cc-stage1/influxdb
-  #    o: bind
-  #mongodb:
-  #  driver: local
-  #  driver_opts:
-  #    type: none
-  #    device: /mnt/docker-volumes/cc-stage1/mongodb
-  #    o: bind
-  #rabbitmq:
-  #  driver: local
-  #  driver_opts:
-  #    type: none
-  #    device: /mnt/docker-volumes/cc-stage1/rabbitmq
-  #    o: bind
-  #redis:
-  #  driver: local
-  #  driver_opts:
-  #    type: none
-  #    device: /mnt/docker-volumes/cc-stage1/redis
-  #    o: bind
-  ## END STAGE
+## BEGIN STAGE
+#volumes:
+#  elasticsearch:
+#    driver: local
+#    driver_opts:
+#      type: none
+#      device: /mnt/docker-volumes/cc-stage1/elasticsearch
+#      o: bind
+#  grafana:
+#    driver: local
+#    driver_opts:
+#      type: none
+#      device: /mnt/docker-volumes/cc-stage1/grafana
+#      o: bind
+#  influxdb:
+#    driver: local
+#    driver_opts:
+#      type: none
+#      device: /mnt/docker-volumes/cc-stage1/influxdb
+#      o: bind
+#  mongodb:
+#    driver: local
+#    driver_opts:
+#      type: none
+#      device: /mnt/docker-volumes/cc-stage1/mongodb
+#      o: bind
+#  rabbitmq:
+#    driver: local
+#    driver_opts:
+#      type: none
+#      device: /mnt/docker-volumes/cc-stage1/rabbitmq
+#      o: bind
+#  redis:
+#    driver: local
+#    driver_opts:
+#      type: none
+#      device: /mnt/docker-volumes/cc-stage1/redis
+#      o: bind
+#
+#configs:
+#  logstash.conf:
+#    file: ./stack/logstash.conf
+#  influxdb.conf:
+#    file: ./stack/influxdb.conf
+#  telegraf.conf:
+#    file: ./stack/telegraf.conf
+#
+#secrets:
+#  stage-staff.pem:
+#    external: true
+## END STAGE
 
