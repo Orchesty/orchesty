@@ -54,6 +54,11 @@ class UniversalMapperNode implements CustomNodeInterface, LoggerAwareInterface
     private $logger;
 
     /**
+     * @var string|null
+     */
+    private $direction;
+
+    /**
      * UniversalMapperNode constructor.
      *
      * @param DocumentManager $dm
@@ -77,6 +82,14 @@ class UniversalMapperNode implements CustomNodeInterface, LoggerAwareInterface
     public function setLogger(LoggerInterface $logger): void
     {
         $this->logger = $logger;
+    }
+
+    /**
+     * @param null|string $direction
+     */
+    public function setDirection(?string $direction): void
+    {
+        $this->direction = $direction ?? '';
     }
 
     /**
@@ -118,18 +131,22 @@ class UniversalMapperNode implements CustomNodeInterface, LoggerAwareInterface
     private function getMapTemplate(ProcessDto $dto): ?MapTemplate
     {
         $systemInstall = $this->systemRepository->getSystemInstallFromHeaders($dto->getHeaders());
-        $topologyName  = CMHeaders::get(CMHeaders::TOPOLOGY_NAME, $dto->getHeaders());
+        $actionName    = CMHeaders::get(CMHeaders::TOPOLOGY_NAME, $dto->getHeaders());
         $actions       = $this->loader->getSystem($systemInstall->getSystem())->getAllowedActions();
 
-        if (!array_key_exists($topologyName, $actions)) {
+        if ($this->direction) {
+            $actionName = sprintf('%s-%s', $actionName, $this->direction);
+        }
+
+        if (!array_key_exists($actionName, $actions)) {
             $this->logger->alert(
-                sprintf('Not allowed action "%s" found for system "%s"!', $topologyName, $systemInstall->getSystem())
+                sprintf('Not allowed action "%s" found for system "%s"!', $actionName, $systemInstall->getSystem())
             );
 
             return NULL;
         }
 
-        return $this->mapRepository->findUnique($systemInstall, $actions[$topologyName]);
+        return $this->mapRepository->findUnique($systemInstall, $actions[$actionName]);
     }
 
 }

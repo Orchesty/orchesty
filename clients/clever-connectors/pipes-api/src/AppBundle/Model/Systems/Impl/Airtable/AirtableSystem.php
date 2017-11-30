@@ -40,8 +40,14 @@ class AirtableSystem implements AuthorizationInterface
         $topologyName = TopologyNameUtils::getTopologyName(TopologyNameUtils::SYNC, $this->getKey());
         $this->addAllowedAction(new ActionDto($topologyName, MapTemplate::DIRECTION_IN));
 
-        $topologyName = TopologyNameUtils::getTopologyName(TopologyNameUtils::CRON, $this->getKey());
+        $topologyName = TopologyNameUtils::getTopologyName(TopologyNameUtils::UPDATED_SUBSCRIBERS, $this->getKey());
         $this->addAllowedAction(new ActionDto($topologyName, MapTemplate::DIRECTION_IN));
+
+        $topologyName = TopologyNameUtils::getTopologyName(TopologyNameUtils::CREATE_CONTACT, $this->getKey());
+        $this->addAllowedAction(new ActionDto($topologyName . '-in', MapTemplate::DIRECTION_IN));
+
+        $topologyName = TopologyNameUtils::getTopologyName(TopologyNameUtils::CREATE_CONTACT, $this->getKey());
+        $this->addAllowedAction(new ActionDto($topologyName . '-out', MapTemplate::DIRECTION_OUT));
     }
 
     /**
@@ -115,11 +121,12 @@ class AirtableSystem implements AuthorizationInterface
     /**
      * @param SystemInstall $systemInstall
      * @param string        $method
+     * @param bool          $appendQuery
      *
      * @return RequestDto
      * @throws SystemException
      */
-    public function getRequestDto(SystemInstall $systemInstall, string $method): RequestDto
+    public function getRequestDto(SystemInstall $systemInstall, string $method, $appendQuery = TRUE): RequestDto
     {
         $this->continueOnAuthorized($systemInstall);
 

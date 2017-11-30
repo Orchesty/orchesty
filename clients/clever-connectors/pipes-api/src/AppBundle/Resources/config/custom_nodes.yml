@@ -51,3 +51,21 @@ services:
             - '@cc.systems.loader'
         calls:
             - [setLogger, ['@monolog.logger']]
+
+    hbpf.custom_node.universal-mapper-in:
+        class: CleverConnectors\AppBundle\Model\CustomNode\UniversalMapperNode
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@cc.systems.loader'
+        calls:
+            - [setLogger, ['@monolog.logger']]
+            - [setDirection, ['in']]
+
+    hbpf.custom_node.universal-mapper-out:
+        class: CleverConnectors\AppBundle\Model\CustomNode\UniversalMapperNode
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@cc.systems.loader'
+        calls:
+            - [setLogger, ['@monolog.logger']]
+            - [setDirection, ['out']]
