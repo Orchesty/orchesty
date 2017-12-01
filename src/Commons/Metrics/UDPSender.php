@@ -22,6 +22,9 @@ use Psr\Log\NullLogger;
 class UDPSender implements LoggerAwareInterface
 {
 
+    private const APCU_IP      = 'metrics_collector_ip';
+    private const APCU_REFRESH = 'metrics_collector_refresh';
+
     private const REFRESH_INTERVAL = 60;
 
     /**
@@ -32,7 +35,7 @@ class UDPSender implements LoggerAwareInterface
     /**
      * @var string
      */
-    private $ip = '';
+    private $ip;
 
     /**
      * @var string
@@ -47,7 +50,7 @@ class UDPSender implements LoggerAwareInterface
     /**
      * @var int
      */
-    private $lastRefresh;
+    private $lastIPRefresh;
 
     /**
      * @var resource|null
@@ -66,7 +69,13 @@ class UDPSender implements LoggerAwareInterface
         $this->collectorPort = $collectorPort;
         $this->logger        = new NullLogger();
 
-        $this->refreshCollectorIp();
+        if (apcu_exists(self::APCU_IP) && apcu_exists(self::APCU_REFRESH)) {
+            $this->ip = apcu_fetch(self::APCU_IP);
+            $this->lastIPRefresh = apcu_fetch(self::APCU_REFRESH);
+        } else {
+            $this->refreshCollectorIp();
+        }
+
         $this->socketCreate();
     }
 
@@ -91,10 +100,6 @@ class UDPSender implements LoggerAwareInterface
      */
     public function send(string $message): bool
     {
-        if ((new DateTime())->getTimestamp() > $this->lastRefresh + self::REFRESH_INTERVAL) {
-            $this->refreshCollectorIp();
-        }
-
         // Recreate socket if needed
         if (socket_last_error($this->socket) != 0) {
             $this->socketCreate();
@@ -127,6 +132,10 @@ class UDPSender implements LoggerAwareInterface
      */
     public function socketSendTo(string $message): bool
     {
+        if (!$this->ip || (new DateTime())->getTimestamp() > $this->lastIPRefresh + self::REFRESH_INTERVAL) {
+            $this->refreshCollectorIp();
+        }
+
         $result = @socket_sendto($this->socket, $message, strlen($message), 0, $this->ip, $this->collectorPort);
 
         if ($result === FALSE) {
@@ -164,8 +173,14 @@ class UDPSender implements LoggerAwareInterface
      */
     private function refreshCollectorIp(): string
     {
-        $this->ip          = gethostbyname($this->collectorHost);
-        $this->lastRefresh = (new DateTime())->getTimestamp();
+        $this->ip            = gethostbyname($this->collectorHost);
+        $this->lastIPRefresh = (new DateTime())->getTimestamp();
+
+        apcu_delete(self::APCU_IP);
+        apcu_delete(self::APCU_REFRESH);
+
+        apcu_add(self::APCU_IP, $this->ip);
+        apcu_add(self::APCU_REFRESH, $this->lastIPRefresh);
 
         return $this->ip;
     }
