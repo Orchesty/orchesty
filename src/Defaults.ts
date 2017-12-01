@@ -18,7 +18,7 @@ class Defaults {
      * @return {INodeConfig}
      */
     public static getNodeConfigDefaults(topoId: string, node: INodeConfigSkeleton, position?: number): INodeConfig {
-        const port = position ? 8007 + position : 8007;
+        const port = position ? 8008 + position : 8008;
 
         return {
             id: node.id,

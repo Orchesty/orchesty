@@ -45,7 +45,6 @@ class HttpWorker implements IWorker {
                 logger.ctxFromMsg(msg),
             );
 
-            const sent = TimeUtils.nowMili();
             request(reqParams, (err: any, response: request.RequestResponse, body: string) => {
 
                 if (err) {

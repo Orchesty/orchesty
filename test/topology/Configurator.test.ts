@@ -58,8 +58,8 @@ const expectedTopo: ITopologyConfig = {
         {
             debug: {
                 host: "node_a",
-                port: 8007,
-                url: "http://node_a:8007/status",
+                port: 8008,
+                url: "http://node_a:8008/status",
             },
             drain: {
                 settings: {
@@ -141,8 +141,8 @@ const expectedTopo: ITopologyConfig = {
         {
             debug: {
                 host: "node_b",
-                port: 8008,
-                url: "http://node_b:8008/status",
+                port: 8009,
+                url: "http://node_b:8009/status",
             },
             drain: {
                 settings: {

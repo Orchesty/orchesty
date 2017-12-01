@@ -67,7 +67,7 @@ class Probe {
         app.get(this.settings.path, (req, resp) => {
             this.checkTopology()
                 .then((result: IProbeResult) => {
-                    resp.set("Accept", "application/json");
+                    resp.set("Content-Type", "application/json");
                     resp.status(200);
                     resp.send(JSON.stringify(result));
                 });
