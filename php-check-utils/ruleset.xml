@@ -4,6 +4,7 @@
     <!--<rule ref="/home/sep/PhpstormProjects/pipes/pf-bundles/vendor/slevomat/coding-standard/SlevomatCodingStandard/ruleset.xml">-->
     <rule ref="./../../slevomat/coding-standard/SlevomatCodingStandard/ruleset.xml">
         <exclude name="SlevomatCodingStandard.ControlStructures.DisallowEqualOperators"/>
+        <exclude name="SlevomatCodingStandard.ControlStructures.RequireYodaComparison"/>
         <exclude name="SlevomatCodingStandard.Exceptions.ReferenceThrowableOnly.ReferencedGeneralException"/>
         <exclude name="SlevomatCodingStandard.TypeHints.TypeHintDeclaration.UselessDocComment"/>
         <exclude name="SlevomatCodingStandard.TypeHints.LongTypeHints.UsedLongTypeHint"/>

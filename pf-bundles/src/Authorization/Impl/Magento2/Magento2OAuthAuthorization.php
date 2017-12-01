@@ -245,15 +245,6 @@ class Magento2OAuthAuthorization extends OAuthAuthorizationAbstract implements M
         return 'Field1 contains connector URL, field2 contains consumer key, field3 contains consumer secret.';
     }
 
-    /**
-     *
-     */
-    private function loadAuthorization(): void
-    {
-        $this->authorization = $this->dm->getRepository(Authorization::class)->findOneBy([
-            'authorizationKey' => $this->getId(),
-        ]);
-    }
 
     /**
      * @return OAuth1Dto

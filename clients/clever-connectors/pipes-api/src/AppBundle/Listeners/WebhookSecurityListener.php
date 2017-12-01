@@ -67,6 +67,7 @@ class WebhookSecurityListener implements EventSubscriberInterface
                 'userId'       => $req->attributes->get('userId'),
             ];
 
+            /** @var Webhook $res */
             $res = $this->repo->findOneBy([
                 'nodeName'     => $params['nodeName'],
                 'topologyName' => $params['topologyName'],

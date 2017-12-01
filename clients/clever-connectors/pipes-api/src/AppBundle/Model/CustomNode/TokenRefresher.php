@@ -4,6 +4,7 @@ namespace CleverConnectors\AppBundle\Model\CustomNode;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\OAuth2Interface;
+use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\SystemLoader;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
@@ -43,10 +44,12 @@ class TokenRefresher implements CustomNodeInterface
      * @param ProcessDto $dto
      *
      * @return ProcessDto
+     * @throws SystemException
      */
     public function process(ProcessDto $dto): ProcessDto
     {
         $systemInstall = json_decode($dto->getData(), TRUE);
+        /** @var SystemInstall $systemInstall */
         $systemInstall = $this->dm->getRepository(SystemInstall::class)->find($systemInstall['_id']['$id']);
 
         if (!$systemInstall->getExpires()) {

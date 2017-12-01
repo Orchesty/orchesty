@@ -67,6 +67,7 @@ class NodeHandler
      * @param string $id
      *
      * @return array
+     * @throws NodeException
      */
     public function getNode(string $id): array
     {
@@ -78,6 +79,7 @@ class NodeHandler
      * @param array  $data
      *
      * @return array
+     * @throws NodeException
      */
     public function updateNode(string $id, array $data): array
     {
@@ -112,6 +114,7 @@ class NodeHandler
      */
     private function getNodeById(string $id): Node
     {
+        /** @var Node $res */
         $res = $this->nodeRepository->find($id);
 
         if (!$res) {

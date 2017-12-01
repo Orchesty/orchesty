@@ -7,6 +7,7 @@ use Hanaboso\PipesFramework\Commons\Transport\Soap\Dto\Wsdl\RequestDto;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
+use SoapClient;
 use SoapFault;
 
 /**

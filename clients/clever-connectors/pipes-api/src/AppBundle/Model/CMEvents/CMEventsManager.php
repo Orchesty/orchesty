@@ -11,6 +11,7 @@ namespace CleverConnectors\AppBundle\Model\CMEvents;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
+use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\SystemInterface;
 use CleverConnectors\AppBundle\Model\Systems\SystemLoader;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
@@ -103,6 +104,7 @@ class CMEventsManager implements LoggerAwareInterface
      * @param string  $event
      *
      * @throws CleverConnectorsException
+     * @throws SystemException
      */
     public function runEvent(Request $request, string $userId, string $event): void
     {
@@ -147,6 +149,8 @@ class CMEventsManager implements LoggerAwareInterface
      * @param array         $data
      *
      * @return SystemInstall
+     * @throws CleverConnectorsException
+     * @throws SystemException
      */
     public function saveEventsForSystemInstall(
         SystemInstall $systemInstall,

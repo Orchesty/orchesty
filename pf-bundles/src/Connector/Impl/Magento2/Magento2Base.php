@@ -76,7 +76,7 @@ abstract class Magento2Base implements ConnectorInterface
      *
      * @return StreamInterface|string
      */
-    protected function processRequest(string $method, string $urlPart, string $body = ''): StreamInterface
+    protected function processRequest(string $method, string $urlPart, string $body = '')
     {
 
         $dto = new RequestDto($method, new Uri($this->authorization->getUrl() . $urlPart));

@@ -13,7 +13,7 @@ use Exception;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use InvalidArgumentException;
-use MongoDB\BSON\ObjectID;
+use MongoDB\BSON\ObjectId;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -77,16 +77,17 @@ class GetTopologyCommand extends Command implements LoggerAwareInterface
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         try {
+            /** @var Node $node */
             $node = $this->dm->getRepository(Node::class)->find($input->getArgument('node-id'));
 
-            if(!$node) {
+            if (!$node) {
                 throw new InvalidArgumentException(sprintf('The node[id=%s]', $input->getArgument('node-id')));
             }
 
             $topology = $this
                 ->dm->getDocumentCollection(Topology::class)
                 ->findOne(
-                    ['_id' => new ObjectID($node->getTopology())],
+                    ['_id' => new ObjectId($node->getTopology())],
                     ['_id', 'name']
                 );
 

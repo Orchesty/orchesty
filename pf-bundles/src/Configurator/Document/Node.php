@@ -41,7 +41,7 @@ class Node
     protected $topology;
 
     /**
-     * @var EmbedNode[]|PersistentCollection
+     * @var EmbedNode[]
      *
      * @MongoDB\EmbedMany(targetDocument="Hanaboso\PipesFramework\Configurator\Document\Embed\EmbedNode")
      */

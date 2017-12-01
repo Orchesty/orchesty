@@ -57,6 +57,7 @@ class MapManager
      */
     public function get(string $id): MapTemplate
     {
+        /** @var MapTemplate $mapTemplate */
         $mapTemplate = $this->mapTemplateRepository->find($id);
 
         if (!$mapTemplate) {

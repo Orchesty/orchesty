@@ -4,7 +4,6 @@ namespace Hanaboso\PipesFramework\Acl\Document;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Doctrine\ODM\MongoDB\PersistentCollection;
 use Hanaboso\PipesFramework\Acl\Entity\GroupInterface;
 use Hanaboso\PipesFramework\Acl\Entity\RuleInterface;
 use Hanaboso\PipesFramework\Commons\Traits\Document\IdTrait;
@@ -34,14 +33,14 @@ class Group extends DocumentAbstract implements GroupInterface
      *
      * @ODM\ReferenceMany(targetDocument="Hanaboso\PipesFramework\Acl\Document\Rule")
      */
-    private $rules;
+    private $rules = [];
 
     /**
      * @var UserInterface[]|ArrayCollection
      *
      * @ODM\ReferenceMany(targetDocument="Hanaboso\PipesFramework\User\Document\User")
      */
-    private $users;
+    private $users = [];
 
     /**
      * @var int
@@ -71,7 +70,7 @@ class Group extends DocumentAbstract implements GroupInterface
     }
 
     /**
-     * @return RuleInterface[]|PersistentCollection|ArrayCollection|null
+     * @return RuleInterface[]|ArrayCollection
      */
     public function getRules()
     {
@@ -103,7 +102,7 @@ class Group extends DocumentAbstract implements GroupInterface
     }
 
     /**
-     * @return UserInterface[]|PersistentCollection|ArrayCollection|null
+     * @return UserInterface[]|ArrayCollection
      */
     public function getUsers()
     {

@@ -1,7 +1,7 @@
 {
   "name": "pipes/php-check-utils",
   "description": "PHP check utils",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "license": "proprietary",
   "authors": [
     {
@@ -11,9 +11,9 @@
   ],
   "require": {
     "php": ">=7.1",
-    "phpstan/phpstan": "^0.8",
-    "phpunit/phpunit": "^6.3",
-    "slevomat/coding-standard": "^3.3",
-    "squizlabs/php_codesniffer": "^3.0"
+    "phpstan/phpstan": "^0.9",
+    "phpunit/phpunit": "^6.5",
+    "slevomat/coding-standard": "^4.0",
+    "squizlabs/php_codesniffer": "^3.1"
   }
 }

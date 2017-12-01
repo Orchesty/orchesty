@@ -7,6 +7,7 @@ use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\TypeEnum;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\DataLayout\Exceptions\LayoutException;
+use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\SystemLoader;
 use CleverConnectors\AppBundle\Model\Systems\Traits\MapTrait;
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -51,6 +52,7 @@ class LayoutManager
      */
     public function get(string $id): DataLayout
     {
+        /** @var DataLayout $layout */
         $layout = $this->dm->getRepository(DataLayout::class)->find($id);
 
         if (!$layout) {
@@ -86,7 +88,9 @@ class LayoutManager
      * @param array         $data
      *
      * @return DataLayout
+     * @throws CleverConnectorsException
      * @throws LayoutException
+     * @throws SystemException
      */
     public function createDataLayout(SystemInstall $systemInstall, array $data): DataLayout
     {

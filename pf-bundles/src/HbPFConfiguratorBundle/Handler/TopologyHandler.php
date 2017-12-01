@@ -107,6 +107,7 @@ class TopologyHandler
      * @param string $id
      *
      * @return array
+     * @throws TopologyException
      */
     public function getTopology(string $id): array
     {
@@ -135,6 +136,7 @@ class TopologyHandler
      * @param array  $data
      *
      * @return array
+     * @throws TopologyException
      */
     public function updateTopology(string $id, array $data): array
     {
@@ -150,6 +152,7 @@ class TopologyHandler
      * @param string $id
      *
      * @return string
+     * @throws TopologyException
      */
     public function getTopologySchema(string $id): string
     {
@@ -162,6 +165,7 @@ class TopologyHandler
      * @param array  $data
      *
      * @return string[]
+     * @throws TopologyException
      */
     public function saveTopologySchema(string $id, string $content, array $data): array
     {
@@ -175,6 +179,7 @@ class TopologyHandler
      * @param string $id
      *
      * @return ResponseDto
+     * @throws TopologyException
      */
     public function publishTopology(string $id): ResponseDto
     {
@@ -199,6 +204,7 @@ class TopologyHandler
      * @param string $id
      *
      * @return string[]
+     * @throws TopologyException
      */
     public function cloneTopology(string $id): array
     {
@@ -212,6 +218,7 @@ class TopologyHandler
      * @param string $id
      *
      * @return ResponseDto
+     * @throws TopologyException
      */
     public function deleteTopology(string $id): ResponseDto
     {
@@ -253,6 +260,7 @@ class TopologyHandler
      */
     private function getTopologyById(string $id): Topology
     {
+        /** @var Topology $res */
         $res = $this->dm->getRepository(Topology::class)->findOneBy(['id' => $id]);
 
         if (!$res) {
