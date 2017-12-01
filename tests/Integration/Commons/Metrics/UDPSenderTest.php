@@ -29,7 +29,7 @@ final class UDPSenderTest extends TestCase
     /**
      * @covers UDPSender::send()
      */
-    public function testSendFailed(): void
+    public function testSendToInvalidHost(): void
     {
         $sender = new UDPSender('...', 1111);
         $socket = $sender->getSocket();

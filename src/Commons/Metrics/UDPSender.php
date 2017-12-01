@@ -130,7 +130,7 @@ class UDPSender implements LoggerAwareInterface
      *
      * @return bool
      */
-    public function socketSendTo(string $message): bool
+    private function socketSendTo(string $message): bool
     {
         if (!$this->ip || (new DateTime())->getTimestamp() > $this->lastIPRefresh + self::REFRESH_INTERVAL) {
             $this->refreshCollectorIp();
