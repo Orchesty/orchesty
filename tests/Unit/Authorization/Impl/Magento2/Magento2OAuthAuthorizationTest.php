@@ -16,7 +16,7 @@ use Hanaboso\PipesFramework\Authorization\Exception\AuthorizationException;
 use Hanaboso\PipesFramework\Authorization\Impl\Magento2\Magento2Authorization;
 use Hanaboso\PipesFramework\Authorization\Impl\Magento2\Magento2OAuthAuthorization;
 use Hanaboso\PipesFramework\Authorization\Provider\OAuth1Provider;
-use PHPUnit_Framework_MockObject_MockObject;
+use PHPUnit\Framework\MockObject\MockObject;
 use Tests\KernelTestCaseAbstract;
 use Tests\PrivateTrait;
 
@@ -43,6 +43,7 @@ final class Magento2OAuthAuthorizationTest extends KernelTestCaseAbstract
      * @covers Magento2OAuthAuthorization::getHeaders()
      * @covers Magento2OAuthAuthorization::getSettings()
      * @covers Magento2OAuthAuthorization::saveSettings()
+     * @throws AuthorizationException
      */
     public function testGetHeaders(): void
     {
@@ -78,6 +79,7 @@ final class Magento2OAuthAuthorizationTest extends KernelTestCaseAbstract
      * @covers Magento2OAuthAuthorization::getHeaders()
      * @covers Magento2OAuthAuthorization::getSettings()
      * @covers Magento2OAuthAuthorization::saveSettings()
+     * @throws AuthorizationException
      */
     public function testGetHeadersMissingUrl(): void
     {
@@ -98,6 +100,7 @@ final class Magento2OAuthAuthorizationTest extends KernelTestCaseAbstract
      * @covers Magento2OAuthAuthorization::getHeaders()
      * @covers Magento2OAuthAuthorization::getSettings()
      * @covers Magento2OAuthAuthorization::saveSettings()
+     * @throws AuthorizationException
      */
     public function testGetHeadersMissingKey(): void
     {
@@ -118,6 +121,7 @@ final class Magento2OAuthAuthorizationTest extends KernelTestCaseAbstract
      * @covers Magento2OAuthAuthorization::getHeaders()
      * @covers Magento2OAuthAuthorization::getSettings()
      * @covers Magento2OAuthAuthorization::saveSettings()
+     * @throws AuthorizationException
      */
     public function testGetHeadersMissingSecret(): void
     {
@@ -137,6 +141,7 @@ final class Magento2OAuthAuthorizationTest extends KernelTestCaseAbstract
      * @covers Magento2OAuthAuthorization::getUrl()
      * @covers Magento2OAuthAuthorization::getSettings()
      * @covers Magento2OAuthAuthorization::saveSettings()
+     * @throws AuthorizationException
      */
     public function testGetUrl(): void
     {
@@ -154,6 +159,7 @@ final class Magento2OAuthAuthorizationTest extends KernelTestCaseAbstract
      * @covers Magento2OAuthAuthorization::getUrl()
      * @covers Magento2OAuthAuthorization::getSettings()
      * @covers Magento2OAuthAuthorization::saveSettings()
+     * @throws AuthorizationException
      */
     public function testGetSettingsMissingUrl(): void
     {
@@ -174,6 +180,7 @@ final class Magento2OAuthAuthorizationTest extends KernelTestCaseAbstract
      * @covers Magento2OAuthAuthorization::getUrl()
      * @covers Magento2OAuthAuthorization::getSettings()
      * @covers Magento2OAuthAuthorization::saveSettings()
+     * @throws AuthorizationException
      */
     public function testGetSettingsMissingKey(): void
     {
@@ -194,6 +201,7 @@ final class Magento2OAuthAuthorizationTest extends KernelTestCaseAbstract
      * @covers Magento2OAuthAuthorization::getUrl()
      * @covers Magento2OAuthAuthorization::getSettings()
      * @covers Magento2OAuthAuthorization::saveSettings()
+     * @throws AuthorizationException
      */
     public function testGetSettingsMissingSecret(): void
     {
@@ -221,6 +229,7 @@ final class Magento2OAuthAuthorizationTest extends KernelTestCaseAbstract
     /**
      * @covers Magento2OAuthAuthorization::authorize()
      * @covers Magento2OAuthAuthorization::saveSettings()
+     * @throws AuthorizationException
      */
     public function testAuthorize(): void
     {
@@ -237,6 +246,7 @@ final class Magento2OAuthAuthorizationTest extends KernelTestCaseAbstract
     /**
      * @covers Magento2OAuthAuthorization::saveSettings()
      * @covers Magento2OAuthAuthorization::saveToken()
+     * @throws AuthorizationException
      */
     public function testSaveToken(): void
     {
@@ -251,9 +261,9 @@ final class Magento2OAuthAuthorizationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @return Magento2OAuthAuthorization|PHPUnit_Framework_MockObject_MockObject
+     * @return Magento2OAuthAuthorization|MockObject
      */
-    private function getMockedAuthorization(): PHPUnit_Framework_MockObject_MockObject
+    private function getMockedAuthorization(): MockObject
     {
         $innerAuthorization = (new Authorization('magento2.oauth'))->setToken([
             'oauth_token'        => 'token',
@@ -263,16 +273,16 @@ final class Magento2OAuthAuthorizationTest extends KernelTestCaseAbstract
         $provider = $this->createMock(OAuth1Provider::class);
         $provider->method('getAuthorizeHeader')->willReturn('Bearer access_token');
 
-        /** @var DocumentRepository|PHPUnit_Framework_MockObject_MockObject $repository */
+        /** @var DocumentRepository|MockObject $repository */
         $repository = $this->createPartialMock(DocumentRepository::class, ['findOneBy']);
         $repository->method('findOneBy')->willReturn($innerAuthorization);
 
-        /** @var DocumentManager|PHPUnit_Framework_MockObject_MockObject $documentManager */
+        /** @var DocumentManager|MockObject $documentManager */
         $documentManager = $this->createPartialMock(DocumentManager::class, ['getRepository', 'flush']);
         $documentManager->method('getRepository')->willReturn($repository);
         $documentManager->method('flush')->willReturn(NULL);
 
-        /** @var Magento2OAuthAuthorization|PHPUnit_Framework_MockObject_MockObject $authorization */
+        /** @var Magento2OAuthAuthorization|MockObject $authorization */
         $authorization = $this->getMockBuilder(Magento2OAuthAuthorization::class)
             ->setMethods(['getToken', 'loadAuthorization'])
             ->setConstructorArgs([

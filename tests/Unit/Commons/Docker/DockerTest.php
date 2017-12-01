@@ -12,8 +12,8 @@ use Hanaboso\PipesFramework\Commons\Docker\Docker;
 use Hanaboso\PipesFramework\Commons\Docker\DockerClient;
 use Hanaboso\PipesFramework\Commons\Docker\Endpoint\Containers;
 use Hanaboso\PipesFramework\Commons\Docker\Endpoint\EndpointAbstract;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use PHPUnit_Framework_MockObject_MockObject;
 use Symfony\Component\Intl\Exception\NotImplementedException;
 
 /**
@@ -25,7 +25,7 @@ class DockerTest extends TestCase
 {
 
     /**
-     * @var DockerClient|PHPUnit_Framework_MockObject_MockObject
+     * @var DockerClient|MockObject
      */
     protected $dockerClient;
 

@@ -15,8 +15,8 @@ use Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider;
 use Hanaboso\PipesFramework\Authorization\Wrapper\OAuth2Wrapper;
 use Hanaboso\PipesFramework\Commons\Redirect\RedirectInterface;
 use League\OAuth2\Client\Token\AccessToken;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use PHPUnit_Framework_MockObject_MockObject;
 
 /**
  * Class OAuth2ProviderTest
@@ -33,7 +33,7 @@ final class OAuth2ProviderTest extends TestCase
      */
     public function testAuthorize(string $url): void
     {
-        /** @var PHPUnit_Framework_MockObject_MockObject|OAuth2Provider $provider */
+        /** @var MockObject|OAuth2Provider $provider */
         $provider = $this->getMockedProvider($url);
         $dto      = new OAuth2Dto('cl_id', 'cl_sec', '127.0.0.4/red', 'authorize/url', 'token/url');
         $dto->setCustomAppDependencies(uniqid(), 'magento');
@@ -48,7 +48,7 @@ final class OAuth2ProviderTest extends TestCase
      */
     public function testAuthorizeCustomApp(string $url): void
     {
-        /** @var PHPUnit_Framework_MockObject_MockObject|OAuth2Provider $provider */
+        /** @var MockObject|OAuth2Provider $provider */
         $provider = $this->getMockedProvider($url);
         $dto      = new OAuth2Dto('cl_id', 'cl_sec', '127.0.0.4/red', 'authorize/url', 'token/url');
 
@@ -72,10 +72,12 @@ final class OAuth2ProviderTest extends TestCase
      *
      * @param array $request
      * @param bool  $exception
+     *
+     * @throws AuthorizationException
      */
     public function testGetAccessToken(array $request, bool $exception): void
     {
-        /** @var OAuth2Provider|PHPUnit_Framework_MockObject_MockObject $provider */
+        /** @var OAuth2Provider|MockObject $provider */
         $provider = $this->getMockedProvider('');
         $dto      = new OAuth2Dto('cl_id', 'cl_sec', '127.0.0.4/red', 'authorize/url', 'token/url');
 
@@ -106,10 +108,12 @@ final class OAuth2ProviderTest extends TestCase
      *
      * @param array $token
      * @param bool  $exception
+     *
+     * @throws AuthorizationException
      */
     public function testRefreshAccessToken(array $token, bool $exception): void
     {
-        /** @var OAuth2Provider|PHPUnit_Framework_MockObject_MockObject $provider */
+        /** @var OAuth2Provider|MockObject $provider */
         $provider = $this->getMockedProvider('');
         $dto      = new OAuth2Dto('cl_id', 'cl_sec', '127.0.0.4/red', 'authorize/url', 'token/url');
 
@@ -143,9 +147,9 @@ final class OAuth2ProviderTest extends TestCase
     /**
      * @param string $authorizeUrl
      *
-     * @return PHPUnit_Framework_MockObject_MockObject
+     * @return MockObject
      */
-    private function getMockedProvider(string $authorizeUrl): PHPUnit_Framework_MockObject_MockObject
+    private function getMockedProvider(string $authorizeUrl): MockObject
     {
         $redirect = $this->createMock(RedirectInterface::class);
         $redirect->method('make')->willReturn(TRUE);

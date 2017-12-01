@@ -13,11 +13,12 @@ use Hanaboso\PipesFramework\Commons\Enum\TypeEnum;
 use Hanaboso\PipesFramework\Configurator\Document\Embed\EmbedNode;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
+use Hanaboso\PipesFramework\Configurator\Exception\NodeException;
 use Hanaboso\PipesFramework\TopologyGenerator\Actions\GenerateTopologyActions;
 use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\Generator;
 use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\VolumePathDefinitionFactory;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use PHPUnit_Framework_MockObject_MockObject;
 use Tests\PrivateTrait;
 
 /**
@@ -31,17 +32,17 @@ class GenerateTopologyActionsTest extends TestCase
     use PrivateTrait;
 
     /**
-     * @var DockerHandler|PHPUnit_Framework_MockObject_MockObject
+     * @var DockerHandler|MockObject
      */
     protected $dockerHandler;
 
     /**
-     * @var VolumePathDefinitionFactory|PHPUnit_Framework_MockObject_MockObject
+     * @var VolumePathDefinitionFactory|MockObject
      */
     protected $volumePathDefinitionFactory;
 
     /**
-     * @var GenerateTopologyActions|PHPUnit_Framework_MockObject_MockObject
+     * @var GenerateTopologyActions|MockObject
      */
     protected $actions;
 
@@ -95,6 +96,7 @@ class GenerateTopologyActionsTest extends TestCase
 
     /**
      * @return array
+     * @throws NodeException
      */
     public function generateTopology(): array
     {

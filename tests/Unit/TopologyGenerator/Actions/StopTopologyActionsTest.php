@@ -12,8 +12,8 @@ use Hanaboso\PipesFramework\Commons\Docker\Handler\DockerHandler;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\TopologyGenerator\Actions\StopTopologyActions;
 use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\DockerComposeCli;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use PHPUnit_Framework_MockObject_MockObject;
 use Tests\PrivateTrait;
 
 /**
@@ -27,17 +27,17 @@ class StopTopologyActionsTest extends TestCase
     use PrivateTrait;
 
     /**
-     * @var DockerHandler|PHPUnit_Framework_MockObject_MockObject
+     * @var DockerHandler|MockObject
      */
     protected $dockerHandler;
 
     /**
-     * @var StopTopologyActions|PHPUnit_Framework_MockObject_MockObject
+     * @var StopTopologyActions|MockObject
      */
     protected $actions;
 
     /**
-     * @var DockerComposeCli|PHPUnit_Framework_MockObject_MockObject
+     * @var DockerComposeCli|MockObject
      */
     protected $dockerComposeCli;
 

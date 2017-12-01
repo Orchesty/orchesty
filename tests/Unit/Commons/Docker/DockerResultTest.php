@@ -9,8 +9,8 @@
 namespace Tests\Unit\Commons\Docker;
 
 use Hanaboso\PipesFramework\Commons\Docker\DockerResult;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use PHPUnit_Framework_MockObject_MockObject;
 use Psr\Http\Message\StreamInterface;
 
 /**
@@ -22,7 +22,7 @@ class DockerResultTest extends TestCase
 {
 
     /**
-     * @var StreamInterface|PHPUnit_Framework_MockObject_MockObject
+     * @var StreamInterface|MockObject
      */
     protected $stream;
 

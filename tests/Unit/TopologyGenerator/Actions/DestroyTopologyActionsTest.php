@@ -13,11 +13,12 @@ use Hanaboso\PipesFramework\Commons\Enum\TypeEnum;
 use Hanaboso\PipesFramework\Configurator\Document\Embed\EmbedNode;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
+use Hanaboso\PipesFramework\Configurator\Exception\NodeException;
 use Hanaboso\PipesFramework\RabbitMq\Handler\RabbitMqHandler;
 use Hanaboso\PipesFramework\TopologyGenerator\Actions\DestroyTopologyActions;
 use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\DockerComposeCli;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use PHPUnit_Framework_MockObject_MockObject;
 use Tests\PrivateTrait;
 
 /**
@@ -31,22 +32,22 @@ class DestroyTopologyActionsTest extends TestCase
     use PrivateTrait;
 
     /**
-     * @var DockerHandler|PHPUnit_Framework_MockObject_MockObject
+     * @var DockerHandler|MockObject
      */
     protected $dockerHandler;
 
     /**
-     * @var RabbitMqHandler|PHPUnit_Framework_MockObject_MockObject
+     * @var RabbitMqHandler|MockObject
      */
     protected $rabbitMqHandler;
 
     /**
-     * @var DestroyTopologyActions|PHPUnit_Framework_MockObject_MockObject
+     * @var DestroyTopologyActions|MockObject
      */
     protected $actions;
 
     /**
-     * @var DockerComposeCli|PHPUnit_Framework_MockObject_MockObject
+     * @var DockerComposeCli|MockObject
      */
     protected $dockerComposeCli;
 
@@ -113,6 +114,8 @@ class DestroyTopologyActionsTest extends TestCase
      * @param string $name
      * @param array  $queues
      * @param string $exchange
+     *
+     * @throws NodeException
      */
     public function testDeleteQueues(string $id, string $name, array $queues, string $exchange): void
     {

@@ -14,8 +14,8 @@ use Hanaboso\PipesFramework\RabbitMq\CallbackStatus;
 use Hanaboso\PipesFramework\RabbitMq\Consumer\SyncCallbackAbstract;
 use Hanaboso\PipesFramework\RabbitMq\Exception\RabbitMqException;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Repeater\Repeater;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use PHPUnit_Framework_MockObject_MockObject;
 
 /**
  * Class BaseCallbackAbstractTest
@@ -34,6 +34,7 @@ class SyncCallbackAbstractTest extends TestCase
      * @param int|null             $callbackStatus
      *
      * @return void
+     * @throws RabbitMqException
      */
     public function testHandleMessage(
         SyncCallbackAbstract $baseCallback,
@@ -133,11 +134,11 @@ class SyncCallbackAbstractTest extends TestCase
     }
 
     /**
-     * @return Repeater|PHPUnit_Framework_MockObject_MockObject
+     * @return Repeater|MockObject
      */
-    private function getRepeater(): PHPUnit_Framework_MockObject_MockObject
+    private function getRepeater(): MockObject
     {
-        /** @var PHPUnit_Framework_MockObject_MockObject $repeater */
+        /** @var MockObject $repeater */
         $repeater = $this->getMockBuilder(Repeater::class)
             ->disableOriginalConstructor()
             ->getMock();
