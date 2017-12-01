@@ -129,8 +129,7 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
      * @return mixed
      * @throws Exception
      */
-    public function processMessage(Message $message, Channel $channel, Client $client,
-                                   LoopInterface $loop): PromiseInterface
+    public function processMessage(Message $message, Channel $channel, Client $client, LoopInterface $loop)
     {
         return $this
             ->validate($message)
@@ -189,7 +188,7 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
      * @param Channel $channel
      * @param Message $message
      *
-     * @return bool|int|PromiseInterface
+     * @return PromiseInterface
      */
     private function testAction(Channel $channel, Message $message): PromiseInterface
     {

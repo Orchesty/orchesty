@@ -119,6 +119,7 @@ class StartingPointHandler
      */
     public function getTopology(string $topologyId): Topology
     {
+        /** @var Topology $topology */
         $topology = $this->topologyRepository->find($topologyId);
 
         if (!$topology) {
@@ -136,6 +137,7 @@ class StartingPointHandler
      */
     public function getNode(string $nodeId): Node
     {
+        /** @var Node $node */
         $node = $this->nodeRepository->find($nodeId);
 
         if (!$node) {
@@ -149,6 +151,8 @@ class StartingPointHandler
      * @param Request $request
      * @param string  $topologyName
      * @param string  $nodeName
+     *
+     * @throws Exception
      */
     public function runWithRequest(Request $request, string $topologyName, string $nodeName): void
     {
@@ -163,6 +167,8 @@ class StartingPointHandler
      * @param Request $request
      * @param string  $topologyId
      * @param string  $nodeId
+     *
+     * @throws Exception
      */
     public function runWithRequestById(Request $request, string $topologyId, string $nodeId): void
     {
@@ -173,6 +179,8 @@ class StartingPointHandler
      * @param string      $topologyName
      * @param string      $nodeName
      * @param string|null $body
+     *
+     * @throws Exception
      */
     public function run(string $topologyName, string $nodeName, ?string $body = NULL): void
     {
@@ -186,6 +194,7 @@ class StartingPointHandler
      * @param string $topologyId
      *
      * @return array
+     * @throws Exception
      */
     public function runTest(string $topologyId): array
     {

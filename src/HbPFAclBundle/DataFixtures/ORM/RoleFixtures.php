@@ -10,6 +10,7 @@ use Hanaboso\PipesFramework\Acl\Factory\MaskFactory;
 use Hanaboso\PipesFramework\User\Entity\User;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\Security\Core\Encoder\EncoderFactory;
 use Symfony\Component\Security\Core\Encoder\PasswordEncoderInterface;
 
 /**
@@ -44,8 +45,10 @@ class RoleFixtures implements FixtureInterface, ContainerAwareInterface
             return;
         }
 
+        /** @var EncoderFactory $factory */
+        $factory = $this->container->get('security.encoder_factory');
         /** @var PasswordEncoderInterface $encoder */
-        $encoder    = $this->container->get('security.encoder_factory')->getEncoder(User::class);
+        $encoder    = $factory->getEncoder(User::class);
         $rules      = $this->container->getParameter('acl_rule')['fixture_groups'];
         $ownerRules = $this->container->getParameter('acl_rule')['owner'];
 

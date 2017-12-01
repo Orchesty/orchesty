@@ -43,7 +43,7 @@ interface OAuth2DtoInterface
     public function getTokenUrl(): string;
 
     /**
-     * @return mixed
+     * @return bool
      */
     public function isCustomApp(): bool;
 

@@ -6,11 +6,11 @@ use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Transport\Soap\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Commons\Transport\Soap\Dto\ResponseHeaderDto;
 use Hanaboso\PipesFramework\Commons\Transport\Soap\Dto\Wsdl\RequestDto;
-use Hanaboso\PipesFramework\Commons\Transport\Soap\SoapClient;
 use Hanaboso\PipesFramework\Commons\Transport\Soap\SoapClientFactory;
 use Hanaboso\PipesFramework\Commons\Transport\Soap\SoapManager;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use PHPUnit_Framework_MockObject_MockObject;
+use SoapClient;
 
 /**
  * Class SoapManagerTest
@@ -32,7 +32,7 @@ final class SoapManagerTest extends TestCase
         $client->method('__soapCall')->willReturn($soapCallResponse);
         $client->method('__getLastResponseHeaders')->willReturn($lastResponseHeaders);
 
-        /** @var PHPUnit_Framework_MockObject_MockObject|SoapClientFactory $soapClientFactory */
+        /** @var MockObject|SoapClientFactory $soapClientFactory */
         $soapClientFactory = $this->createPartialMock(SoapClientFactory::class, ['create']);
         $soapClientFactory->method('create')->willReturn($client);
 

@@ -195,16 +195,6 @@ class Magento2Authorization extends AuthorizationAbstract implements Magento2Aut
     }
 
     /**
-     *
-     */
-    private function loadAuthorization(): void
-    {
-        $this->authorization = $this->dm->getRepository(Authorization::class)->findOneBy([
-            'authorizationKey' => $this->getId(),
-        ]);
-    }
-
-    /**
      * @return string
      */
     private function getAuthorizationUrl(): string

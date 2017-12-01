@@ -19,17 +19,20 @@ class TokenRepository extends EntityRepository
     /**
      * @param string $hash
      *
-     * @return Token|array|object|null
+     * @return Token|null
      */
     public function getFreshToken(string $hash): ?Token
     {
-        return $this->createQueryBuilder('t')
+        /** @var Token $token */
+        $token = $this->createQueryBuilder('t')
             ->where('t.hash = :hash')
             ->andWhere('t.created > :created')
             ->setParameter('hash', $hash)
             ->setParameter('created', new DateTime('-1 day'))
             ->getQuery()
             ->getOneOrNullResult();
+
+        return $token;
     }
 
     /**

@@ -42,7 +42,7 @@ class SoapHelper
     /**
      * @param RequestDtoAbstract $request
      *
-     * @return SoapParam[]|null
+     * @return null|array
      */
     public static function composeArguments(RequestDtoAbstract $request): ?array
     {

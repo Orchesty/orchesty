@@ -3,7 +3,6 @@
 namespace Hanaboso\PipesFramework\Acl\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\PersistentCollection;
 use Hanaboso\PipesFramework\User\Entity\UserInterface;
 
 /**
@@ -30,7 +29,7 @@ interface GroupInterface extends EntityInterface
     public function setName(string $name): GroupInterface;
 
     /**
-     * @return RuleInterface[]|PersistentCollection|ArrayCollection|null
+     * @return RuleInterface[]|ArrayCollection
      */
     public function getRules();
 
@@ -49,7 +48,7 @@ interface GroupInterface extends EntityInterface
     public function addRule(RuleInterface $rule): GroupInterface;
 
     /**
-     * @return UserInterface[]|PersistentCollection|ArrayCollection|null
+     * @return UserInterface[]|ArrayCollection
      */
     public function getUsers();
 

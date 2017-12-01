@@ -149,6 +149,7 @@ class UserManager
             );
         }
 
+        /** @var UserInterface $user */
         $user = $this->tmpUserRepository->findOneBy(['email' => $data['email']]);
 
         if (!$user) {
@@ -246,7 +247,7 @@ class UserManager
     }
 
     /**
-     * @param UserInterface|OdmUser|OrmUser $user
+     * @param OdmUser|OrmUser $user
      *
      * @return UserInterface
      * @throws UserManagerException

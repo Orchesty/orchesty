@@ -28,7 +28,7 @@ abstract class AuthorizationAbstract implements AuthorizationInterface
     protected $dm;
 
     /**
-     * @var Authorization
+     * @var Authorization|null
      */
     protected $authorization;
 
@@ -84,6 +84,18 @@ abstract class AuthorizationAbstract implements AuthorizationInterface
     public function isAuthorized(): bool
     {
         return $this->authorized;
+    }
+
+    /**
+     *
+     */
+    protected function loadAuthorization(): void
+    {
+        /** @var Authorization $auth */
+        $auth                = $this->dm->getRepository(Authorization::class)->findOneBy([
+            'authorizationKey' => $this->getId(),
+        ]);
+        $this->authorization = $auth;
     }
 
 }

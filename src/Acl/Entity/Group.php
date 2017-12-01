@@ -4,7 +4,6 @@ namespace Hanaboso\PipesFramework\Acl\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\ORM\PersistentCollection;
 use Hanaboso\PipesFramework\Commons\Traits\Entity\IdTrait;
 use Hanaboso\PipesFramework\User\Entity\UserInterface;
 
@@ -29,28 +28,28 @@ class Group extends EntityAbstract implements GroupInterface
     private $name;
 
     /**
-     * @var RuleInterface[]|null
+     * @var RuleInterface[]|ArrayCollection
      *
      * @ORM\OneToMany(targetEntity="Hanaboso\PipesFramework\Acl\Entity\Rule", mappedBy="group")
      */
-    private $rules;
+    private $rules = [];
 
     /**
-     * @var UserInterface[]|null
+     * @var UserInterface[]|ArrayCollection
      *
      * @ORM\ManyToMany(targetEntity="Hanaboso\PipesFramework\User\Entity\User")
      * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
      */
-    private $users;
+    private $users = [];
 
     /**
-     * @var UserInterface[]|null
+     * @var UserInterface[]
      *
      * @ORM\ManyToMany(targetEntity="Hanaboso\PipesFramework\User\Entity\User")
      * @ORM\JoinColumn(name="group_id", referencedColumnName="id", nullable=true)
      * @ORM\JoinTable(name="group_owner")
      */
-    protected $owner;
+    protected $owner = [];
 
     /**
      * @var int
@@ -80,7 +79,7 @@ class Group extends EntityAbstract implements GroupInterface
     }
 
     /**
-     * @return RuleInterface[]|PersistentCollection|ArrayCollection|null
+     * @return RuleInterface[]|ArrayCollection
      */
     public function getRules()
     {
@@ -112,7 +111,7 @@ class Group extends EntityAbstract implements GroupInterface
     }
 
     /**
-     * @return UserInterface[]|PersistentCollection|ArrayCollection|null
+     * @return UserInterface[]|ArrayCollection
      */
     public function getUsers()
     {

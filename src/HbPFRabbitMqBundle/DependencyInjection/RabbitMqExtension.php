@@ -10,7 +10,6 @@ namespace Hanaboso\PipesFramework\HbPFRabbitMqBundle\DependencyInjection;
 
 use InvalidArgumentException;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
-use Symfony\Component\Config\Definition\Builder\NodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\Config\FileLocator;
@@ -51,15 +50,15 @@ class RabbitMqExtension extends Extension implements ConfigurationInterface, Pre
         $rootNode = $this->getQueuesConfig($rootNode);
         $rootNode = $this->getProducersConfig($rootNode);
         $rootNode = $this->getConsumersConfig($rootNode);
-        $rootNode = $this->getAsyncConsumersConfig($rootNode);
+        $this->getAsyncConsumersConfig($rootNode);
 
         return $treeBuilder;
     }
 
     /**
-     * @param ArrayNodeDefinition|NodeDefinition $rootNode
+     * @param ArrayNodeDefinition $rootNode
      *
-     * @return ArrayNodeDefinition|NodeDefinition
+     * @return ArrayNodeDefinition
      */
     public function getConnectionConfig(ArrayNodeDefinition $rootNode): ArrayNodeDefinition
     {
@@ -76,9 +75,9 @@ class RabbitMqExtension extends Extension implements ConfigurationInterface, Pre
     // Sync config
 
     /**
-     * @param ArrayNodeDefinition|NodeDefinition $rootNode
+     * @param ArrayNodeDefinition $rootNode
      *
-     * @return ArrayNodeDefinition|NodeDefinition
+     * @return ArrayNodeDefinition
      */
     public function getExchangesConfig(ArrayNodeDefinition $rootNode): ArrayNodeDefinition
     {
@@ -103,9 +102,9 @@ class RabbitMqExtension extends Extension implements ConfigurationInterface, Pre
     }
 
     /**
-     * @param ArrayNodeDefinition|NodeDefinition $rootNode
+     * @param ArrayNodeDefinition $rootNode
      *
-     * @return ArrayNodeDefinition|NodeDefinition
+     * @return ArrayNodeDefinition
      */
     public function getQueuesConfig(ArrayNodeDefinition $rootNode): ArrayNodeDefinition
     {
@@ -130,9 +129,9 @@ class RabbitMqExtension extends Extension implements ConfigurationInterface, Pre
     }
 
     /**
-     * @param ArrayNodeDefinition|NodeDefinition $rootNode
+     * @param ArrayNodeDefinition $rootNode
      *
-     * @return ArrayNodeDefinition|NodeDefinition
+     * @return ArrayNodeDefinition
      */
     public function getProducersConfig(ArrayNodeDefinition $rootNode): ArrayNodeDefinition
     {
@@ -153,9 +152,9 @@ class RabbitMqExtension extends Extension implements ConfigurationInterface, Pre
     }
 
     /**
-     * @param ArrayNodeDefinition|NodeDefinition $rootNode
+     * @param ArrayNodeDefinition $rootNode
      *
-     * @return ArrayNodeDefinition|NodeDefinition
+     * @return ArrayNodeDefinition
      */
     public function getConsumersConfig(ArrayNodeDefinition $rootNode): ArrayNodeDefinition
     {
@@ -190,9 +189,9 @@ class RabbitMqExtension extends Extension implements ConfigurationInterface, Pre
     // ASYNC CONFIG
 
     /**
-     * @param ArrayNodeDefinition|NodeDefinition $rootNode
+     * @param ArrayNodeDefinition $rootNode
      *
-     * @return ArrayNodeDefinition|NodeDefinition
+     * @return ArrayNodeDefinition
      */
     public function getAsyncConsumersConfig(ArrayNodeDefinition $rootNode): ArrayNodeDefinition
     {

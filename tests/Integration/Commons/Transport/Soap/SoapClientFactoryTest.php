@@ -5,10 +5,10 @@ namespace Tests\Integration\Commons\Transport\Soap;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Transport\Soap\Dto\NonWsdl\RequestDto as RequestDtoNonWsdl;
 use Hanaboso\PipesFramework\Commons\Transport\Soap\Dto\Wsdl\RequestDto as RequestDtoWsdl;
-use Hanaboso\PipesFramework\Commons\Transport\Soap\SoapClient;
 use Hanaboso\PipesFramework\Commons\Transport\Soap\SoapClientFactory;
 use Hanaboso\PipesFramework\Commons\Transport\Soap\SoapException;
 use PHPUnit\Framework\TestCase;
+use SoapClient;
 
 /**
  * Class SoapClientFactoryTest

@@ -97,7 +97,9 @@ class BunnyManager
         }
 
         if ($this->client === NULL) {
-            $this->client = $this->container->get($this->clientServiceId);
+            /** @var Client $client */
+            $client       = $this->container->get($this->clientServiceId);
+            $this->client = $client;
         }
 
         return $this->client;
