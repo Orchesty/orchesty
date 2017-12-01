@@ -85,7 +85,10 @@ class UniversalMapper implements MapperInterface
                 $output[reset($key)] = $value;
             } else {
                 $firsKey = array_shift($key);
-                $output[$firsKey] = $this->setDataWithInnerKey($key, $value);
+                if (!array_key_exists($firsKey, $output)) {
+                    $output[$firsKey] = [];
+                }
+                $output[$firsKey] = array_merge_recursive($output[$firsKey],$this->setDataWithInnerKey($key, $value));
             }
         }
 

@@ -323,6 +323,10 @@ final class UniversalMapperTest extends TestCase
         $mapField->addItem('string');
         $template->addField($mapField);
 
+        $mapField = new MapField('inner.inner.key2', new TypeEnum(TypeEnum::TEXT));
+        $mapField->addItem('string');
+        $template->addField($mapField);
+
         $dto    = $this->getDto(json_encode($data));
         $mapper = new UniversalMapper();
 
@@ -340,6 +344,7 @@ final class UniversalMapperTest extends TestCase
         self::assertArrayHasKey('inner', $data);
         self::assertArrayHasKey('inner', $data['inner']);
         self::assertArrayHasKey('key', $data['inner']['inner']);
+        self::assertArrayHasKey('key2', $data['inner']['inner']);
 
         self::assertEquals('string', $data[TypeEnum::TEXT]);
         self::assertEquals('http://example.com', $data[TypeEnum::URL]);
@@ -348,6 +353,7 @@ final class UniversalMapperTest extends TestCase
         self::assertEquals(10101, $data[TypeEnum::NUMBER]);
         self::assertEquals('aa@dd.com', $data[TypeEnum::EMAIL]);
         self::assertEquals('string', $data['inner']['inner']['key']);
+        self::assertEquals('string', $data['inner']['inner']['key2']);
     }
 
 
