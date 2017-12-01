@@ -27,6 +27,7 @@ class MetricsEnum extends EnumAbstract
     protected static $choices = [
         // tags
         self::HOST                   => self::HOST,
+        self::URI                    => self::URI,
         self::CORRELATION_ID         => self::CORRELATION_ID,
         self::TOPOLOGY_ID            => self::TOPOLOGY_ID,
         // fields
