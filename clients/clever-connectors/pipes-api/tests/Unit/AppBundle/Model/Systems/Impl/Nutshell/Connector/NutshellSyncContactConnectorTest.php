@@ -15,7 +15,7 @@ use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSender;
 use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSenderFactory;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Nette\Utils\Json;
-use PHPUnit_Framework_MockObject_MockObject;
+use PHPUnit\Framework\MockObject\MockObject;
 use React\EventLoop\Factory;
 use Tests\ConnectorTestCaseAbstract;
 use function React\Promise\resolve;
@@ -53,14 +53,14 @@ final class NutshellSyncContactConnectorTest extends ConnectorTestCaseAbstract
     }
 
     /**
-     * @return PHPUnit_Framework_MockObject_MockObject|NutshellSyncContactConnector
+     * @return MockObject|NutshellSyncContactConnector
      */
     private function getConnectorMock()
     {
         $systemInstall = $this->createMock(SystemInstallRepository::class);
         $systemInstall->method('getSystemInstall')->willReturn((new SystemInstall()));
 
-        /** @var PHPUnit_Framework_MockObject_MockObject|DocumentManager $documentManager */
+        /** @var MockObject|DocumentManager $documentManager */
         $documentManager = $this->createMock(DocumentManager::class);
         $documentManager->method('getRepository')->willReturn($systemInstall);
 
@@ -104,7 +104,7 @@ final class NutshellSyncContactConnectorTest extends ConnectorTestCaseAbstract
     }
 
     /**
-     * @return PHPUnit_Framework_MockObject_MockObject|NutshellSystem
+     * @return MockObject|NutshellSystem
      */
     private function getSystemMock()
     {

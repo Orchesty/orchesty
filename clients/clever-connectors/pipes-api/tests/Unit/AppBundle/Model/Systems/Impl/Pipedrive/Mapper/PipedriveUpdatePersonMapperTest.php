@@ -10,7 +10,7 @@ use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
-use PHPUnit_Framework_MockObject_MockObject;
+use PHPUnit\Framework\MockObject\MockObject;
 use Tests\ConnectorTestCaseAbstract;
 
 /**
@@ -44,9 +44,9 @@ final class PipedriveUpdatePersonMapperTest extends ConnectorTestCaseAbstract
     }
 
     /**
-     * @return DocumentManager|PHPUnit_Framework_MockObject_MockObject
+     * @return DocumentManager|MockObject
      */
-    private function mockDM(): DocumentManager
+    private function mockDM()
     {
         $sys = new SystemInstall();
         $sys->setSettings([

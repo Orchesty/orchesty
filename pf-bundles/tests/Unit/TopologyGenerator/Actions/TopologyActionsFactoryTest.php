@@ -17,8 +17,8 @@ use Hanaboso\PipesFramework\TopologyGenerator\Actions\StopTopologyActions;
 use Hanaboso\PipesFramework\TopologyGenerator\Actions\TopologyActionsFactory;
 use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\VolumePathDefinitionFactory;
 use Hanaboso\PipesFramework\TopologyGenerator\Exception\TopologyGeneratorException;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use PHPUnit_Framework_MockObject_MockObject;
 use Tests\PrivateTrait;
 
 /**
@@ -32,17 +32,17 @@ class TopologyActionsFactoryTest extends TestCase
     use PrivateTrait;
 
     /**
-     * @var PHPUnit_Framework_MockObject_MockObject|DockerHandler
+     * @var MockObject|DockerHandler
      */
     protected $dockerHandler;
 
     /**
-     * @var PHPUnit_Framework_MockObject_MockObject|RabbitMqHandler
+     * @var MockObject|RabbitMqHandler
      */
     protected $rabbitMqHandler;
 
     /**
-     * @var PHPUnit_Framework_MockObject_MockObject|VolumePathDefinitionFactory
+     * @var MockObject|VolumePathDefinitionFactory
      */
     protected $volumePath;
 
@@ -72,6 +72,8 @@ class TopologyActionsFactoryTest extends TestCase
      * @param string      $typeOf
      * @param null|string $property
      * @param null|string $exception
+     *
+     * @throws TopologyGeneratorException
      */
     public function testGetTopologyAction(string $type, string $typeOf, ?string $property, ?string $exception): void
     {

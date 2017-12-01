@@ -23,7 +23,7 @@ use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSenderFactory;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Repository\NodeRepository;
-use PHPUnit_Framework_MockObject_MockObject;
+use PHPUnit\Framework\MockObject\MockObject;
 use React\EventLoop\Factory;
 use Tests\KernelTestCaseAbstract;
 use function React\Promise\resolve;
@@ -69,7 +69,7 @@ final class SalesforceDeletedContactConnectorTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @return PHPUnit_Framework_MockObject_MockObject|SalesforceDeletedContactConnector
+     * @return MockObject|SalesforceDeletedContactConnector
      */
     private function mockSync()
     {
@@ -107,7 +107,7 @@ final class SalesforceDeletedContactConnectorTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @return PHPUnit_Framework_MockObject_MockObject|SalesforceSystem
+     * @return MockObject|SalesforceSystem
      */
     private function mockSystem()
     {

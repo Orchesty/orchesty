@@ -13,7 +13,7 @@ use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
 use Nette\Utils\Json;
-use PHPUnit_Framework_MockObject_MockObject;
+use PHPUnit\Framework\MockObject\MockObject;
 use Tests\ConnectorTestCaseAbstract;
 
 /**
@@ -65,11 +65,11 @@ final class BigcommerceGetCustomerConnectorTest extends ConnectorTestCaseAbstrac
         $systemInstall = $this->createMock(SystemInstallRepository::class);
         $systemInstall->method('getSystemInstall')->willReturn((new SystemInstall()));
 
-        /** @var PHPUnit_Framework_MockObject_MockObject|DocumentManager $documentManager */
+        /** @var MockObject|DocumentManager $documentManager */
         $documentManager = $this->createMock(DocumentManager::class);
         $documentManager->method('getRepository')->willReturn($systemInstall);
 
-        /** @var CurlManagerInterface|PHPUnit_Framework_MockObject_MockObject $curlManager */
+        /** @var CurlManagerInterface|MockObject $curlManager */
         $curlManager = $this->createMock(CurlManagerInterface::class);
         $curlManager->method('send')
             ->will($this->returnCallback(function (RequestDto $dto, array $options = []) {
@@ -85,7 +85,7 @@ final class BigcommerceGetCustomerConnectorTest extends ConnectorTestCaseAbstrac
     }
 
     /**
-     * @return PHPUnit_Framework_MockObject_MockObject|BigcommerceSystem
+     * @return MockObject|BigcommerceSystem
      */
     private function getSystemMock()
     {

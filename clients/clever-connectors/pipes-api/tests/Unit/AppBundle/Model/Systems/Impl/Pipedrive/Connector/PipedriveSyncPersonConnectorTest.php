@@ -12,7 +12,7 @@ use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSenderFactory;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
-use PHPUnit_Framework_MockObject_MockObject;
+use PHPUnit\Framework\MockObject\MockObject;
 use React\EventLoop\Factory;
 use Tests\ConnectorTestCaseAbstract;
 use function React\Promise\resolve;
@@ -62,7 +62,7 @@ final class PipedriveSyncPersonConnectorTest extends ConnectorTestCaseAbstract
     }
 
     /**
-     * @return PHPUnit_Framework_MockObject_MockObject|PipedriveSyncPersonConnector
+     * @return MockObject|PipedriveSyncPersonConnector
      */
     private function mockSync(): PipedriveSyncPersonConnector
     {
@@ -98,7 +98,7 @@ final class PipedriveSyncPersonConnectorTest extends ConnectorTestCaseAbstract
     }
 
     /**
-     * @return PHPUnit_Framework_MockObject_MockObject|DocumentManager
+     * @return MockObject|DocumentManager
      */
     private function mockDm(): DocumentManager
     {

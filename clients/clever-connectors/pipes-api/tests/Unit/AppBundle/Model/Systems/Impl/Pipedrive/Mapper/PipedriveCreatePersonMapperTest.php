@@ -9,6 +9,7 @@ use CleverConnectors\AppBundle\Model\Systems\Impl\Pipedrive\Mapper\PipedriveCrea
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use PHPUnit\Framework\MockObject\MockObject;
 use Tests\ConnectorTestCaseAbstract;
 
 /**
@@ -25,10 +26,10 @@ final class PipedriveCreatePersonMapperTest extends ConnectorTestCaseAbstract
     public function testProccess(): void
     {
         $data = [
-            CleverFieldsEnum::EMAIL       => 'asd@asd.com',
-            CleverFieldsEnum::FIRST_NAME  => 'qwe',
-            CleverFieldsEnum::LAST_NAME   => 'asd',
-            CleverFieldsEnum::REACTIVATE  => TRUE,
+            CleverFieldsEnum::EMAIL      => 'asd@asd.com',
+            CleverFieldsEnum::FIRST_NAME => 'qwe',
+            CleverFieldsEnum::LAST_NAME  => 'asd',
+            CleverFieldsEnum::REACTIVATE => TRUE,
         ];
 
         $conn = new PipedriveCreatePersonMapper($this->mockDM());
@@ -43,9 +44,9 @@ final class PipedriveCreatePersonMapperTest extends ConnectorTestCaseAbstract
     }
 
     /**
-     * @return DocumentManager|\PHPUnit_Framework_MockObject_MockObject
+     * @return DocumentManager|MockObject
      */
-    private function mockDM(): DocumentManager
+    private function mockDM()
     {
         $sys = new SystemInstall();
         $sys->setSettings([

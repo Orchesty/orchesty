@@ -24,8 +24,8 @@ use Hanaboso\PipesFramework\Configurator\Repository\NodeRepository;
 use Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository;
 use Hanaboso\PipesFramework\Configurator\StartingPoint\StartingPoint;
 use Hanaboso\PipesFramework\TopologyGenerator\Request\RequestHandler;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use PHPUnit_Framework_MockObject_MockObject;
 
 /**
  * Class SystemManagerTest
@@ -36,42 +36,42 @@ final class SystemManagerTest extends TestCase
 {
 
     /**
-     * @var PHPUnit_Framework_MockObject_MockObject|RequestHandler
+     * @var MockObject|RequestHandler
      */
     protected $requestHandler;
 
     /**
-     * @var PHPUnit_Framework_MockObject_MockObject|DocumentManager
+     * @var MockObject|DocumentManager
      */
     private $dm;
 
     /**
-     * @var PHPUnit_Framework_MockObject_MockObject|SystemLoader
+     * @var MockObject|SystemLoader
      */
     private $systemLoader;
 
     /**
-     * @var PHPUnit_Framework_MockObject_MockObject|WebhookManager
+     * @var MockObject|WebhookManager
      */
     private $webhookManager;
 
     /**
-     * @var PHPUnit_Framework_MockObject_MockObject|StartingPoint
+     * @var MockObject|StartingPoint
      */
     private $startingPoint;
 
     /**
-     * @var PHPUnit_Framework_MockObject_MockObject|CMEventsManager
+     * @var MockObject|CMEventsManager
      */
     private $eventsManager;
 
     /**
-     * @var PHPUnit_Framework_MockObject_MockObject|MapManager
+     * @var MockObject|MapManager
      */
     private $mapManager;
 
     /**
-     * @var PHPUnit_Framework_MockObject_MockObject|LayoutManager
+     * @var MockObject|LayoutManager
      */
     private $layoutManager;
 
@@ -147,7 +147,7 @@ final class SystemManagerTest extends TestCase
     /**
      * @param string $className
      *
-     * @return PHPUnit_Framework_MockObject_MockObject|mixed
+     * @return MockObject|mixed
      */
     private function getClassMock($className)
     {

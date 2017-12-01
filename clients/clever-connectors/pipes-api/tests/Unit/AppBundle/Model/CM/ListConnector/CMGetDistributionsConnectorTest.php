@@ -9,6 +9,7 @@ use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
+use PHPUnit\Framework\MockObject\MockObject;
 use Tests\ConnectorTestCaseAbstract;
 
 /**
@@ -66,9 +67,9 @@ class CMGetDistributionsConnectorTest extends ConnectorTestCaseAbstract
     }
 
     /**
-     * @return CurlManagerInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @return CurlManagerInterface|MockObject
      */
-    private function mockCurl(): CurlManagerInterface
+    private function mockCurl()
     {
         $curl = $this->createMock(CurlManagerInterface::class);
         $curl

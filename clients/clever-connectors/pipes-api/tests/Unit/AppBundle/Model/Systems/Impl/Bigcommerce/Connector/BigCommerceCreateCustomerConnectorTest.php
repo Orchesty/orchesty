@@ -12,7 +12,7 @@ use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
-use PHPUnit_Framework_MockObject_MockObject;
+use PHPUnit\Framework\MockObject\MockObject;
 use Tests\KernelTestCaseAbstract;
 
 /**
@@ -55,11 +55,11 @@ final class BigCommerceCreateCustomerConnectorTest extends KernelTestCaseAbstrac
         $repo = $this->createMock(SystemInstallRepository::class);
         $repo->method('getSystemInstallFromHeaders')->willReturn($sys);
 
-        /** @var PHPUnit_Framework_MockObject_MockObject|DocumentManager $documentManager */
+        /** @var MockObject|DocumentManager $documentManager */
         $documentManager = $this->createMock(DocumentManager::class);
         $documentManager->method('getRepository')->willReturn($repo);
 
-        /** @var CurlManagerInterface|PHPUnit_Framework_MockObject_MockObject $curlManager */
+        /** @var CurlManagerInterface|MockObject $curlManager */
         $curlManager = $this->createMock(CurlManagerInterface::class);
         $curlManager->expects($this->once())
             ->method('send')->will($this->returnCallback(function (RequestDto $dto) {

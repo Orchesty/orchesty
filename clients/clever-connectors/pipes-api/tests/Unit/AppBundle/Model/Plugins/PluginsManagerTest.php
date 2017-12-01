@@ -15,7 +15,7 @@ use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Repository\NodeRepository;
 use Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository;
 use Hanaboso\PipesFramework\Configurator\StartingPoint\StartingPoint;
-use PHPUnit_Framework_MockObject_MockObject;
+use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Component\HttpFoundation\Request;
 use Tests\KernelTestCaseAbstract;
 
@@ -38,7 +38,7 @@ final class PluginsManagerTest extends KernelTestCaseAbstract
             ->setSystem('sys')
             ->setSettings(['system_url' => 'https://abc']);
 
-        /** @var SystemManager|PHPUnit_Framework_MockObject_MockObject $manager */
+        /** @var SystemManager|MockObject $manager */
         $manager = $this->createMock(SystemManager::class);
         $manager
             ->expects($this->once())
@@ -84,7 +84,7 @@ final class PluginsManagerTest extends KernelTestCaseAbstract
             ->setSystem('sys')
             ->setSettings(['system_url' => 'https://abc']);
 
-        /** @var SystemManager|PHPUnit_Framework_MockObject_MockObject $manager */
+        /** @var SystemManager|MockObject $manager */
         $manager = $this->createMock(SystemManager::class);
         $manager
             ->expects($this->exactly(0))
@@ -129,7 +129,7 @@ final class PluginsManagerTest extends KernelTestCaseAbstract
             ->setSystem('sys')
             ->setSettings(['system_url' => 'https://abc']);
 
-        /** @var SystemManager|PHPUnit_Framework_MockObject_MockObject $manager */
+        /** @var SystemManager|MockObject $manager */
         $manager = $this->createMock(SystemManager::class);
         $manager
             ->expects($this->exactly(0))
@@ -163,7 +163,7 @@ final class PluginsManagerTest extends KernelTestCaseAbstract
             ->setSystem('sys')
             ->setSettings(['system_url' => 'https://abc_xyz']);
 
-        /** @var SystemManager|PHPUnit_Framework_MockObject_MockObject $manager */
+        /** @var SystemManager|MockObject $manager */
         $manager = $this->createMock(SystemManager::class);
         $manager
             ->expects($this->exactly(0))
@@ -330,9 +330,9 @@ final class PluginsManagerTest extends KernelTestCaseAbstract
      * @param string $topology
      * @param string $node
      *
-     * @return StartingPoint|PHPUnit_Framework_MockObject_MockObject
+     * @return StartingPoint|MockObject
      */
-    private function mockStartingPoint(string $topology, string $node): StartingPoint
+    private function mockStartingPoint(string $topology, string $node)
     {
         $sp = $this->createMock(StartingPoint::class);
         $sp->expects($this->once())
@@ -350,9 +350,9 @@ final class PluginsManagerTest extends KernelTestCaseAbstract
     /**
      * @param string $type
      *
-     * @return DocumentManager|PHPUnit_Framework_MockObject_MockObject
+     * @return DocumentManager|MockObject
      */
-    private function mockDm(string $type = ''): DocumentManager
+    private function mockDm(string $type = '')
     {
         $nodeRepo = $this->createMock(NodeRepository::class);
         $nodeRepo->expects($this->once())
@@ -376,7 +376,7 @@ final class PluginsManagerTest extends KernelTestCaseAbstract
      * @param DocumentManager|null $dm
      * @param SystemManager|null   $manager
      *
-     * @return PluginsManager|PHPUnit_Framework_MockObject_MockObject
+     * @return PluginsManager|MockObject
      */
     private function mockPluginsManager(
         ?StartingPoint $start = NULL,
@@ -385,21 +385,21 @@ final class PluginsManagerTest extends KernelTestCaseAbstract
     ): PluginsManager
     {
         if (!$manager) {
-            /** @var SystemManager|PHPUnit_Framework_MockObject_MockObject $manager */
+            /** @var SystemManager|MockObject $manager */
             $manager = $this->createMock(SystemManager::class);
         }
 
         if (!$dm) {
-            /** @var DocumentManager|PHPUnit_Framework_MockObject_MockObject $dm */
+            /** @var DocumentManager|MockObject $dm */
             $dm = $this->createMock(DocumentManager::class);
         }
 
         if (!$start) {
-            /** @var StartingPoint|PHPUnit_Framework_MockObject_MockObject $start */
+            /** @var StartingPoint|MockObject $start */
             $start = $this->createMock(StartingPoint::class);
         }
 
-        /** @var CMGetDistributionsConnector|PHPUnit_Framework_MockObject_MockObject $distConn */
+        /** @var CMGetDistributionsConnector|MockObject $distConn */
         $distConn = $this->createMock(CMGetDistributionsConnector::class);
         $distConn->method('getDistributionsArray')->willReturn([]);
 

@@ -10,6 +10,7 @@ namespace Hanaboso\PipesFramework\HbPFConnectorBundle\Handler;
 
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
+use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
 use Hanaboso\PipesFramework\Connector\Model\ConnectorManager;
 use Hanaboso\PipesFramework\HbPFConnectorBundle\Loader\ConnectorLoader;
 use Symfony\Component\HttpFoundation\Request;
@@ -49,6 +50,7 @@ class ConnectorHandler
      * @param Request $request
      *
      * @return ProcessDto
+     * @throws ConnectorException
      */
     public function processEvent(string $id, Request $request): ProcessDto
     {
@@ -63,6 +65,7 @@ class ConnectorHandler
      * @param string $id
      *
      * @return void
+     * @throws ConnectorException
      */
     public function processTest(string $id): void
     {
@@ -75,6 +78,7 @@ class ConnectorHandler
      * @param Request $request
      *
      * @return ProcessDto
+     * @throws ConnectorException
      */
     public function processAction(string $id, Request $request): ProcessDto
     {

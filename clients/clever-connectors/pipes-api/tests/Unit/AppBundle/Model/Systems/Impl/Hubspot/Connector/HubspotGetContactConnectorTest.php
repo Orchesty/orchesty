@@ -13,7 +13,7 @@ use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
-use PHPUnit_Framework_MockObject_MockObject;
+use PHPUnit\Framework\MockObject\MockObject;
 use Tests\KernelTestCaseAbstract;
 
 /**
@@ -141,7 +141,7 @@ final class HubspotGetContactConnectorTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @return PHPUnit_Framework_MockObject_MockObject|HubspotGetContactConnector
+     * @return MockObject|HubspotGetContactConnector
      */
     private function mockSync()
     {
@@ -173,7 +173,7 @@ final class HubspotGetContactConnectorTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @return PHPUnit_Framework_MockObject_MockObject|HubspotSystem
+     * @return MockObject|HubspotSystem
      */
     private function mockSystem()
     {

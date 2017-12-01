@@ -17,8 +17,8 @@ use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Exception\StartingPointException;
 use Hanaboso\PipesFramework\Configurator\StartingPoint\StartingPoint;
 use Hanaboso\PipesFramework\RabbitMq\BunnyManager;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use PHPUnit_Framework_MockObject_MockObject;
 use Symfony\Component\HttpFoundation\Request;
 use Tests\PrivateTrait;
 
@@ -33,7 +33,7 @@ class StartingPointTest extends TestCase
     use PrivateTrait;
 
     /**
-     * @var BunnyManager|PHPUnit_Framework_MockObject_MockObject
+     * @var BunnyManager|MockObject
      */
     private $bunnyManager;
 
@@ -48,7 +48,7 @@ class StartingPointTest extends TestCase
     private $node;
 
     /**
-     * @var CurlManagerInterface|PHPUnit_Framework_MockObject_MockObject
+     * @var CurlManagerInterface|MockObject
      */
     private $curlManager;
 
@@ -143,7 +143,7 @@ class StartingPointTest extends TestCase
      */
     public function testCreateQueueName(): void
     {
-        $name          = StartingPoint::createQueueName($this->topology, $this->node);
+        $name = StartingPoint::createQueueName($this->topology, $this->node);
         $this->assertSame('pipes.1-top.1-mag-cus', $name);
     }
 
@@ -152,7 +152,7 @@ class StartingPointTest extends TestCase
      */
     public function testCreateHeaders(): void
     {
-        /** @var Topology|PHPUnit_Framework_MockObject_MockObject $topology */
+        /** @var Topology|MockObject $topology */
         $topology = $this->createMock(Topology::class);
         $topology->method('getId')->willReturn('13');
         $topology->method('getName')->willReturn('name');
@@ -258,6 +258,7 @@ class StartingPointTest extends TestCase
 
     /**
      * @covers StartingPoint::runTest()
+     * @throws StartingPointException
      */
     public function testRunTest(): void
     {
@@ -279,6 +280,7 @@ class StartingPointTest extends TestCase
 
     /**
      * @covers StartingPoint::runTest()
+     * @throws StartingPointException
      */
     public function testRunTestBadRequest(): void
     {

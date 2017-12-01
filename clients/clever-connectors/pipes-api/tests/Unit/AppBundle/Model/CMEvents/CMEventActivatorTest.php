@@ -14,7 +14,7 @@ use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSender;
 use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSenderFactory;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
-use PHPUnit_Framework_MockObject_MockObject;
+use PHPUnit\Framework\MockObject\MockObject;
 use React\EventLoop\Factory;
 use Tests\KernelTestCaseAbstract;
 use function React\Promise\resolve;
@@ -32,7 +32,7 @@ class CMEventActivatorTest extends KernelTestCaseAbstract
      */
     public function testProcessBatch(): void
     {
-        /** @var CMActivatorProducer|PHPUnit_Framework_MockObject_MockObject $producer */
+        /** @var CMActivatorProducer|MockObject $producer */
         $producer = $this->createMock(CMActivatorProducer::class);
 
         $node = new CMEventActivator(
@@ -65,7 +65,7 @@ class CMEventActivatorTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @return SystemManager|PHPUnit_Framework_MockObject_MockObject
+     * @return SystemManager|MockObject
      */
     private function mockSystemManager(): SystemManager
     {
@@ -77,7 +77,7 @@ class CMEventActivatorTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @return DocumentManager|PHPUnit_Framework_MockObject_MockObject
+     * @return DocumentManager|MockObject
      */
     private function mockDm(): DocumentManager
     {
@@ -95,7 +95,7 @@ class CMEventActivatorTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @return CurlSenderFactory|PHPUnit_Framework_MockObject_MockObject
+     * @return CurlSenderFactory|MockObject
      */
     private function mockCurl(): CurlSenderFactory
     {

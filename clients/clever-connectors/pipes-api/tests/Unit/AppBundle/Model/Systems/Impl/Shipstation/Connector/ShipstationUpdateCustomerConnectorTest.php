@@ -19,7 +19,7 @@ use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Repository\NodeRepository;
 use Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository;
-use PHPUnit_Framework_MockObject_MockObject;
+use PHPUnit\Framework\MockObject\MockObject;
 use React\EventLoop\Factory;
 use Tests\KernelTestCaseAbstract;
 use function React\Promise\resolve;
@@ -62,7 +62,7 @@ final class ShipstationUpdateCustomerConnectorTest extends KernelTestCaseAbstrac
     }
 
     /**
-     * @return PHPUnit_Framework_MockObject_MockObject|ShipstationUpdateCustomerConnector
+     * @return MockObject|ShipstationUpdateCustomerConnector
      */
     private function mockSync()
     {
@@ -108,7 +108,7 @@ final class ShipstationUpdateCustomerConnectorTest extends KernelTestCaseAbstrac
     }
 
     /**
-     * @return PHPUnit_Framework_MockObject_MockObject|ShipstationSystem
+     * @return MockObject|ShipstationSystem
      */
     private function mockSystem()
     {

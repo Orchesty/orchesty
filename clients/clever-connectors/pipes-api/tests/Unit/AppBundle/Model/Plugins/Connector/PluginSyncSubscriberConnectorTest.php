@@ -13,7 +13,7 @@ use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSender;
 use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSenderFactory;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
-use PHPUnit_Framework_MockObject_MockObject;
+use PHPUnit\Framework\MockObject\MockObject;
 use React\EventLoop\Factory;
 use Tests\ConnectorTestCaseAbstract;
 use function React\Promise\resolve;
@@ -31,7 +31,7 @@ final class PluginSyncSubscriberConnectorTest extends ConnectorTestCaseAbstract
      */
     public function testConnector(): void
     {
-        /** @var ProgressCounterService|PHPUnit_Framework_MockObject_MockObject $counter */
+        /** @var ProgressCounterService|MockObject $counter */
         $counter = $this->createMock(ProgressCounterService::class);
         $counter->method('setTotal')->willReturn('');
 
@@ -63,9 +63,9 @@ final class PluginSyncSubscriberConnectorTest extends ConnectorTestCaseAbstract
     }
 
     /**
-     * @return DocumentManager|PHPUnit_Framework_MockObject_MockObject
+     * @return DocumentManager|MockObject
      */
-    private function mockDm(): DocumentManager
+    private function mockDm()
     {
         $sys = new SystemInstall();
         $sys->setSettings([
@@ -84,9 +84,9 @@ final class PluginSyncSubscriberConnectorTest extends ConnectorTestCaseAbstract
     }
 
     /**
-     * @return CurlSenderFactory|PHPUnit_Framework_MockObject_MockObject
+     * @return CurlSenderFactory|MockObject
      */
-    private function mockCurl(): CurlSenderFactory
+    private function mockCurl()
     {
         $sender = $this->createMock(CurlSender::class);
         $sender->expects($this->at(0))
@@ -112,7 +112,7 @@ final class PluginSyncSubscriberConnectorTest extends ConnectorTestCaseAbstract
                 }
             ));
 
-        /** @var CurlSenderFactory|PHPUnit_Framework_MockObject_MockObject $curl */
+        /** @var CurlSenderFactory|MockObject $curl */
         $curl = $this->createMock(CurlSenderFactory::class);
         $curl->expects($this->once())
             ->method('create')->willReturn($sender);

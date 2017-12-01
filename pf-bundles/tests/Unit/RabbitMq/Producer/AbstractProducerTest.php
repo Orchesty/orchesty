@@ -14,7 +14,7 @@ use Hanaboso\PipesFramework\HbPFRabbitMqBundle\ContentTypes;
 use Hanaboso\PipesFramework\RabbitMq\BunnyManager;
 use Hanaboso\PipesFramework\RabbitMq\Producer\AbstractProducer;
 use Hanaboso\PipesFramework\RabbitMq\Serializers\JsonSerializer;
-use PHPUnit_Framework_MockObject_MockObject;
+use PHPUnit\Framework\MockObject\MockObject;
 use Tests\KernelTestCaseAbstract;
 
 /**
@@ -103,19 +103,19 @@ class AbstractProducerTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @param PHPUnit_Framework_MockObject_MockObject $bunnyManager
-     * @param string                                  $serializerClassName
-     * @param string                                  $beforeExecute
+     * @param MockObject $bunnyManager
+     * @param string     $serializerClassName
+     * @param string     $beforeExecute
      *
-     * @return PHPUnit_Framework_MockObject_MockObject|AbstractProducer
+     * @return MockObject|AbstractProducer
      */
     protected function getPublisher(
-        PHPUnit_Framework_MockObject_MockObject $bunnyManager,
+        MockObject $bunnyManager,
         $serializerClassName = JsonSerializer::class,
         $beforeExecute = 'beforeExecute'
     ): AbstractProducer
     {
-        /** @var PHPUnit_Framework_MockObject_MockObject $producer */
+        /** @var MockObject $producer */
         $producer = $this->getMockForAbstractClass(AbstractProducer::class, [
             'foo',
             '*.*',
@@ -131,9 +131,9 @@ class AbstractProducerTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @return PHPUnit_Framework_MockObject_MockObject
+     * @return MockObject
      */
-    protected function getDefaultBunnyManager(): PHPUnit_Framework_MockObject_MockObject
+    protected function getDefaultBunnyManager(): MockObject
     {
         return $this->getMockBuilder(BunnyManager::class)->disableOriginalConstructor()->getMock();
     }

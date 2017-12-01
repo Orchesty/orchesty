@@ -13,7 +13,7 @@ use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
-use PHPUnit_Framework_MockObject_MockObject;
+use PHPUnit\Framework\MockObject\MockObject;
 use Tests\KernelTestCaseAbstract;
 
 /**
@@ -52,7 +52,7 @@ final class QuickbooksCreateCustomerConnectorTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @return DocumentManager|PHPUnit_Framework_MockObject_MockObject
+     * @return DocumentManager|MockObject
      */
     private function mockDm(): DocumentManager
     {
@@ -74,7 +74,7 @@ final class QuickbooksCreateCustomerConnectorTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @return CurlManagerInterface|PHPUnit_Framework_MockObject_MockObject
+     * @return CurlManagerInterface|MockObject
      */
     private function mockCurl(): CurlManagerInterface
     {

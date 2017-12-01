@@ -13,6 +13,7 @@ use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSenderFactory;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
+use PHPUnit\Framework\MockObject\MockObject;
 use React\EventLoop\Factory;
 use Tests\ConnectorTestCaseAbstract;
 use function React\Promise\resolve;
@@ -65,7 +66,7 @@ final class ZendeskSyncUserConnectorTest extends ConnectorTestCaseAbstract
     }
 
     /**
-     * @return ZendeskSyncUserConnector|\PHPUnit_Framework_MockObject_MockObject
+     * @return ZendeskSyncUserConnector|MockObject
      */
     private function mockResponses(): ZendeskSyncUserConnector
     {
@@ -103,9 +104,9 @@ final class ZendeskSyncUserConnectorTest extends ConnectorTestCaseAbstract
     }
 
     /**
-     * @return DocumentManager|\PHPUnit_Framework_MockObject_MockObject
+     * @return DocumentManager|MockObject
      */
-    private function mockDm(): DocumentManager
+    private function mockDm()
     {
         $sys = new SystemInstall();
         $sys->setToken('token')

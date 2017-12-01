@@ -16,8 +16,8 @@ use Hanaboso\PipesFramework\Authorization\Provider\Dto\OAuth1Dto;
 use Hanaboso\PipesFramework\Authorization\Provider\OAuth1Provider;
 use Hanaboso\PipesFramework\Commons\Redirect\RedirectInterface;
 use OAuth;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use PHPUnit_Framework_MockObject_MockObject;
 
 /**
  * Class OAuth1ProviderTest
@@ -33,12 +33,14 @@ final class OAuth1ProviderTest extends TestCase
      * @param array  $data
      * @param string $url
      * @param bool   $exception
+     *
+     * @throws AuthorizationException
      */
     public function testAuthorize(array $data, string $url, bool $exception): void
     {
         $authorization = new Authorization('magento2.oauth');
         $authorization->setToken([]);
-        /** @var OAuth1Provider|PHPUnit_Framework_MockObject_MockObject $provider */
+        /** @var OAuth1Provider|MockObject $provider */
         $provider = $this->getMockedProvider($data, $url);
         $dto      = new OAuth1Dto($authorization, 'key', 'sec');
 
@@ -71,12 +73,14 @@ final class OAuth1ProviderTest extends TestCase
      * @param array $data
      * @param array $request
      * @param bool  $exception
+     *
+     * @throws AuthorizationException
      */
     public function testGetAccessToken(array $data, array $request, bool $exception): void
     {
         $authorization = new Authorization('magento2.oauth');
         $authorization->setToken($data);
-        /** @var OAuth1Provider|PHPUnit_Framework_MockObject_MockObject $provider */
+        /** @var OAuth1Provider|MockObject $provider */
         $provider = $this->getMockedProvider(['token'], '');
         $dto      = new OAuth1Dto($authorization, 'key', 'sec');
 
@@ -108,12 +112,14 @@ final class OAuth1ProviderTest extends TestCase
      *
      * @param array $data
      * @param bool  $exception
+     *
+     * @throws AuthorizationException
      */
     public function testGetAuthorizeHeader(array $data, bool $exception): void
     {
         $authorization = new Authorization('magento2.oauth');
         $authorization->setToken($data);
-        /** @var OAuth1Provider|PHPUnit_Framework_MockObject_MockObject $provider */
+        /** @var OAuth1Provider|MockObject $provider */
         $provider = $this->getMockedProvider(['token'], '');
         $dto      = new OAuth1Dto($authorization, 'key', 'sec');
 
@@ -148,9 +154,9 @@ final class OAuth1ProviderTest extends TestCase
      * @param array  $data
      * @param string $authorizeUrl
      *
-     * @return PHPUnit_Framework_MockObject_MockObject
+     * @return MockObject
      */
-    private function getMockedProvider(array $data, string $authorizeUrl): PHPUnit_Framework_MockObject_MockObject
+    private function getMockedProvider(array $data, string $authorizeUrl): MockObject
     {
         $dm = $this->createMock(DocumentManager::class);
         $dm->method('persist')->willReturn(TRUE);

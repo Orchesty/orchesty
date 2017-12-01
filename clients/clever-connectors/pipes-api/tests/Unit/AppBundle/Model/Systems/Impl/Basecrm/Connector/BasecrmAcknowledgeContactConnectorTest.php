@@ -11,6 +11,7 @@ use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
+use PHPUnit\Framework\MockObject\MockObject;
 use Tests\ConnectorTestCaseAbstract;
 
 /**
@@ -41,9 +42,9 @@ final class BasecrmAcknowledgeContactConnectorTest extends ConnectorTestCaseAbst
     }
 
     /**
-     * @return CurlManagerInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @return CurlManagerInterface|MockObject
      */
-    private function mockCurl(): CurlManagerInterface
+    private function mockCurl()
     {
         $_SERVER['HTTP_USER_AGENT'] = 'asd';
         $test                       = $this;
@@ -78,9 +79,9 @@ final class BasecrmAcknowledgeContactConnectorTest extends ConnectorTestCaseAbst
     }
 
     /**
-     * @return DocumentManager|\PHPUnit_Framework_MockObject_MockObject
+     * @return DocumentManager|MockObject
      */
-    private function mockDm(): DocumentManager
+    private function mockDm()
     {
         $systemInstall = new SystemInstall();
         $systemInstall->setUser('user')

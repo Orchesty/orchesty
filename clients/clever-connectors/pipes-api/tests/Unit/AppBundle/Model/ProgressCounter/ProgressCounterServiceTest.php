@@ -11,8 +11,8 @@ namespace Tests\Unit\AppBundle\Model\ProgressCounter;
 use CleverConnectors\AppBundle\Enum\ProgressCounterStatusEnum;
 use CleverConnectors\AppBundle\Model\ProgressCounter\ProgressCounterService;
 use CleverConnectors\AppBundle\Model\ProgressCounter\Publisher\IProgressPublisher;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use PHPUnit_Framework_MockObject_MockObject;
 use Predis\Client;
 
 /**
@@ -24,12 +24,12 @@ class ProgressCounterServiceTest extends TestCase
 {
 
     /**
-     * @var PHPUnit_Framework_MockObject_MockObject|Client
+     * @var MockObject|Client
      */
     protected $redis;
 
     /**
-     * @var PHPUnit_Framework_MockObject_MockObject|IProgressPublisher
+     * @var MockObject|IProgressPublisher
      */
     protected $progressPublisher;
 

@@ -19,7 +19,7 @@ use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSenderFactory;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
-use PHPUnit_Framework_MockObject_MockObject;
+use PHPUnit\Framework\MockObject\MockObject;
 use React\EventLoop\Factory;
 use Tests\KernelTestCaseAbstract;
 use function React\Promise\resolve;
@@ -67,7 +67,7 @@ final class SalesforceSyncContactConnectorTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @return PHPUnit_Framework_MockObject_MockObject|SalesforceSyncContactConnector
+     * @return MockObject|SalesforceSyncContactConnector
      */
     private function mockSync()
     {
@@ -104,7 +104,7 @@ final class SalesforceSyncContactConnectorTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @return PHPUnit_Framework_MockObject_MockObject|SalesforceSystem
+     * @return MockObject|SalesforceSystem
      */
     private function mockSystem()
     {

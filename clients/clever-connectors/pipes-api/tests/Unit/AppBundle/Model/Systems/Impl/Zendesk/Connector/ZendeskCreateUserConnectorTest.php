@@ -11,7 +11,7 @@ use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
-use PHPUnit_Framework_MockObject_MockObject;
+use PHPUnit\Framework\MockObject\MockObject;
 use Tests\ConnectorTestCaseAbstract;
 
 /**
@@ -51,7 +51,7 @@ final class ZendeskCreateUserConnectorTest extends ConnectorTestCaseAbstract
     }
 
     /**
-     * @return DocumentManager|PHPUnit_Framework_MockObject_MockObject
+     * @return DocumentManager|MockObject
      */
     private function mockDm(): DocumentManager
     {
@@ -74,7 +74,7 @@ final class ZendeskCreateUserConnectorTest extends ConnectorTestCaseAbstract
     }
 
     /**
-     * @return CurlManagerInterface|PHPUnit_Framework_MockObject_MockObject
+     * @return CurlManagerInterface|MockObject
      */
     private function mockCurl(): CurlManagerInterface
     {

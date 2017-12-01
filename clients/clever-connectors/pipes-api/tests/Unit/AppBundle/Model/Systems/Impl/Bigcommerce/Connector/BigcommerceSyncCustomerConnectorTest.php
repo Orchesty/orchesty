@@ -16,7 +16,7 @@ use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSender;
 use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSenderFactory;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Nette\Utils\Json;
-use PHPUnit_Framework_MockObject_MockObject;
+use PHPUnit\Framework\MockObject\MockObject;
 use React\EventLoop\Factory;
 use Tests\ConnectorTestCaseAbstract;
 use function React\Promise\resolve;
@@ -55,14 +55,14 @@ final class BigcommerceSyncCustomerConnectorTest extends ConnectorTestCaseAbstra
     }
 
     /**
-     * @return PHPUnit_Framework_MockObject_MockObject|BigcommerceSyncCustomerConnector
+     * @return MockObject|BigcommerceSyncCustomerConnector
      */
     private function getConnectorMock()
     {
         $systemInstall = $this->createMock(SystemInstallRepository::class);
         $systemInstall->method('getSystemInstall')->willReturn((new SystemInstall()));
 
-        /** @var PHPUnit_Framework_MockObject_MockObject|DocumentManager $documentManager */
+        /** @var MockObject|DocumentManager $documentManager */
         $documentManager = $this->createMock(DocumentManager::class);
         $documentManager->method('getRepository')->willReturn($systemInstall);
 
@@ -102,7 +102,7 @@ final class BigcommerceSyncCustomerConnectorTest extends ConnectorTestCaseAbstra
     }
 
     /**
-     * @return PHPUnit_Framework_MockObject_MockObject|BigcommerceSystem
+     * @return MockObject|BigcommerceSystem
      */
     private function getSystemMock()
     {

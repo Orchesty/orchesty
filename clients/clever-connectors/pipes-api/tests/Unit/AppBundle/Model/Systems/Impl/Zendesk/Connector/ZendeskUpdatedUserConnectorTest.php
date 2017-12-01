@@ -16,7 +16,7 @@ use Hanaboso\PipesFramework\Commons\Crypt\CryptManager;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSenderFactory;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
-use PHPUnit_Framework_MockObject_MockObject;
+use PHPUnit\Framework\MockObject\MockObject;
 use React\EventLoop\Factory;
 use Tests\ConnectorTestCaseAbstract;
 use Tests\PrivateTrait;
@@ -111,7 +111,7 @@ final class ZendeskUpdatedUserConnectorTest extends ConnectorTestCaseAbstract
     }
 
     /**
-     * @return ZendeskUpdatedUserConnector|PHPUnit_Framework_MockObject_MockObject
+     * @return ZendeskUpdatedUserConnector|MockObject
      */
     private function mockResponses(): ZendeskUpdatedUserConnector
     {
@@ -168,7 +168,7 @@ final class ZendeskUpdatedUserConnectorTest extends ConnectorTestCaseAbstract
     }
 
     /**
-     * @return DocumentManager|PHPUnit_Framework_MockObject_MockObject
+     * @return DocumentManager|MockObject
      */
     private function mockDm(): DocumentManager
     {
@@ -197,7 +197,7 @@ final class ZendeskUpdatedUserConnectorTest extends ConnectorTestCaseAbstract
     /**
      * @param bool $time
      *
-     * @return LastSyncManager|PHPUnit_Framework_MockObject_MockObject
+     * @return LastSyncManager|MockObject
      */
     private function mockLastSync(bool $time = FALSE): LastSyncManager
     {

@@ -14,7 +14,7 @@ use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
-use PHPUnit_Framework_MockObject_MockObject;
+use PHPUnit\Framework\MockObject\MockObject;
 use Tests\Integration\AppBundle\Model\Systems\Impl\NullSystem;
 use Tests\KernelTestCaseAbstract;
 
@@ -48,9 +48,9 @@ final class PluginSwitchTokenConnectorTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @return DocumentManager|PHPUnit_Framework_MockObject_MockObject
+     * @return DocumentManager|MockObject
      */
-    private function mockDm(): DocumentManager
+    private function mockDm()
     {
         $sys = new SystemInstall();
         $sys
@@ -76,9 +76,9 @@ final class PluginSwitchTokenConnectorTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @return SystemLoader|PHPUnit_Framework_MockObject_MockObject
+     * @return SystemLoader|MockObject
      */
-    private function mockLoader(): SystemLoader
+    private function mockLoader()
     {
         $system = $this->createPartialMock(NullSystem::class, ['getRequestDto']);
         $system
@@ -105,9 +105,9 @@ final class PluginSwitchTokenConnectorTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @return CurlManagerInterface|PHPUnit_Framework_MockObject_MockObject
+     * @return CurlManagerInterface|MockObject
      */
-    private function mockCurl(): CurlManagerInterface
+    private function mockCurl()
     {
         $curl = $this->createMock(CurlManagerInterface::class);
         $curl->expects($this->once())

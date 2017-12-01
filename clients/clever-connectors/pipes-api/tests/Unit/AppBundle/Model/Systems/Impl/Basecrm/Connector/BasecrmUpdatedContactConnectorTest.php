@@ -9,7 +9,7 @@ use Hanaboso\PipesFramework\Commons\Crypt\CryptManager;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSenderFactory;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
-use PHPUnit_Framework_MockObject_MockObject;
+use PHPUnit\Framework\MockObject\MockObject;
 use React\EventLoop\Factory;
 use Tests\ConnectorTestCaseAbstract;
 use function React\Promise\resolve;
@@ -69,7 +69,7 @@ final class BasecrmUpdatedContactConnectorTest extends ConnectorTestCaseAbstract
     }
 
     /**
-     * @return BasecrmUpdatedContactConnector|PHPUnit_Framework_MockObject_MockObject
+     * @return BasecrmUpdatedContactConnector|MockObject
      */
     private function mockResponses(): BasecrmUpdatedContactConnector
     {

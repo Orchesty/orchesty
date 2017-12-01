@@ -14,8 +14,8 @@ use CleverConnectors\AppBundle\Model\CustomNode\StartingProgress;
 use CleverConnectors\AppBundle\Model\ProgressCounter\ProgressCounterService;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use PHPUnit_Framework_MockObject_MockObject;
 
 /**
  * Class StartingProgressTest
@@ -26,7 +26,7 @@ final class StartingProgressTest extends TestCase
 {
 
     /**
-     * @var PHPUnit_Framework_MockObject_MockObject|ProgressCounterService
+     * @var MockObject|ProgressCounterService
      */
     private $progressCounterService;
 

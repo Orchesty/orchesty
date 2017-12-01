@@ -16,7 +16,7 @@ use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSender;
 use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSenderFactory;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
-use PHPUnit_Framework_MockObject_MockObject;
+use PHPUnit\Framework\MockObject\MockObject;
 use React\EventLoop\Factory;
 use Tests\ConnectorTestCaseAbstract;
 use function React\Promise\resolve;
@@ -30,37 +30,37 @@ abstract class QuickbooksCustomerConnectorAbstractTest extends ConnectorTestCase
 {
 
     /**
-     * @var PHPUnit_Framework_MockObject_MockObject|SystemInstall
+     * @var MockObject|SystemInstall
      */
     protected $systemInstall;
 
     /**
-     * @var PHPUnit_Framework_MockObject_MockObject|QuickbooksSystem
+     * @var MockObject|QuickbooksSystem
      */
     protected $system;
 
     /**
-     * @var PHPUnit_Framework_MockObject_MockObject|LastSyncManager
+     * @var MockObject|LastSyncManager
      */
     protected $lastSyncManager;
 
     /**
-     * @var PHPUnit_Framework_MockObject_MockObject|CurlSenderFactory
+     * @var MockObject|CurlSenderFactory
      */
     protected $factory;
 
     /**
-     * @var PHPUnit_Framework_MockObject_MockObject|CurlSender
+     * @var MockObject|CurlSender
      */
     protected $sender;
 
     /**
-     * @var PHPUnit_Framework_MockObject_MockObject|DocumentManager
+     * @var MockObject|DocumentManager
      */
     protected $mockDm;
 
     /**
-     * @var PHPUnit_Framework_MockObject_MockObject|ProgressCounterService
+     * @var MockObject|ProgressCounterService
      */
     protected $counterService;
 

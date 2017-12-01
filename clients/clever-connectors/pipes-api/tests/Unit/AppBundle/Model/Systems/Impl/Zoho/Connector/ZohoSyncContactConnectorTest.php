@@ -12,7 +12,7 @@ use Hanaboso\PipesFramework\Commons\Crypt\CryptManager;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSenderFactory;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
-use PHPUnit_Framework_MockObject_MockObject;
+use PHPUnit\Framework\MockObject\MockObject;
 use React\EventLoop\Factory;
 use RingCentral\Psr7\Response;
 use Tests\ConnectorTestCaseAbstract;
@@ -71,7 +71,7 @@ final class ZohoSyncContactConnectorTest extends ConnectorTestCaseAbstract
     }
 
     /**
-     * @return ZohoSyncContactConnector|PHPUnit_Framework_MockObject_MockObject
+     * @return ZohoSyncContactConnector|MockObject
      */
     private function mockResponses(): ZohoSyncContactConnector
     {
@@ -121,7 +121,7 @@ final class ZohoSyncContactConnectorTest extends ConnectorTestCaseAbstract
     }
 
     /**
-     * @return DocumentManager|PHPUnit_Framework_MockObject_MockObject
+     * @return DocumentManager|MockObject
      */
     private function mockDM(): DocumentManager
     {
