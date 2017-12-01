@@ -6,6 +6,7 @@ use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\Service;
 use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\VolumePathDefinition;
 use Hanaboso\PipesFramework\TopologyGenerator\Environment;
+use Hanaboso\PipesFramework\TopologyGenerator\GeneratorUtils;
 
 /**
  * Class MultiNodeServiceBuilder
@@ -55,7 +56,8 @@ class MultiNodeServiceBuilder extends NodeServiceBuilder
      */
     public function build(Node $node): Service
     {
-        $service = new Service($this->nodeName);
+        $name = GeneratorUtils::createServiceName(sprintf('%s-multi-bridge', $this->topology->getId()));
+        $service = new Service($name);
         $service
             ->setImage($this->registry . '/' . self::IMAGE)
             ->addEnvironment(Environment::RABBITMQ_HOST, $this->environment->getRabbitMqHost())

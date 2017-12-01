@@ -52,8 +52,13 @@ class GenerateTopologyActions extends ActionsAbstract
      * @return bool
      * @throws \Exception
      */
-    public function generateTopology(Topology $topology, array $nodes, string $dstDirectory, string $network,
-                                     string $topologyPrefix): bool
+    public function generateTopology(
+        Topology $topology,
+        array $nodes,
+        string $dstDirectory,
+        string $network,
+        string $topologyPrefix
+    ): bool
     {
         $generator = $this->getGenerator(
             $dstDirectory,
