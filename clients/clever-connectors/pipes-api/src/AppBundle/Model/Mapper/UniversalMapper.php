@@ -48,6 +48,7 @@ class UniversalMapper implements MapperInterface
      * @param ProcessDto  $dto
      *
      * @return ProcessDto
+     * @throws MapperException
      */
     public function process(MapTemplate $template, ProcessDto $dto): ProcessDto
     {
@@ -77,7 +78,15 @@ class UniversalMapper implements MapperInterface
             if ($this->isEmptyAndNotAllowed($value)) {
                 continue;
             }
-            $output[$field->getKey()] = $value;
+
+            $key = FieldKeyGenerator::parseKey($field->getKey());
+
+            if (count($key) == 1) {
+                $output[reset($key)] = $value;
+            } else {
+                $firsKey = array_shift($key);
+                $output[$firsKey] = $this->setDataWithInnerKey($key, $value);
+            }
         }
 
         return $output;
@@ -161,6 +170,27 @@ class UniversalMapper implements MapperInterface
             sprintf('Key "%s" not found in data!', $firstKey),
             MapperException::MISSING_KEY
         );
+    }
+
+    /**
+     * @param array $keys
+     * @param mixed $data
+     * @param array $output
+     *
+     * @return array
+     */
+    private function setDataWithInnerKey(array $keys, $data, array $output = []): array
+    {
+        $firstKey = array_shift($keys);
+        if (count($keys) > 0) {
+
+            $output[$firstKey] = $this->setDataWithInnerKey($keys, $data);
+        }else{
+            $output[$firstKey] = $data;
+        }
+
+
+        return $output;
     }
 
     /**

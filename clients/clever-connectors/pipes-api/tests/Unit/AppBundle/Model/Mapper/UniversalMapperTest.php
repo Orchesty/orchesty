@@ -11,6 +11,7 @@ namespace Tests\Unit\AppBundle\Model\Mapper;
 
 use CleverConnectors\AppBundle\Document\MapTemplate;
 use CleverConnectors\AppBundle\Enum\TypeEnum;
+use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Mapper\Exception\MapperException;
 use CleverConnectors\AppBundle\Model\Mapper\UniversalMapper;
 use CleverConnectors\AppBundle\Model\MapTemplate\MapField;
@@ -47,6 +48,8 @@ final class UniversalMapperTest extends TestCase
      *
      * @covers \CleverConnectors\AppBundle\Model\Mapper\UniversalMapper::isEmptyAndNotAllowed()
      * @covers \CleverConnectors\AppBundle\Model\Mapper\UniversalMapper::setAllowedEmptyValues()
+     * @throws MapperException
+     * @throws CleverConnectorsException
      */
     public function testProcessEmptyData(): void
     {
@@ -72,6 +75,8 @@ final class UniversalMapperTest extends TestCase
     /**
      * @covers \CleverConnectors\AppBundle\Model\Mapper\UniversalMapper::process()
      * @covers \CleverConnectors\AppBundle\Model\Mapper\UniversalMapper::decodeData()
+     * @throws MapperException
+     * @throws CleverConnectorsException
      */
     public function testProcessParseError(): void
     {
@@ -87,6 +92,8 @@ final class UniversalMapperTest extends TestCase
     /**
      * @covers \CleverConnectors\AppBundle\Model\Mapper\UniversalMapper::process()
      * @covers \CleverConnectors\AppBundle\Model\Mapper\UniversalMapper::reformatOutputData()
+     * @throws MapperException
+     * @throws CleverConnectorsException
      */
     public function testProcessFieldTypeError(): void
     {
@@ -109,6 +116,8 @@ final class UniversalMapperTest extends TestCase
     /**
      * @covers \CleverConnectors\AppBundle\Model\Mapper\UniversalMapper::process()
      * @covers \CleverConnectors\AppBundle\Model\Mapper\UniversalMapper::getDataFromInputFields()
+     * @throws MapperException
+     * @throws CleverConnectorsException
      */
     public function testProcessItemTypeError(): void
     {
@@ -133,6 +142,8 @@ final class UniversalMapperTest extends TestCase
      * @covers \CleverConnectors\AppBundle\Model\Mapper\UniversalMapper::getDataFromInputFields()
      * @covers \CleverConnectors\AppBundle\Model\Mapper\UniversalMapper::getDataWithFlatKey()
      * @covers \CleverConnectors\AppBundle\Model\Mapper\UniversalMapper::formatEmail()
+     * @throws MapperException
+     * @throws CleverConnectorsException
      */
     public function testProcessItemFlat(): void
     {
@@ -183,6 +194,8 @@ final class UniversalMapperTest extends TestCase
      * @covers \CleverConnectors\AppBundle\Model\Mapper\UniversalMapper::process()
      * @covers \CleverConnectors\AppBundle\Model\Mapper\UniversalMapper::getDataFromInputFields()
      * @covers \CleverConnectors\AppBundle\Model\Mapper\UniversalMapper::getDataWithFlatKey()
+     * @throws MapperException
+     * @throws CleverConnectorsException
      */
     public function testProcessItemFlatNonExist(): void
     {
@@ -204,6 +217,8 @@ final class UniversalMapperTest extends TestCase
      * @covers \CleverConnectors\AppBundle\Model\Mapper\UniversalMapper::getDataFromInputFields()
      * @covers \CleverConnectors\AppBundle\Model\Mapper\UniversalMapper::getDataWithInnerKey()
      * @covers \CleverConnectors\AppBundle\Model\Mapper\UniversalMapper::formatEmail()
+     * @throws MapperException
+     * @throws CleverConnectorsException
      */
     public function testProcessItemInner(): void
     {
@@ -254,6 +269,8 @@ final class UniversalMapperTest extends TestCase
      * @covers \CleverConnectors\AppBundle\Model\Mapper\UniversalMapper::process()
      * @covers \CleverConnectors\AppBundle\Model\Mapper\UniversalMapper::getDataFromInputFields()
      * @covers \CleverConnectors\AppBundle\Model\Mapper\UniversalMapper::getDataWithInnerKey()
+     * @throws MapperException
+     * @throws CleverConnectorsException
      */
     public function testProcessItemInnerNonExist(): void
     {
@@ -270,6 +287,69 @@ final class UniversalMapperTest extends TestCase
             ->process($template, $dto);
     }
 
+    /**
+     * @covers \CleverConnectors\AppBundle\Model\Mapper\UniversalMapper::process()
+     * @covers \CleverConnectors\AppBundle\Model\Mapper\UniversalMapper::getDataFromInputFields()
+     * @covers \CleverConnectors\AppBundle\Model\Mapper\UniversalMapper::getDataWithFlatKey()
+     * @covers \CleverConnectors\AppBundle\Model\Mapper\UniversalMapper::formatEmail()
+     * @covers \CleverConnectors\AppBundle\Model\Mapper\UniversalMapper::walkMapTemplate()
+     * @covers \CleverConnectors\AppBundle\Model\Mapper\UniversalMapper::setDataWithInnerKey()
+     * @throws MapperException
+     * @throws CleverConnectorsException
+     */
+    public function testProcessInnerOutput(): void
+    {
+        $date = new DateTime('2016-02-26T00:00:00+01:00');
+
+        $data = [
+            'string'    => 'string',
+            'uri'       => 'http://example.com',
+            'date_from' => $date->format(DateTime::W3C),
+            'boolean'   => TRUE,
+            'int'       => 10101,
+            'eml'       => 'aa@dd.com',
+        ];
+
+        $template = $this->getMap(
+            ['string'],
+            ['uri'],
+            ['date_from'],
+            ['boolean'],
+            ['int'],
+            ['eml']
+        );
+
+        $mapField = new MapField('inner.inner.key', new TypeEnum(TypeEnum::TEXT));
+        $mapField->addItem('string');
+        $template->addField($mapField);
+
+        $dto    = $this->getDto(json_encode($data));
+        $mapper = new UniversalMapper();
+
+        $res  = $mapper
+            ->setAllowedEmptyValues(TRUE)
+            ->process($template, $dto);
+        $data = json_decode($res->getData(), TRUE);
+        self::assertTrue(is_array($data));
+        self::assertArrayHasKey(TypeEnum::TEXT, $data);
+        self::assertArrayHasKey(TypeEnum::URL, $data);
+        self::assertArrayHasKey(TypeEnum::DATE, $data);
+        self::assertArrayHasKey(TypeEnum::BOOL, $data);
+        self::assertArrayHasKey(TypeEnum::NUMBER, $data);
+        self::assertArrayHasKey(TypeEnum::EMAIL, $data);
+        self::assertArrayHasKey('inner', $data);
+        self::assertArrayHasKey('inner', $data['inner']);
+        self::assertArrayHasKey('key', $data['inner']['inner']);
+
+        self::assertEquals('string', $data[TypeEnum::TEXT]);
+        self::assertEquals('http://example.com', $data[TypeEnum::URL]);
+        self::assertEquals($date->format(DateTime::ISO8601), $data[TypeEnum::DATE]);
+        self::assertEquals(TRUE, $data[TypeEnum::BOOL]);
+        self::assertEquals(10101, $data[TypeEnum::NUMBER]);
+        self::assertEquals('aa@dd.com', $data[TypeEnum::EMAIL]);
+        self::assertEquals('string', $data['inner']['inner']['key']);
+    }
+
 
     /**
      * ----------------------------------------- HELPERS -------------------------------
@@ -284,6 +364,7 @@ final class UniversalMapperTest extends TestCase
      * @param array $email
      *
      * @return MapTemplate
+     * @throws CleverConnectorsException
      */
     private function getMap($text = [], $url = [], $date = [], $bool = [], $number = [], $email = []): MapTemplate
     {
