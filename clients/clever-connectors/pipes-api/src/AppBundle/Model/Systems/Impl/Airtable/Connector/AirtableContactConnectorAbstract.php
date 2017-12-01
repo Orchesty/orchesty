@@ -29,7 +29,7 @@ use React\Promise\PromiseInterface;
 abstract class AirtableContactConnectorAbstract implements BatchInterface, ConnectorInterface
 {
 
-    protected const PAGE_LIMIT = 50;
+    protected const PAGE_LIMIT = 2;
 
     /**
      * @var AirtableSystem

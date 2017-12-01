@@ -2,7 +2,6 @@
 
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Airtable\Connector;
 
-use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use CleverConnectors\AppBundle\Utils\CronUtils;
@@ -38,12 +37,11 @@ class AirtableUpdatedContactConnector extends AirtableContactConnectorAbstract
      *
      * @return PromiseInterface
      * @throws SystemException
-     * @throws CleverConnectorsException
      */
     public function processBatch(ProcessDto $dto, LoopInterface $loop, callable $callbackItem): PromiseInterface
     {
         $sender        = $this->factory->create($loop);
-        $systemInstall = CronUtils::getSystemInstall($dto);
+        $systemInstall = $this->systemInstallRepository->getSystemInstallFromHeaders($dto->getHeaders());
         $requestDto    = $this->system->getRequestDto($systemInstall, 'GET');
         $requestDto->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()));
         $lastSync = $this->lastSyncManager->getLastSync($systemInstall, $dto->getHeaders());

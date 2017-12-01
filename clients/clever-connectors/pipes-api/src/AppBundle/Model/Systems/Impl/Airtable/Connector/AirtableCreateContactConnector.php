@@ -74,9 +74,9 @@ class AirtableCreateContactConnector implements ConnectorInterface
     {
         $data = Json::decode($dto->getData(), TRUE);
 
-        if (!is_array($data) || !array_key_exists('email', $data)) {
+        if (!is_array($data) || !array_key_exists('fields', $data) || empty($data['fields'])) {
             throw new CleverConnectorsException(
-                'Missing data or required field email',
+                'Missing data or required field "fields" or "fields" does not contain any field',
                 CleverConnectorsException::MISSING_DATA
             );
         }
@@ -96,7 +96,7 @@ class AirtableCreateContactConnector implements ConnectorInterface
     /**
      * @param ProcessDto $dto
      *
-     * @return ProcessDto
+     * @return ProcessDto|void
      * @throws ConnectorException
      */
     public function processEvent(ProcessDto $dto): ProcessDto
