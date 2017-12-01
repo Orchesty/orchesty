@@ -12,6 +12,7 @@ import authorization from './authorization';
 import auth from './auth';
 import process from './process';
 import server from './server';
+import editable from './editable';
 
 const rootReducer = combineReducers({
   application,
@@ -24,7 +25,8 @@ const rootReducer = combineReducers({
   authorization,
   process,
   server,
-  form
+  form,
+  editable
 });
 
 export default rootReducer;

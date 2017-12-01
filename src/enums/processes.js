@@ -19,5 +19,7 @@ export default {
   authorizationLoad: id => `authorization-load-${id}`,
   authorizationAuthorize: id => `authorization-authorize-${id}`,
   authorizationSaveSettings: id => `authorization-settings-save-${id}`,
-  authorizationLoadSettings: id => `authorization-settings-load-${id}`
+  authorizationLoadSettings: id => `authorization-settings-load-${id}`,
+  categoryCreate: hash => `category-create-${hash}`,
+  categoryUpdate: id => `category-update-${id}`
 }

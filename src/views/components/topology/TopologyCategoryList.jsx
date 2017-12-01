@@ -7,6 +7,8 @@ import * as topologyActions from 'rootApp/actions/topologyActions';
 import {filterType} from 'rootApp/types';
 import * as applicationActions from 'rootApp/actions/applicationActions';
 
+import './TopologyCategoryList.less';
+
 class TopologyCategoryList extends React.Component {
   constructor(props) {
     super(props);

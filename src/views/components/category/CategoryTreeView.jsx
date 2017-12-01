@@ -25,7 +25,8 @@ function mapStateToProps(state, ownProps) {
 
 function mapActionsToProps(dispatch, ownProps){
   return {
-    onItemClick: itemId => dispatch(categoryActions.treeItemClick(ownProps.componentKey, itemId, ownProps.onSelect))
+    onItemClick: itemId => dispatch(categoryActions.treeItemClick(ownProps.componentKey, itemId, ownProps.onSelect)),
+    editAction: (id, name) => dispatch(categoryActions.updateCategory(id, {name}))
   }
 }
 
