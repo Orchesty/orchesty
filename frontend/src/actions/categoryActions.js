@@ -2,8 +2,18 @@ import * as types from 'rootApp/actionTypes';
 import serverRequest from 'services/apiGatewayServer';
 import listFactory from './factories/listFactory';
 import {stateType} from 'rootApp/types';
+import * as processActions from './processActions';
+import processes from 'enums/processes';
 
-const {createCompleteList, listLoading, listReceive, listError} = listFactory('CATEGORY/LIST/');
+const {createCompleteList, listLoading, listReceive, listError, invalidateLists} = listFactory('CATEGORY/LIST/');
+
+
+function receive(data){
+  return {
+    type: types.CATEGORY_RECEIVE,
+    data
+  }
+}
 
 function receiveItems(items){
   return {
@@ -128,3 +138,33 @@ export function treeItemClick(treeId, itemId, successCallback) {
   }
 }
 
+export function createCategory(data, processHash = 'new') {
+  return dispatch => {
+    dispatch(processActions.startProcess(processes.categoryCreate(processHash)));
+    return serverRequest(dispatch, 'POST', `/categories`, null, data).then(
+      response => {
+        if (response){
+          dispatch(receive(response));
+          dispatch(invalidateLists());
+        }
+        dispatch(processActions.finishProcess(processes.categoryCreate(processHash), response));
+        return response;
+      }
+    )
+  }
+}
+
+export function updateCategory(id, data) {
+  return dispatch => {
+    dispatch(processActions.startProcess(processes.categoryUpdate(id)));
+    return serverRequest(dispatch, 'PATCH', `/categories/${id}`, null, data).then(
+      response => {
+        if (response){
+          dispatch(receive(response));
+        }
+        dispatch(processActions.finishProcess(processes.categoryUpdate(id), response));
+        return response;
+      }
+    )
+  }
+}
