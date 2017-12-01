@@ -74,8 +74,15 @@ class GeneratorFactory
      */
     public function create(): Generator
     {
-        return new Generator(new Environment(), new HostMapper(), $this->targetDir, $this->network,
-            $this->volumePathDefinitionFactory, $this->topologyPrefix, $this->topologyMode);
+        return new Generator(
+            new Environment(),
+            new HostMapper(),
+            $this->targetDir,
+            $this->network,
+            $this->volumePathDefinitionFactory,
+            $this->topologyPrefix,
+            $this->topologyMode
+        );
     }
 
 }
