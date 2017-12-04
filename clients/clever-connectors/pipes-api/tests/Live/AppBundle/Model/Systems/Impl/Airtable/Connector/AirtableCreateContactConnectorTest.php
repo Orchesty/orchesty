@@ -20,16 +20,15 @@ final class AirtableCreateContactConnectorTest extends ConnectorTestCaseAbstract
     {
         $this->markTestSkipped();
 
-        // TODO finish when mapping's ready
-
         $connector  = $this->container->get('hbpf.connector.airtable-create-contact-connector');
         $processDto = $connector->processAction($this->prepareConnectorProcessDto([
             'url'     => 'https://api.airtable.com/v0/app91I09gFeMUscCG/Table%201',
             'api_key' => 'keyuejqSEf94ZjN11',
         ], [
-            'email'     => 'email@example.com',
-            'firstName' => 'First Name',
-            'lastName'  => 'Last Name',
+            'fields' => [
+                'Email' => 'email@example.com',
+                'Name'  => 'First Name',
+            ],
         ]));
 
         $this->assertTrue(is_array(Json::decode($processDto->getData(), TRUE)));
