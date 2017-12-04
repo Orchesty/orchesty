@@ -1,12 +1,5 @@
 <?php declare(strict_types=1);
 
-/**
- * Created by PhpStorm.
- * User: stanislav.kundrat
- * Date: 8/9/17
- * Time: 9:58 AM
- */
-
 namespace Hanaboso\PipesFramework\Commons\Metrics;
 
 use InvalidArgumentException;
@@ -30,40 +23,35 @@ class InfluxDbSender
     private $measurement;
 
     /**
-     * @var array
-     */
-    private $tags = [];
-
-    /**
      * UDPService constructor.
      *
      * @param UDPSender $sender
      * @param string    $measurement
-     * @param array     $tags
      */
-    public function __construct(UDPSender $sender, string $measurement, array $tags = [])
+    public function __construct(UDPSender $sender, string $measurement)
     {
         $this->sender      = $sender;
         $this->measurement = $measurement;
-        $this->tags        = $tags;
     }
 
     /**
      * @param array $fields
+     * @param array $tags
      *
      * @return bool
      */
-    public function send(array $fields): bool
+    public function send(array $fields, array $tags = []): bool
     {
-        return $this->sender->send($this->createMessage($fields));
+        return $this->sender->send($this->createMessage($fields, $tags));
     }
 
     /**
      * @param array $fields
+     * @param array $tags
      *
      * @return string
      */
-    public function createMessage(array $fields): string
+    public function createMessage(array $fields, array $tags = []): string
     {
         if (empty($fields)) {
             throw new InvalidArgumentException('The fields must not be empty.');
@@ -71,12 +59,10 @@ class InfluxDbSender
 
         $nanoTimestamp = (round(microtime(TRUE) * 1000)) . '000000';
 
-        $this->tags['host'] = gethostname();
-
         return sprintf(
             '%s,%s %s %s',
             $this->measurement,
-            $this->join($this->prepareTags($this->tags)),
+            $this->join($this->prepareTags($tags)),
             $this->join($this->prepareFields($fields)),
             $nanoTimestamp
         );
