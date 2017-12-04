@@ -27,7 +27,7 @@ class Consumer extends BasicConsumer {
         try {
             inMsg = new JobMessage(this.node, amqMsg.properties.headers, amqMsg.content);
             inMsg.getMeasurement().markReceived();
-            inMsg.getMeasurement().setPublished(amqMsg.properties.timestamp);
+            inMsg.getMeasurement().setPublished(parseInt(amqMsg.properties.timestamp, 10));
             inMsg.getHeaders().setHeader("content-type", amqMsg.properties.contentType);
 
             logger.info(`AmqpFaucet received message.`, logger.ctxFromMsg(inMsg));
