@@ -37,7 +37,7 @@ class DockerComposeCli
     /**
      * @var string
      */
-    private const DOCKER_STACK_DEPLOY = 'docker stack deploy -c {config} {topologyprefix}';
+    private const DOCKER_STACK_DEPLOY = 'docker stack deploy -c {config} --with-registry-auth {topologyprefix}';
 
     /**
      * @var string

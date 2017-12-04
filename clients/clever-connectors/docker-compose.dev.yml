@@ -186,6 +186,8 @@ services:
     #        target: /srv/docker-pki/cert.pem
     #      - source: docker-client-key.pem
     #        target: /srv/docker-pki/key.pem
+    #      - source: docker-config.json
+    #        target: /var/www/.docker/config.json
     ## END STAGE
 
     xml-parser-api:
@@ -435,5 +437,6 @@ services:
 #    external: true
 #  docker-client-key.pem:
 #    external: true
+#  docker-config.json:
+#    external: true
 ## END STAGE
-
