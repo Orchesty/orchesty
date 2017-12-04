@@ -3,7 +3,6 @@
 namespace Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\Impl;
 
 use Hanaboso\PipesFramework\Configurator\Document\Node;
-use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\Service;
 use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\VolumePathDefinition;
 use Hanaboso\PipesFramework\TopologyGenerator\Environment;
@@ -17,28 +16,28 @@ class MultiNodeServiceBuilder extends NodeServiceBuilder
 {
 
     /**
-     * @var Topology
+     * @var string
      */
-    private $topology;
+    private $nodeName;
 
     /**
      * NodeServiceBuilder constructor.
      *
-     * @param Topology             $topology
+     * @param string               $nodeName
      * @param Environment          $environment
      * @param string               $registry
      * @param string               $network
      * @param VolumePathDefinition $volumePathDefinition
      */
     public function __construct(
-        Topology $topology,
+        string $nodeName,
         Environment $environment,
         string $registry,
         string $network,
         VolumePathDefinition $volumePathDefinition
     )
     {
-        $this->topology = $topology;
+        $this->nodeName = $nodeName;
         parent::__construct($environment, $registry, $network, $volumePathDefinition);
     }
 
@@ -49,7 +48,7 @@ class MultiNodeServiceBuilder extends NodeServiceBuilder
      */
     public function build(Node $node): Service
     {
-        $service = new Service(sprintf('%s_multi_bridge', $this->topology->getId()));
+        $service = new Service($this->nodeName);
         $service
             ->setImage($this->registry . '/' . self::IMAGE)
             ->addEnvironment(Environment::RABBITMQ_HOST, $this->environment->getRabbitMqHost())
@@ -58,7 +57,7 @@ class MultiNodeServiceBuilder extends NodeServiceBuilder
             ->addEnvironment(Environment::RABBITMQ_PASS, $this->environment->getRabbitMqPass())
             ->addEnvironment(Environment::RABBITMQ_VHOST, $this->environment->getRabbitMqVHost())
             ->addVolume($this->volumePathDefinition->getSourceVolume('topology.json') . ':/srv/app/topology/topology.json')
-            ->setCommand('./dist/src/bin/pipes.js start all_nodes')
+            ->setCommand('./dist/src/bin/pipes.js start multi_bridge')
             ->addNetwork($this->network);
 
         return $service;
