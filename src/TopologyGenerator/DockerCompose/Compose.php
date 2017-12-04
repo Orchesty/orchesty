@@ -64,7 +64,7 @@ class Compose
      *
      * @return Compose
      */
-    public function addServices(Service $service): Compose
+    public function addService(Service $service): Compose
     {
         $this->services[$service->getName()] = $service;
 

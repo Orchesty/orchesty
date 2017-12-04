@@ -63,7 +63,7 @@ class Generator implements GeneratorInterface
     /**
      * @var boolean
      */
-    private $bridgesInSeparateContainers = TRUE;
+    private $runBridgesInSeparateContainers = TRUE;
 
     /**
      * Generator constructor.
@@ -91,95 +91,10 @@ class Generator implements GeneratorInterface
     }
 
     /**
-     * @param bool $bridgesInSeparateContainers
-     */
-    public function setBridgesInSeparateContainers(bool $bridgesInSeparateContainers): void
-    {
-        $this->bridgesInSeparateContainers = $bridgesInSeparateContainers;
-    }
-
-    /**
      * @param Topology        $topology
      * @param iterable|Node[] $nodes
      *
-     * @return string
-     */
-    public function createTopologyConfig(Topology $topology, iterable $nodes): string
-    {
-        $config['id']            = GeneratorUtils::createServiceName(
-            GeneratorUtils::normalizeName($topology->getId(), $topology->getName())
-        );
-        $config['topology_id']   = $topology->getId();
-        $config['topology_name'] = $topology->getName();
-
-        foreach ($nodes as $node) {
-            $nodeFullId = GeneratorUtils::normalizeName($node->getId(), $node->getName());
-
-            $nodeConfig           = [];
-            $nodeConfig['id']     = GeneratorUtils::createServiceName($nodeFullId);
-            $nodeConfig['label']  = [
-                'id'        => GeneratorUtils::createServiceName($nodeFullId),
-                'node_id'   => $node->getId(),
-                'node_name' => $node->getName(),
-            ];
-            $nodeConfig['worker'] = $this->getWorkerConfig($node);
-            $nodeConfig['next']   = [];
-            foreach ($node->getNext() as $next) {
-                $nodeConfig['next'][] = GeneratorUtils::createServiceName(
-                    GeneratorUtils::normalizeName($next->getId(), $next->getName())
-                );
-            }
-
-            $config['nodes'][] = $nodeConfig;
-        }
-
-        return json_encode($config);
-    }
-
-    /**
-     * @param Topology        $topology
-     * @param iterable|Node[] $nodes
-     *
-     * @return string
-     */
-    public function createCompose(Topology $topology, iterable $nodes): string
-    {
-        $volumePathDefinition = $this->volumePathDefinitionFactory->create($topology);
-
-        $compose = new Compose();
-
-        $compose->addNetwork($this->network);
-
-        $builder = new ProbeServiceBuilder(
-            $this->environment,
-            self::REGISTRY,
-            $this->network,
-            $topology,
-            $volumePathDefinition
-        );
-
-        $nodeWatcherService = $builder->build(new Node());
-        $compose->addServices($nodeWatcherService);
-
-        $builder = new CounterServiceBuilder(
-            $this->environment,
-            self::REGISTRY,
-            $this->network,
-            $topology,
-            $volumePathDefinition
-        );
-
-        $counterService = $builder->build(new Node());
-        $compose->addServices($counterService);
-
-        $this->addBridges($compose, $topology, $nodes, $volumePathDefinition);
-
-        return $this->composeBuilder->build($compose);
-    }
-
-    /**
-     * @param Topology        $topology
-     * @param iterable|Node[] $nodes
+     * @throws \Exception
      */
     public function generate(Topology $topology, iterable $nodes): void
     {
@@ -215,6 +130,95 @@ class Generator implements GeneratorInterface
     }
 
     /**
+     * @param bool $runBridgesInSeparateContainers
+     */
+    public function runBridgesInSeparateContainers(bool $runBridgesInSeparateContainers): void
+    {
+        $this->runBridgesInSeparateContainers = $runBridgesInSeparateContainers;
+    }
+
+    /**
+     * @param Topology        $topology
+     * @param iterable|Node[] $nodes
+     *
+     * @return string
+     * @throws \Exception
+     */
+    public function createTopologyConfig(Topology $topology, iterable $nodes): string
+    {
+        $config['id']            = GeneratorUtils::createServiceName(
+            GeneratorUtils::normalizeName($topology->getId(), $topology->getName())
+        );
+        $config['topology_id']   = $topology->getId();
+        $config['topology_name'] = $topology->getName();
+
+        $i = 0;
+        $defaultPort = 8008;
+        foreach ($nodes as $node) {
+            $nodeFullId = GeneratorUtils::normalizeName($node->getId(), $node->getName());
+
+            $nodeConfig           = [];
+            $nodeConfig['id']     = GeneratorUtils::createServiceName($nodeFullId);
+            $nodeConfig['label']  = [
+                'id'        => GeneratorUtils::createServiceName($nodeFullId),
+                'node_id'   => $node->getId(),
+                'node_name' => $node->getName(),
+            ];
+            $nodeConfig['worker'] = $this->getWorkerConfig($node);
+            $nodeConfig['next']   = [];
+            foreach ($node->getNext() as $next) {
+                $nodeConfig['next'][] = GeneratorUtils::createServiceName(
+                    GeneratorUtils::normalizeName($next->getId(), $next->getName())
+                );
+            }
+
+            if (!$this->runBridgesInSeparateContainers) {
+                $multiName = $this->getMultiNodeName($topology);
+                $port = $defaultPort + $i;
+                $nodeConfig['debug'] = [
+                    'port' => $port,
+                    'host' => $multiName,
+                    'url' => sprintf('http://%s:%s/status', $multiName, $port),
+                ];
+            }
+
+            $config['nodes'][] = $nodeConfig;
+            $i++;
+        }
+
+        return json_encode($config);
+    }
+
+    /**
+     * @param Topology        $topology
+     * @param iterable|Node[] $nodes
+     *
+     * @return string
+     */
+    public function createCompose(Topology $topology, iterable $nodes): string
+    {
+        $volume = $this->volumePathDefinitionFactory->create($topology);
+
+        $compose = new Compose();
+
+        $compose->addNetwork($this->network);
+
+        $builder = new ProbeServiceBuilder($this->environment, self::REGISTRY, $this->network, $topology, $volume);
+
+        $nodeWatcherService = $builder->build(new Node());
+        $compose->addService($nodeWatcherService);
+
+        $builder = new CounterServiceBuilder($this->environment, self::REGISTRY, $this->network, $topology, $volume);
+
+        $counterService = $builder->build(new Node());
+        $compose->addService($counterService);
+
+        $this->addBridges($compose, $topology, $nodes, $volume);
+
+        return $this->composeBuilder->build($compose);
+    }
+
+    /**
      * @param Compose              $compose
      * @param Topology             $topology
      * @param iterable             $nodes
@@ -227,7 +231,7 @@ class Generator implements GeneratorInterface
         VolumePathDefinition $volumePD
     ): void
     {
-        if ($this->bridgesInSeparateContainers) {
+        if ($this->runBridgesInSeparateContainers) {
             // Run every bridge in dedicated container
             foreach ($nodes as $node) {
                 $builder = new NodeServiceBuilder(
@@ -236,26 +240,38 @@ class Generator implements GeneratorInterface
                     $this->network,
                     $volumePD
                 );
-                $compose->addServices($builder->build($node));
+                $compose->addService($builder->build($node));
             }
         } else {
             // Run all topology bridges is single container
             $builder = new MultiNodeServiceBuilder(
-                $topology,
+                $this->getMultiNodeName($topology),
                 $this->environment,
                 self::REGISTRY,
                 $this->network,
                 $volumePD
             );
 
-            $compose->addServices($builder->build(new Node()));
+            $multi = $builder->build(new Node());
+            $compose->addService($multi);
         }
+    }
+
+    /**
+     * @param Topology $topology
+     *
+     * @return string
+     */
+    private function getMultiNodeName(Topology $topology): string
+    {
+        return sprintf('%s_mb', $topology->getId());
     }
 
     /**
      * @param Node $node
      *
      * @return array
+     * @throws \Exception
      */
     private function getWorkerConfig(Node $node): array
     {
@@ -291,6 +307,7 @@ class Generator implements GeneratorInterface
      * @param Node $node
      *
      * @return array
+     * @throws \Exception
      */
     private function getHttpWorkerConfig(Node $node): array
     {
@@ -304,6 +321,7 @@ class Generator implements GeneratorInterface
      * @param Node $node
      *
      * @return array
+     * @throws \Exception
      */
     private function getHttpXmlParserWorkerConfig(Node $node): array
     {
@@ -322,6 +340,7 @@ class Generator implements GeneratorInterface
      * @param Node $node
      *
      * @return array
+     * @throws \Exception
      */
     private function getHttpWorkerSettings(Node $node): array
     {

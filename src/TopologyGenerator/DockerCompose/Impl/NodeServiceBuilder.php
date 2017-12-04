@@ -83,7 +83,7 @@ class NodeServiceBuilder implements ServiceBuilderInterface
             ->addEnvironment(Environment::RABBITMQ_VHOST, $this->environment->getRabbitMqVHost())
             ->addVolume($this->volumePathDefinition->getSourceVolume('topology.json') . ':/srv/app/topology/topology.json')
             ->setCommand(sprintf(
-                    './dist/src/bin/pipes.js start node --id %s',
+                    './dist/src/bin/pipes.js start bridge --id %s',
                     GeneratorUtils::createServiceName(GeneratorUtils::normalizeName($node->getId(), $node->getName()))
                 )
             )

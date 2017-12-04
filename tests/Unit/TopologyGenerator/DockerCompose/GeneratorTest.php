@@ -32,6 +32,9 @@ class GeneratorTest extends TestCase
 
     /**
      * Generator::generate
+     *
+     * @throws \Exception
+     * @throws \Hanaboso\PipesFramework\Configurator\Exception\NodeException
      */
     public function testGenerateSeparateBridges(): void
     {
@@ -98,7 +101,7 @@ class GeneratorTest extends TestCase
             new VolumePathDefinitionFactory()
         );
 
-        $generator->setBridgesInSeparateContainers(TRUE);
+        $generator->runBridgesInSeparateContainers(TRUE);
 
         $generator->generate($topology, $nodes);
 
@@ -123,6 +126,9 @@ class GeneratorTest extends TestCase
 
     /**
      * Generator::generate
+     *
+     * @throws \Hanaboso\PipesFramework\Configurator\Exception\NodeException
+     * @throws \Exception
      */
     public function testGenerateMultiBridge(): void
     {
@@ -155,7 +161,7 @@ class GeneratorTest extends TestCase
             new VolumePathDefinitionFactory()
         );
 
-        $generator->setBridgesInSeparateContainers(FALSE);
+        $generator->runBridgesInSeparateContainers(FALSE);
 
         $generator->generate($topology, $nodes);
 
