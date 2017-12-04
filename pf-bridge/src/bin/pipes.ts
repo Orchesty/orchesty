@@ -32,11 +32,11 @@ switch (argv.service) {
     case "repeater":
         pipes.startRepeater();
         break;
-    case "all_nodes":
+    case "multi_bridge":
         process.env.PIPES_NODE_TYPE = `pipes_node`;
         pipes.startAllNodes();
         break;
-    case "node":
+    case "bridge":
         process.env.PIPES_NODE_TYPE = `pipes_node`;
         pipes.startNode(argv.id);
         break;

@@ -55,7 +55,7 @@ class GenerateTopologyActions extends ActionsAbstract
             $this->volumePathDefinition
         );
 
-        $generator->setBridgesInSeparateContainers(FALSE);
+        $generator->runBridgesInSeparateContainers(FALSE);
         $generator->generate($topology, $nodes);
 
         return TRUE;
