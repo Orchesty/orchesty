@@ -64,7 +64,7 @@ class CustomNodeController extends FOSRestController
             );
         } catch (Exception|Throwable $e) {
             $response = new Response(
-                ControllerUtils::createExceptionData($e),
+                ControllerUtils::createExceptionData($e, TRUE),
                 500,
                 ControllerUtils::createHeaders([], $e)
             );

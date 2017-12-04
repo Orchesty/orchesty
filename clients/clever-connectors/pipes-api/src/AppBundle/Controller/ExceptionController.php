@@ -53,7 +53,7 @@ class ExceptionController
             $code = 404;
         }
 
-        return new Response(ControllerUtils::createExceptionData($exception), $code);
+        return new Response(ControllerUtils::createExceptionData($exception, TRUE), $code);
     }
 
 }

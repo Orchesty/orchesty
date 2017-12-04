@@ -144,7 +144,7 @@ class CMEventsController extends FOSRestController
             }
         }
 
-        return new Response(ControllerUtils::createExceptionData($e), $code);
+        return new Response(ControllerUtils::createExceptionData($e, TRUE), $code);
     }
 
 }

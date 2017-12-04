@@ -64,7 +64,7 @@ class ConnectorController extends FOSRestController
         } catch (Exception|Throwable $e) {
             $this->logger->error($e->getMessage(), ['exception' => $e]);
             $response = new Response(
-                ControllerUtils::createExceptionData($e),
+                ControllerUtils::createExceptionData($e, TRUE),
                 500,
                 ControllerUtils::createHeaders($request->headers->all(), $e)
             );

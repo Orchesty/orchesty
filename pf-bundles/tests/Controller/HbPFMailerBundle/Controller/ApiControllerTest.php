@@ -41,7 +41,7 @@ class ApiControllerTest extends ControllerTestCaseAbstract
             'subject' => '',
             'content' => '',
         ]);
-        $content = json_decode($response->content);
+        $content = $response->content;
 
         $this->assertEquals(500, $response->status);
         $this->assertEquals(MessageBuilderException::class, $content->type);
@@ -54,7 +54,7 @@ class ApiControllerTest extends ControllerTestCaseAbstract
     public function testSendNotFoundMailer(): void
     {
         $response = $this->sendPost('/mailer/unknown/send', []);
-        $content = json_decode($response->content);
+        $content = $response->content;
 
         $this->assertEquals(500, $response->status);
         $this->assertEquals(MailerException::class, $content->type);
@@ -88,7 +88,7 @@ class ApiControllerTest extends ControllerTestCaseAbstract
             'subject' => '',
             'content' => '',
         ]);
-        $content = json_decode($response->content);
+        $content = $response->content;
 
         $this->assertEquals(500, $response->status);
         $this->assertEquals(MessageBuilderException::class, $content->type);
@@ -101,7 +101,7 @@ class ApiControllerTest extends ControllerTestCaseAbstract
     public function testSendTestNotFoundMailer(): void
     {
         $response = $this->sendPost('/mailer/unknown/send', []);
-        $content = json_decode($response->content);
+        $content = $response->content;
 
         $this->assertEquals(500, $response->status);
         $this->assertEquals(MailerException::class, $content->type);
