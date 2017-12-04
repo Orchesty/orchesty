@@ -53,7 +53,7 @@ class TopologyListTable extends React.Component {
   }
 
   render() {
-    const {list, elements, listChangeFilter, openModal, clone, topologyDelete, publish, selectPage, list: {items}} = this.props;
+    const {list, elements, listChangeFilter, openModal, clone, topologyDelete, publish, changeCategory, selectPage, list: {items}} = this.props;
 
     let rows = null;
     if (items){
@@ -67,13 +67,22 @@ class TopologyListTable extends React.Component {
             {
               caption: 'Edit',
               action: () => {openModal('topology_edit', {topologyId: id});}
-            },
-            {
+            }
+          ];
+          if (changeCategory){
+            menuItems.push({
+              caption: 'Change category',
+             // processId: processes.topologyChangeCategory(id),
+              action: () => {changeCategory(id)}
+            });
+          }
+          if (clone){
+            menuItems.push({
               caption: 'Clone',
               processId: processes.topologyClone(id),
               action: () => {clone(id)}
-            }
-          ];
+            });
+          }
           if (publish){
             menuItems.push({
               caption: 'Publish',
@@ -141,7 +150,8 @@ TopologyListTable.propTypes = {
   listChangeFilter: PropTypes.func,
   clone: PropTypes.func,
   publish: PropTypes.func,
-  topologyDelete: PropTypes.func
+  topologyDelete: PropTypes.func,
+  changeCategory: PropTypes.func
 };
 
 export default StateComponent(TopologyListTable);

@@ -30,7 +30,9 @@ TreeView.propTypes = {
   allOpen: PropTypes.bool,
   onItemClick: PropTypes.func,
   componentKey: PropTypes.string,
-  editAction: PropTypes.func.isRequired
+  editAction: PropTypes.func.isRequired,
+  createAction: PropTypes.func.isRequired,
+  deleteAction: PropTypes.func.isRequired,
 };
 
 export default TreeView;

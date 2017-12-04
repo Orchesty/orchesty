@@ -7,6 +7,8 @@ class TreeViewItem extends React.Component {
     super(props);
     this.itemClick = this.itemClick.bind(this);
     this.edit = this.edit.bind(this);
+    this.create = this.create.bind(this);
+    this.makeDelete = this.makeDelete.bind(this);
   }
 
   itemClick(e){
@@ -22,6 +24,18 @@ class TreeViewItem extends React.Component {
     editAction(item.id, value);
   }
 
+  create(e){
+    const {createAction, item} = this.props;
+    e.preventDefault();
+    createAction(item.id);
+  }
+
+  makeDelete(e){
+    const {deleteAction, item} = this.props;
+    e.preventDefault();
+    deleteAction(item.id);
+  }
+
   render() {
     const {item, ...passProps} = this.props;
     const {allOpen, componentKey} = this.props;
@@ -31,7 +45,12 @@ class TreeViewItem extends React.Component {
     const children = open && item.children.map(item => <TreeViewItem key={item.id} item={item} {...passProps}/>);
     return (
       <li className={(item.selected ? 'selected' : '') + (openable ? (open ? ' open' : ' close') : '')}>
-        <a href="#" onClick={this.itemClick}><TextEditable commitAction={this.edit} componentKey={`${componentKey}.${item.id}`} value={item.caption} /></a>
+        <div className="tree-view-item">
+          <a className="item-caption" href="#" onClick={this.itemClick}><TextEditable commitAction={this.edit} componentKey={`${componentKey}.${item.id}`} value={item.caption} /></a>
+          <span className="quick-buttons">
+            <a href="#" onClick={this.create}><i className="fa fa-plus-circle" /></a> <a href="#" onClick={this.makeDelete}><i className="fa fa-times" /></a>
+          </span>
+        </div>
         {open && <ul>{children}</ul>}
       </li>
     );
@@ -52,7 +71,9 @@ TreeViewItem.propTypes = {
     children: PropTypes.arrayOf(PropTypes.object)
   }).isRequired,
   onItemClick: PropTypes.func,
-  editAction: PropTypes.func.isRequired
+  editAction: PropTypes.func.isRequired,
+  createAction: PropTypes.func.isRequired,
+  deleteAction: PropTypes.func.isRequired,
 };
 
 export default TreeViewItem;
