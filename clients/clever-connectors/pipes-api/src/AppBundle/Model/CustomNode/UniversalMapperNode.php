@@ -56,7 +56,7 @@ class UniversalMapperNode implements CustomNodeInterface, LoggerAwareInterface
     /**
      * @var string|null
      */
-    private $direction;
+    private $suffix = NULL;
 
     /**
      * UniversalMapperNode constructor.
@@ -85,11 +85,11 @@ class UniversalMapperNode implements CustomNodeInterface, LoggerAwareInterface
     }
 
     /**
-     * @param null|string $direction
+     * @param string $suffix
      */
-    public function setDirection(?string $direction): void
+    public function setSuffix(string $suffix): void
     {
-        $this->direction = $direction ?? '';
+        $this->suffix = $suffix;
     }
 
     /**
@@ -134,8 +134,8 @@ class UniversalMapperNode implements CustomNodeInterface, LoggerAwareInterface
         $actionName    = CMHeaders::get(CMHeaders::TOPOLOGY_NAME, $dto->getHeaders());
         $actions       = $this->loader->getSystem($systemInstall->getSystem())->getAllowedActions();
 
-        if ($this->direction) {
-            $actionName = sprintf('%s-%s', $actionName, $this->direction);
+        if ($this->suffix) {
+            $actionName = sprintf('%s-%s', $actionName, $this->suffix);
         }
 
         if (!array_key_exists($actionName, $actions)) {

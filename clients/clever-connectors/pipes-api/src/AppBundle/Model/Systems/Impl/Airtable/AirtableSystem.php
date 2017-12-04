@@ -48,6 +48,12 @@ class AirtableSystem implements AuthorizationInterface
 
         $topologyName = TopologyNameUtils::getTopologyName(TopologyNameUtils::CREATE_CONTACT, $this->getKey());
         $this->addAllowedAction(new ActionDto($topologyName . '-out', MapTemplate::DIRECTION_OUT));
+
+        $topologyName = TopologyNameUtils::getTopologyName(TopologyNameUtils::UNSUBSCRIBE_CONTACT, $this->getKey());
+        $this->addAllowedAction(new ActionDto($topologyName, MapTemplate::DIRECTION_OUT));
+
+        $topologyName = TopologyNameUtils::getTopologyName(TopologyNameUtils::HARD_BOUNCE_CONTACT, $this->getKey());
+        $this->addAllowedAction(new ActionDto($topologyName, MapTemplate::DIRECTION_OUT));
     }
 
     /**

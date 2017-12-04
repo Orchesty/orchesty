@@ -27,3 +27,14 @@ services:
             - '@systems.airtable'
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.transport.curl_manager'
+
+    hbpf.connector.airtable-update-contact-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Airtable\Connector\AirtableUpdateContactConnector
+        arguments:
+            - '@systems.airtable'
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.transport.curl_manager'
+
+    hbpf.custom_node.airtable-update-contact-mapper:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Airtable\Mapper\AirtableUpdateContactMapper
+        arguments:
