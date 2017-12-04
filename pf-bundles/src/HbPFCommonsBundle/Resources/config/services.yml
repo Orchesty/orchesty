@@ -1,5 +1,15 @@
 services:
 
+    hbpf.system_metrics_listener:
+        class: Hanaboso\PipesFramework\Commons\Listener\SystemMetricsListener
+        arguments:
+            - '@hbpf.influxdb_sender'
+        calls:
+            - ['setLogger', ['@monolog.logger.commons']]
+        tags:
+            - { name: kernel.event_subscriber, event: kernel.request }
+            - { name: kernel.event_subscriber, event: kernel.terminate }
+
     hbpf.redirect:
         class: Hanaboso\PipesFramework\Commons\Redirect\Redirect
         arguments:
@@ -45,3 +55,9 @@ services:
         class: Hanaboso\PipesFramework\Commons\Docker\DockerClient
         arguments:
             - '%docker.connection.settings%'
+
+    hbpf.influxdb_sender:
+        class: Hanaboso\PipesFramework\Commons\Metrics\InfluxDbSender
+        arguments:
+            - '@udp_sender'
+            - '%metrics.measurement%'
