@@ -32,7 +32,6 @@ class AppExtension extends Extension implements PrependExtensionInterface
         $loader->load('rabbit_mq.yml');
     }
 
-
     /**
      * @param array            $configs
      * @param ContainerBuilder $container
@@ -75,6 +74,7 @@ class AppExtension extends Extension implements PrependExtensionInterface
         $loader->load('shopware.yml');
         $loader->load('wordpress.yml');
         $loader->load('drupal.yml');
+        $loader->load('joomla.yml');
     }
 
 }

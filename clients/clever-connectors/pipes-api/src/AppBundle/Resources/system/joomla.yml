@@ -1,0 +1,5 @@
+services:
+    systems.joomla:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Joomla\JoomlaSystem
+        arguments:
+        tags: ['%systems%']
