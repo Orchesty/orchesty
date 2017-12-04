@@ -55,9 +55,7 @@ abstract class ActionsAbstract
     {
         switch ($this->mode) {
             case GeneratorHandler::MODE_SWARM:
-                $dockerInfo = $this->dockerHandler->getTopologyStackInfo(
-                    GeneratorHandler::getStackName($deploymentPrefix, $topology->getId())
-                );
+                $dockerInfo = [];
                 break;
             case GeneratorHandler::MODE_COMPOSE:
                 $dockerInfo = $this->dockerHandler->getTopologyInfo(
