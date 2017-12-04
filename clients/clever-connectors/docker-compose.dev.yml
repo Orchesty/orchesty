@@ -13,23 +13,17 @@ services:
     batch:
         image: dkr.hanaboso.net/pipes/pipes/php-dev:dev
         user: ${DEV_UID}:${DEV_GID}
+        command: bash -c 'while ! [ -f vendor/autoload.php ];do sleep 1; echo "sleep 1"; done; bin/console rabbit-mq:async-consumer batch'
         working_dir: /var/www/pipes/clients/clever-connectors/pipes-api
         volumes:
           - ../../:/var/www/pipes
           - ${SSH_AUTH_SOCK}:/tmp/bound-ssh-agent
           - ${HOME}/.composer:/srv/.composer
-        depends_on:
-          - mongo
-          - rabbitmq
-        command: bash -c 'while ! [ -f vendor/autoload.php ];do sleep 1; echo "sleep 1"; done; bin/console rabbit-mq:async-consumer batch'
     ## END DEV
     ## BEGIN STAGE
     #batch:
     #    image: dkr.hanaboso.net/pipes/client-cm/monolith-fpm:prod-images
     #    command: bin/console rabbit-mq:async-consumer batch
-    #    depends_on:
-    #      - mongo
-    #      - rabbitmq
     ## END STAGE
 
 
@@ -37,23 +31,17 @@ services:
     batch-connector:
         image: dkr.hanaboso.net/pipes/pipes/php-dev:dev
         user: ${DEV_UID}:${DEV_GID}
+        command: bash -c 'while ! [ -f vendor/autoload.php ];do sleep 1; echo "sleep 1"; done; bin/console rabbit-mq:async-consumer batch-connector'
         working_dir: /var/www/pipes/clients/clever-connectors/pipes-api
         volumes:
           - ../../:/var/www/pipes
           - ${SSH_AUTH_SOCK}:/tmp/bound-ssh-agent
           - ${HOME}/.composer:/srv/.composer
-        depends_on:
-          - mongo
-          - rabbitmq
-        command: bash -c 'while ! [ -f vendor/autoload.php ];do sleep 1; echo "sleep 1"; done; bin/console rabbit-mq:async-consumer batch-connector'
     ## END DEV
     ## BEGIN STAGE
     #batch-connector:
     #    image: dkr.hanaboso.net/pipes/client-cm/monolith-fpm:prod-images
     #    command: bin/console rabbit-mq:async-consumer batch-connector
-    #    depends_on:
-    #      - mongo
-    #      - rabbitmq
     ## END STAGE
 
     ## BEGIN DEV
@@ -75,9 +63,6 @@ services:
           - ${SSH_AUTH_SOCK}:/tmp/bound-ssh-agent
           - ./../topology:${GENERATOR_PATH}
           - ${DOCKER_SOCKET_PATH}:/var/run/docker.sock
-        depends_on:
-          - mongo
-          - rabbitmq
         group_add:
           - ${DOCKER_GID}
         command: bash -c 'while ! [ -f vendor/autoload.php ];do sleep 1; echo "sleep 1"; done; bin/console rabbit-mq:consumer topology-controlling'
@@ -87,23 +72,17 @@ services:
     status-service:
         image: dkr.hanaboso.net/pipes/pipes/php-dev:dev
         user: ${DEV_UID}:${DEV_GID}
+        command: bash -c 'while ! [ -f vendor/autoload.php ];do sleep 1; echo "sleep 1"; done; bin/console rabbit-mq:consumer status-service'
         working_dir: /var/www/pipes/clients/clever-connectors/pipes-api
         volumes:
           - ../../:/var/www/pipes
           - ${SSH_AUTH_SOCK}:/tmp/bound-ssh-agent
           - ${HOME}/.composer:/srv/.composer
-        depends_on:
-          - mongo
-          - rabbitmq
-        command: bash -c 'while ! [ -f vendor/autoload.php ];do sleep 1; echo "sleep 1"; done; bin/console rabbit-mq:consumer status-service'
     ## END DEV
     ## BEGIN STAGE
     #status-service:
     #    image: dkr.hanaboso.net/pipes/client-cm/monolith-fpm:prod-images
     #    command: bin/console rabbit-mq:consumer status-service
-    #    depends_on:
-    #      - mongo
-    #      - rabbitmq
     ## END STAGE
 
     multi-probe:
@@ -163,17 +142,10 @@ services:
           - ../../:/var/www/pipes
           - ${SSH_AUTH_SOCK}:/tmp/bound-ssh-agent
           - ${HOME}/.composer:/srv/.composer
-        depends_on:
-          - mongo
-          - rabbitmq
-          - cron-api
     ## END DEV
     ## BEGIN STAGE
     #monolith-fpm:
     #    image: dkr.hanaboso.net/pipes/client-cm/monolith-fpm:prod-images
-    #    depends_on:
-    #      - mongo
-    #      - rabbitmq
     ## END STAGE
 
     # Services
@@ -196,8 +168,6 @@ services:
           - ${DOCKER_SOCKET_PATH}:/var/run/docker.sock
         group_add:
           - ${DOCKER_GID}
-        depends_on:
-          - mongo
     ## END DEV
     ## BEGIN STAGE
     #topology-fpm:
@@ -216,8 +186,6 @@ services:
     #        target: /srv/docker-pki/cert.pem
     #      - source: docker-client-key.pem
     #        target: /srv/docker-pki/key.pem
-    #    depends_on:
-    #      - mongo
     ## END STAGE
 
     xml-parser-api:
@@ -264,15 +232,7 @@ services:
               - mapper-api
               - monolith-api
               - topology-api
-              - cron-api
-        depends_on:
-          - monolith-fpm
-          - topology-fpm
-          - api-demo-fpm
-          - grafana
-          - kibana
-          - spitter
-          - cron-api
+        # TODO: Use dynamic dns resolution in Nginx instead
 
     stream:
         image: dkr.hanaboso.net/pipes/pipes/stream:dev
@@ -405,8 +365,6 @@ services:
         #    target: /var/www/html/cert/stage-staff.pem
         #    mode: 0644
         ## END STAGE
-        depends_on:
-          - rabbitmq
 
     cron-api:
         image: dkr.hanaboso.net/pipes/pipes/python-cron:dev
