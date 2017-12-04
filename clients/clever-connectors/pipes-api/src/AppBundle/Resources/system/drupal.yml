@@ -1,0 +1,5 @@
+services:
+    systems.drupal:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Drupal\DrupalSystem
+        arguments:
+        tags: ['%systems%']
