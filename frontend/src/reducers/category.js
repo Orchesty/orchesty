@@ -41,6 +41,11 @@ function reducer(state, action){
         elements: addElement(state.elements, action.data)
       });
 
+    case types.CATEGORY_REMOVE:
+      const newElements = Object.assign({}, state.elements);
+      delete newElements[action.id];
+      return Object.assign({}, state, {elements: newElements});
+
     case types.CATEGORY_TREE_CREATE:
       return Object.assign({}, state, {
         trees: Object.assign({}, state.trees, {
@@ -48,7 +53,7 @@ function reducer(state, action){
             id: action.id,
             state: stateType.NOT_LOADED,
             root: null,
-            selectedId: null
+            selectedId: action.selectedId !== undefined ? action.selectedId : null
           }
         })
       });
@@ -89,6 +94,24 @@ function reducer(state, action){
           })
         })
       });
+
+    case types.CATEGORY_TREE_INVALIDATE:
+      const newTrees = {};
+      let changed = false;
+      Object.keys(state.trees).forEach(key => {
+        const tree = state.trees[key];
+        if (tree.state !== stateType.NOT_LOADED){
+          newTrees[key] = Object.assign({}, tree, {state: stateType.NOT_LOADED});
+          changed = true;
+        } else {
+          newTrees[key] = tree;
+        }
+      });
+      if (changed) {
+        return Object.assign({}, state, {trees: newTrees});
+      } else {
+        return state;
+      }
 
     default:
       return state;

@@ -7,11 +7,23 @@ import processes from 'enums/processes';
 
 const {createCompleteList, listLoading, listReceive, listError, invalidateLists} = listFactory('CATEGORY/LIST/');
 
+function invalidateTrees(){
+  return {
+    type: types.CATEGORY_TREE_INVALIDATE
+  }
+}
 
 function receive(data){
   return {
     type: types.CATEGORY_RECEIVE,
     data
+  }
+}
+
+function remove(id) {
+  return {
+    type: types.CATEGORY_REMOVE,
+    id
   }
 }
 
@@ -22,10 +34,11 @@ function receiveItems(items){
   }
 }
 
-function createCompleteTree(treeId){
+function createCompleteTree(treeId, selectedId = undefined){
   return {
     type: types.CATEGORY_TREE_CREATE,
     id: treeId,
+    selectedId: selectedId
   }
 }
 
@@ -111,11 +124,13 @@ function loadTree(treeId, force = false) {
   }
 }
 
-export function needCategoryTree(treeId, forced = false) {
+export function needCategoryTree(treeId, forced = false, selectedId = undefined) {
   return (dispatch, getState) => {
     const tree = getState().category.trees[treeId];
     if (!tree) {
-      dispatch(createCompleteTree(treeId));
+      dispatch(createCompleteTree(treeId, selectedId));
+    } else if (selectedId !== undefined) {
+      dispatch(treeSelect(treeId, selectedId));
     }
     if (forced || !tree || tree.state == stateType.NOT_LOADED || tree.state == stateType.ERROR){
       return dispatch(loadTree(treeId, forced));
@@ -146,6 +161,7 @@ export function createCategory(data, processHash = 'new') {
         if (response){
           dispatch(receive(response));
           dispatch(invalidateLists());
+          dispatch(invalidateTrees());
         }
         dispatch(processActions.finishProcess(processes.categoryCreate(processHash), response));
         return response;
@@ -163,6 +179,23 @@ export function updateCategory(id, data) {
           dispatch(receive(response));
         }
         dispatch(processActions.finishProcess(processes.categoryUpdate(id), response));
+        return response;
+      }
+    )
+  }
+}
+
+export function deleteCategory(id){
+  return dispatch => {
+    dispatch(processActions.startProcess(processes.categoryDelete(id)));
+    return serverRequest(dispatch, 'DELETE', `/categories/${id}`).then(
+      response => {
+        if (response) {
+          dispatch(invalidateLists());
+          dispatch(invalidateTrees());
+          dispatch(remove(id));
+        }
+        dispatch(processActions.finishProcess(processes.categoryDelete(id), response));
         return response;
       }
     )

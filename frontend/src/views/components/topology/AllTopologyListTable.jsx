@@ -30,7 +30,8 @@ function mapActionsToProps(dispatch, ownProps){
     selectPage: (key, args) => dispatch(applicationActions.selectPage(key, args)),
     clone: id => dispatch(topologyActions.cloneTopology(id)),
     topologyDelete: id => dispatch(applicationActions.openModal('topology_delete_dialog', {topologyId: id})),
-    publish: id => dispatch(topologyActions.publishTopology(id))
+    publish: id => dispatch(topologyActions.publishTopology(id)),
+    changeCategory: id => dispatch(applicationActions.openModal('category_topology_change', {topologyId: id}))
   }
 }
 
