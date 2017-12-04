@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace CleverConnectors\AppBundle\Model\CM\SubscriptionConnector;
+namespace CleverConnectors\AppBundle\Model\CM\SubscriberConnector;
 
 /**
  * Created by PhpStorm.
@@ -24,11 +24,11 @@ use Psr\Log\LoggerInterface;
 use Throwable;
 
 /**
- * Class CMSubscriptionConnectorAbstract
+ * Class CMSubscriberConnectorAbstract
  *
- * @package CleverConnectors\AppBundle\Model\CM\SubscriptionConnector
+ * @package CleverConnectors\AppBundle\Model\CM\SubscriberConnector
  */
-abstract class CMSubscriptionConnectorAbstract extends CMAuthorization implements ConnectorInterface, LoggerAwareInterface
+abstract class CMSubscriberConnectorAbstract extends CMAuthorization implements ConnectorInterface, LoggerAwareInterface
 {
 
     /**
@@ -42,7 +42,7 @@ abstract class CMSubscriptionConnectorAbstract extends CMAuthorization implement
     protected $logger;
 
     /**
-     * CMSubscriptionConnectorAbstract constructor.
+     * CMSubscriberConnectorAbstract constructor.
      *
      * @param CurlManagerInterface $curl
      */
@@ -68,7 +68,7 @@ abstract class CMSubscriptionConnectorAbstract extends CMAuthorization implement
     public function processEvent(ProcessDto $dto): ProcessDto
     {
         throw new ConnectorException(
-            'CMSubscriptionConnector has no support for webhooks!',
+            'CMSubscriberConnector has no support for webhooks!',
             ConnectorException::CONNECTOR_DOES_NOT_HAVE_PROCESS_EVENT
         );
     }

@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace CleverConnectors\AppBundle\Model\CM\SubscriptionConnector\CustomerObject;
+namespace CleverConnectors\AppBundle\Model\CM\SubscriberConnector\SubscriberObject;
 
 /**
  * Created by PhpStorm.
@@ -14,7 +14,7 @@ use CleverConnectors\AppBundle\Enum\CleverFieldsEnum;
 /**
  * Class CMSubscriber
  *
- * @package CleverConnectors\AppBundle\Model\CM\SubscriptionConnector\CustomerObject
+ * @package CleverConnectors\AppBundle\Model\CM\SubscriberConnector\SubscriberObject
  */
 final class CMSubscriber
 {

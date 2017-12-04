@@ -1,20 +1,20 @@
 services:
     hbpf.connector.cleverconnectors-create-subscriptions-connector:
-        class: CleverConnectors\AppBundle\Model\CM\SubscriptionConnector\CMCreateSubscriptionConnector
+        class: CleverConnectors\AppBundle\Model\CM\SubscriberConnector\CMCreateSubscriberConnector
         arguments:
             - '@cc.transport.curl.manager'
         calls:
             - ['setLogger', ['@monolog.logger.commons']]
 
     hbpf.connector.cleverconnectors-update-subscriptions-connector:
-        class: CleverConnectors\AppBundle\Model\CM\SubscriptionConnector\CMUpdateSubscriptionConnector
+        class: CleverConnectors\AppBundle\Model\CM\SubscriberConnector\CMUpdateSubscriberConnector
         arguments:
             - '@cc.transport.curl.manager'
         calls:
             - ['setLogger', ['@monolog.logger.commons']]
 
     hbpf.connector.cleverconnectors-delete-subscriptions-connector:
-        class: CleverConnectors\AppBundle\Model\CM\SubscriptionConnector\CMDeleteSubscriptionConnector
+        class: CleverConnectors\AppBundle\Model\CM\SubscriberConnector\CMDeleteSubscriberConnector
         arguments:
             - '@cc.transport.curl.manager'
         calls:
@@ -26,7 +26,7 @@ services:
             - '@cc.transport.curl.manager'
 
     hbpf.connector.cleverconnectors-validate-subscriptions-connector:
-        class: CleverConnectors\AppBundle\Model\CM\SubscriptionConnector\CMValidateSubscriptionConnector
+        class: CleverConnectors\AppBundle\Model\CM\SubscriberConnector\CMValidateSubscriberConnector
         arguments:
             - '@cc.transport.curl.manager'
         calls:

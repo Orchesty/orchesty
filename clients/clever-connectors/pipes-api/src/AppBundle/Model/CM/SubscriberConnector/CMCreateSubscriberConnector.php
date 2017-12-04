@@ -1,6 +1,13 @@
 <?php declare(strict_types=1);
 
-namespace CleverConnectors\AppBundle\Model\CM\SubscriptionConnector;
+namespace CleverConnectors\AppBundle\Model\CM\SubscriberConnector;
+
+/**
+ * Created by PhpStorm.
+ * User: radekj
+ * Date: 21.9.17
+ * Time: 17:49
+ */
 
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
@@ -8,11 +15,11 @@ use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
 
 /**
- * Class CMValidateSubscriptionConnector
+ * Class CMCreateSubscriberConnector
  *
- * @package CleverConnectors\AppBundle\Model\CM\SubscriptionConnector
+ * @package CleverConnectors\AppBundle\Model\CM\SubscriberConnector
  */
-class CMValidateSubscriptionConnector extends CMSubscriptionConnectorAbstract
+class CMCreateSubscriberConnector extends CMSubscriberConnectorAbstract
 {
 
     /**
@@ -25,16 +32,6 @@ class CMValidateSubscriptionConnector extends CMSubscriptionConnectorAbstract
     public function processAction(ProcessDto $dto): ProcessDto
     {
         return $this->processCMAction($dto, CurlManager::METHOD_POST, [200, 201]);
-    }
-
-    /**
-     * @param string $email
-     *
-     * @return string
-     */
-    protected function getUrl(string $email = ''): string
-    {
-        return 'https://api.dev.clevermonitor.com/v1.2/validation/email';
     }
 
 }

@@ -2,7 +2,7 @@
 
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Zendesk\Mapper;
 
-use CleverConnectors\AppBundle\Model\CM\SubscriptionConnector\CustomerObject\CMSubscriber;
+use CleverConnectors\AppBundle\Model\CM\SubscriberConnector\SubscriberObject\CMSubscriber;
 use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
 
 /**

@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace CleverConnectors\AppBundle\Model\CM\SubscriptionConnector;
+namespace CleverConnectors\AppBundle\Model\CM\SubscriberConnector;
 
 use CleverConnectors\AppBundle\Enum\CleverFieldsEnum;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
@@ -9,11 +9,11 @@ use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
 
 /**
- * Class CMDeleteSubscriptionConnector
+ * Class CMUpdateSubscriberConnector
  *
- * @package CleverConnectors\AppBundle\Model\CM\SubscriptionConnector
+ * @package CleverConnectors\AppBundle\Model\CM\SubscriberConnector
  */
-class CMDeleteSubscriptionConnector extends CMSubscriptionConnectorAbstract
+class CMUpdateSubscriberConnector extends CMSubscriberConnectorAbstract
 {
 
     /**
@@ -30,7 +30,7 @@ class CMDeleteSubscriptionConnector extends CMSubscriptionConnectorAbstract
             return (new ProcessDto())->setData('')->setHeaders($dto->getHeaders());
         }
 
-        return $this->processCMAction($dto, CurlManager::METHOD_DELETE, [200], $data[CleverFieldsEnum::EMAIL]);
+        return $this->processCMAction($dto, CurlManager::METHOD_PATCH, [200], $data[CleverFieldsEnum::EMAIL]);
     }
 
 }

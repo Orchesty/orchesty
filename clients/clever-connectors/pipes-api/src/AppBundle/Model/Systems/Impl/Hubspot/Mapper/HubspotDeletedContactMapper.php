@@ -3,7 +3,7 @@
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\Mapper;
 
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
-use CleverConnectors\AppBundle\Model\CM\SubscriptionConnector\CustomerObject\CMSubscriber;
+use CleverConnectors\AppBundle\Model\CM\SubscriberConnector\SubscriberObject\CMSubscriber;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\HubspotSystem;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 
