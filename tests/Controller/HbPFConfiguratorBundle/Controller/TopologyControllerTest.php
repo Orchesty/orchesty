@@ -56,7 +56,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
     public function testGetTopologyNotFound(): void
     {
         $response = $this->sendGet('/api/topologies/999');
-        $content = json_decode($response->content);
+        $content = $response->content;
 
         self::assertEquals(500, $response->status);
         self::assertEquals(TopologyException::class, $content->type);
@@ -112,7 +112,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
             'descr'   => 'Topology 2',
             'enabled' => TRUE,
         ]);
-        $content = json_decode($response->content);
+        $content = $response->content;
 
         self::assertEquals(500, $response->status);
         self::assertEquals(TopologyException::class, $content->type);
@@ -156,7 +156,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
             'status'  => $response->getStatusCode(),
             'content' => Json::decode($response->getContent()),
         ];
-        $content = json_decode($response->content);
+        $content = $response->content;
 
         self::assertEquals(500, $response->status);
         self::assertEquals(TopologyException::class, $content->type);
@@ -217,7 +217,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
             'status'  => $response->getStatusCode(),
             'content' => Json::decode($response->getContent()),
         ];
-        $content = json_decode($response->content);
+        $content = $response->content;
 
         self::assertEquals(500, $response->status);
         self::assertEquals(TopologyException::class, $content->type);

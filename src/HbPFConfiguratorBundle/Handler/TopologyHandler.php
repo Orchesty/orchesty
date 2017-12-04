@@ -123,7 +123,7 @@ class TopologyHandler
      */
     public function createTopology(array $data): array
     {
-        ControllerUtils::checkParameters(['name', 'descr'], $data);
+        ControllerUtils::checkParameters(['name'], $data);
 
         $topology = $this->manager->createTopology($data);
 
@@ -140,7 +140,7 @@ class TopologyHandler
      */
     public function updateTopology(string $id, array $data): array
     {
-        ControllerUtils::checkParameters(['descr', 'enabled'], $data);
+        ControllerUtils::checkParameters(['enabled'], $data);
 
         $topology = $this->getTopologyById($id);
         $this->manager->updateTopology($topology, $data);

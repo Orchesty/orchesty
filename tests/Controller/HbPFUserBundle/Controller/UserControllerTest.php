@@ -69,7 +69,7 @@ class UserControllerTest extends ControllerTestCaseAbstract
         ]);
 
         $this->assertEquals(500, $response->status);
-        $content = json_decode($response->content);
+        $content = $response->content;
         $this->assertEquals(SecurityManagerException::class, $content->type);
         $this->assertEquals(2001, $content->error_code);
     }
@@ -90,7 +90,7 @@ class UserControllerTest extends ControllerTestCaseAbstract
         ]);
 
         $this->assertEquals(500, $response->status);
-        $content = json_decode($response->content);
+        $content = $response->content;
         $this->assertEquals(SecurityManagerException::class, $content->type);
         $this->assertEquals(2001, $content->error_code);
     }
@@ -115,7 +115,7 @@ class UserControllerTest extends ControllerTestCaseAbstract
         $response = $this->sendPost('/api/user/logout', []);
 
         $this->assertEquals(500, $response->status);
-        $content = json_decode($response->content);
+        $content = $response->content;
         $this->assertEquals(SecurityManagerException::class, $content->type);
         $this->assertEquals(2001, $content->error_code);
     }
@@ -147,7 +147,7 @@ class UserControllerTest extends ControllerTestCaseAbstract
         ]);
 
         $this->assertEquals(500, $response->status);
-        $content = json_decode($response->content);
+        $content = $response->content;
         $this->assertEquals(UserManagerException::class, $content->type);
         $this->assertEquals(2001, $content->error_code);
     }
@@ -183,7 +183,7 @@ class UserControllerTest extends ControllerTestCaseAbstract
             []);
 
         $this->assertEquals(500, $response->status);
-        $content = json_decode($response->content);
+        $content = $response->content;
         $this->assertEquals(TokenManagerException::class, $content->type);
         $this->assertEquals(2001, $content->error_code);
     }
@@ -224,7 +224,7 @@ class UserControllerTest extends ControllerTestCaseAbstract
             Strings::substring($token->getHash(), 1)), ['password' => 'newPassword']);
 
         $this->assertEquals(500, $response->status);
-        $content = json_decode($response->content);
+        $content = $response->content;
         $this->assertEquals(TokenManagerException::class, $content->type);
         $this->assertEquals(2001, $content->error_code);
     }
@@ -290,7 +290,7 @@ class UserControllerTest extends ControllerTestCaseAbstract
         $response = $this->sendPost('/api/user/reset_password', [
             'email' => '',
         ]);
-        $content = json_decode($response->content);
+        $content = $response->content;
 
         $this->assertEquals(500, $response->status);
         $this->assertEquals(UserManagerException::class, $content->type);
@@ -338,7 +338,7 @@ class UserControllerTest extends ControllerTestCaseAbstract
         $this->loginUser('email@example.com', 'passw0rd');
 
         $response = $this->sendDelete('/api/user/0/delete');
-        $content = json_decode($response->content);
+        $content = $response->content;
 
         $this->assertEquals(500, $response->status);
         $this->assertEquals(UserManagerException::class, $content->type);
@@ -368,7 +368,7 @@ class UserControllerTest extends ControllerTestCaseAbstract
         $this->dm->flush();
 
         $response = $this->sendDelete(sprintf('/api/user/%s/delete', $loggedUser->getId()));
-        $content = json_decode($response->content);
+        $content = $response->content;
 
         $this->assertEquals(500, $response->status);
         $this->assertEquals(UserManagerException::class, $content->type);
@@ -388,7 +388,7 @@ class UserControllerTest extends ControllerTestCaseAbstract
         $this->persistAndFlush($user);
 
         $response = $this->sendDelete(sprintf('/api/user/%s/delete', $user->getId()));
-        $content = json_decode($response->content);
+        $content = $response->content;
 
         $this->assertEquals(500, $response->status);
         $this->assertEquals(AclException::class, $content->type);
