@@ -439,4 +439,11 @@ services:
 #    external: true
 #  docker-config.json:
 #    external: true
+#
+#networks:
+#  default:
+#    driver: overlay
+#    ipam:
+#      config:
+#        - subnet: 10.75.0.0/16
 ## END STAGE
