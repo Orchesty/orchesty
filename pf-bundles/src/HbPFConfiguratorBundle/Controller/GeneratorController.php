@@ -65,9 +65,8 @@ class GeneratorController extends FOSRestController
         if ($this->generatorHandler) {
             $result = $this->generatorHandler->generateTopology($id);
             //@todo better solution
-            if (is_array($result)) {
-                $statusCode = 200;
-            }
+            $statusCode = 200;
+
         }
 
         return $this->getResponse(["result" => $statusCode], $statusCode);
@@ -92,9 +91,7 @@ class GeneratorController extends FOSRestController
         if ($this->generatorHandler) {
             $result = $this->generatorHandler->runTopology($id);
             //@todo better solution
-            if (is_array($result)) {
-                $statusCode = 200;
-            }
+            $statusCode = 200;
         }
 
         return $this->getResponse(["result" => $statusCode], $statusCode);
