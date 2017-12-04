@@ -1,4 +1,5 @@
-<?php
+<?php declare(strict_types=1);
+
 /**
  * Created by PhpStorm.
  * User: radek.jirsa
@@ -10,9 +11,11 @@ namespace Tests\Integration\Metrics;
 
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Metrics\Client\MetricsClient;
+use Hanaboso\PipesFramework\Metrics\Exception\MetricsException;
 use Hanaboso\PipesFramework\Metrics\MetricsManager;
 use InfluxDB\Database;
 use InfluxDB\Database\RetentionPolicy;
+use InfluxDB\Exception;
 use InfluxDB\Point;
 use Tests\KernelTestCaseAbstract;
 use Tests\PrivateTrait;
@@ -27,7 +30,12 @@ final class MetricsManagerTest extends KernelTestCaseAbstract
 
     use PrivateTrait;
 
-    public function testGetTopologyMetrics()
+    /**
+     * @throws Database\Exception
+     * @throws Exception
+     * @throws MetricsException
+     */
+    public function testGetTopologyMetrics(): void
     {
         $id   = uniqid();
         $topo = $this->createTopo($id);
@@ -35,10 +43,17 @@ final class MetricsManagerTest extends KernelTestCaseAbstract
         $this->setFakeData($id);
 
         $manager = $this->getManager();
-        $aa      = $manager->getTopologyMetrics($topo, []);
+        $result  = $manager->getTopologyMetrics($topo, []);
+
+        self::assertTrue(is_array($result));
     }
 
-    private function createTopo(string $id)
+    /**
+     * @param string $id
+     *
+     * @return Topology
+     */
+    private function createTopo(string $id): Topology
     {
         $topo = new Topology();
         $topo->setName('aaa-bbb');
@@ -47,7 +62,10 @@ final class MetricsManagerTest extends KernelTestCaseAbstract
         return $topo;
     }
 
-    private function getClient()
+    /**
+     * @return MetricsClient
+     */
+    private function getClient(): MetricsClient
     {
         $host = $this->container->getParameter('influx.host');
         $port = $this->container->getParameter('influx.port');
@@ -57,6 +75,9 @@ final class MetricsManagerTest extends KernelTestCaseAbstract
         return new MetricsClient($host, $port, $user, $pass, 'test');
     }
 
+    /**
+     * @return MetricsManager
+     */
     private function getManager(): MetricsManager
     {
         $table = $this->container->getParameter('influx.table');
@@ -64,25 +85,33 @@ final class MetricsManagerTest extends KernelTestCaseAbstract
         return new MetricsManager($this->getClient(), $table);
     }
 
-    private function setFakeData(string $id)
+    /**
+     * @param string $id
+     *
+     * @throws Database\Exception
+     * @throws MetricsException
+     * @throws Exception
+     */
+    private function setFakeData(string $id): void
     {
         $points = [
             new Point(
                 'pipes_node',
                 NULL,
                 [
-                    MetricsManager::TOP_PROCESS_TIME => 10,
-                    MetricsManager::WAIT_TIME        => 10,
                     MetricsManager::NODE             => 'node',
                     MetricsManager::TOPOLOGY         => $id,
+                ],
+                [
+                    MetricsManager::TOP_PROCESS_TIME => 10,
+                    MetricsManager::WAIT_TIME        => 10,
                 ]
             ),
         ];
 
         $this->getClient()->createClient()->selectDB('test')->create(new RetentionPolicy('test', '1d', 1, TRUE));
         $database = $this->getClient()->getDatabase('test');
-        // we are writing unix timestamps, which have a second precision
-        $result = $database->writePoints($points, Database::PRECISION_SECONDS);
+        $database->writePoints($points, Database::PRECISION_SECONDS);
     }
 
 }
