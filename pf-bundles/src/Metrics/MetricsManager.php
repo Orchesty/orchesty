@@ -52,7 +52,13 @@ class MetricsManager
         $this->tableName = $tableName;
     }
 
-    public function getTopologyMetrics(Topology $topology, array $params)
+    /**
+     * @param Topology $topology
+     * @param array    $params
+     *
+     * @return array
+     */
+    public function getTopologyMetrics(Topology $topology, array $params): array
     {
         $from = $params['from'] ?? NULL;
         $to   = $params['to'] ?? NULL;
@@ -82,12 +88,18 @@ class MetricsManager
         }
 
         // @TODO agregace výsledků
-        return $qb->getQuery();
+        return $qb->getResultSet()->getPoints();
     }
 
-    public function getNodeMetrics(Node $node, array $params)
+    /**
+     * @param Node  $node
+     * @param array $params
+     *
+     * @return array
+     */
+    public function getNodeMetrics(Node $node, array $params): array
     {
-
+        return [];
     }
 
     /**
@@ -133,12 +145,12 @@ class MetricsManager
         $first = TRUE;
         foreach ($data as $key => $alias) {
             if (!$first) {
-                $ret   .= sprintf(', %s("%s") as %s', $funcName, $key, $alias);
+                $ret .= sprintf(', %s("%s") as %s', $funcName, $key, $alias);
                 continue;
             }
 
             $first = FALSE;
-            $ret = sprintf('%s("%s") as %s', $funcName, $key, $alias);
+            $ret   = sprintf('%s("%s") as %s', $funcName, $key, $alias);
         }
 
         return $ret;
