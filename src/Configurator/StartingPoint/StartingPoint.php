@@ -9,6 +9,8 @@
 namespace Hanaboso\PipesFramework\Configurator\StartingPoint;
 
 use Bunny\Channel;
+use DateTime;
+use DateTimeZone;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
@@ -178,7 +180,7 @@ class StartingPoint implements LoggerAwareInterface
             ->addHeader(PipesHeaders::createKey(PipesHeaders::TOPOLOGY_ID), $topology->getId())
             ->addHeader(PipesHeaders::createKey(PipesHeaders::TOPOLOGY_NAME), $topology->getName())
             ->addHeader('content-type', $requestHeaders['content-type'][0] ?? 'text/plain')
-            ->addHeader('timestamp', (string) round(microtime(TRUE) * 1000));
+            ->addHeader('timestamp', new DateTime('now', new DateTimeZone('UTC')));
 
         foreach (PipesHeaders::clear($requestHeaders) as $key => $value) {
             $headers->addHeader($key, (string) $value[0]);

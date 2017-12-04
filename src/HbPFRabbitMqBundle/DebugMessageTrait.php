@@ -49,6 +49,9 @@ trait DebugMessageTrait
         if (!empty($headers)) {
             $result = [];
             foreach ($headers as $key => $value) {
+                if ($key === 'timestamp') {
+                    $value = $value->getTimestamp();
+                }
                 $result[] = sprintf('%s=%s', $key, $value);
             }
             $context['headers'] = implode('@', $result);

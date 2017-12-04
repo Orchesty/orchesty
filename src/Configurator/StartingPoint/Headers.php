@@ -31,11 +31,11 @@ class Headers
 
     /**
      * @param string $key
-     * @param string $value
+     * @param mixed  $value
      *
      * @return Headers
      */
-    public function addHeader(string $key, string $value): Headers
+    public function addHeader(string $key, $value): Headers
     {
         $this->headers[$key] = $value;
 
