@@ -3,7 +3,6 @@
 namespace Tests\Controller\HbPFConnectorBundle\Controller;
 
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
-use Hanaboso\PipesFramework\HbPFConnectorBundle\Controller\ConnectorController;
 use Hanaboso\PipesFramework\HbPFConnectorBundle\Handler\ConnectorHandler;
 use Tests\ControllerTestCaseAbstract;
 
@@ -20,8 +19,6 @@ class ConnectorControllerTest extends ControllerTestCaseAbstract
      */
     public function testProcessEvent(): void
     {
-        $this->markTestSkipped('Fix it!');
-
         $this->mockHandler('processEvent');
 
         $this->client->request('POST', '/connector/magento/webhook', [], [], [], '{}');
@@ -37,7 +34,6 @@ class ConnectorControllerTest extends ControllerTestCaseAbstract
      */
     public function testProcessAction(): void
     {
-        $this->markTestSkipped('Fix it!');
         $this->mockHandler('processAction');
 
         $this->client->request('POST', '/connector/magento/action', [], [], [], '{}');
