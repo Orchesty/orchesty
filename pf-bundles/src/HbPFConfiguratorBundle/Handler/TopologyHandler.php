@@ -138,8 +138,6 @@ class TopologyHandler
      */
     public function updateTopology(string $id, array $data): array
     {
-        ControllerUtils::checkParameters(['descr', 'enabled'], $data);
-
         $topology = $this->getTopologyById($id);
         $this->manager->updateTopology($topology, $data);
 
