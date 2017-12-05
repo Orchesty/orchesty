@@ -117,6 +117,7 @@ class InstallManager implements LoggerAwareInterface
      * @param bool $force
      *
      * @return array
+     * @throws CleverConnectorsException
      */
     public function prepareInstall(bool $makeCreate, bool $makeUpdate, bool $makeDelete, bool $force = FALSE): array
     {
