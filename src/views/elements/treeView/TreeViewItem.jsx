@@ -9,6 +9,9 @@ class TreeViewItem extends React.Component {
     this.edit = this.edit.bind(this);
     this.create = this.create.bind(this);
     this.makeDelete = this.makeDelete.bind(this);
+    this.startEdit = this.startEdit.bind(this);
+    this.setControlFunctions = this.setControlFunctions.bind(this);
+    this.editControlFunctions = {};
   }
 
   itemClick(e){
@@ -36,6 +39,17 @@ class TreeViewItem extends React.Component {
     deleteAction(item.id);
   }
 
+  startEdit(e){
+    e.preventDefault();
+    if (this.editControlFunctions.switchEdit){
+      this.editControlFunctions.switchEdit();
+    }
+  }
+
+  setControlFunctions(functions){
+    this.editControlFunctions = functions;
+  }
+
   render() {
     const {item, ...passProps} = this.props;
     const {allOpen, componentKey} = this.props;
@@ -46,9 +60,19 @@ class TreeViewItem extends React.Component {
     return (
       <li className={(item.selected ? 'selected' : '') + (openable ? (open ? ' open' : ' close') : '')}>
         <div className="tree-view-item">
-          <a className="item-caption" href="#" onClick={this.itemClick}><TextEditable commitAction={this.edit} componentKey={`${componentKey}.${item.id}`} value={item.caption} /></a>
+          {open ? <span className="caret" /> : <span className="empty" />}
+          <a className="item-caption" href="#" onClick={this.itemClick}>
+            <TextEditable
+              commitAction={this.edit}
+              componentKey={`${componentKey}.${item.id}`}
+              value={item.caption}
+              setControlFunction={this.setControlFunctions}
+            />
+          </a>
           <span className="quick-buttons">
-            <a href="#" onClick={this.create}><i className="fa fa-plus-circle" /></a> <a href="#" onClick={this.makeDelete}><i className="fa fa-times" /></a>
+            <a href="#" onClick={this.startEdit}><i className="fa fa-pencil" /></a>
+            <a href="#" onClick={this.create}><i className="fa fa-plus-circle" /></a>
+            <a href="#" onClick={this.makeDelete}><i className="fa fa-times" /></a>
           </span>
         </div>
         {open && <ul>{children}</ul>}
