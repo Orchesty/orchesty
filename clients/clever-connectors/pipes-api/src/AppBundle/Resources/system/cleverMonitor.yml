@@ -31,3 +31,17 @@ services:
             - '@cc.transport.curl.manager'
         calls:
             - ['setLogger', ['@monolog.logger.commons']]
+
+    hbpf.connector.cleverconnectors-get-subscribers-connector:
+        class: CleverConnectors\AppBundle\Model\CM\SubscriberConnector\CMGetSubscribersConnector
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.transport.async_curl_factory'
+            - '%clevermonitor%'
+
+    hbpf.connector.cleverconnectors-get-list-subscribers-connector:
+        class: CleverConnectors\AppBundle\Model\CM\SubscriberConnector\CMGetListSubscribersConnector
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.transport.async_curl_factory'
+            - '%clevermonitor%'
