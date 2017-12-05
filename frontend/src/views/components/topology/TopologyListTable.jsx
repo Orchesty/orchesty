@@ -8,7 +8,7 @@ import * as applicationActions from 'actions/applicationActions';
 import StateComponent from 'wrappers/StateComponent';
 import BoolValue from 'elements/BoolValue';
 import SortTh from 'elements/table/SortTh';
-import ActionButtonPanel from 'elements/actions/ActionButtonPanel';
+import ActionButton from 'elements/actions/ActionButton';
 import ListPagination from 'elements/table/ListPagination';
 import TopologyListFilter from './TopologyListFilter';
 
@@ -42,11 +42,10 @@ class TopologyListTable extends React.Component {
     const {list: {sort}} = this.props;
     return (
       <tr>
-        <SortTh name="_id" state={sort} onChangeSort={this.changeSort}>#</SortTh>
-        <SortTh name="visibility" state={sort} onChangeSort={this.changeSort}>Visibility</SortTh>
         <SortTh name="name" state={sort} onChangeSort={this.changeSort}>Name</SortTh>
         <SortTh name="version" state={sort} onChangeSort={this.changeSort}>Version</SortTh>
         <SortTh name="descr" state={sort} onChangeSort={this.changeSort}>Description</SortTh>
+        <SortTh name="visibility" state={sort} onChangeSort={this.changeSort}>Visibility</SortTh>
         <SortTh name="enabled" state={sort} onChangeSort={this.changeSort}>Enabled</SortTh>
         <th>Actions</th>
       </tr>
@@ -54,7 +53,7 @@ class TopologyListTable extends React.Component {
   }
 
   render() {
-    const {list, elements, listChangeFilter, openModal, clone, topologyDelete, publish, selectPage, list: {items}} = this.props;
+    const {list, elements, listChangeFilter, openModal, clone, topologyDelete, publish, changeCategory, selectPage, list: {items}} = this.props;
 
     let rows = null;
     if (items){
@@ -68,13 +67,22 @@ class TopologyListTable extends React.Component {
             {
               caption: 'Edit',
               action: () => {openModal('topology_edit', {topologyId: id});}
-            },
-            {
+            }
+          ];
+          if (changeCategory){
+            menuItems.push({
+              caption: 'Change category',
+             // processId: processes.topologyChangeCategory(id),
+              action: () => {changeCategory(id)}
+            });
+          }
+          if (clone){
+            menuItems.push({
               caption: 'Clone',
               processId: processes.topologyClone(id),
               action: () => {clone(id)}
-            }
-          ];
+            });
+          }
           if (publish){
             menuItems.push({
               caption: 'Publish',
@@ -96,13 +104,12 @@ class TopologyListTable extends React.Component {
           }
           return (
             <tr key={item._id}>
-              <td>{item._id}</td>
-              <td>{item.visibility}</td>
               <td>{item.name}</td>
               <td>{item.version}</td>
               <td>{item.descr}</td>
+              <td>{item.visibility}</td>
               <td><BoolValue value={item.enabled}/></td>
-              <td><ActionButtonPanel items={menuItems} right={true} size="sm" /></td>
+              <td><ActionButton item={menuItems} right={true} size="sm" /></td>
             </tr>
           )
         }
@@ -143,7 +150,8 @@ TopologyListTable.propTypes = {
   listChangeFilter: PropTypes.func,
   clone: PropTypes.func,
   publish: PropTypes.func,
-  topologyDelete: PropTypes.func
+  topologyDelete: PropTypes.func,
+  changeCategory: PropTypes.func
 };
 
 export default StateComponent(TopologyListTable);

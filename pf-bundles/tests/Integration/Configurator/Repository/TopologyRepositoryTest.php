@@ -2,6 +2,7 @@
 
 namespace Tests\Integration\Configurator\Repository;
 
+use Hanaboso\PipesFramework\Category\Document\Category;
 use Hanaboso\PipesFramework\Commons\Enum\TopologyStatusEnum;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository;
@@ -93,6 +94,41 @@ final class TopologyRepositoryTest extends DatabaseTestCaseAbstract
 
         self::assertCount(2, $result);
 
+    }
+
+    /**
+     * @covers TopologyRepository::getTopologiesByCategory()
+     */
+    public function testGetTopologiesByCategory(): void
+    {
+        /** @var TopologyRepository $repo */
+        $repo   = $this->dm->getRepository(Topology::class);
+        $category = new Category();
+        $category->setName('test_category');
+        $this->dm->persist($category);
+        $this->dm->flush();
+
+        $topologyNoCategory = new Topology();
+        $topologyNoCategory
+            ->setName('topology-no-category')
+            ->setEnabled(TRUE)
+            ->setVisibility(TopologyStatusEnum::PUBLIC);
+
+        $topologyWithCategory = new Topology();
+        $topologyWithCategory
+            ->setName('topology-with-category')
+            ->setEnabled(TRUE)
+            ->setVisibility(TopologyStatusEnum::PUBLIC)
+            ->setCategory($category->getId());
+
+        $this->dm->persist($topologyNoCategory);
+        $this->dm->persist($topologyWithCategory);
+        $this->dm->flush();
+
+        $topologies = $repo->getTopologiesByCategory($category);
+
+        self::assertCount(1, $topologies);
+        self::assertEquals($topologyWithCategory->getId(), $topologies[0]->getId());
     }
 
 }

@@ -140,8 +140,6 @@ class TopologyHandler
      */
     public function updateTopology(string $id, array $data): array
     {
-        ControllerUtils::checkParameters(['enabled'], $data);
-
         $topology = $this->getTopologyById($id);
         $this->manager->updateTopology($topology, $data);
 
@@ -248,6 +246,7 @@ class TopologyHandler
             'status'     => $topology->getStatus(),
             'visibility' => $topology->getVisibility(),
             'version'    => $topology->getVersion(),
+            'category'   => $topology->getCategory(),
             'enabled'    => $topology->isEnabled(),
         ];
     }

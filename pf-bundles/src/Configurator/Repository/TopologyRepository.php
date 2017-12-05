@@ -4,6 +4,7 @@ namespace Hanaboso\PipesFramework\Configurator\Repository;
 
 use Doctrine\ODM\MongoDB\Cursor;
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use Hanaboso\PipesFramework\Category\Document\Category;
 use Hanaboso\PipesFramework\Commons\Enum\TopologyStatusEnum;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 
@@ -116,6 +117,16 @@ class TopologyRepository extends DocumentRepository
             ->execute();
 
         return $result->toArray(TRUE);
+    }
+
+    /**
+     * @param Category $category
+     *
+     * @return Topology[]
+     */
+    public function getTopologiesByCategory(Category $category): array
+    {
+        return $this->findBy(['category' => $category->getId()]);
     }
 
 }

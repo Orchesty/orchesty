@@ -13,6 +13,7 @@ import * as applicationActions from './applicationActions';
 import * as topologyGroupActions from './topologyGroupActions';
 import {listType} from 'rootApp/types';
 import filterCallback from 'rootApp/utils/filterCallback';
+import nestedValue from 'rootApp/utils/nestedValue';
 
 const {createPaginationList, createCompleteList, listLoading, listError, listReceive, listDelete, listChangeSort, listChangePage, listChangeFilter, invalidateLists} = listFactory('TOPOLOGY/LIST/');
 
@@ -86,7 +87,7 @@ function loadList(id, loadingState = true){
       return response;
     });
     if (list.local){
-      promise = promise.then(response => response ? prepareLocalList(list, response.items) : response);
+      promise = promise.then(response => response ? prepareLocalList(list, response.items, getState) : response);
     }
     return promise.then(response => {
       dispatch(response ? listReceive(id, response) : listError(id));
@@ -95,16 +96,22 @@ function loadList(id, loadingState = true){
   }
 }
 
-function prepareLocalList(list, elements){
+function createGetStoredValue(getState){
+  const state = getState();
+  return key => nestedValue(state, key);
+}
+
+function prepareLocalList(list, elements, getState){
   const elementArray = Object.values(elements);
   let res = {
     items: elementArray
   };
   if (list.filter){
+    const getStoredValue = createGetStoredValue(getState);
     Object.keys(list.filter).forEach(key => {
       const filterItem = list.filter[key];
-      if (filterItem !== undefined || filterItem !== null){
-        res.items = res.items.filter(filterCallback(filterItem));
+      if (filterItem !== undefined && filterItem !== null){
+        res.items = res.items.filter(filterCallback(filterItem, getStoredValue));
       }
     });
   }
@@ -121,23 +128,23 @@ function prepareLocalList(list, elements){
   return res;
 }
 
-function refreshList(listId, loadingState = true){
+export function refreshList(listId, loadingState = true){
   return (dispatch, getState) => {
     const list = getState().topology.lists[listId];
     if (list.local){
-      dispatch(listReceive(listId, prepareLocalList(list, getState().topology.elements)));
+      dispatch(listReceive(listId, prepareLocalList(list, getState().topology.elements, getState)));
     } else {
       return dispatch(loadList(listId, loadingState));
     }
   }
 }
 
-export function needTopologyList(listId) {
+export function needTopologyList(listId, filter) {
   return (dispatch, getState) => {
     const list = getState().topology.lists[listId];
     if (!list) {
       const create = config.params.preferPaging ?
-        createPaginationList.bind(null, listId, config.params.defaultPageSize) : createCompleteList.bind(null, listId);
+        local => createPaginationList(listId, config.params.defaultPageSize, local, null, filter) : local => createCompleteList(listId, local, null, filter);
       dispatch(create(true));
     }
     return dispatch(loadList(listId));
