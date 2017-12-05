@@ -1,16 +1,17 @@
 <?php declare(strict_types=1);
 
-namespace CleverConnectors\AppBundle\Model\Systems\Impl\Salesforce\Connector;
+namespace CleverConnectors\AppBundle\Model\Systems\Impl\Airtable\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
-use CleverConnectors\AppBundle\Enum\CleverCustomKeysEnum;
 use CleverConnectors\AppBundle\Enum\CleverFieldsEnum;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
-use CleverConnectors\AppBundle\Model\Systems\Impl\Salesforce\SalesforceSystem;
+use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
+use CleverConnectors\AppBundle\Model\Systems\Impl\Airtable\AirtableSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Exception;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlException;
@@ -22,17 +23,15 @@ use Nette\Utils\Json;
 use Nette\Utils\Strings;
 
 /**
- * Class SalesforceUpdateContactConnector
+ * Class AirtableUpdateContactConnector
  *
- * @package CleverConnectors\AppBundle\Model\Systems\Impl\Salesforce\Connector
+ * @package CleverConnectors\AppBundle\Model\Systems\Impl\Airtable\Connector
  */
-class SalesforceUpdateContactConnector implements ConnectorInterface
+class AirtableUpdateContactConnector implements ConnectorInterface
 {
 
-    private const URL = '%s/services/data/v40.0/sobjects/Contact/id/%s';
-
     /**
-     * @var SalesforceSystem
+     * @var AirtableSystem
      */
     private $system;
 
@@ -47,17 +46,17 @@ class SalesforceUpdateContactConnector implements ConnectorInterface
     private $systemInstallRepository;
 
     /**
-     * SalesforceUpdateContactConnector constructor.
+     * AirtableUpdateContactConnector constructor.
      *
-     * @param SalesforceSystem     $system
+     * @param AirtableSystem       $system
      * @param DocumentManager      $dm
      * @param CurlManagerInterface $manager
      */
-    public function __construct(SalesforceSystem $system, DocumentManager $dm, CurlManagerInterface $manager)
+    public function __construct(AirtableSystem $system, DocumentManager $dm, CurlManagerInterface $manager)
     {
         $this->system                  = $system;
-        $this->systemInstallRepository = $dm->getRepository(SystemInstall::class);
         $this->manager                 = $manager;
+        $this->systemInstallRepository = $dm->getRepository(SystemInstall::class);
     }
 
     /**
@@ -65,7 +64,7 @@ class SalesforceUpdateContactConnector implements ConnectorInterface
      */
     public function getId(): string
     {
-        return 'salesforce-update-contact-connector';
+        return 'airtable-update-contact-connector';
     }
 
     /**
@@ -73,7 +72,8 @@ class SalesforceUpdateContactConnector implements ConnectorInterface
      *
      * @return ProcessDto
      * @throws CleverConnectorsException
-     * @throws CurlException
+     * @throws SystemException
+     * @throws Exception
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {
@@ -86,13 +86,22 @@ class SalesforceUpdateContactConnector implements ConnectorInterface
             );
         }
 
-        /** @var string $eventType */
-        $eventType     = CMHeaders::get(CMHeaders::CM_EVENT_TYPE, $dto->getHeaders());
+        $foreignId = $data[CleverFieldsEnum::FOREIGN_ID];
+        unset($data[CleverFieldsEnum::FOREIGN_ID]);
+
+        // check that there is exactly 1 field (unsubscribe or hard-bounce)
+        if (count($data) !== 1) {
+            throw new CleverConnectorsException(
+                count($data) < 1 ? 'Missing data for update' : 'Exceeded number of fields in data',
+                count($data) > 1 ? CleverConnectorsException::MISSING_DATA : CleverConnectorsException::EXCEEDED_NUMBER_OF_FIELDS
+            );
+        }
+
         $systemInstall = $this->systemInstallRepository->getSystemInstallFromHeaders($dto->getHeaders());
         $requestDto    = $this->system->getRequestDto($systemInstall, CurlManager::METHOD_PATCH);
         $requestDto
-            ->setUri(new Uri(sprintf(self::URL, $requestDto->getUri(), $data[CleverFieldsEnum::FOREIGN_ID])))
-            ->setBody(Json::encode([sprintf('%s__c', CleverCustomKeysEnum::getFromType($eventType)) => 1]))
+            ->setUri(new Uri(sprintf('%s/%s', $requestDto->getUri(), $foreignId)))
+            ->setBody(Json::encode($data))
             ->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()));
 
         try {
@@ -120,7 +129,7 @@ class SalesforceUpdateContactConnector implements ConnectorInterface
     public function processEvent(ProcessDto $dto): ProcessDto
     {
         throw new ConnectorException(
-            'Salesforce has no support for event!',
+            'Airtable has no support for event!',
             ConnectorException::CONNECTOR_DOES_NOT_HAVE_PROCESS_EVENT
         );
     }

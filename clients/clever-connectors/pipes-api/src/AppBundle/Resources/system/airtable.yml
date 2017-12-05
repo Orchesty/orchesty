@@ -1,0 +1,40 @@
+services:
+    systems.airtable:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Airtable\AirtableSystem
+        arguments:
+        tags: ['%systems%']
+
+    hbpf.connector.airtable-sync-contact-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Airtable\Connector\AirtableSyncContactConnector
+        arguments:
+            - '@systems.airtable'
+            - '@cc.last_sync.manager'
+            - '@hbpf.transport.async_curl_factory'
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@cc.progress_counter.async_progress_counter_service'
+
+    hbpf.connector.airtable-updated-contact-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Airtable\Connector\AirtableUpdatedContactConnector
+        arguments:
+            - '@systems.airtable'
+            - '@cc.last_sync.manager'
+            - '@hbpf.transport.async_curl_factory'
+            - '@doctrine_mongodb.odm.default_document_manager'
+
+    hbpf.connector.airtable-create-contact-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Airtable\Connector\AirtableCreateContactConnector
+        arguments:
+            - '@systems.airtable'
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.transport.curl_manager'
+
+    hbpf.connector.airtable-update-contact-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Airtable\Connector\AirtableUpdateContactConnector
+        arguments:
+            - '@systems.airtable'
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.transport.curl_manager'
+
+    hbpf.custom_node.airtable-update-contact-mapper:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Airtable\Mapper\AirtableUpdateContactMapper
+        arguments:

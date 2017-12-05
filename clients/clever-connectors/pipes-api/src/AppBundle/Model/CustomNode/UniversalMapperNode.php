@@ -18,6 +18,7 @@ use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Exception;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
 use Psr\Log\LoggerAwareInterface;
@@ -53,6 +54,11 @@ class UniversalMapperNode implements CustomNodeInterface, LoggerAwareInterface
     private $logger;
 
     /**
+     * @var string|null
+     */
+    private $suffix = NULL;
+
+    /**
      * UniversalMapperNode constructor.
      *
      * @param DocumentManager $dm
@@ -79,9 +85,18 @@ class UniversalMapperNode implements CustomNodeInterface, LoggerAwareInterface
     }
 
     /**
+     * @param string $suffix
+     */
+    public function setSuffix(string $suffix): void
+    {
+        $this->suffix = $suffix;
+    }
+
+    /**
      * @param ProcessDto $dto
      *
      * @return ProcessDto
+     * @throws Exception
      */
     public function process(ProcessDto $dto): ProcessDto
     {
@@ -91,10 +106,15 @@ class UniversalMapperNode implements CustomNodeInterface, LoggerAwareInterface
             return $dto;
         }
 
-        $mapper = new UniversalMapper();
-        $dto    = $mapper
-            ->setAllowedEmptyValues(TRUE)
-            ->process($template, $dto);
+        try {
+            $mapper = new UniversalMapper();
+            $dto    = $mapper
+                ->setAllowedEmptyValues(TRUE)
+                ->process($template, $dto);
+        } catch (Exception $exception) {
+            $this->logger->error($exception->getMessage());
+            throw $exception;
+        }
 
         return $dto;
     }
@@ -111,18 +131,22 @@ class UniversalMapperNode implements CustomNodeInterface, LoggerAwareInterface
     private function getMapTemplate(ProcessDto $dto): ?MapTemplate
     {
         $systemInstall = $this->systemRepository->getSystemInstallFromHeaders($dto->getHeaders());
-        $topologyName  = CMHeaders::get(CMHeaders::TOPOLOGY_NAME, $dto->getHeaders());
+        $actionName    = CMHeaders::get(CMHeaders::TOPOLOGY_NAME, $dto->getHeaders());
         $actions       = $this->loader->getSystem($systemInstall->getSystem())->getAllowedActions();
 
-        if (!array_key_exists($topologyName, $actions)) {
+        if ($this->suffix) {
+            $actionName = sprintf('%s-%s', $actionName, $this->suffix);
+        }
+
+        if (!array_key_exists($actionName, $actions)) {
             $this->logger->alert(
-                sprintf('Not allowed action "%s" found for system "%s"!', $topologyName, $systemInstall->getSystem())
+                sprintf('Not allowed action "%s" found for system "%s"!', $actionName, $systemInstall->getSystem())
             );
 
             return NULL;
         }
 
-        return $this->mapRepository->findUnique($systemInstall, $actions[$topologyName]);
+        return $this->mapRepository->findUnique($systemInstall, $actions[$actionName]);
     }
 
 }

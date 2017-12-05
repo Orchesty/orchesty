@@ -75,6 +75,7 @@ class AppExtension extends Extension implements PrependExtensionInterface
         $loader->load('wordpress.yml');
         $loader->load('drupal.yml');
         $loader->load('joomla.yml');
+        $loader->load('airtable.yml');
     }
 
 }
