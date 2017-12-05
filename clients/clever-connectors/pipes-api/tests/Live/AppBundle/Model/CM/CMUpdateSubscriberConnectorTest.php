@@ -2,7 +2,7 @@
 
 namespace Tests\Live\AppBundle\Model\CM;
 
-use CleverConnectors\AppBundle\Model\CM\SubscriptionConnector\CMUpdateSubscriptionConnector;
+use CleverConnectors\AppBundle\Model\CM\SubscriberConnector\CMUpdateSubscriberConnector;
 use GuzzleHttp\Client;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlClientFactory;
@@ -10,11 +10,11 @@ use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Tests\KernelTestCaseAbstract;
 
 /**
- * Class CMUpdateSubscriptionConnectorTest
+ * Class CMUpdateSubscriberConnectorTest
  *
  * @package Tests\Live\AppBundle\Model\CM
  */
-final class CMUpdateSubscriptionConnectorTest extends KernelTestCaseAbstract
+final class CMUpdateSubscriberConnectorTest extends KernelTestCaseAbstract
 {
 
     /**
@@ -33,7 +33,7 @@ final class CMUpdateSubscriptionConnectorTest extends KernelTestCaseAbstract
         $fac = $this->createMock(CurlClientFactory::class);
         $fac->expects($this->at(0))->method('create')->willReturn(new Client($opt));
         $curl = new CurlManager($fac);
-        $conn = new CMUpdateSubscriptionConnector($curl);
+        $conn = new CMUpdateSubscriberConnector($curl);
 
         $conn->processAction((new ProcessDto())->setData('{"email":"eml@eml.com"}')->setHeaders([
             'pf_token' => '-3*QYg*3H-5+vaez_K7_N-4K1YhCn88k',
