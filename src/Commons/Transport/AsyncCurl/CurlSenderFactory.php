@@ -13,6 +13,8 @@ use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use React\EventLoop\LoopInterface;
+use React\Socket\Connector;
+use React\Socket\SecureConnector;
 
 /**
  * Class CurlFactory
@@ -45,12 +47,24 @@ class CurlSenderFactory implements LoggerAwareInterface
 
     /**
      * @param LoopInterface $loop
+     * @param array         $secret
      *
      * @return CurlSender
      */
-    public function create(LoopInterface $loop): CurlSender
+    public function create(LoopInterface $loop, array $secret = []): CurlSender
     {
-        $curlSender = new CurlSender(new Browser($loop));
+        $browser = new Browser($loop);
+
+        if (isset($secret['ca']) && isset($secret['cert'])) {
+            $context = [
+                'verify_peer' => TRUE,
+                'cafile'      => $secret['ca'],
+                'local_cert'  => $secret['cert'],
+            ];
+            $browser = new Browser($loop, new SecureConnector(new Connector($loop), $loop, $context));
+        }
+
+        $curlSender = new CurlSender($browser);
         $curlSender->setLogger($this->logger);
 
         return $curlSender;
