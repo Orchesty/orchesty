@@ -3,6 +3,8 @@ import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import * as editableActions from 'actions/editableActions';
 
+import './Editable.less';
+
 export default (EditComponent, View, parameters = {valueKey: 'value'}) => {
   class Editable extends React.Component {
     constructor(props) {
@@ -10,6 +12,15 @@ export default (EditComponent, View, parameters = {valueKey: 'value'}) => {
       this.viewDoubleClick = this.viewDoubleClick.bind(this);
       this.editChange = this.editChange.bind(this);
       this.editDone = this.editDone.bind(this);
+    }
+
+    componentWillMount(){
+      const {setControlFunction, switchEdit, switchView} = this.props;
+      if (setControlFunction){
+        setControlFunction({
+          switchEdit, switchView
+        });
+      }
     }
 
     viewDoubleClick(e){
@@ -40,7 +51,7 @@ export default (EditComponent, View, parameters = {valueKey: 'value'}) => {
       } else {
         const editValue = editableRec && editableRec.hasOwnProperty('value') ? editableRec.value : this.props[valueKey];
         return (
-          <div>
+          <div className="editable">
             <EditComponent
               onChange={this.editChange}
               onDone={this.editDone}
@@ -57,7 +68,8 @@ export default (EditComponent, View, parameters = {valueKey: 'value'}) => {
     switchEdit: PropTypes.func.isRequired,
     switchView: PropTypes.func.isRequired,
     changeValue: PropTypes.func.isRequired,
-    commitAction: PropTypes.func.isRequired
+    commitAction: PropTypes.func.isRequired,
+    setControlFunction: PropTypes.func
   };
 
 
