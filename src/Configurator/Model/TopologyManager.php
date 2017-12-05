@@ -145,6 +145,7 @@ class TopologyManager
             ->setName($topology->getName())
             ->setVersion($version + 1)
             ->setDescr($topology->getDescr())
+            ->setCategory($topology->getCategory())
             ->setEnabled(FALSE)
             ->setBpmn($topology->getBpmn())
             ->setRawBpmn($topology->getRawBpmn());
@@ -352,6 +353,10 @@ class TopologyManager
 
         if (isset($data['enabled'])) {
             $topology->setEnabled($data['enabled']);
+        }
+
+        if (array_key_exists('category', $data)) {
+            $topology->setCategory($data['category']);
         }
 
         return $topology;
