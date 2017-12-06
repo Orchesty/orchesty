@@ -22,6 +22,8 @@ use RuntimeException;
 class CategoryParser
 {
 
+    public const ALL = '*';
+
     /**
      * @var array
      */
@@ -96,11 +98,9 @@ class CategoryParser
      */
     private function doLoop(string $map, array &$mapPath, array &$filePath, string $alias, array &$out = []): void
     {
-        if ($map == '*') {
+        if ($map == self::ALL) {
             $stop = next($mapPath);
-            if ($stop == '*') {
-                throw new RuntimeException('Char "*" after "*" is not allowed.');
-            }
+            $this->checkStopChar($stop);
             foreach ($filePath as $value) {
                 if ($value !== $stop) {
                     array_shift($filePath);
@@ -108,7 +108,7 @@ class CategoryParser
                     break;
                 }
             }
-        } elseif ($map == reset($filePath)) {
+        } elseif ($map === reset($filePath)) {
             array_shift($filePath);
             $out[] = $alias;
         } else {
@@ -136,6 +136,16 @@ class CategoryParser
         $key = array_search($file->getName(), $parts);
         if ($key !== FALSE) {
             unset($parts[$key]);
+        }
+    }
+
+    /**
+     * @param string $stop
+     */
+    private function checkStopChar(string $stop): void
+    {
+        if ($stop === self::ALL) {
+            throw new RuntimeException('Char "*" after "*" is not allowed.');
         }
     }
 
