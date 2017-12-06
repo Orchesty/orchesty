@@ -4,9 +4,9 @@ namespace Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller;
 
 use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Controller\FOSRestController;
+use Hanaboso\PipesFramework\Commons\Traits\ControllerTrait;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\NodeHandler;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -19,6 +19,8 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class NodeController extends FOSRestController
 {
+
+    use ControllerTrait;
 
     /**
      * @var NodeHandler
@@ -38,7 +40,7 @@ class NodeController extends FOSRestController
         $this->construct();
         $data = $this->nodeHandler->getNodes($id);
 
-        return new JsonResponse($data, 200);
+        return $this->getResponse($data);
     }
 
     /**
@@ -54,7 +56,7 @@ class NodeController extends FOSRestController
         $this->construct();
         $data = $this->nodeHandler->getNode($id);
 
-        return new JsonResponse($data, 200);
+        return $this->getResponse($data);
     }
 
     /**
@@ -71,7 +73,7 @@ class NodeController extends FOSRestController
         $this->construct();
         $data = $this->nodeHandler->updateNode($id, $request->request->all());
 
-        return new JsonResponse($data, 200);
+        return $this->getResponse($data);
     }
 
     /**

@@ -58,7 +58,7 @@ final class TableParser implements TableParserInterface
             }
         }
 
-        return Json::encode($data);
+        return json_encode($data);
     }
 
     /**

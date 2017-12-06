@@ -3,12 +3,11 @@
 namespace Hanaboso\PipesFramework\ApiGateway\Listener;
 
 use Hanaboso\PipesFramework\Commons\Exception\PipesFrameworkException;
-use Hanaboso\PipesFramework\Utils\ControllerUtils;
+use Hanaboso\PipesFramework\Commons\Traits\ControllerTrait;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 
@@ -19,6 +18,8 @@ use Symfony\Component\HttpKernel\KernelEvents;
  */
 class ControllerExceptionListener implements EventSubscriberInterface, LoggerAwareInterface
 {
+
+    use ControllerTrait;
 
     /**
      * @var LoggerInterface
@@ -57,7 +58,7 @@ class ControllerExceptionListener implements EventSubscriberInterface, LoggerAwa
         }
 
         $this->logger->error('Controller exception.', ['exception' => $e]);
-        $event->setResponse(new JsonResponse(ControllerUtils::createExceptionData($e), 400));
+        $event->setResponse($this->getErrorResponse($e, 400));
     }
 
     /**

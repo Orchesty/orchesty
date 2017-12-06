@@ -10,10 +10,11 @@ namespace Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller;
 
 use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Controller\FOSRestController;
+use Hanaboso\PipesFramework\Commons\Traits\ControllerTrait;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\GeneratorHandler;
 use Psr\Log\LoggerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class GeneratorController
@@ -24,6 +25,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
  */
 class GeneratorController extends FOSRestController
 {
+
+    use ControllerTrait;
 
     /**
      * @var LoggerInterface|NULL
@@ -41,9 +44,9 @@ class GeneratorController extends FOSRestController
      *
      * @param string $id
      *
-     * @return JsonResponse
+     * @return Response
      */
-    public function generateAction(string $id): JsonResponse
+    public function generateAction(string $id): Response
     {
         //TODO: Make much better !!!!
         $this->construct();
@@ -56,7 +59,7 @@ class GeneratorController extends FOSRestController
             }
         }
 
-        return new JsonResponse(["result" => $statusCode], $statusCode, []);
+        return $this->getResponse(["result" => $statusCode], $statusCode);
     }
 
     /**
@@ -65,9 +68,9 @@ class GeneratorController extends FOSRestController
      *
      * @param string $id
      *
-     * @return JsonResponse
+     * @return Response
      */
-    public function runAction(string $id): JsonResponse
+    public function runAction(string $id): Response
     {
         //TODO: Make much better !!!!
         $this->construct();
@@ -81,7 +84,7 @@ class GeneratorController extends FOSRestController
             }
         }
 
-        return new JsonResponse(["result" => $statusCode], $statusCode, []);
+        return $this->getResponse(["result" => $statusCode], $statusCode);
     }
 
     /**
@@ -90,9 +93,9 @@ class GeneratorController extends FOSRestController
      *
      * @param string $id
      *
-     * @return JsonResponse
+     * @return Response
      */
-    public function stopAction(string $id): JsonResponse
+    public function stopAction(string $id): Response
     {
         //TODO: Make much better !!!!
         $this->construct();
@@ -106,7 +109,7 @@ class GeneratorController extends FOSRestController
             }
         }
 
-        return new JsonResponse(["result" => $statusCode, "docker_info" => $result], $statusCode, []);
+        return $this->getResponse(["result" => $statusCode, "docker_info" => $result], $statusCode);
     }
 
     /**
@@ -115,9 +118,9 @@ class GeneratorController extends FOSRestController
      *
      * @param string $id
      *
-     * @return JsonResponse
+     * @return Response
      */
-    public function deleteAction(string $id): JsonResponse
+    public function deleteAction(string $id): Response
     {
         //TODO: Make much better !!!!
         $this->construct();
@@ -129,7 +132,7 @@ class GeneratorController extends FOSRestController
             $statusCode = 200;
         }
 
-        return new JsonResponse(["result" => $statusCode], $statusCode, []);
+        return $this->getResponse(["result" => $statusCode], $statusCode);
     }
 
     /**
@@ -138,9 +141,9 @@ class GeneratorController extends FOSRestController
      *
      * @param string $id
      *
-     * @return JsonResponse
+     * @return Response
      */
-    public function infoAction(string $id): JsonResponse
+    public function infoAction(string $id): Response
     {
         //TODO: Make much better !!!!
         $this->construct();
@@ -148,11 +151,11 @@ class GeneratorController extends FOSRestController
         $result     = NULL;
 
         if ($this->generatorHandler) {
-            $result = $this->generatorHandler->infoTopology($id);
+            $result     = $this->generatorHandler->infoTopology($id);
             $statusCode = 200;
         }
 
-        return new JsonResponse(["result" => $statusCode, "docker_info" => $result], $statusCode, []);
+        return $this->getResponse(["result" => $statusCode, "docker_info" => $result], $statusCode);
     }
 
     /**

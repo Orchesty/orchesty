@@ -26,7 +26,7 @@ class ApiControllerTest extends ControllerTestCaseAbstract
         $this->assertEquals(200, $response->status);
         $this->assertEquals(
             file_get_contents(sprintf('%s/../../../Integration/Parser/data/output-10.json', __DIR__)),
-            $response->content
+            json_encode($response->content)
         );
     }
 

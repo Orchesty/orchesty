@@ -11,11 +11,11 @@ namespace Hanaboso\PipesFramework\HbPFConnectorBundle\Controller;
 use Exception;
 use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Controller\FOSRestController;
+use Hanaboso\PipesFramework\Commons\Traits\ControllerTrait;
 use Hanaboso\PipesFramework\HbPFConnectorBundle\Handler\ConnectorHandler;
 use Hanaboso\PipesFramework\Utils\ControllerUtils;
 use Psr\Log\LoggerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Throwable;
@@ -29,6 +29,8 @@ use Throwable;
  */
 class ConnectorController extends FOSRestController
 {
+
+    use ControllerTrait;
 
     /**
      * @var ConnectorHandler
@@ -54,23 +56,14 @@ class ConnectorController extends FOSRestController
         $this->construct();
 
         try {
-            $data     = $this->handler->processEvent($id, $request);
-            $response = new Response(
-                $data->getData(),
-                200,
-                ControllerUtils::createHeaders($data->getHeaders()
-                )
-            );
+            $data = $this->handler->processEvent($id, $request);
+
+            return $this->getResponse($data->getData(), 200, ControllerUtils::createHeaders($data->getHeaders()));
         } catch (Exception|Throwable $e) {
             $this->logger->error($e->getMessage(), ['exception' => $e]);
-            $response = new Response(
-                ControllerUtils::createExceptionData($e, TRUE),
-                500,
-                ControllerUtils::createHeaders($request->headers->all(), $e)
-            );
-        }
 
-        return $response;
+            return $this->getErrorResponse($e, 500, ControllerUtils::createHeaders($request->headers->all(), $e));
+        }
     }
 
     /**
@@ -80,25 +73,21 @@ class ConnectorController extends FOSRestController
      * @param Request $request
      * @param string  $id
      *
-     * @return JsonResponse
+     * @return Response
      */
-    public function processEventTestAction(Request $request, string $id): JsonResponse
+    public function processEventTestAction(Request $request, string $id): Response
     {
         $this->construct();
 
         try {
             $this->handler->processTest($id);
-            $response = new JsonResponse('', 200);
+
+            return $this->getResponse('');
         } catch (Exception|Throwable $e) {
             $this->logger->error($e->getMessage(), ['exception' => $e]);
-            $response = new JsonResponse(
-                ControllerUtils::createExceptionData($e),
-                500,
-                ControllerUtils::createHeaders($request->headers->all(), $e)
-            );
-        }
 
-        return $response;
+            return $this->getErrorResponse($e, 500, ControllerUtils::createHeaders($request->headers->all(), $e));
+        }
     }
 
     /**
@@ -108,29 +97,21 @@ class ConnectorController extends FOSRestController
      * @param string  $id
      * @param Request $request
      *
-     * @return JsonResponse
+     * @return Response
      */
-    public function processActionAction(string $id, Request $request): JsonResponse
+    public function processActionAction(string $id, Request $request): Response
     {
         $this->construct();
 
         try {
-            $data     = $this->handler->processAction($id, $request);
-            $response = new JsonResponse(
-                $data->getData(),
-                200,
-                ControllerUtils::createHeaders($data->getHeaders()),
-                TRUE);
+            $data = $this->handler->processAction($id, $request);
+
+            return $this->getResponse($data->getData(), 200, ControllerUtils::createHeaders($data->getHeaders()));
         } catch (Exception|Throwable $e) {
             $this->logger->error($e->getMessage(), ['exception' => $e]);
-            $response = new JsonResponse(
-                ControllerUtils::createExceptionData($e),
-                500,
-                ControllerUtils::createHeaders($request->headers->all(), $e)
-            );
-        }
 
-        return $response;
+            return $this->getErrorResponse($e, 500, ControllerUtils::createHeaders($request->headers->all(), $e));
+        }
     }
 
     /**
@@ -140,25 +121,21 @@ class ConnectorController extends FOSRestController
      * @param Request $request
      * @param string  $id
      *
-     * @return JsonResponse
+     * @return Response
      */
-    public function processActionTestAction(Request $request, string $id): JsonResponse
+    public function processActionTestAction(Request $request, string $id): Response
     {
         $this->construct();
 
         try {
             $this->handler->processTest($id);
-            $response = new JsonResponse('', 200);
+
+            return $this->getResponse('');
         } catch (Exception|Throwable $e) {
             $this->logger->error($e->getMessage(), ['exception' => $e]);
-            $response = new JsonResponse(
-                ControllerUtils::createExceptionData($e),
-                500,
-                ControllerUtils::createHeaders($request->headers->all(), $e)
-            );
-        }
 
-        return $response;
+            return $this->getErrorResponse($e, 500, ControllerUtils::createHeaders($request->headers->all(), $e));
+        }
     }
 
     /**
