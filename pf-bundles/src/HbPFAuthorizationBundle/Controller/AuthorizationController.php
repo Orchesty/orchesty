@@ -5,11 +5,10 @@ namespace Hanaboso\PipesFramework\HbPFAuthorizationBundle\Controller;
 use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Controller\FOSRestController;
 use Hanaboso\PipesFramework\Authorization\Exception\AuthorizationException;
+use Hanaboso\PipesFramework\Commons\Traits\ControllerTrait;
 use Hanaboso\PipesFramework\HbPFAuthorizationBundle\Handler\AuthorizationHandler;
-use Hanaboso\PipesFramework\Utils\ControllerUtils;
 use InvalidArgumentException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -23,6 +22,8 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class AuthorizationController extends FOSRestController
 {
+
+    use ControllerTrait;
 
     /**
      * @var AuthorizationHandler
@@ -43,12 +44,11 @@ class AuthorizationController extends FOSRestController
         $this->construct();
         try {
             $this->handler->authorize($authorizationId);
-            $response = new RedirectResponse($request->request->get('redirect_url'));
-        } catch (AuthorizationException | InvalidArgumentException $e) {
-            $response = new JsonResponse(ControllerUtils::createExceptionData($e), 500);
-        }
 
-        return $response;
+            return new RedirectResponse($request->request->get('redirect_url'));
+        } catch (AuthorizationException | InvalidArgumentException $e) {
+            return $this->getErrorResponse($e);
+        }
     }
 
     /**
@@ -62,12 +62,10 @@ class AuthorizationController extends FOSRestController
     public function getSettingsAction(string $authorizationId): Response
     {
         try {
-            $response = new JsonResponse($this->handler->getSettings($authorizationId));
+            return $this->getResponse($this->handler->getSettings($authorizationId));
         } catch (AuthorizationException $e) {
-            $response = new JsonResponse(ControllerUtils::createExceptionData($e), 500);
+            return $this->getErrorResponse($e);
         }
-
-        return $response;
     }
 
     /**
@@ -83,12 +81,11 @@ class AuthorizationController extends FOSRestController
     {
         try {
             $this->handler->saveSettings($request->request->all(), $authorizationId);
-            $response = new JsonResponse([]);
-        } catch (AuthorizationException $e) {
-            $response = new JsonResponse(ControllerUtils::createExceptionData($e), 500);
-        }
 
-        return $response;
+            return $this->getResponse([]);
+        } catch (AuthorizationException $e) {
+            return $this->getErrorResponse($e);
+        }
     }
 
     /**
@@ -105,12 +102,11 @@ class AuthorizationController extends FOSRestController
         $this->construct();
         try {
             $this->handler->saveToken($request->request->all(), $authorizationId);
-            $response = new RedirectResponse($this->container->getParameter('frontend_host'). '/close-me.html');
-        } catch (AuthorizationException $e) {
-            $response = new JsonResponse(ControllerUtils::createExceptionData($e), 500);
-        }
 
-        return $response;
+            return new RedirectResponse($this->container->getParameter('frontend_host') . '/close-me.html');
+        } catch (AuthorizationException $e) {
+            return $this->getErrorResponse($e);
+        }
     }
 
     /**
@@ -124,7 +120,8 @@ class AuthorizationController extends FOSRestController
     public function getAuthorizationsAction(Request $request): Response
     {
         $this->construct();
-        return new JsonResponse($this->handler->getAuthInfo($request->getSchemeAndHttpHost()), 200);
+
+        return $this->getResponse($this->handler->getAuthInfo($request->getSchemeAndHttpHost()));
     }
 
     /**

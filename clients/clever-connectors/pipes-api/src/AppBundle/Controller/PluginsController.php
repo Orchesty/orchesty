@@ -7,10 +7,10 @@ use CleverConnectors\AppBundle\Handler\PluginsHandler;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use FOS\RestBundle\Controller\FOSRestController;
 use Hanaboso\PipesFramework\Commons\Exception\PipesFrameworkException;
+use Hanaboso\PipesFramework\Commons\Traits\ControllerTrait;
 use LogicException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Throwable;
@@ -24,6 +24,8 @@ use Throwable;
  */
 class PluginsController extends FOSRestController
 {
+
+    use ControllerTrait;
 
     /**
      * @var PluginsHandler
@@ -51,9 +53,9 @@ class PluginsController extends FOSRestController
     public function installAction(Request $request): Response
     {
         try {
-            return new JsonResponse($this->handler->install($request), 200);
+            return $this->getResponse($this->handler->install($request));
         } catch (Throwable $e) {
-            return self::processException($e);
+            return $this->processException($e);
         }
     }
 
@@ -68,9 +70,9 @@ class PluginsController extends FOSRestController
     public function checkAction(Request $request): Response
     {
         try {
-            return new JsonResponse($this->handler->check($request), 200);
+            return $this->getResponse($this->handler->check($request));
         } catch (Throwable $e) {
-            return self::processException($e);
+            return $this->processException($e);
         }
     }
 
@@ -87,9 +89,9 @@ class PluginsController extends FOSRestController
         try {
             $this->handler->createSubscriber($request);
 
-            return new JsonResponse('', 200);
+            return $this->getResponse('');
         } catch (Throwable $e) {
-            return self::processException($e);
+            return $this->processException($e);
         }
     }
 
@@ -106,9 +108,9 @@ class PluginsController extends FOSRestController
         try {
             $this->handler->updateSubscriber($request);
 
-            return new JsonResponse('', 200);
+            return $this->getResponse('');
         } catch (Throwable $e) {
-            return self::processException($e);
+            return $this->processException($e);
         }
     }
 
@@ -125,9 +127,9 @@ class PluginsController extends FOSRestController
         try {
             $this->handler->deleteSubscriber($request);
 
-            return new JsonResponse('', 200);
+            return $this->getResponse('');
         } catch (Throwable $e) {
-            return self::processException($e);
+            return $this->processException($e);
         }
     }
 
@@ -142,9 +144,9 @@ class PluginsController extends FOSRestController
     public function getDistributionListsAction(Request $request): Response
     {
         try {
-            return new JsonResponse($this->handler->getDistributionLists($request), 200);
+            return $this->getResponse($this->handler->getDistributionLists($request));
         } catch (Throwable $e) {
-            return self::processException($e);
+            return $this->processException($e);
         }
     }
 
@@ -161,9 +163,9 @@ class PluginsController extends FOSRestController
         try {
             $this->handler->validateSubscriber($request);
 
-            return new JsonResponse('', 200);
+            return $this->getResponse('');
         } catch (Throwable $e) {
-            return self::processException($e);
+            return $this->processException($e);
         }
     }
 
@@ -172,7 +174,7 @@ class PluginsController extends FOSRestController
      *
      * @return Response
      */
-    private static function processException(Throwable $e): Response
+    private function processException(Throwable $e): Response
     {
         $code      = 500;
         $className = get_class($e);
@@ -193,10 +195,7 @@ class PluginsController extends FOSRestController
             $code = 400;
         }
 
-        return new Response(json_encode([
-            'status'  => 'ERROR',
-            'message' => $e->getMessage(),
-        ]), $code);
+        return $this->getErrorResponse($e, $code);
     }
 
 }

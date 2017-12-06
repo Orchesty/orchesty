@@ -4,11 +4,10 @@ namespace Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller;
 
 use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Controller\FOSRestController;
+use Hanaboso\PipesFramework\Commons\Traits\ControllerTrait;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler;
-use Hanaboso\PipesFramework\Utils\ControllerUtils;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -21,6 +20,8 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class TopologyController extends FOSRestController
 {
+
+    use ControllerTrait;
 
     /**
      * @var TopologyHandler
@@ -46,7 +47,7 @@ class TopologyController extends FOSRestController
             $query->get('order_by')
         );
 
-        return new JsonResponse($data, 200);
+        return $this->getResponse($data);
     }
 
     /**
@@ -61,9 +62,9 @@ class TopologyController extends FOSRestController
     {
         $this->construct();
         try {
-            return new JsonResponse($this->topologyHandler->getTopology($id));
+            return $this->getResponse($this->topologyHandler->getTopology($id));
         } catch (TopologyException $e) {
-            return new JsonResponse(ControllerUtils::createExceptionData($e), 500);
+            return $this->getErrorResponse($e);
         }
 
     }
@@ -80,9 +81,9 @@ class TopologyController extends FOSRestController
     {
         $this->construct();
         try {
-            return new JsonResponse($this->topologyHandler->createTopology($request->request->all()));
+            return $this->getResponse($this->topologyHandler->createTopology($request->request->all()));
         } catch (TopologyException $e) {
-            return new JsonResponse(ControllerUtils::createExceptionData($e), 500);
+            return $this->getErrorResponse($e);
         }
     }
 
@@ -99,9 +100,9 @@ class TopologyController extends FOSRestController
     {
         $this->construct();
         try {
-            return new JsonResponse($this->topologyHandler->updateTopology($id, $request->request->all()));
+            return $this->getResponse($this->topologyHandler->updateTopology($id, $request->request->all()));
         } catch (TopologyException $e) {
-            return new JsonResponse(ControllerUtils::createExceptionData($e), 500);
+            return $this->getErrorResponse($e);
         }
     }
 
@@ -122,7 +123,7 @@ class TopologyController extends FOSRestController
 
             return $response;
         } catch (TopologyException $e) {
-            return new JsonResponse(ControllerUtils::createExceptionData($e), 500);
+            return $this->getErrorResponse($e);
         }
     }
 
@@ -142,20 +143,18 @@ class TopologyController extends FOSRestController
             /** @var string $content */
             $content = $request->getContent();
 
-            return new JsonResponse($this->topologyHandler->saveTopologySchema(
+            return $this->getResponse($this->topologyHandler->saveTopologySchema(
                 $id,
                 $content,
                 $request->request->all()
             ));
         } catch (TopologyException $e) {
-            return new JsonResponse(
-                ControllerUtils::createExceptionData($e),
+            return $this->getErrorResponse($e,
                 in_array($e->getCode(), [
                     TopologyException::TOPOLOGY_NODE_NAME_NOT_FOUND,
                     TopologyException::TOPOLOGY_NODE_TYPE_NOT_FOUND,
                     TopologyException::TOPOLOGY_NODE_TYPE_NOT_EXIST,
-                ], TRUE) ? 400 : 500
-            );
+                ], TRUE) ? 400 : 500);
         }
     }
 
@@ -172,7 +171,7 @@ class TopologyController extends FOSRestController
         $this->construct();
         $res = $this->topologyHandler->publishTopology($id);
 
-        return new JsonResponse($res->getBody(), $res->getStatusCode());
+        return $this->getResponse($res->getBody(), $res->getStatusCode());
     }
 
     /**
@@ -188,7 +187,7 @@ class TopologyController extends FOSRestController
         $this->construct();
         $data = $this->topologyHandler->cloneTopology($id);
 
-        return new JsonResponse($data, 200);
+        return $this->getResponse($data);
     }
 
     /**
@@ -204,7 +203,7 @@ class TopologyController extends FOSRestController
         $this->construct();
         $res = $this->topologyHandler->deleteTopology($id);
 
-        return new JsonResponse($res->getBody(), $res->getStatusCode());
+        return $this->getResponse($res->getBody(), $res->getStatusCode());
     }
 
     /**

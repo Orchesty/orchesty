@@ -10,6 +10,7 @@ namespace Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller;
 
 use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Controller\FOSRestController;
+use Hanaboso\PipesFramework\Commons\Traits\ControllerTrait;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\StartingPointHandler;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Request;
@@ -24,6 +25,8 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class StartingPointController extends FOSRestController
 {
+
+    use ControllerTrait;
 
     /**
      * @var StartingPointHandler
@@ -45,7 +48,7 @@ class StartingPointController extends FOSRestController
         $this->construct();
         $this->handler->runWithRequest($request, $topologyName, $nodeName);
 
-        return $this->handleView($this->view([], 200, []));
+        return $this->getResponse([]);
     }
 
     /**
@@ -63,7 +66,7 @@ class StartingPointController extends FOSRestController
         $this->construct();
         $this->handler->runWithRequestById($request, $topologyId, $nodeId);
 
-        return $this->handleView($this->view([], 200, []));
+        return $this->getResponse([]);
     }
 
     /**
@@ -79,7 +82,7 @@ class StartingPointController extends FOSRestController
         $this->construct();
         $data = $this->handler->runTest($topologyId);
 
-        return $this->handleView($this->view($data, 200, ['application/json']));
+        return $this->getResponse($data, 200, ['Content-Type' => 'application/json']);
     }
 
     /**

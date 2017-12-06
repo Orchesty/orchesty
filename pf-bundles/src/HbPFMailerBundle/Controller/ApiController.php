@@ -4,15 +4,15 @@ namespace Hanaboso\PipesFramework\HbPFMailerBundle\Controller;
 
 use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Controller\FOSRestController;
+use Hanaboso\PipesFramework\Commons\Traits\ControllerTrait;
 use Hanaboso\PipesFramework\HbPFMailerBundle\Handler\MailHandler;
 use Hanaboso\PipesFramework\Mailer\Exception\MailerException;
 use Hanaboso\PipesFramework\Mailer\MessageBuilder\MessageBuilderException;
 use Hanaboso\PipesFramework\Mailer\Transport\TransportException;
-use Hanaboso\PipesFramework\Utils\ControllerUtils;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class ApiController
@@ -23,6 +23,8 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class ApiController extends FOSRestController
 {
+
+    use ControllerTrait;
 
     /**
      * @var MailHandler
@@ -46,16 +48,16 @@ class ApiController extends FOSRestController
      * @param Request $request
      * @param string  $handlerId
      *
-     * @return JsonResponse
+     * @return Response
      */
-    public function sendAction(Request $request, string $handlerId): JsonResponse
+    public function sendAction(Request $request, string $handlerId): Response
     {
         try {
             $this->mailHandler->send($handlerId, $request->request->all());
 
-            return new JsonResponse(['status' => 'OK']);
+            return $this->getResponse(['status' => 'OK']);
         } catch (ServiceNotFoundException | MessageBuilderException | TransportException | MailerException $e) {
-            return new JsonResponse(ControllerUtils::createExceptionData($e), 500);
+            return $this->getErrorResponse($e);
         }
     }
 
@@ -65,16 +67,16 @@ class ApiController extends FOSRestController
      * @param Request $request
      * @param string  $handlerId
      *
-     * @return JsonResponse
+     * @return Response
      */
-    public function sendTestAction(Request $request, string $handlerId): JsonResponse
+    public function sendTestAction(Request $request, string $handlerId): Response
     {
         try {
             $this->mailHandler->testSend($handlerId, $request->request->all());
 
-            return new JsonResponse(['status' => 'OK']);
+            return $this->getResponse(['status' => 'OK']);
         } catch (ServiceNotFoundException | MessageBuilderException | TransportException | MailerException $e) {
-            return new JsonResponse(ControllerUtils::createExceptionData($e), 500);
+            return $this->getErrorResponse($e);
         }
     }
 

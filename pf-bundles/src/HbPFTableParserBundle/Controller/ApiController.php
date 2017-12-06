@@ -5,13 +5,13 @@ namespace Hanaboso\PipesFramework\HbPFTableParserBundle\Controller;
 use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Controller\FOSRestController;
 use Hanaboso\PipesFramework\Commons\Exception\FileStorageException;
+use Hanaboso\PipesFramework\Commons\Traits\ControllerTrait;
 use Hanaboso\PipesFramework\HbPFTableParserBundle\Handler\TableParserHandler;
 use Hanaboso\PipesFramework\HbPFTableParserBundle\Handler\TableParserHandlerException;
 use Hanaboso\PipesFramework\Parser\Exception\TableParserException;
-use Hanaboso\PipesFramework\Utils\ControllerUtils;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class ApiController
@@ -22,6 +22,8 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class ApiController extends FOSRestController
 {
+
+    use ControllerTrait;
 
     /**
      * @var TableParserHandler
@@ -44,15 +46,15 @@ class ApiController extends FOSRestController
      *
      * @param Request $request
      *
-     * @return JsonResponse
+     * @return Response
      *
      */
-    public function toJsonAction(Request $request): JsonResponse
+    public function toJsonAction(Request $request): Response
     {
         try {
-            return new JsonResponse($this->tableParserHandler->parseToJson($request->request->all()));
+            return $this->getResponse($this->tableParserHandler->parseToJson($request->request->all()));
         } catch (TableParserHandlerException | FileStorageException $e) {
-            return new JsonResponse(ControllerUtils::createExceptionData($e), 500);
+            return $this->getErrorResponse($e);
         }
     }
 
@@ -60,15 +62,14 @@ class ApiController extends FOSRestController
      * @Route("/parser/{type}/to/json/test", requirements={"type": "\w+"})
      * @Method("POST")
      *
-     * @return JsonResponse
-     *
+     * @return Response
      */
-    public function toJsonTestAction(): JsonResponse
+    public function toJsonTestAction(): Response
     {
         try {
-            return new JsonResponse($this->tableParserHandler->parseToJsonTest());
+            return $this->getResponse($this->tableParserHandler->parseToJsonTest());
         } catch (TableParserHandlerException | FileStorageException $e) {
-            return new JsonResponse(ControllerUtils::createExceptionData($e), 500);
+            return $this->getErrorResponse($e);
         }
     }
 
@@ -79,14 +80,14 @@ class ApiController extends FOSRestController
      * @param Request $request
      * @param string  $type
      *
-     * @return JsonResponse
+     * @return Response
      */
-    public function fromJsonAction(Request $request, string $type): JsonResponse
+    public function fromJsonAction(Request $request, string $type): Response
     {
         try {
-            return new JsonResponse($this->tableParserHandler->parseFromJson($type, $request->request->all()));
+            return $this->getResponse($this->tableParserHandler->parseFromJson($type, $request->request->all()));
         } catch (TableParserHandlerException | TableParserException | FileStorageException $e) {
-            return new JsonResponse(ControllerUtils::createExceptionData($e), 500);
+            return $this->getErrorResponse($e);
         }
     }
 
@@ -96,14 +97,14 @@ class ApiController extends FOSRestController
      *
      * @param string $type
      *
-     * @return JsonResponse
+     * @return Response
      */
-    public function fromJsonTestAction(string $type): JsonResponse
+    public function fromJsonTestAction(string $type): Response
     {
         try {
-            return new JsonResponse($this->tableParserHandler->parseFromJsonTest($type));
+            return $this->getResponse($this->tableParserHandler->parseFromJsonTest($type));
         } catch (TableParserHandlerException | TableParserException | FileStorageException $e) {
-            return new JsonResponse(ControllerUtils::createExceptionData($e), 500);
+            return $this->getErrorResponse($e);
         }
     }
 

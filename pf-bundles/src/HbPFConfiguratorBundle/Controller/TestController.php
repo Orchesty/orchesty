@@ -7,6 +7,7 @@ use Exception;
 use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Controller\FOSRestController;
 use Hanaboso\PipesFramework\Commons\Enum\TypeEnum;
+use Hanaboso\PipesFramework\Commons\Traits\ControllerTrait;
 use Hanaboso\PipesFramework\Configurator\Document\Embed\EmbedNode;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
@@ -26,6 +27,8 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class TestController extends FOSRestController
 {
+
+    use ControllerTrait;
 
     private const FILE_NAME = 'topology.txt';
 
@@ -85,7 +88,7 @@ class TestController extends FOSRestController
     {
         $this->generateTopology($network);
 
-        return $this->handleView($this->view([], 200, []));
+        return $this->getResponse([]);
     }
 
     /**
@@ -193,7 +196,7 @@ class TestController extends FOSRestController
             'correlation_id' => '456',
         ]);
 
-        return $this->handleView($this->view([], 200, []));
+        return $this->getResponse([]);
     }
 
     /**
@@ -214,7 +217,7 @@ class TestController extends FOSRestController
             ]);
         }
 
-        return $this->handleView($this->view([], 200, []));
+        return $this->getResponse([]);
     }
 
 }

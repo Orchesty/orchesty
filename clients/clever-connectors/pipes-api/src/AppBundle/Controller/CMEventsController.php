@@ -13,7 +13,7 @@ use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Handler\CMEventsHandler;
 use Exception;
 use FOS\RestBundle\Controller\FOSRestController;
-use Hanaboso\PipesFramework\Utils\ControllerUtils;
+use Hanaboso\PipesFramework\Commons\Traits\ControllerTrait;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
@@ -28,6 +28,8 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class CMEventsController extends FOSRestController
 {
+
+    use ControllerTrait;
 
     /**
      * @var CMEventsHandler
@@ -58,10 +60,10 @@ class CMEventsController extends FOSRestController
         try {
             $this->handler->createEvent($request, $userId);
         } catch (CleverConnectorsException $e) {
-            return self::processException($e);
+            return $this->processException($e);
         }
 
-        return new Response('', 200);
+        return $this->getResponse('');
     }
 
     /**
@@ -78,10 +80,10 @@ class CMEventsController extends FOSRestController
         try {
             $this->handler->unsubscribeEvent($request, $userId);
         } catch (CleverConnectorsException $e) {
-            return self::processException($e);
+            return $this->processException($e);
         }
 
-        return new Response('', 200);
+        return $this->getResponse('');
     }
 
     /**
@@ -98,10 +100,10 @@ class CMEventsController extends FOSRestController
         try {
             $this->handler->hardBounceEvent($request, $userId);
         } catch (CleverConnectorsException $e) {
-            return self::processException($e);
+            return $this->processException($e);
         }
 
-        return new Response('', 200);
+        return $this->getResponse('');
     }
 
     /**
@@ -118,10 +120,10 @@ class CMEventsController extends FOSRestController
         try {
             $this->handler->subscribeEvent($request, $userId);
         } catch (CleverConnectorsException $e) {
-            return self::processException($e);
+            return $this->processException($e);
         }
 
-        return new Response('', 200);
+        return $this->getResponse('');
     }
 
     /**
@@ -129,7 +131,7 @@ class CMEventsController extends FOSRestController
      *
      * @return Response
      */
-    private static function processException(Exception $e): Response
+    private function processException(Exception $e): Response
     {
         $code = 500;
 
@@ -144,7 +146,7 @@ class CMEventsController extends FOSRestController
             }
         }
 
-        return new Response(ControllerUtils::createExceptionData($e, TRUE), $code);
+        return $this->getErrorResponse($e, $code);
     }
 
 }

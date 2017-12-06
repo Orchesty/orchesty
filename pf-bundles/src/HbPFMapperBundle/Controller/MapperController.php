@@ -4,12 +4,12 @@ namespace Hanaboso\PipesFramework\HbPFMapperBundle\Controller;
 
 use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Controller\FOSRestController;
+use Hanaboso\PipesFramework\Commons\Traits\ControllerTrait;
 use Hanaboso\PipesFramework\HbPFMapperBundle\Exception\MapperException;
 use Hanaboso\PipesFramework\HbPFMapperBundle\Handler\MapperHandler;
-use Hanaboso\PipesFramework\Utils\ControllerUtils;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class MapperController
@@ -20,6 +20,8 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class MapperController extends FOSRestController
 {
+
+    use ControllerTrait;
 
     /**
      * @var MapperHandler
@@ -43,18 +45,17 @@ class MapperController extends FOSRestController
      * @param Request $request
      * @param string  $id
      *
-     * @return JsonResponse
+     * @return Response
      */
-    public function processAction(Request $request, string $id): JsonResponse
+    public function processAction(Request $request, string $id): Response
     {
         try {
-            $data     = $this->mapperHandler->process($id, $request->request->all());
-            $response = new JsonResponse($data, 200);
-        } catch (MapperException $e) {
-            $response = new JsonResponse(ControllerUtils::createExceptionData($e), 500);
-        }
+            $data = $this->mapperHandler->process($id, $request->request->all());
 
-        return $response;
+            return $this->getResponse($data);
+        } catch (MapperException $e) {
+            return $this->getErrorResponse($e);
+        }
     }
 
     /**
@@ -64,18 +65,17 @@ class MapperController extends FOSRestController
      * @param Request $request
      * @param string  $id
      *
-     * @return JsonResponse
+     * @return Response
      */
-    public function processTestAction(Request $request, string $id): JsonResponse
+    public function processTestAction(Request $request, string $id): Response
     {
         try {
             $this->mapperHandler->processTest($id, $request->request->all());
-            $response = new JsonResponse([], 200);
-        } catch (MapperException $e) {
-            $response = new JsonResponse(ControllerUtils::createExceptionData($e), 500);
-        }
 
-        return $response;
+            return $this->getResponse([]);
+        } catch (MapperException $e) {
+            return $this->getErrorResponse($e);
+        }
     }
 
 }

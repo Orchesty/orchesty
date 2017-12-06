@@ -10,9 +10,9 @@ namespace Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller;
 
 use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Controller\FOSRestController;
+use Hanaboso\PipesFramework\Commons\Traits\ControllerTrait;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\CategoryHandler;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -26,6 +26,8 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class CategoryController extends FOSRestController
 {
+
+    use ControllerTrait;
 
     /**
      * @var CategoryHandler
@@ -43,7 +45,7 @@ class CategoryController extends FOSRestController
         $this->construct();
         $data = $this->categoryHandler->getCategories();
 
-        return new JsonResponse($data, 200);
+        return $this->getResponse($data);
     }
 
     /**
@@ -59,7 +61,7 @@ class CategoryController extends FOSRestController
         $this->construct();
         $data = $this->categoryHandler->createCategory($request->request->all());
 
-        return new JsonResponse($data, 200);
+        return $this->getResponse($data);
     }
 
     /**
@@ -76,7 +78,7 @@ class CategoryController extends FOSRestController
         $this->construct();
         $data = $this->categoryHandler->updateCategory($id, $request->request->all());
 
-        return new JsonResponse($data, 200);
+        return $this->getResponse($data);
     }
 
     /**
@@ -92,7 +94,7 @@ class CategoryController extends FOSRestController
         $this->construct();
         $data = $this->categoryHandler->deleteCategory($id);
 
-        return new JsonResponse($data, 200);
+        return $this->getResponse($data);
     }
 
     /**

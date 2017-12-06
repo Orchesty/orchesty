@@ -16,11 +16,10 @@ class ControllerUtils
 
     /**
      * @param Throwable $exception
-     * @param bool      $asJson
      *
      * @return string|array
      */
-    public static function createExceptionData(Throwable $exception, bool $asJson = FALSE)
+    public static function createExceptionData(Throwable $exception)
     {
         $output = [
             'status'     => 'ERROR',
@@ -29,11 +28,7 @@ class ControllerUtils
             'message'    => $exception->getMessage(),
         ];
 
-        if ($asJson) {
-            return json_encode($output);
-        }
-
-        return $output;
+        return json_encode($output);
     }
 
     /**

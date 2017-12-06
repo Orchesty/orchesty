@@ -3,6 +3,7 @@
 namespace CleverConnectors\AppBundle\Controller;
 
 use FOS\RestBundle\Controller\FOSRestController;
+use Hanaboso\PipesFramework\Commons\Traits\ControllerTrait;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\StartingPointHandler;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -18,6 +19,8 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class WebhookController extends FOSRestController
 {
+
+    use ControllerTrait;
 
     /**
      * @var StartingPointHandler
@@ -48,7 +51,7 @@ class WebhookController extends FOSRestController
     {
         $this->handler->runWithRequest($request, $topologyName, $nodeName);
 
-        return new Response('', 200);
+        return $this->getResponse('', 200);
     }
 
 }

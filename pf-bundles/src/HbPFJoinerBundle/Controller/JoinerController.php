@@ -10,12 +10,12 @@ namespace Hanaboso\PipesFramework\HbPFJoinerBundle\Controller;
 
 use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Controller\FOSRestController;
+use Hanaboso\PipesFramework\Commons\Traits\ControllerTrait;
 use Hanaboso\PipesFramework\HbPFJoinerBundle\Exception\JoinerException;
 use Hanaboso\PipesFramework\HbPFJoinerBundle\Handler\JoinerHandler;
-use Hanaboso\PipesFramework\Utils\ControllerUtils;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class JoinerController
@@ -26,6 +26,8 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class JoinerController extends FOSRestController
 {
+
+    use ControllerTrait;
 
     /**
      * @var JoinerHandler
@@ -49,18 +51,17 @@ class JoinerController extends FOSRestController
      * @param Request $request
      * @param string  $joinerId
      *
-     * @return JsonResponse
+     * @return Response
      */
-    public function sendAction(Request $request, string $joinerId): JsonResponse
+    public function sendAction(Request $request, string $joinerId): Response
     {
         try {
-            $data     = $this->handler->processJoiner($joinerId, $request->request->all());
-            $response = new JsonResponse($data, 200);
-        } catch (JoinerException $e) {
-            $response = new JsonResponse(ControllerUtils::createExceptionData($e), 500);
-        }
+            $data = $this->handler->processJoiner($joinerId, $request->request->all());
 
-        return $response;
+            return $this->getResponse($data);
+        } catch (JoinerException $e) {
+            return $this->getErrorResponse($e);
+        }
     }
 
     /**
@@ -70,18 +71,17 @@ class JoinerController extends FOSRestController
      * @param Request $request
      * @param string  $joinerId
      *
-     * @return JsonResponse
+     * @return Response
      */
-    public function sendTestAction(Request $request, string $joinerId): JsonResponse
+    public function sendTestAction(Request $request, string $joinerId): Response
     {
         try {
             $this->handler->processJoinerTest($joinerId, $request->request->all());
-            $response = new JsonResponse([], 200);
-        } catch (JoinerException $e) {
-            $response = new JsonResponse(ControllerUtils::createExceptionData($e), 500);
-        }
 
-        return $response;
+            return $this->getResponse([]);
+        } catch (JoinerException $e) {
+            return $this->getErrorResponse($e);
+        }
     }
 
 }

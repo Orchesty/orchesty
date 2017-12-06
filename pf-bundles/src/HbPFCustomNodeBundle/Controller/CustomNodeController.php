@@ -11,10 +11,10 @@ namespace Hanaboso\PipesFramework\HbPFCustomNodeBundle\Controller;
 use Exception;
 use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Controller\FOSRestController;
+use Hanaboso\PipesFramework\Commons\Traits\ControllerTrait;
 use Hanaboso\PipesFramework\HbPFCustomNodeBundle\Handler\CustomNodeHandler;
 use Hanaboso\PipesFramework\Utils\ControllerUtils;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Throwable;
@@ -28,6 +28,8 @@ use Throwable;
  */
 class CustomNodeController extends FOSRestController
 {
+
+    use ControllerTrait;
 
     /**
      * @var CustomNodeHandler
@@ -56,21 +58,12 @@ class CustomNodeController extends FOSRestController
     public function sendAction(Request $request, string $nodeId): Response
     {
         try {
-            $data     = $this->handler->process($nodeId, (string) $request->getContent(), $request->headers->all());
-            $response = new Response(
-                $data->getData(),
-                200,
-                ControllerUtils::createHeaders($data->getHeaders())
-            );
-        } catch (Exception|Throwable $e) {
-            $response = new Response(
-                ControllerUtils::createExceptionData($e, TRUE),
-                500,
-                ControllerUtils::createHeaders([], $e)
-            );
-        }
+            $data = $this->handler->process($nodeId, (string) $request->getContent(), $request->headers->all());
 
-        return $response;
+            return $this->getResponse($data->getData(), 200, ControllerUtils::createHeaders($data->getHeaders()));
+        } catch (Exception|Throwable $e) {
+            return $this->getErrorResponse($e, 500, ControllerUtils::createHeaders([], $e));
+        }
     }
 
     /**
@@ -79,18 +72,17 @@ class CustomNodeController extends FOSRestController
      *
      * @param string $nodeId
      *
-     * @return JsonResponse
+     * @return Response
      */
-    public function sendTestAction(string $nodeId): JsonResponse
+    public function sendTestAction(string $nodeId): Response
     {
         try {
             $this->handler->processTest($nodeId);
-            $response = new JsonResponse([], 200);
-        } catch (Exception|Throwable $e) {
-            $response = new JsonResponse(ControllerUtils::createExceptionData($e), 500);
-        }
 
-        return $response;
+            return $this->getResponse([]);
+        } catch (Exception|Throwable $e) {
+            return $this->getErrorResponse($e);
+        }
     }
 
 }

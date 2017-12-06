@@ -9,11 +9,10 @@ use Exception;
 use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Controller\FOSRestController;
 use Hanaboso\PipesFramework\Commons\Exception\PipesFrameworkException;
+use Hanaboso\PipesFramework\Commons\Traits\ControllerTrait;
 use Hanaboso\PipesFramework\Commons\Utils\Base64;
-use Hanaboso\PipesFramework\Utils\ControllerUtils;
 use InvalidArgumentException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -27,6 +26,8 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class SystemController extends FOSRestController
 {
+
+    use ControllerTrait;
 
     /**
      * @var SystemHandler
@@ -54,9 +55,9 @@ class SystemController extends FOSRestController
     public function getSystemAction(string $systemKey): Response
     {
         try {
-            return new JsonResponse($this->handler->getSystem($systemKey), 200);
+            return $this->getResponse($this->handler->getSystem($systemKey), 200);
         } catch (SystemException $e) {
-            return self::processException($e);
+            return $this->processException($e);
         }
     }
 
@@ -71,12 +72,12 @@ class SystemController extends FOSRestController
     public function getSystemsAction(Request $request): Response
     {
         try {
-            return new JsonResponse($this->handler->getSystems(
+            return $this->getResponse($this->handler->getSystems(
                 $request->query->get('user', NULL),
                 $request->query->get('group', NULL)
             ), 200);
         } catch (SystemException $e) {
-            return self::processException($e);
+            return $this->processException($e);
         }
     }
 
@@ -91,9 +92,9 @@ class SystemController extends FOSRestController
     public function getUserSystemsAction(string $userId): Response
     {
         try {
-            return new JsonResponse($this->handler->getUserSystems($userId), 200);
+            return $this->getResponse($this->handler->getUserSystems($userId), 200);
         } catch (SystemException $e) {
-            return self::processException($e);
+            return $this->processException($e);
         }
     }
 
@@ -109,9 +110,9 @@ class SystemController extends FOSRestController
     public function getUserSystemAction(string $userId, string $systemKey): Response
     {
         try {
-            return new JsonResponse($this->handler->getUserSystem($userId, $systemKey), 200);
+            return $this->getResponse($this->handler->getUserSystem($userId, $systemKey), 200);
         } catch (SystemException $e) {
-            return self::processException($e);
+            return $this->processException($e);
         }
     }
 
@@ -128,9 +129,10 @@ class SystemController extends FOSRestController
     public function installSystemAction(Request $request, string $userId, string $systemKey): Response
     {
         try {
-            return new JsonResponse($this->handler->installSystem($userId, $systemKey, $request->request->all()), 200);
+            return $this->getResponse($this->handler->installSystem($userId, $systemKey, $request->request->all()),
+                200);
         } catch (SystemException | CleverConnectorsException | PipesFrameworkException $e) {
-            return self::processException($e);
+            return $this->processException($e);
         }
     }
 
@@ -147,12 +149,12 @@ class SystemController extends FOSRestController
     public function saveSystemSettingsAction(Request $request, string $userId, string $systemKey): Response
     {
         try {
-            return new JsonResponse(
+            return $this->getResponse(
                 $this->handler->saveSystemSettings($userId, $systemKey, $request->request->all()),
                 200
             );
         } catch (SystemException $e) {
-            return self::processException($e);
+            return $this->processException($e);
         }
     }
 
@@ -168,9 +170,9 @@ class SystemController extends FOSRestController
     public function uninstallSystemAction(string $userId, string $systemKey): Response
     {
         try {
-            return new JsonResponse($this->handler->uninstallSystem($userId, $systemKey), 200);
+            return $this->getResponse($this->handler->uninstallSystem($userId, $systemKey), 200);
         } catch (SystemException $e) {
-            return self::processException($e);
+            return $this->processException($e);
         }
     }
 
@@ -187,9 +189,9 @@ class SystemController extends FOSRestController
     public function switchSystemTokenAction(Request $request, string $userId, string $systemKey): Response
     {
         try {
-            return new JsonResponse($this->handler->switchToken($userId, $systemKey, $request->request->all()), 200);
+            return $this->getResponse($this->handler->switchToken($userId, $systemKey, $request->request->all()), 200);
         } catch (SystemException | PipesFrameworkException $e) {
-            return self::processException($e);
+            return $this->processException($e);
         }
     }
 
@@ -205,9 +207,9 @@ class SystemController extends FOSRestController
     public function synchronizeSubscriptionsAction(string $userId, string $systemKey): Response
     {
         try {
-            return new JsonResponse($this->handler->synchronizeSubscriptions($userId, $systemKey), 202);
+            return $this->getResponse($this->handler->synchronizeSubscriptions($userId, $systemKey), 202);
         } catch (SystemException $e) {
-            return self::processException($e);
+            return $this->processException($e);
         }
     }
 
@@ -224,9 +226,9 @@ class SystemController extends FOSRestController
     public function setPasswordAction(Request $request, string $userId, string $systemKey): Response
     {
         try {
-            return new JsonResponse($this->handler->setPassword($userId, $systemKey, $request->request->all()), 200);
+            return $this->getResponse($this->handler->setPassword($userId, $systemKey, $request->request->all()), 200);
         } catch (SystemException | PipesFrameworkException $e) {
-            return self::processException($e);
+            return $this->processException($e);
         }
     }
 
@@ -253,7 +255,7 @@ class SystemController extends FOSRestController
 
             return new RedirectResponse($redirectUrl);
         } catch (SystemException $e) {
-            return self::processException($e);
+            return $this->processException($e);
         }
     }
 
@@ -315,9 +317,9 @@ class SystemController extends FOSRestController
             $data = $request->request->all();
             $data = $this->handler->runCustomAction($system, $user, $action, $data);
 
-            return new JsonResponse($data, 200);
+            return $this->getResponse($data, 200);
         } catch (SystemException $e) {
-            return self::processException($e);
+            return $this->processException($e);
         }
     }
 
@@ -326,7 +328,7 @@ class SystemController extends FOSRestController
      *
      * @return Response
      */
-    private static function processException(Exception $e): Response
+    private function processException(Exception $e): Response
     {
         $code = 500;
 
@@ -355,7 +357,7 @@ class SystemController extends FOSRestController
             }
         }
 
-        return new Response(ControllerUtils::createExceptionData($e, TRUE), $code);
+        return $this->getErrorResponse($e, $code);
     }
 
 }

@@ -9,9 +9,9 @@ use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Controller\FOSRestController;
 use Hanaboso\PipesFramework\Commons\Exception\PipesFrameworkException;
+use Hanaboso\PipesFramework\Commons\Traits\ControllerTrait;
 use LogicException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Throwable;
@@ -25,6 +25,8 @@ use Throwable;
  */
 class LayoutController extends FOSRestController
 {
+
+    use ControllerTrait;
 
     /**
      * @var LayoutHandler
@@ -54,9 +56,9 @@ class LayoutController extends FOSRestController
     public function createAction(Request $request, string $userId, string $systemKey): Response
     {
         try {
-            return new JsonResponse($this->handler->create($userId, $systemKey, $request->request->all()), 200);
+            return $this->getResponse($this->handler->create($userId, $systemKey, $request->request->all()));
         } catch (Throwable $e) {
-            return self::processException($e);
+            return $this->processException($e);
         }
     }
 
@@ -74,9 +76,9 @@ class LayoutController extends FOSRestController
     public function updateAction(Request $request, string $id, string $userId, string $systemKey): Response
     {
         try {
-            return new JsonResponse($this->handler->update($id, $userId, $systemKey, $request->request->all()), 200);
+            return $this->getResponse($this->handler->update($id, $userId, $systemKey, $request->request->all()));
         } catch (Throwable $e) {
-            return self::processException($e);
+            return $this->processException($e);
         }
     }
 
@@ -95,9 +97,9 @@ class LayoutController extends FOSRestController
         try {
             $this->handler->delete($id, $userId, $systemKey);
 
-            return new JsonResponse([], 200);
+            return $this->getResponse([]);
         } catch (Throwable $e) {
-            return self::processException($e);
+            return $this->processException($e);
         }
     }
 
@@ -106,7 +108,7 @@ class LayoutController extends FOSRestController
      *
      * @return Response
      */
-    private static function processException(Throwable $e): Response
+    private function processException(Throwable $e): Response
     {
         $code      = 500;
         $className = get_class($e);
@@ -133,10 +135,7 @@ class LayoutController extends FOSRestController
             $code = 400;
         }
 
-        return new Response(json_encode([
-            'status'  => 'ERROR',
-            'message' => $e->getMessage(),
-        ]), $code);
+        return $this->getErrorResponse($e, $code);
     }
 
 }

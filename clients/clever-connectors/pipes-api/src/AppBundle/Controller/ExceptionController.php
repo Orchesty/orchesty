@@ -12,7 +12,7 @@ namespace CleverConnectors\AppBundle\Controller;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use Exception;
 use FOS\RestBundle\Controller\Annotations\Route;
-use Hanaboso\PipesFramework\Utils\ControllerUtils;
+use Hanaboso\PipesFramework\Commons\Traits\ControllerTrait;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -26,6 +26,8 @@ use Symfony\Component\Routing\Exception\MethodNotAllowedException;
  */
 class ExceptionController
 {
+
+    use ControllerTrait;
 
     /**
      * @param Exception $exception
@@ -45,15 +47,17 @@ class ExceptionController
             $code = 405;
         } elseif (
             in_array($className, [CleverConnectorsException::class])
-            && $exception->getCode() == CleverConnectorsException::USER_TOKEN_NOT_EXISTS) {
+            && $exception->getCode() == CleverConnectorsException::USER_TOKEN_NOT_EXISTS
+        ) {
             $code = 403;
         } elseif (
             in_array($className, [CleverConnectorsException::class])
-            && $exception->getCode() == CleverConnectorsException::WEBHOOK_NOT_FOUND) {
+            && $exception->getCode() == CleverConnectorsException::WEBHOOK_NOT_FOUND
+        ) {
             $code = 404;
         }
 
-        return new Response(ControllerUtils::createExceptionData($exception, TRUE), $code);
+        return $this->getErrorResponse($exception, $code);
     }
 
 }
