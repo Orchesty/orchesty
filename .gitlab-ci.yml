@@ -133,13 +133,28 @@ monolith-cm:
     - cd clients/clever-connectors
     - make build-monolith-fpm push-monolith-fpm TAG=${CI_BUILD_REF_NAME}
 
-stage-cm:
+stage-cm2:
   stage: stage3
   when: manual
   script:
     - cd clients/clever-connectors
     - make docker-compose.ci.yml
     - export DEPLOYMENT_PREFIX=cc-stage2
+    - export PUBLISH_HTTP_PORT=6541
+    - export BACKEND_URL=https://clever-conn2.stage.hanaboso.net
+    - export DOCKER_HOST=192.168.10.31:2376
+    - export DOCKER_TLS_VERIFY=1
+    - docker stack deploy --with-registry-auth -c docker-compose.ci.yml ${DEPLOYMENT_PREFIX}
+
+stage-cm3:
+  stage: stage3
+  when: manual
+  script:
+    - cd clients/clever-connectors
+    - make docker-compose.ci.yml
+    - export DEPLOYMENT_PREFIX=cc-stage3
+    - export PUBLISH_HTTP_PORT=6542
+    - export BACKEND_URL=https://clever-conn3.stage.hanaboso.net
     - export DOCKER_HOST=192.168.10.31:2376
     - export DOCKER_TLS_VERIFY=1
     - docker stack deploy --with-registry-auth -c docker-compose.ci.yml ${DEPLOYMENT_PREFIX}

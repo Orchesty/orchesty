@@ -176,7 +176,7 @@ services:
     #      DEPLOYMENT_PREFIX: ${DEPLOYMENT_PREFIX}
     #      DOCKER_NETWORK: ${DEPLOYMENT_PREFIX}_default
     #      GENERATOR_PATH: /srv/topology
-    #      DOCKER_HOST: 192.168.10.31:2376
+    #      DOCKER_HOST: ${DOCKER_HOST}
     #      DOCKER_TLS_VERIFY: 1
     #      DOCKER_CERT_PATH: /srv/docker-pki
     #    secrets:
@@ -220,10 +220,10 @@ services:
     ## BEGIN STAGE
     #    image: dkr.hanaboso.net/pipes/pipes/frontend:prod-images
     #    environment:
-    #      BACKEND_URL: https://clever-conn2.stage.hanaboso.net/api
+    #      BACKEND_URL: ${BACKEND_URL}/api
     #      PHP_WEBROOT: /var/www/html/web
     #    ports:
-    #      - 6541:80
+    #      - ${PUBLISH_HTTP_PORT}:80
     ## END STAGE
         networks:
           default:
@@ -387,37 +387,37 @@ services:
 #    driver: local
 #    driver_opts:
 #      type: none
-#      device: /mnt/docker-volumes/cc-stage1/elasticsearch
+#      device: /mnt/docker-volumes/${DEPLOYMENT_PREFIX}/elasticsearch
 #      o: bind
 #  grafana:
 #    driver: local
 #    driver_opts:
 #      type: none
-#      device: /mnt/docker-volumes/cc-stage1/grafana
+#      device: /mnt/docker-volumes/${DEPLOYMENT_PREFIX}/grafana
 #      o: bind
 #  influxdb:
 #    driver: local
 #    driver_opts:
 #      type: none
-#      device: /mnt/docker-volumes/cc-stage1/influxdb
+#      device: /mnt/docker-volumes/${DEPLOYMENT_PREFIX}/influxdb
 #      o: bind
 #  mongodb:
 #    driver: local
 #    driver_opts:
 #      type: none
-#      device: /mnt/docker-volumes/cc-stage1/mongodb
+#      device: /mnt/docker-volumes/${DEPLOYMENT_PREFIX}/mongodb
 #      o: bind
 #  rabbitmq:
 #    driver: local
 #    driver_opts:
 #      type: none
-#      device: /mnt/docker-volumes/cc-stage1/rabbitmq
+#      device: /mnt/docker-volumes/${DEPLOYMENT_PREFIX}/rabbitmq
 #      o: bind
 #  redis:
 #    driver: local
 #    driver_opts:
 #      type: none
-#      device: /mnt/docker-volumes/cc-stage1/redis
+#      device: /mnt/docker-volumes/${DEPLOYMENT_PREFIX}/redis
 #      o: bind
 #
 #configs:
