@@ -25,6 +25,7 @@
     "guzzlehttp/guzzle": "^6.3",
     "jms/serializer-bundle": "^2.2",
     "league/oauth2-client": "^2.2",
+    "mtdowling/cron-expression": "^1.2",
     "nette/http": "^2.4",
     "nette/utils": "^2.4",
     "paragonie/halite": "^3.3",
