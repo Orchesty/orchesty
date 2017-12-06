@@ -5,10 +5,10 @@ namespace Hanaboso\PipesFramework\Parser;
 use Hanaboso\PipesFramework\Parser\Exception\TableParserException;
 use Nette\Utils\Json;
 use Nette\Utils\Strings;
-use PhpOffice\PhpSpreadsheet\Cell;
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Worksheet;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Writer\Csv;
 use PhpOffice\PhpSpreadsheet\Writer\Html;
 use PhpOffice\PhpSpreadsheet\Writer\IWriter;
@@ -34,22 +34,22 @@ final class TableParser implements TableParserInterface
     {
         $worksheet = IOFactory::load($path)->getActiveSheet();
         $maxRow    = $worksheet->getHighestDataRow();
-        $maxColumn = Cell::columnIndexFromString($worksheet->getHighestDataColumn());
+        $maxColumn = Coordinate::columnIndexFromString($worksheet->getHighestDataColumn());
 
         $data        = [];
         $columnNames = [];
-        for ($row = 1; $row < (int) $maxRow + 1; $row++) {
+        for ($row = 1; $row <= $maxRow; $row++) {
             $columns = [];
             for ($column = 0; $column < $maxColumn; $column++) {
                 if ($row === 1) {
                     if ($hasHeaders) {
-                        $columnNames[] = $this->getTrimmedCellValue($worksheet, $column, 1);
+                        $columnNames[] = $this->getTrimmedCellValue($worksheet, $column + 1, 1);
                     } else {
                         $columnNames[]    = $column;
-                        $columns[$column] = $this->getTrimmedCellValue($worksheet, $column, $row);
+                        $columns[$column] = $this->getTrimmedCellValue($worksheet, $column + 1, $row);
                     }
                 } else {
-                    $columns[$columnNames[$column]] = $this->getTrimmedCellValue($worksheet, $column, $row);
+                    $columns[$columnNames[$column]] = $this->getTrimmedCellValue($worksheet, $column + 1, $row);
                 }
             }
 
@@ -80,15 +80,15 @@ final class TableParser implements TableParserInterface
         if ($hasHeaders) {
             $headers = array_keys((array) $data[0]);
             foreach ($headers as $column => $value) {
-                $this->setCellValue($worksheet, $column, 1, $value);
+                $this->setCellValue($worksheet, ++$column, 1, $value);
             }
         }
 
         foreach ($data as $row => $rowData) {
             foreach ($rowData as $column => $value) {
                 $hasHeaders
-                    ? $this->setCellValue($worksheet, array_search($column, $headers, TRUE), $row + 2, $value)
-                    : $this->setCellValue($worksheet, $column, $row + 1, $value);
+                    ? $this->setCellValue($worksheet, array_search($column, $headers, TRUE) + 1, $row + 2, $value)
+                    : $this->setCellValue($worksheet, ++$column, $row + 1, $value);
             }
         }
 
