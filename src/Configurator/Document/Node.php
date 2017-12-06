@@ -69,6 +69,13 @@ class Node
     protected $enabled = TRUE;
 
     /**
+     * @var string
+     *
+     * @MongoDB\Field(type="string")
+     */
+    protected $cron;
+
+    /**
      * @return string
      */
     public function getName(): string
@@ -200,6 +207,26 @@ class Node
     public function setEnabled(bool $enabled): Node
     {
         $this->enabled = $enabled;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCron(): string
+    {
+        return $this->cron;
+    }
+
+    /**
+     * @param string $cron
+     *
+     * @return Node
+     */
+    public function setCron(string $cron): Node
+    {
+        $this->cron = $cron;
 
         return $this;
     }

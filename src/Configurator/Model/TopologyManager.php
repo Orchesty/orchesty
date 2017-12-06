@@ -2,6 +2,7 @@
 
 namespace Hanaboso\PipesFramework\Configurator\Model;
 
+use Cron\CronExpression;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\PipesFramework\Commons\DatabaseManager\DatabaseManagerLocator;
@@ -243,6 +244,7 @@ class TopologyManager
                             $handler,
                             $process['@name'] ?? '',
                             $process['@pipes:pipesType'] ?? '',
+                            $innerProcess['@pipes:cronTime'] ?? '',
                             $nodes,
                             $embedNodes
                         );
@@ -254,6 +256,7 @@ class TopologyManager
                                 $handler,
                                 $innerProcess['@name'] ?? '',
                                 $innerProcess['@pipes:pipesType'] ?? '',
+                                $innerProcess['@pipes:cronTime'] ?? '',
                                 $nodes,
                                 $embedNodes
                             );
@@ -283,6 +286,7 @@ class TopologyManager
      * @param string      $handler
      * @param string|null $name
      * @param string|null $type
+     * @param string|null $cron
      * @param array       $nodes
      * @param array       $embedNodes
      *
@@ -295,6 +299,7 @@ class TopologyManager
         string $handler,
         ?string $name = NULL,
         ?string $type = NULL,
+        ?string $cron = NULL,
         array &$nodes,
         array &$embedNodes
     ): Node
@@ -322,11 +327,19 @@ class TopologyManager
             );
         }
 
+        if ($cron && !CronExpression::isValidExpression($cron)) {
+            throw new TopologyException(
+                sprintf('Node [%s] cron [%s] not valid', $id, $type),
+                TopologyException::TOPOLOGY_NODE_CRON_NOT_VALID
+            );
+        }
+
         $node = (new Node())
             ->setName($name)
             ->setType($type)
             ->setTopology($topology->getId())
-            ->setHandler(Strings::endsWith($handler, 'vent') ? HandlerEnum::EVENT : HandlerEnum::ACTION);
+            ->setHandler(Strings::endsWith($handler, 'vent') ? HandlerEnum::EVENT : HandlerEnum::ACTION)
+            ->setCron($cron);
         $this->dm->persist($node);
 
         $nodes[$id]      = $node;

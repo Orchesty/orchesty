@@ -322,6 +322,38 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers TopologyController::saveTopologySchemaAction()
+     */
+    public function testSaveTopologySchemaCronNotValid(): void
+    {
+        $topology = (new Topology())
+            ->setName('Topology')
+            ->setDescr('Topology')
+            ->setEnabled(TRUE);
+        $this->persistAndFlush($topology);
+
+        $this->client->request(
+            'PUT',
+            sprintf('/api/topologies/%s/schema.bpmn', $topology->getId()),
+            [],
+            [],
+            [
+                'CONTENT_TYPE' => 'application/xml',
+                'ACCEPT'       => 'application/xml',
+            ],
+            str_replace('pipes:cronTime="*/2 * * * *"', 'pipes:cronTime="Unknown"', $this->getBpmn())
+        );
+
+        $response = $this->client->getResponse();
+        $response = (object) [
+            'status'  => $response->getStatusCode(),
+            'content' => Json::decode($response->getContent()),
+        ];
+
+        self::assertEquals(400, $response->status);
+    }
+
+    /**
+     * @covers TopologyController::saveTopologySchemaAction()
      * @covers TopologyController::getTopologySchemaAction()
      */
     public function testSaveAndGetTopologySchema(): void

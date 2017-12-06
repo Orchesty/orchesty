@@ -23,5 +23,6 @@ class TopologyException extends PipesFrameworkException
     public const TOPOLOGY_HAS_NO_NODES         = self::OFFSET + 7;
     public const TOPOLOGY_NAME_ALREADY_EXISTS  = self::OFFSET + 8;
     public const TOPOLOGY_CANNOT_CHANGE_NAME   = self::OFFSET + 9;
+    public const TOPOLOGY_NODE_CRON_NOT_VALID  = self::OFFSET + 10;
 
 }

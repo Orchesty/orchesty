@@ -16,7 +16,7 @@
             <bpmn:outgoing>SequenceFlow_1bipfui</bpmn:outgoing>
         </bpmn:task>
         <bpmn:task id="Task_06eefzf" name="Splitter SPI" pipes:pipesType="splitter"/>
-        <bpmn:event id="Event_1whl90w" name="Event 1" pipes:pipesType="cron">
+        <bpmn:event id="Event_1whl90w" name="Event 1" pipes:pipesType="cron" pipes:cronTime="*/2 * * * *">
             <bpmn:outgoing>SequenceFlow_15lu3i2</bpmn:outgoing>
         </bpmn:event>
         <bpmn:event id="Event_14a98wz" name="Event 2" pipes:pipesType="webhook"/>
