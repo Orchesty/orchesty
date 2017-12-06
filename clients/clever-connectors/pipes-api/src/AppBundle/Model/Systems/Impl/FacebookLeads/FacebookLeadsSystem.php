@@ -6,10 +6,10 @@
  * Time: 1:28 PM
  */
 
-namespace AppBundle\Model\Systems\Impl\Facebook;
+namespace AppBundle\Model\Systems\Impl\FacebookLeads;
 
-use AppBundle\Model\Systems\Impl\Facebook\Connector\FacebookGetLeadformConnector;
-use AppBundle\Model\Systems\Impl\Facebook\Connector\FacebookGetPageConnector;
+use AppBundle\Model\Systems\Impl\FacebookLeads\Connector\FacebookGetLeadformConnector;
+use AppBundle\Model\Systems\Impl\FacebookLeads\Connector\FacebookGetPageConnector;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\SystemTypeEnum;
 use CleverConnectors\AppBundle\Model\Form\Field;
@@ -19,27 +19,31 @@ use CleverConnectors\AppBundle\Model\Systems\Authorizations\Traits\Authorization
 use CleverConnectors\AppBundle\Model\Systems\SystemInterface;
 use CleverConnectors\AppBundle\Model\Systems\Traits\SystemTrait;
 use CleverConnectors\AppBundle\Utils\AuthorizationUtils;
+use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Authorization\Provider\Dto\OAuth2Dto;
 use Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 
-class FacebookSystem implements SystemInterface, OAuth2Interface
+/**
+ * Class FacebookLeadsSystem
+ *
+ * @package AppBundle\Model\Systems\Impl\FacebookLeads
+ */
+class FacebookLeadsSystem implements SystemInterface, OAuth2Interface
 {
 
     use SystemTrait;
     use AuthorizationTrait;
 
+    private const API_URL = 'https://graph.facebook.com/v2.11';
     private const APP_ID        = '364762510625679';
     private const APP_SECRET    = 'e75e811167e3f129503e510968988006';
     private const AUTHORIZE_URL = 'https://www.facebook.com/v2.11/dialog/oauth';
     private const TOKEN_URL     = 'https://graph.facebook.com/v2.11/oauth/access_token';
 
-    private const PAGE_FIELD_KEY = 'page';
-    private const FORM_FIELD_KEY = 'form';
 
     private const USER_ACCESS_TOKEN = 'user_access_token';
     private const PAGE_ACCESS_TOKEN = 'page_access_token';
-    private const PAGE_ID           = 'page_id';
     private const FORM_ID           = 'form_id';
 
     /**
@@ -173,7 +177,17 @@ class FacebookSystem implements SystemInterface, OAuth2Interface
      */
     public function getRequestDto(SystemInstall $systemInstall, string $method): RequestDto
     {
-        // TODO: Implement getRequestDto() method.
+        $this->continueOnAuthorized($systemInstall);
+
+        $sett = $systemInstall->getSettings();
+
+        $dto = new RequestDto($method, new Uri(self::API_URL));
+        $dto->setHeaders([
+            'Content-Type'  => 'application/json',
+            'Accept'        => 'application/json',
+        ]);
+
+        return $dto;
     }
 
     /**
@@ -183,25 +197,25 @@ class FacebookSystem implements SystemInterface, OAuth2Interface
      */
     public function getSettingFields(SystemInstall $systemInstall): array
     {
-        $pageId = $systemInstall->getSettings()[self::PAGE_ID] ?? NULL
+        $pageAccessToken = $systemInstall->getSettings()[self::PAGE_ACCESS_TOKEN] ?? NULL;
 
         $fieldPages = new Field(
             Field::SELECT,
-            self::PAGE_FIELD_KEY,
+            self::PAGE_ACCESS_TOKEN,
             'Page',
-            $pageId,
-            $systemInstall->TRUE
+            $pageAccessToken,
+            TRUE
         );
         $fieldPages->setAction($systemInstall, $this->backend, 'getPages');
 
         $fieldForms = new Field(
             Field::SELECT,
-            self::FORM_FIELD_KEY,
+            self::FORM_ID,
             'Leads form',
             $systemInstall->getSettings()[self::FORM_ID],
             TRUE
         );
-        if ($pageId) {
+        if ($pageAccessToken) {
             $fieldForms->setAction($systemInstall, $this->backend, 'getForms');
         }
 

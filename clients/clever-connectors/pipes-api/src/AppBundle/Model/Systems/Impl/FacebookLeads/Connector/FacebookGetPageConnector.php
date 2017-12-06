@@ -6,7 +6,7 @@
  * Time: 3:52 PM
  */
 
-namespace AppBundle\Model\Systems\Impl\Facebook\Connector;
+namespace AppBundle\Model\Systems\Impl\FacebookLeads\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\Systems\SystemInterface;
@@ -19,11 +19,11 @@ use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
 use Nette\Utils\Json;
 
 /**
- * Class FacebookGetLeadformConnector
+ * Class FacebookGetPageConnector
  *
- * @package AppBundle\Model\Systems\Impl\Facebook\Connector
+ * @package AppBundle\Model\Systems\Impl\FacebookLeads\Connector
  */
-class FacebookGetLeadformConnector implements ConnectorInterface
+class FacebookGetPageConnector implements ConnectorInterface
 {
 
     /**
@@ -32,7 +32,7 @@ class FacebookGetLeadformConnector implements ConnectorInterface
     private $curlManager;
 
     /**
-     * FacebookGetLeadformConnector constructor.
+     * FacebookGetAccountConnector constructor.
      *
      * @param CurlManager $curlManager
      */
@@ -47,7 +47,7 @@ class FacebookGetLeadformConnector implements ConnectorInterface
      */
     public function getId(): string
     {
-        return 'facebook-get-leadform-connector';
+        return 'facebook-get-page-connector';
 
     }
 
@@ -80,19 +80,16 @@ class FacebookGetLeadformConnector implements ConnectorInterface
      *
      * @return array
      */
-    public function getLeadForms(SystemInterface $system, SystemInstall $systemInstall): array
+    public function getAccounts(SystemInterface $system, SystemInstall $systemInstall): array
     {
         $requestDto  = $system->getRequestDto($systemInstall, CurlManager::METHOD_GET);
-        $url = new Uri($requestDto->getUri(TRUE) . 'me/leadgen_forms?limit=1000&fields=id%2Cname&access_token=' . urlencode($systemInstall->getSettings()['page_access_token']));
+        $url = new Uri($requestDto->getUri(TRUE) . '/me/accounts?limit=1000&fields=access_token%2Cname&access_token=' . urlencode($systemInstall->getSettings()['user_access_token']));
         $response = $this->curlManager->send(RequestDto::from($requestDto, $url));
         if ($response->getStatusCode() >= 200 && $response->getStatusCode()){
-            $data = JSON::decode($response->getBody());
+            $data = json_decode($response->getBody(), TRUE);
             $res = [];
             foreach ($data as $page){
-                $res[] = [
-                    'id' => $page['id'],
-                    'name' => $page['name'],
-                ];
+                $res[$page['access_token']] = $page['name'];
             }
 
             return $res;
