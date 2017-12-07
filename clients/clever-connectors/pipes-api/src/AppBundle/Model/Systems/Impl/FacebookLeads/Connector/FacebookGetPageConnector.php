@@ -6,7 +6,7 @@
  * Time: 3:52 PM
  */
 
-namespace AppBundle\Model\Systems\Impl\FacebookLeads\Connector;
+namespace CleverConnectors\AppBundle\Model\Systems\Impl\FacebookLeads\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\Systems\SystemInterface;
@@ -16,12 +16,11 @@ use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
-use Nette\Utils\Json;
 
 /**
  * Class FacebookGetPageConnector
  *
- * @package AppBundle\Model\Systems\Impl\FacebookLeads\Connector
+ * @package CleverConnectors\AppBundle\Model\Systems\Impl\FacebookLeads\Connector
  */
 class FacebookGetPageConnector implements ConnectorInterface
 {
@@ -88,7 +87,7 @@ class FacebookGetPageConnector implements ConnectorInterface
         if ($response->getStatusCode() >= 200 && $response->getStatusCode()){
             $data = json_decode($response->getBody(), TRUE);
             $res = [];
-            foreach ($data as $page){
+            foreach ($data['data'] as $page){
                 $res[$page['access_token']] = $page['name'];
             }
 

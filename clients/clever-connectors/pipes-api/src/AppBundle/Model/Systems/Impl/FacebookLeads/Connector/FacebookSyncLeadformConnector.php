@@ -6,14 +6,12 @@
  * Time: 10:37 AM
  */
 
-namespace AppBundle\Model\Systems\Impl\FacebookLeads\Connector;
+namespace CleverConnectors\AppBundle\Model\Systems\Impl\FacebookLeads\Connector;
 
-use AppBundle\Model\Systems\Impl\FacebookLeads\FacebookLeadsSystem;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\LastSync\LastSyncManager;
-use CleverConnectors\AppBundle\Model\ProgressCounter\ProgressCounterService;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
-use CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\QuickbooksSystem;
+use CleverConnectors\AppBundle\Model\Systems\Impl\FacebookLeads\FacebookLeadsSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Doctrine\Common\Persistence\ObjectRepository;
@@ -30,6 +28,11 @@ use Psr\Http\Message\ResponseInterface;
 use React\EventLoop\LoopInterface;
 use React\Promise\PromiseInterface;
 
+/**
+ * Class FacebookSyncLeadformConnector
+ *
+ * @package CleverConnectors\AppBundle\Model\Systems\Impl\FacebookLeads\Connector
+ */
 class FacebookSyncLeadformConnector implements BatchInterface, ConnectorInterface
 {
 
@@ -95,9 +98,10 @@ class FacebookSyncLeadformConnector implements BatchInterface, ConnectorInterfac
         $requestDto->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()));
         $settings = $systemInstall->getSettings();
         $url      = new Uri(sprintf(
-            '%s/%s/leads?access_token=',
+            '%s/%s/leads?fields=%s&access_token=%s',
             $requestDto->getUri(TRUE),
             $settings['form_id'],
+            urlencode('created_time,id,ad_id,form_id,field_data'),
             urlencode($settings['page_access_token'])
         ));
         $promise  = $sender->send(RequestDto::from($requestDto, $url))
@@ -105,7 +109,8 @@ class FacebookSyncLeadformConnector implements BatchInterface, ConnectorInterfac
                 function (ResponseInterface $response): SuccessMessage {
                     return $this->createSuccessMessage($response);
                 }
-            );
+            )
+            ->then($callbackItem);
 
         $this->systemInstallRepository->setSyncTime($systemInstall);
 
@@ -161,10 +166,9 @@ class FacebookSyncLeadformConnector implements BatchInterface, ConnectorInterfac
     private function createSuccessMessage(ResponseInterface $response): SuccessMessage
     {
         $data = json_decode($response->getBody()->getContents(), TRUE);
-        if (is_array($data) && array_key_exists('data', $data) && array_key_exists('field_data',
-                $data['data'])) {
+        if (is_array($data) && array_key_exists('data', $data)) {
             $successMessage = new SuccessMessage(0);
-            $successMessage->setData(json_encode($data['data']['field_data']));
+            $successMessage->setData(json_encode($data['data']));
             unset($data);
 
             return $successMessage;

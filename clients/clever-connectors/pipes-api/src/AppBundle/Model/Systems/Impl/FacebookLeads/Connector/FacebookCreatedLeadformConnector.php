@@ -6,12 +6,12 @@
  * Time: 3:36 PM
  */
 
-namespace AppBundle\Model\Systems\Impl\FacebookLeads\Connector;
+namespace CleverConnectors\AppBundle\Model\Systems\Impl\FacebookLeads\Connector;
 
-use AppBundle\Model\Systems\Impl\FacebookLeads\FacebookLeadsSystem;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\LastSync\LastSyncManager;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
+use CleverConnectors\AppBundle\Model\Systems\Impl\FacebookLeads\FacebookLeadsSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use CleverConnectors\AppBundle\Utils\CronUtils;
@@ -32,7 +32,7 @@ use React\Promise\PromiseInterface;
 /**
  * Class FacebookCreatedLeadformConnector
  *
- * @package AppBundle\Model\Systems\Impl\FacebookLeads\Connector
+ * @package CleverConnectors\AppBundle\Model\Systems\Impl\FacebookLeads\Connector
  */
 class FacebookCreatedLeadformConnector implements BatchInterface, ConnectorInterface
 {
@@ -78,10 +78,10 @@ class FacebookCreatedLeadformConnector implements BatchInterface, ConnectorInter
     )
     {
 
-        $this->system = $system;
-        $this->lastSyncManager = $lastSyncManager;
-        $this->factory = $factory;
-        $this->dm = $dm;
+        $this->system                  = $system;
+        $this->lastSyncManager         = $lastSyncManager;
+        $this->factory                 = $factory;
+        $this->dm                      = $dm;
         $this->systemInstallRepository = $dm->getRepository(SystemInstall::class);
     }
 
@@ -99,27 +99,37 @@ class FacebookCreatedLeadformConnector implements BatchInterface, ConnectorInter
         $requestDto    = $this->system->getRequestDto($systemInstall, CurlManager::METHOD_GET);
         $requestDto->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()));
 
-        $times = CronUtils::getTimes($this->lastSyncManager->getLastSync($systemInstall, $dto->getHeaders()));
+        $settings = $systemInstall->getSettings();
+
+        $times  = CronUtils::getTimes($this->lastSyncManager->getLastSync($systemInstall, $dto->getHeaders()));
         $filter = [];
         if ($times->getStart()) {
             $filter[] = [
-              'field' => 'time_created',
-              'operator' => 'GREATER_THAN_OR_EQUAL',
-              'value' => $times->getStart()->getTimestamp()
+                'field'    => 'time_created',
+                'operator' => 'GREATER_THAN_OR_EQUAL',
+                'value'    => $times->getStart()->getTimestamp(),
             ];
         }
         $filter[] = [
-          'field' => 'time_created',
-          'operator' => 'LESS_THAN',
-          'value' => $times->getEnd()->getTimestamp()
+            'field'    => 'time_created',
+            'operator' => 'LESS_THAN',
+            'value'    => $times->getEnd()->getTimestamp(),
         ];
 
-        $url     = new Uri($requestDto->getUri(TRUE) . '/leads?filtering=' . urlencode(json_encode($filter)));
-        $promise  = $sender->send(RequestDto::from($requestDto, $url))->then(
+        $url = new Uri(sprintf(
+            '%s/%s/leads?fields=%s&filtering=%s&access_token=%s',
+            $requestDto->getUri(TRUE),
+            $settings['form_id'],
+            urlencode('created_time,id,ad_id,form_id,field_data'),
+            urlencode(json_encode($filter)),
+            urlencode($settings['page_access_token'])
+        ));
+
+        $promise = $sender->send(RequestDto::from($requestDto, $url))->then(
             function (ResponseInterface $response): SuccessMessage {
                 return $this->createSuccessMessage($response);
             }
-        );
+        )->then($callbackItem);
 
         $lastSync = $this->lastSyncManager->getLastSync($systemInstall, $dto->getHeaders());
         $times    = CronUtils::getTimes($lastSync);
@@ -178,10 +188,9 @@ class FacebookCreatedLeadformConnector implements BatchInterface, ConnectorInter
     private function createSuccessMessage(ResponseInterface $response): SuccessMessage
     {
         $data = json_decode($response->getBody()->getContents(), TRUE);
-        if (is_array($data) && array_key_exists('data', $data) && array_key_exists('field_data',
-                $data['data'])) {
+        if (is_array($data) && array_key_exists('data', $data)) {
             $successMessage = new SuccessMessage(0);
-            $successMessage->setData(json_encode($data['data']['field_data']));
+            $successMessage->setData(json_encode($data['data']));
             unset($data);
 
             return $successMessage;

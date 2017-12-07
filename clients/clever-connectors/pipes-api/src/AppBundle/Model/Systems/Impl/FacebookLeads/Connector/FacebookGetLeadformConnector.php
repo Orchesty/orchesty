@@ -6,7 +6,7 @@
  * Time: 3:52 PM
  */
 
-namespace AppBundle\Model\Systems\Impl\FacebookLeads\Connector;
+namespace CleverConnectors\AppBundle\Model\Systems\Impl\FacebookLeads\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\Systems\SystemInterface;
@@ -16,12 +16,11 @@ use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
-use Nette\Utils\Json;
 
 /**
  * Class FacebookGetLeadformConnector
  *
- * @package AppBundle\Model\Systems\Impl\FacebookLeads\Connector
+ * @package CleverConnectors\AppBundle\Model\Systems\Impl\FacebookLeads\Connector
  */
 class FacebookGetLeadformConnector implements ConnectorInterface
 {
@@ -62,7 +61,6 @@ class FacebookGetLeadformConnector implements ConnectorInterface
         // TODO: Implement processEvent() method.
     }
 
-
     /**
      * @param ProcessDto $dto
      *
@@ -77,25 +75,28 @@ class FacebookGetLeadformConnector implements ConnectorInterface
     /**
      * @param SystemInterface $system
      * @param SystemInstall   $systemInstall
+     * @param string          $pageAccessToken
      *
      * @return array
      */
-    public function getLeadForms(SystemInterface $system, SystemInstall $systemInstall): array
+    public function getLeadForms(SystemInterface $system, SystemInstall $systemInstall, string $pageAccessToken): array
     {
-        $requestDto  = $system->getRequestDto($systemInstall, CurlManager::METHOD_GET);
-        $url = new Uri($requestDto->getUri(TRUE) . '/me/leadgen_forms?limit=1000&fields=id%2Cname&access_token=' . urlencode($systemInstall->getSettings()['page_access_token']));
-        $response = $this->curlManager->send(RequestDto::from($requestDto, $url));
-        if ($response->getStatusCode() >= 200 && $response->getStatusCode()){
+        $requestDto = $system->getRequestDto($systemInstall, CurlManager::METHOD_GET);
+        $url        = new Uri(
+            $requestDto->getUri(TRUE) . '/me/leadgen_forms?limit=1000&fields=id%2Cname&access_token=' . urlencode($pageAccessToken)
+        );
+        $response   = $this->curlManager->send(RequestDto::from($requestDto, $url));
+        if ($response->getStatusCode() >= 200 && $response->getStatusCode()) {
             $data = json_decode($response->getBody(), TRUE);
-            $res = [];
-            foreach ($data as $page){
+            $res  = [];
+            foreach ($data['data'] as $page) {
                 $res[$page['id']] = $page['name'];
             }
 
             return $res;
 
         } else {
-            return[]; // TODO Vyhodit exception
+            return []; // TODO Vyhodit exception
         }
 
     }

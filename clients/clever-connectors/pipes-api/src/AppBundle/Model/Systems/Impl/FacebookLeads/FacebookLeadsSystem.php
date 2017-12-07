@@ -6,16 +6,17 @@
  * Time: 1:28 PM
  */
 
-namespace AppBundle\Model\Systems\Impl\FacebookLeads;
+namespace CleverConnectors\AppBundle\Model\Systems\Impl\FacebookLeads;
 
-use AppBundle\Model\Systems\Impl\FacebookLeads\Connector\FacebookGetLeadformConnector;
-use AppBundle\Model\Systems\Impl\FacebookLeads\Connector\FacebookGetPageConnector;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\SystemTypeEnum;
 use CleverConnectors\AppBundle\Model\Form\Field;
 use CleverConnectors\AppBundle\Model\Form\Form;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\OAuth2Interface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\Traits\AuthorizationTrait;
+use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
+use CleverConnectors\AppBundle\Model\Systems\Impl\FacebookLeads\Connector\FacebookGetLeadformConnector;
+use CleverConnectors\AppBundle\Model\Systems\Impl\FacebookLeads\Connector\FacebookGetPageConnector;
 use CleverConnectors\AppBundle\Model\Systems\SystemInterface;
 use CleverConnectors\AppBundle\Model\Systems\Traits\SystemTrait;
 use CleverConnectors\AppBundle\Utils\AuthorizationUtils;
@@ -27,7 +28,7 @@ use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 /**
  * Class FacebookLeadsSystem
  *
- * @package AppBundle\Model\Systems\Impl\FacebookLeads
+ * @package CleverConnectors\AppBundle\Model\Systems\Impl\FacebookLeads
  */
 class FacebookLeadsSystem implements SystemInterface, OAuth2Interface
 {
@@ -35,12 +36,11 @@ class FacebookLeadsSystem implements SystemInterface, OAuth2Interface
     use SystemTrait;
     use AuthorizationTrait;
 
-    private const API_URL = 'https://graph.facebook.com/v2.11';
+    private const API_URL       = 'https://graph.facebook.com/v2.11';
     private const APP_ID        = '364762510625679';
     private const APP_SECRET    = 'e75e811167e3f129503e510968988006';
     private const AUTHORIZE_URL = 'https://www.facebook.com/v2.11/dialog/oauth';
     private const TOKEN_URL     = 'https://graph.facebook.com/v2.11/oauth/access_token';
-
 
     private const USER_ACCESS_TOKEN = 'user_access_token';
     private const PAGE_ACCESS_TOKEN = 'page_access_token';
@@ -55,10 +55,12 @@ class FacebookLeadsSystem implements SystemInterface, OAuth2Interface
      * @var string
      */
     private $backend;
+
     /**
      * @var FacebookGetPageConnector
      */
     private $facebookGetPageConnector;
+
     /**
      * @var FacebookGetLeadformConnector
      */
@@ -72,12 +74,16 @@ class FacebookLeadsSystem implements SystemInterface, OAuth2Interface
      * @param FacebookGetPageConnector     $facebookGetPageConnector
      * @param FacebookGetLeadformConnector $facebookGetLeadformConnector
      */
-    public function __construct(OAuth2Provider $provider, string $backend,
-                                FacebookGetPageConnector $facebookGetPageConnector, FacebookGetLeadformConnector $facebookGetLeadformConnector)
+    public function __construct(
+        OAuth2Provider $provider,
+        string $backend,
+        FacebookGetPageConnector $facebookGetPageConnector,
+        FacebookGetLeadformConnector $facebookGetLeadformConnector
+    )
     {
-        $this->provider                 = $provider;
-        $this->backend                  = $backend;
-        $this->facebookGetPageConnector = $facebookGetPageConnector;
+        $this->provider                     = $provider;
+        $this->backend                      = $backend;
+        $this->facebookGetPageConnector     = $facebookGetPageConnector;
         $this->facebookGetLeadformConnector = $facebookGetLeadformConnector;
     }
 
@@ -116,17 +122,21 @@ class FacebookLeadsSystem implements SystemInterface, OAuth2Interface
      */
     public function saveToken(SystemInstall $systemInstall, array $data): SystemInstall
     {
-        // TODO: Implement saveToken() method.
+        $arr = $this->provider->getAccessToken($this->createDto($systemInstall), $data);
+        $this->setSettings($systemInstall, $arr);
+
+        return $systemInstall;
     }
 
     /**
      * @param SystemInstall $systemInstall
      *
      * @return SystemInstall
+     * @throws SystemException
      */
     public function refreshToken(SystemInstall $systemInstall): SystemInstall
     {
-        // TODO: Implement refreshToken() method.
+        throw new SystemException('Facebook Leads system has not implemented "refreshToken" function.');
     }
 
     /**
@@ -179,12 +189,10 @@ class FacebookLeadsSystem implements SystemInterface, OAuth2Interface
     {
         $this->continueOnAuthorized($systemInstall);
 
-        $sett = $systemInstall->getSettings();
-
         $dto = new RequestDto($method, new Uri(self::API_URL));
         $dto->setHeaders([
-            'Content-Type'  => 'application/json',
-            'Accept'        => 'application/json',
+            'Content-Type' => 'application/json',
+            'Accept'       => 'application/json',
         ]);
 
         return $dto;
@@ -197,13 +205,11 @@ class FacebookLeadsSystem implements SystemInterface, OAuth2Interface
      */
     public function getSettingFields(SystemInstall $systemInstall): array
     {
-        $pageAccessToken = $systemInstall->getSettings()[self::PAGE_ACCESS_TOKEN] ?? NULL;
-
         $fieldPages = new Field(
             Field::SELECT,
             self::PAGE_ACCESS_TOKEN,
             'Page',
-            $pageAccessToken,
+            $systemInstall->getSettings()[self::PAGE_ACCESS_TOKEN] ?? NULL,
             TRUE
         );
         $fieldPages->setAction($systemInstall, $this->backend, 'getPages');
@@ -215,9 +221,7 @@ class FacebookLeadsSystem implements SystemInterface, OAuth2Interface
             $systemInstall->getSettings()[self::FORM_ID],
             TRUE
         );
-        if ($pageAccessToken) {
-            $fieldForms->setAction($systemInstall, $this->backend, 'getForms');
-        }
+        $fieldForms->setAction($systemInstall, $this->backend, 'getForms');
 
         $form = new Form();
         $form
@@ -229,22 +233,24 @@ class FacebookLeadsSystem implements SystemInterface, OAuth2Interface
 
     /**
      * @param SystemInstall $systemInstall
+     * @param array         $data
      *
      * @return array
      */
-    public function getPages(SystemInstall $systemInstall): array
+    public function getPages(SystemInstall $systemInstall, array $data): array
     {
         return $this->facebookGetPageConnector->getAccounts($this, $systemInstall);
     }
 
     /**
      * @param SystemInstall $systemInstall
+     * @param array         $data
      *
      * @return array
      */
-    public function getForms(SystemInstall $systemInstall): array
+    public function getForms(SystemInstall $systemInstall, array $data): array
     {
-        return $this->facebookGetLeadformConnector->getLeadForms($this, $systemInstall);
+        return $this->facebookGetLeadformConnector->getLeadForms($this, $systemInstall, $data[self::PAGE_ACCESS_TOKEN]);
     }
 
     /**
