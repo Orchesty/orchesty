@@ -28,12 +28,34 @@ final class UserRepositoryTest extends DatabaseTestCaseAbstract
         $this->dm->clear();
 
         /** @var UserRepository $rep */
-        $rep = $this->dm->getRepository(User::class);
+        $rep   = $this->dm->getRepository(User::class);
         $users = $rep->getArrayOfUsers();
 
         self::assertGreaterThanOrEqual(2, count($users));
         self::assertArrayHasKey('email', $users[0]);
         self::assertArrayHasKey('created', $users[0]);
+    }
+
+    /**
+     *
+     */
+    public function testGetUserCount(): void
+    {
+        $user = new User();
+        $user
+            ->setEmail('eml')
+            ->setPassword('pwd');
+        $this->persistAndFlush($user);
+        $user = new User();
+        $user
+            ->setEmail('eml2')
+            ->setPassword('pwd');
+        $this->persistAndFlush($user);
+
+        /** @var UserRepository $rep */
+        $rep = $this->dm->getRepository(User::class);
+
+        self::assertGreaterThanOrEqual(1, $rep->getUserCount());
     }
 
 }

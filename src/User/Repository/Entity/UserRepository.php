@@ -30,4 +30,18 @@ class UserRepository extends EntityRepository
         return $arr;
     }
 
+    /**
+     * @return int
+     */
+    public function getUserCount(): int
+    {
+        $res = $this->createQueryBuilder('u')
+            ->select('count(u.email) as amount')
+            ->where('u.deleted = 0')
+            ->getQuery()
+            ->getSingleResult();
+
+        return intval($res['amount']);
+    }
+
 }
