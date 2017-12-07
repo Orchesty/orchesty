@@ -48,6 +48,7 @@
         "@id": "Event_1whl90w",
         "@name": "Event 1",
         "@pipes:pipesType": "cron",
+        "@pipes:cronTime": "*/2 * * * *",
         "bpmn:outgoing": "SequenceFlow_15lu3i2"
       },
       {
