@@ -9,6 +9,7 @@
 namespace Hanaboso\PipesFramework\Commons\Transport\AsyncCurl;
 
 use Clue\React\Buzz\Browser;
+use Hanaboso\PipesFramework\Commons\Metrics\InfluxDbSender;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -30,11 +31,19 @@ class CurlSenderFactory implements LoggerAwareInterface
     private $logger;
 
     /**
-     * CurlFactory constructor.
+     * @var InfluxDbSender
      */
-    public function __construct()
+    private $influxSender;
+
+    /**
+     * CurlFactory constructor.
+     *
+     * @param InfluxDbSender $influxSender
+     */
+    public function __construct(InfluxDbSender $influxSender)
     {
         $this->logger = new NullLogger();
+        $this->influxSender = $influxSender;
     }
 
     /**
@@ -64,7 +73,7 @@ class CurlSenderFactory implements LoggerAwareInterface
             $browser = new Browser($loop, new SecureConnector(new Connector($loop), $loop, $context));
         }
 
-        $curlSender = new CurlSender($browser);
+        $curlSender = new CurlSender($browser, $this->influxSender);
         $curlSender->setLogger($this->logger);
 
         return $curlSender;

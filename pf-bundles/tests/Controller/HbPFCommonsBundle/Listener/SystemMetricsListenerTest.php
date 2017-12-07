@@ -4,6 +4,7 @@ namespace Tests\Controller\HbPFCommonsBundle\Listener;
 
 use Hanaboso\PipesFramework\Commons\Listener\SystemMetricsListener;
 use Hanaboso\PipesFramework\Commons\Metrics\SystemMetrics;
+use Hanaboso\PipesFramework\Commons\Utils\CurlMetricUtils;
 use Hanaboso\PipesFramework\Commons\Utils\PipesHeaders;
 use Symfony\Component\HttpFoundation\Request;
 use Tests\ControllerTestCaseAbstract;
@@ -48,11 +49,11 @@ class SystemMetricsListenerTest extends ControllerTestCaseAbstract
         $metrics = $request->attributes->get(SystemMetricsListener::METRICS_ATTRIBUTES_KEY);
 
         $this->assertInternalType('array', $metrics);
-        $this->assertArrayHasKey(SystemMetricsListener::KEY_TIMESTAMP, $metrics);
-        $timestamp = $metrics[SystemMetricsListener::KEY_TIMESTAMP];
+        $this->assertArrayHasKey(CurlMetricUtils::KEY_TIMESTAMP, $metrics);
+        $timestamp = $metrics[CurlMetricUtils::KEY_TIMESTAMP];
         $this->assertGreaterThan(SystemMetrics::getCurrentTimestamp() - 5000, $timestamp);
-        $this->assertArrayHasKey(SystemMetricsListener::KEY_CPU, $metrics);
-        $cpu = $metrics[SystemMetricsListener::KEY_CPU];
+        $this->assertArrayHasKey(CurlMetricUtils::KEY_CPU, $metrics);
+        $cpu = $metrics[CurlMetricUtils::KEY_CPU];
         $this->assertGreaterThan(0, $cpu[SystemMetrics::CPU_TIME_USER]);
         $this->assertGreaterThan(0, $cpu[SystemMetrics::CPU_TIME_KERNEL]);
         $this->assertGreaterThan(0, $cpu[SystemMetrics::CPU_START_TIME]);

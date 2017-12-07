@@ -6,7 +6,7 @@ use Exception;
 use Hanaboso\PipesFramework\Commons\Enum\MetricsEnum;
 use Hanaboso\PipesFramework\Commons\Metrics\Exception\SystemMetricException;
 use Hanaboso\PipesFramework\Commons\Metrics\InfluxDbSender;
-use Hanaboso\PipesFramework\Commons\Metrics\SystemMetrics;
+use Hanaboso\PipesFramework\Commons\Utils\CurlMetricUtils;
 use Hanaboso\PipesFramework\Commons\Utils\PipesHeaders;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
@@ -26,9 +26,6 @@ class SystemMetricsListener implements EventSubscriberInterface, LoggerAwareInte
 {
 
     public const METRICS_ATTRIBUTES_KEY = 'system_metrics';
-
-    public const KEY_TIMESTAMP = 'timestamp';
-    public const KEY_CPU       = 'cpu';
 
     /**
      * @var LoggerInterface
@@ -74,7 +71,7 @@ class SystemMetricsListener implements EventSubscriberInterface, LoggerAwareInte
                 return;
             }
 
-            $metricsData = $this->getCurrentMetrics();
+            $metricsData = CurlMetricUtils::getCurrentMetrics();
             $event->getRequest()->attributes->add([self::METRICS_ATTRIBUTES_KEY => $metricsData]);
         } catch (Exception $e) {
             $this->logger->error('Metrics listener onKernelRequest exception', ['exception' => $e]);
@@ -119,27 +116,18 @@ class SystemMetricsListener implements EventSubscriberInterface, LoggerAwareInte
     private function sendMetrics(Request $request): void
     {
         $startMetrics = $request->attributes->get(self::METRICS_ATTRIBUTES_KEY);
-
-        $startTime      = $startMetrics[self::KEY_TIMESTAMP];
-        $startCpuUser   = $startMetrics[self::KEY_CPU][SystemMetrics::CPU_TIME_USER];
-        $startCpuKernel = $startMetrics[self::KEY_CPU][SystemMetrics::CPU_TIME_KERNEL];
-
-        $endMetrics = $this->getCurrentMetrics();
-
-        $requestDuration = $endMetrics[self::KEY_TIMESTAMP] - $startTime;
-        $cpuUserTime     = $endMetrics[self::KEY_CPU][SystemMetrics::CPU_TIME_USER] - $startCpuUser;
-        $cpuKernelTime   = $endMetrics[self::KEY_CPU][SystemMetrics::CPU_TIME_KERNEL] - $startCpuKernel;
+        $times        = CurlMetricUtils::getTimes($startMetrics);
 
         $this->sender->send(
             [
-                MetricsEnum::REQUEST_TOTAL_DURATION => $requestDuration,
-                MetricsEnum::CPU_USER_TIME          => $cpuUserTime,
-                MetricsEnum::CPU_KERNEL_TIME        => $cpuKernelTime,
+                MetricsEnum::REQUEST_TOTAL_DURATION => $times[CurlMetricUtils::KEY_REQUEST_DURATION],
+                MetricsEnum::CPU_USER_TIME          => $times[CurlMetricUtils::KEY_USER_TIME],
+                MetricsEnum::CPU_KERNEL_TIME        => $times[CurlMetricUtils::KEY_KERNEL_TIME],
             ],
             [
-                MetricsEnum::HOST => gethostname(),
-                MetricsEnum::URI => $request->getRequestUri(),
-                MetricsEnum::TOPOLOGY_ID => $request->headers->get(
+                MetricsEnum::HOST           => gethostname(),
+                MetricsEnum::URI            => $request->getRequestUri(),
+                MetricsEnum::TOPOLOGY_ID    => $request->headers->get(
                     PipesHeaders::createKey(PipesHeaders::TOPOLOGY_ID)
                 ),
                 MetricsEnum::CORRELATION_ID => $request->headers->get(
@@ -150,24 +138,13 @@ class SystemMetricsListener implements EventSubscriberInterface, LoggerAwareInte
     }
 
     /**
-     * @return array
-     */
-    private function getCurrentMetrics(): array
-    {
-        return [
-            self::KEY_TIMESTAMP => SystemMetrics::getCurrentTimestamp(),
-            self::KEY_CPU       => SystemMetrics::getCpuTimes(),
-        ];
-    }
-
-    /**
      * @param Request $request
      *
      * @return bool
      */
     private function isPipesRequest(Request $request): bool
     {
-        $topologyIdHeader = PipesHeaders::createKey(PipesHeaders::TOPOLOGY_ID);
+        $topologyIdHeader    = PipesHeaders::createKey(PipesHeaders::TOPOLOGY_ID);
         $correlationIdHeader = PipesHeaders::createKey(PipesHeaders::CORRELATION_ID);
 
         if ($request->headers->has($topologyIdHeader) &&

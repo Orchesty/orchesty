@@ -3,6 +3,7 @@
 namespace CleverConnectors\AppBundle\Transport\Curl;
 
 use GuzzleHttp\RequestOptions;
+use Hanaboso\PipesFramework\Commons\Metrics\InfluxDbSender;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlClientFactory;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 
@@ -20,14 +21,15 @@ final class CMCurlManager extends CurlManager
     private $secret;
 
     /**
-     * CurlManager constructor.
+     * CMCurlManager constructor.
      *
      * @param CurlClientFactory $curlClientFactory
+     * @param InfluxDbSender    $influxSender
      * @param array             $secret
      */
-    public function __construct(CurlClientFactory $curlClientFactory, array $secret)
+    public function __construct(CurlClientFactory $curlClientFactory, InfluxDbSender $influxSender, array $secret)
     {
-        parent::__construct($curlClientFactory);
+        parent::__construct($curlClientFactory, $influxSender);
 
         $this->secret = $secret;
     }
