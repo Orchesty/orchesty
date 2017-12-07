@@ -28,4 +28,20 @@ class CronUtils
         );
     }
 
+    /**
+     * @param Topology $topology
+     * @param Node     $node
+     *
+     * @return string
+     */
+    public static function getHash(Topology $topology, Node $node): string
+    {
+        return sprintf(
+            '%s-%s-%s',
+            $topology->getName(),
+            $topology->getVersion(),
+            $node->getName()
+        );
+    }
+
 }

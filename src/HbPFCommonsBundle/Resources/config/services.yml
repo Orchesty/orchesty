@@ -61,3 +61,10 @@ services:
         arguments:
             - '@udp_sender'
             - '%metrics.measurement%'
+
+    hbpf.cron.manager:
+        class: Hanaboso\PipesFramework\Commons\Cron\CronManager
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.transport.curl_manager'
+            - '%cron_host%'
