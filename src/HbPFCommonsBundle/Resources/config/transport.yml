@@ -7,6 +7,7 @@ services:
         class: Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager
         arguments:
             - '@hbpf.transport.curl_client_factory'
+            - '@hbpf.influxdb_sender'
         calls:
             - ['setLogger', ['@monolog.logger.commons']]
             
@@ -21,10 +22,13 @@ services:
         class: Hanaboso\PipesFramework\Commons\Transport\Soap\SoapManager
         arguments:
             - '@hbpf.transport.soap_client_factory'
+            - '@hbpf.influxdb_sender'
         calls:
             - ['setLogger', ['@monolog.logger.commons']]
 
     hbpf.transport.async_curl_factory:
         class: Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSenderFactory
+        arguments:
+            - '@hbpf.influxdb_sender'
         calls:
             - ['setLogger', ['@monolog.logger.commons']]

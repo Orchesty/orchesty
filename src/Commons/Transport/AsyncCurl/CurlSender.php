@@ -12,8 +12,10 @@ use Clue\React\Buzz\Browser;
 use Clue\React\Buzz\Message\ResponseException;
 use Exception;
 use GuzzleHttp\Psr7\Request;
+use Hanaboso\PipesFramework\Commons\Metrics\InfluxDbSender;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Commons\Transport\Utils\TransportFormatter;
+use Hanaboso\PipesFramework\Commons\Utils\CurlMetricUtils;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerAwareInterface;
@@ -42,14 +44,21 @@ class CurlSender implements LoggerAwareInterface
     private $logger;
 
     /**
+     * @var InfluxDbSender
+     */
+    private $influxSender;
+
+    /**
      * CurlSender constructor.
      *
-     * @param Browser $browser
+     * @param Browser        $browser
+     * @param InfluxDbSender $influxSender
      */
-    public function __construct(Browser $browser)
+    public function __construct(Browser $browser, InfluxDbSender $influxSender)
     {
-        $this->browser = $browser;
-        $this->logger  = new NullLogger();
+        $this->browser      = $browser;
+        $this->logger       = new NullLogger();
+        $this->influxSender = $influxSender;
     }
 
     /**
@@ -70,11 +79,14 @@ class CurlSender implements LoggerAwareInterface
         $request = new Request($dto->getMethod(), $dto->getUri(), $dto->getHeaders(), $dto->getBody());
 
         $this->logRequest($request, $dto->getDebugInfo());
+        $startTimes = CurlMetricUtils::getCurrentMetrics();
 
         return $this
             ->sendRequest($request)
-            ->then(function (ResponseInterface $response) use ($dto) {
+            ->then(function (ResponseInterface $response) use ($dto, $startTimes) {
                 $this->logResponse($response, $dto->getDebugInfo());
+                $times = CurlMetricUtils::getTimes($startTimes);
+                CurlMetricUtils::sendCurlMetrics($this->influxSender, $times, $dto->getUri(TRUE));
 
                 return resolve($response);
             }, function (Exception $e) use ($dto) {

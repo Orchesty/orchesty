@@ -5,6 +5,7 @@ namespace Tests\Unit\Commons\Transport\Curl;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\Uri;
+use Hanaboso\PipesFramework\Commons\Metrics\InfluxDbSender;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlClientFactory;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlException;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
@@ -41,7 +42,10 @@ final class CurlManagerTest extends TestCase
 
         $requestDto = new RequestDto(CurlManager::METHOD_GET, new Uri('http://example.com'));
 
-        $curlManager = new CurlManager($curlClientFactory);
+        /** @var InfluxDbSender $influx */
+        $influx = $this->createMock(InfluxDbSender::class);
+
+        $curlManager = new CurlManager($curlClientFactory, $influx);
         $result      = $curlManager->send($requestDto);
 
         $this->assertInstanceOf(ResponseDto::class, $result);
@@ -58,7 +62,11 @@ final class CurlManagerTest extends TestCase
     {
         $this->expectException(CurlException::class);
         $requestDto  = new RequestDto(CurlManager::METHOD_GET, new Uri('http://example.com'));
-        $curlManager = new CurlManager(new CurlClientFactory());
+
+        /** @var InfluxDbSender $influx */
+        $influx = $this->createMock(InfluxDbSender::class);
+
+        $curlManager = new CurlManager(new CurlClientFactory(), $influx);
         $curlManager->send($requestDto, ['headers' => 123]);
     }
 

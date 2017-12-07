@@ -12,6 +12,7 @@ use Clue\React\Buzz\Browser;
 use Clue\React\Buzz\Message\ResponseException;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\Uri;
+use Hanaboso\PipesFramework\Commons\Metrics\InfluxDbSender;
 use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSender;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use PHPUnit\Framework\TestCase;
@@ -37,7 +38,10 @@ class CurlSenderTest extends TestCase
         $browser = $this->createMock(Browser::class);
         $browser->method('send')->willReturn(resolve(new Response(201)));
 
-        $curl    = new CurlSender($browser);
+        /** @var InfluxDbSender $influx */
+        $influx = $this->createMock(InfluxDbSender::class);
+
+        $curl    = new CurlSender($browser, $influx);
         $request = new RequestDto('GET', new Uri('https://cleverconn.stage.hanaboso.net/api/'));
 
         $curl
@@ -57,7 +61,10 @@ class CurlSenderTest extends TestCase
         $browser = $this->createMock(Browser::class);
         $browser->method('send')->willReturn(reject(new ResponseException(new Response(401))));
 
-        $curl    = new CurlSender($browser);
+        /** @var InfluxDbSender $influx */
+        $influx = $this->createMock(InfluxDbSender::class);
+
+        $curl    = new CurlSender($browser, $influx);
         $request = new RequestDto('GET', new Uri('https://cleverconn.stage.hanaboso.net/api/'));
 
         $curl

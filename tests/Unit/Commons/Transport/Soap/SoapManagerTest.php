@@ -3,6 +3,7 @@
 namespace Tests\Unit\Commons\Transport\Soap;
 
 use GuzzleHttp\Psr7\Uri;
+use Hanaboso\PipesFramework\Commons\Metrics\InfluxDbSender;
 use Hanaboso\PipesFramework\Commons\Transport\Soap\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Commons\Transport\Soap\Dto\ResponseHeaderDto;
 use Hanaboso\PipesFramework\Commons\Transport\Soap\Dto\Wsdl\RequestDto;
@@ -39,7 +40,10 @@ final class SoapManagerTest extends TestCase
         $request = new RequestDto('', [], '', new Uri(''));
         $request->setVersion(SOAP_1_2);
 
-        $soapManager = new SoapManager($soapClientFactory);
+        /** @var InfluxDbSender $influx */
+        $influx = $this->createMock(InfluxDbSender::class);
+
+        $soapManager = new SoapManager($soapClientFactory, $influx);
         $result      = $soapManager->send($request);
 
         $this->assertInstanceOf(ResponseDto::class, $result);
