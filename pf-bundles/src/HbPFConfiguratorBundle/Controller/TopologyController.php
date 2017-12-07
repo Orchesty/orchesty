@@ -154,7 +154,9 @@ class TopologyController extends FOSRestController
                     TopologyException::TOPOLOGY_NODE_NAME_NOT_FOUND,
                     TopologyException::TOPOLOGY_NODE_TYPE_NOT_FOUND,
                     TopologyException::TOPOLOGY_NODE_TYPE_NOT_EXIST,
-                ], TRUE) ? 400 : 500);
+                    TopologyException::TOPOLOGY_NODE_CRON_NOT_VALID,
+                ], TRUE) ? 400 : 500
+            );
         }
     }
 

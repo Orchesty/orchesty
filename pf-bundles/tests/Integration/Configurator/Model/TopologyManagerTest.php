@@ -241,7 +241,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
         self::assertEquals($top->getRawBpmn(), $res->getRawBpmn());
 
         /** @var Node[] $nodes */
-        $nodes     = $this->dm->getRepository(Node::class)->findBy(['topology' => $res->getId()]);
+        $nodes = $this->dm->getRepository(Node::class)->findBy(['topology' => $res->getId()]);
         self::assertCount(5, $nodes);
 
         foreach ($nodes as $node) {
@@ -330,7 +330,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
         $this->persistAndFlush($topology);
 
         $topologyManager = $this->container->get('hbpf.configurator.manager.topology');
-        $topologyManager->saveTopologySchema($topology, '', $this->getSchema('schema-1.json'));
+        $topologyManager->saveTopologySchema($topology, '', $this->getSchema('schema.json'));
 
         /** @var Node[] $nodes */
         $nodes = $this->dm->getRepository(Node::class)->findBy(['topology' => $topology->getId()]);
@@ -362,6 +362,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
         self::assertEquals(TypeEnum::CRON, $nodes[5]->getType());
         self::assertEquals(HandlerEnum::EVENT, $nodes[5]->getHandler());
         self::assertEquals(1, count($nodes[5]->getNext()));
+        self::assertEquals('*/2 * * * *', $nodes[5]->getCron());
         self::assertEquals('Parser ABC', $nodes[5]->getNext()[0]->getName());
 
         self::assertEquals('Event 2', $nodes[6]->getName());
@@ -384,7 +385,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
         $this->expectException(TopologyException::class);
         $this->expectExceptionCode(TopologyException::TOPOLOGY_NODE_NAME_NOT_FOUND);
 
-        $schema = $this->getSchema('schema-1.json');
+        $schema = $this->getSchema('schema.json');
         unset($schema['bpmn:process']['bpmn:startEvent']['@name']);
         $topologyManager->saveTopologySchema($topology, '', $schema);
     }
@@ -404,7 +405,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
         $this->expectException(TopologyException::class);
         $this->expectExceptionCode(TopologyException::TOPOLOGY_NODE_TYPE_NOT_FOUND);
 
-        $schema = $this->getSchema('schema-1.json');
+        $schema = $this->getSchema('schema.json');
         unset($schema['bpmn:process']['bpmn:startEvent']['@pipes:pipesType']);
         $topologyManager->saveTopologySchema($topology, '', $schema);
     }
@@ -424,8 +425,28 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
         $this->expectException(TopologyException::class);
         $this->expectExceptionCode(TopologyException::TOPOLOGY_NODE_TYPE_NOT_EXIST);
 
-        $schema                                                        = $this->getSchema('schema-1.json');
+        $schema                                                        = $this->getSchema('schema.json');
         $schema['bpmn:process']['bpmn:startEvent']['@pipes:pipesType'] = 'Unknown';
+        $topologyManager->saveTopologySchema($topology, '', $schema);
+    }
+
+    /**
+     *
+     */
+    public function testSaveTopologySchemaCronNotValid(): void
+    {
+        $topology = (new Topology())
+            ->setName('Topology')
+            ->setDescr('Topology');
+        $this->persistAndFlush($topology);
+
+        $topologyManager = $this->container->get('hbpf.configurator.manager.topology');
+
+        $this->expectException(TopologyException::class);
+        $this->expectExceptionCode(TopologyException::TOPOLOGY_NODE_CRON_NOT_VALID);
+
+        $schema                                                        = $this->getSchema('schema.json');
+        $schema['bpmn:process']['bpmn:event'][0]['@pipes:cronTime'] = 'Unknown';
         $topologyManager->saveTopologySchema($topology, '', $schema);
     }
 
@@ -461,7 +482,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
      *
      * @return array
      */
-    private function getSchema(string $name = 'schema-1.json'): array
+    private function getSchema(string $name = 'schema.json'): array
     {
         return Json::decode(file_get_contents(sprintf('%s/data/%s', __DIR__, $name)), Json::FORCE_ARRAY);
     }
