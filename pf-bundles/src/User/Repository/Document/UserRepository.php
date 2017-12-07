@@ -39,4 +39,17 @@ class UserRepository extends DocumentRepository
         return $res;
     }
 
+    /**
+     * @return int
+     */
+    public function getUserCount(): int
+    {
+        return $this->createQueryBuilder()
+            ->field('deleted')
+            ->equals(FALSE)
+            ->count()
+            ->getQuery()
+            ->execute();
+    }
+
 }
