@@ -17,7 +17,7 @@ abstract class DocumentAbstract
     /**
      * @var UserInterface|null
      *
-     * @ODM\ReferenceOne(targetDocument="Hanaboso\PipesFramework\User\Document\User")
+     * @ODM\ReferenceOne(targetDocument="Hanaboso\PipesFramework\User\Document\User", strategy="set")
      * @OWNER()
      */
     protected $owner;
