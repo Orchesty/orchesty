@@ -3,6 +3,7 @@
 namespace Hanaboso\PipesFramework\User\Repository\Document;
 
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use Hanaboso\PipesFramework\User\Document\User;
 
 /**
  * Class UserRepository
@@ -11,5 +12,31 @@ use Doctrine\ODM\MongoDB\DocumentRepository;
  */
 class UserRepository extends DocumentRepository
 {
+
+    /**
+     * @return array
+     */
+    public function getArrayOfUsers(): array
+    {
+        $arr = $this->createQueryBuilder()
+            ->select(['email', 'created'])
+            ->field('deleted')
+            ->equals(FALSE)
+            ->getQuery()
+            ->execute()
+            ->toArray();
+
+        $res = [];
+
+        /** @var User $user */
+        foreach ($arr as $user) {
+            $res[] = [
+                'email'   => $user->getEmail(),
+                'created' => $user->getCreated()->format('d-m-Y'),
+            ];
+        }
+
+        return $res;
+    }
 
 }
