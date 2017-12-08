@@ -1,4 +1,4 @@
-import {repeaterOptions} from "./config";
+import { repeaterOptions } from "./config";
 import { IAmqpDrainSettings } from "./node/drain/AmqpDrain";
 import { IAmqpFaucetSettings } from "./node/faucet/AmqpFaucet";
 import { INodeConfig } from "./topology/Configurator";
@@ -148,6 +148,7 @@ class Defaults {
                     options: {},
                 },
             },
+            port: parseInt(process.env.COUNTER_PORT, 10) || 8005,
         };
     }
 

@@ -6,31 +6,69 @@ import {Connection} from "amqplib-plus/dist/lib/Connection";
 import {Publisher} from "amqplib-plus/dist/lib/Publisher";
 import {SimpleConsumer} from "amqplib-plus/dist/lib/SimpleConsumer";
 import {Replies} from "amqplib/properties";
+import * as bodyParser from "body-parser";
+import * as express from "express";
+import * as rp from "request-promise";
 import {amqpConnectionOptions} from "../../../src/config";
+import Headers from "../../../src/message/Headers";
 import {ResultCode} from "../../../src/message/ResultCode";
-import {default as Counter, ICounterProcessInfo} from "../../../src/topology/counter/Counter";
+import {default as Counter, ICounterProcessInfo, ICounterSettings} from "../../../src/topology/counter/Counter";
 
 const conn = new Connection(amqpConnectionOptions);
-const counterSettings = {
-    topology: "topoId",
-    sub: {queue: {name: "test_counter_sub_q", prefetch: 1, options: {}}},
-    pub: {
-        exchange: {name: "test_counter_pub_e", type: "direct", options: {}},
-        queue: {name: "test_counter_pub_q", options: {}},
-        routing_key: "pub_rk",
-    },
-};
-const testOutputQueue = {
-    name: "test_counter_output",
-    options: {},
-};
-
 const metricsMock = {
     send: () => Promise.resolve("sent"),
 };
 
 describe("Counter", () => {
+    it("should start http server and resend termination http request", (done) => {
+        const topoApiMock = express();
+        topoApiMock.use(bodyParser.raw({ type: () => true }));
+        topoApiMock.get("/remote-terminate", () => {
+            done();
+        });
+        topoApiMock.listen(7900);
+
+        const counterSettings: ICounterSettings = {
+            topology: "topoToDeleteId",
+            sub: {queue: {name: "test_counter_subdel_q", prefetch: 1, options: {}}},
+            pub: {
+                exchange: {name: "test_counter_pubdel_e", type: "direct", options: {}},
+                queue: {name: "test_counter_pubdel_q", options: {}},
+                routing_key: "pubdel_rk",
+            },
+            port: 7901,
+        };
+        const counter = new Counter(counterSettings, conn, metricsMock);
+        counter.listen()
+            .then(() => {
+                const headers = new Headers();
+                headers.setPFHeader(Headers.TOPOLOGY_DELETE_URL, "http://localhost:7900/remote-terminate");
+                const options = {
+                    uri: `http://localhost:7901/topology/terminate/${counterSettings.topology}`,
+                    headers: headers.getRaw(),
+                };
+                return rp(options);
+            })
+            .then((resp: string) => {
+                assert.equal(resp, "Topology will be terminated as soon as possible.");
+            });
+    });
+
     it("should receive messages and count them properly when all succeeded", (done) => {
+        const counterSettings: ICounterSettings = {
+            topology: "topoId",
+            sub: {queue: {name: "test_counter_sub_q", prefetch: 1, options: {}}},
+            pub: {
+                exchange: {name: "test_counter_pub_e", type: "direct", options: {}},
+                queue: {name: "test_counter_pub_q", options: {}},
+                routing_key: "pub_rk",
+            },
+            port: 7902,
+        };
+        const testOutputQueue = {
+            name: "test_counter_output",
+            options: {},
+        };
         const events: Array<[{}, {}]> = [
             // Test Job 123 - linear success
             //
@@ -351,7 +389,7 @@ describe("Counter", () => {
         consumer.consume(testOutputQueue.name, testOutputQueue.options);
 
         const counter = new Counter(counterSettings, conn, metricsMock);
-        counter.listen()
+        counter.listen(7902)
             .then(() => {
                 const promises: Array<Promise<any>> = [];
                 events.forEach((ev) => {

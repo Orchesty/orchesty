@@ -73,14 +73,14 @@ class Pipes {
     /**
      * Starts topology counter
      */
-    public startCounter(): Promise<void> {
+    public startCounter(port?: number): Promise<void> {
         const counter = new Counter(
             this.topology.counter,
             this.dic.get("amqp.connection"),
             this.dic.get("metrics")(this.topology.id, `${os.hostname()}_counter`),
         );
 
-        return counter.listen()
+        return counter.listen(port)
             .then(() => {
                 logger.info(`Counter for topology "${this.getTopologyConfig().id}" is running.`);
             });

@@ -52,6 +52,7 @@ const expectedTopo: ITopologyConfig = {
                 prefetch: 1,
             },
         },
+        port: 8005,
     },
     id: "test-topo",
     nodes: [

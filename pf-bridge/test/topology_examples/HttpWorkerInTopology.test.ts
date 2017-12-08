@@ -84,7 +84,7 @@ describe("Topology with HttpWorker Node", () => {
         const pip = new Pipes(testTopology);
 
         const [counter, httpNode, captureNode] = await Promise.all([
-            pip.startCounter(),
+            pip.startCounter(8555),
             pip.startNode("http-worker-node"),
             pip.startNode("capture-node"),
         ]);
