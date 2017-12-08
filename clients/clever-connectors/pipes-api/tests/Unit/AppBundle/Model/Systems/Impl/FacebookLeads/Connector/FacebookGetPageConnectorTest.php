@@ -27,6 +27,9 @@ use Tests\ConnectorTestCaseAbstract;
 class FacebookGetPageConnectorTest extends ConnectorTestCaseAbstract
 {
 
+    /**
+     *
+     */
     public function testGetAccounts(): void
     {
         $response = new Response(200, [], $this->getRequest('FacebookPageResponse.json'));
@@ -55,7 +58,7 @@ class FacebookGetPageConnectorTest extends ConnectorTestCaseAbstract
         /** @var PHPUnit_Framework_MockObject_MockObject|SystemInstall $systemInstall */
         $systemInstall = $this->createMock(SystemInstall::class);
         $systemInstall->method('getSettings')->willReturn([
-            'user_access_token' => '987654321'
+            'user_access_token' => '987654321',
         ]);
 
         $connector = new FacebookGetPageConnector($curlManager);

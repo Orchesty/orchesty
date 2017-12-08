@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: michal.bartl
@@ -58,11 +58,6 @@ class FacebookCreatedLeadformConnector implements BatchInterface, ConnectorInter
     private $factory;
 
     /**
-     * @var DocumentManager
-     */
-    private $dm;
-
-    /**
      * FacebookCreatedLeadformConnector constructor.
      *
      * @param FacebookLeadsSystem $system
@@ -81,7 +76,6 @@ class FacebookCreatedLeadformConnector implements BatchInterface, ConnectorInter
         $this->system                  = $system;
         $this->lastSyncManager         = $lastSyncManager;
         $this->factory                 = $factory;
-        $this->dm                      = $dm;
         $this->systemInstallRepository = $dm->getRepository(SystemInstall::class);
     }
 
@@ -150,7 +144,7 @@ class FacebookCreatedLeadformConnector implements BatchInterface, ConnectorInter
     /**
      * @param ProcessDto $dto
      *
-     * @return ProcessDto
+     * @return ProcessDto|void
      * @throws SystemException
      */
     public function processEvent(ProcessDto $dto): ProcessDto
@@ -161,7 +155,7 @@ class FacebookCreatedLeadformConnector implements BatchInterface, ConnectorInter
     /**
      * @param ProcessDto $dto
      *
-     * @return ProcessDto
+     * @return ProcessDto|void
      * @throws SystemException
      */
     public function processAction(ProcessDto $dto): ProcessDto
@@ -200,4 +194,5 @@ class FacebookCreatedLeadformConnector implements BatchInterface, ConnectorInter
             SystemException::MISSING_RESPONSE_DATA
         );
     }
+
 }

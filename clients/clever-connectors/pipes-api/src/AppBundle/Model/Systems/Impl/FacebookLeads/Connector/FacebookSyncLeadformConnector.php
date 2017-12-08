@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: michal.bartl
@@ -47,19 +47,9 @@ class FacebookSyncLeadformConnector implements BatchInterface, ConnectorInterfac
     private $system;
 
     /**
-     * @var LastSyncManager
-     */
-    private $lastSyncManager;
-
-    /**
      * @var CurlSenderFactory
      */
     private $factory;
-
-    /**
-     * @var DocumentManager
-     */
-    private $dm;
 
     /**
      * FacebookSyncLeadformConnector constructor.
@@ -77,9 +67,7 @@ class FacebookSyncLeadformConnector implements BatchInterface, ConnectorInterfac
     )
     {
         $this->system                  = $system;
-        $this->lastSyncManager         = $lastSyncManager;
         $this->factory                 = $factory;
-        $this->dm                      = $dm;
         $this->systemInstallRepository = $dm->getRepository(SystemInstall::class);
     }
 
@@ -128,7 +116,7 @@ class FacebookSyncLeadformConnector implements BatchInterface, ConnectorInterfac
     /**
      * @param ProcessDto $dto
      *
-     * @return ProcessDto
+     * @return ProcessDto|void
      * @throws SystemException
      */
     public function processEvent(ProcessDto $dto): ProcessDto
@@ -139,7 +127,7 @@ class FacebookSyncLeadformConnector implements BatchInterface, ConnectorInterfac
     /**
      * @param ProcessDto $dto
      *
-     * @return ProcessDto
+     * @return ProcessDto|void
      * @throws SystemException
      */
     public function processAction(ProcessDto $dto): ProcessDto

@@ -18,20 +18,20 @@ use Nette\Utils\Json;
 use Tests\DatabaseTestCaseAbstract;
 
 /**
- * Class FacebookGetPageConnectorTest
+ * Class FacebookGetLeadformConnectorTest
  *
  * @package Tests\Live\AppBundle\Model\Systems\Impl\FacebookLeads\Connector
  */
-class FacebookGetPageConnectorTest extends DatabaseTestCaseAbstract
+class FacebookGetLeadformConnectorTest extends DatabaseTestCaseAbstract
 {
 
     /**
      *
      */
-    public function testGetAccounts(): void
+    public function testGetLeadForms(): void
     {
         $this->markTestSkipped();
-        $connector = $this->container->get('hbpf.connector.facebook-get-page-connector');
+        $connector = $this->container->get('hbpf.connector.facebook-get-leadform-connector');
         $system = $this->container->get('systems.facebookleads');
 
         $topology = (new Topology())->setName('Topology');
@@ -75,9 +75,9 @@ class FacebookGetPageConnectorTest extends DatabaseTestCaseAbstract
         ]);
 
 
-        $pages = $connector->getAccounts($system, $systemInstall);
+        $pages = $connector->getLeadForms($system, $systemInstall, 'EAAUmsI0AZCFEBANL3u5O4p0lrljnvb3Jz1AH0R1Qu8VJGDUpmhwTWWcZBZC0dH8wkdD4Ynzxp5FFpIYScdBkk78VbptIvkft93SZCbaAoUv3sl4Eej3IBHGL14hT1bGfOefJCyaVLU2WXoUmo0JrCVZCAtaN74EgDSmSo746ocBSuNkZB65etPBtEIkXLNz6JOTbXT7eGciQZDZD');
         $this->assertTrue(is_array($pages));
-        $this->assertCount(5, $pages);
+        $this->assertCount(2, $pages);
 
     }
 

@@ -94,7 +94,7 @@ class FacebookLeadsSystem implements SystemInterface, OAuth2Interface
      */
     public function isAuthorized(SystemInstall $systemInstall): bool
     {
-        return !empty($systemInstall->getSettings()[OAuth2Provider::ACCESS_TOKEN]);
+        return !empty($systemInstall->getSettings()[self::USER_ACCESS_TOKEN]);
     }
 
     /**
@@ -131,7 +131,7 @@ class FacebookLeadsSystem implements SystemInterface, OAuth2Interface
     /**
      * @param SystemInstall $systemInstall
      *
-     * @return SystemInstall
+     * @return SystemInstall|void
      * @throws SystemException
      */
     public function refreshToken(SystemInstall $systemInstall): SystemInstall

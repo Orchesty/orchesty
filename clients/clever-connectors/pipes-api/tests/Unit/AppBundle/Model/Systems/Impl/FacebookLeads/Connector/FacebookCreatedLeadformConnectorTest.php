@@ -23,8 +23,8 @@ use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
 use PHPUnit_Framework_MockObject_MockObject;
 use React\EventLoop\Factory;
-use function React\Promise\resolve;
 use Tests\ConnectorTestCaseAbstract;
+use function React\Promise\resolve;
 
 /**
  * Class FacebookCreatedLeadformConnectorTest
@@ -105,7 +105,7 @@ class FacebookCreatedLeadformConnectorTest extends ConnectorTestCaseAbstract
         $this->systemInstall = $this->createMock(SystemInstall::class);
         $this->systemInstall->method('getSettings')->willReturn([
             'form_id' => '123456',
-            'page_access_token' => '987654321'
+            'page_access_token' => '987654321',
         ]);
 
         $this->systemInstallRepository = $this->createMock(SystemInstallRepository::class);

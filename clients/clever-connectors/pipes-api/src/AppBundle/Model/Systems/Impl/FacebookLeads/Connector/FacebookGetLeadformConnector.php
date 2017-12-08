@@ -9,13 +9,13 @@
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\FacebookLeads\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\SystemInterface;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
-use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
 
 /**
  * Class FacebookGetLeadformConnector
@@ -53,23 +53,23 @@ class FacebookGetLeadformConnector implements ConnectorInterface
     /**
      * @param ProcessDto $dto
      *
-     * @return ProcessDto
-     * @throws ConnectorException
+     * @return ProcessDto|void
+     * @throws SystemException
      */
     public function processEvent(ProcessDto $dto): ProcessDto
     {
-        // TODO: Implement processEvent() method.
+        throw new SystemException('Facebook Leads has not implemented "processEvent" function.');
     }
 
     /**
      * @param ProcessDto $dto
      *
-     * @return ProcessDto
-     * @throws ConnectorException
+     * @return ProcessDto|void
+     * @throws SystemException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {
-        // TODO: Implement processAction() method.
+        throw new SystemException('Facebook Leads  has not implemented "processAction" function.');
     }
 
     /**
@@ -98,6 +98,6 @@ class FacebookGetLeadformConnector implements ConnectorInterface
         } else {
             return []; // TODO Vyhodit exception
         }
-
     }
+
 }
