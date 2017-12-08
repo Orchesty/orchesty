@@ -4,10 +4,12 @@ namespace Hanaboso\PipesFramework\Commons\Transport\Curl;
 
 use Exception;
 use GuzzleHttp\Psr7\Request;
+use Hanaboso\PipesFramework\Commons\Metrics\InfluxDbSender;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Commons\Transport\Utils\TransportFormatter;
+use Hanaboso\PipesFramework\Commons\Utils\CurlMetricUtils;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -39,14 +41,21 @@ class CurlManager implements CurlManagerInterface, LoggerAwareInterface
     private $logger;
 
     /**
+     * @var InfluxDbSender
+     */
+    private $influxSender;
+
+    /**
      * CurlManager constructor.
      *
      * @param CurlClientFactory $curlClientFactory
+     * @param InfluxDbSender    $influxSender
      */
-    public function __construct(CurlClientFactory $curlClientFactory)
+    public function __construct(CurlClientFactory $curlClientFactory, InfluxDbSender $influxSender)
     {
         $this->curlClientFactory = $curlClientFactory;
         $this->logger            = new NullLogger();
+        $this->influxSender      = $influxSender;
     }
 
     /**
@@ -96,8 +105,12 @@ class CurlManager implements CurlManagerInterface, LoggerAwareInterface
                 $dto->getBody()
             ));
 
-            $client      = $this->curlClientFactory->create();
+            $client = $this->curlClientFactory->create();
+
+            $startTimes  = CurlMetricUtils::getCurrentMetrics();
             $psrResponse = $client->send($request, $this->prepareOptions($options));
+            $times       = CurlMetricUtils::getTimes($startTimes);
+            CurlMetricUtils::sendCurlMetrics($this->influxSender, $times, $request->getUri()->__toString());
 
             $response = new ResponseDto(
                 $psrResponse->getStatusCode(),

@@ -3,8 +3,10 @@
 namespace Hanaboso\PipesFramework\Commons\Transport\Soap;
 
 use Exception;
+use Hanaboso\PipesFramework\Commons\Metrics\InfluxDbSender;
 use Hanaboso\PipesFramework\Commons\Transport\Soap\Dto\RequestDtoAbstract;
 use Hanaboso\PipesFramework\Commons\Transport\Soap\Dto\ResponseDto;
+use Hanaboso\PipesFramework\Commons\Utils\CurlMetricUtils;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -31,14 +33,21 @@ final class SoapManager implements SoapManagerInterface, LoggerAwareInterface
     private $logger;
 
     /**
+     * @var InfluxDbSender
+     */
+    private $influxSender;
+
+    /**
      * SoapManager constructor.
      *
      * @param SoapClientFactory $soapClientFactory
+     * @param InfluxDbSender    $influxSender
      */
-    public function __construct(SoapClientFactory $soapClientFactory)
+    public function __construct(SoapClientFactory $soapClientFactory, InfluxDbSender $influxSender)
     {
         $this->soapClientFactory = $soapClientFactory;
         $this->logger            = new NullLogger();
+        $this->influxSender      = $influxSender;
     }
 
     /**
@@ -73,6 +82,7 @@ final class SoapManager implements SoapManagerInterface, LoggerAwareInterface
                 $request->getPassword()
             ));
 
+            $startTimes       = CurlMetricUtils::getCurrentMetrics();
             $soapCallResponse = $client->__soapCall(
                 $request->getFunction(),
                 SoapHelper::composeArguments($request),
@@ -80,6 +90,8 @@ final class SoapManager implements SoapManagerInterface, LoggerAwareInterface
                 SoapHelper::composeRequestHeaders($request),
                 $outputHeaders
             );
+            $times = CurlMetricUtils::getTimes($startTimes);
+            CurlMetricUtils::sendCurlMetrics($this->influxSender, $times, $request->getUri()->__toString());
 
             return $this->handleResponse(
                 $soapCallResponse,
