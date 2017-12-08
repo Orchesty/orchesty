@@ -19,7 +19,7 @@ use Symfony\Component\HttpFoundation\Request;
 }*/
 
 require __DIR__ . '/../vendor/autoload.php';
-Debug::enable();
+Debug::enable(~E_DEPRECATED, FALSE);
 
 $kernel = new AppKernel('dev', TRUE);
 if (PHP_VERSION_ID < 70000) {
