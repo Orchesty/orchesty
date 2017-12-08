@@ -43,6 +43,7 @@ class CategoryManager
      * @param array $data
      *
      * @return Category
+     * @throws CategoryException
      */
     public function createCategory(array $data): Category
     {
@@ -58,6 +59,7 @@ class CategoryManager
      * @param array    $data
      *
      * @return Category
+     * @throws CategoryException
      */
     public function updateCategory(Category $category, array $data): Category
     {
