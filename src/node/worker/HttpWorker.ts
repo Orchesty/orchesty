@@ -1,4 +1,3 @@
-import {TimeUtils} from "hb-utils/dist/lib/TimeUtils";
 import {IMetrics} from "metrics-sender/dist/lib/metrics/IMetrics";
 import * as request from "request";
 import logger from "../../logger/Logger";

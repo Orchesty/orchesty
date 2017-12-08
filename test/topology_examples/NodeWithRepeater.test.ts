@@ -120,7 +120,7 @@ describe("Node with repeater test", () => {
         const pip = new Pipes(testTopology);
 
         Promise.all([
-            pip.startCounter(),
+            pip.startCounter(8558),
             pip.startRepeater(),
             pip.startNode(testTopology.nodes[0].id),
             pip.startNode(testTopology.nodes[1].id),

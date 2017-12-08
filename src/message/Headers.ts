@@ -15,6 +15,7 @@ class Headers {
     // topology related headers
     public static readonly TOPOLOGY_ID = "topology-id";
     public static readonly TOPOLOGY_NAME = "topology-name";
+    public static readonly TOPOLOGY_DELETE_URL = "topology-delete-url";
 
     // result headers
     public static readonly RESULT_CODE = "result-code";

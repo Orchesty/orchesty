@@ -102,7 +102,7 @@ describe("Linear Topology test", () => {
         const pip = new Pipes(testTopology);
 
         Promise.all([
-            pip.startCounter(),
+            pip.startCounter(8556),
             pip.startNode(testTopology.nodes[0].id),
             pip.startNode(testTopology.nodes[1].id),
             pip.startNode(testTopology.nodes[2].id),
