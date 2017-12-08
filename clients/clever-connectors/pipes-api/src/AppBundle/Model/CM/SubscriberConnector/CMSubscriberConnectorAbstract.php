@@ -116,7 +116,8 @@ abstract class CMSubscriberConnectorAbstract extends CMAuthorization implements 
         try {
             $res = $this->curl->send($req);
         } catch (Throwable $e) {
-            $this->logger->error(sprintf('CM %s subscription failed.', $method), ['exception' => $e]);
+            $this->logger->error(sprintf('CM %s subscription failed.', $method),
+                ['body' => $req->getBody(), 'exception' => $e]);
             throw new ConnectorException(
                 sprintf('%s subscription failed.', $method),
                 ConnectorException::CONNECTOR_FAILED_TO_PROCESS
@@ -124,7 +125,8 @@ abstract class CMSubscriberConnectorAbstract extends CMAuthorization implements 
         }
 
         if (!in_array($res->getStatusCode(), $statusCode)) {
-            $this->logger->error(sprintf('CM %s subscription failed.', $method), ['exception' => $res->getBody()]);
+            $this->logger->error(sprintf('CM %s subscription failed.', $method),
+                ['body' => $req->getBody(), 'exception' => $res->getBody()]);
             throw new ConnectorException(
                 sprintf('%s subscription returned [%s] status code.', $method, $res->getStatusCode()),
                 ConnectorException::CONNECTOR_FAILED_TO_PROCESS
