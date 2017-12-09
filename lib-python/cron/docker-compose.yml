@@ -1,0 +1,37 @@
+version: '2'
+
+services:
+  pipes-cron:
+    user: ${DEV_UID}:${DEV_GID}
+    image: dkr.hanaboso.net/pipes/pipes/python-cron:dev
+    environment:
+      - DEV_UID=${DEV_UID}
+      - DEV_GID=${DEV_GID}
+      - DEV_IP=${DEV_IP}
+      - CRON_NAME=${CRON_NAME}
+    #restart: always
+    volumes:
+      - ./:/usr/src/app
+    ports:
+      - ${DEV_IP}:80:5000
+    links:
+      - mongo
+    depends_on:
+      - mongo
+    command:
+      - python
+    stdin_open:
+      true
+    tty:
+      true
+
+  mongo:
+    image: mongo:jessie
+    volumes:
+      - mongo:/data/db
+    ports:
+      - ${DEV_IP}:27017:27017
+
+volumes:
+  mongo: {}
+

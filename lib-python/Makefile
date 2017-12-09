@@ -7,20 +7,32 @@ DOCKER_REGISTRY := dkr.hanaboso.net/pipes/pipes/
 docker-build-base:
 	docker build -t python-base:$(DOCKER_DEFAULT_TAG) -t $(DOCKER_REGISTRY)python-base:$(DOCKER_DEFAULT_TAG) -f docker/base/Dockerfile .
 
+docker-build-base3:
+	docker build -t python-base3:$(DOCKER_DEFAULT_TAG) -t $(DOCKER_REGISTRY)python-base3:$(DOCKER_DEFAULT_TAG) -f docker/base3/Dockerfile .
+
 docker-build-dev: docker-build-base
 	docker build -t python-xml-parser:$(DOCKER_DEFAULT_TAG) -t $(DOCKER_REGISTRY)python-xml-parser:$(DOCKER_DEFAULT_TAG) -f docker/dev/Dockerfile .
+
+docker-build-cron-dev: docker-build-base3
+	docker build -t python-cron:$(DOCKER_DEFAULT_TAG) -t $(DOCKER_REGISTRY)python-cron:$(DOCKER_DEFAULT_TAG) -f cron/Dockerfile .
 
 docker-build-prod: docker-build-base
 	docker build -t python-xml-parser:$(DOCKER_PROD_TAG) -t $(DOCKER_REGISTRY)python-xml-parser:$(DOCKER_PROD_TAG) -f docker/prod/Dockerfile .
 
 docker-push-base: docker-build-base
 	docker push $(DOCKER_REGISTRY)python-base:$(DOCKER_DEFAULT_TAG)
-	
+
+docker-push-base3: docker-build-base3
+	docker push $(DOCKER_REGISTRY)python-base3:$(DOCKER_DEFAULT_TAG)
+
 docker-push-xml-parser-prod: docker-build-prod
 	docker push $(DOCKER_REGISTRY)python-xml-parser:$(DOCKER_PROD_TAG)
-	
+
 docker-push-xml-parser-dev: docker-build-dev
 	docker push $(DOCKER_REGISTRY)python-xml-parser:$(DOCKER_DEFAULT_TAG)
+
+docker-push-cron-dev: docker-build-cron-dev
+	docker push $(DOCKER_REGISTRY)python-cron:$(DOCKER_DEFAULT_TAG)
 
 docker-build-all: docker-build-dev docker-build-prod
 
