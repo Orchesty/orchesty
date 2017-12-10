@@ -17,6 +17,7 @@ use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Authorization\Provider\Dto\OAuth2Dto;
 use Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Class FacebookaudienceSystem
@@ -38,10 +39,10 @@ class FacebookaudienceSystem implements OAuth2Interface
     private const APP_SECRET = '001b9d466b6f13d242d759cd094dccca';
 
     private const API_URL       = 'https://graph.facebook.com/v2.11';
-    private const AUTHORIZE_URL = '';
-    private const TOKEN_URL     = 'https://graph.facebook.com/v2.11/oauth/access_token?client_id=%s&client_secret=%s&grant_type=client_credentials';
+    private const AUTHORIZE_URL = 'https://www.facebook.com/v2.11/dialog/oauth';
+    private const TOKEN_URL     = 'https://graph.facebook.com/v2.11/oauth/access_token';
 
-    private $scopes = [''];
+    private $scopes = ['manage_pages', 'ads_read', 'ads_management'];
 
     /**
      * @var OAuth2Provider
@@ -49,14 +50,9 @@ class FacebookaudienceSystem implements OAuth2Interface
     private $provider;
 
     /**
-     * @var FacebookaudienceGetAccountsConnector
+     * @var ContainerInterface
      */
-    private $accountsConnector;
-
-    /**
-     * @var FacebookaudienceGetAudiencesConnector
-     */
-    private $audiencesConnector;
+    private $container;
 
     /**
      * @var string
@@ -66,22 +62,19 @@ class FacebookaudienceSystem implements OAuth2Interface
     /**
      * SalesforceSystem constructor.
      *
-     * @param OAuth2Provider                        $provider
-     * @param FacebookaudienceGetAccountsConnector  $accountsConnector
-     * @param FacebookaudienceGetAudiencesConnector $audiencesConnector
-     * @param string                                $backend
+     * @param OAuth2Provider     $provider
+     * @param ContainerInterface $container
+     * @param string             $backend
      */
     public function __construct(
         OAuth2Provider $provider,
-        FacebookaudienceGetAccountsConnector $accountsConnector,
-        FacebookaudienceGetAudiencesConnector $audiencesConnector,
+        ContainerInterface $container,
         string $backend
     )
     {
-        $this->provider           = $provider;
-        $this->accountsConnector  = $accountsConnector;
-        $this->audiencesConnector = $audiencesConnector;
-        $this->backend            = $backend;
+        $this->provider  = $provider;
+        $this->container = $container;
+        $this->backend   = $backend;
     }
 
     /**
@@ -131,7 +124,9 @@ class FacebookaudienceSystem implements OAuth2Interface
      */
     public function isAuthorized(SystemInstall $systemInstall): bool
     {
-        // TODO: Implement isAuthorized() method.
+        $sett = $systemInstall->getSettings();
+
+        return !empty($sett[OAuth2Provider::ACCESS_TOKEN] ?? '');
     }
 
     /**
@@ -148,7 +143,7 @@ class FacebookaudienceSystem implements OAuth2Interface
     public function authorize(SystemInstall $systemInstall): void
     {
         $dto = $this->createDto($systemInstall);
-        $this->provider->authorize($dto, $this->scopes); // TODO scopes
+        $this->provider->authorize($dto, $this->scopes);
     }
 
     /**
@@ -190,12 +185,9 @@ class FacebookaudienceSystem implements OAuth2Interface
     {
         $this->continueOnAuthorized($systemInstall);
 
-        // TODO
-
         $headers = [
-            'Content-Type'  => 'application/json',
-            'Accept'        => 'application/json',
-            'Authorization' => sprintf('Bearer %s', $systemInstall->getSettings()[OAuth2Provider::ACCESS_TOKEN]),
+            'Content-Type' => 'application/json',
+            'Accept'       => 'application/json',
         ];
 
         $dto = new RequestDto($method, new Uri(self::API_URL));
@@ -215,7 +207,7 @@ class FacebookaudienceSystem implements OAuth2Interface
             Field::SELECT,
             self::AD_ACCOUNT_ID,
             'Select FB account',
-            $systemInstall->getSettings()[self::AD_ACCOUNT_ID],
+            $systemInstall->getSettings()[self::AD_ACCOUNT_ID] ?? '',
             TRUE
         );
         $field1->setAction($systemInstall, $this->backend, 'getAccounts');
@@ -224,7 +216,7 @@ class FacebookaudienceSystem implements OAuth2Interface
             Field::SELECT,
             self::CUSTOM_AUDIENCE_ID,
             'Select your distribution list in FB',
-            $systemInstall->getSettings()[self::CUSTOM_AUDIENCE_ID],
+            $systemInstall->getSettings()[self::CUSTOM_AUDIENCE_ID] ?? '',
             TRUE
         );
         $field2->setAction($systemInstall, $this->backend, 'getAudiences');
@@ -234,7 +226,7 @@ class FacebookaudienceSystem implements OAuth2Interface
             Field::TEXT,
             self::NEW_LIST,
             'Create new list',
-            $systemInstall->getSettings()[self::NEW_LIST]
+            $systemInstall->getSettings()[self::NEW_LIST] ?? ''
         );
         $field3->setDependsOn($field2);
 
@@ -242,9 +234,9 @@ class FacebookaudienceSystem implements OAuth2Interface
             Field::SELECT,
             self::DISTRIBUTION_LIST_ID,
             'Select source distribution list',
-            $systemInstall->getSettings()[self::DISTRIBUTION_LIST_ID],
+            $systemInstall->getSettings()[self::DISTRIBUTION_LIST_ID] ?? '',
             TRUE
-        ); // will be filled by CM
+        ); // filled by CM
 
         $form = new Form();
         $form
@@ -260,10 +252,12 @@ class FacebookaudienceSystem implements OAuth2Interface
      * @param SystemInstall $systemInstall
      *
      * @return array
+     * @throws SystemException
      */
     public function getAccounts(SystemInstall $systemInstall): array
     {
-        return $this->accountsConnector->getAccounts($systemInstall);
+        return $this->container->get('hbpf.connector.facebookaudience-get-accounts-connector')
+            ->getAccounts($systemInstall);
     }
 
     /**
@@ -273,7 +267,8 @@ class FacebookaudienceSystem implements OAuth2Interface
      */
     public function getAudiences(SystemInstall $systemInstall): array
     {
-        return $this->audiencesConnector->getAudiences($systemInstall);
+        return $this->container->get('hbpf.connector.facebookaudience-get-audiences-connector')
+            ->getAudiences($systemInstall);
     }
 
     /**

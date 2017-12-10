@@ -2,13 +2,15 @@
 
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\Connector;
 
+use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
-use CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\FacebookaudienceSystem;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use GuzzleHttp\Psr7\Uri;
+use Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 use Nette\Utils\Json;
 
 /**
@@ -19,7 +21,7 @@ use Nette\Utils\Json;
 class FacebookaudienceCreateAudienceConnector extends FacebookaudienceConnectorAbstract
 {
 
-    private const URL = '%s/act_%s/customaudiences';
+    private const URL = '%s/act_%s/customaudiences?fields=name&access_token=%s';
 
     /**
      * @return string
@@ -58,6 +60,35 @@ class FacebookaudienceCreateAudienceConnector extends FacebookaudienceConnectorA
         $response = $this->manager->send($requestDto);
 
         return $dto->setData($response->getBody());
+    }
+
+    /**
+     * @return array
+     */
+    public function getAudiences(): array
+    {
+
+    }
+
+    /**
+     * @param SystemInstall   $systemInstall
+     * @param ProcessDto|null $dto
+     *
+     * @return ResponseDto
+     * @throws SystemException
+     */
+    private function makeRequest(SystemInstall $systemInstall, ?ProcessDto $dto = NULL): ResponseDto
+    {
+        $token      = $systemInstall->getSettings()[OAuth2Provider::ACCESS_TOKEN];
+        $requestDto = $this->system->getRequestDto($systemInstall, CurlManager::METHOD_GET);
+        $url        = sprintf(self::URL, $requestDto->getUri(), $token);
+        $requestDto->setUri(new Uri($url));
+
+        if ($dto) {
+            $requestDto->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()));
+        }
+
+        return $this->manager->send($requestDto);
     }
 
 }
