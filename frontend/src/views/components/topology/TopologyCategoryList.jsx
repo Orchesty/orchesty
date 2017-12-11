@@ -8,6 +8,7 @@ import {filterType} from 'rootApp/types';
 import * as applicationActions from 'rootApp/actions/applicationActions';
 
 import './TopologyCategoryList.less';
+import ActionButtonPanel from 'rootApp/views/elements/actions/ActionButtonPanel';
 
 class TopologyCategoryList extends React.Component {
   constructor(props) {
@@ -15,11 +16,7 @@ class TopologyCategoryList extends React.Component {
     this.categorySelected = this.categorySelected.bind(this);
   }
 
-  componentWillMount(){
-    this._sendActions();
-  }
-
-  _sendActions(){
+  getPageActions(){
     const {setActions, openNewTopology} = this.props;
     const pageActions = [];
     if (openNewTopology) {
@@ -28,7 +25,7 @@ class TopologyCategoryList extends React.Component {
         action: () => openNewTopology(this.props.categoryId)
       });
     }
-    setActions(pageActions);
+    return pageActions;
   }
 
   categorySelected(categoryId){
@@ -47,7 +44,16 @@ class TopologyCategoryList extends React.Component {
     return (
       <div className="topology-category-list">
         <CategoryTreeView componentKey={pageKey} onSelect={this.categorySelected}/>
-        <AllTopologyListTable componentKey={pageKey} filter={topologyFilter}/>
+        <div className="topology-sub-page">
+          <div className="sub-page-title">
+            <div className="pull-right">
+              <ActionButtonPanel items={this.getPageActions()} size="md" right={true}/>
+            </div>
+          </div>
+          <div className="sub-page-content">
+            <AllTopologyListTable componentKey={pageKey} filter={topologyFilter}/>
+          </div>
+        </div>
       </div>
     );
   }

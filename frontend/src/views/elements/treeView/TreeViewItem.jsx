@@ -28,9 +28,12 @@ class TreeViewItem extends React.Component {
   }
 
   create(e){
-    const {createAction, item} = this.props;
+    const {createAction, item, editableSwitchEdit, componentKey} = this.props;
     e.preventDefault();
-    createAction(item.id);
+    createAction(item.id).then(res => {
+      editableSwitchEdit(`${componentKey}.${res._id}`);
+      return res;
+    });
   }
 
   makeDelete(e){
@@ -55,6 +58,7 @@ class TreeViewItem extends React.Component {
     const {allOpen, componentKey} = this.props;
     const openable = item.children && item.children.length;
     const open = (allOpen || item.open) && openable;
+    const editable = item.id !== null;
 
     const children = open && item.children.map(item => <TreeViewItem key={item.id} item={item} {...passProps}/>);
     return (
@@ -70,9 +74,9 @@ class TreeViewItem extends React.Component {
             />
           </a>
           <span className="quick-buttons">
-            <a href="#" onClick={this.startEdit}><i className="fa fa-pencil" /></a>
+            {editable && <a href="#" onClick={this.startEdit}><i className="fa fa-pencil" /></a>}
             <a href="#" onClick={this.create}><i className="fa fa-plus-circle" /></a>
-            <a href="#" onClick={this.makeDelete}><i className="fa fa-times" /></a>
+            {editable && <a href="#" onClick={this.makeDelete}><i className="fa fa-times" /></a>}
           </span>
         </div>
         {open && <ul>{children}</ul>}
@@ -98,6 +102,7 @@ TreeViewItem.propTypes = {
   editAction: PropTypes.func.isRequired,
   createAction: PropTypes.func.isRequired,
   deleteAction: PropTypes.func.isRequired,
+  editableSwitchEdit: PropTypes.func.isRequired
 };
 
 export default TreeViewItem;
