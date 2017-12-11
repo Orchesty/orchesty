@@ -4,6 +4,7 @@ namespace CleverConnectors\AppBundle\Model\CM\SubscriberConnector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\CM\CMAuthorization;
+use CleverConnectors\AppBundle\Model\ProgressCounter\ProgressCounterService;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use Doctrine\Common\Persistence\ObjectRepository;
@@ -55,17 +56,29 @@ abstract class CMGetSubscribersConnectorAbstract extends CMAuthorization impleme
     protected $secret;
 
     /**
+     * @var ProgressCounterService
+     */
+    private $counterService;
+
+    /**
      * CMSubscriberConnectorAbstract constructor.
      *
-     * @param DocumentManager   $dm
-     * @param CurlSenderFactory $factory
-     * @param array             $secret
+     * @param DocumentManager        $dm
+     * @param CurlSenderFactory      $factory
+     * @param ProgressCounterService $counterService
+     * @param array                  $secret
      */
-    function __construct(DocumentManager $dm, CurlSenderFactory $factory, array $secret)
+    function __construct(
+        DocumentManager $dm,
+        CurlSenderFactory $factory,
+        ProgressCounterService $counterService,
+        array $secret
+    )
     {
         $this->systemInstallRepository = $dm->getRepository(SystemInstall::class);
         $this->factory                 = $factory;
         $this->secret                  = $secret;
+        $this->counterService          = $counterService;
     }
 
     /**

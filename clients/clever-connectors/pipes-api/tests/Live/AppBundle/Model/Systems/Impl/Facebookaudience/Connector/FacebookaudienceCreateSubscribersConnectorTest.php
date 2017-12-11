@@ -5,7 +5,6 @@ namespace Tests\Live\AppBundle\Model\Systems\Impl\Facebookaudience\Connector;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\FacebookaudienceSystem;
-use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
 use Nette\Utils\Json;
 use Tests\ConnectorTestCaseAbstract;
 
@@ -20,7 +19,6 @@ final class FacebookaudienceCreateSubscribersConnectorTest extends ConnectorTest
     /**
      * @throws SystemException
      * @throws CleverConnectorsException
-     * @throws ConnectorException
      */
     public function testProcessAction(): void
     {

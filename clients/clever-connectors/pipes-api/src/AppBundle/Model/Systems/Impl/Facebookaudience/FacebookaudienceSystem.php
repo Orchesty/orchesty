@@ -10,8 +10,12 @@ use CleverConnectors\AppBundle\Model\Form\Form;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\OAuth2Interface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\Traits\AuthorizationTrait;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
+use CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\Connector\FacebookaudienceGetAccountsConnector;
+use CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\Connector\FacebookaudienceGetAudiencesConnector;
 use CleverConnectors\AppBundle\Model\Systems\Traits\SystemTrait;
 use CleverConnectors\AppBundle\Utils\AuthorizationUtils;
+use DateTime;
+use DateTimeZone;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Authorization\Provider\Dto\OAuth2Dto;
 use Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider;
@@ -43,6 +47,9 @@ class FacebookaudienceSystem implements OAuth2Interface
     private const AUTHORIZE_URL = 'https://www.facebook.com/v2.11/dialog/oauth';
     private const TOKEN_URL     = 'https://graph.facebook.com/v2.11/oauth/access_token';
 
+    /**
+     * @var array
+     */
     private $scopes = ['manage_pages', 'ads_read', 'ads_management'];
 
     /**
@@ -155,11 +162,12 @@ class FacebookaudienceSystem implements OAuth2Interface
      */
     public function saveToken(SystemInstall $systemInstall, array $data): SystemInstall
     {
-        // TODO check if its short-lived or long-lived token
-
-        $dto   = $this->createDto($systemInstall);
-        $token = $this->provider->getAccessToken($dto, $data);
-        $systemInstall->setExpires(NULL); // TODO check
+        $dto     = $this->createDto($systemInstall);
+        $token   = $this->provider->getAccessToken($dto, $data);
+        $expires = (new DateTime())
+            ->setTimestamp($token['expires'])
+            ->setTimezone(new DateTimeZone('UTC'));
+        $systemInstall->setExpires($expires);
 
         return $this->setSettings($systemInstall, $token);
     }
@@ -259,8 +267,10 @@ class FacebookaudienceSystem implements OAuth2Interface
      */
     public function getAccounts(SystemInstall $systemInstall): array
     {
-        return $this->container->get('hbpf.connector.facebookaudience-get-accounts-connector')
-            ->getAccounts($systemInstall);
+        /** @var FacebookaudienceGetAccountsConnector $connector */
+        $connector = $this->container->get('hbpf.connector.facebookaudience-get-accounts-connector');
+
+        return $connector->getAccounts($systemInstall);
     }
 
     /**
@@ -273,8 +283,10 @@ class FacebookaudienceSystem implements OAuth2Interface
      */
     public function getAudiences(SystemInstall $systemInstall, array $data): array
     {
-        return $this->container->get('hbpf.connector.facebookaudience-get-audiences-connector')
-            ->getAudiences($systemInstall, $data);
+        /** @var FacebookaudienceGetAudiencesConnector $connector */
+        $connector = $this->container->get('hbpf.connector.facebookaudience-get-audiences-connector');
+
+        return $connector->getAudiences($systemInstall, $data);
     }
 
     /**
