@@ -16,7 +16,7 @@ namespace CcApi\ApiEntity;
 class MapTemplateFactory
 {
 
-    private const ID        = 'id';
+    private const ID        = '_id';
     private const ACTION    = 'action';
     private const DIRECTION = 'direction';
     private const FIELDS    = 'fields';
@@ -31,11 +31,13 @@ class MapTemplateFactory
         $mapTemplate = new MapTemplate();
         $mapTemplate
             ->setId($data[self::ID] ?? '')
-            ->setAction($data[self::ACTION])
-            ->setDirection($data[self::DIRECTION]);
+            ->setAction($data[self::ACTION] ?? '')
+            ->setDirection($data[self::DIRECTION] ?? '');
 
-        foreach ($data[self::FIELDS] as $value) {
-            $mapTemplate->addField(MapTemplateFieldFactory::create($value));
+        if (isset($data[self::FIELDS])) {
+            foreach ($data[self::FIELDS] as $value) {
+                $mapTemplate->addField(MapTemplateFieldFactory::create($value));
+            }
         }
 
         return $mapTemplate;

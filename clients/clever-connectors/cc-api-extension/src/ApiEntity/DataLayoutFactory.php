@@ -16,7 +16,7 @@ namespace CcApi\ApiEntity;
 class DataLayoutFactory
 {
 
-    private const ID     = 'id';
+    private const ID     = '_id';
     private const ACTION = 'action';
     private const FIELDS = 'fields';
 
@@ -29,11 +29,13 @@ class DataLayoutFactory
     {
         $dataLayout = new DataLayout();
         $dataLayout
-            ->setId($data[self::ID])
-            ->setAction($data[self::ACTION]);
+            ->setId($data[self::ID] ?? '')
+            ->setAction($data[self::ACTION] ?? '');
 
-        foreach ($data[self::FIELDS] as $value) {
-            $dataLayout->addField(DataLayoutFieldFactory::create($value));
+        if (isset($data[self::FIELDS])) {
+            foreach ($data[self::FIELDS] as $value) {
+                $dataLayout->addField(DataLayoutFieldFactory::create($value));
+            }
         }
 
         return $dataLayout;
