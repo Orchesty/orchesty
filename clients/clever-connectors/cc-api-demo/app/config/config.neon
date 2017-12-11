@@ -65,5 +65,13 @@ services:
 	subscribe_form_factory:
 		class: App\Forms\SubscribeFormFactory
 
+	# MAPPING
+	data_layout_form_factory:
+		class: App\Forms\DataLayoutFormFactory
+
+	mapping_form_factory:
+		class: App\Forms\MappingFormFactory
+
 extensions:
 	cc_api: CcApi\Bridges\DI\CcApiExtension
+	- WebChemistry\Forms\Controls\DI\MultiplierExtension

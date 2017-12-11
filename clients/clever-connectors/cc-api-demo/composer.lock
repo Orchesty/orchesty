@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "a08f2f4acf28988b8db9ee7d4943a0ba",
+    "content-hash": "9e3c5264d6fecb6ea9e014963cb387af",
     "packages": [
         {
             "name": "bunny/bunny",
@@ -1962,6 +1962,49 @@
                 "profiler"
             ],
             "time": "2017-10-04T18:43:42+00:00"
+        },
+        {
+            "name": "webchemistry/forms-multiplier",
+            "version": "v2.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/WebChemistry/forms-multiplier.git",
+                "reference": "87fea53d92c98f2cc85c5edb6c52b7c759e0d9c1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/WebChemistry/forms-multiplier/zipball/87fea53d92c98f2cc85c5edb6c52b7c759e0d9c1",
+                "reference": "87fea53d92c98f2cc85c5edb6c52b7c759e0d9c1",
+                "shasum": ""
+            },
+            "require": {
+                "nette/forms": "^2.4",
+                "php": ">= 5.6"
+            },
+            "require-dev": {
+                "codeception/codeception": "^2.1",
+                "latte/latte": "^2.3",
+                "nette/application": "^2.3",
+                "nette/di": "^2.3",
+                "webchemistry/testing-helpers": "dev-master"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "WebChemistry\\Forms\\Controls\\": [
+                        "src/"
+                    ]
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "description": "Multiplier for nette forms",
+            "keywords": [
+                "Forms",
+                "multiplier",
+                "nette",
+                "webchemistry"
+            ],
+            "time": "2017-09-23T08:49:34+00:00"
         }
     ],
     "packages-dev": [],

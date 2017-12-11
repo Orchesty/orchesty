@@ -1,4 +1,4 @@
-.PHONY: init
+.PHONY: init composer-update
 
 DC=docker-compose
 DE=docker-compose exec webserver
@@ -8,6 +8,8 @@ DE=docker-compose exec webserver
 		sed -e "s/{DEV_UID}/$(shell id -u)/g; s/{DEV_USERNAME}/$(shell id -un)/g;" .env.dist > .env; \
 	fi
 
+composer-update:
+	$(DE) composer update
 
 init: .env
 	$(DC) build

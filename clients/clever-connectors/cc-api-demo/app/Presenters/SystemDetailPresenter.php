@@ -113,6 +113,8 @@ class SystemDetailPresenter extends BasePresenter
 
     /**
      * @param Form $form
+     *
+     * @throws \Nette\Application\AbortException
      */
     public function processAuthorizationSettingGenerator(Form $form): void
     {
@@ -148,6 +150,8 @@ class SystemDetailPresenter extends BasePresenter
 
     /**
      * @param Form $form
+     *
+     * @throws \Nette\Application\AbortException
      */
     public function processSwitchToken(Form $form)
     {
