@@ -73,12 +73,18 @@ class InstallManager implements LoggerAwareInterface
     private $logger;
 
     /**
+     * @var CategoryParser
+     */
+    private $categoryParser;
+
+    /**
      * InstallManager constructor.
      *
      * @param DocumentManager $dm
      * @param Client          $client
      * @param TopologyManager $topologyManager
      * @param RequestHandler  $requestHandler
+     * @param CategoryParser  $categoryParser
      * @param array           $dirs
      */
     public function __construct(
@@ -86,6 +92,7 @@ class InstallManager implements LoggerAwareInterface
         Client $client,
         TopologyManager $topologyManager,
         RequestHandler $requestHandler,
+        CategoryParser $categoryParser,
         array $dirs
     )
     {
@@ -93,6 +100,7 @@ class InstallManager implements LoggerAwareInterface
         $this->client          = $client;
         $this->topologyManager = $topologyManager;
         $this->requestHandler  = $requestHandler;
+        $this->categoryParser  = $categoryParser;
         $this->comparator      = new TopologiesComparator($dm->getRepository(Topology::class), $dirs);
         $this->xml             = new XmlDecoder();
         $this->logger          = new NullLogger();
@@ -201,6 +209,7 @@ class InstallManager implements LoggerAwareInterface
                     ['name' => TplgLoader::getName($file->getName()), 'enabled' => TRUE]
                 );
                 $this->makeRunnable($topology, $file->getContents());
+                $this->categoryParser->classifyTopology($topology, $file);
             } catch (Throwable $e) {
                 $this->logException($e, self::CREATE);
                 $message = $e->getMessage();
@@ -226,6 +235,7 @@ class InstallManager implements LoggerAwareInterface
                 $oldTopology = $obj->getTopology();
                 $this->dm->persist($oldTopology);
                 $topology = $this->makeRunnable($oldTopology, $obj->getFile()->getContents());
+                $this->categoryParser->classifyTopology($topology, $obj->getFile());
 
                 if ($topology->getId() != $oldTopology->getId()) {
                     $this->makeDeletable($oldTopology);

@@ -10,6 +10,7 @@
 namespace Tests\Unit\AppBundle\Model\Installer;
 
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
+use CleverConnectors\AppBundle\Model\Installer\CategoryParser;
 use CleverConnectors\AppBundle\Model\Installer\Dto\CompareResultDto;
 use CleverConnectors\AppBundle\Model\Installer\Dto\TopologyFile;
 use CleverConnectors\AppBundle\Model\Installer\Dto\UpdateObject;
@@ -20,6 +21,7 @@ use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyManager;
 use Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository;
 use Hanaboso\PipesFramework\TopologyGenerator\Request\RequestHandler;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Predis\Client;
 use Tests\PrivateTrait;
@@ -36,6 +38,7 @@ final class InstallManagerTest extends TestCase
 
     /**
      *
+     * @throws CleverConnectorsException
      */
     public function testPrepareInstall(): void
     {
@@ -52,6 +55,7 @@ final class InstallManagerTest extends TestCase
 
     /**
      *
+     * @throws CleverConnectorsException
      */
     public function testMakeInstall(): void
     {
@@ -70,6 +74,7 @@ final class InstallManagerTest extends TestCase
 
     /**
      *
+     * @throws CleverConnectorsException
      */
     public function testMakeInstallEx(): void
     {
@@ -94,16 +99,19 @@ final class InstallManagerTest extends TestCase
         array $dirs = []
     ): InstallManager
     {
+        /** @var DocumentManager|MockObject $dm */
         $repo = $this->createMock(TopologyRepository::class);
         $dm   = $this->createMock(DocumentManager::class);
         $dm->method('getRepository')->willReturn($repo);
         $dm->method('persist')->willReturn(TRUE);
 
+        /** @var Client|MockObject $client */
         $client = $this->getMockBuilder(Client::class)->setMethods(['set', 'get', 'del'])->getMock();
         $client->method('set')->willReturn(TRUE);
         $client->method('get')->willReturn($redisResult);
         $client->method('del')->willReturn(TRUE);
 
+        /** @var TopologyManager|MockObject $topologyManager */
         $topologyManager = $this->createMock(TopologyManager::class);
         $topologyManager->method('createTopology')->willReturn(new Topology());
         $topologyManager->method('publishTopology')->willReturn(TRUE);
@@ -111,11 +119,16 @@ final class InstallManagerTest extends TestCase
         $topologyManager->method('deleteTopology')->willReturn(TRUE);
         $topologyManager->method('saveTopologySchema')->willReturn($savedTopo);
 
+        /** @var RequestHandler|MockObject $requestHandler */
         $requestHandler = $this->createMock(RequestHandler::class);
         $requestHandler->method('runTopology')->willReturn(new ResponseDto(200, '', '', []));
         $requestHandler->method('deleteTopology')->willReturn(new ResponseDto(200, '', '', []));
 
-        return new InstallManager($dm, $client, $topologyManager, $requestHandler, $dirs);
+        /** @var CategoryParser|MockObject $categoryParser */
+        $categoryParser = $this->createMock(CategoryParser::class);
+        $categoryParser->method('classifyTopology')->willReturn(NULL);
+
+        return new InstallManager($dm, $client, $topologyManager, $requestHandler, $categoryParser, $dirs);
     }
 
     /**

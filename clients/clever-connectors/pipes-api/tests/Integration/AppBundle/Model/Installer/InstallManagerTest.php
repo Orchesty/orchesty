@@ -10,11 +10,13 @@
 namespace Tests\Integration\AppBundle\Model\Installer;
 
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
+use CleverConnectors\AppBundle\Model\Installer\CategoryParser;
 use CleverConnectors\AppBundle\Model\Installer\InstallManager;
 use Hanaboso\PipesFramework\Commons\Enum\TopologyStatusEnum;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\TopologyGenerator\Request\RequestHandler;
+use PHPUnit\Framework\MockObject\MockObject;
 use Predis\Client;
 use Tests\DatabaseTestCaseAbstract;
 
@@ -33,6 +35,7 @@ final class InstallManagerTest extends DatabaseTestCaseAbstract
 
     /**
      *
+     * @throws CleverConnectorsException
      */
     public function testPrepareInstall(): void
     {
@@ -54,6 +57,7 @@ final class InstallManagerTest extends DatabaseTestCaseAbstract
 
     /**
      *
+     * @throws CleverConnectorsException
      */
     public function testMakeInstall(): void
     {
@@ -79,6 +83,7 @@ final class InstallManagerTest extends DatabaseTestCaseAbstract
 
     /**
      *
+     * @throws CleverConnectorsException
      */
     public function testMakeInstallEx(): void
     {
@@ -92,6 +97,7 @@ final class InstallManagerTest extends DatabaseTestCaseAbstract
      */
     private function getManager(): InstallManager
     {
+        /** @var MockObject|RequestHandler $requestHandler */
         $requestHandler = $this->createMock(RequestHandler::class);
         $requestHandler->method('runTopology')->willReturn(new ResponseDto(200, '', '', []));
         $requestHandler->method('deleteTopology')->willReturn(new ResponseDto(200, '', '', []));
@@ -99,8 +105,11 @@ final class InstallManagerTest extends DatabaseTestCaseAbstract
         $this->redis     = $this->container->get('snc_redis.default');
         $topologyManager = $this->container->get('hbpf.configurator.manager.topology');
         $dir             = sprintf('%s/data', __DIR__);
+        $categoryManager = $this->container->get('hbpf.configurator.manager.category');
+        $categoryParser  = new CategoryParser($this->dm, $categoryManager);
+        $categoryParser->addRoot('systems', $dir);
 
-        return new InstallManager($this->dm, $this->redis, $topologyManager, $requestHandler, [$dir]);
+        return new InstallManager($this->dm, $this->redis, $topologyManager, $requestHandler, $categoryParser, [$dir]);
     }
 
     /**
