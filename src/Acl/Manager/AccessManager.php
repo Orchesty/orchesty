@@ -344,7 +344,10 @@ class AccessManager implements EventSubscriberInterface
         $res = $this->dm->getRepository($class)->findOneBy($params);
 
         if (!$res) {
-            $this->throwPermissionException('User has no permission on entity with [%s] id or it doesn\'t exist.');
+            $this->throwPermissionException(sprintf(
+                'User has no permission on entity with [%s] id or it doesn\'t exist.',
+                $id
+            ));
         }
 
         return $res;
