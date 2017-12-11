@@ -37,10 +37,13 @@ final class MetricsClientTest extends KernelTestCaseAbstract
 
     /**
      *
+     * @throws MetricsException
+     * @throws Database\Exception
      */
     public function testGetDatabase(): void
     {
-        $manager  = $this->getMetricsClient();
+        $manager = $this->getMetricsClient();
+        $manager->createClient()->selectDB('udp')->create(new RetentionPolicy('test', '1d', 1, TRUE));
         $database = $manager->getDatabase();
 
         $database->create(new RetentionPolicy('test', '1d', 1, TRUE));
@@ -54,11 +57,14 @@ final class MetricsClientTest extends KernelTestCaseAbstract
 
     /**
      *
+     * @throws MetricsException
+     * @throws Database\Exception
      */
     public function testGetQueryBuilder(): void
     {
         $manager = $this->getMetricsClient();
-        $qb      = $manager->getQueryBuilder();
+        $manager->createClient()->selectDB('udp')->create(new RetentionPolicy('test', '1d', 1, TRUE));
+        $qb = $manager->getQueryBuilder();
 
         self::assertInstanceOf(Builder::class, $qb);
     }
