@@ -83,6 +83,19 @@ services:
     volumes:
       - redis:/data
 
+  cron-api:
+    user: ${DEV_UID}:${DEV_GID}
+    image: dkr.hanaboso.net/pipes/pipes/python-cron:dev
+    environment:
+      - DEV_UID={DEV_UID}
+      - DEV_GID={DEV_GID}
+    ports:
+      - 80:5000
+    links:
+      - mongo
+    depends_on:
+      - mongo
+
 volumes:
   mongo: {}
   mariadb: {}
