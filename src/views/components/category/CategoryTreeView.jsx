@@ -5,6 +5,7 @@ import {connect} from 'react-redux';
 import * as categoryActions from 'rootApp/actions/categoryActions';
 import StateComponent from 'rootApp/views/wrappers/StateComponent';
 import {stateType} from 'rootApp/types';
+import * as editableAction from 'rootApp/actions/editableActions';
 
 function treeItemToTreeView(elements, treeItem, selectedId){
   const item = elements[treeItem.id];
@@ -32,7 +33,8 @@ function mapActionsToProps(dispatch, ownProps){
     onItemClick: itemId => dispatch(categoryActions.treeItemClick(ownProps.componentKey, itemId, ownProps.onSelect)),
     editAction: (id, name) => dispatch(categoryActions.updateCategory(id, {name})),
     createAction: parentId => dispatch(categoryActions.createCategory({parent: parentId, name: 'New category'})),
-    deleteAction: id => dispatch(categoryActions.deleteCategory(id))
+    deleteAction: id => dispatch(categoryActions.deleteCategory(id)),
+    editableSwitchEdit: id => dispatch(editableAction.switchEdit(id))
   }
 }
 
