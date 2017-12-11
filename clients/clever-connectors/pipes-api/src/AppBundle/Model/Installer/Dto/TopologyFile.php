@@ -51,10 +51,16 @@ final class TopologyFile
     }
 
     /**
+     * @param bool $withoutFileName
+     *
      * @return string
      */
-    public function getPath(): string
+    public function getPath(bool $withoutFileName = FALSE): string
     {
+        if ($withoutFileName) {
+            return str_replace($this->name, '', $this->path);
+        }
+
         return $this->path;
     }
 

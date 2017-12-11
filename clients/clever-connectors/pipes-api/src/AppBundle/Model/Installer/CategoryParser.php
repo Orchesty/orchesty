@@ -31,17 +31,27 @@ class CategoryParser
     /**
      * @var array
      */
-    private $pathMaps = [];
+    private $roots = [];
 
     /**
      * @var array
      */
-    private $exclude = [];
+    private $excludes = [];
 
     /**
      * @var array
      */
-    private $filePath = [];
+    private $aliases = [];
+
+    /**
+     * @var array
+     */
+    private $pathFromFile = [];
+
+    /**
+     * @var array
+     */
+    private $tmpFilePath = [];
 
     /**
      * @var array
@@ -49,9 +59,9 @@ class CategoryParser
     private $tmpPath = [];
 
     /**
-     * @var array
+     * @var string
      */
-    private $tmpMapPath = [];
+    private $matchedRootAlias = '';
 
     /**
      * @var DocumentManager
@@ -82,24 +92,56 @@ class CategoryParser
     }
 
     /**
-     * @param string $path
-     * @param string $category
+     * ------------------------------------------- SETTERS ----------------------------------------------
      */
-    public function addPathMap(string $path, string $category): void
+
+    /**
+     * @param string $alias
+     * @param string $path
+     *
+     * @return CategoryParser
+     */
+    public function addRoot(string $alias, string $path): CategoryParser
     {
-        $this->pathMaps[$path] = $category;
-        ksort($this->pathMaps);
+        $this->roots[$alias] = $path;
+
+        return $this;
     }
 
     /**
-     * @param string $exclude
+     * @param string $rootAlias
+     * @param string $folder
+     *
+     * @return CategoryParser
      */
-    public function addExclude(string $exclude): void
+    public function addExclude(string $rootAlias, string $folder): CategoryParser
     {
-        if (!in_array($exclude, $this->exclude)) {
-            $this->exclude[] = $exclude;
+        if (array_key_exists($rootAlias, $this->roots)) {
+            $this->excludes[$rootAlias][] = $folder;
         }
+
+        return $this;
     }
+
+    /**
+     * @param string $rootAlias
+     * @param string $folder
+     * @param string $alias
+     *
+     * @return CategoryParser
+     */
+    public function addAlias(string $rootAlias, string $folder, string $alias): CategoryParser
+    {
+        if (array_key_exists($rootAlias, $this->roots)) {
+            $this->aliases[$rootAlias][$alias] = $folder;
+        }
+
+        return $this;
+    }
+
+    /**
+     * ------------------------------------- PUBLIC-METHODS -----------------------------------------------
+     */
 
     /**
      * @param Topology     $topology
@@ -111,7 +153,7 @@ class CategoryParser
         $parent     = '';
         foreach ($categories as $name) {
             /** @var Category $category */
-            $category = $this->categoryRepository->findBy(['name' => $name]);
+            $category = $this->categoryRepository->findOneBy(['name' => $name]);
 
             if (!empty($category) && ($category->getParent() == $parent || empty($parent))) {
                 $category = $this->categoryManager->updateCategory($category, ['parent' => $parent]);
@@ -127,7 +169,7 @@ class CategoryParser
     }
 
     /**
-     * ------------------------------------ HELPERS -----------------------------------------
+     * ------------------------------------ HELPERS -------------------------------------------------------
      */
 
     /**
@@ -137,23 +179,13 @@ class CategoryParser
      */
     private function getCategories(TopologyFile $file): array
     {
-        $cats = [];
+        $this->pathFromFile = $this->getParsedPath($file->getPath(TRUE));
+        $this->matchRoot();
+        $this->removeExcluded();
+        $this->setAliases();
+        array_unshift($this->tmpFilePath, $this->matchedRootAlias);
 
-        $this->filePath = $this->getParsedPath($file->getPath());
-        $this->removeElement($this->filePath, $file->getName());
-        foreach ($this->pathMaps as $path => $alias) {
-            $this->tmpPath    = $this->filePath;
-            $this->tmpMapPath = $this->getParsedPath($path);
-            foreach ($this->tmpMapPath as $map) {
-                if (!empty($this->filePath)) {
-                    $this->doLoop($map, $cats);
-                }
-                $this->replaceElement($cats, $map, $alias);
-            }
-
-        }
-
-        return $cats;
+        return $this->tmpFilePath;
     }
 
     /**
@@ -167,51 +199,49 @@ class CategoryParser
     }
 
     /**
-     * @param array  $array
-     * @param string $element
+     * @return array
      */
-    private function removeElement(array &$array, string $element)
+    private function matchRoot(): array
     {
-        $key = array_search($element, $array);
-        if ($key !== FALSE) {
-            unset($array[$key]);
+        $categories = [];
+        foreach ($this->roots as $alias => $path) {
+            $this->tmpFilePath = $this->pathFromFile;
+            $this->tmpPath     = $this->getParsedPath($path);
+            foreach ($this->tmpPath as $key => $part) {
+                $isMatch = $this->processRootParts($part);
+                if (!$isMatch) {
+                    break;
+                }
+                unset($this->tmpPath[$key]);
+            }
+
+            if (empty($this->tmpPath)) {
+                $this->matchedRootAlias = $alias;
+                $this->tmpFilePath      = array_unique($this->tmpFilePath);
+                array_unshift($categories, $alias);
+                break;
+            }
         }
+
+        return $categories;
     }
 
     /**
-     * @param array  $array
-     * @param string $element
+     * @param string $root
+     *
+     * @return bool
      */
-    private function replaceElement(array &$array, string $element, string $replacement)
+    private function processRootParts(string $root): bool
     {
-        $key = array_search($element, $array);
-        if ($key !== FALSE) {
-            $array[$key] = $replacement;
-        }
-    }
-
-    /**
-     * @param string $map
-     * @param array  $out
-     */
-    private function doLoop(string $map, array &$out = []): void
-    {
-        if ($map === self::ALL) {
-            $this->removePartsOfPath(next($this->tmpMapPath));
-        } elseif ($map === reset($this->tmpPath)) {
-            $key = array_shift($this->tmpPath);
-            $this->removeElement($this->filePath, $key);
-            $this->addToOutput($out, $key);
+        if ($root === self::ALL) {
+            $this->removePartsOfPath(next($this->tmpPath));
+        } elseif ($root === reset($this->tmpFilePath)) {
+            array_shift($this->tmpFilePath);
         } else {
-            $key = array_shift($this->tmpPath);
-            if (!in_array($key, $this->exclude)) {
-                $this->addToOutput($out, $key);
-            }
-
-            if (!empty($this->tmpPath)) {
-                $this->doLoop($map, $out);
-            }
+            return FALSE;
         }
+
+        return TRUE;
     }
 
     /**
@@ -220,15 +250,14 @@ class CategoryParser
     private function removePartsOfPath(string $stop): void
     {
         $this->checkStopChar($stop);
-        foreach ($this->tmpPath as $value) {
-            if ($value !== $stop) {
-                array_shift($this->tmpPath);
-            } else {
+        $copy = $this->tmpFilePath;
+        foreach ($copy as $value) {
+            if ($value === $stop) {
+                $this->tmpFilePath = $copy;
                 break;
             }
+            array_shift($copy);
         }
-        $this->filePath = $this->tmpPath;
-        $this->removeElement($this->filePath, $stop);
     }
 
     /**
@@ -242,13 +271,51 @@ class CategoryParser
     }
 
     /**
-     * @param array  $out
-     * @param string $in
+     *
      */
-    private function addToOutput(array &$out, string $in): void
+    private function removeExcluded(): void
     {
-        if (!in_array($in, $out)) {
-            $out[] = $in;
+        if (isset($this->excludes[$this->matchedRootAlias])) {
+            foreach ($this->excludes[$this->matchedRootAlias] as $exclude) {
+                $this->removeElement($this->tmpFilePath, $exclude);
+            }
+        }
+    }
+
+    /**
+     * @param array  $array
+     * @param string $element
+     */
+    private function removeElement(array &$array, string $element): void
+    {
+        $key = array_search($element, $array);
+        if ($key !== FALSE) {
+            unset($array[$key]);
+        }
+    }
+
+    /**
+     *
+     */
+    private function setAliases(): void
+    {
+        if (isset($this->aliases[$this->matchedRootAlias])) {
+            foreach ($this->aliases[$this->matchedRootAlias] as $alias => $value) {
+                $this->replaceElement($this->tmpFilePath, $value, $alias);
+            }
+        }
+    }
+
+    /**
+     * @param array  $array
+     * @param string $element
+     * @param string $replacement
+     */
+    private function replaceElement(array &$array, string $element, string $replacement): void
+    {
+        $key = array_search($element, $array);
+        if ($key !== FALSE) {
+            $array[$key] = $replacement;
         }
     }
 

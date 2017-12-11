@@ -150,3 +150,14 @@ services:
         arguments:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@cc.systems.loader'
+
+    cc.category.parser:
+        class: CleverConnectors\AppBundle\Model\Installer\CategoryParser
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.configurator.manager.category'
+        calls:
+        - [addRoot,['Systems',"%connectors_topologies%"]]
+        - [addExclude, ['Systems','Topologies']]
+        - [addRoot,['Plugins',"%plugins_topologies%"]]
+        - [addRoot,['Service',"%service_topologies%"]]
