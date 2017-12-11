@@ -2,6 +2,7 @@
 
 namespace CleverConnectors\AppBundle\Model\CM\SubscriberConnector;
 
+use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
@@ -36,14 +37,16 @@ class CMGetListSubscribersConnector extends CMGetSubscribersConnectorAbstract
         $sender        = $this->factory->create($loop, $this->secret);
         $systemInstall = $this->systemInstallRepository->getSystemInstallFromHeaders($dto->getHeaders());
 
-        // TODO get distribution list from settings
         // TODO finish tests (live and unit)
-        //        $settings = $systemInstall->getSettings();
-        //        if (!isset($settings[SystemInstall::DISTRIBUTION_LIST])) {
-        //            throw new CleverConnectorsException();
-        //        }
-        //
-        //        $this->listId = $settings[SystemInstall::DISTRIBUTION_LIST];
+        $settings = $systemInstall->getSettings();
+        if (!isset($settings[SystemInstall::DISTRIBUTION_LIST])) {
+            throw new CleverConnectorsException(
+                'Distribution list not found in settings',
+                CleverConnectorsException::DISTRIBUTION_LIST_NOT_FOUND
+            );
+        }
+
+        $this->listId = $settings[SystemInstall::DISTRIBUTION_LIST];
 
         $req = new RequestDto(CurlManager::METHOD_GET, new Uri($this->getUrl(0)));
         $req->setHeaders($this->getAuthorizationHeaders($systemInstall->getUser(), $systemInstall->getToken()));

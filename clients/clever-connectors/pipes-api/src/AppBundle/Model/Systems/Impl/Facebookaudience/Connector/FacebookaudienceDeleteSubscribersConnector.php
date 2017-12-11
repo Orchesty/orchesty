@@ -49,7 +49,7 @@ class FacebookaudienceDeleteSubscribersConnector extends FacebookaudienceConnect
         }
 
         $systemInstall    = $this->systemInstallRepository->getSystemInstallFromHeaders($dto->getHeaders());
-        $customAudienceId = $systemInstall->getSettings()[FacebookaudienceSystem::CUSTOM_AUDIENCE_ID];
+        $customAudienceId = $systemInstall->getSettings()[FacebookaudienceSystem::CUSTOM_AUDIENCE];
         $requestDto       = $this->system->getRequestDto($systemInstall, CurlManager::METHOD_DELETE);
         $requestDto
             ->setUri(new Uri(sprintf(self::URL, $requestDto->getUri(), $customAudienceId)))

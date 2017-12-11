@@ -49,12 +49,15 @@ final class FacebookaudienceGetAccountsConnectorTest extends ConnectorTestCaseAb
         /** @var SystemInstall $systemInstall */
         $systemInstall = $this->systemInstallRepository->find($data['system_install']['_id']);
 
-        $connector  = $this->container->get('hbpf.connector.facebookaudience-get-accounts-connector');
-        $accounts = $connector->getAccounts($systemInstall);
+        $connector = $this->container->get('hbpf.connector.facebookaudience-get-accounts-connector');
+        $accounts  = $connector->getAccounts($systemInstall);
 
         $this->assertTrue(is_array($accounts));
-        $this->assertArrayHasKey('id', $accounts[0]);
-        $this->assertArrayHasKey('name', $accounts[0]);
+        $this->assertTrue(count($accounts) > 0);
+        foreach ($accounts as $key => $account) {
+            $this->assertTrue(strpos($key, 'act_') === 0);
+            $this->assertTrue(is_string($account));
+        }
     }
 
 }

@@ -36,6 +36,11 @@ abstract class FacebookaudienceConnectorAbstract implements ConnectorInterface
     protected $systemInstallRepository;
 
     /**
+     * @var DocumentManager
+     */
+    protected $dm;
+
+    /**
      * FacebookaudienceGetAudiencesConnector constructor.
      *
      * @param FacebookaudienceSystem $system
@@ -46,6 +51,7 @@ abstract class FacebookaudienceConnectorAbstract implements ConnectorInterface
     {
         $this->system                  = $system;
         $this->manager                 = $manager;
+        $this->dm                      = $dm;
         $this->systemInstallRepository = $dm->getRepository(SystemInstall::class);
     }
 

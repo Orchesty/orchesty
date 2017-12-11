@@ -4,13 +4,12 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\SystemTypeEnum;
+use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Form\Field;
 use CleverConnectors\AppBundle\Model\Form\Form;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\OAuth2Interface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\Traits\AuthorizationTrait;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
-use CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\Connector\FacebookaudienceGetAccountsConnector;
-use CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\Connector\FacebookaudienceGetAudiencesConnector;
 use CleverConnectors\AppBundle\Model\Systems\Traits\SystemTrait;
 use CleverConnectors\AppBundle\Utils\AuthorizationUtils;
 use GuzzleHttp\Psr7\Uri;
@@ -30,10 +29,12 @@ class FacebookaudienceSystem implements OAuth2Interface
     use SystemTrait;
     use AuthorizationTrait;
 
-    public const AD_ACCOUNT_ID        = 'ad_account_id';
-    public const CUSTOM_AUDIENCE_ID   = 'custom_audience_id';
-    public const NEW_LIST             = 'new_list';
-    public const DISTRIBUTION_LIST_ID = 'distribution_list_id';
+    public const AD_ACCOUNT      = 'ad_account';
+    public const CUSTOM_AUDIENCE = 'custom_audience';
+    public const NEW_LIST        = 'new_list';
+
+    public const CREATE_NEW = 'create_new'; // as a key in option list for audiences
+    public const ALL        = 'all'; // as a key in option list for source distribution list
 
     private const APP_ID     = '1449914605304913';
     private const APP_SECRET = '001b9d466b6f13d242d759cd094dccca';
@@ -154,6 +155,8 @@ class FacebookaudienceSystem implements OAuth2Interface
      */
     public function saveToken(SystemInstall $systemInstall, array $data): SystemInstall
     {
+        // TODO check if its short-lived or long-lived token
+
         $dto   = $this->createDto($systemInstall);
         $token = $this->provider->getAccessToken($dto, $data);
         $systemInstall->setExpires(NULL); // TODO check
@@ -205,18 +208,18 @@ class FacebookaudienceSystem implements OAuth2Interface
     {
         $field1 = new Field(
             Field::SELECT,
-            self::AD_ACCOUNT_ID,
+            self::AD_ACCOUNT,
             'Select FB account',
-            $systemInstall->getSettings()[self::AD_ACCOUNT_ID] ?? '',
+            $systemInstall->getSettings()[self::AD_ACCOUNT] ?? '',
             TRUE
         );
         $field1->setAction($systemInstall, $this->backend, 'getAccounts');
 
         $field2 = new Field(
             Field::SELECT,
-            self::CUSTOM_AUDIENCE_ID,
+            self::CUSTOM_AUDIENCE,
             'Select your distribution list in FB',
-            $systemInstall->getSettings()[self::CUSTOM_AUDIENCE_ID] ?? '',
+            $systemInstall->getSettings()[self::CUSTOM_AUDIENCE] ?? '',
             TRUE
         );
         $field2->setAction($systemInstall, $this->backend, 'getAudiences');
@@ -232,9 +235,9 @@ class FacebookaudienceSystem implements OAuth2Interface
 
         $field4 = new Field(
             Field::SELECT,
-            self::DISTRIBUTION_LIST_ID,
+            SystemInstall::DISTRIBUTION_LIST,
             'Select source distribution list',
-            $systemInstall->getSettings()[self::DISTRIBUTION_LIST_ID] ?? '',
+            $systemInstall->getSettings()[SystemInstall::DISTRIBUTION_LIST] ?? '',
             TRUE
         ); // filled by CM
 
@@ -262,13 +265,16 @@ class FacebookaudienceSystem implements OAuth2Interface
 
     /**
      * @param SystemInstall $systemInstall
+     * @param array         $data
      *
      * @return array
+     * @throws CleverConnectorsException
+     * @throws SystemException
      */
-    public function getAudiences(SystemInstall $systemInstall): array
+    public function getAudiences(SystemInstall $systemInstall, array $data): array
     {
         return $this->container->get('hbpf.connector.facebookaudience-get-audiences-connector')
-            ->getAudiences($systemInstall);
+            ->getAudiences($systemInstall, $data);
     }
 
     /**

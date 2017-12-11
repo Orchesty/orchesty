@@ -5,6 +5,7 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\Connect
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
+use CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\FacebookaudienceSystem;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider;
@@ -21,7 +22,7 @@ use Nette\Utils\Json;
 class FacebookaudienceCreateAudienceConnector extends FacebookaudienceConnectorAbstract
 {
 
-    private const URL = '%s/act_%s/customaudiences?fields=name&access_token=%s';
+    private const URL = '%s/%s/customaudiences?access_token=%s';
 
     /**
      * @return string
@@ -42,53 +43,95 @@ class FacebookaudienceCreateAudienceConnector extends FacebookaudienceConnectorA
     {
         $data = Json::decode($dto->getData(), TRUE);
 
-        if (!is_array($data) || !array_key_exists('name', $data)) {
+        if (!is_array($data) || !array_key_exists('data', $data) || empty($data['data'])) {
             throw new CleverConnectorsException(
-                'Missing data or required field "name"',
+                'Missing data or required field "data"',
                 CleverConnectorsException::MISSING_DATA
             );
         }
 
         $systemInstall = $this->systemInstallRepository->getSystemInstallFromHeaders($dto->getHeaders());
-        $adAccountId   = $systemInstall->getSettings()[FacebookaudienceSystem::AD_ACCOUNT_ID];
-        $requestDto    = $this->system->getRequestDto($systemInstall, CurlManager::METHOD_POST);
+        $audienceId    = $systemInstall->getSettings()[FacebookaudienceSystem::CUSTOM_AUDIENCE];
+        $newList       = $systemInstall->getSettings()[FacebookaudienceSystem::NEW_LIST];
+
+        if ($audienceId == FacebookaudienceSystem::CREATE_NEW &&
+            !empty($newList) &&
+            !$this->listExists($newList, $data['data'])
+        ) {
+            return $this->createNew($systemInstall, $dto, $newList);
+        }
+
+        return $dto;
+    }
+
+    /**
+     * @param string $list
+     * @param array  $data
+     *
+     * @return bool
+     */
+    private function listExists(string $list, array $data): bool
+    {
+        foreach ($data as $item) {
+            if ($item['name'] == $list) {
+                return TRUE;
+            }
+        }
+
+        return FALSE;
+    }
+
+    /**
+     * @param SystemInstall $systemInstall
+     * @param ProcessDto    $dto
+     * @param string        $newList
+     *
+     * @return ProcessDto
+     * @throws SystemException
+     * @throws CleverConnectorsException
+     */
+    private function createNew(SystemInstall $systemInstall, ProcessDto $dto, string $newList): ProcessDto
+    {
+        $dto->setData(Json::encode([
+            'name'    => $newList,
+            'subtype' => 'CUSTOM',
+        ]));
+
+        $token       = $systemInstall->getSettings()[OAuth2Provider::ACCESS_TOKEN];
+        $adAccountId = $systemInstall->getSettings()[FacebookaudienceSystem::AD_ACCOUNT];
+        $requestDto  = $this->system->getRequestDto($systemInstall, CurlManager::METHOD_POST);
         $requestDto
-            ->setUri(new Uri(sprintf(self::URL, $requestDto->getUri(), $adAccountId)))
+            ->setUri(new Uri(sprintf(self::URL, $requestDto->getUri(), $adAccountId, $token)))
             ->setBody($dto->getData())
             ->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()));
 
         $response = $this->manager->send($requestDto);
 
+        $this->saveAudience($response, $systemInstall);
+
         return $dto->setData($response->getBody());
     }
 
     /**
-     * @return array
-     */
-    public function getAudiences(): array
-    {
-
-    }
-
-    /**
-     * @param SystemInstall   $systemInstall
-     * @param ProcessDto|null $dto
+     * @param ResponseDto   $response
+     * @param SystemInstall $systemInstall
      *
-     * @return ResponseDto
-     * @throws SystemException
+     * @throws CleverConnectorsException
      */
-    private function makeRequest(SystemInstall $systemInstall, ?ProcessDto $dto = NULL): ResponseDto
+    private function saveAudience(ResponseDto $response, SystemInstall $systemInstall): void
     {
-        $token      = $systemInstall->getSettings()[OAuth2Provider::ACCESS_TOKEN];
-        $requestDto = $this->system->getRequestDto($systemInstall, CurlManager::METHOD_GET);
-        $url        = sprintf(self::URL, $requestDto->getUri(), $token);
-        $requestDto->setUri(new Uri($url));
-
-        if ($dto) {
-            $requestDto->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()));
+        $resData = Json::decode($response->getBody(), TRUE);
+        if (!array_key_exists('id', $resData)) {
+            throw new CleverConnectorsException(
+                'Request to create new audience failed.',
+                CleverConnectorsException::REQUEST_FAILED
+            );
         }
 
-        return $this->manager->send($requestDto);
+        $this->system->setSettings($systemInstall, [
+            FacebookaudienceSystem::CUSTOM_AUDIENCE => $resData['id'],
+        ]);
+        $this->dm->flush();
     }
 
 }

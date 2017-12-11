@@ -7,6 +7,7 @@ use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\FacebookaudienceSystem;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use GuzzleHttp\Psr7\Uri;
+use Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Nette\Utils\Json;
@@ -19,7 +20,7 @@ use Nette\Utils\Json;
 class FacebookaudienceCreateSubscribersConnector extends FacebookaudienceConnectorAbstract
 {
 
-    private const URL = '%s/%s/users';
+    private const URL = '%s/%s/users?access_token=%s';
 
     /**
      * @return string
@@ -40,19 +41,19 @@ class FacebookaudienceCreateSubscribersConnector extends FacebookaudienceConnect
     {
         $data = Json::decode($dto->getData(), TRUE);
 
-        // TODO
-        if (!is_array($data) || !array_key_exists('name', $data)) {
+        if (!is_array($data) || !array_key_exists('payload', $data) || !array_key_exists('data', $data['payload'])) {
             throw new CleverConnectorsException(
-                'Missing data or required field "name"',
+                'Missing data or required field "payload"',
                 CleverConnectorsException::MISSING_DATA
             );
         }
 
         $systemInstall    = $this->systemInstallRepository->getSystemInstallFromHeaders($dto->getHeaders());
-        $customAudienceId = $systemInstall->getSettings()[FacebookaudienceSystem::CUSTOM_AUDIENCE_ID];
+        $token            = $systemInstall->getSettings()[OAuth2Provider::ACCESS_TOKEN];
+        $customAudienceId = $systemInstall->getSettings()[FacebookaudienceSystem::CUSTOM_AUDIENCE];
         $requestDto       = $this->system->getRequestDto($systemInstall, CurlManager::METHOD_POST);
         $requestDto
-            ->setUri(new Uri(sprintf(self::URL, $requestDto->getUri(), $customAudienceId)))
+            ->setUri(new Uri(sprintf(self::URL, $requestDto->getUri(), $customAudienceId, $token)))
             ->setBody($dto->getData())
             ->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()));
 

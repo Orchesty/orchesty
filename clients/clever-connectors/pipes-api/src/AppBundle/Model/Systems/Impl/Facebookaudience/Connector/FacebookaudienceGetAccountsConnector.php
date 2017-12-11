@@ -58,7 +58,7 @@ class FacebookaudienceGetAccountsConnector extends FacebookaudienceConnectorAbst
             $data = json_decode($response->getBody(), TRUE);
             if (array_key_exists('data', $data) && is_array($data) && !empty($data)) {
                 foreach ($data['data'] as $item) {
-                    $res[] = $item;
+                    $res[$item['id']] = $item['name'];
                 }
             }
         }
