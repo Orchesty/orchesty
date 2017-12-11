@@ -25,6 +25,9 @@ class UserSystemFactory
     private const AUTHORIZED     = 'authorized';
     private const SYNCHRONIZED   = 'synchronized';
     private const SETTING_FIELDS = 'setting_fields';
+    private const ACTIONS        = 'actions';
+    private const DATA_LAYOUTS   = 'data_layouts';
+    private const MAP_TEMPLATES  = 'map_templates';
 
     /**
      * @param array $data
@@ -48,6 +51,20 @@ class UserSystemFactory
         if (array_key_exists(self::SETTING_FIELDS, $data)) {
             foreach ($data[self::SETTING_FIELDS] as $field) {
                 $system->addSettingField(SettingFieldFactory::create($field));
+            }
+        }
+
+        $system->setActions($data[self::ACTIONS] ?? []);
+
+        if (array_key_exists(self::DATA_LAYOUTS, $data)) {
+            foreach ($data[self::DATA_LAYOUTS] as $item) {
+                $system->addDataLayout(DataLayoutFactory::create($item));
+            }
+        }
+
+        if (array_key_exists(self::MAP_TEMPLATES, $data)) {
+            foreach ($data[self::MAP_TEMPLATES] as $item) {
+                $system->addMapTemplate(MapTemplateFactory::create($item));
             }
         }
 
