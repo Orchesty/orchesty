@@ -142,8 +142,7 @@ class ConnectorManagerTest extends TestCase
             $this->assertSame(CurlSender::GET, $request->getMethod());
             $this->assertSame('/user_systems/user/123/system/key', $request->getUri()->getPath());
 
-            $content = '{"key":"key","type":"type","name":"name","description":"description","token":"token","auth_type":"auth_type","synchronized":true,"authorized":false,';
-            $content .= '"setting_fields":[{"key":"key","type":"type","value":"value","label":"label","required":true}]}';
+            $content = file_get_contents(__DIR__ . '/data/user-system.json');
 
             return new Response(200, [], $content);
         };
@@ -166,6 +165,26 @@ class ConnectorManagerTest extends TestCase
         $this->assertSame('value', $setting->getValue());
         $this->assertSame('label', $setting->getLabel());
         $this->assertSame(TRUE, $setting->isRequired());
+
+        $this->assertSame(['action1'], $userSystem->getActions());
+
+        $dataLayout = $userSystem->getDataLayouts()[0];
+        $this->assertSame('1', $dataLayout->getId());
+        $this->assertSame('action', $dataLayout->getAction());
+
+        $field = $dataLayout->getFields()[0];
+        $this->assertSame('key', $field->getKey());
+        $this->assertSame('type', $field->getType());
+
+        $mapTemplate = $userSystem->getMapTemplates()[0];
+        $this->assertSame('1', $mapTemplate->getId());
+        $this->assertSame('action', $mapTemplate->getAction());
+        $this->assertSame('in', $mapTemplate->getDirection());
+
+        $field = $mapTemplate->getFields()[0];
+        $this->assertSame('name', $field->getName());
+        $this->assertSame('type', $field->getType());
+        $this->assertSame(["item"], $field->getItems());
     }
 
     /**

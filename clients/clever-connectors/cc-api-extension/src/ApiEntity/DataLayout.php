@@ -72,7 +72,7 @@ class DataLayout
     }
 
     /**
-     * @return array
+     * @return array|DataLayoutField[]
      */
     public function getFields(): array
     {
