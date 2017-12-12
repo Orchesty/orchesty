@@ -15,5 +15,6 @@ COPY cron/id_rsa.pub /root/.ssh/authorized_keys
 COPY cron/entrypoint.sh /
 
 COPY cron/ /usr/src/app
+
 ENTRYPOINT [ "/entrypoint.sh" ]
 CMD cd /usr/src/app && python app.py

@@ -16,6 +16,7 @@ services:
       - ${DEV_IP}:80:5000
     links:
       - mongo
+      - syslog-ng
     depends_on:
       - mongo
     command:
@@ -31,7 +32,13 @@ services:
       - mongo:/data/db
     ports:
       - ${DEV_IP}:27017:27017
+  syslog-ng:
+    image: balabit/syslog-ng
+    ports:
+      - ${DEV_IP}:514:514
+      - ${DEV_IP}:601:601
+    volumes:
+      - ./syslog-ng-remote.conf:/etc/syslog-ng/conf.d/syslog-ng-remote.conf
 
 volumes:
   mongo: {}
-

@@ -11,6 +11,10 @@ echo "gitlab.hanaboso.net ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDIwOgk1SAbzW3WX/
 
 chmod 0700 /home/dev/.ssh && chown -R dev:dev /home/dev
 
+# add log directory
+sudo mkdir /usr/src/app/log
+sudo chown dev:dev -R /usr/src/app && sudo chmod 775 -R /usr/src/app
+
 sudo service ssh start
 sudo service cron start
 
