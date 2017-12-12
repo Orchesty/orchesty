@@ -29,7 +29,7 @@ use React\Promise\PromiseInterface;
 abstract class AirtableContactConnectorAbstract implements BatchInterface, ConnectorInterface
 {
 
-    protected const PAGE_LIMIT = 2;
+    protected const PAGE_LIMIT = 50;
 
     /**
      * @var AirtableSystem
@@ -138,7 +138,7 @@ abstract class AirtableContactConnectorAbstract implements BatchInterface, Conne
         if (array_key_exists('records', $data)) {
 
             $successMessage = new SuccessMessage($i);
-            $successMessage->setData(json_encode($data['records']));
+            $successMessage->setData(json_encode($this->removeEmptyRecords($data['records'])));
             unset($data);
 
             return $successMessage;
@@ -183,6 +183,23 @@ abstract class AirtableContactConnectorAbstract implements BatchInterface, Conne
     protected function fetchData(CurlSender $sender, RequestDto $request): PromiseInterface
     {
         return $sender->send($request);
+    }
+
+    /**
+     * @param array $records
+     *
+     * @return array
+     */
+    private function removeEmptyRecords(array $records): array
+    {
+        $res = [];
+        foreach ($records as $record) {
+            if (array_key_exists('fields', $record) && is_array($record['fields']) && !empty($record['fields'])) {
+                $res[] = $record;
+            }
+        }
+
+        return $res;
     }
 
 }
