@@ -3,6 +3,7 @@
 namespace Tests\Live\AppBundle\Model\CM;
 
 use CleverConnectors\AppBundle\Model\CM\SubscriberConnector\CMGetListSubscribersConnector;
+use CleverConnectors\AppBundle\Model\ProgressCounter\ProgressCounterService;
 use Clue\React\Buzz\Browser;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSender;
@@ -28,13 +29,13 @@ final class CMGetListSubscribersConnectorTest extends KernelTestCaseAbstract
      */
     public function testBatchAction(): void
     {
-        $this->markTestSkipped('Online test');
+        //$this->markTestSkipped('Online test');
 
         $loop = Factory::create();
         $dto  = (new ProcessDto())->setHeaders([
             'pf-guid'       => '51a83cfe-9e04-11e7-a177-000d3a20eb16',
             'pf-token'      => '-3*QYg*3H-5+vaez_K7_N-4K1YhCn88k',
-            'pf-system-key' => 'neco',
+            'pf-system-key' => 'facebookaudience',
         ]);
 
         $context    = [
@@ -52,7 +53,13 @@ final class CMGetListSubscribersConnectorTest extends KernelTestCaseAbstract
             ->method('create')
             ->willReturn($curlSender);
 
-        $conn = new CMGetListSubscribersConnector($this->dm, $factory, ['cert' => '']);
+        /** @var PHPUnit_Framework_MockObject_MockObject|ProgressCounterService $progressCounter */
+        $progressCounter = $this->createMock(ProgressCounterService::class);
+        $progressCounter
+            ->method('setTotal')
+            ->willReturn(NULL);
+
+        $conn = new CMGetListSubscribersConnector($this->dm, $factory, $progressCounter, ['cert' => '']);
 
         $process = $conn->processBatch($dto, $loop, function (SuccessMessage $message): void {
             $this->assertTrue(is_array(Json::decode($message->getData(), TRUE)));

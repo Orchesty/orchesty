@@ -4,6 +4,7 @@ namespace CleverConnectors\AppBundle\Model\CM\SubscriberConnector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
+use CleverConnectors\AppBundle\Utils\CMHeaders;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
@@ -37,7 +38,6 @@ class CMGetListSubscribersConnector extends CMGetSubscribersConnectorAbstract
         $sender        = $this->factory->create($loop, $this->secret);
         $systemInstall = $this->systemInstallRepository->getSystemInstallFromHeaders($dto->getHeaders());
 
-        // TODO finish tests (live and unit)
         $settings = $systemInstall->getSettings();
         if (!isset($settings[SystemInstall::DISTRIBUTION_LIST])) {
             throw new CleverConnectorsException(
@@ -47,11 +47,11 @@ class CMGetListSubscribersConnector extends CMGetSubscribersConnectorAbstract
         }
 
         $this->listId = $settings[SystemInstall::DISTRIBUTION_LIST];
-
-        $req = new RequestDto(CurlManager::METHOD_GET, new Uri($this->getUrl(0)));
+        $processId    = CMHeaders::get(CMHeaders::PROCESS_ID, $dto->getHeaders()) ?? '';
+        $req          = new RequestDto(CurlManager::METHOD_GET, new Uri($this->getUrl(0)));
         $req->setHeaders($this->getAuthorizationHeaders($systemInstall->getUser(), $systemInstall->getToken()));
 
-        $promise = $this->getPage($sender, $callbackItem, $req);
+        $promise = $this->getPage($sender, $callbackItem, $req, 1, $processId);
 
         return $promise;
     }

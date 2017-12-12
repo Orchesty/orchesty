@@ -42,11 +42,11 @@ class CMGetSubscribersConnector extends CMGetSubscribersConnectorAbstract
             );
         }
 
-        // TODO set total count of pages for progress counter
-        $req = new RequestDto(CurlManager::METHOD_GET, new Uri($this->getUrl(0)));
+        $processId = CMHeaders::get(CMHeaders::PROCESS_ID, $dto->getHeaders()) ?? '';
+        $req       = new RequestDto(CurlManager::METHOD_GET, new Uri($this->getUrl(0)));
         $req->setHeaders($this->getAuthorizationHeaders($user, $token));
 
-        $promise = $this->getPage($sender, $callbackItem, $req);
+        $promise = $this->getPage($sender, $callbackItem, $req, 1, $processId);
 
         return $promise;
     }

@@ -130,10 +130,11 @@ abstract class CMGetSubscribersConnectorAbstract extends CMAuthorization impleme
     }
 
     /**
-     * @param CurlSender $sender
-     * @param callable   $callbackItem
-     * @param RequestDto $requestDto
-     * @param int        $page
+     * @param CurlSender  $sender
+     * @param callable    $callbackItem
+     * @param RequestDto  $requestDto
+     * @param int         $page
+     * @param null|string $processId
      *
      * @return PromiseInterface
      */
@@ -141,18 +142,23 @@ abstract class CMGetSubscribersConnectorAbstract extends CMAuthorization impleme
         CurlSender $sender,
         callable $callbackItem,
         RequestDto $requestDto,
-        int $page = 1
+        int $page = 1,
+        ?string $processId = NULL
     ): PromiseInterface
     {
         $requestDto->setUri(new Uri($this->getUrl(($page - 1) * self::COUNT)));
 
         return $this->fetchData($sender, $requestDto)->then(
-            function (ResponseInterface $response) use ($sender, $requestDto, $callbackItem, $page) {
+            function (ResponseInterface $response) use ($sender, $requestDto, $callbackItem, $page, $processId) {
                 if ($response->getStatusCode() === 200) {
                     $callbackItem($this->createSuccessMessage($response, $page));
 
-                    return $this->getPage($sender, $callbackItem, $requestDto, $page + 1);
+                    return $this->getPage($sender, $callbackItem, $requestDto, $page + 1, $processId);
                 } else {
+                    if ($processId) {
+                        $this->counterService->setTotal($processId, $page);
+                    }
+
                     return resolve();
                 }
             }

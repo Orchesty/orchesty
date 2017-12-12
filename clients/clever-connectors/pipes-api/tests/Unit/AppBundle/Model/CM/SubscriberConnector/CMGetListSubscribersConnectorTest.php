@@ -4,6 +4,7 @@ namespace Tests\Unit\AppBundle\Model\CM\SubscriberConnector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\CM\SubscriberConnector\CMGetListSubscribersConnector;
+use CleverConnectors\AppBundle\Model\ProgressCounter\ProgressCounterService;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Response;
@@ -41,7 +42,10 @@ final class CMGetListSubscribersConnectorTest extends KernelTestCaseAbstract
         $systemInstall
             ->setUser('51a83cfe-9e04-11e7-a177-000d3a20eb16')
             ->setToken('-3*QYg*3H-5+vaez_K7_N-4K1YhCn88k')
-            ->setSystem('neco');
+            ->setSystem('neco')
+            ->setSettings([
+                SystemInstall::DISTRIBUTION_LIST => '123',
+            ]);
 
         $repository = $this->createMock(SystemInstallRepository::class);
         $repository->method('getSystemInstallFromHeaders')->willReturn($systemInstall);
@@ -61,10 +65,13 @@ final class CMGetListSubscribersConnectorTest extends KernelTestCaseAbstract
             ->method('create')
             ->willReturn($curlSender);
 
+        /** @var MockObject|ProgressCounterService $progressCounter */
+        $progressCounter = $this->createMock(ProgressCounterService::class);
+
         /** @var MockObject|CMGetListSubscribersConnector $conn */
         $conn = $this->getMockBuilder(CMGetListSubscribersConnector::class)
             ->setMethods(['fetchData'])
-            ->setConstructorArgs([$dm, $factory, ['ca' => '', 'cert' => '']])
+            ->setConstructorArgs([$dm, $factory, $progressCounter, ['ca' => '', 'cert' => '']])
             ->getMock();
 
         $conn->expects($this->at(0))
