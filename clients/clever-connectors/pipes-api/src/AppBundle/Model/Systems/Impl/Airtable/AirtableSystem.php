@@ -4,7 +4,10 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\Airtable;
 
 use CleverConnectors\AppBundle\Document\MapTemplate;
 use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Enum\CleverCustomKeysEnum;
 use CleverConnectors\AppBundle\Enum\SystemTypeEnum;
+use CleverConnectors\AppBundle\Model\CMEvents\CMEventObject;
+use CleverConnectors\AppBundle\Model\CMEvents\Traits\CMEventSystemTrait;
 use CleverConnectors\AppBundle\Model\Form\Field;
 use CleverConnectors\AppBundle\Model\Form\Form;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\AuthorizationInterface;
@@ -26,6 +29,7 @@ class AirtableSystem implements AuthorizationInterface
 
     use SystemTrait;
     use AuthorizationTrait;
+    use CMEventSystemTrait;
 
     public const  BASE_URL = 'https://api.airtable.com/v0/';
     private const API_KEY  = 'api_key';
@@ -37,6 +41,10 @@ class AirtableSystem implements AuthorizationInterface
      */
     public function __construct()
     {
+        $this->addCMEvent(new CMEventObject('', SystemInstall::EVENT_CREATE, ''));
+        $this->addCMEvent(new CMEventObject(CleverCustomKeysEnum::UNSUBSCRIBE, SystemInstall::EVENT_UNSUBSCRIBE, ''));
+        $this->addCMEvent(new CMEventObject(CleverCustomKeysEnum::HARD_BOUNCE, SystemInstall::EVENT_HARD_BOUNCE, ''));
+
         $topologyName = TopologyNameUtils::getTopologyName(TopologyNameUtils::SYNC, $this->getKey());
         $this->addAllowedAction(new ActionDto($topologyName, MapTemplate::DIRECTION_IN));
 
@@ -189,11 +197,35 @@ class AirtableSystem implements AuthorizationInterface
             $this->prepareValue(self::URL, $settings)
         );
 
+        $field4 = new Field(
+            Field::CHECKBOX,
+            SystemInstall::EVENT_CREATE,
+            'Create event',
+            $systemInstall->isEventCreate()
+        );
+
+        $field5 = new Field(
+            Field::CHECKBOX,
+            SystemInstall::EVENT_UNSUBSCRIBE,
+            'UnSubscribe event',
+            $systemInstall->isEventUnsubscribe()
+        );
+
+        $field6 = new Field(
+            Field::CHECKBOX,
+            SystemInstall::EVENT_HARD_BOUNCE,
+            'Hard Bounce event',
+            $systemInstall->isEventHardBounce()
+        );
+
         $form = new Form();
         $form
             ->addField($field1)
             ->addField($field2)
-            ->addField($field3);
+            ->addField($field3)
+            ->addField($field4)
+            ->addField($field5)
+            ->addField($field6);
 
         return $form->toArray();
     }
