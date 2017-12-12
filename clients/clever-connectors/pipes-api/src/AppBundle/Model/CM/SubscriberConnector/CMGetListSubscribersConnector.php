@@ -63,6 +63,8 @@ class CMGetListSubscribersConnector extends CMGetSubscribersConnectorAbstract
      */
     protected function getUrl(int $offset): string
     {
+        // TODO fetch all or only certain status code?
+
         return sprintf(
             '%s/lists/%s/subscribers/?offset=%s&count=%s',
             self::BASE_URL,
