@@ -2,10 +2,8 @@
 
 namespace Hanaboso\PipesFramework\HbPFAclBundle\DependencyInjection;
 
-use RuntimeException;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
 use Symfony\Component\DependencyInjection\Loader;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 
@@ -14,23 +12,8 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
  *
  * @link http://symfony.com/doc/current/cookbook/bundles/extension.html
  */
-class HbPFAclExtension extends Extension implements PrependExtensionInterface
+class HbPFAclExtension extends Extension
 {
-
-    /**
-     * Allow an extension to prepend the extension configurations.
-     *
-     * @param ContainerBuilder $container
-     */
-    public function prepend(ContainerBuilder $container): void
-    {
-        if (!$container->hasExtension('hb_pf_user')) {
-            throw new RuntimeException('You must register HbPFUserBundle before.');
-        };
-
-        $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/prepend-config'));
-        $loader->load('doctrine.yml');
-    }
 
     /**
      * @param array            $configs
