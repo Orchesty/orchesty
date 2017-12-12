@@ -107,21 +107,21 @@ class MetricsManager
             self::CPU_KERNEL_TIME    => self::CPU_COUNT,
             self::REQUEST_TOTAL_TIME => self::REQUEST_COUNT,
         ]);
-        $select .= ', ';
+        $select = self::addStringSeparator($select);
         $select .= self::getSumForSelect([
             self::TOP_PROCESS_TIME   => self::PROCESSED_SUM,
             self::WAIT_TIME          => self::WAIT_SUM,
             self::CPU_KERNEL_TIME    => self::CPU_SUM,
             self::REQUEST_TOTAL_TIME => self::REQUEST_SUM,
         ]);
-        $select .= ', ';
+        $select = self::addStringSeparator($select);
         $select .= self::getMinForSelect([
             self::TOP_PROCESS_TIME   => self::PROCESSED_MIN,
             self::WAIT_TIME          => self::WAIT_MIN,
             self::CPU_KERNEL_TIME    => self::CPU_MIN,
             self::REQUEST_TOTAL_TIME => self::REQUEST_MIN,
         ]);
-        $select .= ', ';
+        $select = self::addStringSeparator($select);
         $select .= self::getMaxForSelect([
             self::TOP_PROCESS_TIME   => self::PROCESSED_MAX,
             self::WAIT_TIME          => self::WAIT_MAX,
@@ -129,16 +129,77 @@ class MetricsManager
             self::REQUEST_TOTAL_TIME => self::REQUEST_MAX,
         ]);
 
+        $where = [
+            self::TOPOLOGY => GeneratorUtils::createNormalizedServiceName($topology->getId(), $topology->getName()),
+        ];
+
+        return $this->runQuery($select, $where, $from, $to);
+    }
+
+    /**
+     * @param Node  $node
+     * @param array $params
+     *
+     * @return array
+     */
+    public function getNodeMetrics(Node $node, array $params): array
+    {
+        $from = $params['from'] ?? NULL;
+        $to   = $params['to'] ?? NULL;
+
+        $select = self::getCountForSelect([
+            self::TOP_PROCESS_TIME   => self::PROCESSED_COUNT,
+            self::WAIT_TIME          => self::WAIT_COUNT,
+            self::CPU_KERNEL_TIME    => self::CPU_COUNT,
+            self::REQUEST_TOTAL_TIME => self::REQUEST_COUNT,
+        ]);
+        $select = self::addStringSeparator($select);
+        $select .= self::getSumForSelect([
+            self::TOP_PROCESS_TIME   => self::PROCESSED_SUM,
+            self::WAIT_TIME          => self::WAIT_SUM,
+            self::CPU_KERNEL_TIME    => self::CPU_SUM,
+            self::REQUEST_TOTAL_TIME => self::REQUEST_SUM,
+        ]);
+        $select = self::addStringSeparator($select);
+        $select .= self::getMinForSelect([
+            self::TOP_PROCESS_TIME   => self::PROCESSED_MIN,
+            self::WAIT_TIME          => self::WAIT_MIN,
+            self::CPU_KERNEL_TIME    => self::CPU_MIN,
+            self::REQUEST_TOTAL_TIME => self::REQUEST_MIN,
+        ]);
+        $select = self::addStringSeparator($select);
+        $select .= self::getMaxForSelect([
+            self::TOP_PROCESS_TIME   => self::PROCESSED_MAX,
+            self::WAIT_TIME          => self::WAIT_MAX,
+            self::CPU_KERNEL_TIME    => self::CPU_MAX,
+            self::REQUEST_TOTAL_TIME => self::REQUEST_MAX,
+        ]);
+
+        $where = [
+            self::NODE => GeneratorUtils::createNormalizedServiceName($node->getId(), $node->getName()),
+        ];
+
+        return $this->runQuery($select, $where, $from, $to);
+    }
+
+    /**
+     * -------------------------------------------- HELPERS ---------------------------------------------
+     */
+
+    /**
+     * @param string      $select
+     * @param array       $where
+     * @param string|NULL $from
+     * @param string|NULL $to
+     *
+     * @return array
+     */
+    private function runQuery(string $select, array $where, string $from = NULL, string $to = NULL): array
+    {
         $qb = $this->builder
             ->select($select)
             ->from($this->tableName)
-            ->where(
-                self::getConditions(
-                    [
-                        self::TOPOLOGY => GeneratorUtils::createNormalizedServiceName($topology->getId(),
-                            $topology->getName()),
-                    ])
-            );
+            ->where(self::getConditions($where));
 
         if ($from && $to) {
             $qb->setTimeRange((new DateTime($from))->getTimestamp(), (new DateTime($to))->getTimestamp());
@@ -171,17 +232,6 @@ class MetricsManager
     }
 
     /**
-     * @param Node  $node
-     * @param array $params
-     *
-     * @return array
-     */
-    public function getNodeMetrics(Node $node, array $params): array
-    {
-        return [];
-    }
-
-    /**
      * @param array $data
      *
      * @return array
@@ -194,6 +244,16 @@ class MetricsManager
         }
 
         return $ret;
+    }
+
+    /**
+     * @param string $string
+     *
+     * @return string
+     */
+    private static function addStringSeparator(string $string): string
+    {
+        return sprintf('%s, ', $string);
     }
 
     /**
