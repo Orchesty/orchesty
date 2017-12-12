@@ -15,14 +15,14 @@ handlers:
         formatter: simple
         stream: ext://sys.stdout
 
-    syslog:
-        class: logging.handlers.SysLogHandler
-        level: DEBUG
-        formatter: syslog
-        facility: "local6"
-        address:
-          - syslog-ng
-          - 514
+#    syslog:
+#        class: logging.handlers.SysLogHandler
+#        level: DEBUG
+#        formatter: syslog
+#        facility: "local6"
+#        address:
+#          - syslog-ng
+#          - 514
 
     info_file_handler:
         class: logging.handlers.RotatingFileHandler
@@ -67,5 +67,5 @@ loggers:
 
 root:
       level: DEBUG
-      handlers: [console, syslog, info_file_handler, debug_file_handler, error_file_handler, warning_file_handler]
+      handlers: [console, info_file_handler, debug_file_handler, error_file_handler, warning_file_handler]
       propagate: no
