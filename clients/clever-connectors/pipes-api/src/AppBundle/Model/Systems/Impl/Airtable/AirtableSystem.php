@@ -194,7 +194,7 @@ class AirtableSystem implements AuthorizationInterface
             Field::TEXT,
             self::VIEW,
             'View',
-            $this->prepareValue(self::URL, $settings)
+            $this->prepareValue(self::VIEW, $settings)
         );
 
         $field4 = new Field(
