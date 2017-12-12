@@ -201,17 +201,19 @@ class CronManager
         $processedNodes = [];
 
         foreach ($nodes as $node) {
-            $processedNode[self::HASH] = $this->getHash($node);
+            if ($node->getCron()) {
+                $processedNode[self::HASH] = $this->getHash($node);
 
-            if (!in_array(self::TIME, $exclude, TRUE)) {
-                $processedNode[self::TIME] = $node->getCron();
+                if (!in_array(self::TIME, $exclude, TRUE)) {
+                    $processedNode[self::TIME] = $node->getCron();
+                }
+
+                if (!in_array(self::COMMAND, $exclude, TRUE)) {
+                    $processedNode[self::COMMAND] = $this->getCommand($node);
+                }
+
+                $processedNodes[] = $processedNode;
             }
-
-            if (!in_array(self::COMMAND, $exclude, TRUE)) {
-                $processedNode[self::COMMAND] = $this->getCommand($node);
-            }
-
-            $processedNodes[] = $processedNode;
         }
 
         return Json::encode($processedNodes);
