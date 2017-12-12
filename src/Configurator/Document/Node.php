@@ -69,7 +69,7 @@ class Node
     protected $enabled = TRUE;
 
     /**
-     * @var string
+     * @var string|null
      *
      * @MongoDB\Field(type="string")
      */
@@ -212,9 +212,9 @@ class Node
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getCron(): string
+    public function getCron(): ?string
     {
         return $this->cron;
     }
