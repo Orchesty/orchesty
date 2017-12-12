@@ -149,6 +149,7 @@ services:
               - mapper-api
               - monolith-api
               - topology-api
+              - cron-api
         depends_on:
           - monolith-fpm
           - topology-fpm
@@ -156,6 +157,7 @@ services:
           - grafana
           - kibana
           - spitter
+          - cron-api
 
     stream:
         image: dkr.hanaboso.net/pipes/pipes/stream:dev
@@ -268,6 +270,19 @@ services:
           - ${SSH_AUTH_SOCK}:/ssh-agent
         depends_on:
           - rabbitmq
+
+    cron-api:
+        user: ${DEV_UID}:${DEV_GID}
+        image: dkr.hanaboso.net/pipes/pipes/python-cron:dev
+        environment:
+          - DEV_UID={DEV_UID}
+          - DEV_GID={DEV_GID}
+        ports:
+          - ${DEV_IP}:8050:5000
+        links:
+          - mongo
+        depends_on:
+          - mongo
 
 volumes:
   elasticsearch: {}
