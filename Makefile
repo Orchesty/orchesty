@@ -11,7 +11,7 @@ docker-up: .env
 
 docker-up-force: .env
 	$(DC) pull
-	$(DC) up -d --force-recreate
+	$(DC) up -d --force-recreate --remove-orphans
 
 docker-down-clean: .env
 	$(DC) down -v
