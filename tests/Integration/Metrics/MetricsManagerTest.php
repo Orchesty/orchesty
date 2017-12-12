@@ -13,6 +13,7 @@ use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Metrics\Client\MetricsClient;
 use Hanaboso\PipesFramework\Metrics\Exception\MetricsException;
 use Hanaboso\PipesFramework\Metrics\MetricsManager;
+use Hanaboso\PipesFramework\TopologyGenerator\GeneratorUtils;
 use InfluxDB\Database;
 use InfluxDB\Database\RetentionPolicy;
 use InfluxDB\Exception;
@@ -46,6 +47,13 @@ final class MetricsManagerTest extends KernelTestCaseAbstract
         $result  = $manager->getTopologyMetrics($topo, []);
 
         self::assertTrue(is_array($result));
+        self::assertCount(6, $result);
+        self::assertArrayHasKey(MetricsManager::QUEUE_DEPTH, $result);
+        self::assertArrayHasKey(MetricsManager::WAITING_TIME, $result);
+        self::assertArrayHasKey(MetricsManager::PROCESS_TIME, $result);
+        self::assertArrayHasKey(MetricsManager::CPU_TIME, $result);
+        self::assertArrayHasKey(MetricsManager::REQUEST_TIME, $result);
+        self::assertArrayHasKey(MetricsManager::ERROR, $result);
     }
 
     /**
@@ -94,23 +102,45 @@ final class MetricsManagerTest extends KernelTestCaseAbstract
      */
     private function setFakeData(string $id): void
     {
+        $this->getClient()->createClient()->selectDB('test')->create(new RetentionPolicy('test', '1d', 1, TRUE));
+        $database = $this->getClient()->getDatabase('test');
+        $points   = [
+            new Point(
+                'pipes_node',
+                NULL,
+                [
+                    MetricsManager::NODE     => 'node',
+                    MetricsManager::TOPOLOGY => GeneratorUtils::createNormalizedServiceName($id, 'aaa-bbb'),
+                ],
+                [
+                    MetricsManager::TOP_PROCESS_TIME   => 10,
+                    MetricsManager::WAIT_TIME          => 10,
+                    MetricsManager::REQUEST_TOTAL_TIME => 10,
+                    MetricsManager::CPU_KERNEL_TIME    => 10,
+                    MetricsManager::NODE_PROCESS_TIME  => 10,
+                ]
+            ),
+        ];
+        $database->writePoints($points, Database::PRECISION_SECONDS);
+        sleep(1);
         $points = [
             new Point(
                 'pipes_node',
                 NULL,
                 [
-                    MetricsManager::NODE             => 'node',
-                    MetricsManager::TOPOLOGY         => $id,
+                    MetricsManager::NODE     => 'node',
+                    MetricsManager::TOPOLOGY => GeneratorUtils::createNormalizedServiceName($id, 'aaa-bbb'),
                 ],
                 [
-                    MetricsManager::TOP_PROCESS_TIME => 10,
-                    MetricsManager::WAIT_TIME        => 10,
+                    MetricsManager::TOP_PROCESS_TIME   => 2,
+                    MetricsManager::WAIT_TIME          => 2,
+                    MetricsManager::REQUEST_TOTAL_TIME => 2,
+                    MetricsManager::CPU_KERNEL_TIME    => 2,
+                    MetricsManager::NODE_PROCESS_TIME  => 2,
                 ]
             ),
         ];
 
-        $this->getClient()->createClient()->selectDB('test')->create(new RetentionPolicy('test', '1d', 1, TRUE));
-        $database = $this->getClient()->getDatabase('test');
         $database->writePoints($points, Database::PRECISION_SECONDS);
     }
 
