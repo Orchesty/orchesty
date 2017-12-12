@@ -32,8 +32,9 @@ use function React\Promise\resolve;
 abstract class CMGetSubscribersConnectorAbstract extends CMAuthorization implements ConnectorInterface, BatchInterface, LoggerAwareInterface
 {
 
-    protected const BASE_URL = 'https://api.dev.clevermonitor.com/v1.2';
-    protected const COUNT    = 50;
+    protected const BASE_URL              = 'https://api.dev.clevermonitor.com/v1.2';
+    protected const COUNT                 = 50;
+    protected const ALL_SUBSCRIBERS_COUNT = 500;
 
     /**
      * @var ObjectRepository|SystemInstallRepository

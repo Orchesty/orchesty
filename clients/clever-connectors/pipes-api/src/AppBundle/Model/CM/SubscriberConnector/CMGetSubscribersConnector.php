@@ -58,7 +58,7 @@ class CMGetSubscribersConnector extends CMGetSubscribersConnectorAbstract
      */
     protected function getUrl(int $offset): string
     {
-        return sprintf('%s/subscribers/?offset=%s&count=%s', self::BASE_URL, $offset, self::COUNT);
+        return sprintf('%s/subscribers/?offset=%s&count=%s', self::BASE_URL, $offset, self::ALL_SUBSCRIBERS_COUNT);
     }
 
 }
