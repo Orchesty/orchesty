@@ -38,6 +38,10 @@ init-dev: .env
 	$(DC_DEV) up -d --force-recreate --remove-orphans
 	$(DE_DEV) monolith-fpm composer global require hirak/prestissimo
 	$(DE_DEV) monolith-fpm composer install --ignore-platform-reqs
+	$(DE_DEV) monolith-fpm bin/console cache:warmup
+	$(DE_DEV) batch bin/console cache:warmup
+	$(DE_DEV) batch-connector bin/console cache:warmup
+	$(DE_DEV) status-service bin/console cache:warmup
 	$(DE_DEV) api-demo-fpm composer install
 
 destroy-dev:
