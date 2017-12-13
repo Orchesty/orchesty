@@ -38,6 +38,7 @@ class SystemMetricsListenerTest extends ControllerTestCaseAbstract
         $headers = [
             'HTTP_' . PipesHeaders::createKey(PipesHeaders::TOPOLOGY_ID) => 'topoId',
             'HTTP_' . PipesHeaders::createKey(PipesHeaders::CORRELATION_ID) => 'correlationId',
+            'HTTP_' . PipesHeaders::createKey(PipesHeaders::NODE_ID) => 'nodeId',
         ];
         $this->client->request('GET', '/nodes/oiz5', [], [], $headers);
 
