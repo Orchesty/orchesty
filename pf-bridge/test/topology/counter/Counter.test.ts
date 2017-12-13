@@ -12,7 +12,9 @@ import * as rp from "request-promise";
 import {amqpConnectionOptions} from "../../../src/config";
 import Headers from "../../../src/message/Headers";
 import {ResultCode} from "../../../src/message/ResultCode";
-import {default as Counter, ICounterProcessInfo, ICounterSettings} from "../../../src/topology/counter/Counter";
+import {default as Counter, ICounterSettings} from "../../../src/topology/counter/Counter";
+import {ICounterProcessInfo} from "../../../src/topology/counter/CounterProcess";
+import InMemoryStorage from "../../../src/topology/counter/storage/InMemoryStorage";
 
 const conn = new Connection(amqpConnectionOptions);
 const metricsMock = {
@@ -38,16 +40,16 @@ describe("Counter", () => {
             },
             port: 7901,
         };
-        const counter = new Counter(counterSettings, conn, metricsMock);
+        const counter = new Counter(counterSettings, conn, new InMemoryStorage(), metricsMock);
         counter.listen()
             .then(() => {
                 const headers = new Headers();
                 headers.setPFHeader(Headers.TOPOLOGY_DELETE_URL, "http://localhost:7900/remote-terminate");
-                const options = {
+                // Simulate external request to counter http server
+                return rp({
                     uri: `http://localhost:7901/topology/terminate/${counterSettings.topology}`,
                     headers: headers.getRaw(),
-                };
-                return rp(options);
+                });
             })
             .then((resp: string) => {
                 assert.equal(resp, "Topology will be terminated as soon as possible.");
@@ -388,7 +390,7 @@ describe("Counter", () => {
         const consumer = new SimpleConsumer(conn, prepareConsumer, handleMessage);
         consumer.consume(testOutputQueue.name, testOutputQueue.options);
 
-        const counter = new Counter(counterSettings, conn, metricsMock);
+        const counter = new Counter(counterSettings, conn, new InMemoryStorage(), metricsMock);
         counter.listen(7902)
             .then(() => {
                 const promises: Array<Promise<any>> = [];

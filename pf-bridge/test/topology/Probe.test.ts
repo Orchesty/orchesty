@@ -4,7 +4,7 @@ import "mocha";
 import * as express from "express";
 import * as rp from "request-promise";
 import {default as Configurator, INodeConfig} from "../../src/topology/Configurator";
-import Probe, {IProbeResult} from "../../src/topology/Probe";
+import Probe, {IProbeResult} from "../../src/topology/probe/Probe";
 
 const topo = Configurator.createConfigFromSkeleton(
     {

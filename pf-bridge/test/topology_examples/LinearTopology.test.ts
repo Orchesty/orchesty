@@ -12,7 +12,7 @@ import Headers from "../../src/message/Headers";
 import {ResultCode} from "../../src/message/ResultCode";
 import Pipes from "../../src/Pipes";
 import {ITopologyConfigSkeleton} from "../../src/topology/Configurator";
-import {ICounterProcessInfo} from "../../src/topology/counter/Counter";
+import {ICounterProcessInfo} from "../../src/topology/counter/CounterProcess";
 
 const testTopology: ITopologyConfigSkeleton = {
     id: "linear-topo",

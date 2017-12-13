@@ -12,7 +12,7 @@ import MongoMessageStorage from "./repeater/MongoMessageStorage";
 import Repeater from "./repeater/Repeater";
 import {default as Configurator, INodeConfig, ITopologyConfig, ITopologyConfigSkeleton} from "./topology/Configurator";
 import Counter from "./topology/counter/Counter";
-import Probe from "./topology/Probe";
+import Probe from "./topology/probe/Probe";
 
 class Pipes {
 
@@ -55,9 +55,9 @@ class Pipes {
 
     /**
      *
-     * @return {Promise<Node[]>}
+     * @return {Promise<void>}
      */
-    public startAllNodes(): Promise<Node[]> {
+    public startMultiBridge(): Promise<void> {
         const proms: Node[] = [];
 
         for (const nodeCfg of this.topology.nodes) {
@@ -67,7 +67,12 @@ class Pipes {
                 });
         }
 
-        return Promise.all(proms);
+        return Promise.all(proms)
+            .then(() => {
+                const multiProbe = this.dic.get("probe.multi");
+                multiProbe.addTopology();
+                return;
+            });
     }
 
     /**
@@ -77,6 +82,7 @@ class Pipes {
         const counter = new Counter(
             this.topology.counter,
             this.dic.get("amqp.connection"),
+            this.dic.get("counter.storage.memory"),
             this.dic.get("metrics")(this.topology.id, `${os.hostname()}_counter`),
         );
 

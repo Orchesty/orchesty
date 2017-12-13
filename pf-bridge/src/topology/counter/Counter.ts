@@ -7,11 +7,10 @@ import * as request from "request";
 import logger from "../../logger/Logger";
 import {default as CounterMessage} from "../../message/CounterMessage";
 import Headers from "../../message/Headers";
-import {ResultCode} from "../../message/ResultCode";
 import {INodeLabel} from "../Configurator";
 import CounterConsumer from "./CounterConsumer";
-
-const ID_DELIMITER = ".";
+import {default as CounterProcess, ICounterProcessInfo} from "./CounterProcess";
+import ICounterStorage from "./storage/ICounterStorage";
 
 const ROUTE_TOPOLOGY_TERMINATE = "/topology/terminate/:topologyId";
 
@@ -39,111 +38,20 @@ export interface ICounterSettings {
     port: number;
 }
 
-interface ICounterLog {
-    resultCode: ResultCode;
-    node: string;
-    message: string;
-}
-
-export interface ICounterProcessInfo {
-    topology: string;
-    correlation_id: string;
-    process_id: string;
-    total: number;
-    ok: number;
-    nok: number;
-    success: boolean;
-    messages: ICounterLog[];
-    start_timestamp: number;
-    end_timestamp: number;
-}
-
 /**
  * Topology component that receives signals(messages) and watches if some process run through whole topology
  * If yes, it sends process finished message
  */
 export default class Counter {
 
-    /**
-     * Returns top parent of job
-     * @param {string} id
-     * @return {string}
-     * @private
-     */
-    private static getMostTopProcessId(id: string) {
-        const stringId = `${id}`;
-        const parts = stringId.split(ID_DELIMITER, 1);
-
-        return parts[0];
-    }
-
-    /**
-     *
-     * @param {string} topology
-     * @param {CounterMessage} cm
-     * @return {ICounterProcessInfo}
-     */
-    private static createProcessInfo(topology: string, cm: CounterMessage): ICounterProcessInfo {
-        return {
-            topology,
-            correlation_id: cm.getCorrelationId(),
-            process_id: cm.getProcessId(),
-            total: 1,
-            ok: 0,
-            nok: 0,
-            success: true,
-            messages: [],
-            start_timestamp: Date.now(),
-            end_timestamp: 0,
-        };
-    }
-
-    /**
-     *
-     * @param {ICounterProcessInfo} processInfo
-     * @param {CounterMessage} cm
-     * @return {ICounterProcessInfo}
-     */
-    private static updateProcessInfo(processInfo: ICounterProcessInfo, cm: CounterMessage): ICounterProcessInfo {
-        if (cm.getResultCode() === ResultCode.SUCCESS ||
-            cm.getResultCode() === ResultCode.DO_NOT_CONTINUE) {
-            processInfo.ok += 1;
-        } else {
-            processInfo.nok += 1;
-            processInfo.success = false;
-        }
-
-        processInfo.total += cm.getMultiplier() * cm.getFollowing();
-
-        const log: ICounterLog = {node: cm.getNodeId(), resultCode: cm.getResultCode(), message: cm.getResultMsg()};
-        processInfo.messages.push(log);
-
-        return processInfo;
-    }
-
-    /**
-     * Returns true if process is completely finished
-     *
-     * @param {ICounterProcessInfo} job
-     * @return {boolean}
-     * @private
-     */
-    private static isProcessFinished(job: ICounterProcessInfo) {
-        logger.info(`Counter is process finished called. Data: ${JSON.stringify(job)}`);
-
-        if (job.nok + job.ok === job.total) {
-            return true;
-        }
-        return false;
-    }
-
-    private processes: { [key: string]: ICounterProcessInfo };
     private settings: any;
     private connection: Connection;
     private publisher: Publisher;
     private consumer: CounterConsumer;
+    private storage: ICounterStorage;
     private metrics: IMetrics;
     private httpServer: any;
+    private topologyId: string;
     private terminationRequested: boolean;
     private terminationUrl: string;
 
@@ -151,16 +59,24 @@ export default class Counter {
      *
      * @param settings
      * @param connection
+     * @param storage
      * @param metrics
      */
-    constructor(settings: ICounterSettings, connection: Connection, metrics: IMetrics) {
-        this.processes = {};
+    constructor(
+        settings: ICounterSettings,
+        connection: Connection,
+        storage: ICounterStorage,
+        metrics: IMetrics,
+    ) {
         this.terminationRequested = false;
         this.settings = settings;
         this.connection = connection;
+        this.storage = storage;
         this.metrics = metrics;
 
-        logger.info(`Starting counter for topology : '${this.settings.topology}'`);
+        this.topologyId = this.settings.topology;
+
+        logger.info(`Starting counter for topology : '${this.topologyId}'`);
 
         this.prepareConsumer();
         this.preparePublisher();
@@ -234,7 +150,7 @@ export default class Counter {
                 return resp.status(400).send("Missing topologyId");
             }
 
-            if (req.params.topologyId !== this.settings.topology) {
+            if (req.params.topologyId !== this.topologyId) {
                 return resp.status(400).send(`Invalid topologyId "${req.params.topologyId}"`);
             }
 
@@ -268,14 +184,14 @@ export default class Counter {
             const content = JSON.parse(msg.content.toString());
 
             const resultCode = content.result.code;
-            const processId = Counter.getMostTopProcessId(headers.getPFHeader(Headers.PROCESS_ID));
+            const processId = CounterProcess.getMostTopProcessId(headers.getPFHeader(Headers.PROCESS_ID));
             headers.setPFHeader(Headers.PROCESS_ID, processId);
 
             const node: INodeLabel = {
                 id: headers.getPFHeader(Headers.NODE_ID),
                 node_id: headers.getPFHeader(Headers.NODE_ID),
                 node_name: headers.getPFHeader(Headers.NODE_NAME),
-                topology_id: this.settings.topology,
+                topology_id: this.topologyId,
             };
 
             const cm = new CounterMessage(
@@ -305,27 +221,27 @@ export default class Counter {
     /**
      *
      * @param {CounterMessage} cm
-     * @return {ICounterProcessInfo}
+     * @return {void}
      */
-    private updateProcessInfo(cm: CounterMessage): ICounterProcessInfo {
-        let proc: ICounterProcessInfo = this.processes[cm.getProcessId()] ? this.processes[cm.getProcessId()] : null;
+    private async updateProcessInfo(cm: CounterMessage): Promise<void> {
+        let proc: ICounterProcessInfo = await this.storage.get(this.topologyId, cm.getProcessId());
 
         if (!proc) {
-            proc = Counter.createProcessInfo(this.settings.topology, cm);
+            proc = CounterProcess.createProcessInfo(this.topologyId, cm);
         }
 
-        proc = Counter.updateProcessInfo(proc, cm);
+        proc = CounterProcess.updateProcessInfo(proc, cm);
 
-        if (Counter.isProcessFinished(proc)) {
+        if (CounterProcess.isProcessFinished(proc)) {
             proc.end_timestamp = Date.now();
             this.onJobFinished(proc);
-            delete this.processes[cm.getProcessId()];
+            this.storage.remove(this.topologyId, cm.getProcessId());
         } else {
-            // save job
-            this.processes[cm.getProcessId()] = proc;
+            const added = await this.storage.add(this.topologyId, proc);
+            if (!added) {
+                logger.error(`Could not add to counter storage. ${JSON.stringify(proc)}`);
+            }
         }
-
-        return proc;
     }
 
     /**
@@ -377,13 +293,13 @@ export default class Counter {
     /**
      * Checks if counter can be terminated and if so, send http request about it
      */
-    private tryTerminate() {
+    private async tryTerminate() {
         if (!this.terminationRequested || !this.terminationUrl) {
             return;
         }
 
-        // Keep running some processes are not completed yet
-        if (Object.keys(this.processes).length) {
+        const isSomeRunning = await this.storage.hasSome(this.topologyId);
+        if (isSomeRunning) {
             return;
         }
 
