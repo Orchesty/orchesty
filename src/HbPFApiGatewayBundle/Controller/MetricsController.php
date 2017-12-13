@@ -18,7 +18,7 @@ class MetricsController extends FOSRestController
 {
 
     /**
-     * @Route("/metrics/topology/{topologyName}")
+     * @Route("/metrics/topology/{topologyId}")
      * @Method({"GET", "OPTIONS"})
      *
      * @return Response
@@ -29,7 +29,7 @@ class MetricsController extends FOSRestController
     }
 
     /**
-     * @Route("/api/metrics/topology/{topologyName}/node/{nodeName}")
+     * @Route("/metrics/topology/{topologyId}/node/{nodeId}")
      * @Method({"GET", "OPTIONS"})
      *
      * @return Response

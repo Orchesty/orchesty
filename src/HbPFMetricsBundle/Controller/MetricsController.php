@@ -11,10 +11,11 @@ namespace Hanaboso\PipesFramework\HbPFMetricsBundle\Controller;
 
 use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Controller\FOSRestController;
+use Hanaboso\PipesFramework\Commons\Traits\ControllerTrait;
 use Hanaboso\PipesFramework\HbPFMetricsBundle\Handler\MetricsHandler;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class MetricsController
@@ -25,45 +26,46 @@ use Symfony\Component\HttpFoundation\Request;
 class MetricsController extends FOSRestController
 {
 
+    use ControllerTrait;
+
     /**
      * @var MetricsHandler
      */
     private $metricsHandler;
 
     /**
-     * @Route("/metrics/topology/{topologyName}")
+     * @Route("/metrics/topology/{topologyId}")
      * @Method({"GET", "OPTIONS"})
      *
      * @param Request $request
-     * @param string  $topologyName
+     * @param string  $topologyId
      *
-     * @return JsonResponse
+     * @return Response
      */
-    public function topologyMetricsAction(Request $request, string $topologyName): JsonResponse
+    public function topologyMetricsAction(Request $request, string $topologyId): Response
     {
         $this->construct();
-        $data = $this->metricsHandler->getTopologyMetrics($topologyName, $request->attributes->all());
+        $data = $this->metricsHandler->getTopologyMetrics($topologyId, $request->attributes->all());
 
-        return new JsonResponse($data);
+        return $this->getResponse($data);
     }
 
     /**
-     * @Route("/api/metrics/topology/{topologyName}/node/{nodeName}")
+     * @Route("/metrics/topology/{topologyId}/node/{nodeId}")
      * @Method({"GET", "OPTIONS"})
      *
      * @param Request $request
-     * @param string  $topologyName
+     * @param string  $topologyId
+     * @param string  $nodeId
      *
-     * @param string  $nodeName
-     *
-     * @return JsonResponse
+     * @return Response
      */
-    public function nodeMetricsAction(Request $request, string $topologyName, string $nodeName): JsonResponse
+    public function nodeMetricsAction(Request $request, string $topologyId, string $nodeId): Response
     {
         $this->construct();
-        $data = $this->metricsHandler->getNodeMetrics($topologyName, $nodeName, $request->attributes->all());
+        $data = $this->metricsHandler->getNodeMetrics($topologyId, $nodeId, $request->attributes->all());
 
-        return new JsonResponse($data);
+        return $this->getResponse($data);
     }
 
     /**

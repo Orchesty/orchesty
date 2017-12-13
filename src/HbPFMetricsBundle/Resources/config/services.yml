@@ -1,5 +1,4 @@
 services:
-
     hbpf.metrics.metrics_client:
         class: Hanaboso\PipesFramework\Metrics\Client\MetricsClient
         arguments:
@@ -11,6 +10,9 @@ services:
 
     hbpf.metrics.handler.metrics:
         class: Hanaboso\PipesFramework\HbPFMetricsBundle\Handler\MetricsHandler
+        arguments:
+            - "@doctrine_mongodb.odm.default_document_manager"
+            - "@hbpf.metrics.manager.metrics"
 
     hbpf.metrics.manager.metrics:
         class: Hanaboso\PipesFramework\Metrics\MetricsManager
