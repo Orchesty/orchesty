@@ -83,7 +83,7 @@ class Pipes {
             this.topology.counter,
             this.dic.get("amqp.connection"),
             this.dic.get("counter.storage.memory"),
-            this.dic.get("metrics")(this.topology.id, `${os.hostname()}_counter`),
+            this.dic.get("metrics")(this.topology.id, "counter"),
         );
 
         return counter.listen(port)
@@ -143,7 +143,7 @@ class Pipes {
             this.dic.get(nodeCfg.worker.type)(nodeCfg.worker.settings, drain) :
             this.dic.get(nodeCfg.worker.type)(nodeCfg.worker.settings);
 
-        const metrics: IMetrics = this.dic.get("metrics")(this.topology.id, `${os.hostname()}_${id}`);
+        const metrics: IMetrics = this.dic.get("metrics")(this.topology.id, id);
 
         const node = new Node(id, worker, faucet, drain, metrics);
 

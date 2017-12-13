@@ -41,8 +41,7 @@ class DIContainer extends Container {
         this.set("metrics", (topology: string, node: string) => {
             return new Metrics(
                 metricsOptions.node_measurement,
-                topology,
-                node,
+                {topology_id: topology, node_id: node},
                 metricsOptions.server,
                 metricsOptions.port,
             );
