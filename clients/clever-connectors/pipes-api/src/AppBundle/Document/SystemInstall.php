@@ -40,6 +40,7 @@ class SystemInstall
     public const  SYSTEM_URL         = 'system_url';
     public const  DISTRIBUTION_LISTS = 'distribution_lists';
     public const  REMOTE_HOST        = 'remote_host';
+    public const  SELECT_LIST        = 'list';
 
     use IdTrait;
 
