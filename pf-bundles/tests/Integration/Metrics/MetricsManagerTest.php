@@ -9,11 +9,11 @@
 
 namespace Tests\Integration\Metrics;
 
+use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Metrics\Client\MetricsClient;
 use Hanaboso\PipesFramework\Metrics\Exception\MetricsException;
 use Hanaboso\PipesFramework\Metrics\MetricsManager;
-use Hanaboso\PipesFramework\TopologyGenerator\GeneratorUtils;
 use InfluxDB\Database;
 use InfluxDB\Database\RetentionPolicy;
 use InfluxDB\Exception;
@@ -36,15 +36,15 @@ final class MetricsManagerTest extends KernelTestCaseAbstract
      * @throws Exception
      * @throws MetricsException
      */
-    public function testGetTopologyMetrics(): void
+    public function testGetNodeMetrics(): void
     {
-        $id   = uniqid();
-        $topo = $this->createTopo($id);
+        $topo = $this->createTopo();
+        $node = $this->createNode($topo);
 
-        $this->setFakeData($id);
+        $this->setFakeData($topo->getId(), $node->getId());
 
         $manager = $this->getManager();
-        $result  = $manager->getTopologyMetrics($topo, []);
+        $result  = $manager->getNodeMetrics($node, []);
 
         self::assertTrue(is_array($result));
         self::assertCount(6, $result);
@@ -57,17 +57,67 @@ final class MetricsManagerTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @param string $id
-     *
+     * @throws Database\Exception
+     * @throws Exception
+     * @throws MetricsException
+     */
+    public function testGetTopologyMetrics(): void
+    {
+        $topo = $this->createTopo();
+        $node = $this->createNode($topo);
+
+        $this->setFakeData($topo->getId(), $node->getId());
+
+        $manager = $this->getManager();
+        $result  = $manager->getTopologyMetrics($topo, []);
+
+        self::assertTrue(is_array($result));
+        self::assertCount(1, $result);
+        self::assertArrayHasKey($node->getId(), $result);
+        $result = $result[$node->getId()];
+
+        self::assertTrue(is_array($result));
+        self::assertCount(6, $result);
+        self::assertArrayHasKey(MetricsManager::QUEUE_DEPTH, $result);
+        self::assertArrayHasKey(MetricsManager::WAITING_TIME, $result);
+        self::assertArrayHasKey(MetricsManager::PROCESS_TIME, $result);
+        self::assertArrayHasKey(MetricsManager::CPU_TIME, $result);
+        self::assertArrayHasKey(MetricsManager::REQUEST_TIME, $result);
+        self::assertArrayHasKey(MetricsManager::ERROR, $result);
+    }
+
+    /**
+     * --------------------------------------- HELPERS ----------------------------------
+     */
+
+    /**
      * @return Topology
      */
-    private function createTopo(string $id): Topology
+    private function createTopo(): Topology
     {
         $topo = new Topology();
-        $topo->setName('aaa-bbb');
-        $this->setProperty($topo, 'id', $id);
+        $topo->setName(uniqid());
+        $this->dm->persist($topo);
+        $this->dm->flush($topo);
 
         return $topo;
+    }
+
+    /**
+     * @param Topology $topology
+     *
+     * @return Node
+     */
+    private function createNode(Topology $topology): Node
+    {
+        $node = new Node();
+        $node
+            ->setTopology($topology->getId())
+            ->setName(uniqid());
+        $this->dm->persist($node);
+        $this->dm->flush($node);
+
+        return $node;
     }
 
     /**
@@ -90,17 +140,18 @@ final class MetricsManagerTest extends KernelTestCaseAbstract
     {
         $table = $this->container->getParameter('influx.table');
 
-        return new MetricsManager($this->getClient(), $table);
+        return new MetricsManager($this->getClient(), $this->dm, $table);
     }
 
     /**
-     * @param string $id
+     * @param string $topologyId
+     * @param string $nodeId
      *
      * @throws Database\Exception
-     * @throws MetricsException
      * @throws Exception
+     * @throws MetricsException
      */
-    private function setFakeData(string $id): void
+    private function setFakeData(string $topologyId, string $nodeId): void
     {
         $this->getClient()->createClient()->selectDB('test')->create(new RetentionPolicy('test', '1d', 1, TRUE));
         $database = $this->getClient()->getDatabase('test');
@@ -109,11 +160,10 @@ final class MetricsManagerTest extends KernelTestCaseAbstract
                 'pipes_node',
                 NULL,
                 [
-                    MetricsManager::NODE     => 'node',
-                    MetricsManager::TOPOLOGY => GeneratorUtils::createNormalizedServiceName($id, 'aaa-bbb'),
+                    MetricsManager::NODE     => $nodeId,
+                    MetricsManager::TOPOLOGY => $topologyId,
                 ],
                 [
-                    MetricsManager::TOP_PROCESS_TIME   => 10,
                     MetricsManager::WAIT_TIME          => 10,
                     MetricsManager::REQUEST_TOTAL_TIME => 10,
                     MetricsManager::CPU_KERNEL_TIME    => 10,
@@ -121,18 +171,17 @@ final class MetricsManagerTest extends KernelTestCaseAbstract
                 ]
             ),
         ];
-        $database->writePoints($points, Database::PRECISION_SECONDS);
-        sleep(1);
+        $database->writePoints($points, Database::PRECISION_NANOSECONDS);
+        usleep(10);
         $points = [
             new Point(
                 'pipes_node',
                 NULL,
                 [
-                    MetricsManager::NODE     => 'node',
-                    MetricsManager::TOPOLOGY => GeneratorUtils::createNormalizedServiceName($id, 'aaa-bbb'),
+                    MetricsManager::NODE     => $nodeId,
+                    MetricsManager::TOPOLOGY => $topologyId,
                 ],
                 [
-                    MetricsManager::TOP_PROCESS_TIME   => 2,
                     MetricsManager::WAIT_TIME          => 2,
                     MetricsManager::REQUEST_TOTAL_TIME => 2,
                     MetricsManager::CPU_KERNEL_TIME    => 2,
@@ -141,7 +190,7 @@ final class MetricsManagerTest extends KernelTestCaseAbstract
             ),
         ];
 
-        $database->writePoints($points, Database::PRECISION_SECONDS);
+        $database->writePoints($points, Database::PRECISION_NANOSECONDS);
     }
 
 }

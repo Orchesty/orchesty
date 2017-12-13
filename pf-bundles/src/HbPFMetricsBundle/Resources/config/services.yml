@@ -11,10 +11,10 @@ services:
 
     hbpf.metrics.handler.metrics:
         class: Hanaboso\PipesFramework\HbPFMetricsBundle\Handler\MetricsHandler
-        arguments:
 
     hbpf.metrics.manager.metrics:
         class: Hanaboso\PipesFramework\Metrics\MetricsManager
         arguments:
             - "@hbpf.metrics.metrics_client"
+            - "@doctrine_mongodb.odm.default_document_manager"
             - "%influx.table%"

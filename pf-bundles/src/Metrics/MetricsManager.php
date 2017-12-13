@@ -10,11 +10,13 @@
 namespace Hanaboso\PipesFramework\Metrics;
 
 use DateTime;
+use Doctrine\Common\Persistence\ObjectRepository;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
+use Hanaboso\PipesFramework\Configurator\Repository\NodeRepository;
 use Hanaboso\PipesFramework\Metrics\Client\ClientInterface;
 use Hanaboso\PipesFramework\Metrics\Dto\MetricsDto;
-use Hanaboso\PipesFramework\TopologyGenerator\GeneratorUtils;
 use InfluxDB\Query\Builder;
 
 /**
@@ -34,15 +36,14 @@ class MetricsManager
     public const ERROR        = 'error';
 
     // TAGS
-    public const TOPOLOGY = 'host';
-    public const NODE     = 'name';
+    public const TOPOLOGY = 'topology_id';
+    public const NODE     = 'node_id';
 
     // METRICS
     public const WAIT_TIME          = 'bridge_job_waiting_duration';
-    public const NODE_PROCESS_TIME  = 'bridge_job_worker_duration';
-    public const TOP_PROCESS_TIME   = 'counter_process_duration';
     public const CPU_KERNEL_TIME    = 'fpm_cpu_kernel_time';
     public const REQUEST_TOTAL_TIME = 'fpm_request_total_duration';
+    public const NODE_PROCESS_TIME  = 'bridge_job_worker_duration';
 
     // ALIASES - COUNT
     private const PROCESSED_COUNT = 'top_processed_count';
@@ -74,6 +75,11 @@ class MetricsManager
     private $builder;
 
     /**
+     * @var NodeRepository|ObjectRepository
+     */
+    private $nodeRepository;
+
+    /**
      * @var string
      */
     private $tableName;
@@ -82,12 +88,14 @@ class MetricsManager
      * MetricsManager constructor.
      *
      * @param ClientInterface $client
+     * @param DocumentManager $dm
      * @param string          $tableName
      */
-    public function __construct(ClientInterface $client, string $tableName)
+    public function __construct(ClientInterface $client, DocumentManager $dm, string $tableName)
     {
-        $this->builder   = $client->getQueryBuilder();
-        $this->tableName = $tableName;
+        $this->builder        = $client->getQueryBuilder();
+        $this->tableName      = $tableName;
+        $this->nodeRepository = $dm->getRepository(Node::class);
     }
 
     /**
@@ -98,42 +106,13 @@ class MetricsManager
      */
     public function getTopologyMetrics(Topology $topology, array $params): array
     {
-        $from = $params['from'] ?? NULL;
-        $to   = $params['to'] ?? NULL;
+        $res   = [];
+        $nodes = $this->nodeRepository->findBy(['topology' => $topology->getId()]);
+        foreach ($nodes as $node) {
+            $res[$node->getId()] = $this->getNodeMetrics($node, $params);
+        }
 
-        $select = self::getCountForSelect([
-            self::TOP_PROCESS_TIME   => self::PROCESSED_COUNT,
-            self::WAIT_TIME          => self::WAIT_COUNT,
-            self::CPU_KERNEL_TIME    => self::CPU_COUNT,
-            self::REQUEST_TOTAL_TIME => self::REQUEST_COUNT,
-        ]);
-        $select = self::addStringSeparator($select);
-        $select .= self::getSumForSelect([
-            self::TOP_PROCESS_TIME   => self::PROCESSED_SUM,
-            self::WAIT_TIME          => self::WAIT_SUM,
-            self::CPU_KERNEL_TIME    => self::CPU_SUM,
-            self::REQUEST_TOTAL_TIME => self::REQUEST_SUM,
-        ]);
-        $select = self::addStringSeparator($select);
-        $select .= self::getMinForSelect([
-            self::TOP_PROCESS_TIME   => self::PROCESSED_MIN,
-            self::WAIT_TIME          => self::WAIT_MIN,
-            self::CPU_KERNEL_TIME    => self::CPU_MIN,
-            self::REQUEST_TOTAL_TIME => self::REQUEST_MIN,
-        ]);
-        $select = self::addStringSeparator($select);
-        $select .= self::getMaxForSelect([
-            self::TOP_PROCESS_TIME   => self::PROCESSED_MAX,
-            self::WAIT_TIME          => self::WAIT_MAX,
-            self::CPU_KERNEL_TIME    => self::CPU_MAX,
-            self::REQUEST_TOTAL_TIME => self::REQUEST_MAX,
-        ]);
-
-        $where = [
-            self::TOPOLOGY => GeneratorUtils::createNormalizedServiceName($topology->getId(), $topology->getName()),
-        ];
-
-        return $this->runQuery($select, $where, $from, $to);
+        return $res;
     }
 
     /**
@@ -148,35 +127,35 @@ class MetricsManager
         $to   = $params['to'] ?? NULL;
 
         $select = self::getCountForSelect([
-            self::TOP_PROCESS_TIME   => self::PROCESSED_COUNT,
+            self::NODE_PROCESS_TIME  => self::PROCESSED_COUNT,
             self::WAIT_TIME          => self::WAIT_COUNT,
             self::CPU_KERNEL_TIME    => self::CPU_COUNT,
             self::REQUEST_TOTAL_TIME => self::REQUEST_COUNT,
         ]);
         $select = self::addStringSeparator($select);
         $select .= self::getSumForSelect([
-            self::TOP_PROCESS_TIME   => self::PROCESSED_SUM,
+            self::NODE_PROCESS_TIME  => self::PROCESSED_SUM,
             self::WAIT_TIME          => self::WAIT_SUM,
             self::CPU_KERNEL_TIME    => self::CPU_SUM,
             self::REQUEST_TOTAL_TIME => self::REQUEST_SUM,
         ]);
         $select = self::addStringSeparator($select);
         $select .= self::getMinForSelect([
-            self::TOP_PROCESS_TIME   => self::PROCESSED_MIN,
+            self::NODE_PROCESS_TIME  => self::PROCESSED_MIN,
             self::WAIT_TIME          => self::WAIT_MIN,
             self::CPU_KERNEL_TIME    => self::CPU_MIN,
             self::REQUEST_TOTAL_TIME => self::REQUEST_MIN,
         ]);
         $select = self::addStringSeparator($select);
         $select .= self::getMaxForSelect([
-            self::TOP_PROCESS_TIME   => self::PROCESSED_MAX,
+            self::NODE_PROCESS_TIME  => self::PROCESSED_MAX,
             self::WAIT_TIME          => self::WAIT_MAX,
             self::CPU_KERNEL_TIME    => self::CPU_MAX,
             self::REQUEST_TOTAL_TIME => self::REQUEST_MAX,
         ]);
 
         $where = [
-            self::NODE => GeneratorUtils::createNormalizedServiceName($node->getId(), $node->getName()),
+            self::NODE => $node->getId(),
         ];
 
         return $this->runQuery($select, $where, $from, $to);
@@ -194,7 +173,7 @@ class MetricsManager
      *
      * @return array
      */
-    private function runQuery(string $select, array $where, string $from = NULL, string $to = NULL): array
+    private function runQuery(string $select, array $where, ?string $from = NULL, ?string $to = NULL): array
     {
         $qb = $this->builder
             ->select($select)
