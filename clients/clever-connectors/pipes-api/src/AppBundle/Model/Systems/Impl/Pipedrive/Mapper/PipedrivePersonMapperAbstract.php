@@ -80,7 +80,7 @@ abstract class PipedrivePersonMapperAbstract implements CustomNodeInterface
                 $systemInstall = $this->systemInstallRepository->getSystemInstallFromHeaders($dto->getHeaders());
                 $sett          = $systemInstall->getSettings();
 
-                $obj->setLists([$sett[SystemInstall::SELECT_LIST] ?? NULL]);
+                $obj->setLists($sett[SystemInstall::SELECT_LIST] ? [$sett[SystemInstall::SELECT_LIST]] : []);
             }
 
             return $dto->setData(json_encode($obj->toArray()));
