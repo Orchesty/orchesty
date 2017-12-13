@@ -12,13 +12,17 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\Index;
 use Hanaboso\PipesFramework\Commons\Traits\Document\IdTrait;
 
-
 /**
  * Class Category
  *
  * @package Hanaboso\PipesFramework\Category\Document
  *
- * @MongoDB\Document(repositoryClass="Hanaboso\PipesFramework\Category\Repository\CategoryRepository")
+ * @MongoDB\Document(
+ *     repositoryClass="Hanaboso\PipesFramework\Category\Repository\CategoryRepository",
+ *     indexes={
+ *         @MongoDB\Index(keys={"name": "asc", "parent": "asc"}, unique="true")
+ *     }
+ * )
  */
 class Category
 {
@@ -31,7 +35,6 @@ class Category
      * @MongoDB\Field(type="string")
      */
     protected $name;
-
 
     /**
      * @var string|null
