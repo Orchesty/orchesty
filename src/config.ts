@@ -1,7 +1,7 @@
 import {IConnectionOptions} from "amqplib-plus/dist/lib/Connection";
 import {IMongoMessageStorageSettings} from "./repeater/MongoMessageStorage";
 import {IRepeaterSettings} from "./repeater/Repeater";
-import {IProbeSettings} from "./topology/Probe";
+import {IProbeSettings} from "./topology/probe/Probe";
 
 // Set timeouts and other env values differently for tests
 if (process.env.NODE_ENV === "test") {
@@ -51,4 +51,9 @@ export const probeOptions: IProbeSettings = {
     port: parseInt(process.env.PROBE_PORT, 10) || 8007,
     path: process.env.PROBE_PATH || "/status",
     timeout: parseInt(process.env.PROBE_TIMEOUT, 10) || 10000,
+};
+
+export const multiProbeOptions = {
+    host: process.env.MULTI_PROBE_HOST || "multi-probe",
+    port: parseInt(process.env.PROBE_PORT, 10) || 8007,
 };

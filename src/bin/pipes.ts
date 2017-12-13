@@ -34,7 +34,7 @@ switch (argv.service) {
         break;
     case "multi_bridge":
         process.env.PIPES_NODE_TYPE = `pipes_node`;
-        pipes.startAllNodes();
+        pipes.startMultiBridge();
         break;
     case "bridge":
         process.env.PIPES_NODE_TYPE = `pipes_node`;

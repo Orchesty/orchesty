@@ -1,7 +1,7 @@
 import * as express from "express";
 import * as request from "request";
-import logger from "../logger/Logger";
-import {INodeConfig, INodeLabel} from "./Configurator";
+import logger from "../../logger/Logger";
+import {INodeConfig, INodeLabel} from "../Configurator";
 
 interface INodeInfo {
     label: INodeLabel;
