@@ -40,7 +40,8 @@ describe("Counter", () => {
             },
             port: 7901,
         };
-        const counter = new Counter(counterSettings, conn, new InMemoryStorage(), metricsMock);
+        const storage = new InMemoryStorage();
+        const counter = new Counter(counterSettings, conn, storage, metricsMock);
         counter.listen()
             .then(() => {
                 const headers = new Headers();
@@ -390,7 +391,8 @@ describe("Counter", () => {
         const consumer = new SimpleConsumer(conn, prepareConsumer, handleMessage);
         consumer.consume(testOutputQueue.name, testOutputQueue.options);
 
-        const counter = new Counter(counterSettings, conn, new InMemoryStorage(), metricsMock);
+        const storage = new InMemoryStorage();
+        const counter = new Counter(counterSettings, conn, storage, metricsMock);
         counter.listen(7902)
             .then(() => {
                 const promises: Array<Promise<any>> = [];

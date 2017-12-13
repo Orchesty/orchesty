@@ -83,6 +83,7 @@ class Pipes {
             this.topology.counter,
             this.dic.get("amqp.connection"),
             this.dic.get("counter.storage.memory"),
+            this.dic.get("probe.multi"),
             this.dic.get("metrics")(this.topology.id, "counter"),
         );
 
