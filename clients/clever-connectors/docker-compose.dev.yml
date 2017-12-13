@@ -52,7 +52,7 @@ services:
           - rabbitmq
         command: bash -c 'while ! [ -f vendor/autoload.php ];do sleep 1; echo "sleep 1"; done; bin/console rabbit-mq:consumer status-service'
 
-    probe:
+    multi-probe:
       image: 'dkr.hanaboso.net/pipes/pipes/go-multi-probe:dev'
       ports:
         - ${DEV_IP}:8007:8007

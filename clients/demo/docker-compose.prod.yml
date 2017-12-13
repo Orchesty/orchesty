@@ -4,7 +4,7 @@ version: '2'
 
 services:
     # Nodes
-    probe:
+    multi-probe:
       image: 'dkr.hanaboso.net/pipes/pipes/go-multi-probe:dev'
       ports:
         - ${DEV_IP}:8007:8007
