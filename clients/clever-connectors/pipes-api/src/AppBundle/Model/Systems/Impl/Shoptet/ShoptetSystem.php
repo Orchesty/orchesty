@@ -121,8 +121,17 @@ class ShoptetSystem implements SystemInterface, AuthorizationInterface
             TRUE
         );
 
+        $field2 = new Field(
+            Field::SELECT,
+            SystemInstall::SELECT_LIST,
+            'Distribution list',
+            $this->prepareValue(SystemInstall::SELECT_LIST, $sett)
+        );
+
         $form = new Form();
-        $form->addField($field1);
+        $form
+            ->addField($field1)
+            ->addField($field2);
 
         return $form->toArray();
     }

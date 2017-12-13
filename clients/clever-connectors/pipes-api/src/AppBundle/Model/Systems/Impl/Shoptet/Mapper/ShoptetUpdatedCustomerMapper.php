@@ -2,6 +2,7 @@
 
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Shoptet\Mapper;
 
+use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\CM\SubscriberConnector\SubscriberObject\CMSubscriber;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
@@ -67,6 +68,11 @@ class ShoptetUpdatedCustomerMapper implements CustomNodeInterface
         if (!empty($guid)) {
             $obj->setForeignId($guid);
         }
+
+        // todo ...
+        $systemInstall = $this->systemInstallRepository->getSystemInstallFromHeaders($dto->getHeaders());
+        $sett          = $systemInstall->getSettings();
+        $obj->setLists([$sett[SystemInstall::SELECT_LIST] ?? NULL]);
 
         return $dto->setData(json_encode($obj->toArray()));
     }
