@@ -34,16 +34,19 @@ class SystemCompilerPass implements CompilerPassInterface
 
             if (method_exists(SystemLoader::class, $method)) {
                 $services = $container->findTaggedServiceIds($tagWithPercentage);
+                $services = array_keys($services);
                 if ($container->getParameter('kernel.environment') === 'prod') {
                     $developmentTag      = sprintf('%%%s%%', $container->getParameter('systems.dev'));
                     $developmentServices = $container->findTaggedServiceIds($developmentTag);
+                    $developmentServices = array_keys($developmentServices);
                     foreach ($services as $key => $service) {
-                        if (in_array($service, $developmentServices, TRUE)) {
+                        if (in_array($service, $developmentServices)) {
                             unset($services[$key]);
                         }
                     }
                 }
-                $loader->addMethodCall($method, [array_keys($services)]);
+
+                $loader->addMethodCall($method, [$services]);
             } else {
                 throw new SystemException(
                     sprintf('System method \'%s\' not found', $method),
