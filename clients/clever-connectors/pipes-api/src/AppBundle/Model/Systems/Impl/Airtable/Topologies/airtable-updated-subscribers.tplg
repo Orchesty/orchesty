@@ -20,7 +20,7 @@
       <bpmn:incoming>SequenceFlow_1moojjh</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0sbl4fz</bpmn:outgoing>
     </bpmn:task>
-    <bpmn:task id="Task_08kb7a3" pipes:pipesType="connector" name="cleverconnectors-update-subscriptions-connector">
+    <bpmn:task id="Task_08kb7a3" pipes:pipesType="connector" name="cleverconnectors-create-subscriptions-connector">
       <bpmn:incoming>SequenceFlow_0sbl4fz</bpmn:incoming>
     </bpmn:task>
     <bpmn:sequenceFlow id="SequenceFlow_01m3rag" sourceRef="Event_1bqnesq" targetRef="Task_0rg5ghr" />
