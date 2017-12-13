@@ -50,6 +50,7 @@ monolog:
             level: info
             formatter: logstash_formatter
             max_files: 10
+            channels: '!php'
 
 services:
     logstash_formatter:
