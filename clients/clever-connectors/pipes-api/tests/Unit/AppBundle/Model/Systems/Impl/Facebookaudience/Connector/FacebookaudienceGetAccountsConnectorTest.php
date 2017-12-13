@@ -3,7 +3,6 @@
 namespace Tests\Unit\AppBundle\Model\Systems\Impl\Facebookaudience\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
-use CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\Connector\FacebookaudienceCreateAudienceConnector;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\Connector\FacebookaudienceGetAccountsConnector;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\FacebookaudienceSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
@@ -27,7 +26,7 @@ final class FacebookaudienceGetAccountsConnectorTest extends ConnectorTestCaseAb
 {
 
     /**
-     * @covers FacebookaudienceCreateAudienceConnector::processAction()
+     * @covers FacebookaudienceGetAccountsConnector::processAction()
      */
     public function testProcessAction(): void
     {
@@ -49,7 +48,7 @@ final class FacebookaudienceGetAccountsConnectorTest extends ConnectorTestCaseAb
     }
 
     /**
-     * @covers FacebookaudienceCreateAudienceConnector::getAccounts()
+     * @covers FacebookaudienceGetAccountsConnector::getAccounts()
      */
     public function testGetAccounts(): void
     {

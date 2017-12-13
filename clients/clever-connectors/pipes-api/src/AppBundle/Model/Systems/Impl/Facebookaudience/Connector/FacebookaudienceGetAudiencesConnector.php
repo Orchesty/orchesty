@@ -62,7 +62,7 @@ class FacebookaudienceGetAudiencesConnector extends FacebookaudienceConnectorAbs
             empty($data[FacebookaudienceSystem::AD_ACCOUNT])) {
 
             throw new CleverConnectorsException(
-                'Missing key "ad_account_id" in data',
+                'Missing key "ad_account" in data',
                 CleverConnectorsException::MISSING_DATA
             );
         }
@@ -94,10 +94,19 @@ class FacebookaudienceGetAudiencesConnector extends FacebookaudienceConnectorAbs
      *
      * @return ResponseDto
      * @throws SystemException
+     * @throws CleverConnectorsException
      */
     private function makeRequest(SystemInstall $systemInstall, ?ProcessDto $dto = NULL): ResponseDto
     {
-        $adAccountId = $systemInstall->getSettings()[FacebookaudienceSystem::AD_ACCOUNT];
+        $adAccountId = $systemInstall->getSettings()[FacebookaudienceSystem::AD_ACCOUNT] ?? '';
+
+        if (empty($adAccountId)) {
+            throw new CleverConnectorsException(
+                'Missing Ad Account ID',
+                CleverConnectorsException::MISSING_DATA
+            );
+        }
+
         $token       = $systemInstall->getSettings()[OAuth2Provider::ACCESS_TOKEN];
         $requestDto  = $this->system->getRequestDto($systemInstall, CurlManager::METHOD_GET);
         $requestDto->setUri(new Uri(sprintf(self::URL, $requestDto->getUri(), $adAccountId, $token)));

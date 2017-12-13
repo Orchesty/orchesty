@@ -185,6 +185,7 @@ final class BigcommerceSystemTest extends KernelTestCaseAbstract
                 'description' => '',
                 'action'      => '',
                 'choices'     => [],
+                'depends_on'  => '',
             ],
             1 => [
                 'type'        => 'text',
@@ -196,6 +197,7 @@ final class BigcommerceSystemTest extends KernelTestCaseAbstract
                 'disabled'    => FALSE,
                 'description' => '',
                 'action'      => '',
+                'depends_on'  => '',
                 'choices'     => [],
             ],
             2 => [
@@ -208,6 +210,7 @@ final class BigcommerceSystemTest extends KernelTestCaseAbstract
                 'disabled'    => FALSE,
                 'description' => '',
                 'action'      => '',
+                'depends_on'  => '',
                 'choices'     => [],
             ],
             3 => [
@@ -220,6 +223,7 @@ final class BigcommerceSystemTest extends KernelTestCaseAbstract
                 'disabled'    => FALSE,
                 'description' => '',
                 'action'      => '',
+                'depends_on'  => '',
                 'choices'     => [],
             ],
         ], $form);

@@ -324,7 +324,7 @@ class Field
             'description' => $this->description,
             'choices'     => $this->choices,
             'action'      => $this->actionUrl,
-            'dependsOn'   => $this->dependsOn,
+            'depends_on'  => $this->dependsOn,
         ];
 
         if ($this->type === Field::PASSWORD) {
