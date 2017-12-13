@@ -10,6 +10,9 @@ fos_rest:
     body_converter:
         enabled: true
 
+    routing_loader:
+            default_format: json
+
     body_listener:
         decoders:
             json: fos_rest.decoder.json
