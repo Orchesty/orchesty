@@ -5,6 +5,9 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\Shoptet\Mapper;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\CM\SubscriberConnector\SubscriberObject\CMSubscriber;
+use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
+use Doctrine\Common\Persistence\ObjectRepository;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
 
@@ -15,6 +18,21 @@ use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
  */
 class ShoptetUpdatedCustomerMapper implements CustomNodeInterface
 {
+
+    /**
+     * @var SystemInstallRepository|ObjectRepository
+     */
+    private $systemInstallRepository;
+
+    /**
+     * ShoptetUpdatedCustomerMapper constructor.
+     *
+     * @param DocumentManager $dm
+     */
+    public function __construct(DocumentManager $dm)
+    {
+        $this->systemInstallRepository = $dm->getRepository(SystemInstall::class);
+    }
 
     /**
      * @param ProcessDto $dto
@@ -69,10 +87,12 @@ class ShoptetUpdatedCustomerMapper implements CustomNodeInterface
             $obj->setForeignId($guid);
         }
 
-        // todo ...
         $systemInstall = $this->systemInstallRepository->getSystemInstallFromHeaders($dto->getHeaders());
         $sett          = $systemInstall->getSettings();
-        $obj->setLists([$sett[SystemInstall::SELECT_LIST] ?? NULL]);
+
+        if (array_key_exists(SystemInstall::SELECT_LIST, $sett)) {
+            $obj->setLists([$sett[SystemInstall::SELECT_LIST]]);
+        }
 
         return $dto->setData(json_encode($obj->toArray()));
     }
