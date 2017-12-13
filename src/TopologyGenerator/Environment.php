@@ -26,6 +26,8 @@ class Environment
     public const XML_PARSER_RELOADED = 'PARSER_RELOADED';
     public const METRICS_HOST        = 'METRICS_HOST';
     public const METRICS_PORT        = 'METRICS_PORT';
+    public const MULTI_PROBE_HOST    = 'MULTI_PROBE_HOST';
+    public const MULTI_PROBE_PORT    = 'MULTI_PROBE_PORT';
     public const DEV_UID             = 'DEV_UID';
     public const DEV_GID             = 'DEV_GID';
 
@@ -78,6 +80,16 @@ class Environment
      * @var string
      */
     protected $metricsPort = '5555';
+
+    /**
+     * @var string
+     */
+    protected $multiProbeHost = 'multi-probe';
+
+    /**
+     * @var string
+     */
+    protected $multiProbePort = '8007';
 
     /**
      * @var string
@@ -212,7 +224,7 @@ class Environment
     /**
      * @return string
      */
-    public function getXmlParserPort(): string 
+    public function getXmlParserPort(): string
     {
         return $this->xmlParserPort;
     }
@@ -232,7 +244,7 @@ class Environment
     /**
      * @return string
      */
-    public function getXmlParserReloaded(): string 
+    public function getXmlParserReloaded(): string
     {
         return $this->xmlParserReloaded;
     }
@@ -287,6 +299,38 @@ class Environment
         $this->metricsPort = $metricsPort;
 
         return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getMultiProbeHost(): string
+    {
+        return $this->multiProbeHost;
+    }
+
+    /**
+     * @param string $multiProbeHost
+     */
+    public function setMultiProbeHost(string $multiProbeHost): void
+    {
+        $this->multiProbeHost = $multiProbeHost;
+    }
+
+    /**
+     * @return string
+     */
+    public function getMultiProbePort(): string
+    {
+        return $this->multiProbePort;
+    }
+
+    /**
+     * @param string $multiProbePort
+     */
+    public function setMultiProbePort(string $multiProbePort): void
+    {
+        $this->multiProbePort = $multiProbePort;
     }
 
     /**

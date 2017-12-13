@@ -56,6 +56,8 @@ class MultiNodeServiceBuilder extends NodeServiceBuilder
             ->addEnvironment(Environment::RABBITMQ_USER, $this->environment->getRabbitMqUser())
             ->addEnvironment(Environment::RABBITMQ_PASS, $this->environment->getRabbitMqPass())
             ->addEnvironment(Environment::RABBITMQ_VHOST, $this->environment->getRabbitMqVHost())
+            ->addEnvironment(Environment::MULTI_PROBE_HOST, $this->environment->getMultiProbeHost())
+            ->addEnvironment(Environment::MULTI_PROBE_PORT, $this->environment->getMultiProbePort())
             ->addVolume($this->volumePathDefinition->getSourceVolume('topology.json') . ':/srv/app/topology/topology.json')
             ->setCommand('./dist/src/bin/pipes.js start multi_bridge')
             ->addNetwork($this->network);

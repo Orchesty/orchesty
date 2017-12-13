@@ -40,6 +40,8 @@ services:
       RABBITMQ_USER: guest
       RABBITMQ_PASS: guest
       RABBITMQ_VHOST: /
+      MULTI_PROBE_HOST: multi-probe
+      MULTI_PROBE_PORT: '8007'
     volumes:
       - './topology.json:/srv/app/topology/topology.json'
     networks:
