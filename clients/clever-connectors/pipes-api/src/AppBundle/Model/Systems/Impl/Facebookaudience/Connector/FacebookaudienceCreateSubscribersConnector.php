@@ -50,8 +50,16 @@ class FacebookaudienceCreateSubscribersConnector extends FacebookaudienceConnect
 
         $systemInstall    = $this->systemInstallRepository->getSystemInstallFromHeaders($dto->getHeaders());
         $token            = $systemInstall->getSettings()[OAuth2Provider::ACCESS_TOKEN];
-        $customAudienceId = $systemInstall->getSettings()[FacebookaudienceSystem::CUSTOM_AUDIENCE];
-        $requestDto       = $this->system->getRequestDto($systemInstall, CurlManager::METHOD_POST);
+        $customAudienceId = $systemInstall->getSettings()[FacebookaudienceSystem::CUSTOM_AUDIENCE] ?? '';
+
+        if (empty($customAudienceId)) {
+            throw new CleverConnectorsException(
+                'Missing Audience ID',
+                CleverConnectorsException::MISSING_DATA
+            );
+        }
+
+        $requestDto = $this->system->getRequestDto($systemInstall, CurlManager::METHOD_POST);
         $requestDto
             ->setUri(new Uri(sprintf(self::URL, $requestDto->getUri(), $customAudienceId, $token)))
             ->setBody($dto->getData())

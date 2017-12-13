@@ -22,13 +22,6 @@ services:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.transport.curl_manager'
 
-    hbpf.connector.facebookaudience-delete-subscribers-connector:
-        class: CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\Connector\FacebookaudienceDeleteSubscribersConnector
-        arguments:
-            - '@systems.facebookaudience'
-            - '@doctrine_mongodb.odm.default_document_manager'
-            - '@hbpf.transport.curl_manager'
-
     hbpf.connector.facebookaudience-get-accounts-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\Connector\FacebookaudienceGetAccountsConnector
         arguments:

@@ -51,8 +51,22 @@ class FacebookaudienceCreateAudienceConnector extends FacebookaudienceConnectorA
         }
 
         $systemInstall = $this->systemInstallRepository->getSystemInstallFromHeaders($dto->getHeaders());
-        $audienceId    = $systemInstall->getSettings()[FacebookaudienceSystem::CUSTOM_AUDIENCE];
-        $newList       = $systemInstall->getSettings()[FacebookaudienceSystem::NEW_LIST];
+        $audienceId    = $systemInstall->getSettings()[FacebookaudienceSystem::CUSTOM_AUDIENCE] ?? '';
+        $newList       = $systemInstall->getSettings()[FacebookaudienceSystem::NEW_LIST] ?? '';
+
+        if (empty($audienceId)) {
+            throw new CleverConnectorsException(
+                'Missing Audience ID',
+                CleverConnectorsException::MISSING_DATA
+            );
+        }
+
+        if ($audienceId == FacebookaudienceSystem::CREATE_NEW && empty($newList)) {
+            throw new CleverConnectorsException(
+                'Missing Audience Name',
+                CleverConnectorsException::MISSING_DATA
+            );
+        }
 
         if ($audienceId == FacebookaudienceSystem::CREATE_NEW &&
             !empty($newList) &&
@@ -98,8 +112,16 @@ class FacebookaudienceCreateAudienceConnector extends FacebookaudienceConnectorA
         ]));
 
         $token       = $systemInstall->getSettings()[OAuth2Provider::ACCESS_TOKEN];
-        $adAccountId = $systemInstall->getSettings()[FacebookaudienceSystem::AD_ACCOUNT];
-        $requestDto  = $this->system->getRequestDto($systemInstall, CurlManager::METHOD_POST);
+        $adAccountId = $systemInstall->getSettings()[FacebookaudienceSystem::AD_ACCOUNT] ?? '';
+
+        if (empty($adAccountId)) {
+            throw new CleverConnectorsException(
+                'Missing Ad Account ID',
+                CleverConnectorsException::MISSING_DATA
+            );
+        }
+
+        $requestDto = $this->system->getRequestDto($systemInstall, CurlManager::METHOD_POST);
         $requestDto
             ->setUri(new Uri(sprintf(self::URL, $requestDto->getUri(), $adAccountId, $token)))
             ->setBody($dto->getData())
