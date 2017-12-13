@@ -6669,7 +6669,7 @@
             "dist": {
                 "type": "path",
                 "url": "../libs/php-check-utils",
-                "reference": "45c49ad4e47e876095a0f91d20586eac966808e9",
+                "reference": "17523c2764872c6ec8753475072db0f83b80e9b6",
                 "shasum": null
             },
             "require": {
@@ -6677,7 +6677,7 @@
                 "phpstan/phpstan": "^0.9",
                 "phpunit/phpunit": "^6.5",
                 "slevomat/coding-standard": "^4.0",
-                "squizlabs/php_codesniffer": "^3.1"
+                "squizlabs/php_codesniffer": "3.1"
             },
             "type": "library",
             "license": [
@@ -7362,16 +7362,16 @@
         },
         {
             "name": "squizlabs/php_codesniffer",
-            "version": "3.2.0",
+            "version": "3.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/squizlabs/PHP_CodeSniffer.git",
-                "reference": "ba816f2e1bacc16278792c78b67c730dfff064a6"
+                "reference": "3c2d0a0fe39684ba0c1eb842a6a775d0b938d699"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/squizlabs/PHP_CodeSniffer/zipball/ba816f2e1bacc16278792c78b67c730dfff064a6",
-                "reference": "ba816f2e1bacc16278792c78b67c730dfff064a6",
+                "url": "https://api.github.com/repos/squizlabs/PHP_CodeSniffer/zipball/3c2d0a0fe39684ba0c1eb842a6a775d0b938d699",
+                "reference": "3c2d0a0fe39684ba0c1eb842a6a775d0b938d699",
                 "shasum": ""
             },
             "require": {
@@ -7409,7 +7409,7 @@
                 "phpcs",
                 "standards"
             ],
-            "time": "2017-12-12T21:36:10+00:00"
+            "time": "2017-09-19T22:47:14+00:00"
         },
         {
             "name": "theseer/tokenizer",
