@@ -25,9 +25,7 @@ class CurlMetricsUtilsTest extends KernelTestCaseAbstract
         $influx->expects($this->once())
             ->method('send')->will($this->returnCallback(
                 function (array $times, array $data): bool {
-                    self::assertGreaterThan(0, $times[MetricsEnum::REQUEST_TOTAL_DURATION]);
-                    self::assertGreaterThanOrEqual(0, $times[MetricsEnum::CPU_USER_TIME]);
-                    self::assertGreaterThanOrEqual(0, $times[MetricsEnum::CPU_KERNEL_TIME]);
+                    self::assertGreaterThan(0, $times[MetricsEnum::REQUEST_TOTAL_DURATION_SENT]);
                     self::assertNotEmpty($data[MetricsEnum::HOST]);
                     self::assertEquals('http://google.com', $data[MetricsEnum::URI]);
 

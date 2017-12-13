@@ -17,23 +17,25 @@ class MetricsEnum extends EnumAbstract
     public const TOPOLOGY_ID    = 'topology_id';
 
     // Fields
-    public const REQUEST_TOTAL_DURATION = 'fpm_request_total_duration';
-    public const CPU_USER_TIME          = 'fpm_cpu_user_time';
-    public const CPU_KERNEL_TIME        = 'fpm_cpu_kernel_time';
+    public const REQUEST_TOTAL_DURATION      = 'fpm_request_total_duration';
+    public const CPU_USER_TIME               = 'fpm_cpu_user_time';
+    public const CPU_KERNEL_TIME             = 'fpm_cpu_kernel_time';
+    public const REQUEST_TOTAL_DURATION_SENT = 'sent_request_total_duration';
 
     /**
      * @var string[]
      */
     protected static $choices = [
         // tags
-        self::HOST                   => self::HOST,
-        self::URI                    => self::URI,
-        self::CORRELATION_ID         => self::CORRELATION_ID,
-        self::TOPOLOGY_ID            => self::TOPOLOGY_ID,
+        self::HOST                        => self::HOST,
+        self::URI                         => self::URI,
+        self::CORRELATION_ID              => self::CORRELATION_ID,
+        self::TOPOLOGY_ID                 => self::TOPOLOGY_ID,
         // fields
-        self::REQUEST_TOTAL_DURATION => self::REQUEST_TOTAL_DURATION,
-        self::CPU_USER_TIME          => self::CPU_USER_TIME,
-        self::CPU_KERNEL_TIME        => self::CPU_KERNEL_TIME,
+        self::REQUEST_TOTAL_DURATION      => self::REQUEST_TOTAL_DURATION,
+        self::CPU_USER_TIME               => self::CPU_USER_TIME,
+        self::CPU_KERNEL_TIME             => self::CPU_KERNEL_TIME,
+        self::REQUEST_TOTAL_DURATION_SENT => self::REQUEST_TOTAL_DURATION_SENT,
     ];
 
 }

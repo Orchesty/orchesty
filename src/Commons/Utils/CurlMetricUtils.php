@@ -49,9 +49,7 @@ class CurlMetricUtils
     {
         $sender->send(
             [
-                MetricsEnum::REQUEST_TOTAL_DURATION => $timeData[self::KEY_REQUEST_DURATION],
-                MetricsEnum::CPU_USER_TIME          => $timeData[self::KEY_USER_TIME],
-                MetricsEnum::CPU_KERNEL_TIME        => $timeData[self::KEY_KERNEL_TIME],
+                MetricsEnum::REQUEST_TOTAL_DURATION_SENT => $timeData[self::KEY_REQUEST_DURATION],
             ],
             [
                 MetricsEnum::HOST => gethostname(),
