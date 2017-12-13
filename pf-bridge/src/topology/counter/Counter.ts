@@ -1,18 +1,15 @@
 import {Channel, Message, Options} from "amqplib";
 import {Connection} from "amqplib-plus/dist/lib/Connection";
 import {Publisher} from "amqplib-plus/dist/lib/Publisher";
-import * as express from "express";
 import {IMetrics} from "metrics-sender/dist/lib/metrics/IMetrics";
-import * as request from "request";
 import logger from "../../logger/Logger";
 import {default as CounterMessage} from "../../message/CounterMessage";
 import Headers from "../../message/Headers";
 import {INodeLabel} from "../Configurator";
+import Terminator from "../terminator/Terminator";
 import CounterConsumer from "./CounterConsumer";
 import {default as CounterProcess, ICounterProcessInfo} from "./CounterProcess";
 import ICounterStorage from "./storage/ICounterStorage";
-
-const ROUTE_TOPOLOGY_TERMINATE = "/topology/terminate/:topologyId";
 
 export interface ICounterSettings {
     topology: string;
@@ -35,7 +32,6 @@ export interface ICounterSettings {
             options: {},
         },
     };
-    port: number;
 }
 
 /**
@@ -49,29 +45,29 @@ export default class Counter {
     private publisher: Publisher;
     private consumer: CounterConsumer;
     private storage: ICounterStorage;
+    private terminator: Terminator;
     private metrics: IMetrics;
-    private httpServer: any;
     private topologyId: string;
-    private terminationRequested: boolean;
-    private terminationUrl: string;
 
     /**
      *
      * @param settings
      * @param connection
      * @param storage
+     * @param terminator
      * @param metrics
      */
     constructor(
         settings: ICounterSettings,
         connection: Connection,
         storage: ICounterStorage,
+        terminator: Terminator,
         metrics: IMetrics,
     ) {
-        this.terminationRequested = false;
         this.settings = settings;
         this.connection = connection;
         this.storage = storage;
+        this.terminator = terminator;
         this.metrics = metrics;
 
         this.topologyId = this.settings.topology;
@@ -80,7 +76,6 @@ export default class Counter {
 
         this.prepareConsumer();
         this.preparePublisher();
-        this.prepareHttpServer();
     }
 
     /**
@@ -91,14 +86,6 @@ export default class Counter {
         return this.consumer.consume(this.settings.sub.queue.name, this.settings.sub.queue.options)
             .then(() => {
                 logger.info(`Counter started consuming messages from "${this.settings.sub.queue.name}" queue`);
-
-                return;
-            })
-            .then(() => {
-                const httpPort = port || this.settings.port;
-                return this.httpServer.listen(httpPort, () => {
-                    logger.info(`Counter listening for termination requests on port '${httpPort}'`);
-                });
             });
     }
 
@@ -137,39 +124,6 @@ export default class Counter {
         };
 
         this.publisher = new Publisher(this.connection, prepareFn);
-    }
-
-    /**
-     * Creates http server to handle termination requests
-     */
-    private prepareHttpServer() {
-        const app = express();
-
-        app.get(ROUTE_TOPOLOGY_TERMINATE, (req, resp) => {
-            if (!req.params || !req.params.topologyId) {
-                return resp.status(400).send("Missing topologyId");
-            }
-
-            if (req.params.topologyId !== this.topologyId) {
-                return resp.status(400).send(`Invalid topologyId "${req.params.topologyId}"`);
-            }
-
-            const reqHeaders: any = req.headers;
-            const headers = new Headers(reqHeaders);
-            if (!headers.hasPFHeader(Headers.TOPOLOGY_DELETE_URL)) {
-                return resp.status(400).send(`Missing PF header "pf-${Headers.TOPOLOGY_DELETE_URL}"`);
-            }
-
-            resp.status(200).send("Topology will be terminated as soon as possible.");
-
-            logger.info(`Counter received termination request. ${JSON.stringify(req.params)}`);
-
-            this.terminationRequested = true;
-            this.terminationUrl = headers.getPFHeader(Headers.TOPOLOGY_DELETE_URL);
-            this.tryTerminate();
-        });
-
-        this.httpServer = app;
     }
 
     /**
@@ -268,8 +222,6 @@ export default class Counter {
                     {node_id: "counter", correlation_id: process.correlation_id, process_id: process.process_id},
                 );
 
-                this.tryTerminate();
-
                 const duration = process.end_timestamp - process.start_timestamp;
 
                 this.metrics.send(
@@ -287,44 +239,9 @@ export default class Counter {
                             process_id: process.process_id,
                         });
                     });
+
+                this.terminator.tryTerminate(process.topology);
             });
-    }
-
-    /**
-     * Checks if counter can be terminated and if so, send http request about it
-     */
-    private async tryTerminate() {
-        if (!this.terminationRequested || !this.terminationUrl) {
-            return;
-        }
-
-        const isSomeRunning = await this.storage.hasSome(this.topologyId);
-        if (isSomeRunning) {
-            return;
-        }
-
-        // Should terminate -> send request and expect being terminated
-        const requestOptions = {
-            method: "GET",
-            url: this.terminationUrl,
-            timeout: 5000,
-        };
-
-        logger.info(`Counter sending termination request: ${JSON.stringify(requestOptions)}`);
-
-        request(requestOptions, (err, response) => {
-            if (err) {
-                logger.error(`Counter termination request ended with error: ${err.message}`);
-                return;
-            }
-
-            if (response.statusCode !== 200) {
-                logger.error(`Counter termination request resulted with statusCode: ${response.statusCode}`);
-                return;
-            }
-
-            logger.info("Counter termination request accepted.");
-        });
     }
 
 }
