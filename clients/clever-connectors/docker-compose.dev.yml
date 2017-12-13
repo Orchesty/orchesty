@@ -279,6 +279,12 @@ services:
           - ${DEV_IP}:9200:9200
         volumes:
           - elasticsearch:/usr/share/elasticsearch/data
+        ## BEGIN STAGE
+        #deploy:
+        #  placement:
+        #    constraints:
+        #      - node.labels.es == ready
+        ## END STAGE
 
     kibana:
         image: docker.elastic.co/kibana/kibana:5.6.0
