@@ -4,6 +4,11 @@ version: '2'
 
 services:
     # Nodes
+    probe:
+      image: 'dkr.hanaboso.net/pipes/pipes/go-multi-probe:dev'
+      ports:
+        - ${DEV_IP}:8007:8007
+
     repeater:
       image: 'dkr.hanaboso.net/pipes/pipes/pf-bridge:dev'
       user: ${DEV_UID}:${DEV_GID}
