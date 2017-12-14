@@ -52,7 +52,10 @@ class BasecrmCreatedContactMapper extends BasecrmContactMapperAbstract
             $sett          = $systemInstall->getSettings();
 
             $obj = $this->getSubscriber($data);
-            $obj->setLists($sett[SystemInstall::SELECT_LIST] ? [$sett[SystemInstall::SELECT_LIST]] : []);
+
+            if (array_key_exists(SystemInstall::SELECT_LIST, $sett)) {
+                $obj->setLists([$sett[SystemInstall::SELECT_LIST]]);
+            }
 
             $dto->setData(json_encode($obj->toArray()));
         }
