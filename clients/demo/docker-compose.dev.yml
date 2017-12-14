@@ -55,6 +55,20 @@ services:
       ports:
         - ${DEV_IP}:8007:8007
 
+    multi-counter:
+      image: 'dkr.hanaboso.net/pipes/pipes/pf-bridge:dev'
+      user: ${DEV_UID}:${DEV_GID}
+      environment:
+        RABBITMQ_HOST: rabbitmq
+        RABBITMQ_PORT: '5672'
+        RABBITMQ_USER: guest
+        RABBITMQ_PASS: guest
+        RABBITMQ_VHOST: /
+      depends_on:
+        - mongo
+        - rabbitmq
+      command: './dist/src/bin/pipes.js start multi_counter'
+
     repeater:
       image: 'dkr.hanaboso.net/pipes/pipes/pf-bridge:dev'
       user: ${DEV_UID}:${DEV_GID}

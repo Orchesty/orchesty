@@ -32,7 +32,6 @@ describe("Counter", () => {
         topoApiMock.listen(7900);
 
         const counterSettings: ICounterSettings = {
-            topology: "topoToDeleteId",
             sub: {queue: {name: "test_counter_subdel_q", prefetch: 1, options: {}}},
             pub: {
                 exchange: {name: "test_counter_pubdel_e", type: "direct", options: {}},
@@ -43,13 +42,13 @@ describe("Counter", () => {
         const storage = new InMemoryStorage();
         const terminator = new Terminator(7901, storage);
         const counter = new Counter(counterSettings, conn, storage, terminator, metricsMock);
-        counter.listen()
+        counter.start()
             .then(() => {
                 const headers = new Headers();
                 headers.setPFHeader(Headers.TOPOLOGY_DELETE_URL, "http://localhost:7900/remote-terminate");
                 // Simulate external request to counter http server
                 return rp({
-                    uri: `http://localhost:7901/topology/terminate/${counterSettings.topology}`,
+                    uri: `http://localhost:7901/topology/terminate/someTopoId`,
                     headers: headers.getRaw(),
                 });
             })
@@ -60,7 +59,6 @@ describe("Counter", () => {
 
     it("should receive messages and count them properly when all succeeded", (done) => {
         const counterSettings: ICounterSettings = {
-            topology: "topoId",
             sub: {queue: {name: "test_counter_sub_q", prefetch: 1, options: {}}},
             pub: {
                 exchange: {name: "test_counter_pub_e", type: "direct", options: {}},
@@ -90,6 +88,7 @@ describe("Counter", () => {
                 },
                 {
                     headers: {
+                        "pf-topology-id": "topoid",
                         "pf-correlation-id": "corrid1",
                         "pf-process-id": "test_job_123",
                         "pf-parent-id": "",
@@ -112,6 +111,7 @@ describe("Counter", () => {
                 },
                 {
                     headers: {
+                        "pf-topology-id": "topoid",
                         "pf-correlation-id": "corrid2",
                         "pf-process-id": "test_job_123",
                         "pf-parent-id": "",
@@ -134,6 +134,7 @@ describe("Counter", () => {
                 },
                 {
                     headers: {
+                        "pf-topology-id": "topoid",
                         "pf-correlation-id": "corrid3",
                         "pf-process-id": "test_job_123",
                         "pf-parent-id": "",
@@ -160,6 +161,7 @@ describe("Counter", () => {
                 },
                 {
                     headers: {
+                        "pf-topology-id": "topoid",
                         "pf-correlation-id": "corrid1",
                         "pf-process-id": "test_job_456",
                         "pf-parent-id": "",
@@ -182,6 +184,7 @@ describe("Counter", () => {
                 },
                 {
                     headers: {
+                        "pf-topology-id": "topoid",
                         "pf-correlation-id": "corrid2",
                         "pf-process-id": "test_job_456",
                         "pf-parent-id": "",
@@ -204,6 +207,7 @@ describe("Counter", () => {
                 },
                 {
                     headers: {
+                        "pf-topology-id": "topoid",
                         "pf-correlation-id": "corrid3",
                         "pf-process-id": "test_job_456",
                         "pf-parent-id": "",
@@ -233,6 +237,7 @@ describe("Counter", () => {
                 },
                 {
                     headers: {
+                        "pf-topology-id": "topoid",
                         "pf-correlation-id": "corrid1",
                         "pf-process-id": "test_job_789",
                         "pf-parent-id": "",
@@ -255,6 +260,7 @@ describe("Counter", () => {
                 },
                 {
                     headers: {
+                        "pf-topology-id": "topoid",
                         "pf-correlation-id": "corrid2",
                         "pf-process-id": "test_job_789",
                         "pf-parent-id": "",
@@ -277,6 +283,7 @@ describe("Counter", () => {
                 },
                 {
                     headers: {
+                        "pf-topology-id": "topoid",
                         "pf-correlation-id": "corrid3",
                         "pf-process-id": "test_job_789",
                         "pf-parent-id": "",
@@ -299,6 +306,7 @@ describe("Counter", () => {
                 },
                 {
                     headers: {
+                        "pf-topology-id": "topoid",
                         "pf-correlation-id": "corrid4",
                         "pf-process-id": "test_job_789",
                         "pf-parent-id": "",
@@ -394,7 +402,7 @@ describe("Counter", () => {
         const storage = new InMemoryStorage();
         const terminator = new Terminator(7902, storage);
         const counter = new Counter(counterSettings, conn, storage, terminator, metricsMock);
-        counter.listen()
+        counter.start()
             .then(() => {
                 const promises: Array<Promise<any>> = [];
                 events.forEach((ev) => {

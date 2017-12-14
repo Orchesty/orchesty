@@ -26,6 +26,9 @@ switch (argv.service) {
     case "counter":
         pipes.startCounter();
         break;
+    case "multi_counter":
+        pipes.startMultiCounter();
+        break;
     case "probe":
         pipes.startProbe();
         break;

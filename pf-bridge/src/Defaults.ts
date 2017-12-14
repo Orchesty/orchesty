@@ -15,9 +15,15 @@ class Defaults {
      * @param {string} topoId
      * @param {INodeConfigSkeleton} node
      * @param {number} position
+     * @param {boolean} isMulti
      * @return {INodeConfig}
      */
-    public static getNodeConfigDefaults(topoId: string, node: INodeConfigSkeleton, position?: number): INodeConfig {
+    public static getNodeConfigDefaults(
+        topoId: string,
+        node: INodeConfigSkeleton,
+        position?: number,
+        isMulti: boolean = false,
+    ): INodeConfig {
         const port = position ? 8008 + position : 8008;
 
         return {
@@ -31,7 +37,7 @@ class Defaults {
             next: [],
             worker: Defaults.getDefaultWorkerConfig(),
             faucet: Defaults.getDefaultFaucetConfig(topoId, node),
-            drain: Defaults.getDefaultDrainConfig(topoId, node),
+            drain: Defaults.getDefaultDrainConfig(topoId, node, isMulti),
             debug: {
                 port,
                 host: node.id,
@@ -76,16 +82,21 @@ class Defaults {
      *
      * @param {string} topoId
      * @param {INodeConfigSkeleton} node
+     * @param {boolean} isMulti
      * @return {IDrainConfig}
      */
-    public static getDefaultDrainConfig(topoId: string, node: INodeConfigSkeleton): IDrainConfig {
+    public static getDefaultDrainConfig(
+        topoId: string,
+        node: INodeConfigSkeleton,
+        isMulti: boolean = false,
+    ): IDrainConfig {
         const type = "drain.amqp";
         const faucetConf = Defaults.getDefaultFaucetConfig(topoId, node);
         const settings: IAmqpDrainSettings = {
             node_label: node.label,
             counter: {
                 queue: {
-                    name: `pipes.${topoId}.counter`,
+                    name: isMulti ? "pipes.multi-counter" : `pipes.${topoId}.counter`,
                     options: {},
                 },
             },
@@ -123,12 +134,36 @@ class Defaults {
 
     /**
      *
+     * @param {boolean} isMulti
      * @param {string} topoId
      * @return {ICounterSettings}
      */
-    public static getCounterDefaultSettings(topoId: string): ICounterSettings {
+    public static getCounterDefaultSettings(isMulti: boolean, topoId: string): ICounterSettings {
+        if (isMulti) {
+            return {
+                sub: {
+                    queue: {
+                        name: "pipes.multi-counter",
+                        prefetch: 1,
+                        options: {},
+                    },
+                },
+                pub: {
+                    routing_key: "process_finished",
+                    exchange: {
+                        name: `pipes.events`,
+                        type: "direct",
+                        options: {},
+                    },
+                    queue: {
+                        name: "pipes.results",
+                        options: {},
+                    },
+                },
+            };
+        }
+
         return {
-            topology: topoId,
             sub: {
                 queue: {
                     name: `pipes.${topoId}.counter`,

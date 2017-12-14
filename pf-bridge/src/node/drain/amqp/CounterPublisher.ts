@@ -3,6 +3,7 @@ import {Connection} from "amqplib-plus/dist/lib/Connection";
 import {Publisher} from "amqplib-plus/dist/lib/Publisher";
 import logger from "../../../logger/Logger";
 import CounterMessage from "../../../message/CounterMessage";
+import Headers from "../../../message/Headers";
 import JobMessage from "../../../message/JobMessage";
 import {IAmqpDrainSettings} from "../AmqpDrain";
 
@@ -15,7 +16,7 @@ class CounterPublisher extends Publisher {
 
     /**
      *
-     * @param {AMQPConnection} conn
+     * @param {Connection} conn
      * @param {IAmqpDrainSettings} settings
      */
     constructor(conn: Connection, settings: IAmqpDrainSettings) {
@@ -42,6 +43,8 @@ class CounterPublisher extends Publisher {
      * @return {Promise<void>}
      */
     public send(message: JobMessage): Promise<void> {
+        message.getHeaders().setPFHeader(Headers.TOPOLOGY_ID, this.settings.node_label.topology_id);
+
         const counterMessage = new CounterMessage(
             this.settings.node_label,
             message.getHeaders().getRaw(),

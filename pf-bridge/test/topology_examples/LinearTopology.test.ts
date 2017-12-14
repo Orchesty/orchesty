@@ -130,8 +130,8 @@ describe("Linear Topology test", () => {
                             .then(() => {
                                 return ch.bindQueue(
                                     counterResultQueue.name,
-                                    pip.getTopologyConfig().counter.pub.exchange.name,
-                                    pip.getTopologyConfig().counter.pub.routing_key,
+                                    pip.getTopologyConfig(false).counter.pub.exchange.name,
+                                    pip.getTopologyConfig(false).counter.pub.routing_key,
                                 );
                             })
                             .then(() => {
@@ -143,8 +143,8 @@ describe("Linear Topology test", () => {
                     // In this fn we evaluate expected incoming message and state if test is OK or failed
                     const data: ICounterProcessInfo = JSON.parse(msg.content.toString());
                     assert.equal(data.process_id, msgHeaders.headers["pf-process-id"]);
-                    assert.equal(data.total, pip.getTopologyConfig().nodes.length);
-                    assert.equal(data.ok, pip.getTopologyConfig().nodes.length);
+                    assert.equal(data.total, pip.getTopologyConfig(false).nodes.length);
+                    assert.equal(data.ok, pip.getTopologyConfig(false).nodes.length);
                     assert.equal(data.nok, 0);
                     const trace: string[] = [];
                     data.messages.forEach((info) => {

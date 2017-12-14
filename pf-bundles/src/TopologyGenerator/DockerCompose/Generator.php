@@ -12,10 +12,8 @@ use Exception;
 use Hanaboso\PipesFramework\Commons\Enum\TypeEnum;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
-use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\Impl\CounterServiceBuilder;
 use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\Impl\MultiNodeServiceBuilder;
 use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\Impl\NodeServiceBuilder;
-use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\Impl\ProbeServiceBuilder;
 use Hanaboso\PipesFramework\TopologyGenerator\Environment;
 use Hanaboso\PipesFramework\TopologyGenerator\GeneratorInterface;
 use Hanaboso\PipesFramework\TopologyGenerator\GeneratorUtils;
@@ -64,7 +62,7 @@ class Generator implements GeneratorInterface
     /**
      * @var boolean
      */
-    private $runBridgesInSeparateContainers = TRUE;
+    private $multiModeEnabled = FALSE;
 
     /**
      * Generator constructor.
@@ -131,11 +129,11 @@ class Generator implements GeneratorInterface
     }
 
     /**
-     * @param bool $runBridgesInSeparateContainers
+     * @param bool $enable
      */
-    public function runBridgesInSeparateContainers(bool $runBridgesInSeparateContainers): void
+    public function setMultiMode(bool $enable): void
     {
-        $this->runBridgesInSeparateContainers = $runBridgesInSeparateContainers;
+        $this->multiModeEnabled = $enable;
     }
 
     /**
@@ -170,7 +168,7 @@ class Generator implements GeneratorInterface
                 $nodeConfig['next'][] = GeneratorUtils::createNormalizedServiceName($next->getId(), $next->getName());
             }
 
-            if (!$this->runBridgesInSeparateContainers) {
+			if ($this->multiModeEnabled) {
                 $multiName           = $this->getMultiNodeName($topology);
                 $port                = $defaultPort + $i;
                 $nodeConfig['debug'] = [
@@ -201,16 +199,6 @@ class Generator implements GeneratorInterface
 
         $compose->addNetwork($this->network);
 
-        $builder = new ProbeServiceBuilder($this->environment, self::REGISTRY, $this->network, $topology, $volume);
-
-        $nodeWatcherService = $builder->build(new Node());
-        $compose->addService($nodeWatcherService);
-
-        $builder = new CounterServiceBuilder($this->environment, self::REGISTRY, $this->network, $topology, $volume);
-
-        $counterService = $builder->build(new Node());
-        $compose->addService($counterService);
-
         $this->addBridges($compose, $topology, $nodes, $volume);
 
         return $this->composeBuilder->build($compose);
@@ -229,18 +217,7 @@ class Generator implements GeneratorInterface
         VolumePathDefinition $volumePD
     ): void
     {
-        if ($this->runBridgesInSeparateContainers) {
-            // Run every bridge in dedicated container
-            foreach ($nodes as $node) {
-                $builder = new NodeServiceBuilder(
-                    $this->environment,
-                    self::REGISTRY,
-                    $this->network,
-                    $volumePD
-                );
-                $compose->addService($builder->build($node));
-            }
-        } else {
+        if ($this->multiModeEnabled) {
             // Run all topology bridges is single container
             $builder = new MultiNodeServiceBuilder(
                 $this->getMultiNodeName($topology),
@@ -252,6 +229,17 @@ class Generator implements GeneratorInterface
 
             $multi = $builder->build(new Node());
             $compose->addService($multi);
+        } else {
+            // Run every bridge in dedicated container
+            foreach ($nodes as $node) {
+                $builder = new NodeServiceBuilder(
+                    $this->environment,
+                    self::REGISTRY,
+                    $this->network,
+                    $volumePD
+                );
+                $compose->addService($builder->build($node));
+            }
         }
     }
 

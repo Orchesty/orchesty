@@ -103,16 +103,16 @@ describe("Topology with HttpWorker Node", () => {
                 await ch.purgeQueue(counterResultQueue.name);
                 await ch.bindQueue(
                     counterResultQueue.name,
-                    pip.getTopologyConfig().counter.pub.exchange.name,
-                    pip.getTopologyConfig().counter.pub.routing_key,
+                    pip.getTopologyConfig(false).counter.pub.exchange.name,
+                    pip.getTopologyConfig(false).counter.pub.routing_key,
                 );
             },
             (msg: Message) => {
                 // Check if every received result messages is processed without error
                 const data: ICounterProcessInfo = JSON.parse(msg.content.toString());
                 assert.isTrue(data.success);
-                assert.equal(data.total, pip.getTopologyConfig().nodes.length);
-                assert.equal(data.ok, pip.getTopologyConfig().nodes.length);
+                assert.equal(data.total, pip.getTopologyConfig(false).nodes.length);
+                assert.equal(data.ok, pip.getTopologyConfig(false).nodes.length);
                 assert.equal(data.nok, 0);
 
                 resultMessagesReceived++;

@@ -12,23 +12,20 @@ import Repeater from "./repeater/Repeater";
 import {default as Configurator, INodeConfig, ITopologyConfig, ITopologyConfigSkeleton} from "./topology/Configurator";
 import Counter from "./topology/counter/Counter";
 import Probe from "./topology/probe/Probe";
+import Defaults from "./Defaults";
 
 class Pipes {
 
     public nodes: Container;
-
-    private topology: ITopologyConfig;
     private dic: DIContainer;
 
     /**
      *
      * @param {ITopologyConfig | ITopologyConfigSkeleton} topology
      */
-    constructor(topology: ITopologyConfig | ITopologyConfigSkeleton) {
+    constructor(private topology: ITopologyConfig | ITopologyConfigSkeleton) {
         this.nodes = new Container();
         this.dic = new DIContainer();
-
-        this.topology = Configurator.createConfigFromSkeleton(topology);
     }
 
     /**
@@ -57,9 +54,10 @@ class Pipes {
      * @return {Promise<void>}
      */
     public startMultiBridge(): Promise<void> {
+        const topo = this.getTopologyConfig(true);
         const proms: Node[] = [];
 
-        for (const nodeCfg of this.topology.nodes) {
+        for (const nodeCfg of topo.nodes) {
             this.startNode(nodeCfg.id)
                 .then((node: Node) => {
                     proms.push(node);
@@ -76,45 +74,63 @@ class Pipes {
 
     /**
      * Starts topology counter
+     * @return {Promise<Counter>}
      */
-    public startCounter(): Promise<Counter> {
+    public async startCounter(): Promise<Counter> {
+        const topo = this.getTopologyConfig(false);
+
         const counter = new Counter(
-            this.topology.counter,
+            topo.counter,
             this.dic.get("amqp.connection"),
             this.dic.get("counter.storage"),
             this.dic.get("topology.terminator")(false),
-            this.dic.get("metrics")(this.topology.id, "counter"),
+            this.dic.get("metrics")(topo.id, "counter"),
         );
 
-        return counter.listen()
-            .then(() => {
-                logger.info(`Counter for topology "${this.getTopologyConfig().id}" is running.`);
+        await counter.start();
 
-                return counter;
-            });
+        logger.info(`Counter for topology "${topo.id}" is running.`);
+
+        return counter;
     }
 
     /**
      * Starts counter capable to manage multiple topologies
-     * @return {Promise<void>}
+     *
+     * @return {Promise<Counter>}
      */
-    public startMultiCounter(): Promise<void> {
-        return Promise.resolve();
+    public async startMultiCounter(): Promise<Counter> {
+        const topo = this.getTopologyConfig(true);
+
+        const counter = new Counter(
+            topo.counter,
+            this.dic.get("amqp.connection"),
+            this.dic.get("counter.storage"),
+            this.dic.get("topology.terminator")(true),
+            this.dic.get("metrics")(topo.id, "counter"),
+        );
+
+        await counter.start();
+
+        logger.info(`MultiCounter is running.`);
+
+        return counter;
     }
 
     /**
      * Starts topology probe
      */
     public startProbe(): Promise<void> {
-        const probe = new Probe(this.topology.id, probeOptions);
+        const topo = this.getTopologyConfig(false);
+        const probe = new Probe(topo.id, probeOptions);
 
-        for (const nodeCfg of this.topology.nodes) {
+        for (const nodeCfg of topo.nodes) {
             probe.addNode(nodeCfg);
         }
 
         return probe.start()
             .then(() => {
-                logger.info(`Probe of topology "${this.getTopologyConfig().id}" is running.`);
+                logger.info(`Probe of topology "${topo.id}" is running.`);
             });
     }
 
@@ -133,8 +149,8 @@ class Pipes {
      *
      * @return {ITopologyConfig}
      */
-    public getTopologyConfig(): ITopologyConfig {
-        return this.topology;
+    public getTopologyConfig(isMulti: boolean): ITopologyConfig {
+        return Configurator.createConfigFromSkeleton(isMulti, this.topology);
     }
 
     /**
@@ -151,6 +167,7 @@ class Pipes {
      * @return {Node}
      */
     private createNode(nodeCfg: INodeConfig): Node {
+        const topo = this.getTopologyConfig(false);
         const id = nodeCfg.id;
 
         const faucet: IFaucet = this.dic.get(nodeCfg.faucet.type)(nodeCfg.faucet.settings);
@@ -161,7 +178,7 @@ class Pipes {
             this.dic.get(nodeCfg.worker.type)(nodeCfg.worker.settings, drain) :
             this.dic.get(nodeCfg.worker.type)(nodeCfg.worker.settings);
 
-        const metrics: IMetrics = this.dic.get("metrics")(this.topology.id, id);
+        const metrics: IMetrics = this.dic.get("metrics")(topo.id, id);
 
         const node = new Node(id, worker, faucet, drain, metrics);
 
@@ -177,7 +194,8 @@ class Pipes {
      * @return {INodeConfig}
      */
     private getNodeConfig(nodeId: string): INodeConfig {
-        for (const nodeCfg of this.topology.nodes) {
+        const topo = this.getTopologyConfig(false);
+        for (const nodeCfg of topo.nodes) {
             if (nodeCfg.id === nodeId) {
                 return nodeCfg;
             }

@@ -74,23 +74,24 @@ class Configurator {
 
     /**
      *
-     * @param {ITopologyConfigSkeleton} topologySkeleton
+     * @param {boolean} isMulti
+     * @param {ITopologyConfigSkeleton} skeleton
      * @return {ITopologyConfig}
      */
-    public static createConfigFromSkeleton(topologySkeleton: ITopologyConfigSkeleton): ITopologyConfig {
+    public static createConfigFromSkeleton(isMulti: boolean, skeleton: ITopologyConfigSkeleton): ITopologyConfig {
         const nodes: INodeConfig[] = [];
 
-        let position = 0;
-        topologySkeleton.nodes.forEach((nodeSkeleton: INodeConfigSkeleton) => {
-            const node = Configurator.createNodeConfig(topologySkeleton.id, nodeSkeleton, position);
+        let i = 0;
+        skeleton.nodes.forEach((nodeSkeleton: INodeConfigSkeleton) => {
+            const node = Configurator.createNodeConfig(skeleton.id, nodeSkeleton, i);
             nodes.push(node);
-            position++;
+            i++;
         });
 
         return {
-            id: topologySkeleton.id,
+            id: skeleton.id,
             nodes,
-            counter: topologySkeleton.counter || Defaults.getCounterDefaultSettings(topologySkeleton.id),
+            counter: skeleton.counter || Defaults.getCounterDefaultSettings(isMulti, skeleton.id),
         };
     }
 
