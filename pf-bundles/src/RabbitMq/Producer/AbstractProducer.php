@@ -181,6 +181,7 @@ class AbstractProducer implements LoggerAwareInterface
         switch ($this->getContentType()) {
             case ContentTypes::APPLICATION_JSON:
                 $message = $this->beforeSerializer($message);
+
                 if ($this->serializer instanceof IMessageSerializer) {
                     $message = $this->serializer->toJson($message);
                 } else {

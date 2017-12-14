@@ -47,7 +47,7 @@ class GeneratorUtils
      */
     public static function dokerizeName(string $id, string $name): string
     {
-        return sprintf('%s%s', $id, preg_replace('/-/', '', $name));
+        return strtolower(sprintf('%s%s', $id, preg_replace('/-|\s/', '', $name)));
     }
 
     /**

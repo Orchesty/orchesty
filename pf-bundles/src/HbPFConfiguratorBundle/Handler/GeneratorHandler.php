@@ -9,6 +9,7 @@
 namespace Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Hanaboso\PipesFramework\Commons\Enum\DatabaseFilterEnum;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\TopologyGenerator\Actions\DestroyTopologyActions;
@@ -133,7 +134,14 @@ class GeneratorHandler
      */
     public function stopTopology(string $topologyId): ?array
     {
+        if ($this->dm->getFilterCollection()->isEnabled(DatabaseFilterEnum::DELETED)) {
+            $this->dm->getFilterCollection()->disable(DatabaseFilterEnum::DELETED);
+        }
         $topology = $this->dm->getRepository(Topology::class)->find($topologyId);
+
+        if (!$this->dm->getFilterCollection()->isEnabled(DatabaseFilterEnum::DELETED)) {
+            $this->dm->getFilterCollection()->enable(DatabaseFilterEnum::DELETED);
+        }
 
         if ($topology) {
             /** @var StopTopologyActions $actions */
@@ -163,10 +171,18 @@ class GeneratorHandler
      */
     public function destroyTopology(string $topologyId): bool
     {
+        if ($this->dm->getFilterCollection()->isEnabled(DatabaseFilterEnum::DELETED)) {
+            $this->dm->getFilterCollection()->disable(DatabaseFilterEnum::DELETED);
+        }
+
         $topology = $this->dm->getRepository(Topology::class)->find($topologyId);
         $nodes    = $this->dm->getRepository(Node::class)->findBy([
             'topology' => $topologyId,
         ]);
+
+        if (!$this->dm->getFilterCollection()->isEnabled(DatabaseFilterEnum::DELETED)) {
+            $this->dm->getFilterCollection()->enable(DatabaseFilterEnum::DELETED);
+        }
 
         if ($topology && !empty($nodes)) {
             /** @var DestroyTopologyActions $actions */

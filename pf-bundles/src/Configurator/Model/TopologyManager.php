@@ -13,6 +13,7 @@ use Hanaboso\PipesFramework\Commons\Exception\EnumException;
 use Hanaboso\PipesFramework\Configurator\Document\Embed\EmbedNode;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
+use Hanaboso\PipesFramework\Configurator\Exception\NodeException;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
 use Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository;
 use Nette\Utils\Arrays;
@@ -78,6 +79,7 @@ class TopologyManager
      * @param array    $data
      *
      * @return Topology
+     * @throws TopologyException
      */
     public function updateTopology(Topology $topology, array $data): Topology
     {
@@ -138,6 +140,7 @@ class TopologyManager
      * @param Topology $topology
      *
      * @return Topology
+     * @throws NodeException
      */
     public function cloneTopology(Topology $topology): Topology
     {
@@ -205,7 +208,7 @@ class TopologyManager
         }
 
         $this->removeNodesByTopology($topology);
-        $this->dm->remove($topology);
+        $topology->setDeleted(TRUE);
         $this->dm->flush();
     }
 
@@ -214,8 +217,9 @@ class TopologyManager
      */
     private function removeNodesByTopology(Topology $topology): void
     {
+        /** @var Node $node */
         foreach ($this->dm->getRepository(Node::class)->findBy(['topology' => $topology->getId()]) as $node) {
-            $this->dm->remove($node);
+            $node->setDeleted(TRUE);
         }
 
         $this->dm->flush();
@@ -224,6 +228,8 @@ class TopologyManager
     /**
      * @param Topology $topology
      * @param array    $data
+     *
+     * @throws TopologyException
      */
     private function generateNodes(Topology $topology, array $data): void
     {
