@@ -32,9 +32,8 @@ use function React\Promise\resolve;
 abstract class CMGetSubscribersConnectorAbstract extends CMAuthorization implements ConnectorInterface, BatchInterface, LoggerAwareInterface
 {
 
-    protected const BASE_URL              = 'https://api.dev.clevermonitor.com/v1.2';
-    protected const COUNT                 = 50;
-    protected const ALL_SUBSCRIBERS_COUNT = 500;
+    protected const BASE_URL = 'https://api.dev.clevermonitor.com/v1.2';
+    protected const COUNT    = 50;
 
     /**
      * @var ObjectRepository|SystemInstallRepository
@@ -147,7 +146,7 @@ abstract class CMGetSubscribersConnectorAbstract extends CMAuthorization impleme
         ?string $processId = NULL
     ): PromiseInterface
     {
-        $requestDto->setUri(new Uri($this->getUrl(($page - 1) * self::COUNT)));
+        $requestDto->setUri(new Uri($this->getUrl(($page - 1) * static::COUNT)));
 
         return $this->fetchData($sender, $requestDto)->then(
             function (ResponseInterface $response) use ($sender, $requestDto, $callbackItem, $page, $processId) {

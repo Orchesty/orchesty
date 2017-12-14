@@ -2,9 +2,12 @@
 
 namespace Tests\Live\AppBundle\Model\CM;
 
+use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\CM\SubscriberConnector\CMGetListSubscribersConnector;
 use CleverConnectors\AppBundle\Model\ProgressCounter\ProgressCounterService;
+use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use Clue\React\Buzz\Browser;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\PipesFramework\Commons\Metrics\InfluxDbSender;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSender;
@@ -67,7 +70,27 @@ final class CMGetListSubscribersConnectorTest extends KernelTestCaseAbstract
             ->method('setTotal')
             ->willReturn(NULL);
 
-        $conn = new CMGetListSubscribersConnector($this->dm, $factory, $progressCounter, ['cert' => '']);
+        $systemInstall = new SystemInstall();
+        $systemInstall
+            ->setUser('5a8b121f-a74c-11e7-a177-000d3a20eb16')
+            ->setToken('+-cl2-3FR-6FD_83L+_19X6+hbZrtfeI')
+            ->setSettings([
+                SystemInstall::DISTRIBUTION_LIST => '0b8cc606-2991-67d5-6e95-4feb3731c615',
+            ]);
+
+        $repo = $this->createMock(SystemInstallRepository::class);
+        $repo
+            ->expects($this->at(0))
+            ->method('getSystemInstallFromHeaders')
+            ->willReturn($systemInstall);
+
+        $dm = $this->createMock(DocumentManager::class);
+        $dm
+            ->expects($this->at(0))
+            ->method('getRepository')
+            ->willReturn($repo);
+
+        $conn = new CMGetListSubscribersConnector($dm, $factory, $progressCounter, ['cert' => '']);
 
         $process = $conn->processBatch($dto, $loop, function (SuccessMessage $message): void {
             $this->assertTrue(is_array(Json::decode($message->getData(), TRUE)));

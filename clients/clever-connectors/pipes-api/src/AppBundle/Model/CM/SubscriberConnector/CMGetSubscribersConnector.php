@@ -19,6 +19,8 @@ use React\Promise\PromiseInterface;
 class CMGetSubscribersConnector extends CMGetSubscribersConnectorAbstract
 {
 
+    protected const COUNT = 100;
+
     /**
      * @param ProcessDto    $dto
      * @param LoopInterface $loop
@@ -58,9 +60,12 @@ class CMGetSubscribersConnector extends CMGetSubscribersConnectorAbstract
      */
     protected function getUrl(int $offset): string
     {
-        // TODO fetch all or only certain status code?
-
-        return sprintf('%s/subscribers/?offset=%s&count=%s', self::BASE_URL, $offset, self::ALL_SUBSCRIBERS_COUNT);
+        return sprintf(
+            '%s/subscribers/?contact_status=1&offset=%s&count=%s',
+            self::BASE_URL,
+            $offset,
+            self::COUNT
+        );
     }
 
 }
