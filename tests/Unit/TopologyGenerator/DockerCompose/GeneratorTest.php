@@ -101,7 +101,7 @@ class GeneratorTest extends TestCase
             new VolumePathDefinitionFactory()
         );
 
-        $generator->runBridgesInSeparateContainers(TRUE);
+        $generator->setMultiMode(FALSE);
 
         $generator->generate($topology, $nodes);
 
@@ -161,7 +161,7 @@ class GeneratorTest extends TestCase
             new VolumePathDefinitionFactory()
         );
 
-        $generator->runBridgesInSeparateContainers(FALSE);
+        $generator->setMultiMode(TRUE);
 
         $generator->generate($topology, $nodes);
 

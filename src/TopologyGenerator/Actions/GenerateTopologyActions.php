@@ -46,16 +46,13 @@ class GenerateTopologyActions extends ActionsAbstract
      * @param string   $network
      *
      * @return bool
+     * @throws \Exception
      */
     public function generateTopology(Topology $topology, array $nodes, string $dstDirectory, string $network): bool
     {
-        $generator = $this->getGenerator(
-            $dstDirectory,
-            $network,
-            $this->volumePathDefinition
-        );
+        $generator = $this->getGenerator($dstDirectory, $network, $this->volumePathDefinition);
 
-        $generator->runBridgesInSeparateContainers(FALSE);
+        $generator->setMultiMode(TRUE);
         $generator->generate($topology, $nodes);
 
         return TRUE;
