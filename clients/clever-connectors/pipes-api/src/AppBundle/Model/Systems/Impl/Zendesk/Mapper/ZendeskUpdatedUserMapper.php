@@ -2,7 +2,6 @@
 
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Zendesk\Mapper;
 
-use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 
 /**
@@ -10,29 +9,18 @@ use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Zendesk\Mapper
  */
-class ZendeskUpdatedUserMapper extends ZendeskUpdatedUserMapperAbstract
+class ZendeskUpdatedUserMapper extends ZendeskUserMapperAbstract
 {
 
     /**
      * @param ProcessDto $dto
+     * @param array      $data
      *
-     * @return ProcessDto
-     * @throws CleverConnectorsException
+     * @return bool
      */
-    public function process(ProcessDto $dto): ProcessDto
+    protected function omit(ProcessDto $dto, array $data): bool
     {
-        $data = json_decode($dto->getData(), TRUE);
-
-        if (!array_key_exists('email', $data)) {
-            throw new CleverConnectorsException(
-                'Missing required email field in data.',
-                CleverConnectorsException::MISSING_DATA
-            );
-        }
-
-        $obj = $this->createSubscriber($data);
-
-        return $dto->setData(json_encode($obj->toArray()));
+        return $data['created_at'] === $data['updated_at'];
     }
 
 }

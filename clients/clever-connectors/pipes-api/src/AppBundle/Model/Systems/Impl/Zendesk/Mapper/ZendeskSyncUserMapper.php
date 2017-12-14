@@ -6,14 +6,13 @@ use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 
 /**
- * Class ZendeskCreatedUserMapper
+ * Class ZendeskSyncUserMapper
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Zendesk\Mapper
  */
-class ZendeskCreatedUserMapper extends ZendeskUserMapperAbstract
+class ZendeskSyncUserMapper extends ZendeskUserMapperAbstract
 {
 
     /**
@@ -34,17 +33,6 @@ class ZendeskCreatedUserMapper extends ZendeskUserMapperAbstract
     public function __construct(DocumentManager $dm)
     {
         $this->systemInstallRepository = $dm->getRepository(SystemInstall::class);
-    }
-
-    /**
-     * @param ProcessDto $dto
-     * @param array      $data
-     *
-     * @return bool
-     */
-    protected function omit(ProcessDto $dto, array $data): bool
-    {
-        return $data['created_at'] !== $data['updated_at'];
     }
 
 }
