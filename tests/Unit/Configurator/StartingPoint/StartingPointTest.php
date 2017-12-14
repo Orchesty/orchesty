@@ -186,6 +186,7 @@ class StartingPointTest extends TestCase
   <title>Title</title>
 </root>'
         );
+        $request->setMethod('POST');
 
         $body = $startingPoint->createBodyFromRequest($request);
 
@@ -209,6 +210,7 @@ class StartingPointTest extends TestCase
         ],
             '{"name": "Name", "array": []}'
         );
+        $request->setMethod('PUT');
 
         $body = $startingPoint->createBodyFromRequest($request);
 
@@ -227,6 +229,7 @@ class StartingPointTest extends TestCase
         ],
             'Data1,Data2,Data3'
         );
+        $request->setMethod('POST');
 
         $body = $startingPoint->createBodyFromRequest($request);
 

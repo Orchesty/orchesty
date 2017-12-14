@@ -197,8 +197,11 @@ class StartingPoint implements LoggerAwareInterface
      */
     public function createBodyFromRequest(Request $request): string
     {
-        /** @var string $content */
-        $content = $request->getContent();
+        $content = '{}';
+        if (in_array($request->getMethod(), ['POST', 'PUT'])) {
+            /** @var string $content */
+            $content = $request->getContent();
+        }
 
         return $content;
     }
