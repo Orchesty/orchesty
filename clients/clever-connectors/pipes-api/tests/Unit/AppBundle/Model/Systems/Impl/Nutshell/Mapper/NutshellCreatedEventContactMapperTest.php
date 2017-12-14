@@ -7,11 +7,11 @@ use Nette\Utils\Json;
 use Tests\ConnectorTestCaseAbstract;
 
 /**
- * Class NutshellSyncUpdateContactMapperTest
+ * Class NutshellCreatedEventContactMapperTest
  *
  * @package Tests\Unit\AppBundle\Model\Systems\Impl\Nutshell\Mapper
  */
-final class NutshellSyncUpdateContactMapperTest extends ConnectorTestCaseAbstract
+final class NutshellCreatedEventContactMapperTest extends ConnectorTestCaseAbstract
 {
 
     /**
@@ -19,7 +19,7 @@ final class NutshellSyncUpdateContactMapperTest extends ConnectorTestCaseAbstrac
      */
     public function testProcess(): void
     {
-        $connector = $this->container->get('hbpf.custom_node.nutshell-sync-update-contact-mapper');
+        $connector = $this->container->get('hbpf.custom_node.nutshell-created-event-contact-mapper');
 
         $response = Json::decode($connector->process($this->prepareConnectorProcessDto([
             'username' => 'nutshell@mailinator.com',
@@ -41,7 +41,7 @@ final class NutshellSyncUpdateContactMapperTest extends ConnectorTestCaseAbstrac
      */
     public function testProcessWithList(): void
     {
-        $connector = $this->container->get('hbpf.custom_node.nutshell-sync-update-contact-mapper');
+        $connector = $this->container->get('hbpf.custom_node.nutshell-created-event-contact-mapper');
 
         $response = Json::decode($connector->process($this->prepareConnectorProcessDto([
             'username' => 'nutshell@mailinator.com',
@@ -56,7 +56,6 @@ final class NutshellSyncUpdateContactMapperTest extends ConnectorTestCaseAbstrac
             CleverFieldsEnum::FOREIGN_ID => '1',
             CleverFieldsEnum::REACTIVATE => TRUE,
             CleverFieldsEnum::SEND_OPTIN => FALSE,
-            CleverFieldsEnum::LISTS      => ['4b04d334-3db9-b290-d0aa-099642329856'],
         ], $response);
     }
 

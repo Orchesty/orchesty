@@ -19,6 +19,8 @@ class NutshellCreatedContactMapper extends NutshellContactMapperAbstract
      */
     public function process(ProcessDto $dto): ProcessDto
     {
+        $this->action = self::CREATE;
+
         return parent::process($this->getNeededAction($dto, self::CREATE));
     }
 

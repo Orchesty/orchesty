@@ -41,6 +41,7 @@ services:
     hbpf.custom_node.nutshell-sync-update-contact-mapper:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Nutshell\Mapper\NutshellSyncUpdateContactMapper
         arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
 
     hbpf.custom_node.nutshell-create-contact-mapper:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Nutshell\Mapper\NutshellCreateContactMapper
@@ -53,11 +54,19 @@ services:
     hbpf.custom_node.nutshell-created-contact-mapper:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Nutshell\Mapper\NutshellCreatedContactMapper
         arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
 
     hbpf.custom_node.nutshell-updated-contact-mapper:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Nutshell\Mapper\NutshellUpdatedContactMapper
         arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
 
     hbpf.custom_node.nutshell-deleted-contact-mapper:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Nutshell\Mapper\NutshellDeletedContactMapper
         arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+
+    hbpf.custom_node.nutshell-created-event-contact-mapper:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Nutshell\Mapper\NutshellCreatedEventContactMapper
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'

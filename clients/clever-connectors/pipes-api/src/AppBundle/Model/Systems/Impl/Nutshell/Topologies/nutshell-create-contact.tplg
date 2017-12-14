@@ -14,12 +14,12 @@
       <bpmn:outgoing>SequenceFlow_09i5kjp</bpmn:outgoing>
     </bpmn:task>
     <bpmn:sequenceFlow id="SequenceFlow_0s8nvox" sourceRef="Task_0k8z15e" targetRef="Task_1qhhgvy" />
-    <bpmn:task id="Task_05vlcw8" pipes:pipesType="custom" name="nutshell-created-contact-mapper">
+    <bpmn:task id="Task_05vlcw8" pipes:pipesType="custom" name="nutshell-created-event-contact-mapper">
       <bpmn:incoming>SequenceFlow_09i5kjp</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0kinxdm</bpmn:outgoing>
     </bpmn:task>
     <bpmn:sequenceFlow id="SequenceFlow_09i5kjp" sourceRef="Task_1qhhgvy" targetRef="Task_05vlcw8" />
-    <bpmn:task id="Task_07suptj" pipes:pipesType="connector" name="cleverconnectors-create-subscriptions-connector">
+    <bpmn:task id="Task_07suptj" pipes:pipesType="connector" name="cleverconnectors-update-subscriptions-connector">
       <bpmn:incoming>SequenceFlow_0kinxdm</bpmn:incoming>
     </bpmn:task>
     <bpmn:sequenceFlow id="SequenceFlow_0kinxdm" sourceRef="Task_05vlcw8" targetRef="Task_07suptj" />

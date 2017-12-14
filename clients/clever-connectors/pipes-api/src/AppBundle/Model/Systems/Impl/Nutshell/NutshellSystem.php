@@ -212,6 +212,12 @@ class NutshellSystem implements AuthorizationInterface, CMEventSystemInterface, 
             $systemInstall->isEventHardBounce()
         );
 
+        $field7 = new Field(
+            Field::SELECT,
+            SystemInstall::SELECT_LIST,
+            'Distribution list'
+        );
+
         $form = new Form();
         $form
             ->addField($field1)
@@ -219,7 +225,8 @@ class NutshellSystem implements AuthorizationInterface, CMEventSystemInterface, 
             ->addField($field3)
             ->addField($field4)
             ->addField($field5)
-            ->addField($field6);
+            ->addField($field6)
+            ->addField($field7);
 
         return $form->toArray();
     }
