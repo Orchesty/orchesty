@@ -36,7 +36,14 @@ class AuthorizationSettingGeneratorFactory
                 if ($field->getKey() === 'list') {
                     $form
                         ->addSelect($field->getKey(), $field->getLabel(), $distributionList)
+                        ->setPrompt('Choose list')
                         ->setOption('description', $field->getDescription());
+
+                    if ($field->getValue() !== '' && $field->getValue() !== NULL) {
+                        $form[$field->getKey()]
+                            ->setDefaultValue($field->getValue());
+                    }
+
                 } else {
                     switch ($field->getType()) {
                         case 'password':
@@ -72,10 +79,10 @@ class AuthorizationSettingGeneratorFactory
                             }
                             break;
                     }
-                }
 
-                $form[$field->getKey()]
-                    ->setDefaultValue($field->getValue());
+                    $form[$field->getKey()]
+                        ->setDefaultValue($field->getValue());
+                }
 
                 if ($field->isRequired()) {
                     $form[$field->getKey()]->setRequired('This field is required.');

@@ -1,0 +1,40 @@
+{block title}
+    USER SYSTEM DETAIL
+{/block title}
+
+{block content}
+    <h1 class="text-center">USER SYSTEM DETAIL</h1>
+
+    <hr>
+
+    {if $user->isLoggedIn()}
+
+        <div class="row">
+            <div class="col-md-10 text-center" style="line-height: 3rem">
+                <strong>UserId:</strong> {$userId}
+            </div>
+            <div class="col-md-2" style="line-height: 3rem">
+                {form logoutForm}
+                    <div class="form-group" style="margin-bottom: 0">
+                        {input logout class=>"form-control btn btn-danger btn-sm"}
+                    </div>
+                {/form}
+            </div>
+
+        </div>
+
+        <hr>
+
+        <div class="row">
+            {control customForm}
+        </div>
+
+    {else}
+        <div class="row">
+            <div class="col-md-12">
+                {control loginForm}
+            </div>
+        </div>
+    {/if}
+
+{/block}

@@ -67,6 +67,10 @@ services:
 	distribution_list:
 		class: App\Model\DistributionList(%clever.host%,%clever.secret%)
 
+	# CUSTOM FORMS
+	wise_pop_factory:
+		class: App\Form\Systems\WisePopFormFactory
+
 	# STREAM
 	publish_form_factory:
 		class: App\Forms\PublishFormFactory
