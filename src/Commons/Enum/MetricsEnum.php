@@ -15,6 +15,7 @@ class MetricsEnum extends EnumAbstract
     public const URI            = 'uri';
     public const CORRELATION_ID = 'correlation_id';
     public const TOPOLOGY_ID    = 'topology_id';
+    public const NODE_ID        = 'node_id';
 
     // Fields
     public const REQUEST_TOTAL_DURATION      = 'fpm_request_total_duration';

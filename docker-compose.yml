@@ -96,8 +96,19 @@ services:
     depends_on:
       - mongo
 
+  influxdb:
+    image: influxdb:1.2-alpine
+    ports:
+    - ${DEV_IP}:8083:8083
+    - ${DEV_IP}:8086:8086
+    - ${DEV_IP}:8089:8089/udp
+    volumes:
+    - influxdb:/var/lib/influxdb
+    - ./docker/influx/influxdb.conf:/etc/influxdb/influxdb.conf
+
 volumes:
   mongo: {}
   mariadb: {}
   rabbit-mq: {}
   redis: {}
+  influxdb: {}

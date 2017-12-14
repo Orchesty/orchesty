@@ -8,6 +8,7 @@
 
 namespace Hanaboso\PipesFramework\TopologyGenerator\DockerCompose;
 
+use Exception;
 use Hanaboso\PipesFramework\Commons\Enum\TypeEnum;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
@@ -94,7 +95,7 @@ class Generator implements GeneratorInterface
      * @param Topology        $topology
      * @param iterable|Node[] $nodes
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function generate(Topology $topology, iterable $nodes): void
     {
@@ -142,17 +143,16 @@ class Generator implements GeneratorInterface
      * @param iterable|Node[] $nodes
      *
      * @return string
-     * @throws \Exception
+     * @throws Exception
      */
     public function createTopologyConfig(Topology $topology, iterable $nodes): string
     {
-        $config['id']            = GeneratorUtils::createServiceName(
-            GeneratorUtils::normalizeName($topology->getId(), $topology->getName())
-        );
+        $config['id']            = GeneratorUtils::createNormalizedServiceName($topology->getId(),
+            $topology->getName());
         $config['topology_id']   = $topology->getId();
         $config['topology_name'] = $topology->getName();
 
-        $i = 0;
+        $i           = 0;
         $defaultPort = 8008;
         foreach ($nodes as $node) {
             $nodeFullId = GeneratorUtils::normalizeName($node->getId(), $node->getName());
@@ -167,18 +167,16 @@ class Generator implements GeneratorInterface
             $nodeConfig['worker'] = $this->getWorkerConfig($node);
             $nodeConfig['next']   = [];
             foreach ($node->getNext() as $next) {
-                $nodeConfig['next'][] = GeneratorUtils::createServiceName(
-                    GeneratorUtils::normalizeName($next->getId(), $next->getName())
-                );
+                $nodeConfig['next'][] = GeneratorUtils::createNormalizedServiceName($next->getId(), $next->getName());
             }
 
             if (!$this->runBridgesInSeparateContainers) {
-                $multiName = $this->getMultiNodeName($topology);
-                $port = $defaultPort + $i;
+                $multiName           = $this->getMultiNodeName($topology);
+                $port                = $defaultPort + $i;
                 $nodeConfig['debug'] = [
                     'port' => $port,
                     'host' => $multiName,
-                    'url' => sprintf('http://%s:%s/status', $multiName, $port),
+                    'url'  => sprintf('http://%s:%s/status', $multiName, $port),
                 ];
             }
 
@@ -271,7 +269,7 @@ class Generator implements GeneratorInterface
      * @param Node $node
      *
      * @return array
-     * @throws \Exception
+     * @throws Exception
      */
     private function getWorkerConfig(Node $node): array
     {
@@ -307,7 +305,7 @@ class Generator implements GeneratorInterface
      * @param Node $node
      *
      * @return array
-     * @throws \Exception
+     * @throws Exception
      */
     private function getHttpWorkerConfig(Node $node): array
     {
@@ -321,7 +319,7 @@ class Generator implements GeneratorInterface
      * @param Node $node
      *
      * @return array
-     * @throws \Exception
+     * @throws Exception
      */
     private function getHttpXmlParserWorkerConfig(Node $node): array
     {
@@ -340,7 +338,7 @@ class Generator implements GeneratorInterface
      * @param Node $node
      *
      * @return array
-     * @throws \Exception
+     * @throws Exception
      */
     private function getHttpWorkerSettings(Node $node): array
     {
