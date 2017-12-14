@@ -2,8 +2,12 @@
 
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Mailmunch\Mapper;
 
+use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\CM\SubscriberConnector\SubscriberObject\CMSubscriber;
+use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
+use Doctrine\Common\Persistence\ObjectRepository;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
 use function GuzzleHttp\Psr7\parse_query;
@@ -15,6 +19,21 @@ use function GuzzleHttp\Psr7\parse_query;
  */
 class MailmunchCreatedEmailMapper implements CustomNodeInterface
 {
+
+    /**
+     * @var SystemInstallRepository|ObjectRepository
+     */
+    private $systemInstallRepository;
+
+    /**
+     * MailmunchCreatedEmailMapper constructor.
+     *
+     * @param DocumentManager $dm
+     */
+    public function __construct(DocumentManager $dm)
+    {
+        $this->systemInstallRepository = $dm->getRepository(SystemInstall::class);
+    }
 
     /**
      * @param ProcessDto $dto
@@ -33,8 +52,13 @@ class MailmunchCreatedEmailMapper implements CustomNodeInterface
             );
         }
 
+        $sys  = $this->systemInstallRepository->getSystemInstallFromHeaders($dto->getHeaders());
+        $sett = $sys->getSettings();
+
         $obj = new CMSubscriber();
-        $obj->setEmail($data['email']);
+        $obj
+            ->setEmail($data['email'])
+            ->setLists($sett[SystemInstall::SELECT_LIST] ? [$sett[SystemInstall::SELECT_LIST]] : []);
 
         if (array_key_exists('first-name', $data)) {
             $obj->setFirstName($data['first-name']);

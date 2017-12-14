@@ -2,8 +2,13 @@
 
 namespace Tests\Unit\AppBundle\Model\Systems\Impl\Mailmunch\Mapper;
 
+use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\CleverFieldsEnum;
+use CleverConnectors\AppBundle\Model\Systems\Impl\Mailmunch\Mapper\MailmunchCreatedEmailMapper;
+use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use PHPUnit_Framework_MockObject_MockObject;
 use Tests\KernelTestCaseAbstract;
 
 /**
@@ -19,11 +24,25 @@ final class MailmunchCreatedEmailMapperTest extends KernelTestCaseAbstract
      */
     public function testMapper(): void
     {
+        $sys = new SystemInstall();
+        $sys->setSettings([
+            'list' => 'someList',
+        ]);
+
+        $repo = $this->createMock(SystemInstallRepository::class);
+        $repo->expects($this->once())
+            ->method('getSystemInstallFromHeaders')->willReturn($sys);
+
+        /** @var DocumentManager|PHPUnit_Framework_MockObject_MockObject $dm */
+        $dm = $this->createMock(DocumentManager::class);
+        $dm->expects($this->once())
+            ->method('getRepository')->willReturn($repo);
+
         $data = 'last-name=&first-name=sdf&email=asd%40asd.com&site-id=432743&form-id=559774&form-name=jgn&referral=http%3A%2F%2F194.213.36.182%2F&ip-address=188.122.212.69';
         $dto  = new ProcessDto();
-        $dto->setData($data);
+        $dto->setData($data)->setHeaders([]);
 
-        $mapper = $this->container->get('hbpf.custom_node.mailmunch-created-email-mapper');
+        $mapper = new MailmunchCreatedEmailMapper($dm);
         $res    = $mapper->process($dto);
 
         $expt = [
@@ -31,6 +50,7 @@ final class MailmunchCreatedEmailMapperTest extends KernelTestCaseAbstract
             CleverFieldsEnum::FIRST_NAME => 'sdf',
             CleverFieldsEnum::REACTIVATE => TRUE,
             CleverFieldsEnum::SEND_OPTIN => FALSE,
+            CleverFieldsEnum::LISTS      => ['someList'],
         ];
 
         self::assertEquals($expt, json_decode($res->getData(), TRUE));
