@@ -43,7 +43,7 @@ class FacebookaudienceCreateAudienceConnector extends FacebookaudienceConnectorA
     {
         $data = Json::decode($dto->getData(), TRUE);
 
-        if (!is_array($data) || !array_key_exists('data', $data) || empty($data['data'])) {
+        if (!is_array($data) || !array_key_exists('data', $data)) {
             throw new CleverConnectorsException(
                 'Missing data or required field "data"',
                 CleverConnectorsException::MISSING_DATA
@@ -86,9 +86,11 @@ class FacebookaudienceCreateAudienceConnector extends FacebookaudienceConnectorA
      */
     private function listExists(string $list, array $data): bool
     {
-        foreach ($data as $item) {
-            if ($item['name'] == $list) {
-                return TRUE;
+        if (!empty($data)) {
+            foreach ($data as $item) {
+                if ($item['name'] == $list) {
+                    return TRUE;
+                }
             }
         }
 
