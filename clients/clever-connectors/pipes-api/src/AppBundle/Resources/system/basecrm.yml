@@ -53,6 +53,7 @@ services:
     hbpf.custom_node.basecrm-created-contact-mapper:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Basecrm\Mapper\BasecrmCreatedContactMapper
         arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
 
     hbpf.custom_node.basecrm-update-contact-mapper:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Basecrm\Mapper\BasecrmUpdateContactMapper

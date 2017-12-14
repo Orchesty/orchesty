@@ -12,7 +12,7 @@
       <bpmn:incoming>SequenceFlow_1w18u86</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1gy43r1</bpmn:outgoing>
     </bpmn:task>
-    <bpmn:task id="Task_18npyx0" pipes:pipesType="custom" name="basecrm-created-contact-mapper">
+    <bpmn:task id="Task_18npyx0" pipes:pipesType="custom" name="basecrm-updated-contact-mapper">
       <bpmn:incoming>SequenceFlow_1gy43r1</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1ohy6ty</bpmn:outgoing>
     </bpmn:task>
