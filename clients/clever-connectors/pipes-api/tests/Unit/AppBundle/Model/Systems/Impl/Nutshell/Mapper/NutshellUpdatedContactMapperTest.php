@@ -22,12 +22,18 @@ final class NutshellUpdatedContactMapperTest extends ConnectorTestCaseAbstract
     public function testProcess(): void
     {
         $connector = $this->container->get('hbpf.custom_node.nutshell-updated-contact-mapper');
-
-        $response = Json::decode($connector->process(
-            (new ProcessDto())->setData(
-                str_replace('"create"', '"update"', $this->getRequest('NutshellWebhookResponse.json'))
-            ))->getData(), TRUE
+        $data      = Json::decode(str_replace(
+            '"create"',
+            '"update"',
+            $this->getRequest('NutshellWebhookResponse.json')),
+            TRUE
         );
+
+        $response = Json::decode($connector->process($this->prepareConnectorProcessDto([
+            'username' => 'nutshell@mailinator.com',
+            'api_key'  => '967b1f7b321e6305d18e6656a650c32420aba98d',
+            'list'     => '4b04d334-3db9-b290-d0aa-099642329856',
+        ], $data, [], TRUE))->getData(), TRUE);
 
         $this->assertEquals([
             CleverFieldsEnum::EMAIL      => 'User01@User01.com',

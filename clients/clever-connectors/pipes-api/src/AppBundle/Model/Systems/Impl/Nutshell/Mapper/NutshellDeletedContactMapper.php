@@ -19,6 +19,8 @@ class NutshellDeletedContactMapper extends NutshellContactMapperAbstract
      */
     public function process(ProcessDto $dto): ProcessDto
     {
+        $this->action = self::DELETE;
+
         return parent::process($this->getNeededAction($dto, self::DELETE));
     }
 

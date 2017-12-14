@@ -5,11 +5,11 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\Nutshell\Mapper;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 
 /**
- * Class NutshellSyncUpdateContactMapper
+ * Class NutshellCreatedEventContactMapper
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Nutshell\Mapper
  */
-class NutshellSyncUpdateContactMapper extends NutshellContactMapperAbstract
+class NutshellCreatedEventContactMapper extends NutshellContactMapperAbstract
 {
 
     /**
@@ -19,7 +19,7 @@ class NutshellSyncUpdateContactMapper extends NutshellContactMapperAbstract
      */
     public function process(ProcessDto $dto): ProcessDto
     {
-        $this->action = self::UPDATE;
+        $this->action = self::CREATE;
 
         return parent::processSync($dto);
     }
