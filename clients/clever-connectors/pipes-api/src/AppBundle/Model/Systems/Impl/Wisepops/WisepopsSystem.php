@@ -17,8 +17,10 @@ use CleverConnectors\AppBundle\Model\Webhook\Traits\WebhookSystemTrait;
 use CleverConnectors\AppBundle\Model\Webhook\WebhookSubscribes;
 use CleverConnectors\AppBundle\Model\Webhook\WebhookSystemInterface;
 use CleverConnectors\AppBundle\Utils\TopologyNameUtils;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
+use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
 
 /**
  * Class WisepopsSystem
@@ -28,23 +30,45 @@ use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 class WisepopsSystem implements WebhookSystemInterface, AuthorizationInterface
 {
 
-    use SystemTrait;
+    use SystemTrait {
+        toArray as parentToArray;
+    }
     use AuthorizationTrait;
     use WebhookSystemTrait;
 
-    private const API_KEY     = 'api_key';
-    private const BASE_URL    = 'https://app.wisepops.com/';
-    public const  WEBHOOK_URL = 'https://app.wisepops.com/api1/hooks';
+    public const   FORM_ID     = 'form_id';
+    public const   FORM_LIST   = 'list';
+    public const   WEBHOOK_URL = 'https://app.wisepops.com/api1/hooks';
+
+    private const  API_KEY   = 'api_key';
+    private const  FORM_NAME = 'form_name';
+    private const  BASE_URL  = 'https://app.wisepops.com/';
+    private const  INFO_URL  = 'https://app.wisepops.com/api1/wisepops';
+
+    /**
+     * @var CurlManagerInterface
+     */
+    private $curlManager;
+
+    /**
+     * @var DocumentManager
+     */
+    private $dm;
 
     /**
      * WisepopsSystem constructor.
+     *
+     * @param CurlManagerInterface $curlManager
+     * @param DocumentManager      $dm
      */
-    public function __construct()
+    public function __construct(CurlManagerInterface $curlManager, DocumentManager $dm)
     {
         $this->subscriptions[] = new WebhookSubscribes(
             'wisepops-created-email-connector',
             TopologyNameUtils::getTopologyName(TopologyNameUtils::CREATED_SUBSCRIBERS, $this->getKey())
         );
+        $this->curlManager     = $curlManager;
+        $this->dm              = $dm;
     }
 
     /**
@@ -170,6 +194,61 @@ class WisepopsSystem implements WebhookSystemInterface, AuthorizationInterface
     }
 
     /**
+     * @param SystemInstall $systemInstall
+     * @param array         $data
+     *
+     * @return array
+     */
+    public function refreshForms(SystemInstall $systemInstall, array $data = []): array
+    {
+        $dto = $this->getRequestDto($systemInstall, 'GET');
+        $dto->setUri(new Uri(self::INFO_URL));
+
+        $res   = $this->curlManager->send($dto);
+        $forms = json_decode($res->getBody(), TRUE);
+
+        $sForms = [];
+
+        $sett = $systemInstall->getSettings();
+        if (array_key_exists(SystemInstall::FORMS, $sett)) {
+            $sForms = $sett[SystemInstall::FORMS];
+
+            foreach ($sForms as $form) {
+                $this->removeForm($forms, $form[self::FORM_ID]);
+            }
+        }
+
+        foreach ($forms as $form) {
+            $sForms[] = [
+                self::FORM_ID   => $form['id'],
+                self::FORM_NAME => $form['label'],
+                self::FORM_LIST => NULL,
+            ];
+        }
+
+        $sett[SystemInstall::FORMS] = $sForms;
+        $systemInstall->setSettings($sett);
+        $this->dm->flush();
+
+        return $sForms;
+    }
+
+    /**
+     * @param SystemInstall|null $systemInstall
+     *
+     * @return array
+     */
+    public function toArray(?SystemInstall $systemInstall = NULL): array
+    {
+        $arr = $this->parentToArray($systemInstall);
+        if (array_key_exists(SystemInstall::FORMS, $systemInstall->getSettings())) {
+            $arr[SystemInstall::FORMS] = $systemInstall->getSettings()[SystemInstall::FORMS];
+        }
+
+        return $arr;
+    }
+
+    /**
      * ------------------------------------------------ HELPERS ------------------------------------------------
      */
 
@@ -184,6 +263,20 @@ class WisepopsSystem implements WebhookSystemInterface, AuthorizationInterface
             'Content-Type'  => 'application/json',
             'Authorization' => sprintf('WISEPOPS-API key="%s"', $systemInstall->getSettings()[self::API_KEY]),
         ];
+    }
+
+    /**
+     * @param array      $array
+     * @param int|string $id
+     */
+    private function removeForm(array &$array, $id): void
+    {
+        foreach ($array as $index => $item) {
+            if ($id === $item['id']) {
+                unset($array[$index]);
+                break;
+            }
+        }
     }
 
 }
