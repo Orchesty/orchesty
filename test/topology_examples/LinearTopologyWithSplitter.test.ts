@@ -103,8 +103,8 @@ describe("Linear topology with splitter test", () => {
                             .then(() => {
                                 return ch.bindQueue(
                                     counterResultQueue.name,
-                                    pip.getTopologyConfig().counter.pub.exchange.name,
-                                    pip.getTopologyConfig().counter.pub.routing_key,
+                                    pip.getTopologyConfig(false).counter.pub.exchange.name,
+                                    pip.getTopologyConfig(false).counter.pub.routing_key,
                                 );
                             })
                             .then(() => {

@@ -7,6 +7,7 @@ import {default as Configurator, INodeConfig} from "../../src/topology/Configura
 import Probe, {IProbeResult} from "../../src/topology/probe/Probe";
 
 const topo = Configurator.createConfigFromSkeleton(
+    false,
     {
         id: "probe-test",
         nodes: [

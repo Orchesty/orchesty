@@ -9,10 +9,10 @@ import {INodeLabel} from "../Configurator";
 import Terminator from "../terminator/Terminator";
 import CounterConsumer from "./CounterConsumer";
 import {default as CounterProcess, ICounterProcessInfo} from "./CounterProcess";
+import ICounter from "./ICounter";
 import ICounterStorage from "./storage/ICounterStorage";
 
 export interface ICounterSettings {
-    topology: string;
     sub: {
         queue: {
             name: string,
@@ -38,7 +38,7 @@ export interface ICounterSettings {
  * Topology component that receives signals(messages) and watches if some process run through whole topology
  * If yes, it sends process finished message
  */
-export default class Counter {
+export default class Counter implements ICounter {
 
     private settings: any;
     private connection: Connection;
@@ -47,7 +47,6 @@ export default class Counter {
     private storage: ICounterStorage;
     private terminator: Terminator;
     private metrics: IMetrics;
-    private topologyId: string;
 
     /**
      *
@@ -70,10 +69,6 @@ export default class Counter {
         this.terminator = terminator;
         this.metrics = metrics;
 
-        this.topologyId = this.settings.topology;
-
-        logger.info(`Starting counter for topology : '${this.topologyId}'`);
-
         this.prepareConsumer();
         this.preparePublisher();
     }
@@ -82,7 +77,7 @@ export default class Counter {
      * Listen to the event stream and keep info about job partial results
      * On job end, send process end message.
      */
-    public listen(): Promise<void> {
+    public start(): Promise<void> {
         return this.consumer.consume(this.settings.sub.queue.name, this.settings.sub.queue.options)
             .then(() => {
                 logger.info(`Counter started consuming messages from "${this.settings.sub.queue.name}" queue`);
@@ -147,7 +142,7 @@ export default class Counter {
                 id: headers.getPFHeader(Headers.NODE_ID),
                 node_id: headers.getPFHeader(Headers.NODE_ID),
                 node_name: headers.getPFHeader(Headers.NODE_NAME),
-                topology_id: this.topologyId,
+                topology_id: headers.getPFHeader(Headers.TOPOLOGY_ID),
             };
 
             const cm = new CounterMessage(
@@ -160,6 +155,7 @@ export default class Counter {
             );
 
             logger.info(`Counter message received with status: "${resultCode}"`, {
+                topology_id: cm.getTopologyId(),
                 node_id: cm.getNodeId(),
                 correlation_id: cm.getCorrelationId(),
                 process_id: cm.getProcessId(),
@@ -168,7 +164,7 @@ export default class Counter {
 
             this.updateProcessInfo(cm);
         } catch (e) {
-            logger.error("Invalid counter message.", {error: e});
+            logger.error("Cannot handle counter message.", {error: e});
         }
 
         return;
@@ -180,22 +176,25 @@ export default class Counter {
      * @return {void}
      */
     private async updateProcessInfo(cm: CounterMessage): Promise<void> {
-        let proc: ICounterProcessInfo = await this.storage.get(this.topologyId, cm.getProcessId());
+        const topologyId = cm.getTopologyId();
+        const processId = cm.getProcessId();
 
-        if (!proc) {
-            proc = CounterProcess.createProcessInfo(this.topologyId, cm);
+        let processInfo: ICounterProcessInfo = await this.storage.get(topologyId, processId);
+
+        if (!processInfo) {
+            processInfo = CounterProcess.createProcessInfo(topologyId, cm);
         }
 
-        proc = CounterProcess.updateProcessInfo(proc, cm);
+        processInfo = CounterProcess.updateProcessInfo(processInfo, cm);
 
-        if (CounterProcess.isProcessFinished(proc)) {
-            proc.end_timestamp = Date.now();
-            this.onJobFinished(proc);
-            this.storage.remove(this.topologyId, cm.getProcessId());
+        if (CounterProcess.isProcessFinished(processInfo)) {
+            processInfo.end_timestamp = Date.now();
+            this.onJobFinished(processInfo);
+            this.storage.remove(topologyId, processId);
         } else {
-            const added = await this.storage.add(this.topologyId, proc);
+            const added = await this.storage.add(topologyId, processInfo);
             if (!added) {
-                logger.error(`Could not add to counter storage. ${JSON.stringify(proc)}`);
+                logger.error(`Could not add to counter storage. ${JSON.stringify(processInfo)}`);
             }
         }
     }

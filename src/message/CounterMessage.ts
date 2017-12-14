@@ -1,18 +1,10 @@
 import {INodeLabel} from "../topology/Configurator";
 import AMessage from "./AMessage";
+import Headers from "./Headers";
 import IMessage from "./IMessage";
 import { ResultCode } from "./ResultCode";
 
-export interface ICounterMessageHeaders {
-    node_id: string;
-    node_name: string;
-    correlation_id: string;
-    process_id: string;
-    parent_id: string;
-    sequence_id: number;
-}
-
-export interface ICounterMessageContent {
+interface ICounterMessageContent {
     result: { code: ResultCode, message: string };
     route: { following: number, multiplier: number };
 }
@@ -28,6 +20,10 @@ class CounterMessage extends AMessage implements IMessage {
         private multiplier: number = 1,
     ) {
         super(node, headers, new Buffer(""));
+
+        if (!this.headers.hasPFHeader(Headers.TOPOLOGY_ID)) {
+            throw new Error(`Cannot create Counter message object. Missing topology-id header.`);
+        }
 
         this.resultCode = resultCode;
         this.resultMsg = resultMsg;
@@ -86,6 +82,14 @@ class CounterMessage extends AMessage implements IMessage {
         this.body = new Buffer(contentString);
 
         return contentString;
+    }
+
+    /**
+     *
+     * @return {string}
+     */
+    public getTopologyId(): string {
+        return this.headers.getPFHeader(Headers.TOPOLOGY_ID);
     }
 
 }
