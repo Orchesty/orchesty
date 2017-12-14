@@ -5,11 +5,11 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\Zoho\Mapper;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 
 /**
- * Class ZohoUpdatedContactMapper
+ * Class ZohoCreatedContactMapper
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Zoho\Mapper
  */
-class ZohoUpdatedContactMapper extends ZohoContactMapperAbstract
+class ZohoCreatedContactMapper extends ZohoContactMapperAbstract
 {
 
     /**
@@ -19,7 +19,7 @@ class ZohoUpdatedContactMapper extends ZohoContactMapperAbstract
      */
     public function process(ProcessDto $dto): ProcessDto
     {
-        $this->action = self::UPDATE;
+        $this->action = self::CREATE;
 
         return parent::process($this->getNeededAction($dto));
     }

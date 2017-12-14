@@ -4,10 +4,13 @@ namespace Tests\Unit\AppBundle\Model\Systems\Impl\Zoho\Mapper;
 
 use CleverConnectors\AppBundle\Enum\CleverFieldsEnum;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\PipesFramework\Commons\Utils\PipesHeaders;
+use Nette\Utils\Json;
+use Nette\Utils\Strings;
 use Tests\ConnectorTestCaseAbstract;
 
 /**
- * Class ZohoUpdateContactMapperTest
+ * Class ZohoUpdatedContactMapperTest
  *
  * @package Tests\Unit\AppBundle\Model\Systems\Impl\Zoho\Mapper
  */
@@ -19,24 +22,48 @@ final class ZohoUpdatedContactMapperTest extends ConnectorTestCaseAbstract
      */
     public function testProcess(): void
     {
-        $node = $this->container->get('hbpf.custom_node.zoho-updated-contact-mapper');
-
-        $response = json_decode(
-            $node->process((new ProcessDto())->setData($this->getRequest('singleContact.json')))
-                ->getData(),
-            TRUE
+        $connector = $this->container->get('hbpf.custom_node.zoho-updated-contact-mapper');
+        $data      = Json::decode(Strings::replace(
+            $this->getRequest('singleContact.json'),
+            '#2017-10-18 09:49:57#',
+            '2017-10-18 09:49:56',
+            1), TRUE
         );
 
-        $expt = [
-            CleverFieldsEnum::EMAIL      => 'john-buttbenton@gmail.com',
-            CleverFieldsEnum::FIRST_NAME => 'John',
-            CleverFieldsEnum::LAST_NAME  => 'Butt',
+        $response = Json::decode($connector->process($this->prepareConnectorProcessDto([
+            'auth_token' => '05361930f1c8c009d9a1e30e07b23126',
+            'list'       => 'ffdfe93e-7a4e-0629-2a1a-27aee18a840a',
+        ], $data, [], TRUE))->getData(), TRUE);
+
+        $this->assertEquals([
+            CleverFieldsEnum::EMAIL      => 'User01@User01.com',
+            CleverFieldsEnum::FIRST_NAME => 'User01',
+            CleverFieldsEnum::LAST_NAME  => 'User01',
             CleverFieldsEnum::FOREIGN_ID => '85896000000078213',
             CleverFieldsEnum::REACTIVATE => TRUE,
             CleverFieldsEnum::SEND_OPTIN => FALSE,
-        ];
+        ], $response);
+    }
 
-        self::assertEquals($expt, $response);
+    /**
+     *
+     */
+    public function testProcessInvalid(): void
+    {
+        $connector = $this->container->get('hbpf.custom_node.zoho-updated-contact-mapper');
+
+        $dto = $connector->process(
+            (new ProcessDto())->setData(
+                $this->getRequest('singleContact.json')
+            )->setHeaders([])
+        );
+
+        $this->assertEquals([
+            PipesHeaders::createKey(PipesHeaders::RESULT_CODE)    => 1003,
+            PipesHeaders::createKey(PipesHeaders::RESULT_STATUS)  => 'DO_NOT_CONTINUE',
+            PipesHeaders::createKey(PipesHeaders::RESULT_MESSAGE) => 'Data does not contains contact update event',
+            PipesHeaders::createKey(PipesHeaders::RESULT_DETAIL)  => '',
+        ], $dto->getHeaders());
     }
 
 }
