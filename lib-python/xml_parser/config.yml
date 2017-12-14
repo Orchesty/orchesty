@@ -1,6 +1,6 @@
 ---
 version: 1
-disable_existing_loggers: True
+disable_existing_loggers: False
 # https://docs.python.org/2/library/logging.html#logrecord-attributes
 formatters:
     simple:
@@ -76,6 +76,6 @@ loggers:
       propagate: no
 
 root:
-    level: INFO
+    level: DEBUG
     handlers: [console, syslog]
 

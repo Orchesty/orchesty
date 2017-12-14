@@ -1,11 +1,13 @@
 #!/usr/bin/env python
 # encoding: utf-8
+import logging
 import logging.config
 import os
 import sys
 
 from __init__ import __version__
 from errors.bad_request import BadRequest
+from handler.response_handler import get_json_content
 from handler.xml_parser_error_handler import XmlParserErrorHandler
 from handler.xml_parser_output_handler import XmlParserOutputHandler
 from handler.xml_parser_parse_handler import XmlParserParseHandler
@@ -13,7 +15,6 @@ from handler.xml_parser_version_handler import XmlParserVersionHandler
 from hb_metrics.metrics import Metrics
 from hb_metrics.service.udp_sender import UdpSender
 from model.request_data import RequestData
-from handler.response_handler import get_json_content
 
 os.environ.setdefault('PARSER_HOST', '0.0.0.0')
 os.environ.setdefault('PARSER_PORT', '80')
