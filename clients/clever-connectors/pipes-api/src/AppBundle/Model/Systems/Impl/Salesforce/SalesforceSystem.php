@@ -68,7 +68,6 @@ class SalesforceSystem implements OAuth2Interface, CMEventSystemInterface
         $this->topologyNames[TopologyNameUtils::getTopologyName(TopologyNameUtils::HARD_BOUNCE_CONTACT,
             $this->getKey())] = TopologyNameUtils::getTopologyName(TopologyNameUtils::UNSUBSCRIBE_CONTACT,
             $this->getKey());
-
     }
 
     /**
@@ -224,11 +223,19 @@ class SalesforceSystem implements OAuth2Interface, CMEventSystemInterface
             $systemInstall->isEventHardBounce()
         );
 
+        $field4 = new Field(
+            Field::SELECT,
+            SystemInstall::SELECT_LIST,
+            'Distribution list',
+            $this->prepareValue(SystemInstall::SELECT_LIST, $systemInstall->getSettings())
+        );
+
         $form = new Form();
         $form
             ->addField($field1)
             ->addField($field2)
-            ->addField($field3);
+            ->addField($field3)
+            ->addField($field4);
 
         return $form->toArray();
     }
