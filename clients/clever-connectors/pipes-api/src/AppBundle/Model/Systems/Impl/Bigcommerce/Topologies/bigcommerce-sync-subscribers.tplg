@@ -14,12 +14,12 @@
       <bpmn:outgoing>SequenceFlow_0s5slrh</bpmn:outgoing>
     </bpmn:task>
     <bpmn:sequenceFlow id="SequenceFlow_0gab8o9" sourceRef="Task_0lrtdf1" targetRef="Task_1lgobox" />
-    <bpmn:task id="Task_0tsfo7k" pipes:pipesType="custom" name="bigcommerce-update-customer-mapper">
+    <bpmn:task id="Task_0tsfo7k" pipes:pipesType="custom" name="bigcommerce-created-customer-mapper">
       <bpmn:incoming>SequenceFlow_0s5slrh</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_074kf9u</bpmn:outgoing>
     </bpmn:task>
     <bpmn:sequenceFlow id="SequenceFlow_0s5slrh" sourceRef="Task_1lgobox" targetRef="Task_0tsfo7k" />
-    <bpmn:task id="Task_0nvpg98" pipes:pipesType="connector" name="cleverconnectors-update-subscriptions-connector">
+    <bpmn:task id="Task_0nvpg98" pipes:pipesType="connector" name="cleverconnectors-create-subscriptions-connector">
       <bpmn:incoming>SequenceFlow_074kf9u</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0xubcm4</bpmn:outgoing>
     </bpmn:task>

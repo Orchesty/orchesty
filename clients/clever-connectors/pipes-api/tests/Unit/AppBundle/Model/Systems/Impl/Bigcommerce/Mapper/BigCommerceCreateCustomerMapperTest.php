@@ -23,18 +23,18 @@ final class BigCommerceCreateCustomerMapperTest extends KernelTestCaseAbstract
 
         $dto = new ProcessDto();
         $dto->setData(json_encode([
-            CleverFieldsEnum::EMAIL      => 'eml@eml.com',
-            CleverFieldsEnum::FIRST_NAME => 'ichi',
-            CleverFieldsEnum::LAST_NAME  => 'ni',
+            CleverFieldsEnum::EMAIL      => 'User01@User01.com',
+            CleverFieldsEnum::FIRST_NAME => 'User01',
+            CleverFieldsEnum::LAST_NAME  => 'User01',
         ]));
 
         /** @var ProcessDto $res */
         $res = $mapper->process($dto);
 
         self::assertEquals(json_encode([
-            'email'      => 'eml@eml.com',
-            'first_name' => 'ichi',
-            'last_name'  => 'ni',
+            'email'      => 'User01@User01.com',
+            'first_name' => 'User01',
+            'last_name'  => 'User01',
         ]), $res->getData());
     }
 

@@ -7,11 +7,11 @@ use Nette\Utils\Json;
 use Tests\ConnectorTestCaseAbstract;
 
 /**
- * Class BigcommerceUpdatedCustomerMapperTest
+ * Class BigcommerceCreatedCustomerMapperTest
  *
  * @package Tests\Unit\AppBundle\Model\Systems\Impl\Bigcommerce\Mapper
  */
-final class BigcommerceUpdatedCustomerMapperTest extends ConnectorTestCaseAbstract
+final class BigcommerceCreatedCustomerMapperTest extends ConnectorTestCaseAbstract
 {
 
     /**
@@ -19,7 +19,7 @@ final class BigcommerceUpdatedCustomerMapperTest extends ConnectorTestCaseAbstra
      */
     public function testProcess(): void
     {
-        $connector = $this->container->get('hbpf.custom_node.bigcommerce-updated-customer-mapper');
+        $connector = $this->container->get('hbpf.custom_node.bigcommerce-created-customer-mapper');
 
         $response = Json::decode($connector->process($this->prepareConnectorProcessDto([
             'store_id'     => 'noos7j71hh',
@@ -42,7 +42,7 @@ final class BigcommerceUpdatedCustomerMapperTest extends ConnectorTestCaseAbstra
      */
     public function testProcessList(): void
     {
-        $connector = $this->container->get('hbpf.custom_node.bigcommerce-updated-customer-mapper');
+        $connector = $this->container->get('hbpf.custom_node.bigcommerce-created-customer-mapper');
 
         $response = Json::decode($connector->process($this->prepareConnectorProcessDto([
             'store_id'     => 'noos7j71hh',
@@ -58,6 +58,7 @@ final class BigcommerceUpdatedCustomerMapperTest extends ConnectorTestCaseAbstra
             CleverFieldsEnum::FOREIGN_ID => '1',
             CleverFieldsEnum::REACTIVATE => TRUE,
             CleverFieldsEnum::SEND_OPTIN => FALSE,
+            CleverFieldsEnum::LISTS      => ['d2a151ff-7548-c8e4-b05d-694eae055b26'],
         ], $response);
     }
 

@@ -172,7 +172,7 @@ final class BigcommerceSystemTest extends KernelTestCaseAbstract
     {
         $form = $this->system->getSettingFields($this->systemInstall);
 
-        $this->assertEquals(4, count($form));
+        $this->assertEquals(5, count($form));
         $this->assertEquals([
             0 => [
                 'type'        => 'text',
@@ -183,8 +183,8 @@ final class BigcommerceSystemTest extends KernelTestCaseAbstract
                 'read_only'   => FALSE,
                 'disabled'    => FALSE,
                 'description' => '',
-                'action'      => '',
                 'choices'     => [],
+                'action'      => '',
                 'depends_on'  => '',
             ],
             1 => [
@@ -196,9 +196,9 @@ final class BigcommerceSystemTest extends KernelTestCaseAbstract
                 'read_only'   => FALSE,
                 'disabled'    => FALSE,
                 'description' => '',
+                'choices'     => [],
                 'action'      => '',
                 'depends_on'  => '',
-                'choices'     => [],
             ],
             2 => [
                 'type'        => 'text',
@@ -209,9 +209,9 @@ final class BigcommerceSystemTest extends KernelTestCaseAbstract
                 'read_only'   => FALSE,
                 'disabled'    => FALSE,
                 'description' => '',
+                'choices'     => [],
                 'action'      => '',
                 'depends_on'  => '',
-                'choices'     => [],
             ],
             3 => [
                 'type'        => 'checkbox',
@@ -222,9 +222,22 @@ final class BigcommerceSystemTest extends KernelTestCaseAbstract
                 'read_only'   => FALSE,
                 'disabled'    => FALSE,
                 'description' => '',
+                'choices'     => [],
                 'action'      => '',
                 'depends_on'  => '',
+            ],
+            4 => [
+                'type'        => 'select',
+                'key'         => 'list',
+                'label'       => 'Distribution list',
+                'value'       => NULL,
+                'required'    => FALSE,
+                'read_only'   => FALSE,
+                'disabled'    => FALSE,
+                'description' => '',
                 'choices'     => [],
+                'action'      => '',
+                'depends_on'  => '',
             ],
         ], $form);
     }

@@ -5,11 +5,11 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\Bigcommerce\Mapper;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 
 /**
- * Class BigcommerceUpdatedCustomerMapper
+ * Class BigcommerceCreatedCustomerMapper
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Bigcommerce\Mapper
  */
-class BigcommerceUpdatedCustomerMapper extends BigcommerceCustomerMapperAbstract
+class BigcommerceCreatedCustomerMapper extends BigcommerceCustomerMapperAbstract
 {
 
     /**
@@ -19,7 +19,7 @@ class BigcommerceUpdatedCustomerMapper extends BigcommerceCustomerMapperAbstract
      */
     public function process(ProcessDto $dto): ProcessDto
     {
-        $this->action = self::UPDATE;
+        $this->action = self::CREATE;
 
         return parent::process($dto);
     }
