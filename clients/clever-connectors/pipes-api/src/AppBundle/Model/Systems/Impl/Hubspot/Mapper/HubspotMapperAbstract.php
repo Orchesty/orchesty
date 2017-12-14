@@ -2,8 +2,13 @@
 
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\Mapper;
 
+use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
+use CleverConnectors\AppBundle\Model\CM\SubscriberConnector\SubscriberObject\CMSubscriber;
+use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
+use Doctrine\Common\Persistence\ObjectRepository;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
 
@@ -14,6 +19,26 @@ use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
  */
 abstract class HubspotMapperAbstract implements CustomNodeInterface
 {
+
+    /**
+     * @var bool
+     */
+    protected $includeList = FALSE;
+
+    /**
+     * @var SystemInstallRepository|ObjectRepository
+     */
+    protected $systemInstallRepository;
+
+    /**
+     * HubspotSyncContactMapper constructor.
+     *
+     * @param DocumentManager $dm
+     */
+    public function __construct(DocumentManager $dm)
+    {
+        $this->systemInstallRepository = $dm->getRepository(SystemInstall::class);
+    }
 
     /**
      * @param string $key
@@ -29,6 +54,44 @@ abstract class HubspotMapperAbstract implements CustomNodeInterface
                 CleverConnectorsException::MISSING_DATA
             );
         }
+    }
+
+    /**
+     * @param ProcessDto $dto
+     * @param array      $data
+     *
+     * @return CMSubscriber
+     * @throws CleverConnectorsException
+     */
+    protected function fillCMSubscriber(ProcessDto $dto, array $data): CMSubscriber
+    {
+        $this->continueAfterDataCheck('properties', $data);
+
+        $properties = $data['properties'];
+        $email      = $this->getEmail($data);
+
+        $obj = new CMSubscriber();
+        $obj->setEmail($email);
+
+        if (array_key_exists('firstname', $properties)) {
+            $obj->setFirstName($properties['firstname']['value']);
+        }
+
+        if (array_key_exists('lastname', $properties)) {
+            $obj->setLastName($properties['lastname']['value']);
+        }
+
+        if (array_key_exists('vid', $data)) {
+            $obj->setForeignId($data['vid']);
+        }
+
+        if ($this->includeList) {
+            $systemInstall = $this->systemInstallRepository->getSystemInstallFromHeaders($dto->getHeaders());
+            $sett          = $systemInstall->getSettings();
+            $obj->setLists([$sett[SystemInstall::SELECT_LIST] ?? NULL]);
+        }
+
+        return $obj;
     }
 
     /**

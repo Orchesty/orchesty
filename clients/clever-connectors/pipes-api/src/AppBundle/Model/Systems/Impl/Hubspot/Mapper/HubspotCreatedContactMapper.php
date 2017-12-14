@@ -3,7 +3,6 @@
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\Mapper;
 
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
-use CleverConnectors\AppBundle\Model\CM\SubscriberConnector\SubscriberObject\CMSubscriber;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\HubspotSystem;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 
@@ -14,6 +13,11 @@ use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
  */
 class HubspotCreatedContactMapper extends HubspotMapperAbstract
 {
+
+    /**
+     * @var bool
+     */
+    protected $includeList = TRUE;
 
     /**
      * @param ProcessDto $dto
@@ -42,25 +46,7 @@ class HubspotCreatedContactMapper extends HubspotMapperAbstract
             );
         }
 
-        $this->continueAfterDataCheck('properties', $data);
-
-        $properties = $data['properties'];
-        $email      = $this->getEmail($data);
-
-        $obj = new CMSubscriber();
-        $obj->setEmail($email);
-
-        if (array_key_exists('firstname', $properties)) {
-            $obj->setFirstName($properties['firstname']['value']);
-        }
-
-        if (array_key_exists('lastname', $properties)) {
-            $obj->setLastName($properties['lastname']['value']);
-        }
-
-        if (array_key_exists('vid', $data)) {
-            $obj->setForeignId($data['vid']);
-        }
+        $obj = $this->fillCMSubscriber($dto, $data);
 
         return $dto->setData(json_encode($obj->toArray()));
     }

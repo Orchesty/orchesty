@@ -42,23 +42,29 @@ services:
     hbpf.custom_node.hubspot-created-contact-mapper:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\Mapper\HubspotCreatedContactMapper
         arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
 
     hbpf.custom_node.hubspot-create-contact-mapper:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\Mapper\HubspotCreateContactMapper
         arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
 
     hbpf.custom_node.hubspot-updated-contact-mapper:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\Mapper\HubspotUpdatedContactMapper
         arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
 
     hbpf.custom_node.hubspot-update-contact-mapper:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\Mapper\HubspotUpdateContactMapper
         arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
 
     hbpf.custom_node.hubspot-sync-contact-mapper:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\Mapper\HubspotSyncContactMapper
         arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
 
     hbpf.custom_node.hubspot-deleted-contact-mapper:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\Mapper\HubspotDeletedContactMapper
         arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
