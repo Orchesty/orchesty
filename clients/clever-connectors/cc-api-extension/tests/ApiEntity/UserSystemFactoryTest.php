@@ -67,6 +67,11 @@ class UserSystemFactoryTest extends TestCase
                             'unknown'  => 'unknown',
                         ],
                     ],
+                    'custom_form'    => [
+                        [
+                            "table_id" => "#123",
+                        ],
+                    ],
                     'actions'        => ['action1', 'action2'],
                     'data_layouts'   => [
                         ['_id' => '1', 'action' => 'action'],
@@ -91,7 +96,9 @@ class UserSystemFactoryTest extends TestCase
                             ->setValue('value')
                             ->setLabel('label')
                             ->setRequired(TRUE)
-                    )->setActions(['action1', 'action2'])
+                    )
+                    ->setCustomForm([['table_id' => '#123']])
+                    ->setActions(['action1', 'action2'])
                     ->addDataLayout(
                         (new DataLayout())
                             ->setId('1')

@@ -39,6 +39,11 @@ class UserSystem extends System
     /**
      * @var array
      */
+    private $customForm = [];
+
+    /**
+     * @var array
+     */
     private $actions = [];
 
     /**
@@ -127,6 +132,26 @@ class UserSystem extends System
     public function addSettingField(SettingField $settingField): self
     {
         $this->settingFields[] = $settingField;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getCustomForm(): array
+    {
+        return $this->customForm;
+    }
+
+    /**
+     * @param array $customForm
+     *
+     * @return UserSystem
+     */
+    public function setCustomForm(array $customForm): UserSystem
+    {
+        $this->customForm = $customForm;
 
         return $this;
     }

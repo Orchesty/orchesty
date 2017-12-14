@@ -16,6 +16,16 @@
       "required": true
     }
   ],
+  "custom_form": [
+    {
+      "table_id": "#123",
+      "list": "test"
+    },
+    {
+      "table_id": "#456",
+      "list": "test2"
+    }
+  ],
   "actions": [
     "action1"
   ],

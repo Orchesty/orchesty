@@ -166,6 +166,11 @@ class ConnectorManagerTest extends TestCase
         $this->assertSame('label', $setting->getLabel());
         $this->assertSame(TRUE, $setting->isRequired());
 
+        $this->assertSame([
+            ['table_id' => '#123', 'list' => 'test'],
+            ['table_id' => '#456', 'list' => 'test2'],
+        ], $userSystem->getCustomForm());
+
         $this->assertSame(['action1'], $userSystem->getActions());
 
         $dataLayout = $userSystem->getDataLayouts()[0];
