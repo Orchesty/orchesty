@@ -1,6 +1,5 @@
 import {Container} from "hb-utils/dist/lib/Container";
 import {IMetrics} from "metrics-sender/dist/lib/metrics/IMetrics";
-import * as os from "os";
 import {mongoStorageOptions, probeOptions, repeaterOptions} from "./config";
 import DIContainer from "./DIContainer";
 import logger from "./logger/Logger";
@@ -78,19 +77,29 @@ class Pipes {
     /**
      * Starts topology counter
      */
-    public startCounter(port?: number): Promise<void> {
+    public startCounter(): Promise<Counter> {
         const counter = new Counter(
             this.topology.counter,
             this.dic.get("amqp.connection"),
-            this.dic.get("counter.storage.memory"),
-            this.dic.get("probe.multi"),
+            this.dic.get("counter.storage"),
+            this.dic.get("topology.terminator")(false),
             this.dic.get("metrics")(this.topology.id, "counter"),
         );
 
-        return counter.listen(port)
+        return counter.listen()
             .then(() => {
                 logger.info(`Counter for topology "${this.getTopologyConfig().id}" is running.`);
+
+                return counter;
             });
+    }
+
+    /**
+     * Starts counter capable to manage multiple topologies
+     * @return {Promise<void>}
+     */
+    public startMultiCounter(): Promise<void> {
+        return Promise.resolve();
     }
 
     /**
@@ -126,6 +135,14 @@ class Pipes {
      */
     public getTopologyConfig(): ITopologyConfig {
         return this.topology;
+    }
+
+    /**
+     *
+     * @return {DIContainer}
+     */
+    public getDIContainer(): DIContainer {
+        return this.dic;
     }
 
     /**

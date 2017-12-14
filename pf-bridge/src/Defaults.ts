@@ -148,7 +148,6 @@ class Defaults {
                     options: {},
                 },
             },
-            port: parseInt(process.env.COUNTER_PORT, 10) || 8005,
         };
     }
 

@@ -2,7 +2,7 @@ import {AssertionPublisher} from "amqplib-plus/dist/lib/AssertPublisher";
 import {Connection} from "amqplib-plus/dist/lib/Connection";
 import {Container} from "hb-utils/dist/lib/Container";
 import {Metrics} from "metrics-sender/dist/lib/metrics/Metrics";
-import {amqpConnectionOptions, metricsOptions, multiProbeOptions} from "./config";
+import {amqpConnectionOptions, metricsOptions, multiProbeOptions, topologyTerminatorOptions} from "./config";
 import CounterPublisher from "./node/drain/amqp/CounterPublisher";
 import FollowersPublisher from "./node/drain/amqp/FollowersPublisher";
 import {default as AmqpDrain, IAmqpDrainSettings} from "./node/drain/AmqpDrain";
@@ -19,6 +19,7 @@ import TestCaptureWorker from "./node/worker/TestCaptureWorker";
 import UppercaseWorker from "./node/worker/UppercaseWorker";
 import InMemoryStorage from "./topology/counter/storage/InMemoryStorage";
 import MultiProbeConnector from "./topology/probe/MultiProbeConnector";
+import Terminator from "./topology/terminator/Terminator";
 
 class DIContainer extends Container {
 
@@ -34,9 +35,21 @@ class DIContainer extends Container {
     private setServices() {
         this.set("amqp.connection", new Connection(amqpConnectionOptions));
 
-        this.set("counter.storage.memory", new InMemoryStorage());
+        this.set("counter.storage", new InMemoryStorage());
 
         this.set("probe.multi", new MultiProbeConnector(multiProbeOptions.host, multiProbeOptions.port));
+
+        this.set("topology.terminator", (isMulti: boolean = false) => {
+            if (isMulti) {
+                return new Terminator(
+                    topologyTerminatorOptions.port,
+                    this.get("counter.storage"),
+                    this.get("probe.multi"),
+                );
+            }
+
+            return new Terminator(topologyTerminatorOptions.port, this.get("counter.storage"));
+        });
 
         this.set("metrics", (topology: string, node: string) => {
             return new Metrics(

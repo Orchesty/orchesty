@@ -82,10 +82,12 @@ export default class Counter {
      * Listen to the event stream and keep info about job partial results
      * On job end, send process end message.
      */
-    public listen(port?: number): Promise<void> {
+    public listen(): Promise<void> {
         return this.consumer.consume(this.settings.sub.queue.name, this.settings.sub.queue.options)
             .then(() => {
                 logger.info(`Counter started consuming messages from "${this.settings.sub.queue.name}" queue`);
+
+                this.terminator.startServer();
             });
     }
 

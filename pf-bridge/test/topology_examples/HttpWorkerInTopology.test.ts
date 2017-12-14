@@ -14,6 +14,7 @@ import {ResultCode} from "../../src/message/ResultCode";
 import Pipes from "../../src/Pipes";
 import {ITopologyConfigSkeleton} from "../../src/topology/Configurator";
 import {ICounterProcessInfo} from "../../src/topology/counter/CounterProcess";
+import Terminator from "../../src/topology/terminator/Terminator";
 
 const testTopology: ITopologyConfigSkeleton = {
     id: "topo-with-http-worker-node",
@@ -83,8 +84,12 @@ describe("Topology with HttpWorker Node", () => {
     it("Next node should receive changed content", async () => {
         const pip = new Pipes(testTopology);
 
+        // manually set the terminator port not to collide with other tests
+        const dic = pip.getDIContainer();
+        dic.set("topology.terminator", () => new Terminator(8555, dic.get("counter.storage")));
+
         const [counter, httpNode, captureNode] = await Promise.all([
-            pip.startCounter(8555),
+            pip.startCounter(),
             pip.startNode("http-worker-node"),
             pip.startNode("capture-node"),
         ]);

@@ -15,6 +15,7 @@ import {ResultCode} from "../../../src/message/ResultCode";
 import {default as Counter, ICounterSettings} from "../../../src/topology/counter/Counter";
 import {ICounterProcessInfo} from "../../../src/topology/counter/CounterProcess";
 import InMemoryStorage from "../../../src/topology/counter/storage/InMemoryStorage";
+import Terminator from "../../../src/topology/terminator/Terminator";
 
 const conn = new Connection(amqpConnectionOptions);
 const metricsMock = {
@@ -38,10 +39,10 @@ describe("Counter", () => {
                 queue: {name: "test_counter_pubdel_q", options: {}},
                 routing_key: "pubdel_rk",
             },
-            port: 7901,
         };
         const storage = new InMemoryStorage();
-        const counter = new Counter(counterSettings, conn, storage, metricsMock);
+        const terminator = new Terminator(7901, storage);
+        const counter = new Counter(counterSettings, conn, storage, terminator, metricsMock);
         counter.listen()
             .then(() => {
                 const headers = new Headers();
@@ -66,7 +67,6 @@ describe("Counter", () => {
                 queue: {name: "test_counter_pub_q", options: {}},
                 routing_key: "pub_rk",
             },
-            port: 7902,
         };
         const testOutputQueue = {
             name: "test_counter_output",
@@ -392,8 +392,9 @@ describe("Counter", () => {
         consumer.consume(testOutputQueue.name, testOutputQueue.options);
 
         const storage = new InMemoryStorage();
-        const counter = new Counter(counterSettings, conn, storage, metricsMock);
-        counter.listen(7902)
+        const terminator = new Terminator(7902, storage);
+        const counter = new Counter(counterSettings, conn, storage, terminator, metricsMock);
+        counter.listen()
             .then(() => {
                 const promises: Array<Promise<any>> = [];
                 events.forEach((ev) => {
