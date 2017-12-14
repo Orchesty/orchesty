@@ -71,6 +71,11 @@ class Field
     private $actionUrl = '';
 
     /**
+     * @var string
+     */
+    private $dependsOn = '';
+
+    /**
      * Field constructor.
      *
      * @param string     $type
@@ -288,6 +293,22 @@ class Field
     }
 
     /**
+     * @return string
+     */
+    public function getDependsOn(): string
+    {
+        return $this->dependsOn;
+    }
+
+    /**
+     * @param Field $field
+     */
+    public function setDependsOn(Field $field): void
+    {
+        $this->dependsOn = $field->getKey();
+    }
+
+    /**
      * @return array
      */
     public function toArray(): array
@@ -303,6 +324,7 @@ class Field
             'description' => $this->description,
             'choices'     => $this->choices,
             'action'      => $this->actionUrl,
+            'depends_on'  => $this->dependsOn,
         ];
 
         if ($this->type === Field::PASSWORD) {

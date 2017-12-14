@@ -203,6 +203,7 @@ final class SystemManagerTest extends DatabaseTestCaseAbstract
                         [
                         ],
                     'action'      => '',
+                    'depends_on'  => '',
                 ], 1     =>
                     [
                         'type'        => 'text',
@@ -217,6 +218,7 @@ final class SystemManagerTest extends DatabaseTestCaseAbstract
                             [
                             ],
                         'action'      => '',
+                        'depends_on'  => '',
                     ], 2 =>
                     [
                         'type'        => 'password',
@@ -231,6 +233,7 @@ final class SystemManagerTest extends DatabaseTestCaseAbstract
                             [
                             ],
                         'action'      => '',
+                        'depends_on'  => '',
                     ],
             ],
             'data_layouts'     => [

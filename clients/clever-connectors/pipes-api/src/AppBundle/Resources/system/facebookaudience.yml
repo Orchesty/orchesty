@@ -1,0 +1,51 @@
+services:
+
+    systems.facebookaudience:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\FacebookaudienceSystem
+        arguments:
+            - '@hbpf.providers.oauth2_provider'
+            - '@service_container'
+            - '%backend_host%'
+        tags: ['%systems%']
+
+    hbpf.connector.facebookaudience-create-audience-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\Connector\FacebookaudienceCreateAudienceConnector
+        arguments:
+            - '@systems.facebookaudience'
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.transport.curl_manager'
+
+    hbpf.connector.facebookaudience-create-subscribers-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\Connector\FacebookaudienceCreateSubscribersConnector
+        arguments:
+            - '@systems.facebookaudience'
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.transport.curl_manager'
+
+    hbpf.connector.facebookaudience-get-accounts-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\Connector\FacebookaudienceGetAccountsConnector
+        arguments:
+            - '@systems.facebookaudience'
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.transport.curl_manager'
+
+    hbpf.connector.facebookaudience-get-audiences-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\Connector\FacebookaudienceGetAudiencesConnector
+        arguments:
+            - '@systems.facebookaudience'
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.transport.curl_manager'
+
+    hbpf.custom_node.facebookaudience-get-subscribers-filter:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\Filter\FacebookaudienceGetSubscribersFilter
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+
+    hbpf.custom_node.facebookaudience-get-list-subscribers-filter:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\Filter\FacebookaudienceGetListSubscribersFilter
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+
+    hbpf.custom_node.facebookaudience-create-subscribers-mapper:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\Mapper\FacebookaudienceCreateSubscribersMapper
+        arguments:

@@ -29,5 +29,6 @@ class CleverConnectorsException extends Exception
     public const DYNAMIC_MAPPING_NOT_ALLOWED  = 17;
     public const ACTION_NOT_ALLOWED           = 18;
     public const EXCEEDED_NUMBER_OF_FIELDS    = 19;
+    public const DISTRIBUTION_LIST_NOT_FOUND  = 20;
 
 }

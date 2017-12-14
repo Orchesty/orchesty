@@ -3,6 +3,7 @@
 namespace Tests\Unit\AppBundle\Model\CM\SubscriberConnector;
 
 use CleverConnectors\AppBundle\Model\CM\SubscriberConnector\CMGetSubscribersConnector;
+use CleverConnectors\AppBundle\Model\ProgressCounter\ProgressCounterService;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Response;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
@@ -46,10 +47,13 @@ final class CMGetSubscribersConnectorTest extends KernelTestCaseAbstract
 
         $dm = $this->createMock(DocumentManager::class);
 
+        /** @var MockObject|ProgressCounterService $progressCounter */
+        $progressCounter = $this->createMock(ProgressCounterService::class);
+
         /** @var MockObject|CMGetSubscribersConnector $conn */
         $conn = $this->getMockBuilder(CMGetSubscribersConnector::class)
             ->setMethods(['fetchData'])
-            ->setConstructorArgs([$dm, $factory, ['ca' => '', 'cert' => '']])
+            ->setConstructorArgs([$dm, $factory, $progressCounter, ['ca' => '', 'cert' => '']])
             ->getMock();
 
         $conn->expects($this->at(0))

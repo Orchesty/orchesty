@@ -2,7 +2,9 @@
 
 namespace CleverConnectors\AppBundle\Model\CM\SubscriberConnector;
 
+use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
+use CleverConnectors\AppBundle\Utils\CMHeaders;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
@@ -36,19 +38,20 @@ class CMGetListSubscribersConnector extends CMGetSubscribersConnectorAbstract
         $sender        = $this->factory->create($loop, $this->secret);
         $systemInstall = $this->systemInstallRepository->getSystemInstallFromHeaders($dto->getHeaders());
 
-        // TODO get distribution list from settings
-        // TODO finish tests (live and unit)
-        //        $settings = $systemInstall->getSettings();
-        //        if (!isset($settings[SystemInstall::DISTRIBUTION_LIST])) {
-        //            throw new CleverConnectorsException();
-        //        }
-        //
-        //        $this->listId = $settings[SystemInstall::DISTRIBUTION_LIST];
+        $settings = $systemInstall->getSettings();
+        if (!isset($settings[SystemInstall::DISTRIBUTION_LIST])) {
+            throw new CleverConnectorsException(
+                'Distribution list not found in settings',
+                CleverConnectorsException::DISTRIBUTION_LIST_NOT_FOUND
+            );
+        }
 
-        $req = new RequestDto(CurlManager::METHOD_GET, new Uri($this->getUrl(0)));
+        $this->listId = $settings[SystemInstall::DISTRIBUTION_LIST];
+        $processId    = CMHeaders::get(CMHeaders::PROCESS_ID, $dto->getHeaders()) ?? '';
+        $req          = new RequestDto(CurlManager::METHOD_GET, new Uri($this->getUrl(0)));
         $req->setHeaders($this->getAuthorizationHeaders($systemInstall->getUser(), $systemInstall->getToken()));
 
-        $promise = $this->getPage($sender, $callbackItem, $req);
+        $promise = $this->getPage($sender, $callbackItem, $req, 1, $processId);
 
         return $promise;
     }
@@ -61,7 +64,7 @@ class CMGetListSubscribersConnector extends CMGetSubscribersConnectorAbstract
     protected function getUrl(int $offset): string
     {
         return sprintf(
-            '%s/lists/%s/subscribers/?offset=%s&count=%s',
+            '%s/lists/%s/subscribers/?contact_status=1&offset=%s&count=%s',
             self::BASE_URL,
             $this->listId,
             $offset,
