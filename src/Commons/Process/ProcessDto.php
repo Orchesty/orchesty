@@ -27,7 +27,7 @@ final class ProcessDto
     /**
      * @var string
      */
-    private $data;
+    private $data = '{}';
 
     /**
      * @var array
