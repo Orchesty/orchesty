@@ -31,6 +31,7 @@ class SystemMetricsListener implements EventSubscriberInterface, LoggerAwareInte
      * @var LoggerInterface
      */
     private $logger;
+
     /**
      * @var InfluxDbSender
      */
@@ -133,6 +134,9 @@ class SystemMetricsListener implements EventSubscriberInterface, LoggerAwareInte
                 MetricsEnum::CORRELATION_ID => $request->headers->get(
                     PipesHeaders::createKey(PipesHeaders::CORRELATION_ID)
                 ),
+                MetricsEnum::NODE_ID        => $request->headers->get(
+                    PipesHeaders::createKey(PipesHeaders::NODE_ID)
+                ),
             ]
         );
     }
@@ -146,9 +150,11 @@ class SystemMetricsListener implements EventSubscriberInterface, LoggerAwareInte
     {
         $topologyIdHeader    = PipesHeaders::createKey(PipesHeaders::TOPOLOGY_ID);
         $correlationIdHeader = PipesHeaders::createKey(PipesHeaders::CORRELATION_ID);
+        $nodeIdHeader        = PipesHeaders::createKey(PipesHeaders::NODE_ID);
 
-        if ($request->headers->has($topologyIdHeader) &&
-            $request->headers->has($correlationIdHeader)
+        if (
+            $request->headers->has($topologyIdHeader) && $request->headers->has($correlationIdHeader)
+            && $request->headers->has($nodeIdHeader)
         ) {
             return TRUE;
         }

@@ -38,3 +38,7 @@ hb_pf_user:
 hb_pf_configurator:
     resource: '@HbPFConfiguratorBundle'
     type: annotation
+
+hb_pf_metrics:
+    resource: '@HbPFMetricsBundle'
+    type: annotation

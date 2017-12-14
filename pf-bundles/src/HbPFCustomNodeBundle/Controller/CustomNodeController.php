@@ -41,7 +41,7 @@ class CustomNodeController extends FOSRestController
      *
      * @param CustomNodeHandler $handler
      */
-    function __construct(CustomNodeHandler $handler)
+    public function __construct(CustomNodeHandler $handler)
     {
         $this->handler = $handler;
     }

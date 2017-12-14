@@ -39,7 +39,7 @@ class JoinerController extends FOSRestController
      *
      * @param JoinerHandler $handler
      */
-    function __construct(JoinerHandler $handler)
+    public function __construct(JoinerHandler $handler)
     {
         $this->handler = $handler;
     }
