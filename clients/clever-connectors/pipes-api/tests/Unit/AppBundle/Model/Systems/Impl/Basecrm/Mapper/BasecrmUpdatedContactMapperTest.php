@@ -23,16 +23,17 @@ final class BasecrmUpdatedContactMapperTest extends ConnectorTestCaseAbstract
 
         $response = Json::decode($node->process(
             (new ProcessDto())->setData(
-                $this->getRequest('contactItem.json')
+                $this->getRequest('contactCreated.json')
             ))->getData(), TRUE
         );
 
         $expt = [
-            'email'       => 'asd@asd.com',
-            'first_name'  => 'Base',
-            '_foreign_id' => '187596661',
+            'email'       => 'eml@eml.com',
+            'first_name'  => 'first',
+            '_foreign_id' => '188442396',
             'reactivate'  => TRUE,
             'send_optin'  => FALSE,
+            'last_name'   => 'last',
         ];
 
         self::assertEquals($expt, $response);
