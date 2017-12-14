@@ -57,3 +57,7 @@ export const multiProbeOptions = {
     host: process.env.MULTI_PROBE_HOST || "multi-probe",
     port: parseInt(process.env.PROBE_PORT, 10) || 8007,
 };
+
+export const topologyTerminatorOptions = {
+    port: parseInt(process.env.TERMINATOR_PORT, 10) || 8005,
+};
