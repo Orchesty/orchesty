@@ -10,6 +10,7 @@ namespace Hanaboso\PipesFramework\Mailer\RabbitMq;
 
 use Bunny\Message;
 use Hanaboso\PipesFramework\HbPFMailerBundle\DefaultValues\DefaultValues;
+use Hanaboso\PipesFramework\Mailer\Exception\MailerException;
 use Hanaboso\PipesFramework\Mailer\Mailer;
 use Hanaboso\PipesFramework\Mailer\MessageBuilder\Impl\GenericMessageBuilder;
 use Hanaboso\PipesFramework\Mailer\MessageBuilder\MessageBuilderException;
@@ -61,6 +62,7 @@ class MailerCallback extends SyncCallbackAbstract
      * @param Message $message
      *
      * @return CallbackStatus
+     * @throws MailerException
      */
     function handle($data, Message $message): CallbackStatus
     {
