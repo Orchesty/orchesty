@@ -117,4 +117,23 @@ interface ConnectorInterface
      */
     public function hardBounce(string $userId, Subscriber $subscriber): void;
 
+    /**
+     * @param string $userId
+     * @param string $systemKey
+     * @param string $action
+     *
+     * @return array
+     */
+    public function customGetAction(string $userId, string $systemKey, string $action): array;
+
+    /**
+     * @param string $userId
+     * @param string $systemKey
+     * @param string $action
+     * @param array  $data
+     *
+     * @return array
+     */
+    public function customPostAction(string $userId, string $systemKey, string $action, array $data): array;
+
 }

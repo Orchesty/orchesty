@@ -391,4 +391,45 @@ class ConnectorManager implements ConnectorInterface
         $this->send($request);
     }
 
+    /**
+     * @param string $userId
+     * @param string $systemKey
+     * @param string $action
+     *
+     * @return array
+     * @throws ConnectorException
+     */
+    public function customGetAction(string $userId, string $systemKey, string $action): array
+    {
+        $request = new Request(
+            CurlSender::GET,
+            new Uri(sprintf('/system/%s/user/%s/action/%s', $systemKey, $userId, $action)),
+            $this->getDefaultHeaders()->getHeaders()
+        );
+
+        return $this->parseBody($this->send($request));
+    }
+
+    /**
+     * @param string $userId
+     * @param string $systemKey
+     * @param string $action
+     * @param array  $data
+     *
+     * @return array
+     * @throws ConnectorException
+     * @throws JsonException
+     */
+    public function customPostAction(string $userId, string $systemKey, string $action, array $data): array
+    {
+        $request = new Request(
+            CurlSender::POST,
+            new Uri(sprintf('/system/%s/user/%s/action/%s', $systemKey, $userId, $action)),
+            $this->getDefaultHeaders()->getHeaders(),
+            Json::encode($data)
+        );
+
+        return $this->parseBody($this->send($request));
+    }
+
 }

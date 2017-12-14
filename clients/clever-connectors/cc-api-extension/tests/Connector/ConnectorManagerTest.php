@@ -419,4 +419,44 @@ class ConnectorManagerTest extends TestCase
         $this->assertTrue(TRUE);
     }
 
+    /**
+     * @covers ConnectorManager::customGetAction()
+     */
+    public function testCustomGetAction(): void
+    {
+        $cb = function (Request $request) {
+            $this->assertSame('application/json', $request->getHeader('content-type')[0]);
+            $this->assertSame(CurlSender::GET, $request->getMethod());
+            $this->assertSame('/system/system-key/user/123/action/my-action', $request->getUri()->getPath());
+            $this->assertSame('', $request->getBody()->getContents());
+
+            return new Response(200, [], '{"data":"text"}');
+        };
+
+        $cm = new ConnectorManager($this->createSuccessResponse($cb));
+
+        $data = $cm->customGetAction('123', 'system-key', 'my-action');
+        $this->assertSame(['data' => 'text'], $data);
+    }
+
+    /**
+     * @covers ConnectorManager::customPostAction()
+     */
+    public function testCustomPostAction(): void
+    {
+        $cb = function (Request $request) {
+            $this->assertSame('application/json', $request->getHeader('content-type')[0]);
+            $this->assertSame(CurlSender::POST, $request->getMethod());
+            $this->assertSame('/system/system-key/user/123/action/my-action', $request->getUri()->getPath());
+            $this->assertSame('{"data":"TEXT"}', $request->getBody()->getContents());
+
+            return new Response(200, [], '{"data":"text"}');
+        };
+
+        $cm = new ConnectorManager($this->createSuccessResponse($cb));
+
+        $data = $cm->customPostAction('123', 'system-key', 'my-action', ['data' => 'TEXT']);
+        $this->assertSame(['data' => 'text'], $data);
+    }
+
 }
