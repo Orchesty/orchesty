@@ -19,7 +19,7 @@
       <bpmn:outgoing>SequenceFlow_0n812iw</bpmn:outgoing>
     </bpmn:task>
     <bpmn:sequenceFlow id="SequenceFlow_0n812iw" sourceRef="Task_0bw7otc" targetRef="Task_0t2jfih" />
-    <bpmn:task id="Task_0t2jfih" pipes:pipesType="custom" name="zendesk-updated-user-mapper">
+    <bpmn:task id="Task_0t2jfih" pipes:pipesType="custom" name="zendesk-sync-user-mapper">
       <bpmn:incoming>SequenceFlow_0n812iw</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_03wmu7j</bpmn:outgoing>
     </bpmn:task>

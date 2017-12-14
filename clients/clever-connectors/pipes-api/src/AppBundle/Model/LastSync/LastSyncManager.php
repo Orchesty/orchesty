@@ -58,10 +58,10 @@ class LastSyncManager
 
         if (!$lastSync) {
             $lastSync = $this->createLastSync($systemInstall, $nodeName, $topologyName);
-        }
 
-        if ($systemInstall->isSynchronized() && $systemInstall->getSynchronizedTime()) {
-            $lastSync->setTimestamp($systemInstall->getSynchronizedTime());
+            if ($systemInstall->isSynchronized() && $systemInstall->getSynchronizedTime()) {
+                $lastSync->setTimestamp($systemInstall->getSynchronizedTime());
+            }
         }
 
         return $lastSync;

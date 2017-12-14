@@ -41,6 +41,16 @@ services:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Zendesk\Mapper\ZendeskUpdatedUserMapper
         arguments:
 
+    hbpf.custom_node.zendesk-created-user-mapper:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Zendesk\Mapper\ZendeskCreatedUserMapper
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+
+    hbpf.custom_node.zendesk-sync-user-mapper:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Zendesk\Mapper\ZendeskSyncUserMapper
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+
     hbpf.custom_node.zendesk-create-user-mapper:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Zendesk\Mapper\ZendeskCreateUserMapper
         arguments:
@@ -49,6 +59,6 @@ services:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Zendesk\Mapper\ZendeskUpdateUserMapper
         arguments:
 
-    hbpf.custom_node.zendesk-created-user-mapper:
-        class: CleverConnectors\AppBundle\Model\Systems\Impl\Zendesk\Mapper\ZendeskCreatedUserMapper
+    hbpf.custom_node.zendesk-created-event-user-mapper:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Zendesk\Mapper\ZendeskCreatedEventUserMapper
         arguments:
