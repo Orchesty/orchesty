@@ -8,6 +8,7 @@
 
 namespace App\Forms;
 
+use AlesWita\FormRenderer\BootstrapV4Renderer;
 use Nette\Application\UI\Form;
 
 /**
@@ -31,6 +32,8 @@ class SwitchTokenFormFactory
 
         $form
             ->addSubmit('switch_token', 'Switch token');
+
+        $form->setRenderer(new BootstrapV4Renderer);
 
         return $form;
     }

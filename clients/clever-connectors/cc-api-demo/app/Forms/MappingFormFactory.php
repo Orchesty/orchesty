@@ -8,6 +8,7 @@
 
 namespace App\Forms;
 
+use AlesWita\FormRenderer\BootstrapV4Renderer;
 use Nette\Application\UI\Form;
 
 /**
@@ -44,6 +45,8 @@ class MappingFormFactory
         }
 
         $form->addSubmit('save_mapping', 'Save');
+
+        $form->setRenderer(new BootstrapV4Renderer);
 
         return $form;
     }

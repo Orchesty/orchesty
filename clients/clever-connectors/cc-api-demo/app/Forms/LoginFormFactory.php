@@ -2,6 +2,7 @@
 
 namespace App\Forms;
 
+use AlesWita\FormRenderer\BootstrapV4Renderer;
 use Nette\Application\UI\Form;
 
 /**
@@ -26,6 +27,8 @@ class LoginFormFactory
 
         $form
             ->addSubmit('login', 'Login');
+
+        $form->setRenderer(new BootstrapV4Renderer);
 
         return $form;
     }

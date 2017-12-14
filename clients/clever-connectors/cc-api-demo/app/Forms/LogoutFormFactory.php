@@ -8,6 +8,7 @@
 
 namespace App\Forms;
 
+use AlesWita\FormRenderer\BootstrapV4Renderer;
 use Nette\Application\UI\Form;
 
 /**
@@ -27,6 +28,8 @@ class LogoutFormFactory
 
         $form
             ->addSubmit('logout', 'Logout');
+
+        $form->setRenderer(new BootstrapV4Renderer);
 
         return $form;
     }

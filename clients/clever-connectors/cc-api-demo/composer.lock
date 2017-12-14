@@ -4,8 +4,60 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "9e3c5264d6fecb6ea9e014963cb387af",
+    "content-hash": "a53cdf8674356b8f6b31ce00c602608e",
     "packages": [
+        {
+            "name": "aleswita/formrenderer",
+            "version": "1.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/aleswita/FormRenderer.git",
+                "reference": "f457af2f6c79f3d053eb57e51230bbeac15af7e0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/aleswita/FormRenderer/zipball/f457af2f6c79f3d053eb57e51230bbeac15af7e0",
+                "reference": "f457af2f6c79f3d053eb57e51230bbeac15af7e0",
+                "shasum": ""
+            },
+            "require": {
+                "latte/latte": "~2.4.0 || ~3.0.0",
+                "nette/application": "~2.4.0 || ~3.0.0",
+                "nette/forms": "~2.4.0 || ~3.0.0",
+                "nette/utils": "~2.4.0 || ~3.0.0",
+                "php": "~7.1"
+            },
+            "require-dev": {
+                "nette/bootstrap": "~2.4.0 || ~3.0.0",
+                "nette/robot-loader": "~2.4.0 || ~3.0.0",
+                "nette/tester": "~1.7.0",
+                "tracy/tracy": "~2.4.0 || ~3.0.0"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "src/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Aleš Wita",
+                    "email": "aleswita+github@gmail.com"
+                }
+            ],
+            "description": "Form Renderer for Nette Framework and Bootstrap.",
+            "keywords": [
+                "bootsrap",
+                "form",
+                "nette",
+                "renderer"
+            ],
+            "time": "2017-08-14T06:48:01+00:00"
+        },
         {
             "name": "bunny/bunny",
             "version": "v0.2.4",

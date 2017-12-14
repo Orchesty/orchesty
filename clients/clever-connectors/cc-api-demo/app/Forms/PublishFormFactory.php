@@ -2,6 +2,7 @@
 
 namespace App\Forms;
 
+use AlesWita\FormRenderer\BootstrapV4Renderer;
 use Nette\Application\UI\Form;
 
 /**
@@ -38,6 +39,8 @@ class PublishFormFactory
 
         $form
             ->addSubmit('publish', 'Publish message');
+
+        $form->setRenderer(new BootstrapV4Renderer);
 
         return $form;
     }

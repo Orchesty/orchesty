@@ -8,6 +8,7 @@
 
 namespace App\Forms;
 
+use AlesWita\FormRenderer\BootstrapV4Renderer;
 use CcApi\ApiEntity\System;
 use Nette\Application\UI\Form;
 
@@ -39,6 +40,8 @@ class SystemInstallFormFactory
 
         $form
             ->addSubmit('install', 'Install');
+
+        $form->setRenderer(new BootstrapV4Renderer);
 
         return $form;
     }

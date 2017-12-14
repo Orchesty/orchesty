@@ -8,6 +8,7 @@
 
 namespace App\Forms;
 
+use AlesWita\FormRenderer\BootstrapV4Renderer;
 use Nette\Application\UI\Form;
 use Nette\Forms\Container;
 use WebChemistry\Forms\Controls\Multiplier;
@@ -38,6 +39,8 @@ class DataLayoutFormFactory
 
         $multiplier->addCreateButton('Add field');
         $multiplier->addRemoveButton('Remove');
+
+        $form->setRenderer(new BootstrapV4Renderer);
 
         return $form;
     }

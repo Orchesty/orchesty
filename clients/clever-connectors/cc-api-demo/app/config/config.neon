@@ -13,6 +13,12 @@ parameters:
 		host: "http://stream:3030"
 		queue: pipes.stream
 
+	clever:
+		host: 'https://api.dev.clevermonitor.com/v1.2'
+		secret:
+			cert: %appDir%/../cert/clever.pem
+			ca: %appDir%/../cert/ca.crt
+
 cc_api:
 	base_uri: 'https://cleverconn.stage.hanaboso.net/'
 	cert: %appDir%/../cert/stage-staff.pem
@@ -57,6 +63,9 @@ services:
 
 	authorize_generator_form_factory:
 		class: App\Forms\AuthorizationSettingGeneratorFactory
+
+	distribution_list:
+		class: App\Model\DistributionList(%clever.host%,%clever.secret%)
 
 	# STREAM
 	publish_form_factory:
