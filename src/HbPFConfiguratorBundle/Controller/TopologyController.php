@@ -4,7 +4,9 @@ namespace Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller;
 
 use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Controller\FOSRestController;
+use Hanaboso\PipesFramework\Commons\Exception\PipesFrameworkException;
 use Hanaboso\PipesFramework\Commons\Traits\ControllerTrait;
+use Hanaboso\PipesFramework\Configurator\Exception\NodeException;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -76,6 +78,7 @@ class TopologyController extends FOSRestController
      * @param Request $request
      *
      * @return Response
+     * @throws PipesFrameworkException
      */
     public function createTopologyAction(Request $request): Response
     {
@@ -167,6 +170,7 @@ class TopologyController extends FOSRestController
      * @param string $id
      *
      * @return Response
+     * @throws TopologyException
      */
     public function publishTopologyAction(string $id): Response
     {
@@ -183,6 +187,8 @@ class TopologyController extends FOSRestController
      * @param string $id
      *
      * @return Response
+     * @throws TopologyException
+     * @throws NodeException
      */
     public function cloneTopologyAction(string $id): Response
     {
@@ -199,6 +205,7 @@ class TopologyController extends FOSRestController
      * @param string $id
      *
      * @return Response
+     * @throws TopologyException
      */
     public function deleteTopologyAction(string $id): Response
     {

@@ -10,6 +10,7 @@ namespace Tests\Unit\HbPFConfiguratorBundle\Handler;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use Doctrine\ODM\MongoDB\Query\FilterCollection;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\GeneratorHandler;
@@ -354,6 +355,13 @@ class GeneratorHandlerTest extends TestCase
 
                 return NULL;
             });
+
+        $filterCollection = $this->createMock(FilterCollection::class);
+        $filterCollection->method('isEnabled')->willReturn(TRUE);
+        $filterCollection->method('disable')->willReturn(TRUE);
+        $filterCollection->method('enable')->willReturn(TRUE);
+
+        $dm->method('getFilterCollection')->willReturn($filterCollection);
 
         return $dm;
     }
