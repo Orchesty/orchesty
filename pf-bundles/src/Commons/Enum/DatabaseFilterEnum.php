@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace CleverConnectors\AppBundle\Enum;
-
-use Hanaboso\PipesFramework\Commons\Enum\EnumAbstract;
+namespace Hanaboso\PipesFramework\Commons\Enum;
 
 /**
  * Class DatabaseFilterEnum
