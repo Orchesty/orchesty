@@ -10,6 +10,7 @@ import {ResultCode} from "../../src/message/ResultCode";
 import Pipes from "../../src/Pipes";
 import {ITopologyConfigSkeleton} from "../../src/topology/Configurator";
 import {ICounterProcessInfo} from "../../src/topology/counter/CounterProcess";
+import Terminator from "../../src/topology/terminator/Terminator";
 
 const testTopology: ITopologyConfigSkeleton = {
     id: "linear-topo-with-splitter",
@@ -74,8 +75,12 @@ describe("Linear topology with splitter test", () => {
 
         const pip = new Pipes(testTopology);
 
+        // manually set the terminator port not to collide with other tests
+        const dic = pip.getDIContainer();
+        dic.set("topology.terminator", () => new Terminator(8557, dic.get("counter.storage")));
+
         Promise.all([
-            pip.startCounter(8557),
+            pip.startCounter(),
             pip.startNode(testTopology.nodes[0].id),
             pip.startNode(testTopology.nodes[1].id),
             pip.startNode(testTopology.nodes[2].id),

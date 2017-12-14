@@ -2,6 +2,7 @@ import * as express from "express";
 import logger from "../../logger/Logger";
 import Headers from "../../message/Headers";
 import ICounterStorage from "../counter/storage/ICounterStorage";
+import MultiProbeConnector from "../probe/MultiProbeConnector";
 import RequestSender from "../util/RequestSender";
 
 const ROUTE_TOPOLOGY_TERMINATE = "/topology/terminate/:topologyId";
@@ -12,12 +13,34 @@ export default class Terminator {
     private terminationUrl: string;
     private httpServer: any;
 
-    constructor(private storage: ICounterStorage) {
+    /**
+     * @param {number} port
+     * @param {ICounterStorage} storage
+     * @param {MultiProbeConnector|null} multiProbe
+     */
+    constructor(
+        private port: number,
+        private storage: ICounterStorage,
+        private multiProbe?: MultiProbeConnector,
+    ) {
         this.terminationRequested = false;
         this.prepareHttpServer();
-        this.httpServer.listen(httpPort, () => {
-            logger.info(`Topology terminator listening for termination requests on port '${httpPort}'`);
+    }
+
+    /**
+     *
+     */
+    public startServer(): Promise<void> {
+        return this.httpServer.listen(this.port, () => {
+            logger.info(`Topology terminator listening for termination requests on port '${this.port}'`);
         });
+    }
+
+    /**
+     *
+     */
+    public stopServer(): Promise<void> {
+        return this.httpServer.close();
     }
 
     /**
@@ -33,7 +56,9 @@ export default class Terminator {
             return;
         }
 
-        this.probe.removeTopology(topologyId);
+        if (this.multiProbe) {
+            this.multiProbe.removeTopology(topologyId);
+        }
 
         // Should terminate -> send request and expect being terminated
         const terminateOptions = {method: "GET", url: this.terminationUrl, timeout: 5000};
@@ -44,9 +69,9 @@ export default class Terminator {
      * Creates http server to handle termination requests
      */
     private prepareHttpServer() {
-        const app = express();
+        const server = express();
 
-        app.get(ROUTE_TOPOLOGY_TERMINATE, (req, resp) => {
+        server.get(ROUTE_TOPOLOGY_TERMINATE, (req, resp) => {
             if (!req.params || !req.params.topologyId) {
                 return resp.status(400).send("Missing topologyId");
             }
@@ -70,7 +95,7 @@ export default class Terminator {
             this.tryTerminate(req.params.topologyId);
         });
 
-        this.httpServer = app;
+        this.httpServer = server;
     }
 
 }
