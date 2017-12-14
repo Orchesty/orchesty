@@ -25,6 +25,10 @@ class UserSystemFactory
     private const AUTHORIZED     = 'authorized';
     private const SYNCHRONIZED   = 'synchronized';
     private const SETTING_FIELDS = 'setting_fields';
+    private const CUSTOM_FORM    = 'custom_form';
+    private const ACTIONS        = 'actions';
+    private const DATA_LAYOUTS   = 'data_layouts';
+    private const MAP_TEMPLATES  = 'map_templates';
 
     /**
      * @param array $data
@@ -43,11 +47,26 @@ class UserSystemFactory
             ->setToken($data[self::TOKEN] ?? '')
             ->setAuthType($data[self::AUTH_TYPE] ?? '')
             ->setAuthorized($data[self::AUTHORIZED] ?? FALSE)
-            ->setSynchronized($data[self::SYNCHRONIZED] ?? FALSE);
+            ->setSynchronized($data[self::SYNCHRONIZED] ?? FALSE)
+            ->setCustomForm($data[self::CUSTOM_FORM] ?? []);
 
         if (array_key_exists(self::SETTING_FIELDS, $data)) {
             foreach ($data[self::SETTING_FIELDS] as $field) {
                 $system->addSettingField(SettingFieldFactory::create($field));
+            }
+        }
+
+        $system->setActions($data[self::ACTIONS] ?? []);
+
+        if (array_key_exists(self::DATA_LAYOUTS, $data)) {
+            foreach ($data[self::DATA_LAYOUTS] as $item) {
+                $system->addDataLayout(DataLayoutFactory::create($item));
+            }
+        }
+
+        if (array_key_exists(self::MAP_TEMPLATES, $data)) {
+            foreach ($data[self::MAP_TEMPLATES] as $item) {
+                $system->addMapTemplate(MapTemplateFactory::create($item));
             }
         }
 

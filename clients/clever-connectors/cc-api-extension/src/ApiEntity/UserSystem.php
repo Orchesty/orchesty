@@ -37,6 +37,26 @@ class UserSystem extends System
     private $settingFields = [];
 
     /**
+     * @var array
+     */
+    private $customForm = [];
+
+    /**
+     * @var array
+     */
+    private $actions = [];
+
+    /**
+     * @var array|DataLayout[]
+     */
+    private $dataLayouts = [];
+
+    /**
+     * @var array|MapTemplate[]
+     */
+    private $mapTemplates = [];
+
+    /**
      * @return string
      */
     public function getToken(): string
@@ -112,6 +132,86 @@ class UserSystem extends System
     public function addSettingField(SettingField $settingField): self
     {
         $this->settingFields[] = $settingField;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getCustomForm(): array
+    {
+        return $this->customForm;
+    }
+
+    /**
+     * @param array $customForm
+     *
+     * @return UserSystem
+     */
+    public function setCustomForm(array $customForm): UserSystem
+    {
+        $this->customForm = $customForm;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getActions(): array
+    {
+        return $this->actions;
+    }
+
+    /**
+     * @param array $actions
+     *
+     * @return UserSystem
+     */
+    public function setActions(array $actions): UserSystem
+    {
+        $this->actions = $actions;
+
+        return $this;
+    }
+
+    /**
+     * @return array|DataLayout[]
+     */
+    public function getDataLayouts(): array
+    {
+        return $this->dataLayouts;
+    }
+
+    /**
+     * @param DataLayout $dataLayout
+     *
+     * @return UserSystem
+     */
+    public function addDataLayout(DataLayout $dataLayout): UserSystem
+    {
+        $this->dataLayouts[] = $dataLayout;
+
+        return $this;
+    }
+
+    /**
+     * @return array|MapTemplate[]
+     */
+    public function getMapTemplates(): array
+    {
+        return $this->mapTemplates;
+    }
+
+    /**
+     * @param MapTemplate $mapTemplate
+     *
+     * @return UserSystem
+     */
+    public function addMapTemplate(MapTemplate $mapTemplate): UserSystem
+    {
+        $this->mapTemplates[] = $mapTemplate;
 
         return $this;
     }

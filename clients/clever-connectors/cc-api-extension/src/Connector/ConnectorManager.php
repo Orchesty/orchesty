@@ -23,6 +23,7 @@ use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Uri;
 use InvalidArgumentException;
 use Nette\Utils\Json;
+use Nette\Utils\JsonException;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -138,6 +139,7 @@ class ConnectorManager implements ConnectorInterface
      * @param string $systemKey
      *
      * @return System
+     * @throws ConnectorException
      */
     public function getSystem(string $systemKey): System
     {
@@ -157,6 +159,7 @@ class ConnectorManager implements ConnectorInterface
      * @param string $systemKey
      *
      * @return UserSystem
+     * @throws ConnectorException
      */
     public function getUserSystem(string $userId, string $systemKey): UserSystem
     {
@@ -175,6 +178,7 @@ class ConnectorManager implements ConnectorInterface
      * @param string $userId
      *
      * @return iterable|UserSystem[]
+     * @throws ConnectorException
      */
     public function getAllUserSystems(string $userId): iterable
     {
@@ -198,6 +202,8 @@ class ConnectorManager implements ConnectorInterface
      * @param string $userId
      * @param string $systemKey
      * @param array  $settings
+     *
+     * @throws ConnectorException
      */
     public function saveUserSystemSetting(string $userId, string $systemKey, array $settings): void
     {
@@ -215,6 +221,8 @@ class ConnectorManager implements ConnectorInterface
      * @param string $userId
      * @param string $systemKey
      * @param string $token
+     *
+     * @throws ConnectorException
      */
     public function installUserSystem(string $userId, string $systemKey, string $token): void
     {
@@ -231,6 +239,8 @@ class ConnectorManager implements ConnectorInterface
     /**
      * @param string $userId
      * @param string $systemKey
+     *
+     * @throws ConnectorException
      */
     public function uninstallUserSystem(string $userId, string $systemKey): void
     {
@@ -248,6 +258,7 @@ class ConnectorManager implements ConnectorInterface
      * @param string $systemKey
      *
      * @return int
+     * @throws ConnectorException
      */
     public function synchronizeUserSystem(string $userId, string $systemKey): int
     {
@@ -266,6 +277,8 @@ class ConnectorManager implements ConnectorInterface
      * @param string $userId
      * @param string $systemKey
      * @param string $password
+     *
+     * @throws ConnectorException
      */
     public function setUserSystemPassword(string $userId, string $systemKey, string $password): void
     {
@@ -283,6 +296,8 @@ class ConnectorManager implements ConnectorInterface
      * @param string $userId
      * @param string $systemKey
      * @param string $token
+     *
+     * @throws ConnectorException
      */
     public function switchUserSystemToken(string $userId, string $systemKey, string $token): void
     {
@@ -322,6 +337,9 @@ class ConnectorManager implements ConnectorInterface
     /**
      * @param string     $userId
      * @param Subscriber $subscriber
+     *
+     * @throws ConnectorException
+     * @throws JsonException
      */
     public function subscribe(string $userId, Subscriber $subscriber): void
     {
@@ -338,6 +356,9 @@ class ConnectorManager implements ConnectorInterface
     /**
      * @param string     $userId
      * @param Subscriber $subscriber
+     *
+     * @throws ConnectorException
+     * @throws JsonException
      */
     public function unSubscribe(string $userId, Subscriber $subscriber): void
     {
@@ -354,6 +375,9 @@ class ConnectorManager implements ConnectorInterface
     /**
      * @param string     $userId
      * @param Subscriber $subscriber
+     *
+     * @throws ConnectorException
+     * @throws JsonException
      */
     public function hardBounce(string $userId, Subscriber $subscriber): void
     {
@@ -365,6 +389,47 @@ class ConnectorManager implements ConnectorInterface
         );
 
         $this->send($request);
+    }
+
+    /**
+     * @param string $userId
+     * @param string $systemKey
+     * @param string $action
+     *
+     * @return array
+     * @throws ConnectorException
+     */
+    public function customGetAction(string $userId, string $systemKey, string $action): array
+    {
+        $request = new Request(
+            CurlSender::GET,
+            new Uri(sprintf('/system/%s/user/%s/action/%s', $systemKey, $userId, $action)),
+            $this->getDefaultHeaders()->getHeaders()
+        );
+
+        return $this->parseBody($this->send($request));
+    }
+
+    /**
+     * @param string $userId
+     * @param string $systemKey
+     * @param string $action
+     * @param array  $data
+     *
+     * @return array
+     * @throws ConnectorException
+     * @throws JsonException
+     */
+    public function customPostAction(string $userId, string $systemKey, string $action, array $data): array
+    {
+        $request = new Request(
+            CurlSender::POST,
+            new Uri(sprintf('/system/%s/user/%s/action/%s', $systemKey, $userId, $action)),
+            $this->getDefaultHeaders()->getHeaders(),
+            Json::encode($data)
+        );
+
+        return $this->parseBody($this->send($request));
     }
 
 }
