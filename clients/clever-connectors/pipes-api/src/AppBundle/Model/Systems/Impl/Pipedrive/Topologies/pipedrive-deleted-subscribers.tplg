@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:pipes="http://www.omg.org/spec/Pipes/20100524/MODEL" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn">
   <bpmn:process id="Process_1" isExecutable="false">
-    <bpmn:event id="Event_1uu53f7" pipes:pipesType="webhook" name="pipedrive-delete-person-connector">
+    <bpmn:event id="Event_1uu53f7" pipes:pipesType="webhook" name="pipedrive-deleted-person-connector">
       <bpmn:outgoing>SequenceFlow_0gl41m2</bpmn:outgoing>
     </bpmn:event>
-    <bpmn:task id="Task_1el6yvc" pipes:pipesType="custom" name="pipedrive-delete-person-mapper">
+    <bpmn:task id="Task_1el6yvc" pipes:pipesType="custom" name="pipedrive-deleted-person-mapper">
       <bpmn:incoming>SequenceFlow_0gl41m2</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1ei4hs7</bpmn:outgoing>
     </bpmn:task>
@@ -19,7 +19,7 @@
       <bpmndi:BPMNShape id="Event_1uu53f7_di" bpmnElement="Event_1uu53f7">
         <dc:Bounds x="189" y="263" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="163" y="303" width="88" height="24" />
+          <dc:Bounds x="167" y="303" width="80" height="36" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Task_1el6yvc_di" bpmnElement="Task_1el6yvc">

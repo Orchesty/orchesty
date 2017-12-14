@@ -35,10 +35,10 @@ final class PipedriveSubscribeRequester implements RequesterInterface
      * @var array
      */
     private $events = [
-        'pipedrive-update-person-connector' => [
+        'pipedrive-updated-person-connector' => [
             'updated', 'person',
         ],
-        'pipedrive-delete-person-connector' => [
+        'pipedrive-deleted-person-connector' => [
             'deleted', 'person',
         ],
     ];
