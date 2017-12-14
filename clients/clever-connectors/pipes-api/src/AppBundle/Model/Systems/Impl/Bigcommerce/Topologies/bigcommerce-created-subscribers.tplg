@@ -9,7 +9,7 @@
       <bpmn:outgoing>SequenceFlow_0lbmf54</bpmn:outgoing>
     </bpmn:task>
     <bpmn:sequenceFlow id="SequenceFlow_10e39ry" sourceRef="Event_0d1o9t8" targetRef="Task_0s2zkn1" />
-    <bpmn:task id="Task_1elbgy0" pipes:pipesType="custom" name="bigcommerce-updated-customer-mapper">
+    <bpmn:task id="Task_1elbgy0" pipes:pipesType="custom" name="bigcommerce-created-customer-mapper">
       <bpmn:incoming>SequenceFlow_0lbmf54</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1bknhhp</bpmn:outgoing>
     </bpmn:task>
