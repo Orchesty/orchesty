@@ -287,7 +287,7 @@ services:
           - DEV_UID={DEV_UID}
           - DEV_GID={DEV_GID}
         ports:
-          - ${DEV_IP}:8050:5000
+          - ${DEV_IP}:5000:5000
         links:
           - mongo
         depends_on:
