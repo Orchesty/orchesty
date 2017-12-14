@@ -134,6 +134,15 @@ class FacebookaudienceSystem implements OAuth2Interface
     {
         $sett = $systemInstall->getSettings();
 
+        if ($systemInstall->getExpires() !== NULL) {
+            $now     = (new DateTime())->setTimezone(new DateTimeZone('UTC'))->getTimestamp();
+            $expires = $systemInstall->getExpires()->getTimestamp();
+
+            if ($expires <= $now) {
+                return FALSE;
+            }
+        }
+
         return !empty($sett[OAuth2Provider::ACCESS_TOKEN] ?? '');
     }
 
