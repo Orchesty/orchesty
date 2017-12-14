@@ -285,7 +285,7 @@ class StartingPoint implements LoggerAwareInterface
      */
     public function runTest(Topology $topology): array
     {
-        $uri = sprintf('%s_probe:%s/status', $topology->getId(), 8007);
+        $uri = sprintf('multi-probe:%s/topology/status?topologyId=%s', 8007, $topology->getId());
 
         $requestDto = new RequestDto(CurlManager::METHOD_GET, new Uri($uri));
 
