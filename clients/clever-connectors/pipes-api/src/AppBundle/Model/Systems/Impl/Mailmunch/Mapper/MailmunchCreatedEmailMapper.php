@@ -57,8 +57,11 @@ class MailmunchCreatedEmailMapper implements CustomNodeInterface
 
         $obj = new CMSubscriber();
         $obj
-            ->setEmail($data['email'])
-            ->setLists($sett[SystemInstall::SELECT_LIST] ? [$sett[SystemInstall::SELECT_LIST]] : []);
+            ->setEmail($data['email']);
+
+        if (array_key_exists(SystemInstall::SELECT_LIST, $sett)) {
+            $obj->setLists([$sett[SystemInstall::SELECT_LIST]]);
+        }
 
         if (array_key_exists('first-name', $data)) {
             $obj->setFirstName($data['first-name']);
