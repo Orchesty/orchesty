@@ -9,7 +9,6 @@
 
     <div class="row">
 
-        {import '../components/form.latte'}
         {if $user->isLoggedIn()}
             <div class="col-md-10 text-center" style="line-height: 3rem">
                 <strong>UserId:</strong> {$userId}
@@ -84,7 +83,7 @@
 
         {else}
             <div class="col-md-12">
-                {include bootstrap-form loginForm}
+                {control loginForm}
             </div>
         {/if}
 

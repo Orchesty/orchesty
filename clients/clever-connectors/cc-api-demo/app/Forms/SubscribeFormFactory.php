@@ -8,6 +8,7 @@
 
 namespace App\Forms;
 
+use AlesWita\FormRenderer\BootstrapV4Renderer;
 use Nette\Application\UI\Form;
 
 /**
@@ -37,6 +38,8 @@ class SubscribeFormFactory
 
         $form
             ->addSubmit('subscribe', 'Subscribe');
+
+        $form->setRenderer(new BootstrapV4Renderer);
 
         return $form;
     }

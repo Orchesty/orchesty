@@ -8,7 +8,9 @@
     "nette/nette": "^2.4",
     "clever-monitor/cc-api-extension": "0.0.1",
     "clever-monitor/cm-stream": "0.0.1",
-    "bunny/bunny": "^0.2"
+    "bunny/bunny": "^0.2",
+    "webchemistry/forms-multiplier": "^2.0",
+    "aleswita/formrenderer": "^1.1"
   },
   "require-dev": {
   },

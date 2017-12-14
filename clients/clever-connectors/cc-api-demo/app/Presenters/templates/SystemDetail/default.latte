@@ -7,7 +7,6 @@
 
     <hr>
 
-    {import '../components/form.latte'}
     {if $user->isLoggedIn()}
 
         <div class="row">
@@ -29,8 +28,13 @@
         {if $system}
             <div class="row">
 
-                <div class="col-md-8">
+                <div class="col-md-6">
                     <h3>System info</h3>
+                </div>
+                <div class="col-md-2">
+                    <a n:href="Mapping:" class="btn btn-info btn-sm btn-block">
+                        Mapping
+                    </a>
                 </div>
                 <div class="col-md-2">
                     {if $system->getAuthType() == 'oauth2'}
@@ -85,7 +89,7 @@
 
                         <h3>Authorization</h3>
 
-                        {include bootstrap-form authorizationSettingGeneratorForm}
+                        {control authorizationSettingGeneratorForm}
                     </div>
                 </div>
             {/if}
@@ -95,8 +99,7 @@
             <div class="row">
                 <div class="col-md-12">
                     <h2>Switch token</h2>
-
-                    {include bootstrap-form switchTokenForm}
+                    {control switchTokenForm}
                 </div>
             </div>
         {else}
@@ -110,7 +113,7 @@
     {else}
         <div class="row">
             <div class="col-md-12">
-                {include bootstrap-form loginForm}
+                {control loginForm}
             </div>
         </div>
     {/if}

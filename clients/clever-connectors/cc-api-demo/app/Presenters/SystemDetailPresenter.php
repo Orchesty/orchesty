@@ -10,9 +10,13 @@ namespace App\Presenters;
 
 use App\Forms\AuthorizationSettingGeneratorFactory;
 use App\Forms\SwitchTokenFormFactory;
+use App\Model\DistributionList;
 use CcApi\ApiEntity\UserSystem;
 use CcApi\Connector\ConnectorManager;
 use Nette\Application\UI\Form;
+use Nette\Forms\Container;
+use Tracy\Debugger;
+use WebChemistry\Forms\Controls\Multiplier;
 
 /**
  * Class SystemDetailPresenter
@@ -36,10 +40,16 @@ class SystemDetailPresenter extends BasePresenter
      * @var AuthorizationSettingGeneratorFactory
      */
     private $authorizationSettingGeneratorFactory;
+
     /**
      * @var SwitchTokenFormFactory
      */
     private $switchTokenFormFactory;
+
+    /**
+     * @var DistributionList
+     */
+    private $distributionList;
 
     /**
      * HomepagePresenter constructor.
@@ -47,15 +57,17 @@ class SystemDetailPresenter extends BasePresenter
      * @param ConnectorManager                     $connectorManager
      * @param AuthorizationSettingGeneratorFactory $authorizationSettingGeneratorFactory
      * @param SwitchTokenFormFactory               $switchTokenFormFactory
+     * @param DistributionList                     $distributionList
      */
     public function __construct(ConnectorManager $connectorManager,
                                 AuthorizationSettingGeneratorFactory $authorizationSettingGeneratorFactory,
-                                SwitchTokenFormFactory $switchTokenFormFactory)
+                                SwitchTokenFormFactory $switchTokenFormFactory, DistributionList $distributionList)
     {
         parent::__construct();
         $this->connectorManager                     = $connectorManager;
         $this->authorizationSettingGeneratorFactory = $authorizationSettingGeneratorFactory;
         $this->switchTokenFormFactory               = $switchTokenFormFactory;
+        $this->distributionList                     = $distributionList;
     }
 
     /**
@@ -70,6 +82,41 @@ class SystemDetailPresenter extends BasePresenter
         } else {
             $this->template->system = NULL;
         }
+
+    }
+
+    /**
+     * @param $systemKey
+     *
+     * @return Form|null
+     */
+    private function getForm($systemKey): ?Form
+    {
+        $distributionList = $this->distributionList->getListsForSelect($this->userSystem->getToken(), $this->userId);
+        $form             = $this->authorizationSettingGeneratorFactory->create($this->userSystem, $distributionList);
+
+        switch ($systemKey) {
+            case 'airtable':
+
+                /** @var Multiplier $multiplier */
+                $multiplier = $form->addMultiplier('multiplier', function (Container $container, Form $form) {
+
+                    $container
+                        ->addText('table_id', 'Table ID')
+                        ->setRequired('The field key id required, please fill it.');
+                    $container
+                        ->addButton('redirect', 'Detail');
+                });
+
+                $multiplier->addCreateButton('Add table');
+                $multiplier->addRemoveButton('Remove');
+
+                $form->setCurrentGroup();
+
+                break;
+        }
+
+        return $form;
     }
 
     /**
@@ -104,7 +151,7 @@ class SystemDetailPresenter extends BasePresenter
      */
     public function createComponentAuthorizationSettingGeneratorForm(): Form
     {
-        $form = $this->authorizationSettingGeneratorFactory->create($this->userSystem);
+        $form = $this->getForm($this->userSystem->getKey());
 
         $form->onSuccess[] = [$this, 'processAuthorizationSettingGenerator'];
 
@@ -113,6 +160,8 @@ class SystemDetailPresenter extends BasePresenter
 
     /**
      * @param Form $form
+     *
+     * @throws \Nette\Application\AbortException
      */
     public function processAuthorizationSettingGenerator(Form $form): void
     {
@@ -131,7 +180,7 @@ class SystemDetailPresenter extends BasePresenter
 
         $this->flashMessage('Setting was saved.');
 
-        $this->redirect('//SystemDetail:', ['systemKey' => $this->userSystem->getKey()]);
+        $this->redirect('SystemDetail:', ['systemKey' => $this->userSystem->getKey()]);
     }
 
     /**
@@ -148,6 +197,8 @@ class SystemDetailPresenter extends BasePresenter
 
     /**
      * @param Form $form
+     *
+     * @throws \Nette\Application\AbortException
      */
     public function processSwitchToken(Form $form)
     {
@@ -156,7 +207,7 @@ class SystemDetailPresenter extends BasePresenter
         $this->connectorManager->switchUserSystemToken($this->userId, $this->userSystem->getKey(), $data['token']);
 
         $this->flashMessage('Token was switched.');
-        $this->redirect('//SystemDetail:', ['systemKey' => $this->userSystem->getKey()]);
+        $this->redirect('SystemDetail:', ['systemKey' => $this->userSystem->getKey()]);
     }
 
 }
