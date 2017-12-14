@@ -3,11 +3,16 @@
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Salesforce\Mapper;
 
 /**
- * Class SalesforceUpdatedContactMapper
+ * Class SalesforceCreatedContactMapper
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Salesforce\Mapper
  */
-class SalesforceUpdatedContactMapper extends SalesforceContactMapperAbstract
+class SalesforceCreatedContactMapper extends SalesforceContactMapperAbstract
 {
+
+    /**
+     * @var bool
+     */
+    protected $includeList = TRUE;
 
 }

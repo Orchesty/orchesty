@@ -9,7 +9,7 @@
       <bpmn:incoming>SequenceFlow_02ygos2</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1vx5bro</bpmn:outgoing>
     </bpmn:task>
-    <bpmn:task id="Task_0lopyr0" pipes:pipesType="custom" name="salesforce-updated-contact-mapper">
+    <bpmn:task id="Task_0lopyr0" pipes:pipesType="custom" name="salesforce-created-contact-mapper">
       <bpmn:incoming>SequenceFlow_1vx5bro</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0aft69n</bpmn:outgoing>
     </bpmn:task>
