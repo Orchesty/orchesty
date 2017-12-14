@@ -216,6 +216,8 @@ class StartingPoint implements LoggerAwareInterface
      * @param Request  $request
      * @param Topology $topology
      * @param Node     $node
+     *
+     * @throws \Exception
      */
     public function runWithRequest(Request $request, Topology $topology, Node $node): void
     {
@@ -232,6 +234,8 @@ class StartingPoint implements LoggerAwareInterface
      * @param Topology    $topology
      * @param Node        $node
      * @param null|string $body
+     *
+     * @throws \Exception
      */
     public function run(Topology $topology, Node $node, ?string $body = NULL): void
     {
@@ -243,6 +247,8 @@ class StartingPoint implements LoggerAwareInterface
      * @param Node     $node
      * @param Headers  $headers
      * @param string   $content
+     *
+     * @throws \Exception
      */
     protected function runTopology(Topology $topology, Node $node, Headers $headers, string $content = ''): void
     {
@@ -278,7 +284,7 @@ class StartingPoint implements LoggerAwareInterface
      */
     public function runTest(Topology $topology): array
     {
-        $uri = sprintf('%s_probe:%s/status', $topology->getId(), 8007);
+        $uri = sprintf('multi-probe:%s/topology/status?topologyId=%s', 8007, $topology->getId());
 
         $requestDto = new RequestDto(CurlManager::METHOD_GET, new Uri($uri));
 
