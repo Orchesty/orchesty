@@ -88,6 +88,7 @@ services:
         depends_on:
           - mongo
           - rabbitmq
+          - cron-api
 
     # Services
     topology-fpm:
