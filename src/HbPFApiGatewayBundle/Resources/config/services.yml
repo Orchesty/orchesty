@@ -2,7 +2,7 @@ services:
     listener.controller.exception:
         class: Hanaboso\PipesFramework\ApiGateway\Listener\ControllerExceptionListener
         arguments:
-        class:
+        calls:
             - ['setLogger', ['@monolog.logger.commons']]
         tags:
             - { name: kernel.event_subscriber }

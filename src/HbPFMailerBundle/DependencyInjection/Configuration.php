@@ -23,11 +23,11 @@ class Configuration implements ConfigurationInterface
 
         $mailerNode =  $rootNode->children()->arrayNode('mailer');
 
-        $defaultNode = $mailerNode->children()->arrayNode("default_values")->normalizeKeys(FALSE)->cannotBeEmpty()->isRequired();
+        $defaultNode = $mailerNode->children()->arrayNode("default_values")->normalizeKeys(FALSE)->isRequired();
         $from        = $defaultNode->children()->arrayNode('from');
         $from->children()->scalarNode('user_manager')->isRequired()->cannotBeEmpty();
 
-        $subject = $defaultNode->children()->arrayNode('subject')->normalizeKeys(FALSE)->cannotBeEmpty()->isRequired();
+        $subject = $defaultNode->children()->arrayNode('subject')->normalizeKeys(FALSE)->isRequired();
         $subject->children()->scalarNode('user_manager')->isRequired();
 
         $defaultNode->children()->arrayNode('to')->isRequired();
