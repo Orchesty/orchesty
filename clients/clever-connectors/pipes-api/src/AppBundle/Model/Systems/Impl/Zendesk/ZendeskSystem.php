@@ -162,13 +162,13 @@ class ZendeskSystem implements SystemInterface, AuthorizationInterface, CMEventS
             TRUE
         );
 
-        $field3 = new Field(
+        $field3 = (new Field(
             Field::TEXT,
             self::DOMAIN,
-            'Domain xxx.zendesk.com (only xxx part)',
+            'Domain',
             $this->prepareValue(self::DOMAIN, $sett),
             TRUE
-        );
+        ))->setDescription('Domain (XXX part in https://XXX.zendesk.com)');
 
         $field4 = new Field(
             Field::CHECKBOX,

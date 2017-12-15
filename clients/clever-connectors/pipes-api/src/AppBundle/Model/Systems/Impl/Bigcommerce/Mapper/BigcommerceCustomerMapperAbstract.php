@@ -34,7 +34,7 @@ abstract class BigcommerceCustomerMapperAbstract implements CustomNodeInterface
     private $systemInstallRepository;
 
     /**
-     * NutshellContactMapperAbstract constructor.
+     * BigcommerceCustomerMapperAbstract constructor.
      *
      * @param DocumentManager $dm
      */

@@ -186,13 +186,13 @@ class ShopifySystem implements WebhookSystemInterface, OAuth2Interface, CMEventS
     {
         $settings = $systemInstall->getSettings();
 
-        $field1 = new Field(
+        $field1 = (new Field(
             Field::TEXT,
             self::SYSTEM_URL,
-            'System url of client\'s app - XXX.myshopify.com (only XXX part).',
+            'Store ID',
             $this->prepareValue(self::SYSTEM_URL, $settings),
             TRUE
-        );
+        ))->setDescription('Store ID (XXX part in https://XXX.myshopify.com)');
 
         $field2 = new Field(
             Field::CHECKBOX,
