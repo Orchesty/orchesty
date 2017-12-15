@@ -78,6 +78,13 @@ services:
 
     multi-probe:
       image: 'dkr.hanaboso.net/pipes/pipes/go-multi-probe:dev'
+      environment:
+        REDIS_HOST: 'redis'
+        REDIS_PORT: '6379'
+        REDIS_PASS: ''
+        REDIS_DB: '0'
+      depends_on:
+        - redis
       ports:
         - ${DEV_IP}:8007:8007
 
