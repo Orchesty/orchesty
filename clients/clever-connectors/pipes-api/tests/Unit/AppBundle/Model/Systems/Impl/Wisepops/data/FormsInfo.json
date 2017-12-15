@@ -1,0 +1,29 @@
+[
+  {
+    "id": 106677,
+    "label": "$5 Off Sign Up",
+    "created_at": "2016-05-11 17:21:45.91262",
+    "activated": true,
+    "display_count": 0,
+    "click_count": 0,
+    "email_count": 0
+  },
+  {
+    "id": 106682,
+    "label": "BF: Fashion",
+    "created_at": "2016-11-07 21:36:35.120542",
+    "activated": true,
+    "display_count": 0,
+    "click_count": 0,
+    "email_count": 0
+  },
+  {
+    "id": 106625,
+    "label": "Welcome Brand",
+    "created_at": "2016-05-18 18:08:31.438349",
+    "activated": true,
+    "display_count": 2,
+    "click_count": 2,
+    "email_count": 2
+  }
+]

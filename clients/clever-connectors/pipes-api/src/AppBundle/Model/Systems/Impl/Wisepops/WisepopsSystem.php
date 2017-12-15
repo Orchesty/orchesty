@@ -10,6 +10,7 @@ use CleverConnectors\AppBundle\Model\Requester\RequesterInterface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\AuthorizationInterface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\Traits\AuthorizationTrait;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
+use CleverConnectors\AppBundle\Model\Systems\Impl\Wisepops\Connector\WisepopsRefreshFormsConnector;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Wisepops\Requester\WisepopsSubscribeRequester;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Wisepops\Requester\WisepopsUnsubscribeRequester;
 use CleverConnectors\AppBundle\Model\Systems\Traits\SystemTrait;
@@ -28,23 +29,37 @@ use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 class WisepopsSystem implements WebhookSystemInterface, AuthorizationInterface
 {
 
-    use SystemTrait;
+    use SystemTrait {
+        toArray as parentToArray;
+    }
     use AuthorizationTrait;
     use WebhookSystemTrait;
 
-    private const API_KEY     = 'api_key';
-    private const BASE_URL    = 'https://app.wisepops.com/';
-    public const  WEBHOOK_URL = 'https://app.wisepops.com/api1/hooks';
+    public const   FORM_ID     = 'form_id';
+    public const   FORM_LIST   = 'list';
+    public const  FORM_NAME = 'form_name';
+    public const   WEBHOOK_URL = 'https://app.wisepops.com/api1/hooks';
+
+    private const  API_KEY   = 'api_key';
+    private const  BASE_URL  = 'https://app.wisepops.com/';
+
+    /**
+     * @var WisepopsRefreshFormsConnector|null
+     */
+    private $refreshConn;
 
     /**
      * WisepopsSystem constructor.
+     *
+     * @param WisepopsRefreshFormsConnector|null $refreshConn
      */
-    public function __construct()
+    public function __construct(?WisepopsRefreshFormsConnector $refreshConn = NULL)
     {
         $this->subscriptions[] = new WebhookSubscribes(
             'wisepops-created-email-connector',
             TopologyNameUtils::getTopologyName(TopologyNameUtils::CREATED_SUBSCRIBERS, $this->getKey())
         );
+        $this->refreshConn = $refreshConn;
     }
 
     /**
@@ -167,6 +182,32 @@ class WisepopsSystem implements WebhookSystemInterface, AuthorizationInterface
         $this->continueOnAuthorized($systemInstall);
 
         return new WisepopsUnsubscribeRequester($this->getHeaders($systemInstall));
+    }
+
+    /**
+     * @param SystemInstall $systemInstall
+     * @param array         $data
+     *
+     * @return array
+     */
+    public function refreshForms(SystemInstall $systemInstall, array $data = []): array
+    {
+        return $this->refreshConn->refreshForms($systemInstall);
+    }
+
+    /**
+     * @param SystemInstall|null $systemInstall
+     *
+     * @return array
+     */
+    public function toArray(?SystemInstall $systemInstall = NULL): array
+    {
+        $arr = $this->parentToArray($systemInstall);
+        if (array_key_exists(SystemInstall::FORMS, $systemInstall->getSettings())) {
+            $arr[SystemInstall::FORMS] = $systemInstall->getSettings()[SystemInstall::FORMS];
+        }
+
+        return $arr;
     }
 
     /**
