@@ -135,10 +135,18 @@ class ShipstationSystem implements AuthorizationInterface
             TRUE
         );
 
+        $field3 = new Field(
+            Field::SELECT,
+            SystemInstall::SELECT_LIST,
+            'Distribution list',
+            $this->prepareValue(SystemInstall::SELECT_LIST, $systemInstall->getSettings())
+        );
+
         $form = new Form();
         $form
             ->addField($field1)
-            ->addField($field2);
+            ->addField($field2)
+            ->addField($field3);
 
         return $form->toArray();
     }

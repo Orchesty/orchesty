@@ -8,7 +8,7 @@
       <bpmn:incoming>SequenceFlow_1owds33</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0tjntkm</bpmn:outgoing>
     </bpmn:task>
-    <bpmn:task id="Task_0ov0ioc" pipes:pipesType="custom" name="shipstation-update-customer-mapper">
+    <bpmn:task id="Task_0ov0ioc" pipes:pipesType="custom" name="shipstation-created-customer-mapper">
       <bpmn:incoming>SequenceFlow_0tjntkm</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0pn8gn3</bpmn:outgoing>
     </bpmn:task>

@@ -20,6 +20,12 @@ services:
             - '@cc.last_sync.manager'
             - '@hbpf.transport.async_curl_factory'
 
-    hbpf.custom_node.shipstation-update-customer-mapper:
-        class: CleverConnectors\AppBundle\Model\Systems\Impl\Shipstation\Mapper\ShipstationUpdateCustomerMapper
+    hbpf.custom_node.shipstation-created-customer-mapper:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Shipstation\Mapper\ShipstationCreatedCustomerMapper
         arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+
+    hbpf.custom_node.shipstation-updated-customer-mapper:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Shipstation\Mapper\ShipstationUpdatedCustomerMapper
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'

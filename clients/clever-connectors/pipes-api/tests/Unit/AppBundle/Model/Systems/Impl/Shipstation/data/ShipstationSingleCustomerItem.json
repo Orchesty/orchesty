@@ -2,7 +2,7 @@
   "customerId": 108140195,
   "createDate": "2017-10-15T23:29:47.6370000",
   "modifyDate": "2017-10-15T23:29:47.6370000",
-  "name": "John Doe",
+  "name": "User01 User01",
   "company": "Company",
   "street1": "Street",
   "street2": "",
@@ -11,7 +11,7 @@
   "postalCode": "12345",
   "countryCode": "US",
   "phone": "",
-  "email": "email@example.com",
+  "email": "User01@User01.com",
   "addressVerified": "Error",
   "marketplaceUsernames": [
     {
@@ -21,7 +21,7 @@
       "modifyDate": "2017-10-15T23:29:47.6400000",
       "marketplaceId": 0,
       "marketplace": "ShipStation",
-      "username": "user1@user1.com"
+      "username": "User01@User01.com"
     }
   ],
   "tags": null
