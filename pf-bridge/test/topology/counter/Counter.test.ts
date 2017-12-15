@@ -16,6 +16,7 @@ import {default as Counter, ICounterSettings} from "../../../src/topology/counte
 import {ICounterProcessInfo} from "../../../src/topology/counter/CounterProcess";
 import InMemoryStorage from "../../../src/topology/counter/storage/InMemoryStorage";
 import Terminator from "../../../src/topology/terminator/Terminator";
+import RedisStorage from "../../../src/topology/counter/storage/RedisStorage";
 
 const conn = new Connection(amqpConnectionOptions);
 const metricsMock = {
@@ -400,6 +401,7 @@ describe("Counter", () => {
         consumer.consume(testOutputQueue.name, testOutputQueue.options);
 
         const storage = new InMemoryStorage();
+        // const storage = new RedisStorage("localhost", 6379);
         const terminator = new Terminator(7902, storage);
         const counter = new Counter(counterSettings, conn, storage, terminator, metricsMock);
         counter.start()

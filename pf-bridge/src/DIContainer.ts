@@ -2,7 +2,10 @@ import {AssertionPublisher} from "amqplib-plus/dist/lib/AssertPublisher";
 import {Connection} from "amqplib-plus/dist/lib/Connection";
 import {Container} from "hb-utils/dist/lib/Container";
 import {Metrics} from "metrics-sender/dist/lib/metrics/Metrics";
-import {amqpConnectionOptions, metricsOptions, multiProbeOptions, topologyTerminatorOptions} from "./config";
+import {
+    amqpConnectionOptions, metricsOptions, multiProbeOptions, redisStorageOptions,
+    topologyTerminatorOptions,
+} from "./config";
 import CounterPublisher from "./node/drain/amqp/CounterPublisher";
 import FollowersPublisher from "./node/drain/amqp/FollowersPublisher";
 import {default as AmqpDrain, IAmqpDrainSettings} from "./node/drain/AmqpDrain";
@@ -17,7 +20,7 @@ import {default as ResequencerWorker, IResequencerWorkerSettings} from "./node/w
 import SplitterWorker, {ISplitterWorkerSettings} from "./node/worker/SplitterWorker";
 import TestCaptureWorker from "./node/worker/TestCaptureWorker";
 import UppercaseWorker from "./node/worker/UppercaseWorker";
-import InMemoryStorage from "./topology/counter/storage/InMemoryStorage";
+import RedisStorage from "./topology/counter/storage/RedisStorage";
 import MultiProbeConnector from "./topology/probe/MultiProbeConnector";
 import Terminator from "./topology/terminator/Terminator";
 
@@ -35,7 +38,14 @@ class DIContainer extends Container {
     private setServices() {
         this.set("amqp.connection", new Connection(amqpConnectionOptions));
 
-        this.set("counter.storage", new InMemoryStorage());
+        // this.set("counter.storage", new InMemoryStorage());
+
+        this.set("counter.storage", new RedisStorage(
+            redisStorageOptions.host,
+            redisStorageOptions.port,
+            redisStorageOptions.pass,
+            redisStorageOptions.db,
+        ));
 
         this.set("probe.multi", new MultiProbeConnector(multiProbeOptions.host, multiProbeOptions.port));
 
