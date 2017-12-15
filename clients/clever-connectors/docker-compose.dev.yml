@@ -97,9 +97,13 @@ services:
         RABBITMQ_USER: guest
         RABBITMQ_PASS: guest
         RABBITMQ_VHOST: /
+        REDIS_HOST: 'redis'
+        REDIS_PORT: '6379'
+        REDIS_PASS: ''
+        REDIS_DB: '0'
       depends_on:
-        - mongo
         - rabbitmq
+        - redis
       command: './dist/src/bin/pipes.js start multi_counter'
 
     repeater:
