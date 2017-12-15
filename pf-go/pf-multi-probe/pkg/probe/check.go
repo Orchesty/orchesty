@@ -41,7 +41,7 @@ func Check(br BridgeInfo, resultsChannel chan<- BridgeInfo) {
 	defer response.Body.Close()
 
 	br.Code = response.StatusCode
-	br.Message = string(bodyBytes)[0:1000]
+	br.Message = string(bodyBytes)
 
 	resultsChannel <- br
 
