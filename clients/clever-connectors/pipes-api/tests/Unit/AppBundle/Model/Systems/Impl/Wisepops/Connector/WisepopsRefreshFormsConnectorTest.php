@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Unit\AppBundle\Model\Systems\Impl\Wisepops\System;
+namespace Tests\Unit\AppBundle\Model\Systems\Impl\Wisepops\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
-use CleverConnectors\AppBundle\Model\Systems\Impl\Wisepops\WisepopsSystem;
+use CleverConnectors\AppBundle\Model\Systems\Impl\Wisepops\Connector\WisepopsRefreshFormsConnector;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
@@ -13,11 +13,11 @@ use PHPUnit_Framework_MockObject_MockObject;
 use Tests\ConnectorTestCaseAbstract;
 
 /**
- * Class WisepopsSystemTest
+ * Class WisepopsRefreshFormsConnectorTest
  *
- * @package Tests\Unit\AppBundle\Model\Systems\Impl\Wisepops\System
+ * @package Tests\Unit\AppBundle\Model\Systems\Impl\Wisepops\Connector
  */
-final class WisepopsSystemTest extends ConnectorTestCaseAbstract
+final class WisepopsRefreshFormsConnectorTest extends ConnectorTestCaseAbstract
 {
 
     /**
@@ -49,8 +49,11 @@ final class WisepopsSystemTest extends ConnectorTestCaseAbstract
         $dm = $this->createMock(DocumentManager::class);
         $dm->method('flush')->willReturn([]);
 
-        $system = new WisepopsSystem($curl, $dm);
-        $sys    = new SystemInstall();
+        $conn = new WisepopsRefreshFormsConnector(
+            $dm,
+            $curl
+        );
+        $sys  = new SystemInstall();
         $sys->setSettings([
             'api_key'     => 'apiKey',
             'custom_form' => [
@@ -62,7 +65,7 @@ final class WisepopsSystemTest extends ConnectorTestCaseAbstract
             ],
         ]);
 
-        $res = $system->refreshForms($sys);
+        $res = $conn->refreshForms($sys);
 
         $expt = [
             [
