@@ -8,7 +8,7 @@ export default class RequestSender {
      *
      * @param {request.UrlOptions} options
      */
-    public static send(options: UrlOptions) {
+    public static send(options: UrlOptions): void {
         logger.info(`Sending request to: ${options.url}`);
         request(options, (err, response) => {
             if (err) {
