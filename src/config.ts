@@ -61,3 +61,10 @@ export const multiProbeOptions = {
 export const topologyTerminatorOptions = {
     port: parseInt(process.env.TERMINATOR_PORT, 10) || 8005,
 };
+
+export const redisStorageOptions = {
+    host: process.env.REDIS_HOST || "redis",
+    port: parseInt(process.env.REDIS_PORT, 10) || 6379,
+    pass: process.env.REDIS_PASS || "",
+    db: parseInt(process.env.REDIS_DB, 10) || 0,
+};
