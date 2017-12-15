@@ -133,22 +133,30 @@ class ZapierSystem implements WebhookSystemInterface, AuthorizationInterface
             Field::TEXT,
             'user',
             'User',
-            $systemInstall->getUser()
+            $systemInstall->getUser(),
+            TRUE
         );
-        $field1->setRequired(TRUE);
 
         $field2 = new Field(
             Field::TEXT,
             'token',
             'Token',
-            $systemInstall->getToken()
+            $systemInstall->getToken(),
+            TRUE
         );
-        $field2->setRequired(TRUE);
+
+        $field3 = new Field(
+            Field::SELECT,
+            SystemInstall::SELECT_LIST,
+            'Distribution list',
+            $this->prepareValue(SystemInstall::SELECT_LIST, $systemInstall->getSettings())
+        );
 
         $form = new Form();
         $form
             ->addField($field1)
-            ->addField($field2);
+            ->addField($field2)
+            ->addField($field3);
 
         return $form->toArray();
     }
