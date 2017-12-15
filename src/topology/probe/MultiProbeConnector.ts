@@ -27,7 +27,7 @@ class MultiProbeConnector {
             method: "POST",
             url: `${this.url}/topology/add`,
             timeout: REQUEST_TIMEOUT,
-            body: topology,
+            body: JSON.stringify(topology),
             headers: {
                 "Content-Type": "application/json",
             },
