@@ -4,7 +4,7 @@
     <bpmn:event id="Event_1b57rlo" pipes:pipesType="webhook" name="shopify-created-customer-connector">
       <bpmn:outgoing>SequenceFlow_1txoy1a</bpmn:outgoing>
     </bpmn:event>
-    <bpmn:task id="Task_18klc2j" pipes:pipesType="custom" name="shopify-updated-customer-mapper">
+    <bpmn:task id="Task_18klc2j" pipes:pipesType="custom" name="shopify-created-customer-mapper">
       <bpmn:incoming>SequenceFlow_1txoy1a</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0pcjfzu</bpmn:outgoing>
     </bpmn:task>

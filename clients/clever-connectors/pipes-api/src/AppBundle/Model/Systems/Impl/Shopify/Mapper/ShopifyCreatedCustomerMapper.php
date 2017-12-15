@@ -3,11 +3,16 @@
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\Mapper;
 
 /**
- * Class ShopifyUpdatedCustomerMapper
+ * Class ShopifyCreatedCustomerMapper
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\Mapper
  */
-class ShopifyUpdatedCustomerMapper extends ShopifyCustomerMapperAbstract
+class ShopifyCreatedCustomerMapper extends ShopifyCustomerMapperAbstract
 {
+
+    /**
+     * @var bool
+     */
+    protected $includeList = TRUE;
 
 }

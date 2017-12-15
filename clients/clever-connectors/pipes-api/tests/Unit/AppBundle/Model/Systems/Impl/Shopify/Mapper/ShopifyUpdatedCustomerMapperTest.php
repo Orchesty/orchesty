@@ -3,6 +3,7 @@
 namespace Tests\Unit\AppBundle\Model\Systems\Impl\Shopify\Mapper;
 
 use CleverConnectors\AppBundle\Enum\CleverFieldsEnum;
+use CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\Mapper\ShopifyUpdatedCustomerMapper;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Nette\Utils\Json;
 use Tests\ConnectorTestCaseAbstract;
@@ -16,9 +17,9 @@ final class ShopifyUpdatedCustomerMapperTest extends ConnectorTestCaseAbstract
 {
 
     /**
-     *
+     * @covers ShopifyUpdatedCustomerMapper::process()
      */
-    public function testProcessEvent(): void
+    public function testProcess(): void
     {
         $connector = $this->container->get('hbpf.custom_node.shopify-updated-customer-mapper');
 
