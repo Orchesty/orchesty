@@ -168,7 +168,7 @@ class Generator implements GeneratorInterface
                 $nodeConfig['next'][] = GeneratorUtils::createNormalizedServiceName($next->getId(), $next->getName());
             }
 
-			if ($this->multiModeEnabled) {
+            if ($this->multiModeEnabled) {
                 $multiName           = $this->getMultiNodeName($topology);
                 $port                = $defaultPort + $i;
                 $nodeConfig['debug'] = [
