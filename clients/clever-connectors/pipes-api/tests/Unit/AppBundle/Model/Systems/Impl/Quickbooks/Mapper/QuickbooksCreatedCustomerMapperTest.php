@@ -2,8 +2,14 @@
 
 namespace Tests\Unit\AppBundle\Model\Systems\Impl\Quickbooks\Mapper;
 
+use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\CleverFieldsEnum;
+use CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\Mapper\QuickbooksCreatedCustomerMapper;
+use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Nette\Utils\Json;
+use PHPUnit_Framework_MockObject_MockObject;
 use Tests\ConnectorTestCaseAbstract;
 
 /**
@@ -17,26 +23,38 @@ final class QuickbooksCreatedCustomerMapperTest extends ConnectorTestCaseAbstrac
     /**
      *
      */
-    public function testMapper(): void
+    public function testProcess(): void
     {
-        $mapper = $this->container->get('hbpf.custom_node.quickbooks-created-customer-mapper');
+        $sys = new SystemInstall();
+        $sys->setSettings([
+            'list' => 'someList',
+        ]);
 
-        $dto = new ProcessDto();
-        $dto->setData(json_encode([
-            'body' => $this->getRequest('CustomerCreated.json'),
-        ]))->setHeaders([]);
+        $repo = $this->createMock(SystemInstallRepository::class);
+        $repo->method('getSystemInstallFromHeaders')->willReturn($sys);
 
-        /** @var ProcessDto $res */
-        $res = $mapper->process($dto);
+        /** @var DocumentManager|PHPUnit_Framework_MockObject_MockObject $dm */
+        $dm = $this->createMock(DocumentManager::class);
+        $dm->method('getRepository')->willReturn($repo);
 
-        self::assertEquals(json_encode([
-            CleverFieldsEnum::EMAIL      => 'eml@emlm.com',
-            CleverFieldsEnum::REACTIVATE => TRUE,
+        $connector = new QuickbooksCreatedCustomerMapper($dm);
+
+        $response = Json::decode(
+            $connector->process((new ProcessDto())->setData($this->getRequest('QuickbooksCustomerMapper.json'))
+                ->setHeaders([]))
+                ->getData(),
+            TRUE
+        );
+
+        $this->assertEquals([
+            CleverFieldsEnum::EMAIL      => 'jdrew2@myemail.com',
+            CleverFieldsEnum::FIRST_NAME => 'James2',
+            CleverFieldsEnum::LAST_NAME  => 'King2',
             CleverFieldsEnum::SEND_OPTIN => FALSE,
-            CleverFieldsEnum::FIRST_NAME => 'Ichi',
-            CleverFieldsEnum::LAST_NAME  => 'Ni',
-            CleverFieldsEnum::FOREIGN_ID => '58',
-        ]), $res->getData());
+            CleverFieldsEnum::FOREIGN_ID => '2',
+            CleverFieldsEnum::REACTIVATE => TRUE,
+            CleverFieldsEnum::LISTS      => ['someList'],
+        ], $response);
     }
 
 }

@@ -14,6 +14,7 @@ use CleverConnectors\AppBundle\Model\ProgressCounter\ProgressCounterService;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\QuickbooksSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
+use CleverConnectors\AppBundle\Utils\Dto\Times;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Uri;
@@ -89,7 +90,7 @@ class QuickbooksSyncCustomerConnector extends QuickbooksCustomerConnectorAbstrac
         $requestDto->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()));
         $processId = CMHeaders::get(CMHeaders::PROCESS_ID, $dto->getHeaders()) ?? '';
         $url       = new Uri(
-            $requestDto->getUri(TRUE) . 'query?query=' . urlencode($this->getTotalQuery($systemInstall, $dto))
+            $requestDto->getUri(TRUE) . 'query?query=' . urlencode($this->getTotalQuery())
         );
         $counterService = $this->counterService;
         $promise   = $this->fetchData($sender, RequestDto::from($requestDto, $url))->then(
@@ -97,38 +98,36 @@ class QuickbooksSyncCustomerConnector extends QuickbooksCustomerConnectorAbstrac
                 return $this->getTotalPages($response);
             }
         )->then(
-            function (int $total) use ($systemInstall, $dto, $sender, $callbackItem, $requestDto, $processId, $counterService) {
+            function (int $total) use ($sender, $callbackItem, $requestDto, $processId, $counterService) {
                 $counterService->setTotal($processId, $total * self::PAGE_LIMIT);
 
-                return all($this->doPageLoop($systemInstall, $dto, $total, $sender, $callbackItem, $requestDto));
+                return all($this->doPageLoop($total, $sender, $callbackItem, $requestDto));
             }
         );
 
-        $this->afterFetch($systemInstall, $dto);
+        $this->systemInstallRepository->setSyncTime($systemInstall);
 
         return $promise;
     }
 
     /**
-     * @param SystemInstall $systemInstall
-     * @param ProcessDto    $dto
+     * @param Times|null $times
      *
      * @return string
      */
-    protected function getTotalQuery(SystemInstall $systemInstall, ProcessDto $dto): string
+    protected function getTotalQuery(?Times $times = NULL): string
     {
         return 'SELECT COUNT(*) FROM customer WHERE Active = true';
     }
 
     /**
-     * @param SystemInstall $systemInstall
-     * @param ProcessDto    $dto
-     * @param int           $start
-     * @param int           $count
+     * @param int        $start
+     * @param int        $count
+     * @param Times|null $times
      *
      * @return string
      */
-    protected function getDataQuery(SystemInstall $systemInstall, ProcessDto $dto, int $start, int $count): string
+    protected function getDataQuery(int $start, int $count, ?Times $times = NULL): string
     {
         return sprintf('SELECT * FROM customer WHERE Active = true STARTPOSITION %d MAXRESULTS %d', $start, $count);
     }
@@ -144,13 +143,13 @@ class QuickbooksSyncCustomerConnector extends QuickbooksCustomerConnectorAbstrac
     }
 
     /**
-     * @param SystemInstall $systemInstall
-     * @param ProcessDto    $dto
+     * @param Times $times
+     *
+     * @return string
      */
-    protected function afterFetch(SystemInstall $systemInstall, ProcessDto $dto): void
+    protected function getTimeQuery(Times $times): string
     {
-        $this->systemInstallRepository->setSyncTime($systemInstall);
-
+        return '';
     }
 
 }
