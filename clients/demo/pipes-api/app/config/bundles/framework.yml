@@ -6,7 +6,6 @@ framework:
         strict_requirements: ~
     csrf_protection:
         enabled: false
-    default_locale: "%locale%"
     templating:
         engines: ['twig']
     default_locale: '%locale%'

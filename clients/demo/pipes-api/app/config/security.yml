@@ -28,6 +28,7 @@ security:
             pattern: ^/
             security: true
             provider: user_provider
+            logout_on_user_change: true
             form_login:
                 check_path: /api/user/login
                 login_path: /api/user/login
@@ -40,3 +41,4 @@ security:
                 success_handler: hbpf.user.handler.user
         main:
             anonymous: ~
+            logout_on_user_change: true
