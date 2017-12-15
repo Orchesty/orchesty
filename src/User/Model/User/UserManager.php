@@ -17,6 +17,7 @@ use Hanaboso\PipesFramework\User\Model\Messages\RegisterMessage;
 use Hanaboso\PipesFramework\User\Model\Messages\ResetPasswordMessage;
 use Hanaboso\PipesFramework\User\Model\Security\SecurityManager;
 use Hanaboso\PipesFramework\User\Model\Token\TokenManager;
+use Hanaboso\PipesFramework\User\Model\Token\TokenManagerException;
 use Hanaboso\PipesFramework\User\Model\User\Event\UserEvent;
 use Hanaboso\PipesFramework\User\Repository\Document\TmpUserRepository as OdmTmpRepo;
 use Hanaboso\PipesFramework\User\Repository\Document\UserRepository as OdmRepo;
@@ -174,14 +175,23 @@ class UserManager
 
     /**
      * @param string $token
+     *
+     * @throws TokenManagerException
      */
     public function activate(string $token): void
     {
         $token = $this->tokenManager->validate($token);
 
+        if (!$token->getTmpUser()) {
+            throw new TokenManagerException(
+                'Token has already been used.',
+                TokenManagerException::TOKEN_ALREADY_USED
+            );
+        }
+
         /** @var OdmUser|OrmUser $class */
         $class = $this->provider->getResource(ResourceEnum::USER);
-        $user  = $class::from($token->getTmpUser());
+        $user  = $class::from($token->getTmpUser())->setToken($token);
         $this->dm->persist($user);
         $this->eventDispatcher->dispatch(UserEvent::USER_ACTIVATE, new UserEvent($user, NULL, $token->getTmpUser()));
 
