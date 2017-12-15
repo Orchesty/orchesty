@@ -14,8 +14,10 @@ const TopologyListPath = "/topology/list"
 const TopologyRemovePath = "/topology/remove"
 const TopologyStatusPath = "/topology/status"
 
+// TopologiesMap is persisted data structure to keep information about topologies and their nodes
 type TopologiesMap map[string][]BridgeInfo
 
+// BridgeInfo is the struct to keep information about single bridge
 type BridgeInfo struct {
 	Id       string `json:"id"`
 	NodeId   string `json:"node_id"`
@@ -38,6 +40,7 @@ type responseBody struct {
 	Data   string `json:"data"`
 }
 
+// Server is the probe's http server
 type Server struct {
 	Topologies TopologiesMap
 }
@@ -67,6 +70,7 @@ func (probe *Server) handleAddRequest(res http.ResponseWriter, req *http.Request
 	var receivedTopology topologyJson
 
 	data, err := ioutil.ReadAll(req.Body)
+
 	if err != nil {
 		res.WriteHeader(http.StatusBadRequest)
 		res.Write(getErrorResponseBody(err))
@@ -74,6 +78,12 @@ func (probe *Server) handleAddRequest(res http.ResponseWriter, req *http.Request
 	}
 
 	json.Unmarshal(data, &receivedTopology)
+
+	if receivedTopology.ID == "" || len(receivedTopology.Bridges) == 0 {
+		res.WriteHeader(http.StatusBadRequest)
+		res.Write(getErrorResponseBody(fmt.Errorf("please provide valid topology")))
+		return
+	}
 
 	bridges := make([]BridgeInfo, len(receivedTopology.Bridges))
 	for index, element := range receivedTopology.Bridges {

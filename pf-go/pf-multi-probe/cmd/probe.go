@@ -1,7 +1,7 @@
 package main
 
 import (
-	"hanaboso/pf-multi-probe/pkg/probe"
+	"pf-go/pf-multi-probe/pkg/probe"
 )
 
 func main() {
