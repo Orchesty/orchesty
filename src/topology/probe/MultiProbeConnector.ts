@@ -22,7 +22,7 @@ class MultiProbeConnector {
     /**
      * Sends request to add topology to multi probe
      */
-    public addTopology(topology: ITopologyConfig) {
+    public addTopology(topology: ITopologyConfig): void {
         const requestOptions = {
             method: "POST",
             url: `${this.url}/topology/add`,
@@ -39,7 +39,7 @@ class MultiProbeConnector {
     /**
      * Sends request to remove topology from multi probe
      */
-    public removeTopology(topologyId: string) {
+    public removeTopology(topologyId: string): void {
         const requestOptions = {
             method: "GET",
             url: `${this.url}/topology/remove?topologyId=${topologyId}`,
