@@ -67,7 +67,7 @@ class Pipes {
         return Promise.all(proms)
             .then(() => {
                 const multiProbe = this.dic.get("probe.multi");
-                multiProbe.addTopology(this.topology);
+                multiProbe.addTopology(topo);
                 return;
             });
     }
