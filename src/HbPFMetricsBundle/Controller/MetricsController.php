@@ -16,6 +16,7 @@ use Hanaboso\PipesFramework\HbPFMetricsBundle\Handler\MetricsHandler;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Throwable;
 
 /**
  * Class MetricsController
@@ -45,7 +46,11 @@ class MetricsController extends FOSRestController
     public function topologyMetricsAction(Request $request, string $topologyId): Response
     {
         $this->construct();
-        $data = $this->metricsHandler->getTopologyMetrics($topologyId, $request->attributes->all());
+        try {
+            $data = $this->metricsHandler->getTopologyMetrics($topologyId, $request->attributes->all());
+        } catch (Throwable $e) {
+            return $this->getErrorResponse($e, 400);
+        }
 
         return $this->getResponse($data);
     }
@@ -63,7 +68,11 @@ class MetricsController extends FOSRestController
     public function nodeMetricsAction(Request $request, string $topologyId, string $nodeId): Response
     {
         $this->construct();
-        $data = $this->metricsHandler->getNodeMetrics($topologyId, $nodeId, $request->attributes->all());
+        try {
+            $data = $this->metricsHandler->getNodeMetrics($topologyId, $nodeId, $request->attributes->all());
+        } catch (Throwable $e) {
+            return $this->getErrorResponse($e, 400);
+        }
 
         return $this->getResponse($data);
     }
