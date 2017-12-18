@@ -14,9 +14,6 @@ use App\Model\DistributionList;
 use CcApi\ApiEntity\UserSystem;
 use CcApi\Connector\ConnectorManager;
 use Nette\Application\UI\Form;
-use Nette\Forms\Container;
-use Tracy\Debugger;
-use WebChemistry\Forms\Controls\Multiplier;
 
 /**
  * Class SystemDetailPresenter
@@ -52,6 +49,11 @@ class SystemDetailPresenter extends BasePresenter
     private $distributionList;
 
     /**
+     * @var array
+     */
+    private $list = [];
+
+    /**
      * HomepagePresenter constructor.
      *
      * @param ConnectorManager                     $connectorManager
@@ -72,51 +74,40 @@ class SystemDetailPresenter extends BasePresenter
 
     /**
      * @param $systemKey
+     *
+     * @throws \CcApi\Connector\Exception\ConnectorException
+     * @throws \Nette\Application\UI\InvalidLinkException
      */
     public function actionDefault($systemKey): void
     {
         if ($systemKey) {
-            $this->userSystem = $this->connectorManager->getUserSystem($this->userId, $systemKey);
-
-            $this->template->system = $this->userSystem;
+            $this->userSystem                  = $this->connectorManager->getUserSystem($this->userId, $systemKey);
+            $this->list                        = $this->distributionList->getListsForSelect(
+                $this->userSystem->getToken(),
+                $this->userId
+            );
+            $this->template->additionalSetting = $this->createLink($this->userSystem);
+            $this->template->system            = $this->userSystem;
         } else {
             $this->template->system = NULL;
         }
-
     }
 
     /**
-     * @param $systemKey
+     * @param UserSystem $userSystem
      *
-     * @return Form|null
+     * @return string
+     * @throws \Nette\Application\UI\InvalidLinkException
      */
-    private function getForm($systemKey): ?Form
+    private function createLink(UserSystem $userSystem): string
     {
-        $distributionList = $this->distributionList->getListsForSelect($this->userSystem->getToken(), $this->userId);
-        $form             = $this->authorizationSettingGeneratorFactory->create($this->userSystem, $distributionList);
-
-        switch ($systemKey) {
-            case 'airtable':
-
-                /** @var Multiplier $multiplier */
-                $multiplier = $form->addMultiplier('multiplier', function (Container $container, Form $form) {
-
-                    $container
-                        ->addText('table_id', 'Table ID')
-                        ->setRequired('The field key id required, please fill it.');
-                    $container
-                        ->addButton('redirect', 'Detail');
-                });
-
-                $multiplier->addCreateButton('Add table');
-                $multiplier->addRemoveButton('Remove');
-
-                $form->setCurrentGroup();
-
+        switch ($userSystem->getKey()) {
+            case 'wisepops':
+                return $this->link('WisePop:', ['systemKey' => $this->userSystem->getKey()]);
                 break;
+            default:
+                return '';
         }
-
-        return $form;
     }
 
     /**
@@ -136,7 +127,7 @@ class SystemDetailPresenter extends BasePresenter
     }
 
     /**
-     *
+     * @throws \CcApi\Connector\Exception\ConnectorException
      */
     public function handleStartSync()
     {
@@ -151,7 +142,7 @@ class SystemDetailPresenter extends BasePresenter
      */
     public function createComponentAuthorizationSettingGeneratorForm(): Form
     {
-        $form = $this->getForm($this->userSystem->getKey());
+        $form = $form = $this->authorizationSettingGeneratorFactory->create($this->userSystem, $this->list);
 
         $form->onSuccess[] = [$this, 'processAuthorizationSettingGenerator'];
 
@@ -162,6 +153,7 @@ class SystemDetailPresenter extends BasePresenter
      * @param Form $form
      *
      * @throws \Nette\Application\AbortException
+     * @throws \CcApi\Connector\Exception\ConnectorException
      */
     public function processAuthorizationSettingGenerator(Form $form): void
     {
@@ -199,6 +191,7 @@ class SystemDetailPresenter extends BasePresenter
      * @param Form $form
      *
      * @throws \Nette\Application\AbortException
+     * @throws \CcApi\Connector\Exception\ConnectorException
      */
     public function processSwitchToken(Form $form)
     {
