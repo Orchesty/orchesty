@@ -7,6 +7,7 @@ import RequestSender from "../util/RequestSender";
 
 const ROUTE_TOPOLOGY_TERMINATE = "/topology/terminate/:topologyId";
 
+// TODO - modify to multi-counter
 export default class Terminator {
 
     private terminationRequested: boolean;
@@ -30,9 +31,9 @@ export default class Terminator {
     /**
      *
      */
-    public startServer(): Promise<void> {
+    public async startServer(): Promise<void> {
         return this.httpServer.listen(this.port, () => {
-            logger.info(`Topology terminator listening for termination requests on port '${this.port}'`);
+            logger.info(`Topology terminator is listening on port '${this.port}'`);
         });
     }
 
