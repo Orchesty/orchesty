@@ -196,6 +196,19 @@ class WisepopsSystem implements WebhookSystemInterface, AuthorizationInterface
     }
 
     /**
+     * @param SystemInstall $systemInstall
+     * @param array         $data
+     *
+     * @return array
+     */
+    public function saveCustomForm(SystemInstall $systemInstall, array $data = []): array
+    {
+        $this->setSettings($systemInstall, [SystemInstall::FORMS => $data]);
+
+        return $this->toArray($systemInstall);
+    }
+
+    /**
      * @param SystemInstall|null $systemInstall
      *
      * @return array
