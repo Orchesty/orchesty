@@ -6,11 +6,7 @@ import {Connection} from "amqplib-plus/dist/lib/Connection";
 import {Publisher} from "amqplib-plus/dist/lib/Publisher";
 import {SimpleConsumer} from "amqplib-plus/dist/lib/SimpleConsumer";
 import {Replies} from "amqplib/properties";
-import * as bodyParser from "body-parser";
-import * as express from "express";
-import * as rp from "request-promise";
 import {amqpConnectionOptions} from "../../../src/config";
-import Headers from "../../../src/message/Headers";
 import {ResultCode} from "../../../src/message/ResultCode";
 import {default as Counter, ICounterSettings} from "../../../src/topology/counter/Counter";
 import {ICounterProcessInfo} from "../../../src/topology/counter/CounterProcess";
@@ -24,39 +20,6 @@ const metricsMock = {
 };
 
 describe("Counter", () => {
-    it("should start http server and resend termination http request", (done) => {
-        const topoApiMock = express();
-        topoApiMock.use(bodyParser.raw({ type: () => true }));
-        topoApiMock.get("/remote-terminate", () => {
-            done();
-        });
-        topoApiMock.listen(7900);
-
-        const counterSettings: ICounterSettings = {
-            sub: {queue: {name: "test_counter_subdel_q", prefetch: 1, options: {}}},
-            pub: {
-                exchange: {name: "test_counter_pubdel_e", type: "direct", options: {}},
-                queue: {name: "test_counter_pubdel_q", options: {}},
-                routing_key: "pubdel_rk",
-            },
-        };
-        const storage = new InMemoryStorage();
-        const terminator = new Terminator(7901, storage);
-        const counter = new Counter(counterSettings, conn, storage, terminator, metricsMock);
-        counter.start()
-            .then(() => {
-                const headers = new Headers();
-                headers.setPFHeader(Headers.TOPOLOGY_DELETE_URL, "http://localhost:7900/remote-terminate");
-                // Simulate external request to counter http server
-                return rp({
-                    uri: `http://localhost:7901/topology/terminate/someTopoId`,
-                    headers: headers.getRaw(),
-                });
-            })
-            .then((resp: string) => {
-                assert.equal(resp, "Topology will be terminated as soon as possible.");
-            });
-    });
 
     it("should receive messages and count them properly when all succeeded", (done) => {
         const counterSettings: ICounterSettings = {
