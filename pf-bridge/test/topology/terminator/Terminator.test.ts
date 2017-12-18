@@ -7,6 +7,14 @@ import * as rp from "request-promise";
 import Headers from "../../../src/message/Headers";
 import Terminator from "../../../src/topology/terminator/Terminator";
 
+const dumbStorage = {
+    has: () => Promise.resolve(false),
+    hasSome: () => Promise.resolve(false),
+    get: () => Promise.resolve(null),
+    add: () => Promise.resolve(true),
+    remove: () => Promise.resolve(true),
+};
+
 describe("Terminator", () => {
     it("should accept valid termination http request and send another request to given url", async () => {
         const prom = new Promise((resolve) => {
@@ -19,14 +27,7 @@ describe("Terminator", () => {
             topoApiMock.listen(7900);
         });
 
-        const storageMock = {
-            has: () => Promise.resolve(false),
-            hasSome: () => Promise.resolve(false),
-            get: () => Promise.resolve(null),
-            add: () => Promise.resolve(true),
-            remove: () => Promise.resolve(true),
-        };
-        const terminator = new Terminator(7901, storageMock);
+        const terminator = new Terminator(7901, dumbStorage);
         await terminator.startServer();
 
         const headers = new Headers();
@@ -41,4 +42,17 @@ describe("Terminator", () => {
 
         return prom;
     });
+
+    it("should return error response when missing delete url header", async () => {
+        const terminator = new Terminator(7902, dumbStorage);
+        await terminator.startServer();
+
+        try {
+            await rp({uri: `http://localhost:7902/topology/terminate/abc`});
+        } catch (e) {
+            assert.equal(e.statusCode, 400);
+            return Promise.resolve();
+        }
+    });
+
 });
