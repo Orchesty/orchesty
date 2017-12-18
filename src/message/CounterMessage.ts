@@ -92,6 +92,19 @@ class CounterMessage extends AMessage implements IMessage {
         return this.headers.getPFHeader(Headers.TOPOLOGY_ID);
     }
 
+    /**
+     *
+     * @return {string}
+     */
+    public toString(): string {
+        return JSON.stringify({
+            processId: this.getProcessId(),
+            resultCode: this.resultCode,
+            following: this.following,
+            multiplier: this.multiplier,
+        });
+    }
+
 }
 
 export default CounterMessage;
