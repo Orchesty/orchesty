@@ -459,7 +459,10 @@ class SystemManager
         $system = $this->systemLoader->getSystem($systemKey);
 
         if (method_exists($system, $action)) {
-            return $system->$action($systemInstall, $data);
+            $output = $system->$action($systemInstall, $data);
+            $this->dm->flush();
+
+            return $output;
         }
 
         throw new SystemException(
