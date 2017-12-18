@@ -57,12 +57,16 @@ export interface INodeConfig {
 
 export interface ITopologyConfigSkeleton {
     id: string;
+    topology_id: string;
+    topology_name: string;
     nodes: INodeConfigSkeleton[];
     counter?: ICounterSettings;
 }
 
 export interface ITopologyConfig {
     id: string;
+    topology_id: string;
+    topology_name: string;
     nodes: INodeConfig[];
     counter: ICounterSettings;
 }
@@ -90,6 +94,8 @@ class Configurator {
 
         return {
             id: skeleton.id,
+            topology_id: skeleton.topology_id,
+            topology_name: skeleton.topology_name,
             nodes,
             counter: skeleton.counter || Defaults.getCounterDefaultSettings(isMulti, skeleton.id),
         };

@@ -5,6 +5,8 @@ import Configurator, {ITopologyConfig, ITopologyConfigSkeleton} from "../../src/
 
 const testTopo: ITopologyConfigSkeleton = {
     id: "test-topo",
+    topology_id: "test-topo",
+    topology_name: "test-topo",
     nodes: [
         {
             id: "node_a",
@@ -53,6 +55,8 @@ const expectedTopo: ITopologyConfig = {
         },
     },
     id: "test-topo",
+    topology_id: "test-topo",
+    topology_name: "test-topo",
     nodes: [
         {
             debug: {

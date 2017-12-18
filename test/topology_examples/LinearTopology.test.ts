@@ -17,6 +17,8 @@ import Terminator from "../../src/topology/terminator/Terminator";
 
 const testTopology: ITopologyConfigSkeleton = {
     id: "linear-topo",
+    topology_id: "linear-topo",
+    topology_name: "linear-topo",
     nodes: [
         {
             id: "first",
