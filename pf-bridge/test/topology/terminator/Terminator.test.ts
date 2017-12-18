@@ -55,4 +55,28 @@ describe("Terminator", () => {
         }
     });
 
+    it("tryTerminate will do nothing if topology have not been previously requested for termination", async () => {
+        const terminator = new Terminator(7903, dumbStorage);
+        const terminated  = await terminator.tryTerminate("abcd");
+
+        assert.isFalse(terminated);
+    });
+
+    it("tryTerminate will do nothing if topology have not still some processes running", async () => {
+        dumbStorage.hasSome = () => Promise.resolve(true);
+        const terminator = new Terminator(7903, dumbStorage);
+        await terminator.startServer();
+
+        const headers = new Headers();
+        headers.setPFHeader(Headers.TOPOLOGY_DELETE_URL, "http://localhost");
+        const resp = await rp({
+            uri: `http://localhost:7903/topology/terminate/efgh`,
+            headers: headers.getRaw(),
+        });
+        assert.equal(resp, "Topology will be terminated as soon as possible.");
+
+        const terminated  = await terminator.tryTerminate("efgh");
+        assert.isFalse(terminated);
+    });
+
 });

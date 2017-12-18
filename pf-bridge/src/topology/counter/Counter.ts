@@ -74,6 +74,14 @@ export default class Counter implements ICounter {
     }
 
     /**
+     *
+     * @return {ICounterSettings}
+     */
+    public getSettings(): ICounterSettings {
+        return this.settings;
+    }
+
+    /**
      * Listen to the event stream and keep info about job partial results
      * On job end, send process end message.
      */
@@ -99,8 +107,8 @@ export default class Counter implements ICounter {
                 });
         };
 
-        this.consumer = new CounterConsumer(this.connection, prepareFn, (msg: Message) => {
-            this.handleMessage(msg);
+        this.consumer = new CounterConsumer(this.connection, prepareFn, async (msg: Message) => {
+            await this.handleMessage(msg);
         });
     }
 
@@ -129,7 +137,7 @@ export default class Counter implements ICounter {
      * @param {Message} msg
      * @return {boolean}
      */
-    private handleMessage(msg: Message): void {
+    private async handleMessage(msg: Message): Promise<void> {
         try {
             const headers = new Headers(msg.properties.headers);
             const content = JSON.parse(msg.content.toString());
@@ -154,7 +162,7 @@ export default class Counter implements ICounter {
                 parseInt(content.route.multiplier, 10),
             );
 
-            logger.info(`Counter message received with status: "${resultCode}"`, {
+            logger.info(`Counter message received: "${cm.toString()}"`, {
                 topology_id: cm.getTopologyId(),
                 node_id: cm.getNodeId(),
                 correlation_id: cm.getCorrelationId(),
@@ -162,12 +170,12 @@ export default class Counter implements ICounter {
                 parent_id: cm.getParentId(),
             });
 
-            this.updateProcessInfo(cm);
+            await this.updateProcessInfo(cm);
         } catch (e) {
             logger.error("Cannot handle counter message.", {error: e});
-        }
 
-        return;
+            return Promise.reject(e);
+        }
     }
 
     /**
@@ -185,17 +193,20 @@ export default class Counter implements ICounter {
             processInfo = CounterProcess.createProcessInfo(topologyId, cm);
         }
 
+        console.log("before ", processInfo);
+
         processInfo = CounterProcess.updateProcessInfo(processInfo, cm);
+
+        console.log("after ", processInfo);
 
         if (CounterProcess.isProcessFinished(processInfo)) {
             processInfo.end_timestamp = Date.now();
-            this.onJobFinished(processInfo);
-            this.storage.remove(topologyId, processId);
+            await this.onJobFinished(processInfo);
+            await this.storage.remove(topologyId, processId);
+            return Promise.resolve();
         } else {
-            const added = await this.storage.add(topologyId, processInfo);
-            if (!added) {
-                logger.error(`Could not add to counter storage. ${JSON.stringify(processInfo)}`);
-            }
+            await this.storage.add(topologyId, processInfo);
+            return Promise.resolve();
         }
     }
 
@@ -204,7 +215,7 @@ export default class Counter implements ICounter {
      *
      * @param process
      */
-    private onJobFinished(process: ICounterProcessInfo): void {
+    private async onJobFinished(process: ICounterProcessInfo): Promise<void> {
         if (!process) {
             logger.warn(`Counter onJobFinished received invalid process info data: "${process}"`);
             return;
@@ -216,33 +227,36 @@ export default class Counter implements ICounter {
             contentType: "application/json",
         };
 
-        this.publisher.publish(e.name, rKey, new Buffer(JSON.stringify(process)), options)
-            .then(() => {
-                logger.info(
-                    "Counter job evaluated as finished",
-                    {node_id: "counter", correlation_id: process.correlation_id, process_id: process.process_id},
-                );
+        await this.publisher.publish(e.name, rKey, new Buffer(JSON.stringify(process)), options);
 
-                const duration = process.end_timestamp - process.start_timestamp;
+        logger.info(
+            `Counter job evaluated as finished. Success: ${process.success}`,
+            {
+                node_id: "counter",
+                correlation_id: process.correlation_id,
+                process_id: process.process_id,
+                topology_id: process.topology,
+            },
+        );
 
-                this.metrics.send(
-                    {
-                        counter_process_result: process.ok === process.total,
-                        counter_process_duration: duration,
-                        counter_process_ok_count: process.ok,
-                        counter_process_fail_count: process.nok,
-                    })
-                    .catch((err) => {
-                        logger.warn("Unable to send counter metrics.", {
-                            error: err,
-                            node_id: "counter",
-                            correlation_id: process.correlation_id,
-                            process_id: process.process_id,
-                        });
-                    });
+        this.terminator.tryTerminate(process.topology);
 
-                this.terminator.tryTerminate(process.topology);
+        try {
+            await this.metrics.send(
+                {
+                    counter_process_result: process.ok === process.total,
+                    counter_process_duration: process.end_timestamp - process.start_timestamp,
+                    counter_process_ok_count: process.ok,
+                    counter_process_fail_count: process.nok,
+                });
+        } catch (e) {
+            logger.warn("Unable to send counter metrics.", {
+                error: e,
+                node_id: "counter",
+                correlation_id: process.correlation_id,
+                process_id: process.process_id,
             });
+        }
     }
 
 }
