@@ -215,7 +215,8 @@ class NutshellSystem implements AuthorizationInterface, CMEventSystemInterface, 
         $field7 = new Field(
             Field::SELECT,
             SystemInstall::SELECT_LIST,
-            'Distribution list'
+            'Distribution list',
+            $this->prepareValue(SystemInstall::SELECT_LIST, $systemInstall->getSettings())
         );
 
         $form = new Form();

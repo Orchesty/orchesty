@@ -7,6 +7,7 @@ use DateTime;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
+use Nette\Utils\Arrays;
 
 /**
  * Class ZohoUpdatedContactConnector
@@ -51,7 +52,12 @@ class ZohoUpdatedContactConnector extends ZohoCronConnectorAbstract
             && array_key_exists('row', $data['response']['result']['Contacts'])
         ) {
             $successMessage = new SuccessMessage($i);
-            $successMessage->setData(json_encode($data['response']['result']['Contacts']['row']));
+            $data           = $data['response']['result']['Contacts']['row'];
+            if (!Arrays::isList($data)) {
+                $data = [$data];
+            }
+
+            $successMessage->setData(json_encode($data));
             unset($data);
 
             return $successMessage;

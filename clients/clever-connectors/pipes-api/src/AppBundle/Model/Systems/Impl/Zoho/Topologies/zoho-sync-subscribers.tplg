@@ -12,7 +12,7 @@
       <bpmn:incoming>SequenceFlow_0xxnw4q</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0c049g6</bpmn:outgoing>
     </bpmn:task>
-    <bpmn:task id="Task_03q3xpl" pipes:pipesType="custom" name="zoho-updated-contact-mapper">
+    <bpmn:task id="Task_03q3xpl" pipes:pipesType="custom" name="zoho-sync-update-contact-mapper">
       <bpmn:incoming>SequenceFlow_0c049g6</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1ih1xph</bpmn:outgoing>
     </bpmn:task>

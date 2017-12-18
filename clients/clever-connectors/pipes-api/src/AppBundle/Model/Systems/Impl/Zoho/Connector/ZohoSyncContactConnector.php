@@ -17,6 +17,7 @@ use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSenderFactory;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
+use Nette\Utils\Arrays;
 use React\EventLoop\LoopInterface;
 use React\Promise\PromiseInterface;
 
@@ -109,7 +110,12 @@ class ZohoSyncContactConnector extends ZohoContactConnectorAbstract
             && array_key_exists('row', $data['response']['result']['Contacts'])
         ) {
             $successMessage = new SuccessMessage($i);
-            $successMessage->setData(json_encode($data['response']['result']['Contacts']['row']));
+            $data           = $data['response']['result']['Contacts']['row'];
+            if (!Arrays::isList($data)) {
+                $data = [$data];
+            }
+
+            $successMessage->setData(json_encode($data));
             unset($data);
 
             return $successMessage;

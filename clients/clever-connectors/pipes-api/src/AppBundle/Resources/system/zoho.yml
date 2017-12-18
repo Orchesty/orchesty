@@ -49,13 +49,24 @@ services:
             - '@cc.last_sync.manager'
             - '@cc.progress_counter.progress_counter_service'
 
+    hbpf.custom_node.zoho-sync-update-contact-mapper:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Zoho\Mapper\ZohoSyncUpdateContactMapper
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+
     hbpf.custom_node.zoho-create-contact-mapper:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Zoho\Mapper\ZohoCreateContactMapper
         arguments:
 
+    hbpf.custom_node.zoho-created-contact-mapper:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Zoho\Mapper\ZohoCreatedContactMapper
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+
     hbpf.custom_node.zoho-updated-contact-mapper:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Zoho\Mapper\ZohoUpdatedContactMapper
         arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
 
     hbpf.custom_node.zoho-deleted-contact-mapper:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Zoho\Mapper\ZohoDeletedContactMapper
