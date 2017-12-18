@@ -3,6 +3,7 @@
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Wisepops\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Wisepops\WisepopsSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use Doctrine\Common\Persistence\ObjectRepository;
@@ -78,6 +79,7 @@ class WisepopsRefreshFormsConnector implements ConnectorInterface
      *
      * @return ProcessDto
      * @throws ConnectorException
+     * @throws SystemException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {
@@ -91,6 +93,7 @@ class WisepopsRefreshFormsConnector implements ConnectorInterface
      * @param SystemInstall $systemInstall
      *
      * @return array
+     * @throws SystemException
      */
     public function refreshForms(SystemInstall $systemInstall): array
     {
@@ -115,7 +118,7 @@ class WisepopsRefreshFormsConnector implements ConnectorInterface
 
         foreach ($forms as $form) {
             $sForms[] = [
-                WisepopsSystem::FORM_ID   => $form['id'],
+                WisepopsSystem::FORM_ID   => (string) $form['id'],
                 WisepopsSystem::FORM_NAME => $form['label'],
                 WisepopsSystem::FORM_LIST => NULL,
             ];
@@ -135,7 +138,7 @@ class WisepopsRefreshFormsConnector implements ConnectorInterface
     private function removeForm(array &$array, $id): void
     {
         foreach ($array as $index => $item) {
-            if ($id === $item['id']) {
+            if ($id == $item['id']) {
                 unset($array[$index]);
                 break;
             }

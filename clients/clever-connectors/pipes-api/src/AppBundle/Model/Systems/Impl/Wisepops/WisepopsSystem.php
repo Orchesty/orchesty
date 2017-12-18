@@ -189,6 +189,7 @@ class WisepopsSystem implements WebhookSystemInterface, AuthorizationInterface
      * @param array         $data
      *
      * @return array
+     * @throws SystemException
      */
     public function refreshForms(SystemInstall $systemInstall, array $data = []): array
     {
