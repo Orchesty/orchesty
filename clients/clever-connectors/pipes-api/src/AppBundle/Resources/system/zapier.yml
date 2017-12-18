@@ -16,6 +16,12 @@ services:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Zapier\Connector\ZapierDeletedSubscriberConnector
         arguments:
 
-    hbpf.custom_node.zapier-subscriber-mapper:
-        class: CleverConnectors\AppBundle\Model\Systems\Impl\Zapier\Mapper\ZapierSubscriberMapper
+    hbpf.custom_node.zapier-created-subscriber-mapper:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Zapier\Mapper\ZapierCreatedSubscriberMapper
         arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+
+    hbpf.custom_node.zapier-updated-subscriber-mapper:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Zapier\Mapper\ZapierUpdatedSubscriberMapper
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
