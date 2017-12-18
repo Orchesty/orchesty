@@ -8,8 +8,11 @@
 
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\Mapper;
 
+use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\CM\SubscriberConnector\SubscriberObject\CMSubscriber;
+use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
+use Doctrine\Common\Persistence\ObjectRepository;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
 
@@ -20,6 +23,16 @@ use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
  */
 class QuickbooksUpdatedCustomerMapper implements CustomNodeInterface
 {
+
+    /**
+     * @var bool
+     */
+    protected $includeList = FALSE;
+
+    /**
+     * @var SystemInstallRepository|ObjectRepository
+     */
+    protected $systemInstallRepository;
 
     /**
      * @param ProcessDto $dto
@@ -43,7 +56,8 @@ class QuickbooksUpdatedCustomerMapper implements CustomNodeInterface
     {
         if (empty($data)
             || !array_key_exists('PrimaryEmailAddr', $data)
-            || !array_key_exists('Address', $data['PrimaryEmailAddr'])) {
+            || !array_key_exists('Address', $data['PrimaryEmailAddr'])
+        ) {
             return $this->setHeadersToStop($dto);
         }
 
@@ -58,6 +72,15 @@ class QuickbooksUpdatedCustomerMapper implements CustomNodeInterface
 
         if (array_key_exists('FamilyName', $data)) {
             $obj->setLastName($data['FamilyName'] ?? '');
+        }
+
+        if ($this->includeList) {
+            $sys  = $this->systemInstallRepository->getSystemInstallFromHeaders($dto->getHeaders());
+            $sett = $sys->getSettings();
+
+            if (array_key_exists(SystemInstall::SELECT_LIST, $sett)) {
+                $obj->setLists([$sett[SystemInstall::SELECT_LIST]]);
+            }
         }
 
         return $dto->setData(json_encode($obj->toArray()));

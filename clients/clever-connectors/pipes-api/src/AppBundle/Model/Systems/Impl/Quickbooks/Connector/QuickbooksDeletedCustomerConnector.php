@@ -8,10 +8,8 @@
 
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\Connector;
 
-use CleverConnectors\AppBundle\Document\SystemInstall;
-use CleverConnectors\AppBundle\Utils\CronUtils;
+use CleverConnectors\AppBundle\Utils\Dto\Times;
 use DateTime;
-use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 
 /**
  * Class QuickbooksDeletedCustomerConnector
@@ -30,16 +28,12 @@ class QuickbooksDeletedCustomerConnector extends QuickbooksCustomerConnectorAbst
     }
 
     /**
-     * @param SystemInstall $systemInstall
-     * @param ProcessDto    $dto
+     * @param Times $times
      *
      * @return string
      */
-    private function getTimeQuery(SystemInstall $systemInstall, ProcessDto $dto): string
+    protected function getTimeQuery(Times $times): string
     {
-        $lastSync = $this->lastSyncManager->getLastSync($systemInstall, $dto->getHeaders());
-        $times    = CronUtils::getTimes($lastSync);
-
         $since = $times->getStart() ? sprintf(' AND MetaData.LastUpdatedTime >= \'%s\'',
             $times->getStart()->format(DateTime::ATOM)) : '';
         $till  = sprintf(' AND MetaData.LastUpdatedTime < \'% s\'', $times->getEnd()->format(DateTime::ATOM));
@@ -48,50 +42,26 @@ class QuickbooksDeletedCustomerConnector extends QuickbooksCustomerConnectorAbst
     }
 
     /**
-     * @param SystemInstall $systemInstall
-     * @param ProcessDto    $dto
+     * @param Times|null $times
      *
      * @return string
      */
-    protected function getTotalQuery(SystemInstall $systemInstall, ProcessDto $dto): string
+    protected function getTotalQuery(?Times $times = NULL): string
     {
-        return 'SELECT COUNT(*) FROM customer WHERE Active = false' . $this->getTimeQuery($systemInstall, $dto);
+        return 'SELECT COUNT(*) FROM customer WHERE Active = false' . $this->getTimeQuery($times);
     }
 
     /**
-     * @param SystemInstall $systemInstall
-     * @param ProcessDto    $dto
-     * @param int           $start
-     * @param int           $count
+     * @param int        $start
+     * @param int        $count
+     * @param Times|null $times
      *
      * @return string
      */
-    protected function getDataQuery(SystemInstall $systemInstall, ProcessDto $dto, int $start, int $count): string
+    protected function getDataQuery(int $start, int $count, ?Times $times = NULL): string
     {
-        return sprintf('SELECT * FROM customer WHERE Active = false' . $this->getTimeQuery($systemInstall, $dto)
+        return sprintf('SELECT * FROM customer WHERE Active = false' . $this->getTimeQuery($times)
             . ' STARTPOSITION %d MAXRESULTS %d', $start, $count);
-    }
-
-    /**
-     * @param ProcessDto $dto
-     *
-     * @return SystemInstall
-     */
-    protected function getSystemInstall(ProcessDto $dto): SystemInstall
-    {
-        return CronUtils::getSystemInstall($dto);
-    }
-
-    /**
-     * @param SystemInstall $systemInstall
-     * @param ProcessDto    $dto
-     */
-    protected function afterFetch(SystemInstall $systemInstall, ProcessDto $dto): void
-    {
-        $lastSync = $this->lastSyncManager->getLastSync($systemInstall, $dto->getHeaders());
-        $times    = CronUtils::getTimes($lastSync);
-        $lastSync->setTimestamp($times->getEnd());
-        $this->lastSyncManager->updateLastSync($lastSync);
     }
 
 }
