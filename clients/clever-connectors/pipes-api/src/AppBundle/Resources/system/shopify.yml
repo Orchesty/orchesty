@@ -49,9 +49,15 @@ services:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\Connector\ShopifyDeletedCustomerConnector
         arguments:
 
+    hbpf.custom_node.shopify-created-customer-mapper:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\Mapper\ShopifyCreatedCustomerMapper
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+
     hbpf.custom_node.shopify-updated-customer-mapper:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\Mapper\ShopifyUpdatedCustomerMapper
         arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
 
     hbpf.custom_node.shopify-deleted-customer-mapper:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\Mapper\ShopifyDeletedCustomerMapper
