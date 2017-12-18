@@ -10,43 +10,23 @@ namespace App\Presenters;
 
 use App\Form\Systems\WisePopFormFactory;
 use App\Model\DistributionList;
-use CcApi\ApiEntity\UserSystem;
 use CcApi\Connector\ConnectorManager;
 use Nette\Application\UI\Form;
 use Nette\Forms\Controls\SubmitButton;
+use SystemCustomPresenter;
 
 /**
  * Class WisePopPresenter
  *
  * @package App\Presenters
  */
-class WisePopPresenter extends BasePresenter
+class WisePopPresenter extends SystemCustomPresenter
 {
 
     /**
      * @var WisePopFormFactory
      */
     private $wisePopFormFactory;
-
-    /**
-     * @var ConnectorManager
-     */
-    private $connectorManager;
-
-    /**
-     * @var DistributionList
-     */
-    private $distributionList;
-
-    /**
-     * @var UserSystem
-     */
-    private $userSystem;
-
-    /**
-     * @var array
-     */
-    private $list = [];
 
     /**
      * WisePopPresenter constructor.
@@ -58,29 +38,8 @@ class WisePopPresenter extends BasePresenter
     public function __construct(WisePopFormFactory $wisePopFormFactory, ConnectorManager $connectorManager,
                                 DistributionList $distributionList)
     {
-        parent::__construct();
+        parent::__construct($connectorManager, $distributionList);
         $this->wisePopFormFactory = $wisePopFormFactory;
-        $this->connectorManager   = $connectorManager;
-        $this->distributionList   = $distributionList;
-    }
-
-    /**
-     * @param $systemKey
-     *
-     * @throws \CcApi\Connector\Exception\ConnectorException
-     */
-    public function actionDefault($systemKey)
-    {
-        if ($systemKey) {
-            $this->userSystem       = $this->connectorManager->getUserSystem($this->userId, $systemKey);
-            $this->list             = $this->distributionList->getListsForSelect(
-                $this->userSystem->getToken(),
-                $this->userId
-            );
-            $this->template->system = $this->userSystem;
-        } else {
-            $this->template->system = NULL;
-        }
     }
 
     /**
@@ -103,11 +62,13 @@ class WisePopPresenter extends BasePresenter
      */
     public function processRefresh(SubmitButton $submitButton)
     {
-        //$data = $this->connectorManager->customGetAction($this->userId, $this->userSystem->getKey(), 'refreshForms');
+        $data = $this->connectorManager->customGetAction($this->userId, $this->userSystem->getKey(), 'refreshForms');
 
-        $form = $submitButton->getForm();
+        $this->userSystem->setCustomForm($data);
 
-        $form->addText('test', 'Test');
+        $this->removeComponent($this['customForm']);
+        $this['customForm'] = $this->createComponentCustomForm();
+        $this['customForm']->setValues($data, TRUE);
 
         $this->redrawControl('customForm');
     }
@@ -120,6 +81,8 @@ class WisePopPresenter extends BasePresenter
     public function processSave(SubmitButton $submitButton)
     {
         $data = $submitButton->getForm()->getValues(TRUE);
+
+        $this->connectorManager->customPostAction($this->userId, $this->userSystem->getKey(), 'saveCustomForm', $data);
 
         $this->redirect('WisePop:', ['systemKey' => $this->userSystem->getKey()]);
     }
