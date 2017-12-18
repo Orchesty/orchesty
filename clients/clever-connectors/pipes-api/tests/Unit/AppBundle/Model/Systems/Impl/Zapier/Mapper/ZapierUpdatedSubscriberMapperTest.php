@@ -9,16 +9,15 @@
 namespace Tests\Unit\AppBundle\Model\Systems\Impl\Zapier\Mapper;
 
 use CleverConnectors\AppBundle\Enum\CleverFieldsEnum;
-use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Nette\Utils\Json;
 use Tests\ConnectorTestCaseAbstract;
 
 /**
- * Class ZapierSubscriberMapperTest
+ * Class ZapierUpdatedSubscriberMapperTest
  *
  * @package Tests\Unit\AppBundle\Model\Systems\Impl\Zapier\Mapper
  */
-class ZapierSubscriberMapperTest extends ConnectorTestCaseAbstract
+class ZapierUpdatedSubscriberMapperTest extends ConnectorTestCaseAbstract
 {
 
     /**
@@ -26,13 +25,12 @@ class ZapierSubscriberMapperTest extends ConnectorTestCaseAbstract
      */
     public function testProcess(): void
     {
-        $connector = $this->container->get('hbpf.custom_node.zapier-subscriber-mapper');
-
-        $response = Json::decode($connector->process(
-            (new ProcessDto())->setData(
-                $this->getRequest('ZapierWebhookResponse.json')
-            ))->getData(), TRUE
-        );
+        $connector = $this->container->get('hbpf.custom_node.zapier-updated-subscriber-mapper');
+        $response  = Json::decode($connector->process($this->prepareConnectorProcessDto([
+            'user'  => 'User',
+            'token' => 'Token',
+            'list'  => 'd70671e4-7b87-805e-2fc5-a673d2316330',
+        ], Json::decode($this->getRequest('ZapierWebhookResponse.json'), TRUE), [], TRUE))->getData(), TRUE);
 
         $this->assertEquals([
             CleverFieldsEnum::EMAIL      => 'karel@barel.com',
