@@ -46,25 +46,24 @@ class WisePopFormFactory
     {
         $form = new Form();
 
-        $i = 0;
-        foreach ($system->getCustomForm() as $item) {
-
+        for ($i = 0; $i < count($system->getCustomForm()); $i++) {
             $con = $form->addContainer($i);
 
-            $con
-                ->addText('form_id', $item['form_id']);
+            $con->addText('form_id', 'Form')
+                ->setAttribute('readonly');
 
-            $con
-                ->addText('form_name', $item['form_name']);
+            $con->addText('form_name', 'Name')
+                ->setAttribute('readonly');
 
-            $con->addSelect('list', 'Distribution list', $distributionList);
-
-            $i++;
+            $con->addSelect('list', 'Distribution list', $distributionList)
+                ->setPrompt('Choose list');
         }
 
         $form->addSubmit('refresh', 'Refresh')
             ->getControlPrototype()
             ->addClass('ajax');
+
+        $form->setDefaults($system->getCustomForm());
 
         $form->addSubmit('save_custom_data', 'Save');
 
