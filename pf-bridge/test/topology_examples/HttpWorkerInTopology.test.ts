@@ -18,6 +18,8 @@ import Terminator from "../../src/topology/terminator/Terminator";
 
 const testTopology: ITopologyConfigSkeleton = {
     id: "topo-with-http-worker-node",
+    topology_id: "topo-with-http-worker-node",
+    topology_name: "topo-with-http-worker-node",
     nodes: [
         {
             id: "http-worker-node",

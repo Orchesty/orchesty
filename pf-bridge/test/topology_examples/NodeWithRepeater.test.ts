@@ -17,6 +17,8 @@ import Terminator from "../../src/topology/terminator/Terminator";
 
 const testTopology: ITopologyConfigSkeleton = {
     id: "topo-with-repeater",
+    topology_id: "topo-with-repeater",
+    topology_name: "topo-with-repeater",
     nodes: [
         {
             id: "start-node",
