@@ -8,13 +8,25 @@ import (
 )
 
 func main() {
-	db, _ := strconv.Atoi(os.Getenv("REDIS_DB"))
+	host := getenv("REDIS_HOST", "localhost")
+	port := getenv("REDIS_PORT", "6379")
+	pass := getenv("REDIS_PASS", "")
+	db, _ := strconv.Atoi(getenv("REDIS_DB", "0"))
+
 	r := redis.NewClient(&redis.Options{
-		Addr:     os.Getenv("REDIS_HOST") + ":" + os.Getenv("REDIS_PORT"),
-		Password: os.Getenv("REDIS_PASS"),
+		Addr:     host + ":" + port,
+		Password: pass,
 		DB:       db,
 	})
 
 	srv := probe.Server{Redis: r}
 	srv.Start()
+}
+
+func getenv(key, fallback string) string {
+	value := os.Getenv(key)
+	if len(value) == 0 {
+		return fallback
+	}
+	return value
 }

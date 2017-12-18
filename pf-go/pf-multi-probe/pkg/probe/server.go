@@ -76,7 +76,7 @@ func jsonResponse(next http.Handler) http.Handler {
 // handleAddRequest adds given topology configuration to the internal map of maintained topologies
 // returns 200 statusCode and topologyId in response if handled well
 func (probe *Server) handleAddRequest(res http.ResponseWriter, req *http.Request) {
-	var receivedTopology topologyJson
+	var receivedTopology TopologyJson
 	var topologyInfo TopologyInfo
 
 	log.Println("Add topology request received.")
@@ -122,7 +122,7 @@ func (probe *Server) handleAddRequest(res http.ResponseWriter, req *http.Request
 
 	err = probe.Redis.HSet(RedisKey, receivedTopology.TopologyId, topologyString).Err()
 	if err != nil {
-		msg := "Unable to add topology " + receivedTopology.TopologyId
+		msg := "Unable to add topology " + receivedTopology.TopologyId + " Redis err:" + err.Error()
 		log.Println(msg, err)
 		res.WriteHeader(http.StatusBadRequest)
 		res.Write(getErrorResponseBody(fmt.Errorf(msg)))
