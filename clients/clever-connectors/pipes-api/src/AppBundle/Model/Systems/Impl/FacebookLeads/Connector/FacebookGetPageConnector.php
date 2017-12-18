@@ -12,6 +12,7 @@ use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\SystemInterface;
 use GuzzleHttp\Psr7\Uri;
+use Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
@@ -81,13 +82,13 @@ class FacebookGetPageConnector implements ConnectorInterface
     public function getAccounts(SystemInterface $system, SystemInstall $systemInstall): array
     {
         $requestDto = $system->getRequestDto($systemInstall, CurlManager::METHOD_GET);
-        $url        = new Uri($requestDto->getUri(TRUE) . '/me/accounts?limit=1000&fields=access_token%2Cname&access_token=' . urlencode($systemInstall->getSettings()['user_access_token']));
+        $url        = new Uri($requestDto->getUri(TRUE) . '/me/accounts?limit=1000&fields=id%2Cname&access_token=' . urlencode($systemInstall->getSettings()[OAuth2Provider::ACCESS_TOKEN]));
         $response   = $this->curlManager->send(RequestDto::from($requestDto, $url));
         if ($response->getStatusCode() >= 200 && $response->getStatusCode()) {
             $data = json_decode($response->getBody(), TRUE);
             $res  = [];
             foreach ($data['data'] as $page) {
-                $res[$page['access_token']] = $page['name'];
+                $res[$page['id']] = $page['name'];
             }
 
             return $res;

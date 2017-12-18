@@ -8,8 +8,13 @@
 
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\FacebookLeads\Mapper;
 
-use CleverConnectors\AppBundle\Model\CM\SubscriptionConnector\CustomerObject\CMSubscriber;
+use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Model\CM\SubscriberConnector\SubscriberObject\CMSubscriber;
+use CleverConnectors\AppBundle\Model\Systems\Impl\FacebookLeads\FacebookLeadsSystem;
+use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
+use Doctrine\Common\Persistence\ObjectRepository;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
 
@@ -20,6 +25,21 @@ use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
  */
 class FacebookCreatedLeadformMapper implements CustomNodeInterface
 {
+
+    /**
+     * @var SystemInstallRepository|ObjectRepository
+     */
+    private $systemInstallRepository;
+
+    /**
+     * WisepopsCreatedEmailMapper constructor.
+     *
+     * @param DocumentManager $dm
+     */
+    public function __construct(DocumentManager $dm)
+    {
+        $this->systemInstallRepository = $dm->getRepository(SystemInstall::class);
+    }
 
     /**
      * @param ProcessDto $dto
@@ -56,6 +76,19 @@ class FacebookCreatedLeadformMapper implements CustomNodeInterface
                     $subscriber->setFirstName($fullName[0]);
                     $subscriber->setLastName($fullName[1]);
                     break;
+            }
+        }
+
+        $sys  = $this->systemInstallRepository->getSystemInstallFromHeaders($dto->getHeaders());
+        $sett = $sys->getSettings();
+
+        $forms = array_key_exists(SystemInstall::FORMS, $sett) ? $forms = $sett[SystemInstall::FORMS] : [];
+        $id    = $data['form_id'];
+
+        foreach ($forms as $form) {
+            if ($form[FacebookLeadsSystem::FORM_ID] === $id) {
+                $subscriber->setLists([$form[FacebookLeadsSystem::FORM_LIST]]);
+                break;
             }
         }
 

@@ -8,7 +8,12 @@
 
 namespace Tests\Unit\AppBundle\Model\Systems\Impl\FacebookLeads\Mapper;
 
+use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\CleverFieldsEnum;
+use CleverConnectors\AppBundle\Model\Systems\Impl\FacebookLeads\FacebookLeadsSystem;
+use CleverConnectors\AppBundle\Model\Systems\Impl\FacebookLeads\Mapper\FacebookCreatedLeadformMapper;
+use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Tests\ConnectorTestCaseAbstract;
 
@@ -25,7 +30,20 @@ class FacebookCreatedLeadformMapperTest extends ConnectorTestCaseAbstract
      */
     public function testMapper(): void
     {
-        $mapper = $this->container->get('hbpf.custom_node.facebook-created-leadform-mapper');
+        /** @var \PHPUnit_Framework_MockObject_MockObject|$systemInstall $system */
+        $systemInstall = $this->createMock(SystemInstall::class);
+        $systemInstall->method('getSettings')->willReturn([]);
+
+        /** @var \PHPUnit_Framework_MockObject_MockObject| SystemInstallRepository $systemInstallRepository */
+        $systemInstallRepository = $this->createMock(SystemInstallRepository::class);
+        $systemInstallRepository->method('getSystemInstallFromHeaders')->willReturn($systemInstall);
+
+        /** @var \PHPUnit_Framework_MockObject_MockObject|DocumentManager $dm */
+        $dm = $this->createMock(DocumentManager::class);
+        $dm
+            ->method('getRepository')
+            ->willReturn($systemInstallRepository);
+        $mapper = new FacebookCreatedLeadformMapper($dm);
 
         $dto1 = new ProcessDto();
         $dto1->setData($this->getRequest('LeadformCreated1.json'))->setHeaders([]);
@@ -41,7 +59,6 @@ class FacebookCreatedLeadformMapperTest extends ConnectorTestCaseAbstract
             CleverFieldsEnum::LAST_NAME  => 'Example',
             CleverFieldsEnum::FOREIGN_ID => '666',
         ]), $res1->getData());
-
 
         $dto2 = new ProcessDto();
         $dto2->setData($this->getRequest('LeadformCreated2.json'))->setHeaders([]);

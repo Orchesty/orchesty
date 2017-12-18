@@ -16,6 +16,7 @@ use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\Uri;
+use Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSender;
 use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSenderFactory;
@@ -105,7 +106,7 @@ class FacebookSyncLeadformConnectorTest extends ConnectorTestCaseAbstract
         $this->systemInstall = $this->createMock(SystemInstall::class);
         $this->systemInstall->method('getSettings')->willReturn([
             'form_id' => '123456',
-            'page_access_token' => '987654321',
+            OAuth2Provider::ACCESS_TOKEN => '987654321',
         ]);
 
         $this->systemInstallRepository = $this->createMock(SystemInstallRepository::class);

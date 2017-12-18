@@ -33,18 +33,21 @@ use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 class FacebookLeadsSystem implements SystemInterface, OAuth2Interface
 {
 
-    use SystemTrait;
+    use SystemTrait {
+        toArray as parentToArray;
+    }
     use AuthorizationTrait;
 
     private const API_URL       = 'https://graph.facebook.com/v2.11';
-    private const APP_ID        = '364762510625679';
-    private const APP_SECRET    = 'e75e811167e3f129503e510968988006';
+    private const APP_ID        = '1449914605304913';
+    private const APP_SECRET    = '001b9d466b6f13d242d759cd094dccca';
     private const AUTHORIZE_URL = 'https://www.facebook.com/v2.11/dialog/oauth';
     private const TOKEN_URL     = 'https://graph.facebook.com/v2.11/oauth/access_token';
 
-    private const USER_ACCESS_TOKEN = 'user_access_token';
-    private const PAGE_ACCESS_TOKEN = 'page_access_token';
-    private const FORM_ID           = 'form_id';
+    public const   PAGE_ID   = 'page_id';
+    public const   FORM_ID   = 'form_id';
+    public const   FORM_LIST = 'list';
+    public const   FORM_NAME = 'form_name';
 
     /**
      * @var OAuth2Provider
@@ -94,7 +97,7 @@ class FacebookLeadsSystem implements SystemInterface, OAuth2Interface
      */
     public function isAuthorized(SystemInstall $systemInstall): bool
     {
-        return !empty($systemInstall->getSettings()[self::USER_ACCESS_TOKEN]);
+        return !empty($systemInstall->getSettings()[OAuth2Provider::ACCESS_TOKEN]);
     }
 
     /**
@@ -152,7 +155,7 @@ class FacebookLeadsSystem implements SystemInterface, OAuth2Interface
      */
     public function getKey(): string
     {
-        return 'facebook';
+        return 'facebookleads';
     }
 
     /**
@@ -160,7 +163,7 @@ class FacebookLeadsSystem implements SystemInterface, OAuth2Interface
      */
     public function getName(): string
     {
-        return 'Facebook';
+        return 'Facebook Leads';
     }
 
     /**
@@ -205,28 +208,7 @@ class FacebookLeadsSystem implements SystemInterface, OAuth2Interface
      */
     public function getSettingFields(SystemInstall $systemInstall): array
     {
-        $fieldPages = new Field(
-            Field::SELECT,
-            self::PAGE_ACCESS_TOKEN,
-            'Page',
-            $systemInstall->getSettings()[self::PAGE_ACCESS_TOKEN] ?? NULL,
-            TRUE
-        );
-        $fieldPages->setAction($systemInstall, $this->backend, 'getPages');
-
-        $fieldForms = new Field(
-            Field::SELECT,
-            self::FORM_ID,
-            'Leads form',
-            $systemInstall->getSettings()[self::FORM_ID],
-            TRUE
-        );
-        $fieldForms->setAction($systemInstall, $this->backend, 'getForms');
-
         $form = new Form();
-        $form
-            ->addField($fieldPages)
-            ->addField($fieldForms);
 
         return $form->toArray();
     }
@@ -250,7 +232,7 @@ class FacebookLeadsSystem implements SystemInterface, OAuth2Interface
      */
     public function getForms(SystemInstall $systemInstall, array $data): array
     {
-        return $this->facebookGetLeadformConnector->getLeadForms($this, $systemInstall, $data[self::PAGE_ACCESS_TOKEN]);
+        return $this->facebookGetLeadformConnector->getLeadForms($this, $systemInstall, $data[self::PAGE_ID]);
     }
 
     /**
@@ -266,6 +248,34 @@ class FacebookLeadsSystem implements SystemInterface, OAuth2Interface
         $dto->setCustomAppDependencies($systemInstall->getUser(), $systemInstall->getSystem());
 
         return $dto;
+    }
+
+    /**
+     * @param SystemInstall $systemInstall
+     * @param array         $data
+     *
+     * @return array
+     */
+    public function saveCustomForm(SystemInstall $systemInstall, array $data = []): array
+    {
+        $this->setSettings($systemInstall, [SystemInstall::FORMS => $data]);
+
+        return $this->toArray($systemInstall);
+    }
+
+    /**
+     * @param SystemInstall|null $systemInstall
+     *
+     * @return array
+     */
+    public function toArray(?SystemInstall $systemInstall = NULL): array
+    {
+        $arr = $this->parentToArray($systemInstall);
+        if ($systemInstall && array_key_exists(SystemInstall::FORMS, $systemInstall->getSettings())) {
+            $arr[SystemInstall::FORMS] = $systemInstall->getSettings()[SystemInstall::FORMS];
+        }
+
+        return $arr;
     }
 
 }

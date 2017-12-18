@@ -13,6 +13,7 @@ use CleverConnectors\AppBundle\Model\Systems\Impl\FacebookLeads\Connector\Facebo
 use CleverConnectors\AppBundle\Model\Systems\Impl\FacebookLeads\FacebookLeadsSystem;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\Uri;
+use Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
@@ -58,7 +59,7 @@ class FacebookGetPageConnectorTest extends ConnectorTestCaseAbstract
         /** @var PHPUnit_Framework_MockObject_MockObject|SystemInstall $systemInstall */
         $systemInstall = $this->createMock(SystemInstall::class);
         $systemInstall->method('getSettings')->willReturn([
-            'user_access_token' => '987654321',
+            OAuth2Provider::ACCESS_TOKEN => '987654321',
         ]);
 
         $connector = new FacebookGetPageConnector($curlManager);
@@ -66,7 +67,7 @@ class FacebookGetPageConnectorTest extends ConnectorTestCaseAbstract
         $result = $connector->getAccounts($system, $systemInstall);
 
         $this->assertCount(5, $result);
-        $this->assertEquals('Cerv fiction', $result['EAACEdEose0cBACyI28ZBdLVCaENIWwg9CSA5ZCPCnL6UKypCUktkSDsiYa5OxzJMCC4DgdNeYmZBuZAqWkhhWlfYnnZABpTFlJ6cxWXhLowUpIQDpjJvs8AuJzAM55XcZAgZC2ctMnd1HiQLZA0UatzwoeBvlafSpOZBZBzR26ygYZA0K24FhT292yjkTX8QTn3vIgZD']);
+        $this->assertEquals('Cerv fiction', $result['787114551385792']);
     }
 
 }

@@ -105,7 +105,7 @@ class FacebookCreatedLeadformConnectorTest extends ConnectorTestCaseAbstract
         $this->systemInstall = $this->createMock(SystemInstall::class);
         $this->systemInstall->method('getSettings')->willReturn([
             'form_id' => '123456',
-            'page_access_token' => '987654321',
+            'access_token' => '987654321',
         ]);
 
         $this->systemInstallRepository = $this->createMock(SystemInstallRepository::class);

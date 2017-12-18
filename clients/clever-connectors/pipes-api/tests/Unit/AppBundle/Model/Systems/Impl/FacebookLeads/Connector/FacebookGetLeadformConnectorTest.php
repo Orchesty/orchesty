@@ -11,8 +11,10 @@ namespace Tests\Unit\AppBundle\Model\Systems\Impl\FacebookLeads\Connector;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\Systems\Impl\FacebookLeads\Connector\FacebookGetLeadformConnector;
 use CleverConnectors\AppBundle\Model\Systems\Impl\FacebookLeads\FacebookLeadsSystem;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\Uri;
+use Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
@@ -57,13 +59,23 @@ class FacebookGetLeadformConnectorTest extends ConnectorTestCaseAbstract
 
         /** @var PHPUnit_Framework_MockObject_MockObject|SystemInstall $systemInstall */
         $systemInstall = $this->createMock(SystemInstall::class);
+        $systemInstall->method('getSettings')->willReturn([OAuth2Provider::ACCESS_TOKEN => '123456']);
 
-        $connector = new FacebookGetLeadformConnector($curlManager);
+        /** @var PHPUnit_Framework_MockObject_MockObject|DocumentManager $dm */
+        $dm = $this->createMock(DocumentManager::class);
 
-        $result = $connector->getLeadForms($system, $systemInstall, 'page_access_token');
+        $connector = new FacebookGetLeadformConnector($curlManager, $dm);
+
+        $result = $connector->getLeadForms($system, $systemInstall, 'pageId');
+
+        $expected = [
+            'form_name' => 'test form-copy',
+            'form_id'   => '505108016512972',
+            'list'      => NULL,
+        ];
 
         $this->assertCount(2, $result);
-        $this->assertEquals('test form-copy', $result['505108016512972']);
+        $this->assertEquals($expected, $result[0]);
     }
 
 }

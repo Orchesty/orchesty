@@ -18,6 +18,7 @@ use CleverConnectors\AppBundle\Utils\CronUtils;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Uri;
+use Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSenderFactory;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
@@ -116,7 +117,7 @@ class FacebookCreatedLeadformConnector implements BatchInterface, ConnectorInter
             $settings['form_id'],
             urlencode('created_time,id,ad_id,form_id,field_data'),
             urlencode(json_encode($filter)),
-            urlencode($settings['page_access_token'])
+            urlencode($settings[OAuth2Provider::ACCESS_TOKEN])
         ));
 
         $promise = $sender->send(RequestDto::from($requestDto, $url))->then(
