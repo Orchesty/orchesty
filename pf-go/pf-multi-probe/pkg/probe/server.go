@@ -79,6 +79,8 @@ func (probe *Server) handleAddRequest(res http.ResponseWriter, req *http.Request
 	var receivedTopology topologyJson
 	var topologyInfo TopologyInfo
 
+	log.Println("Add topology request received.")
+
 	data, err := ioutil.ReadAll(req.Body)
 
 	if err != nil {
@@ -87,13 +89,21 @@ func (probe *Server) handleAddRequest(res http.ResponseWriter, req *http.Request
 		return
 	}
 
-	json.Unmarshal(data, &receivedTopology)
+	err = json.Unmarshal(data, &receivedTopology)
+	if err != nil {
+		res.WriteHeader(http.StatusBadRequest)
+		res.Write(getErrorResponseBody(err))
+		return
+	}
 
 	if receivedTopology.TopologyId == "" || len(receivedTopology.Bridges) == 0 {
 		res.WriteHeader(http.StatusBadRequest)
 		res.Write(getErrorResponseBody(fmt.Errorf("please provide valid topology")))
+		log.Println("Invalid topology provided.")
 		return
 	}
+
+	log.Println("Trying to add topology: " + receivedTopology.TopologyId)
 
 	bridges := make([]BridgeInfo, len(receivedTopology.Bridges))
 	for index, element := range receivedTopology.Bridges {
