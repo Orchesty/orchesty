@@ -89,7 +89,7 @@ func (probe *Server) handleAddRequest(res http.ResponseWriter, req *http.Request
 
 	json.Unmarshal(data, &receivedTopology)
 
-	if receivedTopology.ID == "" || len(receivedTopology.Bridges) == 0 {
+	if receivedTopology.TopologyId == "" || len(receivedTopology.Bridges) == 0 {
 		res.WriteHeader(http.StatusBadRequest)
 		res.Write(getErrorResponseBody(fmt.Errorf("please provide valid topology")))
 		return
@@ -99,8 +99,8 @@ func (probe *Server) handleAddRequest(res http.ResponseWriter, req *http.Request
 	for index, element := range receivedTopology.Bridges {
 		b := BridgeInfo{
 			Id: element.ID,
-			NodeId: element.NodeId,
-			NodeName: element.NodeName,
+			NodeId: element.Label.NodeId,
+			NodeName: element.Label.NodeName,
 			Url: element.Debug.Url,
 		}
 
@@ -110,19 +110,19 @@ func (probe *Server) handleAddRequest(res http.ResponseWriter, req *http.Request
 	topologyInfo.Bridges = bridges
 	topologyString, _ := json.Marshal(topologyInfo)
 
-	err = probe.Redis.HSet(RedisKey, receivedTopology.ID, topologyString).Err()
+	err = probe.Redis.HSet(RedisKey, receivedTopology.TopologyId, topologyString).Err()
 	if err != nil {
-		msg := "Unable to add topology " + receivedTopology.ID
+		msg := "Unable to add topology " + receivedTopology.TopologyId
 		log.Println(msg, err)
 		res.WriteHeader(http.StatusBadRequest)
 		res.Write(getErrorResponseBody(fmt.Errorf(msg)))
 		return
 	}
 
-	log.Println("Added topology: " + receivedTopology.ID)
+	log.Println("Added topology: " + receivedTopology.TopologyId)
 
 	res.WriteHeader(http.StatusOK)
-	res.Write(getSuccessResponseBody(receivedTopology.ID))
+	res.Write(getSuccessResponseBody(receivedTopology.TopologyId))
 }
 
 // handleRemoveRequest removes key from topologies map if it exists there
