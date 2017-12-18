@@ -2,20 +2,47 @@
 
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Shipstation\Mapper;
 
+use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\CM\SubscriberConnector\SubscriberObject\CMSubscriber;
+use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
+use Doctrine\Common\Persistence\ObjectRepository;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
 use Nette\Utils\Json;
 use Nette\Utils\Strings;
 
 /**
- * Class ShipstationUpdateCustomerMapper
+ * Class ShipstationCustomerMapperAbstract
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Shipstation\Mapper
  */
-class ShipstationUpdateCustomerMapper implements CustomNodeInterface
+class ShipstationCustomerMapperAbstract implements CustomNodeInterface
 {
+
+    protected const CREATE = 'create';
+    protected const UPDATE = 'update';
+
+    /**
+     * @var string
+     */
+    protected $action;
+
+    /**
+     * @var SystemInstallRepository|ObjectRepository
+     */
+    private $systemInstallRepository;
+
+    /**
+     * ShipstationCustomerMapperAbstract constructor.
+     *
+     * @param DocumentManager $dm
+     */
+    public function __construct(DocumentManager $dm)
+    {
+        $this->systemInstallRepository = $dm->getRepository(SystemInstall::class);
+    }
 
     /**
      * @param ProcessDto $dto
@@ -34,8 +61,17 @@ class ShipstationUpdateCustomerMapper implements CustomNodeInterface
             );
         }
 
-        $subscriber = new CMSubscriber();
-        $subscriber->setEmail($data['email']);
+        $subscriber = (new CMSubscriber())
+            ->setEmail($data['email']);
+
+        if ($this->action === self::CREATE) {
+            $systemInstall = $this->systemInstallRepository->getSystemInstallFromHeaders($dto->getHeaders());
+            $lists         = $systemInstall->getSettings()[SystemInstall::SELECT_LIST] ?? NULL;
+
+            if ($lists) {
+                $subscriber->setLists([$lists]);
+            }
+        }
 
         if (array_key_exists('name', $data)) {
             $position = strrpos($data['name'], ' ');
