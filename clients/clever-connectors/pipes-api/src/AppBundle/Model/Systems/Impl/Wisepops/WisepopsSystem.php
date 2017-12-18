@@ -37,11 +37,11 @@ class WisepopsSystem implements WebhookSystemInterface, AuthorizationInterface
 
     public const   FORM_ID     = 'form_id';
     public const   FORM_LIST   = 'list';
-    public const  FORM_NAME = 'form_name';
+    public const   FORM_NAME   = 'form_name';
     public const   WEBHOOK_URL = 'https://app.wisepops.com/api1/hooks';
 
-    private const  API_KEY   = 'api_key';
-    private const  BASE_URL  = 'https://app.wisepops.com/';
+    private const  API_KEY  = 'api_key';
+    private const  BASE_URL = 'https://app.wisepops.com/';
 
     /**
      * @var WisepopsRefreshFormsConnector|null
@@ -59,7 +59,7 @@ class WisepopsSystem implements WebhookSystemInterface, AuthorizationInterface
             'wisepops-created-email-connector',
             TopologyNameUtils::getTopologyName(TopologyNameUtils::CREATED_SUBSCRIBERS, $this->getKey())
         );
-        $this->refreshConn = $refreshConn;
+        $this->refreshConn     = $refreshConn;
     }
 
     /**
@@ -203,7 +203,7 @@ class WisepopsSystem implements WebhookSystemInterface, AuthorizationInterface
     public function toArray(?SystemInstall $systemInstall = NULL): array
     {
         $arr = $this->parentToArray($systemInstall);
-        if (array_key_exists(SystemInstall::FORMS, $systemInstall->getSettings())) {
+        if ($systemInstall && array_key_exists(SystemInstall::FORMS, $systemInstall->getSettings())) {
             $arr[SystemInstall::FORMS] = $systemInstall->getSettings()[SystemInstall::FORMS];
         }
 
