@@ -25,17 +25,35 @@ resource "azurerm_resource_group" "main" {
 }
 
 
-# swarm1 network
-resource "azurerm_virtual_network" "swarm1" {
-  name                = "swarm1"
+# swarm01 network
+resource "azurerm_virtual_network" "main-vnet" {
+  name                = "main-vnet"
   address_space       = [ "${var.stack_ip_prefix}.0.0/16" ]
   location            = "${azurerm_resource_group.main.location}"
   resource_group_name = "${azurerm_resource_group.main.name}"
 }
 
-resource "azurerm_subnet" "swarm1" {
-  name                 = "swarm1"
+resource "azurerm_subnet" "swarm01" {
+  name                 = "swarm01"
   resource_group_name  = "${azurerm_resource_group.main.name}"
-  virtual_network_name = "${azurerm_virtual_network.swarm1.name}"
+  virtual_network_name = "${azurerm_virtual_network.main-vnet.name}"
   address_prefix       = "${var.stack_ip_prefix}.1.0/24"
+}
+
+resource "azurerm_network_security_group" "default" {
+  name                = "default-nsg"
+  location            = "${azurerm_resource_group.main.location}"
+  resource_group_name = "${azurerm_resource_group.main.name}"
+
+  security_rule {
+    name                       = "ssh-allow"
+    priority                   = 100
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "21"
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
+  }
 }
