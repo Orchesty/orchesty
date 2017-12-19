@@ -9,6 +9,7 @@
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\FacebookLeads\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\SystemInterface;
 use GuzzleHttp\Psr7\Uri;
@@ -78,13 +79,14 @@ class FacebookGetPageConnector implements ConnectorInterface
      * @param SystemInstall   $systemInstall
      *
      * @return array
+     * @throws CleverConnectorsException
      */
     public function getAccounts(SystemInterface $system, SystemInstall $systemInstall): array
     {
         $requestDto = $system->getRequestDto($systemInstall, CurlManager::METHOD_GET);
         $url        = new Uri($requestDto->getUri(TRUE) . '/me/accounts?limit=1000&fields=id%2Cname&access_token=' . urlencode($systemInstall->getSettings()[OAuth2Provider::ACCESS_TOKEN]));
         $response   = $this->curlManager->send(RequestDto::from($requestDto, $url));
-        if ($response->getStatusCode() >= 200 && $response->getStatusCode()) {
+        if ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300) {
             $data = json_decode($response->getBody(), TRUE);
             $res  = [];
             foreach ($data['data'] as $page) {
@@ -94,7 +96,9 @@ class FacebookGetPageConnector implements ConnectorInterface
             return $res;
 
         } else {
-            return []; // TODO Vyhodit exception
+            throw new CleverConnectorsException(
+                'Facebook Leads Error: Getting leads pages failed.', CleverConnectorsException::REQUEST_FAILED
+            );
         }
     }
 

@@ -34,6 +34,15 @@ class FacebookGetLeadformConnectorTest extends ConnectorTestCaseAbstract
      */
     public function testGetLeadForms(): void
     {
+        $responsePage = new Response(200, [], $this->getRequest('FacebookPageResponse.json'));
+
+        $responsePageDto = new ResponseDto(
+            $responsePage->getStatusCode(),
+            $responsePage->getReasonPhrase(),
+            $responsePage->getBody()->getContents(),
+            $responsePage->getHeaders()
+        );
+
         $response = new Response(200, [], $this->getRequest('FacebookFormsResponse.json'));
 
         $responseDto = new ResponseDto(
@@ -45,7 +54,8 @@ class FacebookGetLeadformConnectorTest extends ConnectorTestCaseAbstract
 
         /** @var PHPUnit_Framework_MockObject_MockObject|CurlManager $curlManager */
         $curlManager = $this->createMock(CurlManager::class);
-        $curlManager->expects($this->at(0))->method('send')->willReturn($responseDto);
+        $curlManager->expects($this->at(0))->method('send')->willReturn($responsePageDto);
+        $curlManager->expects($this->at(1))->method('send')->willReturn($responseDto);
 
         $requestDto = new RequestDto('GET', new Uri('http://test.neco'));
         $requestDto->setHeaders([

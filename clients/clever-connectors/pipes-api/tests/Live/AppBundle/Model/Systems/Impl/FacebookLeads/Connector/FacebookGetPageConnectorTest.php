@@ -10,6 +10,7 @@ namespace Tests\Live\AppBundle\Model\Systems\Impl\FacebookLeads\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
+use Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider;
 use Hanaboso\PipesFramework\Commons\Crypt\CryptManager;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
@@ -38,7 +39,7 @@ class FacebookGetPageConnectorTest extends DatabaseTestCaseAbstract
         $this->persistAndFlush($topology);
 
         $settings = [
-            'user_access_token' => 'EAAUmsI0AZCFEBAKdw4uSeW8oBszi8wrs2z1pJbL4nsAIj3PGb5E1wS6rv3VZBZBToiTy7IwQ01ZBOAt03stYZBeM0ObZAsw0LZCYTmNqYb50Oc7v9Kx0ZC9U0PFYR1Tl6uG8vq9XfcmjB2vwFpqnaYOhzDgaHV0YeRgjBZB46d13JNI29CoGQQmv5VxqdSDAvvbiMZAHFgy2o8fgZDZD',
+            OAuth2Provider::ACCESS_TOKEN=> 'EAAUmsI0AZCFEBAP06pWBjNw7xgTn93PtqOkR9WRlkjlNi8z78Ptogsnz5XiIxirUdboKN7oAwNk2QjHxfDr10KZCpPL68baLsbQG4MKxyW6YZAj5z0q1VapCX0cCrdhJCiwxpnsxRxYSX9KCvlZAWwvKO2vKnpRQryRY5EQKKg9fgJ84yZBLvFsl74WasfOnj2CtnsmOUWgZDZD',
         ];
 
         $systemInstall = new SystemInstall();

@@ -3,7 +3,6 @@ services:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\FacebookLeads\FacebookLeadsSystem
         arguments:
             - '@hbpf.providers.oauth2_provider'
-            - '%backend_host%'
             - '@hbpf.connector.facebook-get-page-connector'
             - '@hbpf.connector.facebook-get-leadform-connector'
         tags: ['%systems%']

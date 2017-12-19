@@ -10,6 +10,7 @@ namespace Tests\Live\AppBundle\Model\Systems\Impl\FacebookLeads\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
+use Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider;
 use Hanaboso\PipesFramework\Commons\Crypt\CryptManager;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
@@ -38,7 +39,7 @@ class FacebookGetLeadformConnectorTest extends DatabaseTestCaseAbstract
         $this->persistAndFlush($topology);
 
         $settings = [
-            'user_access_token' => 'EAAUmsI0AZCFEBAKdw4uSeW8oBszi8wrs2z1pJbL4nsAIj3PGb5E1wS6rv3VZBZBToiTy7IwQ01ZBOAt03stYZBeM0ObZAsw0LZCYTmNqYb50Oc7v9Kx0ZC9U0PFYR1Tl6uG8vq9XfcmjB2vwFpqnaYOhzDgaHV0YeRgjBZB46d13JNI29CoGQQmv5VxqdSDAvvbiMZAHFgy2o8fgZDZD',
+            OAuth2Provider::ACCESS_TOKEN => 'EAAUmsI0AZCFEBAJx7txMNeZBtkZAlhUNckltZCX54EGlZBMrZAe5pPQqOyE7wjxikAboUDp0QHMKlPS5ZCR5mOTqajZBRervKrsa5T0TcQbKzFu8wZBxkwowCsKE59uGqPbHc4t996XvMjsz5MbXjeygpWbi2gzkZBzYZBIW9w3CBxR1BhtiUwaYf2vFckUHg78fZCJyfpwoJArwwAZDZD',
         ];
 
         $systemInstall = new SystemInstall();
@@ -75,9 +76,9 @@ class FacebookGetLeadformConnectorTest extends DatabaseTestCaseAbstract
         ]);
 
 
-        $pages = $connector->getLeadForms($system, $systemInstall, 'EAAUmsI0AZCFEBANL3u5O4p0lrljnvb3Jz1AH0R1Qu8VJGDUpmhwTWWcZBZC0dH8wkdD4Ynzxp5FFpIYScdBkk78VbptIvkft93SZCbaAoUv3sl4Eej3IBHGL14hT1bGfOefJCyaVLU2WXoUmo0JrCVZCAtaN74EgDSmSo746ocBSuNkZB65etPBtEIkXLNz6JOTbXT7eGciQZDZD');
-        $this->assertTrue(is_array($pages));
-        $this->assertCount(2, $pages);
+        $forms = $connector->getLeadForms($system, $systemInstall, '787114551385792');
+        $this->assertTrue(is_array($forms));
+        $this->assertCount(2, $forms);
 
     }
 

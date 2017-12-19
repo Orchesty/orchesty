@@ -10,7 +10,6 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\FacebookLeads;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\SystemTypeEnum;
-use CleverConnectors\AppBundle\Model\Form\Field;
 use CleverConnectors\AppBundle\Model\Form\Form;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\OAuth2Interface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\Traits\AuthorizationTrait;
@@ -55,11 +54,6 @@ class FacebookLeadsSystem implements SystemInterface, OAuth2Interface
     private $provider;
 
     /**
-     * @var string
-     */
-    private $backend;
-
-    /**
      * @var FacebookGetPageConnector
      */
     private $facebookGetPageConnector;
@@ -73,19 +67,16 @@ class FacebookLeadsSystem implements SystemInterface, OAuth2Interface
      * FacebookSystem constructor.
      *
      * @param OAuth2Provider               $provider
-     * @param string                       $backend
      * @param FacebookGetPageConnector     $facebookGetPageConnector
      * @param FacebookGetLeadformConnector $facebookGetLeadformConnector
      */
     public function __construct(
         OAuth2Provider $provider,
-        string $backend,
         FacebookGetPageConnector $facebookGetPageConnector,
         FacebookGetLeadformConnector $facebookGetLeadformConnector
     )
     {
         $this->provider                     = $provider;
-        $this->backend                      = $backend;
         $this->facebookGetPageConnector     = $facebookGetPageConnector;
         $this->facebookGetLeadformConnector = $facebookGetLeadformConnector;
     }

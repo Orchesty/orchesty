@@ -9,6 +9,7 @@
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\FacebookLeads\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\FacebookLeads\FacebookLeadsSystem;
 use CleverConnectors\AppBundle\Model\Systems\SystemInterface;
@@ -47,7 +48,7 @@ class FacebookGetLeadformConnector implements ConnectorInterface
     {
 
         $this->curlManager = $curlManager;
-        $this->dm = $dm;
+        $this->dm          = $dm;
     }
 
     /**
@@ -87,16 +88,21 @@ class FacebookGetLeadformConnector implements ConnectorInterface
      * @param string          $pageId
      *
      * @return array
+     * @throws CleverConnectorsException
      */
     public function getLeadForms(SystemInterface $system, SystemInstall $systemInstall, string $pageId): array
     {
         $settings = $systemInstall->getSettings();
+
+        $pageAccessToken = $this->getPageAccessToken($system, $systemInstall, $pageId);
+
         $requestDto = $system->getRequestDto($systemInstall, CurlManager::METHOD_GET);
         $url        = new Uri(
-            $requestDto->getUri(TRUE) . '/' . $pageId . '/leadgen_forms?limit=1000&fields=id%2Cname&access_token=' . urlencode($settings[OAuth2Provider::ACCESS_TOKEN])
+            $requestDto->getUri(TRUE) . '/' . $pageId . '/leadgen_forms?limit=1000&fields=id%2Cname&access_token=' . urlencode($pageAccessToken)
         );
-        $response   = $this->curlManager->send(RequestDto::from($requestDto, $url));
-        if ($response->getStatusCode() >= 200 && $response->getStatusCode()) {
+
+        $response = $this->curlManager->send(RequestDto::from($requestDto, $url));
+        if ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300) {
             $data = json_decode($response->getBody(), TRUE);
 
             $sForms = [];
@@ -124,7 +130,38 @@ class FacebookGetLeadformConnector implements ConnectorInterface
             return $sForms;
 
         } else {
-            return []; // TODO Vyhodit exception
+            throw new CleverConnectorsException(
+                'Facebook Leads Error: Getting leads form failed.',
+                CleverConnectorsException::REQUEST_FAILED
+            );
+        }
+    }
+
+    /**
+     * @param SystemInterface $system
+     * @param SystemInstall   $systemInstall
+     * @param string          $pageId
+     *
+     * @return string
+     * @throws CleverConnectorsException
+     */
+    private function getPageAccessToken(SystemInterface $system, SystemInstall $systemInstall, string $pageId): string
+    {
+        $settings   = $systemInstall->getSettings();
+        $requestDto = $system->getRequestDto($systemInstall, CurlManager::METHOD_GET); //
+        $url        = new Uri(
+            $requestDto->getUri(TRUE) . '/' . $pageId . '?fields=access_token&access_token=' . urlencode($settings[OAuth2Provider::ACCESS_TOKEN])
+        );
+        $response   = $this->curlManager->send(RequestDto::from($requestDto, $url));
+        if ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300) {
+            $data = json_decode($response->getBody(), TRUE);
+
+            return $data['access_token'];
+        } else {
+            throw new CleverConnectorsException(
+                'Facebook Leads Error: Getting leads page access token failed.',
+                CleverConnectorsException::REQUEST_FAILED
+            );
         }
     }
 

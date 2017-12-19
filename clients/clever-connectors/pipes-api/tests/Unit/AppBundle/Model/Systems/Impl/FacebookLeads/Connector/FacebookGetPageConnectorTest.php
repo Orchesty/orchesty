@@ -33,7 +33,7 @@ class FacebookGetPageConnectorTest extends ConnectorTestCaseAbstract
      */
     public function testGetAccounts(): void
     {
-        $response = new Response(200, [], $this->getRequest('FacebookPageResponse.json'));
+        $response = new Response(200, [], $this->getRequest('FacebookPagesResponse.json'));
 
         $responseDto = new ResponseDto(
             $response->getStatusCode(),
