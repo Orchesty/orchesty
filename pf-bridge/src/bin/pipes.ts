@@ -2,8 +2,14 @@
 
 import * as fs from "fs";
 import * as yargs from "yargs";
+import logger from "../logger/Logger";
 import Pipes from "../Pipes";
 import {ITopologyConfig} from "../topology/Configurator";
+
+process.on("unhandledRejection", (err) => {
+    logger.error("Unhandled rejection", err);
+    process.exit(1);
+});
 
 const topologyConfig: ITopologyConfig = JSON.parse(fs.readFileSync("topology/topology.json", "utf8"));
 

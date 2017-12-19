@@ -6,7 +6,7 @@ import {Connection} from "amqplib-plus/dist/lib/Connection";
 import {Publisher} from "amqplib-plus/dist/lib/Publisher";
 import {SimpleConsumer} from "amqplib-plus/dist/lib/SimpleConsumer";
 import {Replies} from "amqplib/properties";
-import {amqpConnectionOptions} from "../../../src/config";
+import {amqpConnectionOptions, redisStorageOptions} from "../../../src/config";
 import {ResultCode} from "../../../src/message/ResultCode";
 import {default as Counter, ICounterSettings} from "../../../src/topology/counter/Counter";
 import {ICounterProcessInfo} from "../../../src/topology/counter/CounterProcess";
@@ -402,9 +402,48 @@ describe("Counter", () => {
             options: {},
         };
 
-        const storage = new RedisStorage("localhost", 6379);
+        const storage = new RedisStorage(redisStorageOptions.host, redisStorageOptions.port);
         const terminator = new Terminator(7956, storage);
         const counter = new Counter(counterSettings, conn, storage, terminator, metricsMock);
         runCounterTest(counter, testOutputQueue, done);
+    });
+
+    it("handleMessage method should return rejection on invalid message", async () => {
+        const counterSettings: ICounterSettings = {
+            sub: {queue: {name: "test_counter_redis_sub_q", prefetch: 1, options: {}}},
+            pub: {
+                exchange: {name: "test_counter_redis_pub_e", type: "direct", options: {}},
+                queue: {name: "test_counter_redis_pub_q", options: {}},
+                routing_key: "pub_redis_rk",
+            },
+        };
+        const storage = new InMemoryStorage();
+        const terminator = new Terminator(7957, storage);
+        const counter = new Counter(counterSettings, conn, storage, terminator, metricsMock);
+
+        try {
+            const msg: Message = {content: new Buffer(""), fields: {}, properties: {}};
+            // tslint:disable-next-line
+            await counter["handleMessage"](msg);
+        } catch (e) {
+            assert.equal(e.message, "Unexpected end of JSON input");
+        }
+
+        try {
+            const msg: Message = {content: new Buffer('{"foo": "bar"}'), fields: {}, properties: {}};
+            // tslint:disable-next-line
+            await counter["handleMessage"](msg);
+        } catch (e) {
+            assert.equal(e.message, "Cannot read property \'code\' of undefined");
+        }
+
+        try {
+            const content = {result: {code: 0, message: ""}, route: {following: 1, multiplier: 1}};
+            const msg: Message = {content: new Buffer(JSON.stringify(content)), fields: {}, properties: {}};
+            // tslint:disable-next-line
+            await counter["handleMessage"](msg);
+        } catch (e) {
+            assert.include(e.message, "headers");
+        }
     });
 });
