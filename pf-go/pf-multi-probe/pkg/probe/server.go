@@ -11,17 +11,15 @@ import (
 	"github.com/go-redis/redis"
 )
 
-const Port = 8007
 const TopologyAddPath = "/topology/add"
 const TopologyListPath = "/topology/list"
 const TopologyRemovePath = "/topology/remove"
 const TopologyStatusPath = "/topology/status"
 
-const RedisKey = "multi-probe"
-
 // TopologiesMap is persisted data structure to keep information about topologies and their nodes
 type TopologiesMap map[string][]BridgeInfo
 
+// TopologyInfo struct contains information about running topologies
 type TopologyInfo struct {
 	Bridges []BridgeInfo `json:"bridges"`
 }
@@ -49,20 +47,31 @@ type responseBody struct {
 	Data   string `json:"data"`
 }
 
-// Server is the probe's http server
+// Server is the http server that checks the statuses of bridges in topology
 type Server struct {
-	Redis *redis.Client
+	Storage    Storage
+	CheckerSvc Checker
 }
 
 // Start starts the probe's http server and registers routes
-func (probe *Server) Start() {
+func (probe *Server) Start(port int) {
 
 	http.Handle(TopologyAddPath, jsonResponse(http.HandlerFunc(probe.handleAddRequest)))
 	http.Handle(TopologyListPath, jsonResponse(http.HandlerFunc(probe.handleListRequest)))
 	http.Handle(TopologyRemovePath, jsonResponse(http.HandlerFunc(probe.handleRemoveRequest)))
 	http.Handle(TopologyStatusPath, jsonResponse(http.HandlerFunc(probe.handleStatusRequest)))
 
-	http.ListenAndServe(":"+strconv.Itoa(Port), nil)
+	err := http.ListenAndServe(":"+strconv.Itoa(port), nil)
+	if err != nil {
+		fmt.Println("Error starting server: ", err.Error())
+	} else {
+		fmt.Println("Server listening on port: ", port)
+	}
+}
+
+// Stop stops the probe's http server
+func (probe *Server) Stop() {
+	panic("not implemented yet")
 }
 
 func jsonResponse(next http.Handler) http.Handler {
@@ -108,10 +117,10 @@ func (probe *Server) handleAddRequest(res http.ResponseWriter, req *http.Request
 	bridges := make([]BridgeInfo, len(receivedTopology.Bridges))
 	for index, element := range receivedTopology.Bridges {
 		b := BridgeInfo{
-			Id: element.ID,
-			NodeId: element.Label.NodeId,
+			Id:       element.ID,
+			NodeId:   element.Label.NodeId,
 			NodeName: element.Label.NodeName,
-			Url: element.Debug.Url,
+			Url:      element.Debug.Url,
 		}
 
 		bridges[index] = b
@@ -120,7 +129,7 @@ func (probe *Server) handleAddRequest(res http.ResponseWriter, req *http.Request
 	topologyInfo.Bridges = bridges
 	topologyString, _ := json.Marshal(topologyInfo)
 
-	err = probe.Redis.HSet(RedisKey, receivedTopology.TopologyId, topologyString).Err()
+	err = probe.Storage.Set(receivedTopology.TopologyId, topologyString)
 	if err != nil {
 		msg := "Unable to add topology " + receivedTopology.TopologyId + " Redis err:" + err.Error()
 		log.Println(msg, err)
@@ -146,7 +155,7 @@ func (probe *Server) handleRemoveRequest(res http.ResponseWriter, req *http.Requ
 		return
 	}
 
-	_, err = probe.Redis.HDel(RedisKey, topologyId).Result()
+	err = probe.Storage.Delete(topologyId)
 	if err != nil {
 		res.WriteHeader(http.StatusBadRequest)
 		res.Write(getErrorResponseBody(fmt.Errorf("cannot delete. Error: %s", err)))
@@ -161,7 +170,7 @@ func (probe *Server) handleRemoveRequest(res http.ResponseWriter, req *http.Requ
 
 // handleListRequest returns the json list of all maintained topologies and their bridge's urls
 func (probe *Server) handleListRequest(res http.ResponseWriter, req *http.Request) {
-	topologies, err := probe.Redis.HKeys(RedisKey).Result()
+	topologies, err := probe.Storage.Keys()
 	if err != nil {
 		res.WriteHeader(http.StatusInternalServerError)
 		res.Write(getErrorResponseBody(err))
@@ -187,7 +196,7 @@ func (probe *Server) handleStatusRequest(res http.ResponseWriter, req *http.Requ
 	results := make(chan BridgeInfo, len(bridges))
 
 	for _, bridge := range bridges {
-		go Check(bridge, results)
+		go probe.CheckerSvc.Check(bridge, results)
 	}
 
 	total := 0
@@ -205,15 +214,7 @@ func (probe *Server) handleStatusRequest(res http.ResponseWriter, req *http.Requ
 			failed++
 		}
 
-		bridgesStatuses[r] = BridgeInfo{
-			Id:       topologyId,
-			NodeId:   br.NodeId,
-			NodeName: br.NodeName,
-			Status:   br.Code != http.StatusOK,
-			Url:      br.Url,
-			Code:     br.Code,
-			Message:  br.Message,
-		}
+		bridgesStatuses[r] = br
 	}
 
 	body := probeStatusResponse{
@@ -237,7 +238,7 @@ func (probe *Server) getTopology(topologyId string) (topo TopologyInfo, err erro
 		return topoInfo, fmt.Errorf("missing 'topologyId' param")
 	}
 
-	val, err := probe.Redis.HGet(RedisKey, topologyId).Result()
+	val, err := probe.Storage.Get(topologyId)
 	if err == redis.Nil {
 		return topoInfo, fmt.Errorf("cannot find topology '%s'", topologyId)
 	}
