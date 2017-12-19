@@ -34,10 +34,11 @@ resource "azurerm_virtual_network" "main-vnet" {
 }
 
 resource "azurerm_subnet" "swarm01" {
-  name                 = "swarm01"
-  resource_group_name  = "${azurerm_resource_group.main.name}"
-  virtual_network_name = "${azurerm_virtual_network.main-vnet.name}"
-  address_prefix       = "${var.stack_ip_prefix}.1.0/24"
+  name                      = "swarm01"
+  resource_group_name       = "${azurerm_resource_group.main.name}"
+  virtual_network_name      = "${azurerm_virtual_network.main-vnet.name}"
+  address_prefix            = "${var.stack_ip_prefix}.1.0/24"
+  network_security_group_id = "${azurerm_network_security_group.default.id}"
 }
 
 resource "azurerm_network_security_group" "default" {
@@ -54,6 +55,28 @@ resource "azurerm_network_security_group" "default" {
     source_port_range          = "*"
     destination_port_range     = "21"
     source_address_prefix      = "*"
+    destination_address_prefix = "*"
+  }
+  security_rule {
+    name                       = "docker-hbo-allow"
+    priority                   = 101
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "2376"
+    source_address_prefix      = "188.122.212.69/32"
+    destination_address_prefix = "*"
+  }
+  security_rule {
+    name                       = "cc-stage1-http-hbo-allow"
+    priority                   = 102
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "6540"
+    source_address_prefix      = "188.122.212.69/32"
     destination_address_prefix = "*"
   }
 }
