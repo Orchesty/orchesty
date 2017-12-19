@@ -85,13 +85,11 @@ export default class Counter implements ICounter {
      * Listen to the event stream and keep info about job partial results
      * On job end, send process end message.
      */
-    public start(): Promise<void> {
-        return this.consumer.consume(this.settings.sub.queue.name, this.settings.sub.queue.options)
-            .then(() => {
-                logger.info(`Counter started consuming messages from "${this.settings.sub.queue.name}" queue`);
+    public async start(): Promise<void> {
+        await this.consumer.consume(this.settings.sub.queue.name, this.settings.sub.queue.options);
+        await this.terminator.startServer();
 
-                this.terminator.startServer();
-            });
+        logger.info(`Counter started consuming messages from "${this.settings.sub.queue.name}" queue`);
     }
 
     /**
@@ -193,11 +191,7 @@ export default class Counter implements ICounter {
             processInfo = CounterProcess.createProcessInfo(topologyId, cm);
         }
 
-        console.log("before ", processInfo);
-
         processInfo = CounterProcess.updateProcessInfo(processInfo, cm);
-
-        console.log("after ", processInfo);
 
         if (CounterProcess.isProcessFinished(processInfo)) {
             processInfo.end_timestamp = Date.now();
