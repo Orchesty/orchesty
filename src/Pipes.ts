@@ -12,7 +12,6 @@ import Repeater from "./repeater/Repeater";
 import {default as Configurator, INodeConfig, ITopologyConfig, ITopologyConfigSkeleton} from "./topology/Configurator";
 import Counter from "./topology/counter/Counter";
 import Probe from "./topology/probe/Probe";
-import Defaults from "./Defaults";
 
 class Pipes {
 
