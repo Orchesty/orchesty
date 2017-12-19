@@ -29,7 +29,10 @@ use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 class AirtableSystem implements AuthorizationInterface, CMEventSystemInterface
 {
 
-    use SystemTrait;
+    use SystemTrait {
+        toArray as parentToArray;
+    }
+
     use AuthorizationTrait;
     use CMEventSystemTrait;
 
@@ -240,6 +243,34 @@ class AirtableSystem implements AuthorizationInterface, CMEventSystemInterface
     public function getCMEventRequester(SystemInstall $systemInstall): ?RequesterInterface
     {
         return NULL;
+    }
+
+    /**
+     * @param SystemInstall $systemInstall
+     * @param array         $data
+     *
+     * @return array
+     */
+    public function saveCustomForm(SystemInstall $systemInstall, array $data = []): array
+    {
+        $this->setSettings($systemInstall, [SystemInstall::FORMS => $data]);
+
+        return $this->toArray($systemInstall);
+    }
+
+    /**
+     * @param SystemInstall|null $systemInstall
+     *
+     * @return array
+     */
+    public function toArray(?SystemInstall $systemInstall = NULL): array
+    {
+        $arr = $this->parentToArray($systemInstall);
+        if ($systemInstall && array_key_exists(SystemInstall::FORMS, $systemInstall->getSettings())) {
+            $arr[SystemInstall::FORMS] = $systemInstall->getSettings()[SystemInstall::FORMS];
+        }
+
+        return $arr;
     }
 
 }
