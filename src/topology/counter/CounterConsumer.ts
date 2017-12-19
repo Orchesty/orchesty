@@ -16,8 +16,8 @@ class CounterConsumer extends Consumer {
     }
 
     public async processMessage(msg: Message, channel: Channel): Promise<void> {
-        channel.ack(msg);
         await this.processData(msg);
+        channel.ack(msg);
     }
 
 }

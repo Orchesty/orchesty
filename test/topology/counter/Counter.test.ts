@@ -21,152 +21,152 @@ const metricsMock = {
 
 function runCounterTest(counter: Counter, testOutputQueue: any, done: any) {
     const events: Array<[{}, {}]> = [
-        // // Test Job 123 - linear success
-        // //
-        // //  SUCCESS - SUCCESS - SUCCESS
-        // //
-        // [
-        //     {
-        //         result: {
-        //             code: ResultCode.SUCCESS,
-        //         },
-        //         route: {
-        //             following: 1,
-        //             multiplier: 1,
-        //             message: "test",
-        //         },
-        //     },
-        //     {
-        //         headers: {
-        //             "pf-topology-id": "topoid",
-        //             "pf-correlation-id": "corrid1",
-        //             "pf-process-id": "test_job_123",
-        //             "pf-parent-id": "",
-        //             "pf-sequence-id": "1",
-        //             "pf-node-id": "test_node_1",
-        //             "pf-node-name": "test_node_name_1",
-        //         },
-        //     },
-        // ],
-        // [
-        //     {
-        //         result: {
-        //             code: ResultCode.SUCCESS,
-        //         },
-        //         route: {
-        //             following: 1,
-        //             multiplier: 1,
-        //             message: "test",
-        //         },
-        //     },
-        //     {
-        //         headers: {
-        //             "pf-topology-id": "topoid",
-        //             "pf-correlation-id": "corrid2",
-        //             "pf-process-id": "test_job_123",
-        //             "pf-parent-id": "",
-        //             "pf-sequence-id": "1",
-        //             "pf-node-id": "test_node_2",
-        //             "pf-node-name": "test_node_name_2",
-        //         },
-        //     },
-        // ],
-        // [
-        //     {
-        //         result: {
-        //             code: ResultCode.SUCCESS,
-        //         },
-        //         route: {
-        //             following: 0,
-        //             multiplier: 1,
-        //             message: "test",
-        //         },
-        //     },
-        //     {
-        //         headers: {
-        //             "pf-topology-id": "topoid",
-        //             "pf-correlation-id": "corrid3",
-        //             "pf-process-id": "test_job_123",
-        //             "pf-parent-id": "",
-        //             "pf-sequence-id": "1",
-        //             "pf-node-id": "test_node_3",
-        //             "pf-node-name": "test_node_name_3",
-        //         },
-        //     },
-        // ],
-        // // Test Job 456 - linear with error
-        // //
-        // //  SUCCESS - FAILED - SUCCESS
-        // //
-        // [
-        //     {
-        //         result: {
-        //             code: ResultCode.SUCCESS,
-        //         },
-        //         route: {
-        //             following: 1,
-        //             multiplier: 1,
-        //             message: "test",
-        //         },
-        //     },
-        //     {
-        //         headers: {
-        //             "pf-topology-id": "topoid",
-        //             "pf-correlation-id": "corrid1",
-        //             "pf-process-id": "test_job_456",
-        //             "pf-parent-id": "",
-        //             "pf-sequence-id": "1",
-        //             "pf-node-id": "test_node_1",
-        //             "pf-node-name": "test_node_name_1",
-        //         },
-        //     },
-        // ],
-        // [
-        //     {
-        //         result: {
-        //             code: ResultCode.UNKNOWN_ERROR,
-        //         },
-        //         route: {
-        //             following: 1,
-        //             multiplier: 1,
-        //             message: "test",
-        //         },
-        //     },
-        //     {
-        //         headers: {
-        //             "pf-topology-id": "topoid",
-        //             "pf-correlation-id": "corrid2",
-        //             "pf-process-id": "test_job_456",
-        //             "pf-parent-id": "",
-        //             "pf-sequence-id": "1",
-        //             "pf-node-id": "test_node_2",
-        //             "pf-node-name": "test_node_name_2",
-        //         },
-        //     },
-        // ],
-        // [
-        //     {
-        //         result: {
-        //             code: ResultCode.SUCCESS,
-        //         },
-        //         route: {
-        //             following: 0,
-        //             multiplier: 1,
-        //             message: "test",
-        //         },
-        //     },
-        //     {
-        //         headers: {
-        //             "pf-topology-id": "topoid",
-        //             "pf-correlation-id": "corrid3",
-        //             "pf-process-id": "test_job_456",
-        //             "pf-parent-id": "",
-        //             "pf-sequence-id": "1",
-        //             "pf-node-id": "test_node_3",
-        //             "pf-node-name": "test_node_name_3",
-        //         },
-        //     },
-        // ],
+        // Test Job 123 - linear success
+        //
+        //  SUCCESS - SUCCESS - SUCCESS
+        //
+        [
+            {
+                result: {
+                    code: ResultCode.SUCCESS,
+                },
+                route: {
+                    following: 1,
+                    multiplier: 1,
+                    message: "test",
+                },
+            },
+            {
+                headers: {
+                    "pf-topology-id": "topoid",
+                    "pf-correlation-id": "corrid1",
+                    "pf-process-id": "test_job_123",
+                    "pf-parent-id": "",
+                    "pf-sequence-id": "1",
+                    "pf-node-id": "test_node_1",
+                    "pf-node-name": "test_node_name_1",
+                },
+            },
+        ],
+        [
+            {
+                result: {
+                    code: ResultCode.SUCCESS,
+                },
+                route: {
+                    following: 1,
+                    multiplier: 1,
+                    message: "test",
+                },
+            },
+            {
+                headers: {
+                    "pf-topology-id": "topoid",
+                    "pf-correlation-id": "corrid2",
+                    "pf-process-id": "test_job_123",
+                    "pf-parent-id": "",
+                    "pf-sequence-id": "1",
+                    "pf-node-id": "test_node_2",
+                    "pf-node-name": "test_node_name_2",
+                },
+            },
+        ],
+        [
+            {
+                result: {
+                    code: ResultCode.SUCCESS,
+                },
+                route: {
+                    following: 0,
+                    multiplier: 1,
+                    message: "test",
+                },
+            },
+            {
+                headers: {
+                    "pf-topology-id": "topoid",
+                    "pf-correlation-id": "corrid3",
+                    "pf-process-id": "test_job_123",
+                    "pf-parent-id": "",
+                    "pf-sequence-id": "1",
+                    "pf-node-id": "test_node_3",
+                    "pf-node-name": "test_node_name_3",
+                },
+            },
+        ],
+        // Test Job 456 - linear with error
+        //
+        //  SUCCESS - FAILED - SUCCESS
+        //
+        [
+            {
+                result: {
+                    code: ResultCode.SUCCESS,
+                },
+                route: {
+                    following: 1,
+                    multiplier: 1,
+                    message: "test",
+                },
+            },
+            {
+                headers: {
+                    "pf-topology-id": "topoid",
+                    "pf-correlation-id": "corrid1",
+                    "pf-process-id": "test_job_456",
+                    "pf-parent-id": "",
+                    "pf-sequence-id": "1",
+                    "pf-node-id": "test_node_1",
+                    "pf-node-name": "test_node_name_1",
+                },
+            },
+        ],
+        [
+            {
+                result: {
+                    code: ResultCode.UNKNOWN_ERROR,
+                },
+                route: {
+                    following: 1,
+                    multiplier: 1,
+                    message: "test",
+                },
+            },
+            {
+                headers: {
+                    "pf-topology-id": "topoid",
+                    "pf-correlation-id": "corrid2",
+                    "pf-process-id": "test_job_456",
+                    "pf-parent-id": "",
+                    "pf-sequence-id": "1",
+                    "pf-node-id": "test_node_2",
+                    "pf-node-name": "test_node_name_2",
+                },
+            },
+        ],
+        [
+            {
+                result: {
+                    code: ResultCode.SUCCESS,
+                },
+                route: {
+                    following: 0,
+                    multiplier: 1,
+                    message: "test",
+                },
+            },
+            {
+                headers: {
+                    "pf-topology-id": "topoid",
+                    "pf-correlation-id": "corrid3",
+                    "pf-process-id": "test_job_456",
+                    "pf-parent-id": "",
+                    "pf-sequence-id": "1",
+                    "pf-node-id": "test_node_3",
+                    "pf-node-name": "test_node_name_3",
+                },
+            },
+        ],
         // Test Job 789 - split success
         //
         //           SUCCESS
@@ -306,7 +306,7 @@ function runCounterTest(counter: Counter, testOutputQueue: any, done: any) {
         }
 
         resultsReceived++;
-        if (resultsReceived === 1) {
+        if (resultsReceived === 3) {
             done();
         }
     };
@@ -368,7 +368,7 @@ function runCounterTest(counter: Counter, testOutputQueue: any, done: any) {
 
 describe("Counter", () => {
 
-    it.skip("using inMemory storage should evaluate processes properly", (done) => {
+    it("using inMemory storage should evaluate processes properly", (done) => {
         const counterSettings: ICounterSettings = {
             sub: {queue: {name: "test_counter_memory_sub_q", prefetch: 1, options: {}}},
             pub: {
