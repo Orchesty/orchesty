@@ -109,7 +109,7 @@ class TestController extends FOSRestController
             ]);
 
             $generatorFactory = new GeneratorFactory($this->rootDir, $network, $this->volumePathDefinitionFactory,
-                $prefix);
+                $prefix, 'swarm');
             $generator        = $generatorFactory->create();
             $generator->generate($topology, $nodes);
         } else {
@@ -179,7 +179,8 @@ class TestController extends FOSRestController
 
             file_put_contents($this->rootDir . '/' . self::FILE_NAME, $topology->getId());
 
-            $generatorFactory = new GeneratorFactory($this->rootDir, $network, $this->volumePathDefinitionFactory, $prefix);
+            $generatorFactory = new GeneratorFactory($this->rootDir, $network, $this->volumePathDefinitionFactory,
+                $prefix, 'swarm');
             $generator        = $generatorFactory->create();
 
             $generator->generate($topology, $nodes);

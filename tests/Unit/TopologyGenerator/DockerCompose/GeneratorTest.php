@@ -99,7 +99,9 @@ class GeneratorTest extends TestCase
             new HostMapper(),
             __DIR__ . '/output',
             'demo_default',
-            new VolumePathDefinitionFactory()
+            new VolumePathDefinitionFactory(),
+            'cc',
+            'swarm'
         );
 
         $generator->setMultiMode(FALSE);
@@ -159,7 +161,9 @@ class GeneratorTest extends TestCase
             new HostMapper(),
             __DIR__ . '/output-multi',
             'demo_default',
-            new VolumePathDefinitionFactory()
+            new VolumePathDefinitionFactory(),
+            'cc',
+            'swarm'
         );
 
         $generator->setMultiMode(TRUE);

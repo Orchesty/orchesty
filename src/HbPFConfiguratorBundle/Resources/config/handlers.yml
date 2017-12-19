@@ -28,11 +28,11 @@ services:
             - '%generator_path%'
             - '%docker_network%'
             - '@hbpf.topology_generator.topology_actions_factory'
+            - '%deployment_prefix%'
+            - '%topology_mode%'
 
     hbpf.handler.category:
         class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\CategoryHandler
         arguments:
             - '@hbpf.database_manager_locator'
             - '@hbpf.configurator.manager.category'
-            - '%deployment_prefix%'
-            - '%topology_mode%'

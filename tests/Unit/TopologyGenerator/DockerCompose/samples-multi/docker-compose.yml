@@ -1,4 +1,4 @@
-version: '2'
+version: '3.3'
 services:
   1_mb:
     image: 'dkr.hanaboso.net/pipes/pipes/pf-bridge:dev'
@@ -12,8 +12,6 @@ services:
       RABBITMQ_VHOST: /
       MULTI_PROBE_HOST: multi-probe
       MULTI_PROBE_PORT: '8007'
-    volumes:
-      - './topology.json:/srv/app/topology/topology.json'
     networks:
       - demo_default
     command: './dist/src/bin/pipes.js start multi_bridge'

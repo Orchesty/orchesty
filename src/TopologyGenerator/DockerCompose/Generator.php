@@ -15,7 +15,6 @@ use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\Impl\MultiNodeServiceBuilder;
 use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\Impl\NodeServiceBuilder;
-use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\Impl\ProbeServiceBuilder;
 use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\Impl\ServiceTrait;
 use Hanaboso\PipesFramework\TopologyGenerator\Environment;
 use Hanaboso\PipesFramework\TopologyGenerator\GeneratorInterface;
@@ -246,7 +245,9 @@ class Generator implements GeneratorInterface
                 $this->environment,
                 self::REGISTRY,
                 $this->network,
-                $volumePD
+                $volumePD,
+                $this->topologyMode,
+                $this->topologyPrefix
             );
 
             $multi = $builder->build(new Node());
