@@ -35,7 +35,7 @@ class Compose
     protected $networks = [];
 
     /**
-     * @var
+     * @var array
      */
     protected $configs = [];
 
