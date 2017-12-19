@@ -12,7 +12,7 @@
       <bpmn:incoming>SequenceFlow_1kx58o1</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0ywwv5d</bpmn:outgoing>
     </bpmn:task>
-    <bpmn:task id="Task_0cvfokj" pipes:pipesType="custom" name="quickbooks-updated-customer-mapper">
+    <bpmn:task id="Task_0cvfokj" pipes:pipesType="custom" name="quickbooks-created-customer-mapper">
       <bpmn:incoming>SequenceFlow_0ywwv5d</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1isqe2j</bpmn:outgoing>
     </bpmn:task>
