@@ -28,9 +28,9 @@ final class BigcommerceSubscribeRequester implements RequesterInterface
      * @var array
      */
     private $topics = [
-        'bigcommerce-create-customer-connector' => 'store/customer/created',
-        'bigcommerce-update-customer-connector' => 'store/customer/updated',
-        'bigcommerce-delete-customer-connector' => 'store/customer/deleted',
+        'bigcommerce-created-customer-connector' => 'store/customer/created',
+        'bigcommerce-updated-customer-connector' => 'store/customer/updated',
+        'bigcommerce-deleted-customer-connector' => 'store/customer/deleted',
     ];
 
     /**

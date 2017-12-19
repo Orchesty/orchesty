@@ -55,8 +55,8 @@ final class BigcommerceSystemTest extends KernelTestCaseAbstract
     public function testGetSubscribeRequest(): void
     {
         $webhook = new WebhookSubscribes(
-            'bigcommerce-create-customer-connector',
-            'bigcommerce-create-customer'
+            'bigcommerce-created-customer-connector',
+            'bigcommerce-created-customer'
         );
         $dto     = $this->system->getSubscribeRequester($this->systemInstall)
             ->getRequestDto([
@@ -74,8 +74,8 @@ final class BigcommerceSystemTest extends KernelTestCaseAbstract
         ], Json::decode($dto->getBody(), TRUE));
 
         $webhook = new WebhookSubscribes(
-            'bigcommerce-update-customer-connector',
-            'bigcommerce-update-customer'
+            'bigcommerce-updated-customer-connector',
+            'bigcommerce-updated-customer'
         );
 
         $dto = $this->system->getSubscribeRequester($this->systemInstall)
@@ -94,8 +94,8 @@ final class BigcommerceSystemTest extends KernelTestCaseAbstract
         ], Json::decode($dto->getBody(), TRUE));
 
         $webhook = new WebhookSubscribes(
-            'bigcommerce-delete-customer-connector',
-            'bigcommerce-delete-customer'
+            'bigcommerce-deleted-customer-connector',
+            'bigcommerce-deleted-customer'
         );
 
         $dto = $this->system->getSubscribeRequester($this->systemInstall)
