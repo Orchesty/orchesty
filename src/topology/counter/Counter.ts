@@ -96,34 +96,36 @@ export default class Counter implements ICounter {
      * Creates subscription channel
      */
     private prepareConsumer() {
-        const prepareFn: any = (ch: Channel) => {
+        const prepareFn: any = async (ch: Channel) => {
             const s = this.settings;
 
-            return ch.assertQueue(s.sub.queue.name, s.sub.queue.options)
-                .then(() => {
-                    return ch.prefetch(s.sub.queue.prefetch);
-                });
+            await ch.assertQueue(s.sub.queue.name, s.sub.queue.options);
+            await ch.prefetch(s.sub.queue.prefetch);
         };
 
-        this.consumer = new CounterConsumer(this.connection, prepareFn, async (msg: Message) => {
-            await this.handleMessage(msg);
-        });
+        this.consumer = new CounterConsumer(
+            this.connection,
+            prepareFn,
+            async (msg: Message) => {
+                return await this.handleMessage(msg);
+            },
+        );
     }
 
     /**
      * Creates publish channel
      */
     private preparePublisher() {
-        const prepareFn: any = (ch: Channel) => {
+        const prepareFn: any = async (ch: Channel) => {
             const pubExSett = this.settings.pub.exchange;
             const pubQSett = this.settings.pub.queue;
 
-            return Promise.all([
+            await Promise.all([
                 ch.assertExchange(pubExSett.name, pubExSett.type, pubExSett.options),
                 ch.assertQueue(pubQSett.name, pubQSett.options),
-            ]).then(() => {
-                return ch.bindQueue(pubQSett.name, pubExSett.name, this.settings.pub.routing_key);
-            });
+            ]);
+
+            await ch.bindQueue(pubQSett.name, pubExSett.name, this.settings.pub.routing_key);
         };
 
         this.publisher = new Publisher(this.connection, prepareFn);
@@ -139,22 +141,14 @@ export default class Counter implements ICounter {
         try {
             const headers = new Headers(msg.properties.headers);
             const content = JSON.parse(msg.content.toString());
-
-            const resultCode = content.result.code;
             const processId = CounterProcess.getMostTopProcessId(headers.getPFHeader(Headers.PROCESS_ID));
             headers.setPFHeader(Headers.PROCESS_ID, processId);
-
-            const node: INodeLabel = {
-                id: headers.getPFHeader(Headers.NODE_ID),
-                node_id: headers.getPFHeader(Headers.NODE_ID),
-                node_name: headers.getPFHeader(Headers.NODE_NAME),
-                topology_id: headers.getPFHeader(Headers.TOPOLOGY_ID),
-            };
+            const node: INodeLabel = headers.createNodeLabel();
 
             const cm = new CounterMessage(
                 node,
                 headers.getRaw(),
-                resultCode,
+                content.result.code,
                 content.result.message,
                 parseInt(content.route.following, 10),
                 parseInt(content.route.multiplier, 10),
