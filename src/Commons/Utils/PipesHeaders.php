@@ -19,22 +19,23 @@ class PipesHeaders
     public const PF_PREFIX = 'pf-';
 
     // Framework headers
-    public const CORRELATION_ID  = 'correlation-id';
-    public const PROCESS_ID      = 'process-id';
-    public const PARENT_ID       = 'parent-id';
-    public const SEQUENCE_ID     = 'sequence-id';
-    public const NODE_ID         = 'node-id';
-    public const NODE_NAME       = 'node-name';
-    public const TOPOLOGY_ID     = 'topology-id';
-    public const TOPOLOGY_NAME   = 'topology-name';
-    public const RESULT_CODE     = 'result-code';
-    public const RESULT_STATUS   = 'result-status';
-    public const RESULT_MESSAGE  = 'result-message';
-    public const RESULT_DETAIL   = 'result-detail';
-    public const REPEAT_QUEUE    = "repeat-queue";
-    public const REPEAT_INTERVAL = "repeat-interval";
-    public const REPEAT_MAX_HOPS = "repeat-max-hops";
-    public const REPEAT_HOPS     = "repeat-hops";
+    public const CORRELATION_ID      = 'correlation-id';
+    public const PROCESS_ID          = 'process-id';
+    public const PARENT_ID           = 'parent-id';
+    public const SEQUENCE_ID         = 'sequence-id';
+    public const NODE_ID             = 'node-id';
+    public const NODE_NAME           = 'node-name';
+    public const TOPOLOGY_ID         = 'topology-id';
+    public const TOPOLOGY_NAME       = 'topology-name';
+    public const TOPOLOGY_DELETE_URL = 'topology-delete-url';
+    public const RESULT_CODE         = 'result-code';
+    public const RESULT_STATUS       = 'result-status';
+    public const RESULT_MESSAGE      = 'result-message';
+    public const RESULT_DETAIL       = 'result-detail';
+    public const REPEAT_QUEUE        = "repeat-queue";
+    public const REPEAT_INTERVAL     = "repeat-interval";
+    public const REPEAT_MAX_HOPS     = "repeat-max-hops";
+    public const REPEAT_HOPS         = "repeat-hops";
 
     private const WHITE_LIST = ['content-type'];
 
