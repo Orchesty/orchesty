@@ -16,7 +16,7 @@ function invalidateTrees(){
 function receive(data){
   return {
     type: types.CATEGORY_RECEIVE,
-    data
+    data: data.parent === '' ? Object.assign(data, {parent: null}) : data
   }
 }
 
@@ -30,7 +30,7 @@ function remove(id) {
 function receiveItems(items){
   return {
     type: types.CATEGORY_RECEIVE_ITEMS,
-    items
+    items: items.map(item => item.parent === '' ? Object.assign(item, {parent: null}) : item)
   }
 }
 
