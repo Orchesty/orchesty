@@ -11,6 +11,7 @@ namespace Tests\Unit\AppBundle\Model\Systems\Impl\FacebookLeads\Connector;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\Systems\Impl\FacebookLeads\Connector\FacebookGetPageConnector;
 use CleverConnectors\AppBundle\Model\Systems\Impl\FacebookLeads\FacebookLeadsSystem;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider;
@@ -62,9 +63,12 @@ class FacebookGetPageConnectorTest extends ConnectorTestCaseAbstract
             OAuth2Provider::ACCESS_TOKEN => '987654321',
         ]);
 
-        $connector = new FacebookGetPageConnector($curlManager);
+        /** @var PHPUnit_Framework_MockObject_MockObject|DocumentManager $dm */
+        $dm = $this->createMock(DocumentManager::class);
 
-        $result = $connector->getAccounts($system, $systemInstall);
+        $connector = new FacebookGetPageConnector($system, $dm, $curlManager);
+
+        $result = $connector->getAccounts($systemInstall);
 
         $this->assertCount(5, $result);
         $this->assertEquals('Cerv fiction', $result['787114551385792']);

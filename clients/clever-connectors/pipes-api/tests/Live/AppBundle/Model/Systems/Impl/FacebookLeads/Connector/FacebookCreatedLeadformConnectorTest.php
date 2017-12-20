@@ -41,7 +41,7 @@ class FacebookCreatedLeadformConnectorTest extends DatabaseTestCaseAbstract
         $this->persistAndFlush($topology);
 
         $settings = [
-            OAuth2Provider::ACCESS_TOKEN => 'EAAUmsI0AZCFEBAJx7txMNeZBtkZAlhUNckltZCX54EGlZBMrZAe5pPQqOyE7wjxikAboUDp0QHMKlPS5ZCR5mOTqajZBRervKrsa5T0TcQbKzFu8wZBxkwowCsKE59uGqPbHc4t996XvMjsz5MbXjeygpWbi2gzkZBzYZBIW9w3CBxR1BhtiUwaYf2vFckUHg78fZCJyfpwoJArwwAZDZD',
+            OAuth2Provider::ACCESS_TOKEN => 'EAAUmsI0AZCFEBAEiZBMvJaJFSb1sKJPAOt0LL48tkw5rk052UfNG26kCxae0JROuuwnpHD4s3lR59h3YKNqs1tfz6WwyNPARYPAkwb2BUKqIlqxSCS0GJXPNIxGT9bOsZCB23XCJ1v9moe1xLobXqvX4vqoKkHQSyrqoxYZAGscTYuf1HM3ZCT6Jnpxm6sY1Dc7ClrQRR9gZDZD',
             'form_id'           => '505108016512972',
         ];
 

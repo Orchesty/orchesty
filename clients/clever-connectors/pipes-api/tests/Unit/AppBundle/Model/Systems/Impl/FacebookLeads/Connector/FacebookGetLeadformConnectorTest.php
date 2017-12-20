@@ -69,14 +69,17 @@ class FacebookGetLeadformConnectorTest extends ConnectorTestCaseAbstract
 
         /** @var PHPUnit_Framework_MockObject_MockObject|SystemInstall $systemInstall */
         $systemInstall = $this->createMock(SystemInstall::class);
-        $systemInstall->method('getSettings')->willReturn([OAuth2Provider::ACCESS_TOKEN => '123456']);
+        $systemInstall->method('getSettings')->willReturn([
+            OAuth2Provider::ACCESS_TOKEN => '123456',
+            FacebookLeadsSystem::PAGE_ID => 'page_id',
+        ]);
 
         /** @var PHPUnit_Framework_MockObject_MockObject|DocumentManager $dm */
         $dm = $this->createMock(DocumentManager::class);
 
-        $connector = new FacebookGetLeadformConnector($curlManager, $dm);
+        $connector = new FacebookGetLeadformConnector($system, $dm, $curlManager);
 
-        $result = $connector->getLeadForms($system, $systemInstall, 'pageId');
+        $result = $connector->getLeadForms($systemInstall, [FacebookLeadsSystem::PAGE_ID => 'page_id']);
 
         $expected = [
             'form_name' => 'test form-copy',

@@ -9,7 +9,6 @@
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\FacebookLeads\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
-use CleverConnectors\AppBundle\Model\LastSync\LastSyncManager;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\FacebookLeads\FacebookLeadsSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
@@ -56,13 +55,11 @@ class FacebookSyncLeadformConnector implements BatchInterface, ConnectorInterfac
      * FacebookSyncLeadformConnector constructor.
      *
      * @param FacebookLeadsSystem $system
-     * @param LastSyncManager     $lastSyncManager
      * @param CurlSenderFactory   $factory
      * @param DocumentManager     $dm
      */
     public function __construct(
         FacebookLeadsSystem $system,
-        LastSyncManager $lastSyncManager,
         CurlSenderFactory $factory,
         DocumentManager $dm
     )

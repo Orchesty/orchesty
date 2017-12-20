@@ -33,13 +33,12 @@ class FacebookGetPageConnectorTest extends DatabaseTestCaseAbstract
     {
         $this->markTestSkipped();
         $connector = $this->container->get('hbpf.connector.facebook-get-page-connector');
-        $system = $this->container->get('systems.facebookleads');
 
         $topology = (new Topology())->setName('Topology');
         $this->persistAndFlush($topology);
 
         $settings = [
-            OAuth2Provider::ACCESS_TOKEN=> 'EAAUmsI0AZCFEBAP06pWBjNw7xgTn93PtqOkR9WRlkjlNi8z78Ptogsnz5XiIxirUdboKN7oAwNk2QjHxfDr10KZCpPL68baLsbQG4MKxyW6YZAj5z0q1VapCX0cCrdhJCiwxpnsxRxYSX9KCvlZAWwvKO2vKnpRQryRY5EQKKg9fgJ84yZBLvFsl74WasfOnj2CtnsmOUWgZDZD',
+            OAuth2Provider::ACCESS_TOKEN=> 'EAAUmsI0AZCFEBAEiZBMvJaJFSb1sKJPAOt0LL48tkw5rk052UfNG26kCxae0JROuuwnpHD4s3lR59h3YKNqs1tfz6WwyNPARYPAkwb2BUKqIlqxSCS0GJXPNIxGT9bOsZCB23XCJ1v9moe1xLobXqvX4vqoKkHQSyrqoxYZAGscTYuf1HM3ZCT6Jnpxm6sY1Dc7ClrQRR9gZDZD',
         ];
 
         $systemInstall = new SystemInstall();
@@ -76,7 +75,7 @@ class FacebookGetPageConnectorTest extends DatabaseTestCaseAbstract
         ]);
 
 
-        $pages = $connector->getAccounts($system, $systemInstall);
+        $pages = $connector->getAccounts($systemInstall);
         $this->assertTrue(is_array($pages));
         $this->assertCount(5, $pages);
 

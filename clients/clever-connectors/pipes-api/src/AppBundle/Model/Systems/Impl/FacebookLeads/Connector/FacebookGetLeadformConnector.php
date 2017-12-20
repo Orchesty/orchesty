@@ -12,13 +12,16 @@ use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\FacebookLeads\FacebookLeadsSystem;
-use CleverConnectors\AppBundle\Model\Systems\SystemInterface;
+use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
+use CleverConnectors\AppBundle\Utils\CMHeaders;
+use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 
 /**
@@ -33,22 +36,34 @@ class FacebookGetLeadformConnector implements ConnectorInterface
      * @var CurlManager
      */
     private $curlManager;
+
     /**
      * @var DocumentManager
      */
     private $dm;
 
     /**
+     * @var FacebookLeadsSystem
+     */
+    private $system;
+
+    /** @var SystemInstallRepository|ObjectRepository */
+    private $systemInstallRepository;
+
+    /**
      * FacebookGetLeadformConnector constructor.
      *
-     * @param CurlManager     $curlManager
-     * @param DocumentManager $dm
+     * @param FacebookLeadsSystem $system
+     * @param DocumentManager     $dm
+     * @param CurlManager         $curlManager
      */
-    public function __construct(CurlManager $curlManager, DocumentManager $dm)
+    public function __construct(FacebookLeadsSystem $system, DocumentManager $dm, CurlManager $curlManager)
     {
 
-        $this->curlManager = $curlManager;
-        $this->dm          = $dm;
+        $this->curlManager             = $curlManager;
+        $this->dm                      = $dm;
+        $this->system                  = $system;
+        $this->systemInstallRepository = $dm->getRepository(SystemInstall::class);
     }
 
     /**
@@ -57,7 +72,6 @@ class FacebookGetLeadformConnector implements ConnectorInterface
     public function getId(): string
     {
         return 'facebook-get-leadform-connector';
-
     }
 
     /**
@@ -74,34 +88,45 @@ class FacebookGetLeadformConnector implements ConnectorInterface
     /**
      * @param ProcessDto $dto
      *
-     * @return ProcessDto|void
+     * @return ProcessDto
      * @throws SystemException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {
-        throw new SystemException('Facebook Leads  has not implemented "processAction" function.');
+        $systemInstall = $this->systemInstallRepository->getSystemInstallFromHeaders($dto->getHeaders());
+        $response      = $this->makeRequest($systemInstall, $dto);
+
+        return $dto->setData($response->getBody());
     }
 
     /**
-     * @param SystemInterface $system
-     * @param SystemInstall   $systemInstall
-     * @param string          $pageId
+     * @param SystemInstall $systemInstall
+     * @param array         $data
      *
      * @return array
      * @throws CleverConnectorsException
+     * @internal param string $pageId
+     *
      */
-    public function getLeadForms(SystemInterface $system, SystemInstall $systemInstall, string $pageId): array
+    public function getLeadForms(SystemInstall $systemInstall, array $data): array
     {
-        $settings = $systemInstall->getSettings();
+        if (!array_key_exists(FacebookLeadsSystem::PAGE_ID, $data) ||
+            empty($data[FacebookLeadsSystem::PAGE_ID])) {
 
-        $pageAccessToken = $this->getPageAccessToken($system, $systemInstall, $pageId);
+            throw new CleverConnectorsException(
+                'Missing key "page_id" in data',
+                CleverConnectorsException::MISSING_DATA
+            );
+        }
 
-        $requestDto = $system->getRequestDto($systemInstall, CurlManager::METHOD_GET);
-        $url        = new Uri(
-            $requestDto->getUri(TRUE) . '/' . $pageId . '/leadgen_forms?limit=1000&fields=id%2Cname&access_token=' . urlencode($pageAccessToken)
-        );
+        $this->system->setSettings($systemInstall, [
+            FacebookLeadsSystem::PAGE_ID => $data[FacebookLeadsSystem::PAGE_ID],
+        ]);
+        $this->dm->flush();
 
-        $response = $this->curlManager->send(RequestDto::from($requestDto, $url));
+        $settings   = $systemInstall->getSettings();
+
+        $response = $this->makeRequest($systemInstall);
         if ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300) {
             $data = json_decode($response->getBody(), TRUE);
 
@@ -138,17 +163,18 @@ class FacebookGetLeadformConnector implements ConnectorInterface
     }
 
     /**
-     * @param SystemInterface $system
-     * @param SystemInstall   $systemInstall
-     * @param string          $pageId
+     * @param SystemInstall $systemInstall
+     * @param string        $pageId
      *
      * @return string
      * @throws CleverConnectorsException
+     * @internal param array $data
+     *
      */
-    private function getPageAccessToken(SystemInterface $system, SystemInstall $systemInstall, string $pageId): string
+    private function getPageAccessToken(SystemInstall $systemInstall, string $pageId): string
     {
         $settings   = $systemInstall->getSettings();
-        $requestDto = $system->getRequestDto($systemInstall, CurlManager::METHOD_GET); //
+        $requestDto = $this->system->getRequestDto($systemInstall, CurlManager::METHOD_GET); //
         $url        = new Uri(
             $requestDto->getUri(TRUE) . '/' . $pageId . '?fields=access_token&access_token=' . urlencode($settings[OAuth2Provider::ACCESS_TOKEN])
         );
@@ -172,11 +198,34 @@ class FacebookGetLeadformConnector implements ConnectorInterface
     private function removeForm(array &$array, $id): void
     {
         foreach ($array as $index => $item) {
-            if ($id === $item['id']) {
+            if ($id == $item['id']) {
                 unset($array[$index]);
                 break;
             }
         }
+    }
+
+    /**
+     * @param SystemInstall   $systemInstall
+     * @param ProcessDto|null $dto
+     *
+     * @return ResponseDto
+     */
+    private function makeRequest(SystemInstall $systemInstall, ?ProcessDto $dto = NULL): ResponseDto
+    {
+        $settings = $systemInstall->getSettings();
+        $pageId = $settings[FacebookLeadsSystem::PAGE_ID];
+        $pageAccessToken = $this->getPageAccessToken($systemInstall, $pageId);
+
+        $requestDto = $this->system->getRequestDto($systemInstall, CurlManager::METHOD_GET);
+        $url        = new Uri(
+            $requestDto->getUri(TRUE) . '/' . $pageId . '/leadgen_forms?limit=1000&fields=id%2Cname&access_token=' . urlencode($pageAccessToken)
+        );
+        if ($dto) {
+            $requestDto->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()));
+        }
+
+        return $this->curlManager->send(RequestDto::from($requestDto, $url));
     }
 
 }

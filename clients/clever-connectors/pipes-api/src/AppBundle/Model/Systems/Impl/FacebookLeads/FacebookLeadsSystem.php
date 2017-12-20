@@ -23,6 +23,7 @@ use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Authorization\Provider\Dto\OAuth2Dto;
 use Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Class FacebookLeadsSystem
@@ -54,31 +55,25 @@ class FacebookLeadsSystem implements SystemInterface, OAuth2Interface
     private $provider;
 
     /**
-     * @var FacebookGetPageConnector
+     * @var ContainerInterface
      */
-    private $facebookGetPageConnector;
-
-    /**
-     * @var FacebookGetLeadformConnector
-     */
-    private $facebookGetLeadformConnector;
+    private $container;
 
     /**
      * FacebookSystem constructor.
      *
-     * @param OAuth2Provider               $provider
-     * @param FacebookGetPageConnector     $facebookGetPageConnector
-     * @param FacebookGetLeadformConnector $facebookGetLeadformConnector
+     * @param OAuth2Provider     $provider
+     * @param ContainerInterface $container
+     *
      */
     public function __construct(
         OAuth2Provider $provider,
-        FacebookGetPageConnector $facebookGetPageConnector,
-        FacebookGetLeadformConnector $facebookGetLeadformConnector
+        ContainerInterface $container
+
     )
     {
-        $this->provider                     = $provider;
-        $this->facebookGetPageConnector     = $facebookGetPageConnector;
-        $this->facebookGetLeadformConnector = $facebookGetLeadformConnector;
+        $this->provider = $provider;
+        $this->container = $container;
     }
 
     /**
@@ -212,7 +207,10 @@ class FacebookLeadsSystem implements SystemInterface, OAuth2Interface
      */
     public function getPages(SystemInstall $systemInstall, array $data): array
     {
-        return $this->facebookGetPageConnector->getAccounts($this, $systemInstall);
+        /** @var FacebookGetPageConnector $connector */
+        $connector = $this->container->get('hbpf.connector.facebook-get-page-connector');
+
+        return $connector->getAccounts($systemInstall);
     }
 
     /**
@@ -223,7 +221,10 @@ class FacebookLeadsSystem implements SystemInterface, OAuth2Interface
      */
     public function getForms(SystemInstall $systemInstall, array $data): array
     {
-        return $this->facebookGetLeadformConnector->getLeadForms($this, $systemInstall, $data[self::PAGE_ID]);
+        /** @var FacebookGetLeadformConnector $connector */
+        $connector = $this->container->get('hbpf.connector.facebook-get-leadform-connector');
+
+        return $connector->getLeadForms($systemInstall, $data);
     }
 
     /**

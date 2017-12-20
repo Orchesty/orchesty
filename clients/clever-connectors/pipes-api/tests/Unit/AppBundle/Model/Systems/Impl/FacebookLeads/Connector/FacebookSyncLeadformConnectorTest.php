@@ -77,7 +77,7 @@ class FacebookSyncLeadformConnectorTest extends ConnectorTestCaseAbstract
 
         $this->sender->expects($this->at(0))->method('send')->willReturn($promiseData);
 
-        $connector = new FacebookSyncLeadformConnector($this->system, $this->lastSyncManager, $this->factory, $this->mockDm);
+        $connector = new FacebookSyncLeadformConnector($this->system, $this->factory, $this->mockDm);
 
         $processDto = new ProcessDto();
         $processDto
