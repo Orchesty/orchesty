@@ -12,6 +12,7 @@ use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
+use Hanaboso\PipesFramework\Commons\Utils\PipesHeaders;
 
 /**
  * Class ReqeustHandler
@@ -35,6 +36,11 @@ class RequestHandler
      * @var string
      */
     public const DELETE_TOPOLOGY_URL = 'http://topology-api:80/api/topology/delete/{id}';
+
+    /**
+     * @var string
+     */
+    public const TERMINATE_TOPOLOGY_URL = 'http://multi-counter-api:8005/topology/terminate/{id}';
 
     /**
      * @var string
@@ -93,9 +99,14 @@ class RequestHandler
      */
     public function deleteTopology(string $topologyId): ResponseDto
     {
-        $uri = $this->getUrl($topologyId, self::DELETE_TOPOLOGY_URL);
+        $uri        = $this->getUrl($topologyId, self::DELETE_TOPOLOGY_URL);
+        $counterUri = $this->getUrl($topologyId, self::TERMINATE_TOPOLOGY_URL);
 
-        $dto      = new RequestDto('GET', new Uri($uri));
+        $dto = new RequestDto('GET', new Uri($counterUri));
+        $dto->setHeaders([
+            PipesHeaders::createKey(PipesHeaders::TOPOLOGY_DELETE_URL) => $uri,
+        ]);
+
         $response = $this->curlManager->send($dto);
 
         return $response;

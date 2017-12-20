@@ -101,6 +101,12 @@ services:
         REDIS_PORT: '6379'
         REDIS_PASS: ''
         REDIS_DB: '0'
+      ports:
+        - ${DEV_IP}:8005:8005
+      networks:
+        default:
+          aliases:
+            - multi-counter-api
       depends_on:
         - rabbitmq
         - redis
