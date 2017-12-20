@@ -3,3 +3,5 @@ services:
         class: Hanaboso\PipesFramework\HbPFCustomNodeBundle\Controller\CustomNodeController
         arguments:
             - '@hbpf.handler.custom_node'
+        calls:
+            - ['setLogger', ['@monolog.logger.commons']]
