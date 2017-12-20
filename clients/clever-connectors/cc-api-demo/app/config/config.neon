@@ -70,6 +70,8 @@ services:
 	# CUSTOM FORMS
 	wise_pop_factory:
 		class: App\Form\Systems\WisePopFormFactory
+	air_table_factory:
+		class: App\Form\Systems\AirTableFormFactory
 
 	# STREAM
 	publish_form_factory:

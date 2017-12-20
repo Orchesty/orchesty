@@ -105,6 +105,9 @@ class SystemDetailPresenter extends BasePresenter
             case 'wisepops':
                 return $this->link('WisePop:', ['systemKey' => $this->userSystem->getKey()]);
                 break;
+            case 'airtable':
+                return $this->link('AirTable:', ['systemKey' => $this->userSystem->getKey()]);
+                break;
             default:
                 return '';
         }
