@@ -230,9 +230,11 @@ class AirTableFormFactory
     private function prepareMappingInContainer(Container &$container, array $dataLayout): void
     {
         $this->generateMappingContainer($container, [
-            'first_name' => $dataLayout,
-            'last_name'  => $dataLayout,
-            'email'      => $dataLayout,
+            'email'       => $dataLayout,
+            'first_name'  => $dataLayout,
+            'last_name'   => $dataLayout,
+            'unsubscribe' => $dataLayout,
+            'hard_bounce' => $dataLayout,
         ]);
     }
 
@@ -245,9 +247,11 @@ class AirTableFormFactory
         $mappings = [];
         foreach ($dataLayout as $item) {
             $mappings[str_replace('-', '_', Strings::webalize($item))] = [
-                'first_name' => 'First Name',
-                'last_name'  => 'Last Name',
-                'email'      => 'Email',
+                'email'       => 'Email',
+                'first_name'  => 'First Name',
+                'last_name'   => 'Last Name',
+                'unsubscribe' => 'UnSubscribe',
+                'hard_bounce' => 'Hard Bounce',
             ];
         }
 

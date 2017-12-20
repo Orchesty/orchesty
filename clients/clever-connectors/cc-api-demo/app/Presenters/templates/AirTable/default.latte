@@ -64,39 +64,20 @@
             </div>
             <h4>Mapping In</h4>
             <div n:multiplier='template_in'>
-                <div class='row'>
-                    <div class='col-md-2 col-form-label text-md-right'>
-                        {label first_name}
+                {foreach $_multiplier->controls as $input}
+                    <div class='row' n:if='$iterator->isOdd()'>
+                        <div class='col-md-2 col-form-label text-md-right'>
+                            {label $input}
+                        </div>
+                        <div class='col-md-4'>
+                            {input $input 'class' => 'form-control'}
+                        </div>
+                        <div class='col-md-4'>
+                            {php $name = $input->getName() . '_type'}
+                            {input $name 'class' => 'form-control'}
+                        </div>
                     </div>
-                    <div class='col-md-4'>
-                        {input first_name 'class' => 'form-control'}
-                    </div>
-                    <div class='col-md-4'>
-                        {input first_name_type 'class' => 'form-control'}
-                    </div>
-                </div>
-                <div class='row'>
-                    <div class='col-md-2 col-form-label text-md-right'>
-                        {label last_name}
-                    </div>
-                    <div class='col-md-4'>
-                        {input last_name 'class' => 'form-control'}
-                    </div>
-                    <div class='col-md-4'>
-                        {input last_name_type 'class' => 'form-control'}
-                    </div>
-                </div>
-                <div class='row'>
-                    <div class='col-md-2 col-form-label text-md-right'>
-                        {label email}
-                    </div>
-                    <div class='col-md-4'>
-                        {input email 'class' => 'form-control'}
-                    </div>
-                    <div class='col-md-4'>
-                        {input email_type 'class' => 'form-control'}
-                    </div>
-                </div>
+                {/foreach}
             </div>
             <div class='row form-group'>
                 <div class='col-md-10'></div>
