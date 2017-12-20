@@ -37,7 +37,7 @@ class PipedriveUpdatedPersonMapper extends PipedrivePersonMapperAbstract
      */
     protected function getInnerData(array $data)
     {
-        if ($data['current']['update_time'] === $data['current']['add_time']) {
+        if (strtotime($data['current']['update_time']) - strtotime($data['current']['add_time']) <= 5) {
             return self::OMMIT;
         }
 
