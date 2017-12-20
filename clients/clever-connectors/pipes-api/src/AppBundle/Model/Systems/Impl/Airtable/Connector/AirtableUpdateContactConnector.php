@@ -80,7 +80,7 @@ class AirtableUpdateContactConnector implements ConnectorInterface
 
         if (!is_array($data) || !array_key_exists('id', $data)) {
             throw new CleverConnectorsException(
-                'Missing data or required field id',
+                'Missing data or required field id.',
                 CleverConnectorsException::MISSING_DATA
             );
         }
