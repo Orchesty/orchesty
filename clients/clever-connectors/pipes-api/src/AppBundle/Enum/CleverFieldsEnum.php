@@ -9,6 +9,8 @@
 
 namespace CleverConnectors\AppBundle\Enum;
 
+use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use Hanaboso\PipesFramework\Commons\Enum\EnumAbstract;
 
 /**
@@ -47,5 +49,28 @@ final class CleverFieldsEnum extends EnumAbstract
         self::PLUGINS_LISTS => 'distribution_list',
         self::SEND_OPTIN    => 'send_optin',
     ];
+
+    /**
+     * @param string $eventType
+     *
+     * @return string
+     * @throws CleverConnectorsException
+     */
+    public static function getFromType(string $eventType): string
+    {
+        switch ($eventType) {
+            case SystemInstall::EVENT_UNSUBSCRIBE:
+                return self::UNSUBSCRIBE;
+
+            case SystemInstall::EVENT_HARD_BOUNCE:
+                return self::HARD_BOUNCE;
+
+            default:
+                throw new CleverConnectorsException(
+                    sprintf('Not valid option for field [%s]', $eventType),
+                    CleverConnectorsException::INVALID_ENUM_VALUE
+                );
+        }
+    }
 
 }

@@ -36,27 +36,27 @@ class UniversalMapperNode implements CustomNodeInterface, LoggerAwareInterface
     /**
      * @var SystemInstallRepository|ObjectRepository
      */
-    private $systemRepository;
+    protected $systemRepository;
 
     /**
      * @var MapTemplateRepository|ObjectRepository
      */
-    private $mapRepository;
+    protected $mapRepository;
 
     /**
      * @var SystemLoader
      */
-    private $loader;
+    protected $loader;
 
     /**
      * @var LoggerInterface
      */
-    private $logger;
+    protected $logger;
 
     /**
      * @var string|null
      */
-    private $suffix = NULL;
+    protected $suffix = NULL;
 
     /**
      * UniversalMapperNode constructor.
@@ -128,7 +128,7 @@ class UniversalMapperNode implements CustomNodeInterface, LoggerAwareInterface
      *
      * @return MapTemplate|null
      */
-    private function getMapTemplate(ProcessDto $dto): ?MapTemplate
+    protected function getMapTemplate(ProcessDto $dto): ?MapTemplate
     {
         $systemInstall = $this->systemRepository->getSystemInstallFromHeaders($dto->getHeaders());
         $actionName    = CMHeaders::get(CMHeaders::TOPOLOGY_NAME, $dto->getHeaders());

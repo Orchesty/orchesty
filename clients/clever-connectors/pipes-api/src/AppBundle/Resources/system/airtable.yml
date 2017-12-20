@@ -38,3 +38,42 @@ services:
     hbpf.custom_node.airtable-update-contact-mapper:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Airtable\Mapper\AirtableUpdateContactMapper
         arguments:
+
+    hbpf.custom_node.airtable-table-splitter:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Airtable\Splitter\AirtableTableSplitter
+        arguments:
+            - '@cc.progress_counter.async_progress_counter_service'
+            - '@doctrine_mongodb.odm.default_document_manager'
+
+    hbpf.custom_node.airtable-update-table-splitter:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Airtable\Splitter\AirtableUpdateTableSplitter
+        arguments:
+            - '@cc.progress_counter.async_progress_counter_service'
+            - '@doctrine_mongodb.odm.default_document_manager'
+
+    hbpf.custom_node.airtable-created-contact-mapper-in:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Airtable\Mapper\AirtableCreatedContactMapper
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@cc.systems.loader'
+        calls:
+            - [setLogger, ['@monolog.logger']]
+            - [setSuffix, ['in']]
+
+    hbpf.custom_node.airtable-contact-mapper-in:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Airtable\Mapper\AirtableContactMapper
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@cc.systems.loader'
+        calls:
+            - [setLogger, ['@monolog.logger']]
+            - [setSuffix, ['in']]
+
+    hbpf.custom_node.airtable-contact-mapper-out:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Airtable\Mapper\AirtableContactMapper
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@cc.systems.loader'
+        calls:
+            - [setLogger, ['@monolog.logger']]
+            - [setSuffix, ['out']]

@@ -76,7 +76,10 @@ class AirtableSyncContactConnector extends AirtableContactConnectorAbstract
         $requestDto->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()));
         $processId = CMHeaders::get(CMHeaders::PROCESS_ID, $dto->getHeaders()) ?? '';
 
-        $promise = $this->getPage($sender, $requestDto, $callbackItem, 1, NULL, $processId);
+        $table = CMHeaders::get(AirtableSystem::TABLE_URL, $dto->getHeaders());
+        $view  = CMHeaders::get(AirtableSystem::VIEW, $dto->getHeaders());
+
+        $promise = $this->getPage($sender, $requestDto, $table, $callbackItem, 1, NULL, $processId, $view);
 
         $this->systemInstallRepository->setSyncTime($systemInstall);
 
@@ -86,26 +89,32 @@ class AirtableSyncContactConnector extends AirtableContactConnectorAbstract
     /**
      * @param CurlSender  $sender
      * @param RequestDto  $requestDto
+     * @param string      $table
      * @param callable    $callbackItem
      * @param int         $page
      * @param null|string $offset
      * @param null|string $processId
+     * @param null|string $view
      *
      * @return PromiseInterface
      */
     protected function getPage(
         CurlSender $sender,
         RequestDto $requestDto,
+        string $table,
         callable $callbackItem,
         int $page,
         ?string $offset = NULL,
-        ?string $processId = NULL
+        ?string $processId = NULL,
+        ?string $view = NULL
     ): PromiseInterface
     {
-        $uri = $this->getUri($requestDto, $offset);
+        $uri = $this->getUri($table, $offset, NULL, $view);
 
         return $this->fetchData($sender, RequestDto::from($requestDto, $uri))->then(
-            function (ResponseInterface $response) use ($sender, $requestDto, $callbackItem, $page, $processId) {
+            function (ResponseInterface $response) use (
+                $sender, $requestDto, $table, $callbackItem, $page, $processId, $view
+            ) {
                 $data = json_decode($response->getBody()->getContents(), TRUE);
                 $callbackItem($this->createSuccessMessage($data, $page));
 
@@ -113,10 +122,12 @@ class AirtableSyncContactConnector extends AirtableContactConnectorAbstract
                     return $this->getPage(
                         $sender,
                         $requestDto,
+                        $table,
                         $callbackItem,
                         $page + 1,
                         $this->getOffset($data),
-                        $processId
+                        $processId,
+                        $view
                     );
                 } else {
                     if ($processId) {

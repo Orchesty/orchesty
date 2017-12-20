@@ -2,12 +2,16 @@
 
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Airtable\Connector;
 
+use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Model\LastSync\LastSyncManager;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
+use CleverConnectors\AppBundle\Model\Systems\Impl\Airtable\AirtableSystem;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
-use CleverConnectors\AppBundle\Utils\CronUtils;
 use DateTime;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSender;
+use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSenderFactory;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Psr\Http\Message\ResponseInterface;
 use React\EventLoop\LoopInterface;
@@ -21,6 +25,32 @@ use function React\Promise\resolve;
  */
 class AirtableUpdatedContactConnector extends AirtableContactConnectorAbstract
 {
+
+    private const DATE_FORMAT = 'Y-m-d H:i:s';
+
+    /**
+     * @var DocumentManager
+     */
+    private $dm;
+
+    /**
+     * AirtableContactConnectorAbstract constructor.
+     *
+     * @param AirtableSystem    $system
+     * @param LastSyncManager   $lastSyncManager
+     * @param CurlSenderFactory $factory
+     * @param DocumentManager   $dm
+     */
+    public function __construct(
+        AirtableSystem $system,
+        LastSyncManager $lastSyncManager,
+        CurlSenderFactory $factory,
+        DocumentManager $dm
+    )
+    {
+        parent::__construct($system, $lastSyncManager, $factory, $dm);
+        $this->dm = $dm;
+    }
 
     /**
      * @return string
@@ -44,13 +74,33 @@ class AirtableUpdatedContactConnector extends AirtableContactConnectorAbstract
         $systemInstall = $this->systemInstallRepository->getSystemInstallFromHeaders($dto->getHeaders());
         $requestDto    = $this->system->getRequestDto($systemInstall, 'GET');
         $requestDto->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()));
-        $lastSync = $this->lastSyncManager->getLastSync($systemInstall, $dto->getHeaders());
-        $times    = CronUtils::getTimes($lastSync);
 
-        $promise = $this->getPage($sender, $requestDto, $callbackItem, 1, NULL, $times->getStart());
+        $table = CMHeaders::get(AirtableSystem::TABLE_URL, $dto->getHeaders());
+        $view  = CMHeaders::get(AirtableSystem::VIEW, $dto->getHeaders());
 
-        $lastSync->setTimestamp($times->getEnd());
-        $this->lastSyncManager->updateLastSync($lastSync);
+        $index = NULL;
+        $from  = NULL;
+        $sett  = $systemInstall->getSettings();
+        $to    = new DateTime();
+
+        foreach ($sett[SystemInstall::FORMS] as $index => $form) {
+            if ($form[AirtableSystem::TABLE_URL] === $table) {
+                if (array_key_exists(AirtableSystem::LAST_SYNC, $form)) {
+                    $from = DateTime::createFromFormat(self::DATE_FORMAT, $form[AirtableSystem::LAST_SYNC]);
+                } else {
+                    $lastSync = $this->lastSyncManager->getLastSync($systemInstall, $dto->getHeaders());
+                    $from     = $lastSync ? $lastSync->getTimestamp() : NULL;
+                }
+
+                break;
+            }
+        }
+
+        $promise = $this->getPage($sender, $requestDto, $table, $callbackItem, 1, NULL, $from, $view);
+
+        $sett[SystemInstall::FORMS][$index][AirtableSystem::LAST_SYNC] = $to->format(self::DATE_FORMAT);
+        $systemInstall->setSettings($sett);
+        $this->dm->flush();
 
         return $promise;
     }
@@ -58,26 +108,31 @@ class AirtableUpdatedContactConnector extends AirtableContactConnectorAbstract
     /**
      * @param CurlSender    $sender
      * @param RequestDto    $requestDto
+     * @param string        $table
      * @param callable      $callbackItem
      * @param int           $page
-     * @param string  |null $offset
+     * @param null|string   $offset
      * @param DateTime|null $from
+     * @param null|string   $view
      *
      * @return PromiseInterface
      */
     protected function getPage(
         CurlSender $sender,
         RequestDto $requestDto,
+        string $table,
         callable $callbackItem,
         int $page,
         ?string $offset = NULL,
-        ?DateTime $from = NULL
+        ?DateTime $from = NULL,
+        ?string $view = NULL
     ): PromiseInterface
     {
-        $uri = $this->getUri($requestDto, $offset, $from);
+        $uri = $this->getUri($table, $offset, $from, $view);
 
         return $this->fetchData($sender, RequestDto::from($requestDto, $uri))->then(
-            function (ResponseInterface $response) use ($sender, $requestDto, $callbackItem, $page, $from) {
+            function (ResponseInterface $response) use ($sender, $requestDto, $table, $callbackItem, $page, $from, $view
+            ) {
                 $data = json_decode($response->getBody()->getContents(), TRUE);
                 $callbackItem($this->createSuccessMessage($data, $page));
 
@@ -85,10 +140,12 @@ class AirtableUpdatedContactConnector extends AirtableContactConnectorAbstract
                     return $this->getPage(
                         $sender,
                         $requestDto,
+                        $table,
                         $callbackItem,
                         $page + 1,
                         $this->getOffset($data),
-                        $from
+                        $from,
+                        $view
                     );
                 } else {
                     return resolve();

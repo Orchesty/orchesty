@@ -3,7 +3,6 @@
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Airtable\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
-use CleverConnectors\AppBundle\Enum\CleverFieldsEnum;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Airtable\AirtableSystem;
@@ -79,28 +78,30 @@ class AirtableUpdateContactConnector implements ConnectorInterface
     {
         $data = Json::decode($dto->getData(), TRUE);
 
-        if (!is_array($data) || !array_key_exists(CleverFieldsEnum::FOREIGN_ID, $data)) {
+        if (!is_array($data) || !array_key_exists('id', $data)) {
             throw new CleverConnectorsException(
-                'Missing data or required field _foreign_id',
+                'Missing data or required field id',
                 CleverConnectorsException::MISSING_DATA
             );
         }
 
-        $foreignId = $data[CleverFieldsEnum::FOREIGN_ID];
-        unset($data[CleverFieldsEnum::FOREIGN_ID]);
+        $foreignId = $data['id'];
+        unset($data['id']);
 
         // check that there is exactly 1 field (unsubscribe or hard-bounce)
-        if (count($data) !== 1) {
+        if (count($data['fields']) !== 1) {
             throw new CleverConnectorsException(
                 count($data) < 1 ? 'Missing data for update' : 'Exceeded number of fields in data',
-                count($data) > 1 ? CleverConnectorsException::MISSING_DATA : CleverConnectorsException::EXCEEDED_NUMBER_OF_FIELDS
+                count($data) < 1 ? CleverConnectorsException::MISSING_DATA : CleverConnectorsException::EXCEEDED_NUMBER_OF_FIELDS
             );
         }
+
+        $table = CMHeaders::get(AirtableSystem::TABLE_URL, $dto->getHeaders());
 
         $systemInstall = $this->systemInstallRepository->getSystemInstallFromHeaders($dto->getHeaders());
         $requestDto    = $this->system->getRequestDto($systemInstall, CurlManager::METHOD_PATCH);
         $requestDto
-            ->setUri(new Uri(sprintf('%s/%s', $requestDto->getUri(), $foreignId)))
+            ->setUri(new Uri(sprintf('%s/%s', $table, $foreignId)))
             ->setBody(Json::encode($data))
             ->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()));
 
@@ -111,7 +112,7 @@ class AirtableUpdateContactConnector implements ConnectorInterface
         } catch (CurlException $e) {
             if (Strings::contains($e->getMessage(), '"errorCode":"INVALID_FIELD"')) {
                 throw new CleverConnectorsException(
-                    'Missing required field cm_unsubscribe or cm_hard_bounce',
+                    sprintf('Missing required field unsubscribe or hard_bounce in table of [%s] url.', $table),
                     CleverConnectorsException::MISSING_DATA
                 );
             }
