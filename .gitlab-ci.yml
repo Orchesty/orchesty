@@ -36,6 +36,18 @@ njs-build-image:
     - master
     - ci
 
+go-multi-probe-image:
+  stage: stage1
+  script:
+    - cd $REPO_ROOT/pf-go/pf-multi-probe
+    - IMAGE=dkr.hanaboso.net/pipes/pipes/go-multi-probe:${CI_BUILD_REF_NAME}
+    - docker build -t ${IMAGE} .
+    - docker push ${IMAGE}
+  only:
+    - dev
+    - master
+    - ci
+
 pf-bundles-test:
   stage: stage2
   script:
