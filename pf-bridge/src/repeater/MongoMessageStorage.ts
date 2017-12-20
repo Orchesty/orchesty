@@ -45,7 +45,7 @@ class MongoMessageStorage implements IMessageStorage {
      * @param {number} timeout
      * @return {Promise<boolean>}
      */
-    public save(message: Message, timeout: number): Promise<boolean> {
+    public async save(message: Message, timeout: number): Promise<boolean> {
         const now = Date.now();
         const repeatInterval = timeout;
         const repeatAt = now + repeatInterval;
@@ -60,23 +60,20 @@ class MongoMessageStorage implements IMessageStorage {
             created_at: now,
         };
 
-        return this.db
-            .then((db: Db) => {
-                return db.collection(COLLECTION_NAME).insertOne(document);
-            })
-            .then(() => {
-                logger.info(
-                    "Message persisted.",
-                    {
-                        node_id: "repeater",
-                        correlation_id: message.properties.headers.correlation_id,
-                        process_id: message.properties.headers.process_id,
-                    });
-                return true;
-            })
-            .catch(() => {
-                return false;
-            });
+        try {
+            const mongo: Db = await this.db;
+            const result = await mongo.collection(COLLECTION_NAME).insertOne(document);
+            logger.info(
+                "Message persisted.",
+                {
+                    node_id: "repeater",
+                    correlation_id: message.properties.headers.correlation_id,
+                    process_id: message.properties.headers.process_id,
+                });
+            return true;
+        } catch (e) {
+            return false;
+        }
     }
 
     /**
@@ -136,11 +133,19 @@ class MongoMessageStorage implements IMessageStorage {
      * @param query
      * @return {Promise<IPersistedMessage[]>}
      */
-    private find(query: any): Promise<IPersistedMessage[]> {
-        return this.db
-            .then((db: Db) => {
-                return db.collection(COLLECTION_NAME).find(query).toArray();
-            });
+    private async find(query: any): Promise<IPersistedMessage[]> {
+        try {
+            const mongo: Db = await this.db;
+
+            return mongo.collection(COLLECTION_NAME).find(query).toArray();
+        } catch (e) {
+            logger.error(
+                `Error finding mongo document. Query: ${JSON.stringify(query)}`,
+                { node_id: "repeater", error: e },
+            );
+
+            return [];
+        }
     }
 
     /**
@@ -148,11 +153,10 @@ class MongoMessageStorage implements IMessageStorage {
      * @param query
      * @return {Promise<DeleteWriteOpResultObject>}
      */
-    private deleteDocuments(query: any): Promise<DeleteWriteOpResultObject> {
-        return this.db
-            .then((db: Db) => {
-                return db.collection(COLLECTION_NAME).deleteMany(query);
-            });
+    private async deleteDocuments(query: any): Promise<DeleteWriteOpResultObject> {
+        const mongo: Db = await this.db;
+
+        return mongo.collection(COLLECTION_NAME).deleteMany(query);
     }
 
 }
