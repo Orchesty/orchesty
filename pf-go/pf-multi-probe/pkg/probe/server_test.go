@@ -5,6 +5,10 @@ import (
 	"fmt"
 	"net/http"
 	"time"
+	"io/ioutil"
+	"github.com/stretchr/testify/assert"
+	"bytes"
+	"encoding/json"
 )
 
 type storageMock struct {
@@ -35,7 +39,7 @@ func (r *storageMock) Keys() ([]string, error) {
 	return keys, nil
 }
 
-type checkerMock struct {}
+type checkerMock struct{}
 
 func (c *checkerMock) Check(br BridgeInfo, resultsChannel chan<- BridgeInfo) {
 	br.Status = true
@@ -52,13 +56,73 @@ func TestServer(t *testing.T) {
 	checker := checkerMock{}
 
 	srv := Server{Storage: &storage, CheckerSvc: &checker}
-	srv.Start(5555)
+	go srv.Start(5555)
 
 	host := "http://localhost:5555"
 	var client = http.Client{Timeout: time.Second * 1}
 
-	request, _ := http.NewRequest("GET", host+ "/topology/list", nil)
-	response, _ := client.Do(request)
+	// List should be empty
+	response, _ := client.Get(host + "/topology/list")
+	defer response.Body.Close()
+	body, _ := ioutil.ReadAll(response.Body)
+	assert.Equal(t, "{\"status\":true,\"data\":\"\"}", string(body))
 
-	fmt.Println(response)
+	// Remove should not be possible for non-existing topology
+	response, _ = client.Get(host + "/topology/remove?topologyId=XYZ")
+	assert.Equal(t, http.StatusBadRequest, response.StatusCode)
+
+	// Status should not be possible for non-existing topology
+	response, _ = client.Get(host + "/topology/status?topologyId=XYZ")
+	assert.Equal(t, http.StatusBadRequest, response.StatusCode)
+
+	// Add should fail when topology json is missing
+	response, _ = client.Get(host + "/topology/add")
+	assert.Equal(t, http.StatusBadRequest, response.StatusCode)
+
+	// Add topology should success
+	var topology TopologyJson
+	topoData, _ := ioutil.ReadFile("./topology_test.json")
+	json.Unmarshal(topoData, &topology)
+	addReq, _ := http.NewRequest("POST", host+"/topology/add", bytes.NewBuffer(topoData))
+	addReq.Header.Set("Content-Type", "application/json")
+	response, _ = client.Do(addReq)
+	assert.Equal(t, http.StatusOK, response.StatusCode)
+
+	// List should contain 1 topo
+	response, _ = client.Get(host + "/topology/list")
+	defer response.Body.Close()
+	body, _ = ioutil.ReadAll(response.Body)
+	assert.Equal(t, "{\"status\":true,\"data\":\""+topology.TopologyId+"\"}", string(body))
+
+	// Add topology should replace the previous with same id
+	response, _ = client.Do(addReq)
+	assert.Equal(t, http.StatusOK, response.StatusCode)
+
+	// List should contain 1 topo
+	response, _ = client.Get(host + "/topology/list")
+	defer response.Body.Close()
+	body, _ = ioutil.ReadAll(response.Body)
+	assert.Equal(t, "{\"status\":true,\"data\":\""+topology.TopologyId+"\"}", string(body))
+
+	// Status should return json with results for bridges in topology
+	var checkResult probeStatusResponse
+	response, _ = client.Get(host + "/topology/status?topologyId=" + topology.TopologyId)
+	assert.Equal(t, http.StatusOK, response.StatusCode)
+	defer response.Body.Close()
+	statusBody, _ := ioutil.ReadAll(response.Body)
+	json.Unmarshal(statusBody, &checkResult)
+	assert.Equal(t, topology.TopologyId, checkResult.Id)
+	assert.True(t, checkResult.Status)
+	assert.Equal(t, "6 of 6 bridges are ready", checkResult.Message)
+	assert.Len(t, checkResult.Nodes, 6)
+
+	// Remove should delete existing topology
+	response, _ = client.Get(host + "/topology/remove?topologyId=" + topology.TopologyId)
+	assert.Equal(t, http.StatusOK, response.StatusCode)
+
+	// List should be empty
+	response, _ = client.Get(host + "/topology/list")
+	defer response.Body.Close()
+	body, _ = ioutil.ReadAll(response.Body)
+	assert.Equal(t, "{\"status\":true,\"data\":\"\"}", string(body))
 }
