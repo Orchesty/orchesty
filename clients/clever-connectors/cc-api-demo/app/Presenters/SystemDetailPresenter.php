@@ -108,6 +108,9 @@ class SystemDetailPresenter extends BasePresenter
             case 'airtable':
                 return $this->link('AirTable:', ['systemKey' => $this->userSystem->getKey()]);
                 break;
+            case 'facebookaudience':
+                return $this->link('FacebookLeads:', ['systemKey' => $this->userSystem->getKey()]);
+                break;
             default:
                 return '';
         }
