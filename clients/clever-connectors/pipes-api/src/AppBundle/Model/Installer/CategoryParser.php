@@ -161,7 +161,7 @@ class CategoryParser
                 $category = $this->createCategory($name, $parent);
             }
 
-            $topology->setCategory($category->getName());
+            $topology->setCategory($category->getId());
             $parent = $category->getId();
         }
 
