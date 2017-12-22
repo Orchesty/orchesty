@@ -92,8 +92,6 @@ services:
         REDIS_PORT: '6379'
         REDIS_PASS: ''
         REDIS_DB: '0'
-      depends_on:
-        - redis
       ports:
         - ${DEV_IP}:8007:8007
 
@@ -216,6 +214,14 @@ services:
         volumes:
           - ../../:/var/www/pipes
           - ${SSH_AUTH_SOCK}:/tmp/bound-ssh-agent
+        # TODO: Use dynamic dns resolution in Nginx instead
+        depends_on:
+          - monolith-fpm
+          - topology-fpm
+          - api-demo-fpm
+          - kibana
+          - grafana
+          - spitter
     ## END DEV
     ## BEGIN STAGE
     #    image: dkr.hanaboso.net/pipes/pipes/frontend:prod-images
@@ -234,7 +240,6 @@ services:
               - mapper-api
               - monolith-api
               - topology-api
-        # TODO: Use dynamic dns resolution in Nginx instead
 
     stream:
         image: dkr.hanaboso.net/pipes/pipes/stream:dev
