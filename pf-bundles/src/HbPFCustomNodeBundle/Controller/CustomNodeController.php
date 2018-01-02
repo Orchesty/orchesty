@@ -14,6 +14,9 @@ use FOS\RestBundle\Controller\FOSRestController;
 use Hanaboso\PipesFramework\Commons\Traits\ControllerTrait;
 use Hanaboso\PipesFramework\HbPFCustomNodeBundle\Handler\CustomNodeHandler;
 use Hanaboso\PipesFramework\Utils\ControllerUtils;
+use Monolog\Logger;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -26,7 +29,7 @@ use Throwable;
  *
  * @Route(service="hbpf.custom.custom_node")
  */
-class CustomNodeController extends FOSRestController
+class CustomNodeController extends FOSRestController implements LoggerAwareInterface
 {
 
     use ControllerTrait;
@@ -35,6 +38,11 @@ class CustomNodeController extends FOSRestController
      * @var CustomNodeHandler
      */
     private $handler;
+
+    /**
+     * @var null|LoggerInterface
+     */
+    private $logger = NULL;
 
     /**
      * CustomNodeController constructor.
@@ -62,6 +70,7 @@ class CustomNodeController extends FOSRestController
 
             return $this->getResponse($data->getData(), 200, ControllerUtils::createHeaders($data->getHeaders()));
         } catch (Exception|Throwable $e) {
+            $this->logger->error($e->getMessage(), ['exception' => $e]);
             return $this->getErrorResponse($e, 500, ControllerUtils::createHeaders([], $e));
         }
     }
@@ -83,6 +92,14 @@ class CustomNodeController extends FOSRestController
         } catch (Exception|Throwable $e) {
             return $this->getErrorResponse($e);
         }
+    }
+
+    /**
+     * @param LoggerInterface $logger
+     */
+    public function setLogger(LoggerInterface $logger): void
+    {
+        $this->logger = $logger;
     }
 
 }

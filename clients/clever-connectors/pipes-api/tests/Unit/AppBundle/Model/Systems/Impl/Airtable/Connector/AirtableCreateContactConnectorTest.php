@@ -8,6 +8,7 @@ use CleverConnectors\AppBundle\Model\Systems\Impl\Airtable\Connector\AirtableCre
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Uri;
+use Hanaboso\PipesFramework\Commons\Crypt\CryptManager;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;

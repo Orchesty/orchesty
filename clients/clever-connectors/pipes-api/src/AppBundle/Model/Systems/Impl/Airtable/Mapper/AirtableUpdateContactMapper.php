@@ -2,7 +2,6 @@
 
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Airtable\Mapper;
 
-use CleverConnectors\AppBundle\Enum\CleverCustomKeysEnum;
 use CleverConnectors\AppBundle\Enum\CleverFieldsEnum;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
@@ -37,12 +36,11 @@ class AirtableUpdateContactMapper implements CustomNodeInterface
 
         /** @var string $eventType */
         $eventType = CMHeaders::get(CMHeaders::CM_EVENT_TYPE, $dto->getHeaders());
-        $eventKey  = CleverCustomKeysEnum::getFromType($eventType);
+        $eventKey  = CleverFieldsEnum::getFromType($eventType);
 
         $data[$eventKey] = 1;
-        $dto->setData(Json::encode($data));
 
-        return $dto;
+        return $dto->setData(Json::encode($data));
     }
 
 }

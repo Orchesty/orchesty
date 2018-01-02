@@ -95,53 +95,59 @@ abstract class AirtableContactConnectorAbstract implements BatchInterface, Conne
     }
 
     /**
-     * @param RequestDto    $dto
+     * @param string        $table
      * @param null|string   $offset
      * @param DateTime|null $from
+     * @param null|string   $view
      *
      * @return Uri
      */
-    protected function getUri(RequestDto $dto, ?string $offset = NULL, ?DateTime $from = NULL): Uri
+    protected function getUri(
+        string $table,
+        ?string $offset = NULL,
+        ?DateTime $from = NULL,
+        ?string $view = NULL
+    ): Uri
     {
-        $query = NULL;
-        $uri   = $dto->getUri(TRUE);
-
-        if (strpos($uri, '?')) {
-            $tmp   = explode('?', $uri);
-            $uri   = $tmp[0];
-            $query = $tmp[1];
-        }
+        $uri = $table;
 
         $uri .= sprintf('?pageSize=%s', self::PAGE_LIMIT);
+
+        if ($view) {
+            $uri .= sprintf('&view=%s', $view);
+        }
         if ($offset) {
             $uri .= sprintf('&offset=%s', $offset);
         }
         if ($from) {
             $uri .= sprintf('&filterByFormula=CREATED_TIME()>\'%s\'', urlencode($from->format(DATE_ISO8601)));
         }
-        if ($query) {
-            $uri .= sprintf('&%s', $query);
-        }
 
         return new Uri($uri);
     }
 
     /**
-     * @param mixed $data
+     * @param array $data
      * @param int   $i
      *
      * @return SuccessMessage
      * @throws SystemException
      */
-    protected function createSuccessMessage($data, int $i): SuccessMessage
+    protected function createSuccessMessage(array $data, int $i): SuccessMessage
     {
         if (array_key_exists('records', $data)) {
+            if (!empty($data['records'])) {
+                $successMessage = new SuccessMessage($i);
+                $successMessage->setData(json_encode($this->removeEmptyRecords($data['records'])));
+                unset($data);
 
-            $successMessage = new SuccessMessage($i);
-            $successMessage->setData(json_encode($this->removeEmptyRecords($data['records'])));
-            unset($data);
-
-            return $successMessage;
+                return $successMessage;
+            } else {
+                throw new SystemException(
+                    'Empty data set, Airtable connector.',
+                    SystemException::MISSING_DATA
+                );
+            }
         } else {
             throw new SystemException(
                 'Bad response data for Airtable sync request.',
