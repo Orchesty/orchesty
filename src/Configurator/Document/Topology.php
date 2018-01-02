@@ -94,6 +94,13 @@ class Topology
     protected $category;
 
     /**
+     * @var string
+     *
+     * @MongoDB\Field(type="string")
+     */
+    protected $contentHash = '';
+
+    /**
      * Topology constructor.
      */
     public function __construct()
@@ -290,6 +297,26 @@ class Topology
         $this->category = $category;
 
         return $this;
+    }
+
+    /**
+     * @param string $contentHash
+     *
+     * @return Topology
+     */
+    public function setContentHash(string $contentHash): Topology
+    {
+        $this->contentHash = $contentHash;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getContentHash(): string
+    {
+        return $this->contentHash;
     }
 
 }
