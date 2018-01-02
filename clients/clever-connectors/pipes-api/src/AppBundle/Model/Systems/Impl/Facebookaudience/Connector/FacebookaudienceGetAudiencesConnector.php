@@ -12,7 +12,6 @@ use Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
-use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
 
 /**
  * Class FacebookaudienceGetAudiencesConnector
@@ -36,7 +35,6 @@ class FacebookaudienceGetAudiencesConnector extends FacebookaudienceConnectorAbs
      * @param ProcessDto $dto
      *
      * @return ProcessDto
-     * @throws ConnectorException
      * @throws CleverConnectorsException
      * @throws SystemException
      */
@@ -107,8 +105,8 @@ class FacebookaudienceGetAudiencesConnector extends FacebookaudienceConnectorAbs
             );
         }
 
-        $token       = $systemInstall->getSettings()[OAuth2Provider::ACCESS_TOKEN];
-        $requestDto  = $this->system->getRequestDto($systemInstall, CurlManager::METHOD_GET);
+        $token      = $systemInstall->getSettings()[OAuth2Provider::ACCESS_TOKEN];
+        $requestDto = $this->system->getRequestDto($systemInstall, CurlManager::METHOD_GET);
         $requestDto->setUri(new Uri(sprintf(self::URL, $requestDto->getUri(), $adAccountId, $token)));
 
         if ($dto) {

@@ -89,7 +89,7 @@ class FacebookGetLeadformConnector implements ConnectorInterface
      * @param ProcessDto $dto
      *
      * @return ProcessDto
-     * @throws SystemException
+     * @throws CleverConnectorsException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {
@@ -124,7 +124,7 @@ class FacebookGetLeadformConnector implements ConnectorInterface
         ]);
         $this->dm->flush();
 
-        $settings   = $systemInstall->getSettings();
+        $settings = $systemInstall->getSettings();
 
         $response = $this->makeRequest($systemInstall);
         if ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300) {
@@ -210,11 +210,12 @@ class FacebookGetLeadformConnector implements ConnectorInterface
      * @param ProcessDto|null $dto
      *
      * @return ResponseDto
+     * @throws CleverConnectorsException
      */
     private function makeRequest(SystemInstall $systemInstall, ?ProcessDto $dto = NULL): ResponseDto
     {
-        $settings = $systemInstall->getSettings();
-        $pageId = $settings[FacebookLeadsSystem::PAGE_ID];
+        $settings        = $systemInstall->getSettings();
+        $pageId          = $settings[FacebookLeadsSystem::PAGE_ID];
         $pageAccessToken = $this->getPageAccessToken($systemInstall, $pageId);
 
         $requestDto = $this->system->getRequestDto($systemInstall, CurlManager::METHOD_GET);

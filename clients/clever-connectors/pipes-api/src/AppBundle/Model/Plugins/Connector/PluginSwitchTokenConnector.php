@@ -3,7 +3,6 @@
 namespace CleverConnectors\AppBundle\Model\Plugins\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
-use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Plugins\PluginSystemAbstract;
 use CleverConnectors\AppBundle\Model\Systems\SystemLoader;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
@@ -78,7 +77,7 @@ class PluginSwitchTokenConnector implements ConnectorInterface
      * @param ProcessDto $dto
      *
      * @return ProcessDto
-     * @throws CleverConnectorsException
+     * @throws \CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {

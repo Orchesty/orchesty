@@ -284,6 +284,7 @@ class SystemController extends FOSRestController
      *
      * @return Response
      * @throws CleverConnectorsException
+     * @throws SystemException
      */
     public function saveTokenAction(Request $request): Response
     {

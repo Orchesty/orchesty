@@ -78,7 +78,6 @@ class WisepopsRefreshFormsConnector implements ConnectorInterface
      * @param ProcessDto $dto
      *
      * @return ProcessDto
-     * @throws ConnectorException
      * @throws SystemException
      */
     public function processAction(ProcessDto $dto): ProcessDto

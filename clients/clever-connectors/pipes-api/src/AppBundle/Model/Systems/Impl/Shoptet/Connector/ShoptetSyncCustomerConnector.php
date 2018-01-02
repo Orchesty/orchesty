@@ -131,7 +131,6 @@ class ShoptetSyncCustomerConnector implements ConnectorInterface, BatchInterface
      * @param ResponseInterface $response
      *
      * @return SuccessMessage
-     * @throws SystemException
      */
     protected function createSuccessMessage(ResponseInterface $response): SuccessMessage
     {

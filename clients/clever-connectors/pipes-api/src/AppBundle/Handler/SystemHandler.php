@@ -5,6 +5,7 @@ namespace CleverConnectors\AppBundle\Handler;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\OAuth1Interface;
+use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\SystemManager;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\PipesFramework\Utils\ControllerUtils;
@@ -43,6 +44,7 @@ class SystemHandler
      * @param string $key
      *
      * @return array
+     * @throws SystemException
      */
     public function getSystem(string $key): array
     {
@@ -54,6 +56,7 @@ class SystemHandler
      * @param null|string $group
      *
      * @return array
+     * @throws SystemException
      */
     public function getSystems(?string $user = NULL, ?string $group = NULL): array
     {
@@ -70,6 +73,7 @@ class SystemHandler
      * @param string $user
      *
      * @return array
+     * @throws SystemException
      */
     public function getUserSystems(string $user): array
     {
@@ -86,6 +90,7 @@ class SystemHandler
      * @param string $systemKey
      *
      * @return array
+     * @throws SystemException
      */
     public function getUserSystem(string $user, string $systemKey): array
     {
@@ -101,6 +106,7 @@ class SystemHandler
      *
      * @return array
      * @throws CleverConnectorsException
+     * @throws SystemException
      */
     public function installSystem(string $user, string $system, array $data): array
     {
@@ -124,6 +130,8 @@ class SystemHandler
      * @param array  $data
      *
      * @return array
+     * @throws SystemException
+     * @throws CleverConnectorsException
      */
     public function saveSystemSettings(string $user, string $system, array $data): array
     {
@@ -137,6 +145,7 @@ class SystemHandler
      * @param string $system
      *
      * @return array
+     * @throws SystemException
      */
     public function uninstallSystem(string $user, string $system): array
     {
@@ -152,6 +161,7 @@ class SystemHandler
      *
      * @return array
      *
+     * @throws SystemException
      */
     public function switchToken(string $user, string $system, array $data): array
     {
@@ -166,6 +176,7 @@ class SystemHandler
      * @param string $system
      *
      * @return array
+     * @throws SystemException
      */
     public function synchronizeSubscriptions(string $user, string $system): array
     {
@@ -180,6 +191,7 @@ class SystemHandler
      * @param array  $data
      *
      * @return array
+     * @throws SystemException
      */
     public function setPassword(string $user, string $system, array $data): array
     {
@@ -193,6 +205,8 @@ class SystemHandler
      * @param string $user
      * @param string $systemKey
      * @param string $redirectUrl
+     *
+     * @throws SystemException
      */
     public function authorize(string $user, string $systemKey, string $redirectUrl): void
     {
@@ -205,6 +219,7 @@ class SystemHandler
      * @param array  $data
      *
      * @return string
+     * @throws SystemException
      */
     public function saveToken(string $user, string $systemKey, array $data): string
     {
@@ -218,7 +233,6 @@ class SystemHandler
      * @param string $system
      *
      * @return bool
-     * @throws CleverConnectorsException
      */
     public function isSystemInstalled(string $user, string $system): bool
     {
@@ -237,6 +251,7 @@ class SystemHandler
      * @param array  $data
      *
      * @return array
+     * @throws SystemException
      */
     public function runCustomAction(string $systemKey, string $user, string $action, array $data = []): array
     {

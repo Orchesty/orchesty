@@ -66,7 +66,6 @@ class CMGetDistributionsConnector extends CMAuthorization implements ConnectorIn
      *
      * @return ProcessDto
      * @throws CleverConnectorsException
-     * @throws ConnectorException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {

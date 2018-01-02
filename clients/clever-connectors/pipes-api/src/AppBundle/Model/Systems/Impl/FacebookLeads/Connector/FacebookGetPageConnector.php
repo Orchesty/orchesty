@@ -83,7 +83,6 @@ class FacebookGetPageConnector implements ConnectorInterface
      * @param ProcessDto $dto
      *
      * @return ProcessDto
-     * @throws SystemException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {
