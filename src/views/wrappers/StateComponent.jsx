@@ -6,7 +6,7 @@ import ErrorState from 'elements/state/ErrorState';
 import LoadingState from 'elements/state/LoadingState';
 import NotLoadedState from 'elements/state/NotLoadedState';
 
-export default WrappedComponent => {
+export default (WrappedComponent, stateFunc) => {
 
   class StateComponent extends React.Component {
     constructor(props) {
@@ -23,7 +23,8 @@ export default WrappedComponent => {
 
     _needData(props, mount){
       const {state, notLoadedCallback} = props;
-      if ((!state || state == stateType.NOT_LOADED || (mount && state == stateType.ERROR)) && notLoadedCallback) {
+      const calcState = typeof stateFunc == 'function' ? stateFunc(this.props) : state;
+      if ((!calcState || calcState == stateType.NOT_LOADED || (mount && calcState == stateType.ERROR)) && notLoadedCallback) {
         notLoadedCallback();
       }
     }
@@ -31,7 +32,9 @@ export default WrappedComponent => {
     render() {
       const {state,  notLoadedCallback, ...passProps} = this.props;
 
-      switch (state) {
+      const calcState = typeof stateFunc == 'function' ? stateFunc(this.props) : state;
+
+      switch (calcState) {
         case stateType.SUCCESS:
           return <WrappedComponent {...passProps} />;
         case stateType.LOADING:

@@ -8,6 +8,7 @@ import * as applicationActions from 'rootApp/actions/applicationActions';
 
 import TabBar from 'elements/tab/TabBar';
 import TopologyNodeListTable from 'components/node/TopologyNodeListTable';
+import TopologyNodeMetricsListTable from 'components/node/TopologyNodeMetricsListTable';
 import TopologySchema from './TopologySchema';
 
 import './TopologyDetail.less';
@@ -20,6 +21,10 @@ const tabItems = [
   {
     id: 'schema',
     caption: 'Schema'
+  },
+  {
+    id: 'node_metrics',
+    caption: 'Metrics'
   }
 ];
 
@@ -30,7 +35,8 @@ class TopologyDetail extends React.Component {
     this.schemaImported = this.schemaImported.bind(this);
     this._actions = {
       nodes: null,
-      schema: null
+      schema: null,
+      nodeMetrics: null
     }
   }
 
@@ -65,7 +71,7 @@ class TopologyDetail extends React.Component {
         caption: 'Publish',
         action: publish,
         processId: processes.topologyPublish(topologyId),
-        disabled: topology.visibility == 'public'
+        disabled: !topology || topology.visibility == 'public'
       });
     }
     if (testTopology) {
@@ -76,7 +82,7 @@ class TopologyDetail extends React.Component {
       });
     }
     if (topologyDelete){
-      const deleteDisabled = topology.visibility == 'public' && topology.enabled;
+      const deleteDisabled = !topology || (topology.visibility == 'public' && topology.enabled);
       pageActions.push({
         caption: 'Delete',
         processId: processes.topologyDelete(topologyId),
@@ -106,16 +112,19 @@ class TopologyDetail extends React.Component {
     return (
       <div className="topology-detail">
         <TabBar items={tabItems} active={activeIndex} onChangeTab={this.changeTab}/>
-        {activeTab == 'nodes' && <TopologyNodeListTable topologyId={topologyId} setActions={this.setActions.bind(this, 'nodes')}/>}
-        <div className={'schema-wrapper' + ( schemaVisible ? '' : ' hidden')}>
-          <TopologySchema
-            schemaId={topologyId}
-            topology={topology}
-            setActions={this.setActions.bind(this, 'schema')}
-            onChangeTopology={onChangeTopology}
-            visible={schemaVisible}
-            onImport={this.schemaImported}
-          />
+        <div className="tab-content">
+          {activeTab == 'nodes' && <TopologyNodeListTable topologyId={topologyId} setActions={this.setActions.bind(this, 'nodes')}/>}
+          {activeTab == 'node_metrics' && <TopologyNodeMetricsListTable topologyId={topologyId} setActions={this.setActions.bind(this, 'nodeMetrics')}/>}
+          <div className={'schema-wrapper' + ( schemaVisible ? '' : ' hidden')}>
+            <TopologySchema
+              schemaId={topologyId}
+              topology={topology}
+              setActions={this.setActions.bind(this, 'schema')}
+              onChangeTopology={onChangeTopology}
+              visible={schemaVisible}
+              onImport={this.schemaImported}
+            />
+          </div>
         </div>
       </div>
     );
@@ -128,7 +137,7 @@ TopologyDetail.defaultProps = {
 
 TopologyDetail.propTypes = {
   topologyId: PropTypes.string.isRequired,
-  topology: PropTypes.object.isRequired,
+  topology: PropTypes.object,
   activeTab: PropTypes.oneOf(tabItems.map(tab => tab.id)).isRequired,
   onChangeTab: PropTypes.func.isRequired,
   setActions: PropTypes.func.isRequired,

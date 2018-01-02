@@ -8,11 +8,19 @@
     flex-basis: min-content;
   }
 
-  .node-list-table{
+  .tab-content{
+    display: flex;
+    flex-direction: column;
     flex: 1;
+    overflow-y: auto;
+
+    .node-list-table{
+      flex: 1;
+    }
+
+    .schema-wrapper{
+      flex: 1;
+    }
   }
 
-  .schema-wrapper{
-    flex: 1;
-  }
 }
