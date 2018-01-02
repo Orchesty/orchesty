@@ -57,11 +57,11 @@ class WisepopsCreatedEmailMapper implements CustomNodeInterface
         $sys  = $this->systemInstallRepository->getSystemInstallFromHeaders($dto->getHeaders());
         $sett = $sys->getSettings();
 
-        $forms = array_key_exists(SystemInstall::FORMS, $sett) ? $forms = $sett[SystemInstall::FORMS] : [];
+        $forms = $sett[SystemInstall::FORMS] ?? [];
         $id    = $data['wisepop_id'];
 
         foreach ($forms as $form) {
-            if ($form[WisepopsSystem::FORM_ID] === $id) {
+            if ($form[WisepopsSystem::FORM_ID] == $id) {
                 $obj->setLists([$form[WisepopsSystem::FORM_LIST]]);
                 break;
             }
