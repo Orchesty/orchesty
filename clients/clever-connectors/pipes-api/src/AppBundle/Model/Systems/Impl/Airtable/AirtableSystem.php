@@ -183,13 +183,6 @@ class AirtableSystem implements AuthorizationInterface, CMEventSystemInterface
             TRUE
         );
 
-        $field3 = new Field(
-            Field::TEXT,
-            self::VIEW,
-            'View',
-            $this->prepareValue(self::VIEW, $settings)
-        );
-
         $field4 = new Field(
             Field::CHECKBOX,
             SystemInstall::EVENT_CREATE,
@@ -214,7 +207,6 @@ class AirtableSystem implements AuthorizationInterface, CMEventSystemInterface
         $form = new Form();
         $form
             ->addField($field1)
-            ->addField($field3)
             ->addField($field4)
             ->addField($field5)
             ->addField($field6);
