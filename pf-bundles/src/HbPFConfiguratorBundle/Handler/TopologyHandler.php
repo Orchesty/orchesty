@@ -6,10 +6,12 @@ use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\PipesFramework\Commons\DatabaseManager\DatabaseManagerLocator;
 use Hanaboso\PipesFramework\Commons\Enum\TopologyStatusEnum;
+use Hanaboso\PipesFramework\Commons\Exception\PipesFrameworkException;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Commons\Utils\UriParams;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
+use Hanaboso\PipesFramework\Configurator\Exception\NodeException;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyManager;
 use Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository;
@@ -120,6 +122,7 @@ class TopologyHandler
      * @param array $data
      *
      * @return array
+     * @throws PipesFrameworkException
      */
     public function createTopology(array $data): array
     {
@@ -203,6 +206,7 @@ class TopologyHandler
      *
      * @return string[]
      * @throws TopologyException
+     * @throws NodeException
      */
     public function cloneTopology(string $id): array
     {
@@ -223,7 +227,7 @@ class TopologyHandler
         $topology = $this->getTopologyById($id);
         $res      = new ResponseDto(200, '', '', []);
 
-        if ($topology->getVisibility() === TopologyStatusEnum::PUBLIC) {
+        if (!($topology->getVisibility() === TopologyStatusEnum::PUBLIC && $topology->isEnabled())) {
             $res = $this->requestHandler->deleteTopology($id);
         }
 

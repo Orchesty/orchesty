@@ -39,7 +39,10 @@ class SystemInstall
     public const  PLUGIN_VERSION     = 'pluginVersion';
     public const  SYSTEM_URL         = 'system_url';
     public const  DISTRIBUTION_LISTS = 'distribution_lists';
+    public const  DISTRIBUTION_LIST  = 'distribution_list';
     public const  REMOTE_HOST        = 'remote_host';
+    public const  SELECT_LIST        = 'list';
+    public const  FORMS              = 'custom_form';
 
     use IdTrait;
 

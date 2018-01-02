@@ -13,3 +13,20 @@
 #main-menu ul > li {
     text-transform: uppercase;
 }
+
+div#loader {
+    position: fixed;
+    top: calc(50% - 60px);
+    left: calc(50% - 60px);
+    width: 120px;
+    height: 120px;
+    border: 16px solid #DDDDDD;
+    border-top: 16px solid #FF0000;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}

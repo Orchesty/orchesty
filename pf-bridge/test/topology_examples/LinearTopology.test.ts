@@ -13,9 +13,12 @@ import {ResultCode} from "../../src/message/ResultCode";
 import Pipes from "../../src/Pipes";
 import {ITopologyConfigSkeleton} from "../../src/topology/Configurator";
 import {ICounterProcessInfo} from "../../src/topology/counter/CounterProcess";
+import Terminator from "../../src/topology/terminator/Terminator";
 
 const testTopology: ITopologyConfigSkeleton = {
     id: "linear-topo",
+    topology_id: "linear-topo",
+    topology_name: "linear-topo",
     nodes: [
         {
             id: "first",
@@ -101,8 +104,12 @@ describe("Linear Topology test", () => {
 
         const pip = new Pipes(testTopology);
 
+        // manually set the terminator port not to collide with other tests
+        const dic = pip.getDIContainer();
+        dic.set("topology.terminator", () => new Terminator(8556, dic.get("counter.storage")));
+
         Promise.all([
-            pip.startCounter(8556),
+            pip.startCounter(),
             pip.startNode(testTopology.nodes[0].id),
             pip.startNode(testTopology.nodes[1].id),
             pip.startNode(testTopology.nodes[2].id),
@@ -125,8 +132,8 @@ describe("Linear Topology test", () => {
                             .then(() => {
                                 return ch.bindQueue(
                                     counterResultQueue.name,
-                                    pip.getTopologyConfig().counter.pub.exchange.name,
-                                    pip.getTopologyConfig().counter.pub.routing_key,
+                                    pip.getTopologyConfig(false).counter.pub.exchange.name,
+                                    pip.getTopologyConfig(false).counter.pub.routing_key,
                                 );
                             })
                             .then(() => {
@@ -138,8 +145,8 @@ describe("Linear Topology test", () => {
                     // In this fn we evaluate expected incoming message and state if test is OK or failed
                     const data: ICounterProcessInfo = JSON.parse(msg.content.toString());
                     assert.equal(data.process_id, msgHeaders.headers["pf-process-id"]);
-                    assert.equal(data.total, pip.getTopologyConfig().nodes.length);
-                    assert.equal(data.ok, pip.getTopologyConfig().nodes.length);
+                    assert.equal(data.total, pip.getTopologyConfig(false).nodes.length);
+                    assert.equal(data.ok, pip.getTopologyConfig(false).nodes.length);
                     assert.equal(data.nok, 0);
                     const trace: string[] = [];
                     data.messages.forEach((info) => {

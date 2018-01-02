@@ -12,7 +12,7 @@
       <bpmn:incoming>SequenceFlow_05uqy7z</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_15io5ci</bpmn:outgoing>
     </bpmn:task>
-    <bpmn:task id="Task_0402zik" pipes:pipesType="custom" name="pipedrive-created-person-mapper">
+    <bpmn:task id="Task_0402zik" pipes:pipesType="custom" name="pipedrive-created-event-person-mapper">
       <bpmn:incoming>SequenceFlow_15io5ci</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0geqhfa</bpmn:outgoing>
     </bpmn:task>

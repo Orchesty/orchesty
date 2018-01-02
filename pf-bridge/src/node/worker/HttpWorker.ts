@@ -118,6 +118,16 @@ class HttpWorker implements IWorker {
     }
 
     /**
+     * Creates http request body to be sent
+     *
+     * @param {JobMessage} inMsg
+     * @return {any}
+     */
+    public getHttpRequestBody(inMsg: JobMessage): string {
+        return inMsg.getContent();
+    }
+
+    /**
      *
      * @param {JobMessage} inMsg
      * @return {Headers}
@@ -145,7 +155,7 @@ class HttpWorker implements IWorker {
         };
 
         if (method === "POST" || method === "PATCH" || method === "PUT") {
-            httpParams.body = inMsg.getContent();
+            httpParams.body = this.getHttpRequestBody(inMsg);
         }
 
         return httpParams;

@@ -13,6 +13,12 @@ parameters:
 		host: "http://stream:3030"
 		queue: pipes.stream
 
+	clever:
+		host: 'https://api.dev.clevermonitor.com/v1.2'
+		secret:
+			cert: %appDir%/../cert/clever.pem
+			ca: %appDir%/../cert/ca.crt
+
 cc_api:
 	base_uri: 'https://cleverconn.stage.hanaboso.net/'
 	cert: %appDir%/../cert/stage-staff.pem
@@ -58,6 +64,15 @@ services:
 	authorize_generator_form_factory:
 		class: App\Forms\AuthorizationSettingGeneratorFactory
 
+	distribution_list:
+		class: App\Model\DistributionList(%clever.host%,%clever.secret%)
+
+	# CUSTOM FORMS
+	wise_pop_factory:
+		class: App\Form\Systems\WisePopFormFactory
+	air_table_factory:
+		class: App\Form\Systems\AirTableFormFactory
+
 	# STREAM
 	publish_form_factory:
 		class: App\Forms\PublishFormFactory
@@ -65,5 +80,13 @@ services:
 	subscribe_form_factory:
 		class: App\Forms\SubscribeFormFactory
 
+	# MAPPING
+	data_layout_form_factory:
+		class: App\Forms\DataLayoutFormFactory
+
+	mapping_form_factory:
+		class: App\Forms\MappingFormFactory
+
 extensions:
 	cc_api: CcApi\Bridges\DI\CcApiExtension
+	- WebChemistry\Forms\Controls\DI\MultiplierExtension

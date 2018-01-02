@@ -9,6 +9,7 @@ use CleverConnectors\AppBundle\Model\ProgressCounter\ProgressCounterService;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Airtable\AirtableSystem;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Airtable\Connector\AirtableUpdatedContactConnector;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
+use CleverConnectors\AppBundle\Utils\CMHeaders;
 use DateTime;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Response;
@@ -38,7 +39,9 @@ final class AirtableUpdatedContactConnectorTest extends KernelTestCaseAbstract
 
         $processDto = new ProcessDto();
         $processDto
-            ->setHeaders([])
+            ->setHeaders([
+                CMHeaders::createKey(AirtableSystem::TABLE_URL) => 'some/table',
+            ])
             ->setData(json_encode(['data' => ['system_install' => []], ['settings' => [], 'user' => '123']]));
 
         /** @var AirtableUpdatedContactConnector $syncConn */
@@ -63,14 +66,24 @@ final class AirtableUpdatedContactConnectorTest extends KernelTestCaseAbstract
      */
     private function mockSync()
     {
-        $systemInstal = $this->createMock(SystemInstallRepository::class);
-        $systemInstal->method('getSystemInstall')->willReturn((new SystemInstall()));
+        $sys = new SystemInstall();
+        $sys->setSettings([
+            SystemInstall::FORMS => [
+                [
+                    'table-url' => 'http://someTable',
+                    'list-id'   => 'listId',
+                ],
+            ],
+        ]);
+
+        $systemInstall = $this->createMock(SystemInstallRepository::class);
+        $systemInstall->method('getSystemInstallFromHeaders')->willReturn($sys);
 
         $dm = $this->createMock(DocumentManager::class);
         $dm
             ->expects($this->at(0))
             ->method('getRepository')
-            ->willReturn($systemInstal);
+            ->willReturn($systemInstall);
 
         $lastSync = $this->createMock(LastSyncManager::class);
         $lastSync

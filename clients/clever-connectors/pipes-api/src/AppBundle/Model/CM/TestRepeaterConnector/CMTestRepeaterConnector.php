@@ -9,11 +9,9 @@
 
 namespace CleverConnectors\AppBundle\Model\CM\TestRepeaterConnector;
 
-use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
-use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
 use Predis\Client;
 
 /**
@@ -51,7 +49,6 @@ class CMTestRepeaterConnector implements ConnectorInterface
      * @param ProcessDto $dto
      *
      * @return ProcessDto
-     * @throws ConnectorException
      */
     public function processEvent(ProcessDto $dto): ProcessDto
     {
@@ -62,7 +59,6 @@ class CMTestRepeaterConnector implements ConnectorInterface
      * @param ProcessDto $dto
      *
      * @return ProcessDto
-     * @throws ConnectorException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {
@@ -73,7 +69,6 @@ class CMTestRepeaterConnector implements ConnectorInterface
      * @param ProcessDto $dto
      *
      * @return ProcessDto
-     * @throws CleverConnectorsException
      */
     protected function process(ProcessDto $dto): ProcessDto
     {

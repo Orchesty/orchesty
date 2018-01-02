@@ -6,8 +6,33 @@ services:
     # Nodes
     multi-probe:
       image: 'dkr.hanaboso.net/pipes/pipes/go-multi-probe:dev'
+      environment:
+        REDIS_HOST: 'redis'
+        REDIS_PORT: '6379'
+        REDIS_PASS: ''
+        REDIS_DB: '0'
+      depends_on:
+        - redis
       ports:
         - ${DEV_IP}:8007:8007
+
+    multi-counter:
+      image: 'dkr.hanaboso.net/pipes/pipes/pf-bridge:dev'
+      user: ${DEV_UID}:${DEV_GID}
+      environment:
+        RABBITMQ_HOST: rabbitmq
+        RABBITMQ_PORT: '5672'
+        RABBITMQ_USER: guest
+        RABBITMQ_PASS: guest
+        RABBITMQ_VHOST: /
+        REDIS_HOST: 'redis'
+        REDIS_PORT: '6379'
+        REDIS_PASS: ''
+        REDIS_DB: '0'
+      depends_on:
+        - redis
+        - rabbitmq
+      command: './dist/src/bin/pipes.js start multi_counter'
 
     repeater:
       image: 'dkr.hanaboso.net/pipes/pipes/pf-bridge:dev'

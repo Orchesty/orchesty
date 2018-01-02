@@ -2,18 +2,40 @@
 
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Basecrm\Mapper;
 
+use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
-use CleverConnectors\AppBundle\Model\CM\SubscriberConnector\SubscriberObject\CMSubscriber;
+use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
+use Doctrine\Common\Persistence\ObjectRepository;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
-use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
 
 /**
  * Class BasecrmCreatedContactMapper
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Basecrm\Mapper
  */
-class BasecrmCreatedContactMapper implements CustomNodeInterface
+class BasecrmCreatedContactMapper extends BasecrmContactMapperAbstract
 {
+
+    /**
+     * @var array
+     */
+    protected static $event_types = ['created'];
+
+    /**
+     * @var SystemInstallRepository|ObjectRepository
+     */
+    protected $systemInstallRepository;
+
+    /**
+     * BasecrmUpdatedContactMapper constructor.
+     *
+     * @param DocumentManager $dm
+     */
+    public function __construct(DocumentManager $dm)
+    {
+        $this->systemInstallRepository = $dm->getRepository(SystemInstall::class);
+    }
 
     /**
      * @param ProcessDto $dto
@@ -23,32 +45,20 @@ class BasecrmCreatedContactMapper implements CustomNodeInterface
      */
     public function process(ProcessDto $dto): ProcessDto
     {
-        $item = json_decode($dto->getData(), TRUE);
+        $data = json_decode($dto->getData(), TRUE);
 
-        if (!array_key_exists('data', $item)
-            || !array_key_exists('email', $item['data'])
-            || is_null($item['data']['email'])
-            || is_null($item['data']['id'])
-        ) {
-            throw new CleverConnectorsException(
-                'Missing required email or id field in item data, BaseCRM - createdMapper.',
-                CleverConnectorsException::MISSING_DATA
-            );
+        if ($this->checkEventType($data, $dto)) {
+            $systemInstall = $this->systemInstallRepository->getSystemInstallFromHeaders($dto->getHeaders());
+            $sett          = $systemInstall->getSettings();
+
+            $obj = $this->getSubscriber($data);
+
+            if (array_key_exists(SystemInstall::SELECT_LIST, $sett)) {
+                $obj->setLists([$sett[SystemInstall::SELECT_LIST]]);
+            }
+
+            $dto->setData(json_encode($obj->toArray()));
         }
-
-        $obj = new CMSubscriber();
-        $obj->setEmail($item['data']['email'])
-            ->setForeignId($item['data']['id']);
-
-        if (array_key_exists('first_name', $item['data'])) {
-            $obj->setFirstName($item['data']['first_name'] ?? '');
-        }
-
-        if (array_key_exists('last_name', $item['data'])) {
-            $obj->setLastName($item['data']['last_name'] ?? '');
-        }
-
-        $dto->setData(json_encode($obj->toArray()));
 
         return $dto;
     }

@@ -2,58 +2,31 @@
 
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Pipedrive\Mapper;
 
-use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
-use CleverConnectors\AppBundle\Model\CM\SubscriberConnector\SubscriberObject\CMSubscriber;
-use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
-use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
-
 /**
  * Class PipedriveCreatedPersonMapper
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Pipedrive\Mapper
  */
-class PipedriveCreatedPersonMapper implements CustomNodeInterface
+class PipedriveCreatedPersonMapper extends PipedriveUpdatedPersonMapper
 {
 
     /**
-     * @param ProcessDto $dto
-     *
-     * @return ProcessDto
-     * @throws CleverConnectorsException
+     * @var bool
      */
-    public function process(ProcessDto $dto): ProcessDto
+    protected $includeList = TRUE;
+
+    /**
+     * @param array $data
+     *
+     * @return array|string
+     */
+    protected function getInnerData(array $data)
     {
-        $data = json_decode($dto->getData(), TRUE);
-
-        if (!array_key_exists('data', $data)
-            || !array_key_exists('email', $data['data'])
-            || empty($data['data']['email'][0])
-            || !array_key_exists('value', $data['data']['email'][0])
-        ) {
-            throw new CleverConnectorsException(
-                'Missing required email field in data.',
-                CleverConnectorsException::MISSING_DATA
-            );
+        if (strtotime($data['current']['update_time']) - strtotime($data['current']['add_time']) > 5) {
+            return self::OMMIT;
         }
 
-        $data = $data['data'];
-
-        $obj = new CMSubscriber();
-        $obj->setEmail($data['email'][0]['value']);
-
-        if (array_key_exists('first_name', $data)) {
-            $obj->setFirstName($data['first_name']);
-        }
-
-        if (array_key_exists('last_name', $data)) {
-            $obj->setLastName($data['last_name'] ?? '');
-        }
-
-        if (array_key_exists('id', $data)) {
-            $obj->setForeignId($data['id']);
-        }
-
-        return $dto->setData(json_encode($obj->toArray()));
+        return $data['current'];
     }
 
 }

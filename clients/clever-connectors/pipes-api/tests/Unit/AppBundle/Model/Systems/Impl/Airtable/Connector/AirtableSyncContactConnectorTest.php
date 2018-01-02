@@ -9,6 +9,7 @@ use CleverConnectors\AppBundle\Model\ProgressCounter\ProgressCounterService;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Airtable\AirtableSystem;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Airtable\Connector\AirtableSyncContactConnector;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
+use CleverConnectors\AppBundle\Utils\CMHeaders;
 use DateTime;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Response;
@@ -38,7 +39,9 @@ final class AirtableSyncContactConnectorTest extends KernelTestCaseAbstract
 
         $processDto = new ProcessDto();
         $processDto
-            ->setHeaders([])
+            ->setHeaders([
+                CMHeaders::createKey(AirtableSystem::TABLE_URL) => 'some/table',
+            ])
             ->setData(json_encode(['data' => ['system_install' => []], ['settings' => [], 'user' => '123']]));
 
         /** @var AirtableSyncContactConnector $syncConn */

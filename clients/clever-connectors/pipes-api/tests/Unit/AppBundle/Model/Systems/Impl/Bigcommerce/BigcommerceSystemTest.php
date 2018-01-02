@@ -55,8 +55,8 @@ final class BigcommerceSystemTest extends KernelTestCaseAbstract
     public function testGetSubscribeRequest(): void
     {
         $webhook = new WebhookSubscribes(
-            'bigcommerce-create-customer-connector',
-            'bigcommerce-create-customer'
+            'bigcommerce-created-customer-connector',
+            'bigcommerce-created-customer'
         );
         $dto     = $this->system->getSubscribeRequester($this->systemInstall)
             ->getRequestDto([
@@ -74,8 +74,8 @@ final class BigcommerceSystemTest extends KernelTestCaseAbstract
         ], Json::decode($dto->getBody(), TRUE));
 
         $webhook = new WebhookSubscribes(
-            'bigcommerce-update-customer-connector',
-            'bigcommerce-update-customer'
+            'bigcommerce-updated-customer-connector',
+            'bigcommerce-updated-customer'
         );
 
         $dto = $this->system->getSubscribeRequester($this->systemInstall)
@@ -94,8 +94,8 @@ final class BigcommerceSystemTest extends KernelTestCaseAbstract
         ], Json::decode($dto->getBody(), TRUE));
 
         $webhook = new WebhookSubscribes(
-            'bigcommerce-delete-customer-connector',
-            'bigcommerce-delete-customer'
+            'bigcommerce-deleted-customer-connector',
+            'bigcommerce-deleted-customer'
         );
 
         $dto = $this->system->getSubscribeRequester($this->systemInstall)
@@ -172,19 +172,20 @@ final class BigcommerceSystemTest extends KernelTestCaseAbstract
     {
         $form = $this->system->getSettingFields($this->systemInstall);
 
-        $this->assertEquals(4, count($form));
+        $this->assertEquals(5, count($form));
         $this->assertEquals([
             0 => [
                 'type'        => 'text',
                 'key'         => 'store_id',
-                'label'       => 'Store ID (XXX part in https://store-XXX.mybigcommerce.com)',
+                'label'       => 'Store ID',
                 'value'       => 'ukcfcghi',
                 'required'    => TRUE,
                 'read_only'   => FALSE,
                 'disabled'    => FALSE,
-                'description' => '',
-                'action'      => '',
+                'description' => 'Store ID (XXX part in https://store-XXX.mybigcommerce.com)',
                 'choices'     => [],
+                'action'      => '',
+                'depends_on'  => '',
             ],
             1 => [
                 'type'        => 'text',
@@ -195,8 +196,9 @@ final class BigcommerceSystemTest extends KernelTestCaseAbstract
                 'read_only'   => FALSE,
                 'disabled'    => FALSE,
                 'description' => '',
-                'action'      => '',
                 'choices'     => [],
+                'action'      => '',
+                'depends_on'  => '',
             ],
             2 => [
                 'type'        => 'text',
@@ -207,8 +209,9 @@ final class BigcommerceSystemTest extends KernelTestCaseAbstract
                 'read_only'   => FALSE,
                 'disabled'    => FALSE,
                 'description' => '',
-                'action'      => '',
                 'choices'     => [],
+                'action'      => '',
+                'depends_on'  => '',
             ],
             3 => [
                 'type'        => 'checkbox',
@@ -219,8 +222,22 @@ final class BigcommerceSystemTest extends KernelTestCaseAbstract
                 'read_only'   => FALSE,
                 'disabled'    => FALSE,
                 'description' => '',
-                'action'      => '',
                 'choices'     => [],
+                'action'      => '',
+                'depends_on'  => '',
+            ],
+            4 => [
+                'type'        => 'select',
+                'key'         => 'list',
+                'label'       => 'Distribution list',
+                'value'       => NULL,
+                'required'    => FALSE,
+                'read_only'   => FALSE,
+                'disabled'    => FALSE,
+                'description' => '',
+                'choices'     => [],
+                'action'      => '',
+                'depends_on'  => '',
             ],
         ], $form);
     }

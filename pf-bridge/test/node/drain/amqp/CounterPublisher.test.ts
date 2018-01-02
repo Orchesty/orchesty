@@ -103,6 +103,7 @@ describe("CounterPublisher", () => {
                             "pf-sequence-id": `${msgSeqId}`,
                             "pf-node-id": settings.node_label.node_id,
                             "pf-node-name": settings.node_label.node_name,
+                            "pf-topology-id": settings.node_label.topology_id,
                         },
                         type: "counter_message",
                         appId: settings.node_label.id,

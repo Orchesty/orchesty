@@ -132,6 +132,7 @@ class SystemManager
      * @param string $key
      *
      * @return SystemInterface
+     * @throws SystemException
      */
     public function getSystem(string $key): SystemInterface
     {
@@ -143,6 +144,7 @@ class SystemManager
      * @param string|null $group
      *
      * @return SystemInterface[]
+     * @throws SystemException
      */
     public function getSystems(?string $user = NULL, ?string $group = NULL): array
     {
@@ -153,6 +155,7 @@ class SystemManager
      * @param string $user
      *
      * @return SystemInterface[]
+     * @throws SystemException
      */
     public function getUserSystems(string $user): array
     {
@@ -170,6 +173,7 @@ class SystemManager
      * @param SystemInstall $systemInstall
      *
      * @return array
+     * @throws SystemException
      */
     public function getUserSystem(SystemInstall $systemInstall): array
     {
@@ -191,6 +195,7 @@ class SystemManager
      * @param bool   $synchronized
      *
      * @return string[]
+     * @throws SystemException
      */
     public function getSystemUsers(string $system, bool $synchronized): array
     {
@@ -233,7 +238,6 @@ class SystemManager
      * @param string $system
      *
      * @return SystemInstall|null
-     * @throws SystemException
      */
     public function getSystemInstallOrNull(string $user, string $system): ?SystemInstall
     {
@@ -249,6 +253,7 @@ class SystemManager
      * @param string $token
      *
      * @return SystemInstall
+     * @throws SystemException
      */
     public function installSystem(string $user, string $system, string $token): SystemInstall
     {
@@ -295,6 +300,7 @@ class SystemManager
      *
      * @return SystemInstall
      * @throws SystemException
+     * @throws CleverConnectorsException
      */
     public function saveSystemSettings(string $user, string $systemKey, array $data): SystemInstall
     {
@@ -338,7 +344,7 @@ class SystemManager
      * @param string $system
      *
      * @return int
-     * @throws CleverConnectorsException
+     * @throws SystemException
      */
     public function synchronizeSubscriptions(string $user, string $system): int
     {
@@ -353,6 +359,7 @@ class SystemManager
      * @param string $password
      *
      * @return SystemInstall
+     * @throws SystemException
      */
     public function setPassword(string $user, string $systemKey, string $password): SystemInstall
     {
@@ -373,6 +380,8 @@ class SystemManager
      * @param string $user
      * @param string $systemKey
      * @param string $redirectUrl
+     *
+     * @throws SystemException
      */
     public function authorize(string $user, string $systemKey, string $redirectUrl): void
     {
@@ -392,6 +401,7 @@ class SystemManager
      * @param array  $data
      *
      * @return SystemInstall
+     * @throws SystemException
      */
     public function saveToken(string $user, string $systemKey, array $data): SystemInstall
     {
@@ -412,6 +422,8 @@ class SystemManager
      * @param array         $webhooks
      * @param Node[]        $nodes
      * @param LastSync[]    $syncs
+     *
+     * @throws SystemException
      */
     public function deleteTopology(
         ?Topology $topology = NULL,
@@ -459,7 +471,10 @@ class SystemManager
         $system = $this->systemLoader->getSystem($systemKey);
 
         if (method_exists($system, $action)) {
-            return $system->$action($systemInstall, $data);
+            $output = $system->$action($systemInstall, $data);
+            $this->dm->flush();
+
+            return $output;
         }
 
         throw new SystemException(
@@ -476,6 +491,9 @@ class SystemManager
      * @param SystemInterface $system
      * @param SystemInstall   $systemInstall
      * @param array           $data
+     *
+     * @throws CleverConnectorsException
+     * @throws SystemException
      */
     protected function activateEvents(SystemInterface $system, SystemInstall $systemInstall, array &$data): void
     {
@@ -486,6 +504,8 @@ class SystemManager
 
     /**
      * @param SystemInstall $systemInstall
+     *
+     * @throws SystemException
      */
     protected function subscribeWebhooks(SystemInstall $systemInstall): void
     {
@@ -500,6 +520,8 @@ class SystemManager
 
     /**
      * @param SystemInstall $systemInstall
+     *
+     * @throws SystemException
      */
     protected function updateWebhooks(SystemInstall $systemInstall): void
     {
@@ -514,6 +536,8 @@ class SystemManager
 
     /**
      * @param SystemInstall $systemInstall
+     *
+     * @throws SystemException
      */
     protected function unSubscribeWebhooks(SystemInstall $systemInstall): void
     {
@@ -533,6 +557,7 @@ class SystemManager
      * @param array  $data
      *
      * @return array
+     * @throws SystemException
      */
     private function runTopologies(string $user, string $system, string $topology, array $data): array
     {
@@ -565,6 +590,8 @@ class SystemManager
     /**
      * @param SystemInstall $systemInstall
      * @param string        $token
+     *
+     * @throws SystemException
      */
     private function runSwitchTokenTopologies(SystemInstall $systemInstall, string $token): void
     {

@@ -8,6 +8,7 @@
 
 namespace App\Forms;
 
+use AlesWita\FormRenderer\BootstrapV4Renderer;
 use Nette\Application\UI\Form;
 
 /**
@@ -34,6 +35,8 @@ class SystemFilterFormFactory
 
         $form
             ->addSubmit('filter', 'Filter');
+
+        $form->setRenderer(new BootstrapV4Renderer);
 
         return $form;
     }

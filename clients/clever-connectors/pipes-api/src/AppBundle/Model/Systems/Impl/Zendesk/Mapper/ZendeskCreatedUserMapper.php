@@ -2,7 +2,10 @@
 
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Zendesk\Mapper;
 
-use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
+use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
+use Doctrine\Common\Persistence\ObjectRepository;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 
 /**
@@ -10,32 +13,38 @@ use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Zendesk\Mapper
  */
-class ZendeskCreatedUserMapper extends ZendeskUpdatedUserMapperAbstract
+class ZendeskCreatedUserMapper extends ZendeskUserMapperAbstract
 {
 
     /**
-     * @param ProcessDto $dto
-     *
-     * @return ProcessDto
-     * @throws CleverConnectorsException
+     * @var bool
      */
-    public function process(ProcessDto $dto): ProcessDto
+    protected $includeList = TRUE;
+
+    /**
+     * @var SystemInstallRepository|ObjectRepository
+     */
+    protected $systemInstallRepository;
+
+    /**
+     * ZendeskCreatedUserMapper constructor.
+     *
+     * @param DocumentManager $dm
+     */
+    public function __construct(DocumentManager $dm)
     {
-        $data = json_decode($dto->getData(), TRUE);
+        $this->systemInstallRepository = $dm->getRepository(SystemInstall::class);
+    }
 
-        if (!array_key_exists('user', $data)
-            || !array_key_exists('email', $data['user'])
-            || empty($data['user']['email'] ?? '')
-        ) {
-            throw new CleverConnectorsException(
-                'Missing required email field in data.',
-                CleverConnectorsException::MISSING_DATA
-            );
-        }
-
-        $obj = $this->createSubscriber($data['user']);
-
-        return $dto->setData(json_encode($obj->toArray()));
+    /**
+     * @param ProcessDto $dto
+     * @param array      $data
+     *
+     * @return bool
+     */
+    protected function omit(ProcessDto $dto, array $data): bool
+    {
+        return $data['created_at'] !== $data['updated_at'];
     }
 
 }

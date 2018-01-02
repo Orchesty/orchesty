@@ -8,6 +8,8 @@
 
 namespace Tests\ApiEntity;
 
+use CcApi\ApiEntity\DataLayout;
+use CcApi\ApiEntity\MapTemplate;
 use CcApi\ApiEntity\SettingField;
 use CcApi\ApiEntity\UserSystem;
 use CcApi\ApiEntity\UserSystemFactory;
@@ -50,6 +52,7 @@ class UserSystemFactoryTest extends TestCase
                     'type'           => 'type',
                     'name'           => 'name',
                     'description'    => 'desc',
+                    'auth_type'      => 'oauth',
                     'token'          => 'token',
                     'authorized'     => TRUE,
                     'synchronized'   => TRUE,
@@ -64,21 +67,48 @@ class UserSystemFactoryTest extends TestCase
                             'unknown'  => 'unknown',
                         ],
                     ],
+                    'custom_form'    => [
+                        [
+                            "table_id" => "#123",
+                        ],
+                    ],
+                    'actions'        => ['action1', 'action2'],
+                    'data_layouts'   => [
+                        ['_id' => '1', 'action' => 'action'],
+                    ],
+                    'map_templates'  => [
+                        ['_id' => '1', 'action' => 'action', 'direction' => 'in'],
+                    ],
                 ],
                 (new UserSystem())
                     ->setKey('key')
                     ->setType('type')
                     ->setName('name')
+                    ->setAuthType('oauth')
                     ->setDescription('desc')
                     ->setToken('token')
                     ->setAuthorized(TRUE)
                     ->setSynchronized(TRUE)
-                    ->addSettingField((new SettingField())
-                        ->setKey('key')
-                        ->setType('type')
-                        ->setValue('value')
-                        ->setLabel('label')
-                        ->setRequired(TRUE)
+                    ->addSettingField(
+                        (new SettingField())
+                            ->setKey('key')
+                            ->setType('type')
+                            ->setValue('value')
+                            ->setLabel('label')
+                            ->setRequired(TRUE)
+                    )
+                    ->setCustomForm([['table_id' => '#123']])
+                    ->setActions(['action1', 'action2'])
+                    ->addDataLayout(
+                        (new DataLayout())
+                            ->setId('1')
+                            ->setAction('action')
+                    )
+                    ->addMapTemplate(
+                        (new MapTemplate())
+                            ->setId('1')
+                            ->setAction('action')
+                            ->setDirection('in')
                     ),
             ],
         ];

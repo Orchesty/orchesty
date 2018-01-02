@@ -36,6 +36,30 @@ services:
           - rabbitmq
         command: bash -c 'while ! [ -f vendor/autoload.php ];do sleep 1; echo "sleep 1"; done; bin/console rabbit-mq:async-consumer batch-connector'
 
+    topology-controlling-consumer:
+        image: dkr.hanaboso.net/pipes/pipes/php-dev:dev
+        user: ${DEV_UID}:${DEV_GID}
+        working_dir: /var/www/pipes/clients/clever-connectors/pipes-api
+        environment:
+          DEV_UID: ${DEV_UID}
+          DEV_GID: ${DEV_GID}
+          GENERATOR_PATH: ${GENERATOR_PATH}
+          DOCKER_NETWORK: ${COMPOSE_PROJECT_NAME}_default
+          PROJECT_SOURCE_PATH: ${PROJECT_SOURCE_PATH}
+          DOCKER_GID: ${DOCKER_GID}
+          DOCKER_SOCKET_PATH: ${DOCKER_SOCKET_PATH}
+        volumes:
+          - ../../:/var/www/pipes
+          - ${SSH_AUTH_SOCK}:/ssh-agent
+          - ./../topology:${GENERATOR_PATH}
+          - ${DOCKER_SOCKET_PATH}:/var/run/docker.sock
+        depends_on:
+          - mongo
+          - rabbitmq
+        group_add:
+          - ${DOCKER_GID}
+        command: bash -c 'while ! [ -f vendor/autoload.php ];do sleep 1; echo "sleep 1"; done; bin/console rabbit-mq:consumer topology-controlling'
+
     status-service:
         image: dkr.hanaboso.net/pipes/pipes/php-dev:dev
         user: ${DEV_UID}:${DEV_GID}
@@ -54,8 +78,39 @@ services:
 
     multi-probe:
       image: 'dkr.hanaboso.net/pipes/pipes/go-multi-probe:dev'
+      environment:
+        REDIS_HOST: 'redis'
+        REDIS_PORT: '6379'
+        REDIS_PASS: ''
+        REDIS_DB: '0'
+      depends_on:
+        - redis
       ports:
         - ${DEV_IP}:8007:8007
+
+    multi-counter:
+      image: 'dkr.hanaboso.net/pipes/pipes/pf-bridge:dev'
+      user: ${DEV_UID}:${DEV_GID}
+      environment:
+        RABBITMQ_HOST: rabbitmq
+        RABBITMQ_PORT: '5672'
+        RABBITMQ_USER: guest
+        RABBITMQ_PASS: guest
+        RABBITMQ_VHOST: /
+        REDIS_HOST: 'redis'
+        REDIS_PORT: '6379'
+        REDIS_PASS: ''
+        REDIS_DB: '0'
+      ports:
+        - ${DEV_IP}:8005:8005
+      networks:
+        default:
+          aliases:
+            - multi-counter-api
+      depends_on:
+        - rabbitmq
+        - redis
+      command: './dist/src/bin/pipes.js start multi_counter'
 
     repeater:
       image: 'dkr.hanaboso.net/pipes/pipes/pf-bridge:dev'
@@ -88,6 +143,7 @@ services:
         depends_on:
           - mongo
           - rabbitmq
+          - cron-api
 
     # Services
     topology-fpm:
@@ -286,7 +342,7 @@ services:
           - DEV_UID={DEV_UID}
           - DEV_GID={DEV_GID}
         ports:
-          - ${DEV_IP}:8050:5000
+          - ${DEV_IP}:5000:5000
         links:
           - mongo
         depends_on:

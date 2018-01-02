@@ -1,20 +1,27 @@
 package probe
 
 type topologyBridgeDebugJson struct {
-	port string
-	host string
+	Port int
+	Host string
 	Url  string
 }
 
-type topologyBridgeJson struct {
+type topologyBridgeLabelJson struct {
 	ID       string
-	NodeId   string
-	NodeName string
-	Next     []string
-	Debug    topologyBridgeDebugJson
+	NodeId   string `json:"node_id"`
+	NodeName string `json:"node_name"`
 }
 
-type topologyJson struct {
-	ID      string
-	Bridges []topologyBridgeJson `json:"nodes"`
+type topologyBridgeJson struct {
+	ID    string
+	Label topologyBridgeLabelJson
+	Debug topologyBridgeDebugJson
+	Next  []string
+}
+
+type TopologyJson struct {
+	ID           string
+	TopologyId   string               `json:"topology_id"`
+	TopologyName string               `json:"topology_name"`
+	Bridges      []topologyBridgeJson `json:"nodes"`
 }

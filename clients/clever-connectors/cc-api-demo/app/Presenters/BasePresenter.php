@@ -79,6 +79,9 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 
     /**
      * @param Form $form
+     *
+     * @throws Nette\Application\AbortException
+     * @throws Nette\Security\AuthenticationException
      */
     public function processLogin(Form $form)
     {
@@ -101,7 +104,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
     }
 
     /**
-     *
+     * @throws Nette\Application\AbortException
      */
     public function processLogout()
     {

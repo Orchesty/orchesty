@@ -74,7 +74,7 @@ class CounterProcess {
             processInfo.success = false;
         }
 
-        processInfo.total += cm.getMultiplier() * cm.getFollowing();
+        processInfo.total = processInfo.total + (cm.getMultiplier() * cm.getFollowing());
 
         const log: ICounterLog = {node: cm.getNodeId(), resultCode: cm.getResultCode(), message: cm.getResultMsg()};
         processInfo.messages.push(log);
@@ -90,8 +90,6 @@ class CounterProcess {
      * @private
      */
     public static isProcessFinished(job: ICounterProcessInfo) {
-        logger.info(`Counter is process finished called. Data: ${JSON.stringify(job)}`);
-
         if (job.nok + job.ok === job.total) {
             return true;
         }

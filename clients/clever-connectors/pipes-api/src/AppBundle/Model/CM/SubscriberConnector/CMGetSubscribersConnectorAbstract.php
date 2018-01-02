@@ -4,6 +4,7 @@ namespace CleverConnectors\AppBundle\Model\CM\SubscriberConnector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\CM\CMAuthorization;
+use CleverConnectors\AppBundle\Model\ProgressCounter\ProgressCounterService;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use Doctrine\Common\Persistence\ObjectRepository;
@@ -55,17 +56,29 @@ abstract class CMGetSubscribersConnectorAbstract extends CMAuthorization impleme
     protected $secret;
 
     /**
+     * @var ProgressCounterService
+     */
+    private $counterService;
+
+    /**
      * CMSubscriberConnectorAbstract constructor.
      *
-     * @param DocumentManager   $dm
-     * @param CurlSenderFactory $factory
-     * @param array             $secret
+     * @param DocumentManager        $dm
+     * @param CurlSenderFactory      $factory
+     * @param ProgressCounterService $counterService
+     * @param array                  $secret
      */
-    function __construct(DocumentManager $dm, CurlSenderFactory $factory, array $secret)
+    function __construct(
+        DocumentManager $dm,
+        CurlSenderFactory $factory,
+        ProgressCounterService $counterService,
+        array $secret
+    )
     {
         $this->systemInstallRepository = $dm->getRepository(SystemInstall::class);
         $this->factory                 = $factory;
         $this->secret                  = $secret;
+        $this->counterService          = $counterService;
     }
 
     /**
@@ -117,10 +130,11 @@ abstract class CMGetSubscribersConnectorAbstract extends CMAuthorization impleme
     }
 
     /**
-     * @param CurlSender $sender
-     * @param callable   $callbackItem
-     * @param RequestDto $requestDto
-     * @param int        $page
+     * @param CurlSender  $sender
+     * @param callable    $callbackItem
+     * @param RequestDto  $requestDto
+     * @param int         $page
+     * @param null|string $processId
      *
      * @return PromiseInterface
      */
@@ -128,18 +142,23 @@ abstract class CMGetSubscribersConnectorAbstract extends CMAuthorization impleme
         CurlSender $sender,
         callable $callbackItem,
         RequestDto $requestDto,
-        int $page = 1
+        int $page = 1,
+        ?string $processId = NULL
     ): PromiseInterface
     {
-        $requestDto->setUri(new Uri($this->getUrl(($page - 1) * self::COUNT)));
+        $requestDto->setUri(new Uri($this->getUrl(($page - 1) * static::COUNT)));
 
         return $this->fetchData($sender, $requestDto)->then(
-            function (ResponseInterface $response) use ($sender, $requestDto, $callbackItem, $page) {
+            function (ResponseInterface $response) use ($sender, $requestDto, $callbackItem, $page, $processId) {
                 if ($response->getStatusCode() === 200) {
                     $callbackItem($this->createSuccessMessage($response, $page));
 
-                    return $this->getPage($sender, $callbackItem, $requestDto, $page + 1);
+                    return $this->getPage($sender, $callbackItem, $requestDto, $page + 1, $processId);
                 } else {
+                    if ($processId) {
+                        $this->counterService->setTotal($processId, $page);
+                    }
+
                     return resolve();
                 }
             }

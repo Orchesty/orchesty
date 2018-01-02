@@ -29,7 +29,12 @@ class UniversalMapper implements MapperInterface
     /**
      * @var bool
      */
-    private $allowedEmptyValues = FALSE;
+    private $allowedEmptyOutputValues = FALSE;
+
+    /**
+     * @var bool
+     */
+    private $allowedMissingKey = FALSE;
 
     /**
      * @param bool $allowedEmptyValues
@@ -38,7 +43,19 @@ class UniversalMapper implements MapperInterface
      */
     public function setAllowedEmptyValues(bool $allowedEmptyValues): UniversalMapper
     {
-        $this->allowedEmptyValues = $allowedEmptyValues;
+        $this->allowedEmptyOutputValues = $allowedEmptyValues;
+
+        return $this;
+    }
+
+    /**
+     * @param bool $allowedMissingKey
+     *
+     * @return UniversalMapper
+     */
+    public function setAllowedMissingKey(bool $allowedMissingKey): UniversalMapper
+    {
+        $this->allowedMissingKey = $allowedMissingKey;
 
         return $this;
     }
@@ -140,6 +157,10 @@ class UniversalMapper implements MapperInterface
             return $data[$key];
         }
 
+        if ($this->allowedMissingKey) {
+            return '';
+        }
+
         throw new MapperException(
             sprintf('Key "%s" not found in data!', $key),
             MapperException::MISSING_KEY
@@ -163,6 +184,10 @@ class UniversalMapper implements MapperInterface
 
         if (array_key_exists($firstKey, $data) && is_scalar($data[$firstKey])) {
             return $data[$firstKey];
+        }
+
+        if ($this->allowedMissingKey) {
+            return '';
         }
 
         throw new MapperException(
@@ -326,7 +351,7 @@ class UniversalMapper implements MapperInterface
      */
     private function isEmptyAndNotAllowed($data): bool
     {
-        return empty($data) && !$this->allowedEmptyValues;
+        return empty($data) && !$this->allowedEmptyOutputValues;
     }
 
 }

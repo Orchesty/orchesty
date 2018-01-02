@@ -20,7 +20,7 @@
       <bpmn:incoming>SequenceFlow_01bumgd</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1atc94c</bpmn:outgoing>
     </bpmn:task>
-    <bpmn:task id="Task_0tcuom7" pipes:pipesType="custom" name="quickbooks-created-customer-mapper">
+    <bpmn:task id="Task_0tcuom7" pipes:pipesType="custom" name="quickbooks-created-event-customer-mapper">
       <bpmn:incoming>SequenceFlow_1atc94c</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1abu7c2</bpmn:outgoing>
     </bpmn:task>

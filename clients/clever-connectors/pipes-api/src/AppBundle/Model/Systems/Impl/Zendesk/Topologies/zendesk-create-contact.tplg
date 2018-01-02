@@ -12,7 +12,7 @@
       <bpmn:incoming>SequenceFlow_115zieo</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0ed35ag</bpmn:outgoing>
     </bpmn:task>
-    <bpmn:task id="Task_059ac9z" pipes:pipesType="custom" name="zendesk-created-user-mapper">
+    <bpmn:task id="Task_059ac9z" pipes:pipesType="custom" name="zendesk-created-event-user-mapper">
       <bpmn:incoming>SequenceFlow_0ed35ag</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_188rtbh</bpmn:outgoing>
     </bpmn:task>

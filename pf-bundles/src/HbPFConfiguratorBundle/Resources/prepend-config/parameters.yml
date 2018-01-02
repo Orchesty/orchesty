@@ -1,9 +1,9 @@
 parameters:
-    generator_path: %env(GENERATOR_PATH)%
-    env(GENERATOR_PATH): %kernel.project_dir%/topology
-    docker_network: %env(DOCKER_NETWORK)%
-    env(DOCKER_NETWORK): demo_default
-    project_source_path: %env(PROJECT_SOURCE_PATH)%
+    generator_path: "%env(GENERATOR_PATH)%"
+    env(GENERATOR_PATH): "%kernel.project_dir%/topology"
+    docker_network: "%env(DOCKER_NETWORK)%"
+    env(DOCKER_NETWORK): "demo_default"
+    project_source_path: "%env(PROJECT_SOURCE_PATH)%"
     env(PROJECT_SOURCE_PATH): null
 
 

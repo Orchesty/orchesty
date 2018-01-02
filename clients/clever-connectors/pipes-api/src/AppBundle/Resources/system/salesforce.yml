@@ -53,9 +53,15 @@ services:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Salesforce\Mapper\SalesforceCreateContactMapper
         arguments:
 
+    hbpf.custom_node.salesforce-created-contact-mapper:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Salesforce\Mapper\SalesforceCreatedContactMapper
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+
     hbpf.custom_node.salesforce-updated-contact-mapper:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Salesforce\Mapper\SalesforceUpdatedContactMapper
         arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
 
     hbpf.custom_node.salesforce-deleted-contact-mapper:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Salesforce\Mapper\SalesforceDeletedContactMapper

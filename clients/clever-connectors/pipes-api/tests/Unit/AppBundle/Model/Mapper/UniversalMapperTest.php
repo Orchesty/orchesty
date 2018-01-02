@@ -197,7 +197,7 @@ final class UniversalMapperTest extends TestCase
      * @throws MapperException
      * @throws CleverConnectorsException
      */
-    public function testProcessItemFlatNonExist(): void
+    public function testProcessItemFlatNonExistErr(): void
     {
         $data     = ['text' => 'string'];
         $template = $this->getMap(['bad_key']);
@@ -210,6 +210,43 @@ final class UniversalMapperTest extends TestCase
         $mapper
             ->setAllowedEmptyValues(TRUE)
             ->process($template, $dto);
+    }
+
+    /**
+     * @covers \CleverConnectors\AppBundle\Model\Mapper\UniversalMapper::setAllowedMissingKey()
+     * @covers \CleverConnectors\AppBundle\Model\Mapper\UniversalMapper::process()
+     * @covers \CleverConnectors\AppBundle\Model\Mapper\UniversalMapper::getDataFromInputFields()
+     * @covers \CleverConnectors\AppBundle\Model\Mapper\UniversalMapper::getDataWithFlatKey()
+     * @throws MapperException
+     * @throws CleverConnectorsException
+     */
+    public function testProcessItemFlatNonExist(): void
+    {
+        $data     = ['text' => 'string'];
+        $template = $this->getMap(['bad_key']);
+
+        $dto    = $this->getDto(json_encode($data));
+        $mapper = new UniversalMapper();
+
+        $res  = $mapper
+            ->setAllowedEmptyValues(TRUE)
+            ->setAllowedMissingKey(TRUE)
+            ->process($template, $dto);
+        $data = json_decode($res->getData(), TRUE);
+        self::assertTrue(is_array($data));
+        self::assertArrayHasKey(TypeEnum::TEXT, $data);
+        self::assertArrayHasKey(TypeEnum::URL, $data);
+        self::assertArrayHasKey(TypeEnum::DATE, $data);
+        self::assertArrayHasKey(TypeEnum::BOOL, $data);
+        self::assertArrayHasKey(TypeEnum::NUMBER, $data);
+        self::assertArrayHasKey(TypeEnum::EMAIL, $data);
+
+        self::assertEquals('', $data[TypeEnum::TEXT]);
+        self::assertEquals('', $data[TypeEnum::URL]);
+        self::assertNotEmpty($data[TypeEnum::DATE]);
+        self::assertEquals(FALSE, $data[TypeEnum::BOOL]);
+        self::assertEquals(0, $data[TypeEnum::NUMBER]);
+        self::assertEquals('', $data[TypeEnum::EMAIL]);
     }
 
     /**
@@ -272,7 +309,7 @@ final class UniversalMapperTest extends TestCase
      * @throws MapperException
      * @throws CleverConnectorsException
      */
-    public function testProcessItemInnerNonExist(): void
+    public function testProcessItemInnerNonExistErr(): void
     {
         $data     = ['inner' => ['string' => 'string'],];
         $template = $this->getMap(['inner.bad_key']);
@@ -285,6 +322,43 @@ final class UniversalMapperTest extends TestCase
         $mapper
             ->setAllowedEmptyValues(TRUE)
             ->process($template, $dto);
+    }
+
+    /**
+     * @covers \CleverConnectors\AppBundle\Model\Mapper\UniversalMapper::setAllowedMissingKey()
+     * @covers \CleverConnectors\AppBundle\Model\Mapper\UniversalMapper::process()
+     * @covers \CleverConnectors\AppBundle\Model\Mapper\UniversalMapper::getDataFromInputFields()
+     * @covers \CleverConnectors\AppBundle\Model\Mapper\UniversalMapper::getDataWithInnerKey()
+     * @throws MapperException
+     * @throws CleverConnectorsException
+     */
+    public function testProcessItemInnerNonExist(): void
+    {
+        $data     = ['inner' => ['string' => 'string'],];
+        $template = $this->getMap(['inner.bad_key']);
+
+        $dto    = $this->getDto(json_encode($data));
+        $mapper = new UniversalMapper();
+
+        $res  = $mapper
+            ->setAllowedMissingKey(TRUE)
+            ->setAllowedEmptyValues(TRUE)
+            ->process($template, $dto);
+        $data = json_decode($res->getData(), TRUE);
+        self::assertTrue(is_array($data));
+        self::assertArrayHasKey(TypeEnum::TEXT, $data);
+        self::assertArrayHasKey(TypeEnum::URL, $data);
+        self::assertArrayHasKey(TypeEnum::DATE, $data);
+        self::assertArrayHasKey(TypeEnum::BOOL, $data);
+        self::assertArrayHasKey(TypeEnum::NUMBER, $data);
+        self::assertArrayHasKey(TypeEnum::EMAIL, $data);
+
+        self::assertEquals('', $data[TypeEnum::TEXT]);
+        self::assertEquals('', $data[TypeEnum::URL]);
+        self::assertNotEmpty($data[TypeEnum::DATE]);
+        self::assertEquals(FALSE, $data[TypeEnum::BOOL]);
+        self::assertEquals(0, $data[TypeEnum::NUMBER]);
+        self::assertEquals('', $data[TypeEnum::EMAIL]);
     }
 
     /**

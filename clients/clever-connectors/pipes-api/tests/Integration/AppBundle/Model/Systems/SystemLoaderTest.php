@@ -2,6 +2,7 @@
 
 namespace Tests\Integration\AppBundle\Model\Systems;
 
+use AppKernel;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\SystemLoader;
 use Tests\Integration\AppBundle\Model\Systems\Impl\NullSystem;
@@ -37,6 +38,34 @@ final class SystemLoaderTest extends KernelTestCaseAbstract
         $this->assertInstanceOf(NullSystem::class, $this->loader->getSystem('null.user'));
         $this->assertInstanceOf(NullSystem::class, $this->loader->getSystem('null.group'));
         $this->assertInstanceOf(NullSystem::class, $this->loader->getSystem('null.user.group'));
+    }
+
+    /**
+     *
+     */
+    public function testGetSystems(): void
+    {
+        $systems = $this->loader->getSystems();
+        $this->assertGreaterThan(10, count($systems));
+        $this->assertInstanceOf(NullSystem::class, $systems[0]);
+        $this->assertInstanceOf(NullSystem::class, $systems[1]);
+        $this->assertInstanceOf(NullSystem::class, $systems[2]);
+    }
+
+    /**
+     *
+     */
+    public function testGetSystemsInProduction(): void
+    {
+        $kernel = new AppKernel('prod', TRUE);
+        $kernel->boot();
+        $this->loader = $kernel->getContainer()->get('cc.systems.loader');
+
+        $systems = $this->loader->getSystems();
+        $this->assertGreaterThan(10, count($systems));
+        $this->assertNotInstanceOf(NullSystem::class, $systems[0]);
+        $this->assertNotInstanceOf(NullSystem::class, $systems[1]);
+        $this->assertNotInstanceOf(NullSystem::class, $systems[2]);
     }
 
     /**

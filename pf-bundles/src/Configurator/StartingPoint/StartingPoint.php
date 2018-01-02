@@ -11,6 +11,7 @@ namespace Hanaboso\PipesFramework\Configurator\StartingPoint;
 use Bunny\Channel;
 use DateTime;
 use DateTimeZone;
+use Exception;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
@@ -91,8 +92,8 @@ class StartingPoint implements LoggerAwareInterface
     {
         return sprintf(
             self::QUEUE_PATTERN,
-            GeneratorUtils::createServiceName(GeneratorUtils::normalizeName($topology->getId(), $topology->getName())),
-            GeneratorUtils::createServiceName(GeneratorUtils::normalizeName($node->getId(), $node->getName()))
+            GeneratorUtils::createNormalizedServiceName($topology->getId(), $topology->getName()),
+            GeneratorUtils::createNormalizedServiceName($node->getId(), $node->getName())
         );
     }
 
@@ -105,7 +106,7 @@ class StartingPoint implements LoggerAwareInterface
     {
         return sprintf(
             self::QUEUE_PATTERN,
-            GeneratorUtils::createServiceName(GeneratorUtils::normalizeName($topology->getId(), $topology->getName())),
+            GeneratorUtils::createNormalizedServiceName($topology->getId(), $topology->getName()),
             'counter'
         );
     }
@@ -119,7 +120,7 @@ class StartingPoint implements LoggerAwareInterface
     {
         return sprintf(
             self::EXCHANGE_PATTERN,
-            GeneratorUtils::createServiceName(GeneratorUtils::normalizeName($topology->getId(), $topology->getName()))
+            GeneratorUtils::createNormalizedServiceName($topology->getId(), $topology->getName())
         );
     }
 
@@ -128,7 +129,7 @@ class StartingPoint implements LoggerAwareInterface
      * @param Node     $node
      *
      * @return bool
-     * @throws \Exception
+     * @throws Exception
      */
     public function validateTopology(Topology $topology, Node $node): bool
     {
@@ -179,7 +180,7 @@ class StartingPoint implements LoggerAwareInterface
             ->addHeader(PipesHeaders::createKey(PipesHeaders::SEQUENCE_ID), '1')
             ->addHeader(PipesHeaders::createKey(PipesHeaders::TOPOLOGY_ID), $topology->getId())
             ->addHeader(PipesHeaders::createKey(PipesHeaders::TOPOLOGY_NAME), $topology->getName())
-            ->addHeader('content-type', $requestHeaders['content-type'][0] ?? 'text/plain')
+            ->addHeader('content-type', $requestHeaders['content-type'][0] ?? 'application/json')
             ->addHeader('timestamp', new DateTime('now', new DateTimeZone('UTC')));
 
         foreach (PipesHeaders::clear($requestHeaders) as $key => $value) {
@@ -196,8 +197,11 @@ class StartingPoint implements LoggerAwareInterface
      */
     public function createBodyFromRequest(Request $request): string
     {
-        /** @var string $content */
-        $content = $request->getContent();
+        $content = '{}';
+        if (in_array($request->getMethod(), ['POST', 'PUT'])) {
+            /** @var string $content */
+            $content = $request->getContent();
+        }
 
         return $content;
     }
@@ -216,6 +220,8 @@ class StartingPoint implements LoggerAwareInterface
      * @param Request  $request
      * @param Topology $topology
      * @param Node     $node
+     *
+     * @throws Exception
      */
     public function runWithRequest(Request $request, Topology $topology, Node $node): void
     {
@@ -232,6 +238,8 @@ class StartingPoint implements LoggerAwareInterface
      * @param Topology    $topology
      * @param Node        $node
      * @param null|string $body
+     *
+     * @throws Exception
      */
     public function run(Topology $topology, Node $node, ?string $body = NULL): void
     {
@@ -243,6 +251,8 @@ class StartingPoint implements LoggerAwareInterface
      * @param Node     $node
      * @param Headers  $headers
      * @param string   $content
+     *
+     * @throws Exception
      */
     protected function runTopology(Topology $topology, Node $node, Headers $headers, string $content = ''): void
     {
@@ -278,7 +288,7 @@ class StartingPoint implements LoggerAwareInterface
      */
     public function runTest(Topology $topology): array
     {
-        $uri = sprintf('%s_probe:%s/status', $topology->getId(), 8007);
+        $uri = sprintf('multi-probe:%s/topology/status?topologyId=%s', 8007, $topology->getId());
 
         $requestDto = new RequestDto(CurlManager::METHOD_GET, new Uri($uri));
 

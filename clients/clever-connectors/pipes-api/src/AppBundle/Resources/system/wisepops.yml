@@ -2,6 +2,7 @@ services:
     systems.wisepops:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Wisepops\WisepopsSystem
         arguments:
+            - '@hbpf.connector.wisepops-refresh-forms-connector'
         tags: ['%systems%']
 
     hbpf.connector.wisepops-sync-email-connector:
@@ -15,6 +16,12 @@ services:
     hbpf.connector.wisepops-created-email-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Wisepops\Connector\WisepopsCreatedEmailConnector
         arguments:
+
+    hbpf.connector.wisepops-refresh-forms-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Wisepops\Connector\WisepopsRefreshFormsConnector
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.transport.curl_manager'
 
     hbpf.custom_node.wisepops-created-email-mapper:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Wisepops\Mapper\WisepopsCreatedEmailMapper

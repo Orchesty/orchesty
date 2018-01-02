@@ -8,11 +8,14 @@
 
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\Connector;
 
+use CleverConnectors\AppBundle\Document\LastSync;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\LastSync\LastSyncManager;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\QuickbooksSystem;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
+use CleverConnectors\AppBundle\Utils\CronUtils;
+use CleverConnectors\AppBundle\Utils\Dto\Times;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSender;
@@ -89,29 +92,6 @@ abstract class QuickbooksCustomerConnectorAbstract implements BatchInterface, Co
     }
 
     /**
-     * @param SystemInstall $systemInstall
-     * @param ProcessDto    $dto
-     *
-     * @return string
-     */
-    abstract protected function getTotalQuery(SystemInstall $systemInstall, ProcessDto $dto): string;
-
-    /**
-     * @param SystemInstall $systemInstall
-     * @param ProcessDto    $dto
-     * @param int           $start
-     * @param int           $count
-     *
-     * @return string
-     */
-    abstract protected function getDataQuery(
-        SystemInstall $systemInstall,
-        ProcessDto $dto,
-        int $start,
-        int $count
-    ): string;
-
-    /**
      * @param ProcessDto    $dto
      * @param LoopInterface $loop
      * @param callable      $callbackItem
@@ -124,38 +104,25 @@ abstract class QuickbooksCustomerConnectorAbstract implements BatchInterface, Co
         $systemInstall = $this->getSystemInstall($dto);
         $requestDto    = $this->system->getRequestDto($systemInstall, CurlManager::METHOD_GET);
         $requestDto->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()));
-        $url     = new Uri($requestDto->getUri(TRUE) . 'query?query=' . urlencode($this->getTotalQuery($systemInstall,
-                $dto)));
+
+        $lastSync = $this->lastSyncManager->getLastSync($systemInstall, $dto->getHeaders());
+        $times    = CronUtils::getTimes($lastSync);
+        $url      = new Uri($requestDto->getUri(TRUE) . 'query?query=' . urlencode($this->getTotalQuery($times)));
+
         $promise = $this->fetchData($sender, RequestDto::from($requestDto, $url))->then(
             function (ResponseInterface $response): int {
                 return $this->getTotalPages($response);
             }
         )->then(
-            function (int $total) use ($systemInstall, $dto, $sender, $callbackItem, $requestDto) {
-                return all($this->doPageLoop($systemInstall, $dto, $total, $sender, $callbackItem, $requestDto));
+            function (int $total) use ($sender, $callbackItem, $requestDto, $times) {
+                return all($this->doPageLoop($total, $sender, $callbackItem, $requestDto, $times));
             }
         );
 
-        $this->afterFetch($systemInstall, $dto);
+        $this->afterFetch($lastSync, $times);
 
         return $promise;
     }
-
-    /**
-     * @param SystemInstall $systemInstall
-     *
-     * @param ProcessDto    $dto
-     *
-     * @return void
-     */
-    abstract protected function afterFetch(SystemInstall $systemInstall, ProcessDto $dto): void;
-
-    /**
-     * @param ProcessDto $dto
-     *
-     * @return SystemInstall
-     */
-    abstract protected function getSystemInstall(ProcessDto $dto): SystemInstall;
 
     /**
      * @param CurlSender $sender
@@ -180,7 +147,8 @@ abstract class QuickbooksCustomerConnectorAbstract implements BatchInterface, Co
         $data = json_decode($response->getBody()->getContents(), TRUE);
 
         if (!is_array($data) || !array_key_exists('QueryResponse', $data) || !array_key_exists('totalCount',
-                $data['QueryResponse'])) {
+                $data['QueryResponse'])
+        ) {
             throw new SystemException('Quickbooks response has no "QueryResponse -> totalCount" field!',
                 SystemException::MISSING_RESPONSE_DATA);
         }
@@ -192,26 +160,27 @@ abstract class QuickbooksCustomerConnectorAbstract implements BatchInterface, Co
     }
 
     /**
-     * @param SystemInstall $systemInstall
-     * @param ProcessDto    $processDto
-     * @param int           $total
-     * @param CurlSender    $sender
-     * @param callable      $callbackItem
-     * @param RequestDto    $dto
+     * @param int        $total
+     * @param CurlSender $sender
+     * @param callable   $callbackItem
+     * @param RequestDto $dto
+     * @param Times|null $times
      *
      * @return array
      */
     protected function doPageLoop(
-        SystemInstall $systemInstall,
-        ProcessDto $processDto,
         int $total,
         CurlSender $sender,
-        callable $callbackItem, RequestDto $dto): array
+        callable $callbackItem,
+        RequestDto $dto,
+        ?Times $times = NULL
+    ): array
     {
         $requests = [];
         for ($i = 0; $i < $total; $i++) {
-            $url = new Uri($dto->getUri(TRUE) . 'query?query=' . urlencode($this->getDataQuery($systemInstall,
-                    $processDto, $i * self::PAGE_LIMIT + 1, self::PAGE_LIMIT)));
+            $url = new Uri($dto->getUri(TRUE) . 'query?query=' . urlencode(
+                    $this->getDataQuery($i * self::PAGE_LIMIT + 1, self::PAGE_LIMIT, $times)
+                ));
 
             $requests[] = $this
                 ->fetchData($sender, RequestDto::from($dto, $url))
@@ -226,6 +195,49 @@ abstract class QuickbooksCustomerConnectorAbstract implements BatchInterface, Co
     }
 
     /**
+     * @param LastSync $lastSync
+     * @param Times    $times
+     */
+    protected function afterFetch(LastSync $lastSync, Times $times): void
+    {
+        $lastSync->setTimestamp($times->getEnd());
+        $this->lastSyncManager->updateLastSync($lastSync);
+    }
+
+    /**
+     * @param Times $times
+     *
+     * @return string
+     */
+    protected function getTotalQuery(?Times $times = NULL): string
+    {
+        return 'SELECT COUNT(*) FROM customer WHERE Active = true' . $this->getTimeQuery($times);
+    }
+
+    /**
+     * @param int        $start
+     * @param int        $count
+     * @param Times|null $times
+     *
+     * @return string
+     */
+    protected function getDataQuery(int $start, int $count, ?Times $times = NULL): string
+    {
+        return sprintf('SELECT * FROM customer WHERE Active = true' . $this->getTimeQuery($times)
+            . ' STARTPOSITION %d MAXRESULTS %d', $start, $count);
+    }
+
+    /**
+     * @param ProcessDto $dto
+     *
+     * @return SystemInstall
+     */
+    protected function getSystemInstall(ProcessDto $dto): SystemInstall
+    {
+        return CronUtils::getSystemInstall($dto);
+    }
+
+    /**
      * @param ResponseInterface $response
      * @param int               $i
      *
@@ -236,7 +248,8 @@ abstract class QuickbooksCustomerConnectorAbstract implements BatchInterface, Co
     {
         $data = json_decode($response->getBody()->getContents(), TRUE);
         if (is_array($data) && array_key_exists('QueryResponse', $data) && array_key_exists('Customer',
-                $data['QueryResponse'])) {
+                $data['QueryResponse'])
+        ) {
             $successMessage = new SuccessMessage($i);
             $successMessage->setData(json_encode($data['QueryResponse']['Customer']));
             unset($data);
@@ -248,5 +261,12 @@ abstract class QuickbooksCustomerConnectorAbstract implements BatchInterface, Co
             SystemException::MISSING_RESPONSE_DATA
         );
     }
+
+    /**
+     * @param Times $times
+     *
+     * @return string
+     */
+    abstract protected function getTimeQuery(Times $times): string;
 
 }

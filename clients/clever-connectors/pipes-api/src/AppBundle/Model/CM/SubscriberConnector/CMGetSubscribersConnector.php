@@ -19,6 +19,8 @@ use React\Promise\PromiseInterface;
 class CMGetSubscribersConnector extends CMGetSubscribersConnectorAbstract
 {
 
+    protected const COUNT = 100;
+
     /**
      * @param ProcessDto    $dto
      * @param LoopInterface $loop
@@ -42,10 +44,11 @@ class CMGetSubscribersConnector extends CMGetSubscribersConnectorAbstract
             );
         }
 
-        $req = new RequestDto(CurlManager::METHOD_GET, new Uri($this->getUrl(0)));
+        $processId = CMHeaders::get(CMHeaders::PROCESS_ID, $dto->getHeaders()) ?? '';
+        $req       = new RequestDto(CurlManager::METHOD_GET, new Uri($this->getUrl(0)));
         $req->setHeaders($this->getAuthorizationHeaders($user, $token));
 
-        $promise = $this->getPage($sender, $callbackItem, $req);
+        $promise = $this->getPage($sender, $callbackItem, $req, 1, $processId);
 
         return $promise;
     }
@@ -57,7 +60,12 @@ class CMGetSubscribersConnector extends CMGetSubscribersConnectorAbstract
      */
     protected function getUrl(int $offset): string
     {
-        return sprintf('%s/subscribers/?offset=%s&count=%s', self::BASE_URL, $offset, self::COUNT);
+        return sprintf(
+            '%s/subscribers/?contact_status=1&offset=%s&count=%s',
+            self::BASE_URL,
+            $offset,
+            self::COUNT
+        );
     }
 
 }

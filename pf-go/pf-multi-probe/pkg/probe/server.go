@@ -6,16 +6,25 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
+	"strings"
+	"github.com/go-redis/redis"
 )
 
-const Port = 8007
 const TopologyAddPath = "/topology/add"
 const TopologyListPath = "/topology/list"
 const TopologyRemovePath = "/topology/remove"
 const TopologyStatusPath = "/topology/status"
 
+// TopologiesMap is persisted data structure to keep information about topologies and their nodes
 type TopologiesMap map[string][]BridgeInfo
 
+// TopologyInfo struct contains information about running topologies
+type TopologyInfo struct {
+	Bridges []BridgeInfo `json:"bridges"`
+}
+
+// BridgeInfo is the struct to keep information about single bridge
 type BridgeInfo struct {
 	Id       string `json:"id"`
 	NodeId   string `json:"node_id"`
@@ -38,19 +47,31 @@ type responseBody struct {
 	Data   string `json:"data"`
 }
 
+// Server is the http server that checks the statuses of bridges in topology
 type Server struct {
-	Topologies TopologiesMap
+	Storage    Storage
+	CheckerSvc Checker
 }
 
 // Start starts the probe's http server and registers routes
-func (probe *Server) Start() {
+func (probe *Server) Start(port int) {
 
 	http.Handle(TopologyAddPath, jsonResponse(http.HandlerFunc(probe.handleAddRequest)))
 	http.Handle(TopologyListPath, jsonResponse(http.HandlerFunc(probe.handleListRequest)))
 	http.Handle(TopologyRemovePath, jsonResponse(http.HandlerFunc(probe.handleRemoveRequest)))
 	http.Handle(TopologyStatusPath, jsonResponse(http.HandlerFunc(probe.handleStatusRequest)))
 
-	http.ListenAndServe(":"+strconv.Itoa(Port), nil)
+	err := http.ListenAndServe(":"+strconv.Itoa(port), nil)
+	if err != nil {
+		fmt.Println("Error starting server: ", err.Error())
+	} else {
+		fmt.Println("Server listening on port: ", port)
+	}
+}
+
+// Stop stops the probe's http server
+func (probe *Server) Stop() {
+	panic("not implemented yet")
 }
 
 func jsonResponse(next http.Handler) http.Handler {
@@ -64,33 +85,63 @@ func jsonResponse(next http.Handler) http.Handler {
 // handleAddRequest adds given topology configuration to the internal map of maintained topologies
 // returns 200 statusCode and topologyId in response if handled well
 func (probe *Server) handleAddRequest(res http.ResponseWriter, req *http.Request) {
-	var receivedTopology topologyJson
+	var receivedTopology TopologyJson
+	var topologyInfo TopologyInfo
+
+	log.Println("Add topology request received.")
 
 	data, err := ioutil.ReadAll(req.Body)
+
 	if err != nil {
 		res.WriteHeader(http.StatusBadRequest)
 		res.Write(getErrorResponseBody(err))
 		return
 	}
 
-	json.Unmarshal(data, &receivedTopology)
+	err = json.Unmarshal(data, &receivedTopology)
+	if err != nil {
+		res.WriteHeader(http.StatusBadRequest)
+		res.Write(getErrorResponseBody(err))
+		return
+	}
+
+	if receivedTopology.TopologyId == "" || len(receivedTopology.Bridges) == 0 {
+		res.WriteHeader(http.StatusBadRequest)
+		res.Write(getErrorResponseBody(fmt.Errorf("please provide valid topology")))
+		log.Println("Invalid topology provided.")
+		return
+	}
+
+	log.Println("Trying to add topology: " + receivedTopology.TopologyId)
 
 	bridges := make([]BridgeInfo, len(receivedTopology.Bridges))
 	for index, element := range receivedTopology.Bridges {
 		b := BridgeInfo{
-			Id: element.ID,
-			NodeId: element.NodeId,
-			NodeName: element.NodeName,
-			Url: element.Debug.Url,
+			Id:       element.ID,
+			NodeId:   element.Label.NodeId,
+			NodeName: element.Label.NodeName,
+			Url:      element.Debug.Url,
 		}
 
 		bridges[index] = b
 	}
 
-	probe.Topologies[receivedTopology.ID] = bridges
+	topologyInfo.Bridges = bridges
+	topologyString, _ := json.Marshal(topologyInfo)
+
+	err = probe.Storage.Set(receivedTopology.TopologyId, topologyString)
+	if err != nil {
+		msg := "Unable to add topology " + receivedTopology.TopologyId + " Redis err:" + err.Error()
+		log.Println(msg, err)
+		res.WriteHeader(http.StatusBadRequest)
+		res.Write(getErrorResponseBody(fmt.Errorf(msg)))
+		return
+	}
+
+	log.Println("Added topology: " + receivedTopology.TopologyId)
 
 	res.WriteHeader(http.StatusOK)
-	res.Write(getSuccessResponseBody(receivedTopology.ID))
+	res.Write(getSuccessResponseBody(receivedTopology.TopologyId))
 }
 
 // handleRemoveRequest removes key from topologies map if it exists there
@@ -104,7 +155,14 @@ func (probe *Server) handleRemoveRequest(res http.ResponseWriter, req *http.Requ
 		return
 	}
 
-	delete(probe.Topologies, topologyId)
+	err = probe.Storage.Delete(topologyId)
+	if err != nil {
+		res.WriteHeader(http.StatusBadRequest)
+		res.Write(getErrorResponseBody(fmt.Errorf("cannot delete. Error: %s", err)))
+		return
+	}
+
+	log.Println("Removed topology: " + topologyId)
 
 	res.WriteHeader(http.StatusOK)
 	res.Write(getSuccessResponseBody(topologyId))
@@ -112,8 +170,7 @@ func (probe *Server) handleRemoveRequest(res http.ResponseWriter, req *http.Requ
 
 // handleListRequest returns the json list of all maintained topologies and their bridge's urls
 func (probe *Server) handleListRequest(res http.ResponseWriter, req *http.Request) {
-	jsonString, err := json.Marshal(probe.Topologies)
-
+	topologies, err := probe.Storage.Keys()
 	if err != nil {
 		res.WriteHeader(http.StatusInternalServerError)
 		res.Write(getErrorResponseBody(err))
@@ -121,24 +178,25 @@ func (probe *Server) handleListRequest(res http.ResponseWriter, req *http.Reques
 	}
 
 	res.WriteHeader(http.StatusOK)
-	res.Write(getSuccessResponseBody(string(jsonString)))
+	res.Write(getSuccessResponseBody(strings.Join(topologies, ",")))
 }
 
 // handleStatusRequest creates http request to all topology nodes and returns the overall result
 func (probe *Server) handleStatusRequest(res http.ResponseWriter, req *http.Request) {
 	topologyId := req.FormValue("topologyId")
 
-	bridges, err := probe.getTopology(topologyId)
+	topology, err := probe.getTopology(topologyId)
 	if err != nil {
 		res.WriteHeader(http.StatusBadRequest)
 		res.Write(getErrorResponseBody(err))
 		return
 	}
 
+	bridges := topology.Bridges
 	results := make(chan BridgeInfo, len(bridges))
 
 	for _, bridge := range bridges {
-		go Check(bridge, results)
+		go probe.CheckerSvc.Check(bridge, results)
 	}
 
 	total := 0
@@ -156,15 +214,7 @@ func (probe *Server) handleStatusRequest(res http.ResponseWriter, req *http.Requ
 			failed++
 		}
 
-		bridgesStatuses[r] = BridgeInfo{
-			Id:       topologyId,
-			NodeId:   br.NodeId,
-			NodeName: br.NodeName,
-			Status:   br.Code != http.StatusOK,
-			Url:      br.Url,
-			Code:     br.Code,
-			Message:  br.Message,
-		}
+		bridgesStatuses[r] = br
 	}
 
 	body := probeStatusResponse{
@@ -181,18 +231,27 @@ func (probe *Server) handleStatusRequest(res http.ResponseWriter, req *http.Requ
 }
 
 // getTopology return the bridges information for given topologyId or returns error
-func (probe *Server) getTopology(topologyId string) (bridges []BridgeInfo, err error) {
+func (probe *Server) getTopology(topologyId string) (topo TopologyInfo, err error) {
+	var topoInfo TopologyInfo
+
 	if topologyId == "" {
-		return nil, fmt.Errorf("missing 'topologyId' param")
+		return topoInfo, fmt.Errorf("missing 'topologyId' param")
 	}
 
-	bridges, ok := probe.Topologies[topologyId]
-
-	if !ok {
-		return nil, fmt.Errorf("unknown topology '%s'", topologyId)
+	val, err := probe.Storage.Get(topologyId)
+	if err == redis.Nil {
+		return topoInfo, fmt.Errorf("cannot find topology '%s'", topologyId)
+	}
+	if err != nil {
+		return topoInfo, fmt.Errorf("error finding topology '%s'. %s", topologyId, err)
 	}
 
-	return bridges, nil
+	err = json.Unmarshal([]byte(val), &topoInfo)
+	if err != nil {
+		return topoInfo, fmt.Errorf("error loading topology '%s'. %s", topologyId, err)
+	}
+
+	return topoInfo, nil
 }
 
 // getErrorResponseBody formats the http response body for errors

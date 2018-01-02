@@ -62,7 +62,7 @@ final class PipedriveUnsubscribeRequester implements RequesterInterface
         $url = sprintf(
             self::WEBHOOK_UNSUBSCRIPTION_URL,
             $this->getWebhookId($data),
-            $this->systemInstall->getSynchronizedTime()[PipedriveSystem::API_TOKEN]
+            $this->systemInstall->getSettings()[PipedriveSystem::API_TOKEN]
         );
         $dto = new RequestDto(CurlManager::METHOD_DELETE, new Uri($url));
         $dto->setHeaders($this->headers);

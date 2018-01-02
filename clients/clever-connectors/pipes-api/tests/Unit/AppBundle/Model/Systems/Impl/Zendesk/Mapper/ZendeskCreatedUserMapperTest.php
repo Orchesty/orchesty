@@ -2,9 +2,14 @@
 
 namespace Tests\Unit\AppBundle\Model\Systems\Impl\Zendesk\Mapper;
 
+use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\CleverFieldsEnum;
+use CleverConnectors\AppBundle\Model\Systems\Impl\Zendesk\Mapper\ZendeskCreatedUserMapper;
+use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Nette\Utils\Json;
+use PHPUnit_Framework_MockObject_MockObject;
 use Tests\ConnectorTestCaseAbstract;
 
 /**
@@ -20,20 +25,33 @@ final class ZendeskCreatedUserMapperTest extends ConnectorTestCaseAbstract
      */
     public function testProcessEvent(): void
     {
-        $connector = $this->container->get('hbpf.custom_node.zendesk-created-user-mapper');
+        $sys = new SystemInstall();
+        $sys->setSettings([
+            'list' => 'someList',
+        ]);
+
+        $repo = $this->createMock(SystemInstallRepository::class);
+        $repo->method('getSystemInstallFromHeaders')->willReturn($sys);
+
+        /** @var DocumentManager|PHPUnit_Framework_MockObject_MockObject $dm */
+        $dm = $this->createMock(DocumentManager::class);
+        $dm->method('getRepository')->willReturn($repo);
+
+        $connector = new ZendeskCreatedUserMapper($dm);
 
         $response = Json::decode(
-            $connector->process((new ProcessDto())->setData($this->getRequest('createdUser.json')))
+            $connector->process((new ProcessDto())->setData($this->getRequest('singleItemNewUser.json'))->setHeaders([]))
                 ->getData(),
             TRUE
         );
 
         $this->assertEquals([
-            CleverFieldsEnum::EMAIL      => 'eml@eml.com',
-            CleverFieldsEnum::LAST_NAME  => 'nagmae',
-            CleverFieldsEnum::FOREIGN_ID => '115499307813',
+            CleverFieldsEnum::EMAIL      => '2@zen.com',
+            CleverFieldsEnum::LAST_NAME  => 'zen2',
+            CleverFieldsEnum::FOREIGN_ID => '115316804773',
             CleverFieldsEnum::REACTIVATE => TRUE,
             CleverFieldsEnum::SEND_OPTIN => FALSE,
+            CleverFieldsEnum::LISTS => ['someList'],
         ], $response);
     }
 

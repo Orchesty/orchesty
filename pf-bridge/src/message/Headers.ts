@@ -1,4 +1,5 @@
 import Resequencer from "../node/Resequencer";
+import {INodeLabel} from "../topology/Configurator";
 
 class Headers {
 
@@ -185,6 +186,19 @@ class Headers {
      */
     public removeHeader(key: string) {
         delete this.headers[key];
+    }
+
+    /**
+     *
+     * @return {INodeLabel}
+     */
+    public createNodeLabel(): INodeLabel {
+        return {
+            id: this.getPFHeader(Headers.NODE_ID),
+            node_id: this.getPFHeader(Headers.NODE_ID),
+            node_name: this.getPFHeader(Headers.NODE_NAME),
+            topology_id: this.getPFHeader(Headers.TOPOLOGY_ID),
+        };
     }
 
 }

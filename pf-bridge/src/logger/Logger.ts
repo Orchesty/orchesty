@@ -6,6 +6,7 @@ import {ResultCode} from "../message/ResultCode";
 import {default as winston} from "./Winston";
 
 export interface ILogContext {
+    topology_id?: string;
     node_id?: string;
     correlation_id?: string;
     process_id?: string;

@@ -40,3 +40,10 @@ services:
             - '@hbpf.topology_generator.request.request_handler'
         tags:
             -  { name: console.command }
+    clever_connectors.destroy_topology_command:
+        class: CleverConnectors\AppBundle\Command\DestroyTopologyCommand
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.topology_generator.request.request_handler'
+        tags:
+            -  { name: console.command }

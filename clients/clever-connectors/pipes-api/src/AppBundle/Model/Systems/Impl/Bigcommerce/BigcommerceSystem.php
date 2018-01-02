@@ -133,13 +133,13 @@ class BigcommerceSystem implements WebhookSystemInterface, AuthorizationInterfac
     {
         $settings = $systemInstall->getSettings();
 
-        $field1 = new Field(
+        $field1 = (new Field(
             Field::TEXT,
             self::STORE_ID,
-            'Store ID (XXX part in https://store-XXX.mybigcommerce.com)',
+            'Store ID',
             $this->prepareValue(self::STORE_ID, $settings),
             TRUE
-        );
+        ))->setDescription('Store ID (XXX part in https://store-XXX.mybigcommerce.com)');
 
         $field2 = new Field(
             Field::TEXT,
@@ -164,12 +164,20 @@ class BigcommerceSystem implements WebhookSystemInterface, AuthorizationInterfac
             $systemInstall->isEventCreate()
         );
 
+        $field5 = new Field(
+            Field::SELECT,
+            SystemInstall::SELECT_LIST,
+            'Distribution list',
+            $this->prepareValue(SystemInstall::SELECT_LIST, $systemInstall->getSettings())
+        );
+
         $form = new Form();
         $form
             ->addField($field1)
             ->addField($field2)
             ->addField($field3)
-            ->addField($field4);
+            ->addField($field4)
+            ->addField($field5);
 
         return $form->toArray();
     }

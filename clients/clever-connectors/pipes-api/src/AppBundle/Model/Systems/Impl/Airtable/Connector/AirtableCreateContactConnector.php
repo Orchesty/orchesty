@@ -82,9 +82,12 @@ class AirtableCreateContactConnector implements ConnectorInterface
         }
 
         $systemInstall = $this->systemInstallRepository->getSystemInstallFromHeaders($dto->getHeaders());
-        $requestDto    = $this->system->getRequestDto($systemInstall, CurlManager::METHOD_POST, FALSE);
+
+        $requestDto = $this->system->getRequestDto($systemInstall, CurlManager::METHOD_POST, FALSE);
+        $uri        = CMHeaders::get(AirtableSystem::TABLE_URL, $dto->getHeaders());
+
         $requestDto
-            ->setUri(new Uri($requestDto->getUri()))
+            ->setUri(new Uri($uri))
             ->setBody($dto->getData())
             ->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()));
 

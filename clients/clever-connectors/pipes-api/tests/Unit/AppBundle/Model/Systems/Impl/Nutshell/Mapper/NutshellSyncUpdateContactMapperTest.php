@@ -3,7 +3,6 @@
 namespace Tests\Unit\AppBundle\Model\Systems\Impl\Nutshell\Mapper;
 
 use CleverConnectors\AppBundle\Enum\CleverFieldsEnum;
-use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Nette\Utils\Json;
 use Tests\ConnectorTestCaseAbstract;
 
@@ -22,11 +21,10 @@ final class NutshellSyncUpdateContactMapperTest extends ConnectorTestCaseAbstrac
     {
         $connector = $this->container->get('hbpf.custom_node.nutshell-sync-update-contact-mapper');
 
-        $response = Json::decode($connector->process(
-            (new ProcessDto())->setData(
-                $this->getRequest('NutshellSingleContactItem.json')
-            ))->getData(), TRUE
-        );
+        $response = Json::decode($connector->process($this->prepareConnectorProcessDto([
+            'username' => 'nutshell@mailinator.com',
+            'api_key'  => '967b1f7b321e6305d18e6656a650c32420aba98d',
+        ], Json::decode($this->getRequest('NutshellSingleContactItem.json'), TRUE), [], TRUE))->getData(), TRUE);
 
         $this->assertEquals([
             CleverFieldsEnum::EMAIL      => 'User01@User01.com',
@@ -35,6 +33,30 @@ final class NutshellSyncUpdateContactMapperTest extends ConnectorTestCaseAbstrac
             CleverFieldsEnum::FOREIGN_ID => '1',
             CleverFieldsEnum::REACTIVATE => TRUE,
             CleverFieldsEnum::SEND_OPTIN => FALSE,
+        ], $response);
+    }
+
+    /**
+     *
+     */
+    public function testProcessWithList(): void
+    {
+        $connector = $this->container->get('hbpf.custom_node.nutshell-sync-update-contact-mapper');
+
+        $response = Json::decode($connector->process($this->prepareConnectorProcessDto([
+            'username' => 'nutshell@mailinator.com',
+            'api_key'  => '967b1f7b321e6305d18e6656a650c32420aba98d',
+            'list'     => '4b04d334-3db9-b290-d0aa-099642329856',
+        ], Json::decode($this->getRequest('NutshellSingleContactItem.json'), TRUE), [], TRUE))->getData(), TRUE);
+
+        $this->assertEquals([
+            CleverFieldsEnum::EMAIL      => 'User01@User01.com',
+            CleverFieldsEnum::FIRST_NAME => 'User01',
+            CleverFieldsEnum::LAST_NAME  => 'User01',
+            CleverFieldsEnum::FOREIGN_ID => '1',
+            CleverFieldsEnum::REACTIVATE => TRUE,
+            CleverFieldsEnum::SEND_OPTIN => FALSE,
+            CleverFieldsEnum::LISTS      => ['4b04d334-3db9-b290-d0aa-099642329856'],
         ], $response);
     }
 

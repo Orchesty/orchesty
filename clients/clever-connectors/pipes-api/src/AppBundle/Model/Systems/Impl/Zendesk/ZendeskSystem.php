@@ -162,13 +162,13 @@ class ZendeskSystem implements SystemInterface, AuthorizationInterface, CMEventS
             TRUE
         );
 
-        $field3 = new Field(
+        $field3 = (new Field(
             Field::TEXT,
             self::DOMAIN,
-            'Domain xxx.zendesk.com (only xxx part)',
+            'Domain',
             $this->prepareValue(self::DOMAIN, $sett),
             TRUE
-        );
+        ))->setDescription('Domain (XXX part in https://XXX.zendesk.com)');
 
         $field4 = new Field(
             Field::CHECKBOX,
@@ -191,6 +191,13 @@ class ZendeskSystem implements SystemInterface, AuthorizationInterface, CMEventS
             $systemInstall->isEventHardBounce()
         );
 
+        $field7 = new Field(
+            Field::SELECT,
+            SystemInstall::SELECT_LIST,
+            'Distribution list',
+            $this->prepareValue(SystemInstall::SELECT_LIST, $sett)
+        );
+
         $form = new Form();
         $form
             ->addField($field1)
@@ -198,7 +205,8 @@ class ZendeskSystem implements SystemInterface, AuthorizationInterface, CMEventS
             ->addField($field3)
             ->addField($field4)
             ->addField($field5)
-            ->addField($field6);
+            ->addField($field6)
+            ->addField($field7);
 
         return $form->toArray();
     }

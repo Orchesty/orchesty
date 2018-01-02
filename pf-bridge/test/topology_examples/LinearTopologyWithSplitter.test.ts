@@ -10,9 +10,12 @@ import {ResultCode} from "../../src/message/ResultCode";
 import Pipes from "../../src/Pipes";
 import {ITopologyConfigSkeleton} from "../../src/topology/Configurator";
 import {ICounterProcessInfo} from "../../src/topology/counter/CounterProcess";
+import Terminator from "../../src/topology/terminator/Terminator";
 
 const testTopology: ITopologyConfigSkeleton = {
     id: "linear-topo-with-splitter",
+    topology_id: "linear-topo-with-splitter",
+    topology_name: "linear-topo-with-splitter",
     nodes: [
         {
             id: "node-a",
@@ -74,8 +77,12 @@ describe("Linear topology with splitter test", () => {
 
         const pip = new Pipes(testTopology);
 
+        // manually set the terminator port not to collide with other tests
+        const dic = pip.getDIContainer();
+        dic.set("topology.terminator", () => new Terminator(8557, dic.get("counter.storage")));
+
         Promise.all([
-            pip.startCounter(8557),
+            pip.startCounter(),
             pip.startNode(testTopology.nodes[0].id),
             pip.startNode(testTopology.nodes[1].id),
             pip.startNode(testTopology.nodes[2].id),
@@ -98,8 +105,8 @@ describe("Linear topology with splitter test", () => {
                             .then(() => {
                                 return ch.bindQueue(
                                     counterResultQueue.name,
-                                    pip.getTopologyConfig().counter.pub.exchange.name,
-                                    pip.getTopologyConfig().counter.pub.routing_key,
+                                    pip.getTopologyConfig(false).counter.pub.exchange.name,
+                                    pip.getTopologyConfig(false).counter.pub.routing_key,
                                 );
                             })
                             .then(() => {

@@ -1,21 +1,18 @@
 import {Channel, Message, Options} from "amqplib";
 import {Connection} from "amqplib-plus/dist/lib/Connection";
 import {Publisher} from "amqplib-plus/dist/lib/Publisher";
-import * as express from "express";
 import {IMetrics} from "metrics-sender/dist/lib/metrics/IMetrics";
-import * as request from "request";
 import logger from "../../logger/Logger";
 import {default as CounterMessage} from "../../message/CounterMessage";
 import Headers from "../../message/Headers";
 import {INodeLabel} from "../Configurator";
+import Terminator from "../terminator/Terminator";
 import CounterConsumer from "./CounterConsumer";
 import {default as CounterProcess, ICounterProcessInfo} from "./CounterProcess";
+import ICounter from "./ICounter";
 import ICounterStorage from "./storage/ICounterStorage";
 
-const ROUTE_TOPOLOGY_TERMINATE = "/topology/terminate/:topologyId";
-
 export interface ICounterSettings {
-    topology: string;
     sub: {
         queue: {
             name: string,
@@ -35,141 +32,103 @@ export interface ICounterSettings {
             options: {},
         },
     };
-    port: number;
 }
 
 /**
  * Topology component that receives signals(messages) and watches if some process run through whole topology
  * If yes, it sends process finished message
  */
-export default class Counter {
+export default class Counter implements ICounter {
 
     private settings: any;
     private connection: Connection;
     private publisher: Publisher;
     private consumer: CounterConsumer;
     private storage: ICounterStorage;
+    private terminator: Terminator;
     private metrics: IMetrics;
-    private httpServer: any;
-    private topologyId: string;
-    private terminationRequested: boolean;
-    private terminationUrl: string;
 
     /**
      *
      * @param settings
      * @param connection
      * @param storage
+     * @param terminator
      * @param metrics
      */
     constructor(
         settings: ICounterSettings,
         connection: Connection,
         storage: ICounterStorage,
+        terminator: Terminator,
         metrics: IMetrics,
     ) {
-        this.terminationRequested = false;
         this.settings = settings;
         this.connection = connection;
         this.storage = storage;
+        this.terminator = terminator;
         this.metrics = metrics;
-
-        this.topologyId = this.settings.topology;
-
-        logger.info(`Starting counter for topology : '${this.topologyId}'`);
 
         this.prepareConsumer();
         this.preparePublisher();
-        this.prepareHttpServer();
+    }
+
+    /**
+     *
+     * @return {ICounterSettings}
+     */
+    public getSettings(): ICounterSettings {
+        return this.settings;
     }
 
     /**
      * Listen to the event stream and keep info about job partial results
      * On job end, send process end message.
      */
-    public listen(port?: number): Promise<void> {
-        return this.consumer.consume(this.settings.sub.queue.name, this.settings.sub.queue.options)
-            .then(() => {
-                logger.info(`Counter started consuming messages from "${this.settings.sub.queue.name}" queue`);
+    public async start(): Promise<void> {
+        await this.consumer.consume(this.settings.sub.queue.name, this.settings.sub.queue.options);
+        await this.terminator.startServer();
 
-                return;
-            })
-            .then(() => {
-                const httpPort = port || this.settings.port;
-                return this.httpServer.listen(httpPort, () => {
-                    logger.info(`Counter listening for termination requests on port '${httpPort}'`);
-                });
-            });
+        logger.info(`Counter started consuming messages from "${this.settings.sub.queue.name}" queue`);
     }
 
     /**
      * Creates subscription channel
      */
     private prepareConsumer() {
-        const prepareFn: any = (ch: Channel) => {
+        const prepareFn: any = async (ch: Channel) => {
             const s = this.settings;
 
-            return ch.assertQueue(s.sub.queue.name, s.sub.queue.options)
-                .then(() => {
-                    return ch.prefetch(s.sub.queue.prefetch);
-                });
+            await ch.assertQueue(s.sub.queue.name, s.sub.queue.options);
+            await ch.prefetch(s.sub.queue.prefetch);
         };
 
-        this.consumer = new CounterConsumer(this.connection, prepareFn, (msg: Message) => {
-            this.handleMessage(msg);
-        });
+        this.consumer = new CounterConsumer(
+            this.connection,
+            prepareFn,
+            async (msg: Message) => {
+                return await this.handleMessage(msg);
+            },
+        );
     }
 
     /**
      * Creates publish channel
      */
     private preparePublisher() {
-        const prepareFn: any = (ch: Channel) => {
+        const prepareFn: any = async (ch: Channel) => {
             const pubExSett = this.settings.pub.exchange;
             const pubQSett = this.settings.pub.queue;
 
-            return Promise.all([
+            await Promise.all([
                 ch.assertExchange(pubExSett.name, pubExSett.type, pubExSett.options),
                 ch.assertQueue(pubQSett.name, pubQSett.options),
-            ]).then(() => {
-                return ch.bindQueue(pubQSett.name, pubExSett.name, this.settings.pub.routing_key);
-            });
+            ]);
+
+            await ch.bindQueue(pubQSett.name, pubExSett.name, this.settings.pub.routing_key);
         };
 
         this.publisher = new Publisher(this.connection, prepareFn);
-    }
-
-    /**
-     * Creates http server to handle termination requests
-     */
-    private prepareHttpServer() {
-        const app = express();
-
-        app.get(ROUTE_TOPOLOGY_TERMINATE, (req, resp) => {
-            if (!req.params || !req.params.topologyId) {
-                return resp.status(400).send("Missing topologyId");
-            }
-
-            if (req.params.topologyId !== this.topologyId) {
-                return resp.status(400).send(`Invalid topologyId "${req.params.topologyId}"`);
-            }
-
-            const reqHeaders: any = req.headers;
-            const headers = new Headers(reqHeaders);
-            if (!headers.hasPFHeader(Headers.TOPOLOGY_DELETE_URL)) {
-                return resp.status(400).send(`Missing PF header "pf-${Headers.TOPOLOGY_DELETE_URL}"`);
-            }
-
-            resp.status(200).send("Topology will be terminated as soon as possible.");
-
-            logger.info(`Counter received termination request. ${JSON.stringify(req.params)}`);
-
-            this.terminationRequested = true;
-            this.terminationUrl = headers.getPFHeader(Headers.TOPOLOGY_DELETE_URL);
-            this.tryTerminate();
-        });
-
-        this.httpServer = app;
     }
 
     /**
@@ -178,44 +137,37 @@ export default class Counter {
      * @param {Message} msg
      * @return {boolean}
      */
-    private handleMessage(msg: Message): void {
+    private async handleMessage(msg: Message): Promise<void> {
         try {
             const headers = new Headers(msg.properties.headers);
             const content = JSON.parse(msg.content.toString());
-
-            const resultCode = content.result.code;
             const processId = CounterProcess.getMostTopProcessId(headers.getPFHeader(Headers.PROCESS_ID));
             headers.setPFHeader(Headers.PROCESS_ID, processId);
-
-            const node: INodeLabel = {
-                id: headers.getPFHeader(Headers.NODE_ID),
-                node_id: headers.getPFHeader(Headers.NODE_ID),
-                node_name: headers.getPFHeader(Headers.NODE_NAME),
-                topology_id: this.topologyId,
-            };
+            const node: INodeLabel = headers.createNodeLabel();
 
             const cm = new CounterMessage(
                 node,
                 headers.getRaw(),
-                resultCode,
+                content.result.code,
                 content.result.message,
                 parseInt(content.route.following, 10),
                 parseInt(content.route.multiplier, 10),
             );
 
-            logger.info(`Counter message received with status: "${resultCode}"`, {
+            logger.info(`Counter message received: "${cm.toString()}"`, {
+                topology_id: cm.getTopologyId(),
                 node_id: cm.getNodeId(),
                 correlation_id: cm.getCorrelationId(),
                 process_id: cm.getProcessId(),
                 parent_id: cm.getParentId(),
             });
 
-            this.updateProcessInfo(cm);
+            await this.updateProcessInfo(cm);
         } catch (e) {
-            logger.error("Invalid counter message.", {error: e});
-        }
+            logger.error("Cannot handle counter message.", {error: e});
 
-        return;
+            return Promise.reject(e);
+        }
     }
 
     /**
@@ -224,23 +176,25 @@ export default class Counter {
      * @return {void}
      */
     private async updateProcessInfo(cm: CounterMessage): Promise<void> {
-        let proc: ICounterProcessInfo = await this.storage.get(this.topologyId, cm.getProcessId());
+        const topologyId = cm.getTopologyId();
+        const processId = cm.getProcessId();
 
-        if (!proc) {
-            proc = CounterProcess.createProcessInfo(this.topologyId, cm);
+        let processInfo: ICounterProcessInfo = await this.storage.get(topologyId, processId);
+
+        if (!processInfo) {
+            processInfo = CounterProcess.createProcessInfo(topologyId, cm);
         }
 
-        proc = CounterProcess.updateProcessInfo(proc, cm);
+        processInfo = CounterProcess.updateProcessInfo(processInfo, cm);
 
-        if (CounterProcess.isProcessFinished(proc)) {
-            proc.end_timestamp = Date.now();
-            this.onJobFinished(proc);
-            this.storage.remove(this.topologyId, cm.getProcessId());
+        if (CounterProcess.isProcessFinished(processInfo)) {
+            processInfo.end_timestamp = Date.now();
+            await this.onJobFinished(processInfo);
+            await this.storage.remove(topologyId, processId);
+            return Promise.resolve();
         } else {
-            const added = await this.storage.add(this.topologyId, proc);
-            if (!added) {
-                logger.error(`Could not add to counter storage. ${JSON.stringify(proc)}`);
-            }
+            await this.storage.add(topologyId, processInfo);
+            return Promise.resolve();
         }
     }
 
@@ -249,7 +203,7 @@ export default class Counter {
      *
      * @param process
      */
-    private onJobFinished(process: ICounterProcessInfo): void {
+    private async onJobFinished(process: ICounterProcessInfo): Promise<void> {
         if (!process) {
             logger.warn(`Counter onJobFinished received invalid process info data: "${process}"`);
             return;
@@ -261,70 +215,36 @@ export default class Counter {
             contentType: "application/json",
         };
 
-        this.publisher.publish(e.name, rKey, new Buffer(JSON.stringify(process)), options)
-            .then(() => {
-                logger.info(
-                    "Counter job evaluated as finished",
-                    {node_id: "counter", correlation_id: process.correlation_id, process_id: process.process_id},
-                );
+        await this.publisher.publish(e.name, rKey, new Buffer(JSON.stringify(process)), options);
 
-                this.tryTerminate();
+        logger.info(
+            `Counter job evaluated as finished. Success: ${process.success}`,
+            {
+                node_id: "counter",
+                correlation_id: process.correlation_id,
+                process_id: process.process_id,
+                topology_id: process.topology,
+            },
+        );
 
-                const duration = process.end_timestamp - process.start_timestamp;
+        this.terminator.tryTerminate(process.topology);
 
-                this.metrics.send(
-                    {
-                        counter_process_result: process.ok === process.total,
-                        counter_process_duration: duration,
-                        counter_process_ok_count: process.ok,
-                        counter_process_fail_count: process.nok,
-                    })
-                    .catch((err) => {
-                        logger.warn("Unable to send counter metrics.", {
-                            error: err,
-                            node_id: "counter",
-                            correlation_id: process.correlation_id,
-                            process_id: process.process_id,
-                        });
-                    });
+        try {
+            await this.metrics.send(
+                {
+                    counter_process_result: process.ok === process.total,
+                    counter_process_duration: process.end_timestamp - process.start_timestamp,
+                    counter_process_ok_count: process.ok,
+                    counter_process_fail_count: process.nok,
+                });
+        } catch (e) {
+            logger.warn("Unable to send counter metrics.", {
+                error: e,
+                node_id: "counter",
+                correlation_id: process.correlation_id,
+                process_id: process.process_id,
             });
-    }
-
-    /**
-     * Checks if counter can be terminated and if so, send http request about it
-     */
-    private async tryTerminate() {
-        if (!this.terminationRequested || !this.terminationUrl) {
-            return;
         }
-
-        const isSomeRunning = await this.storage.hasSome(this.topologyId);
-        if (isSomeRunning) {
-            return;
-        }
-
-        // Should terminate -> send request and expect being terminated
-        const requestOptions = {
-            method: "GET",
-            url: this.terminationUrl,
-            timeout: 5000,
-        };
-
-        logger.info(`Counter sending termination request: ${JSON.stringify(requestOptions)}`);
-
-        request(requestOptions, (err, response) => {
-            if (err) {
-                logger.error(`Counter termination request ended with error: ${err.message}`);
-                return;
-            }
-
-            if (response.statusCode !== 200) {
-                logger.error(`Counter termination request resulted with statusCode: ${response.statusCode}`);
-                return;
-            }
-
-            logger.info("Counter termination request accepted.");
-        });
     }
 
 }

@@ -52,6 +52,8 @@ class HomepagePresenter extends BasePresenter
 
     /**
      * @param Form $form
+     *
+     * @throws \CcApi\Connector\Exception\ConnectorException
      */
     public function processSystemFilter(Form $form): void
     {
@@ -66,7 +68,7 @@ class HomepagePresenter extends BasePresenter
     }
 
     /**
-     *
+     * @throws \CcApi\Connector\Exception\ConnectorException
      */
     public function actionDefault(): void
     {

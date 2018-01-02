@@ -10,6 +10,7 @@ namespace App\Presenters;
 
 use App\Forms\AuthorizationSettingGeneratorFactory;
 use App\Forms\SwitchTokenFormFactory;
+use App\Model\DistributionList;
 use CcApi\ApiEntity\UserSystem;
 use CcApi\Connector\ConnectorManager;
 use Nette\Application\UI\Form;
@@ -36,10 +37,21 @@ class SystemDetailPresenter extends BasePresenter
      * @var AuthorizationSettingGeneratorFactory
      */
     private $authorizationSettingGeneratorFactory;
+
     /**
      * @var SwitchTokenFormFactory
      */
     private $switchTokenFormFactory;
+
+    /**
+     * @var DistributionList
+     */
+    private $distributionList;
+
+    /**
+     * @var array
+     */
+    private $list = [];
 
     /**
      * HomepagePresenter constructor.
@@ -47,28 +59,57 @@ class SystemDetailPresenter extends BasePresenter
      * @param ConnectorManager                     $connectorManager
      * @param AuthorizationSettingGeneratorFactory $authorizationSettingGeneratorFactory
      * @param SwitchTokenFormFactory               $switchTokenFormFactory
+     * @param DistributionList                     $distributionList
      */
     public function __construct(ConnectorManager $connectorManager,
                                 AuthorizationSettingGeneratorFactory $authorizationSettingGeneratorFactory,
-                                SwitchTokenFormFactory $switchTokenFormFactory)
+                                SwitchTokenFormFactory $switchTokenFormFactory, DistributionList $distributionList)
     {
         parent::__construct();
         $this->connectorManager                     = $connectorManager;
         $this->authorizationSettingGeneratorFactory = $authorizationSettingGeneratorFactory;
         $this->switchTokenFormFactory               = $switchTokenFormFactory;
+        $this->distributionList                     = $distributionList;
     }
 
     /**
      * @param $systemKey
+     *
+     * @throws \CcApi\Connector\Exception\ConnectorException
+     * @throws \Nette\Application\UI\InvalidLinkException
      */
     public function actionDefault($systemKey): void
     {
         if ($systemKey) {
-            $this->userSystem = $this->connectorManager->getUserSystem($this->userId, $systemKey);
-
-            $this->template->system = $this->userSystem;
+            $this->userSystem                  = $this->connectorManager->getUserSystem($this->userId, $systemKey);
+            $this->list                        = $this->distributionList->getListsForSelect(
+                $this->userSystem->getToken(),
+                $this->userId
+            );
+            $this->template->additionalSetting = $this->createLink($this->userSystem);
+            $this->template->system            = $this->userSystem;
         } else {
             $this->template->system = NULL;
+        }
+    }
+
+    /**
+     * @param UserSystem $userSystem
+     *
+     * @return string
+     * @throws \Nette\Application\UI\InvalidLinkException
+     */
+    private function createLink(UserSystem $userSystem): string
+    {
+        switch ($userSystem->getKey()) {
+            case 'wisepops':
+                return $this->link('WisePop:', ['systemKey' => $this->userSystem->getKey()]);
+                break;
+            case 'airtable':
+                return $this->link('AirTable:', ['systemKey' => $this->userSystem->getKey()]);
+                break;
+            default:
+                return '';
         }
     }
 
@@ -89,7 +130,7 @@ class SystemDetailPresenter extends BasePresenter
     }
 
     /**
-     *
+     * @throws \CcApi\Connector\Exception\ConnectorException
      */
     public function handleStartSync()
     {
@@ -104,7 +145,7 @@ class SystemDetailPresenter extends BasePresenter
      */
     public function createComponentAuthorizationSettingGeneratorForm(): Form
     {
-        $form = $this->authorizationSettingGeneratorFactory->create($this->userSystem);
+        $form = $form = $this->authorizationSettingGeneratorFactory->create($this->userSystem, $this->list);
 
         $form->onSuccess[] = [$this, 'processAuthorizationSettingGenerator'];
 
@@ -113,6 +154,9 @@ class SystemDetailPresenter extends BasePresenter
 
     /**
      * @param Form $form
+     *
+     * @throws \Nette\Application\AbortException
+     * @throws \CcApi\Connector\Exception\ConnectorException
      */
     public function processAuthorizationSettingGenerator(Form $form): void
     {
@@ -131,7 +175,7 @@ class SystemDetailPresenter extends BasePresenter
 
         $this->flashMessage('Setting was saved.');
 
-        $this->redirect('//SystemDetail:', ['systemKey' => $this->userSystem->getKey()]);
+        $this->redirect('SystemDetail:', ['systemKey' => $this->userSystem->getKey()]);
     }
 
     /**
@@ -148,6 +192,9 @@ class SystemDetailPresenter extends BasePresenter
 
     /**
      * @param Form $form
+     *
+     * @throws \Nette\Application\AbortException
+     * @throws \CcApi\Connector\Exception\ConnectorException
      */
     public function processSwitchToken(Form $form)
     {
@@ -156,7 +203,7 @@ class SystemDetailPresenter extends BasePresenter
         $this->connectorManager->switchUserSystemToken($this->userId, $this->userSystem->getKey(), $data['token']);
 
         $this->flashMessage('Token was switched.');
-        $this->redirect('//SystemDetail:', ['systemKey' => $this->userSystem->getKey()]);
+        $this->redirect('SystemDetail:', ['systemKey' => $this->userSystem->getKey()]);
     }
 
 }

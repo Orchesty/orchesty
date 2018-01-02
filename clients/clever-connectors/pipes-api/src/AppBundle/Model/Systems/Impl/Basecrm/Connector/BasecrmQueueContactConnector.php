@@ -80,7 +80,8 @@ class BasecrmQueueContactConnector implements ConnectorInterface
      * @param ProcessDto $dto
      *
      * @return ProcessDto
-     * @throws ConnectorException
+     * @throws SystemException
+     * @throws \CleverConnectors\AppBundle\Exceptions\CleverConnectorsException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {

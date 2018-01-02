@@ -166,6 +166,7 @@ final class SystemControllerTest extends ControllerTestCaseAbstract
                         'description' => '',
                         'action'      => '',
                         'choices'     => [],
+                        'depends_on'  => '',
                     ],
                     (object) [
                         'type'        => 'text',
@@ -178,6 +179,7 @@ final class SystemControllerTest extends ControllerTestCaseAbstract
                         'description' => '',
                         'action'      => '',
                         'choices'     => [],
+                        'depends_on'  => '',
                     ],
                     (object) [
                         'type'        => 'password',
@@ -190,6 +192,7 @@ final class SystemControllerTest extends ControllerTestCaseAbstract
                         'description' => '',
                         'action'      => '',
                         'choices'     => [],
+                        'depends_on'  => '',
                     ],
                 ],
                 'actions'        => ['null.user.group-updated-subscribers'],
@@ -247,6 +250,7 @@ final class SystemControllerTest extends ControllerTestCaseAbstract
                         'description' => '',
                         'action'      => '',
                         'choices'     => [],
+                        'depends_on'  => '',
                     ],
                     (object) [
                         'type'        => 'text',
@@ -259,6 +263,7 @@ final class SystemControllerTest extends ControllerTestCaseAbstract
                         'description' => '',
                         'action'      => '',
                         'choices'     => [],
+                        'depends_on'  => '',
                     ],
                     (object) [
                         'type'        => 'password',
@@ -271,6 +276,7 @@ final class SystemControllerTest extends ControllerTestCaseAbstract
                         'description' => '',
                         'action'      => '',
                         'choices'     => [],
+                        'depends_on'  => '',
                     ],
                 ],
                 'actions'        => ['null.user.group-updated-subscribers'],

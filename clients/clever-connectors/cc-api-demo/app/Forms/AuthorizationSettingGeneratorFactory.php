@@ -8,6 +8,7 @@
 
 namespace App\Forms;
 
+use AlesWita\FormRenderer\BootstrapV4Renderer;
 use CcApi\ApiEntity\UserSystem;
 use Nette\Application\UI\Form;
 
@@ -21,53 +22,67 @@ class AuthorizationSettingGeneratorFactory
 
     /**
      * @param UserSystem $userSystem
+     * @param array      $distributionList
      *
      * @return Form
      */
-    public function create(?UserSystem $userSystem = NULL): Form
+    public function create(?UserSystem $userSystem = NULL, array $distributionList = []): Form
     {
         $form = new Form();
 
         if ($userSystem) {
             foreach ($userSystem->getSettingFields() as $field) {
 
-                switch ($field->getType()) {
-                    case 'password':
-                        $form
-                            ->addPassword($field->getKey(), $field->getLabel());
+                if ($field->getKey() === 'list') {
+                    $form
+                        ->addSelect($field->getKey(), $field->getLabel(), $distributionList)
+                        ->setPrompt('Choose list')
+                        ->setOption('description', $field->getDescription());
 
-                        if ($field->getValue()) {
-                            $message = 'Password exists.';
-                        } else {
-                            $message = 'Password not exists.';
-                        }
+                    if ($field->getValue() !== '' && $field->getValue() !== NULL) {
+                        $form[$field->getKey()]
+                            ->setDefaultValue($field->getValue());
+                    }
 
-                        if ($field->getDescription() != '') {
-                            $form[$field->getKey()]
-                                ->setOption('description', $message . ' - ' . $field->getDescription());
-                        } else {
-                            $form[$field->getKey()]
-                                ->setOption('description', $message);
-                        }
-                        break;
-                    case 'checkbox':
-                        $form
-                            ->addCheckbox($field->getKey(), $field->getLabel());
-                        break;
-                    default:
-                        $form
-                            ->addText($field->getKey(), $field->getLabel())
-                            ->setType($field->getType());
+                } else {
+                    switch ($field->getType()) {
+                        case 'password':
+                            $form
+                                ->addPassword($field->getKey(), $field->getLabel());
 
-                        if ($field->getDescription() != '') {
-                            $form[$field->getKey()]
-                                ->setOption('description', $field->getDescription());
-                        }
-                        break;
+                            if ($field->getValue()) {
+                                $message = 'Password exists.';
+                            } else {
+                                $message = 'Password not exists.';
+                            }
+
+                            if ($field->getDescription() != '') {
+                                $form[$field->getKey()]
+                                    ->setOption('description', $message . ' - ' . $field->getDescription());
+                            } else {
+                                $form[$field->getKey()]
+                                    ->setOption('description', $message);
+                            }
+                            break;
+                        case 'checkbox':
+                            $form
+                                ->addCheckbox($field->getKey(), $field->getLabel());
+                            break;
+                        default:
+                            $form
+                                ->addText($field->getKey(), $field->getLabel())
+                                ->setType($field->getType());
+
+                            if ($field->getDescription() != '') {
+                                $form[$field->getKey()]
+                                    ->setOption('description', $field->getDescription());
+                            }
+                            break;
+                    }
+
+                    $form[$field->getKey()]
+                        ->setDefaultValue($field->getValue());
                 }
-
-                $form[$field->getKey()]
-                    ->setDefaultValue($field->getValue());
 
                 if ($field->isRequired()) {
                     $form[$field->getKey()]->setRequired('This field is required.');
@@ -86,6 +101,8 @@ class AuthorizationSettingGeneratorFactory
 
             $form->addSubmit('save_auth_setting', 'Save');
         }
+
+        $form->setRenderer(new BootstrapV4Renderer);
 
         return $form;
     }

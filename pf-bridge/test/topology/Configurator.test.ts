@@ -5,6 +5,8 @@ import Configurator, {ITopologyConfig, ITopologyConfigSkeleton} from "../../src/
 
 const testTopo: ITopologyConfigSkeleton = {
     id: "test-topo",
+    topology_id: "test-topo",
+    topology_name: "test-topo",
     nodes: [
         {
             id: "node_a",
@@ -32,7 +34,6 @@ const testTopo: ITopologyConfigSkeleton = {
 
 const expectedTopo: ITopologyConfig = {
     counter: {
-        topology: "test-topo",
         pub: {
             exchange: {
                 name: "pipes.test-topo.events",
@@ -52,9 +53,10 @@ const expectedTopo: ITopologyConfig = {
                 prefetch: 1,
             },
         },
-        port: 8005,
     },
     id: "test-topo",
+    topology_id: "test-topo",
+    topology_name: "test-topo",
     nodes: [
         {
             debug: {
@@ -229,12 +231,12 @@ const expectedTopo: ITopologyConfig = {
 
 describe("Configurator", () => {
     it("should add defaults to missing topology skeleton fields", () => {
-        const config: ITopologyConfig = Configurator.createConfigFromSkeleton(testTopo);
+        const config: ITopologyConfig = Configurator.createConfigFromSkeleton(false, testTopo);
         assert.deepEqual(config, expectedTopo);
     });
     it("should not damage existing topology if converted multiple times", () => {
-        const config: ITopologyConfig = Configurator.createConfigFromSkeleton(testTopo);
-        const again: ITopologyConfig = Configurator.createConfigFromSkeleton(config);
+        const config: ITopologyConfig = Configurator.createConfigFromSkeleton(false, testTopo);
+        const again: ITopologyConfig = Configurator.createConfigFromSkeleton(false, config);
         assert.deepEqual(again, expectedTopo);
     });
 });

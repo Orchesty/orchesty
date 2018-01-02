@@ -57,12 +57,16 @@ export interface INodeConfig {
 
 export interface ITopologyConfigSkeleton {
     id: string;
+    topology_id: string;
+    topology_name: string;
     nodes: INodeConfigSkeleton[];
     counter?: ICounterSettings;
 }
 
 export interface ITopologyConfig {
     id: string;
+    topology_id: string;
+    topology_name: string;
     nodes: INodeConfig[];
     counter: ICounterSettings;
 }
@@ -74,23 +78,26 @@ class Configurator {
 
     /**
      *
-     * @param {ITopologyConfigSkeleton} topologySkeleton
+     * @param {boolean} isMulti
+     * @param {ITopologyConfigSkeleton} skeleton
      * @return {ITopologyConfig}
      */
-    public static createConfigFromSkeleton(topologySkeleton: ITopologyConfigSkeleton): ITopologyConfig {
+    public static createConfigFromSkeleton(isMulti: boolean, skeleton: ITopologyConfigSkeleton): ITopologyConfig {
         const nodes: INodeConfig[] = [];
 
-        let position = 0;
-        topologySkeleton.nodes.forEach((nodeSkeleton: INodeConfigSkeleton) => {
-            const node = Configurator.createNodeConfig(topologySkeleton.id, nodeSkeleton, position);
+        let i = 0;
+        skeleton.nodes.forEach((nodeSkeleton: INodeConfigSkeleton) => {
+            const node = Configurator.createNodeConfig(skeleton.id, nodeSkeleton, i);
             nodes.push(node);
-            position++;
+            i++;
         });
 
         return {
-            id: topologySkeleton.id,
+            id: skeleton.id,
+            topology_id: skeleton.topology_id,
+            topology_name: skeleton.topology_name,
             nodes,
-            counter: topologySkeleton.counter || Defaults.getCounterDefaultSettings(topologySkeleton.id),
+            counter: skeleton.counter || Defaults.getCounterDefaultSettings(isMulti, skeleton.id),
         };
     }
 

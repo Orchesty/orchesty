@@ -13,9 +13,12 @@ import {ResultCode} from "../../src/message/ResultCode";
 import Pipes from "../../src/Pipes";
 import {ITopologyConfigSkeleton} from "../../src/topology/Configurator";
 import {ICounterProcessInfo} from "../../src/topology/counter/CounterProcess";
+import Terminator from "../../src/topology/terminator/Terminator";
 
 const testTopology: ITopologyConfigSkeleton = {
     id: "topo-with-repeater",
+    topology_id: "topo-with-repeater",
+    topology_name: "topo-with-repeater",
     nodes: [
         {
             id: "start-node",
@@ -119,8 +122,12 @@ describe("Node with repeater test", () => {
     it("in first node message should be repeated and then forwarded to second node", (done) => {
         const pip = new Pipes(testTopology);
 
+        // manually set the terminator port not to collide with other tests
+        const dic = pip.getDIContainer();
+        dic.set("topology.terminator", () => new Terminator(8558, dic.get("counter.storage")));
+
         Promise.all([
-            pip.startCounter(8558),
+            pip.startCounter(),
             pip.startRepeater(),
             pip.startNode(testTopology.nodes[0].id),
             pip.startNode(testTopology.nodes[1].id),
@@ -143,8 +150,8 @@ describe("Node with repeater test", () => {
                             .then(() => {
                                 return ch.bindQueue(
                                     counterResultQueue.name,
-                                    pip.getTopologyConfig().counter.pub.exchange.name,
-                                    pip.getTopologyConfig().counter.pub.routing_key,
+                                    pip.getTopologyConfig(false).counter.pub.exchange.name,
+                                    pip.getTopologyConfig(false).counter.pub.routing_key,
                                 );
                             })
                             .then(() => {
@@ -156,8 +163,8 @@ describe("Node with repeater test", () => {
                     // In this fn we evaluate expected incoming message and state if test is OK or failed
                     const data: ICounterProcessInfo = JSON.parse(msg.content.toString());
                     assert.equal(data.process_id, testMsgHeaders.getPFHeader(Headers.PROCESS_ID));
-                    assert.equal(data.total, pip.getTopologyConfig().nodes.length);
-                    assert.equal(data.ok, pip.getTopologyConfig().nodes.length);
+                    assert.equal(data.total, pip.getTopologyConfig(false).nodes.length);
+                    assert.equal(data.ok, pip.getTopologyConfig(false).nodes.length);
                     assert.equal(data.nok, 0);
                     done();
                 },

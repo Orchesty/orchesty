@@ -1,6 +1,16 @@
 $(function () {
 
 	$.nette.init();
+	$.nette.ext('loader', {
+		start: function () {
+			$('body').append("<div id='loader'></div>");
+		},
+		complete: function() {
+			$('div#loader').remove();
+		}
+	}, {
+
+	});
 
 	// Stream client scripts
 	var socket = io(wsHost);

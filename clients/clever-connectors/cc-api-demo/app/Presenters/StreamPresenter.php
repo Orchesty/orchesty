@@ -48,7 +48,8 @@ class StreamPresenter extends BasePresenter
     }
 
     /**
-     * Action after login
+     * @throws \CmStream\Exception\SubscriberException
+     * @throws \Nette\Application\AbortException
      */
     public function handleSubscribe(): void
     {
@@ -61,6 +62,9 @@ class StreamPresenter extends BasePresenter
      * Action after logout
      *
      * @param $token
+     *
+     * @throws \CmStream\Exception\SubscriberException
+     * @throws \Nette\Application\AbortException
      */
     public function handleUnSubscribe($token): void
     {
@@ -70,7 +74,8 @@ class StreamPresenter extends BasePresenter
     }
 
     /**
-     *
+     * @throws \CmStream\Exception\SubscriberException
+     * @throws \Nette\Application\AbortException
      */
     public function actionSubscribeDemo(): void
     {
@@ -82,7 +87,8 @@ class StreamPresenter extends BasePresenter
     }
 
     /**
-     *
+     * @throws \CmStream\Exception\SubscriberException
+     * @throws \Nette\Application\AbortException
      */
     public function actionUnsubscribeDemo(): void
 
@@ -122,6 +128,8 @@ class StreamPresenter extends BasePresenter
 
     /**
      * @param Form $form
+     *
+     * @throws \Exception
      */
     public function processPublishForm(Form $form)
     {

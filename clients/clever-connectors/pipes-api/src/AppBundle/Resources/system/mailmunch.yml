@@ -12,3 +12,4 @@ services:
     hbpf.custom_node.mailmunch-created-email-mapper:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Mailmunch\Mapper\MailmunchCreatedEmailMapper
         arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'

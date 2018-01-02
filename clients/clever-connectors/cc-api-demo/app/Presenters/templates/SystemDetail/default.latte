@@ -7,7 +7,6 @@
 
     <hr>
 
-    {import '../components/form.latte'}
     {if $user->isLoggedIn()}
 
         <div class="row">
@@ -85,7 +84,20 @@
 
                         <h3>Authorization</h3>
 
-                        {include bootstrap-form authorizationSettingGeneratorForm}
+                        {control authorizationSettingGeneratorForm}
+                    </div>
+                </div>
+            {/if}
+
+            {if $additionalSetting !== ''}
+                <hr>
+
+                <div class="row">
+                    <div class="col-md-3">
+
+                    </div>
+                    <div class="col-md-9">
+                        <a href="{$additionalSetting}" class="btn btn-primary">Additional setting</a>
                     </div>
                 </div>
             {/if}
@@ -95,8 +107,7 @@
             <div class="row">
                 <div class="col-md-12">
                     <h2>Switch token</h2>
-
-                    {include bootstrap-form switchTokenForm}
+                    {control switchTokenForm}
                 </div>
             </div>
         {else}
@@ -110,7 +121,7 @@
     {else}
         <div class="row">
             <div class="col-md-12">
-                {include bootstrap-form loginForm}
+                {control loginForm}
             </div>
         </div>
     {/if}

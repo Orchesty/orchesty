@@ -19,6 +19,8 @@ class NutshellUpdatedContactMapper extends NutshellContactMapperAbstract
      */
     public function process(ProcessDto $dto): ProcessDto
     {
+        $this->action = self::UPDATE;
+
         return parent::process($this->getNeededAction($dto, self::UPDATE));
     }
 

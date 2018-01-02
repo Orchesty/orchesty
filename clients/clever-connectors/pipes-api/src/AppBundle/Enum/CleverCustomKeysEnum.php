@@ -52,7 +52,6 @@ final class CleverCustomKeysEnum extends EnumAbstract
      * @param string $fieldName
      *
      * @return string
-     * @throws CleverConnectorsException
      */
     public static function getType(string $fieldName): string
     {

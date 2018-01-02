@@ -8,13 +8,12 @@
 
 namespace Hanaboso\PipesFramework\TopologyGenerator\DockerCompose;
 
+use Exception;
 use Hanaboso\PipesFramework\Commons\Enum\TypeEnum;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
-use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\Impl\CounterServiceBuilder;
 use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\Impl\MultiNodeServiceBuilder;
 use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\Impl\NodeServiceBuilder;
-use Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\Impl\ProbeServiceBuilder;
 use Hanaboso\PipesFramework\TopologyGenerator\Environment;
 use Hanaboso\PipesFramework\TopologyGenerator\GeneratorInterface;
 use Hanaboso\PipesFramework\TopologyGenerator\GeneratorUtils;
@@ -63,7 +62,7 @@ class Generator implements GeneratorInterface
     /**
      * @var boolean
      */
-    private $runBridgesInSeparateContainers = TRUE;
+    private $multiModeEnabled = FALSE;
 
     /**
      * Generator constructor.
@@ -94,7 +93,7 @@ class Generator implements GeneratorInterface
      * @param Topology        $topology
      * @param iterable|Node[] $nodes
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function generate(Topology $topology, iterable $nodes): void
     {
@@ -130,11 +129,11 @@ class Generator implements GeneratorInterface
     }
 
     /**
-     * @param bool $runBridgesInSeparateContainers
+     * @param bool $enable
      */
-    public function runBridgesInSeparateContainers(bool $runBridgesInSeparateContainers): void
+    public function setMultiMode(bool $enable): void
     {
-        $this->runBridgesInSeparateContainers = $runBridgesInSeparateContainers;
+        $this->multiModeEnabled = $enable;
     }
 
     /**
@@ -142,17 +141,16 @@ class Generator implements GeneratorInterface
      * @param iterable|Node[] $nodes
      *
      * @return string
-     * @throws \Exception
+     * @throws Exception
      */
     public function createTopologyConfig(Topology $topology, iterable $nodes): string
     {
-        $config['id']            = GeneratorUtils::createServiceName(
-            GeneratorUtils::normalizeName($topology->getId(), $topology->getName())
-        );
+        $config['id']            = GeneratorUtils::createNormalizedServiceName($topology->getId(),
+            $topology->getName());
         $config['topology_id']   = $topology->getId();
         $config['topology_name'] = $topology->getName();
 
-        $i = 0;
+        $i           = 0;
         $defaultPort = 8008;
         foreach ($nodes as $node) {
             $nodeFullId = GeneratorUtils::normalizeName($node->getId(), $node->getName());
@@ -167,18 +165,16 @@ class Generator implements GeneratorInterface
             $nodeConfig['worker'] = $this->getWorkerConfig($node);
             $nodeConfig['next']   = [];
             foreach ($node->getNext() as $next) {
-                $nodeConfig['next'][] = GeneratorUtils::createServiceName(
-                    GeneratorUtils::normalizeName($next->getId(), $next->getName())
-                );
+                $nodeConfig['next'][] = GeneratorUtils::createNormalizedServiceName($next->getId(), $next->getName());
             }
 
-            if (!$this->runBridgesInSeparateContainers) {
-                $multiName = $this->getMultiNodeName($topology);
-                $port = $defaultPort + $i;
+            if ($this->multiModeEnabled) {
+                $multiName           = $this->getMultiNodeName($topology);
+                $port                = $defaultPort + $i;
                 $nodeConfig['debug'] = [
                     'port' => $port,
                     'host' => $multiName,
-                    'url' => sprintf('http://%s:%s/status', $multiName, $port),
+                    'url'  => sprintf('http://%s:%s/status', $multiName, $port),
                 ];
             }
 
@@ -203,16 +199,6 @@ class Generator implements GeneratorInterface
 
         $compose->addNetwork($this->network);
 
-        $builder = new ProbeServiceBuilder($this->environment, self::REGISTRY, $this->network, $topology, $volume);
-
-        $nodeWatcherService = $builder->build(new Node());
-        $compose->addService($nodeWatcherService);
-
-        $builder = new CounterServiceBuilder($this->environment, self::REGISTRY, $this->network, $topology, $volume);
-
-        $counterService = $builder->build(new Node());
-        $compose->addService($counterService);
-
         $this->addBridges($compose, $topology, $nodes, $volume);
 
         return $this->composeBuilder->build($compose);
@@ -231,18 +217,7 @@ class Generator implements GeneratorInterface
         VolumePathDefinition $volumePD
     ): void
     {
-        if ($this->runBridgesInSeparateContainers) {
-            // Run every bridge in dedicated container
-            foreach ($nodes as $node) {
-                $builder = new NodeServiceBuilder(
-                    $this->environment,
-                    self::REGISTRY,
-                    $this->network,
-                    $volumePD
-                );
-                $compose->addService($builder->build($node));
-            }
-        } else {
+        if ($this->multiModeEnabled) {
             // Run all topology bridges is single container
             $builder = new MultiNodeServiceBuilder(
                 $this->getMultiNodeName($topology),
@@ -254,6 +229,17 @@ class Generator implements GeneratorInterface
 
             $multi = $builder->build(new Node());
             $compose->addService($multi);
+        } else {
+            // Run every bridge in dedicated container
+            foreach ($nodes as $node) {
+                $builder = new NodeServiceBuilder(
+                    $this->environment,
+                    self::REGISTRY,
+                    $this->network,
+                    $volumePD
+                );
+                $compose->addService($builder->build($node));
+            }
         }
     }
 
@@ -271,7 +257,7 @@ class Generator implements GeneratorInterface
      * @param Node $node
      *
      * @return array
-     * @throws \Exception
+     * @throws Exception
      */
     private function getWorkerConfig(Node $node): array
     {
@@ -307,7 +293,7 @@ class Generator implements GeneratorInterface
      * @param Node $node
      *
      * @return array
-     * @throws \Exception
+     * @throws Exception
      */
     private function getHttpWorkerConfig(Node $node): array
     {
@@ -321,7 +307,7 @@ class Generator implements GeneratorInterface
      * @param Node $node
      *
      * @return array
-     * @throws \Exception
+     * @throws Exception
      */
     private function getHttpXmlParserWorkerConfig(Node $node): array
     {
@@ -340,7 +326,7 @@ class Generator implements GeneratorInterface
      * @param Node $node
      *
      * @return array
-     * @throws \Exception
+     * @throws Exception
      */
     private function getHttpWorkerSettings(Node $node): array
     {

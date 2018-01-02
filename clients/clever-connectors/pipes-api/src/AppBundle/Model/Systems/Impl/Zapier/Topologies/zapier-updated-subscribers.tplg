@@ -4,7 +4,7 @@
     <bpmn:event id="Event_0v4fm7v" pipes:pipesType="webhook" name="zapier-updated-subscriber-connector">
       <bpmn:outgoing>SequenceFlow_0f4oxlx</bpmn:outgoing>
     </bpmn:event>
-    <bpmn:task id="Task_188kpdm" pipes:pipesType="custom" name="zapier-subscriber-mapper">
+    <bpmn:task id="Task_188kpdm" pipes:pipesType="custom" name="zapier-updated-subscriber-mapper">
       <bpmn:incoming>SequenceFlow_0f4oxlx</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1p01er8</bpmn:outgoing>
     </bpmn:task>

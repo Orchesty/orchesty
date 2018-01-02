@@ -11,7 +11,10 @@ namespace Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller;
 use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Controller\FOSRestController;
 use Hanaboso\PipesFramework\Commons\Traits\ControllerTrait;
+use Hanaboso\PipesFramework\Configurator\TopologyControlling\Messages\TopologyMessage;
+use Hanaboso\PipesFramework\Configurator\TopologyControlling\TopologyControllingProducer;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\GeneratorHandler;
+use Hanaboso\PipesFramework\TopologyGenerator\Exception\TopologyGeneratorException;
 use Psr\Log\LoggerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Response;
@@ -36,7 +39,12 @@ class GeneratorController extends FOSRestController
     /**
      * @var GeneratorHandler|NULL
      */
-    private $generatorHandler = NULL;
+    protected $generatorHandler = NULL;
+
+    /**
+     * @var TopologyControllingProducer|NULL
+     */
+    protected $topologyControllingProducer = NULL;
 
     /**
      * @Route("/topology/generate/{id}")
@@ -45,6 +53,7 @@ class GeneratorController extends FOSRestController
      * @param string $id
      *
      * @return Response
+     * @throws TopologyGeneratorException
      */
     public function generateAction(string $id): Response
     {
@@ -69,6 +78,7 @@ class GeneratorController extends FOSRestController
      * @param string $id
      *
      * @return Response
+     * @throws TopologyGeneratorException
      */
     public function runAction(string $id): Response
     {
@@ -94,22 +104,27 @@ class GeneratorController extends FOSRestController
      * @param string $id
      *
      * @return Response
+     * @throws TopologyGeneratorException
      */
     public function stopAction(string $id): Response
     {
         //TODO: Make much better !!!!
         $this->construct();
-        $statusCode = 400;
-        $result     = NULL;
+        $statusCode = 200;
 
-        if ($this->generatorHandler) {
+        if ($this->topologyControllingProducer) {
+            $message = new TopologyMessage($id, TopologyMessage::STOP);
+            $this->topologyControllingProducer->publish($message->getMessage());
+        }
+
+        /*if ($this->generatorHandler) {
             $result = $this->generatorHandler->stopTopology($id);
             if (is_array($result) && count($result) == 0) {
                 $statusCode = 200;
             }
-        }
+        }*/
 
-        return $this->getResponse(["result" => $statusCode, "docker_info" => $result], $statusCode);
+        return $this->getResponse(["result" => $statusCode], $statusCode);
     }
 
     /**
@@ -119,18 +134,26 @@ class GeneratorController extends FOSRestController
      * @param string $id
      *
      * @return Response
+     * @throws TopologyGeneratorException
+     * @throws TopologyGeneratorException
      */
     public function deleteAction(string $id): Response
     {
         //TODO: Make much better !!!!
         $this->construct();
-        $statusCode = 400;
+        $statusCode = 200;
 
-        if ($this->generatorHandler) {
+        if ($this->topologyControllingProducer) {
+
+            $message = new TopologyMessage($id, TopologyMessage::DELETE);
+            $this->topologyControllingProducer->publish($message->getMessage());
+        }
+
+        /*if ($this->generatorHandler) {
             $this->generatorHandler->stopTopology($id);
             $this->generatorHandler->destroyTopology($id);
             $statusCode = 200;
-        }
+        }*/
 
         return $this->getResponse(["result" => $statusCode], $statusCode);
     }
@@ -142,6 +165,7 @@ class GeneratorController extends FOSRestController
      * @param string $id
      *
      * @return Response
+     * @throws TopologyGeneratorException
      */
     public function infoAction(string $id): Response
     {
@@ -168,6 +192,10 @@ class GeneratorController extends FOSRestController
         }
         if (!$this->logger) {
             $this->logger = $this->container->get('monolog.logger.security');
+        }
+
+        if (!$this->topologyControllingProducer) {
+            $this->topologyControllingProducer = $this->container->get('rabbit-mq.producer.topology-destroy');
         }
     }
 

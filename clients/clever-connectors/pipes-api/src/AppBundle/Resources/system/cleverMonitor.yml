@@ -37,6 +37,7 @@ services:
         arguments:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.transport.async_curl_factory'
+            - '@cc.progress_counter.async_progress_counter_service'
             - '%clevermonitor%'
 
     hbpf.connector.cleverconnectors-get-list-subscribers-connector:
@@ -44,4 +45,5 @@ services:
         arguments:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.transport.async_curl_factory'
+            - '@cc.progress_counter.async_progress_counter_service'
             - '%clevermonitor%'

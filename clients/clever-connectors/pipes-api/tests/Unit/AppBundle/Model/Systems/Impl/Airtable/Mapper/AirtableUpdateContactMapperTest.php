@@ -37,7 +37,7 @@ final class AirtableUpdateContactMapperTest extends ConnectorTestCaseAbstract
 
         $this->assertEquals([
             '_foreign_id'    => 'abc',
-            'cm_unsubscribe' => 1,
+            'unsubscribe' => 1,
         ], $response);
     }
 

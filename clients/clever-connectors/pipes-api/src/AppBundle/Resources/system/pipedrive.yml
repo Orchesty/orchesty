@@ -38,6 +38,12 @@ services:
     hbpf.custom_node.pipedrive-updated-person-mapper:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Pipedrive\Mapper\PipedriveUpdatedPersonMapper
         arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+
+    hbpf.custom_node.pipedrive-created-event-person-mapper:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Pipedrive\Mapper\PipedriveCreatedEventPersonMapper
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
 
     hbpf.custom_node.pipedrive-deleted-person-mapper:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Pipedrive\Mapper\PipedriveDeletedPersonMapper
@@ -46,10 +52,12 @@ services:
     hbpf.custom_node.pipedrive-sync-person-mapper:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Pipedrive\Mapper\PipedriveSyncPersonMapper
         arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
 
     hbpf.custom_node.pipedrive-created-person-mapper:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Pipedrive\Mapper\PipedriveCreatedPersonMapper
         arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
 
     hbpf.custom_node.pipedrive-update-person-mapper:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Pipedrive\Mapper\PipedriveUpdatePersonMapper

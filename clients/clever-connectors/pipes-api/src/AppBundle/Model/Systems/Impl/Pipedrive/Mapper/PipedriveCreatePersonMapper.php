@@ -5,7 +5,6 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\Pipedrive\Mapper;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\CleverCustomKeysEnum;
 use CleverConnectors\AppBundle\Enum\CleverFieldsEnum;
-use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -78,7 +77,6 @@ class PipedriveCreatePersonMapper implements CustomNodeInterface
      * @param SystemInstall $systemInstall
      *
      * @return string
-     * @throws SystemException
      */
     private function getHash(string $key, SystemInstall $systemInstall): string
     {

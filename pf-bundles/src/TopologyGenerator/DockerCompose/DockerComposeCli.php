@@ -77,7 +77,6 @@ class DockerComposeCli
             $command = str_replace('{config}', $this->config, self::DOCKER_COMPOSE_STOP);
             //TODO: find better cli tool
             exec($command);
-
             return TRUE;
         }
 
@@ -90,8 +89,7 @@ class DockerComposeCli
     public function destroy(): bool
     {
         if (file_exists($this->configDir)) {
-            exec(sprintf('rm -rf %s', $this->configDir));
-
+                 exec(sprintf('rm -rf %s', $this->configDir));
             return TRUE;
         }
 

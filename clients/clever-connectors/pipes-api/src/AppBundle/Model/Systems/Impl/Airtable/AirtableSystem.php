@@ -29,14 +29,24 @@ use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 class AirtableSystem implements AuthorizationInterface, CMEventSystemInterface
 {
 
-    use SystemTrait;
+    use SystemTrait {
+        toArray as parentToArray;
+    }
     use AuthorizationTrait;
     use CMEventSystemTrait;
 
-    public const  BASE_URL = 'https://api.airtable.com/v0/';
-    private const API_KEY  = 'api_key';
-    private const VIEW     = 'view';
-    private const URL      = 'url';
+    public const BASE_URL     = 'https://api.airtable.com/v0/';
+    public const TABLE_URL    = 'table-url';
+    public const LAYOUT       = 'datalayout';
+    public const TEMPLATE     = 'map_templates';
+    public const TEMPLATE_IN  = 'template_in';
+    public const TEMPLATE_OUT = 'template_out';
+    public const LIST_ID      = 'list-id';
+    public const DATA_SET     = 'data_set';
+    public const VIEW         = 'view';
+    public const LAST_SYNC    = 'last_sync';
+
+    private const API_KEY = 'api_key';
 
     /**
      * AirtableSystem constructor.
@@ -48,10 +58,10 @@ class AirtableSystem implements AuthorizationInterface, CMEventSystemInterface
         $this->addCMEvent(new CMEventObject(CleverCustomKeysEnum::HARD_BOUNCE, SystemInstall::EVENT_HARD_BOUNCE, ''));
 
         $topologyName = TopologyNameUtils::getTopologyName(TopologyNameUtils::SYNC, $this->getKey());
-        $this->addAllowedAction(new ActionDto($topologyName, MapTemplate::DIRECTION_IN));
+        $this->addAllowedAction(new ActionDto($topologyName . '-in', MapTemplate::DIRECTION_IN));
 
         $topologyName = TopologyNameUtils::getTopologyName(TopologyNameUtils::UPDATED_SUBSCRIBERS, $this->getKey());
-        $this->addAllowedAction(new ActionDto($topologyName, MapTemplate::DIRECTION_IN));
+        $this->addAllowedAction(new ActionDto($topologyName . '-in', MapTemplate::DIRECTION_IN));
 
         $topologyName = TopologyNameUtils::getTopologyName(TopologyNameUtils::CREATE_CONTACT, $this->getKey());
         $this->addAllowedAction(new ActionDto($topologyName . '-in', MapTemplate::DIRECTION_IN));
@@ -60,10 +70,10 @@ class AirtableSystem implements AuthorizationInterface, CMEventSystemInterface
         $this->addAllowedAction(new ActionDto($topologyName . '-out', MapTemplate::DIRECTION_OUT));
 
         $topologyName = TopologyNameUtils::getTopologyName(TopologyNameUtils::UNSUBSCRIBE_CONTACT, $this->getKey());
-        $this->addAllowedAction(new ActionDto($topologyName, MapTemplate::DIRECTION_OUT));
+        $this->addAllowedAction(new ActionDto($topologyName . '-out', MapTemplate::DIRECTION_OUT));
 
         $topologyName = TopologyNameUtils::getTopologyName(TopologyNameUtils::HARD_BOUNCE_CONTACT, $this->getKey());
-        $this->addAllowedAction(new ActionDto($topologyName, MapTemplate::DIRECTION_OUT));
+        $this->addAllowedAction(new ActionDto($topologyName . '-out', MapTemplate::DIRECTION_OUT));
     }
 
     /**
@@ -75,7 +85,7 @@ class AirtableSystem implements AuthorizationInterface, CMEventSystemInterface
     {
         $settings = $systemInstall->getSettings();
 
-        return !empty($settings[self::API_KEY] ?? '') && !empty($settings[self::URL] ?? '');
+        return !empty($settings[self::API_KEY] ?? '');
     }
 
     /**
@@ -148,18 +158,7 @@ class AirtableSystem implements AuthorizationInterface, CMEventSystemInterface
 
         $settings = $systemInstall->getSettings();
 
-        $uri = $settings[self::URL];
-        if (strpos($uri, '?')) {
-            $tmp = explode('?', $uri);
-            $uri = $tmp[0];
-        }
-
-        // use view if set
-        if ($settings[self::VIEW] ?? '') {
-            $uri .= sprintf('?view=%s', $settings[self::VIEW]);
-        }
-
-        return (new RequestDto($method, new Uri($uri)))
+        return (new RequestDto($method, new Uri(self::BASE_URL)))
             ->setHeaders([
                 'Authorization' => sprintf('Bearer %s', $settings[self::API_KEY]),
                 'Content-Type'  => 'application/json',
@@ -181,14 +180,6 @@ class AirtableSystem implements AuthorizationInterface, CMEventSystemInterface
             self::API_KEY,
             'API Key',
             $this->prepareValue(self::API_KEY, $settings),
-            TRUE
-        );
-
-        $field2 = new Field(
-            Field::TEXT,
-            self::URL,
-            'Url of the table',
-            $this->prepareValue(self::URL, $settings),
             TRUE
         );
 
@@ -223,7 +214,6 @@ class AirtableSystem implements AuthorizationInterface, CMEventSystemInterface
         $form = new Form();
         $form
             ->addField($field1)
-            ->addField($field2)
             ->addField($field3)
             ->addField($field4)
             ->addField($field5)
@@ -240,6 +230,47 @@ class AirtableSystem implements AuthorizationInterface, CMEventSystemInterface
     public function getCMEventRequester(SystemInstall $systemInstall): ?RequesterInterface
     {
         return NULL;
+    }
+
+    /**
+     * @param SystemInstall $systemInstall
+     * @param array         $data
+     *
+     * @return array
+     */
+    public function saveCustomForm(SystemInstall $systemInstall, array $data = []): array
+    {
+        $tables = [];
+
+        foreach ($data as $index => $row) {
+            if (in_array($row[self::TABLE_URL], $tables)) {
+                unset($data[$index]);
+            } else {
+                $tables[] = $row[self::TABLE_URL];
+            }
+        }
+
+        $this->setSettings($systemInstall, [SystemInstall::FORMS => $data]);
+
+        $res                       = $this->parentToArray($systemInstall);
+        $res[SystemInstall::FORMS] = $data;
+
+        return $res;
+    }
+
+    /**
+     * @param SystemInstall|null $systemInstall
+     *
+     * @return array
+     */
+    public function toArray(?SystemInstall $systemInstall = NULL): array
+    {
+        $arr = $this->parentToArray($systemInstall);
+        if ($systemInstall && array_key_exists(SystemInstall::FORMS, $systemInstall->getSettings())) {
+            $arr[SystemInstall::FORMS] = $systemInstall->getSettings()[SystemInstall::FORMS];
+        }
+
+        return $arr;
     }
 
 }

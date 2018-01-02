@@ -14,9 +14,12 @@ import {ResultCode} from "../../src/message/ResultCode";
 import Pipes from "../../src/Pipes";
 import {ITopologyConfigSkeleton} from "../../src/topology/Configurator";
 import {ICounterProcessInfo} from "../../src/topology/counter/CounterProcess";
+import Terminator from "../../src/topology/terminator/Terminator";
 
 const testTopology: ITopologyConfigSkeleton = {
     id: "topo-with-http-worker-node",
+    topology_id: "topo-with-http-worker-node",
+    topology_name: "topo-with-http-worker-node",
     nodes: [
         {
             id: "http-worker-node",
@@ -83,8 +86,12 @@ describe("Topology with HttpWorker Node", () => {
     it("Next node should receive changed content", async () => {
         const pip = new Pipes(testTopology);
 
+        // manually set the terminator port not to collide with other tests
+        const dic = pip.getDIContainer();
+        dic.set("topology.terminator", () => new Terminator(8555, dic.get("counter.storage")));
+
         const [counter, httpNode, captureNode] = await Promise.all([
-            pip.startCounter(8555),
+            pip.startCounter(),
             pip.startNode("http-worker-node"),
             pip.startNode("capture-node"),
         ]);
@@ -98,16 +105,16 @@ describe("Topology with HttpWorker Node", () => {
                 await ch.purgeQueue(counterResultQueue.name);
                 await ch.bindQueue(
                     counterResultQueue.name,
-                    pip.getTopologyConfig().counter.pub.exchange.name,
-                    pip.getTopologyConfig().counter.pub.routing_key,
+                    pip.getTopologyConfig(false).counter.pub.exchange.name,
+                    pip.getTopologyConfig(false).counter.pub.routing_key,
                 );
             },
             (msg: Message) => {
                 // Check if every received result messages is processed without error
                 const data: ICounterProcessInfo = JSON.parse(msg.content.toString());
                 assert.isTrue(data.success);
-                assert.equal(data.total, pip.getTopologyConfig().nodes.length);
-                assert.equal(data.ok, pip.getTopologyConfig().nodes.length);
+                assert.equal(data.total, pip.getTopologyConfig(false).nodes.length);
+                assert.equal(data.ok, pip.getTopologyConfig(false).nodes.length);
                 assert.equal(data.nok, 0);
 
                 resultMessagesReceived++;
