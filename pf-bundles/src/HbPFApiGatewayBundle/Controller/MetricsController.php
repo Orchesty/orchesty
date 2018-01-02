@@ -5,6 +5,7 @@ namespace Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller;
 use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Controller\FOSRestController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -21,22 +22,32 @@ class MetricsController extends FOSRestController
      * @Route("/metrics/topology/{topologyId}")
      * @Method({"GET", "OPTIONS"})
      *
+     * @param Request $request
+     * @param string  $topologyId
+     *
      * @return Response
      */
-    public function topologyMetricsAction(): Response
+    public function topologyMetricsAction(Request $request, string $topologyId): Response
     {
-        return $this->forward('HbPFMetricsBundle:Metrics:topologyMetrics');
+        return $this->forward('HbPFMetricsBundle:Metrics:topologyMetrics',
+            ['query' => $request->query, 'topologyId' => $topologyId]);
     }
 
     /**
      * @Route("/metrics/topology/{topologyId}/node/{nodeId}")
      * @Method({"GET", "OPTIONS"})
      *
+     * @param Request $request
+     * @param string  $topologyId
+     * @param string  $nodeId
+     *
      * @return Response
      */
-    public function nodeMetricsAction(): Response
+    public function nodeMetricsAction(Request $request, string $topologyId, string $nodeId): Response
     {
-        return $this->forward('HbPFMetricsBundle:Metrics:nodeMetrics');
+        return $this->forward('HbPFMetricsBundle:Metrics:nodeMetrics',
+            ['query' => $request->query, 'topologyId' => $topologyId, 'nodeId' => $nodeId]
+        );
     }
 
 }
