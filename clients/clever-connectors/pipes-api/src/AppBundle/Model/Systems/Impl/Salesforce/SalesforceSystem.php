@@ -273,15 +273,18 @@ class SalesforceSystem implements OAuth2Interface, CMEventSystemInterface
     {
         $sett = $systemInstall->getSettings();
         if (!array_key_exists(self::CLIENT_ID, $sett)
-            || !array_key_exists(self::CLIENT_SECRET, $sett)) {
-            throw new SystemException::MISSING_DATA (
-                'Missing Client Id or Client secret in settings.'
+            || !array_key_exists(self::CLIENT_SECRET, $sett)
+        ) {
+            throw new SystemException(
+                'Missing Client Id or Client secret in settings.',
+                SystemException::MISSING_DATA
             );
         }
 
         $redirectUrl = AuthorizationUtils::generateUrl();
 
-        $dto = new OAuth2Dto($sett[self::CLIENT_ID], $sett[self::CLIENT_SECRET], $redirectUrl, self::AUTHORIZE_URL, self::TOKEN_URL);
+        $dto = new OAuth2Dto($sett[self::CLIENT_ID], $sett[self::CLIENT_SECRET], $redirectUrl, self::AUTHORIZE_URL,
+            self::TOKEN_URL);
         $dto->setCustomAppDependencies($systemInstall->getUser(), $systemInstall->getSystem());
 
         return $dto;
