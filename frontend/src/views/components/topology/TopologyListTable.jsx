@@ -104,7 +104,7 @@ class TopologyListTable extends React.Component {
           }
           return (
             <tr key={item._id}>
-              <td>{item.name}</td>
+              <td><a href="#" onClick={e => {e.preventDefault(); selectPage('topology_detail', {topologyId: item._id});}}>{item.name}</a></td>
               <td>{item.version}</td>
               <td>{item.descr}</td>
               <td>{item.visibility}</td>
