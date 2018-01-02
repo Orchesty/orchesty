@@ -76,4 +76,10 @@ export default {
     needAuth: true,
     simpleRoute: '/authorizations'
   },
+  notification_settings: {
+    id: 'notification_settings',
+    caption: 'Notification setting',
+    needAuth: true,
+    simpleRoute: '/notification_settings'
+  },
 }

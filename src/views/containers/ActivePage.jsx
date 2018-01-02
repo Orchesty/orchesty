@@ -8,6 +8,7 @@ import TopologyDetailPage from 'pages/TopologyDetailPage';
 import SchemaPage from 'pages/SchemaPage';
 import AuthorizationListPage from 'pages/AuthorizationListPage';
 import TopologyCategoryListPage from 'pages/TopologyCategoryListPage';
+import NotificationSettingsPage from 'rootApp/views/pages/NotificationSettingsPage';
 
 class ActivePage extends React.Component {
   render() {
@@ -25,6 +26,8 @@ class ActivePage extends React.Component {
         return <SchemaPage pageKey={page.key} {...page.args}/>;
       case 'authorization_list':
         return <AuthorizationListPage pageKey={page.key} {...page.args}/>;
+      case 'notification_settings':
+        return <NotificationSettingsPage pageKey={page.key} {...page.args}/>;
       default:
         return <Error404Page />;
     }
