@@ -95,23 +95,17 @@ class FacebookGetLeadformConnectorTest extends ConnectorTestCaseAbstract
 
         $expected = [
             0 => [
-                'form_id'   => '505108016512973',
-                'form_name' => 'test form-copy',
-                'list'      => 'FacebookLeads',
-            ],
-            1 => [
                 'form_id'   => '148856735852557',
                 'form_name' => 'test form',
                 'list'      => NULL,
             ],
-            2 => [
+            1 => [
                 'form_id'   => '505108016512972',
                 'form_name' => 'test form-copy',
                 'list'      => NULL,
             ],
         ];
 
-        $this->assertCount(3, $result);
         $this->assertEquals($expected, $result);
     }
 
