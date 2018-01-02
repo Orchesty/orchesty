@@ -274,7 +274,7 @@ class SalesforceSystem implements OAuth2Interface, CMEventSystemInterface
         $sett = $systemInstall->getSettings();
         if (!array_key_exists(self::CLIENT_ID, $sett)
             || !array_key_exists(self::CLIENT_SECRET, $sett)) {
-            throw new SystemException::MISSING_DATA(
+            throw new SystemException::MISSING_DATA (
                 'Missing Client Id or Client secret in settings.'
             );
         }
