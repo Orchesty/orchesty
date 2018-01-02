@@ -2,6 +2,8 @@
 
 namespace Hanaboso\PipesFramework\Configurator\Model;
 
+use CleverConnectors\AppBundle\Utils\Dto\Schema;
+use CleverConnectors\AppBundle\Utils\TopologySchemaUtils;
 use Cron\CronExpression;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -16,7 +18,7 @@ use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Exception\NodeException;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
 use Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository;
-use Nette\Utils\Arrays;
+use Nette\Utils\Json;
 use Nette\Utils\Strings;
 
 /**
@@ -96,6 +98,8 @@ class TopologyManager
      * @param array    $data
      *
      * @return Topology
+     * @throws NodeException
+     * @throws TopologyException
      */
     public function saveTopologySchema(Topology $topology, string $content, array $data): Topology
     {
@@ -103,11 +107,20 @@ class TopologyManager
             $topology = $this->cloneTopology($topology);
         }
 
+        $originalSchemaObject = TopologySchemaUtils::getSchemaObject($topology->getBpmn());
+
         $topology
             ->setBpmn($data)
             ->setRawBpmn($content);
 
-        $this->generateNodes($topology, $data);
+        $newSchemaObject = TopologySchemaUtils::getSchemaObject($topology->getBpmn());
+        $newSchemaMd5    = md5(Json::encode($newSchemaObject->toArray()));
+
+        if (md5(Json::encode($originalSchemaObject->toArray())) !== $newSchemaMd5) {
+            $topology->setContentHash($newSchemaMd5);
+        }
+
+        $this->generateNodes($topology, $newSchemaObject);
 
         $this->dm->flush();
 
@@ -227,60 +240,36 @@ class TopologyManager
 
     /**
      * @param Topology $topology
-     * @param array    $data
+     * @param Schema   $dto
      *
      * @throws TopologyException
      */
-    private function generateNodes(Topology $topology, array $data): void
+    private function generateNodes(Topology $topology, Schema $dto): void
     {
         $this->removeNodesByTopology($topology);
 
-        if (isset($data['bpmn:process'])) {
-            /** @var Node[] $nodes */
-            $nodes = [];
-            /** @var EmbedNode[] $embedNodes */
-            $embedNodes = [];
+        /** @var Node[] $nodes */
+        /** @var EmbedNode[] $embedNodes */
+        $nodes      = [];
+        $embedNodes = [];
 
-            foreach ($data['bpmn:process'] as $handler => $process) {
-                if (in_array($handler, ['bpmn:startEvent', 'bpmn:task', 'bpmn:event', 'bpmn:endEvent'], TRUE)) {
-                    if (!Arrays::isList($process)) {
-                        $this->createNode(
-                            $topology,
-                            $process['@id'] ?? '',
-                            $handler,
-                            $process['@name'] ?? '',
-                            $process['@pipes:pipesType'] ?? '',
-                            $innerProcess['@pipes:cronTime'] ?? '',
-                            $nodes,
-                            $embedNodes
-                        );
-                    } else {
-                        foreach ($process as $innerProcess) {
-                            $this->createNode(
-                                $topology,
-                                $innerProcess['@id'] ?? '',
-                                $handler,
-                                $innerProcess['@name'] ?? '',
-                                $innerProcess['@pipes:pipesType'] ?? '',
-                                $innerProcess['@pipes:cronTime'] ?? '',
-                                $nodes,
-                                $embedNodes
-                            );
-                        }
-                    }
-                }
-            }
+        foreach ($dto->getNodes() as $id => $node) {
+            $this->createNode(
+                $topology,
+                $id,
+                $node['handler'],
+                $node['name'],
+                $node['pipes_type'],
+                $node['cron_time'],
+                $nodes,
+                $embedNodes
+            );
+        }
 
-            if (isset($data['bpmn:process']['bpmn:sequenceFlow'])) {
-                if (!isset($data['bpmn:process']['bpmn:sequenceFlow'][0])) {
-                    $tmp = $data['bpmn:process']['bpmn:sequenceFlow'];
-                    unset($data['bpmn:process']['bpmn:sequenceFlow']);
-                    $data['bpmn:process']['bpmn:sequenceFlow'][0] = $tmp;
-                }
-                foreach ($data['bpmn:process']['bpmn:sequenceFlow'] as $link) {
-                    if (isset($nodes[$link['@sourceRef']]) && isset($embedNodes[$link['@targetRef']])) {
-                        $nodes[$link['@sourceRef']]->addNext($embedNodes[$link['@targetRef']]);
-                    }
+        foreach ($dto->getSequences() as $source => $targets) {
+            foreach ($targets as $target) {
+                if (isset($nodes[$source]) && $embedNodes[$target]) {
+                    $nodes[$source]->addNext($embedNodes[$target]);
                 }
             }
         }
