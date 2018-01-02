@@ -41,8 +41,8 @@ class SalesforceSystem implements OAuth2Interface, CMEventSystemInterface
     use CMEventSystemTrait;
     use AuthorizationTrait;
 
-    private const CLIENT_ID     = '3MVG9g9rbsTkKnAW3CCxLnJW_55kKZ67XIZboIqeXL93kTR7hQMuU8ZPRgtzK79H0Xo44sZIqZENW.POc.lpJ';
-    private const CLIENT_SECRET = '9190968633171454987';
+    private const CLIENT_ID     = 'client_id';
+    private const CLIENT_SECRET = 'client_secret';
     private const AUTHORIZE_URL = 'https://login.salesforce.com/services/oauth2/authorize';
     private const TOKEN_URL     = 'https://na1.salesforce.com/services/oauth2/token';
 
@@ -202,28 +202,46 @@ class SalesforceSystem implements OAuth2Interface, CMEventSystemInterface
      */
     public function getSettingFields(SystemInstall $systemInstall): array
     {
+        $sett = $systemInstall->getSettings();
+
         $field1 = new Field(
+            Field::TEXT,
+            self::CLIENT_ID,
+            'Client ID',
+            $this->prepareValue(self::CLIENT_ID, $sett),
+            TRUE
+        );
+
+        $field2 = new Field(
+            Field::TEXT,
+            self::CLIENT_SECRET,
+            'Client secret',
+            $this->prepareValue(self::CLIENT_SECRET, $sett),
+            TRUE
+        );
+
+        $field3 = new Field(
             Field::CHECKBOX,
             SystemInstall::EVENT_CREATE,
             'Create event',
             $systemInstall->isEventCreate()
         );
 
-        $field2 = new Field(
+        $field4 = new Field(
             Field::CHECKBOX,
             SystemInstall::EVENT_UNSUBSCRIBE,
             'Unsubscribe event',
             $systemInstall->isEventUnsubscribe()
         );
 
-        $field3 = new Field(
+        $field5 = new Field(
             Field::CHECKBOX,
             SystemInstall::EVENT_HARD_BOUNCE,
             'Hard Bounce event',
             $systemInstall->isEventHardBounce()
         );
 
-        $field4 = new Field(
+        $field6 = new Field(
             Field::SELECT,
             SystemInstall::SELECT_LIST,
             'Distribution list',
@@ -235,7 +253,9 @@ class SalesforceSystem implements OAuth2Interface, CMEventSystemInterface
             ->addField($field1)
             ->addField($field2)
             ->addField($field3)
-            ->addField($field4);
+            ->addField($field4)
+            ->addField($field5)
+            ->addField($field6);
 
         return $form->toArray();
     }
@@ -252,8 +272,9 @@ class SalesforceSystem implements OAuth2Interface, CMEventSystemInterface
     private function createDto(SystemInstall $systemInstall): OAuth2Dto
     {
         $redirectUrl = AuthorizationUtils::generateUrl();
+        $sett = $systemInstall->getSettings();
 
-        $dto = new OAuth2Dto(self::CLIENT_ID, self::CLIENT_SECRET, $redirectUrl, self::AUTHORIZE_URL, self::TOKEN_URL);
+        $dto = new OAuth2Dto($sett[self::CLIENT_ID], $sett[self::CLIENT_SECRET], $redirectUrl, self::AUTHORIZE_URL, self::TOKEN_URL);
         $dto->setCustomAppDependencies($systemInstall->getUser(), $systemInstall->getSystem());
 
         return $dto;
