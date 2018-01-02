@@ -14,7 +14,6 @@ use FOS\RestBundle\Controller\FOSRestController;
 use Hanaboso\PipesFramework\Commons\Traits\ControllerTrait;
 use Hanaboso\PipesFramework\HbPFCustomNodeBundle\Handler\CustomNodeHandler;
 use Hanaboso\PipesFramework\Utils\ControllerUtils;
-use Monolog\Logger;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -71,6 +70,7 @@ class CustomNodeController extends FOSRestController implements LoggerAwareInter
             return $this->getResponse($data->getData(), 200, ControllerUtils::createHeaders($data->getHeaders()));
         } catch (Exception|Throwable $e) {
             $this->logger->error($e->getMessage(), ['exception' => $e]);
+
             return $this->getErrorResponse($e, 500, ControllerUtils::createHeaders([], $e));
         }
     }
@@ -90,6 +90,8 @@ class CustomNodeController extends FOSRestController implements LoggerAwareInter
 
             return $this->getResponse([]);
         } catch (Exception|Throwable $e) {
+            $this->logger->error($e->getMessage(), ['exception' => $e]);
+
             return $this->getErrorResponse($e);
         }
     }
