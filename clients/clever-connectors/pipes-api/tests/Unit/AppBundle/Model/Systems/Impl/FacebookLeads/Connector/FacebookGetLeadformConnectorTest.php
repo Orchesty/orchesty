@@ -72,6 +72,18 @@ class FacebookGetLeadformConnectorTest extends ConnectorTestCaseAbstract
         $systemInstall->method('getSettings')->willReturn([
             OAuth2Provider::ACCESS_TOKEN => '123456',
             FacebookLeadsSystem::PAGE_ID => 'page_id',
+            SystemInstall::FORMS         => [
+                0 => [
+                    'form_id'   => '505108016512973',
+                    'form_name' => 'test form-copy',
+                    'list'      => 'FacebookLeads',
+                ],
+                1 => [
+                    'form_id'   => '148856735852557',
+                    'form_name' => 'test form',
+                    'list'      => NULL,
+                ],
+            ],
         ]);
 
         /** @var PHPUnit_Framework_MockObject_MockObject|DocumentManager $dm */
@@ -82,13 +94,25 @@ class FacebookGetLeadformConnectorTest extends ConnectorTestCaseAbstract
         $result = $connector->getLeadForms($systemInstall, [FacebookLeadsSystem::PAGE_ID => 'page_id']);
 
         $expected = [
-            'form_name' => 'test form-copy',
-            'form_id'   => '505108016512972',
-            'list'      => NULL,
+            0 => [
+                'form_id'   => '505108016512973',
+                'form_name' => 'test form-copy',
+                'list'      => 'FacebookLeads',
+            ],
+            1 => [
+                'form_id'   => '148856735852557',
+                'form_name' => 'test form',
+                'list'      => NULL,
+            ],
+            2 => [
+                'form_id'   => '505108016512972',
+                'form_name' => 'test form-copy',
+                'list'      => NULL,
+            ],
         ];
 
-        $this->assertCount(2, $result);
-        $this->assertEquals($expected, $result[0]);
+        $this->assertCount(3, $result);
+        $this->assertEquals($expected, $result);
     }
 
 }

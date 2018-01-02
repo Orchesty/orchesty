@@ -136,7 +136,7 @@ class FacebookGetLeadformConnector implements ConnectorInterface
                 $sForms = $settings[SystemInstall::FORMS];
 
                 foreach ($sForms as $form) {
-                    $this->removeForm($form, $form[FacebookLeadsSystem::FORM_ID]);
+                    $this->removeForm($data['data'], $form[FacebookLeadsSystem::FORM_ID]);
                 }
             }
 
@@ -148,8 +148,8 @@ class FacebookGetLeadformConnector implements ConnectorInterface
                 ];
             }
 
-            $sett[SystemInstall::FORMS] = $sForms;
-            $systemInstall->setSettings($sett);
+            $settings[SystemInstall::FORMS] = $sForms;
+            $systemInstall->setSettings($settings);
             $this->dm->flush();
 
             return $sForms;

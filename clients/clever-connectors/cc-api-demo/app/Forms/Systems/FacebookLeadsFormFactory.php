@@ -7,11 +7,11 @@ use CcApi\ApiEntity\UserSystem;
 use Nette\Application\UI\Form;
 
 /**
- * Class WisePopFormFactory
+ * Class FacebookLeadsFormFactory
  *
  * @package App\Form\Systems
  */
-class WisePopFormFactory
+class FacebookLeadsFormFactory
 {
 
     /**
@@ -25,19 +25,24 @@ class WisePopFormFactory
         $form = new Form();
 
         for ($i = 0; $i < count($system->getCustomForm()); $i++) {
-            $con = $form->addContainer($i);
+            $container = $form->addContainer($i);
 
-            $con->addText('form_id', 'Form')
+            $container->addText('form_id', 'Form')
                 ->setAttribute('readonly');
 
-            $con->addText('form_name', 'Name')
+            $container->addText('form_name', 'Name')
                 ->setAttribute('readonly');
 
-            $con->addSelect('list', 'Distribution list', $list)
+            $container->addSelect('list', 'Distribution list', $list)
                 ->setPrompt('Choose list');
         }
 
-        $form->addSubmit('refresh', 'Refresh');
+        $form
+            ->addSelect('page', 'Page')
+            ->setPrompt('Choose page');
+
+        $form->addSubmit('refresh_pages', 'Refresh Pages');
+        $form->addSubmit('refresh_forms', 'Refresh Forms');
         $form->addSubmit('save_custom_data', 'Save');
         $form->setDefaults($system->getCustomForm());
         $form->setRenderer(new BootstrapV4Renderer());
