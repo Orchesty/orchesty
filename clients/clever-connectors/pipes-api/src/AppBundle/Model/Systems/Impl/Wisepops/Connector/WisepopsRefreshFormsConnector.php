@@ -110,8 +110,10 @@ class WisepopsRefreshFormsConnector implements ConnectorInterface
         if (array_key_exists(SystemInstall::FORMS, $sett)) {
             $sForms = $sett[SystemInstall::FORMS];
 
-            foreach ($sForms as $form) {
-                $this->removeForm($forms, $form[WisepopsSystem::FORM_ID]);
+            foreach ($sForms as $index => $form) {
+                if (!$this->removeForm($forms, $form[WisepopsSystem::FORM_ID])) {
+                    unset($sForms[$index]);
+                }
             }
         }
 
@@ -123,6 +125,8 @@ class WisepopsRefreshFormsConnector implements ConnectorInterface
             ];
         }
 
+        $sForms = array_values($sForms);
+
         $sett[SystemInstall::FORMS] = $sForms;
         $systemInstall->setSettings($sett);
         $this->dm->flush();
@@ -133,15 +137,20 @@ class WisepopsRefreshFormsConnector implements ConnectorInterface
     /**
      * @param array      $array
      * @param int|string $id
+     *
+     * @return bool
      */
-    private function removeForm(array &$array, $id): void
+    private function removeForm(array &$array, $id): bool
     {
         foreach ($array as $index => $item) {
             if ($id == $item['id']) {
                 unset($array[$index]);
-                break;
+
+                return TRUE;
             }
         }
+
+        return FALSE;
     }
 
 }
