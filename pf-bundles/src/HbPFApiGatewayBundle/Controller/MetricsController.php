@@ -12,7 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
  *
  * @package Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller
  *
- * @Route(service="hbpf.api_gateway.controller.user")
+ * @Route(service="hbpf.api_gateway.controller.metrics")
  */
 class MetricsController extends FOSRestController
 {
