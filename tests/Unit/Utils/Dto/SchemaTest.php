@@ -35,6 +35,30 @@ final class SchemaTest extends TestCase
     }
 
     /**
+     * @covers Schema::buildIndex()
+     */
+    public function testBuildIndexSameHash(): void
+    {
+        $content = $this->load('ignored-change-same-hash.tplg');
+        $schema  = TopologySchemaUtils::getSchemaObject($this->getXmlDecoder()->decode($content));
+
+        $this->assertInstanceOf(Schema::class, $schema);
+        $this->assertEquals($this->getExpected(), TopologySchemaUtils::getIndexHash($schema));
+    }
+
+    /**
+     * @covers Schema::buildIndex()
+     */
+    public function testBuildIndexNewHash(): void
+    {
+        $content = $this->load('change-new-hash.tplg');
+        $schema  = TopologySchemaUtils::getSchemaObject($this->getXmlDecoder()->decode($content));
+
+        $this->assertInstanceOf(Schema::class, $schema);
+        $this->assertNotEquals($this->getExpected(), TopologySchemaUtils::getIndexHash($schema));
+    }
+
+    /**
      *
      */
     public function testBuildIndexMissingStartNode(): void
