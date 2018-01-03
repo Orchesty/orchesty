@@ -296,6 +296,10 @@ services:
         command: sh -c 'bin/kibana-plugin remove x-pack; /usr/local/bin/kibana-docker'
         ports:
           - ${DEV_IP}:5601:5601
+        ## BEGIN STAGE
+        #ports:
+        #  - 5601:5601
+        ## END STAGE
 
     logstash:
         image: docker.elastic.co/logstash/logstash:5.6.0
