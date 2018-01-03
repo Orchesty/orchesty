@@ -30,7 +30,7 @@ func main() {
 	var checker = probe.HttpChecker{Client: &httpClient}
 
 	srv := probe.Server{Storage: &storage, CheckerSvc: &checker}
-	srv.Start(8008)
+	srv.Start(8007)
 
 	gracefulShutdown(&srv)
 }
