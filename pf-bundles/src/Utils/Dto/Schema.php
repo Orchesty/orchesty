@@ -1,0 +1,160 @@
+<?php declare(strict_types=1);
+
+namespace Hanaboso\PipesFramework\Utils\Dto;
+
+use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
+
+/**
+ * Class Schema
+ *
+ * @package CleverConnectors\AppBundle\Utils\Dto
+ */
+class Schema
+{
+
+    private const LIMIT = 100;
+
+    /**
+     * @var array
+     */
+    private $nodes = [];
+
+    /**
+     * @var array
+     */
+    private $sequences = [];
+
+    /**
+     * @var string
+     */
+    private $startNode = '';
+
+    /**
+     * @return mixed
+     */
+    public function getNodes()
+    {
+        return $this->nodes;
+    }
+
+    /**
+     * @param string $id
+     * @param array  $node
+     */
+    public function addNode(string $id, array $node): void
+    {
+        $this->nodes[$id] = $node;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSequences()
+    {
+        return $this->sequences;
+    }
+
+    /**
+     * @param string $source
+     * @param string $target
+     */
+    public function addSequence(string $source, string $target): void
+    {
+        $this->sequences[$source][] = $target;
+    }
+
+    /**
+     * @return string
+     */
+    public function getStartNode(): string
+    {
+        return $this->startNode;
+    }
+
+    /**
+     * @param string $startNode
+     */
+    public function setStartNode(string $startNode): void
+    {
+        $this->startNode = $startNode;
+    }
+
+    /**
+     * Creates index used to
+     *
+     * @return array
+     * @throws TopologyException
+     */
+    public function buildIndex(): array
+    {
+        if (!empty($this->nodes)) {
+            $this->checkStartNode();
+        } else {
+            return [];
+        }
+
+        $count   = 1;
+        $index   = [];
+        $index[] = $this->getIndexItem($this->startNode);
+        $nextIds = $this->sequences[$this->startNode];
+
+        while ($nextIds) {
+            $ids = [];
+            foreach ($nextIds as $nextId) {
+                $index[] = $this->getIndexItem($nextId);
+                if (isset($this->sequences[$nextId])) {
+                    $this->checkInfiniteLoop($count);
+                    $ids = array_merge($ids, $this->sequences[$nextId]);
+                    $count++;
+                }
+            }
+
+            $nextIds = $ids;
+        }
+
+        sort($index);
+
+        return $index;
+    }
+
+    /**
+     * @param string $id
+     *
+     * @return string
+     */
+    private function getIndexItem(string $id): string
+    {
+        $node = $this->nodes[$id];
+
+        return sprintf('%s:%s', $node['name'], $node['pipes_type']);
+    }
+
+    /**
+     * @throws TopologyException
+     */
+    private function checkStartNode(): void
+    {
+        if (empty($this->startNode)) {
+            throw new TopologyException(
+                'Invalid schema - starting node was not found',
+                TopologyException::SCHEMA_START_NODE_MISSING
+            );
+        }
+    }
+
+    /**
+     * @param int $count
+     *
+     * @throws TopologyException
+     */
+    private function checkInfiniteLoop(int $count): void
+    {
+        if ($count >= self::LIMIT) {
+            throw new TopologyException(
+                'Invalid schema - infinite loop',
+                TopologyException::SCHEMA_INFINITE_LOOP
+            );
+        }
+    }
+
+}
