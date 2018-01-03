@@ -1,13 +1,22 @@
 import download from 'utils/download';
 import * as serverActions from 'actions/serverActions';
-
 import config from 'rootApp/config';
+import actions from 'actions';
 
 class Application{
   constructor(store){
     this._store = store;
     this._record = null;
     this._recordUnsubscribe = null;
+    this._actions = actions;
+  }
+
+  get actions(){
+    return this._actions;
+  }
+
+  get dispatch(){
+    return this._store.dispatch;
   }
 
   downloadState(){
