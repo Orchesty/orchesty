@@ -9,10 +9,11 @@ RUN apt-get update && \
        stable"
 
 RUN apt-get update && \
-    apt-get install -y git mc sudo docker-ce && \
+    apt-get install -y git mc sudo docker-ce libpng-dev && \
     curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer && \
     composer global require "hirak/prestissimo:^0.3" && \
     pecl install xdebug && \
+    docker-php-ext-install gd && \
     docker-php-ext-enable xdebug && \
     apt-get clean && apt-get autoremove -y && \
     rm -rf /var/lib/apt/lists/* /var/lib/log/* /var/log/* /tmp/* /var/tmp/*
