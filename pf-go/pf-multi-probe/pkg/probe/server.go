@@ -49,6 +49,7 @@ type responseBody struct {
 
 // Server is the http server that checks the statuses of bridges in topology
 type Server struct {
+	httpServer *http.Server
 	Storage    Storage
 	CheckerSvc Checker
 }
@@ -56,24 +57,36 @@ type Server struct {
 // Start starts the probe's http server and registers routes
 func (probe *Server) Start(port int) {
 
+	srv := &http.Server{Addr: ":"+strconv.Itoa(port)}
+
 	http.Handle(TopologyAddPath, jsonResponse(http.HandlerFunc(probe.handleAddRequest)))
 	http.Handle(TopologyListPath, jsonResponse(http.HandlerFunc(probe.handleListRequest)))
 	http.Handle(TopologyRemovePath, jsonResponse(http.HandlerFunc(probe.handleRemoveRequest)))
 	http.Handle(TopologyStatusPath, jsonResponse(http.HandlerFunc(probe.handleStatusRequest)))
 
-	err := http.ListenAndServe(":"+strconv.Itoa(port), nil)
-	if err != nil {
-		fmt.Println("Error starting server: ", err.Error())
-	} else {
-		fmt.Println("Server listening on port: ", port)
+	go func() {
+		log.Println("Starting probe http server.")
+
+		err := srv.ListenAndServe()
+		if err != nil {
+			log.Println("Error starting server: ", err.Error())
+		} else {
+			log.Println("Server listening on port: ", port)
+		}
+	}()
+
+	probe.httpServer = srv
+}
+
+// Stop stops the probe's http server gracefully
+func (probe *Server) Stop() {
+	log.Println("Stopping probe http server.")
+	if err := probe.httpServer.Shutdown(nil); err != nil {
+		panic(err) // failure/timeout shutting down the server gracefully
 	}
 }
 
-// Stop stops the probe's http server
-func (probe *Server) Stop() {
-	panic("not implemented yet")
-}
-
+// jsonResponse is middleware function that adds json related http headers to http response
 func jsonResponse(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("Content-Type", "application/json")
@@ -148,6 +161,8 @@ func (probe *Server) handleAddRequest(res http.ResponseWriter, req *http.Request
 func (probe *Server) handleRemoveRequest(res http.ResponseWriter, req *http.Request) {
 	topologyId := req.FormValue("topologyId")
 
+	log.Println("Remove topology request received.", topologyId)
+
 	_, err := probe.getTopology(topologyId)
 	if err != nil {
 		res.WriteHeader(http.StatusBadRequest)
@@ -170,12 +185,16 @@ func (probe *Server) handleRemoveRequest(res http.ResponseWriter, req *http.Requ
 
 // handleListRequest returns the json list of all maintained topologies and their bridge's urls
 func (probe *Server) handleListRequest(res http.ResponseWriter, req *http.Request) {
+	log.Println("List topologies request received.")
+
 	topologies, err := probe.Storage.Keys()
 	if err != nil {
 		res.WriteHeader(http.StatusInternalServerError)
 		res.Write(getErrorResponseBody(err))
 		return
 	}
+
+	log.Println(fmt.Sprintf("Topology list now contains %d topologies", len(topologies)))
 
 	res.WriteHeader(http.StatusOK)
 	res.Write(getSuccessResponseBody(strings.Join(topologies, ",")))
@@ -184,6 +203,8 @@ func (probe *Server) handleListRequest(res http.ResponseWriter, req *http.Reques
 // handleStatusRequest creates http request to all topology nodes and returns the overall result
 func (probe *Server) handleStatusRequest(res http.ResponseWriter, req *http.Request) {
 	topologyId := req.FormValue("topologyId")
+
+	log.Println("Status topology request received.", topologyId)
 
 	topology, err := probe.getTopology(topologyId)
 	if err != nil {
@@ -223,6 +244,8 @@ func (probe *Server) handleStatusRequest(res http.ResponseWriter, req *http.Requ
 		Message: fmt.Sprintf("%d of %d bridges are ready", ready, total),
 		Nodes:   bridgesStatuses,
 	}
+
+	log.Println("Status topology result:", topologyId, " -> ", body.Message)
 
 	out, _ := json.Marshal(body)
 

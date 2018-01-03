@@ -57,6 +57,7 @@ func TestServer(t *testing.T) {
 
 	srv := Server{Storage: &storage, CheckerSvc: &checker}
 	go srv.Start(5555)
+	defer srv.Stop()
 
 	host := "http://localhost:5555"
 	var client = http.Client{Timeout: time.Second * 1}
