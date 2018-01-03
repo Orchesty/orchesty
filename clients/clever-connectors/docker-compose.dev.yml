@@ -375,12 +375,20 @@ services:
         ## BEGIN DEV
         volumes:
           - ./cc-api-demo/cert:/var/www/html/cert
+        environment:
+          BASE_URI: https://clever-conn1.stage.hanaboso.net/
         ## END DEV
         ## BEGIN STAGE
+        #environment:
+        #  BASE_URI: ${BACKEND_URL}/
         #secrets:
         #  - source: stage-staff.pem
         #    target: /var/www/html/cert/stage-staff.pem
         #    mode: 0644
+        #  - source: clevermonitor-ca.pem
+        #    target: /var/www/html/cert/ca.crt
+        #  - source: clevermonitor-hanaboso.pem
+        #    target: /var/www/html/cert/clever.pem
         ## END STAGE
 
     cron-api:
@@ -445,6 +453,10 @@ services:
 #
 #secrets:
 #  stage-staff.pem:
+#    external: true
+#  clevermonitor-ca.pem:
+#    external: true
+#  clevermonitor-hanaboso.pem:
 #    external: true
 #  docker-ca.pem:
 #    external: true
