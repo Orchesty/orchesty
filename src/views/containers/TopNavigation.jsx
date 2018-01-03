@@ -2,6 +2,9 @@ import React from 'react'
 import { connect } from 'react-redux';
 
 import * as applicationActions from 'actions/applicationActions';
+import GeneralSearch from 'rootApp/views/components/search/GeneralSearch';
+
+import './TopNavigation.less';
 
 class TopNavigation extends React.Component {
   constructor(props) {
@@ -21,6 +24,9 @@ class TopNavigation extends React.Component {
                 <a href="javascript:;" className="dropdown-toggle info-number">
                   <i className="fa fa-envelope-o"></i>
                 </a>
+              </li>
+              <li className="col col-md-5 col-sm-5 col-xs-12">
+                <GeneralSearch />
               </li>
             </ul>
           </nav>
