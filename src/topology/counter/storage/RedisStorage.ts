@@ -4,21 +4,54 @@ import logger from "../../../logger/Logger";
 import {ICounterProcessInfo} from "../CounterProcess";
 import ICounterStorage from "./ICounterStorage";
 
+export interface IRedisStorageSettings {
+    host: string;
+    port: number;
+    pass: string;
+    db: number;
+}
+
 export default class RedisStorage implements ICounterStorage {
 
     private client: RedisClient;
 
-    constructor(
-        host: string,
-        port: number,
-        password: string = "",
-        db: number = 0,
-    ) {
+    /**
+     *
+     * @param {IRedisStorageSettings} opts
+     */
+    constructor(opts: IRedisStorageSettings) {
         this.client = redis.createClient({
-            host,
-            port,
-            password,
-            db,
+            host: opts.host,
+            port: opts.port,
+            password: opts.pass,
+            db: opts.db,
+        });
+
+        this.client.on("error", (err) => {
+            logger.error("RedisStorage Error.", {node_id: "redis_storage", error: err});
+        });
+
+        this.client.on("warning", (msg) => {
+            logger.warn(`RedisStorage warning: ${msg}`, {node_id: "redis_storage"});
+        });
+
+        this.client.on("ready", () => {
+            logger.info("RedisStorage connection ready.", {node_id: "redis_storage"});
+        });
+
+        this.client.on("connect", () => {
+            logger.info("RedisStorage connected to redis.", {node_id: "redis_storage"});
+        });
+
+        this.client.on("reconnecting", (i) => {
+            logger.info(
+                `RedisStorage reconnecting. Delay: ${i.delay}, Attempt #${i.attempt}`,
+                {node_id: "redis_storage"},
+            );
+        });
+
+        this.client.on("end", () => {
+            logger.info("RedisStorage connection ended.", {node_id: "redis_storage"});
         });
     }
 

@@ -62,7 +62,7 @@ describe("HttpXmlParserWorker", () => {
         assert.equal(bodyJson.data, '<?xml version="1.0" encoding="UTF-8"?><root></root>');
     });
 
-    it("sends request to remote server", async() => {
+    it("sends request to remote server", async () => {
         httpServer.use(bodyParser.raw(bodyParserRaw));
         httpServer.post("/xml-worker", (req, resp) => {
             assert.equal(

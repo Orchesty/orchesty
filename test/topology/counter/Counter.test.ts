@@ -1,4 +1,4 @@
-import { assert } from "chai";
+import {assert} from "chai";
 import "mocha";
 
 import {Channel, Message} from "amqplib";
@@ -402,7 +402,7 @@ describe("Counter", () => {
             options: {},
         };
 
-        const storage = new RedisStorage(redisStorageOptions.host, redisStorageOptions.port);
+        const storage = new RedisStorage(redisStorageOptions);
         const terminator = new Terminator(7956, storage);
         const counter = new Counter(counterSettings, conn, storage, terminator, metricsMock);
         runCounterTest(counter, testOutputQueue, done);
