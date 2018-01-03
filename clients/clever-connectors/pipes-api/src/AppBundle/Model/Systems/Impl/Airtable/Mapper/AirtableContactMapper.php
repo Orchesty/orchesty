@@ -48,7 +48,6 @@ class AirtableContactMapper extends UniversalMapperNode
             /** @var ProcessDto $dto */
             $dto = $mapper
                 ->setAllowedMissingKey(TRUE)
-                ->setAllowedEmptyValues(TRUE)
                 ->process($template, $dto);
 
             if ($this->includeList) {
