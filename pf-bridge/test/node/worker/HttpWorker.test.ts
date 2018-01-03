@@ -77,6 +77,8 @@ httpServer.listen(4020);
 
 const metricsMock = {
     send: () => Promise.resolve("sent"),
+    addTag: () => { return; },
+    removeTag: () => { return; },
 };
 
 function createHttpWorker(port: number, processPath: string, host: string = "localhost") {

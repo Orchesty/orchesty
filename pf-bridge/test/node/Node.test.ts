@@ -10,6 +10,8 @@ import UppercaseWorker from "../../src/node/worker/UppercaseWorker";
 
 const metricsMock = {
     send: () => Promise.resolve("sent"),
+    addTag: () => { return; },
+    removeTag: () => { return; },
 };
 
 describe("Node", () => {
