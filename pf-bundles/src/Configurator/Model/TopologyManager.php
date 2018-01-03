@@ -2,8 +2,6 @@
 
 namespace Hanaboso\PipesFramework\Configurator\Model;
 
-use CleverConnectors\AppBundle\Utils\Dto\Schema;
-use CleverConnectors\AppBundle\Utils\TopologySchemaUtils;
 use Cron\CronExpression;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -18,7 +16,8 @@ use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Exception\NodeException;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
 use Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository;
-use Nette\Utils\Json;
+use Hanaboso\PipesFramework\Utils\Dto\Schema;
+use Hanaboso\PipesFramework\Utils\TopologySchemaUtils;
 use Nette\Utils\Strings;
 
 /**
@@ -103,25 +102,22 @@ class TopologyManager
      */
     public function saveTopologySchema(Topology $topology, string $content, array $data): Topology
     {
-        if ($topology->getVisibility() === TopologyStatusEnum::PUBLIC) {
-            $topology = $this->cloneTopology($topology);
-        }
+        $newSchemaObject = TopologySchemaUtils::getSchemaObject($data);
+        $newSchemaMd5    = TopologySchemaUtils::getIndexHash($newSchemaObject);
 
-        $originalSchemaObject = TopologySchemaUtils::getSchemaObject($topology->getBpmn());
+        if ($topology->getContentHash() !== $newSchemaMd5) {
+            $topology->setContentHash($newSchemaMd5);
+
+            if ($topology->getVisibility() === TopologyStatusEnum::PUBLIC) {
+                $topology = $this->cloneTopology($topology);
+            }
+        }
 
         $topology
             ->setBpmn($data)
             ->setRawBpmn($content);
 
-        $newSchemaObject = TopologySchemaUtils::getSchemaObject($topology->getBpmn());
-        $newSchemaMd5    = md5(Json::encode($newSchemaObject->toArray()));
-
-        if (md5(Json::encode($originalSchemaObject->toArray())) !== $newSchemaMd5) {
-            $topology->setContentHash($newSchemaMd5);
-        }
-
         $this->generateNodes($topology, $newSchemaObject);
-
         $this->dm->flush();
 
         return $topology;

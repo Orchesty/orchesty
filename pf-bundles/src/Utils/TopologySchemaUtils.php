@@ -1,9 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace CleverConnectors\AppBundle\Utils;
+namespace Hanaboso\PipesFramework\Utils;
 
-use CleverConnectors\AppBundle\Utils\Dto\Schema;
+use Hanaboso\PipesFramework\Utils\Dto\Schema;
 use Nette\Utils\Arrays;
+use Nette\Utils\Json;
 
 /**
  * Class TopologySchemaUtils
@@ -24,6 +25,7 @@ class TopologySchemaUtils
     private const INCOMING      = 'bpmn:incoming';
     private const OUTGOING      = 'bpmn:outgoing';
 
+    /** @var array */
     private static $handlers = [self::START_EVENT, self::TASK, self::EVENT, self::END_EVENT];
 
     /**
@@ -33,7 +35,7 @@ class TopologySchemaUtils
      */
     public static function getSchemaObject(array $data): Schema
     {
-        $obj = new Schema();
+        $schema = new Schema();
 
         if (isset($data[self::PROCESS])) {
 
@@ -52,10 +54,10 @@ class TopologySchemaUtils
                     foreach ($process as $innerProcess) {
 
                         if (isset($innerProcess[self::OUTGOING]) && !isset($innerProcess[self::INCOMING])) {
-                            $obj->setStartNode($innerProcess['@id']);
+                            $schema->setStartNode($innerProcess['@id']);
                         }
 
-                        $obj->addNode($innerProcess['@id'], [
+                        $schema->addNode($innerProcess['@id'], [
                             'handler'    => $handler,
                             'id'         => $innerProcess['@id'],
                             'name'       => $innerProcess['@name'] ?? '',
@@ -74,12 +76,22 @@ class TopologySchemaUtils
                 }
 
                 foreach ($processes[self::SEQUENCE_FLOW] as $link) {
-                    $obj->addSequence($link[self::SOURCE_REF], $link[self::TARGET_REF]);
+                    $schema->addSequence($link[self::SOURCE_REF], $link[self::TARGET_REF]);
                 }
             }
         }
 
-        return $obj;
+        return $schema;
+    }
+
+    /**
+     * @param Schema $schema
+     *
+     * @return string
+     */
+    public static function getIndexHash(Schema $schema): string
+    {
+        return md5(Json::encode($schema->buildIndex()));
     }
 
 }

@@ -12,10 +12,12 @@ namespace Tests\Integration\AppBundle\Model\Installer;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Installer\CategoryParser;
 use CleverConnectors\AppBundle\Model\Installer\InstallManager;
+use FOS\RestBundle\Decoder\XmlDecoder;
 use Hanaboso\PipesFramework\Commons\Enum\TopologyStatusEnum;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\TopologyGenerator\Request\RequestHandler;
+use Hanaboso\PipesFramework\Utils\TopologySchemaUtils;
 use PHPUnit\Framework\MockObject\MockObject;
 use Predis\Client;
 use Tests\DatabaseTestCaseAbstract;
@@ -117,10 +119,13 @@ final class InstallManagerTest extends DatabaseTestCaseAbstract
      */
     private function createTopologies(): void
     {
+        $xmlDecoder = new XmlDecoder();
+
         $topology = new Topology();
         $topology
             ->setName('file')
             ->setRawBpmn($this->load('file.tplg'))
+            ->setContentHash(TopologySchemaUtils::getIndexHash(TopologySchemaUtils::getSchemaObject($xmlDecoder->decode($this->load('file.tplg')))))
             ->setEnabled(TRUE)
             ->setVisibility(TopologyStatusEnum::PUBLIC);
         $this->dm->persist($topology);
@@ -129,6 +134,7 @@ final class InstallManagerTest extends DatabaseTestCaseAbstract
         $topology3
             ->setName('file2')
             ->setRawBpmn($this->load('file2.tplg', FALSE))
+            ->setContentHash(TopologySchemaUtils::getIndexHash(TopologySchemaUtils::getSchemaObject($xmlDecoder->decode($this->load('file2.tplg', FALSE)))))
             ->setEnabled(TRUE)
             ->setVisibility(TopologyStatusEnum::PUBLIC);
         $this->dm->persist($topology3);

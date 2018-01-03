@@ -13,8 +13,10 @@ use CleverConnectors\AppBundle\Model\Installer\Dto\CompareResultDto;
 use CleverConnectors\AppBundle\Model\Installer\Dto\TopologyFile;
 use CleverConnectors\AppBundle\Model\Installer\Dto\UpdateObject;
 use Doctrine\Common\Persistence\ObjectRepository;
+use FOS\RestBundle\Decoder\XmlDecoder;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository;
+use Hanaboso\PipesFramework\Utils\TopologySchemaUtils;
 use Symfony\Component\Finder\SplFileInfo;
 
 /**
@@ -100,21 +102,10 @@ class TopologiesComparator
      */
     private function isEqual(Topology $topology, SplFileInfo $file): bool
     {
-        return md5($this->removeWhiteSpace($topology->getRawBpmn())) == md5($this->removeWhiteSpace($file->getContents()));
-    }
+        $xmlDecoder = new XmlDecoder();
+        $newSchema  = TopologySchemaUtils::getSchemaObject($xmlDecoder->decode($file->getContents()));
 
-    /**
-     * @param string $string
-     *
-     * @return string
-     */
-    private function removeWhiteSpace(string $string): string
-    {
-        $string = preg_replace('/[\t\n\r\0\x0B]/', '', $string);
-        $string = preg_replace('/([\s])\1+/', ' ', $string);
-        $string = trim($string);
-
-        return $string;
+        return $topology->getContentHash() == TopologySchemaUtils::getIndexHash($newSchema);
     }
 
     /**

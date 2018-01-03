@@ -13,8 +13,10 @@ use CleverConnectors\AppBundle\Model\Installer\Dto\CompareResultDto;
 use CleverConnectors\AppBundle\Model\Installer\Dto\TopologyFile;
 use CleverConnectors\AppBundle\Model\Installer\Dto\UpdateObject;
 use CleverConnectors\AppBundle\Model\Installer\TopologiesComparator;
+use FOS\RestBundle\Decoder\XmlDecoder;
 use Hanaboso\PipesFramework\Commons\Enum\TopologyStatusEnum;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
+use Hanaboso\PipesFramework\Utils\TopologySchemaUtils;
 use Tests\DatabaseTestCaseAbstract;
 
 /**
@@ -30,10 +32,13 @@ final class TopologiesComparatorTest extends DatabaseTestCaseAbstract
      */
     public function testCompare(): void
     {
+        $xmlDecoder = new XmlDecoder();
+
         $topology = new Topology();
         $topology
             ->setName('file')
             ->setRawBpmn($this->load('file.tplg'))
+            ->setContentHash(TopologySchemaUtils::getIndexHash(TopologySchemaUtils::getSchemaObject($xmlDecoder->decode($this->load('file.tplg')))))
             ->setEnabled(TRUE)
             ->setVisibility(TopologyStatusEnum::PUBLIC);
         $this->dm->persist($topology);
@@ -41,7 +46,8 @@ final class TopologiesComparatorTest extends DatabaseTestCaseAbstract
         $topology3 = new Topology();
         $topology3
             ->setName('file2')
-            ->setRawBpmn(file_get_contents(sprintf('%s/%s', __DIR__, 'file2.tplg')))
+            ->setRawBpmn($this->load('file2.tplg', FALSE))
+            ->setContentHash(TopologySchemaUtils::getIndexHash(TopologySchemaUtils::getSchemaObject($xmlDecoder->decode($this->load('file2.tplg', FALSE)))))
             ->setEnabled(TRUE)
             ->setVisibility(TopologyStatusEnum::PUBLIC);
         $this->dm->persist($topology3);
