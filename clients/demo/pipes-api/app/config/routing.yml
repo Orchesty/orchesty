@@ -30,3 +30,7 @@ hb_pf_configurator:
 hb_pf_user:
     resource: "@HbPFUserBundle/Controller"
     type: annotation
+
+hb_pf_metrics:
+    resource: "@HbPFMetricsBundle/Controller"
+    type: annotation
