@@ -17,6 +17,8 @@ import Terminator from "../../../src/topology/terminator/Terminator";
 const conn = new Connection(amqpConnectionOptions);
 const metricsMock = {
     send: () => Promise.resolve("sent"),
+    addTag: () => { return; },
+    removeTag: () => { return; },
 };
 
 function runCounterTest(counter: Counter, testOutputQueue: any, done: any) {
