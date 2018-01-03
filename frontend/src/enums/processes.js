@@ -22,5 +22,6 @@ export default {
   authorizationLoadSettings: id => `authorization-settings-load-${id}`,
   categoryCreate: hash => `category-create-${hash}`,
   categoryUpdate: id => `category-update-${id}`,
-  categoryDelete: id => `category-delete-${id}`
+  categoryDelete: id => `category-delete-${id}`,
+  notificationSettingsUpdate: () => `notification-settings-update`
 }
