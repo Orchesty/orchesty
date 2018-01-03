@@ -127,6 +127,8 @@ class Node {
 
         logger.info(`Sending metrics: ${JSON.stringify(measurements)}`, logger.ctxFromMsg(msg));
 
+        this.metrics.addTag("node_id", msg.getNodeLabel().node_id);
+
         this.metrics.send(measurements)
             .catch((err) => {
                 logger.warn("Unable to send metrics", logger.ctxFromMsg(msg, err));
