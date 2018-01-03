@@ -10,3 +10,7 @@ export function isJSON(value){
     return false;
   }
 }
+
+export function isEmail(value){
+  return /^[^\s@]+@[^\s@]+$/.test(value);
+}
