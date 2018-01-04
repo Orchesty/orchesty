@@ -110,9 +110,9 @@ describe("Linear Topology test", () => {
 
         Promise.all([
             pip.startCounter(),
-            pip.startNode(testTopology.nodes[0].id),
-            pip.startNode(testTopology.nodes[1].id),
-            pip.startNode(testTopology.nodes[2].id),
+            pip.startBridge(testTopology.nodes[0].id),
+            pip.startBridge(testTopology.nodes[1].id),
+            pip.startBridge(testTopology.nodes[2].id),
         ])
         .then(() => {
             // Prepares consumer of counter output

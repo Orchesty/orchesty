@@ -31,7 +31,7 @@ describe("Repeater", () => {
         const storage = new MongoMessageStorage(mongoStorageOptions);
         const repeater = new Repeater(settings, conn, storage);
 
-        repeater.run();
+        repeater.start();
 
         let sentTimestamp = Date.now();
         const publisher = new Publisher(conn, (ch: Channel) => {
