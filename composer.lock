@@ -1820,31 +1820,31 @@
         },
         {
             "name": "influxdb/influxdb-php",
-            "version": "1.14.4",
+            "version": "1.14.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/influxdata/influxdb-php.git",
-                "reference": "c938497f4c95f636c872af148ae311102953a317"
+                "reference": "64c79de3f3e0e7f8c20b5fc51f50da8736767de9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/influxdata/influxdb-php/zipball/c938497f4c95f636c872af148ae311102953a317",
-                "reference": "c938497f4c95f636c872af148ae311102953a317",
+                "url": "https://api.github.com/repos/influxdata/influxdb-php/zipball/64c79de3f3e0e7f8c20b5fc51f50da8736767de9",
+                "reference": "64c79de3f3e0e7f8c20b5fc51f50da8736767de9",
                 "shasum": ""
             },
             "require": {
-                "guzzlehttp/guzzle": "6.*",
-                "php": "^5.5 | ^7.0",
-                "symfony/event-dispatcher": "2.*|3.*"
+                "guzzlehttp/guzzle": "^6.0",
+                "php": "^5.5 || ^7.0",
+                "symfony/event-dispatcher": "^2.0 || ^3.0 || ^4.0"
             },
             "require-dev": {
                 "codeclimate/php-test-reporter": "0.*",
-                "phpunit/phpunit": "^4.0",
-                "symfony/config": "~2.8",
-                "symfony/console": "~2.8",
-                "symfony/filesystem": "~2.8",
-                "symfony/stopwatch": "~2.8",
-                "symfony/yaml": "~2.8"
+                "symfony/config": "~2.8|~3.0|~4.0",
+                "symfony/console": "~2.8|~3.0|~4.0",
+                "symfony/filesystem": "~2.8|~3.0|~4.0",
+                "symfony/phpunit-bridge": "^3.4 || ^4.0",
+                "symfony/stopwatch": "~2.8|~3.0|~4.0",
+                "symfony/yaml": "~2.8|~3.0|~4.0"
             },
             "suggest": {
                 "stefanotorresi/influxdb-php-async": "An asyncronous client for InfluxDB, implemented via ReactPHP."
@@ -1883,7 +1883,7 @@
                 "influxdb library",
                 "time series"
             ],
-            "time": "2017-05-17T13:42:08+00:00"
+            "time": "2018-01-03T13:09:43+00:00"
         },
         {
             "name": "jdorn/sql-formatter",
