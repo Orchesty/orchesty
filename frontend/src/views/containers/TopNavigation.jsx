@@ -17,14 +17,9 @@ class TopNavigation extends React.Component {
         <div className="nav_menu">
           <nav>
             <div className="nav toggle">
-              <a id="menu_toggle" onClick={this.props.toggleMainMenu}><i className="fa fa-bars"></i></a>
+              <a id="menu_toggle" onClick={this.props.toggleMainMenu}><i className="fa fa-bars" /></a>
             </div>
             <ul className="nav navbar-nav navbar-right">
-              <li>
-                <a href="javascript:;" className="dropdown-toggle info-number">
-                  <i className="fa fa-envelope-o"></i>
-                </a>
-              </li>
               <li className="col col-md-5 col-sm-5 col-xs-12">
                 <GeneralSearch />
               </li>

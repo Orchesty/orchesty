@@ -6,7 +6,7 @@ import {filterType} from 'rootApp/types';
 import FilterElement from 'rootApp/views/wrappers/FilterElement';
 import TextInput from 'rootApp/views/elements/input/TextInput';
 
-import './TopologyNameFilter.less';
+//import './TopologyNameFilter.less';
 import * as applicationActions from 'rootApp/actions/applicationActions';
 
 class TopologySelector extends React.Component{

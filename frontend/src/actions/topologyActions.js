@@ -146,8 +146,10 @@ export function needTopologyList(listId, filter) {
       const create = config.params.preferPaging ?
         local => createPaginationList(listId, config.params.defaultPageSize, local, null, filter) : local => createCompleteList(listId, local, null, filter);
       dispatch(create(true));
+      return dispatch(loadList(listId));
+    } else {
+      return Promise.resolve(true);
     }
-    return dispatch(loadList(listId));
   }
 }
 
