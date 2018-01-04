@@ -11,10 +11,6 @@ process.on("unhandledRejection", (err) => {
     process.exit(1);
 });
 
-const topologyConfig: ITopologyConfig = JSON.parse(fs.readFileSync("topology/topology.json", "utf8"));
-
-const pipes = new Pipes(topologyConfig);
-
 const argv = yargs
     .usage("Usage: $0 start <service> [options]")
     .command("start <service>", "Starts concrete node or topology complementary services")
@@ -25,6 +21,18 @@ const argv = yargs
     .demandCommand(1, "You need to specify command.")
     .help()
     .argv;
+
+let topologyConfig: ITopologyConfig;
+try {
+    topologyConfig = JSON.parse(fs.readFileSync("topology/topology.json", "utf8"));
+} catch (e) {
+    logger.error("Cannot start program: ", {error: e, node_id: argv.service});
+    // tslint:disable-next-line
+    console.error(e.message);
+    process.exit(126);
+}
+
+const pipes = new Pipes(topologyConfig);
 
 process.env.PIPES_NODE_TYPE = `pipes_${argv.service}_${topologyConfig.id}`;
 
