@@ -129,8 +129,8 @@ describe("Node with repeater test", () => {
         Promise.all([
             pip.startCounter(),
             pip.startRepeater(),
-            pip.startNode(testTopology.nodes[0].id),
-            pip.startNode(testTopology.nodes[1].id),
+            pip.startBridge(testTopology.nodes[0].id),
+            pip.startBridge(testTopology.nodes[1].id),
         ])
         .then(() => {
             // Prepares consumer of counter output

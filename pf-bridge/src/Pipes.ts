@@ -33,7 +33,7 @@ class Pipes {
      * @param {string} nodeId
      * @return {Promise<void>}
      */
-    public startNode(nodeId: string): Promise<Node> {
+    public startBridge(nodeId: string): Promise<Node> {
         const nodeConf = this.getNodeConfig(nodeId);
         const node: Node = this.createNode(nodeConf);
 
@@ -57,7 +57,7 @@ class Pipes {
         const proms: Node[] = [];
 
         for (const nodeCfg of topo.nodes) {
-            this.startNode(nodeCfg.id)
+            this.startBridge(nodeCfg.id)
                 .then((node: Node) => {
                     proms.push(node);
                 });
@@ -119,7 +119,7 @@ class Pipes {
     /**
      * Starts topology probe
      */
-    public startProbe(): Promise<void> {
+    public async startProbe(): Promise<Probe> {
         const topo = this.getTopologyConfig(false);
         const probe = new Probe(topo.id, probeOptions);
 
@@ -127,20 +127,23 @@ class Pipes {
             probe.addNode(nodeCfg);
         }
 
-        return probe.start()
-            .then(() => {
-                logger.info(`Probe of topology "${topo.id}" is running.`);
-            });
+        await probe.start();
+
+        logger.info(`Probe of topology "${topo.id}" is running.`);
+
+        return probe;
     }
 
     /**
      * Creates and starts repeater service
      */
-    public startRepeater(): void {
+    public startRepeater(): Repeater {
         const storage = new MongoMessageStorage(mongoStorageOptions);
         const repeater = new Repeater(repeaterOptions, this.dic.get("amqp.connection"), storage);
 
-        repeater.run();
+        repeater.start();
+
+        return repeater;
     }
 
     /**

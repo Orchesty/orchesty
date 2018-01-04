@@ -5,3 +5,4 @@ npm-debug.log
 tmp/*
 src/**/*.js
 package-lock.json
+topology/topology.json

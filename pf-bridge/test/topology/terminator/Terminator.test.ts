@@ -13,6 +13,7 @@ const dumbStorage = {
     get: () => Promise.resolve(null),
     add: () => Promise.resolve(true),
     remove: () => Promise.resolve(true),
+    stop: () => Promise.resolve(),
 };
 
 describe("Terminator", () => {

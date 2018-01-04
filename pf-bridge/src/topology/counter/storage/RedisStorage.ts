@@ -163,4 +163,15 @@ export default class RedisStorage implements ICounterStorage {
             });
         });
     }
+
+    /**
+     * Finish all transactions and close connection to redis
+     *
+     * @return {Promise<void>}
+     */
+    public stop(): Promise<void> {
+        return new Promise((resolve) => {
+            this.client.quit(() => { resolve(); });
+        });
+    }
 }
