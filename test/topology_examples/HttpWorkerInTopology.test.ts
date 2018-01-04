@@ -92,8 +92,8 @@ describe("Topology with HttpWorker Node", () => {
 
         const [counter, httpNode, captureNode] = await Promise.all([
             pip.startCounter(),
-            pip.startNode("http-worker-node"),
-            pip.startNode("capture-node"),
+            pip.startBridge("http-worker-node"),
+            pip.startBridge("capture-node"),
         ]);
 
         let resultMessagesReceived: number = 0;

@@ -101,6 +101,14 @@ class InMemoryStorage implements ICounterStorage {
         return Promise.resolve(false);
     }
 
+    /**
+     *
+     * @return {Promise<void>}
+     */
+    public stop(): Promise<void> {
+        return Promise.resolve();
+    }
+
 }
 
 export default InMemoryStorage;

@@ -2,6 +2,7 @@ import {Channel, Message, Options} from "amqplib";
 import {Connection} from "amqplib-plus/dist/lib/Connection";
 import {Publisher} from "amqplib-plus/dist/lib/Publisher";
 import {IMetrics} from "metrics-sender/dist/lib/metrics/IMetrics";
+import IStoppable from "../../IStoppable";
 import logger from "../../logger/Logger";
 import {default as CounterMessage} from "../../message/CounterMessage";
 import Headers from "../../message/Headers";
@@ -38,7 +39,7 @@ export interface ICounterSettings {
  * Topology component that receives signals(messages) and watches if some process run through whole topology
  * If yes, it sends process finished message
  */
-export default class Counter implements ICounter {
+export default class Counter implements ICounter, IStoppable {
 
     private settings: any;
     private connection: Connection;
@@ -47,6 +48,8 @@ export default class Counter implements ICounter {
     private storage: ICounterStorage;
     private terminator: Terminator;
     private metrics: IMetrics;
+
+    private consumerTag: string;
 
     /**
      *
@@ -86,10 +89,28 @@ export default class Counter implements ICounter {
      * On job end, send process end message.
      */
     public async start(): Promise<void> {
-        await this.consumer.consume(this.settings.sub.queue.name, this.settings.sub.queue.options);
+        const inQueue = this.settings.sub.queue;
+        this.consumerTag = await this.consumer.consume(inQueue.name, inQueue.options);
+
         await this.terminator.startServer();
 
-        logger.info(`Counter started consuming messages from "${this.settings.sub.queue.name}" queue`);
+        logger.info(`Counter started consuming messages from "${inQueue.name}" queue, consumerTag ${this.consumerTag}`);
+    }
+
+    /**
+     * Stops consuming queue and wait some time to complete persisting etc.
+     *
+     * @return {Promise<void>}
+     */
+    public async stop(): Promise<void> {
+        await this.consumer.cancel(this.consumerTag);
+
+        // Give process some time to finish processing current data
+        await new Promise((resolve) => setTimeout(resolve, 100));
+
+        await this.storage.stop();
+
+        return;
     }
 
     /**

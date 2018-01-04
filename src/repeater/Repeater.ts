@@ -3,6 +3,7 @@ import {AssertionPublisher} from "amqplib-plus/dist/lib/AssertPublisher";
 import {Connection, createChannelCallback} from "amqplib-plus/dist/lib/Connection";
 import {SimpleConsumer} from "amqplib-plus/dist/lib/SimpleConsumer";
 import {ObjectUtils} from "hb-utils/dist/lib/ObjectUtils";
+import IStoppable from "../IStoppable";
 import Headers from "../message/Headers";
 import logger from "./../logger/Logger";
 import IMessageStorage from "./IMessageStorage";
@@ -17,10 +18,12 @@ export interface IRepeaterSettings {
     check_timeout: number;
 }
 
-class Repeater {
+class Repeater implements IStoppable {
 
     private consumer: SimpleConsumer;
     private publisher: AssertionPublisher;
+
+    private consumerTag: string;
 
     /**
      *
@@ -40,15 +43,25 @@ class Repeater {
     /**
      * Check for messages to be reSent in infinite loop
      */
-    public run() {
-        this.consumer.consume(this.settings.input.queue.name, {})
-            .then(() => {
-                logger.info(
-                    `Repeater consumer started consumption of messages in '${this.settings.input.queue.name}'`,
-                    { node_id: "repeater" },
-                );
-                this.checkMessages();
-            });
+    public async start() {
+        const q = this.settings.input.queue.name;
+
+        this.consumerTag = await this.consumer.consume(q, {});
+
+        logger.info(`Repeater consumer started consumption of messages in '${q}'`, { node_id: "repeater" });
+
+        this.checkMessages();
+    }
+
+    /**
+     * Stop the repeater gracefully
+     *
+     * @return {Promise<void>}
+     */
+    public async stop(): Promise<void> {
+        await this.consumer.cancel(this.consumerTag);
+
+        return;
     }
 
     /**

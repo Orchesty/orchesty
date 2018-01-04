@@ -1,0 +1,117 @@
+{
+  "id": "5a2a9fc13ceae00021038be2-air-har-bou-con",
+  "topology_id": "5a2a9fc13ceae00021038be2",
+  "topology_name": "airtable-hard-bounce-contact",
+  "nodes": [
+    {
+      "id": "5a2a9fe23ceae000227fbb96-sig-eve",
+      "label": {
+        "id": "5a2a9fe23ceae000227fbb96-sig-eve",
+        "node_id": "5a2a9fe23ceae000227fbb96",
+        "node_name": "signal-event"
+      },
+      "worker": {
+        "type": "worker.http",
+        "settings": {
+          "host": "monolith-api",
+          "process_path": "\/custom_node\/signal-event\/process",
+          "status_path": "\/custom_node\/signal-event\/process\/test",
+          "method": "POST",
+          "port": 80,
+          "secure": false,
+          "opts": []
+        }
+      },
+      "next": [
+        "5a2a9fe23ceae000227fbb99-air-upd-con-map"
+      ],
+      "debug": {
+        "port": 8008,
+        "host": "5a2a9fc13ceae00021038be2_mb",
+        "url": "http:\/\/5a2a9fc13ceae00021038be2_mb:8008\/status"
+      }
+    },
+    {
+      "id": "5a2a9fe23ceae000227fbb97-uni-map",
+      "label": {
+        "id": "5a2a9fe23ceae000227fbb97-uni-map",
+        "node_id": "5a2a9fe23ceae000227fbb97",
+        "node_name": "universal-mapper"
+      },
+      "worker": {
+        "type": "worker.http",
+        "settings": {
+          "host": "monolith-api",
+          "process_path": "\/custom_node\/universal-mapper\/process",
+          "status_path": "\/custom_node\/universal-mapper\/process\/test",
+          "method": "POST",
+          "port": 80,
+          "secure": false,
+          "opts": []
+        }
+      },
+      "next": [
+        "5a2a9fe23ceae000227fbb98-air-upd-con-con"
+      ],
+      "debug": {
+        "port": 8009,
+        "host": "5a2a9fc13ceae00021038be2_mb",
+        "url": "http:\/\/5a2a9fc13ceae00021038be2_mb:8009\/status"
+      }
+    },
+    {
+      "id": "5a2a9fe23ceae000227fbb98-air-upd-con-con",
+      "label": {
+        "id": "5a2a9fe23ceae000227fbb98-air-upd-con-con",
+        "node_id": "5a2a9fe23ceae000227fbb98",
+        "node_name": "airtable-update-contact-connector"
+      },
+      "worker": {
+        "type": "worker.http",
+        "settings": {
+          "host": "monolith-api",
+          "process_path": "\/connector\/airtable-update-contact-connector\/action",
+          "status_path": "\/connector\/airtable-update-contact-connector\/action\/test",
+          "method": "POST",
+          "port": 80,
+          "secure": false,
+          "opts": []
+        }
+      },
+      "next": [],
+      "debug": {
+        "port": 8010,
+        "host": "5a2a9fc13ceae00021038be2_mb",
+        "url": "http:\/\/5a2a9fc13ceae00021038be2_mb:8010\/status"
+      }
+    },
+    {
+      "id": "5a2a9fe23ceae000227fbb99-air-upd-con-map",
+      "label": {
+        "id": "5a2a9fe23ceae000227fbb99-air-upd-con-map",
+        "node_id": "5a2a9fe23ceae000227fbb99",
+        "node_name": "airtable-update-contact-mapper"
+      },
+      "worker": {
+        "type": "worker.http",
+        "settings": {
+          "host": "monolith-api",
+          "process_path": "\/custom_node\/airtable-update-contact-mapper\/process",
+          "status_path": "\/custom_node\/airtable-update-contact-mapper\/process\/test",
+          "method": "POST",
+          "port": 80,
+          "secure": false,
+          "opts": []
+        }
+      },
+      "next": [
+        "5a2a9fe23ceae000227fbb97-uni-map"
+      ],
+      "debug": {
+        "port": 8011,
+        "host": "5a2a9fc13ceae00021038be2_mb",
+        "url": "http:\/\/5a2a9fc13ceae00021038be2_mb:8011\/status"
+      }
+    }
+  ]
+}

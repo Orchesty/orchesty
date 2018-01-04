@@ -8,4 +8,6 @@ export default interface ICounterStorage {
     add(topology: string, info: ICounterProcessInfo): Promise<boolean>;
     remove(topology: string, processId: string): Promise<boolean>;
 
+    stop(): Promise<void>;
+
 }

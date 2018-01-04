@@ -1,5 +1,6 @@
 import * as express from "express";
 import * as request from "request";
+import IStoppable from "../../IStoppable";
 import logger from "../../logger/Logger";
 import {INodeConfig, INodeLabel} from "../Configurator";
 
@@ -34,7 +35,7 @@ export interface IProbeSettings {
     timeout: number;
 }
 
-class Probe {
+class Probe implements IStoppable {
 
     private nodes: INodeConfig[];
 
@@ -48,6 +49,17 @@ class Probe {
         private settings: IProbeSettings,
     ) {
         this.nodes = [];
+    }
+
+    /**
+     * Stop the probe gracefully
+     *
+     * @return {Promise<void>}
+     */
+    public stop(): Promise<void> {
+        // TODO - stop the http server
+
+        return;
     }
 
     /**
