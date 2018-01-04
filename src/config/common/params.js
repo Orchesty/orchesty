@@ -4,5 +4,15 @@ export default {
   allowChangeServer: false,
   urlPrefix: null,
   preferPaging: false,
-  mainPage: 'topology_list'
+  mainPage: 'topology_list',
+  clearGeneralSearch: false,
+
+  hotKeys: {
+    generalSearch: {   // false - for turn off
+      alt: false,
+      ctrl: true,
+      shift: false,
+      char: 'g'
+    }
+  }
 }
