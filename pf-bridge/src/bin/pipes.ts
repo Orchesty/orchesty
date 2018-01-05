@@ -45,13 +45,11 @@ const main = async () => {
 
     switch (argv.service) {
         case "multi_counter":
-            // TODO - refactor Pipes not to reqiure topology.json in this case of starting multi_counter
             // Fake topology config (irrelevant for multi-counter)
             pipes = new Pipes(emtpyTopologyConfig);
             svc = await pipes.startMultiCounter();
             break;
         case "repeater":
-            // TODO - refactor Pipes not to reqiure topology.json in this case of starting multi_counter
             // Fake topology config (irrelevant for multi-counter)
             pipes = new Pipes(emtpyTopologyConfig);
             svc = await pipes.startRepeater();
@@ -60,13 +58,23 @@ const main = async () => {
             pipes = new Pipes(loadTopologyConfigFromFile());
             await pipes.startMultiBridge();
             break;
+
+        // DEPRECATED
         case "bridge":
-            // DEPRECATED
             logger.error(`Deprecated service: "${argv.service}". Use multi_bridge instead.`);
             process.exit(126);
-            // pipes = new Pipes(loadTopologyConfigFromFile());
-            // await pipes.startBridge(argv.id);
+
+            pipes = new Pipes(loadTopologyConfigFromFile());
+            await pipes.startBridge(argv.id);
             break;
+        case "probe":
+            logger.error(`Deprecated service: "${argv.service}". Use multi-probe written in GoLang instead.`);
+            process.exit(126);
+
+            pipes = new Pipes(loadTopologyConfigFromFile());
+            await pipes.startProbe();
+            break;
+
         default:
             logger.error(`Unknown service: "${argv.service}"`);
             process.exit(126);
