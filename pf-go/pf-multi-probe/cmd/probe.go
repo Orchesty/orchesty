@@ -27,7 +27,7 @@ func main() {
 	storage := probe.RedisStorage{Client: rCli}
 
 	var httpClient = http.Client{Timeout: time.Second * 10}
-	var checker = probe.HttpChecker{Client: &httpClient}
+	var checker = probe.HttpCheck{Client: &httpClient}
 
 	srv := probe.Server{Storage: &storage, CheckerSvc: &checker}
 	srv.Start(8007)
@@ -35,7 +35,7 @@ func main() {
 	gracefulShutdown(&srv)
 }
 
-// getenv returns the ENV variable value or returns the default value if not set
+// getEnv returns the ENV variable value or returns the default value if not set
 func getEnv(key, fallback string) string {
 	value := os.Getenv(key)
 	if len(value) == 0 {

@@ -30,7 +30,7 @@ func TestCheckOK(t *testing.T) {
 	}
 
 	httpClient := new(httpOKClientMock)
-	var checker = HttpChecker{Client: httpClient}
+	var checker = HttpCheck{Client: httpClient}
 
 	checker.Check(bridge, results)
 
@@ -64,7 +64,7 @@ func TestCheckNotOK(t *testing.T) {
 	}
 
 	httpClient := new(httpNotOKClientMock)
-	var checker = HttpChecker{Client: httpClient}
+	var checker = HttpCheck{Client: httpClient}
 
 	checker.Check(bridge, results)
 
