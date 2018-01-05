@@ -5,7 +5,7 @@ export default {
   urlPrefix: null,
   preferPaging: false,
   mainPage: 'topology_list',
-  clearGeneralSearch: false,
+  clearGeneralSearch: true,
 
   hotKeys: {
     generalSearch: {   // false - for turn off
