@@ -87,7 +87,7 @@ class Configurator {
 
         let i = 0;
         skeleton.nodes.forEach((nodeSkeleton: INodeConfigSkeleton) => {
-            const node = Configurator.createNodeConfig(skeleton.id, nodeSkeleton, i);
+            const node = Configurator.createNodeConfig(skeleton.id, nodeSkeleton, i, isMulti);
             nodes.push(node);
             i++;
         });
@@ -106,14 +106,16 @@ class Configurator {
      * @param {string} topoId
      * @param {INodeConfigSkeleton} nodeSkeleton
      * @param {number} nodePosition
+     * @param {boolean} isMulti
      * @return {INodeConfig}
      */
     private static createNodeConfig(
         topoId: string,
         nodeSkeleton: INodeConfigSkeleton,
         nodePosition: number,
+        isMulti: boolean = false,
     ): INodeConfig {
-        const defaults: INodeConfig = Defaults.getNodeConfigDefaults(topoId, nodeSkeleton, nodePosition);
+        const defaults: INodeConfig = Defaults.getNodeConfigDefaults(topoId, nodeSkeleton, nodePosition, isMulti);
 
         const faucetSettings = nodeSkeleton.faucet || defaults.faucet;
         const workerSettings = nodeSkeleton.worker || defaults.worker;
