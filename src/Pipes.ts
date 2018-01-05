@@ -3,6 +3,7 @@ import {IMetrics} from "metrics-sender/dist/lib/metrics/IMetrics";
 import {mongoStorageOptions, probeOptions, repeaterOptions} from "./config";
 import Defaults from "./Defaults";
 import DIContainer from "./DIContainer";
+import IStoppable from "./IStoppable";
 import logger from "./logger/Logger";
 import IDrain from "./node/drain/IDrain";
 import IFaucet from "./node/faucet/IFaucet";
@@ -42,32 +43,28 @@ class Pipes {
         await node.startServer(nodeConf.debug.port);
         await node.open();
 
-        logger.info(`Node started`, { node_id: nodeId });
+        logger.info(`Bridge started`, { node_id: nodeId });
 
         return node;
     }
 
     /**
      *
-     * @return {Promise<void>}
+     * @return {Promise<IStoppable[]>}
      */
-    public startMultiBridge(): Promise<void> {
+    public async startMultiBridge(): Promise<IStoppable[]> {
         const topo = this.getTopologyConfig(true);
         const proms: Node[] = [];
 
         for (const nodeCfg of topo.nodes) {
-            this.startBridge(nodeCfg.id, true)
-                .then((node: Node) => {
-                    proms.push(node);
-                });
+            const node = await this.startBridge(nodeCfg.id, true);
+            proms.push(node);
         }
 
-        return Promise.all(proms)
-            .then(() => {
-                const multiProbe = this.dic.get("probe.multi");
-                multiProbe.addTopology(topo);
-                return;
-            });
+        const multiProbeConnector = this.dic.get("probe.multi");
+        multiProbeConnector.addTopology(topo);
+
+        return await Promise.all(proms);
     }
 
     /**

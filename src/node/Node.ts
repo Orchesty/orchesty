@@ -1,5 +1,6 @@
 import * as express from "express";
 import {IMetrics} from "metrics-sender/dist/lib/metrics/IMetrics";
+import IStoppable from "../IStoppable";
 import logger from "../logger/Logger";
 import JobMessage from "../message/JobMessage";
 import {ResultCode, ResultCodeGroup} from "../message/ResultCode";
@@ -19,7 +20,7 @@ const ROUTE_STATUS = "/status";
  * Node class wraps faucet-worker-drain objects and links them together
  * Also is responsible for sending basic metrics
  */
-class Node {
+class Node implements IStoppable {
 
     private nodeStatus: NODE_STATUS;
 
@@ -107,6 +108,21 @@ class Node {
     }
 
     /**
+     * TODO - safely close worker, drain and http server as well
+     *
+     * Stops all node's services
+     *
+     * @return {Promise<void>}
+     */
+    public async stop(): Promise<void> {
+        // Stop faucet and have and keep a safe time period for opened jobs
+        await Promise.all([
+            this.faucet.stop(),
+            new Promise((resolve) => setTimeout(resolve, 2000)),
+        ]);
+    }
+
+    /**
      *
      * @return {IWorker}
      */
@@ -118,27 +134,28 @@ class Node {
      *
      * @param {JobMessage} msg
      */
-    private sendBridgeMetrics(msg: JobMessage): void {
+    private async sendBridgeMetrics(msg: JobMessage): Promise<void> {
+        try {
+            const isSuccess = msg.getResult().code === ResultCode.SUCCESS;
+            const isError = msg.getResultGroup() !== ResultCodeGroup.SUCCESS &&
+                msg.getResultGroup() !== ResultCodeGroup.NON_STANDARD;
 
-        const isError = msg.getResultGroup() !== ResultCodeGroup.SUCCESS &&
-                        msg.getResultGroup() !== ResultCodeGroup.NON_STANDARD;
+            const measurements = {
+                bridge_job_waiting_duration: msg.getMeasurement().getWaitingDuration(),
+                bridge_job_worker_duration: msg.getMeasurement().getWorkerDuration(),
+                bridge_job_total_duration: msg.getMeasurement().getNodeTotalDuration(),
+                bridge_job_result_success: isSuccess ? 1 : 0,
+                bridge_job_result_error: isError ? 1 : 0,
+            };
 
-        const measurements = {
-            bridge_job_waiting_duration: msg.getMeasurement().getWaitingDuration(),
-            bridge_job_worker_duration: msg.getMeasurement().getWorkerDuration(),
-            bridge_job_total_duration: msg.getMeasurement().getNodeTotalDuration(),
-            bridge_job_result_success: msg.getResult().code === ResultCode.SUCCESS,
-            bridge_job_result_error: isError,
-        };
+            logger.info(`Sending metrics: ${JSON.stringify(measurements)}`, logger.ctxFromMsg(msg));
 
-        logger.info(`Sending metrics: ${JSON.stringify(measurements)}`, logger.ctxFromMsg(msg));
+            this.metrics.addTag("node_id", msg.getNodeLabel().node_id);
 
-        this.metrics.addTag("node_id", msg.getNodeLabel().node_id);
-
-        this.metrics.send(measurements)
-            .catch((err) => {
-                logger.warn("Unable to send metrics", logger.ctxFromMsg(msg, err));
-            });
+            await this.metrics.send(measurements);
+        } catch (err) {
+            logger.warn("Unable to send metrics", logger.ctxFromMsg(msg, err));
+        }
     }
 
 }

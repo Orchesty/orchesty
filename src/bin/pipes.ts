@@ -10,7 +10,7 @@ import {ITopologyConfig} from "../topology/Configurator";
 const SIGTERM_TIMEOUT = 5000;
 
 process.on("unhandledRejection", (err) => {
-    logger.error("Unhandled rejection", err);
+    logger.error("Unhandled rejection", {error: err});
     process.exit(1);
 });
 
@@ -30,8 +30,6 @@ const loadTopologyConfigFromFile = (): ITopologyConfig => {
         return JSON.parse(fs.readFileSync("topology/topology.json", "utf8"));
     } catch (e) {
         logger.error("Cannot start program: ", {error: e, node_id: argv.service});
-        // tslint:disable-next-line
-        console.error(e.message);
         process.exit(126);
     }
 };
@@ -39,24 +37,25 @@ const loadTopologyConfigFromFile = (): ITopologyConfig => {
 const main = async () => {
     process.env.PIPES_NODE_TYPE = `pipes_${argv.service}`;
 
-    const emtpyTopologyConfig: any = {};
+    const emptyTopologyConfig: any = {};
+
+    let toStop: IStoppable[] = [];
     let pipes: Pipes;
-    let svc: IStoppable;
 
     switch (argv.service) {
         case "multi_counter":
             // Fake topology config (irrelevant for multi-counter)
-            pipes = new Pipes(emtpyTopologyConfig);
-            svc = await pipes.startMultiCounter();
+            pipes = new Pipes(emptyTopologyConfig);
+            toStop.push(await pipes.startMultiCounter());
             break;
         case "repeater":
             // Fake topology config (irrelevant for multi-counter)
-            pipes = new Pipes(emtpyTopologyConfig);
-            svc = await pipes.startRepeater();
+            pipes = new Pipes(emptyTopologyConfig);
+            toStop.push(await pipes.startRepeater());
             break;
         case "multi_bridge":
             pipes = new Pipes(loadTopologyConfigFromFile());
-            await pipes.startMultiBridge();
+            toStop = await pipes.startMultiBridge();
             break;
 
         // DEPRECATED
@@ -65,14 +64,14 @@ const main = async () => {
             process.exit(126);
 
             pipes = new Pipes(loadTopologyConfigFromFile());
-            await pipes.startBridge(argv.id);
+            toStop.push(await pipes.startBridge(argv.id));
             break;
         case "probe":
             logger.error(`Deprecated service: "${argv.service}". Use multi-probe written in GoLang instead.`);
             process.exit(126);
 
             pipes = new Pipes(loadTopologyConfigFromFile());
-            await pipes.startProbe();
+            toStop.push(await pipes.startProbe());
             break;
 
         default:
@@ -91,12 +90,13 @@ const main = async () => {
         // Force hard exit after timeout
         setTimeout(() => { process.exit(0); }, SIGTERM_TIMEOUT);
 
-        if (!svc) {
-            logger.info("Graceful shutdown - nothing to shutdown");
-            return;
-        }
+        const stopProms: Array<Promise<void>> = [];
+        toStop.forEach((svc: IStoppable) => {
+            stopProms.push(svc.stop());
+        });
 
-        await svc.stop();
+        await Promise.all(stopProms);
+
         logger.info("Graceful shutdown successful.");
         process.exit(0);
     });
