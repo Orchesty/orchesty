@@ -19,7 +19,7 @@ export default (WrappedComponent, parameters) => {
     }
 
     componentDidMount(){
-      this._self && this._self.focus();
+      this._self && !this._self.contains(document.activeElement) && this._self.focus();
     }
 
     closeClick(e){

@@ -54,7 +54,6 @@ class GeneralSearch extends React.Component {
   }
 
   onHotKey(e){
-    console.log(e);
     if (hotKeyCompare(e, config.params.hotKeys.generalSearch)){
       e.preventDefault();
       if (this._setSelfInput){
@@ -150,7 +149,6 @@ class GeneralSearch extends React.Component {
         e.preventDefault();
         break;
       case 13:
-        console.log('enter');
         this.enter();
         e.preventDefault();
         break;
