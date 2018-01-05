@@ -25,7 +25,7 @@ const argv = yargs
     .help()
     .argv;
 
-const getTopologyConfig = (): ITopologyConfig => {
+const loadTopologyConfigFromFile = (): ITopologyConfig => {
     try {
         return JSON.parse(fs.readFileSync("topology/topology.json", "utf8"));
     } catch (e) {
@@ -37,38 +37,35 @@ const getTopologyConfig = (): ITopologyConfig => {
 };
 
 const main = async () => {
-    const topologyConfig: ITopologyConfig = getTopologyConfig();
-    const pipes = new Pipes(topologyConfig);
-    process.env.PIPES_NODE_TYPE = `pipes_${argv.service}_${topologyConfig.id}`;
+    process.env.PIPES_NODE_TYPE = `pipes_${argv.service}`;
 
+    const emtpyTopologyConfig: any = {};
+    let pipes: Pipes;
     let svc: IStoppable;
 
     switch (argv.service) {
-        case "counter":
-            // DEPRECATED - use multi-counter instead
-            // svc = await pipes.startCounter();
-            logger.error("DEPRECATED - use multi-counter instead");
-            process.exit(126);
-            break;
         case "multi_counter":
+            // TODO - refactor Pipes not to reqiure topology.json in this case of starting multi_counter
+            // Fake topology config (irrelevant for multi-counter)
+            pipes = new Pipes(emtpyTopologyConfig);
             svc = await pipes.startMultiCounter();
             break;
-        case "probe":
-            // DEPRECATED - use multi-probe in go instead
-            // svc = await pipes.startProbe();
-            logger.error("DEPRECATED - use multi-probe in golang instead");
-            process.exit(126);
-            break;
         case "repeater":
-            svc = pipes.startRepeater();
+            // TODO - refactor Pipes not to reqiure topology.json in this case of starting multi_counter
+            // Fake topology config (irrelevant for multi-counter)
+            pipes = new Pipes(emtpyTopologyConfig);
+            svc = await pipes.startRepeater();
             break;
         case "multi_bridge":
-            process.env.PIPES_NODE_TYPE = `pipes_node`;
-            pipes.startMultiBridge();
+            pipes = new Pipes(loadTopologyConfigFromFile());
+            await pipes.startMultiBridge();
             break;
         case "bridge":
-            process.env.PIPES_NODE_TYPE = `pipes_node`;
-            pipes.startBridge(argv.id);
+            // DEPRECATED
+            logger.error(`Deprecated service: "${argv.service}". Use multi_bridge instead.`);
+            process.exit(126);
+            // pipes = new Pipes(loadTopologyConfigFromFile());
+            // await pipes.startBridge(argv.id);
             break;
         default:
             logger.error(`Unknown service: "${argv.service}"`);

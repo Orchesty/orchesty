@@ -12,6 +12,7 @@ import Repeater from "./repeater/Repeater";
 import {default as Configurator, INodeConfig, ITopologyConfig, ITopologyConfigSkeleton} from "./topology/Configurator";
 import Counter from "./topology/counter/Counter";
 import Probe from "./topology/probe/Probe";
+import Defaults from "./Defaults";
 
 class Pipes {
 
@@ -97,14 +98,13 @@ class Pipes {
      * @return {Promise<Counter>}
      */
     public async startMultiCounter(): Promise<Counter> {
-        const topo = this.getTopologyConfig(true);
-
+        const topoId = "pipes.multi-counter";
         const counter = new Counter(
-            topo.counter,
+            Defaults.getCounterDefaultSettings(true, topoId),
             this.dic.get("amqp.connection"),
             this.dic.get("counter.storage"),
             this.dic.get("topology.terminator")(true),
-            this.dic.get("metrics")(topo.id, "counter"),
+            this.dic.get("metrics")(topoId, "counter"),
         );
 
         await counter.start();
@@ -135,11 +135,15 @@ class Pipes {
     /**
      * Creates and starts repeater service
      */
-    public startRepeater(): Repeater {
+    public async startRepeater(): Promise<Repeater> {
         const storage = new MongoMessageStorage(mongoStorageOptions);
-        const repeater = new Repeater(repeaterOptions, this.dic.get("amqp.connection"), storage);
+        const repeater = new Repeater(
+            repeaterOptions,
+            this.dic.get("amqp.connection"),
+            storage,
+        );
 
-        repeater.start();
+        await repeater.start();
 
         return repeater;
     }
