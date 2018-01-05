@@ -2,6 +2,7 @@ import * as express from "express";
 import {IMetrics} from "metrics-sender/dist/lib/metrics/IMetrics";
 import logger from "../logger/Logger";
 import JobMessage from "../message/JobMessage";
+import {ResultCode} from "../message/ResultCode";
 import IDrain from "./drain/IDrain";
 import IFaucet from "./faucet/IFaucet";
 import IWorker from "./worker/IWorker";
@@ -123,6 +124,7 @@ class Node {
             bridge_job_waiting_duration: msg.getMeasurement().getWaitingDuration(),
             bridge_job_worker_duration: msg.getMeasurement().getWorkerDuration(),
             bridge_job_total_duration: msg.getMeasurement().getNodeTotalDuration(),
+            bridge_job_result_error: msg.getResult().code === ResultCode.SUCCESS,
         };
 
         logger.info(`Sending metrics: ${JSON.stringify(measurements)}`, logger.ctxFromMsg(msg));
