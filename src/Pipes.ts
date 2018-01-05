@@ -1,6 +1,7 @@
 import {Container} from "hb-utils/dist/lib/Container";
 import {IMetrics} from "metrics-sender/dist/lib/metrics/IMetrics";
 import {mongoStorageOptions, probeOptions, repeaterOptions} from "./config";
+import Defaults from "./Defaults";
 import DIContainer from "./DIContainer";
 import logger from "./logger/Logger";
 import IDrain from "./node/drain/IDrain";
@@ -12,7 +13,6 @@ import Repeater from "./repeater/Repeater";
 import {default as Configurator, INodeConfig, ITopologyConfig, ITopologyConfigSkeleton} from "./topology/Configurator";
 import Counter from "./topology/counter/Counter";
 import Probe from "./topology/probe/Probe";
-import Defaults from "./Defaults";
 
 class Pipes {
 
@@ -115,6 +115,8 @@ class Pipes {
     }
 
     /**
+     * DEPRECATED - use topology probe written in GoLang instead
+     *
      * Starts topology probe
      */
     public async startProbe(): Promise<Probe> {
