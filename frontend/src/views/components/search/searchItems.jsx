@@ -18,3 +18,17 @@ export const topologyGroup = ({item, globalState: {topology, topologyGroup, cate
     </div>
   )
 };
+
+export const category = ({item, globalState: {category}}) => {
+  const categoryItem = category.elements[item.id];
+  return (
+    <div className="search-item-category">
+      <div className="icon">
+        <i className="fa fa-2x fa-tag" />
+      </div>
+      <div className="info">
+        <div className="name">{categoryItem.name}</div>
+      </div>
+    </div>
+  )
+};
