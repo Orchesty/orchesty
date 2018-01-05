@@ -35,6 +35,7 @@ parameters:
     frontend_host: 127.0.0.1
     backend_host: 127.0.0.2
     cron_host: 127.0.0.2
+    notification_host: 127.0.0.2
 
     # InfluxDb
     influx.host: influxdb
