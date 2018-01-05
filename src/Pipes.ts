@@ -31,21 +31,19 @@ class Pipes {
      * Starts single node by its ID and opens it http probe server
      *
      * @param {string} nodeId
+     * @param {boolean} isMulti
      * @return {Promise<void>}
      */
-    public startBridge(nodeId: string): Promise<Node> {
-        const nodeConf = this.getNodeConfig(nodeId);
+    public async startBridge(nodeId: string, isMulti: boolean = false): Promise<Node> {
+        const nodeConf = this.getNodeConfig(nodeId, isMulti);
         const node: Node = this.createNode(nodeConf);
 
-        return node.startServer(nodeConf.debug.port)
-            .then(() => {
-                return node.open();
-            })
-            .then(() => {
-                logger.info(`Node started`, { node_id: nodeId });
+        await node.startServer(nodeConf.debug.port);
+        await node.open();
 
-                return node;
-            });
+        logger.info(`Node started`, { node_id: nodeId });
+
+        return node;
     }
 
     /**
@@ -57,7 +55,7 @@ class Pipes {
         const proms: Node[] = [];
 
         for (const nodeCfg of topo.nodes) {
-            this.startBridge(nodeCfg.id)
+            this.startBridge(nodeCfg.id, true)
                 .then((node: Node) => {
                     proms.push(node);
                 });
@@ -193,10 +191,11 @@ class Pipes {
      * Returns node config for particular node or throws error if node does not exist
      *
      * @param {string} nodeId
+     * @param {boolean} isMulti
      * @return {INodeConfig}
      */
-    private getNodeConfig(nodeId: string): INodeConfig {
-        const topo = this.getTopologyConfig(false);
+    private getNodeConfig(nodeId: string, isMulti: boolean = false): INodeConfig {
+        const topo = this.getTopologyConfig(isMulti);
         for (const nodeCfg of topo.nodes) {
             if (nodeCfg.id === nodeId) {
                 return nodeCfg;
