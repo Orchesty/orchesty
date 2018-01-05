@@ -31,12 +31,17 @@ export function search(searchStr){
         dispatch(startSearch(searchStr));
         return Promise.all([
           dispatch(topologyActions.needTopologyList('complete')),
-          dispatch(categoryActions.needCategoryList('complete'))
+          dispatch(categoryActions.needCategoryList('complete')),
         ]).then(() => {
-          const topologyGroupElements = getState().topologyGroup.elements;
-          const items = Object.keys(topologyGroupElements)
-            .filter(key => key.indexOf(searchStr) >= 0)
-            .map(key => ({id: key, objectType: 'topologyGroup'}));
+          const state = getState();
+          const categoryElements = state.category.elements;
+          const topologyGroupElements = state.topologyGroup.elements;
+          let items = Object.keys(categoryElements)
+            .filter(key => categoryElements[key].name.toLocaleLowerCase().indexOf(searchStr) >= 0)
+            .map(key => ({id: key, objectType: 'category'}));
+          items = items.concat(Object.keys(topologyGroupElements)
+            .filter(key => key.toLocaleLowerCase().indexOf(searchStr) >= 0)
+            .map(key => ({id: key, objectType: 'topologyGroup'})));
           return dispatch(finish(items));
         });
       } else {

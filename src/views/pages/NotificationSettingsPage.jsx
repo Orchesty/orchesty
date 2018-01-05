@@ -25,4 +25,4 @@ function mapActionsToProps(dispatch, ownProps){
   }
 }
 
-export default connect(mapStateToProps, mapActionsToProps)(Page(StateComponent(NotificationSettingsForm, props => props.notificationSettings.state)));
+export default connect(mapStateToProps, mapActionsToProps)(Page(StateComponent(NotificationSettingsForm)));

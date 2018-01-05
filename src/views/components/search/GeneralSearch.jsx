@@ -10,6 +10,8 @@ import * as applicationActions from 'rootApp/actions/applicationActions';
 import config from 'rootApp/config';
 import hotKeyCompare from 'rootApp/utils/hotKeyCompare';
 import hotKeyString from 'rootApp/utils/hotKeyString';
+import * as categoryActions from 'rootApp/actions/categoryActions';
+import * as topologyActions from 'rootApp/actions/topologyActions';
 
 class GeneralSearch extends React.Component {
   constructor(props) {
@@ -216,7 +218,13 @@ function mapActionsToProps(dispatch, ownProps){
     searchAction: searchStr => dispatch(generalSearchActions.search(searchStr)),
     clearAction: () => dispatch(generalSearchActions.clear()),
     redirectActions: {
-      topologyGroup: id => dispatch(applicationActions.selectPage('topology_detail', {topologyId: id}))
+      topologyGroup: id => dispatch(applicationActions.selectPage('topology_detail', {topologyId: id})),
+      category: id => {
+        dispatch(applicationActions.selectPage('topology_list', {categoryId: id}));
+        dispatch(categoryActions.treeItemClick('topology_list', id, () => {
+          dispatch(topologyActions.refreshList('topology_list'))
+        }));
+      }
     }
   };
 }
