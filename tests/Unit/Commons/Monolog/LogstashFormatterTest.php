@@ -1,4 +1,5 @@
 <?php declare(strict_types=1);
+
 /**
  * Created by PhpStorm.
  * User: venca
@@ -114,7 +115,7 @@ class LogstashFormatterTest extends TestCase
                 'class'   => 'Exception',
                 'message' => 'Default exception',
                 'code'    => 0,
-                'file'    => '/srv/project/tests/Unit/Commons/Monolog/LogstashFormatterTest.php:98',
+                'file'    => '/srv/project/tests/Unit/Commons/Monolog/LogstashFormatterTest.php:99',
                 'trace'   => '',
             ],
         ], $message);
@@ -149,7 +150,7 @@ class LogstashFormatterTest extends TestCase
                 'class'   => 'Exception',
                 'message' => 'Default exception',
                 'code'    => 0,
-                'file'    => '/srv/project/tests/Unit/Commons/Monolog/LogstashFormatterTest.php:133',
+                'file'    => '/srv/project/tests/Unit/Commons/Monolog/LogstashFormatterTest.php:134',
                 'trace'   => '',
             ],
             'correlation_id' => '123',
