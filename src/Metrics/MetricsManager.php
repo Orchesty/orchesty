@@ -241,7 +241,7 @@ class MetricsManager implements LoggerAwareInterface
         if ($from && $to) {
             $qb->setTimeRange((new DateTime($from))->getTimestamp(), (new DateTime($to))->getTimestamp());
         }
-        $this->logger->info('Metrics not found!', ['Query' => $qb->getQuery()]);
+        $this->logger->info('Metrics was selected.', ['Query' => $qb->getQuery()]);
         $result = $qb->getResultSet()->getPoints();
 
         $waiting = new MetricsDto();
