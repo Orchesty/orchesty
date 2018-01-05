@@ -41,5 +41,7 @@ parameters:
     influx.port: 8086
     influx.user: admin
     influx.password: password
-    influx.database: udp
-    influx.table: pipes_node
+    influx.database: pipes
+    influx.node_table: pipes_node
+    influx.fpm_table: pipes_monolith_fpm
+    influx.rabbit_table: rabbitmq_queue

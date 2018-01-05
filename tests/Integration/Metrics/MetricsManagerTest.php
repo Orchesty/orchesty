@@ -14,6 +14,7 @@ use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Metrics\Client\MetricsClient;
 use Hanaboso\PipesFramework\Metrics\Exception\MetricsException;
 use Hanaboso\PipesFramework\Metrics\MetricsManager;
+use Hanaboso\PipesFramework\TopologyGenerator\GeneratorUtils;
 use InfluxDB\Database;
 use InfluxDB\Database\RetentionPolicy;
 use InfluxDB\Exception;
@@ -41,10 +42,10 @@ final class MetricsManagerTest extends KernelTestCaseAbstract
         $topo = $this->createTopo();
         $node = $this->createNode($topo);
 
-        $this->setFakeData($topo->getId(), $node->getId());
+        $this->setFakeData($topo, $node);
 
         $manager = $this->getManager();
-        $result  = $manager->getNodeMetrics($node, []);
+        $result  = $manager->getNodeMetrics($node, $topo, []);
 
         self::assertTrue(is_array($result));
         self::assertCount(6, $result);
@@ -66,7 +67,7 @@ final class MetricsManagerTest extends KernelTestCaseAbstract
         $topo = $this->createTopo();
         $node = $this->createNode($topo);
 
-        $this->setFakeData($topo->getId(), $node->getId());
+        $this->setFakeData($topo, $node);
 
         $manager = $this->getManager();
         $result  = $manager->getTopologyMetrics($topo, []);
@@ -138,20 +139,22 @@ final class MetricsManagerTest extends KernelTestCaseAbstract
      */
     private function getManager(): MetricsManager
     {
-        $table = $this->container->getParameter('influx.table');
+        $nodeTable   = $this->container->getParameter('influx.node_table');
+        $fpmTable    = $this->container->getParameter('influx.fpm_table');
+        $rabbitTable = $this->container->getParameter('influx.rabbit_table');
 
-        return new MetricsManager($this->getClient(), $this->dm, $table);
+        return new MetricsManager($this->getClient(), $this->dm, $nodeTable, $fpmTable, $rabbitTable);
     }
 
     /**
-     * @param string $topologyId
-     * @param string $nodeId
+     * @param Topology $topology
+     * @param Node     $node
      *
      * @throws Database\Exception
      * @throws Exception
      * @throws MetricsException
      */
-    private function setFakeData(string $topologyId, string $nodeId): void
+    private function setFakeData(Topology $topology, Node $node): void
     {
         $this->getClient()->createClient()->selectDB('test')->create(new RetentionPolicy('test', '1d', 1, TRUE));
         $database = $this->getClient()->getDatabase('test');
@@ -160,14 +163,12 @@ final class MetricsManagerTest extends KernelTestCaseAbstract
                 'pipes_node',
                 NULL,
                 [
-                    MetricsManager::NODE     => $nodeId,
-                    MetricsManager::TOPOLOGY => $topologyId,
+                    MetricsManager::NODE => $node->getId(),
                 ],
                 [
-                    MetricsManager::WAIT_TIME          => 10,
-                    MetricsManager::REQUEST_TOTAL_TIME => 10,
-                    MetricsManager::CPU_KERNEL_TIME    => 10,
-                    MetricsManager::NODE_PROCESS_TIME  => 10,
+                    MetricsManager::WAIT_TIME         => 10,
+                    MetricsManager::NODE_PROCESS_TIME => 10,
+                    MetricsManager::NODE_RESULT_ERROR => 1,
                 ]
             ),
         ];
@@ -175,17 +176,76 @@ final class MetricsManagerTest extends KernelTestCaseAbstract
         usleep(10);
         $points = [
             new Point(
+                'pipes_monolith_fpm',
+                NULL,
+                [
+                    MetricsManager::NODE => $node->getId(),
+                ],
+                [
+                    MetricsManager::REQUEST_TOTAL_TIME => 2,
+                    MetricsManager::CPU_KERNEL_TIME    => 2,
+                ]
+            ),
+        ];
+
+        $database->writePoints($points, Database::PRECISION_NANOSECONDS);
+        usleep(10);
+        $points = [
+            new Point(
+                'rabbitmq_queue',
+                NULL,
+                [
+                    MetricsManager::QUEUE => GeneratorUtils::generateQueueName($topology, $node),
+                ],
+                [
+                    MetricsManager::MESSAGES => 5,
+                ]
+            ),
+        ];
+
+        $database->writePoints($points, Database::PRECISION_NANOSECONDS);
+        usleep(10);
+        $points   = [
+            new Point(
                 'pipes_node',
                 NULL,
                 [
-                    MetricsManager::NODE     => $nodeId,
-                    MetricsManager::TOPOLOGY => $topologyId,
+                    MetricsManager::NODE => $node->getId(),
                 ],
                 [
-                    MetricsManager::WAIT_TIME          => 2,
-                    MetricsManager::REQUEST_TOTAL_TIME => 2,
-                    MetricsManager::CPU_KERNEL_TIME    => 2,
-                    MetricsManager::NODE_PROCESS_TIME  => 2,
+                    MetricsManager::WAIT_TIME         => 1,
+                    MetricsManager::NODE_PROCESS_TIME => 1,
+                    MetricsManager::NODE_RESULT_ERROR => 0,
+                ]
+            ),
+        ];
+        $database->writePoints($points, Database::PRECISION_NANOSECONDS);
+        usleep(10);
+        $points = [
+            new Point(
+                'pipes_monolith_fpm',
+                NULL,
+                [
+                    MetricsManager::NODE => $node->getId(),
+                ],
+                [
+                    MetricsManager::REQUEST_TOTAL_TIME => 4,
+                    MetricsManager::CPU_KERNEL_TIME    => 4,
+                ]
+            ),
+        ];
+
+        $database->writePoints($points, Database::PRECISION_NANOSECONDS);
+        usleep(10);
+        $points = [
+            new Point(
+                'rabbitmq_queue',
+                NULL,
+                [
+                    MetricsManager::QUEUE => GeneratorUtils::generateQueueName($topology, $node),
+                ],
+                [
+                    MetricsManager::MESSAGES => 0,
                 ]
             ),
         ];

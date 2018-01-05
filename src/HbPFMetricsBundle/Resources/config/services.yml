@@ -19,4 +19,8 @@ services:
         arguments:
             - "@hbpf.metrics.metrics_client"
             - "@doctrine_mongodb.odm.default_document_manager"
-            - "%influx.table%"
+            - "%influx.node_table%"
+            - "%influx.fpm_table%"
+            - "%influx.rabbit_table%"
+        calls:
+            - ['setLogger', ['@monolog.logger.commons']]
