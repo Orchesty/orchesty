@@ -92,6 +92,7 @@ class Defaults {
     ): IDrainConfig {
         const type = "drain.amqp";
         const faucetConf = Defaults.getDefaultFaucetConfig(topoId, node);
+        const followers = node.next || [];
         const settings: IAmqpDrainSettings = {
             node_label: node.label,
             counter: {
@@ -112,7 +113,7 @@ class Defaults {
                     options: faucetConf.settings.queue.options,
                 },
             },
-            followers: node.next.map((nextNode: string) => {
+            followers: followers.map((nextNode: string) => {
                 return {
                     node_id: nextNode,
                     exchange: {
