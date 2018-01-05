@@ -44,7 +44,7 @@ final class MetricsDto
      */
     public function setMin($min): MetricsDto
     {
-        if (!empty($min)) {
+        if (!empty($min) || $min === 0) {
             $this->min = (string) $min;
         }
 
@@ -58,7 +58,7 @@ final class MetricsDto
      */
     public function setMax($max): MetricsDto
     {
-        if (!empty($max)) {
+        if (!empty($max || $max === 0)) {
             $this->max = (string) $max;
         }
 
@@ -81,14 +81,15 @@ final class MetricsDto
     }
 
     /**
-     * @param mixed $total
+     * @param mixed $count
+     * @param mixed $sum
      *
      * @return MetricsDto
      */
-    public function setTotal($total): MetricsDto
+    public function setTotal($count, $sum): MetricsDto
     {
-        if (!empty($total)) {
-            $this->total = (string) $total;
+        if (!empty($count) && !empty($sum)) {
+            $this->total = (string) (($sum / $count) * 100);
         }
 
         return $this;

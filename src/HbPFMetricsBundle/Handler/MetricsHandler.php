@@ -78,15 +78,17 @@ class MetricsHandler
     {
         /** @var Node $node */
         $node = $this->dm->getRepository(Node::class)->findBy(['id' => $nodeId, 'topology' => $topologyId]);
+        /** @var Topology $topology */
+        $topology = $this->dm->getRepository(Topology::class)->find($topologyId);
 
-        if (!$node) {
+        if (!$node || !$topology) {
             throw new MetricsException(
                 sprintf('Node "%s" with Topology "%s" not found!', $nodeId, $topologyId),
                 MetricsException::NODE_NOT_FOUND
             );
         }
 
-        return $this->metricsManager->getNodeMetrics($node, $params);
+        return $this->metricsManager->getNodeMetrics($node, $topology, $params);
     }
 
 }

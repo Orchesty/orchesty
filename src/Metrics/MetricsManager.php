@@ -15,16 +15,21 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Repository\NodeRepository;
+use Hanaboso\PipesFramework\Metrics\Builder\Builder;
 use Hanaboso\PipesFramework\Metrics\Client\ClientInterface;
 use Hanaboso\PipesFramework\Metrics\Dto\MetricsDto;
-use InfluxDB\Query\Builder;
+use Hanaboso\PipesFramework\TopologyGenerator\GeneratorUtils;
+use InfluxDB\Query\Builder as InfluxDbBuilder;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 
 /**
  * Class MetricsManager
  *
  * @package Hanaboso\PipesFramework\Metrics
  */
-class MetricsManager
+class MetricsManager implements LoggerAwareInterface
 {
 
     // OUTPUT
@@ -38,39 +43,46 @@ class MetricsManager
     // TAGS
     public const TOPOLOGY = 'topology_id';
     public const NODE     = 'node_id';
+    public const QUEUE    = 'queue';
 
     // METRICS
     public const WAIT_TIME          = 'bridge_job_waiting_duration';
+    public const NODE_PROCESS_TIME  = 'bridge_job_worker_duration';
+    public const NODE_RESULT_ERROR  = 'bridge_job_result_error';
     public const CPU_KERNEL_TIME    = 'fpm_cpu_kernel_time';
     public const REQUEST_TOTAL_TIME = 'fpm_request_total_duration';
-    public const NODE_PROCESS_TIME  = 'bridge_job_worker_duration';
+    public const MESSAGES           = 'messages';
 
     // ALIASES - COUNT
-    private const PROCESSED_COUNT = 'top_processed_count';
-    private const WAIT_COUNT      = 'wait_count';
-    private const CPU_COUNT       = 'cpu_count';
-    private const REQUEST_COUNT   = 'request_count';
+    private const PROCESSED_COUNT     = 'top_processed_count';
+    private const WAIT_COUNT          = 'wait_count';
+    private const CPU_COUNT           = 'cpu_count';
+    private const REQUEST_COUNT       = 'request_count';
+    private const REQUEST_ERROR_COUNT = 'request_error_count';
 
     // ALIASES - SUM
-    private const PROCESSED_SUM = 'top_processed_sum';
-    private const WAIT_SUM      = 'wait_sum';
-    private const CPU_SUM       = 'cpu_sum';
-    private const REQUEST_SUM   = 'request_sum';
+    private const PROCESSED_SUM     = 'top_processed_sum';
+    private const WAIT_SUM          = 'wait_sum';
+    private const CPU_SUM           = 'cpu_sum';
+    private const REQUEST_SUM       = 'request_sum';
+    private const REQUEST_ERROR_SUM = 'request_error_sum';
 
     // ALIASES - MIN
     private const PROCESSED_MIN = 'top_processed_min';
     private const WAIT_MIN      = 'wait_min';
     private const CPU_MIN       = 'cpu_min';
     private const REQUEST_MIN   = 'request_min';
+    private const QUEUE_MIN     = 'queue_min';
 
     // ALIASES - MAX
     private const PROCESSED_MAX = 'top_processed_max';
     private const WAIT_MAX      = 'wait_max';
     private const CPU_MAX       = 'cpu_max';
     private const REQUEST_MAX   = 'request_max';
+    private const QUEUE_MAX     = 'queue_max';
 
     /**
-     * @var Builder
+     * @var Builder|InfluxDbBuilder
      */
     private $builder;
 
@@ -82,20 +94,60 @@ class MetricsManager
     /**
      * @var string
      */
-    private $tableName;
+    private $nodeTable;
+
+    /**
+     * @var string
+     */
+    private $fpmTable;
+
+    /**
+     * @var string
+     */
+    private $rabbitTable;
+
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
 
     /**
      * MetricsManager constructor.
      *
      * @param ClientInterface $client
      * @param DocumentManager $dm
-     * @param string          $tableName
+     * @param string          $nodeTable
+     * @param string          $fpmTable
+     * @param string          $rabbitTable
      */
-    public function __construct(ClientInterface $client, DocumentManager $dm, string $tableName)
+    public function __construct(
+        ClientInterface $client,
+        DocumentManager $dm,
+        string $nodeTable,
+        string $fpmTable,
+        string $rabbitTable
+    )
     {
         $this->builder        = $client->getQueryBuilder();
-        $this->tableName      = $tableName;
+        $this->nodeTable      = $nodeTable;
+        $this->fpmTable       = $fpmTable;
+        $this->rabbitTable    = $rabbitTable;
         $this->nodeRepository = $dm->getRepository(Node::class);
+        $this->logger         = new NullLogger();
+    }
+
+    /**
+     * Sets a logger instance on the object.
+     *
+     * @param LoggerInterface $logger
+     *
+     * @return MetricsManager
+     */
+    public function setLogger(LoggerInterface $logger): MetricsManager
+    {
+        $this->logger = $logger;
+
+        return $this;
     }
 
     /**
@@ -109,19 +161,20 @@ class MetricsManager
         $res   = [];
         $nodes = $this->nodeRepository->findBy(['topology' => $topology->getId()]);
         foreach ($nodes as $node) {
-            $res[$node->getId()] = $this->getNodeMetrics($node, $params);
+            $res[$node->getId()] = $this->getNodeMetrics($node, $topology, $params);
         }
 
         return $res;
     }
 
     /**
-     * @param Node  $node
-     * @param array $params
+     * @param Node     $node
+     * @param Topology $topology
+     * @param array    $params
      *
      * @return array
      */
-    public function getNodeMetrics(Node $node, array $params): array
+    public function getNodeMetrics(Node $node, Topology $topology, array $params): array
     {
         $from = $params['from'] ?? NULL;
         $to   = $params['to'] ?? NULL;
@@ -131,6 +184,7 @@ class MetricsManager
             self::WAIT_TIME          => self::WAIT_COUNT,
             self::CPU_KERNEL_TIME    => self::CPU_COUNT,
             self::REQUEST_TOTAL_TIME => self::REQUEST_COUNT,
+            self::NODE_RESULT_ERROR  => self::REQUEST_ERROR_COUNT,
         ]);
         $select = self::addStringSeparator($select);
         $select .= self::getSumForSelect([
@@ -138,6 +192,7 @@ class MetricsManager
             self::WAIT_TIME          => self::WAIT_SUM,
             self::CPU_KERNEL_TIME    => self::CPU_SUM,
             self::REQUEST_TOTAL_TIME => self::REQUEST_SUM,
+            self::NODE_RESULT_ERROR  => self::REQUEST_ERROR_SUM,
         ]);
         $select = self::addStringSeparator($select);
         $select .= self::getMinForSelect([
@@ -145,6 +200,7 @@ class MetricsManager
             self::WAIT_TIME          => self::WAIT_MIN,
             self::CPU_KERNEL_TIME    => self::CPU_MIN,
             self::REQUEST_TOTAL_TIME => self::REQUEST_MIN,
+            self::MESSAGES           => self::QUEUE_MIN,
         ]);
         $select = self::addStringSeparator($select);
         $select .= self::getMaxForSelect([
@@ -152,10 +208,12 @@ class MetricsManager
             self::WAIT_TIME          => self::WAIT_MAX,
             self::CPU_KERNEL_TIME    => self::CPU_MAX,
             self::REQUEST_TOTAL_TIME => self::REQUEST_MAX,
+            self::MESSAGES           => self::QUEUE_MAX,
         ]);
 
         $where = [
-            self::NODE => $node->getId(),
+            self::NODE  => $node->getId(),
+            self::QUEUE => GeneratorUtils::generateQueueName($topology, $node),
         ];
 
         return $this->runQuery($select, $where, $from, $to);
@@ -177,52 +235,67 @@ class MetricsManager
     {
         $qb = $this->builder
             ->select($select)
-            ->from($this->tableName)
+            ->from(sprintf('%s,%s,%s', $this->nodeTable, $this->fpmTable, $this->rabbitTable))
             ->where(self::getConditions($where));
 
         if ($from && $to) {
             $qb->setTimeRange((new DateTime($from))->getTimestamp(), (new DateTime($to))->getTimestamp());
         }
+        $this->logger->info('Metrics was selected.', ['Query' => $qb->getQuery()]);
+        $result = $qb->getResultSet()->getPoints();
 
-        $result  = $qb->getResultSet()->getPoints();
-        $result  = reset($result);
         $waiting = new MetricsDto();
         $waiting
-            ->setMin($result[self::WAIT_MIN] ?? '')
-            ->setMax($result[self::WAIT_MAX] ?? '')
-            ->setAvg($result[self::WAIT_COUNT] ?? '', $result[self::WAIT_SUM] ?? '');
+            ->setMin($result[1][self::WAIT_MIN] ?? '')
+            ->setMax($result[1][self::WAIT_MAX] ?? '')
+            ->setAvg($result[1][self::WAIT_COUNT] ?? '', $result[1][self::WAIT_SUM] ?? '');
         $process = new MetricsDto();
         $process
-            ->setMin($result[self::PROCESSED_MIN] ?? '')
-            ->setMax($result[self::PROCESSED_MAX] ?? '')
-            ->setAvg($result[self::PROCESSED_COUNT] ?? '', $result[self::PROCESSED_SUM] ?? '');
+            ->setMin($result[1][self::PROCESSED_MIN] ?? '')
+            ->setMax($result[1][self::PROCESSED_MAX] ?? '')
+            ->setAvg($result[1][self::PROCESSED_COUNT] ?? '', $result[1][self::PROCESSED_SUM] ?? '');
         $cpu = new MetricsDto();
         $cpu
-            ->setMin($result[self::CPU_MIN] ?? '')
-            ->setMax($result[self::CPU_MAX] ?? '')
-            ->setAvg($result[self::CPU_COUNT] ?? '', $result[self::CPU_SUM] ?? '');
+            ->setMin($result[0][self::CPU_MIN] ?? '')
+            ->setMax($result[0][self::CPU_MAX] ?? '')
+            ->setAvg($result[0][self::CPU_COUNT] ?? '', $result[0][self::CPU_SUM] ?? '');
         $request = new MetricsDto();
         $request
-            ->setMin($result[self::REQUEST_MIN] ?? '')
-            ->setMax($result[self::REQUEST_MAX] ?? '')
-            ->setAvg($result[self::REQUEST_COUNT] ?? '', $result[self::REQUEST_SUM] ?? '');
+            ->setMin($result[0][self::REQUEST_MIN] ?? '')
+            ->setMax($result[0][self::REQUEST_MAX] ?? '')
+            ->setAvg($result[0][self::REQUEST_COUNT] ?? '', $result[0][self::REQUEST_SUM] ?? '');
+        $queue = new MetricsDto();
+        $queue
+            ->setMin($result[2][self::QUEUE_MIN] ?? '')
+            ->setMax($result[2][self::QUEUE_MAX] ?? '');
 
-        return $this->generateOutput(new MetricsDto(), $waiting, $process, $cpu, $request, new MetricsDto());
+        $error = new MetricsDto();
+        $error
+            ->setTotal($result[1][self::REQUEST_ERROR_COUNT] ?? '', $result[1][self::REQUEST_ERROR_SUM] ?? '');
+
+        return $this->generateOutput($queue, $waiting, $process, $cpu, $request, $error);
     }
 
     /**
-     * @param array $data
+     * @param array  $data
+     * @param string $delimiter
      *
      * @return array
      */
-    private static function getConditions(array $data): array
+    private static function getConditions(array $data, string $delimiter = 'or'): array
     {
-        $ret = [];
+        $ret   = '';
+        $first = TRUE;
         foreach ($data as $name => $value) {
-            $ret[] = sprintf('%s = \'%s\'', $name, $value);
+            if (!$first) {
+                $ret .= sprintf(' %s ', $delimiter);
+            }
+
+            $ret   .= sprintf('%s = \'%s\'', $name, $value);
+            $first = FALSE;
         }
 
-        return $ret;
+        return [$ret];
     }
 
     /**
@@ -287,12 +360,11 @@ class MetricsManager
         $first = TRUE;
         foreach ($data as $key => $alias) {
             if (!$first) {
-                $ret .= sprintf(', %s("%s") as %s', $funcName, $key, $alias);
-                continue;
+                $ret .= ',';
             }
 
             $first = FALSE;
-            $ret   = sprintf('%s("%s") as %s', $funcName, $key, $alias);
+            $ret   .= sprintf('%s("%s") as %s', $funcName, $key, $alias);
         }
 
         return $ret;
