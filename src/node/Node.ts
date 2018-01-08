@@ -84,21 +84,23 @@ class Node implements IStoppable {
     public open(): Promise<void> {
         this.nodeStatus = NODE_STATUS.READY;
 
-        const processFn = (msgIn: JobMessage): Promise<void> => {
-            msgIn.getMeasurement().markWorkerStart();
+        const processFn = async (msgIn: JobMessage): Promise<void> => {
+            try {
+                msgIn.getMeasurement().markWorkerStart();
+                const msgsOut = await this.worker.processData(msgIn);
 
-            return this.worker.processData(msgIn)
-                .then((msgsOut: JobMessage[]) => {
-                    msgsOut.forEach((msgOut: JobMessage) => {
-                        msgOut.getMeasurement().markWorkerEnd();
-                        this.drain.forward(msgOut);
-                        msgOut.getMeasurement().markFinished();
-                        this.sendBridgeMetrics(msgOut);
-                    });
-                })
-                .catch((err: any) => {
-                    logger.error(`Node process failed.`, logger.ctxFromMsg(msgIn, err));
+                msgsOut.forEach((msgOut: JobMessage) => {
+                    msgOut.getMeasurement().markWorkerEnd();
+
+                    // send to following bridge here
+                    this.drain.forward(msgOut);
+
+                    msgOut.getMeasurement().markFinished();
+                    this.sendBridgeMetrics(msgOut);
                 });
+            } catch (err) {
+                logger.error(`Node process failed.`, logger.ctxFromMsg(msgIn, err));
+            }
         };
 
         return this.faucet.open(processFn)
