@@ -7,8 +7,8 @@ import {Publisher} from "amqplib-plus/dist/lib/Publisher";
 import {SimpleConsumer} from "amqplib-plus/dist/lib/SimpleConsumer";
 import {amqpConnectionOptions, mongoStorageOptions} from "../../src/config";
 import Headers from "../../src/message/Headers";
-import MongoMessageStorage from "../../src/repeater/MongoMessageStorage";
 import Repeater, {IRepeaterSettings} from "../../src/repeater/Repeater";
+import MongoMessageStorage from "../../src/repeater/storage/MongoMessageStorage";
 
 const conn = new Connection(amqpConnectionOptions);
 

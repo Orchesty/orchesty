@@ -3,7 +3,7 @@ import {ResultCode} from "../../message/ResultCode";
 import IWorker from "./IWorker";
 
 /**
- * Worker for testing purposes.
+ * Worker for testing purposes to be used in testing topologies.
  *
  * It provides method for retrieving all messages passed to processData function
  */

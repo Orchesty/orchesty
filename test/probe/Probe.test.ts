@@ -3,8 +3,8 @@ import "mocha";
 
 import * as express from "express";
 import * as rp from "request-promise";
+import Probe, {IProbeResult} from "../../src/probe/Probe";
 import {default as Configurator, INodeConfig} from "../../src/topology/Configurator";
-import Probe, {IProbeResult} from "../../src/topology/probe/Probe";
 
 const topo = Configurator.createConfigFromSkeleton(
     false,

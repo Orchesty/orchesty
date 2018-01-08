@@ -1,10 +1,10 @@
 import * as express from "express";
 import {Container} from "hb-utils/dist/lib/Container";
-import logger from "../../logger/Logger";
-import Headers from "../../message/Headers";
 import ICounterStorage from "../counter/storage/ICounterStorage";
+import logger from "../logger/Logger";
+import Headers from "../message/Headers";
 import MultiProbeConnector from "../probe/MultiProbeConnector";
-import RequestSender from "../util/RequestSender";
+import RequestSender from "../utils/RequestSender";
 
 const ROUTE_TOPOLOGY_TERMINATE = "/topology/terminate/:topologyId";
 

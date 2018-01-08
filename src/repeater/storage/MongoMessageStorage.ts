@@ -1,6 +1,6 @@
 import {Message} from "amqplib";
 import {Db, DeleteWriteOpResultObject, MongoClient} from "mongodb";
-import logger from "./../logger/Logger";
+import logger from "../../logger/Logger";
 import IMessageStorage from "./IMessageStorage";
 
 export interface IMongoMessageStorageSettings {

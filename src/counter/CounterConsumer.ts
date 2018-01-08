@@ -1,7 +1,7 @@
 import { Channel, Message } from "amqplib";
 import {Connection} from "amqplib-plus/dist/lib/Connection";
 import {Consumer} from "amqplib-plus/dist/lib/Consumer";
-import logger from "../../logger/Logger";
+import logger from "../logger/Logger";
 
 class CounterConsumer extends Consumer {
 

@@ -5,52 +5,61 @@ import {Channel, Message} from "amqplib";
 import {Connection} from "amqplib-plus/dist/lib/Connection";
 import {Publisher} from "amqplib-plus/dist/lib/Publisher";
 import {SimpleConsumer} from "amqplib-plus/dist/lib/SimpleConsumer";
+import * as bodyParser from "body-parser";
+import * as express from "express";
 import * as config from "../../src/config";
+import {ICounterProcessInfo} from "../../src/counter/CounterProcess";
+import Headers from "../../src/message/Headers";
 import {ResultCode} from "../../src/message/ResultCode";
 import Pipes from "../../src/Pipes";
+import Terminator from "../../src/terminator/Terminator";
 import {ITopologyConfigSkeleton} from "../../src/topology/Configurator";
-import {ICounterProcessInfo} from "../../src/topology/counter/CounterProcess";
-import Terminator from "../../src/topology/terminator/Terminator";
 
 const testTopology: ITopologyConfigSkeleton = {
-    id: "linear-topo-with-splitter",
-    topology_id: "linear-topo-with-splitter",
-    topology_name: "linear-topo-with-splitter",
+    id: "linear-topo",
+    topology_id: "linear-topo",
+    topology_name: "linear-topo",
     nodes: [
         {
-            id: "node-a",
+            id: "first",
             debug: {
-                port: 4111,
+                port: 4001,
                 host: "localhost",
-                url: "http://localhost:4101/status",
+                url: "http://localhost:4001/status",
             },
-            next: ["node-b"],
+            next: ["second"],
         },
         {
-            id: "node-b",
+            id: "second",
             worker: {
-                type: "splitter.json",
+                type: "worker.http",
                 settings: {
-                    node_id: "node-b",
+                    host: "localhost",
+                    method: "post",
+                    port: 3050,
+                    process_path: "/httpworker1/",
+                    status_path: "/status",
+                    secure: false,
+                    opts: {},
                 },
             },
             debug: {
-                port: 4112,
+                port: 4002,
                 host: "localhost",
-                url: "http://localhost:4102/status",
+                url: "http://localhost:4002/status",
             },
-            next: ["node-c"],
+            next: ["third"],
         },
         {
-            id: "node-c",
+            id: "third",
             worker: {
                 type: "worker.uppercase",
                 settings: {},
             },
             debug: {
-                port: 4103,
+                port: 4003,
                 host: "localhost",
-                url: "http://localhost:4103/status",
+                url: "http://localhost:4003/status",
             },
             next: [],
         },
@@ -60,26 +69,44 @@ const testTopology: ITopologyConfigSkeleton = {
 const amqpConn = new Connection(config.amqpConnectionOptions);
 const firstQueue = `pipes.${testTopology.id}.${testTopology.nodes[0].id}`;
 
-describe("Linear topology with splitter test", () => {
+describe("Linear Topology test", () => {
     it("complete flow of messages till the end", (done) => {
-        const msgTestContent = [
-            { val : "to be split 1"},
-            { val : "to be split 2"},
-            { val : "to be split 3"},
-            { val : "to be split 4"},
-        ];
+        const msgTestContent = "test content";
         const msgHeaders = { headers: {
             "pf-correlation-id": "corrid",
             "pf-process-id": "test",
             "pf-parent-id": "",
             "pf-sequence-id": 0,
+            "pf-topology-id": "topoid",
+            "pf-topology-name": "toponame",
+            "pf-foo": "bar",
+            "foo": "bar",
+            "content-type": "text/plain",
         }};
+
+        const httpWorkerMock = express();
+        httpWorkerMock.use(bodyParser.raw({
+            type: () => true,
+        }));
+        httpWorkerMock.post("/httpworker1", (req, resp) => {
+            assert.equal(req.body.toString(), msgTestContent);
+            const respBody = req.body + " modified";
+
+            const requestHeaders: any = req.headers;
+            const replyHeaders = new Headers(requestHeaders);
+            replyHeaders.setPFHeader(Headers.RESULT_CODE, `${ResultCode.SUCCESS}`);
+            replyHeaders.setPFHeader(Headers.RESULT_MESSAGE, "ok");
+
+            resp.set(replyHeaders.getRaw());
+            resp.status(200).send(JSON.stringify(respBody));
+        });
+        httpWorkerMock.listen(3050);
 
         const pip = new Pipes(testTopology);
 
         // manually set the terminator port not to collide with other tests
         const dic = pip.getDIContainer();
-        dic.set("topology.terminator", () => new Terminator(8557, dic.get("counter.storage")));
+        dic.set("topology.terminator", () => new Terminator(8556, dic.get("counter.storage")));
 
         Promise.all([
             pip.startCounter(),
@@ -91,7 +118,7 @@ describe("Linear topology with splitter test", () => {
             // Prepares consumer of counter output
             // Prepares function for evaluation of test end
             const counterResultQueue = {
-                name: "pipes.linear-topo-with-splitter.counter-result",
+                name: "linear-topology-counter-result",
                 options: {},
             };
             const resultConsumer = new SimpleConsumer(
@@ -118,8 +145,8 @@ describe("Linear topology with splitter test", () => {
                     // In this fn we evaluate expected incoming message and state if test is OK or failed
                     const data: ICounterProcessInfo = JSON.parse(msg.content.toString());
                     assert.equal(data.process_id, msgHeaders.headers["pf-process-id"]);
-                    assert.equal(data.total, 6);
-                    assert.equal(data.ok, 6);
+                    assert.equal(data.total, pip.getTopologyConfig(false).nodes.length);
+                    assert.equal(data.ok, pip.getTopologyConfig(false).nodes.length);
                     assert.equal(data.nok, 0);
                     const trace: string[] = [];
                     data.messages.forEach((info) => {
@@ -128,15 +155,7 @@ describe("Linear topology with splitter test", () => {
                     });
                     assert.deepEqual(
                         trace,
-                        [
-                            testTopology.nodes[0].id,
-                            testTopology.nodes[1].id,
-                            // in node-b message should have been split to 4 sub-messages
-                            testTopology.nodes[2].id,
-                            testTopology.nodes[2].id,
-                            testTopology.nodes[2].id,
-                            testTopology.nodes[2].id,
-                        ],
+                        [testTopology.nodes[0].id, testTopology.nodes[1].id, testTopology.nodes[2].id],
                     );
                     done();
                 },
@@ -160,7 +179,7 @@ describe("Linear topology with splitter test", () => {
                     });
                 },
             );
-            return publisher.sendToQueue(firstQueue, new Buffer(JSON.stringify(msgTestContent)), msgHeaders);
+            return publisher.sendToQueue(firstQueue, new Buffer(msgTestContent), msgHeaders);
         });
     });
 

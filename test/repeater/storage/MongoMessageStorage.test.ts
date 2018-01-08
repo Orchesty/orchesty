@@ -3,8 +3,8 @@ import "mocha";
 
 import {Message} from "amqplib";
 import {Db, MongoClient} from "mongodb";
-import {mongoStorageOptions} from "../../src/config";
-import MongoMessageStorage from "../../src/repeater/MongoMessageStorage";
+import {mongoStorageOptions} from "../../../src/config";
+import MongoMessageStorage from "../../../src/repeater/storage/MongoMessageStorage";
 
 const mongo = MongoClient.connect(`mongodb://${mongoStorageOptions.host}/${mongoStorageOptions.db}`);
 const COLLECTION_NAME = "messages";

@@ -1,6 +1,6 @@
 import * as redis from "redis";
 import {RedisClient} from "redis";
-import logger from "../../../logger/Logger";
+import logger from "../../logger/Logger";
 import {ICounterProcessInfo} from "../CounterProcess";
 import ICounterStorage from "./ICounterStorage";
 

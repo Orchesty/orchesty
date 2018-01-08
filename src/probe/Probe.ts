@@ -1,8 +1,8 @@
 import * as express from "express";
 import * as request from "request";
-import IStoppable from "../../IStoppable";
-import logger from "../../logger/Logger";
-import {INodeConfig, INodeLabel} from "../Configurator";
+import IStoppable from "../IStoppable";
+import logger from "../logger/Logger";
+import {INodeConfig, INodeLabel} from "../topology/Configurator";
 
 interface INodeInfo {
     label: INodeLabel;

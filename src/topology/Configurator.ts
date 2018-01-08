@@ -1,5 +1,7 @@
-import { default as Defaults } from "../Defaults";
-import { ICounterSettings } from "./counter/Counter";
+import {repeaterOptions} from "../config";
+import { ICounterSettings } from "../counter/Counter";
+import {IAmqpDrainSettings} from "../node/drain/AmqpDrain";
+import {IAmqpFaucetSettings} from "../node/faucet/AmqpFaucet";
 
 export interface IWorkerConfig {
     type: string;
@@ -79,6 +81,60 @@ class Configurator {
     /**
      *
      * @param {boolean} isMulti
+     * @param {string} topoId
+     * @return {ICounterSettings}
+     */
+    public static getCounterDefaultSettings(isMulti: boolean, topoId: string): ICounterSettings {
+        if (isMulti) {
+            return {
+                sub: {
+                    queue: {
+                        name: "pipes.multi-counter",
+                        prefetch: 1,
+                        options: {},
+                    },
+                },
+                pub: {
+                    routing_key: "process_finished",
+                    exchange: {
+                        name: `pipes.events`,
+                        type: "direct",
+                        options: {},
+                    },
+                    queue: {
+                        name: "pipes.results",
+                        options: {},
+                    },
+                },
+            };
+        }
+
+        return {
+            sub: {
+                queue: {
+                    name: `pipes.${topoId}.counter`,
+                    prefetch: 1,
+                    options: {},
+                },
+            },
+            pub: {
+                routing_key: "process_finished",
+                exchange: {
+                    name: `pipes.${topoId}.events`,
+                    type: "direct",
+                    options: {},
+                },
+                queue: {
+                    name: "pipes.results",
+                    options: {},
+                },
+            },
+        };
+    }
+
+    /**
+     *
+     * @param {boolean} isMulti
      * @param {ITopologyConfigSkeleton} skeleton
      * @return {ITopologyConfig}
      */
@@ -87,7 +143,7 @@ class Configurator {
 
         let i = 0;
         skeleton.nodes.forEach((nodeSkeleton: INodeConfigSkeleton) => {
-            const node = Configurator.createNodeConfig(skeleton.id, nodeSkeleton, i, isMulti);
+            const node = this.createNodeConfig(skeleton.id, nodeSkeleton, i, isMulti);
             nodes.push(node);
             i++;
         });
@@ -97,7 +153,7 @@ class Configurator {
             topology_id: skeleton.topology_id,
             topology_name: skeleton.topology_name,
             nodes,
-            counter: skeleton.counter || Defaults.getCounterDefaultSettings(isMulti, skeleton.id),
+            counter: skeleton.counter || this.getCounterDefaultSettings(isMulti, skeleton.id),
         };
     }
 
@@ -115,7 +171,7 @@ class Configurator {
         nodePosition: number,
         isMulti: boolean = false,
     ): INodeConfig {
-        const defaults: INodeConfig = Defaults.getNodeConfigDefaults(topoId, nodeSkeleton, nodePosition, isMulti);
+        const defaults: INodeConfig = this.getNodeConfigDefaults(topoId, nodeSkeleton, nodePosition, isMulti);
 
         const faucetSettings = nodeSkeleton.faucet || defaults.faucet;
         const workerSettings = nodeSkeleton.worker || defaults.worker;
@@ -136,6 +192,129 @@ class Configurator {
             debug: nodeSkeleton.debug || defaults.debug,
             initial: nodePosition === 0,
         };
+    }
+
+    /**
+     *
+     * @param {string} topoId
+     * @param {INodeConfigSkeleton} node
+     * @param {number} position
+     * @param {boolean} isMulti
+     * @return {INodeConfig}
+     */
+    private static getNodeConfigDefaults(
+        topoId: string,
+        node: INodeConfigSkeleton,
+        position?: number,
+        isMulti: boolean = false,
+    ): INodeConfig {
+        const port = position ? 8008 + position : 8008;
+
+        return {
+            id: node.id,
+            label: {
+                id: node.id,
+                node_id: node.label ? node.label.node_id : node.id,
+                node_name: node.label ? node.label.node_name : `${node.id}_unknown`,
+                topology_id: topoId,
+            },
+            next: [],
+            worker: this.getDefaultWorkerConfig(),
+            faucet: this.getDefaultFaucetConfig(topoId, node),
+            drain: this.getDefaultDrainConfig(topoId, node, isMulti),
+            debug: {
+                port,
+                host: node.id,
+                url: `http://${node.id}:${port}/status`,
+            },
+            initial: false,
+        };
+    }
+
+    /**
+     *
+     * @return {IWorkerConfig}
+     */
+    private static getDefaultWorkerConfig(): IWorkerConfig {
+        const type = "worker.null";
+        const settings = {};
+
+        return { type, settings };
+    }
+
+    /**
+     *
+     * @param {string} topoId
+     * @param {INodeConfigSkeleton} node
+     * @return {IFaucetConfig}
+     */
+    private static getDefaultFaucetConfig(topoId: string, node: INodeConfigSkeleton): IFaucetConfig {
+        const type = "faucet.amqp";
+        const settings: IAmqpFaucetSettings = {
+            node_label: node.label,
+            exchange: { name: `pipes.${topoId}.events`, type: "direct", options: {} },
+            queue: { name: `pipes.${topoId}.${node.id}`, options: {} },
+            prefetch: 10000,
+            dead_letter_exchange: { name: "pipes.dead-letter", type: "direct", options: {} },
+            routing_key: `${topoId}.${node.id}`,
+        };
+
+        return { type, settings };
+    }
+
+    /**
+     *
+     * @param {string} topoId
+     * @param {INodeConfigSkeleton} node
+     * @param {boolean} isMulti
+     * @return {IDrainConfig}
+     */
+    private static getDefaultDrainConfig(
+        topoId: string,
+        node: INodeConfigSkeleton,
+        isMulti: boolean = false,
+    ): IDrainConfig {
+        const type = "drain.amqp";
+        const faucetConf = this.getDefaultFaucetConfig(topoId, node);
+        const followers = node.next || [];
+        const settings: IAmqpDrainSettings = {
+            node_label: node.label,
+            counter: {
+                queue: {
+                    name: isMulti ? "pipes.multi-counter" : `pipes.${topoId}.counter`,
+                    options: {},
+                },
+            },
+            repeater: {
+                queue: {
+                    name: repeaterOptions.input.queue.name || `pipes.repeater`,
+                    options: repeaterOptions.input.queue.options || {},
+                },
+            },
+            faucet: {
+                queue: {
+                    name: faucetConf.settings.queue.name,
+                    options: faucetConf.settings.queue.options,
+                },
+            },
+            followers: followers.map((nextNode: string) => {
+                return {
+                    node_id: nextNode,
+                    exchange: {
+                        name: `pipes.${topoId}.events`,
+                        type: "direct",
+                        options: {},
+                    },
+                    queue: {
+                        name: `pipes.${topoId}.${nextNode}`,
+                        options: {},
+                    },
+                    routing_key: `${topoId}.${nextNode}`,
+                };
+            }),
+        };
+
+        return { type, settings };
     }
 
 }
