@@ -132,11 +132,9 @@ class AmqpRpcWorker implements IWorker {
                 logger.ctxFromMsg(msg),
             );
         }).catch((err: Error) => {
-            const context = logger.ctxFromMsg(msg);
-            context.error = err;
             logger.error(
                 `Worker[type='amqprpc'] sending request to "${this.settings.publish_queue.name}" failed`,
-                context,
+                logger.ctxFromMsg(msg, err),
             );
         });
 
@@ -155,7 +153,6 @@ class AmqpRpcWorker implements IWorker {
             const w: IWaiting = { resolveFn: resolve, message: msg, sequence: 0 };
             this.waiting.set(uuid, w);
         });
-
     }
 
     /**

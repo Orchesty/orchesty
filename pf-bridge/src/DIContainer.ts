@@ -6,6 +6,8 @@ import {
     amqpConnectionOptions, metricsOptions, multiProbeOptions, redisStorageOptions,
     topologyTerminatorOptions,
 } from "./config";
+import RedisStorage from "./counter/storage/RedisStorage";
+import FakeLimiter from "./limiter/FakeLimiter";
 import CounterPublisher from "./node/drain/amqp/CounterPublisher";
 import FollowersPublisher from "./node/drain/amqp/FollowersPublisher";
 import {default as AmqpDrain, IAmqpDrainSettings} from "./node/drain/AmqpDrain";
@@ -15,12 +17,12 @@ import AmqpRpcWorker, {IAmqpRpcWorkerSettings} from "./node/worker/AmqpRpcWorker
 import AppenderWorker, {IAppenderWorkerSettings} from "./node/worker/AppenderWorker";
 import HttpWorker, {IHttpWorkerSettings} from "./node/worker/HttpWorker";
 import HttpXmlParserWorker, {IHttpXmlParserWorkerSettings} from "./node/worker/HttpXmlParserWorker";
+import LimiterWorker from "./node/worker/LimiterWorker";
 import NullWorker from "./node/worker/NullWorker";
 import {default as ResequencerWorker, IResequencerWorkerSettings} from "./node/worker/ResequencerWorker";
 import SplitterWorker, {ISplitterWorkerSettings} from "./node/worker/SplitterWorker";
 import TestCaptureWorker from "./node/worker/TestCaptureWorker";
 import UppercaseWorker from "./node/worker/UppercaseWorker";
-import RedisStorage from "./counter/storage/RedisStorage";
 import MultiProbeConnector from "./probe/MultiProbeConnector";
 import Terminator from "./terminator/Terminator";
 
@@ -76,7 +78,7 @@ class DIContainer extends Container {
             const followersPub = new FollowersPublisher(this.get("amqp.connection"), settings);
             const assertionPub = new AssertionPublisher(
                 this.get("amqp.connection"),
-                () =>  Promise.resolve(),
+                () => Promise.resolve(),
                 {},
             );
             const metrics = this.get("metrics")(settings.node_label.topology_id, settings.node_label.id);
@@ -102,6 +104,12 @@ class DIContainer extends Container {
             const metrics = this.get("metrics")(settings.node_label.topology_id, settings.node_label.id);
 
             return new HttpXmlParserWorker(settings, metrics);
+        });
+        this.set(`${wPrefix}.limited_http`, (settings: IHttpWorkerSettings) => {
+            return new LimiterWorker(
+                new FakeLimiter(),
+                this.get(`${wPrefix}.http`)(settings),
+            );
         });
         this.set(`${wPrefix}.null`, (settings: {}) => {
             return new NullWorker();
