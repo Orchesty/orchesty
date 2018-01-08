@@ -6,7 +6,7 @@ import {ObjectUtils} from "hb-utils/dist/lib/ObjectUtils";
 import IStoppable from "../IStoppable";
 import Headers from "../message/Headers";
 import logger from "./../logger/Logger";
-import IMessageStorage from "./IMessageStorage";
+import IMessageStorage from "./storage/IMessageStorage";
 
 export interface IRepeaterSettings {
     input: {

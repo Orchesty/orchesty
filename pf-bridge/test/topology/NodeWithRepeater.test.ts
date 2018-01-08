@@ -8,12 +8,12 @@ import {SimpleConsumer} from "amqplib-plus/dist/lib/SimpleConsumer";
 import * as bodyParser from "body-parser";
 import * as express from "express";
 import * as config from "../../src/config";
+import {ICounterProcessInfo} from "../../src/counter/CounterProcess";
 import Headers from "../../src/message/Headers";
 import {ResultCode} from "../../src/message/ResultCode";
 import Pipes from "../../src/Pipes";
+import Terminator from "../../src/terminator/Terminator";
 import {ITopologyConfigSkeleton} from "../../src/topology/Configurator";
-import {ICounterProcessInfo} from "../../src/topology/counter/CounterProcess";
-import Terminator from "../../src/topology/terminator/Terminator";
 
 const testTopology: ITopologyConfigSkeleton = {
     id: "topo-with-repeater",

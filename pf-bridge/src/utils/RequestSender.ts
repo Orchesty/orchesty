@@ -1,6 +1,6 @@
 import {UrlOptions} from "request";
 import * as request from "request";
-import logger from "../../logger/Logger";
+import logger from "../logger/Logger";
 
 export default class RequestSender {
 

@@ -1,8 +1,8 @@
 import {IConnectionOptions} from "amqplib-plus/dist/lib/Connection";
-import {IMongoMessageStorageSettings} from "./repeater/MongoMessageStorage";
+import {IMongoMessageStorageSettings} from "./repeater/storage/MongoMessageStorage";
 import {IRepeaterSettings} from "./repeater/Repeater";
-import {IRedisStorageSettings} from "./topology/counter/storage/RedisStorage";
-import {IProbeSettings} from "./topology/probe/Probe";
+import {IRedisStorageSettings} from "./counter/storage/RedisStorage";
+import {IProbeSettings} from "./probe/Probe";
 
 // Set timeouts and other env values differently for tests
 if (process.env.NODE_ENV === "test") {

@@ -4,8 +4,8 @@ import "mocha";
 import * as bodyParser from "body-parser";
 import * as express from "express";
 import * as rp from "request-promise";
-import Headers from "../../../src/message/Headers";
-import Terminator from "../../../src/topology/terminator/Terminator";
+import Headers from "../../src/message/Headers";
+import Terminator from "../../src/terminator/Terminator";
 
 const dumbStorage = {
     has: () => Promise.resolve(false),

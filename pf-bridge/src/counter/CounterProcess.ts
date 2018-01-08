@@ -1,6 +1,6 @@
-import logger from "../../logger/Logger";
-import {default as CounterMessage} from "../../message/CounterMessage";
-import {ResultCode} from "../../message/ResultCode";
+import logger from "../logger/Logger";
+import {default as CounterMessage} from "../message/CounterMessage";
+import {ResultCode} from "../message/ResultCode";
 
 interface ICounterLog {
     resultCode: ResultCode;

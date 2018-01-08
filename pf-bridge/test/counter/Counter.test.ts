@@ -6,13 +6,13 @@ import {Connection} from "amqplib-plus/dist/lib/Connection";
 import {Publisher} from "amqplib-plus/dist/lib/Publisher";
 import {SimpleConsumer} from "amqplib-plus/dist/lib/SimpleConsumer";
 import {Replies} from "amqplib/properties";
-import {amqpConnectionOptions, redisStorageOptions} from "../../../src/config";
-import {ResultCode} from "../../../src/message/ResultCode";
-import {default as Counter, ICounterSettings} from "../../../src/topology/counter/Counter";
-import {ICounterProcessInfo} from "../../../src/topology/counter/CounterProcess";
-import InMemoryStorage from "../../../src/topology/counter/storage/InMemoryStorage";
-import RedisStorage from "../../../src/topology/counter/storage/RedisStorage";
-import Terminator from "../../../src/topology/terminator/Terminator";
+import {amqpConnectionOptions, redisStorageOptions} from "../../src/config";
+import {default as Counter, ICounterSettings} from "../../src/counter/Counter";
+import {ICounterProcessInfo} from "../../src/counter/CounterProcess";
+import InMemoryStorage from "../../src/counter/storage/InMemoryStorage";
+import RedisStorage from "../../src/counter/storage/RedisStorage";
+import {ResultCode} from "../../src/message/ResultCode";
+import Terminator from "../../src/terminator/Terminator";
 
 const conn = new Connection(amqpConnectionOptions);
 const metricsMock = {

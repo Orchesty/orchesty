@@ -20,9 +20,9 @@ import {default as ResequencerWorker, IResequencerWorkerSettings} from "./node/w
 import SplitterWorker, {ISplitterWorkerSettings} from "./node/worker/SplitterWorker";
 import TestCaptureWorker from "./node/worker/TestCaptureWorker";
 import UppercaseWorker from "./node/worker/UppercaseWorker";
-import RedisStorage from "./topology/counter/storage/RedisStorage";
-import MultiProbeConnector from "./topology/probe/MultiProbeConnector";
-import Terminator from "./topology/terminator/Terminator";
+import RedisStorage from "./counter/storage/RedisStorage";
+import MultiProbeConnector from "./probe/MultiProbeConnector";
+import Terminator from "./terminator/Terminator";
 
 class DIContainer extends Container {
 

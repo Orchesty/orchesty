@@ -1,5 +1,5 @@
-import {ITopologyConfig} from "../Configurator";
-import RequestSender from "../util/RequestSender";
+import {ITopologyConfig} from "../topology/Configurator";
+import RequestSender from "../utils/RequestSender";
 
 const REQUEST_TIMEOUT = 5000;
 

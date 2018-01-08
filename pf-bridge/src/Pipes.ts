@@ -1,7 +1,7 @@
 import {Container} from "hb-utils/dist/lib/Container";
 import {IMetrics} from "metrics-sender/dist/lib/metrics/IMetrics";
 import {mongoStorageOptions, probeOptions, repeaterOptions} from "./config";
-import Defaults from "./Defaults";
+import Counter from "./counter/Counter";
 import DIContainer from "./DIContainer";
 import IStoppable from "./IStoppable";
 import logger from "./logger/Logger";
@@ -9,11 +9,10 @@ import IDrain from "./node/drain/IDrain";
 import IFaucet from "./node/faucet/IFaucet";
 import Node from "./node/Node";
 import IWorker from "./node/worker/IWorker";
-import MongoMessageStorage from "./repeater/MongoMessageStorage";
+import Probe from "./probe/Probe";
 import Repeater from "./repeater/Repeater";
+import MongoMessageStorage from "./repeater/storage/MongoMessageStorage";
 import {default as Configurator, INodeConfig, ITopologyConfig, ITopologyConfigSkeleton} from "./topology/Configurator";
-import Counter from "./topology/counter/Counter";
-import Probe from "./topology/probe/Probe";
 
 class Pipes {
 
@@ -97,7 +96,7 @@ class Pipes {
     public async startMultiCounter(): Promise<Counter> {
         const topoId = "pipes.multi-counter";
         const counter = new Counter(
-            Defaults.getCounterDefaultSettings(true, topoId),
+            Configurator.getCounterDefaultSettings(true, topoId),
             this.dic.get("amqp.connection"),
             this.dic.get("counter.storage"),
             this.dic.get("topology.terminator")(true),
