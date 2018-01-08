@@ -34,3 +34,7 @@ services:
     hbpf.api_gateway.controller.metrics:
         class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\MetricsController
         arguments:
+
+    hbpf.api_gateway.controller.notification:
+        class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\NotificationController
+        arguments:
