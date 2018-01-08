@@ -1,0 +1,5 @@
+services:
+    hbpf.notification.controller.notification:
+        class: Hanaboso\PipesFramework\HbPFNotificationBundle\Controller\NotificationController
+        arguments:
+            - '@hbpf.notification.handler.notification'
