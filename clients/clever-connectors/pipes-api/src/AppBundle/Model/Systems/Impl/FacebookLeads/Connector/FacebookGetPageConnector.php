@@ -16,6 +16,7 @@ use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\FacebookLeads\FacebookLeadsSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
+use CleverConnectors\AppBundle\Utils\LoggerUtils;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Uri;
@@ -155,23 +156,17 @@ class FacebookGetPageConnector implements ConnectorInterface
                 $body = $response->getBody()->getContents();
                 $data = json_decode($body, TRUE);
                 if (isset($data['error']['code']) && $data['error']['code'] == 190) {
-                    $msgData = [
-                        'guid'        => $systemInstall->getUser(),
-                        'token'       => $systemInstall->getToken(),
-                        'system_key'  => $this->system->getKey(),
-                        'system_name' => $this->system->getName(),
-                    ];
-                    $this->notificationLogger->info(NotificationTypeEnum::ACCESS_EXPIRATION, $msgData);
+                    $this->notificationLogger->info(
+                        NotificationTypeEnum::ACCESS_EXPIRATION,
+                        LoggerUtils::getMessage($this->system, $systemInstall)
+                    );
                 }
             }
             if (isset($response) && $response->getStatusCode()  == 500) {
-                $msgData = [
-                    'guid'        => $systemInstall->getUser(),
-                    'token'       => $systemInstall->getToken(),
-                    'system_key'  => $this->system->getKey(),
-                    'system_name' => $this->system->getName(),
-                ];
-                $this->notificationLogger->info(NotificationTypeEnum::SERVICE_UNAVAILABLE, $msgData);
+                $this->notificationLogger->info(
+                    NotificationTypeEnum::SERVICE_UNAVAILABLE,
+                    LoggerUtils::getMessage($this->system, $systemInstall)
+                );
             }
         }
     }
