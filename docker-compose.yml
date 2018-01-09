@@ -5,7 +5,6 @@ services:
     user: ${DEV_UID}:${DEV_GID}
     volumes:
       - ./:/srv/project
-      - ../:/srv/libs
       - ${SSH_AUTH_SOCK}:/tmp/bound-ssh-agent
       - ./topology:${GENERATOR_PATH}
       - ${DOCKER_SOCKET_PATH}:/var/run/docker.sock
