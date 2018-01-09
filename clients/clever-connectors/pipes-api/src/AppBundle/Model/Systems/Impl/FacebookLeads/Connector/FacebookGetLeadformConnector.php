@@ -10,6 +10,7 @@
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\FacebookLeads\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Enum\NotificationTypeEnum;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\FacebookLeads\FacebookLeadsSystem;
@@ -20,10 +21,12 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlException;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Class FacebookGetLeadformConnector
@@ -52,19 +55,30 @@ class FacebookGetLeadformConnector implements ConnectorInterface
     private $systemInstallRepository;
 
     /**
+     * @var LoggerInterface
+     */
+    private $notificationLogger;
+
+    /**
      * FacebookGetLeadformConnector constructor.
      *
      * @param FacebookLeadsSystem $system
      * @param DocumentManager     $dm
      * @param CurlManager         $curlManager
+     * @param LoggerInterface     $notificationLogger
      */
-    public function __construct(FacebookLeadsSystem $system, DocumentManager $dm, CurlManager $curlManager)
+    public function __construct(
+        FacebookLeadsSystem $system,
+        DocumentManager $dm,
+        CurlManager $curlManager,
+        LoggerInterface $notificationLogger
+    )
     {
-
         $this->curlManager             = $curlManager;
         $this->dm                      = $dm;
         $this->system                  = $system;
         $this->systemInstallRepository = $dm->getRepository(SystemInstall::class);
+        $this->notificationLogger      = $notificationLogger;
     }
 
     /**
@@ -237,7 +251,33 @@ class FacebookGetLeadformConnector implements ConnectorInterface
             $requestDto->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()));
         }
 
-        return $this->curlManager->send(RequestDto::from($requestDto, $url));
+        try {
+            return $this->curlManager->send(RequestDto::from($requestDto, $url));
+        } catch (CurlException $e) {
+            $response = $e->getResponse();
+            if (isset($response) && $response->getStatusCode() == 400) {
+                $body = $response->getBody()->getContents();
+                $data = json_decode($body, TRUE);
+                if (isset($data['error']['code']) && $data['error']['code'] == 190) {
+                    $msgData = [
+                        'guid'        => $systemInstall->getUser(),
+                        'token'       => $systemInstall->getToken(),
+                        'system_key'  => $this->system->getKey(),
+                        'system_name' => $this->system->getName(),
+                    ];
+                    $this->notificationLogger->info(NotificationTypeEnum::ACCESS_EXPIRATION, $msgData);
+                }
+            }
+            if (isset($response) && $response->getStatusCode() == 500) {
+                $msgData = [
+                    'guid'        => $systemInstall->getUser(),
+                    'token'       => $systemInstall->getToken(),
+                    'system_key'  => $this->system->getKey(),
+                    'system_name' => $this->system->getName(),
+                ];
+                $this->notificationLogger->info(NotificationTypeEnum::SERVICE_UNAVAILABLE, $msgData);
+            }
+        }
     }
 
 }

@@ -23,7 +23,9 @@ use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSender;
 use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSenderFactory;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit_Framework_MockObject_MockObject;
+use Psr\Log\LoggerInterface;
 use React\EventLoop\Factory;
 use Tests\ConnectorTestCaseAbstract;
 use function React\Promise\resolve;
@@ -67,6 +69,11 @@ class FacebookSyncLeadformConnectorTest extends ConnectorTestCaseAbstract
     private $mockDm;
 
     /**
+     * @var MockObject|LoggerInterface
+     */
+    protected $notificationLogger;
+
+    /**
      *
      */
     public function testProcessBatch(): void
@@ -78,7 +85,8 @@ class FacebookSyncLeadformConnectorTest extends ConnectorTestCaseAbstract
 
         $this->sender->expects($this->at(0))->method('send')->willReturn($promiseData);
 
-        $connector = new FacebookSyncLeadformConnector($this->system, $this->factory, $this->mockDm);
+        $connector = new FacebookSyncLeadformConnector($this->system, $this->factory, $this->mockDm,
+            $this->notificationLogger);
 
         $processDto = new ProcessDto();
         $processDto
@@ -106,7 +114,7 @@ class FacebookSyncLeadformConnectorTest extends ConnectorTestCaseAbstract
 
         $this->systemInstall = $this->createMock(SystemInstall::class);
         $this->systemInstall->method('getSettings')->willReturn([
-            'form_id' => '123456',
+            'form_id'                    => '123456',
             OAuth2Provider::ACCESS_TOKEN => '987654321',
         ]);
 
@@ -132,6 +140,9 @@ class FacebookSyncLeadformConnectorTest extends ConnectorTestCaseAbstract
         $this->sender          = $this->createMock(CurlSender::class);
         $this->factory         = $this->createMock(CurlSenderFactory::class);
         $this->factory->method('create')->willReturn($this->sender);
+
+        $this->notificationLogger = $this->createMock(LoggerInterface::class);
+        $this->notificationLogger->method('info');
     }
 
 }

@@ -10,10 +10,12 @@
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\FacebookLeads\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Enum\NotificationTypeEnum;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\FacebookLeads\FacebookLeadsSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
+use Clue\React\Buzz\Message\ResponseException;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Uri;
@@ -26,6 +28,7 @@ use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\BatchInterface;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Log\LoggerInterface;
 use React\EventLoop\LoopInterface;
 use React\Promise\PromiseInterface;
 
@@ -53,21 +56,29 @@ class FacebookSyncLeadformConnector implements BatchInterface, ConnectorInterfac
     private $factory;
 
     /**
+     * @var LoggerInterface
+     */
+    private $notificationLogger;
+
+    /**
      * FacebookSyncLeadformConnector constructor.
      *
      * @param FacebookLeadsSystem $system
      * @param CurlSenderFactory   $factory
      * @param DocumentManager     $dm
+     * @param LoggerInterface     $notificationLogger
      */
     public function __construct(
         FacebookLeadsSystem $system,
         CurlSenderFactory $factory,
-        DocumentManager $dm
+        DocumentManager $dm,
+        LoggerInterface $notificationLogger
     )
     {
         $this->system                  = $system;
         $this->factory                 = $factory;
         $this->systemInstallRepository = $dm->getRepository(SystemInstall::class);
+        $this->notificationLogger      = $notificationLogger;
     }
 
     /**
@@ -95,6 +106,31 @@ class FacebookSyncLeadformConnector implements BatchInterface, ConnectorInterfac
             ->then(
                 function (ResponseInterface $response): SuccessMessage {
                     return $this->createSuccessMessage($response);
+                },
+                function (ResponseException $exception) use ($systemInstall): void {
+                    if ($exception->getCode() == 400) {
+                        $body = $exception->getResponse()->getBody()->getContents();
+                        $data = json_decode($body, TRUE);
+                        if (isset($data['error']['code']) && $data['error']['code'] == 190) {
+                            $msgData = [
+                                'guid'        => $systemInstall->getUser(),
+                                'token'       => $systemInstall->getToken(),
+                                'system_key'  => $this->system->getKey(),
+                                'system_name' => $this->system->getName(),
+                            ];
+                            $this->notificationLogger->info(NotificationTypeEnum::ACCESS_EXPIRATION, $msgData);
+                        }
+                    }
+                    if ($exception->getCode() == 500) {
+                        $msgData = [
+                            'guid'        => $systemInstall->getUser(),
+                            'token'       => $systemInstall->getToken(),
+                            'system_key'  => $this->system->getKey(),
+                            'system_name' => $this->system->getName(),
+                        ];
+                        $this->notificationLogger->info(NotificationTypeEnum::SERVICE_UNAVAILABLE, $msgData);
+                    }
+                    throw $exception;
                 }
             )
             ->then($callbackItem);

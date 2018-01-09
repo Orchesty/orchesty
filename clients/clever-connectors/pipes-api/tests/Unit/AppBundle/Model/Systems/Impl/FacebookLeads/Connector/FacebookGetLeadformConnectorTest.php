@@ -19,7 +19,9 @@ use Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit_Framework_MockObject_MockObject;
+use Psr\Log\LoggerInterface;
 use Tests\ConnectorTestCaseAbstract;
 
 /**
@@ -90,7 +92,11 @@ class FacebookGetLeadformConnectorTest extends ConnectorTestCaseAbstract
         /** @var PHPUnit_Framework_MockObject_MockObject|DocumentManager $dm */
         $dm = $this->createMock(DocumentManager::class);
 
-        $connector = new FacebookGetLeadformConnector($system, $dm, $curlManager);
+        /** @var MockObject|LoggerInterface $notificationLogger */
+        $notificationLogger = $this->createMock(LoggerInterface::class);
+        $notificationLogger->method('info');
+
+        $connector = new FacebookGetLeadformConnector($system, $dm, $curlManager, $notificationLogger);
 
         $result = $connector->getLeadForms($systemInstall, [FacebookLeadsSystem::PAGE_ID => 'page_id']);
 

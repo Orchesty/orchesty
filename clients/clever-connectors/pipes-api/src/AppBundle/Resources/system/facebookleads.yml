@@ -12,6 +12,7 @@ services:
             - '@systems.facebookleads'
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.transport.curl_manager'
+            - '@monolog.logger.notification'
 
     hbpf.connector.facebook-get-leadform-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\FacebookLeads\Connector\FacebookGetLeadformConnector
@@ -19,6 +20,7 @@ services:
             - '@systems.facebookleads'
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.transport.curl_manager'
+            - '@monolog.logger.notification'
 
     hbpf.connector.facebook-sync-leadform-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\FacebookLeads\Connector\FacebookSyncLeadformConnector
@@ -26,6 +28,7 @@ services:
             - '@systems.facebookleads'
             - '@hbpf.transport.async_curl_factory'
             - '@doctrine_mongodb.odm.default_document_manager'
+            - '@monolog.logger.notification'
 
     hbpf.connector.facebook-created-leadform-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\FacebookLeads\Connector\FacebookCreatedLeadformConnector
@@ -34,6 +37,7 @@ services:
             - '@cc.last_sync.manager'
             - '@hbpf.transport.async_curl_factory'
             - '@doctrine_mongodb.odm.default_document_manager'
+            - '@monolog.logger.notification'
 
     hbpf.custom_node.facebook-created-leadform-mapper:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\FacebookLeads\Mapper\FacebookCreatedLeadformMapper
