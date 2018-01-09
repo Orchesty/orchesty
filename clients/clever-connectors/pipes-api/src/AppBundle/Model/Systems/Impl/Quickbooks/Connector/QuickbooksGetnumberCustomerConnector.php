@@ -3,6 +3,7 @@
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Enum\NotificationTypeEnum;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\Mapper\QuickbooksCreateCustomerMapper;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\QuickbooksSystem;
@@ -16,6 +17,7 @@ use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
+use Psr\Log\LoggerInterface;
 
 /**
  * Class QuickbooksGetnumberCustomerConnector
@@ -43,17 +45,29 @@ class QuickbooksGetnumberCustomerConnector implements ConnectorInterface
     private $system;
 
     /**
+     * @var LoggerInterface
+     */
+    private $notificationLogger;
+
+    /**
      * QuickbooksCreateCustomerConnector constructor.
      *
      * @param DocumentManager      $dm
      * @param QuickbooksSystem     $system
      * @param CurlManagerInterface $curl
+     * @param LoggerInterface      $notificationLogger
      */
-    public function __construct(DocumentManager $dm, QuickbooksSystem $system, CurlManagerInterface $curl)
+    public function __construct(
+        DocumentManager $dm,
+        QuickbooksSystem $system,
+        CurlManagerInterface $curl,
+        LoggerInterface $notificationLogger
+    )
     {
         $this->curl                    = $curl;
         $this->systemInstallRepository = $dm->getRepository(SystemInstall::class);
         $this->system                  = $system;
+        $this->notificationLogger      = $notificationLogger;
     }
 
     /**
@@ -99,7 +113,18 @@ class QuickbooksGetnumberCustomerConnector implements ConnectorInterface
         $requestDto->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()))
             ->setUri(new Uri(rtrim($requestDto->getUri(TRUE), '/') . $this->getQuery($body)));
 
-        $res     = $this->curl->send($requestDto);
+        $res = $this->curl->send($requestDto);
+
+        if ($res->getStatusCode() == 500) {
+            $msgData = [
+                'guid'        => $systemInstall->getUser(),
+                'token'       => $systemInstall->getToken(),
+                'system_key'  => $this->system->getKey(),
+                'system_name' => $this->system->getName(),
+            ];
+            $this->notificationLogger->info(NotificationTypeEnum::SERVICE_UNAVAILABLE, $msgData);
+        }
+
         $resBody = json_decode($res->getBody(), TRUE);
 
         if ($res->getStatusCode() !== 200

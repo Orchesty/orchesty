@@ -44,7 +44,8 @@ final class QuickbooksCreatedCustomerConnectorTest extends QuickbooksCustomerCon
         return new QuickbooksCreatedCustomerConnector(
             $this->system,
             $this->lastSyncManager,
-            $this->factory
+            $this->factory,
+            $this->notificationLogger
         );
     }
 

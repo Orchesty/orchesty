@@ -10,12 +10,14 @@
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Enum\NotificationTypeEnum;
 use CleverConnectors\AppBundle\Model\LastSync\LastSyncManager;
 use CleverConnectors\AppBundle\Model\ProgressCounter\ProgressCounterService;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\QuickbooksSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use CleverConnectors\AppBundle\Utils\Dto\Times;
+use Clue\React\Buzz\Message\ResponseException;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Uri;
@@ -24,6 +26,7 @@ use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSenderFactory;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Log\LoggerInterface;
 use React\EventLoop\LoopInterface;
 use React\Promise\PromiseInterface;
 use function React\Promise\all;
@@ -54,16 +57,18 @@ class QuickbooksSyncCustomerConnector extends QuickbooksCustomerConnectorAbstrac
      * @param CurlSenderFactory      $factory
      * @param DocumentManager        $dm
      * @param ProgressCounterService $counterService
+     * @param LoggerInterface        $logger
      */
     public function __construct(
         QuickbooksSystem $system,
         LastSyncManager $lastSyncManager,
         CurlSenderFactory $factory,
         DocumentManager $dm,
-        ProgressCounterService $counterService
+        ProgressCounterService $counterService,
+        LoggerInterface $logger
     )
     {
-        parent::__construct($system, $lastSyncManager, $factory);
+        parent::__construct($system, $lastSyncManager, $factory, $logger);
         $this->systemInstallRepository = $dm->getRepository(SystemInstall::class);
         $this->counterService          = $counterService;
     }
@@ -89,14 +94,26 @@ class QuickbooksSyncCustomerConnector extends QuickbooksCustomerConnectorAbstrac
         $systemInstall = $this->getSystemInstall($dto);
         $requestDto    = $this->system->getRequestDto($systemInstall, CurlManager::METHOD_GET);
         $requestDto->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()));
-        $processId = CMHeaders::get(CMHeaders::PROCESS_ID, $dto->getHeaders()) ?? '';
-        $url       = new Uri(
+        $processId      = CMHeaders::get(CMHeaders::PROCESS_ID, $dto->getHeaders()) ?? '';
+        $url            = new Uri(
             $requestDto->getUri(TRUE) . 'query?query=' . urlencode($this->getTotalQuery())
         );
         $counterService = $this->counterService;
-        $promise   = $this->fetchData($sender, RequestDto::from($requestDto, $url))->then(
+        $promise        = $this->fetchData($sender, RequestDto::from($requestDto, $url))->then(
             function (ResponseInterface $response): int {
                 return $this->getTotalPages($response);
+            },
+            function (ResponseException $exception) use ($systemInstall): void {
+                if ($exception->getCode() == 401) {
+                    $msgData = [
+                        'guid'        => $systemInstall->getUser(),
+                        'token'       => $systemInstall->getToken(),
+                        'system_key'  => $this->system->getKey(),
+                        'system_name' => $this->system->getName(),
+                    ];
+                    $this->notificationLogger->info(NotificationTypeEnum::ACCESS_EXPIRATION, $msgData);
+                }
+                throw $exception;
             }
         )->then(
             function (int $total) use ($sender, $callbackItem, $requestDto, $processId, $counterService) {

@@ -14,6 +14,7 @@ use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
 use PHPUnit\Framework\MockObject\MockObject;
+use Psr\Log\LoggerInterface;
 use Tests\ConnectorTestCaseAbstract;
 
 /**
@@ -29,6 +30,9 @@ final class QuickbooksGetnumberCustomerConnectorTest extends ConnectorTestCaseAb
      */
     public function testProcessConnector(): void
     {
+        $notificationLogger = $this->createMock(LoggerInterface::class);
+        $notificationLogger->method('info');
+
         $dto = new ProcessDto();
         $dto->setHeaders([])
             ->setData(json_encode([
@@ -46,7 +50,8 @@ final class QuickbooksGetnumberCustomerConnectorTest extends ConnectorTestCaseAb
         $conn = new QuickbooksGetnumberCustomerConnector(
             $this->mockDm(),
             $this->container->get('systems.quickbooks'),
-            $this->mockCurl()
+            $this->mockCurl(),
+            $notificationLogger
         );
 
         $res = $conn->processAction($dto);

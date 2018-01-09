@@ -13,6 +13,7 @@ services:
             - '@hbpf.transport.async_curl_factory'
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@cc.progress_counter.async_progress_counter_service'
+            - '@monolog.logger.notification'
 
     hbpf.connector.quickbooks-created-customer-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\Connector\QuickbooksCreatedCustomerConnector
@@ -20,6 +21,7 @@ services:
             - '@systems.quickbooks'
             - '@cc.last_sync.manager'
             - '@hbpf.transport.async_curl_factory'
+            - '@monolog.logger.notification'
 
     hbpf.connector.quickbooks-updated-customer-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\Connector\QuickbooksUpdatedCustomerConnector
@@ -27,6 +29,7 @@ services:
             - '@systems.quickbooks'
             - '@cc.last_sync.manager'
             - '@hbpf.transport.async_curl_factory'
+            - '@monolog.logger.notification'
 
     hbpf.connector.quickbooks-create-customer-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\Connector\QuickbooksCreateCustomerConnector
@@ -34,6 +37,7 @@ services:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@systems.quickbooks'
             - '@hbpf.transport.curl_manager'
+            - '@monolog.logger.notification'
 
     hbpf.connector.quickbooks-getnumber-customer-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\Connector\QuickbooksGetnumberCustomerConnector
@@ -41,6 +45,7 @@ services:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@systems.quickbooks'
             - '@hbpf.transport.curl_manager'
+            - '@monolog.logger.notification'
 
     hbpf.connector.quickbooks-deleted-customer-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\Connector\QuickbooksDeletedCustomerConnector
@@ -48,6 +53,7 @@ services:
             - '@systems.quickbooks'
             - '@cc.last_sync.manager'
             - '@hbpf.transport.async_curl_factory'
+            - '@monolog.logger.notification'
 
     hbpf.custom_node.quickbooks-updated-customer-mapper:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\Mapper\QuickbooksUpdatedCustomerMapper
