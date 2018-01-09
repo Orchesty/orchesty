@@ -12,7 +12,7 @@ services:
           DEV_GID: ${DEV_GID}
         volumes:
           - ../../../:/var/www/pipes
-          - ${SSH_AUTH_SOCK}:/ssh-agent
+          - ${SSH_AUTH_SOCK}:/tmp/bound-ssh-agent
           - ${HOME}/.composer:/srv/.composer
         depends_on:
           - mongo

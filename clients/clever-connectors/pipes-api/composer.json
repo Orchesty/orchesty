@@ -32,7 +32,7 @@
     "twig/twig": "^1.0||^2.0"
   },
   "require-dev": {
-    "pipes/php-check-utils": "^1.0",
+    "hanaboso/php-check-utils": "^1.0",
     "sensio/generator-bundle": "^3.1",
     "symfony/phpunit-bridge": "^3.4"
   },
@@ -69,11 +69,8 @@
   },
   "repositories": [
     {
-      "type": "path",
-      "url": "../../../php-check-utils",
-      "options": {
-        "symlink": false
-      }
+      "type": "git",
+      "url": "git@gitlab.hanaboso.net:hanaboso/php-check-utils.git"
     },
     {
       "type": "path",

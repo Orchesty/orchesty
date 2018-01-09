@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "7ec6cbf50a5f349cf2c0361a983c8fa2",
+    "content-hash": "d7573c8a96b7d69af7f72a74bb7b6256",
     "packages": [
         {
             "name": "alcaeus/mongo-php-adapter",
@@ -4245,16 +4245,16 @@
         },
         {
             "name": "react/socket",
-            "version": "v0.8.7",
+            "version": "v0.8.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/reactphp/socket.git",
-                "reference": "49bca29df739f4e288ba2abfed9cac93de1bfff6"
+                "reference": "e9e206b6277023bf4afd910a764f0cd3d470e7ed"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/reactphp/socket/zipball/49bca29df739f4e288ba2abfed9cac93de1bfff6",
-                "reference": "49bca29df739f4e288ba2abfed9cac93de1bfff6",
+                "url": "https://api.github.com/repos/reactphp/socket/zipball/e9e206b6277023bf4afd910a764f0cd3d470e7ed",
+                "reference": "e9e206b6277023bf4afd910a764f0cd3d470e7ed",
                 "shasum": ""
             },
             "require": {
@@ -4288,7 +4288,7 @@
                 "reactphp",
                 "stream"
             ],
-            "time": "2017-12-24T11:28:59+00:00"
+            "time": "2018-01-06T12:13:20+00:00"
         },
         {
             "name": "react/stream",
@@ -5364,6 +5364,34 @@
         }
     ],
     "packages-dev": [
+        {
+            "name": "hanaboso/php-check-utils",
+            "version": "1.0.6",
+            "source": {
+                "type": "git",
+                "url": "git@gitlab.hanaboso.net:hanaboso/php-check-utils.git",
+                "reference": "6bc28d2ae89a6a0a01828c186262cbaff0deb913"
+            },
+            "require": {
+                "php": ">=7.1",
+                "phpstan/phpstan": "^0.9",
+                "phpunit/phpunit": "^6.5",
+                "slevomat/coding-standard": "^4.0",
+                "squizlabs/php_codesniffer": "^3.2"
+            },
+            "type": "library",
+            "license": [
+                "proprietary"
+            ],
+            "authors": [
+                {
+                    "name": "Venca Krecl",
+                    "email": "venca.email@gmail.com"
+                }
+            ],
+            "description": "PHP check utils",
+            "time": "2018-01-08T09:35:53+00:00"
+        },
         {
             "name": "jean85/pretty-package-versions",
             "version": "1.0.3",
@@ -6686,16 +6714,16 @@
         },
         {
             "name": "phpunit/phpunit-mock-objects",
-            "version": "5.0.5",
+            "version": "5.0.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit-mock-objects.git",
-                "reference": "283b9f4f670e3a6fd6c4ff95c51a952eb5c75933"
+                "reference": "33fd41a76e746b8fa96d00b49a23dadfa8334cdf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit-mock-objects/zipball/283b9f4f670e3a6fd6c4ff95c51a952eb5c75933",
-                "reference": "283b9f4f670e3a6fd6c4ff95c51a952eb5c75933",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit-mock-objects/zipball/33fd41a76e746b8fa96d00b49a23dadfa8334cdf",
+                "reference": "33fd41a76e746b8fa96d00b49a23dadfa8334cdf",
                 "shasum": ""
             },
             "require": {
@@ -6741,38 +6769,7 @@
                 "mock",
                 "xunit"
             ],
-            "time": "2017-12-10T08:01:53+00:00"
-        },
-        {
-            "name": "pipes/php-check-utils",
-            "version": "1.0.6",
-            "dist": {
-                "type": "path",
-                "url": "../libs/php-check-utils",
-                "reference": "766ed5a6597e266f6295455c3df01e86fbd7771d",
-                "shasum": null
-            },
-            "require": {
-                "php": ">=7.1",
-                "phpstan/phpstan": "^0.9",
-                "phpunit/phpunit": "^6.5",
-                "slevomat/coding-standard": "^4.0",
-                "squizlabs/php_codesniffer": "3.1.1"
-            },
-            "type": "library",
-            "license": [
-                "proprietary"
-            ],
-            "authors": [
-                {
-                    "name": "Venca Krecl",
-                    "email": "venca.email@gmail.com"
-                }
-            ],
-            "description": "PHP check utils",
-            "transport-options": {
-                "symlink": false
-            }
+            "time": "2018-01-06T05:45:45+00:00"
         },
         {
             "name": "sebastian/code-unit-reverse-lookup",
@@ -7404,16 +7401,16 @@
         },
         {
             "name": "slevomat/coding-standard",
-            "version": "4.2.1",
+            "version": "4.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/slevomat/coding-standard.git",
-                "reference": "998b5e96ce36a55d7821d17f39d296a17c05b481"
+                "reference": "52f3c79c5fc0d575a8a763c54a16c96e7a7e41b0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/slevomat/coding-standard/zipball/998b5e96ce36a55d7821d17f39d296a17c05b481",
-                "reference": "998b5e96ce36a55d7821d17f39d296a17c05b481",
+                "url": "https://api.github.com/repos/slevomat/coding-standard/zipball/52f3c79c5fc0d575a8a763c54a16c96e7a7e41b0",
+                "reference": "52f3c79c5fc0d575a8a763c54a16c96e7a7e41b0",
                 "shasum": ""
             },
             "require": {
@@ -7437,20 +7434,20 @@
                 "MIT"
             ],
             "description": "Slevomat Coding Standard for PHP_CodeSniffer complements Consistence Coding Standard by providing sniffs with additional checks.",
-            "time": "2018-01-04T14:00:21+00:00"
+            "time": "2018-01-08T08:07:32+00:00"
         },
         {
             "name": "squizlabs/php_codesniffer",
-            "version": "3.1.1",
+            "version": "3.2.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/squizlabs/PHP_CodeSniffer.git",
-                "reference": "d667e245d5dcd4d7bf80f26f2c947d476b66213e"
+                "reference": "d7c00c3000ac0ce79c96fcbfef86b49a71158cd1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/squizlabs/PHP_CodeSniffer/zipball/d667e245d5dcd4d7bf80f26f2c947d476b66213e",
-                "reference": "d667e245d5dcd4d7bf80f26f2c947d476b66213e",
+                "url": "https://api.github.com/repos/squizlabs/PHP_CodeSniffer/zipball/d7c00c3000ac0ce79c96fcbfef86b49a71158cd1",
+                "reference": "d7c00c3000ac0ce79c96fcbfef86b49a71158cd1",
                 "shasum": ""
             },
             "require": {
@@ -7488,7 +7485,7 @@
                 "phpcs",
                 "standards"
             ],
-            "time": "2017-10-16T22:40:25+00:00"
+            "time": "2017-12-19T21:44:46+00:00"
         },
         {
             "name": "theseer/tokenizer",
