@@ -18,6 +18,7 @@ use CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\QuickbooksSystem;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use CleverConnectors\AppBundle\Utils\CronUtils;
 use CleverConnectors\AppBundle\Utils\Dto\Times;
+use CleverConnectors\AppBundle\Utils\LoggerUtils;
 use Clue\React\Buzz\Message\ResponseException;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
@@ -130,14 +131,17 @@ abstract class QuickbooksCustomerConnectorAbstract implements BatchInterface, Co
                 return $this->getTotalPages($response);
             },
             function (ResponseException $exception) use ($systemInstall): void {
+                if ($exception->getCode() == 401) {
+                    $this->notificationLogger->info(
+                        NotificationTypeEnum::ACCESS_EXPIRATION,
+                        LoggerUtils::getMessage($this->system, $systemInstall)
+                    );
+                }
                 if ($exception->getCode() == 500) {
-                    $msgData = [
-                        'guid'        => $systemInstall->getUser(),
-                        'token'       => $systemInstall->getToken(),
-                        'system_key'  => $this->system->getKey(),
-                        'system_name' => $this->system->getName(),
-                    ];
-                    $this->notificationLogger->info(NotificationTypeEnum::SERVICE_UNAVAILABLE, $msgData);
+                    $this->notificationLogger->info(
+                        NotificationTypeEnum::SERVICE_UNAVAILABLE,
+                        LoggerUtils::getMessage($this->system, $systemInstall)
+                    );
                 }
                 throw $exception;
             }

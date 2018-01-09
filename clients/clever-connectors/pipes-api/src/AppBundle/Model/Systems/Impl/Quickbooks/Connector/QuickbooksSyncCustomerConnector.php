@@ -17,6 +17,7 @@ use CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\QuickbooksSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use CleverConnectors\AppBundle\Utils\Dto\Times;
+use CleverConnectors\AppBundle\Utils\LoggerUtils;
 use Clue\React\Buzz\Message\ResponseException;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -105,13 +106,16 @@ class QuickbooksSyncCustomerConnector extends QuickbooksCustomerConnectorAbstrac
             },
             function (ResponseException $exception) use ($systemInstall): void {
                 if ($exception->getCode() == 401) {
-                    $msgData = [
-                        'guid'        => $systemInstall->getUser(),
-                        'token'       => $systemInstall->getToken(),
-                        'system_key'  => $this->system->getKey(),
-                        'system_name' => $this->system->getName(),
-                    ];
-                    $this->notificationLogger->info(NotificationTypeEnum::ACCESS_EXPIRATION, $msgData);
+                    $this->notificationLogger->info(
+                        NotificationTypeEnum::ACCESS_EXPIRATION,
+                        LoggerUtils::getMessage($this->system, $systemInstall)
+                    );
+                }
+                if ($exception->getCode() == 500) {
+                    $this->notificationLogger->info(
+                        NotificationTypeEnum::SERVICE_UNAVAILABLE,
+                        LoggerUtils::getMessage($this->system, $systemInstall)
+                    );
                 }
                 throw $exception;
             }

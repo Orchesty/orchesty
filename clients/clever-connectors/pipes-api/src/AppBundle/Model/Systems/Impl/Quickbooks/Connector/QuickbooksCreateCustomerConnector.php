@@ -9,6 +9,7 @@ use CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\Mapper\QuickbooksCr
 use CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\QuickbooksSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
+use CleverConnectors\AppBundle\Utils\LoggerUtils;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Exception;
@@ -116,21 +117,24 @@ class QuickbooksCreateCustomerConnector implements ConnectorInterface
                 $data[QuickbooksCreateCustomerMapper::SUCCESS] = TRUE;
                 $data['body']                                  = $res->getBody();
             } catch (Exception $e) {
+                if ($e->getCode() == 401) {
+                    $this->notificationLogger->info(
+                        NotificationTypeEnum::ACCESS_EXPIRATION,
+                        LoggerUtils::getMessage($this->system, $systemInstall)
+                    );
+                }
+                if ($e->getCode() == 500) {
+                    $this->notificationLogger->info(
+                        NotificationTypeEnum::SERVICE_UNAVAILABLE,
+                        LoggerUtils::getMessage($this->system, $systemInstall)
+                    );
+                }
                 if ($data[QuickbooksCreateCustomerMapper::ATTEMPT]
                 ) {
                     throw new CleverConnectorsException(
                         'Failed to create new customer, Quickbooks createCustomer.',
                         CleverConnectorsException::REQUEST_FAILED
                     );
-                }
-                if ($e->getCode() == 500) {
-                    $msgData = [
-                        'guid'        => $systemInstall->getUser(),
-                        'token'       => $systemInstall->getToken(),
-                        'system_key'  => $this->system->getKey(),
-                        'system_name' => $this->system->getName(),
-                    ];
-                    $this->notificationLogger->info(NotificationTypeEnum::SERVICE_UNAVAILABLE, $msgData);
                 }
             }
 
