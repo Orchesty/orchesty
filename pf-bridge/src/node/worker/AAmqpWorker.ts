@@ -9,10 +9,9 @@ import Headers from "../../message/Headers";
 import JobMessage from "../../message/JobMessage";
 import {ResultCode} from "../../message/ResultCode";
 import {INodeLabel} from "../../topology/Configurator";
-import IPartialForwarder from "../drain/IPartialForwarder";
 import IWorker from "./IWorker";
 
-export interface IAmqpRpcWorkerSettings {
+export interface IAmqpWorkerSettings {
     node_label: INodeLabel;
     publish_queue: {
         name: string;
@@ -20,7 +19,7 @@ export interface IAmqpRpcWorkerSettings {
     };
 }
 
-interface IWaiting {
+export interface IWaiting {
     resolveFn: any;
     message: JobMessage;
     sequence: number;
@@ -29,7 +28,7 @@ interface IWaiting {
 /**
  * TODO add waiting timeout
  */
-class AmqpRpcWorker implements IWorker {
+abstract class AAmqpWorker implements IWorker {
 
     public static readonly TEST_TYPE = "test";
     public static readonly TEST_ID = "pipes.worker.amqprpc.test";
@@ -38,22 +37,20 @@ class AmqpRpcWorker implements IWorker {
     public static readonly BATCH_END_TYPE = "batch_end";
     public static readonly BATCH_ITEM_TYPE = "batch_item";
 
+    protected waiting: Container;
+
     private publisher: Publisher;
     private resultsQueue: { name: string, options: any, prefetch: number };
     private resultsConsumer: SimpleConsumer;
 
-    private waiting: Container;
-
     /**
      *
-     * @param {AMQPConnection} connection
-     * @param {IAmqpRpcWorkerSettings} settings
-     * @param {IPartialForwarder} partialForwarder
+     * @param {Connection} connection
+     * @param {IAmqpWorkerSettings} settings
      */
     constructor(
-        private connection: Connection,
-        private settings: IAmqpRpcWorkerSettings,
-        private partialForwarder: IPartialForwarder,
+        protected connection: Connection,
+        protected settings: IAmqpWorkerSettings,
     ) {
         this.waiting = new Container();
         this.resultsQueue = {
@@ -62,27 +59,14 @@ class AmqpRpcWorker implements IWorker {
             prefetch: 1,
         };
 
-        const publisherPrepare = (ch: Channel): Promise<void> => {
+        const publisherPrepare = async (ch: Channel): Promise<void> => {
             const q = settings.publish_queue;
-
-            return new Promise((resolve) => {
-                ch.assertQueue(q.name, q.options || { durable: false, exclusive: false, autoDelete: false })
-                    .then(() => {
-                        resolve();
-                    });
-            });
+            await ch.assertQueue(q.name, q.options || { durable: false, exclusive: false, autoDelete: false });
         };
 
-        const resultsConsumerPrepare = (ch: Channel): Promise<void> => {
-            return new Promise((resolve) => {
-                ch.assertQueue(this.resultsQueue.name, this.resultsQueue.options)
-                    .then(() => {
-                        return ch.prefetch(this.resultsQueue.prefetch);
-                    })
-                    .then(() => {
-                        resolve();
-                    });
-            });
+        const resultsConsumerPrepare = async (ch: Channel): Promise<void> => {
+            await ch.assertQueue(this.resultsQueue.name, this.resultsQueue.options);
+            await ch.prefetch(this.resultsQueue.prefetch);
         };
 
         this.publisher = new Publisher(connection, publisherPrepare);
@@ -104,6 +88,15 @@ class AmqpRpcWorker implements IWorker {
     }
 
     /**
+     * Handle single incoming response message as you wish
+     * You can store it and wait for batch_end, forward it without waiting for batch end etc. as you wish
+     *
+     * @param {string} corrId
+     * @param {AmqpMessage} resultMsg
+     */
+    public abstract onBatchItem(corrId: string, resultMsg: AmqpMessage): Promise<void>;
+
+    /**
      * Accepts message, returns unsatisfied promise, which should be satisfied later
      *
      * @param {JobMessage} msg
@@ -121,7 +114,7 @@ class AmqpRpcWorker implements IWorker {
             this.settings.publish_queue.name,
             new Buffer(msg.getContent()),
             {
-                type: AmqpRpcWorker.BATCH_REQUEST_TYPE,
+                type: AAmqpWorker.BATCH_REQUEST_TYPE,
                 replyTo: this.resultsQueue.name,
                 correlationId: uuid,
                 headers: headersToSend.getRaw(),
@@ -170,7 +163,9 @@ class AmqpRpcWorker implements IWorker {
                 }
 
                 const msg: JobMessage = msgs[0];
-                if (msg.getCorrelationId() === AmqpRpcWorker.TEST_ID && msg.getResult().code === ResultCode.SUCCESS) {
+                if (msg.getCorrelationId() === AAmqpWorker.TEST_ID &&
+                    msg.getResult().code === ResultCode.SUCCESS
+                ) {
                     resolve(true);
                 } else {
                     resolve(false);
@@ -178,8 +173,8 @@ class AmqpRpcWorker implements IWorker {
             };
 
             const testHeaders = new Headers();
-            testHeaders.setPFHeader(Headers.CORRELATION_ID, AmqpRpcWorker.TEST_ID);
-            testHeaders.setPFHeader(Headers.PROCESS_ID, AmqpRpcWorker.TEST_ID);
+            testHeaders.setPFHeader(Headers.CORRELATION_ID, AAmqpWorker.TEST_ID);
+            testHeaders.setPFHeader(Headers.PROCESS_ID, AAmqpWorker.TEST_ID);
             testHeaders.setPFHeader(Headers.PARENT_ID, "");
             testHeaders.setPFHeader(Headers.SEQUENCE_ID, "1");
 
@@ -191,7 +186,7 @@ class AmqpRpcWorker implements IWorker {
                 this.settings.publish_queue.name,
                 new Buffer("Is worker ready test message."),
                 {
-                    type: AmqpRpcWorker.TEST_TYPE,
+                    type: AAmqpWorker.TEST_TYPE,
                     correlationId: testCorrelationId,
                     replyTo: this.resultsQueue.name,
                     headers: jobMsg.getHeaders().getRaw(),
@@ -218,14 +213,14 @@ class AmqpRpcWorker implements IWorker {
         }
 
         switch (msg.properties.type) {
-            case AmqpRpcWorker.BATCH_ITEM_TYPE:
-                this.updateWaiting(corrId, msg);
+            case AAmqpWorker.BATCH_ITEM_TYPE:
+                this.onBatchItem(corrId, msg);
                 break;
-            case AmqpRpcWorker.BATCH_END_TYPE:
-                this.resolveWaiting(corrId, msg);
+            case AAmqpWorker.BATCH_END_TYPE:
+                this.onBatchEnd(corrId, msg);
                 break;
-            case AmqpRpcWorker.TEST_TYPE:
-                this.resolveWaiting(corrId, msg);
+            case AAmqpWorker.TEST_TYPE:
+                this.onBatchEnd(corrId, msg);
                 break;
             default:
                 logger.warn(
@@ -236,44 +231,11 @@ class AmqpRpcWorker implements IWorker {
     }
 
     /**
-     * Updates the JobMessage object stored in memory
-     *
-     * @param {string} corrId
-     * @param {AmqpMessage} resultMsg
-     */
-    private updateWaiting(corrId: string, resultMsg: AmqpMessage): void {
-        const stored: IWaiting = this.waiting.get(corrId);
-        stored.sequence++;
-        stored.message.setMultiplier(stored.message.getMultiplier() + 1);
-
-        try {
-            const splitMsg = new JobMessage(this.settings.node_label, resultMsg.properties.headers, resultMsg.content);
-
-            splitMsg.getMeasurement().setPublished(stored.message.getMeasurement().getPublished());
-            splitMsg.getMeasurement().setReceived(stored.message.getMeasurement().getReceived());
-            splitMsg.getMeasurement().setWorkerStart(stored.message.getMeasurement().getWorkerStart());
-
-            splitMsg.setResult({
-                code: parseInt(splitMsg.getHeaders().getPFHeader(Headers.RESULT_CODE), 10),
-                message: splitMsg.getHeaders().getPFHeader(Headers.RESULT_MESSAGE),
-            });
-
-            this.partialForwarder.forwardPart(splitMsg)
-                .catch(() => {
-                    logger.warn(`Worker[type='amqprpc'] partial forward failed.`, logger.ctxFromMsg(splitMsg));
-                });
-
-        } catch (err) {
-            logger.error(`Worker[type='amqprpc'] partial message is invalid. Error: ${err}`);
-        }
-    }
-
-    /**
      * Resolves the stored promise with populated message
      * @param {string} corrId
      * @param {AmqpMessage} msg
      */
-    private resolveWaiting(corrId: string, msg: AmqpMessage): void {
+    private onBatchEnd(corrId: string, msg: AmqpMessage): void {
         const stored: IWaiting = this.waiting.get(corrId);
         if (!stored) {
             logger.warn(`Worker[type='amqprpc'] cannot resolve non-existing waiting promise[corrId=${corrId}]`);
@@ -317,4 +279,4 @@ class AmqpRpcWorker implements IWorker {
 
 }
 
-export default AmqpRpcWorker;
+export default AAmqpWorker;
