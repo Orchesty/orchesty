@@ -49,9 +49,9 @@ class AmqpFaucet implements IFaucet {
 
         logger.info(`AmqpFaucet configured to consume "${s.queue.name}"`, { node_id: s.node_label.id});
 
-        const prepareFn = (ch: Channel) => {
+        const prepareFn = async (ch: Channel) => {
             s.exchange.options["x-dead-letter-exchange"] = s.dead_letter_exchange.name;
-            return Promise.all([
+            const results = await Promise.all([
                 ch.assertQueue(s.queue.name, s.queue.options),
                 ch.assertExchange(
                     s.exchange.name,
@@ -63,12 +63,12 @@ class AmqpFaucet implements IFaucet {
                     s.dead_letter_exchange.type,
                     s.dead_letter_exchange.options),
                 ch.prefetch(s.prefetch),
-            ]).then((results: any) => {
-                const ok = results[0];
-                const ex = results[1];
+            ]);
 
-                return ch.bindQueue(ok.queue, ex.exchange, s.routing_key);
-            });
+            const ok = results[0];
+            const ex = results[1];
+
+            return ch.bindQueue(ok.queue, ex.exchange, s.routing_key);
         };
 
         this.consumer = new Consumer(s.node_label, this.connection, prepareFn, processData);

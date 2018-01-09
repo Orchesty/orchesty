@@ -152,4 +152,14 @@ export class Measurement {
         return this.workerStart;
     }
 
+    /**
+     *
+     * @param {Measurement} foreign
+     */
+    public copyValues(foreign: Measurement): void {
+        this.setPublished(foreign.getPublished());
+        this.setReceived(foreign.getReceived());
+        this.setWorkerStart(foreign.getWorkerStart());
+    }
+
 }

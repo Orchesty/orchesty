@@ -10,15 +10,52 @@ import Headers from "../../../src/message/Headers";
 import JobMessage from "../../../src/message/JobMessage";
 import {ResultCode} from "../../../src/message/ResultCode";
 import IPartialForwarder from "../../../src/node/drain/IPartialForwarder";
-import AmqpRpcWorker, {IAmqpRpcWorkerSettings} from "../../../src/node/worker/AmqpRpcWorker";
+import {IAmqpWorkerSettings, IWaiting} from "../../../src/node/worker/AAmqpWorker";
+import AmqpNonBlockingWorker from "../../../src/node/worker/AmqpNonBlockingWorker";
 import {INodeLabel} from "../../../src/topology/Configurator";
 
 const conn = new Connection(amqpConnectionOptions);
 
-describe("AmqpRpcWorker", () => {
+describe("AmqpNonBlockingWorker", () => {
 
-    it("should check if worker is ready by sending rpc message", () => {
-        const settings: IAmqpRpcWorkerSettings = {
+    it("onBatchItem should ignore batch item if not found in waiting list or has not success result", async () => {
+        const settings: IAmqpWorkerSettings = {
+            node_label: {
+                id: "amqp_rpc_unit_ignore",
+                node_id: "507f191e810c19729de860ea",
+                node_name: "ignore",
+                topology_id: "topoId",
+            },
+            publish_queue: {
+                name: "amqp_rpc_pub_test",
+                options: {},
+            },
+        };
+        const forwarder: IPartialForwarder = {
+            forwardPart: async () => { assert.fail("This should be never called."); },
+        };
+        const rpcWorker = new AmqpNonBlockingWorker(conn, settings, forwarder);
+
+        const headers = new Headers();
+        headers.setPFHeader(Headers.RESULT_CODE, `${ResultCode.UNKNOWN_ERROR}`);
+        headers.setPFHeader(Headers.CORRELATION_ID, "aaa");
+        headers.setPFHeader(Headers.PROCESS_ID, "aaa");
+        headers.setPFHeader(Headers.PARENT_ID, "");
+        headers.setPFHeader(Headers.SEQUENCE_ID, "0");
+        const batchItemMsg = { content: new Buffer(""), fields: {}, properties: {headers: headers.getRaw()} };
+        await rpcWorker.onBatchItem("corr123", batchItemMsg);
+
+        // hack using any type in order to allow add to waiting list even though it is private
+        const hackedRpcWorker: any = rpcWorker;
+        const jobMessage = new JobMessage(settings.node_label, headers.getRaw(), new Buffer(""));
+        const wait: IWaiting = { resolveFn: (): void  => null, message: jobMessage, sequence: 0};
+        hackedRpcWorker.waiting.set("corr123", wait);
+
+        await rpcWorker.onBatchItem("corr123", batchItemMsg);
+    });
+
+    it("worker should check if worker is ready by sending rpc message", () => {
+        const settings: IAmqpWorkerSettings = {
             node_label: {
                 id: "amqp_rpc_node_test",
                 node_id: "507f191e810c19729de860ea",
@@ -33,7 +70,7 @@ describe("AmqpRpcWorker", () => {
         const partialForwarder: IPartialForwarder = {
             forwardPart: () => Promise.resolve(),
         };
-        const rpcWorker = new AmqpRpcWorker(conn, settings, partialForwarder);
+        const rpcWorker = new AmqpNonBlockingWorker(conn, settings, partialForwarder);
 
         const publisher = new Publisher(conn, (ch: Channel) =>  Promise.resolve() );
         const externalWorkerMock = new SimpleConsumer(
@@ -78,9 +115,9 @@ describe("AmqpRpcWorker", () => {
             });
     });
 
-    it("should send 1 message to external worker and receive multiple with proper headers", () => {
+    it("worker should send 1 message to external worker and receive multiple with proper headers", () => {
         const forwarded: JobMessage[] = [];
-        const settings: IAmqpRpcWorkerSettings = {
+        const settings: IAmqpWorkerSettings = {
             node_label: {
                 id: "amqp_rpc_node_multiple",
                 node_id: "507f191e810c19729de860ea",
@@ -98,7 +135,7 @@ describe("AmqpRpcWorker", () => {
                 return Promise.resolve();
             },
         };
-        const rpcWorker = new AmqpRpcWorker(conn, settings, partialForwarder);
+        const rpcWorker = new AmqpNonBlockingWorker(conn, settings, partialForwarder);
         const publisher = new Publisher(conn, (ch: Channel) =>  Promise.resolve() );
         const externalWorkerMock = new SimpleConsumer(
             conn,
@@ -147,7 +184,7 @@ describe("AmqpRpcWorker", () => {
                         msg.properties.replyTo,
                         content,
                         {
-                            type: AmqpRpcWorker.BATCH_ITEM_TYPE,
+                            type: AmqpNonBlockingWorker.BATCH_ITEM_TYPE,
                             correlationId: msg.properties.correlationId,
                             headers: replyHeaders,
                         },
@@ -168,7 +205,7 @@ describe("AmqpRpcWorker", () => {
                             msg.properties.replyTo,
                             new Buffer(""),
                             {
-                                type: AmqpRpcWorker.BATCH_END_TYPE,
+                                type: AmqpNonBlockingWorker.BATCH_END_TYPE,
                                 correlationId: msg.properties.correlationId,
                                 headers: finalHeaders,
                             },
