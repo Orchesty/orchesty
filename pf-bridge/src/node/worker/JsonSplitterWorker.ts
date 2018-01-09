@@ -7,22 +7,22 @@ import IPartialForwarder from "../drain/IPartialForwarder";
 import Resequencer from "../Resequencer";
 import IWorker from "./IWorker";
 
-export interface ISplitterWorkerSettings {
+export interface IJsonSplitterWorkerSettings {
     node_label: INodeLabel;
 }
 
 /**
  *
  */
-class SplitterWorker implements IWorker {
+class JsonSplitterWorker implements IWorker {
 
     /**
      *
-     * @param {ISplitterWorkerSettings} settings
+     * @param {IJsonSplitterWorkerSettings} settings
      * @param {IPartialForwarder} partialForwarder
      */
     constructor(
-        private settings: ISplitterWorkerSettings,
+        private settings: IJsonSplitterWorkerSettings,
         private partialForwarder: IPartialForwarder,
     ) {}
 
@@ -130,4 +130,4 @@ class SplitterWorker implements IWorker {
 
 }
 
-export default SplitterWorker;
+export default JsonSplitterWorker;

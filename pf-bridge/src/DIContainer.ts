@@ -6,21 +6,24 @@ import {
     amqpConnectionOptions, metricsOptions, multiProbeOptions, redisStorageOptions,
     topologyTerminatorOptions,
 } from "./config";
+import RedisStorage from "./counter/storage/RedisStorage";
+import FakeLimiter from "./limiter/FakeLimiter";
 import CounterPublisher from "./node/drain/amqp/CounterPublisher";
 import FollowersPublisher from "./node/drain/amqp/FollowersPublisher";
 import {default as AmqpDrain, IAmqpDrainSettings} from "./node/drain/AmqpDrain";
 import IPartialForwarder from "./node/drain/IPartialForwarder";
 import {default as AmqpFaucet, IAmqpFaucetSettings} from "./node/faucet/AmqpFaucet";
-import AmqpRpcWorker, {IAmqpRpcWorkerSettings} from "./node/worker/AmqpRpcWorker";
+import {IAmqpWorkerSettings} from "./node/worker/AAmqpWorker";
+import AmqpNonBlockingWorker from "./node/worker/AmqpNonBlockingWorker";
 import AppenderWorker, {IAppenderWorkerSettings} from "./node/worker/AppenderWorker";
 import HttpWorker, {IHttpWorkerSettings} from "./node/worker/HttpWorker";
 import HttpXmlParserWorker, {IHttpXmlParserWorkerSettings} from "./node/worker/HttpXmlParserWorker";
+import JsonSplitterWorker, {IJsonSplitterWorkerSettings} from "./node/worker/JsonSplitterWorker";
+import LimiterWorker from "./node/worker/LimiterWorker";
 import NullWorker from "./node/worker/NullWorker";
 import {default as ResequencerWorker, IResequencerWorkerSettings} from "./node/worker/ResequencerWorker";
-import SplitterWorker, {ISplitterWorkerSettings} from "./node/worker/SplitterWorker";
 import TestCaptureWorker from "./node/worker/TestCaptureWorker";
 import UppercaseWorker from "./node/worker/UppercaseWorker";
-import RedisStorage from "./counter/storage/RedisStorage";
 import MultiProbeConnector from "./probe/MultiProbeConnector";
 import Terminator from "./terminator/Terminator";
 
@@ -76,7 +79,7 @@ class DIContainer extends Container {
             const followersPub = new FollowersPublisher(this.get("amqp.connection"), settings);
             const assertionPub = new AssertionPublisher(
                 this.get("amqp.connection"),
-                () =>  Promise.resolve(),
+                () => Promise.resolve(),
                 {},
             );
             const metrics = this.get("metrics")(settings.node_label.topology_id, settings.node_label.id);
@@ -98,6 +101,12 @@ class DIContainer extends Container {
 
             return new HttpWorker(settings, metrics);
         });
+        this.set(`${wPrefix}.http_limited`, (settings: IHttpWorkerSettings) => {
+            return new LimiterWorker(
+                new FakeLimiter(),
+                this.get(`${wPrefix}.http`)(settings),
+            );
+        });
         this.set(`${wPrefix}.http_xml_parser`, (settings: IHttpXmlParserWorkerSettings) => {
             const metrics = this.get("metrics")(settings.node_label.topology_id, settings.node_label.id);
 
@@ -114,11 +123,17 @@ class DIContainer extends Container {
         });
 
         // Splitter workers
-        this.set(`${sPrefix}.amqprpc`, (settings: IAmqpRpcWorkerSettings, forwarder: IPartialForwarder) => {
-            return new AmqpRpcWorker(this.get("amqp.connection"), settings, forwarder);
+        this.set(`${sPrefix}.amqprpc`, (settings: IAmqpWorkerSettings, forwarder: IPartialForwarder) => {
+            return new AmqpNonBlockingWorker(this.get("amqp.connection"), settings, forwarder);
         });
-        this.set(`${sPrefix}.json`, (settings: ISplitterWorkerSettings, forwarder: IPartialForwarder) => {
-            return new SplitterWorker(settings, forwarder);
+        this.set(`${sPrefix}.json`, (settings: IJsonSplitterWorkerSettings, forwarder: IPartialForwarder) => {
+            return new JsonSplitterWorker(settings, forwarder);
+        });
+        this.set(`${sPrefix}.amqprpc_limited`, (settings: IAmqpWorkerSettings, forwarder: IPartialForwarder) => {
+            return new LimiterWorker(
+                new FakeLimiter(),
+                this.get(`${sPrefix}.amqprpc`)(settings, forwarder),
+            );
         });
 
         // Test workers
