@@ -106,7 +106,7 @@ class FacebookSyncLeadformConnectorTest extends ConnectorTestCaseAbstract
 
         $this->systemInstall = $this->createMock(SystemInstall::class);
         $this->systemInstall->method('getSettings')->willReturn([
-            'form_id' => '123456',
+            'form_id'                    => '123456',
             OAuth2Provider::ACCESS_TOKEN => '987654321',
         ]);
 

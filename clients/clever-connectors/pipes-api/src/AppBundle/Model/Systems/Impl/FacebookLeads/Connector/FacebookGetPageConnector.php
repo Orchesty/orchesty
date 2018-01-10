@@ -10,28 +10,36 @@
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\FacebookLeads\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Enum\NotificationTypeEnum;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\FacebookLeads\FacebookLeadsSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
+use CleverConnectors\AppBundle\Utils\LoggerUtils;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlException;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
+use Psr\Log\NullLogger;
 
 /**
  * Class FacebookGetPageConnector
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\FacebookLeads\Connector
  */
-class FacebookGetPageConnector implements ConnectorInterface
+class FacebookGetPageConnector implements ConnectorInterface, LoggerAwareInterface
 {
+
+    use LoggerAwareTrait;
 
     /**
      * @var CurlManager
@@ -53,11 +61,16 @@ class FacebookGetPageConnector implements ConnectorInterface
      * @param DocumentManager     $dm
      * @param CurlManager         $curlManager
      */
-    public function __construct(FacebookLeadsSystem $system, DocumentManager $dm, CurlManager $curlManager)
+    public function __construct(
+        FacebookLeadsSystem $system,
+        DocumentManager $dm,
+        CurlManager $curlManager
+    )
     {
         $this->curlManager             = $curlManager;
         $this->system                  = $system;
         $this->systemInstallRepository = $dm->getRepository(SystemInstall::class);
+        $this->logger                  = new NullLogger();
     }
 
     /**
@@ -123,6 +136,7 @@ class FacebookGetPageConnector implements ConnectorInterface
      * @param ProcessDto|null $dto
      *
      * @return ResponseDto
+     * @throws CurlException
      */
     private function makeRequest(SystemInstall $systemInstall, ?ProcessDto $dto = NULL): ResponseDto
     {
@@ -132,7 +146,29 @@ class FacebookGetPageConnector implements ConnectorInterface
             $requestDto->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()));
         }
 
-        return $this->curlManager->send(RequestDto::from($requestDto, $url));
+        try {
+            return $this->curlManager->send(RequestDto::from($requestDto, $url));
+        } catch (CurlException $e) {
+            $response = $e->getResponse();
+            if (isset($response) && $response->getStatusCode() == 400) {
+                $body = $response->getBody()->getContents();
+                $data = json_decode($body, TRUE);
+                if (isset($data['error']['code']) && $data['error']['code'] == 190) {
+                    $this->logger->info(
+                        NotificationTypeEnum::ACCESS_EXPIRATION,
+                        LoggerUtils::getMessage($this->system, $systemInstall)
+                    );
+                }
+            }
+            if (isset($response) && $response->getStatusCode() == 500) {
+                $this->logger->info(
+                    NotificationTypeEnum::SERVICE_UNAVAILABLE,
+                    LoggerUtils::getMessage($this->system, $systemInstall)
+                );
+            }
+
+            throw $e;
+        }
     }
 
 }

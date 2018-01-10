@@ -77,7 +77,8 @@ class FacebookCreatedLeadformConnectorTest extends ConnectorTestCaseAbstract
 
         $this->sender->expects($this->at(0))->method('send')->willReturn($promiseData);
 
-        $connector = new FacebookCreatedLeadformConnector($this->system, $this->lastSyncManager, $this->factory, $this->mockDm);
+        $connector = new FacebookCreatedLeadformConnector($this->system, $this->lastSyncManager, $this->factory,
+            $this->mockDm);
 
         $processDto = new ProcessDto();
         $processDto
@@ -105,7 +106,7 @@ class FacebookCreatedLeadformConnectorTest extends ConnectorTestCaseAbstract
 
         $this->systemInstall = $this->createMock(SystemInstall::class);
         $this->systemInstall->method('getSettings')->willReturn([
-            'form_id' => '123456',
+            'form_id'      => '123456',
             'access_token' => '987654321',
         ]);
 
