@@ -12,6 +12,8 @@ services:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.transport.async_curl_factory'
             - '@cc.progress_counter.async_progress_counter_service'
+        calls:
+            - ['setLogger', ['@monolog.logger.notification']]
 
     hbpf.connector.wisepops-created-email-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Wisepops\Connector\WisepopsCreatedEmailConnector
@@ -22,6 +24,8 @@ services:
         arguments:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.transport.curl_manager'
+        calls:
+            - ['setLogger', ['@monolog.logger.notification']]
 
     hbpf.custom_node.wisepops-created-email-mapper:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Wisepops\Mapper\WisepopsCreatedEmailMapper
