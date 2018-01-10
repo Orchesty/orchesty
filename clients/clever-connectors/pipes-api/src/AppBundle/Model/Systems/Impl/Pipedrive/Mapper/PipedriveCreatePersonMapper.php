@@ -5,19 +5,31 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\Pipedrive\Mapper;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\CleverCustomKeysEnum;
 use CleverConnectors\AppBundle\Enum\CleverFieldsEnum;
+use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
+use CleverConnectors\AppBundle\Model\Systems\Impl\Pipedrive\PipedriveSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
+use CleverConnectors\AppBundle\Traits\LoggerTrait;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\NullLogger;
 
 /**
  * Class PipedriveCreatePersonMapper
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Pipedrive\Mapper
  */
-class PipedriveCreatePersonMapper implements CustomNodeInterface
+class PipedriveCreatePersonMapper implements CustomNodeInterface, LoggerAwareInterface
 {
+
+    use LoggerTrait;
+
+    /**
+     * @var PipedriveSystem
+     */
+    private $system;
 
     /**
      * @var ObjectRepository|SystemInstallRepository
@@ -28,16 +40,20 @@ class PipedriveCreatePersonMapper implements CustomNodeInterface
      * PipedriveCMPersonMapper constructor.
      *
      * @param DocumentManager $dm
+     * @param PipedriveSystem $system
      */
-    public function __construct(DocumentManager $dm)
+    public function __construct(DocumentManager $dm, PipedriveSystem $system)
     {
         $this->systemInstallRepository = $dm->getRepository(SystemInstall::class);
+        $this->system                  = $system;
+        $this->logger                  = new NullLogger();
     }
 
     /**
      * @param ProcessDto $dto
      *
      * @return ProcessDto
+     * @throws CleverConnectorsException
      */
     public function process(ProcessDto $dto): ProcessDto
     {
@@ -57,6 +73,14 @@ class PipedriveCreatePersonMapper implements CustomNodeInterface
                 $fields['name'] .= ' ';
             }
             $fields['name'] .= $data[CleverFieldsEnum::LAST_NAME];
+        }
+
+        if (empty($fields['name'])) {
+            $this->logError(400, $this->system, $systemInstall);
+            throw new CleverConnectorsException(
+                'Required either first_name or last_name.',
+                CleverConnectorsException::MISSING_DATA
+            );
         }
 
         $unHash   = $this->getHash(CleverCustomKeysEnum::UNSUBSCRIBE, $systemInstall);

@@ -21,21 +21,20 @@
   },
   "require": {
     "hanaboso/pipes-framework": "^1.0",
-    "incenteev/composer-parameter-handler": "^2.0",
+    "incenteev/composer-parameter-handler": "^2.1",
     "nelmio/cors-bundle": "^1.5",
     "php": ">=7.0",
-    "phpoffice/phpspreadsheet": "1.0.0-beta",
     "react/child-process": "^0.5",
-    "sensio/distribution-bundle": "^5.0.19",
-    "sensio/framework-extra-bundle": "^3.0.2",
+    "sensio/distribution-bundle": "^5.0",
+    "sensio/framework-extra-bundle": "^5.1",
     "snc/redis-bundle": "^2.0",
-    "symfony/polyfill-apcu": "^1.0",
+    "symfony/polyfill-apcu": "^1.6",
     "twig/twig": "^1.0||^2.0"
   },
   "require-dev": {
-    "pipes/php-check-utils": "^1.0",
+    "hanaboso/php-check-utils": "^1.0",
     "sensio/generator-bundle": "^3.1",
-    "symfony/phpunit-bridge": "^3.3"
+    "symfony/phpunit-bridge": "^3.4"
   },
   "scripts": {
     "symfony-scripts": [
@@ -70,11 +69,8 @@
   },
   "repositories": [
     {
-      "type": "path",
-      "url": "../../../php-check-utils",
-      "options": {
-        "symlink": false
-      }
+      "type": "git",
+      "url": "git@gitlab.hanaboso.net:hanaboso/php-check-utils.git"
     },
     {
       "type": "path",

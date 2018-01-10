@@ -1,4 +1,5 @@
 <?php declare(strict_types=1);
+
 /**
  * Created by PhpStorm.
  * User: michal.bartl
@@ -9,12 +10,15 @@
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Enum\NotificationTypeEnum;
 use CleverConnectors\AppBundle\Model\LastSync\LastSyncManager;
 use CleverConnectors\AppBundle\Model\ProgressCounter\ProgressCounterService;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\QuickbooksSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use CleverConnectors\AppBundle\Utils\Dto\Times;
+use CleverConnectors\AppBundle\Utils\LoggerUtils;
+use Clue\React\Buzz\Message\ResponseException;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Uri;
@@ -88,14 +92,29 @@ class QuickbooksSyncCustomerConnector extends QuickbooksCustomerConnectorAbstrac
         $systemInstall = $this->getSystemInstall($dto);
         $requestDto    = $this->system->getRequestDto($systemInstall, CurlManager::METHOD_GET);
         $requestDto->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()));
-        $processId = CMHeaders::get(CMHeaders::PROCESS_ID, $dto->getHeaders()) ?? '';
-        $url       = new Uri(
+        $processId      = CMHeaders::get(CMHeaders::PROCESS_ID, $dto->getHeaders()) ?? '';
+        $url            = new Uri(
             $requestDto->getUri(TRUE) . 'query?query=' . urlencode($this->getTotalQuery())
         );
         $counterService = $this->counterService;
-        $promise   = $this->fetchData($sender, RequestDto::from($requestDto, $url))->then(
+        $promise        = $this->fetchData($sender, RequestDto::from($requestDto, $url))->then(
             function (ResponseInterface $response): int {
                 return $this->getTotalPages($response);
+            },
+            function (ResponseException $exception) use ($systemInstall): void {
+                if ($exception->getCode() == 401) {
+                    $this->logger->info(
+                        NotificationTypeEnum::ACCESS_EXPIRATION,
+                        LoggerUtils::getMessage($this->system, $systemInstall)
+                    );
+                }
+                if ($exception->getCode() == 500) {
+                    $this->logger->info(
+                        NotificationTypeEnum::SERVICE_UNAVAILABLE,
+                        LoggerUtils::getMessage($this->system, $systemInstall)
+                    );
+                }
+                throw $exception;
             }
         )->then(
             function (int $total) use ($sender, $callbackItem, $requestDto, $processId, $counterService) {

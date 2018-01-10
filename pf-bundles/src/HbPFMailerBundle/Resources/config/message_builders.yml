@@ -1,4 +1,0 @@
-services:
-  hbpf.mail_builder.generic:
-      class: Hanaboso\PipesFramework\Mailer\MessageBuilder\Impl\GenericMessageBuilder
-      arguments:

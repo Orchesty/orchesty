@@ -37,4 +37,4 @@ phpunit:
 
 init: docker-up composer-install
 
-test: docker-up composer-install codesniffer phpstan phpunit
+test: docker-up-force composer-install codesniffer phpstan phpunit

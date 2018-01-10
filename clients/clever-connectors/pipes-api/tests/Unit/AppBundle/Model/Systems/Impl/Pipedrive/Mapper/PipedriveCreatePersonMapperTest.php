@@ -32,7 +32,7 @@ final class PipedriveCreatePersonMapperTest extends ConnectorTestCaseAbstract
             CleverFieldsEnum::REACTIVATE => TRUE,
         ];
 
-        $conn = new PipedriveCreatePersonMapper($this->mockDM());
+        $conn = new PipedriveCreatePersonMapper($this->mockDM(), $this->container->get('systems.pipedrive'));
         $res  = $conn->process((new ProcessDto())->setData(json_encode($data))->setHeaders([]));
 
         self::assertEquals([

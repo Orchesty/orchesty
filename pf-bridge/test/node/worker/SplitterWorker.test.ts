@@ -5,10 +5,10 @@ import Headers from "../../../src/message/Headers";
 import JobMessage from "../../../src/message/JobMessage";
 import {ResultCode} from "../../../src/message/ResultCode";
 import IPartialForwarder from "../../../src/node/drain/IPartialForwarder";
-import SplitterWorker, {ISplitterWorkerSettings} from "../../../src/node/worker/SplitterWorker";
+import JsonSplitterWorker, {IJsonSplitterWorkerSettings} from "../../../src/node/worker/JsonSplitterWorker";
 import {INodeLabel} from "../../../src/topology/Configurator";
 
-const settings: ISplitterWorkerSettings = {
+const settings: IJsonSplitterWorkerSettings = {
     node_label: {
         id: "someId",
         node_id: "507f191e810c19729de860ea",
@@ -29,7 +29,7 @@ describe("Splitter worker", () => {
         headers.setPFHeader(Headers.PARENT_ID, "");
         headers.setPFHeader(Headers.SEQUENCE_ID, "1");
         const msg = new JobMessage(node, headers.getRaw(), new Buffer("{}{}{}"));
-        const worker = new SplitterWorker(settings, partialForwarder);
+        const worker = new JsonSplitterWorker(settings, partialForwarder);
         return worker.processData(msg)
             .then((outMsgs: JobMessage[]) => {
                 assert.lengthOf(outMsgs, 1);
@@ -52,7 +52,7 @@ describe("Splitter worker", () => {
         headers.setPFHeader(Headers.PARENT_ID, "");
         headers.setPFHeader(Headers.SEQUENCE_ID, "1");
         const msg = new JobMessage(node, headers.getRaw(), body);
-        const worker = new SplitterWorker(settings, partialForwarder);
+        const worker = new JsonSplitterWorker(settings, partialForwarder);
         return worker.processData(msg)
             .then((outMsgs: JobMessage[]) => {
                 assert.lengthOf(outMsgs, 1);
@@ -83,7 +83,7 @@ describe("Splitter worker", () => {
                 return Promise.resolve();
             },
         };
-        const worker = new SplitterWorker(settings, partialForwarder);
+        const worker = new JsonSplitterWorker(settings, partialForwarder);
         return worker.processData(msg)
             .then((outMsgs: JobMessage[]) => {
                 assert.lengthOf(outMsgs, 1);

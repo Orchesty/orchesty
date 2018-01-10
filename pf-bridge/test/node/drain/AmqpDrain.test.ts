@@ -13,6 +13,8 @@ import {INodeLabel} from "../../../src/topology/Configurator";
 
 const metricsMock = {
     send: () => Promise.resolve("sent"),
+    addTag: () => { return; },
+    removeTag: () => { return; },
 };
 
 const settings: IAmqpDrainSettings = {

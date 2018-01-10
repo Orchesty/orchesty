@@ -17,13 +17,13 @@ type Checker interface {
 }
 
 // Checker is used for checking bridge's statuses
-type HttpChecker struct {
+type HttpCheck struct {
 	Client HttpClient
 }
 
 // Check sends http request to target url and waits for response
 // When the response is accepted, it sets BridgeInfo properties according to response headers and body
-func (c *HttpChecker) Check(br BridgeInfo, resultsChannel chan<- BridgeInfo) {
+func (c *HttpCheck) Check(br BridgeInfo, resultsChannel chan<- BridgeInfo) {
 	log.Println("Sending request GET to " + br.Url)
 
 	request, err := http.NewRequest("GET", br.Url, nil)

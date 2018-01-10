@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:pipes="http://www.omg.org/spec/Pipes/20100524/MODEL" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn">
   <bpmn:process id="Process_1" isExecutable="false">
-    <bpmn:event id="Event_064yk9a" pipes:pipesType="webhook" name="wisepops-create-email-connector">
+    <bpmn:event id="Event_064yk9a" pipes:pipesType="webhook" name="wisepops-created-email-connector">
       <bpmn:outgoing>SequenceFlow_1vbeaau</bpmn:outgoing>
     </bpmn:event>
     <bpmn:task id="Task_10x2hta" pipes:pipesType="splitter" name="universal-splitter">
@@ -24,7 +24,7 @@
       <bpmndi:BPMNShape id="Event_064yk9a_di" bpmnElement="Event_064yk9a">
         <dc:Bounds x="256" y="185" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="230" y="225" width="88" height="24" />
+          <dc:Bounds x="238" y="225" width="73" height="36" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Task_10x2hta_di" bpmnElement="Task_10x2hta">

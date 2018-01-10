@@ -7,8 +7,8 @@ import {Publisher} from "amqplib-plus/dist/lib/Publisher";
 import {SimpleConsumer} from "amqplib-plus/dist/lib/SimpleConsumer";
 import {amqpConnectionOptions, mongoStorageOptions} from "../../src/config";
 import Headers from "../../src/message/Headers";
-import MongoMessageStorage from "../../src/repeater/MongoMessageStorage";
 import Repeater, {IRepeaterSettings} from "../../src/repeater/Repeater";
+import MongoMessageStorage from "../../src/repeater/storage/MongoMessageStorage";
 
 const conn = new Connection(amqpConnectionOptions);
 
@@ -31,7 +31,7 @@ describe("Repeater", () => {
         const storage = new MongoMessageStorage(mongoStorageOptions);
         const repeater = new Repeater(settings, conn, storage);
 
-        repeater.run();
+        repeater.start();
 
         let sentTimestamp = Date.now();
         const publisher = new Publisher(conn, (ch: Channel) => {

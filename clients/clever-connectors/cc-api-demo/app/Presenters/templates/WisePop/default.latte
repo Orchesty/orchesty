@@ -1,5 +1,24 @@
 {layout '../@systemCustomLayout.latte'}
 
 {block customForm}
-    {control customForm}
+    <form n:name='customForm'>
+        <div n:foreach='$form->getControls() as $input' class='row{if $input->getName() === 'list'} form-group{/if}'>
+            {breakIf $input->getName() === 'refresh'}
+            <div class='col-md-2 col-form-label text-md-right'>
+                {label $input}
+            </div>
+            <div class='col-md-8'>
+                {input $input 'class' => 'form-control'}
+            </div>
+        </div>
+        <div class='form-group row'>
+            <div class='col-md-4'></div>
+            <div class='col-md-2'>
+                {input refresh 'class' => 'btn btn-block btn-info ajax'}
+            </div>
+            <div class='col-md-2'>
+                {input save_custom_data 'class' => 'btn btn-block btn-primary'}
+            </div>
+        </div>
+    </form>
 {/block}

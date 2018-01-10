@@ -1,4 +1,5 @@
 <?php declare(strict_types=1);
+
 /**
  * Created by PhpStorm.
  * User: venca
@@ -11,6 +12,7 @@ namespace Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Exception;
+use Hanaboso\PipesFramework\Commons\Enum\TopologyStatusEnum;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
@@ -199,7 +201,7 @@ class StartingPointHandler
     public function runTest(string $topologyId): array
     {
         $startTopology = TRUE;
-        $runningInfo = $this->requestHandler->infoTopology($topologyId);
+        $runningInfo   = $this->requestHandler->infoTopology($topologyId);
         if ($runningInfo instanceof ResponseDto && $runningInfo->getBody()) {
             $result = json_decode($runningInfo->getBody(), TRUE);
             if (array_key_exists('docker_info', $result) && count($result['docker_info'])) {
@@ -212,7 +214,14 @@ class StartingPointHandler
             $this->requestHandler->runTopology($topologyId);
         }
 
-        return $this->startingPoint->runTest($this->getTopology($topologyId));
+        $topology = $this->getTopology($topologyId);
+        $res      = $this->startingPoint->runTest($topology);
+
+        if ($topology->getVisibility() === TopologyStatusEnum::DRAFT) {
+            $this->requestHandler->deleteTopology($topologyId);
+        }
+
+        return $res;
     }
 
 }

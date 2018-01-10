@@ -1,4 +1,4 @@
-.PHONY: docker-build docker-push
+.PHONY: docker-build docker-push go-test
 
 DOCKER_DEFAULT_TAG := dev
 DOCKER_REGISTRY := dkr.hanaboso.net/pipes/pipes/
@@ -8,3 +8,6 @@ docker-build:
 
 docker-push:
 	docker push $(DOCKER_REGISTRY)go-multi-probe:$(DOCKER_DEFAULT_TAG)
+
+go-test:
+	go test ./...

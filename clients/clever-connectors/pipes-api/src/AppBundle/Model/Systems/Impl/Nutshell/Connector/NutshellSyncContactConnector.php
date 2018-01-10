@@ -7,7 +7,9 @@ use CleverConnectors\AppBundle\Model\ProgressCounter\ProgressCounterService;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Nutshell\NutshellSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
+use CleverConnectors\AppBundle\Traits\LoggerTrait;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
+use Clue\React\Buzz\Message\ResponseException;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Uri;
@@ -21,6 +23,8 @@ use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\BatchInterface;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
 use Nette\Utils\Json;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\NullLogger;
 use React\EventLoop\LoopInterface;
 use React\Promise\PromiseInterface;
 use function React\Promise\all;
@@ -31,8 +35,10 @@ use function React\Promise\resolve;
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Nutshell\Connector
  */
-class NutshellSyncContactConnector implements BatchInterface, ConnectorInterface
+class NutshellSyncContactConnector implements BatchInterface, ConnectorInterface, LoggerAwareInterface
 {
+
+    use LoggerTrait;
 
     private const PER_PAGE = 50;
 
@@ -75,6 +81,7 @@ class NutshellSyncContactConnector implements BatchInterface, ConnectorInterface
         $this->systemInstallRepository = $dm->getRepository(SystemInstall::class);
         $this->factory                 = $factory;
         $this->counterService          = $counterService;
+        $this->logger                  = new NullLogger();
     }
 
     /**
@@ -124,7 +131,7 @@ class NutshellSyncContactConnector implements BatchInterface, ConnectorInterface
 
         /** @var Uri $url */
         $url     = $requestDto->getUri();
-        $promise = $this->getPage($sender, $requestDto, $url, $callbackItem, 1, $processId);
+        $promise = $this->getPage($sender, $requestDto, $url, $callbackItem, 1, $processId, $systemInstall);
 
         $this->systemInstallRepository->setSyncTime($systemInstall);
 
@@ -143,12 +150,13 @@ class NutshellSyncContactConnector implements BatchInterface, ConnectorInterface
     }
 
     /**
-     * @param CurlSender $sender
-     * @param RequestDto $requestDto
-     * @param Uri        $baseUrl
-     * @param callable   $callbackItem
-     * @param int        $page
-     * @param string     $processId
+     * @param CurlSender    $sender
+     * @param RequestDto    $requestDto
+     * @param Uri           $baseUrl
+     * @param callable      $callbackItem
+     * @param int           $page
+     * @param string        $processId
+     * @param SystemInstall $systemInstall
      *
      * @return PromiseInterface
      */
@@ -158,7 +166,8 @@ class NutshellSyncContactConnector implements BatchInterface, ConnectorInterface
         Uri $baseUrl,
         callable $callbackItem,
         int $page,
-        string $processId
+        string $processId,
+        SystemInstall $systemInstall
     ): PromiseInterface
     {
         $contactsDto = RequestDto::from($requestDto, $baseUrl, 'POST')->setBody(sprintf(
@@ -168,7 +177,14 @@ class NutshellSyncContactConnector implements BatchInterface, ConnectorInterface
         ));
 
         $promise = $this->fetchData($sender, $contactsDto)->then(
-            function (ResponseInterface $response) use ($sender, $requestDto, $baseUrl, $callbackItem, $page, $processId
+            function (ResponseInterface $response) use (
+                $sender,
+                $requestDto,
+                $baseUrl,
+                $callbackItem,
+                $page,
+                $processId,
+                $systemInstall
             ) {
                 $data = Json::decode($response->getBody()->getContents(), TRUE);
                 if (isset($data['result']) && count($data['result']) > 0) {
@@ -178,21 +194,44 @@ class NutshellSyncContactConnector implements BatchInterface, ConnectorInterface
                         $data['result'],
                         $callbackItem,
                         $baseUrl,
-                        $page
+                        $page,
+                        $systemInstall
                     ))->then(function (array $promises) use (
-                        $data, $sender, $requestDto, $baseUrl, $callbackItem, $page, $processId
+                        $data,
+                        $sender,
+                        $requestDto,
+                        $baseUrl,
+                        $callbackItem,
+                        $page,
+                        $processId,
+                        $systemInstall
                     ) {
                         if (count($data['result']) < self::PER_PAGE) {
                             $this->counterService->setTotal($processId, $page * self::PER_PAGE);
 
                             return resolve();
                         } else {
-                            return $this->getPage($sender, $requestDto, $baseUrl, $callbackItem, ++$page, $processId);
+                            return $this->getPage(
+                                $sender,
+                                $requestDto,
+                                $baseUrl,
+                                $callbackItem,
+                                ++$page,
+                                $processId,
+                                $systemInstall
+                            );
                         }
                     });
                 } else {
                     return resolve();
                 }
+            },
+            function (ResponseException $e) use ($systemInstall): void {
+                if ($e->getResponse()) {
+                    $this->logError($e->getResponse()->getStatusCode(), $this->system, $systemInstall);
+                }
+
+                throw $e;
             }
         );
 
@@ -200,12 +239,13 @@ class NutshellSyncContactConnector implements BatchInterface, ConnectorInterface
     }
 
     /**
-     * @param CurlSender $sender
-     * @param RequestDto $requestDto
-     * @param array      $contacts
-     * @param callable   $callbackItem
-     * @param Uri        $baseUrl
-     * @param int        $page
+     * @param CurlSender    $sender
+     * @param RequestDto    $requestDto
+     * @param array         $contacts
+     * @param callable      $callbackItem
+     * @param Uri           $baseUrl
+     * @param int           $page
+     * @param SystemInstall $systemInstall
      *
      * @return array
      */
@@ -215,7 +255,9 @@ class NutshellSyncContactConnector implements BatchInterface, ConnectorInterface
         array $contacts,
         callable $callbackItem,
         Uri $baseUrl,
-        int $page): array
+        int $page,
+        SystemInstall $systemInstall
+    ): array
     {
         $requests = [];
         for ($i = 0; $i < count($contacts); $i++) {
@@ -230,8 +272,14 @@ class NutshellSyncContactConnector implements BatchInterface, ConnectorInterface
                         $data = Json::decode($response->getBody()->getContents(), TRUE);
 
                         return $this->createSuccessMessage($data, ($page - 1) * self::PER_PAGE + $i + 1);
-                    })
-                ->then($callbackItem);
+                    },
+                    function (ResponseException $e) use ($systemInstall): void {
+                        if ($e->getResponse()) {
+                            $this->logError($e->getResponse()->getStatusCode(), $this->system, $systemInstall);
+                        }
+
+                        throw $e;
+                    })->then($callbackItem);
         }
 
         return $requests;

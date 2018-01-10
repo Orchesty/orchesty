@@ -1,4 +1,5 @@
 <?php declare(strict_types=1);
+
 /**
  * Created by PhpStorm.
  * User: venca
@@ -8,6 +9,8 @@
 
 namespace Hanaboso\PipesFramework\TopologyGenerator;
 
+use Hanaboso\PipesFramework\Configurator\Document\Node;
+use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Nette\Utils\Strings;
 
 /**
@@ -80,6 +83,21 @@ class GeneratorUtils
     public static function createNormalizedServiceName(string $id, string $name): string
     {
         return self::createServiceName(self::normalizeName($id, $name));
+    }
+
+    /**
+     * @param Topology $topology
+     * @param Node     $node
+     *
+     * @return string
+     */
+    public static function generateQueueName(Topology $topology, Node $node): string
+    {
+        return sprintf(
+            'pipes.%s.%s',
+            self::createNormalizedServiceName($topology->getId(), $topology->getName()),
+            self::createNormalizedServiceName($node->getId(), $node->getName())
+        );
     }
 
 }

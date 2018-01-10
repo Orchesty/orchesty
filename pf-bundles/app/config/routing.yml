@@ -19,10 +19,6 @@ hb_pf_joiner:
     resource: "@HbPFJoinerBundle"
     type: annotation
 
-hb_pf_mailer:
-    resource: "@HbPFMailerBundle"
-    type: annotation
-
 hb_pf_mapper:
     resource: "@HbPFMapperBundle"
     type: annotation
@@ -41,4 +37,8 @@ hb_pf_configurator:
 
 hb_pf_metrics:
     resource: '@HbPFMetricsBundle'
+    type: annotation
+
+hb_pf_notification:
+    resource: '@HbPFNotificationBundle'
     type: annotation

@@ -27,6 +27,8 @@ services:
             - '@systems.pipedrive'
             - '@hbpf.transport.curl_manager'
             - '@doctrine_mongodb.odm.default_document_manager'
+        calls:
+            - ['setLogger', ['@monolog.logger.notification']]
 
     hbpf.connector.pipedrive-update-person-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Pipedrive\Connector\PipedriveUpdatePersonConnector
@@ -34,6 +36,8 @@ services:
             - '@systems.pipedrive'
             - '@hbpf.transport.curl_manager'
             - '@doctrine_mongodb.odm.default_document_manager'
+        calls:
+            - ['setLogger', ['@monolog.logger.notification']]
 
     hbpf.custom_node.pipedrive-updated-person-mapper:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Pipedrive\Mapper\PipedriveUpdatedPersonMapper
@@ -53,6 +57,8 @@ services:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Pipedrive\Mapper\PipedriveSyncPersonMapper
         arguments:
             - '@doctrine_mongodb.odm.default_document_manager'
+        calls:
+            - ['setLogger', ['@monolog.logger.notification']]
 
     hbpf.custom_node.pipedrive-created-person-mapper:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Pipedrive\Mapper\PipedriveCreatedPersonMapper
@@ -68,6 +74,9 @@ services:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Pipedrive\Mapper\PipedriveCreatePersonMapper
         arguments:
             - '@doctrine_mongodb.odm.default_document_manager'
+            - '@systems.pipedrive'
+        calls:
+            - ['setLogger', ['@monolog.logger.notification']]
 
     hbpf.custom_node.pipedrive-cm-event-activator:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Pipedrive\CMActivator\PipedriveCMActivator

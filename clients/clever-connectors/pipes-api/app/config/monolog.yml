@@ -1,6 +1,6 @@
 monolog:
     use_microseconds: false
-    channels: [webhook_systems]
+    channels: [webhook_systems, notification]
     handlers:
         app:
            type: service
@@ -12,3 +12,7 @@ monolog:
             id: udp_handler
             level: info
             channels: [webhook_systems]
+        notification:
+            type: syslog
+            channels: [notification]
+            level: info

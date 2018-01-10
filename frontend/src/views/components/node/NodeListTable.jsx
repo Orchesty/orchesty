@@ -32,7 +32,6 @@ class NodeListTable extends React.Component {
         <SortTh name="name" state={sort} onChangeSort={listChangeSort}>Name</SortTh>
         <th>Type</th>
         <th>Handler</th>
-        <th>Service</th>
         <SortTh name="enabled" state={sort} onChangeSort={listChangeSort}>Enabled</SortTh>
         {withNodeTest && <th>Ping test</th>}
         <th>Actions</th>
@@ -69,7 +68,6 @@ class NodeListTable extends React.Component {
             <td>{item.name}</td>
             <td>{item.type}</td>
             <td>{item.handler}</td>
-            <td>{item.service}</td>
             <td><BoolValue value={item.enabled}/></td>
             {withNodeTest && <td>{test !== null ? <BoolValue color value={test.code == 200} title={test.message}/> : '-'}</td>}
             <td><ActionButtonPanel items={menuItems} right={true}/></td>

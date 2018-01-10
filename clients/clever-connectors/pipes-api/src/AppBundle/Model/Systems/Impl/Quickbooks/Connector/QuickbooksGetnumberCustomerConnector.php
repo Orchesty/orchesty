@@ -3,11 +3,13 @@
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Enum\NotificationTypeEnum;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\Mapper\QuickbooksCreateCustomerMapper;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\QuickbooksSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
+use CleverConnectors\AppBundle\Utils\LoggerUtils;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Uri;
@@ -16,14 +18,19 @@ use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
+use Psr\Log\NullLogger;
 
 /**
  * Class QuickbooksGetnumberCustomerConnector
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\Connector
  */
-class QuickbooksGetnumberCustomerConnector implements ConnectorInterface
+class QuickbooksGetnumberCustomerConnector implements ConnectorInterface, LoggerAwareInterface
 {
+
+    use LoggerAwareTrait;
 
     private const SUB_URL = '/query?query=';
 
@@ -49,11 +56,16 @@ class QuickbooksGetnumberCustomerConnector implements ConnectorInterface
      * @param QuickbooksSystem     $system
      * @param CurlManagerInterface $curl
      */
-    public function __construct(DocumentManager $dm, QuickbooksSystem $system, CurlManagerInterface $curl)
+    public function __construct(
+        DocumentManager $dm,
+        QuickbooksSystem $system,
+        CurlManagerInterface $curl
+    )
     {
         $this->curl                    = $curl;
         $this->systemInstallRepository = $dm->getRepository(SystemInstall::class);
         $this->system                  = $system;
+        $this->logger                  = new NullLogger();
     }
 
     /**
@@ -99,7 +111,22 @@ class QuickbooksGetnumberCustomerConnector implements ConnectorInterface
         $requestDto->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()))
             ->setUri(new Uri(rtrim($requestDto->getUri(TRUE), '/') . $this->getQuery($body)));
 
-        $res     = $this->curl->send($requestDto);
+        $res = $this->curl->send($requestDto);
+
+        if ($res->getStatusCode() == 401) {
+            $this->logger->info(
+                NotificationTypeEnum::ACCESS_EXPIRATION,
+                LoggerUtils::getMessage($this->system, $systemInstall)
+            );
+        }
+
+        if ($res->getStatusCode() == 500) {
+            $this->logger->info(
+                NotificationTypeEnum::SERVICE_UNAVAILABLE,
+                LoggerUtils::getMessage($this->system, $systemInstall)
+            );
+        }
+
         $resBody = json_decode($res->getBody(), TRUE);
 
         if ($res->getStatusCode() !== 200

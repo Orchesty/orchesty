@@ -10,8 +10,8 @@ use Hanaboso\PipesFramework\HbPFCommonsBundle\HbPFCommonsBundle;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\HbPFConfiguratorBundle;
 use Hanaboso\PipesFramework\HbPFConnectorBundle\HbPFConnectorBundle;
 use Hanaboso\PipesFramework\HbPFCustomNodeBundle\HbPFCustomNodeBundle;
-use Hanaboso\PipesFramework\HbPFMailerBundle\HbPFMailerBundle;
 use Hanaboso\PipesFramework\HbPFMapperBundle\HbPFMapperBundle;
+use Hanaboso\PipesFramework\HbPFMetricsBundle\HbPFMetricsBundle;
 use Hanaboso\PipesFramework\HbPFRabbitMqBundle\HbPFRabbitMqBundle;
 use Hanaboso\PipesFramework\HbPFUserBundle\HbPFUserBundle;
 use JMS\SerializerBundle\JMSSerializerBundle;
@@ -21,7 +21,6 @@ use Snc\RedisBundle\SncRedisBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\MonologBundle\MonologBundle;
 use Symfony\Bundle\SecurityBundle\SecurityBundle;
-use Symfony\Bundle\SwiftmailerBundle\SwiftmailerBundle;
 use Symfony\Bundle\TwigBundle\TwigBundle;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\HttpKernel\Kernel;
@@ -39,13 +38,12 @@ class AppKernel extends Kernel
             new SecurityBundle(),
             new TwigBundle(),
             new MonologBundle(),
-            new SwiftmailerBundle(),
             new DoctrineBundle(),
             new SensioFrameworkExtraBundle(),
             new FOSRestBundle(),
             new JMSSerializerBundle(),
             new DoctrineMongoDBBundle(),
-			new NelmioCorsBundle(),
+            new NelmioCorsBundle(),
             new SncRedisBundle(),
 
             new AppBundle(),
@@ -56,9 +54,9 @@ class AppKernel extends Kernel
             new HbPFMapperBundle(),
             new HbPFApiGatewayBundle(),
             new HbPFCustomNodeBundle(),
-            new HbPFMailerBundle(),
-			new HbPFConfiguratorBundle(),
-			new HbPFUserBundle(),
+            new HbPFConfiguratorBundle(),
+            new HbPFUserBundle(),
+            new HbPFMetricsBundle(),
         ];
 
         if (in_array($this->getEnvironment(), ['dev', 'test'], TRUE)) {

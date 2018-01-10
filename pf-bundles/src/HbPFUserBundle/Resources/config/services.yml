@@ -23,7 +23,6 @@ services:
             - '@security.encoder_factory.generic'
             - '@event_dispatcher'
             - '@hbpf.user.provider.resource'
-            - "@rabbit-mq.producer.pf-mailer"
 
     hbpf.user.manager.security:
         class: Hanaboso\PipesFramework\User\Model\Security\SecurityManager

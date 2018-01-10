@@ -6,23 +6,29 @@ use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Pipedrive\PipedriveSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
+use CleverConnectors\AppBundle\Traits\LoggerTrait;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlException;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\NullLogger;
 
 /**
  * Class PipedriveUpdatePersonConnector
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Pipedrive\Connector
  */
-class PipedriveUpdatePersonConnector implements ConnectorInterface
+class PipedriveUpdatePersonConnector implements ConnectorInterface, LoggerAwareInterface
 {
+
+    use LoggerTrait;
 
     private const SUB_URL = '/persons/%s?api_token=%s';
 
@@ -53,6 +59,7 @@ class PipedriveUpdatePersonConnector implements ConnectorInterface
         $this->system                  = $system;
         $this->curl                    = $curl;
         $this->systemInstallRepository = $dm->getRepository(SystemInstall::class);
+        $this->logger                  = new NullLogger();
     }
 
     /**
@@ -68,6 +75,7 @@ class PipedriveUpdatePersonConnector implements ConnectorInterface
      *
      * @return ProcessDto
      * @throws CleverConnectorsException
+     * @throws CurlException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {
@@ -85,7 +93,13 @@ class PipedriveUpdatePersonConnector implements ConnectorInterface
         $requestDto->setBody($data['body'])
             ->setUri($uri);
 
-        $res = $this->curl->send($requestDto);
+        try {
+            $res = $this->curl->send($requestDto);
+        } catch (CurlException $e) {
+            $this->logError($e->getResponse()->getStatusCode(), $this->system, $systemInstall);
+
+            throw $e;
+        }
 
         if ($res->getStatusCode() != 200) {
             throw new CleverConnectorsException('Failed to update contact / missing field, PipeDrive.',

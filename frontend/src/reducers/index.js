@@ -13,6 +13,9 @@ import auth from './auth';
 import process from './process';
 import server from './server';
 import editable from './editable';
+import metrics from './metrics';
+import notificationSettings from './notificationSettings';
+import generalSearch from './generalSearch';
 
 const rootReducer = combineReducers({
   application,
@@ -26,7 +29,10 @@ const rootReducer = combineReducers({
   process,
   server,
   form,
-  editable
+  editable,
+  metrics,
+  notificationSettings,
+  generalSearch
 });
 
 export default rootReducer;

@@ -18,7 +18,7 @@ function mapStateToProps(state, ownProps){
 
 function mapActionsToProps(dispatch, ownProps){
   return {
-    notLoadedCallback: forced => dispatch(categoryActions.needCategoryTree(ownProps.pageKey))
+    notLoadedCallback: forced => dispatch(categoryActions.needCategoryTree(ownProps.pageKey, forced, ownProps.categoryId))
   }
 }
 

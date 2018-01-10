@@ -8,7 +8,9 @@ use CleverConnectors\AppBundle\Model\ProgressCounter\ProgressCounterService;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Pipedrive\PipedriveSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
+use CleverConnectors\AppBundle\Traits\LoggerTrait;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
+use Clue\React\Buzz\Message\ResponseException;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Uri;
@@ -21,6 +23,8 @@ use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\BatchInterface;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\NullLogger;
 use React\EventLoop\LoopInterface;
 use React\Promise\PromiseInterface;
 use function React\Promise\resolve;
@@ -30,8 +34,10 @@ use function React\Promise\resolve;
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Pipedrive\Connector
  */
-class PipedriveSyncPersonConnector implements ConnectorInterface, BatchInterface
+class PipedriveSyncPersonConnector implements ConnectorInterface, BatchInterface, LoggerAwareInterface
 {
+
+    use LoggerTrait;
 
     private const PER_PAGE    = 50;
     private const PERSONS_URL = '/persons?start=%s&limit=' . self::PER_PAGE . '&api_token=';
@@ -75,6 +81,7 @@ class PipedriveSyncPersonConnector implements ConnectorInterface, BatchInterface
         $this->systemInstallRepository = $dm->getRepository(SystemInstall::class);
         $this->factory                 = $factory;
         $this->counterService          = $counterService;
+        $this->logger                  = new NullLogger();
     }
 
     /**
@@ -101,7 +108,8 @@ class PipedriveSyncPersonConnector implements ConnectorInterface, BatchInterface
         $processId = CMHeaders::get(CMHeaders::PROCESS_ID, $dto->getHeaders()) ?? '';
         $token     = $systemInstall->getSettings()[PipedriveSystem::API_TOKEN];
         $baseUrl   = rtrim($requestDto->getUri(TRUE), '/') . self::PERSONS_URL . $token;
-        $promise   = $this->getPersonsPage($sender, $requestDto, $callbackItem, $baseUrl, 0, $processId);
+        $promise   = $this->getPersonsPage($sender, $requestDto, $callbackItem, $baseUrl, 0, $processId,
+            $systemInstall);
 
         $this->systemInstallRepository->setSyncTime($systemInstall);
 
@@ -146,12 +154,13 @@ class PipedriveSyncPersonConnector implements ConnectorInterface, BatchInterface
     }
 
     /**
-     * @param CurlSender $sender
-     * @param RequestDto $requestDto
-     * @param callable   $callbackItem
-     * @param string     $baseUrl
-     * @param int        $page
-     * @param string     $processId
+     * @param CurlSender    $sender
+     * @param RequestDto    $requestDto
+     * @param callable      $callbackItem
+     * @param string        $baseUrl
+     * @param int           $page
+     * @param string        $processId
+     * @param SystemInstall $systemInstall
      *
      * @return PromiseInterface
      */
@@ -161,7 +170,8 @@ class PipedriveSyncPersonConnector implements ConnectorInterface, BatchInterface
         callable $callbackItem,
         string $baseUrl,
         int $page = 0,
-        string $processId
+        string $processId,
+        SystemInstall $systemInstall
     ): PromiseInterface
     {
         $url = new Uri(sprintf($baseUrl, $page));
@@ -169,7 +179,7 @@ class PipedriveSyncPersonConnector implements ConnectorInterface, BatchInterface
         $res = $this->fetchData($sender, RequestDto::from($requestDto, $url))
             ->then(
                 function (ResponseInterface $response) use (
-                    $sender, $requestDto, $callbackItem, $baseUrl, $page, $processId
+                    $sender, $requestDto, $callbackItem, $baseUrl, $page, $processId, $systemInstall
                 ) {
                     $data = json_decode($response->getBody()->getContents(), TRUE);
                     $callbackItem($this->createSuccessMessage($data, $page));
@@ -191,13 +201,17 @@ class PipedriveSyncPersonConnector implements ConnectorInterface, BatchInterface
                             $callbackItem,
                             $baseUrl,
                             ++$page,
-                            $processId
+                            $processId,
+                            $systemInstall
                         );
                     } else {
                         $this->counterService->setTotal($processId, $page * self::PER_PAGE);
 
                         return resolve();
                     }
+                },
+                function (ResponseException $e) use ($systemInstall): void {
+                    $this->logError($e->getResponse()->getStatusCode(), $this->system, $systemInstall);
                 }
             );
 

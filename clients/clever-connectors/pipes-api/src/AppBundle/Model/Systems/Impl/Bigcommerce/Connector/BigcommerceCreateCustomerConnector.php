@@ -6,23 +6,29 @@ use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Bigcommerce\BigcommerceSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
+use CleverConnectors\AppBundle\Traits\LoggerTrait;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlException;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\NullLogger;
 
 /**
  * Class BigcommerceCreateCustomerConnector
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Bigcommerce\Connector
  */
-class BigcommerceCreateCustomerConnector implements ConnectorInterface
+class BigcommerceCreateCustomerConnector implements ConnectorInterface, LoggerAwareInterface
 {
+
+    use LoggerTrait;
 
     private const CUSTOMER_URL = 'customers';
 
@@ -55,6 +61,7 @@ class BigcommerceCreateCustomerConnector implements ConnectorInterface
         $this->system                  = $system;
         $this->manager                 = $manager;
         $this->systemInstallRepository = $dm->getRepository(SystemInstall::class);
+        $this->logger                  = new NullLogger();
     }
 
     /**
@@ -70,6 +77,7 @@ class BigcommerceCreateCustomerConnector implements ConnectorInterface
      *
      * @return ProcessDto
      * @throws CleverConnectorsException
+     * @throws CurlException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {
@@ -80,16 +88,24 @@ class BigcommerceCreateCustomerConnector implements ConnectorInterface
             new Uri(sprintf($requestDto->getUri(TRUE) . self::CUSTOMER_URL))
         )->setBody($dto->getData());
 
-        $response = $this->manager->send($requestDto);
+        try {
+            $response = $this->manager->send($requestDto);
 
-        if ($response->getStatusCode() !== 201) {
-            throw new CleverConnectorsException(
-                'Failed to create new user / email already in use, BigCommerce.',
-                CleverConnectorsException::REQUEST_FAILED
-            );
+            if ($response->getStatusCode() !== 201) {
+                throw new CleverConnectorsException(
+                    'Failed to create new user / email already in use, BigCommerce.',
+                    CleverConnectorsException::REQUEST_FAILED
+                );
+            }
+
+            return $dto->setData($response->getBody());
+        } catch (CurlException $e) {
+            if ($e->getResponse()) {
+                $this->logError($e->getResponse()->getStatusCode(), $this->system, $systemInstall);
+            }
+
+            throw $e;
         }
-
-        return $dto->setData($response->getBody());
     }
 
     /**

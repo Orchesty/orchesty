@@ -26,3 +26,4 @@ services:
     hbpf.custom_node.wisepops-created-email-mapper:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Wisepops\Mapper\WisepopsCreatedEmailMapper
         arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'

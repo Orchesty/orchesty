@@ -10,11 +10,6 @@ parameters:
     # You should uncomment this if you want to use pdo_sqlite
     #database_path: '%kernel.project_dir%/var/data/data.sqlite'
 
-    mailer_transport: smtp
-    mailer_host: 127.0.0.1
-    mailer_user: ~
-    mailer_password: ~
-
     # Base params
     locale: en
 
@@ -32,6 +27,16 @@ parameters:
     rabbitmq.vhost: /
     rabbitmq.user: guest
     rabbitmq.password: guest
+
+    # InfluxDb
+    influx.host: influxdb
+    influx.port: 8086
+    influx.user: admin
+    influx.password: password
+    influx.database: pipes
+    influx.node_table: pipes_node
+    influx.fpm_table: pipes_monolith_fpm
+    influx.rabbit_table: rabbitmq_queue
 
     backend_host: 'https://cleverconn.stage.hanaboso.net/'
     cron_host: 'http://cron-api:5000'

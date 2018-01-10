@@ -30,6 +30,7 @@ class AmqpFaucet implements IFaucet {
     private settings: IAmqpFaucetSettings;
     private connection: Connection;
     private consumer: Consumer;
+    private consumerTag: string;
 
     /**
      * @param settings
@@ -43,17 +44,14 @@ class AmqpFaucet implements IFaucet {
     /**
      * Creates channel and starts messages consumption.
      */
-    public open(processData: FaucetProcessMsgFn): Promise<void> {
+    public async open(processData: FaucetProcessMsgFn): Promise<void> {
+        const s = this.settings;
 
-        logger.info(
-            `AmqpFaucet input to be configured to read from "${this.settings.queue.name}"`,
-            { node_id: this.settings.node_label.id},
-        );
+        logger.info(`AmqpFaucet configured to consume "${s.queue.name}"`, { node_id: s.node_label.id});
 
-        const prepareFn = (ch: Channel) => {
-            const s = this.settings;
+        const prepareFn = async (ch: Channel) => {
             s.exchange.options["x-dead-letter-exchange"] = s.dead_letter_exchange.name;
-            return Promise.all([
+            const results = await Promise.all([
                 ch.assertQueue(s.queue.name, s.queue.options),
                 ch.assertExchange(
                     s.exchange.name,
@@ -65,23 +63,27 @@ class AmqpFaucet implements IFaucet {
                     s.dead_letter_exchange.type,
                     s.dead_letter_exchange.options),
                 ch.prefetch(s.prefetch),
-            ]).then((results: any) => {
-                const ok = results[0];
-                const ex = results[1];
+            ]);
 
-                return ch.bindQueue(ok.queue, ex.exchange, s.routing_key);
-            });
+            const ok = results[0];
+            const ex = results[1];
+
+            return ch.bindQueue(ok.queue, ex.exchange, s.routing_key);
         };
 
-        this.consumer = new Consumer(this.settings.node_label, this.connection, prepareFn, processData);
+        this.consumer = new Consumer(s.node_label, this.connection, prepareFn, processData);
+        this.consumerTag = await this.consumer.consume(s.queue.name, {});
 
-        return this.consumer.consume(this.settings.queue.name, {})
-            .then(() => {
-                logger.info(
-                    `AmqpFaucet started consumption of "${this.settings.queue.name}"`,
-                    { node_id: this.settings.node_label.id},
-                );
-            });
+        logger.info(`AmqpFaucet started consuming "${s.queue.name}"`, { node_id: s.node_label.id });
+    }
+
+    /**
+     * Stops messages consumption
+     *
+     * @return {Promise<void>}
+     */
+    public async stop(): Promise<void> {
+        await this.consumer.cancel(this.consumerTag);
     }
 
 }

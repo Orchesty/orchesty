@@ -35,11 +35,14 @@ parameters:
     frontend_host: 127.0.0.1
     backend_host: 127.0.0.2
     cron_host: 127.0.0.2
+    notification_host: 127.0.0.2
 
     # InfluxDb
     influx.host: influxdb
     influx.port: 8086
     influx.user: admin
     influx.password: password
-    influx.database: udp
-    influx.table: pipes_node
+    influx.database: pipes
+    influx.node_table: pipes_node
+    influx.fpm_table: pipes_monolith_fpm
+    influx.rabbit_table: rabbitmq_queue

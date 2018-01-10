@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:pipes="http://www.omg.org/spec/Pipes/20100524/MODEL" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn">
   <bpmn:process id="Process_1" isExecutable="false">
-    <bpmn:event id="Event_0kqnuuf" pipes:pipesType="webhook" name="mailmunch-create-email-connector">
+    <bpmn:event id="Event_0kqnuuf" pipes:pipesType="webhook" name="mailmunch-created-email-connector">
       <bpmn:outgoing>SequenceFlow_0sqljs2</bpmn:outgoing>
     </bpmn:event>
     <bpmn:task id="Task_0v1dr9j" pipes:pipesType="custom" name="mailmunch-created-email-mapper">
@@ -19,7 +19,7 @@
       <bpmndi:BPMNShape id="Event_0kqnuuf_di" bpmnElement="Event_0kqnuuf">
         <dc:Bounds x="402" y="333" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="386" y="373" width="67" height="36" />
+          <dc:Bounds x="387" y="373" width="65" height="36" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Task_0v1dr9j_di" bpmnElement="Task_0v1dr9j">

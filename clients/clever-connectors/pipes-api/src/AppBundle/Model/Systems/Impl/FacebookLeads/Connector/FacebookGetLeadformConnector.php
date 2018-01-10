@@ -1,4 +1,5 @@
 <?php declare(strict_types=1);
+
 /**
  * Created by PhpStorm.
  * User: michal.bartl
@@ -111,7 +112,8 @@ class FacebookGetLeadformConnector implements ConnectorInterface
     public function getLeadForms(SystemInstall $systemInstall, array $data): array
     {
         if (!array_key_exists(FacebookLeadsSystem::PAGE_ID, $data) ||
-            empty($data[FacebookLeadsSystem::PAGE_ID])) {
+            empty($data[FacebookLeadsSystem::PAGE_ID])
+        ) {
 
             throw new CleverConnectorsException(
                 'Missing key "page_id" in data',
@@ -135,8 +137,10 @@ class FacebookGetLeadformConnector implements ConnectorInterface
             if (array_key_exists(SystemInstall::FORMS, $settings)) {
                 $sForms = $settings[SystemInstall::FORMS];
 
-                foreach ($sForms as $form) {
-                    $this->removeForm($form, $form[FacebookLeadsSystem::FORM_ID]);
+                foreach ($sForms as $index => $form) {
+                    if (!$this->removeForm($data['data'], $form[FacebookLeadsSystem::FORM_ID])) {
+                        unset($sForms[$index]);
+                    }
                 }
             }
 
@@ -148,8 +152,10 @@ class FacebookGetLeadformConnector implements ConnectorInterface
                 ];
             }
 
-            $sett[SystemInstall::FORMS] = $sForms;
-            $systemInstall->setSettings($sett);
+            $sForms = array_values($sForms);
+
+            $settings[SystemInstall::FORMS] = $sForms;
+            $systemInstall->setSettings($settings);
             $this->dm->flush();
 
             return $sForms;
@@ -194,15 +200,20 @@ class FacebookGetLeadformConnector implements ConnectorInterface
     /**
      * @param array      $array
      * @param int|string $id
+     *
+     * @return bool
      */
-    private function removeForm(array &$array, $id): void
+    private function removeForm(array &$array, $id): bool
     {
         foreach ($array as $index => $item) {
             if ($id == $item['id']) {
                 unset($array[$index]);
-                break;
+
+                return TRUE;
             }
         }
+
+        return FALSE;
     }
 
     /**

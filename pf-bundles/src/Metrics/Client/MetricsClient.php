@@ -9,10 +9,11 @@
 
 namespace Hanaboso\PipesFramework\Metrics\Client;
 
+use Hanaboso\PipesFramework\Metrics\Builder\Builder;
 use Hanaboso\PipesFramework\Metrics\Exception\MetricsException;
 use InfluxDB\Client;
 use InfluxDB\Database;
-use InfluxDB\Query\Builder;
+use InfluxDB\Query\Builder as InfluxDbBuilder;
 
 /**
  * Class MetricsClient
@@ -66,12 +67,13 @@ class MetricsClient implements ClientInterface
     }
 
     /**
-     * @return Builder
+     * @return InfluxDbBuilder
      * @throws MetricsException
      */
-    public function getQueryBuilder(): Builder
+    public function getQueryBuilder(): InfluxDbBuilder
     {
-        return $this->getDatabase()->getQueryBuilder();
+        // InfluxDb library hack
+        return new Builder($this->getDatabase());
     }
 
     /**

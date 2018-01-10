@@ -37,7 +37,7 @@ security:
             pattern: ^/(topologies/\w+/nodes/[\w-]+/run|api/topologies/\w+/nodes/[\w-]+/run)
             security: false
         unsecured_connectors:
-            pattern: ^/(connector/[\w-\.]+/action|connector/[\w-\.]+/webhook|mapper/[\w-\.]+|xml-parser/[\w-\.]+|mailer/[\w-\.]+|custom_node/[\w-\.]+/process)
+            pattern: ^/(connector/[\w-\.]+/action|connector/[\w-\.]+/webhook|mapper/[\w-\.]+|xml-parser/[\w-\.]+|custom_node/[\w-\.]+/process)
             security: false
         unsecured_generator:
             pattern: ^/api/topology/(generate|run|stop|delete|info)/\w+

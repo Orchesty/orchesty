@@ -1,7 +1,8 @@
 import {IConnectionOptions} from "amqplib-plus/dist/lib/Connection";
-import {IMongoMessageStorageSettings} from "./repeater/MongoMessageStorage";
+import {IRedisStorageSettings} from "./counter/storage/RedisStorage";
+import {IProbeSettings} from "./probe/Probe";
 import {IRepeaterSettings} from "./repeater/Repeater";
-import {IProbeSettings} from "./topology/probe/Probe";
+import {IMongoMessageStorageSettings} from "./repeater/storage/MongoMessageStorage";
 
 // Set timeouts and other env values differently for tests
 if (process.env.NODE_ENV === "test") {
@@ -62,7 +63,7 @@ export const topologyTerminatorOptions = {
     port: parseInt(process.env.TERMINATOR_PORT, 10) || 8005,
 };
 
-export const redisStorageOptions = {
+export const redisStorageOptions: IRedisStorageSettings = {
     host: process.env.REDIS_HOST || "redis",
     port: parseInt(process.env.REDIS_PORT, 10) || 6379,
     pass: process.env.REDIS_PASS || "",

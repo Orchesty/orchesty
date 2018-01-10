@@ -1,17 +1,18 @@
 import {Container} from "hb-utils/dist/lib/Container";
 import {IMetrics} from "metrics-sender/dist/lib/metrics/IMetrics";
 import {mongoStorageOptions, probeOptions, repeaterOptions} from "./config";
+import Counter from "./counter/Counter";
 import DIContainer from "./DIContainer";
+import IStoppable from "./IStoppable";
 import logger from "./logger/Logger";
 import IDrain from "./node/drain/IDrain";
 import IFaucet from "./node/faucet/IFaucet";
 import Node from "./node/Node";
 import IWorker from "./node/worker/IWorker";
-import MongoMessageStorage from "./repeater/MongoMessageStorage";
+import Probe from "./probe/Probe";
 import Repeater from "./repeater/Repeater";
+import MongoMessageStorage from "./repeater/storage/MongoMessageStorage";
 import {default as Configurator, INodeConfig, ITopologyConfig, ITopologyConfigSkeleton} from "./topology/Configurator";
-import Counter from "./topology/counter/Counter";
-import Probe from "./topology/probe/Probe";
 
 class Pipes {
 
@@ -31,44 +32,38 @@ class Pipes {
      * Starts single node by its ID and opens it http probe server
      *
      * @param {string} nodeId
+     * @param {boolean} isMulti
      * @return {Promise<void>}
      */
-    public startNode(nodeId: string): Promise<Node> {
-        const nodeConf = this.getNodeConfig(nodeId);
+    public async startBridge(nodeId: string, isMulti: boolean = false): Promise<Node> {
+        const nodeConf = this.getNodeConfig(nodeId, isMulti);
         const node: Node = this.createNode(nodeConf);
 
-        return node.startServer(nodeConf.debug.port)
-            .then(() => {
-                return node.open();
-            })
-            .then(() => {
-                logger.info(`Node started`, { node_id: nodeId });
+        await node.startServer(nodeConf.debug.port);
+        await node.open();
 
-                return node;
-            });
+        logger.info(`Bridge started`, { node_id: nodeId });
+
+        return node;
     }
 
     /**
      *
-     * @return {Promise<void>}
+     * @return {Promise<IStoppable[]>}
      */
-    public startMultiBridge(): Promise<void> {
+    public async startMultiBridge(): Promise<IStoppable[]> {
         const topo = this.getTopologyConfig(true);
         const proms: Node[] = [];
 
         for (const nodeCfg of topo.nodes) {
-            this.startNode(nodeCfg.id)
-                .then((node: Node) => {
-                    proms.push(node);
-                });
+            const node = await this.startBridge(nodeCfg.id, true);
+            proms.push(node);
         }
 
-        return Promise.all(proms)
-            .then(() => {
-                const multiProbe = this.dic.get("probe.multi");
-                multiProbe.addTopology(topo);
-                return;
-            });
+        const multiProbeConnector = this.dic.get("probe.multi");
+        multiProbeConnector.addTopology(topo);
+
+        return await Promise.all(proms);
     }
 
     /**
@@ -99,14 +94,13 @@ class Pipes {
      * @return {Promise<Counter>}
      */
     public async startMultiCounter(): Promise<Counter> {
-        const topo = this.getTopologyConfig(true);
-
+        const topoId = "pipes.multi-counter";
         const counter = new Counter(
-            topo.counter,
+            Configurator.getCounterDefaultSettings(true, topoId),
             this.dic.get("amqp.connection"),
             this.dic.get("counter.storage"),
             this.dic.get("topology.terminator")(true),
-            this.dic.get("metrics")(topo.id, "counter"),
+            this.dic.get("metrics")(topoId, "counter"),
         );
 
         await counter.start();
@@ -117,9 +111,11 @@ class Pipes {
     }
 
     /**
+     * DEPRECATED - use topology probe written in GoLang instead
+     *
      * Starts topology probe
      */
-    public startProbe(): Promise<void> {
+    public async startProbe(): Promise<Probe> {
         const topo = this.getTopologyConfig(false);
         const probe = new Probe(topo.id, probeOptions);
 
@@ -127,20 +123,27 @@ class Pipes {
             probe.addNode(nodeCfg);
         }
 
-        return probe.start()
-            .then(() => {
-                logger.info(`Probe of topology "${topo.id}" is running.`);
-            });
+        await probe.start();
+
+        logger.info(`Probe of topology "${topo.id}" is running.`);
+
+        return probe;
     }
 
     /**
      * Creates and starts repeater service
      */
-    public startRepeater(): void {
+    public async startRepeater(): Promise<Repeater> {
         const storage = new MongoMessageStorage(mongoStorageOptions);
-        const repeater = new Repeater(repeaterOptions, this.dic.get("amqp.connection"), storage);
+        const repeater = new Repeater(
+            repeaterOptions,
+            this.dic.get("amqp.connection"),
+            storage,
+        );
 
-        repeater.run();
+        await repeater.start();
+
+        return repeater;
     }
 
     /**
@@ -190,10 +193,11 @@ class Pipes {
      * Returns node config for particular node or throws error if node does not exist
      *
      * @param {string} nodeId
+     * @param {boolean} isMulti
      * @return {INodeConfig}
      */
-    private getNodeConfig(nodeId: string): INodeConfig {
-        const topo = this.getTopologyConfig(false);
+    private getNodeConfig(nodeId: string, isMulti: boolean = false): INodeConfig {
+        const topo = this.getTopologyConfig(isMulti);
         for (const nodeCfg of topo.nodes) {
             if (nodeCfg.id === nodeId) {
                 return nodeCfg;
