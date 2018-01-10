@@ -7,24 +7,30 @@ use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Airtable\AirtableSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
+use CleverConnectors\AppBundle\Traits\LoggerTrait;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlException;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
 use Nette\Utils\Json;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\NullLogger;
 
 /**
  * Class AirtableCreateContactConnector
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Airtable\Connector
  */
-class AirtableCreateContactConnector implements ConnectorInterface
+class AirtableCreateContactConnector implements ConnectorInterface, LoggerAwareInterface
 {
+
+    use LoggerTrait;
 
     /**
      * @var AirtableSystem
@@ -53,6 +59,7 @@ class AirtableCreateContactConnector implements ConnectorInterface
         $this->system                  = $system;
         $this->systemInstallRepository = $dm->getRepository(SystemInstall::class);
         $this->manager                 = $manager;
+        $this->logger                  = new NullLogger();
     }
 
     /**
@@ -69,6 +76,7 @@ class AirtableCreateContactConnector implements ConnectorInterface
      * @return ProcessDto
      * @throws SystemException
      * @throws CleverConnectorsException
+     * @throws CurlException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {
@@ -91,7 +99,12 @@ class AirtableCreateContactConnector implements ConnectorInterface
             ->setBody($dto->getData())
             ->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()));
 
-        $response = $this->manager->send($requestDto);
+        try {
+            $response = $this->manager->send($requestDto);
+        } catch (CurlException $e) {
+            $this->logError($e->getResponse()->getStatusCode(), $this->system, $systemInstall);
+            throw $e;
+        }
 
         return $dto->setData($response->getBody());
     }

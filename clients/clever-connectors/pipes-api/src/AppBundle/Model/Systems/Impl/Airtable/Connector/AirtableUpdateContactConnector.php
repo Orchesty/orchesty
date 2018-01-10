@@ -7,6 +7,7 @@ use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Airtable\AirtableSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
+use CleverConnectors\AppBundle\Traits\LoggerTrait;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -20,14 +21,18 @@ use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
 use Nette\Utils\Json;
 use Nette\Utils\Strings;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\NullLogger;
 
 /**
  * Class AirtableUpdateContactConnector
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Airtable\Connector
  */
-class AirtableUpdateContactConnector implements ConnectorInterface
+class AirtableUpdateContactConnector implements ConnectorInterface, LoggerAwareInterface
 {
+
+    use LoggerTrait;
 
     /**
      * @var AirtableSystem
@@ -56,6 +61,7 @@ class AirtableUpdateContactConnector implements ConnectorInterface
         $this->system                  = $system;
         $this->manager                 = $manager;
         $this->systemInstallRepository = $dm->getRepository(SystemInstall::class);
+        $this->logger                  = new NullLogger();
     }
 
     /**
@@ -110,6 +116,8 @@ class AirtableUpdateContactConnector implements ConnectorInterface
 
             return $dto->setData($response->getBody());
         } catch (CurlException $e) {
+            $this->logError($e->getResponse()->getStatusCode(), $this->system, $systemInstall);
+
             if (Strings::contains($e->getMessage(), '"errorCode":"INVALID_FIELD"')) {
                 throw new CleverConnectorsException(
                     sprintf('Missing required field unsubscribe or hard_bounce in table of [%s] url.', $table),

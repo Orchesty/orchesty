@@ -7,6 +7,7 @@ use CleverConnectors\AppBundle\Model\LastSync\LastSyncManager;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Airtable\AirtableSystem;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
+use Clue\React\Buzz\Message\ResponseException;
 use DateTime;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
@@ -96,7 +97,7 @@ class AirtableUpdatedContactConnector extends AirtableContactConnectorAbstract
             }
         }
 
-        $promise = $this->getPage($sender, $requestDto, $table, $callbackItem, 1, NULL, $from, $view);
+        $promise = $this->getPage($sender, $requestDto, $table, $callbackItem, 1, NULL, $from, $view, $systemInstall);
 
         $sett[SystemInstall::FORMS][$index][AirtableSystem::LAST_SYNC] = $to->format(self::DATE_FORMAT);
         $systemInstall->setSettings($sett);
@@ -114,6 +115,7 @@ class AirtableUpdatedContactConnector extends AirtableContactConnectorAbstract
      * @param null|string   $offset
      * @param DateTime|null $from
      * @param null|string   $view
+     * @param SystemInstall $systemInstall
      *
      * @return PromiseInterface
      */
@@ -125,13 +127,15 @@ class AirtableUpdatedContactConnector extends AirtableContactConnectorAbstract
         int $page,
         ?string $offset = NULL,
         ?DateTime $from = NULL,
-        ?string $view = NULL
+        ?string $view = NULL,
+        SystemInstall $systemInstall
     ): PromiseInterface
     {
         $uri = $this->getUri($table, $offset, $from, $view);
 
         return $this->fetchData($sender, RequestDto::from($requestDto, $uri))->then(
-            function (ResponseInterface $response) use ($sender, $requestDto, $table, $callbackItem, $page, $from, $view
+            function (ResponseInterface $response) use (
+                $sender, $requestDto, $table, $callbackItem, $page, $from, $view, $systemInstall
             ) {
                 $data = json_decode($response->getBody()->getContents(), TRUE);
                 $callbackItem($this->createSuccessMessage($data, $page));
@@ -145,11 +149,15 @@ class AirtableUpdatedContactConnector extends AirtableContactConnectorAbstract
                         $page + 1,
                         $this->getOffset($data),
                         $from,
-                        $view
+                        $view,
+                        $systemInstall
                     );
                 } else {
                     return resolve();
                 }
+            },
+            function (ResponseException $e) use ($systemInstall): void {
+                $this->logError($e->getResponse()->getStatusCode(), $this->system, $systemInstall);
             }
         );
     }
