@@ -6,21 +6,27 @@ use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Wisepops\WisepopsSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
+use CleverConnectors\AppBundle\Traits\LoggerTrait;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlException;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\NullLogger;
 
 /**
  * Class WisepopsRefreshFormsConnector
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Wisepops\Connector
  */
-class WisepopsRefreshFormsConnector implements ConnectorInterface
+class WisepopsRefreshFormsConnector implements ConnectorInterface, LoggerAwareInterface
 {
+
+    use LoggerTrait;
 
     private const  INFO_URL = 'https://app.wisepops.com/api1/wisepops';
 
@@ -50,6 +56,7 @@ class WisepopsRefreshFormsConnector implements ConnectorInterface
         $this->dm                      = $dm;
         $this->systemInstallRepository = $dm->getRepository(SystemInstall::class);
         $this->curlManager             = $curlManager;
+        $this->logger                  = new NullLogger();
     }
 
     /**
@@ -79,6 +86,7 @@ class WisepopsRefreshFormsConnector implements ConnectorInterface
      *
      * @return ProcessDto
      * @throws SystemException
+     * @throws CurlException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {
@@ -93,6 +101,7 @@ class WisepopsRefreshFormsConnector implements ConnectorInterface
      *
      * @return array
      * @throws SystemException
+     * @throws CurlException
      */
     public function refreshForms(SystemInstall $systemInstall): array
     {
@@ -101,7 +110,13 @@ class WisepopsRefreshFormsConnector implements ConnectorInterface
         $dto = $system->getRequestDto($systemInstall, 'GET');
         $dto->setUri(new Uri(self::INFO_URL));
 
-        $res   = $this->curlManager->send($dto);
+        try {
+            $res = $this->curlManager->send($dto);
+        } catch (CurlException $e) {
+            $this->logError($e->getResponse()->getStatusCode(), $system, $systemInstall);
+            throw $e;
+        }
+
         $forms = json_decode($res->getBody(), TRUE);
 
         $sForms = [];

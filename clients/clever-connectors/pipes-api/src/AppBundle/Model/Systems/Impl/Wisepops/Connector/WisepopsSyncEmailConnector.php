@@ -7,7 +7,9 @@ use CleverConnectors\AppBundle\Model\ProgressCounter\ProgressCounterService;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Wisepops\WisepopsSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
+use CleverConnectors\AppBundle\Traits\LoggerTrait;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
+use Clue\React\Buzz\Message\ResponseException;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Uri;
@@ -19,6 +21,8 @@ use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\BatchInterface;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\NullLogger;
 use React\EventLoop\LoopInterface;
 use React\Promise\PromiseInterface;
 use function React\Promise\resolve;
@@ -28,8 +32,10 @@ use function React\Promise\resolve;
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Wisepops\Connector
  */
-class WisepopsSyncEmailConnector implements BatchInterface, ConnectorInterface
+class WisepopsSyncEmailConnector implements BatchInterface, ConnectorInterface, LoggerAwareInterface
 {
+
+    use LoggerTrait;
 
     private const PER_PAGE = 100;
 
@@ -72,6 +78,7 @@ class WisepopsSyncEmailConnector implements BatchInterface, ConnectorInterface
         $this->systemInstallRepository = $dm->getRepository(SystemInstall::class);
         $this->factory                 = $factory;
         $this->counterService          = $counterService;
+        $this->logger                  = new NullLogger();
     }
 
     /**
@@ -88,6 +95,7 @@ class WisepopsSyncEmailConnector implements BatchInterface, ConnectorInterface
      * @param callable      $callbackItem
      *
      * @return PromiseInterface
+     * @throws SystemException
      */
     public function processBatch(ProcessDto $dto, LoopInterface $loop, callable $callbackItem): PromiseInterface
     {
@@ -98,7 +106,7 @@ class WisepopsSyncEmailConnector implements BatchInterface, ConnectorInterface
         $baseUrl   = $requestDto->getUri(TRUE) . 'api1/emails';
         $processId = CMHeaders::get(CMHeaders::PROCESS_ID, $dto->getHeaders()) ?? '';
 
-        $promise = $this->getPage($sender, $requestDto, $baseUrl, $callbackItem, 1, $processId);
+        $promise = $this->getPage($sender, $requestDto, $baseUrl, $callbackItem, 1, $processId, $systemInstall);
 
         $this->systemInstallRepository->setSyncTime($systemInstall);
 
@@ -143,12 +151,13 @@ class WisepopsSyncEmailConnector implements BatchInterface, ConnectorInterface
     }
 
     /**
-     * @param CurlSender $sender
-     * @param RequestDto $requestDto
-     * @param string     $baseUrl
-     * @param callable   $callbackItem
-     * @param int        $page
-     * @param string     $processId
+     * @param CurlSender    $sender
+     * @param RequestDto    $requestDto
+     * @param string        $baseUrl
+     * @param callable      $callbackItem
+     * @param int           $page
+     * @param string        $processId
+     * @param SystemInstall $systemInstall
      *
      * @return PromiseInterface
      */
@@ -158,13 +167,15 @@ class WisepopsSyncEmailConnector implements BatchInterface, ConnectorInterface
         string $baseUrl,
         callable $callbackItem,
         int $page,
-        string $processId
+        string $processId,
+        SystemInstall $systemInstall
     ): PromiseInterface
     {
         $url = new Uri(sprintf('%s?page=%s', $baseUrl, $page));
 
         $res = $this->fetchData($sender, RequestDto::from($requestDto, $url))->then(
-            function (ResponseInterface $response) use ($sender, $requestDto, $baseUrl, $callbackItem, $page, $processId
+            function (ResponseInterface $response) use (
+                $sender, $requestDto, $baseUrl, $callbackItem, $page, $processId, $systemInstall
             ) {
                 $data = json_decode($response->getBody()->getContents());
                 if (count($data) > 0) {
@@ -176,10 +187,16 @@ class WisepopsSyncEmailConnector implements BatchInterface, ConnectorInterface
                         return resolve();
                     }
 
-                    return $this->getPage($sender, $requestDto, $baseUrl, $callbackItem, $page + 1, $processId);
+                    return $this->getPage($sender, $requestDto, $baseUrl, $callbackItem, $page + 1, $processId,
+                        $systemInstall);
                 } else {
                     return resolve();
                 }
+            },
+            function (ResponseException $e) use ($systemInstall): void {
+                $this->logError($e->getResponse()->getStatusCode(), $this->system, $systemInstall);
+
+                throw $e;
             }
         );
 
