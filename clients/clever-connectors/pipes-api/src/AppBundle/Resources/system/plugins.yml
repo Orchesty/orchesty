@@ -22,6 +22,8 @@ services:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.transport.curl_manager'
             - '@cc.systems.loader'
+        calls:
+            - ['setLogger', ['@monolog.logger.notification']]
 
     hbpf.connector.plugin-hard-bounce-subscriber-connector:
         class: CleverConnectors\AppBundle\Model\Plugins\Connector\PluginHardBounceSubscriberConnector
@@ -29,6 +31,8 @@ services:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.transport.curl_manager'
             - '@cc.systems.loader'
+        calls:
+            - ['setLogger', ['@monolog.logger.notification']]
 
     hbpf.connector.plugin-unsubscribe-subscriber-connector:
         class: CleverConnectors\AppBundle\Model\Plugins\Connector\PluginUnsubscribeSubscriberConnector
@@ -36,6 +40,8 @@ services:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.transport.curl_manager'
             - '@cc.systems.loader'
+        calls:
+            - ['setLogger', ['@monolog.logger.notification']]
 
     hbpf.connector.plugin-sync-subscriber-connector:
         class: CleverConnectors\AppBundle\Model\Plugins\Connector\PluginSyncSubscriberConnector
@@ -44,6 +50,8 @@ services:
             - '@hbpf.transport.async_curl_factory'
             - '@cc.progress_counter.async_progress_counter_service'
             - '@cc.systems.loader'
+        calls:
+            - ['setLogger', ['@monolog.logger.notification']]
 
     hbpf.connector.plugin-switch-token-connector:
         class: CleverConnectors\AppBundle\Model\Plugins\Connector\PluginSwitchTokenConnector
@@ -51,6 +59,8 @@ services:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.transport.curl_manager'
             - '@cc.systems.loader'
+        calls:
+            - ['setLogger', ['@monolog.logger.notification']]
 
     hbpf.connector.plugin-subscribe-subscriber-connector:
         class: CleverConnectors\AppBundle\Model\Plugins\Connector\PluginSubscribeSubscriberConnector
@@ -58,4 +68,6 @@ services:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.transport.curl_manager'
             - '@cc.systems.loader'
+        calls:
+            - ['setLogger', ['@monolog.logger.notification']]
 
