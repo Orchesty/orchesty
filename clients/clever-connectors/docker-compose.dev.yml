@@ -45,30 +45,6 @@ services:
     ## END STAGE
 
     ## BEGIN DEV
-    # Wont be run in staging until we resolve how to do it
-    topology-controlling-consumer:
-        image: dkr.hanaboso.net/pipes/pipes/php-dev:dev
-        user: ${DEV_UID}:${DEV_GID}
-        working_dir: /var/www/pipes/clients/clever-connectors/pipes-api
-        environment:
-          DEV_UID: ${DEV_UID}
-          DEV_GID: ${DEV_GID}
-          GENERATOR_PATH: ${GENERATOR_PATH}
-          DOCKER_NETWORK: ${COMPOSE_PROJECT_NAME}_default
-          PROJECT_SOURCE_PATH: ${PROJECT_SOURCE_PATH}
-          DOCKER_GID: ${DOCKER_GID}
-          DOCKER_SOCKET_PATH: ${DOCKER_SOCKET_PATH}
-        volumes:
-          - ../../:/var/www/pipes
-          - ${SSH_AUTH_SOCK}:/tmp/bound-ssh-agent
-          - ./../topology:${GENERATOR_PATH}
-          - ${DOCKER_SOCKET_PATH}:/var/run/docker.sock
-        group_add:
-          - ${DOCKER_GID}
-        command: bash -c 'while ! [ -f vendor/autoload.php ];do sleep 1; echo "sleep 1"; done; bin/console rabbit-mq:consumer topology-controlling'
-    ## END DEV
-
-    ## BEGIN DEV
     status-service:
         image: dkr.hanaboso.net/pipes/pipes/php-dev:dev
         user: ${DEV_UID}:${DEV_GID}
@@ -146,37 +122,35 @@ services:
     #    image: dkr.hanaboso.net/pipes/client-cm/monolith-fpm:prod-images
     ## END STAGE
 
-    # Services
     ## BEGIN DEV
-    topology-fpm:
-        image: dkr.hanaboso.net/pipes/pipes/php-dev:dev
-        user: ${DEV_UID}:${DEV_GID}
-        working_dir: /var/www/pipes/clients/clever-connectors/pipes-api
+    topology-api:
+        image: dkr.hanaboso.net/pipes/pipes/topology-api:dev
         environment:
-          GENERATOR_PATH: ${GENERATOR_PATH}
-          DOCKER_NETWORK: ${COMPOSE_PROJECT_NAME}_default
-          PROJECT_SOURCE_PATH: ${PROJECT_SOURCE_PATH}
-          DOCKER_GID: ${DOCKER_GID}
-          DOCKER_SOCKET_PATH: ${DOCKER_SOCKET_PATH}
-          TOPOLOGY_MODE: compose
+          DEPLOYMENT_PREFIX: cleverconnectors
+          GENERATOR_NETWORK: cleverconnectors_default
+          GENERATOR_MODE: compose
+          GENERATOR_PATH: /srv/topology
+          MONGO_HOST: mongo
+          MONGO_DATABASE: clever-connectors
+          RABBITMQ_HOST: rabbitmq
         volumes:
-          - ../../:/var/www/pipes
-          - ${SSH_AUTH_SOCK}:/tmp/bound-ssh-agent
-          - ./../topology:${GENERATOR_PATH}
           - ${DOCKER_SOCKET_PATH}:/var/run/docker.sock
-        group_add:
-          - ${DOCKER_GID}
+          - ./.topology:/srv/topology
     ## END DEV
     ## BEGIN STAGE
-    #topology-fpm:
-    #    image: dkr.hanaboso.net/pipes/client-cm/monolith-fpm:prod-images
+    #topology-api:
+    #    image: dkr.hanaboso.net/pipes/pipes/topology-api:dev
     #    environment:
     #      DEPLOYMENT_PREFIX: ${DEPLOYMENT_PREFIX}
-    #      DOCKER_NETWORK: ${DEPLOYMENT_PREFIX}_default
-    #      GENERATOR_PATH: /srv/topology
-    #      DOCKER_HOST: ${DOCKER_HOST}
-    #      DOCKER_TLS_VERIFY: 1
+    #      DOCKER_HOST: tcp://${DOCKER_HOST}
     #      DOCKER_CERT_PATH: /srv/docker-pki
+    #      DOCKER_TLS_VERIFY: 1
+    #      GENERATOR_NETWORK: ${DEPLOYMENT_PREFIX}_default
+    #      GENERATOR_MODE: swarm
+    #      GENERATOR_PATH: /tmp
+    #      MONGO_HOST: mongo
+    #      MONGO_DATABASE: clever-connectors
+    #      RABBITMQ_HOST: rabbitmq
     #    secrets:
     #      - source: docker-ca.pem
     #        target: /srv/docker-pki/ca.pem
@@ -185,7 +159,7 @@ services:
     #      - source: docker-client-key.pem
     #        target: /srv/docker-pki/key.pem
     #      - source: docker-config.json
-    #        target: /var/www/.docker/config.json
+    #        target: /root/.docker/config.json
     ## END STAGE
 
     xml-parser-api:
@@ -217,7 +191,6 @@ services:
         # TODO: Use dynamic dns resolution in Nginx instead
         depends_on:
           - monolith-fpm
-          - topology-fpm
           - api-demo-fpm
           - kibana
           - grafana
@@ -239,7 +212,6 @@ services:
               - ftp-api
               - mapper-api
               - monolith-api
-              - topology-api
 
     stream:
         image: dkr.hanaboso.net/pipes/pipes/stream:dev
