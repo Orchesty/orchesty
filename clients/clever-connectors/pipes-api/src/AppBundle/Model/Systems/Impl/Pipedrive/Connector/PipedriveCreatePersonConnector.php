@@ -18,7 +18,6 @@ use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
 use Psr\Log\LoggerAwareInterface;
-use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
 /**
@@ -118,14 +117,6 @@ class PipedriveCreatePersonConnector implements ConnectorInterface, LoggerAwareI
             'Pipedrive has no support for event.',
             ConnectorException::CONNECTOR_DOES_NOT_HAVE_PROCESS_EVENT
         );
-    }
-
-    /**
-     * @param LoggerInterface $logger
-     */
-    public function setLogger(LoggerInterface $logger): void
-    {
-        $this->logger = $logger;
     }
 
 }

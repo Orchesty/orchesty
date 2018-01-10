@@ -43,4 +43,12 @@ trait LoggerTrait
         }
     }
 
+    /**
+     * @param LoggerInterface $logger
+     */
+    public function setLogger(LoggerInterface $logger): void
+    {
+        $this->logger = $logger;
+    }
+
 }

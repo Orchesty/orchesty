@@ -24,7 +24,6 @@ use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\BatchInterface;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerAwareInterface;
-use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use React\EventLoop\LoopInterface;
 use React\Promise\PromiseInterface;
@@ -137,14 +136,6 @@ class PipedriveSyncPersonConnector implements ConnectorInterface, BatchInterface
     public function processAction(ProcessDto $dto): ProcessDto
     {
         throw new SystemException('PipedriveSync has not implemented "processAction" function.');
-    }
-
-    /**
-     * @param LoggerInterface $logger
-     */
-    public function setLogger(LoggerInterface $logger): void
-    {
-        $this->logger = $logger;
     }
 
     /**
