@@ -136,6 +136,7 @@ class FacebookGetPageConnector implements ConnectorInterface, LoggerAwareInterfa
      * @param ProcessDto|null $dto
      *
      * @return ResponseDto
+     * @throws CurlException
      */
     private function makeRequest(SystemInstall $systemInstall, ?ProcessDto $dto = NULL): ResponseDto
     {
@@ -165,6 +166,8 @@ class FacebookGetPageConnector implements ConnectorInterface, LoggerAwareInterfa
                     LoggerUtils::getMessage($this->system, $systemInstall)
                 );
             }
+
+            throw $e;
         }
     }
 

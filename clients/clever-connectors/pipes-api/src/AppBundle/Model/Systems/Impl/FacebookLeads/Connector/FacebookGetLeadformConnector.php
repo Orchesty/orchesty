@@ -233,7 +233,7 @@ class FacebookGetLeadformConnector implements ConnectorInterface, LoggerAwareInt
      * @param ProcessDto|null $dto
      *
      * @return ResponseDto
-     * @throws CleverConnectorsException
+     * @throws CurlException
      */
     private function makeRequest(SystemInstall $systemInstall, ?ProcessDto $dto = NULL): ResponseDto
     {
@@ -269,6 +269,7 @@ class FacebookGetLeadformConnector implements ConnectorInterface, LoggerAwareInt
                     LoggerUtils::getMessage($this->system, $systemInstall)
                 );
             }
+            throw $e;
         }
     }
 
