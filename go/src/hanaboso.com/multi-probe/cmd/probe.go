@@ -1,7 +1,7 @@
 package main
 
 import (
-	"pf-go/pf-multi-probe/pkg/probe"
+	"hanaboso.net/pf-multi-probe/pkg/probe"
 	"github.com/go-redis/redis"
 	"os"
 	"strconv"
