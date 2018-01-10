@@ -11,6 +11,8 @@ services:
             - '@hbpf.transport.async_curl_factory'
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@cc.progress_counter.async_progress_counter_service'
+        calls:
+            - ['setLogger', ['@monolog.logger.notification']]
 
     hbpf.connector.zoho-get-contact-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Zoho\Connector\ZohoGetContactConnector
@@ -18,6 +20,8 @@ services:
             - '@systems.zoho'
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.transport.curl_manager'
+        calls:
+            - ['setLogger', ['@monolog.logger.notification']]
 
     hbpf.connector.zoho-create-contact-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Zoho\Connector\ZohoCreateContactConnector
@@ -25,6 +29,8 @@ services:
             - '@systems.zoho'
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.transport.curl_manager'
+        calls:
+            - ['setLogger', ['@monolog.logger.notification']]
 
     hbpf.connector.zoho-update-contact-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Zoho\Connector\ZohoUpdateContactConnector
@@ -32,6 +38,8 @@ services:
             - '@systems.zoho'
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.transport.curl_manager'
+        calls:
+            - ['setLogger', ['@monolog.logger.notification']]
 
     hbpf.connector.zoho-updated-contact-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Zoho\Connector\ZohoUpdatedContactConnector
@@ -40,6 +48,8 @@ services:
             - '@hbpf.transport.async_curl_factory'
             - '@cc.last_sync.manager'
             - '@cc.progress_counter.progress_counter_service'
+        calls:
+            - ['setLogger', ['@monolog.logger.notification']]
 
     hbpf.connector.zoho-deleted-contact-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Zoho\Connector\ZohoUpdatedContactConnector
@@ -48,6 +58,8 @@ services:
             - '@hbpf.transport.async_curl_factory'
             - '@cc.last_sync.manager'
             - '@cc.progress_counter.progress_counter_service'
+        calls:
+            - ['setLogger', ['@monolog.logger.notification']]
 
     hbpf.custom_node.zoho-sync-update-contact-mapper:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Zoho\Mapper\ZohoSyncUpdateContactMapper
