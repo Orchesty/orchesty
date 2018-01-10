@@ -5,17 +5,21 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\Basecrm\Mapper;
 use CleverConnectors\AppBundle\Enum\CleverCustomKeysEnum;
 use CleverConnectors\AppBundle\Enum\CleverFieldsEnum;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
+use CleverConnectors\AppBundle\Traits\LoggerTrait;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
+use Psr\Log\LoggerAwareInterface;
 
 /**
  * Class BasecrmUpdateContactMapper
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Basecrm\Mapper
  */
-class BasecrmUpdateContactMapper implements CustomNodeInterface
+class BasecrmUpdateContactMapper implements CustomNodeInterface, LoggerAwareInterface
 {
+
+    use LoggerTrait;
 
     /**
      * @param ProcessDto $dto

@@ -6,23 +6,29 @@ use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Basecrm\BasecrmSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
+use CleverConnectors\AppBundle\Traits\LoggerTrait;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlException;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Commons\Utils\PipesHeaders;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\NullLogger;
 
 /**
  * Class BasecrmAcknowledgeContactConnector
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Basecrm\Connector
  */
-class BasecrmAcknowledgeContactConnector implements ConnectorInterface
+class BasecrmAcknowledgeContactConnector implements ConnectorInterface, LoggerAwareInterface
 {
+
+    use LoggerTrait;
 
     /**
      * @var CurlManagerInterface
@@ -50,6 +56,7 @@ class BasecrmAcknowledgeContactConnector implements ConnectorInterface
         $this->curlManager             = $curlManager;
         $this->system                  = $system;
         $this->systemInstallRepository = $dm->getRepository(SystemInstall::class);
+        $this->logger                  = new NullLogger();
     }
 
     /**
@@ -76,6 +83,7 @@ class BasecrmAcknowledgeContactConnector implements ConnectorInterface
      *
      * @return ProcessDto
      * @throws CleverConnectorsException
+     * @throws CurlException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {
@@ -117,7 +125,13 @@ class BasecrmAcknowledgeContactConnector implements ConnectorInterface
             $url = new Uri(sprintf('%s/v2/sync/ack', rtrim($requestDto->getUri(TRUE), '/')));
             $requestDto->setUri($url);
 
-            $this->curlManager->send($requestDto);
+            try {
+                $this->curlManager->send($requestDto);
+            } catch (CurlException $e) {
+                $this->logError($e->getResponse()->getStatusCode(), $this->system, $systemInstall);
+
+                throw $e;
+            }
         }
 
         return $dto;

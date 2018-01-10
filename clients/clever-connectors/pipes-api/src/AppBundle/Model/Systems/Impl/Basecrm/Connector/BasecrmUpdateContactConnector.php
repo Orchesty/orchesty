@@ -7,6 +7,7 @@ use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlException;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 
 /**
@@ -50,16 +51,21 @@ class BasecrmUpdateContactConnector extends BasecrmUpdateContactConnectorAbstrac
             ->setUri($uri)
             ->setBody($data['body']);
 
-        $res = $this->curl->send($requestDto);
+        $res = NULL;
+        try {
+            $res = $this->curl->send($requestDto);
+        } catch (CurlException $e) {
+            $this->logError($e->getResponse()->getStatusCode(), $this->system, $systemInstall);
 
-        if ($res->getStatusCode() === 404) {
-            throw new CleverConnectorsException(
-                sprintf('Contact with id [%s] wasn\'t find, BaseCRM updateContactConnector.', $data['id']),
-                CleverConnectorsException::REQUEST_FAILED);
-        } elseif ($res->getStatusCode() !== 200) {
-            throw new CleverConnectorsException(
-                sprintf('Failed to update, BaseCRM updateContactConnector, %s', $res->getBody()),
-                CleverConnectorsException::REQUEST_FAILED);
+            if ($e->getResponse()->getStatusCode() === 404) {
+                throw new CleverConnectorsException(
+                    sprintf('Contact with id [%s] wasn\'t find, BaseCRM updateContactConnector.', $data['id']),
+                    CleverConnectorsException::REQUEST_FAILED);
+            } else {
+                throw new CleverConnectorsException(
+                    sprintf('Failed to update, BaseCRM updateContactConnector, %s', $e->getResponse()->getBody()),
+                    CleverConnectorsException::REQUEST_FAILED);
+            }
         }
 
         $body = json_decode($res->getBody(), TRUE);

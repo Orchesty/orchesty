@@ -6,6 +6,7 @@ use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlException;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 
 /**
@@ -42,9 +43,11 @@ class BasecrmCreateContactConnector extends BasecrmUpdateContactConnectorAbstrac
             ->setUri($uri)
             ->setBody($dto->getData());
 
-        $res = $this->curl->send($requestDto);
+        try {
+            $res = $this->curl->send($requestDto);
+        } catch (CurlException $e) {
+            $this->logError($e->getResponse()->getStatusCode(), $this->system, $systemInstall);
 
-        if ($res->getStatusCode() !== 200) {
             throw new CleverConnectorsException('Failed to create new contact, BaseCRM createContactConnector.',
                 CleverConnectorsException::REQUEST_FAILED);
         }

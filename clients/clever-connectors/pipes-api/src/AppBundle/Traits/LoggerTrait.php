@@ -40,11 +40,16 @@ trait LoggerTrait
 
         switch ($status) {
             case 400:
+            case 404:
             case 409:
+            case 422:
                 $this->logger->info(NotificationTypeEnum::DATA_ERROR, $msg);
                 break;
             case 401:
                 $this->logger->info(NotificationTypeEnum::ACCESS_EXPIRATION, $msg);
+                break;
+            case 429:
+                $this->logger->info(NotificationTypeEnum::SERVICE_UNAVAILABLE, $msg);
                 break;
             default:
                 $this->logger->info(NotificationTypeEnum::SERVICE_UNAVAILABLE, $msg);

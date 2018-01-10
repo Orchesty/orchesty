@@ -9,6 +9,8 @@ services:
         arguments:
             - '@systems.basecrm'
             - '@hbpf.transport.async_curl_factory'
+        calls:
+            - ['setLogger', ['@monolog.logger.notification']]
 
     hbpf.connector.basecrm-queue-contact-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Basecrm\Connector\BasecrmQueueContactConnector
@@ -16,6 +18,8 @@ services:
             - '@systems.basecrm'
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.transport.curl_manager'
+        calls:
+            - ['setLogger', ['@monolog.logger.notification']]
 
     hbpf.connector.basecrm-acknowledge-contact-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Basecrm\Connector\BasecrmAcknowledgeContactConnector
@@ -30,6 +34,8 @@ services:
             - '@systems.basecrm'
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.transport.curl_manager'
+        calls:
+            - ['setLogger', ['@monolog.logger.notification']]
 
     hbpf.connector.basecrm-update-contact-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Basecrm\Connector\BasecrmUpdateContactConnector
@@ -37,6 +43,8 @@ services:
             - '@systems.basecrm'
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.transport.curl_manager'
+        calls:
+            - ['setLogger', ['@monolog.logger.notification']]
 
     hbpf.custom_node.basecrm-updated-contact-mapper:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Basecrm\Mapper\BasecrmUpdatedContactMapper
@@ -49,6 +57,10 @@ services:
     hbpf.custom_node.basecrm-create-contact-mapper:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Basecrm\Mapper\BasecrmCreateContactMapper
         arguments:
+            - '@systems.basecrm'
+            - '@doctrine_mongodb.odm.default_document_manager'
+        calls:
+            - ['setLogger', ['@monolog.logger.notification']]
 
     hbpf.custom_node.basecrm-created-contact-mapper:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Basecrm\Mapper\BasecrmCreatedContactMapper
