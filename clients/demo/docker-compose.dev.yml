@@ -44,7 +44,7 @@ services:
           - pipesdemo_default
 
     multi-probe:
-      image: 'dkr.hanaboso.net/pipes/pipes/go-multi-probe:dev'
+      image: 'dkr.hanaboso.net/pipes/pipes/multi-probe:dev'
       environment:
         REDIS_HOST: 'redis'
         REDIS_PORT: '6379'
