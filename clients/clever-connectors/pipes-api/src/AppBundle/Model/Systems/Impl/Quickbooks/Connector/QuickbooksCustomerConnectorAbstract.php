@@ -11,12 +11,15 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\Connector;
 
 use CleverConnectors\AppBundle\Document\LastSync;
 use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Enum\NotificationTypeEnum;
 use CleverConnectors\AppBundle\Model\LastSync\LastSyncManager;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\QuickbooksSystem;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use CleverConnectors\AppBundle\Utils\CronUtils;
 use CleverConnectors\AppBundle\Utils\Dto\Times;
+use CleverConnectors\AppBundle\Utils\LoggerUtils;
+use Clue\React\Buzz\Message\ResponseException;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSender;
@@ -27,6 +30,9 @@ use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\BatchInterface;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
+use Psr\Log\NullLogger;
 use React\EventLoop\LoopInterface;
 use React\Promise\PromiseInterface;
 use function React\Promise\all;
@@ -36,8 +42,10 @@ use function React\Promise\all;
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\Connector
  */
-abstract class QuickbooksCustomerConnectorAbstract implements BatchInterface, ConnectorInterface
+abstract class QuickbooksCustomerConnectorAbstract implements BatchInterface, ConnectorInterface, LoggerAwareInterface
 {
+
+    use LoggerAwareTrait;
 
     protected const PAGE_LIMIT = 50;
 
@@ -63,11 +71,16 @@ abstract class QuickbooksCustomerConnectorAbstract implements BatchInterface, Co
      * @param LastSyncManager   $lastSyncManager
      * @param CurlSenderFactory $factory
      */
-    public function __construct(QuickbooksSystem $system, LastSyncManager $lastSyncManager, CurlSenderFactory $factory)
+    public function __construct(
+        QuickbooksSystem $system,
+        LastSyncManager $lastSyncManager,
+        CurlSenderFactory $factory
+    )
     {
         $this->system          = $system;
         $this->factory         = $factory;
         $this->lastSyncManager = $lastSyncManager;
+        $this->logger          = new NullLogger();
     }
 
     /**
@@ -113,6 +126,21 @@ abstract class QuickbooksCustomerConnectorAbstract implements BatchInterface, Co
         $promise = $this->fetchData($sender, RequestDto::from($requestDto, $url))->then(
             function (ResponseInterface $response): int {
                 return $this->getTotalPages($response);
+            },
+            function (ResponseException $exception) use ($systemInstall): void {
+                if ($exception->getCode() == 401) {
+                    $this->logger->info(
+                        NotificationTypeEnum::ACCESS_EXPIRATION,
+                        LoggerUtils::getMessage($this->system, $systemInstall)
+                    );
+                }
+                if ($exception->getCode() == 500) {
+                    $this->logger->info(
+                        NotificationTypeEnum::SERVICE_UNAVAILABLE,
+                        LoggerUtils::getMessage($this->system, $systemInstall)
+                    );
+                }
+                throw $exception;
             }
         )->then(
             function (int $total) use ($sender, $callbackItem, $requestDto, $times) {
