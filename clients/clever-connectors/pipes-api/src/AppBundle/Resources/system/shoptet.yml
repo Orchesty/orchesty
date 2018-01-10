@@ -10,6 +10,8 @@ services:
             - '@systems.shoptet'
             - '@hbpf.transport.async_curl_factory'
             - '@doctrine_mongodb.odm.default_document_manager'
+        calls:
+            - ['setLogger', ['@monolog.logger.notification']]
 
     hbpf.custom_node.shoptet-updated-customer-splitter:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Shoptet\Splitter\ShoptetUpdatedCustomerSplitter
