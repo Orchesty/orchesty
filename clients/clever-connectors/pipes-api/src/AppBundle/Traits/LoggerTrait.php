@@ -32,6 +32,7 @@ trait LoggerTrait
 
         switch ($status) {
             case 400:
+            case 409:
                 $this->logger->info(NotificationTypeEnum::DATA_ERROR, $msg);
                 break;
             case 401:

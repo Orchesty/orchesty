@@ -4,25 +4,32 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
+use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\HubspotSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
+use CleverConnectors\AppBundle\Traits\LoggerTrait;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlException;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\NullLogger;
 
 /**
  * Class HubspotUpdateContactConnector
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\Connector
  */
-class HubspotUpdateContactConnector implements ConnectorInterface
+class HubspotUpdateContactConnector implements ConnectorInterface, LoggerAwareInterface
 {
+
+    use LoggerTrait;
 
     private const SUB_URL = '/contacts/v1/contact/vid/%s/profile';
 
@@ -53,6 +60,7 @@ class HubspotUpdateContactConnector implements ConnectorInterface
         $this->systemInstallRepository = $dm->getRepository(SystemInstall::class);
         $this->system                  = $system;
         $this->curl                    = $curl;
+        $this->logger                  = new NullLogger();
     }
 
     /**
@@ -82,6 +90,8 @@ class HubspotUpdateContactConnector implements ConnectorInterface
      *
      * @return ProcessDto
      * @throws CleverConnectorsException
+     * @throws SystemException
+     * @throws CurlException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {
@@ -97,7 +107,12 @@ class HubspotUpdateContactConnector implements ConnectorInterface
             ->setUri($uri)
             ->setBody($data['body']);
 
-        $res = $this->curl->send($requestDto);
+        try {
+            $res = $this->curl->send($requestDto);
+        } catch (CurlException $e) {
+            $this->logError($e->getResponse()->getStatusCode(), $this->system, $systemInstall);
+            throw $e;
+        }
 
         if ($res->getStatusCode() === 404) {
             throw new CleverConnectorsException(
