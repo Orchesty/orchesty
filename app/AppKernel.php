@@ -24,7 +24,6 @@ use Snc\RedisBundle\SncRedisBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\MonologBundle\MonologBundle;
 use Symfony\Bundle\SecurityBundle\SecurityBundle;
-use Symfony\Bundle\SwiftmailerBundle\SwiftmailerBundle;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\HttpKernel\Kernel;
 
@@ -49,7 +48,6 @@ class AppKernel extends Kernel
             new MonologBundle(),
             new SecurityBundle(),
             new SensioFrameworkExtraBundle(),
-            new SwiftmailerBundle(),
             new SncRedisBundle(),
 
             new HbPFAclBundle(),
