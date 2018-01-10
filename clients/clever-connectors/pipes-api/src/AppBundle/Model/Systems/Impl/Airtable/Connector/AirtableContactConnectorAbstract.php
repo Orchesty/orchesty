@@ -7,6 +7,7 @@ use CleverConnectors\AppBundle\Model\LastSync\LastSyncManager;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Airtable\AirtableSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
+use CleverConnectors\AppBundle\Traits\LoggerTrait;
 use DateTime;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -19,6 +20,8 @@ use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\BatchInterface;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\NullLogger;
 use React\Promise\PromiseInterface;
 
 /**
@@ -26,8 +29,10 @@ use React\Promise\PromiseInterface;
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Airtable\Connector
  */
-abstract class AirtableContactConnectorAbstract implements BatchInterface, ConnectorInterface
+abstract class AirtableContactConnectorAbstract implements BatchInterface, ConnectorInterface, LoggerAwareInterface
 {
+
+    use LoggerTrait;
 
     protected const PAGE_LIMIT = 50;
 
@@ -70,6 +75,7 @@ abstract class AirtableContactConnectorAbstract implements BatchInterface, Conne
         $this->lastSyncManager         = $lastSyncManager;
         $this->factory                 = $factory;
         $this->systemInstallRepository = $dm->getRepository(SystemInstall::class);
+        $this->logger                  = new NullLogger();
     }
 
     /**

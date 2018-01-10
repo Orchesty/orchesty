@@ -2,11 +2,13 @@
 
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Airtable\Connector;
 
+use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\LastSync\LastSyncManager;
 use CleverConnectors\AppBundle\Model\ProgressCounter\ProgressCounterService;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Airtable\AirtableSystem;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
+use Clue\React\Buzz\Message\ResponseException;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSender;
@@ -79,7 +81,8 @@ class AirtableSyncContactConnector extends AirtableContactConnectorAbstract
         $table = CMHeaders::get(AirtableSystem::TABLE_URL, $dto->getHeaders());
         $view  = CMHeaders::get(AirtableSystem::VIEW, $dto->getHeaders());
 
-        $promise = $this->getPage($sender, $requestDto, $table, $callbackItem, 1, NULL, $processId, $view);
+        $promise = $this->getPage($sender, $requestDto, $table, $callbackItem, 1, NULL, $processId, $view,
+            $systemInstall);
 
         $this->systemInstallRepository->setSyncTime($systemInstall);
 
@@ -87,14 +90,15 @@ class AirtableSyncContactConnector extends AirtableContactConnectorAbstract
     }
 
     /**
-     * @param CurlSender  $sender
-     * @param RequestDto  $requestDto
-     * @param string      $table
-     * @param callable    $callbackItem
-     * @param int         $page
-     * @param null|string $offset
-     * @param null|string $processId
-     * @param null|string $view
+     * @param CurlSender    $sender
+     * @param RequestDto    $requestDto
+     * @param string        $table
+     * @param callable      $callbackItem
+     * @param int           $page
+     * @param null|string   $offset
+     * @param null|string   $processId
+     * @param null|string   $view
+     * @param SystemInstall $systemInstall
      *
      * @return PromiseInterface
      */
@@ -106,14 +110,15 @@ class AirtableSyncContactConnector extends AirtableContactConnectorAbstract
         int $page,
         ?string $offset = NULL,
         ?string $processId = NULL,
-        ?string $view = NULL
+        ?string $view = NULL,
+        SystemInstall $systemInstall
     ): PromiseInterface
     {
         $uri = $this->getUri($table, $offset, NULL, $view);
 
         return $this->fetchData($sender, RequestDto::from($requestDto, $uri))->then(
             function (ResponseInterface $response) use (
-                $sender, $requestDto, $table, $callbackItem, $page, $processId, $view
+                $sender, $requestDto, $table, $callbackItem, $page, $processId, $view, $systemInstall
             ) {
                 $data = json_decode($response->getBody()->getContents(), TRUE);
                 $callbackItem($this->createSuccessMessage($data, $page));
@@ -127,7 +132,8 @@ class AirtableSyncContactConnector extends AirtableContactConnectorAbstract
                         $page + 1,
                         $this->getOffset($data),
                         $processId,
-                        $view
+                        $view,
+                        $systemInstall
                     );
                 } else {
                     if ($processId) {
@@ -136,6 +142,9 @@ class AirtableSyncContactConnector extends AirtableContactConnectorAbstract
 
                     return resolve();
                 }
+            },
+            function (ResponseException $e) use ($systemInstall): void {
+                $this->logError($e->getResponse()->getStatusCode(), $this->system, $systemInstall);
             }
         );
     }
