@@ -12,6 +12,8 @@ services:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.transport.async_curl_factory'
             - '@cc.progress_counter.async_progress_counter_service'
+        calls:
+            - [setLogger, ['@monolog.logger.notification']]
 
     hbpf.connector.nutshell-get-contact-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Nutshell\Connector\NutshellGetContactConnector
@@ -19,6 +21,8 @@ services:
             - '@systems.nutshell'
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.transport.curl_manager'
+        calls:
+            - [setLogger, ['@monolog.logger.notification']]
 
     hbpf.connector.nutshell-create-contact-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Nutshell\Connector\NutshellCreateContactConnector
@@ -26,6 +30,8 @@ services:
             - '@systems.nutshell'
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.transport.curl_manager'
+        calls:
+            - [setLogger, ['@monolog.logger.notification']]
 
     hbpf.connector.nutshell-update-contact-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Nutshell\Connector\NutshellUpdateContactConnector
@@ -33,6 +39,8 @@ services:
             - '@systems.nutshell'
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.transport.curl_manager'
+        calls:
+            - [setLogger, ['@monolog.logger.notification']]
 
     hbpf.connector.nutshell-updated-contact-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Nutshell\Connector\NutshellUpdatedContactConnector

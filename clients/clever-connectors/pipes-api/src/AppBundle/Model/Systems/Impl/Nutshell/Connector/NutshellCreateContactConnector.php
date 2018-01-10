@@ -6,23 +6,29 @@ use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Nutshell\NutshellSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
+use CleverConnectors\AppBundle\Traits\LoggerTrait;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlException;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
 use Nette\Utils\Json;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\NullLogger;
 
 /**
  * Class NutshellCreateContactConnector
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Nutshell\Connector
  */
-class NutshellCreateContactConnector implements ConnectorInterface
+class NutshellCreateContactConnector implements ConnectorInterface, LoggerAwareInterface
 {
+
+    use LoggerTrait;
 
     /**
      * @var NutshellSystem
@@ -51,6 +57,7 @@ class NutshellCreateContactConnector implements ConnectorInterface
         $this->system                  = $system;
         $this->systemInstallRepository = $dm->getRepository(SystemInstall::class);
         $this->manager                 = $manager;
+        $this->logger                  = new NullLogger();
     }
 
     /**
@@ -66,6 +73,7 @@ class NutshellCreateContactConnector implements ConnectorInterface
      *
      * @return ProcessDto
      * @throws CleverConnectorsException
+     * @throws CurlException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {
@@ -82,9 +90,17 @@ class NutshellCreateContactConnector implements ConnectorInterface
         $requestDto    = $this->system->getRequestDto($systemInstall, CurlManager::METHOD_POST);
         $requestDto->setBody($dto->getData())->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()));
 
-        $response = $this->manager->send($requestDto);
+        try {
+            $response = $this->manager->send($requestDto);
 
-        return $dto->setData($response->getBody());
+            return $dto->setData($response->getBody());
+        } catch (CurlException $e) {
+            if ($e->getResponse()) {
+                $this->logError($e->getResponse()->getStatusCode(), $this->system, $systemInstall);
+            }
+
+            throw $e;
+        }
     }
 
     /**
