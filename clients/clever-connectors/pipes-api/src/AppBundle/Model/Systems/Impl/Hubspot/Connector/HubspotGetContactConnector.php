@@ -4,25 +4,32 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
+use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\HubspotSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
+use CleverConnectors\AppBundle\Traits\LoggerTrait;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlException;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\NullLogger;
 
 /**
  * Class HubspotGetContactConnector
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\Connector
  */
-class HubspotGetContactConnector implements ConnectorInterface
+class HubspotGetContactConnector implements ConnectorInterface, LoggerAwareInterface
 {
+
+    use LoggerTrait;
 
     private const CONTACT_URL = '/contacts/v1/contact/vid/%s/profile';
 
@@ -53,6 +60,7 @@ class HubspotGetContactConnector implements ConnectorInterface
         $this->system                  = $system;
         $this->curlManager             = $curlManager;
         $this->systemInstallRepository = $dm->getRepository(SystemInstall::class);
+        $this->logger                  = new NullLogger();
     }
 
     /**
@@ -82,6 +90,8 @@ class HubspotGetContactConnector implements ConnectorInterface
      *
      * @return ProcessDto
      * @throws CleverConnectorsException
+     * @throws CurlException
+     * @throws SystemException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {
@@ -124,6 +134,8 @@ class HubspotGetContactConnector implements ConnectorInterface
      * @param array      $body
      *
      * @return ProcessDto
+     * @throws CurlException
+     * @throws SystemException
      */
     private function getContactProfile(ProcessDto $dto, array $body): ProcessDto
     {
@@ -134,7 +146,12 @@ class HubspotGetContactConnector implements ConnectorInterface
         $query = sprintf(self::CONTACT_URL, $body[HubspotSystem::OBJECT_ID_KEY]);
         $requestDto->setUri(new Uri(sprintf('%s%s', $requestDto->getUri(TRUE), $query)));
 
-        $response = $this->curlManager->send($requestDto);
+        try {
+            $response = $this->curlManager->send($requestDto);
+        } catch (CurlException $e) {
+            $this->logError($e->getResponse()->getStatusCode(), $this->system, $systemInstall);
+            throw $e;
+        }
 
         $responseBody                                       = json_decode($response->getBody(), TRUE);
         $responseBody[HubspotSystem::SUBSCRIPTION_TYPE_KEY] = $body[HubspotSystem::SUBSCRIPTION_TYPE_KEY];

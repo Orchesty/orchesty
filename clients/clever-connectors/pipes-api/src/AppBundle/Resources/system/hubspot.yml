@@ -12,6 +12,8 @@ services:
             - '@systems.hubspot'
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.transport.curl_manager'
+        calls:
+            - ['setLogger', ['@monolog.logger.notification']]
 
     hbpf.connector.hubspot-update-contact-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\Connector\HubspotUpdateContactConnector
@@ -19,6 +21,8 @@ services:
             - '@systems.hubspot'
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.transport.curl_manager'
+        calls:
+            - ['setLogger', ['@monolog.logger.notification']]
 
     hbpf.connector.hubspot-updated-contact-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\Connector\HubspotUpdatedContactConnector
@@ -30,6 +34,8 @@ services:
             - '@systems.hubspot'
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.transport.curl_manager'
+        calls:
+            - ['setLogger', ['@monolog.logger.notification']]
 
     hbpf.connector.hubspot-sync-contact-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\Connector\HubspotSyncContactConnector
@@ -38,6 +44,8 @@ services:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.transport.async_curl_factory'
             - '@cc.progress_counter.async_progress_counter_service'
+        calls:
+            - ['setLogger', ['@monolog.logger.notification']]
 
     hbpf.custom_node.hubspot-created-contact-mapper:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\Mapper\HubspotCreatedContactMapper

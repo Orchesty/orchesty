@@ -7,7 +7,9 @@ use CleverConnectors\AppBundle\Model\ProgressCounter\ProgressCounterService;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\HubspotSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
+use CleverConnectors\AppBundle\Traits\LoggerTrait;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
+use Clue\React\Buzz\Message\ResponseException;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Uri;
@@ -20,6 +22,8 @@ use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\BatchInterface;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\NullLogger;
 use React\EventLoop\LoopInterface;
 use React\Promise\PromiseInterface;
 use function React\Promise\resolve;
@@ -29,8 +33,10 @@ use function React\Promise\resolve;
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\Connector
  */
-class HubspotSyncContactConnector implements BatchInterface, ConnectorInterface
+class HubspotSyncContactConnector implements BatchInterface, ConnectorInterface, LoggerAwareInterface
 {
+
+    use LoggerTrait;
 
     private const PER_PAGE            = 50;
     private const CONTACTS_URL        = '/contacts/v1/lists/all/contacts/all?count=' . self::PER_PAGE;
@@ -75,6 +81,7 @@ class HubspotSyncContactConnector implements BatchInterface, ConnectorInterface
         $this->factory                 = $factory;
         $this->systemInstallRepository = $dm->getRepository(SystemInstall::class);
         $this->counterService          = $counterService;
+        $this->logger                  = new NullLogger();
     }
 
     /**
@@ -123,7 +130,7 @@ class HubspotSyncContactConnector implements BatchInterface, ConnectorInterface
         $requestDto->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()));
         $processId = CMHeaders::get(CMHeaders::PROCESS_ID, $dto->getHeaders()) ?? '';
         $url       = new Uri(sprintf('%s%s', $requestDto->getUri(TRUE), self::CONTACTS_URL));
-        $promise   = $this->getPage($sender, $callbackItem, $requestDto, $url, 1, $processId);
+        $promise   = $this->getPage($sender, $callbackItem, $requestDto, $url, 1, $processId, $systemInstall);
 
         $this->systemInstallRepository->setSyncTime($systemInstall);
 
@@ -142,12 +149,13 @@ class HubspotSyncContactConnector implements BatchInterface, ConnectorInterface
     }
 
     /**
-     * @param CurlSender $sender
-     * @param callable   $callbackItem
-     * @param RequestDto $dto
-     * @param Uri        $url
-     * @param int        $page
-     * @param string     $processId
+     * @param CurlSender    $sender
+     * @param callable      $callbackItem
+     * @param RequestDto    $dto
+     * @param Uri           $url
+     * @param int           $page
+     * @param string        $processId
+     * @param SystemInstall $systemInstall
      *
      * @return PromiseInterface
      */
@@ -157,13 +165,14 @@ class HubspotSyncContactConnector implements BatchInterface, ConnectorInterface
         RequestDto $dto,
         Uri $url,
         int $page,
-        string $processId
+        string $processId,
+        SystemInstall $systemInstall
     ): PromiseInterface
     {
         $res = $this->fetchData($sender, RequestDto::from($dto, $url))
             ->then(
                 function (ResponseInterface $response)
-                use ($sender, $callbackItem, $dto, $url, $page, $processId) {
+                use ($sender, $callbackItem, $dto, $url, $page, $processId, $systemInstall) {
                     $body   = json_decode($response->getBody()->getContents(), TRUE);
                     $parsed = $this->checkParsedResponseData($body);
                     $callbackItem($this->createSuccessMessage($body, $page));
@@ -172,12 +181,16 @@ class HubspotSyncContactConnector implements BatchInterface, ConnectorInterface
                         $query = sprintf(self::CONTACTS_URL_OFFSET, $parsed['vid-offset']);
                         $url   = new Uri(sprintf('%s%s', $dto->getUri(TRUE), $query));
 
-                        return $this->getPage($sender, $callbackItem, $dto, $url, ++$page, $processId);
+                        return $this->getPage($sender, $callbackItem, $dto, $url, ++$page, $processId, $systemInstall);
                     } else {
                         $this->counterService->setTotal($processId, $page * self::PER_PAGE);
                     }
 
                     return resolve();
+                },
+                function (ResponseException $e) use ($systemInstall): void {
+                    $this->logError($e->getResponse()->getStatusCode(), $this->system, $systemInstall);
+                    throw $e;
                 }
             );
 
