@@ -21,7 +21,6 @@ use Snc\RedisBundle\SncRedisBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\MonologBundle\MonologBundle;
 use Symfony\Bundle\SecurityBundle\SecurityBundle;
-use Symfony\Bundle\SwiftmailerBundle\SwiftmailerBundle;
 use Symfony\Bundle\TwigBundle\TwigBundle;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\HttpKernel\Kernel;
@@ -39,7 +38,6 @@ class AppKernel extends Kernel
             new SecurityBundle(),
             new TwigBundle(),
             new MonologBundle(),
-            new SwiftmailerBundle(),
             new DoctrineBundle(),
             new SensioFrameworkExtraBundle(),
             new FOSRestBundle(),
