@@ -36,12 +36,24 @@ njs-build-image:
     - master
     - ci
 
-go-multi-probe-image:
+multi-probe-image:
   stage: stage1
   script:
-    - cd $REPO_ROOT/pf-go/pf-multi-probe
-    - IMAGE=dkr.hanaboso.net/pipes/pipes/go-multi-probe:${CI_BUILD_REF_NAME}
-    - docker build -t ${IMAGE} .
+    - cd $REPO_ROOT/go/src/hanaboso.com/multi-probe
+    - IMAGE=dkr.hanaboso.net/pipes/pipes/multi-probe:${CI_BUILD_REF_NAME}
+    - cd ../ && docker build -t ${IMAGE} -f ./multi-probe/Dockerfile .
+    - docker push ${IMAGE}
+  only:
+    - dev
+    - master
+    - ci
+
+limiter-image:
+  stage: stage1
+  script:
+    - cd $REPO_ROOT/go/src/hanaboso.com/limiter
+    - IMAGE=dkr.hanaboso.net/pipes/pipes/limiter:${CI_BUILD_REF_NAME}
+    - cd ../ && docker build -t ${IMAGE} -f ./limiter/Dockerfile .
     - docker push ${IMAGE}
   only:
     - dev
