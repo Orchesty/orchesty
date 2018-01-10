@@ -29,10 +29,12 @@ class CronManager
 
     private const CREATE = '%s/cron-api/create';
     private const UPDATE = '%s/cron-api/update/%s';
+    private const PATCH  = '%s/cron-api/patch/%s';
     private const DELETE = '%s/cron-api/delete/%s';
 
     private const BATCH_CREATE = '%s/cron-api/batch_create';
     private const BATCH_UPDATE = '%s/cron-api/batch_update';
+    private const BATCH_PATCH  = '%s/cron-api/batch_patch';
     private const BATCH_DELETE = '%s/cron-api/batch_delete';
 
     private const HASH    = 'hash';
@@ -55,23 +57,36 @@ class CronManager
     private $backend;
 
     /**
+     * @var string
+     */
+    private $cronHost;
+
+    /**
      * CronManager constructor.
      *
      * @param DocumentManager      $documentManager
      * @param CurlManagerInterface $curlManager
      * @param string               $backend
+     * @param string               $cronHost
      */
-    public function __construct(DocumentManager $documentManager, CurlManagerInterface $curlManager, string $backend)
+    public function __construct(
+        DocumentManager $documentManager,
+        CurlManagerInterface $curlManager,
+        string $backend,
+        string $cronHost
+    )
     {
         $this->topologyRepository = $documentManager->getRepository(Topology::class);
         $this->curlManager        = $curlManager;
         $this->backend            = $backend;
+        $this->cronHost           = $cronHost;
     }
 
     /**
      * @param Node $node
      *
      * @return ResponseDto
+     * @throws CronException
      */
     public function create(Node $node): ResponseDto
     {
@@ -89,6 +104,7 @@ class CronManager
      * @param Node $node
      *
      * @return ResponseDto
+     * @throws CronException
      */
     public function update(Node $node): ResponseDto
     {
@@ -105,6 +121,24 @@ class CronManager
      * @param Node $node
      *
      * @return ResponseDto
+     * @throws CronException
+     */
+    public function patch(Node $node): ResponseDto
+    {
+        $url = $this->getUrl(self::PATCH, $this->getHash($node));
+        $dto = (new RequestDto(CurlManager::METHOD_POST, $url))->setBody(Json::encode([
+            'time'    => $node->getCron(),
+            'command' => $this->getCommand($node),
+        ]));
+
+        return $this->sendAndProcessRequest($dto);
+    }
+
+    /**
+     * @param Node $node
+     *
+     * @return ResponseDto
+     * @throws CronException
      */
     public function delete(Node $node): ResponseDto
     {
@@ -118,6 +152,7 @@ class CronManager
      * @param Node[] $nodes
      *
      * @return ResponseDto
+     * @throws CronException
      */
     public function batchCreate(array $nodes): ResponseDto
     {
@@ -131,6 +166,7 @@ class CronManager
      * @param Node[] $nodes
      *
      * @return ResponseDto
+     * @throws CronException
      */
     public function batchUpdate(array $nodes): ResponseDto
     {
@@ -144,6 +180,21 @@ class CronManager
      * @param Node[] $nodes
      *
      * @return ResponseDto
+     * @throws CronException
+     */
+    public function batchPatch(array $nodes): ResponseDto
+    {
+        $body = $this->processNodes($nodes);
+        $dto  = (new RequestDto(CurlManager::METHOD_POST, $this->getUrl(self::BATCH_PATCH)))->setBody($body);
+
+        return $this->sendAndProcessRequest($dto);
+    }
+
+    /**
+     * @param Node[] $nodes
+     *
+     * @return ResponseDto
+     * @throws CronException
      */
     public function batchDelete(array $nodes): ResponseDto
     {
@@ -161,7 +212,7 @@ class CronManager
      */
     private function getUrl(string $url, ?string $hash = NULL): Uri
     {
-        $backend = rtrim($this->backend, '/');
+        $backend = rtrim($this->cronHost, '/');
 
         return new Uri($hash ? sprintf($url, $backend, $hash) : sprintf($url, $backend));
     }

@@ -2,6 +2,7 @@
 
 namespace Tests\Integration\Configurator\Model;
 
+use Hanaboso\PipesFramework\Commons\Cron\CronManager;
 use Hanaboso\PipesFramework\Commons\Enum\HandlerEnum;
 use Hanaboso\PipesFramework\Commons\Enum\TopologyStatusEnum;
 use Hanaboso\PipesFramework\Commons\Enum\TypeEnum;
@@ -9,6 +10,7 @@ use Hanaboso\PipesFramework\Configurator\Document\Embed\EmbedNode;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
+use Hanaboso\PipesFramework\Configurator\Model\TopologyManager;
 use Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository;
 use Nette\Utils\Json;
 use Tests\DatabaseTestCaseAbstract;
@@ -445,7 +447,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
         $this->expectException(TopologyException::class);
         $this->expectExceptionCode(TopologyException::TOPOLOGY_NODE_CRON_NOT_VALID);
 
-        $schema                                                        = $this->getSchema('schema.json');
+        $schema                                                     = $this->getSchema('schema.json');
         $schema['bpmn:process']['bpmn:event'][0]['@pipes:cronTime'] = 'Unknown';
         $topologyManager->saveTopologySchema($topology, '', $schema);
     }

@@ -67,4 +67,5 @@ services:
         arguments:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.transport.curl_manager'
+            - '%monolith_host%'
             - '%cron_host%'
