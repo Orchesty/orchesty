@@ -2,6 +2,7 @@
 
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Zendesk\Connector;
 
+use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use CleverConnectors\AppBundle\Utils\CronUtils;
@@ -36,6 +37,8 @@ class ZendeskUpdatedUserConnector extends ZendeskUserConnectorAbstract
      * @param callable      $callbackItem
      *
      * @return PromiseInterface
+     * @throws SystemException
+     * @throws CleverConnectorsException
      */
     public function processBatch(ProcessDto $dto, LoopInterface $loop, callable $callbackItem): PromiseInterface
     {
@@ -49,7 +52,7 @@ class ZendeskUpdatedUserConnector extends ZendeskUserConnectorAbstract
         $url = new Uri(sprintf('%s/api/v2/search?%s', rtrim($requestDto->getUri(TRUE), '/'),
             $this->getTimeQuery($times->getStart())));
 
-        $promise = $this->getPage($sender, $callbackItem, RequestDto::from($requestDto, $url));
+        $promise = $this->getPage($sender, $callbackItem, RequestDto::from($requestDto, $url), 1, NULL, $systemInstall);
 
         $lastSync->setTimestamp($times->getEnd());
         $this->lastSyncManager->updateLastSync($lastSync);

@@ -7,6 +7,8 @@ use CleverConnectors\AppBundle\Model\LastSync\LastSyncManager;
 use CleverConnectors\AppBundle\Model\ProgressCounter\ProgressCounterService;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Zendesk\ZendeskSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
+use CleverConnectors\AppBundle\Traits\LoggerTrait;
+use Clue\React\Buzz\Message\ResponseException;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Uri;
@@ -19,6 +21,8 @@ use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\BatchInterface;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\NullLogger;
 use React\Promise\PromiseInterface;
 use function React\Promise\resolve;
 
@@ -27,8 +31,10 @@ use function React\Promise\resolve;
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Zendesk\Connector
  */
-abstract class ZendeskUserConnectorAbstract implements ConnectorInterface, BatchInterface
+abstract class ZendeskUserConnectorAbstract implements ConnectorInterface, BatchInterface, LoggerAwareInterface
 {
+
+    use LoggerTrait;
 
     protected const PER_PAGE = 50;
 
@@ -79,6 +85,7 @@ abstract class ZendeskUserConnectorAbstract implements ConnectorInterface, Batch
         $this->factory                 = $factory;
         $this->systemInstallRepository = $dm->getRepository(SystemInstall::class);
         $this->counterService          = $counterService;
+        $this->logger                  = new NullLogger();
     }
 
     /**
@@ -115,11 +122,12 @@ abstract class ZendeskUserConnectorAbstract implements ConnectorInterface, Batch
     }
 
     /**
-     * @param CurlSender $sender
-     * @param callable   $callbackItem
-     * @param RequestDto $requestDto
-     * @param int        $page
-     * @param string     $processId
+     * @param CurlSender    $sender
+     * @param callable      $callbackItem
+     * @param RequestDto    $requestDto
+     * @param int           $page
+     * @param string        $processId
+     * @param SystemInstall $systemInstall
      *
      * @return PromiseInterface
      */
@@ -128,30 +136,40 @@ abstract class ZendeskUserConnectorAbstract implements ConnectorInterface, Batch
         callable $callbackItem,
         RequestDto $requestDto,
         int $page = 1,
-        ?string $processId = NULL
+        ?string $processId = NULL,
+        SystemInstall $systemInstall
     ): PromiseInterface
     {
-        $res = $this->fetchData($sender, $requestDto)->then(
-            function (ResponseInterface $response) use ($sender, $callbackItem, $requestDto, $page, $processId) {
-                $data = json_decode($response->getBody()->getContents(), TRUE);
-                $callbackItem($this->createSuccessMessage($data, $page));
+        $res = $this->fetchData($sender, $requestDto)
+            ->then(
+                function (ResponseInterface $response) use (
+                    $sender, $callbackItem, $requestDto, $page, $processId, $systemInstall
+                ) {
+                    $data = json_decode($response->getBody()->getContents(), TRUE);
+                    $callbackItem($this->createSuccessMessage($data, $page));
 
-                if (array_key_exists('next_page', $data) && !is_null($data['next_page'])) {
-                    return $this->getPage(
-                        $sender,
-                        $callbackItem,
-                        RequestDto::from($requestDto, new Uri($data['next_page'])),
-                        ++$page
-                    );
-                } else {
-                    if ($processId) {
-                        $this->counterService->setTotal($processId, $page * self::PER_PAGE);
+                    if (array_key_exists('next_page', $data) && !is_null($data['next_page'])) {
+                        return $this->getPage(
+                            $sender,
+                            $callbackItem,
+                            RequestDto::from($requestDto, new Uri($data['next_page'])),
+                            ++$page,
+                            NULL,
+                            $systemInstall
+                        );
+                    } else {
+                        if ($processId) {
+                            $this->counterService->setTotal($processId, $page * self::PER_PAGE);
+                        }
+
+                        return resolve();
                     }
-
-                    return resolve();
+                },
+                function (ResponseException $e) use ($systemInstall): void {
+                    $this->logError($e->getResponse()->getStatusCode(), $this->system, $systemInstall);
+                    throw $e;
                 }
-            }
-        );
+            );
 
         return $res;
     }
