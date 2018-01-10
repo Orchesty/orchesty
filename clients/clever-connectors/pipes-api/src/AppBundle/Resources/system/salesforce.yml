@@ -13,6 +13,8 @@ services:
             - '@hbpf.transport.async_curl_factory'
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@cc.progress_counter.async_progress_counter_service'
+        calls:
+            - ['setLogger', ['@monolog.logger.notification']]
 
     hbpf.connector.salesforce-get-contact-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Salesforce\Connector\SalesforceGetContactConnector
@@ -20,6 +22,8 @@ services:
             - '@systems.salesforce'
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.transport.curl_manager'
+        calls:
+            - ['setLogger', ['@monolog.logger.notification']]
 
     hbpf.connector.salesforce-create-contact-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Salesforce\Connector\SalesforceCreateContactConnector
@@ -27,6 +31,8 @@ services:
             - '@systems.salesforce'
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.transport.curl_manager'
+        calls:
+            - ['setLogger', ['@monolog.logger.notification']]
 
     hbpf.connector.salesforce-update-contact-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Salesforce\Connector\SalesforceUpdateContactConnector
@@ -34,6 +40,8 @@ services:
             - '@systems.salesforce'
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.transport.curl_manager'
+        calls:
+            - ['setLogger', ['@monolog.logger.notification']]
 
     hbpf.connector.salesforce-updated-contact-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Salesforce\Connector\SalesforceUpdatedContactConnector
@@ -41,6 +49,8 @@ services:
             - '@systems.salesforce'
             - '@cc.last_sync.manager'
             - '@hbpf.transport.async_curl_factory'
+        calls:
+            - ['setLogger', ['@monolog.logger.notification']]
 
     hbpf.connector.salesforce-deleted-contact-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Salesforce\Connector\SalesforceDeletedContactConnector
@@ -48,6 +58,8 @@ services:
             - '@systems.salesforce'
             - '@cc.last_sync.manager'
             - '@hbpf.transport.async_curl_factory'
+        calls:
+            - ['setLogger', ['@monolog.logger.notification']]
 
     hbpf.custom_node.salesforce-create-contact-mapper:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Salesforce\Mapper\SalesforceCreateContactMapper
