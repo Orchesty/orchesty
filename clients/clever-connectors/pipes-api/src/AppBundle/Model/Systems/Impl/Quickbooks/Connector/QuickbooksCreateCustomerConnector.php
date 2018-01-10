@@ -19,15 +19,19 @@ use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
-use Psr\Log\LoggerInterface;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
+use Psr\Log\NullLogger;
 
 /**
  * Class QuickbooksCreateCustomerConnector
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\Connector
  */
-class QuickbooksCreateCustomerConnector implements ConnectorInterface
+class QuickbooksCreateCustomerConnector implements ConnectorInterface, LoggerAwareInterface
 {
+
+    use LoggerAwareTrait;
 
     private const SUB_URL = '/customer';
 
@@ -47,29 +51,22 @@ class QuickbooksCreateCustomerConnector implements ConnectorInterface
     private $system;
 
     /**
-     * @var LoggerInterface
-     */
-    private $notificationLogger;
-
-    /**
      * QuickbooksCreateCustomerConnector constructor.
      *
      * @param DocumentManager      $dm
      * @param QuickbooksSystem     $system
      * @param CurlManagerInterface $curl
-     * @param LoggerInterface      $notificationLogger
      */
     public function __construct(
         DocumentManager $dm,
         QuickbooksSystem $system,
-        CurlManagerInterface $curl,
-        LoggerInterface $notificationLogger
+        CurlManagerInterface $curl
     )
     {
         $this->curl                    = $curl;
         $this->systemInstallRepository = $dm->getRepository(SystemInstall::class);
         $this->system                  = $system;
-        $this->notificationLogger      = $notificationLogger;
+        $this->logger                  = new NullLogger();
     }
 
     /**
@@ -118,13 +115,13 @@ class QuickbooksCreateCustomerConnector implements ConnectorInterface
                 $data['body']                                  = $res->getBody();
             } catch (Exception $e) {
                 if ($e->getCode() == 401) {
-                    $this->notificationLogger->info(
+                    $this->logger->info(
                         NotificationTypeEnum::ACCESS_EXPIRATION,
                         LoggerUtils::getMessage($this->system, $systemInstall)
                     );
                 }
                 if ($e->getCode() == 500) {
-                    $this->notificationLogger->info(
+                    $this->logger->info(
                         NotificationTypeEnum::SERVICE_UNAVAILABLE,
                         LoggerUtils::getMessage($this->system, $systemInstall)
                     );

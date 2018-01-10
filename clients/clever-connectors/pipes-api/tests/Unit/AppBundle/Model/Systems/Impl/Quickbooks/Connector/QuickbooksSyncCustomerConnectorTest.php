@@ -46,8 +46,7 @@ final class QuickbooksSyncCustomerConnectorTest extends QuickbooksCustomerConnec
             $this->lastSyncManager,
             $this->factory,
             $this->mockDm,
-            $this->counterService,
-            $this->notificationLogger
+            $this->counterService
         );
     }
 

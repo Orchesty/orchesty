@@ -27,7 +27,6 @@ use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSenderFactory;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Psr\Http\Message\ResponseInterface;
-use Psr\Log\LoggerInterface;
 use React\EventLoop\LoopInterface;
 use React\Promise\PromiseInterface;
 use function React\Promise\all;
@@ -58,18 +57,16 @@ class QuickbooksSyncCustomerConnector extends QuickbooksCustomerConnectorAbstrac
      * @param CurlSenderFactory      $factory
      * @param DocumentManager        $dm
      * @param ProgressCounterService $counterService
-     * @param LoggerInterface        $logger
      */
     public function __construct(
         QuickbooksSystem $system,
         LastSyncManager $lastSyncManager,
         CurlSenderFactory $factory,
         DocumentManager $dm,
-        ProgressCounterService $counterService,
-        LoggerInterface $logger
+        ProgressCounterService $counterService
     )
     {
-        parent::__construct($system, $lastSyncManager, $factory, $logger);
+        parent::__construct($system, $lastSyncManager, $factory);
         $this->systemInstallRepository = $dm->getRepository(SystemInstall::class);
         $this->counterService          = $counterService;
     }
@@ -106,13 +103,13 @@ class QuickbooksSyncCustomerConnector extends QuickbooksCustomerConnectorAbstrac
             },
             function (ResponseException $exception) use ($systemInstall): void {
                 if ($exception->getCode() == 401) {
-                    $this->notificationLogger->info(
+                    $this->logger->info(
                         NotificationTypeEnum::ACCESS_EXPIRATION,
                         LoggerUtils::getMessage($this->system, $systemInstall)
                     );
                 }
                 if ($exception->getCode() == 500) {
-                    $this->notificationLogger->info(
+                    $this->logger->info(
                         NotificationTypeEnum::SERVICE_UNAVAILABLE,
                         LoggerUtils::getMessage($this->system, $systemInstall)
                     );

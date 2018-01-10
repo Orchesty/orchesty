@@ -44,8 +44,7 @@ final class QuickbooksDeletedCustomerConnectorTest extends QuickbooksCustomerCon
         return new QuickbooksDeletedCustomerConnector(
             $this->system,
             $this->lastSyncManager,
-            $this->factory,
-            $this->notificationLogger
+            $this->factory
         );
     }
 

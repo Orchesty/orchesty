@@ -30,7 +30,9 @@ use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\BatchInterface;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
 use Psr\Http\Message\ResponseInterface;
-use Psr\Log\LoggerInterface;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
+use Psr\Log\NullLogger;
 use React\EventLoop\LoopInterface;
 use React\Promise\PromiseInterface;
 use function React\Promise\all;
@@ -40,8 +42,10 @@ use function React\Promise\all;
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\Connector
  */
-abstract class QuickbooksCustomerConnectorAbstract implements BatchInterface, ConnectorInterface
+abstract class QuickbooksCustomerConnectorAbstract implements BatchInterface, ConnectorInterface, LoggerAwareInterface
 {
+
+    use LoggerAwareTrait;
 
     protected const PAGE_LIMIT = 50;
 
@@ -61,29 +65,22 @@ abstract class QuickbooksCustomerConnectorAbstract implements BatchInterface, Co
     protected $lastSyncManager;
 
     /**
-     * @var LoggerInterface
-     */
-    protected $notificationLogger;
-
-    /**
      * ShopifySyncConnector constructor.
      *
      * @param QuickbooksSystem  $system
      * @param LastSyncManager   $lastSyncManager
      * @param CurlSenderFactory $factory
-     * @param LoggerInterface   $notificationLogger
      */
     public function __construct(
         QuickbooksSystem $system,
         LastSyncManager $lastSyncManager,
-        CurlSenderFactory $factory,
-        LoggerInterface $notificationLogger
+        CurlSenderFactory $factory
     )
     {
-        $this->system             = $system;
-        $this->factory            = $factory;
-        $this->lastSyncManager    = $lastSyncManager;
-        $this->notificationLogger = $notificationLogger;
+        $this->system          = $system;
+        $this->factory         = $factory;
+        $this->lastSyncManager = $lastSyncManager;
+        $this->logger          = new NullLogger();
     }
 
     /**
@@ -132,13 +129,13 @@ abstract class QuickbooksCustomerConnectorAbstract implements BatchInterface, Co
             },
             function (ResponseException $exception) use ($systemInstall): void {
                 if ($exception->getCode() == 401) {
-                    $this->notificationLogger->info(
+                    $this->logger->info(
                         NotificationTypeEnum::ACCESS_EXPIRATION,
                         LoggerUtils::getMessage($this->system, $systemInstall)
                     );
                 }
                 if ($exception->getCode() == 500) {
-                    $this->notificationLogger->info(
+                    $this->logger->info(
                         NotificationTypeEnum::SERVICE_UNAVAILABLE,
                         LoggerUtils::getMessage($this->system, $systemInstall)
                     );

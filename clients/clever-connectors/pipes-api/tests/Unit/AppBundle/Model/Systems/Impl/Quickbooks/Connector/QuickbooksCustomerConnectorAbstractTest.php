@@ -17,7 +17,6 @@ use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSenderFactory;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
 use PHPUnit\Framework\MockObject\MockObject;
-use Psr\Log\LoggerInterface;
 use React\EventLoop\Factory;
 use Tests\ConnectorTestCaseAbstract;
 use function React\Promise\resolve;
@@ -64,11 +63,6 @@ abstract class QuickbooksCustomerConnectorAbstractTest extends ConnectorTestCase
      * @var MockObject|ProgressCounterService
      */
     protected $counterService;
-
-    /**
-     * @var MockObject|LoggerInterface
-     */
-    protected $notificationLogger;
 
     /**
      * @covers ::processBatch()
@@ -144,9 +138,6 @@ abstract class QuickbooksCustomerConnectorAbstractTest extends ConnectorTestCase
 
         $this->counterService = $this->createMock(ProgressCounterService::class);
         $this->counterService->method('setTotal')->willReturn(TRUE);
-
-        $this->notificationLogger = $this->createMock(LoggerInterface::class);
-        $this->notificationLogger->method('info');
     }
 
     /**
