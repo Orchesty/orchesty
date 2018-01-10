@@ -7,23 +7,29 @@ use CleverConnectors\AppBundle\Enum\CleverFieldsEnum;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Nutshell\NutshellSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
+use CleverConnectors\AppBundle\Traits\LoggerTrait;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlException;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
 use Nette\Utils\Json;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\NullLogger;
 
 /**
  * Class NutshellGetContactConnector
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Nutshell\Connector
  */
-class NutshellGetContactConnector implements ConnectorInterface
+class NutshellGetContactConnector implements ConnectorInterface, LoggerAwareInterface
 {
+
+    use LoggerTrait;
 
     /**
      * @var NutshellSystem
@@ -52,6 +58,7 @@ class NutshellGetContactConnector implements ConnectorInterface
         $this->system                  = $system;
         $this->systemInstallRepository = $dm->getRepository(SystemInstall::class);
         $this->manager                 = $manager;
+        $this->logger                  = new NullLogger();
     }
 
     /**
@@ -67,6 +74,7 @@ class NutshellGetContactConnector implements ConnectorInterface
      *
      * @return ProcessDto
      * @throws CleverConnectorsException
+     * @throws CurlException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {
@@ -90,19 +98,27 @@ class NutshellGetContactConnector implements ConnectorInterface
             ],
         ]))->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()));
 
-        $response  = $this->manager->send($requestDto);
-        $innerData = Json::decode($response->getBody(), TRUE);
+        try {
+            $response  = $this->manager->send($requestDto);
+            $innerData = Json::decode($response->getBody(), TRUE);
 
-        if (!is_array($innerData) || !isset($innerData['result']['rev'])) {
-            throw new CleverConnectorsException(
-                'Missing data or required field result_rev',
-                CleverConnectorsException::MISSING_DATA
-            );
+            if (!is_array($innerData) || !isset($innerData['result']['rev'])) {
+                throw new CleverConnectorsException(
+                    'Missing data or required field result_rev',
+                    CleverConnectorsException::MISSING_DATA
+                );
+            }
+
+            return $dto->setData(Json::encode(array_merge($innerData,
+                [CleverFieldsEnum::FOREIGN_ID => $data[CleverFieldsEnum::FOREIGN_ID]]
+            )));
+        } catch (CurlException $e) {
+            if ($e->getResponse()) {
+                $this->logError($e->getResponse()->getStatusCode(), $this->system, $systemInstall);
+            }
+
+            throw $e;
         }
-
-        return $dto->setData(Json::encode(array_merge($innerData,
-            [CleverFieldsEnum::FOREIGN_ID => $data[CleverFieldsEnum::FOREIGN_ID]]
-        )));
     }
 
     /**

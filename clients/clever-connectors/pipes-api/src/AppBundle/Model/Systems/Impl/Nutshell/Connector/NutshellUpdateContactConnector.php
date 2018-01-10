@@ -7,6 +7,7 @@ use CleverConnectors\AppBundle\Enum\CleverCustomKeysEnum;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Nutshell\NutshellSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
+use CleverConnectors\AppBundle\Traits\LoggerTrait;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -18,14 +19,18 @@ use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
 use Nette\Utils\Json;
 use Nette\Utils\Strings;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\NullLogger;
 
 /**
  * Class NutshellUpdateContactConnector
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Nutshell\Connector
  */
-class NutshellUpdateContactConnector implements ConnectorInterface
+class NutshellUpdateContactConnector implements ConnectorInterface, LoggerAwareInterface
 {
+
+    use LoggerTrait;
 
     /**
      * @var NutshellSystem
@@ -54,6 +59,7 @@ class NutshellUpdateContactConnector implements ConnectorInterface
         $this->system                  = $system;
         $this->manager                 = $manager;
         $this->systemInstallRepository = $dm->getRepository(SystemInstall::class);
+        $this->logger                  = new NullLogger();
     }
 
     /**
@@ -100,6 +106,10 @@ class NutshellUpdateContactConnector implements ConnectorInterface
 
             return $dto->setData($response->getBody());
         } catch (CurlException $e) {
+            if ($e->getResponse()) {
+                $this->logError($e->getResponse()->getStatusCode(), $this->system, $systemInstall);
+            }
+
             if (Strings::contains($e->getMessage(), 'is not a custom field')) {
                 throw new CleverConnectorsException(
                     'Missing required field cm_unsubscribe or cm_hard_bounce',

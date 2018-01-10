@@ -22,6 +22,14 @@ trait LoggerTrait
     protected $logger;
 
     /**
+     * @param LoggerInterface $logger
+     */
+    public function setLogger(LoggerInterface $logger): void
+    {
+        $this->logger = $logger;
+    }
+
+    /**
      * @param int             $status
      * @param SystemInterface $system
      * @param SystemInstall   $systemInstall
@@ -37,18 +45,9 @@ trait LoggerTrait
             case 401:
                 $this->logger->info(NotificationTypeEnum::ACCESS_EXPIRATION, $msg);
                 break;
-
             default:
                 $this->logger->info(NotificationTypeEnum::SERVICE_UNAVAILABLE, $msg);
         }
-    }
-
-    /**
-     * @param LoggerInterface $logger
-     */
-    public function setLogger(LoggerInterface $logger): void
-    {
-        $this->logger = $logger;
     }
 
 }
