@@ -12,6 +12,8 @@ services:
             - '@hbpf.transport.async_curl_factory'
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@cc.progress_counter.async_progress_counter_service'
+        calls:
+            - ['setLogger', ['@monolog.logger.notification']]
 
     hbpf.connector.shipstation-update-customer-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Shipstation\Connector\ShipstationUpdateCustomerConnector
@@ -19,6 +21,8 @@ services:
             - '@systems.shipstation'
             - '@cc.last_sync.manager'
             - '@hbpf.transport.async_curl_factory'
+        calls:
+            - ['setLogger', ['@monolog.logger.notification']]
 
     hbpf.custom_node.shipstation-created-customer-mapper:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Shipstation\Mapper\ShipstationCreatedCustomerMapper

@@ -8,6 +8,7 @@ use CleverConnectors\AppBundle\Model\ProgressCounter\ProgressCounterService;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Shipstation\ShipstationSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
+use Clue\React\Buzz\Message\ResponseException;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Uri;
@@ -78,12 +79,20 @@ class ShipstationSyncCustomerConnector extends ShipstationCustomerConnectorAbstr
             ->then(
                 function (ResponseInterface $response): int {
                     return $this->getTotalPages($response);
+                },
+                function (ResponseException $exception) use ($systemInstall): void {
+                    $this->logResponseException($exception, $systemInstall);
+                    throw $exception;
                 }
             )->then(
                 function (int $total) use ($sender, $callbackItem, $requestDto, $processId) {
                     $this->counterService->setTotal($processId, $total * self::PAGE_LIMIT);
 
                     return all($this->doPageLoop($total, $sender, $callbackItem, $requestDto));
+                },
+                function (ResponseException $exception) use ($systemInstall): void {
+                    $this->logResponseException($exception, $systemInstall);
+                    throw $exception;
                 }
             );
 
