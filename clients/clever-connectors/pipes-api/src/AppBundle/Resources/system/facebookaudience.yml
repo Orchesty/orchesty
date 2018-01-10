@@ -14,6 +14,8 @@ services:
             - '@systems.facebookaudience'
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.transport.curl_manager'
+        calls:
+            - ['setLogger', ['@monolog.logger.notification']]
 
     hbpf.connector.facebookaudience-create-subscribers-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\Connector\FacebookaudienceCreateSubscribersConnector
@@ -21,6 +23,8 @@ services:
             - '@systems.facebookaudience'
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.transport.curl_manager'
+        calls:
+            - ['setLogger', ['@monolog.logger.notification']]
 
     hbpf.connector.facebookaudience-get-accounts-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\Connector\FacebookaudienceGetAccountsConnector
@@ -28,6 +32,8 @@ services:
             - '@systems.facebookaudience'
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.transport.curl_manager'
+        calls:
+            - ['setLogger', ['@monolog.logger.notification']]
 
     hbpf.connector.facebookaudience-get-audiences-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\Connector\FacebookaudienceGetAudiencesConnector
@@ -35,6 +41,8 @@ services:
             - '@systems.facebookaudience'
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.transport.curl_manager'
+        calls:
+            - ['setLogger', ['@monolog.logger.notification']]
 
     hbpf.custom_node.facebookaudience-get-subscribers-filter:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\Filter\FacebookaudienceGetSubscribersFilter

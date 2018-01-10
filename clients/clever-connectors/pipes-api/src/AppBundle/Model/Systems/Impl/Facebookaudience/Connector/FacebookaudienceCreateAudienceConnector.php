@@ -10,6 +10,7 @@ use CleverConnectors\AppBundle\Utils\CMHeaders;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlException;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 use Nette\Utils\Json;
@@ -103,8 +104,8 @@ class FacebookaudienceCreateAudienceConnector extends FacebookaudienceConnectorA
      * @param string        $newList
      *
      * @return ProcessDto
-     * @throws SystemException
      * @throws CleverConnectorsException
+     * @throws CurlException
      */
     private function createNew(SystemInstall $systemInstall, ProcessDto $dto, string $newList): ProcessDto
     {
@@ -129,7 +130,12 @@ class FacebookaudienceCreateAudienceConnector extends FacebookaudienceConnectorA
             ->setBody($dto->getData())
             ->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()));
 
-        $response = $this->manager->send($requestDto);
+        try {
+            $response = $this->manager->send($requestDto);
+        } catch (CurlException $e) {
+            $this->logCurlException($e, $systemInstall);
+            throw $e;
+        }
 
         $this->saveAudience($response, $systemInstall);
 

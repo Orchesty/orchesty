@@ -3,12 +3,12 @@
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\Connector;
 
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
-use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\FacebookaudienceSystem;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlException;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Nette\Utils\Json;
 
@@ -35,7 +35,7 @@ class FacebookaudienceCreateSubscribersConnector extends FacebookaudienceConnect
      *
      * @return ProcessDto
      * @throws CleverConnectorsException
-     * @throws SystemException
+     * @throws CurlException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {
@@ -67,7 +67,12 @@ class FacebookaudienceCreateSubscribersConnector extends FacebookaudienceConnect
 
         $response = $this->manager->send($requestDto);
 
-        return $dto->setData($response->getBody());
+        try {
+            return $dto->setData($response->getBody());
+        } catch (CurlException $e) {
+            $this->logCurlException($e, $systemInstall);
+            throw $e;
+        }
     }
 
 }
