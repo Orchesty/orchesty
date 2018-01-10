@@ -2,6 +2,8 @@
 
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Salesforce\Connector;
 
+use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
+use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use CleverConnectors\AppBundle\Utils\CronUtils;
 use GuzzleHttp\Psr7\Uri;
@@ -37,6 +39,8 @@ class SalesforceDeletedContactConnector extends SalesforceContactConnectorAbstra
      * @param callable      $callbackItem
      *
      * @return PromiseInterface
+     * @throws CleverConnectorsException
+     * @throws SystemException
      */
     public function processBatch(ProcessDto $dto, LoopInterface $loop, callable $callbackItem): PromiseInterface
     {
@@ -54,8 +58,8 @@ class SalesforceDeletedContactConnector extends SalesforceContactConnectorAbstra
                 return $this->getTotalPages($response);
             }
             )->then(
-                function (int $total) use ($browser, $callbackItem, $timeQuery, $requestDto) {
-                    return all($this->doPageLoop($total, $browser, $callbackItem, $requestDto, $timeQuery));
+                function (int $total) use ($browser, $callbackItem, $timeQuery, $requestDto, $systemInstall) {
+                    return all($this->doPageLoop($total, $browser, $callbackItem, $requestDto, $timeQuery, $systemInstall));
                 }
             );
 

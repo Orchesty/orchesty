@@ -2,9 +2,12 @@
 
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Salesforce\Connector;
 
+use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\LastSync\LastSyncManager;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Salesforce\SalesforceSystem;
+use CleverConnectors\AppBundle\Traits\LoggerTrait;
+use Clue\React\Buzz\Message\ResponseException;
 use DateTime;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
@@ -16,6 +19,8 @@ use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\BatchInterface;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\NullLogger;
 use React\Promise\PromiseInterface;
 
 /**
@@ -23,8 +28,10 @@ use React\Promise\PromiseInterface;
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Salesforce\Connector
  */
-abstract class SalesforceContactConnectorAbstract implements BatchInterface, ConnectorInterface
+abstract class SalesforceContactConnectorAbstract implements BatchInterface, ConnectorInterface, LoggerAwareInterface
 {
+
+    use LoggerTrait;
 
     protected const QUERY_URL  = '%s/services/data/v40.0/query?q=%s';
     protected const PAGE_LIMIT = 50;
@@ -57,6 +64,7 @@ abstract class SalesforceContactConnectorAbstract implements BatchInterface, Con
         $this->system          = $system;
         $this->lastSyncManager = $lastSyncManager;
         $this->factory         = $factory;
+        $this->logger          = new NullLogger();
     }
 
     /**
@@ -174,11 +182,12 @@ abstract class SalesforceContactConnectorAbstract implements BatchInterface, Con
     }
 
     /**
-     * @param int        $total
-     * @param CurlSender $sender
-     * @param callable   $callbackItem
-     * @param RequestDto $dto
-     * @param string     $timeQuery
+     * @param int           $total
+     * @param CurlSender    $sender
+     * @param callable      $callbackItem
+     * @param RequestDto    $dto
+     * @param string        $timeQuery
+     * @param SystemInstall $systemInstall
      *
      * @return array
      */
@@ -187,16 +196,23 @@ abstract class SalesforceContactConnectorAbstract implements BatchInterface, Con
         CurlSender $sender,
         callable $callbackItem,
         RequestDto $dto,
-        string $timeQuery = ''
+        string $timeQuery = '',
+        SystemInstall $systemInstall
     ): array
     {
         $requests = [];
         for ($i = 0; $i < $total; $i++) {
             $requests[] = $this
                 ->fetchData($sender, $this->createPageContactRequest($i, $timeQuery, $dto))
-                ->then(function (ResponseInterface $response) use ($i): SuccessMessage {
-                    return $this->createSuccessMessage($response, $i);
-                })->then($callbackItem);
+                ->then(
+                    function (ResponseInterface $response) use ($i): SuccessMessage {
+                        return $this->createSuccessMessage($response, $i);
+                    },
+                    function (ResponseException $e) use ($systemInstall): void {
+                        $this->logError($e->getResponse()->getStatusCode(), $this->system, $systemInstall);
+                        throw $e;
+                    }
+                )->then($callbackItem);
         }
 
         return $requests;

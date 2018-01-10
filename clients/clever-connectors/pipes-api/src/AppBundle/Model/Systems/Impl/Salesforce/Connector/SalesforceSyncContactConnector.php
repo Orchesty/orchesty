@@ -12,6 +12,7 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\Salesforce\Connector;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\LastSync\LastSyncManager;
 use CleverConnectors\AppBundle\Model\ProgressCounter\ProgressCounterService;
+use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Salesforce\SalesforceSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
@@ -73,6 +74,7 @@ class SalesforceSyncContactConnector extends SalesforceContactConnectorAbstract
      * @param callable      $callbackItem
      *
      * @return PromiseInterface
+     * @throws SystemException
      */
     public function processBatch(ProcessDto $dto, LoopInterface $loop, callable $callbackItem): PromiseInterface
     {
@@ -88,10 +90,10 @@ class SalesforceSyncContactConnector extends SalesforceContactConnectorAbstract
                     return $this->getTotalPages($response);
                 }
             )->then(
-                function (int $total) use ($sender, $callbackItem, $requestDto, $processId) {
+                function (int $total) use ($sender, $callbackItem, $requestDto, $processId, $systemInstall) {
                     $this->counterService->setTotal($processId, $total + self::PAGE_LIMIT);
 
-                    return all($this->doPageLoop($total, $sender, $callbackItem, $requestDto));
+                    return all($this->doPageLoop($total, $sender, $callbackItem, $requestDto, '', $systemInstall));
                 }
             );
 

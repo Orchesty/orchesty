@@ -6,8 +6,10 @@ use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\CleverCustomKeysEnum;
 use CleverConnectors\AppBundle\Enum\CleverFieldsEnum;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
+use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Salesforce\SalesforceSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
+use CleverConnectors\AppBundle\Traits\LoggerTrait;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -20,14 +22,18 @@ use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
 use Nette\Utils\Json;
 use Nette\Utils\Strings;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\NullLogger;
 
 /**
  * Class SalesforceUpdateContactConnector
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Salesforce\Connector
  */
-class SalesforceUpdateContactConnector implements ConnectorInterface
+class SalesforceUpdateContactConnector implements ConnectorInterface, LoggerAwareInterface
 {
+
+    use LoggerTrait;
 
     private const URL = '%s/services/data/v40.0/sobjects/Contact/id/%s';
 
@@ -58,6 +64,7 @@ class SalesforceUpdateContactConnector implements ConnectorInterface
         $this->system                  = $system;
         $this->systemInstallRepository = $dm->getRepository(SystemInstall::class);
         $this->manager                 = $manager;
+        $this->logger                  = new NullLogger();
     }
 
     /**
@@ -74,6 +81,7 @@ class SalesforceUpdateContactConnector implements ConnectorInterface
      * @return ProcessDto
      * @throws CleverConnectorsException
      * @throws CurlException
+     * @throws SystemException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {
@@ -100,6 +108,8 @@ class SalesforceUpdateContactConnector implements ConnectorInterface
 
             return $dto->setData($response->getBody());
         } catch (CurlException $e) {
+            $this->logError($e->getResponse()->getStatusCode(), $this->system, $systemInstall);
+
             if (Strings::contains($e->getMessage(), '"errorCode":"INVALID_FIELD"')) {
                 throw new CleverConnectorsException(
                     'Missing required field cm_unsubscribe or cm_hard_bounce',

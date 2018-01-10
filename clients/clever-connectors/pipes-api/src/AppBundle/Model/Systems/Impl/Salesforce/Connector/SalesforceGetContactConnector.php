@@ -4,26 +4,33 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\Salesforce\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
+use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Salesforce\SalesforceSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
+use CleverConnectors\AppBundle\Traits\LoggerTrait;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlException;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
 use Nette\Utils\Json;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\NullLogger;
 
 /**
  * Class SalesforceGetContactConnector
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Salesforce\Connector
  */
-class SalesforceGetContactConnector implements ConnectorInterface
+class SalesforceGetContactConnector implements ConnectorInterface, LoggerAwareInterface
 {
+
+    use LoggerTrait;
 
     /**
      * @var SalesforceSystem
@@ -52,6 +59,7 @@ class SalesforceGetContactConnector implements ConnectorInterface
         $this->system                  = $system;
         $this->systemInstallRepository = $dm->getRepository(SystemInstall::class);
         $this->manager                 = $manager;
+        $this->logger                  = new NullLogger();
     }
 
     /**
@@ -81,6 +89,8 @@ class SalesforceGetContactConnector implements ConnectorInterface
      *
      * @return ProcessDto
      * @throws CleverConnectorsException
+     * @throws SystemException
+     * @throws CurlException
      */
     public function processEvent(ProcessDto $dto): ProcessDto
     {
@@ -100,7 +110,13 @@ class SalesforceGetContactConnector implements ConnectorInterface
             '%s/services/data/v40.0/sobjects/Contact/id/%s', $requestDto->getUri(), $data['id']
         )));
 
-        $response  = $this->manager->send($requestDto);
+        try {
+            $response = $this->manager->send($requestDto);
+        } catch (CurlException $e) {
+            $this->logError($e->getResponse()->getStatusCode(), $this->system, $systemInstall);
+            throw $e;
+        }
+
         $innerData = Json::decode($response->getBody(), TRUE);
 
         if (!is_array($innerData) || !isset($innerData['Email'])) {
