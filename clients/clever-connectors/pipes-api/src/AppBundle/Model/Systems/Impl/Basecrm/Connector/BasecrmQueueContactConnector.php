@@ -6,6 +6,7 @@ use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Basecrm\BasecrmSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
+use CleverConnectors\AppBundle\Traits\LoggerTrait;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use CleverConnectors\AppBundle\Utils\CronUtils;
 use Doctrine\Common\Persistence\ObjectRepository;
@@ -13,19 +14,24 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Crypt\CryptManager;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlException;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\NullLogger;
 
 /**
  * Class BasecrmQueueContactConnector
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Basecrm\Connector
  */
-class BasecrmQueueContactConnector implements ConnectorInterface
+class BasecrmQueueContactConnector implements ConnectorInterface, LoggerAwareInterface
 {
+
+    use LoggerTrait;
 
     /**
      * @var BasecrmSystem
@@ -54,6 +60,7 @@ class BasecrmQueueContactConnector implements ConnectorInterface
         $this->system                  = $system;
         $this->curl                    = $curl;
         $this->systemInstallRepository = $dm->getRepository(SystemInstall::class);
+        $this->logger                  = new NullLogger();
     }
 
     /**
@@ -98,6 +105,7 @@ class BasecrmQueueContactConnector implements ConnectorInterface
      * @param ProcessDto    $processDto
      * @param SystemInstall $systemInstall
      *
+     * @throws CurlException
      * @throws SystemException
      */
     private function createQueue(ProcessDto $processDto, SystemInstall $systemInstall): void
@@ -110,7 +118,13 @@ class BasecrmQueueContactConnector implements ConnectorInterface
             ]));
         $uri = new Uri(sprintf('%s/v2/sync/start', rtrim(BasecrmSystem::SYSTEM_URL, '/')));
 
-        $res = $this->curl->send(RequestDto::from($dto, $uri));
+        try {
+            $res = $this->curl->send(RequestDto::from($dto, $uri));
+        } catch (CurlException $e) {
+            $this->logError($e->getResponse()->getStatusCode(), $this->system, $systemInstall);
+
+            throw $e;
+        }
 
         if (!in_array($res->getStatusCode(), [201, 204])) {
             throw new SystemException(sprintf('BaseCRM failed to create sync que, %s', $res->getBody()),

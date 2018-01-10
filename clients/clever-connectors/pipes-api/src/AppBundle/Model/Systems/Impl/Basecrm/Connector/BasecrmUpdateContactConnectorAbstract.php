@@ -5,20 +5,25 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\Basecrm\Connector;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Basecrm\BasecrmSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
+use CleverConnectors\AppBundle\Traits\LoggerTrait;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\NullLogger;
 
 /**
  * Class BasecrmUpdateContactConnectorAbstract
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Basecrm\Connector
  */
-abstract class BasecrmUpdateContactConnectorAbstract implements ConnectorInterface
+abstract class BasecrmUpdateContactConnectorAbstract implements ConnectorInterface, LoggerAwareInterface
 {
+
+    use LoggerTrait;
 
     /**
      * @var BasecrmSystem
@@ -47,6 +52,7 @@ abstract class BasecrmUpdateContactConnectorAbstract implements ConnectorInterfa
         $this->system                  = $system;
         $this->systemInstallRepository = $dm->getRepository(SystemInstall::class);
         $this->curl                    = $curl;
+        $this->logger                  = new NullLogger();
     }
 
     /**

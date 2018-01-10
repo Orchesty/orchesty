@@ -2,10 +2,13 @@
 
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Basecrm\Connector;
 
+use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Basecrm\BasecrmSystem;
+use CleverConnectors\AppBundle\Traits\LoggerTrait;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use CleverConnectors\AppBundle\Utils\CronUtils;
+use Clue\React\Buzz\Message\ResponseException;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSender;
@@ -17,6 +20,8 @@ use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\BatchInterface;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\NullLogger;
 use React\EventLoop\LoopInterface;
 use React\Promise\PromiseInterface;
 use function React\Promise\resolve;
@@ -26,8 +31,10 @@ use function React\Promise\resolve;
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Basecrm\Connector
  */
-class BasecrmUpdatedContactConnector implements ConnectorInterface, BatchInterface
+class BasecrmUpdatedContactConnector implements ConnectorInterface, BatchInterface, LoggerAwareInterface
 {
+
+    use LoggerTrait;
 
     /**
      * @var BasecrmSystem
@@ -49,6 +56,7 @@ class BasecrmUpdatedContactConnector implements ConnectorInterface, BatchInterfa
     {
         $this->system  = $system;
         $this->factory = $factory;
+        $this->logger  = new NullLogger();
     }
 
     /**
@@ -76,7 +84,7 @@ class BasecrmUpdatedContactConnector implements ConnectorInterface, BatchInterfa
         $queId = $systemInstall->getSettings()[BasecrmSystem::QUE_ID];
         $uri   = new Uri(sprintf('%s/v2/sync/%s/queues/main', rtrim($requestDto->getUri(TRUE), '/'), $queId));
 
-        $promise = $this->getPage($sender, $callbackItem, RequestDto::from($requestDto, $uri));
+        $promise = $this->getPage($sender, $callbackItem, RequestDto::from($requestDto, $uri), $systemInstall);
 
         return $promise;
     }
@@ -117,25 +125,36 @@ class BasecrmUpdatedContactConnector implements ConnectorInterface, BatchInterfa
     }
 
     /**
-     * @param CurlSender $sender
-     * @param callable   $callbackItem
-     * @param RequestDto $requestDto
-     * @param int        $page
+     * @param CurlSender    $sender
+     * @param callable      $callbackItem
+     * @param RequestDto    $requestDto
+     * @param SystemInstall $systemInstall
+     * @param int           $page
      *
      * @return PromiseInterface
      */
-    private function getPage(CurlSender $sender, callable $callbackItem, RequestDto $requestDto,
-                             int $page = 1): PromiseInterface
+    private function getPage(
+        CurlSender $sender,
+        callable $callbackItem,
+        RequestDto $requestDto,
+        SystemInstall $systemInstall,
+        int $page = 1
+    ): PromiseInterface
     {
         return $this->fetchData($sender, $requestDto)->then(
-            function (ResponseInterface $response) use ($sender, $requestDto, $callbackItem, $page) {
+            function (ResponseInterface $response) use ($sender, $requestDto, $callbackItem, $page, $systemInstall) {
                 if ($response->getStatusCode() === 200) {
                     $callbackItem($this->createSuccessMessage($response, $page));
 
-                    return $this->getPage($sender, $callbackItem, $requestDto, $page + 1);
+                    return $this->getPage($sender, $callbackItem, $requestDto, $systemInstall, $page + 1);
                 } else {
                     return resolve();
                 }
+            },
+            function (ResponseException $e) use ($systemInstall): void {
+                $this->logError($e->getResponse()->getStatusCode(), $this->system, $systemInstall);
+
+                throw $e;
             }
         );
     }
