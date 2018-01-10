@@ -1,9 +1,0 @@
-hbpf:
-    mailer:
-        default_values:
-            from:
-                user_manager: from@examle.com
-            subject:
-                user_manager: Default subject
-            to:
-            bcc:

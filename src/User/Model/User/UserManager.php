@@ -5,16 +5,12 @@ namespace Hanaboso\PipesFramework\User\Model\User;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ORM\EntityManager;
 use Hanaboso\PipesFramework\HbPFUserBundle\Provider\ResourceProvider;
-use Hanaboso\PipesFramework\RabbitMq\Producer\AbstractProducer;
 use Hanaboso\PipesFramework\User\DatabaseManager\UserDatabaseManagerLocator;
 use Hanaboso\PipesFramework\User\Document\User as OdmUser;
 use Hanaboso\PipesFramework\User\Entity\TmpUserInterface;
 use Hanaboso\PipesFramework\User\Entity\User as OrmUser;
 use Hanaboso\PipesFramework\User\Entity\UserInterface;
 use Hanaboso\PipesFramework\User\Enum\ResourceEnum;
-use Hanaboso\PipesFramework\User\Model\Messages\ActivateMessage;
-use Hanaboso\PipesFramework\User\Model\Messages\RegisterMessage;
-use Hanaboso\PipesFramework\User\Model\Messages\ResetPasswordMessage;
 use Hanaboso\PipesFramework\User\Model\Security\SecurityManager;
 use Hanaboso\PipesFramework\User\Model\Token\TokenManager;
 use Hanaboso\PipesFramework\User\Model\Token\TokenManagerException;
@@ -74,10 +70,6 @@ class UserManager
      * @var ResourceProvider
      */
     private $provider;
-    /**
-     * @var AbstractProducer
-     */
-    private $mailerProducer;
 
     /**
      * UserManager constructor.
@@ -88,7 +80,6 @@ class UserManager
      * @param EncoderFactory             $encoderFactory
      * @param EventDispatcherInterface   $eventDispatcher
      * @param ResourceProvider           $provider
-     * @param AbstractProducer           $mailerProducer
      */
     public function __construct(
         UserDatabaseManagerLocator $userDml,
@@ -96,8 +87,7 @@ class UserManager
         TokenManager $tokenManager,
         EncoderFactory $encoderFactory,
         EventDispatcherInterface $eventDispatcher,
-        ResourceProvider $provider,
-        AbstractProducer $mailerProducer
+        ResourceProvider $provider
     )
     {
         $this->dm                = $userDml->get();
@@ -108,7 +98,6 @@ class UserManager
         $this->encoder           = $encoderFactory->getEncoder($provider->getResource(ResourceEnum::USER));
         $this->eventDispatcher   = $eventDispatcher;
         $this->provider          = $provider;
-        $this->mailerProducer    = $mailerProducer;
     }
 
     /**
@@ -167,9 +156,6 @@ class UserManager
         $token->setTmpUser($user);
         $this->dm->flush();
 
-        $message = new RegisterMessage($user);
-        $this->mailerProducer->publish($message->getMessage());
-
         $this->eventDispatcher->dispatch(UserEvent::USER_REGISTER, new UserEvent($user));
     }
 
@@ -198,9 +184,6 @@ class UserManager
         $this->dm->remove($token->getTmpUser());
         $token->setUser($user)->setTmpUser(NULL);
         $this->dm->flush();
-
-        $message = new ActivateMessage($user);
-        $this->mailerProducer->publish($message->getMessage());
     }
 
     /**
@@ -249,9 +232,6 @@ class UserManager
         }
 
         $this->tokenManager->create($user);
-
-        $message = new ResetPasswordMessage($user);
-        $this->mailerProducer->publish($message->getMessage());
 
         $this->eventDispatcher->dispatch(UserEvent::USER_RESET_PASSWORD, new UserEvent($user));
     }

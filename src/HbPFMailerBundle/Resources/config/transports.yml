@@ -1,9 +1,0 @@
-services:
-
-    hbpf.mailer.transport.swift:
-        class: Hanaboso\PipesFramework\Mailer\Transport\Impl\SwiftMailerTransport
-        arguments:
-            - '@swiftmailer.mailer.default'
-            - '@hbpf.file_storage'
-        calls:
-            - ['setLogger', ['@monolog.logger.mailer']]
