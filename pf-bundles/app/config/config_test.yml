@@ -29,13 +29,6 @@ framework:
         resource: "%kernel.root_dir%/config/routing.yml"
         strict_requirements: ~
 
-swiftmailer:
-    transport: null
-    host: smtp
-    port: 1025
-    username: ''
-    password: ''
-
 doctrine:
     dbal:
         default_connection: default
