@@ -2,6 +2,7 @@
 import logging
 
 import flask
+import logging
 import flask_json
 
 from errors.bad_request import BadRequest
@@ -14,7 +15,6 @@ class RequestData:
     """
     
     """
-    
     request_dump = {}
     
     def __init__(self, request):
