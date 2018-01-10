@@ -12,6 +12,8 @@ services:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.transport.async_curl_factory'
             - '@cc.progress_counter.async_progress_counter_service'
+        calls:
+            - ['setLogger', ['@monolog.logger.notification']]
 
     hbpf.connector.shopify-create-customer-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\Connector\ShopifyCreateCustomerConnector
@@ -19,6 +21,8 @@ services:
             - '@systems.shopify'
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.transport.curl_manager'
+        calls:
+            - ['setLogger', ['@monolog.logger.notification']]
 
     hbpf.connector.shopify-update-customer-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\Connector\ShopifyUpdateCustomerConnector
@@ -27,7 +31,7 @@ services:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.transport.curl_manager'
         calls:
-            - ['setLogger', ['@monolog.logger.commons']]
+            - ['setLogger', ['@monolog.logger.notification']]
 
     hbpf.custom_node.shopify-create-customer-mapper:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\Mapper\ShopifyCreateCustomerMapper

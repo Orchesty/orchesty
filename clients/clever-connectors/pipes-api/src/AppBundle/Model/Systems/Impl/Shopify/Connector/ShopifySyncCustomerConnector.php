@@ -14,7 +14,9 @@ use CleverConnectors\AppBundle\Model\ProgressCounter\ProgressCounterService;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\ShopifySystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
+use CleverConnectors\AppBundle\Traits\LoggerTrait;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
+use Clue\React\Buzz\Message\ResponseException;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Uri;
@@ -26,6 +28,8 @@ use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\BatchInterface;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\NullLogger;
 use React\EventLoop\LoopInterface;
 use React\Promise\PromiseInterface;
 use function React\Promise\all;
@@ -35,8 +39,10 @@ use function React\Promise\all;
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\Connector
  */
-class ShopifySyncCustomerConnector implements BatchInterface, ConnectorInterface
+class ShopifySyncCustomerConnector implements BatchInterface, ConnectorInterface, LoggerAwareInterface
 {
+
+    use LoggerTrait;
 
     private const PER_PAGE      = 50;
     private const COUNT_URL     = 'admin/customers/count.json';
@@ -81,6 +87,7 @@ class ShopifySyncCustomerConnector implements BatchInterface, ConnectorInterface
         $this->systemInstallRepository = $dm->getRepository(SystemInstall::class);
         $this->factory                 = $factory;
         $this->counterService          = $counterService;
+        $this->logger                  = new NullLogger();
     }
 
     /**
@@ -119,6 +126,7 @@ class ShopifySyncCustomerConnector implements BatchInterface, ConnectorInterface
      * @param callable      $callbackItem
      *
      * @return PromiseInterface
+     * @throws SystemException
      */
     public function processBatch(ProcessDto $dto, LoopInterface $loop, callable $callbackItem): PromiseInterface
     {
@@ -133,12 +141,16 @@ class ShopifySyncCustomerConnector implements BatchInterface, ConnectorInterface
             ->then(
                 function (ResponseInterface $response): int {
                     return $this->getTotalPages($response);
+                },
+                function (ResponseException $e) use ($systemInstall): void {
+                    $this->logError($e->getResponse()->getStatusCode(), $this->system, $systemInstall);
+                    throw $e;
                 }
             )->then(
-                function (int $total) use ($sender, $callbackItem, $requestDto, $processId) {
+                function (int $total) use ($sender, $callbackItem, $requestDto, $processId, $systemInstall) {
                     $this->counterService->setTotal($processId, $total * self::PER_PAGE);
 
-                    return all($this->doPageLoop($total, $sender, $callbackItem, $requestDto));
+                    return all($this->doPageLoop($total, $sender, $callbackItem, $requestDto, $systemInstall));
                 }
             );
 
@@ -179,14 +191,21 @@ class ShopifySyncCustomerConnector implements BatchInterface, ConnectorInterface
     }
 
     /**
-     * @param int        $total
-     * @param CurlSender $sender
-     * @param callable   $callbackItem
-     * @param RequestDto $dto
+     * @param int           $total
+     * @param CurlSender    $sender
+     * @param callable      $callbackItem
+     * @param RequestDto    $dto
+     * @param SystemInstall $systemInstall
      *
      * @return array
      */
-    private function doPageLoop(int $total, CurlSender $sender, callable $callbackItem, RequestDto $dto): array
+    private function doPageLoop(
+        int $total,
+        CurlSender $sender,
+        callable $callbackItem,
+        RequestDto $dto,
+        SystemInstall $systemInstall
+    ): array
     {
         $requests = [];
         for ($i = 1; $i <= $total; $i++) {
@@ -196,7 +215,12 @@ class ShopifySyncCustomerConnector implements BatchInterface, ConnectorInterface
                 ->then(
                     function (ResponseInterface $response) use ($i): SuccessMessage {
                         return $this->createSuccessMessage($response, $i);
-                    })
+                    },
+                    function (ResponseException $e) use ($systemInstall): void {
+                        $this->logError($e->getResponse()->getStatusCode(), $this->system, $systemInstall);
+                        throw $e;
+                    }
+                )
                 ->then($callbackItem);
         }
 

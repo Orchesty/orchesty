@@ -6,19 +6,20 @@ use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\ShopifySystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
+use CleverConnectors\AppBundle\Traits\LoggerTrait;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Exception;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlException;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
 use Nette\Utils\Strings;
 use Psr\Log\LoggerAwareInterface;
-use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
 /**
@@ -28,6 +29,8 @@ use Psr\Log\NullLogger;
  */
 class ShopifyUpdateCustomerConnector implements ConnectorInterface, LoggerAwareInterface
 {
+
+    use LoggerTrait;
 
     private const SUB_URL = '/admin/customers/%s.json';
 
@@ -47,11 +50,6 @@ class ShopifyUpdateCustomerConnector implements ConnectorInterface, LoggerAwareI
     private $curl;
 
     /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    /**
      * ShopifyUpdateCustomerConnector constructor.
      *
      * @param ShopifySystem        $system
@@ -64,14 +62,6 @@ class ShopifyUpdateCustomerConnector implements ConnectorInterface, LoggerAwareI
         $this->system                  = $system;
         $this->curl                    = $curl;
         $this->logger                  = new NullLogger();
-    }
-
-    /**
-     * @param LoggerInterface $logger
-     */
-    public function setLogger(LoggerInterface $logger): void
-    {
-        $this->logger = $logger;
     }
 
     /**
@@ -117,9 +107,11 @@ class ShopifyUpdateCustomerConnector implements ConnectorInterface, LoggerAwareI
 
         try {
             $res = $this->curl->send($requestDto);
-        } catch (Exception $exception) {
+        } catch (CurlException $exception) {
+            $this->logError($exception->getResponse()->getStatusCode(), $this->system, $systemInstall);
+
             if (Strings::contains($exception->getMessage(), '422 Unprocessable Entity')) {
-                $this->logger->info('ShopifyUpdateCustomerConnector: custom field already exists and is set.');
+                // ShopifyUpdateCustomerConnector: custom field already exists and is set
                 return $dto;
             }
 
@@ -128,12 +120,7 @@ class ShopifyUpdateCustomerConnector implements ConnectorInterface, LoggerAwareI
 
         $data = json_decode($res->getBody(), TRUE);
 
-        if ($res->getStatusCode() === 404) {
-            throw new CleverConnectorsException(
-                sprintf('Customer with given id [%s] does not exist, Shopify updateCustomerConnector.', $data['id']),
-                CleverConnectorsException::REQUEST_FAILED
-            );
-        } else if (!array_key_exists('customer', $data)) {
+        if (!array_key_exists('customer', $data)) {
             throw new CleverConnectorsException(
                 'CM field does not exist, Shopify updateCustomerConnector.',
                 CleverConnectorsException::MISSING_DATA
