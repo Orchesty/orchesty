@@ -27,15 +27,19 @@ use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
-use Psr\Log\LoggerInterface;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
+use Psr\Log\NullLogger;
 
 /**
  * Class FacebookGetPageConnector
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\FacebookLeads\Connector
  */
-class FacebookGetPageConnector implements ConnectorInterface
+class FacebookGetPageConnector implements ConnectorInterface, LoggerAwareInterface
 {
+
+    use LoggerAwareTrait;
 
     /**
      * @var CurlManager
@@ -51,29 +55,22 @@ class FacebookGetPageConnector implements ConnectorInterface
     private $systemInstallRepository;
 
     /**
-     * @var LoggerInterface
-     */
-    private $notificationLogger;
-
-    /**
      * FacebookGetAccountConnector constructor.
      *
      * @param FacebookLeadsSystem $system
      * @param DocumentManager     $dm
      * @param CurlManager         $curlManager
-     * @param LoggerInterface     $notificationLogger
      */
     public function __construct(
         FacebookLeadsSystem $system,
         DocumentManager $dm,
-        CurlManager $curlManager,
-        LoggerInterface $notificationLogger
+        CurlManager $curlManager
     )
     {
         $this->curlManager             = $curlManager;
         $this->system                  = $system;
         $this->systemInstallRepository = $dm->getRepository(SystemInstall::class);
-        $this->notificationLogger      = $notificationLogger;
+        $this->logger                  = new NullLogger();
     }
 
     /**
@@ -156,14 +153,14 @@ class FacebookGetPageConnector implements ConnectorInterface
                 $body = $response->getBody()->getContents();
                 $data = json_decode($body, TRUE);
                 if (isset($data['error']['code']) && $data['error']['code'] == 190) {
-                    $this->notificationLogger->info(
+                    $this->logger->info(
                         NotificationTypeEnum::ACCESS_EXPIRATION,
                         LoggerUtils::getMessage($this->system, $systemInstall)
                     );
                 }
             }
-            if (isset($response) && $response->getStatusCode()  == 500) {
-                $this->notificationLogger->info(
+            if (isset($response) && $response->getStatusCode() == 500) {
+                $this->logger->info(
                     NotificationTypeEnum::SERVICE_UNAVAILABLE,
                     LoggerUtils::getMessage($this->system, $systemInstall)
                 );

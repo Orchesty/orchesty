@@ -31,7 +31,9 @@ use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\BatchInterface;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
 use Psr\Http\Message\ResponseInterface;
-use Psr\Log\LoggerInterface;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
+use Psr\Log\NullLogger;
 use React\EventLoop\LoopInterface;
 use React\Promise\PromiseInterface;
 
@@ -40,8 +42,10 @@ use React\Promise\PromiseInterface;
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\FacebookLeads\Connector
  */
-class FacebookCreatedLeadformConnector implements BatchInterface, ConnectorInterface
+class FacebookCreatedLeadformConnector implements BatchInterface, ConnectorInterface, LoggerAwareInterface
 {
+
+    use LoggerAwareTrait;
 
     /**
      * @var SystemInstallRepository|ObjectRepository
@@ -64,33 +68,25 @@ class FacebookCreatedLeadformConnector implements BatchInterface, ConnectorInter
     private $factory;
 
     /**
-     * @var LoggerInterface
-     */
-    private $notificationLogger;
-
-    /**
      * FacebookCreatedLeadformConnector constructor.
      *
      * @param FacebookLeadsSystem $system
      * @param LastSyncManager     $lastSyncManager
      * @param CurlSenderFactory   $factory
      * @param DocumentManager     $dm
-     * @param LoggerInterface     $notificationLogger
      */
     public function __construct(
         FacebookLeadsSystem $system,
         LastSyncManager $lastSyncManager,
         CurlSenderFactory $factory,
-        DocumentManager $dm,
-        LoggerInterface $notificationLogger
+        DocumentManager $dm
     )
     {
-
         $this->system                  = $system;
         $this->lastSyncManager         = $lastSyncManager;
         $this->factory                 = $factory;
         $this->systemInstallRepository = $dm->getRepository(SystemInstall::class);
-        $this->notificationLogger      = $notificationLogger;
+        $this->logger                  = new NullLogger();
     }
 
     /**
@@ -142,14 +138,14 @@ class FacebookCreatedLeadformConnector implements BatchInterface, ConnectorInter
                     $body = $exception->getResponse()->getBody()->getContents();
                     $data = json_decode($body, TRUE);
                     if (isset($data['error']['code']) && $data['error']['code'] == 190){
-                        $this->notificationLogger->info(
+                        $this->logger->info(
                             NotificationTypeEnum::ACCESS_EXPIRATION,
                             LoggerUtils::getMessage($this->system, $systemInstall)
                         );
                     }
                 }
                 if ($exception->getCode() == 500) {
-                    $this->notificationLogger->info(
+                    $this->logger->info(
                         NotificationTypeEnum::SERVICE_UNAVAILABLE,
                         LoggerUtils::getMessage($this->system, $systemInstall)
                     );
