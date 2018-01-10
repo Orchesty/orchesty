@@ -3,6 +3,7 @@ services:
         class: Hanaboso\PipesFramework\Configurator\Model\TopologyManager
         arguments:
             - '@hbpf.database_manager_locator'
+            - '@hbpf.cron.manager'
 
     hbpf.configurator.manager.node:
         class: Hanaboso\PipesFramework\Configurator\Model\NodeManager

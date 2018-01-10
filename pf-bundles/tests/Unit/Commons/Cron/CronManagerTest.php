@@ -26,7 +26,7 @@ final class CronManagerTest extends KernelTestCaseAbstract
 {
 
     /**
-     *
+     * @throws CronException
      */
     public function testCreate(): void
     {
@@ -44,7 +44,7 @@ final class CronManagerTest extends KernelTestCaseAbstract
     }
 
     /**
-     *
+     * @throws CronException
      */
     public function testUpdate(): void
     {
@@ -61,7 +61,24 @@ final class CronManagerTest extends KernelTestCaseAbstract
     }
 
     /**
-     *
+     * @throws CronException
+     */
+    public function testPatch(): void
+    {
+        $this->getManager(function (RequestDto $request): ResponseDto {
+            $this->assertEquals(CurlManager::METHOD_POST, $request->getMethod());
+            $this->assertEquals('http://example.com/cron-api/patch/topology-1-1-node-1', $request->getUri(TRUE));
+            $this->assertEquals([
+                'time'    => '1 1 1 1 1',
+                'command' => 'curl -X POST http://example.com/topologies/topology-1/nodes/node-1/run',
+            ], Json::decode($request->getBody(), TRUE));
+
+            return new ResponseDto(200, 'OK', '', []);
+        })->patch($this->getNodes());
+    }
+
+    /**
+     * @throws CronException
      */
     public function testDelete(): void
     {
@@ -75,7 +92,7 @@ final class CronManagerTest extends KernelTestCaseAbstract
     }
 
     /**
-     *
+     * @throws CronException
      */
     public function testBatchCreate(): void
     {
@@ -105,7 +122,7 @@ final class CronManagerTest extends KernelTestCaseAbstract
     }
 
     /**
-     *
+     * @throws CronException
      */
     public function testBatchUpdate(): void
     {
@@ -135,7 +152,37 @@ final class CronManagerTest extends KernelTestCaseAbstract
     }
 
     /**
-     *
+     * @throws CronException
+     */
+    public function testBatchPatch(): void
+    {
+        $this->getManager(function (RequestDto $request) {
+            $this->assertEquals(CurlManager::METHOD_POST, $request->getMethod());
+            $this->assertEquals('http://example.com/cron-api/batch_patch', $request->getUri(TRUE));
+            $this->assertEquals([
+                0 => [
+                    'hash'    => 'topology-1-1-node-1',
+                    'time'    => '1 1 1 1 1',
+                    'command' => 'curl -X POST http://example.com/topologies/topology-1/nodes/node-1/run',
+                ],
+                1 => [
+                    'hash'    => 'topology-1-1-node-2',
+                    'time'    => '2 2 2 2 2',
+                    'command' => 'curl -X POST http://example.com/topologies/topology-1/nodes/node-2/run',
+                ],
+                2 => [
+                    'hash'    => 'topology-1-1-node-3',
+                    'time'    => '3 3 3 3 3',
+                    'command' => 'curl -X POST http://example.com/topologies/topology-1/nodes/node-3/run',
+                ],
+            ], Json::decode($request->getBody(), TRUE));
+
+            return new ResponseDto(200, 'OK', '', []);
+        })->batchPatch($this->getNodes(3));
+    }
+
+    /**
+     * @throws CronException
      */
     public function testBatchDelete(): void
     {
@@ -153,7 +200,7 @@ final class CronManagerTest extends KernelTestCaseAbstract
     }
 
     /**
-     *
+     * @throws CronException
      */
     public function testRequestFail(): void
     {
@@ -191,7 +238,7 @@ final class CronManagerTest extends KernelTestCaseAbstract
         $curlManager = $this->createPartialMock(CurlManager::class, ['send']);
         $curlManager->method('send')->willReturnCallback($callback);
 
-        return new CronManager($documentManager, $curlManager, 'http://example.com/');
+        return new CronManager($documentManager, $curlManager, 'http://example.com/', 'http://example.com/');
     }
 
     /**

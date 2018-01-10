@@ -5,10 +5,12 @@ namespace Hanaboso\PipesFramework\Configurator\Model;
 use Cron\CronExpression;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Hanaboso\PipesFramework\Commons\Cron\CronManager;
 use Hanaboso\PipesFramework\Commons\DatabaseManager\DatabaseManagerLocator;
 use Hanaboso\PipesFramework\Commons\Enum\HandlerEnum;
 use Hanaboso\PipesFramework\Commons\Enum\TopologyStatusEnum;
 use Hanaboso\PipesFramework\Commons\Enum\TypeEnum;
+use Hanaboso\PipesFramework\Commons\Exception\CronException;
 use Hanaboso\PipesFramework\Commons\Exception\EnumException;
 use Hanaboso\PipesFramework\Configurator\Document\Embed\EmbedNode;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
@@ -41,14 +43,21 @@ class TopologyManager
     private $topologyRepository;
 
     /**
+     * @var CronManager
+     */
+    private $cronManager;
+
+    /**
      * TopologyManager constructor.
      *
      * @param DatabaseManagerLocator $dml
+     * @param CronManager            $cronManager
      */
-    function __construct(DatabaseManagerLocator $dml)
+    function __construct(DatabaseManagerLocator $dml, CronManager $cronManager)
     {
         $this->dm                 = $dml->getDm();
         $this->topologyRepository = $this->dm->getRepository(Topology::class);
+        $this->cronManager        = $cronManager;
     }
 
     /**
@@ -335,6 +344,18 @@ class TopologyManager
 
         $nodes[$id]      = $node;
         $embedNodes[$id] = EmbedNode::from($node);
+
+        if ($cron) {
+            try {
+                $this->cronManager->patch($node);
+            } catch (CronException $e) {
+                throw new TopologyException(
+                    sprintf('Saving of Node [%s] & cron [%s] failed.', $id, $type),
+                    TopologyException::TOPOLOGY_NODE_CRON_NOT_AVAILABLE,
+                    $e
+                );
+            }
+        }
 
         return $node;
     }

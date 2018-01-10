@@ -39,6 +39,7 @@ parameters:
     influx.rabbit_table: rabbitmq_queue
 
     backend_host: 127.0.0.66
-    cron_host: 127.0.0.66
+    cron_host: 'http://cron-api:5000'
+    monolith_host: 127.0.0.66
 
     access_token_refresh_interval: 3600
