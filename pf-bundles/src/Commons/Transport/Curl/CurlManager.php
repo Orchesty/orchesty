@@ -3,6 +3,7 @@
 namespace Hanaboso\PipesFramework\Commons\Transport\Curl;
 
 use Exception;
+use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Request;
 use Hanaboso\PipesFramework\Commons\Metrics\InfluxDbSender;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
@@ -127,6 +128,14 @@ class CurlManager implements CurlManagerInterface, LoggerAwareInterface
             ));
 
             unset($psrResponse);
+        } catch (RequestException $exception){
+            $this->logger->error(sprintf('CurlManager::send() failed: %s', $exception->getMessage()));
+            throw new CurlException(
+                sprintf('CurlManager::send() failed: %s', $exception->getMessage()),
+                CurlException::REQUEST_FAILED,
+                $exception->getPrevious(),
+                $exception->getResponse()
+            );
         } catch (Exception $exception) {
             $this->logger->error(sprintf('CurlManager::send() failed: %s', $exception->getMessage()));
             throw new CurlException(

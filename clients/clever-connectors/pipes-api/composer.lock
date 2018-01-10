@@ -947,20 +947,20 @@
         },
         {
             "name": "doctrine/inflector",
-            "version": "v1.2.0",
+            "version": "v1.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/inflector.git",
-                "reference": "e11d84c6e018beedd929cff5220969a3c6d1d462"
+                "reference": "5527a48b7313d15261292c149e55e26eae771b0a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/inflector/zipball/e11d84c6e018beedd929cff5220969a3c6d1d462",
-                "reference": "e11d84c6e018beedd929cff5220969a3c6d1d462",
+                "url": "https://api.github.com/repos/doctrine/inflector/zipball/5527a48b7313d15261292c149e55e26eae771b0a",
+                "reference": "5527a48b7313d15261292c149e55e26eae771b0a",
                 "shasum": ""
             },
             "require": {
-                "php": "^7.0"
+                "php": "^7.1"
             },
             "require-dev": {
                 "phpunit/phpunit": "^6.2"
@@ -968,7 +968,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.2.x-dev"
+                    "dev-master": "1.3.x-dev"
                 }
             },
             "autoload": {
@@ -1010,7 +1010,7 @@
                 "singularize",
                 "string"
             ],
-            "time": "2017-07-22T12:18:28+00:00"
+            "time": "2018-01-09T20:05:19+00:00"
         },
         {
             "name": "doctrine/instantiator",
@@ -1876,11 +1876,11 @@
         },
         {
             "name": "hanaboso/pipes-framework",
-            "version": "1.0.11",
+            "version": "1.0.12",
             "dist": {
                 "type": "path",
                 "url": "../../../pf-bundles",
-                "reference": "25c88f232ecfc5b8c6513cb25028c4926bb5afe8",
+                "reference": "39fb5ab5dc02d433cc3c08d8fab5d6a7f5ff11da",
                 "shasum": null
             },
             "require": {
@@ -1914,7 +1914,7 @@
                 "symfony/symfony": "^3.3"
             },
             "require-dev": {
-                "pipes/php-check-utils": "^1.0",
+                "hanaboso/php-check-utils": "^1.0",
                 "sensio/framework-extra-bundle": "^5.1"
             },
             "type": "library",
