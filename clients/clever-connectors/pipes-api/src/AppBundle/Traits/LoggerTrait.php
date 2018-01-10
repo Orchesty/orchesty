@@ -28,15 +28,18 @@ trait LoggerTrait
      */
     protected function logError(int $status, SystemInterface $system, SystemInstall $systemInstall): void
     {
+        $msg = LoggerUtils::getMessage($system, $systemInstall);
+
         switch ($status) {
             case 400:
-                $this->logger->info(NotificationTypeEnum::DATA_ERROR,
-                    LoggerUtils::getMessage($system, $systemInstall));
+                $this->logger->info(NotificationTypeEnum::DATA_ERROR, $msg);
                 break;
             case 401:
-                $this->logger->info(NotificationTypeEnum::ACCESS_EXPIRATION,
-                    LoggerUtils::getMessage($system, $systemInstall));
+                $this->logger->info(NotificationTypeEnum::ACCESS_EXPIRATION, $msg);
                 break;
+
+            default:
+                $this->logger->info(NotificationTypeEnum::SERVICE_UNAVAILABLE, $msg);
         }
     }
 
