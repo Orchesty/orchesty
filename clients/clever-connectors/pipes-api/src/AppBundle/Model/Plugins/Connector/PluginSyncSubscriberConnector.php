@@ -9,7 +9,9 @@ use CleverConnectors\AppBundle\Model\ProgressCounter\ProgressCounterService;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\SystemLoader;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
+use CleverConnectors\AppBundle\Traits\LoggerTrait;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
+use Clue\React\Buzz\Message\ResponseException;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Uri;
@@ -23,6 +25,8 @@ use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\BatchInterface;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\NullLogger;
 use React\EventLoop\LoopInterface;
 use React\Promise\PromiseInterface;
 use function React\Promise\all;
@@ -33,8 +37,10 @@ use function React\Promise\resolve;
  *
  * @package CleverConnectors\AppBundle\Model\Plugins\Connector
  */
-class PluginSyncSubscriberConnector implements ConnectorInterface, BatchInterface
+class PluginSyncSubscriberConnector implements ConnectorInterface, BatchInterface, LoggerAwareInterface
 {
+
+    use LoggerTrait;
 
     /**
      * @var SystemInstallRepository|ObjectRepository
@@ -75,6 +81,7 @@ class PluginSyncSubscriberConnector implements ConnectorInterface, BatchInterfac
         $this->factory                 = $factory;
         $this->counterService          = $counterService;
         $this->loader                  = $loader;
+        $this->logger                  = new NullLogger();
     }
 
     /**
@@ -91,6 +98,7 @@ class PluginSyncSubscriberConnector implements ConnectorInterface, BatchInterfac
      * @param callable      $callbackItem
      *
      * @return PromiseInterface
+     * @throws SystemException
      */
     public function processBatch(ProcessDto $dto, LoopInterface $loop, callable $callbackItem): PromiseInterface
     {
@@ -203,6 +211,10 @@ class PluginSyncSubscriberConnector implements ConnectorInterface, BatchInterfac
                     } else {
                         return $this->getPages($sender, $requestDto, $callbackItem, $system, $systemInstall, $total);
                     }
+                },
+                function (ResponseException $e) use ($system, $systemInstall): void {
+                    $this->logError($e->getResponse()->getStatusCode(), $system, $systemInstall);
+                    throw $e;
                 }
             );
 
@@ -234,9 +246,15 @@ class PluginSyncSubscriberConnector implements ConnectorInterface, BatchInterfac
             $uri = $this->getUri($system, $systemInstall, $i);
 
             $requests[] = $this->fetchData($sender, RequestDto::from($requestDto, $uri))
-                ->then(function (ResponseInterface $response) use ($i): SuccessMessage {
-                    return $this->createSuccessMessage(json_decode($response, TRUE), $i);
-                })->then($callbackItem);
+                ->then(
+                    function (ResponseInterface $response) use ($i): SuccessMessage {
+                        return $this->createSuccessMessage(json_decode($response, TRUE), $i);
+                    },
+                    function (ResponseException $e) use ($system, $systemInstall): void {
+                        $this->logError($e->getResponse()->getStatusCode(), $system, $systemInstall);
+                        throw $e;
+                    }
+                )->then($callbackItem);
         }
 
         return all($requestDto);

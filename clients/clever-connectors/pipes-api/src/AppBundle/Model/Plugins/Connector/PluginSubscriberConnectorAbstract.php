@@ -6,24 +6,31 @@ use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\CleverFieldsEnum;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Plugins\PluginSystemAbstract;
+use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\SystemLoader;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
+use CleverConnectors\AppBundle\Traits\LoggerTrait;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlException;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\NullLogger;
 
 /**
  * Class PluginSubscriberConnectorAbstract
  *
  * @package CleverConnectors\AppBundle\Model\Plugins\Connector
  */
-abstract class PluginSubscriberConnectorAbstract implements ConnectorInterface
+abstract class PluginSubscriberConnectorAbstract implements ConnectorInterface, LoggerAwareInterface
 {
+
+    use LoggerTrait;
 
     /**
      * @var SystemInstallRepository|ObjectRepository
@@ -52,6 +59,7 @@ abstract class PluginSubscriberConnectorAbstract implements ConnectorInterface
         $this->systemInstallRepository = $dm->getRepository(SystemInstall::class);
         $this->curl                    = $curl;
         $this->loader                  = $loader;
+        $this->logger                  = new NullLogger();
     }
 
     /**
@@ -73,6 +81,8 @@ abstract class PluginSubscriberConnectorAbstract implements ConnectorInterface
      *
      * @return ProcessDto
      * @throws CleverConnectorsException
+     * @throws CurlException
+     * @throws SystemException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {
@@ -86,13 +96,11 @@ abstract class PluginSubscriberConnectorAbstract implements ConnectorInterface
             ->setBody($this->getBody($dto))
             ->setUri($uri);
 
-        $res = $this->curl->send($reqDto);
-
-        if ($res->getStatusCode() !== 200) {
-            throw new CleverConnectorsException(
-                'Request to plugin failed | Server is unavailable.',
-                CleverConnectorsException::REQUEST_FAILED
-            );
+        try {
+            $res = $this->curl->send($reqDto);
+        } catch (CurlException $e) {
+            $this->logError($e->getResponse()->getStatusCode(), $system, $systemInstall);
+            throw $e;
         }
 
         return $dto->setData($res->getBody());

@@ -4,23 +4,30 @@ namespace CleverConnectors\AppBundle\Model\Plugins\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\Plugins\PluginSystemAbstract;
+use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\SystemLoader;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
+use CleverConnectors\AppBundle\Traits\LoggerTrait;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlException;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\NullLogger;
 
 /**
  * Class PluginSwitchTokenConnector
  *
  * @package CleverConnectors\AppBundle\Model\Plugins\Connector
  */
-class PluginSwitchTokenConnector implements ConnectorInterface
+class PluginSwitchTokenConnector implements ConnectorInterface, LoggerAwareInterface
 {
+
+    use LoggerTrait;
 
     /**
      * @var SystemInstallRepository|ObjectRepository
@@ -49,6 +56,7 @@ class PluginSwitchTokenConnector implements ConnectorInterface
         $this->systemInstallRepository = $dm->getRepository(SystemInstall::class);
         $this->curl                    = $curl;
         $this->loader                  = $loader;
+        $this->logger                  = new NullLogger();
     }
 
     /**
@@ -77,7 +85,8 @@ class PluginSwitchTokenConnector implements ConnectorInterface
      * @param ProcessDto $dto
      *
      * @return ProcessDto
-     * @throws \CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException
+     * @throws SystemException
+     * @throws CurlException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {
@@ -92,7 +101,14 @@ class PluginSwitchTokenConnector implements ConnectorInterface
         $requester = $system->getSwitchTokenRequester($systemInstall);
         $req       = $requester->getRequestDto($params);
         $req->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()));
-        $res = $this->curl->send($req);
+
+        try {
+            $res = $this->curl->send($req);
+        } catch (CurlException $e) {
+            $this->logError($e->getResponse()->getStatusCode(), $system, $systemInstall);
+
+            throw $e;
+        }
 
         $requester->processResponse($res, $systemInstall);
 
