@@ -10,7 +10,6 @@ use Hanaboso\PipesFramework\HbPFCommonsBundle\HbPFCommonsBundle;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\HbPFConfiguratorBundle;
 use Hanaboso\PipesFramework\HbPFConnectorBundle\HbPFConnectorBundle;
 use Hanaboso\PipesFramework\HbPFCustomNodeBundle\HbPFCustomNodeBundle;
-use Hanaboso\PipesFramework\HbPFMailerBundle\HbPFMailerBundle;
 use Hanaboso\PipesFramework\HbPFMapperBundle\HbPFMapperBundle;
 use Hanaboso\PipesFramework\HbPFMetricsBundle\HbPFMetricsBundle;
 use Hanaboso\PipesFramework\HbPFRabbitMqBundle\HbPFRabbitMqBundle;
@@ -57,7 +56,6 @@ class AppKernel extends Kernel
             new HbPFMapperBundle(),
             new HbPFApiGatewayBundle(),
             new HbPFCustomNodeBundle(),
-            new HbPFMailerBundle(),
             new HbPFConfiguratorBundle(),
             new HbPFUserBundle(),
             new HbPFMetricsBundle(),
