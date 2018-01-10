@@ -36,6 +36,7 @@ class ZendeskSyncUserConnector extends ZendeskUserConnectorAbstract
      * @param callable      $callbackItem
      *
      * @return PromiseInterface
+     * @throws SystemException
      */
     public function processBatch(ProcessDto $dto, LoopInterface $loop, callable $callbackItem): PromiseInterface
     {
@@ -45,7 +46,8 @@ class ZendeskSyncUserConnector extends ZendeskUserConnectorAbstract
         $requestDto->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()));
         $url       = new Uri(rtrim($requestDto->getUri(TRUE)) . self::USERS_URL);
         $processId = CMHeaders::get(CMHeaders::PROCESS_ID, $dto->getHeaders());
-        $promise   = $this->getPage($sender, $callbackItem, RequestDto::from($requestDto, $url), 1, $processId);
+        $promise   = $this->getPage($sender, $callbackItem, RequestDto::from($requestDto, $url), 1, $processId,
+            $systemInstall);
 
         $this->systemInstallRepository->setSyncTime($systemInstall);
 

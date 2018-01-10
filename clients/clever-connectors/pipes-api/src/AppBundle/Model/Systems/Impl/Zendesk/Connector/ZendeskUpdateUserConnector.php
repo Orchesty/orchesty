@@ -5,25 +5,32 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\Zendesk\Connector;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\CleverCustomKeysEnum;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
+use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Zendesk\ZendeskSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
+use CleverConnectors\AppBundle\Traits\LoggerTrait;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlException;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\NullLogger;
 
 /**
  * Class ZendeskUpdateUserConnector
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Zendesk\Connector
  */
-class ZendeskUpdateUserConnector implements ConnectorInterface
+class ZendeskUpdateUserConnector implements ConnectorInterface, LoggerAwareInterface
 {
+
+    use LoggerTrait;
 
     private const SUB_URL = '/api/v2/users/%s.json';
 
@@ -54,6 +61,7 @@ class ZendeskUpdateUserConnector implements ConnectorInterface
         $this->systemInstallRepository = $dm->getRepository(SystemInstall::class);
         $this->system                  = $system;
         $this->curl                    = $curl;
+        $this->logger                  = new NullLogger();
     }
 
     /**
@@ -83,6 +91,8 @@ class ZendeskUpdateUserConnector implements ConnectorInterface
      *
      * @return ProcessDto
      * @throws CleverConnectorsException
+     * @throws SystemException
+     * @throws CurlException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {
@@ -96,15 +106,18 @@ class ZendeskUpdateUserConnector implements ConnectorInterface
             ->setUri($uri)
             ->setBody($data['body']);
 
-        $res   = $this->curl->send($requestDto);
+        try {
+            $res = $this->curl->send($requestDto);
+        } catch (CurlException $e) {
+            $this->logError($e->getResponse()->getStatusCode(), $this->system, $systemInstall);
+
+            throw $e;
+        }
+
         $data  = json_decode($res->getBody(), TRUE);
         $field = CMHeaders::get(CMHeaders::CM_EVENT_TYPE, $dto->getHeaders()) ?? '';
 
-        if ($res->getStatusCode() === 404) {
-            throw new CleverConnectorsException(
-                sprintf('User with given id [%s] does not exist, Zendesk updateUserConnector.', $data['id']),
-                CleverConnectorsException::REQUEST_FAILED);
-        } else if (!array_key_exists('user', $data)
+        if (!array_key_exists('user', $data)
             || !array_key_exists('user_fields', $data['user'])
             || !array_key_exists(CleverCustomKeysEnum::getFromType($field), $data['user']['user_fields'])
         ) {
