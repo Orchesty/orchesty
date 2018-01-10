@@ -49,6 +49,12 @@ def update_cron(hash_key):
     return cron_handler.update(hash_key, request)
 
 
+@app.route("/cron-api/patch/<hash_key>", methods=['POST'])
+def patch_cron(hash_key):
+    request = Request(flask.request)
+    return cron_handler.patch(hash_key, request)
+
+
 @app.route("/cron-api/delete/<hash_key>", methods=['POST'])
 def delete_cron(hash_key):
     return cron_handler.delete(hash_key)
@@ -64,6 +70,12 @@ def batch_create_cron():
 def batch_update_cron():
     request = Request(flask.request)
     return cron_batch_handler.batch_update(request)
+
+
+@app.route("/cron-api/batch_patch", methods=['POST'])
+def batch_patch_cron():
+    request = Request(flask.request)
+    return cron_batch_handler.batch_patch(request)
 
 
 @app.route("/cron-api/batch_delete", methods=['POST'])

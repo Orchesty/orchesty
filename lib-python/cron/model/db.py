@@ -70,6 +70,23 @@ class Db:
         
         return result
     
+    def patch(self, hash_key: str, time: str, command: str):
+        """
+
+        :param hash_key:
+        :type hash_key: str
+        :param time:
+        :type time: str
+        :param command:
+        :type command: str
+        :return:
+        """
+        result = self.conn.update(self.collection, {'hash': hash_key}, {'time': time, 'command': command})
+        if not result:
+            result = self.conn.insert(self.collection, {'hash': hash_key, 'time': time, 'command': command})
+
+        return result
+
     def get_all(self):
         """
         

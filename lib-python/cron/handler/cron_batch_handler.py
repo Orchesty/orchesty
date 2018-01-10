@@ -18,7 +18,7 @@ class CronBatchHandler(CronHandlerBase):
     """
     
     """
-    
+
     def batch_create(self, request) -> Response:
         """
         
@@ -26,7 +26,7 @@ class CronBatchHandler(CronHandlerBase):
         :return:
         """
         body = request.get_body()
-        
+
         result = []
         for item in body:
             try:
@@ -52,12 +52,12 @@ class CronBatchHandler(CronHandlerBase):
             except TypeError as e:
                 logger.error(str(e))
                 raise BadBodyParameters(str(e), 400)
-        
+
         if len(result):
             raise BatchException(result, 400)
-        
+
         return get_json_content(200, "")
-    
+
     def batch_update(self, request: Request) -> Response:
         """
         
@@ -65,9 +65,9 @@ class CronBatchHandler(CronHandlerBase):
         :return:
         """
         body = request.get_body()
-        
+
         result = []
-        
+
         for item in body:
             try:
                 hash_key, time, command = item['hash'], item['time'], item['command']
@@ -92,12 +92,59 @@ class CronBatchHandler(CronHandlerBase):
             except TypeError as e:
                 logger.error(str(e))
                 raise BadBodyParameters(str(e), 400)
-        
+
         if len(result):
             raise BatchException(result, 400)
-        
+
         return get_json_content(200, "")
-    
+
+    def batch_patch(self, request: Request) -> Response:
+        """
+
+        :param request:
+        :return:
+        """
+        body = request.get_body()
+
+        result = []
+
+        for item in body:
+            try:
+                hash_key, time, command = item['hash'], item['time'], item['command']
+                if self.valid_time(time):
+                    try:
+                        self.db.update(hash_key, time, command)
+                    except RecordNotFound as e:
+                        logger.info('batch update hash: {} {} try to insert'.format(hash_key, e.message))
+                        try:
+                            self.db.add(hash_key, time, command)
+                        except RecordExist as e:
+                            logger.info('batch patch hash: {} {}'.format(hash_key, e.message))
+                            result.append({
+                                'hash': hash_key,
+                                'message': 'Unknown problem {}'.format(str(e))
+                            })
+                else:
+                    result.append({
+                        'hash': hash_key,
+                        'message': 'Invalid time format {}'.format(time)
+                    })
+            except KeyError as e:
+                message = 'Item key {} missing'.format(str(e))
+                logger.error(message)
+                result.append({
+                    'row': repr(item),
+                    'message': message
+                })
+            except TypeError as e:
+                logger.error(str(e))
+                raise BadBodyParameters(str(e), 400)
+
+        if len(result):
+            raise BatchException(result, 400)
+
+        return get_json_content(200, "")
+
     def batch_delete(self, request: Request) -> Response:
         """
         
@@ -105,9 +152,9 @@ class CronBatchHandler(CronHandlerBase):
         :return:
         """
         body = request.get_body()
-        
+
         result = []
-        
+
         for item in body:
             try:
                 try:
@@ -122,8 +169,8 @@ class CronBatchHandler(CronHandlerBase):
                     'row': repr(item),
                     'message': message
                 })
-        
+
         if len(result):
             raise BatchException(result, 400)
-        
+
         return get_json_content(200, "")
