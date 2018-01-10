@@ -6,24 +6,30 @@ use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Bigcommerce\BigcommerceSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
+use CleverConnectors\AppBundle\Traits\LoggerTrait;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlException;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
 use Nette\Utils\Json;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\NullLogger;
 
 /**
  * Class BigcommerceGetCustomerConnector
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Bigcommerce\Connector
  */
-class BigcommerceGetCustomerConnector implements ConnectorInterface
+class BigcommerceGetCustomerConnector implements ConnectorInterface, LoggerAwareInterface
 {
+
+    use LoggerTrait;
 
     private const CUSTOMER_URL = 'customers/%s';
 
@@ -56,6 +62,7 @@ class BigcommerceGetCustomerConnector implements ConnectorInterface
         $this->system                  = $system;
         $this->manager                 = $manager;
         $this->systemInstallRepository = $dm->getRepository(SystemInstall::class);
+        $this->logger                  = new NullLogger();
     }
 
     /**
@@ -71,6 +78,7 @@ class BigcommerceGetCustomerConnector implements ConnectorInterface
      *
      * @return ProcessDto
      * @throws CleverConnectorsException
+     * @throws CurlException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {
@@ -86,11 +94,20 @@ class BigcommerceGetCustomerConnector implements ConnectorInterface
         $systemInstall = $this->systemInstallRepository->getSystemInstallFromHeaders($dto->getHeaders());
         $requestDto    = $this->system->getRequestDto($systemInstall, CurlManager::METHOD_GET);
         $requestDto->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()));
-        $response = $this->manager->send($requestDto->setUri(
-            new Uri(sprintf($requestDto->getUri(TRUE) . self::CUSTOMER_URL, $data['id']))
-        ));
 
-        return $dto->setData($response->getBody());
+        try {
+            $response = $this->manager->send($requestDto->setUri(
+                new Uri(sprintf($requestDto->getUri(TRUE) . self::CUSTOMER_URL, $data['id']))
+            ));
+
+            return $dto->setData($response->getBody());
+        } catch (CurlException $e) {
+            if ($e->getResponse()) {
+                $this->logError($e->getResponse()->getStatusCode(), $this->system, $systemInstall);
+            }
+
+            throw $e;
+        }
     }
 
     /**
