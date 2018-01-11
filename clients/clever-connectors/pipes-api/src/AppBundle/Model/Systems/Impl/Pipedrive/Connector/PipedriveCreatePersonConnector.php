@@ -92,16 +92,7 @@ class PipedriveCreatePersonConnector implements ConnectorInterface, LoggerAwareI
         try {
             $res = $this->curl->send($requestDto);
         } catch (CurlException $e) {
-            if ($e->getResponse()) {
-                $this->logError($e->getResponse()->getStatusCode(), $this->system, $systemInstall);
-            }
-
-            throw $e;
-        }
-
-        if ($res->getStatusCode() != 201) {
-            throw new CleverConnectorsException('Failed to create new contact in Pipedrive.',
-                CleverConnectorsException::REQUEST_FAILED);
+            return $this->connectorError($e, $this->system, $systemInstall, $dto);
         }
 
         return $dto->setData($res->getBody());

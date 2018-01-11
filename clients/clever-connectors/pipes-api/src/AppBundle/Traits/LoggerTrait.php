@@ -5,6 +5,11 @@ namespace CleverConnectors\AppBundle\Traits;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\NotificationTypeEnum;
 use CleverConnectors\AppBundle\Model\Systems\SystemInterface;
+use CleverConnectors\AppBundle\Utils\HeadersUtils;
+use Clue\React\Buzz\Message\ResponseException;
+use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlException;
+use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -49,13 +54,77 @@ trait LoggerTrait
     }
 
     /**
+     * @param CurlException   $e
+     * @param SystemInterface $system
+     * @param SystemInstall   $systemInstall
+     * @param ProcessDto      $dto
+     *
+     * @return ProcessDto
+     * @throws CurlException
+     */
+    protected function connectorError(
+        CurlException $e,
+        SystemInterface $system,
+        SystemInstall $systemInstall,
+        ProcessDto $dto
+    ): ProcessDto
+    {
+        if ($e->getResponse()) {
+            if ($this->limitReached($e)) {
+                return HeadersUtils::setLimitHeaderToDto($dto);
+            }
+            $this->logError($e->getResponse()->getStatusCode(), $system, $systemInstall);
+        }
+
+        throw $e;
+    }
+
+    /**
+     * @param ResponseException $e
+     * @param SystemInterface   $system
+     * @param SystemInstall     $systemInstall
+     * @param int               $i
+     *
+     * @return SuccessMessage
+     */
+    protected function batchConnectorError(
+        ResponseException $e,
+        SystemInterface $system,
+        SystemInstall $systemInstall,
+        int $i
+    ): SuccessMessage
+    {
+        if ($e->getResponse()) {
+            if ($this->limitReached($e)) {
+                $successMessage = new SuccessMessage($i);
+
+                return HeadersUtils::setLimitHeaderToMessage($successMessage);
+            }
+            $this->logError($e->getResponse()->getStatusCode(), $system, $systemInstall);
+        }
+
+        throw $e;
+    }
+
+    /**
+     * @param CurlException|ResponseException $e
+     *
+     * @return bool
+     */
+    protected function limitReached($e): bool
+    {
+        // Override in connector for system specifics.
+        return $e->getResponse()->getStatusCode() === 429;
+    }
+
+    /**
      * @param int             $status
      * @param SystemInterface $system
      * @param SystemInstall   $systemInstall
      */
     protected function logError(int $status, SystemInterface $system, SystemInstall $systemInstall): void
     {
-        $msg = self::getMessage($system, $systemInstall);
+        $msg = $this->getMessage($system, $systemInstall);
 
         switch ($status) {
             case 400:
@@ -81,7 +150,7 @@ trait LoggerTrait
      *
      * @return array
      */
-    private static function getMessage(SystemInterface $system, SystemInstall $systemInstall): array
+    private function getMessage(SystemInterface $system, SystemInstall $systemInstall): array
     {
         return [
             self::$guid       => $systemInstall->getUser(),
