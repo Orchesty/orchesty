@@ -1,5 +1,6 @@
 import JobMessage from "../message/JobMessage";
 import ILimiter from "./ILimiter";
+import Headers from "../message/Headers";
 
 /**
  * Fake temp limiter
@@ -22,6 +23,15 @@ export default class FakeLimiter implements ILimiter {
      * @return {Promise<boolean>}
      */
     public async canBeProcessed(msg: JobMessage): Promise<boolean> {
+        // If limit headers are missing, allow processing it
+        if (!msg.getHeaders().getPFHeader(Headers.LIMIT_KEY) ||
+            !msg.getHeaders().getPFHeader(Headers.LIMIT_TIME) ||
+            !msg.getHeaders().getPFHeader(Headers.LIMIT_VALUE)
+        ) {
+            return true;
+        }
+
+        // Here possibly contact the limiter and pass him the limit headers
         return true;
     }
 
