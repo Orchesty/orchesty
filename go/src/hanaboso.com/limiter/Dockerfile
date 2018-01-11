@@ -1,7 +1,7 @@
 # Build the binary
 FROM golang:1.9
 WORKDIR /go/src/hanaboso.com/limiter/cmd/
- RUN go get -u github.com/stretchr/testify/assert
+RUN go get -u github.com/stretchr/testify/assert github.com/streadway/amqp
 COPY ./limiter /go/src/hanaboso.com/limiter
 # Add custom local hanaboso dependencies like below
 COPY ./utils /go/src/hanaboso.com/utils
