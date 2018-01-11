@@ -28,9 +28,5 @@ func main() {
 	p := rabbitmq.Publisher{RabbitMq: r, RoutingKey: "my-queue"}
 	p.Publish(m)
 
-	done := make(chan bool, 1)
-
-	<-done
-
-	//fmt.Println("I am limiter. Queue " + q.Name + " Exhange " + e.Name)
+	r.Disconnect()
 }
