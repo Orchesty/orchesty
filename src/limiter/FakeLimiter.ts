@@ -1,6 +1,6 @@
+import Headers from "../message/Headers";
 import JobMessage from "../message/JobMessage";
 import ILimiter from "./ILimiter";
-import Headers from "../message/Headers";
 
 /**
  * Fake temp limiter
