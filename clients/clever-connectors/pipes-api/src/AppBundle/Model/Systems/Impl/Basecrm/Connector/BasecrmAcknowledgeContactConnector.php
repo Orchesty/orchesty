@@ -7,6 +7,7 @@ use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Basecrm\BasecrmSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use CleverConnectors\AppBundle\Traits\LoggerTrait;
+use CleverConnectors\AppBundle\Utils\HeadersUtils;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Uri;
@@ -14,7 +15,6 @@ use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlException;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
-use Hanaboso\PipesFramework\Commons\Utils\PipesHeaders;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
 use Psr\Log\LoggerAwareInterface;
@@ -103,13 +103,7 @@ class BasecrmAcknowledgeContactConnector implements ConnectorInterface, LoggerAw
         }
 
         if ($item['meta']['type'] !== 'contact') {
-            $headers = [
-                PipesHeaders::createKey(PipesHeaders::RESULT_CODE)    => 1003,
-                PipesHeaders::createKey(PipesHeaders::RESULT_MESSAGE) => 'Received item update in not for [Contact] entity, BaseCRM.',
-                PipesHeaders::createKey(PipesHeaders::RESULT_DETAIL)  => '',
-            ];
-
-            $dto->setHeaders(array_merge($dto->getHeaders(), $headers));
+            $dto = HeadersUtils::setStopHeaderToDto($dto, 'Received item update in not for [Contact] entity, BaseCRM.');
         } else {
             $systemInstall = $this->systemInstallRepository->getSystemInstallFromHeaders($dto->getHeaders());
             $requestDto    = $this->system->getRequestDto($systemInstall, CurlManager::METHOD_POST);
@@ -127,7 +121,9 @@ class BasecrmAcknowledgeContactConnector implements ConnectorInterface, LoggerAw
             try {
                 $this->curlManager->send($requestDto);
             } catch (CurlException $e) {
-                $this->logError($e->getResponse()->getStatusCode(), $this->system, $systemInstall);
+                if ($e->getResponse()) {
+                    $this->logError($e->getResponse()->getStatusCode(), $this->system, $systemInstall);
+                }
 
                 throw $e;
             }

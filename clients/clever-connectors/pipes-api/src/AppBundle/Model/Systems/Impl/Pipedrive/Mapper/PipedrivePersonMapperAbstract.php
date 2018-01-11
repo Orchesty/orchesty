@@ -6,9 +6,9 @@ use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\CM\SubscriberConnector\SubscriberObject\CMSubscriber;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
+use CleverConnectors\AppBundle\Utils\HeadersUtils;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
-use Hanaboso\PipesFramework\Commons\Utils\PipesHeaders;
 use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
 
 /**
@@ -43,12 +43,9 @@ abstract class PipedrivePersonMapperAbstract implements CustomNodeInterface
         $data = $this->getInnerData($data);
 
         if ($data === self::OMMIT) {
-            return $dto->setHeaders(array_merge($dto->getHeaders(), [
-                PipesHeaders::createKey(PipesHeaders::RESULT_CODE)    => 1003,
-                PipesHeaders::createKey(PipesHeaders::RESULT_MESSAGE) => sprintf(
-                    'Undesired updated webhook branch, Pipedrive.'),
-                PipesHeaders::createKey(PipesHeaders::RESULT_DETAIL)  => '',
-            ]));
+            return HeadersUtils::setStopHeaderToDto($dto, sprintf(
+                    'Undesired updated webhook branch, Pipedrive.')
+            );
         } else {
             if (!array_key_exists('email', $data)
                 || empty($data['email'][0])

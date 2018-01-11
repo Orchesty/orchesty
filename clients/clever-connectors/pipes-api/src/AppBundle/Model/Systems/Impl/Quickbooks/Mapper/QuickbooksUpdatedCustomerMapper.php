@@ -12,7 +12,7 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\Mapper;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\CM\SubscriberConnector\SubscriberObject\CMSubscriber;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
-use CleverConnectors\AppBundle\Utils\CMHeaders;
+use CleverConnectors\AppBundle\Utils\HeadersUtils;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
@@ -59,7 +59,7 @@ class QuickbooksUpdatedCustomerMapper implements CustomNodeInterface
             || !array_key_exists('PrimaryEmailAddr', $data)
             || !array_key_exists('Address', $data['PrimaryEmailAddr'])
         ) {
-            return $this->setHeadersToStop($dto);
+            return HeadersUtils::setStopHeaderToDto($dto);
         }
 
         $obj = new CMSubscriber();
@@ -85,21 +85,6 @@ class QuickbooksUpdatedCustomerMapper implements CustomNodeInterface
         }
 
         return $dto->setData(json_encode($obj->toArray()));
-    }
-
-    /**
-     * @param ProcessDto $dto
-     *
-     * @return ProcessDto
-     */
-    protected function setHeadersToStop(ProcessDto $dto): ProcessDto
-    {
-        $headers       = $dto->getHeaders();
-        $key           = CMHeaders::createKey(CMHeaders::RESULT_CODE);
-        $headers[$key] = 1003;
-        $dto->setHeaders($headers);
-
-        return $dto;
     }
 
 }

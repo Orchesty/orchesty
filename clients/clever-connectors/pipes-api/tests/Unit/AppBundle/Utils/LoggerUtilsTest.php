@@ -4,7 +4,7 @@ namespace Tests\Unit\AppBundle\Utils;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\Systems\SystemInterface;
-use CleverConnectors\AppBundle\Utils\LoggerUtils;
+use CleverConnectors\AppBundle\Traits\LoggerTrait;
 use PHPUnit\Framework\MockObject\MockObject;
 use Tests\KernelTestCaseAbstract;
 
@@ -15,6 +15,8 @@ use Tests\KernelTestCaseAbstract;
  */
 final class LoggerUtilsTest extends KernelTestCaseAbstract
 {
+
+    use LoggerTrait;
 
     /**
      *
@@ -36,7 +38,7 @@ final class LoggerUtilsTest extends KernelTestCaseAbstract
             'token'       => 'Token',
             'system_key'  => 'Key',
             'system_name' => 'Name',
-        ], LoggerUtils::getMessage($system, $systemInstall));
+        ], self::getMessage($system, $systemInstall));
     }
 
 }

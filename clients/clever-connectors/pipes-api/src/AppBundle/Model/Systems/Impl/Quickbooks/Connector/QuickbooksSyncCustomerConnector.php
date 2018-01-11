@@ -10,14 +10,12 @@
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
-use CleverConnectors\AppBundle\Enum\NotificationTypeEnum;
 use CleverConnectors\AppBundle\Model\LastSync\LastSyncManager;
 use CleverConnectors\AppBundle\Model\ProgressCounter\ProgressCounterService;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\QuickbooksSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use CleverConnectors\AppBundle\Utils\Dto\Times;
-use CleverConnectors\AppBundle\Utils\LoggerUtils;
 use Clue\React\Buzz\Message\ResponseException;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -102,25 +100,17 @@ class QuickbooksSyncCustomerConnector extends QuickbooksCustomerConnectorAbstrac
                 return $this->getTotalPages($response);
             },
             function (ResponseException $exception) use ($systemInstall): void {
-                if ($exception->getCode() == 401) {
-                    $this->logger->info(
-                        NotificationTypeEnum::ACCESS_EXPIRATION,
-                        LoggerUtils::getMessage($this->system, $systemInstall)
-                    );
-                }
-                if ($exception->getCode() == 500) {
-                    $this->logger->info(
-                        NotificationTypeEnum::SERVICE_UNAVAILABLE,
-                        LoggerUtils::getMessage($this->system, $systemInstall)
-                    );
+                if ($exception->getResponse()) {
+                    $this->logError($exception->getResponse()->getStatusCode(), $this->system, $systemInstall);
                 }
                 throw $exception;
             }
         )->then(
-            function (int $total) use ($sender, $callbackItem, $requestDto, $processId, $counterService) {
+            function (int $total) use ($sender, $callbackItem, $requestDto, $processId, $counterService, $systemInstall
+            ) {
                 $counterService->setTotal($processId, $total * self::PAGE_LIMIT);
 
-                return all($this->doPageLoop($total, $sender, $callbackItem, $requestDto));
+                return all($this->doPageLoop($total, $sender, $callbackItem, $requestDto, NULL, $systemInstall));
             }
         );
 

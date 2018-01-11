@@ -4,8 +4,8 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\Basecrm\Mapper;
 
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\CM\SubscriberConnector\SubscriberObject\CMSubscriber;
+use CleverConnectors\AppBundle\Utils\HeadersUtils;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
-use Hanaboso\PipesFramework\Commons\Utils\PipesHeaders;
 use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
 
 /**
@@ -50,13 +50,7 @@ abstract class BasecrmContactMapperAbstract implements CustomNodeInterface
         if (array_key_exists('sync', $data['meta'])
             && !in_array($data['meta']['sync']['event_type'], static::$event_types)
         ) {
-            $headers = [
-                PipesHeaders::createKey(PipesHeaders::RESULT_CODE)    => 1003,
-                PipesHeaders::createKey(PipesHeaders::RESULT_MESSAGE) => 'Event type does not match mapper type, BaseCRM.',
-                PipesHeaders::createKey(PipesHeaders::RESULT_DETAIL)  => '',
-            ];
-
-            $dto->setHeaders(array_merge($dto->getHeaders(), $headers));
+            HeadersUtils::setStopHeaderToDto($dto, 'Event type does not match mapper type, BaseCRM.');
 
             return FALSE;
         }

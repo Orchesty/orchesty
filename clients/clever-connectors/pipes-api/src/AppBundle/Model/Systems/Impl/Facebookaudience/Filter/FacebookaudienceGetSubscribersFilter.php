@@ -4,6 +4,7 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\Filter;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\FacebookaudienceSystem;
+use CleverConnectors\AppBundle\Utils\HeadersUtils;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 
 /**
@@ -26,7 +27,7 @@ class FacebookaudienceGetSubscribersFilter extends FacebookaudienceFilterAbstrac
         if ($settings[SystemInstall::DISTRIBUTION_LIST] == FacebookaudienceSystem::ALL) {
             return $dto;
         } else {
-            return $this->setHeadersToStop($dto);
+            return HeadersUtils::setStopHeaderToDto($dto);
         }
     }
 

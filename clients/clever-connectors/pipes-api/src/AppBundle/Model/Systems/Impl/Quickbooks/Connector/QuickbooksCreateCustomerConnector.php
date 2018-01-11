@@ -3,24 +3,22 @@
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
-use CleverConnectors\AppBundle\Enum\NotificationTypeEnum;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\Mapper\QuickbooksCreateCustomerMapper;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\QuickbooksSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
+use CleverConnectors\AppBundle\Traits\LoggerTrait;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
-use CleverConnectors\AppBundle\Utils\LoggerUtils;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Exception;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlException;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
 use Psr\Log\LoggerAwareInterface;
-use Psr\Log\LoggerAwareTrait;
 use Psr\Log\NullLogger;
 
 /**
@@ -31,7 +29,7 @@ use Psr\Log\NullLogger;
 class QuickbooksCreateCustomerConnector implements ConnectorInterface, LoggerAwareInterface
 {
 
-    use LoggerAwareTrait;
+    use LoggerTrait;
 
     private const SUB_URL = '/customer';
 
@@ -113,21 +111,12 @@ class QuickbooksCreateCustomerConnector implements ConnectorInterface, LoggerAwa
 
                 $data[QuickbooksCreateCustomerMapper::SUCCESS] = TRUE;
                 $data['body']                                  = $res->getBody();
-            } catch (Exception $e) {
-                if ($e->getCode() == 401) {
-                    $this->logger->info(
-                        NotificationTypeEnum::ACCESS_EXPIRATION,
-                        LoggerUtils::getMessage($this->system, $systemInstall)
-                    );
+            } catch (CurlException $e) {
+                if ($e->getResponse()) {
+                    $this->logError($e->getResponse()->getStatusCode(), $this->system, $systemInstall);
                 }
-                if ($e->getCode() == 500) {
-                    $this->logger->info(
-                        NotificationTypeEnum::SERVICE_UNAVAILABLE,
-                        LoggerUtils::getMessage($this->system, $systemInstall)
-                    );
-                }
-                if ($data[QuickbooksCreateCustomerMapper::ATTEMPT]
-                ) {
+
+                if ($data[QuickbooksCreateCustomerMapper::ATTEMPT]) {
                     throw new CleverConnectorsException(
                         'Failed to create new customer, Quickbooks createCustomer.',
                         CleverConnectorsException::REQUEST_FAILED

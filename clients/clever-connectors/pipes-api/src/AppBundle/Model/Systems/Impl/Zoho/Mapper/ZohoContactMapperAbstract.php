@@ -6,10 +6,10 @@ use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\CM\SubscriberConnector\SubscriberObject\CMSubscriber;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
+use CleverConnectors\AppBundle\Utils\HeadersUtils;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
-use Hanaboso\PipesFramework\Commons\Utils\PipesHeaders;
 use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
 use Nette\Utils\Json;
 
@@ -129,14 +129,10 @@ abstract class ZohoContactMapperAbstract implements CustomNodeInterface
         $isCreated = ($created ?? NULL) === ($updated ?? NULL);
 
         if ($this->action === self::CREATE && !$isCreated || $this->action === self::UPDATE && $isCreated) {
-            return $dto->setHeaders(array_merge($dto->getHeaders(), [
-                PipesHeaders::createKey(PipesHeaders::RESULT_CODE)    => 1003,
-                PipesHeaders::createKey(PipesHeaders::RESULT_MESSAGE) => sprintf(
-                    'Data does not contains contact %s event',
-                    $this->action
-                ),
-                PipesHeaders::createKey(PipesHeaders::RESULT_DETAIL)  => '',
-            ]));
+            return HeadersUtils::setStopHeaderToDto($dto, sprintf(
+                'Data does not contains contact %s event',
+                $this->action
+            ));
         }
 
         return $dto;

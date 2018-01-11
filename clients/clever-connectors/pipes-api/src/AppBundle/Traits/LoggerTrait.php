@@ -5,7 +5,6 @@ namespace CleverConnectors\AppBundle\Traits;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\NotificationTypeEnum;
 use CleverConnectors\AppBundle\Model\Systems\SystemInterface;
-use CleverConnectors\AppBundle\Utils\LoggerUtils;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -15,6 +14,26 @@ use Psr\Log\LoggerInterface;
  */
 trait LoggerTrait
 {
+
+    /**
+     * @var string
+     */
+    private static $guid = 'guid';
+
+    /**
+     * @var string
+     */
+    private static $token = 'token';
+
+    /**
+     * @var string
+     */
+    private static $systemKey = 'system_key';
+
+    /**
+     * @var string
+     */
+    private static $systemName = 'system_name';
 
     /**
      * @var LoggerInterface
@@ -36,7 +55,7 @@ trait LoggerTrait
      */
     protected function logError(int $status, SystemInterface $system, SystemInstall $systemInstall): void
     {
-        $msg = LoggerUtils::getMessage($system, $systemInstall);
+        $msg = self::getMessage($system, $systemInstall);
 
         switch ($status) {
             case 400:
@@ -54,6 +73,22 @@ trait LoggerTrait
             default:
                 $this->logger->info(NotificationTypeEnum::SERVICE_UNAVAILABLE, $msg);
         }
+    }
+
+    /**
+     * @param SystemInterface $system
+     * @param SystemInstall   $systemInstall
+     *
+     * @return array
+     */
+    private static function getMessage(SystemInterface $system, SystemInstall $systemInstall): array
+    {
+        return [
+            self::$guid       => $systemInstall->getUser(),
+            self::$token      => $systemInstall->getToken(),
+            self::$systemKey  => $system->getKey(),
+            self::$systemName => $system->getName(),
+        ];
     }
 
 }

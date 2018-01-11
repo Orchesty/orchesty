@@ -5,6 +5,7 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\Mapper;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\CM\SubscriberConnector\SubscriberObject\CMSubscriber;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\HubspotSystem;
+use CleverConnectors\AppBundle\Utils\HeadersUtils;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 
 /**
@@ -34,7 +35,7 @@ class HubspotDeletedContactMapper extends HubspotMapperAbstract
         ];
 
         if (in_array($data[HubspotSystem::SUBSCRIPTION_TYPE_KEY], $disallowed)) {
-            return $this->setHeadersToStop($dto);
+            return HeadersUtils::setStopHeaderToDto($dto);
         } elseif ($data[HubspotSystem::SUBSCRIPTION_TYPE_KEY] != HubspotSystem::SUBSCRIPTION_TYPE_DELETE) {
             throw new CleverConnectorsException(
                 sprintf('Unknown subscription type "%s"', $data[HubspotSystem::SUBSCRIPTION_TYPE_KEY]),

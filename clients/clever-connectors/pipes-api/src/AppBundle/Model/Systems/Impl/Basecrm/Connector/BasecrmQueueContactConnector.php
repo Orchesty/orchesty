@@ -121,7 +121,9 @@ class BasecrmQueueContactConnector implements ConnectorInterface, LoggerAwareInt
         try {
             $res = $this->curl->send(RequestDto::from($dto, $uri));
         } catch (CurlException $e) {
-            $this->logError($e->getResponse()->getStatusCode(), $this->system, $systemInstall);
+            if ($e->getResponse()) {
+                $this->logError($e->getResponse()->getStatusCode(), $this->system, $systemInstall);
+            }
 
             throw $e;
         }

@@ -13,7 +13,7 @@ use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\CM\SubscriberConnector\SubscriberObject\CMSubscriber;
 use CleverConnectors\AppBundle\Model\Systems\Impl\FacebookLeads\FacebookLeadsSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
-use CleverConnectors\AppBundle\Utils\CMHeaders;
+use CleverConnectors\AppBundle\Utils\HeadersUtils;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
@@ -52,7 +52,7 @@ class FacebookCreatedLeadformMapper implements CustomNodeInterface
         $data = json_decode($dto->getData(), TRUE);
 
         if (empty($data) || !array_key_exists('field_data', $data)) {
-            return $this->setHeadersToStop($dto);
+            return HeadersUtils::setStopHeaderToDto($dto);
         }
 
         $subscriber = new CMSubscriber();
@@ -94,21 +94,6 @@ class FacebookCreatedLeadformMapper implements CustomNodeInterface
         }
 
         return $dto->setData(json_encode($subscriber->toArray()));
-    }
-
-    /**
-     * @param ProcessDto $dto
-     *
-     * @return ProcessDto
-     */
-    protected function setHeadersToStop(ProcessDto $dto): ProcessDto
-    {
-        $headers       = $dto->getHeaders();
-        $key           = CMHeaders::createKey(CMHeaders::RESULT_CODE);
-        $headers[$key] = 1003;
-        $dto->setHeaders($headers);
-
-        return $dto;
     }
 
 }

@@ -113,7 +113,9 @@ class WisepopsRefreshFormsConnector implements ConnectorInterface, LoggerAwareIn
         try {
             $res = $this->curlManager->send($dto);
         } catch (CurlException $e) {
-            $this->logError($e->getResponse()->getStatusCode(), $system, $systemInstall);
+            if ($e->getResponse()) {
+                $this->logError($e->getResponse()->getStatusCode(), $system, $systemInstall);
+            }
             throw $e;
         }
 

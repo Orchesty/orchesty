@@ -4,7 +4,6 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\Filter;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
-use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
@@ -43,21 +42,6 @@ abstract class FacebookaudienceFilterAbstract implements CustomNodeInterface
         $systemInstall = $this->systemInstallRepository->getSystemInstallFromHeaders($dto->getHeaders());
 
         return $systemInstall->getSettings();
-    }
-
-    /**
-     * @param ProcessDto $dto
-     *
-     * @return ProcessDto
-     */
-    protected function setHeadersToStop(ProcessDto $dto): ProcessDto
-    {
-        $headers       = $dto->getHeaders();
-        $key           = CMHeaders::createKey(CMHeaders::RESULT_CODE);
-        $headers[$key] = 1003;
-        $dto->setHeaders($headers);
-
-        return $dto;
     }
 
 }

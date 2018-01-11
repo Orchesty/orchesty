@@ -108,7 +108,9 @@ class ShopifyUpdateCustomerConnector implements ConnectorInterface, LoggerAwareI
         try {
             $res = $this->curl->send($requestDto);
         } catch (CurlException $exception) {
-            $this->logError($exception->getResponse()->getStatusCode(), $this->system, $systemInstall);
+            if ($exception->getResponse()) {
+                $this->logError($exception->getResponse()->getStatusCode(), $this->system, $systemInstall);
+            }
 
             if (Strings::contains($exception->getMessage(), '422 Unprocessable Entity')) {
                 // ShopifyUpdateCustomerConnector: custom field already exists and is set

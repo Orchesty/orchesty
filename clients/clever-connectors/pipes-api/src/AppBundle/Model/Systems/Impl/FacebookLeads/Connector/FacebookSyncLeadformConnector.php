@@ -10,12 +10,11 @@
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\FacebookLeads\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
-use CleverConnectors\AppBundle\Enum\NotificationTypeEnum;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\FacebookLeads\FacebookLeadsSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
+use CleverConnectors\AppBundle\Traits\LoggerTrait;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
-use CleverConnectors\AppBundle\Utils\LoggerUtils;
 use Clue\React\Buzz\Message\ResponseException;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -30,7 +29,6 @@ use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\BatchInterface;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerAwareInterface;
-use Psr\Log\LoggerAwareTrait;
 use Psr\Log\NullLogger;
 use React\EventLoop\LoopInterface;
 use React\Promise\PromiseInterface;
@@ -43,7 +41,7 @@ use React\Promise\PromiseInterface;
 class FacebookSyncLeadformConnector implements BatchInterface, ConnectorInterface, LoggerAwareInterface
 {
 
-    use LoggerAwareTrait;
+    use LoggerTrait;
 
     /**
      * @var SystemInstallRepository|ObjectRepository
@@ -110,17 +108,11 @@ class FacebookSyncLeadformConnector implements BatchInterface, ConnectorInterfac
                         $body = $exception->getResponse()->getBody()->getContents();
                         $data = json_decode($body, TRUE);
                         if (isset($data['error']['code']) && $data['error']['code'] == 190) {
-                            $this->logger->info(
-                                NotificationTypeEnum::ACCESS_EXPIRATION,
-                                LoggerUtils::getMessage($this->system, $systemInstall)
-                            );
+                            $this->logError(401, $this->system, $systemInstall);
                         }
                     }
                     if ($exception->getCode() == 500) {
-                        $this->logger->info(
-                            NotificationTypeEnum::SERVICE_UNAVAILABLE,
-                            LoggerUtils::getMessage($this->system, $systemInstall)
-                        );
+                        $this->logError(500, $this->system, $systemInstall);
                     }
                     throw $exception;
                 }
