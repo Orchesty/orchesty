@@ -3,11 +3,10 @@
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Shipstation\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
-use CleverConnectors\AppBundle\Enum\NotificationTypeEnum;
 use CleverConnectors\AppBundle\Model\LastSync\LastSyncManager;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Shipstation\ShipstationSystem;
-use CleverConnectors\AppBundle\Utils\LoggerUtils;
+use CleverConnectors\AppBundle\Traits\LoggerTrait;
 use Clue\React\Buzz\Message\ResponseException;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
@@ -20,7 +19,6 @@ use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\BatchInterface;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerAwareInterface;
-use Psr\Log\LoggerAwareTrait;
 use Psr\Log\NullLogger;
 use React\Promise\PromiseInterface;
 
@@ -32,7 +30,7 @@ use React\Promise\PromiseInterface;
 abstract class ShipstationCustomerConnectorAbstract implements BatchInterface, ConnectorInterface, LoggerAwareInterface
 {
 
-    use LoggerAwareTrait;
+    use LoggerTrait;
 
     protected const QUERY_URL  = '%s/customers?%s';
     protected const PAGE_LIMIT = 50;
@@ -195,17 +193,9 @@ abstract class ShipstationCustomerConnectorAbstract implements BatchInterface, C
      */
     protected function logResponseException(ResponseException $exception, SystemInstall $systemInstall): void
     {
-        if ($exception->getCode() == 401) {
-            $this->logger->info(
-                NotificationTypeEnum::ACCESS_EXPIRATION,
-                LoggerUtils::getMessage($this->system, $systemInstall)
-            );
-        }
-        if ($exception->getCode() == 500) {
-            $this->logger->info(
-                NotificationTypeEnum::SERVICE_UNAVAILABLE,
-                LoggerUtils::getMessage($this->system, $systemInstall)
-            );
+        $statusCode = $exception->getResponse()->getStatusCode();
+        if ($statusCode == 500 || $statusCode == 401) {
+            $this->logError($statusCode, $this->system, $systemInstall);
         }
     }
 
