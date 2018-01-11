@@ -20,12 +20,7 @@ class ErrorMessage
     /**
      * @var int
      */
-    private $code = 0;
-
-    /**
-     * @var string
-     */
-    private $status = 'SUCCESS';
+    private $code = 2001;
 
     /**
      * @var string
@@ -41,13 +36,11 @@ class ErrorMessage
      * ErrorMessage constructor.
      *
      * @param int    $code
-     * @param string $status
      * @param string $message
      */
-    public function __construct(int $code, string $status, string $message = '')
+    public function __construct(int $code, string $message = '')
     {
         $this->code    = $code;
-        $this->status  = $status;
         $this->message = $message;
     }
 
@@ -57,14 +50,6 @@ class ErrorMessage
     public function getCode(): int
     {
         return $this->code;
-    }
-
-    /**
-     * @return string
-     */
-    public function getStatus(): string
-    {
-        return $this->status;
     }
 
     /**

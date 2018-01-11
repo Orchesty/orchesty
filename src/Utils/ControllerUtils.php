@@ -53,7 +53,6 @@ class ControllerUtils
 
         $array = [
             PipesHeaders::createKey(PipesHeaders::RESULT_CODE)    => $code,
-            PipesHeaders::createKey(PipesHeaders::RESULT_STATUS)  => $status,
             PipesHeaders::createKey(PipesHeaders::RESULT_MESSAGE) => $message,
             PipesHeaders::createKey(PipesHeaders::RESULT_DETAIL)  => $detail,
         ];

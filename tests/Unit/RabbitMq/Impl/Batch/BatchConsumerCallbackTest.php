@@ -308,5 +308,5 @@ class BatchConsumerCallbackTest extends TestCase
 
         $loop->run();
     }
-
+    
 }

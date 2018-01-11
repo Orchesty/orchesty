@@ -9,6 +9,7 @@
 
 namespace Hanaboso\PipesFramework\RabbitMq\Impl\Batch;
 
+use Hanaboso\PipesFramework\Commons\Utils\PipesHeaders;
 use InvalidArgumentException;
 
 /**
@@ -45,6 +46,7 @@ class SuccessMessage
             throw new InvalidArgumentException('Sequence ID must be grater or equal to 0.');
         }
         $this->sequenceId = $sequenceId;
+        $this->setResultCode(0);
     }
 
     /**
@@ -89,11 +91,53 @@ class SuccessMessage
      *
      * @return SuccessMessage
      */
-    public function addHeaders(string $key, string $value): SuccessMessage
+    public function addHeader(string $key, string $value): SuccessMessage
     {
         $this->headers[$key] = $value;
 
         return $this;
+    }
+
+    /**
+     * @param string $key
+     *
+     * @return bool
+     */
+    public function hasHeader(string $key): bool
+    {
+        return array_key_exists($key, $this->headers);
+    }
+
+    /**
+     * @param string $key
+     *
+     * @return string
+     */
+    public function getHeader(string $key): string
+    {
+        return $this->headers[$key] ?? '';
+    }
+
+    // HELPERS
+
+    /**
+     * @param int $code
+     *
+     * @return SuccessMessage
+     */
+    public function setResultCode(int $code): SuccessMessage
+    {
+        return $this->addHeader(PipesHeaders::RESULT_CODE, (string) $code);
+    }
+
+    /**
+     * @param string $message
+     *
+     * @return SuccessMessage
+     */
+    public function setMessage(string $message): SuccessMessage
+    {
+        return $this->addHeader(PipesHeaders::RESULT_MESSAGE, $message);
     }
 
 }

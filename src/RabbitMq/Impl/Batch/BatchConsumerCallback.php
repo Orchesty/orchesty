@@ -173,7 +173,7 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
                     ->batchErrorCallback(
                         $channel,
                         $message,
-                        new ErrorMessage(2001, 'UNKNOWN_ERROR', $e->getMessage()))
+                        new ErrorMessage(2001, $e->getMessage()))
                     ->then(function () use ($e, $message) {
                         $this->logger->error(sprintf('Batch action error: %s', $e->getMessage()), array_merge(
                             ['exception' => $e],
@@ -240,7 +240,6 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
     {
         $headers = array_merge($message->headers, [
             PipesHeaders::createKey(PipesHeaders::RESULT_CODE)    => 2001,
-            PipesHeaders::createKey(PipesHeaders::RESULT_STATUS)  => 2001,
             PipesHeaders::createKey(PipesHeaders::RESULT_MESSAGE) => $e->getMessage(),
         ]);
 
@@ -287,6 +286,16 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
      */
     private function itemCallback(Channel $channel, Message $message, SuccessMessage $successMessage): PromiseInterface
     {
+        // Limiter
+        if (
+            $successMessage->hasHeader(PipesHeaders::createKey(PipesHeaders::RESULT_CODE)) &&
+            $successMessage->getHeader(PipesHeaders::createKey(PipesHeaders::RESULT_CODE)) == 1004
+        ) {
+            $message->headers[PipesHeaders::createKey(PipesHeaders::RESULT_CODE)] = 1004;
+
+            return resolve();
+        }
+
         $resultMessage = sprintf(
             'Batch item %s for node %s.',
             $successMessage->getSequenceId(),
@@ -298,7 +307,6 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
             [
                 self::TYPE                                            => 'batch_item',
                 PipesHeaders::createKey(PipesHeaders::SEQUENCE_ID)    => $successMessage->getSequenceId(),
-                PipesHeaders::createKey(PipesHeaders::RESULT_CODE)    => 0,
                 PipesHeaders::createKey(PipesHeaders::RESULT_MESSAGE) => $resultMessage,
             ]
         );
@@ -333,11 +341,15 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
             'Batch end for node %s.',
             PipesHeaders::get(PipesHeaders::NODE_NAME, $message->headers)
         );
-        $headers       = array_merge($message->headers, [
+
+        $headers = array_merge($message->headers, [
             self::TYPE                                            => 'batch_end',
-            PipesHeaders::createKey(PipesHeaders::RESULT_CODE)    => 0,
             PipesHeaders::createKey(PipesHeaders::RESULT_MESSAGE) => $resultMessage,
         ]);
+
+        if (!$message->hasHeader(PipesHeaders::createKey(PipesHeaders::RESULT_CODE))) {
+            $headers[PipesHeaders::createKey(PipesHeaders::RESULT_CODE)] = 0;
+        }
 
         return $channel
             ->publish('', $headers, '', $message->getHeader(self::REPLY_TO)
@@ -366,7 +378,6 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
         $headers = array_merge($message->headers, [
             self::TYPE                                            => 'batch_end',
             PipesHeaders::createKey(PipesHeaders::RESULT_CODE)    => $errorMessage->getCode(),
-            PipesHeaders::createKey(PipesHeaders::RESULT_STATUS)  => $errorMessage->getStatus(),
             PipesHeaders::createKey(PipesHeaders::RESULT_MESSAGE) => $errorMessage->getMessage(),
             PipesHeaders::createKey(PipesHeaders::RESULT_DETAIL)  => $errorMessage->getDetail(),
         ]);
