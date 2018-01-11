@@ -145,6 +145,7 @@ class AirtableSyncContactConnector extends AirtableContactConnectorAbstract
             },
             function (ResponseException $e) use ($systemInstall): void {
                 $this->logError($e->getResponse()->getStatusCode(), $this->system, $systemInstall);
+                throw $e;
             }
         );
     }

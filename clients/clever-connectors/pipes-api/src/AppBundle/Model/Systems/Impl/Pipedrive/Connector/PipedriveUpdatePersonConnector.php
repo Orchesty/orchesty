@@ -96,7 +96,9 @@ class PipedriveUpdatePersonConnector implements ConnectorInterface, LoggerAwareI
         try {
             $res = $this->curl->send($requestDto);
         } catch (CurlException $e) {
-            $this->logError($e->getResponse()->getStatusCode(), $this->system, $systemInstall);
+            if ($e->getResponse()) {
+                $this->logError($e->getResponse()->getStatusCode(), $this->system, $systemInstall);
+            }
 
             throw $e;
         }

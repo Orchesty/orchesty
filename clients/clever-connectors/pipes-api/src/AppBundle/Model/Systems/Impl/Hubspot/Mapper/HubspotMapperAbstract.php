@@ -6,7 +6,6 @@ use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\CM\SubscriberConnector\SubscriberObject\CMSubscriber;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
-use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
@@ -121,21 +120,6 @@ abstract class HubspotMapperAbstract implements CustomNodeInterface
             'Could not find "email" under "identity-profiles".',
             CleverConnectorsException::MISSING_DATA
         );
-    }
-
-    /**
-     * @param ProcessDto $dto
-     *
-     * @return ProcessDto
-     */
-    protected function setHeadersToStop(ProcessDto $dto): ProcessDto
-    {
-        $headers       = $dto->getHeaders();
-        $key           = CMHeaders::createKey(CMHeaders::RESULT_CODE);
-        $headers[$key] = 1003;
-        $dto->setHeaders($headers);
-
-        return $dto;
     }
 
     /**

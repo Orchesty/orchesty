@@ -9,6 +9,7 @@ use CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\HubspotSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use CleverConnectors\AppBundle\Traits\LoggerTrait;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
+use CleverConnectors\AppBundle\Utils\HeadersUtils;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Uri;
@@ -118,7 +119,7 @@ class HubspotGetContactConnector implements ConnectorInterface, LoggerAwareInter
         if (in_array($arr[HubspotSystem::SUBSCRIPTION_TYPE_KEY], $allowedTypes)) {
             $dto = $this->getContactProfile($dto, $arr);
         } elseif ($arr[HubspotSystem::SUBSCRIPTION_TYPE_KEY] == HubspotSystem::SUBSCRIPTION_TYPE_DELETE) {
-            $dto = $this->setHeadersToStop($dto);
+            $dto = HeadersUtils::setStopHeaderToDto($dto);
         } else {
             throw new CleverConnectorsException(
                 sprintf('Unknown subscription type "%s"', $arr[HubspotSystem::SUBSCRIPTION_TYPE_KEY]),
@@ -149,7 +150,9 @@ class HubspotGetContactConnector implements ConnectorInterface, LoggerAwareInter
         try {
             $response = $this->curlManager->send($requestDto);
         } catch (CurlException $e) {
-            $this->logError($e->getResponse()->getStatusCode(), $this->system, $systemInstall);
+            if ($e->getResponse()) {
+                $this->logError($e->getResponse()->getStatusCode(), $this->system, $systemInstall);
+            }
             throw $e;
         }
 
@@ -157,21 +160,6 @@ class HubspotGetContactConnector implements ConnectorInterface, LoggerAwareInter
         $responseBody[HubspotSystem::SUBSCRIPTION_TYPE_KEY] = $body[HubspotSystem::SUBSCRIPTION_TYPE_KEY];
 
         $dto->setData(json_encode($responseBody));
-
-        return $dto;
-    }
-
-    /**
-     * @param ProcessDto $dto
-     *
-     * @return ProcessDto
-     */
-    protected function setHeadersToStop(ProcessDto $dto): ProcessDto
-    {
-        $headers       = $dto->getHeaders();
-        $key           = CMHeaders::createKey(CMHeaders::RESULT_CODE);
-        $headers[$key] = 1003;
-        $dto->setHeaders($headers);
 
         return $dto;
     }

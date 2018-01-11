@@ -46,7 +46,9 @@ class BasecrmCreateContactConnector extends BasecrmUpdateContactConnectorAbstrac
         try {
             $res = $this->curl->send($requestDto);
         } catch (CurlException $e) {
-            $this->logError($e->getResponse()->getStatusCode(), $this->system, $systemInstall);
+            if ($e->getResponse()) {
+                $this->logError($e->getResponse()->getStatusCode(), $this->system, $systemInstall);
+            }
 
             throw new CleverConnectorsException('Failed to create new contact, BaseCRM createContactConnector.',
                 CleverConnectorsException::REQUEST_FAILED);

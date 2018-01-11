@@ -3,23 +3,22 @@
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
-use CleverConnectors\AppBundle\Enum\NotificationTypeEnum;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\Mapper\QuickbooksCreateCustomerMapper;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\QuickbooksSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
+use CleverConnectors\AppBundle\Traits\LoggerTrait;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
-use CleverConnectors\AppBundle\Utils\LoggerUtils;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlException;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
 use Psr\Log\LoggerAwareInterface;
-use Psr\Log\LoggerAwareTrait;
 use Psr\Log\NullLogger;
 
 /**
@@ -30,7 +29,7 @@ use Psr\Log\NullLogger;
 class QuickbooksGetnumberCustomerConnector implements ConnectorInterface, LoggerAwareInterface
 {
 
-    use LoggerAwareTrait;
+    use LoggerTrait;
 
     private const SUB_URL = '/query?query=';
 
@@ -111,39 +110,32 @@ class QuickbooksGetnumberCustomerConnector implements ConnectorInterface, Logger
         $requestDto->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()))
             ->setUri(new Uri(rtrim($requestDto->getUri(TRUE), '/') . $this->getQuery($body)));
 
-        $res = $this->curl->send($requestDto);
+        try {
+            $res = $this->curl->send($requestDto);
 
-        if ($res->getStatusCode() == 401) {
-            $this->logger->info(
-                NotificationTypeEnum::ACCESS_EXPIRATION,
-                LoggerUtils::getMessage($this->system, $systemInstall)
-            );
+            $resBody = json_decode($res->getBody(), TRUE);
+
+            if ($res->getStatusCode() !== 200
+                || !array_key_exists('QueryResponse', $resBody)
+                || !array_key_exists('totalCount', $resBody['QueryResponse'])
+            ) {
+                throw new CleverConnectorsException(
+                    'Failed to query name index, QuickbooksGetnumberConnector.',
+                    CleverConnectorsException::REQUEST_FAILED
+                );
+            }
+
+            $body[QuickbooksCreateCustomerMapper::LAST_NAME] .= '#' . (string) ($resBody['QueryResponse']['totalCount'] + 1);
+
+            $data['body'] = json_encode($body);
+
+            return $dto->setData(json_encode($data));
+        } catch (CurlException $e) {
+            if ($e->getResponse()) {
+                $this->logError($e->getResponse()->getStatusCode(), $this->system, $systemInstall);
+            }
+            throw $e;
         }
-
-        if ($res->getStatusCode() == 500) {
-            $this->logger->info(
-                NotificationTypeEnum::SERVICE_UNAVAILABLE,
-                LoggerUtils::getMessage($this->system, $systemInstall)
-            );
-        }
-
-        $resBody = json_decode($res->getBody(), TRUE);
-
-        if ($res->getStatusCode() !== 200
-            || !array_key_exists('QueryResponse', $resBody)
-            || !array_key_exists('totalCount', $resBody['QueryResponse'])
-        ) {
-            throw new CleverConnectorsException(
-                'Failed to query name index, QuickbooksGetnumberConnector.',
-                CleverConnectorsException::REQUEST_FAILED
-            );
-        }
-
-        $body[QuickbooksCreateCustomerMapper::LAST_NAME] .= '#' . (string) ($resBody['QueryResponse']['totalCount'] + 1);
-
-        $data['body'] = json_encode($body);
-
-        return $dto->setData(json_encode($data));
     }
 
     /**

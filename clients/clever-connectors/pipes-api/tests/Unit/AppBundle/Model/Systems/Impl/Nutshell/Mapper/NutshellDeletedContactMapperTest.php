@@ -61,7 +61,6 @@ final class NutshellDeletedContactMapperTest extends ConnectorTestCaseAbstract
         $this->assertEquals([
             PipesHeaders::createKey(PipesHeaders::RESULT_CODE)    => 1003,
             PipesHeaders::createKey(PipesHeaders::RESULT_MESSAGE) => 'Data does not contains contact delete event',
-            PipesHeaders::createKey(PipesHeaders::RESULT_DETAIL)  => '',
         ], $dto->getHeaders());
     }
 

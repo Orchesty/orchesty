@@ -55,17 +55,21 @@ class BasecrmUpdateContactConnector extends BasecrmUpdateContactConnectorAbstrac
         try {
             $res = $this->curl->send($requestDto);
         } catch (CurlException $e) {
-            $this->logError($e->getResponse()->getStatusCode(), $this->system, $systemInstall);
+            if ($e->getResponse()) {
+                $this->logError($e->getResponse()->getStatusCode(), $this->system, $systemInstall);
 
-            if ($e->getResponse()->getStatusCode() === 404) {
-                throw new CleverConnectorsException(
-                    sprintf('Contact with id [%s] wasn\'t find, BaseCRM updateContactConnector.', $data['id']),
-                    CleverConnectorsException::REQUEST_FAILED);
-            } else {
-                throw new CleverConnectorsException(
-                    sprintf('Failed to update, BaseCRM updateContactConnector, %s', $e->getResponse()->getBody()),
-                    CleverConnectorsException::REQUEST_FAILED);
+                if ($e->getResponse()->getStatusCode() === 404) {
+                    throw new CleverConnectorsException(
+                        sprintf('Contact with id [%s] wasn\'t find, BaseCRM updateContactConnector.', $data['id']),
+                        CleverConnectorsException::REQUEST_FAILED);
+                } else {
+                    throw new CleverConnectorsException(
+                        sprintf('Failed to update, BaseCRM updateContactConnector, %s', $e->getResponse()->getBody()),
+                        CleverConnectorsException::REQUEST_FAILED);
+                }
             }
+
+            throw $e;
         }
 
         $body = json_decode($res->getBody(), TRUE);

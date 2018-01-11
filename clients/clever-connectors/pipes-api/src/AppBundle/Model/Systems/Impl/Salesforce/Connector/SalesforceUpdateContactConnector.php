@@ -108,7 +108,9 @@ class SalesforceUpdateContactConnector implements ConnectorInterface, LoggerAwar
 
             return $dto->setData($response->getBody());
         } catch (CurlException $e) {
-            $this->logError($e->getResponse()->getStatusCode(), $this->system, $systemInstall);
+            if ($e->getResponse()) {
+                $this->logError($e->getResponse()->getStatusCode(), $this->system, $systemInstall);
+            }
 
             if (Strings::contains($e->getMessage(), '"errorCode":"INVALID_FIELD"')) {
                 throw new CleverConnectorsException(

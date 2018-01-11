@@ -11,14 +11,13 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\Connector;
 
 use CleverConnectors\AppBundle\Document\LastSync;
 use CleverConnectors\AppBundle\Document\SystemInstall;
-use CleverConnectors\AppBundle\Enum\NotificationTypeEnum;
 use CleverConnectors\AppBundle\Model\LastSync\LastSyncManager;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\QuickbooksSystem;
+use CleverConnectors\AppBundle\Traits\LoggerTrait;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use CleverConnectors\AppBundle\Utils\CronUtils;
 use CleverConnectors\AppBundle\Utils\Dto\Times;
-use CleverConnectors\AppBundle\Utils\LoggerUtils;
 use Clue\React\Buzz\Message\ResponseException;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
@@ -31,7 +30,6 @@ use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\BatchInterface;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerAwareInterface;
-use Psr\Log\LoggerAwareTrait;
 use Psr\Log\NullLogger;
 use React\EventLoop\LoopInterface;
 use React\Promise\PromiseInterface;
@@ -45,7 +43,7 @@ use function React\Promise\all;
 abstract class QuickbooksCustomerConnectorAbstract implements BatchInterface, ConnectorInterface, LoggerAwareInterface
 {
 
-    use LoggerAwareTrait;
+    use LoggerTrait;
 
     protected const PAGE_LIMIT = 50;
 
@@ -128,23 +126,14 @@ abstract class QuickbooksCustomerConnectorAbstract implements BatchInterface, Co
                 return $this->getTotalPages($response);
             },
             function (ResponseException $exception) use ($systemInstall): void {
-                if ($exception->getCode() == 401) {
-                    $this->logger->info(
-                        NotificationTypeEnum::ACCESS_EXPIRATION,
-                        LoggerUtils::getMessage($this->system, $systemInstall)
-                    );
-                }
-                if ($exception->getCode() == 500) {
-                    $this->logger->info(
-                        NotificationTypeEnum::SERVICE_UNAVAILABLE,
-                        LoggerUtils::getMessage($this->system, $systemInstall)
-                    );
+                if ($exception->getResponse()) {
+                    $this->logError($exception->getResponse()->getStatusCode(), $this->system, $systemInstall);
                 }
                 throw $exception;
             }
         )->then(
-            function (int $total) use ($sender, $callbackItem, $requestDto, $times) {
-                return all($this->doPageLoop($total, $sender, $callbackItem, $requestDto, $times));
+            function (int $total) use ($sender, $callbackItem, $requestDto, $times, $systemInstall) {
+                return all($this->doPageLoop($total, $sender, $callbackItem, $requestDto, $times, $systemInstall));
             }
         );
 
@@ -189,11 +178,12 @@ abstract class QuickbooksCustomerConnectorAbstract implements BatchInterface, Co
     }
 
     /**
-     * @param int        $total
-     * @param CurlSender $sender
-     * @param callable   $callbackItem
-     * @param RequestDto $dto
-     * @param Times|null $times
+     * @param int           $total
+     * @param CurlSender    $sender
+     * @param callable      $callbackItem
+     * @param RequestDto    $dto
+     * @param Times|null    $times
+     * @param SystemInstall $systemInstall
      *
      * @return array
      */
@@ -202,7 +192,8 @@ abstract class QuickbooksCustomerConnectorAbstract implements BatchInterface, Co
         CurlSender $sender,
         callable $callbackItem,
         RequestDto $dto,
-        ?Times $times = NULL
+        ?Times $times = NULL,
+        SystemInstall $systemInstall
     ): array
     {
         $requests = [];
@@ -216,7 +207,14 @@ abstract class QuickbooksCustomerConnectorAbstract implements BatchInterface, Co
                 ->then(
                     function (ResponseInterface $response) use ($i): SuccessMessage {
                         return $this->createSuccessMessage($response, $i + 1);
-                    })
+                    },
+                    function (ResponseException $exception) use ($systemInstall): void {
+                        if ($exception->getResponse()) {
+                            $this->logError($exception->getResponse()->getStatusCode(), $this->system, $systemInstall);
+                        }
+                        throw $exception;
+                    }
+                )
                 ->then($callbackItem);
         }
 

@@ -105,7 +105,9 @@ class PluginSwitchTokenConnector implements ConnectorInterface, LoggerAwareInter
         try {
             $res = $this->curl->send($req);
         } catch (CurlException $e) {
-            $this->logError($e->getResponse()->getStatusCode(), $system, $systemInstall);
+            if ($e->getResponse()) {
+                $this->logError($e->getResponse()->getStatusCode(), $system, $systemInstall);
+            }
 
             throw $e;
         }
