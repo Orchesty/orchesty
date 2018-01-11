@@ -5,12 +5,11 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\Zoho\Connector;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\CleverCustomKeysEnum;
 use CleverConnectors\AppBundle\Enum\CleverFieldsEnum;
-use CleverConnectors\AppBundle\Enum\NotificationTypeEnum;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Zoho\ZohoSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
+use CleverConnectors\AppBundle\Traits\LoggerTrait;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
-use CleverConnectors\AppBundle\Utils\LoggerUtils;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Uri;
@@ -22,7 +21,6 @@ use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
 use Nette\Utils\Json;
 use Psr\Log\LoggerAwareInterface;
-use Psr\Log\LoggerAwareTrait;
 
 /**
  * Class ZohoUpdateContactConnector
@@ -32,7 +30,7 @@ use Psr\Log\LoggerAwareTrait;
 class ZohoUpdateContactConnector implements ConnectorInterface, LoggerAwareInterface
 {
 
-    use LoggerAwareTrait;
+    use LoggerTrait;
 
     private const URL = '%s&id=%s&newFormat=1&xmlData=%s';
 
@@ -114,10 +112,7 @@ class ZohoUpdateContactConnector implements ConnectorInterface, LoggerAwareInter
         } catch (CurlException $exception) {
             $response = $exception->getResponse();
             if ($response->getStatusCode() == 500) {
-                $this->logger->info(
-                    NotificationTypeEnum::SERVICE_UNAVAILABLE,
-                    LoggerUtils::getMessage($this->system, $systemInstall)
-                );
+                $this->logError($response->getStatusCode(), $this->system, $systemInstall);
             }
             throw $exception;
         }

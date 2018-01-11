@@ -10,13 +10,12 @@
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\FacebookLeads\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
-use CleverConnectors\AppBundle\Enum\NotificationTypeEnum;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\FacebookLeads\FacebookLeadsSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
+use CleverConnectors\AppBundle\Traits\LoggerTrait;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
-use CleverConnectors\AppBundle\Utils\LoggerUtils;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Uri;
@@ -28,7 +27,6 @@ use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Psr\Log\LoggerAwareInterface;
-use Psr\Log\LoggerAwareTrait;
 use Psr\Log\NullLogger;
 
 /**
@@ -39,7 +37,7 @@ use Psr\Log\NullLogger;
 class FacebookGetLeadformConnector implements ConnectorInterface, LoggerAwareInterface
 {
 
-    use LoggerAwareTrait;
+    use LoggerTrait;
 
     /**
      * @var CurlManager
@@ -257,17 +255,11 @@ class FacebookGetLeadformConnector implements ConnectorInterface, LoggerAwareInt
                 $body = $response->getBody()->getContents();
                 $data = json_decode($body, TRUE);
                 if (isset($data['error']['code']) && $data['error']['code'] == 190) {
-                    $this->logger->info(
-                        NotificationTypeEnum::ACCESS_EXPIRATION,
-                        LoggerUtils::getMessage($this->system, $systemInstall)
-                    );
+                    $this->logError(401, $this->system, $systemInstall);
                 }
             }
             if (isset($response) && $response->getStatusCode() == 500) {
-                $this->logger->info(
-                    NotificationTypeEnum::SERVICE_UNAVAILABLE,
-                    LoggerUtils::getMessage($this->system, $systemInstall)
-                );
+                $this->logError(500, $this->system, $systemInstall);
             }
             throw $e;
         }

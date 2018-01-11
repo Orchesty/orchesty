@@ -3,11 +3,10 @@
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Zoho\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
-use CleverConnectors\AppBundle\Enum\NotificationTypeEnum;
 use CleverConnectors\AppBundle\Model\ProgressCounter\ProgressCounterService;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Zoho\ZohoSystem;
-use CleverConnectors\AppBundle\Utils\LoggerUtils;
+use CleverConnectors\AppBundle\Traits\LoggerTrait;
 use Clue\React\Buzz\Message\ResponseException;
 use DateTime;
 use GuzzleHttp\Psr7\Uri;
@@ -20,7 +19,6 @@ use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\BatchInterface;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerAwareInterface;
-use Psr\Log\LoggerAwareTrait;
 use Psr\Log\NullLogger;
 use React\Promise\PromiseInterface;
 use function React\Promise\resolve;
@@ -33,7 +31,7 @@ use function React\Promise\resolve;
 abstract class ZohoContactConnectorAbstract implements ConnectorInterface, BatchInterface, LoggerAwareInterface
 {
 
-    use LoggerAwareTrait;
+    use LoggerTrait;
 
     protected const ITEMS_PER_PAGE = 50;
 
@@ -146,7 +144,10 @@ abstract class ZohoContactConnectorAbstract implements ConnectorInterface, Batch
                 }
             },
             function (ResponseException $exception) use ($systemInstall): void {
-                $this->logResponseException($exception, $systemInstall);
+                $statusCode = $exception->getResponse()->getStatusCode();
+                if ($statusCode == 500) {
+                    $this->logError($statusCode, $this->system, $systemInstall);
+                }
                 throw $exception;
             }
 
@@ -169,20 +170,6 @@ abstract class ZohoContactConnectorAbstract implements ConnectorInterface, Batch
         }
 
         return TRUE;
-    }
-
-    /**
-     * @param ResponseException $exception
-     * @param SystemInstall     $systemInstall
-     */
-    protected function logResponseException(ResponseException $exception, SystemInstall $systemInstall): void
-    {
-        if ($exception->getCode() == 500) {
-            $this->logger->info(
-                NotificationTypeEnum::SERVICE_UNAVAILABLE,
-                LoggerUtils::getMessage($this->system, $systemInstall)
-            );
-        }
     }
 
     /**

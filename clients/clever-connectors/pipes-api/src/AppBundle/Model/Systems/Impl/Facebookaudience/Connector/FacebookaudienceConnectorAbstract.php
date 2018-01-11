@@ -3,10 +3,9 @@
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
-use CleverConnectors\AppBundle\Enum\NotificationTypeEnum;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\FacebookaudienceSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
-use CleverConnectors\AppBundle\Utils\LoggerUtils;
+use CleverConnectors\AppBundle\Traits\LoggerTrait;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
@@ -15,7 +14,6 @@ use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
 use Psr\Log\LoggerAwareInterface;
-use Psr\Log\LoggerAwareTrait;
 use Psr\Log\NullLogger;
 
 /**
@@ -26,7 +24,7 @@ use Psr\Log\NullLogger;
 abstract class FacebookaudienceConnectorAbstract implements ConnectorInterface, LoggerAwareInterface
 {
 
-    use LoggerAwareTrait;
+    use LoggerTrait;
 
     /**
      * @var FacebookaudienceSystem
@@ -89,17 +87,11 @@ abstract class FacebookaudienceConnectorAbstract implements ConnectorInterface, 
             $body = $response->getBody()->getContents();
             $data = json_decode($body, TRUE);
             if (isset($data['error']['code']) && $data['error']['code'] == 190) {
-                $this->logger->info(
-                    NotificationTypeEnum::ACCESS_EXPIRATION,
-                    LoggerUtils::getMessage($this->system, $systemInstall)
-                );
+                $this->logError(401, $this->system, $systemInstall);
             }
         }
         if (isset($response) && $response->getStatusCode() == 500) {
-            $this->logger->info(
-                NotificationTypeEnum::SERVICE_UNAVAILABLE,
-                LoggerUtils::getMessage($this->system, $systemInstall)
-            );
+            $this->logError(500, $this->system, $systemInstall);
         }
     }
 
