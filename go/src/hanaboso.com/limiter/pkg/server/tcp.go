@@ -17,7 +17,7 @@ type TcpServer struct {
 }
 
 // Start starts the tcp server
-func (self *TcpServer) Start() {
+func (tcp *TcpServer) Start() {
 	// Listen for incoming connections.
 	l, err := net.Listen(connType, connHost+":"+connPort)
 	if err != nil {
@@ -35,12 +35,12 @@ func (self *TcpServer) Start() {
 			os.Exit(1)
 		}
 		// Handle connections in a new goroutine.
-		go self.handleRequest(conn)
+		go tcp.handleRequest(conn)
 	}
 }
 
 // handleRequest handles incoming tcp request
-func (self *TcpServer) handleRequest(conn net.Conn) {
+func (tcp *TcpServer) handleRequest(conn net.Conn) {
 	// Make a buffer to hold incoming data.
 	buf := make([]byte, 1024)
 	// Read the incoming connection into the buffer.
