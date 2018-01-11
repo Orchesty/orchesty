@@ -56,9 +56,7 @@ limiter-image:
     - cd ../ && docker build -t ${IMAGE} -f ./limiter/Dockerfile .
     - docker push ${IMAGE}
   only:
-    - dev
     - master
-    - ci
 
 pf-bundles-test:
   stage: stage2
