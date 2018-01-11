@@ -1,7 +1,7 @@
 package main
 
 import (
-	"hanaboso.com/limiter/pkg/server"
+	"hanaboso.com/limiter/pkg/limiter"
 	"os"
 	"os/signal"
 	"syscall"
@@ -10,14 +10,14 @@ import (
 
 // main runs the limiter program
 func main() {
-	tcpServer := server.TcpServer{}
+	tcpServer := limiter.TcpServer{}
 	go tcpServer.Start()
 
 	gracefulShutdown(&tcpServer)
 }
 
 // gracefulShutdown handles SIGINT and SIGTERM signal to stop the app gracefully
-func gracefulShutdown(tcpServer *server.TcpServer) {
+func gracefulShutdown(tcpServer *limiter.TcpServer) {
 	sigs := make(chan os.Signal, 1)
 	done := make(chan bool, 1)
 
