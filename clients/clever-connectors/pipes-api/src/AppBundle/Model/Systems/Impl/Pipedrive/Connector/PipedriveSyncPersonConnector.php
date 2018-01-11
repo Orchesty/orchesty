@@ -210,10 +210,8 @@ class PipedriveSyncPersonConnector implements ConnectorInterface, BatchInterface
                         return resolve();
                     }
                 },
-                function (ResponseException $e) use ($systemInstall): void {
-                    $this->logError($e->getResponse()->getStatusCode(), $this->system, $systemInstall);
-
-                    throw $e;
+                function (ResponseException $e) use ($systemInstall, $page): SuccessMessage {
+                    return $this->batchConnectorError($e, $this->system, $systemInstall, $page + 1);
                 }
             );
 

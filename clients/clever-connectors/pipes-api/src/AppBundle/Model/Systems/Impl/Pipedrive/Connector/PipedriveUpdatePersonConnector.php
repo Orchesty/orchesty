@@ -94,18 +94,9 @@ class PipedriveUpdatePersonConnector implements ConnectorInterface, LoggerAwareI
             ->setUri($uri);
 
         try {
-            $res = $this->curl->send($requestDto);
+            $this->curl->send($requestDto);
         } catch (CurlException $e) {
-            if ($e->getResponse()) {
-                $this->logError($e->getResponse()->getStatusCode(), $this->system, $systemInstall);
-            }
-
-            throw $e;
-        }
-
-        if ($res->getStatusCode() != 200) {
-            throw new CleverConnectorsException('Failed to update contact / missing field, PipeDrive.',
-                CleverConnectorsException::REQUEST_FAILED);
+            $this->connectorError($e, $this->system, $systemInstall, $dto);
         }
 
         return $dto;
