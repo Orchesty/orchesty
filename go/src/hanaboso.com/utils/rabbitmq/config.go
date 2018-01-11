@@ -1,8 +1,13 @@
 package rabbitmq
 
 type Exchange struct {
-	Name     string
-	Bindings []Binding
+	Name       string
+	Type       string
+	Durable    bool
+	AutoDelete bool
+	Internal   bool
+	NoWait     bool
+	Bindings   []Binding
 }
 
 func (q *Exchange) AddBinding(binding Binding) {
@@ -25,4 +30,5 @@ func (q *Queue) AddBinding(b Binding) {
 type Binding struct {
 	Exchange   string
 	RoutingKey string
+	NoWait     bool
 }

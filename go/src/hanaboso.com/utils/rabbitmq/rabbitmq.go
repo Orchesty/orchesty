@@ -7,12 +7,12 @@ import (
 )
 
 type RabbitMq struct {
-	host      string
-	port      int
-	user      string
-	password  string
+	Host      string
+	Port      int
+	User      string
+	Password  string
 	queues    []Queue
-	Exchanges []Exchange
+	exchanges []Exchange
 	conn      *amqp.Connection
 }
 
@@ -21,41 +21,93 @@ func (r *RabbitMq) AddQueue(q Queue) {
 }
 
 func (r *RabbitMq) AddExchange(e Exchange) {
-	r.Exchanges = append(r.Exchanges, e)
+	r.exchanges = append(r.exchanges, e)
 }
 
 func (r *RabbitMq) Setup() {
 
-	fmt.Println(len(r.Exchanges))
-	for i := 0; i < len(r.Exchanges); i++ {
-		fmt.Println(r.Exchanges[i])
+	if r.conn == nil {
+		log.Fatalln("RabbitMq setup error: not connected.")
 	}
 
-	for i := 0; i < len(r.Exchanges); i++ {
-		for j := 0; j < len(r.Exchanges[i].Bindings); j++ {
-			fmt.Println(r.Exchanges[i].Bindings[j])
+	ch := r.createChannel()
+	defer ch.Close()
+
+	// Declare exchanges
+	for i := 0; i < len(r.exchanges); i++ {
+		err := ch.ExchangeDeclare(r.exchanges[i].Name, r.exchanges[i].Type, r.exchanges[i].Durable, r.exchanges[i].AutoDelete, r.exchanges[i].Internal, r.exchanges[i].NoWait, nil)
+
+		if err != nil {
+			log.Fatalln(fmt.Sprintf("Rabbit MQ exchange declare error: %s", err))
+		}
+
+		log.Println(fmt.Sprintf("Rabbit MQ exchange declare %s", r.exchanges[i].Name))
+	}
+
+	// Bindings exchange to exchange
+	for i := 0; i < len(r.exchanges); i++ {
+		for j := 0; j < len(r.exchanges[i].Bindings); j++ {
+
+			err := ch.ExchangeBind(r.exchanges[i].Name, r.exchanges[i].Bindings[j].RoutingKey, r.exchanges[i].Bindings[j].Exchange, r.exchanges[i].Bindings[j].NoWait, nil)
+
+			if err != nil {
+				log.Fatalln(fmt.Sprintf("Rabbit MQ exchange bind error: %s", err))
+			}
+
+			log.Println(fmt.Sprintf("Rabbit MQ exchange bind %s to %s", r.exchanges[i].Name, r.exchanges[i].Bindings[j].Exchange))
 		}
 	}
 
-	fmt.Println(len(r.queues))
+	// Declare queues
 	for i := 0; i < len(r.queues); i++ {
-		fmt.Println(r.queues[i])
+
+		_, err := ch.QueueDeclare(r.queues[i].Name, r.queues[i].Durable, r.queues[i].AutoDelete, r.queues[i].Exclusive, r.queues[i].NoWait, nil)
+
+		if err != nil {
+			log.Fatalln(fmt.Sprintf("Rabbit MQ queue declare error: %s", err))
+		}
+
+		log.Println(fmt.Sprintf("Rabbit MQ queue declare %s", r.exchanges[i].Name))
 
 		for j := 0; j < len(r.queues[i].Bindings); j++ {
-			fmt.Println(r.queues[i].Bindings[j])
+
+			err := ch.QueueBind(r.queues[i].Name, r.queues[i].Bindings[j].RoutingKey, r.queues[i].Bindings[j].Exchange, r.queues[i].Bindings[j].NoWait, nil)
+
+			if err != nil {
+				log.Fatalln(fmt.Sprintf("Rabbit MQ queue bind error: %s", err))
+			}
+
+			log.Println(fmt.Sprintf("Rabbit MQ queue bind %s to exhange %s", r.queues[i].Name, r.queues[i].Bindings[j].Exchange))
 		}
 	}
 }
 
 func (r *RabbitMq) Connect() {
-	connString := fmt.Sprintf("amqp://%s:%s@%s:%d/", r.user, r.password, r.host, r.port)
+	connString := fmt.Sprintf("amqp://%s:%s@%s:%d/", r.User, r.Password, r.Host, r.Port)
 
 	var err error
 	r.conn, err = amqp.Dial(connString)
 
 	if err != nil {
-		log.Fatalln("Rabbit MQ connection error: %s", err)
+		log.Fatalln(fmt.Sprintf("Rabbit MQ connection error: %s", err))
 	}
 
 	log.Println(fmt.Sprintf("Rabbit MQ connected to %s", connString))
+}
+
+func (r *RabbitMq) Disconnect() {
+	if r.conn != nil {
+		r.conn.Close()
+	}
+}
+
+func (r *RabbitMq) createChannel() (ch *amqp.Channel) {
+
+	ch, err := r.conn.Channel()
+
+	if err != nil {
+		log.Fatalln(fmt.Sprintf("Rabbit MQ channel error: %s", err))
+	}
+
+	return ch
 }
