@@ -151,10 +151,10 @@ class BasecrmUpdatedContactConnector implements ConnectorInterface, BatchInterfa
                     return resolve();
                 }
             },
-            function (ResponseException $e) use ($systemInstall): void {
-                $this->logError($e->getResponse()->getStatusCode(), $this->system, $systemInstall);
+            function (ResponseException $e) use ($systemInstall, $callbackItem, $page) {
+                $callbackItem($this->batchConnectorError($e, $this->system, $systemInstall, $page));
 
-                throw $e;
+                return resolve();
             }
         );
     }

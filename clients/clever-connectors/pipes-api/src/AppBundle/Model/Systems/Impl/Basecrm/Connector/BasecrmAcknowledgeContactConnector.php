@@ -121,11 +121,7 @@ class BasecrmAcknowledgeContactConnector implements ConnectorInterface, LoggerAw
             try {
                 $this->curlManager->send($requestDto);
             } catch (CurlException $e) {
-                if ($e->getResponse()) {
-                    $this->logError($e->getResponse()->getStatusCode(), $this->system, $systemInstall);
-                }
-
-                throw $e;
+                $this->connectorError($e, $this->system, $systemInstall, $dto);
             }
         }
 
