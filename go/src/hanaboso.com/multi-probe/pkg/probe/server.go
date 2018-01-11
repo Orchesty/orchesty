@@ -1,6 +1,7 @@
 package probe
 
 import (
+	"hanaboso.com/utils/topology"
 	"strconv"
 	"net/http"
 	"encoding/json"
@@ -98,7 +99,7 @@ func jsonResponse(next http.Handler) http.Handler {
 // handleAddRequest adds given topology configuration to the internal map of maintained topologies
 // returns 200 statusCode and topologyId in response if handled well
 func (probe *Server) handleAddRequest(res http.ResponseWriter, req *http.Request) {
-	var receivedTopology TopologyJson
+	var receivedTopology topology.TopologyJson
 	var topologyInfo TopologyInfo
 
 	log.Println("Add topology request received.")
@@ -206,14 +207,14 @@ func (probe *Server) handleStatusRequest(res http.ResponseWriter, req *http.Requ
 
 	log.Println("Status topology request received.", topologyId)
 
-	topology, err := probe.getTopology(topologyId)
+	topo, err := probe.getTopology(topologyId)
 	if err != nil {
 		res.WriteHeader(http.StatusBadRequest)
 		res.Write(getErrorResponseBody(err))
 		return
 	}
 
-	bridges := topology.Bridges
+	bridges := topo.Bridges
 	results := make(chan BridgeInfo, len(bridges))
 
 	for _, bridge := range bridges {

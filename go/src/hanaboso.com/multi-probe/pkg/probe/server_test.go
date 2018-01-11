@@ -1,6 +1,7 @@
 package probe
 
 import (
+	"hanaboso.com/utils/topology"
 	"testing"
 	"fmt"
 	"net/http"
@@ -9,6 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"bytes"
 	"encoding/json"
+	"path/filepath"
 )
 
 type storageMock struct {
@@ -80,10 +82,17 @@ func TestServer(t *testing.T) {
 	response, _ = client.Get(host + "/topology/add")
 	assert.Equal(t, http.StatusBadRequest, response.StatusCode)
 
+	// Load topology from file
+	var topo topology.TopologyJson
+	filePath, _ := filepath.Abs("../../data/example.topology.json")
+	topoData, err := ioutil.ReadFile(filePath)
+	if err != nil {
+		assert.Nil(t, err, "Could not load topology file.")
+		return
+	}
+	json.Unmarshal(topoData, &topo)
+
 	// Add topology should success
-	var topology TopologyJson
-	topoData, _ := ioutil.ReadFile("./topology_test.json")
-	json.Unmarshal(topoData, &topology)
 	addReq, _ := http.NewRequest("POST", host+"/topology/add", bytes.NewBuffer(topoData))
 	addReq.Header.Set("Content-Type", "application/json")
 	response, _ = client.Do(addReq)
@@ -93,7 +102,7 @@ func TestServer(t *testing.T) {
 	response, _ = client.Get(host + "/topology/list")
 	defer response.Body.Close()
 	body, _ = ioutil.ReadAll(response.Body)
-	assert.Equal(t, "{\"status\":true,\"data\":\""+topology.TopologyId+"\"}", string(body))
+	assert.Equal(t, "{\"status\":true,\"data\":\""+topo.TopologyId+"\"}", string(body))
 
 	// Add topology should replace the previous with same id
 	response, _ = client.Do(addReq)
@@ -103,22 +112,22 @@ func TestServer(t *testing.T) {
 	response, _ = client.Get(host + "/topology/list")
 	defer response.Body.Close()
 	body, _ = ioutil.ReadAll(response.Body)
-	assert.Equal(t, "{\"status\":true,\"data\":\""+topology.TopologyId+"\"}", string(body))
+	assert.Equal(t, "{\"status\":true,\"data\":\""+topo.TopologyId+"\"}", string(body))
 
 	// Status should return json with results for bridges in topology
 	var checkResult probeStatusResponse
-	response, _ = client.Get(host + "/topology/status?topologyId=" + topology.TopologyId)
+	response, _ = client.Get(host + "/topology/status?topologyId=" + topo.TopologyId)
 	assert.Equal(t, http.StatusOK, response.StatusCode)
 	defer response.Body.Close()
 	statusBody, _ := ioutil.ReadAll(response.Body)
 	json.Unmarshal(statusBody, &checkResult)
-	assert.Equal(t, topology.TopologyId, checkResult.Id)
+	assert.Equal(t, topo.TopologyId, checkResult.Id)
 	assert.True(t, checkResult.Status)
-	assert.Equal(t, "6 of 6 bridges are ready", checkResult.Message)
-	assert.Len(t, checkResult.Nodes, 6)
+	assert.Equal(t, "2 of 2 bridges are ready", checkResult.Message)
+	assert.Len(t, checkResult.Nodes, 2)
 
 	// Remove should delete existing topology
-	response, _ = client.Get(host + "/topology/remove?topologyId=" + topology.TopologyId)
+	response, _ = client.Get(host + "/topology/remove?topologyId=" + topo.TopologyId)
 	assert.Equal(t, http.StatusOK, response.StatusCode)
 
 	// List should be empty

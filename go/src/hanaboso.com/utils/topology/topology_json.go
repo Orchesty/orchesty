@@ -8,8 +8,8 @@ type TopologyBridgeDebugJson struct {
 
 type TopologyBridgeLabelJson struct {
 	ID       string `json:"id"`
-	NoneId   string `json:"node_id"`
-	NoneName string `json:"node_name"`
+	NodeId   string `json:"node_id"`
+	NodeName string `json:"node_name"`
 }
 
 type TopologyBridgeWorkerSettingsQueueJson struct {

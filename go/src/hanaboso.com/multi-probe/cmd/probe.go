@@ -2,6 +2,7 @@ package main
 
 import (
 	"hanaboso.com/multi-probe/pkg/probe"
+	"hanaboso.com/utils/env"
 	"github.com/go-redis/redis"
 	"os"
 	"strconv"
@@ -14,10 +15,10 @@ import (
 
 // main runs the
 func main() {
-	host := getEnv("REDIS_HOST", "localhost")
-	port := getEnv("REDIS_PORT", "6379")
-	pass := getEnv("REDIS_PASS", "")
-	db, _ := strconv.Atoi(getEnv("REDIS_DB", "0"))
+	host := env.GetEnv("REDIS_HOST", "localhost")
+	port := env.GetEnv("REDIS_PORT", "6379")
+	pass := env.GetEnv("REDIS_PASS", "")
+	db, _ := strconv.Atoi(env.GetEnv("REDIS_DB", "0"))
 
 	rCli := redis.NewClient(&redis.Options{
 		Addr:     host + ":" + port,
@@ -33,15 +34,6 @@ func main() {
 	srv.Start(8007)
 
 	gracefulShutdown(&srv)
-}
-
-// getEnv returns the ENV variable value or returns the default value if not set
-func getEnv(key, fallback string) string {
-	value := os.Getenv(key)
-	if len(value) == 0 {
-		return fallback
-	}
-	return value
 }
 
 // gracefulShutdown handles SIGINT and SIGTERM signal to stop the app gracefully
