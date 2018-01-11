@@ -4,8 +4,12 @@ namespace Tests\Unit\AppBundle\Model\Systems\Impl\Wisepops\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Wisepops\Connector\WisepopsRefreshFormsConnector;
+use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\Uri;
+use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlException;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
@@ -86,6 +90,61 @@ final class WisepopsRefreshFormsConnectorTest extends ConnectorTestCaseAbstract
         ];
 
         self::assertEquals($expt, $res);
+    }
+
+    /**
+     *
+     */
+    public function testRefreshFormsLimit(): void
+    {
+        /** @var CurlManagerInterface|PHPUnit_Framework_MockObject_MockObject $curl */
+        $curl = $this->createMock(CurlManagerInterface::class);
+        $curl->expects($this->once())
+            ->method('send')->will($this->returnCallback(
+                function (RequestDto $dto): void {
+                    throw new CurlException(
+                        '',
+                        0,
+                        NULL,
+                        new Response(429)
+                    );
+                }
+            ));
+
+        $sys = new SystemInstall();
+        $sys->setSettings([
+            'api_key'     => 'apiKey',
+            'custom_form' => [
+                [
+                    'form_id'   => 106677,
+                    'form_name' => 'vsfkdj',
+                    'list'      => 'someList',
+                ],
+            ],
+        ]);
+
+        /** @var SystemInstallRepository|PHPUnit_Framework_MockObject_MockObject $repo */
+        $repo = $this->createMock(SystemInstallRepository::class);
+        $repo->expects($this->once())
+            ->method('getSystemInstallFromHeaders')->willReturn($sys);
+
+        /** @var DocumentManager|PHPUnit_Framework_MockObject_MockObject $dm */
+        $dm = $this->createMock(DocumentManager::class);
+        $dm->expects($this->once())
+            ->method('getRepository')->willReturn($repo);
+
+        $conn = new WisepopsRefreshFormsConnector(
+            $dm,
+            $curl
+        );
+
+        $dto = new ProcessDto();
+        $dto->setHeaders([])->setData('');
+
+        $res = $conn->processAction($dto);
+
+        self::assertArrayHasKey('pf-result-code', $res->getHeaders());
+        self::assertEquals(1004, $res->getHeaders()['pf-result-code']);
     }
 
 }

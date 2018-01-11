@@ -91,19 +91,20 @@ class WisepopsRefreshFormsConnector implements ConnectorInterface, LoggerAwareIn
     public function processAction(ProcessDto $dto): ProcessDto
     {
         $sys = $this->systemInstallRepository->getSystemInstallFromHeaders($dto->getHeaders());
-        $res = $this->refreshForms($sys);
+        $res = $this->refreshForms($sys, $dto);
 
         return $dto->setData(json_encode($res));
     }
 
     /**
-     * @param SystemInstall $systemInstall
+     * @param SystemInstall   $systemInstall
+     * @param ProcessDto|NULL $processDto
      *
      * @return array
      * @throws SystemException
      * @throws CurlException
      */
-    public function refreshForms(SystemInstall $systemInstall): array
+    public function refreshForms(SystemInstall $systemInstall, ?ProcessDto $processDto = NULL): array
     {
         $system = new WisepopsSystem();
 
@@ -112,43 +113,46 @@ class WisepopsRefreshFormsConnector implements ConnectorInterface, LoggerAwareIn
 
         try {
             $res = $this->curlManager->send($dto);
-        } catch (CurlException $e) {
-            if ($e->getResponse()) {
-                $this->logError($e->getResponse()->getStatusCode(), $system, $systemInstall);
-            }
-            throw $e;
-        }
 
-        $forms = json_decode($res->getBody(), TRUE);
+            $forms = json_decode($res->getBody(), TRUE);
 
-        $sForms = [];
+            $sForms = [];
 
-        $sett = $systemInstall->getSettings();
-        if (array_key_exists(SystemInstall::FORMS, $sett)) {
-            $sForms = $sett[SystemInstall::FORMS];
+            $sett = $systemInstall->getSettings();
+            if (array_key_exists(SystemInstall::FORMS, $sett)) {
+                $sForms = $sett[SystemInstall::FORMS];
 
-            foreach ($sForms as $index => $form) {
-                if (!$this->removeForm($forms, $form[WisepopsSystem::FORM_ID])) {
-                    unset($sForms[$index]);
+                foreach ($sForms as $index => $form) {
+                    if (!$this->removeForm($forms, $form[WisepopsSystem::FORM_ID])) {
+                        unset($sForms[$index]);
+                    }
                 }
             }
+
+            foreach ($forms as $form) {
+                $sForms[] = [
+                    WisepopsSystem::FORM_ID   => (string) $form['id'],
+                    WisepopsSystem::FORM_NAME => $form['label'],
+                    WisepopsSystem::FORM_LIST => NULL,
+                ];
+            }
+
+            $sForms = array_values($sForms);
+
+            $sett[SystemInstall::FORMS] = $sForms;
+            $systemInstall->setSettings($sett);
+            $this->dm->flush();
+
+            return $sForms;
+        } catch (CurlException $e) {
+            if (!$processDto) {
+                $processDto = new ProcessDto();
+            }
+
+            $this->connectorError($e, $system, $systemInstall, $processDto);
         }
 
-        foreach ($forms as $form) {
-            $sForms[] = [
-                WisepopsSystem::FORM_ID   => (string) $form['id'],
-                WisepopsSystem::FORM_NAME => $form['label'],
-                WisepopsSystem::FORM_LIST => NULL,
-            ];
-        }
-
-        $sForms = array_values($sForms);
-
-        $sett[SystemInstall::FORMS] = $sForms;
-        $systemInstall->setSettings($sett);
-        $this->dm->flush();
-
-        return $sForms;
+        return [];
     }
 
     /**
