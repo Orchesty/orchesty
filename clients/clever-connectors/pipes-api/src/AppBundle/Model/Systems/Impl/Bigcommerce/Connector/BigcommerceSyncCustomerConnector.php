@@ -16,6 +16,7 @@ use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSender;
 use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSenderFactory;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlException;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
@@ -136,12 +137,8 @@ class BigcommerceSyncCustomerConnector implements BatchInterface, ConnectorInter
                 function (ResponseInterface $response): int {
                     return $this->getTotalPages($response);
                 },
-                function (ResponseException $e) use ($systemInstall): void {
-                    if ($e->getResponse()) {
-                        $this->logError($e->getResponse()->getStatusCode(), $this->system, $systemInstall);
-                    }
-
-                    throw $e;
+                function (ResponseException $e) use ($systemInstall, $callbackItem) {
+                    return $callbackItem($this->batchConnectorError($e, $this->system, $systemInstall, 1));
                 }
             )->then(
                 function (int $total) use ($sender, $callbackItem, $requestDto, $systemInstall, $processId) {
@@ -191,6 +188,16 @@ class BigcommerceSyncCustomerConnector implements BatchInterface, ConnectorInter
     }
 
     /**
+     * @param CurlException|ResponseException $e
+     *
+     * @return bool
+     */
+    protected function limitReached($e): bool
+    {
+        return $e->getResponse()->getStatusCode() === 509;
+    }
+
+    /**
      * @param int           $total
      * @param CurlSender    $sender
      * @param callable      $callbackItem
@@ -217,14 +224,10 @@ class BigcommerceSyncCustomerConnector implements BatchInterface, ConnectorInter
                     function (ResponseInterface $response) use ($i): SuccessMessage {
                         return $this->createSuccessMessage($response, $i);
                     },
-                    function (ResponseException $e) use ($systemInstall): void {
-                        if ($e->getResponse()) {
-                            $this->logError($e->getResponse()->getStatusCode(), $this->system, $systemInstall);
-                        }
-
-                        throw $e;
+                    function (ResponseException $e) use ($systemInstall, $i): SuccessMessage {
+                        return $this->batchConnectorError($e, $this->system, $systemInstall, $i + 1);
                     }
-                )->then($callbackItem);
+                )->then($callbackItem, $callbackItem);
         }
 
         return $requests;
