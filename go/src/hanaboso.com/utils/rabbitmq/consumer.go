@@ -25,7 +25,12 @@ func (c *Consumer) Consume(callback Callback) {
 		c.channel = c.RabbitMq.createChannel()
 	}
 
-	c.channel.Qos(c.PrefetchCount, c.PrefetchSize, false)
+	err := c.channel.Qos(c.PrefetchCount, c.PrefetchSize, false)
+
+	if err != nil {
+		log.Fatalln(fmt.Sprintf("Rabbit MQ channel qos: %s", err))
+	}
+
 	msgs, err := c.channel.Consume(c.Queue, c.ConsumerTag, c.NoAck, c.Exclusive, c.NoLocal, c.NoWait, nil)
 
 	if err != nil {

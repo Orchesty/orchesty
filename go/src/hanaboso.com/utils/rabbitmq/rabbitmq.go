@@ -34,50 +34,50 @@ func (r *RabbitMq) Setup() {
 	defer ch.Close()
 
 	// Declare exchanges
-	for i := 0; i < len(r.exchanges); i++ {
-		err := ch.ExchangeDeclare(r.exchanges[i].Name, r.exchanges[i].Type, r.exchanges[i].Durable, r.exchanges[i].AutoDelete, r.exchanges[i].Internal, r.exchanges[i].NoWait, nil)
+	for _, e := range r.exchanges {
+		err := ch.ExchangeDeclare(e.Name, e.Type, e.Durable, e.AutoDelete, e.Internal, e.NoWait, nil)
 
 		if err != nil {
 			log.Fatalln(fmt.Sprintf("Rabbit MQ exchange declare error: %s", err))
 		}
 
-		log.Println(fmt.Sprintf("Rabbit MQ exchange declare %s", r.exchanges[i].Name))
+		log.Println(fmt.Sprintf("Rabbit MQ exchange declare %s", e.Name))
 	}
 
 	// Bindings exchange to exchange
-	for i := 0; i < len(r.exchanges); i++ {
-		for j := 0; j < len(r.exchanges[i].Bindings); j++ {
+	for _, e := range r.exchanges {
+		for _, b := range e.Bindings {
 
-			err := ch.ExchangeBind(r.exchanges[i].Name, r.exchanges[i].Bindings[j].RoutingKey, r.exchanges[i].Bindings[j].Exchange, r.exchanges[i].Bindings[j].NoWait, nil)
+			err := ch.ExchangeBind(e.Name, b.RoutingKey, b.Exchange, b.NoWait, nil)
 
 			if err != nil {
 				log.Fatalln(fmt.Sprintf("Rabbit MQ exchange bind error: %s", err))
 			}
 
-			log.Println(fmt.Sprintf("Rabbit MQ exchange bind %s to %s", r.exchanges[i].Name, r.exchanges[i].Bindings[j].Exchange))
+			log.Println(fmt.Sprintf("Rabbit MQ exchange bind %s to %s", e.Name, b.Exchange))
 		}
 	}
 
 	// Declare queues
-	for i := 0; i < len(r.queues); i++ {
+	for _, q := range r.queues {
 
-		_, err := ch.QueueDeclare(r.queues[i].Name, r.queues[i].Durable, r.queues[i].AutoDelete, r.queues[i].Exclusive, r.queues[i].NoWait, nil)
+		_, err := ch.QueueDeclare(q.Name, q.Durable, q.AutoDelete, q.Exclusive, q.NoWait, nil)
 
 		if err != nil {
 			log.Fatalln(fmt.Sprintf("Rabbit MQ queue declare error: %s", err))
 		}
 
-		log.Println(fmt.Sprintf("Rabbit MQ queue declare %s", r.queues[i].Name))
+		log.Println(fmt.Sprintf("Rabbit MQ queue declare %s", q.Name))
 
-		for j := 0; j < len(r.queues[i].Bindings); j++ {
+		for _, b := range q.Bindings {
 
-			err := ch.QueueBind(r.queues[i].Name, r.queues[i].Bindings[j].RoutingKey, r.queues[i].Bindings[j].Exchange, r.queues[i].Bindings[j].NoWait, nil)
+			err := ch.QueueBind(q.Name, b.RoutingKey, b.Exchange, b.NoWait, nil)
 
 			if err != nil {
 				log.Fatalln(fmt.Sprintf("Rabbit MQ queue bind error: %s", err))
 			}
 
-			log.Println(fmt.Sprintf("Rabbit MQ queue bind %s to exhange %s", r.queues[i].Name, r.queues[i].Bindings[j].Exchange))
+			log.Println(fmt.Sprintf("Rabbit MQ queue bind %s to exhange %s", q.Name,b.Exchange))
 		}
 	}
 }
