@@ -122,8 +122,6 @@ class QuickbooksCreateCustomerConnector implements ConnectorInterface, LoggerAwa
                         CleverConnectorsException::REQUEST_FAILED
                     );
                 }
-
-                throw $e;
             }
 
             $data[QuickbooksCreateCustomerMapper::ATTEMPT] = TRUE;
