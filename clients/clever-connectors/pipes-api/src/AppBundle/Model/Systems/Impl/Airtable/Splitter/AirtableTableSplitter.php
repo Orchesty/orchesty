@@ -98,12 +98,12 @@ class AirtableTableSplitter implements BatchInterface, CustomNodeInterface
         if (array_key_exists(AirtableSystem::TABLE_URL, $form)) {
             $successMessage = new SuccessMessage($i);
             $successMessage
-                ->addHeaders(CMHeaders::createKey(AirtableSystem::TABLE_URL), $form[AirtableSystem::TABLE_URL])
-                ->addHeaders(CMHeaders::createKey(AirtableSystem::LIST_ID), $form[AirtableSystem::LIST_ID])
+                ->addHeader(CMHeaders::createKey(AirtableSystem::TABLE_URL), $form[AirtableSystem::TABLE_URL])
+                ->addHeader(CMHeaders::createKey(AirtableSystem::LIST_ID), $form[AirtableSystem::LIST_ID])
                 ->setData($dto->getData());
 
             if ($form[AirtableSystem::VIEW]) {
-                $successMessage->addHeaders(CMHeaders::createKey(AirtableSystem::VIEW), $form[AirtableSystem::VIEW]);
+                $successMessage->addHeader(CMHeaders::createKey(AirtableSystem::VIEW), $form[AirtableSystem::VIEW]);
             }
 
             return $successMessage;

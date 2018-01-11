@@ -131,7 +131,6 @@ abstract class ZohoContactMapperAbstract implements CustomNodeInterface
         if ($this->action === self::CREATE && !$isCreated || $this->action === self::UPDATE && $isCreated) {
             return $dto->setHeaders(array_merge($dto->getHeaders(), [
                 PipesHeaders::createKey(PipesHeaders::RESULT_CODE)    => 1003,
-                PipesHeaders::createKey(PipesHeaders::RESULT_STATUS)  => 'DO_NOT_CONTINUE',
                 PipesHeaders::createKey(PipesHeaders::RESULT_MESSAGE) => sprintf(
                     'Data does not contains contact %s event',
                     $this->action

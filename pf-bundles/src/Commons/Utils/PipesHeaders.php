@@ -30,7 +30,6 @@ class PipesHeaders
     public const TOPOLOGY_NAME       = 'topology-name';
     public const TOPOLOGY_DELETE_URL = 'topology-delete-url';
     public const RESULT_CODE         = 'result-code';
-    public const RESULT_STATUS       = 'result-status';
     public const RESULT_MESSAGE      = 'result-message';
     public const RESULT_DETAIL       = 'result-detail';
     public const REPEAT_QUEUE        = "repeat-queue";

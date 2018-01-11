@@ -105,7 +105,6 @@ class BasecrmAcknowledgeContactConnector implements ConnectorInterface, LoggerAw
         if ($item['meta']['type'] !== 'contact') {
             $headers = [
                 PipesHeaders::createKey(PipesHeaders::RESULT_CODE)    => 1003,
-                PipesHeaders::createKey(PipesHeaders::RESULT_STATUS)  => 'DO_NOT_CONTINUE',
                 PipesHeaders::createKey(PipesHeaders::RESULT_MESSAGE) => 'Received item update in not for [Contact] entity, BaseCRM.',
                 PipesHeaders::createKey(PipesHeaders::RESULT_DETAIL)  => '',
             ];

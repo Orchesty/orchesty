@@ -45,7 +45,6 @@ abstract class PipedrivePersonMapperAbstract implements CustomNodeInterface
         if ($data === self::OMMIT) {
             return $dto->setHeaders(array_merge($dto->getHeaders(), [
                 PipesHeaders::createKey(PipesHeaders::RESULT_CODE)    => 1003,
-                PipesHeaders::createKey(PipesHeaders::RESULT_STATUS)  => 'DO_NOT_CONTINUE',
                 PipesHeaders::createKey(PipesHeaders::RESULT_MESSAGE) => sprintf(
                     'Undesired updated webhook branch, Pipedrive.'),
                 PipesHeaders::createKey(PipesHeaders::RESULT_DETAIL)  => '',

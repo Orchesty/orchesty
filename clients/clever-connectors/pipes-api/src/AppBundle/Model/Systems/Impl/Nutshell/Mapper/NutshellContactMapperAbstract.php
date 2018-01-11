@@ -152,7 +152,6 @@ abstract class NutshellContactMapperAbstract implements CustomNodeInterface
         if ($data['events'][0]['payloadType'] !== 'contacts' || $data['events'][0]['action'] !== $action) {
             return $dto->setHeaders(array_merge($dto->getHeaders(), [
                 PipesHeaders::createKey(PipesHeaders::RESULT_CODE)    => 1003,
-                PipesHeaders::createKey(PipesHeaders::RESULT_STATUS)  => 'DO_NOT_CONTINUE',
                 PipesHeaders::createKey(PipesHeaders::RESULT_MESSAGE) => sprintf(
                     'Data does not contains contact %s event',
                     $action

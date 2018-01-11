@@ -52,7 +52,6 @@ abstract class BasecrmContactMapperAbstract implements CustomNodeInterface
         ) {
             $headers = [
                 PipesHeaders::createKey(PipesHeaders::RESULT_CODE)    => 1003,
-                PipesHeaders::createKey(PipesHeaders::RESULT_STATUS)  => 'DO_NOT_CONTINUE',
                 PipesHeaders::createKey(PipesHeaders::RESULT_MESSAGE) => 'Event type does not match mapper type, BaseCRM.',
                 PipesHeaders::createKey(PipesHeaders::RESULT_DETAIL)  => '',
             ];

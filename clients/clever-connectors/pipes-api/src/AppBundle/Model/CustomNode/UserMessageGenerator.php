@@ -144,9 +144,9 @@ class UserMessageGenerator implements BatchInterface, CustomNodeInterface
             ->setData(json_encode([
                 'system_install' => $item,
             ]))
-            ->addHeaders(CMHeaders::createKey(CMHeaders::TOKEN), $item['token'] ?? '')
-            ->addHeaders(CMHeaders::createKey(CMHeaders::GUID), $item['user'] ?? '')
-            ->addHeaders(CMHeaders::createKey(CMHeaders::SYSTEM_KEY), $item['system'] ?? '');
+            ->addHeader(CMHeaders::createKey(CMHeaders::TOKEN), $item['token'] ?? '')
+            ->addHeader(CMHeaders::createKey(CMHeaders::GUID), $item['user'] ?? '')
+            ->addHeader(CMHeaders::createKey(CMHeaders::SYSTEM_KEY), $item['system'] ?? '');
 
         return resolve($message);
     }

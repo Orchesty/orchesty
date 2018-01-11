@@ -49,7 +49,6 @@ class ZendeskUserMapperAbstract implements CustomNodeInterface
         if ($this->omit($dto, $data)) {
             $dto->setHeaders(array_merge($dto->getHeaders(), [
                 PipesHeaders::createKey(PipesHeaders::RESULT_CODE)    => 1003,
-                PipesHeaders::createKey(PipesHeaders::RESULT_STATUS)  => 'DO_NOT_CONTINUE',
                 PipesHeaders::createKey(PipesHeaders::RESULT_MESSAGE) =>
                     'Undesired mapper branch in Zendesk topology for given item.',
                 PipesHeaders::createKey(PipesHeaders::RESULT_DETAIL)  => '',

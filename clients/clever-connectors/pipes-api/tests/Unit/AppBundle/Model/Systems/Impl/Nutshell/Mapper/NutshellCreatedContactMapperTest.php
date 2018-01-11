@@ -84,7 +84,6 @@ final class NutshellCreatedContactMapperTest extends ConnectorTestCaseAbstract
 
         $this->assertEquals([
             PipesHeaders::createKey(PipesHeaders::RESULT_CODE)    => 1003,
-            PipesHeaders::createKey(PipesHeaders::RESULT_STATUS)  => 'DO_NOT_CONTINUE',
             PipesHeaders::createKey(PipesHeaders::RESULT_MESSAGE) => 'Data does not contains contact create event',
             PipesHeaders::createKey(PipesHeaders::RESULT_DETAIL)  => '',
         ], $headers);
