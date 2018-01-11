@@ -4,7 +4,7 @@ WORKDIR /go/src/hanaboso.com/limiter/cmd/
  RUN go get -u github.com/stretchr/testify/assert
 COPY ./limiter /go/src/hanaboso.com/limiter
 # Add custom local hanaboso dependencies like below
-#COPY ./some-dep /go/src/hanaboso.com/some-dep
+COPY ./utils /go/src/hanaboso.com/utils
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o ./../build/limiter .
 
 # Create runnable image with the binary only
