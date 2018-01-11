@@ -8,8 +8,9 @@ use CleverConnectors\AppBundle\Model\Systems\Impl\Airtable\AirtableSystem;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Airtable\Connector\AirtableUpdateContactConnector;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use GuzzleHttp\Psr7\Uri;
+use GuzzleHttp\Psr7\Response;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlException;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
@@ -45,12 +46,6 @@ final class AirtableUpdateContactConnectorTest extends KernelTestCaseAbstract
      */
     public function testProcess(): void
     {
-        $conn = new AirtableUpdateContactConnector(
-            new AirtableSystem(),
-            $this->mockDm(),
-            $this->mockCurl()
-        );
-
         $dto = new ProcessDto();
         $dto->setHeaders([
             'pf-table-url' => 'http://someTable',
@@ -62,35 +57,47 @@ final class AirtableUpdateContactConnectorTest extends KernelTestCaseAbstract
                 ],
             ]));
 
-        $conn->processAction($dto);
+        /** @var PHPUnit_Framework_MockObject_MockObject|CurlManagerInterface $sender */
+        $sender = $this->createMock(CurlManagerInterface::class);
+        $sender
+            ->expects($this->exactly(1))
+            ->method('send')
+            ->willReturn(new ResponseDto(200, '', $this->getResponseData(), []));
+
+        $conn = new AirtableUpdateContactConnector(new AirtableSystem(), $this->mockDm(), $sender);
+        $data = $conn->processAction($dto);
+        $this->assertEquals($this->getResponseData(), $data->getData());
     }
 
     /**
-     * @return CurlManagerInterface
+     *
      */
-    private function mockCurl(): CurlManagerInterface
+    public function testProcessActionLimit(): void
     {
-        /** @var CurlManagerInterface|PHPUnit_Framework_MockObject_MockObject $curl */
-        $curl = $this->createMock(CurlManagerInterface::class);
+        $dto = new ProcessDto();
+        $dto->setHeaders([
+            'pf-table-url' => 'http://someTable',
+        ])
+            ->setData(json_encode([
+                'id'     => 'someId',
+                'fields' => [
+                    'air_unsubscribe' => TRUE,
+                ],
+            ]));
 
-        $curl->expects($this->once())
-            ->method('send')->will($this->returnCallback(
-                function (RequestDto $requestDto): ResponseDto {
-                    $expt = new RequestDto('POST', new Uri('http://someTable/someId'));
-                    $expt->setHeaders([
-                        'Content-Type'  => 'application/json',
-                        'Authorization' => 'Bearer someKey',
-                    ])->setBody(json_encode([
-                        'fields' => [
-                            'air_usubscribe' => TRUE,
-                        ],
-                    ]));
+        /** @var PHPUnit_Framework_MockObject_MockObject|CurlManagerInterface $sender */
+        $sender = $this->createMock(CurlManagerInterface::class);
+        $sender
+            ->expects($this->exactly(1))
+            ->method('send')
+            ->willReturnCallback(function (RequestDto $requestDto): void {
+                throw new CurlException('', CurlException::REQUEST_FAILED, NULL, new Response(429));
+            });
 
-                    return new ResponseDto(200, '', '', []);
-                }
-            ));
+        $conn = new AirtableUpdateContactConnector(new AirtableSystem(), $this->mockDm(), $sender);
+        $data = $conn->processAction($dto);
 
-        return $curl;
+        $this->assertEquals(1004, $data->getHeader('pf-result-code'));
     }
 
     /**
@@ -119,6 +126,23 @@ final class AirtableUpdateContactConnectorTest extends KernelTestCaseAbstract
         $dm->method('getRepository')->willReturn($repo);
 
         return $dm;
+    }
+
+    /**
+     * @return string
+     */
+    private function getResponseData(): string
+    {
+        return json_encode([
+            'records' => [
+                [
+                    'fields' => [
+                        'Name'  => 'abc',
+                        'Email' => 'a@a.com',
+                    ],
+                ],
+            ],
+        ]);
     }
 
 }

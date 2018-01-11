@@ -17,6 +17,29 @@ class AirtableSystemTest extends KernelTestCaseAbstract
     /**
      *
      */
+    public function testGetRequestDto(): void
+    {
+        $systemInstall = new SystemInstall();
+        $systemInstall
+            ->setSettings([
+                'api_key' => 'abc123',
+            ]);
+
+        $system = new AirtableSystem();
+        $result = $system->getRequestDto($systemInstall, 'GET');
+
+        $this->assertEquals('https://api.airtable.com/v0/', (string) $result->getUri());
+        $this->assertEquals('GET', $result->getMethod());
+        $this->assertEquals([
+            'Authorization' => 'Bearer abc123',
+            'Content-Type'  => 'application/json',
+            'Accept'        => 'application/json',
+        ], $result->getHeaders());
+    }
+
+    /**
+     *
+     */
     public function testSaveForms(): void
     {
         $sys = new AirtableSystem();

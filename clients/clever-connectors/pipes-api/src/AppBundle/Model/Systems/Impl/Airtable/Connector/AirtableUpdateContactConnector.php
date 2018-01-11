@@ -20,7 +20,6 @@ use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
 use Nette\Utils\Json;
-use Nette\Utils\Strings;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\NullLogger;
 
@@ -116,18 +115,7 @@ class AirtableUpdateContactConnector implements ConnectorInterface, LoggerAwareI
 
             return $dto->setData($response->getBody());
         } catch (CurlException $e) {
-            if ($e->getResponse()) {
-                $this->logError($e->getResponse()->getStatusCode(), $this->system, $systemInstall);
-            }
-
-            if (Strings::contains($e->getMessage(), '"errorCode":"INVALID_FIELD"')) {
-                throw new CleverConnectorsException(
-                    sprintf('Missing required field unsubscribe or hard_bounce in table of [%s] url.', $table),
-                    CleverConnectorsException::MISSING_DATA
-                );
-            }
-
-            throw $e;
+            return $this->connectorError($e, $this->system, $systemInstall, $dto);
         }
     }
 
