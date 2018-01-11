@@ -2,6 +2,7 @@ package main
 
 import (
 	"hanaboso.com/utils/rabbitmq"
+	"github.com/streadway/amqp"
 )
 
 // main runs the
@@ -9,7 +10,7 @@ func main() {
 
 	// Queue
 	q := rabbitmq.Queue{Name: "my-queue"}
-	qb := rabbitmq.Binding{Exchange:"my-exchange", RoutingKey:"routing-key"}
+	qb := rabbitmq.Binding{Exchange: "my-exchange", RoutingKey: "routing-key"}
 	q.AddBinding(qb)
 	// Exchange
 	e := rabbitmq.Exchange{Name: "my-exchange", Type: "direct"}
@@ -21,6 +22,11 @@ func main() {
 	// Setup
 	r.Connect()
 	r.Setup()
+
+	m := amqp.Publishing{Body: []byte("Test message")}
+
+	p := rabbitmq.Publisher{RabbitMq: r, RoutingKey: "my-queue"}
+	p.Publish(m)
 
 	done := make(chan bool, 1)
 
