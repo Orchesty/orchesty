@@ -67,7 +67,7 @@ func (r *RabbitMq) Setup() {
 			log.Fatalln(fmt.Sprintf("Rabbit MQ queue declare error: %s", err))
 		}
 
-		log.Println(fmt.Sprintf("Rabbit MQ queue declare %s", r.exchanges[i].Name))
+		log.Println(fmt.Sprintf("Rabbit MQ queue declare %s", r.queues[i].Name))
 
 		for j := 0; j < len(r.queues[i].Bindings); j++ {
 

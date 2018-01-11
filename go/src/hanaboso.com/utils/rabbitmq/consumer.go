@@ -26,14 +26,14 @@ func (c *Consumer) Consume(callback Callback) {
 	}
 
 	c.channel.Qos(c.PrefetchCount, c.PrefetchSize, false)
-	msg, err := c.channel.Consume(c.Queue, c.ConsumerTag, c.NoAck, c.Exclusive, c.NoLocal, c.NoWait, nil)
+	msgs, err := c.channel.Consume(c.Queue, c.ConsumerTag, c.NoAck, c.Exclusive, c.NoLocal, c.NoWait, nil)
 
 	if err != nil {
 		log.Fatalln(fmt.Sprintf("Rabbit MQ consumer error: %s", err))
 	}
 
 	forever := make(chan bool)
-	go callback(msg)
+	go callback(msgs)
 	log.Println("[*] Waiting for messages. To exit press CTRL+C")
 	<-forever
 
