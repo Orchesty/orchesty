@@ -28,6 +28,11 @@ class Headers {
     public static readonly REPEAT_MAX_HOPS = "repeat-max-hops";
     public static readonly REPEAT_HOPS = "repeat-hops";
 
+    // limit headers
+    public static readonly LIMIT_KEY = "limit-key";
+    public static readonly LIMIT_TIME = "limit-time";
+    public static readonly LIMIT_VALUE = "limit-value";
+
     // Other headers
     public static readonly CONTENT_TYPE = "content-type";
 
