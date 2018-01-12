@@ -3,14 +3,12 @@
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
-use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\ShopifySystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use CleverConnectors\AppBundle\Traits\LoggerTrait;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Exception;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlException;
@@ -18,7 +16,6 @@ use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
-use Nette\Utils\Strings;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\NullLogger;
 
@@ -90,8 +87,7 @@ class ShopifyUpdateCustomerConnector implements ConnectorInterface, LoggerAwareI
      * @param ProcessDto $dto
      *
      * @return ProcessDto
-     * @throws CleverConnectorsException
-     * @throws Exception
+     * @throws CurlException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {
@@ -106,32 +102,10 @@ class ShopifyUpdateCustomerConnector implements ConnectorInterface, LoggerAwareI
             ->setBody($data['body']);
 
         try {
-            $res = $this->curl->send($requestDto);
-        } catch (CurlException $exception) {
-            if ($exception->getResponse()) {
-                $this->logError($exception->getResponse()->getStatusCode(), $this->system, $systemInstall);
-            }
-
-            if (Strings::contains($exception->getMessage(), '422 Unprocessable Entity')) {
-                // ShopifyUpdateCustomerConnector: custom field already exists and is set
-                return $dto;
-            }
-
-            throw $exception;
-        }
-
-        $data = json_decode($res->getBody(), TRUE);
-
-        if (!array_key_exists('customer', $data)) {
-            throw new CleverConnectorsException(
-                'CM field does not exist, Shopify updateCustomerConnector.',
-                CleverConnectorsException::MISSING_DATA
-            );
-        } else if ($res->getStatusCode() !== 200) {
-            throw new CleverConnectorsException(
-                'Failed to update customer - unknown error, Shopify updateCustomerConnector.',
-                CleverConnectorsException::MISSING_DATA
-            );
+            $res  = $this->curl->send($requestDto);
+            $data = json_decode($res->getBody(), TRUE);
+        } catch (CurlException $e) {
+            return $this->connectorError($e, $this->system, $systemInstall, $dto);
         }
 
         return $dto->setData(json_encode($data['customer']));

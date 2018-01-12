@@ -142,9 +142,8 @@ class ShopifySyncCustomerConnector implements BatchInterface, ConnectorInterface
                 function (ResponseInterface $response): int {
                     return $this->getTotalPages($response);
                 },
-                function (ResponseException $e) use ($systemInstall): void {
-                    $this->logError($e->getResponse()->getStatusCode(), $this->system, $systemInstall);
-                    throw $e;
+                function (ResponseException $e) use ($systemInstall, $callbackItem) {
+                    return $callbackItem($this->batchConnectorError($e, $this->system, $systemInstall, 1));
                 }
             )->then(
                 function (int $total) use ($sender, $callbackItem, $requestDto, $processId, $systemInstall) {
@@ -216,12 +215,11 @@ class ShopifySyncCustomerConnector implements BatchInterface, ConnectorInterface
                     function (ResponseInterface $response) use ($i): SuccessMessage {
                         return $this->createSuccessMessage($response, $i);
                     },
-                    function (ResponseException $e) use ($systemInstall): void {
-                        $this->logError($e->getResponse()->getStatusCode(), $this->system, $systemInstall);
-                        throw $e;
+                    function (ResponseException $e) use ($systemInstall, $i): SuccessMessage {
+                        return $this->batchConnectorError($e, $this->system, $systemInstall, $i + 1);
                     }
                 )
-                ->then($callbackItem);
+                ->then($callbackItem, $callbackItem);
         }
 
         return $requests;

@@ -3,8 +3,6 @@
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
-use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
-use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\ShopifySystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use CleverConnectors\AppBundle\Traits\LoggerTrait;
@@ -89,9 +87,7 @@ class ShopifyCreateCustomerConnector implements ConnectorInterface, LoggerAwareI
      * @param ProcessDto $dto
      *
      * @return ProcessDto
-     * @throws CleverConnectorsException
      * @throws CurlException
-     * @throws SystemException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {
@@ -104,26 +100,10 @@ class ShopifyCreateCustomerConnector implements ConnectorInterface, LoggerAwareI
             ->setBody($dto->getData());
 
         try {
-            $res = $this->curl->send($requestDto);
+            $res     = $this->curl->send($requestDto);
+            $resBody = json_decode($res->getBody(), TRUE);
         } catch (CurlException $e) {
-            if ($e->getResponse()) {
-                $this->logError($e->getResponse()->getStatusCode(), $this->system, $systemInstall);
-            }
-            throw $e;
-        }
-
-        $resBody = json_decode($res->getBody(), TRUE);
-
-        if ($res->getStatusCode() !== 201) {
-            throw new CleverConnectorsException(
-                'Failed to create new customer / email already taken, Shopify createCustomerConnector.',
-                CleverConnectorsException::REQUEST_FAILED
-            );
-        } elseif (!array_key_exists('customer', $resBody)) {
-            throw new CleverConnectorsException(
-                'Missing key "customer" in response data, Shopify createCustomerConnector.',
-                CleverConnectorsException::MISSING_DATA
-            );
+            return $this->connectorError($e, $this->system, $systemInstall, $dto);
         }
 
         return $dto->setData(json_encode($resBody['customer']));
