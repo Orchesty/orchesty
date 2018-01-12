@@ -110,10 +110,7 @@ class HubspotUpdateContactConnector implements ConnectorInterface, LoggerAwareIn
         try {
             $res = $this->curl->send($requestDto);
         } catch (CurlException $e) {
-            if ($e->getResponse()) {
-                $this->logError($e->getResponse()->getStatusCode(), $this->system, $systemInstall);
-            }
-            throw $e;
+            return $this->connectorError($e, $this->system, $systemInstall, $dto);
         }
 
         if ($res->getStatusCode() === 404) {

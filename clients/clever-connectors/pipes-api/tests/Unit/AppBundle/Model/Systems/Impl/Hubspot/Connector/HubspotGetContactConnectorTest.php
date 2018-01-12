@@ -8,8 +8,10 @@ use CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\HubspotSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlException;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
@@ -48,6 +50,34 @@ final class HubspotGetContactConnectorTest extends KernelTestCaseAbstract
         self::assertEquals('abc', $resultData['properties']['email']['value']);
         self::assertEquals('def', $resultData['properties']['firstname']['value']);
         self::assertEquals('ghi', $resultData['properties']['lastname']['value']);
+    }
+
+    /**
+     *
+     */
+    public function testProcessActionLimit(): void
+    {
+        $processDto = new ProcessDto();
+        $processDto
+            ->setHeaders([])
+            ->setData(json_encode([
+                'objectId'         => 123,
+                'subscriptionType' => 'contact.creation',
+            ]));
+
+        /** @var MockObject|CurlManagerInterface $sender */
+        $sender = $this->createMock(CurlManagerInterface::class);
+        $sender
+            ->expects($this->exactly(1))
+            ->method('send')
+            ->willReturnCallback(function (RequestDto $requestDto): void {
+                throw new CurlException('', CurlException::REQUEST_FAILED, NULL, new Response(429));
+            });
+
+        $conn = new HubspotGetContactConnector($this->mockSystem(), $this->mockDm(), $sender);
+        $data = $conn->processAction($processDto);
+
+        $this->assertEquals(1004, $data->getHeader('pf-result-code'));
     }
 
     /**
@@ -145,14 +175,6 @@ final class HubspotGetContactConnectorTest extends KernelTestCaseAbstract
      */
     private function mockSync()
     {
-        $systemInstall = $this->createMock(SystemInstallRepository::class);
-        $systemInstall->method('setSyncTime')->willReturn(NULL);
-
-        $dm = $this->createMock(DocumentManager::class);
-        $dm
-            ->method('getRepository')
-            ->willReturn($systemInstall);
-
         $contact = [
             'vid'        => 123,
             'properties' => [
@@ -167,9 +189,25 @@ final class HubspotGetContactConnectorTest extends KernelTestCaseAbstract
             ->method('send')
             ->willReturn(new ResponseDto(200, '', json_encode($contact), []));
 
-        $syncConn = new HubspotGetContactConnector($this->mockSystem(), $dm, $sender);
+        $syncConn = new HubspotGetContactConnector($this->mockSystem(), $this->mockDm(), $sender);
 
         return $syncConn;
+    }
+
+    /**
+     * @return MockObject|DocumentManager
+     */
+    private function mockDm()
+    {
+        $systemInstall = $this->createMock(SystemInstallRepository::class);
+        $systemInstall->method('setSyncTime')->willReturn(NULL);
+
+        $dm = $this->createMock(DocumentManager::class);
+        $dm
+            ->method('getRepository')
+            ->willReturn($systemInstall);
+
+        return $dm;
     }
 
     /**

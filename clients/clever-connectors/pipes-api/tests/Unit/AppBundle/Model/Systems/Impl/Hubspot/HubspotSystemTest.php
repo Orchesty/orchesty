@@ -12,6 +12,7 @@ use CleverConnectors\AppBundle\Model\Webhook\WebhookSubscribes;
 use Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
+use PHPUnit\Framework\MockObject\MockObject;
 use Tests\KernelTestCaseAbstract;
 
 /**
@@ -144,6 +145,32 @@ final class HubspotSystemTest extends KernelTestCaseAbstract
         self::assertEquals(Field::TEXT, $form[0]['type']);
         self::assertEquals('webhook_url', $form[1]['key']);
         self::assertEquals(Field::URL, $form[1]['type']);
+    }
+
+    /**
+     *
+     */
+    public function testGetRequestDto(): void
+    {
+        $systemInstall = new SystemInstall();
+        $systemInstall
+            ->setSettings([
+                'access_token' => 'abc123',
+                'app_id'       => '123',
+            ]);
+
+        /** @var MockObject|OAuth2Provider $provider */
+        $provider = $this->createMock(OAuth2Provider::class);
+
+        $system = new HubspotSystem($provider, 'abc');
+        $result = $system->getRequestDto($systemInstall, 'GET');
+
+        $this->assertEquals('https://api.hubapi.com', (string) $result->getUri());
+        $this->assertEquals('GET', $result->getMethod());
+        $this->assertEquals([
+            'Authorization' => 'Bearer abc123',
+            'Content-Type'  => 'application/json',
+        ], $result->getHeaders());
     }
 
 }

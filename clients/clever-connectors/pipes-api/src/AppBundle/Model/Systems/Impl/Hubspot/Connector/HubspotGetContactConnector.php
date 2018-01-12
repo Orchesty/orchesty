@@ -150,10 +150,7 @@ class HubspotGetContactConnector implements ConnectorInterface, LoggerAwareInter
         try {
             $response = $this->curlManager->send($requestDto);
         } catch (CurlException $e) {
-            if ($e->getResponse()) {
-                $this->logError($e->getResponse()->getStatusCode(), $this->system, $systemInstall);
-            }
-            throw $e;
+            return $this->connectorError($e, $this->system, $systemInstall, $dto);
         }
 
         $responseBody                                       = json_decode($response->getBody(), TRUE);

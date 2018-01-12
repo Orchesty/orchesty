@@ -8,8 +8,10 @@ use CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\Connector\HubspotUpdat
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlException;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
@@ -51,6 +53,41 @@ final class HubspotUpdateContactConnectorTest extends ConnectorTestCaseAbstract
         ]));
 
         $conn->processAction($dto);
+    }
+
+    /**
+     *
+     */
+    public function testProcessActionLimit(): void
+    {
+        $processDto = new ProcessDto();
+        $processDto
+            ->setHeaders([])
+            ->setData(json_encode([
+                'body' => json_encode([
+                    'properties' => [
+                        [
+                            'property' => CleverCustomKeysEnum::UNSUBSCRIBE,
+                            'value'    => FALSE,
+                        ],
+                    ],
+                ]),
+                'id'   => '123456',
+            ]));
+
+        /** @var MockObject|CurlManagerInterface $sender */
+        $sender = $this->createMock(CurlManagerInterface::class);
+        $sender
+            ->expects($this->exactly(1))
+            ->method('send')
+            ->willReturnCallback(function (RequestDto $requestDto): void {
+                throw new CurlException('', CurlException::REQUEST_FAILED, NULL, new Response(429));
+            });
+
+        $conn = new HubspotUpdateContactConnector($this->container->get('systems.hubspot'), $this->mockDm(), $sender);
+        $data = $conn->processAction($processDto);
+
+        $this->assertEquals(1004, $data->getHeader('pf-result-code'));
     }
 
     /**
