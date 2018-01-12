@@ -12,7 +12,7 @@ import (
 func main() {
 	lim := limiter.Limiter{}
 	tcpServer := limiter.NewTcpServer(&lim)
-	go tcpServer.Start()
+	go tcpServer.Start(3333)
 
 	gracefulShutdown(tcpServer)
 }

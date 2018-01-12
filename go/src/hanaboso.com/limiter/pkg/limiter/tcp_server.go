@@ -11,17 +11,19 @@ import (
 	"syscall"
 	"time"
 	"sync"
+	"strconv"
 )
 
 const (
-	connHost                 = "localhost"
-	connPort                 = "3333"
-	connType                 = "tcp"
+	connHost = "localhost"
+	connType = "tcp"
+
 	healthCheckRequest       = "pf-health-check"
 	healthCheckValidResponse = "ok"
-	limitCheckRequest        = "pf-check"
-	limitCheckResponseOK     = "ok"
-	limitCheckResponseNOK    = "nok"
+
+	limitCheckRequest      = "pf-check"
+	limitCheckResponseFree = "ok"
+	limitCheckResponseBusy = "nok"
 )
 
 type request struct {
@@ -75,19 +77,19 @@ type TcpServer struct {
 func NewTcpServer(dec Decider) *TcpServer {
 	return &TcpServer{
 		dec: dec,
-		wg: &sync.WaitGroup{},
+		wg:  &sync.WaitGroup{},
 	}
 }
 
 // Start starts the tcp server
-func (srv *TcpServer) Start() {
-	cmdAddr, _ := net.ResolveTCPAddr(connType, connHost+":"+connPort)
+func (srv *TcpServer) Start(port int) {
+	cmdAddr, _ := net.ResolveTCPAddr(connType, connHost+":"+strconv.Itoa(port))
 	listener, err := net.ListenTCP(connType, cmdAddr)
 	if err != nil {
 		log.Fatalln("TCP Server error listening: ", err.Error())
 	}
 
-	log.Println("TCP server listening.")
+	log.Println("TCP server listening on port:", port)
 
 	srv.listener = listener
 	defer listener.Close()
@@ -130,38 +132,41 @@ func (srv *TcpServer) handleRequest(conn net.Conn) {
 		return
 	}
 
-	log.Println("Tcp Server request received.", req)
+	log.Println("Tcp Server request received:", req)
+
+	resultPrefix := req.name + ";" + req.id + ";"
+	res := ""
 
 	switch req.name {
 	case healthCheckRequest:
-		srv.handleHealthCheckRequest(conn)
-		return
+		res = srv.handleHealthCheckRequest(req)
+		break
 	case limitCheckRequest:
-		srv.handleLimitCheckRequest(conn, req)
-		return
+		res = srv.handleLimitCheckRequest(req)
+		break
 	}
 
-	conn.Write([]byte("Invalid limiter request."))
+	res = resultPrefix + res
+	conn.Write([]byte(res))
+
+	log.Println("Tcp Server response sent:", res)
 }
 
 // handleHealthCheckRequest just writes the given string to response which means that it is alive
-func (*TcpServer) handleHealthCheckRequest(conn net.Conn) {
-	conn.Write([]byte(healthCheckValidResponse))
+func (*TcpServer) handleHealthCheckRequest(req request) string {
+	return healthCheckValidResponse
 }
 
 // handleLimitCheckRequest returns
-func (srv *TcpServer) handleLimitCheckRequest(conn net.Conn, req request) {
+func (srv *TcpServer) handleLimitCheckRequest(req request) string {
 	isFree, err := srv.dec.Decide(req.key, req.time, req.value)
 	if err != nil {
-		fmt.Println("Error evaluating: ", err.Error())
-		conn.Write([]byte(limitCheckResponseOK))
-		return
+		return "Error evaluating limit: " + err.Error()
 	}
 
 	if isFree {
-		conn.Write([]byte(limitCheckResponseOK))
-		return
+		return limitCheckResponseFree
 	}
 
-	conn.Write([]byte(limitCheckResponseNOK))
+	return limitCheckResponseBusy
 }
