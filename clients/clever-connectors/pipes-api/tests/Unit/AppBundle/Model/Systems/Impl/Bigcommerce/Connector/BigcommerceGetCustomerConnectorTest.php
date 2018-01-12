@@ -7,13 +7,16 @@ use CleverConnectors\AppBundle\Model\Systems\Impl\Bigcommerce\BigcommerceSystem;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Bigcommerce\Connector\BigcommerceGetCustomerConnector;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlException;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
 use Nette\Utils\Json;
 use PHPUnit\Framework\MockObject\MockObject;
+use Psr\Log\LoggerInterface;
 use Tests\ConnectorTestCaseAbstract;
 
 /**
@@ -29,9 +32,17 @@ final class BigcommerceGetCustomerConnectorTest extends ConnectorTestCaseAbstrac
      */
     public function testProcessAction(): void
     {
-        $result = Json::decode($this->getConnectorMock()->processAction(
-            (new ProcessDto())->setData('{"id":1}')->setHeaders([])
-        )->getData(), TRUE);
+        $result = Json::decode(
+            $this->getConnectorMock(function (RequestDto $dto, array $options = []) {
+                $this->assertEquals(
+                    new Uri('https://api.bigcommerce.com/stores/ukcfcghi/v2/customers/1'),
+                    $dto->getUri()
+                );
+
+                return new ResponseDto(200, 'OK', $this->getRequest('BigcommerceSingleCustomerItem.json'), []);
+            })->processAction((new ProcessDto())->setData('{"id":1}')->setHeaders([]))->getData(),
+            TRUE
+        );
 
         $this->assertEquals([
             'id'                      => 1,
@@ -58,48 +69,100 @@ final class BigcommerceGetCustomerConnectorTest extends ConnectorTestCaseAbstrac
     }
 
     /**
-     * @return BigcommerceGetCustomerConnector
+     *
      */
-    private function getConnectorMock(): BigcommerceGetCustomerConnector
+    public function testProcessActionWithLimiter(): void
     {
-        $systemInstall = $this->createMock(SystemInstallRepository::class);
-        $systemInstall->method('getSystemInstall')->willReturn((new SystemInstall()));
+        $headers = $this->getConnectorMock(function (RequestDto $dto, array $options = []): void {
+            $this->assertEquals(
+                new Uri('https://api.bigcommerce.com/stores/ukcfcghi/v2/customers/1'),
+                $dto->getUri()
+            );
 
-        /** @var MockObject|DocumentManager $documentManager */
-        $documentManager = $this->createMock(DocumentManager::class);
-        $documentManager->method('getRepository')->willReturn($systemInstall);
+            throw new CurlException('', CurlException::REQUEST_FAILED, NULL, new Response(509));
+        })->processAction((new ProcessDto())->setData('{"id":1}')->setHeaders([]))->getHeaders();
 
-        /** @var CurlManagerInterface|MockObject $curlManager */
-        $curlManager = $this->createMock(CurlManagerInterface::class);
-        $curlManager->method('send')
-            ->will($this->returnCallback(function (RequestDto $dto, array $options = []) {
+        $this->assertEquals(['pf-result-code' => 1004], $headers);
+    }
+
+    /**
+     *
+     */
+    public function testProcessActionWithException(): void
+    {
+        $this->expectException(CurlException::class);
+        $this->expectExceptionCode(CurlException::REQUEST_FAILED);
+
+        $this->getConnectorMock(
+            function (RequestDto $dto, array $options = []): void {
                 $this->assertEquals(
                     new Uri('https://api.bigcommerce.com/stores/ukcfcghi/v2/customers/1'),
                     $dto->getUri()
                 );
 
-                return new ResponseDto(200, 'OK', $this->getRequest('BigcommerceSingleCustomerItem.json'), []);
-            }));
-
-        return new BigcommerceGetCustomerConnector($this->getSystemMock(), $documentManager, $curlManager);
+                throw new CurlException('', CurlException::REQUEST_FAILED, NULL, new Response(401));
+            },
+            function (string $type, array $content): void {
+                $this->assertEquals('access_expiration', $type);
+                $this->assertEquals([
+                    'guid'        => 'User',
+                    'token'       => 'Token',
+                    'system_key'  => 'bigcommerce',
+                    'system_name' => 'Bigcommerce',
+                ], $content);
+            }
+        )->processAction((new ProcessDto())->setData('{"id":1}')->setHeaders([]));
     }
 
     /**
-     * @return MockObject|BigcommerceSystem
+     * @param callable      $curlCallback
+     * @param callable|NULL $loggerCallback
+     *
+     * @return BigcommerceGetCustomerConnector
      */
-    private function getSystemMock()
+    private function getConnectorMock(
+        callable $curlCallback,
+        ?callable $loggerCallback = NULL
+    ): BigcommerceGetCustomerConnector
     {
-        $requestDto = (new RequestDto('GET', new Uri('https://api.bigcommerce.com/stores/ukcfcghi/v2/')))->setHeaders([
-            'X-Auth-Client' => 'p7f4o1hfl1zdkz1bp1sy7u8qs0fq7q',
-            'X-Auth-Token'  => '7ndpkdbqb0h1wycrxhtw43ye0yprtn9',
-            'Content-Type'  => 'application/json',
-            'Accept'        => 'application/json',
-        ]);
+        $dto = (new RequestDto('POST', new Uri('https://api.bigcommerce.com/stores/ukcfcghi/v2/')))
+            ->setHeaders([
+                'X-Auth-Client' => 'p7f4o1hfl1zdkz1bp1sy7u8qs0fq7q',
+                'X-Auth-Token'  => '7ndpkdbqb0h1wycrxhtw43ye0yprtn9',
+                'Content-Type'  => 'application/json',
+                'Accept'        => 'application/json',
+            ]);
 
-        $system = $this->createMock(BigcommerceSystem::class);
-        $system->method('getRequestDto')->willReturn($requestDto);
+        /** @var BigcommerceSystem|MockObject $system */
+        $system = $this->createPartialMock(BigcommerceSystem::class, ['getRequestDto']);
+        $system->method('getRequestDto')->willReturn($dto);
 
-        return $system;
+        /** @var SystemInstall|MockObject $systemInstall */
+        $systemInstall = $this->createPartialMock(SystemInstallRepository::class, ['getSystemInstallFromHeaders']);
+        $systemInstall->method('getSystemInstallFromHeaders')->willReturn(
+            (new SystemInstall())
+                ->setUser('User')
+                ->setToken('Token')
+        );
+
+        /** @var DocumentManager|MockObject $documentManager */
+        $documentManager = $this->createMock(DocumentManager::class);
+        $documentManager->method('getRepository')->willReturn($systemInstall);
+
+        /** @var CurlManagerInterface|MockObject $curlManager */
+        $curlManager = $this->createMock(CurlManagerInterface::class);
+        $curlManager->method('send')->willReturnCallback($curlCallback);
+
+        $connector = new BigcommerceGetCustomerConnector($system, $documentManager, $curlManager);
+
+        if ($loggerCallback) {
+            /** @var LoggerInterface|MockObject $logger */
+            $logger = $this->createMock(LoggerInterface::class);
+            $logger->method('info')->willReturnCallback($loggerCallback);
+            $connector->setLogger($logger);
+        }
+
+        return $connector;
     }
 
 }

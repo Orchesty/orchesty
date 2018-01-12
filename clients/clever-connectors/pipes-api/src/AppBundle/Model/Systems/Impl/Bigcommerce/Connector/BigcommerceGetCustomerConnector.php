@@ -8,6 +8,7 @@ use CleverConnectors\AppBundle\Model\Systems\Impl\Bigcommerce\BigcommerceSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use CleverConnectors\AppBundle\Traits\LoggerTrait;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
+use Clue\React\Buzz\Message\ResponseException;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Uri;
@@ -99,15 +100,11 @@ class BigcommerceGetCustomerConnector implements ConnectorInterface, LoggerAware
             $response = $this->manager->send($requestDto->setUri(
                 new Uri(sprintf($requestDto->getUri(TRUE) . self::CUSTOMER_URL, $data['id']))
             ));
-
-            return $dto->setData($response->getBody());
         } catch (CurlException $e) {
-            if ($e->getResponse()) {
-                $this->logError($e->getResponse()->getStatusCode(), $this->system, $systemInstall);
-            }
-
-            throw $e;
+            return $this->connectorError($e, $this->system, $systemInstall, $dto);
         }
+
+        return $dto->setData($response->getBody());
     }
 
     /**
@@ -122,6 +119,16 @@ class BigcommerceGetCustomerConnector implements ConnectorInterface, LoggerAware
             'Bigcommerce has no support for action!',
             ConnectorException::CONNECTOR_DOES_NOT_HAVE_PROCESS_BATCH
         );
+    }
+
+    /**
+     * @param CurlException|ResponseException $e
+     *
+     * @return bool
+     */
+    protected function limitReached($e): bool
+    {
+        return $e->getResponse()->getStatusCode() === 509;
     }
 
 }
