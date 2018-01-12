@@ -93,7 +93,7 @@ export default class TcpLimiter implements ILimiter {
 
             client.connect(this.settings.port, this.settings.host, () => {
                 logger.info(`Tcp listener sending: ${content}`);
-                client.write(content);
+                client.write(new Buffer(content));
             });
 
             client.on("data", (data: Buffer) => {
