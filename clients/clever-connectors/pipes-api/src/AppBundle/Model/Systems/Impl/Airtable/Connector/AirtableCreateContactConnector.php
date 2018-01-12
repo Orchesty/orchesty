@@ -102,10 +102,7 @@ class AirtableCreateContactConnector implements ConnectorInterface, LoggerAwareI
         try {
             $response = $this->manager->send($requestDto);
         } catch (CurlException $e) {
-            if ($e->getResponse()) {
-                $this->logError($e->getResponse()->getStatusCode(), $this->system, $systemInstall);
-            }
-            throw $e;
+            return $this->connectorError($e, $this->system, $systemInstall, $dto);
         }
 
         return $dto->setData($response->getBody());

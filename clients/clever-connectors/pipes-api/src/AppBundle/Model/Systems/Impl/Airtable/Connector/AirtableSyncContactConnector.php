@@ -116,38 +116,38 @@ class AirtableSyncContactConnector extends AirtableContactConnectorAbstract
     {
         $uri = $this->getUri($table, $offset, NULL, $view);
 
-        return $this->fetchData($sender, RequestDto::from($requestDto, $uri))->then(
-            function (ResponseInterface $response) use (
-                $sender, $requestDto, $table, $callbackItem, $page, $processId, $view, $systemInstall
-            ) {
-                $data = json_decode($response->getBody()->getContents(), TRUE);
-                $callbackItem($this->createSuccessMessage($data, $page));
+        return $this->fetchData($sender, RequestDto::from($requestDto, $uri))
+            ->then(
+                function (ResponseInterface $response) use (
+                    $sender, $requestDto, $table, $callbackItem, $page, $processId, $view, $systemInstall
+                ) {
+                    $data = json_decode($response->getBody()->getContents(), TRUE);
+                    $callbackItem($this->createSuccessMessage($data, $page));
 
-                if ($this->hasOffset($data)) {
-                    return $this->getPage(
-                        $sender,
-                        $requestDto,
-                        $table,
-                        $callbackItem,
-                        $page + 1,
-                        $this->getOffset($data),
-                        $processId,
-                        $view,
-                        $systemInstall
-                    );
-                } else {
-                    if ($processId) {
-                        $this->counterService->setTotal($processId, $page * self::PAGE_LIMIT);
+                    if ($this->hasOffset($data)) {
+                        return $this->getPage(
+                            $sender,
+                            $requestDto,
+                            $table,
+                            $callbackItem,
+                            $page + 1,
+                            $this->getOffset($data),
+                            $processId,
+                            $view,
+                            $systemInstall
+                        );
+                    } else {
+                        if ($processId) {
+                            $this->counterService->setTotal($processId, $page * self::PAGE_LIMIT);
+                        }
+
+                        return resolve();
                     }
-
-                    return resolve();
+                },
+                function (ResponseException $e) use ($systemInstall, $callbackItem, $page) {
+                    return $callbackItem($this->batchConnectorError($e, $this->system, $systemInstall, $page));
                 }
-            },
-            function (ResponseException $e) use ($systemInstall): void {
-                $this->logError($e->getResponse()->getStatusCode(), $this->system, $systemInstall);
-                throw $e;
-            }
-        );
+            );
     }
 
 }

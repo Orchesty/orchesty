@@ -5,7 +5,6 @@ namespace Tests\Unit\AppBundle\Model\Systems\Impl\Airtable\Connector;
 use CleverConnectors\AppBundle\Document\LastSync;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\LastSync\LastSyncManager;
-use CleverConnectors\AppBundle\Model\ProgressCounter\ProgressCounterService;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Airtable\AirtableSystem;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Airtable\Connector\AirtableUpdatedContactConnector;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
@@ -15,11 +14,14 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSender;
 use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSenderFactory;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit_Framework_MockObject_MockObject;
 use React\EventLoop\Factory;
 use Tests\KernelTestCaseAbstract;
+use function React\Promise\reject;
 use function React\Promise\resolve;
 
 /**
@@ -62,9 +64,91 @@ final class AirtableUpdatedContactConnectorTest extends KernelTestCaseAbstract
     }
 
     /**
+     * @covers AirtableSyncContactConnector::processBatch()
+     */
+    public function testProcessBatchLimit(): void
+    {
+        $loop = Factory::create();
+
+        $processDto = new ProcessDto();
+        $processDto
+            ->setHeaders([
+                CMHeaders::createKey(AirtableSystem::TABLE_URL) => 'some/table',
+            ])
+            ->setData(json_encode(['data' => ['system_install' => []], ['settings' => [], 'user' => '123']]));
+
+        /** @var PHPUnit_Framework_MockObject_MockObject|CurlSender $sender */
+        $sender = $this->createMock(CurlSender::class);
+        $sender
+            ->expects($this->once())
+            ->method('send')
+            ->willReturnCallback(function (RequestDto $requestDto) {
+                return reject(new Response(429));
+            });
+
+        /** @var MockObject|CurlSenderFactory $factory */
+        $factory = $this->createMock(CurlSenderFactory::class);
+        $factory
+            ->method('create')
+            ->willReturn($sender);
+
+        $syncConn = new AirtableUpdatedContactConnector(
+            $this->mockSystem(),
+            $this->mockLastSync(),
+            $factory,
+            $this->mockDm()
+        );
+
+        $data = $syncConn->processBatch($processDto, $loop, function (): void {
+        });
+
+        $data->then(
+            function (): void {
+                $this->assertTrue(FALSE);
+            },
+            function (): void {
+                $this->assertTrue(TRUE);
+            }
+        )->done();
+
+        $loop->run();
+    }
+
+    /**
      * @return PHPUnit_Framework_MockObject_MockObject|AirtableUpdatedContactConnector
      */
     private function mockSync()
+    {
+        $sender   = $this->createMock(CurlSenderFactory::class);
+        $syncConn = $this->getMockBuilder(AirtableUpdatedContactConnector::class)
+            ->setMethods(['fetchData'])
+            ->setConstructorArgs([
+                $this->mockSystem(), $this->mockLastSync(), $sender, $this->mockDm(),
+            ])
+            ->getMock();
+
+        $syncConn->expects($this->at(0))
+            ->method('fetchData')
+            ->willReturn(resolve(new Response(200, [],
+                    json_encode([
+                        'records' => [
+                            [
+                                'fields' => [
+                                    'Name'  => 'abc',
+                                    'Email' => 'a@a.com',
+                                ],
+                            ],
+                        ],
+                    ])))
+            );
+
+        return $syncConn;
+    }
+
+    /**
+     * @return MockObject|DocumentManager
+     */
+    private function mockDm()
     {
         $sys = new SystemInstall();
         $sys->setSettings([
@@ -85,6 +169,14 @@ final class AirtableUpdatedContactConnectorTest extends KernelTestCaseAbstract
             ->method('getRepository')
             ->willReturn($systemInstall);
 
+        return $dm;
+    }
+
+    /**
+     * @return MockObject|LastSync
+     */
+    private function mockLastSync()
+    {
         $lastSync = $this->createMock(LastSyncManager::class);
         $lastSync
             ->method('getLastSync')
@@ -93,32 +185,7 @@ final class AirtableUpdatedContactConnectorTest extends KernelTestCaseAbstract
             ->method('updateLastSync')
             ->willReturn(NULL);
 
-        $sender = $this->createMock(CurlSenderFactory::class);
-
-        $processCounter = $this->createMock(ProgressCounterService::class);
-        $processCounter->method('setTotal')->willReturn(TRUE);
-
-        $syncConn = $this->getMockBuilder(AirtableUpdatedContactConnector::class)
-            ->setMethods(['fetchData'])
-            ->setConstructorArgs([$this->mockSystem(), $lastSync, $sender, $dm, $processCounter])
-            ->getMock();
-
-        $syncConn->expects($this->at(0))
-            ->method('fetchData')
-            ->willReturn(resolve(new Response(200, [],
-                    json_encode([
-                        'records' => [
-                            [
-                                'fields' => [
-                                    'Name'  => 'abc',
-                                    'Email' => 'a@a.com',
-                                ],
-                            ],
-                        ],
-                    ])))
-            );
-
-        return $syncConn;
+        return $lastSync;
     }
 
     /**
