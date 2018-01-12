@@ -6,6 +6,9 @@ import (
 	"os/signal"
 	"syscall"
 	"log"
+	"hanaboso.com/limiter/pkg/rabbitmq"
+	"github.com/streadway/amqp"
+	"hanaboso.com/limiter/pkg/storage"
 )
 
 // main runs the limiter program
@@ -13,6 +16,29 @@ func main() {
 	lim := limiter.Limiter{}
 	tcpServer := limiter.NewTcpServer(&lim)
 	go tcpServer.Start()
+
+	r := rabbitmq.NewRabbitMq("rabbitmq", 5672, "guest", "guest")
+	r.AddQueue(rabbitmq.Queue{Name: "test-q"})
+
+	r.Connect()
+	r.Setup()
+
+	c := rabbitmq.NewConsumer(r, "test-q")
+
+	s:= storage.NewStorage("mongodb", "test", "messages")
+	s.Connect()
+
+	mes := storage.Message{LimitKey: "123"}
+
+	s.Save(mes)
+
+	go c.Consume(func(msg <-chan amqp.Delivery) {
+		for m := range msg {
+			log.Println(m)
+
+			m.Ack(false)
+		}
+	})
 
 	gracefulShutdown(tcpServer)
 }
@@ -36,5 +62,3 @@ func gracefulShutdown(srv *limiter.TcpServer) {
 
 	<-quit
 }
-
-

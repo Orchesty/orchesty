@@ -1,0 +1,17 @@
+---
+version: '3'
+
+services:
+  rabbitmq:
+    image: rabbitmq:management-alpine
+    ports:
+      - ${DEV_IP}:15672:15672
+      - ${DEV_IP}:5672:5672
+  mongodb:
+    image: mongo
+    ports:
+      - ${DEV_IP}:27017:27017
+
+  limiter:
+    image: dkr.hanaboso.net/pipes/pipes/limiter:dev
+    command: limiter
