@@ -54,7 +54,12 @@ class HttpXmlParserWorker extends HttpWorker {
      * @returns {string}
      */
     private getContent(data: string): string {
-        return `{"data":${data ? data : ""},"settings":${JSON.stringify(this.settings.parser_settings)}}`;
+        let setStr = "{}";
+        if (this.settings && this.settings.parser_settings) {
+            setStr = JSON.stringify(this.settings.parser_settings);
+        }
+
+        return `{"data":${data ? data : ""},"settings":${setStr}`;
     }
 
 }
