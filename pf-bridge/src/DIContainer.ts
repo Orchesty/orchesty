@@ -7,7 +7,8 @@ import {
     topologyTerminatorOptions,
 } from "./config";
 import RedisStorage from "./counter/storage/RedisStorage";
-import FakeLimiter from "./limiter/FakeLimiter";
+import {default as Limiter, ILimiterOptions} from "./limiter/Limiter";
+import TcpClient from "./limiter/TcpClient";
 import CounterPublisher from "./node/drain/amqp/CounterPublisher";
 import FollowersPublisher from "./node/drain/amqp/FollowersPublisher";
 import {default as AmqpDrain, IAmqpDrainSettings} from "./node/drain/AmqpDrain";
@@ -70,6 +71,12 @@ class DIContainer extends Container {
             );
         });
 
+        this.set("limiter", (settings: ILimiterOptions) => {
+            const tcpClient = new TcpClient(settings.host, settings.port);
+
+            return new Limiter(tcpClient);
+        });
+
         this.set("faucet.amqp", (settings: IAmqpFaucetSettings) => {
             return new AmqpFaucet(settings, this.get("amqp.connection"));
         });
@@ -103,7 +110,7 @@ class DIContainer extends Container {
         });
         this.set(`${wPrefix}.http_limited`, (settings: IHttpWorkerSettings) => {
             return new LimiterWorker(
-                new FakeLimiter(),
+                this.get("limiter"),
                 this.get(`${wPrefix}.http`)(settings),
             );
         });
@@ -131,7 +138,7 @@ class DIContainer extends Container {
         });
         this.set(`${sPrefix}.amqprpc_limited`, (settings: IAmqpWorkerSettings, forwarder: IPartialForwarder) => {
             return new LimiterWorker(
-                new FakeLimiter(),
+                this.get("limiter"),
                 this.get(`${sPrefix}.amqprpc`)(settings, forwarder),
             );
         });

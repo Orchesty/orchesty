@@ -5,16 +5,46 @@ import JobMessage from "../message/JobMessage";
 import ILimiter from "./ILimiter";
 import TcpClient from "./TcpClient";
 
-const HEALTH_CHECK_REQUEST = "pf-health-check";
+const HEALTH_CHECK_PREFIX = "pf-health-check";
 const HEALTH_CHECK_VALID_RESPONSE = "ok";
 
 const LIMIT_CHECK_PREFIX = "pf-check";
 const LIMIT_CHECK_RESPONSE_FREE = "ok";
 
+export interface ILimiterOptions {
+    host: string;
+    port: number;
+}
+
 /**
  * Fake temp limiter
  */
 export default class Limiter implements ILimiter {
+
+    /**
+     *
+     * @returns {string}
+     */
+    private static createHealthCheckRequest(): string {
+        const reqId = uuid4();
+
+        return `${HEALTH_CHECK_PREFIX};${reqId}`;
+    }
+
+    /**
+     *
+     * @param {JobMessage} msg
+     * @returns {string}
+     */
+    private static createCheckLimitRequest(msg: JobMessage): string {
+        // Send request and wait for tcp limiter response
+        const reqId = uuid4();
+        const key = msg.getHeaders().getPFHeader(Headers.LIMIT_KEY);
+        const time = msg.getHeaders().getPFHeader(Headers.LIMIT_TIME);
+        const value = msg.getHeaders().getPFHeader(Headers.LIMIT_VALUE);
+
+        return `${LIMIT_CHECK_PREFIX};${reqId};${key};${time};${value}`;
+    }
 
     constructor(
         private tcpClient: TcpClient,
@@ -27,7 +57,8 @@ export default class Limiter implements ILimiter {
      */
     public async isReady(): Promise<boolean> {
         try {
-            const resp = await this.tcpClient.send(HEALTH_CHECK_REQUEST);
+            const content = Limiter.createHealthCheckRequest();
+            const resp = await this.tcpClient.send(content);
 
             if (resp === HEALTH_CHECK_VALID_RESPONSE) {
                 return true;
@@ -57,7 +88,7 @@ export default class Limiter implements ILimiter {
         }
 
         try {
-            const content = this.createCheckLimitRequest(msg);
+            const content = Limiter.createCheckLimitRequest(msg);
             const result = await this.tcpClient.send(content);
             if (result === LIMIT_CHECK_RESPONSE_FREE) {
                 return true;
@@ -80,21 +111,6 @@ export default class Limiter implements ILimiter {
      */
     public async postpone(msg: JobMessage): Promise<void> {
         return;
-    }
-
-    /**
-     *
-     * @param {JobMessage} msg
-     * @returns {string}
-     */
-    private createCheckLimitRequest(msg: JobMessage): string {
-        // Send request and wait for tcp limiter response
-        const reqId = uuid4();
-        const key = msg.getHeaders().getPFHeader(Headers.LIMIT_KEY);
-        const time = msg.getHeaders().getPFHeader(Headers.LIMIT_TIME);
-        const value = msg.getHeaders().getPFHeader(Headers.LIMIT_VALUE);
-
-        return `${LIMIT_CHECK_PREFIX};${reqId};${key};${time};${value}`;
     }
 
 }

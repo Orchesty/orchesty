@@ -2,13 +2,29 @@ import { assert } from "chai";
 import "mocha";
 
 import * as net from "net";
-import TcpLimiter from "../../src/limiter/Limiter";
+import Limiter from "../../src/limiter/Limiter";
+import TcpClient from "../../src/limiter/TcpClient";
 import Headers from "../../src/message/Headers";
 import JobMessage from "../../src/message/JobMessage";
 
+const createBasicMessage = (): JobMessage => {
+    const hdrs = new Headers();
+    hdrs.setPFHeader(Headers.PROCESS_ID, "pid");
+    hdrs.setPFHeader(Headers.PARENT_ID, "");
+    hdrs.setPFHeader(Headers.SEQUENCE_ID, "1");
+    hdrs.setPFHeader(Headers.CORRELATION_ID, "corr");
+
+    return new JobMessage(
+        { id: "id", node_id: "node_id", node_name: "node_name", topology_id: "topo"},
+        hdrs.getRaw(),
+        new Buffer(""),
+    );
+};
+
 describe("Limiter", () => {
     it("isReady should return negative result on requesting invalid limiter", async () => {
-        const limiter = new TcpLimiter({host: "invalidhost", port: 3333});
+        const tcp = new TcpClient("invalidhost", 3333);
+        const limiter = new Limiter(tcp);
         const result = await limiter.isReady();
         assert.isFalse(result);
     });
@@ -21,7 +37,8 @@ describe("Limiter", () => {
         server.listen(1337, "localhost");
 
         setTimeout( async () => {
-            const limiter = new TcpLimiter({host: "localhost", port: 1337});
+            const tcp = new TcpClient("localhost", 1337);
+            const limiter = new Limiter(tcp);
             const result = await limiter.isReady();
             assert.isTrue(result);
             done();
@@ -29,7 +46,8 @@ describe("Limiter", () => {
     });
 
     it("check limit should returns true when missing mandatory message headers", async () => {
-        const limiter = new TcpLimiter({host: "localhost", port: 3333});
+        const tcp = new TcpClient("localhost", 3333);
+        const limiter = new Limiter(tcp);
         const msg = createBasicMessage();
         const resultOne = await limiter.canBeProcessed(msg);
         assert.isTrue(resultOne);
@@ -42,7 +60,8 @@ describe("Limiter", () => {
     });
 
     it("check limit should return true when cannot contact remote server", async () => {
-        const limiter = new TcpLimiter({host: "invalidhost", port: 3333});
+        const tcp = new TcpClient("invalidhost", 3333);
+        const limiter = new Limiter(tcp);
 
         const msg = createBasicMessage();
         msg.getHeaders().setPFHeader(Headers.LIMIT_KEY, "lkey");
@@ -58,13 +77,15 @@ describe("Limiter", () => {
     //
 
     it("isReady against live go server", async () => {
-        const limiter = new TcpLimiter({host: "localhost", port: 3333});
+        const tcp = new TcpClient("localhost", 3333);
+        const limiter = new Limiter(tcp);
         const result = await limiter.isReady();
         assert.isTrue(result);
     });
 
     it("check limit against live go server", async () => {
-        const limiter = new TcpLimiter({host: "localhost", port: 3333});
+        const tcp = new TcpClient("localhost", 3333);
+        const limiter = new Limiter(tcp);
 
         const msg = createBasicMessage();
         msg.getHeaders().setPFHeader(Headers.LIMIT_KEY, "lkey");
@@ -76,17 +97,3 @@ describe("Limiter", () => {
     });
 
 });
-
-const createBasicMessage = (): JobMessage => {
-    const hdrs = new Headers();
-    hdrs.setPFHeader(Headers.PROCESS_ID, "pid");
-    hdrs.setPFHeader(Headers.PARENT_ID, "");
-    hdrs.setPFHeader(Headers.SEQUENCE_ID, "1");
-    hdrs.setPFHeader(Headers.CORRELATION_ID, "corr");
-
-    return new JobMessage(
-        { id: "id", node_id: "node_id", node_name: "node_name", topology_id: "topo"},
-        hdrs.getRaw(),
-        new Buffer(""),
-    );
-};

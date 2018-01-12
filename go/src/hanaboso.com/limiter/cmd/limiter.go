@@ -10,10 +10,11 @@ import (
 
 // main runs the limiter program
 func main() {
-	tcpServer := limiter.TcpServer{}
+	lim := limiter.Limiter{}
+	tcpServer := limiter.NewTcpServer(&lim)
 	go tcpServer.Start()
 
-	gracefulShutdown(&tcpServer)
+	gracefulShutdown(tcpServer)
 }
 
 // gracefulShutdown handles SIGINT and SIGTERM signal to stop the app gracefully

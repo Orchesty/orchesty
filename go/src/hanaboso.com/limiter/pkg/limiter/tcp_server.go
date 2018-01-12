@@ -44,8 +44,9 @@ func populateRequest(conn net.Conn) (request, error) {
 	data := strings.Split(msg, ";")
 
 	// matches is ready request message
-	if len(data) == 1 {
+	if len(data) == 2 {
 		req.name = data[0]
+		req.id = data[1]
 
 		return req, nil
 	}
@@ -65,8 +66,17 @@ func populateRequest(conn net.Conn) (request, error) {
 }
 
 type TcpServer struct {
+	dec      Decider
 	listener *net.TCPListener
 	wg       *sync.WaitGroup
+}
+
+// NewTcpServer creates new instance of TcpServer struct and returns pointer to it
+func NewTcpServer(dec Decider) *TcpServer {
+	return &TcpServer{
+		dec: dec,
+		wg: &sync.WaitGroup{},
+	}
 }
 
 // Start starts the tcp server
@@ -84,9 +94,6 @@ func (srv *TcpServer) Start() {
 
 	quitChan := make(chan os.Signal, 1)
 	signal.Notify(quitChan, os.Interrupt, os.Kill, syscall.SIGTERM)
-
-	wg := sync.WaitGroup{}
-	srv.wg = &wg
 
 	for {
 		listener.SetDeadline(time.Now().Add(1e9))
@@ -143,8 +150,8 @@ func (*TcpServer) handleHealthCheckRequest(conn net.Conn) {
 }
 
 // handleLimitCheckRequest returns
-func (*TcpServer) handleLimitCheckRequest(conn net.Conn, req request) {
-	isFree, err := Evaluate(req.key, req.time, req.value)
+func (srv *TcpServer) handleLimitCheckRequest(conn net.Conn, req request) {
+	isFree, err := srv.dec.Decide(req.key, req.time, req.value)
 	if err != nil {
 		fmt.Println("Error evaluating: ", err.Error())
 		conn.Write([]byte(limitCheckResponseOK))
