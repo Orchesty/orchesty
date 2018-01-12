@@ -69,3 +69,9 @@ export const redisStorageOptions: IRedisStorageSettings = {
     pass: process.env.REDIS_PASS || "",
     db: parseInt(process.env.REDIS_DB, 10) || 0,
 };
+
+export const limiterOptions = {
+    host: process.env.LIMITER_HOST || "limiter",
+    port: parseInt(process.env.LIMITER_PORT, 10) || 3333,
+};
+

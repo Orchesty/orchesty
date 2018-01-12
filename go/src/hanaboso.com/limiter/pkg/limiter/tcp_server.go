@@ -21,7 +21,7 @@ const (
 	healthCheckValidResponse = "ok"
 	limitCheckRequest        = "pf-check"
 	limitCheckResponseOK     = "ok"
-	limitCheckResponseNOK    = "limit reached"
+	limitCheckResponseNOK    = "nok"
 )
 
 type request struct {
