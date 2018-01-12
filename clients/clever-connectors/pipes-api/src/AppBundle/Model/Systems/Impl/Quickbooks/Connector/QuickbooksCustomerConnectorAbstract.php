@@ -34,6 +34,7 @@ use Psr\Log\NullLogger;
 use React\EventLoop\LoopInterface;
 use React\Promise\PromiseInterface;
 use function React\Promise\all;
+use function React\Promise\reject;
 
 /**
  * Class QuickbooksCustomerConnectorAbstract
@@ -125,11 +126,10 @@ abstract class QuickbooksCustomerConnectorAbstract implements BatchInterface, Co
             function (ResponseInterface $response): int {
                 return $this->getTotalPages($response);
             },
-            function (ResponseException $exception) use ($systemInstall): void {
-                if ($exception->getCode() == 401 || $exception->getCode() == 500) {
-                    $this->logError($exception->getCode(), $this->system, $systemInstall);
-                }
-                throw $exception;
+            function (ResponseException $exception) use ($systemInstall, $callbackItem) {
+                $callbackItem($this->batchConnectorError($exception, $this->system, $systemInstall, 1));
+
+                return reject();
             }
         )->then(
             function (int $total) use ($sender, $callbackItem, $requestDto, $times, $systemInstall) {
@@ -208,11 +208,9 @@ abstract class QuickbooksCustomerConnectorAbstract implements BatchInterface, Co
                     function (ResponseInterface $response) use ($i): SuccessMessage {
                         return $this->createSuccessMessage($response, $i + 1);
                     },
-                    function (ResponseException $exception) use ($systemInstall): void {
-                        if ($exception->getResponse()) {
-                            $this->logError($exception->getResponse()->getStatusCode(), $this->system, $systemInstall);
-                        }
-                        throw $exception;
+                    function (ResponseException $exception) use ($systemInstall, $callbackItem, $i): SuccessMessage {
+                        return $callbackItem($this->batchConnectorError($exception, $this->system, $systemInstall,
+                            $i + 1));
                     }
                 )
                 ->then($callbackItem);
