@@ -9,9 +9,10 @@ use Hanaboso\PipesFramework\Commons\Crypt\CryptManager;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSenderFactory;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
-use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit_Framework_MockObject_MockObject;
 use React\EventLoop\Factory;
 use Tests\ConnectorTestCaseAbstract;
+use function React\Promise\reject;
 use function React\Promise\resolve;
 
 /**
@@ -65,14 +66,16 @@ final class BasecrmUpdatedContactConnectorTest extends ConnectorTestCaseAbstract
         )->done();
 
         $loop->run();
-
     }
 
     /**
-     * @return BasecrmUpdatedContactConnector|MockObject
+     * @param int $status
+     *
+     * @return BasecrmUpdatedContactConnector
      */
-    private function mockResponses(): BasecrmUpdatedContactConnector
+    private function mockResponses(int $status = 200): BasecrmUpdatedContactConnector
     {
+        /** @var BasecrmUpdatedContactConnector|PHPUnit_Framework_MockObject_MockObject $conn */
         $conn = $this->getMockBuilder(BasecrmUpdatedContactConnector::class)->setConstructorArgs([
             $this->container->get('systems.basecrm'),
             $this->createMock(CurlSenderFactory::class),
@@ -82,7 +85,7 @@ final class BasecrmUpdatedContactConnectorTest extends ConnectorTestCaseAbstract
 
         $conn->expects($this->at(0))
             ->method('fetchData')->will($this->returnCallback(
-                function ($sender, RequestDto $dto) use ($test) {
+                function ($sender, RequestDto $dto) use ($test, $status) {
                     $expt = new RequestDto('GET',
                         new Uri('https://api.getbase.com/v2/sync/gf5h46dg5/queues/main'));
                     $expt->setHeaders([
@@ -95,33 +98,39 @@ final class BasecrmUpdatedContactConnectorTest extends ConnectorTestCaseAbstract
 
                     $test->assertEquals($expt, $dto);
 
-                    return resolve(new Response(200, $expt->getHeaders(), $this->getRequest('syncPage1.json')));
+                    if ($status >= 300) {
+                        return reject(new Response($status));
+                    }
+
+                    return resolve(new Response($status, $expt->getHeaders(), $this->getRequest('syncPage1.json')));
                 }
             ));
 
-        $conn->expects($this->at(1))
-            ->method('fetchData')->will($this->returnCallback(
-                function ($sender, RequestDto $dto) use ($test) {
-                    $expt = new RequestDto('GET',
-                        new Uri('https://api.getbase.com/v2/sync/gf5h46dg5/queues/main'));
-                    $expt->setHeaders([
-                        'Accept'                => 'application/json',
-                        'Content-Type'          => 'application/json',
-                        'User-Agent'            => 'Chrome/58.0.3029.96 Safari/537.36',
-                        'Authorization'         => 'Bearer sdgfd6g465g46f456f',
-                        'X-Basecrm-Device-UUID' => $dto->getHeaders()['X-Basecrm-Device-UUID'],
-                    ]);
+        if ($status < 300) {
+            $conn->expects($this->at(1))
+                ->method('fetchData')->will($this->returnCallback(
+                    function ($sender, RequestDto $dto) use ($test) {
+                        $expt = new RequestDto('GET',
+                            new Uri('https://api.getbase.com/v2/sync/gf5h46dg5/queues/main'));
+                        $expt->setHeaders([
+                            'Accept'                => 'application/json',
+                            'Content-Type'          => 'application/json',
+                            'User-Agent'            => 'Chrome/58.0.3029.96 Safari/537.36',
+                            'Authorization'         => 'Bearer sdgfd6g465g46f456f',
+                            'X-Basecrm-Device-UUID' => $dto->getHeaders()['X-Basecrm-Device-UUID'],
+                        ]);
 
-                    $test->assertEquals($expt, $dto);
+                        $test->assertEquals($expt, $dto);
 
-                    return resolve(new Response(200, $expt->getHeaders(), $this->getRequest('syncPage2.json')));
-                }
-            ));
+                        return resolve(new Response(200, $expt->getHeaders(), $this->getRequest('syncPage2.json')));
+                    }
+                ));
 
-        $conn->expects($this->at(2))
-            ->method('fetchData')->willReturn(
-                resolve(new Response(204, [], ''))
-            );
+            $conn->expects($this->at(2))
+                ->method('fetchData')->willReturn(
+                    resolve(new Response(204, [], ''))
+                );
+        }
 
         return $conn;
     }

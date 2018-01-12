@@ -3,15 +3,20 @@
 namespace Tests\Unit\AppBundle\Model\Systems\Impl\Basecrm\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Enum\NotificationTypeEnum;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Basecrm\Connector\BasecrmAcknowledgeContactConnector;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlException;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
 use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit_Framework_MockObject_MockObject;
+use Psr\Log\LoggerInterface;
 use Tests\ConnectorTestCaseAbstract;
 
 /**
@@ -42,17 +47,65 @@ final class BasecrmAcknowledgeContactConnectorTest extends ConnectorTestCaseAbst
     }
 
     /**
-     * @return CurlManagerInterface|MockObject
+     *
      */
-    private function mockCurl()
+    public function testLimit(): void
+    {
+        $conn = new BasecrmAcknowledgeContactConnector(
+            $this->mockCurl(429),
+            $this->container->get('systems.basecrm'),
+            $this->mockDm()
+        );
+
+        $dto = new ProcessDto();
+        $dto->setData($this->getRequest('contactItem.json'))
+            ->setHeaders([
+
+            ]);
+        $res = $conn->processAction($dto);
+        self::assertArrayHasKey('pf-result-code', $res->getHeaders());
+        self::assertEquals(1004, $res->getHeaders()['pf-result-code']);
+    }
+
+    /**
+     *
+     */
+    public function testUnexpectedError(): void
+    {
+        $conn = new BasecrmAcknowledgeContactConnector(
+            $this->mockCurl(404),
+            $this->container->get('systems.basecrm'),
+            $this->mockDm()
+        );
+
+        $conn->setLogger($this->mockLogger());
+
+        $dto = new ProcessDto();
+        $dto->setData($this->getRequest('contactItem.json'))
+            ->setHeaders([
+
+            ]);
+
+        $this->expectException(CurlException::class);
+        $conn->processAction($dto);
+    }
+
+    /**
+     * @param int $status
+     *
+     * @return CurlManagerInterface
+     */
+    private function mockCurl(int $status = 200): CurlManagerInterface
     {
         $_SERVER['HTTP_USER_AGENT'] = 'asd';
         $test                       = $this;
-        $curl                       = $this->createMock(CurlManagerInterface::class);
+
+        /** @var CurlManagerInterface|PHPUnit_Framework_MockObject_MockObject $curl */
+        $curl = $this->createMock(CurlManagerInterface::class);
 
         $curl->expects($this->once())
             ->method('send')->will($this->returnCallback(
-                function (RequestDto $dto) use ($test) {
+                function (RequestDto $dto) use ($test, $status) {
                     $expt = new RequestDto('POST', new Uri('https://api.getbase.com/v2/sync/ack'));
                     $expt->setBody(json_encode([
                         'data' => [
@@ -71,7 +124,11 @@ final class BasecrmAcknowledgeContactConnectorTest extends ConnectorTestCaseAbst
 
                     $test->assertEquals($expt, $dto);
 
-                    return new ResponseDto(200, '', '', []);
+                    if ($status >= 300) {
+                        throw new CurlException('', $status, NULL, new Response($status));
+                    }
+
+                    return new ResponseDto($status, '', '', []);
                 }
             ));
 
@@ -101,6 +158,30 @@ final class BasecrmAcknowledgeContactConnectorTest extends ConnectorTestCaseAbst
         $dm->method('getRepository')->willReturn($repo);
 
         return $dm;
+    }
+
+    /**
+     * @return LoggerInterface
+     */
+    private function mockLogger(): LoggerInterface
+    {
+        /** @var LoggerInterface|PHPUnit_Framework_MockObject_MockObject $logger */
+        $logger = $this->createMock(LoggerInterface::class);
+        $logger->expects($this->once())
+            ->method('info')->will($this->returnCallback(
+                function (string $type, $data): void {
+
+                    $this->assertEquals(NotificationTypeEnum::DATA_ERROR, $type);
+                    $this->assertEquals([
+                        'guid'        => 'user',
+                        'token'       => 'token',
+                        'system_key'  => 'basecrm',
+                        'system_name' => 'BaseCRM',
+                    ], $data);
+                }
+            ));
+
+        return $logger;
     }
 
 }

@@ -120,36 +120,28 @@ class BasecrmQueueContactConnector implements ConnectorInterface, LoggerAwareInt
 
         try {
             $res = $this->curl->send(RequestDto::from($dto, $uri));
-        } catch (CurlException $e) {
-            if ($e->getResponse()) {
-                $this->logError($e->getResponse()->getStatusCode(), $this->system, $systemInstall);
+
+            $body = json_decode($res->getBody(), TRUE);
+            if (!array_key_exists('data', $body)
+                || !array_key_exists('id', $body['data'])
+            ) {
+                throw new SystemException(sprintf('BaseCRM failed to create sync que (missing id), %s',
+                    $res->getBody()),
+                    SystemException::MISSING_RESPONSE_DATA);
             }
 
-            throw $e;
+            $sett                           = $systemInstall->getSettings();
+            $sett[BasecrmSystem::SYNC_UUID] = $uuid;
+            $sett[BasecrmSystem::QUE_ID]    = $body['data']['id'];
+            $systemInstall->setSettings($sett);
+            $this->systemInstallRepository->saveSystemInstall($systemInstall);
+
+            $data                                                      = json_decode($processDto->getData(), TRUE);
+            $data['system_install'][SystemInstall::ENCRYPTED_SETTINGS] = CryptManager::encrypt($systemInstall->getSettings());
+            $processDto->setData(json_encode($data));
+        } catch (CurlException $e) {
+            $this->connectorError($e, $this->system, $systemInstall, $processDto);
         }
-
-        if (!in_array($res->getStatusCode(), [201, 204])) {
-            throw new SystemException(sprintf('BaseCRM failed to create sync que, %s', $res->getBody()),
-                SystemException::MISSING_RESPONSE_DATA);
-        }
-
-        $body = json_decode($res->getBody(), TRUE);
-        if (!array_key_exists('data', $body)
-            || !array_key_exists('id', $body['data'])
-        ) {
-            throw new SystemException(sprintf('BaseCRM failed to create sync que (missing id), %s', $res->getBody()),
-                SystemException::MISSING_RESPONSE_DATA);
-        }
-
-        $sett                           = $systemInstall->getSettings();
-        $sett[BasecrmSystem::SYNC_UUID] = $uuid;
-        $sett[BasecrmSystem::QUE_ID]    = $body['data']['id'];
-        $systemInstall->setSettings($sett);
-        $this->systemInstallRepository->saveSystemInstall($systemInstall);
-
-        $data                                                      = json_decode($processDto->getData(), TRUE);
-        $data['system_install'][SystemInstall::ENCRYPTED_SETTINGS] = CryptManager::encrypt($systemInstall->getSettings());
-        $processDto->setData(json_encode($data));
     }
 
 }

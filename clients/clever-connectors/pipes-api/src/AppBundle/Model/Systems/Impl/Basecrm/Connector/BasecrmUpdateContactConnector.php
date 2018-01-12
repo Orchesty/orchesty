@@ -33,6 +33,7 @@ class BasecrmUpdateContactConnector extends BasecrmUpdateContactConnectorAbstrac
      *
      * @return ProcessDto
      * @throws CleverConnectorsException
+     * @throws CurlException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {
@@ -54,41 +55,29 @@ class BasecrmUpdateContactConnector extends BasecrmUpdateContactConnectorAbstrac
         $res = NULL;
         try {
             $res = $this->curl->send($requestDto);
-        } catch (CurlException $e) {
-            if ($e->getResponse()) {
-                $this->logError($e->getResponse()->getStatusCode(), $this->system, $systemInstall);
 
-                if ($e->getResponse()->getStatusCode() === 404) {
-                    throw new CleverConnectorsException(
-                        sprintf('Contact with id [%s] wasn\'t find, BaseCRM updateContactConnector.', $data['id']),
-                        CleverConnectorsException::REQUEST_FAILED);
-                } else {
-                    throw new CleverConnectorsException(
-                        sprintf('Failed to update, BaseCRM updateContactConnector, %s', $e->getResponse()->getBody()),
-                        CleverConnectorsException::REQUEST_FAILED);
-                }
+            $body = json_decode($res->getBody(), TRUE);
+            $key  = CleverCustomKeysEnum::getFromType(CMHeaders::get(CMHeaders::CM_EVENT_TYPE, $dto->getHeaders()) ?? '');
+
+            if (!is_array($body)
+                || !array_key_exists('data', $body)
+                || !array_key_exists('custom_fields', $body['data'])
+            ) {
+                throw new CleverConnectorsException(
+                    'Malformed response data, BaseCRM updateContactConnector.',
+                    CleverConnectorsException::MISSING_DATA);
+            } else if (!array_key_exists($key, $body['data']['custom_fields'])) {
+                throw new CleverConnectorsException(
+                    sprintf('Requested field [%s] doesn\'t exist, BaseCRM updateContactConnector.', $key),
+                    CleverConnectorsException::REQUEST_FAILED);
             }
 
-            throw $e;
+            $dto->setData($res->getBody());
+        } catch (CurlException $e) {
+            $this->connectorError($e, $this->system, $systemInstall, $dto);
         }
 
-        $body = json_decode($res->getBody(), TRUE);
-        $key  = CleverCustomKeysEnum::getFromType(CMHeaders::get(CMHeaders::CM_EVENT_TYPE, $dto->getHeaders()) ?? '');
-
-        if (!is_array($body)
-            || !array_key_exists('data', $body)
-            || !array_key_exists('custom_fields', $body['data'])
-        ) {
-            throw new CleverConnectorsException(
-                'Malformed response data, BaseCRM updateContactConnector.',
-                CleverConnectorsException::MISSING_DATA);
-        } else if (!array_key_exists($key, $body['data']['custom_fields'])) {
-            throw new CleverConnectorsException(
-                sprintf('Requested field [%s] doesn\'t exist, BaseCRM updateContactConnector.', $key),
-                CleverConnectorsException::REQUEST_FAILED);
-        }
-
-        return $dto->setData($res->getBody());
+        return $dto;
     }
 
 }
