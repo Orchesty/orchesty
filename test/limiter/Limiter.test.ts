@@ -31,7 +31,7 @@ describe("Limiter", () => {
 
     it("isReady should send and receive tcp packet", (done) => {
         const server = net.createServer((socket) => {
-            socket.write("ok");
+            socket.write("pf-health-check;someid;ok");
             socket.pipe(socket);
         });
         server.listen(1337, "localhost");
@@ -45,7 +45,7 @@ describe("Limiter", () => {
         }, 100);
     });
 
-    it("check limit should returns true when missing mandatory message headers", async () => {
+    it("canBeProcessed should returns true when missing mandatory message headers", async () => {
         const tcp = new TcpClient("localhost", 3333);
         const limiter = new Limiter(tcp);
         const msg = createBasicMessage();
@@ -59,7 +59,7 @@ describe("Limiter", () => {
         assert.isTrue(resultTwo);
     });
 
-    it("check limit should return true when cannot contact remote server", async () => {
+    it("canBeProcessed should return true when cannot contact remote server", async () => {
         const tcp = new TcpClient("invalidhost", 3333);
         const limiter = new Limiter(tcp);
 
@@ -70,6 +70,44 @@ describe("Limiter", () => {
 
         const result = await limiter.canBeProcessed(msg);
         assert.isTrue(result);
+    });
+
+    it("canBeProcessed should return what true when limiter returns positive response", async () => {
+        const positive = net.createServer((socket) => {
+            socket.write("pf-check;someid;ok");
+            socket.pipe(socket);
+        });
+        positive.listen(1338, "localhost");
+
+        const tcp = new TcpClient("localhost", 1338);
+        const limiter = new Limiter(tcp);
+
+        const msg = createBasicMessage();
+        msg.getHeaders().setPFHeader(Headers.LIMIT_KEY, "lkey");
+        msg.getHeaders().setPFHeader(Headers.LIMIT_TIME, "ltime");
+        msg.getHeaders().setPFHeader(Headers.LIMIT_VALUE, "lvalue");
+
+        const result = await limiter.canBeProcessed(msg);
+        assert.isTrue(result);
+    });
+
+    it("canBeProcessed should return what true when limiter returns negative response", async () => {
+        const positive = net.createServer((socket) => {
+            socket.write("pf-check;someid;nok");
+            socket.pipe(socket);
+        });
+        positive.listen(1339, "localhost");
+
+        const tcp = new TcpClient("localhost", 1339);
+        const limiter = new Limiter(tcp);
+
+        const msg = createBasicMessage();
+        msg.getHeaders().setPFHeader(Headers.LIMIT_KEY, "lkey");
+        msg.getHeaders().setPFHeader(Headers.LIMIT_TIME, "ltime");
+        msg.getHeaders().setPFHeader(Headers.LIMIT_VALUE, "lvalue");
+
+        const result = await limiter.canBeProcessed(msg);
+        assert.isFalse(result);
     });
 
     //

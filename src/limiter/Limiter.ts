@@ -59,8 +59,9 @@ export default class Limiter implements ILimiter {
         try {
             const content = Limiter.createHealthCheckRequest();
             const resp = await this.tcpClient.send(content);
+            const result = resp.split(";");
 
-            if (resp === HEALTH_CHECK_VALID_RESPONSE) {
+            if (result.length === 3 && result[2] === HEALTH_CHECK_VALID_RESPONSE) {
                 return true;
             } else {
                 logger.warn(`TcpLimiter limiter not ready. Resp: ${resp}`);
@@ -89,8 +90,10 @@ export default class Limiter implements ILimiter {
 
         try {
             const content = Limiter.createCheckLimitRequest(msg);
-            const result = await this.tcpClient.send(content);
-            if (result === LIMIT_CHECK_RESPONSE_FREE) {
+            const resp = await this.tcpClient.send(content);
+            const result = resp.split(";");
+
+            if (result.length === 3 && result[2] === LIMIT_CHECK_RESPONSE_FREE) {
                 return true;
             }
 
