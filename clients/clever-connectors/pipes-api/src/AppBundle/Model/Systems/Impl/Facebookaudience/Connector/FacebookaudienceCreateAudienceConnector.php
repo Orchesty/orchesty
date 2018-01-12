@@ -39,6 +39,7 @@ class FacebookaudienceCreateAudienceConnector extends FacebookaudienceConnectorA
      * @return ProcessDto
      * @throws CleverConnectorsException
      * @throws SystemException
+     * @throws CurlException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {
@@ -106,6 +107,7 @@ class FacebookaudienceCreateAudienceConnector extends FacebookaudienceConnectorA
      * @return ProcessDto
      * @throws CleverConnectorsException
      * @throws CurlException
+     * @throws SystemException
      */
     private function createNew(SystemInstall $systemInstall, ProcessDto $dto, string $newList): ProcessDto
     {
@@ -133,8 +135,7 @@ class FacebookaudienceCreateAudienceConnector extends FacebookaudienceConnectorA
         try {
             $response = $this->manager->send($requestDto);
         } catch (CurlException $e) {
-            $this->logCurlException($e, $systemInstall);
-            throw $e;
+            return $this->logConnectorError($e, $systemInstall, $dto);
         }
 
         $this->saveAudience($response, $systemInstall);

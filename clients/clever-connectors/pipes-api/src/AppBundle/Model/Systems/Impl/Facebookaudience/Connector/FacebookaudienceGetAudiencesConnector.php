@@ -12,7 +12,7 @@ use Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlException;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
-use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 
 /**
  * Class FacebookaudienceGetAudiencesConnector
@@ -37,12 +37,19 @@ class FacebookaudienceGetAudiencesConnector extends FacebookaudienceConnectorAbs
      *
      * @return ProcessDto
      * @throws CleverConnectorsException
+     * @throws CurlException
      * @throws SystemException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {
         $systemInstall = $this->systemInstallRepository->getSystemInstallFromHeaders($dto->getHeaders());
-        $response      = $this->makeRequest($systemInstall, $dto);
+        $requestDto    = $this->prepareRequestDto($systemInstall, $dto);
+
+        try {
+            $response = $this->manager->send($requestDto);
+        } catch (CurlException $e) {
+            return $this->logConnectorError($e, $systemInstall, $dto);
+        }
 
         return $dto->setData($response->getBody());
     }
@@ -53,6 +60,7 @@ class FacebookaudienceGetAudiencesConnector extends FacebookaudienceConnectorAbs
      *
      * @return array
      * @throws CleverConnectorsException
+     * @throws CurlException
      * @throws SystemException
      */
     public function getAudiences(SystemInstall $systemInstall, array $data): array
@@ -73,9 +81,15 @@ class FacebookaudienceGetAudiencesConnector extends FacebookaudienceConnectorAbs
 
         $res                                     = [];
         $res[FacebookaudienceSystem::CREATE_NEW] = 'Create New';
-        $response                                = $this->makeRequest($systemInstall, NULL);
+        $requestDto                              = $this->prepareRequestDto($systemInstall, NULL);
 
-        if ($response->getStatusCode() == 200) {
+        try {
+            $response = $this->manager->send($requestDto);
+        } catch (CurlException $e) {
+            $this->logConnectorError($e, $systemInstall);
+        }
+
+        if (isset($response) && $response->getStatusCode() == 200) {
             $data = json_decode($response->getBody(), TRUE);
             if (array_key_exists('data', $data) && is_array($data) && !empty($data)) {
                 foreach ($data['data'] as $item) {
@@ -91,11 +105,11 @@ class FacebookaudienceGetAudiencesConnector extends FacebookaudienceConnectorAbs
      * @param SystemInstall   $systemInstall
      * @param ProcessDto|null $dto
      *
-     * @return ResponseDto
+     * @return RequestDto
      * @throws CleverConnectorsException
-     * @throws CurlException
+     * @throws SystemException
      */
-    private function makeRequest(SystemInstall $systemInstall, ?ProcessDto $dto = NULL): ResponseDto
+    private function prepareRequestDto(SystemInstall $systemInstall, ?ProcessDto $dto = NULL): RequestDto
     {
         $adAccountId = $systemInstall->getSettings()[FacebookaudienceSystem::AD_ACCOUNT] ?? '';
 
@@ -114,12 +128,7 @@ class FacebookaudienceGetAudiencesConnector extends FacebookaudienceConnectorAbs
             $requestDto->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()));
         }
 
-        try {
-            return $this->manager->send($requestDto);
-        } catch (CurlException $e) {
-            $this->logCurlException($e, $systemInstall);
-            throw $e;
-        }
+        return $requestDto;
     }
 
 }

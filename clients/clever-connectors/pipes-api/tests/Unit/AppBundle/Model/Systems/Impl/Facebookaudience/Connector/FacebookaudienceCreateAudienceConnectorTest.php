@@ -8,9 +8,11 @@ use CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\Connector\Fac
 use CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\FacebookaudienceSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlException;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
@@ -49,6 +51,51 @@ final class FacebookaudienceCreateAudienceConnectorTest extends ConnectorTestCas
         $result = Json::decode($this->getConnectorMock($systemInstall)->processAction($dto)->getData(), TRUE);
 
         $this->assertEquals(['id' => 'abc123'], $result);
+    }
+
+    /**
+     * @covers FacebookaudienceCreateAudienceConnector::processAction()
+     */
+    public function testProcessActionLimit(): void
+    {
+        $dto = (new ProcessDto())->setData(Json::encode([
+            'data' => [
+                ['name' => 'list name 1'],
+                ['name' => 'list name 2'],
+            ],
+        ]))->setHeaders([]);
+
+        $systemInstall = new SystemInstall();
+        $systemInstall->setSettings([
+            OAuth2Provider::ACCESS_TOKEN            => 'access-token-123',
+            FacebookaudienceSystem::AD_ACCOUNT      => 'ad-account-123',
+            FacebookaudienceSystem::CUSTOM_AUDIENCE => FacebookaudienceSystem::CREATE_NEW,
+            FacebookaudienceSystem::NEW_LIST        => 'new list name',
+        ]);
+
+        /** @var MockObject|CurlManagerInterface $sender */
+        $sender = $this->createMock(CurlManagerInterface::class);
+        $sender
+            ->expects($this->exactly(1))
+            ->method('send')
+            ->willReturnCallback(function (RequestDto $requestDto): void {
+                $body = json_encode([
+                    'error' => [
+                        'code' => 4, // means: request limit reached
+                    ],
+                ]);
+                throw new CurlException('', CurlException::REQUEST_FAILED, NULL, new Response(400, [], $body));
+            });
+
+        $connector = new FacebookaudienceCreateAudienceConnector(
+            $this->getSystemMock(FALSE),
+            $this->getDmMock($systemInstall, FALSE),
+            $sender
+        );
+
+        $result = $connector->processAction($dto);
+
+        $this->assertEquals(1004, $result->getHeader('pf-result-code'));
     }
 
     /**
@@ -200,20 +247,6 @@ final class FacebookaudienceCreateAudienceConnectorTest extends ConnectorTestCas
         $creates = TRUE
     ): FacebookaudienceCreateAudienceConnector
     {
-        $systemInstallRepository = $this->createMock(SystemInstallRepository::class);
-        $systemInstallRepository->method('getSystemInstallFromHeaders')->willReturn($systemInstall);
-
-        /** @var MockObject|DocumentManager $documentManager */
-        $documentManager = $this->createMock(DocumentManager::class);
-        $documentManager->method('getRepository')->willReturn($systemInstallRepository);
-
-        if ($creates) {
-            $documentManager
-                ->expects($this->at(0))
-                ->method('flush')
-                ->willReturn(TRUE);
-        }
-
         /** @var CurlManagerInterface|MockObject $curlManager */
         $curlManager = $this->createMock(CurlManagerInterface::class);
 
@@ -231,8 +264,36 @@ final class FacebookaudienceCreateAudienceConnectorTest extends ConnectorTestCas
                 }));
         }
 
-        return new FacebookaudienceCreateAudienceConnector($this->getSystemMock($creates), $documentManager,
-            $curlManager);
+        return new FacebookaudienceCreateAudienceConnector(
+            $this->getSystemMock($creates),
+            $this->getDmMock($systemInstall, $creates),
+            $curlManager
+        );
+    }
+
+    /**
+     * @param SystemInstall $systemInstall
+     * @param bool          $creates
+     *
+     * @return DocumentManager|MockObject
+     */
+    private function getDmMock(SystemInstall $systemInstall, $creates = TRUE)
+    {
+        $systemInstallRepository = $this->createMock(SystemInstallRepository::class);
+        $systemInstallRepository->method('getSystemInstallFromHeaders')->willReturn($systemInstall);
+
+        /** @var MockObject|DocumentManager $documentManager */
+        $documentManager = $this->createMock(DocumentManager::class);
+        $documentManager->method('getRepository')->willReturn($systemInstallRepository);
+
+        if ($creates) {
+            $documentManager
+                ->expects($this->at(0))
+                ->method('flush')
+                ->willReturn(TRUE);
+        }
+
+        return $documentManager;
     }
 
     /**

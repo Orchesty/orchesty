@@ -6,6 +6,7 @@ use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\FacebookaudienceSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use CleverConnectors\AppBundle\Traits\LoggerTrait;
+use CleverConnectors\AppBundle\Utils\HeadersUtils;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
@@ -77,22 +78,50 @@ abstract class FacebookaudienceConnectorAbstract implements ConnectorInterface, 
     }
 
     /**
+     * 4 - application request limit reached
+     * 17 - user request limit reached
+     * 100 - invalid parameter
+     * 190 - invalid access token
+     *
      * @param CurlException $exception
      * @param SystemInstall $systemInstall
+     * @param ProcessDto    $dto
+     *
+     * @return ProcessDto
+     * @throws CurlException
      */
-    protected function logCurlException(CurlException $exception, SystemInstall $systemInstall): void
+    protected function logConnectorError(
+        CurlException $exception,
+        SystemInstall $systemInstall,
+        ?ProcessDto $dto = NULL
+    ): ?ProcessDto
     {
         $response = $exception->getResponse();
-        if (isset($response) && $response->getStatusCode() == 400) {
-            $body = $response->getBody()->getContents();
-            $data = json_decode($body, TRUE);
-            if (isset($data['error']['code']) && $data['error']['code'] == 190) {
-                $this->logError(401, $this->system, $systemInstall);
+
+        if (isset($response)) {
+            $httpCode = $response->getStatusCode();
+            if ($response->getStatusCode() == 400) {
+                $data      = json_decode($response->getBody()->getContents(), TRUE);
+                $errorCode = isset($data['error']['code']) ? $data['error']['code'] : NULL;
+                if (in_array($errorCode, [4, 17])) {
+                    if ($dto) {
+                        return HeadersUtils::setLimitHeaderToDto($dto);
+                    } else {
+                        $httpCode = 429;
+                    }
+                } elseif ($errorCode == 100) {
+                    $httpCode = 400;
+                } elseif ($errorCode == 190) {
+                    $httpCode = 401;
+                } else {
+                    $httpCode = 500;
+                }
             }
+
+            $this->logError($httpCode, $this->system, $systemInstall);
         }
-        if (isset($response) && $response->getStatusCode() == 500) {
-            $this->logError(500, $this->system, $systemInstall);
-        }
+
+        throw $exception;
     }
 
 }

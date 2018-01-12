@@ -65,14 +65,13 @@ class FacebookaudienceCreateSubscribersConnector extends FacebookaudienceConnect
             ->setBody($dto->getData())
             ->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()));
 
-        $response = $this->manager->send($requestDto);
-
         try {
-            return $dto->setData($response->getBody());
+            $response = $this->manager->send($requestDto);
         } catch (CurlException $e) {
-            $this->logCurlException($e, $systemInstall);
-            throw $e;
+            return $this->logConnectorError($e, $systemInstall, $dto);
         }
+
+        return $dto->setData($response->getBody());
     }
 
 }
