@@ -3,8 +3,8 @@
 namespace Tests\Unit\AppBundle\Model\Systems\Impl\Zoho\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Zoho\Connector\ZohoGetContactConnector;
-use CleverConnectors\AppBundle\Model\Systems\Impl\Zoho\ZohoSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Uri;
@@ -13,7 +13,8 @@ use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
 use Nette\Utils\Json;
-use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit_Framework_MockObject_MockObject;
+use Psr\Log\LoggerInterface;
 use Tests\ConnectorTestCaseAbstract;
 
 /**
@@ -101,49 +102,101 @@ final class ZohoGetContactConnectorTest extends ConnectorTestCaseAbstract
     }
 
     /**
+     *
+     */
+    public function testConnectorLimit(): void
+    {
+        $conn = $this->getConnectorMock(4820);
+
+        $result = $conn->processAction(
+            (new ProcessDto())->setData('{"id":"id"}')->setHeaders([])
+        );
+
+        self::assertArrayHasKey('pf-result-code', $result->getHeaders());
+        self::assertEquals(1004, $result->getHeaders()['pf-result-code']);
+    }
+
+    /**
+     *
+     */
+    public function testConnectorError(): void
+    {
+        $conn = $this->getConnectorMock(4001);
+        $conn->setLogger($this->mockLogger());
+        $this->expectException(CleverConnectorsException::class);
+
+        $conn->processAction(
+            (new ProcessDto())->setData('{"id":"id"}')->setHeaders([])
+        );
+    }
+
+    /**
+     * @param int $status
+     *
      * @return ZohoGetContactConnector
      */
-    private function getConnectorMock(): ZohoGetContactConnector
+    private function getConnectorMock(int $status = 200): ZohoGetContactConnector
     {
-        $systemInstall = $this->createMock(SystemInstallRepository::class);
-        $systemInstall->method('getSystemInstall')->willReturn((new SystemInstall()));
+        $sys = new SystemInstall();
+        $sys->setSettings(['auth_token' => '05361930f1c8c009d9a1e30e07b23126'])
+            ->setToken('tkn')->setUser('usr');
 
-        /** @var MockObject|DocumentManager $documentManager */
+        /** @var SystemInstallRepository|PHPUnit_Framework_MockObject_MockObject $systemInstall */
+        $systemInstall = $this->createMock(SystemInstallRepository::class);
+        $systemInstall->method('getSystemInstallFromHeaders')->willReturn($sys);
+
+        /** @var DocumentManager|PHPUnit_Framework_MockObject_MockObject $documentManager */
         $documentManager = $this->createMock(DocumentManager::class);
         $documentManager->method('getRepository')->willReturn($systemInstall);
 
-        /** @var CurlManagerInterface|MockObject $curlManager */
+        /** @var CurlManagerInterface|PHPUnit_Framework_MockObject_MockObject $curlManager */
         $curlManager = $this->createMock(CurlManagerInterface::class);
         $curlManager->method('send')
-            ->will($this->returnCallback(function (RequestDto $dto, array $options = []) {
+            ->will($this->returnCallback(function (RequestDto $dto, array $options = []) use ($status) {
+                if ($status >= 300) {
+                    return new ResponseDto(200, '', json_encode([
+                        'response' => [
+                            'error' => [
+                                'code'    => (string) $status,
+                                'message' => 'error_message',
+                            ],
+                        ],
+                    ]), []);
+                }
+
                 $this->assertEquals(
                     new Uri('https://crm.zoho.eu/crm/private/json/Contacts/getRecordById?authtoken=05361930f1c8c009d9a1e30e07b23126&scope=crmapi&id=76762000000078126'),
                     $dto->getUri()
                 );
 
-                return new ResponseDto(200, 'OK', $this->getRequest('getSingleContact.json'), []);
+                return new ResponseDto($status, 'OK', $this->getRequest('getSingleContact.json'), []);
             }));
+        $system = $this->container->get('systems.zoho');
 
-        return new ZohoGetContactConnector($this->getSystemMock(), $documentManager, $curlManager);
+        return new ZohoGetContactConnector($system, $documentManager, $curlManager);
     }
 
     /**
-     * @return MockObject|ZohoSystem
+     * @return LoggerInterface
      */
-    private function getSystemMock()
+    private function mockLogger(): LoggerInterface
     {
-        $requestDto = (new RequestDto(
-            'POST',
-            new Uri('https://crm.zoho.eu/crm/private/json/Contacts/%s?authtoken=05361930f1c8c009d9a1e30e07b23126&scope=crmapi'))
-        )->setHeaders([
-            'Content-Type' => 'application/json',
-            'Accept'       => 'application/json',
-        ]);
+        /** @var LoggerInterface|PHPUnit_Framework_MockObject_MockObject $logger */
+        $logger = $this->createMock(LoggerInterface::class);
+        $logger->expects($this->once())
+            ->method('info')->will($this->returnCallback(
+                function (string $type, $data): void {
+                    self::assertEquals('access_expiration', $type);
+                    self::assertEquals([
+                        'guid'        => 'usr',
+                        'token'       => 'tkn',
+                        'system_key'  => 'zoho',
+                        'system_name' => 'ZOHO',
+                    ], $data);
+                }
+            ));
 
-        $system = $this->createMock(ZohoSystem::class);
-        $system->method('getRequestDto')->willReturn($requestDto);
-
-        return $system;
+        return $logger;
     }
 
 }

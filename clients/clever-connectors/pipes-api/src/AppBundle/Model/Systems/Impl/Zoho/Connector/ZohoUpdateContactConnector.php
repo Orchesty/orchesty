@@ -6,9 +6,9 @@ use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\CleverCustomKeysEnum;
 use CleverConnectors\AppBundle\Enum\CleverFieldsEnum;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
+use CleverConnectors\AppBundle\Model\Systems\Impl\Zoho\Traits\ZohoLoggerTrait;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Zoho\ZohoSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
-use CleverConnectors\AppBundle\Traits\LoggerTrait;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -30,7 +30,7 @@ use Psr\Log\LoggerAwareInterface;
 class ZohoUpdateContactConnector implements ConnectorInterface, LoggerAwareInterface
 {
 
-    use LoggerTrait;
+    use ZohoLoggerTrait;
 
     private const URL = '%s&id=%s&newFormat=1&xmlData=%s';
 
@@ -107,17 +107,18 @@ class ZohoUpdateContactConnector implements ConnectorInterface, LoggerAwareInter
             ->setUri(new Uri(sprintf($url, 'updateRecords')))
             ->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()));
 
-        try {
-            $response = $this->manager->send($requestDto);
-        } catch (CurlException $exception) {
-            $response = $exception->getResponse();
-            if ($response->getStatusCode() == 500) {
-                $this->logError($response->getStatusCode(), $this->system, $systemInstall);
-            }
-            throw $exception;
+        $response  = $this->manager->send($requestDto);
+        $innerData = Json::decode($response->getBody(), TRUE);
+
+        if (array_key_exists('error', $innerData['response'])) {
+            $status = intval($innerData['response']['error']['code']) ?? 400;
+
+            $this->connectorError($status, $this->system, $systemInstall, $dto);
+        } else {
+            $dto->setData($response->getBody());
         }
 
-        return $dto->setData($response->getBody());
+        return $dto;
     }
 
     /**

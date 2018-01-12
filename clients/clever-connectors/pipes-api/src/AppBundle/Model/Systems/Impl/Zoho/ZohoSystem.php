@@ -31,7 +31,9 @@ class ZohoSystem implements SystemInterface, AuthorizationInterface, CMEventSyst
     use AuthorizationTrait;
     use CMEventSystemTrait;
 
-    public const AUTH_TOKEN = 'auth_token';
+    public const AUTH_TOKEN        = 'auth_token';
+    public const LIMIT_STATUS_CODE = 4820;
+    public const AUTH_STATUS_CODES = [4600, 4001, 401];
 
     /**
      * ZohoSystem constructor.
