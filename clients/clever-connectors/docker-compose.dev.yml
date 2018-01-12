@@ -186,7 +186,12 @@ services:
     xml-parser-api:
         image: 'dkr.hanaboso.net/pipes/pipes/python-xml-parser:prod'
         environment:
+          ## BEGIN DEV
           PARSER_HOST: xml-parser-api
+          ## END DEV
+          ## BEGIN STAGE
+          #PARSER_HOST: 0.0.0.0
+          ## END STAGE
           PARSER_PORT: '80'
           PARSER_RELOADED: '1'
           METRICS_HOST: influxdb
