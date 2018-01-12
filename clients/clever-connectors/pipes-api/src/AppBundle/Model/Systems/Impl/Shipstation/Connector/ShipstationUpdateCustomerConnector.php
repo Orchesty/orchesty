@@ -4,6 +4,7 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\Shipstation\Connector;
 
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use CleverConnectors\AppBundle\Utils\CronUtils;
+use Clue\React\Buzz\Message\ResponseException;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
@@ -48,10 +49,18 @@ class ShipstationUpdateCustomerConnector extends ShipstationCustomerConnectorAbs
             ->then(
                 function (ResponseInterface $response): int {
                     return $this->getTotalPages($response);
+                },
+                function (ResponseException $exception) use ($systemInstall): void {
+                    $this->logResponseException($exception, $systemInstall);
+                    throw $exception;
                 }
             )->then(
                 function (int $total) use ($browser, $callbackItem, $requestDto) {
                     return all($this->doPageLoop($total, $browser, $callbackItem, $requestDto));
+                },
+                function (ResponseException $exception) use ($systemInstall): void {
+                    $this->logResponseException($exception, $systemInstall);
+                    throw $exception;
                 }
             );
 

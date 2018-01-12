@@ -2,9 +2,12 @@
 
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Shipstation\Connector;
 
+use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\LastSync\LastSyncManager;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Shipstation\ShipstationSystem;
+use CleverConnectors\AppBundle\Traits\LoggerTrait;
+use Clue\React\Buzz\Message\ResponseException;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSender;
@@ -15,6 +18,8 @@ use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\BatchInterface;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\NullLogger;
 use React\Promise\PromiseInterface;
 
 /**
@@ -22,8 +27,10 @@ use React\Promise\PromiseInterface;
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Shipstation\Connector
  */
-abstract class ShipstationCustomerConnectorAbstract implements BatchInterface, ConnectorInterface
+abstract class ShipstationCustomerConnectorAbstract implements BatchInterface, ConnectorInterface, LoggerAwareInterface
 {
+
+    use LoggerTrait;
 
     protected const QUERY_URL  = '%s/customers?%s';
     protected const PAGE_LIMIT = 50;
@@ -56,6 +63,7 @@ abstract class ShipstationCustomerConnectorAbstract implements BatchInterface, C
         $this->system          = $system;
         $this->lastSyncManager = $lastSyncManager;
         $this->factory         = $factory;
+        $this->logger          = new NullLogger();
     }
 
     /**
@@ -177,6 +185,18 @@ abstract class ShipstationCustomerConnectorAbstract implements BatchInterface, C
         }
 
         return $requests;
+    }
+
+    /**
+     * @param ResponseException $exception
+     * @param SystemInstall     $systemInstall
+     */
+    protected function logResponseException(ResponseException $exception, SystemInstall $systemInstall): void
+    {
+        $statusCode = $exception->getResponse()->getStatusCode();
+        if ($statusCode == 500 || $statusCode == 401) {
+            $this->logError($statusCode, $this->system, $systemInstall);
+        }
     }
 
     /**
