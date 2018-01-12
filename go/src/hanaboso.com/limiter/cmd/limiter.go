@@ -17,9 +17,9 @@ func main() {
 }
 
 // gracefulShutdown handles SIGINT and SIGTERM signal to stop the app gracefully
-func gracefulShutdown(tcpServer *limiter.TcpServer) {
+func gracefulShutdown(srv *limiter.TcpServer) {
 	sigs := make(chan os.Signal, 1)
-	done := make(chan bool, 1)
+	quit := make(chan bool, 1)
 
 	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
 
@@ -28,12 +28,12 @@ func gracefulShutdown(tcpServer *limiter.TcpServer) {
 		log.Println()
 		log.Println("Signal received: ", sig)
 
-		// tcpServer.Stop()
+		srv.Stop()
 
-		done <- true
+		quit <- true
 	}()
 
-	<-done
+	<-quit
 }
 
 
