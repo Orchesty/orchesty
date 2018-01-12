@@ -28,6 +28,7 @@ use Psr\Http\Message\ResponseInterface;
 use React\EventLoop\LoopInterface;
 use React\Promise\PromiseInterface;
 use function React\Promise\all;
+use function React\Promise\reject;
 
 /**
  * Class QuickbooksSyncCustomerConnector
@@ -99,11 +100,10 @@ class QuickbooksSyncCustomerConnector extends QuickbooksCustomerConnectorAbstrac
             function (ResponseInterface $response): int {
                 return $this->getTotalPages($response);
             },
-            function (ResponseException $exception) use ($systemInstall): void {
-                if ($exception->getCode() == 401 || $exception->getCode() == 500) {
-                    $this->logError($exception->getCode(), $this->system, $systemInstall);
-                }
-                throw $exception;
+            function (ResponseException $exception) use ($systemInstall, $callbackItem) {
+                $callbackItem($this->batchConnectorError($exception, $this->system, $systemInstall, 1));
+
+                return reject();
             }
         )->then(
             function (int $total) use ($sender, $callbackItem, $requestDto, $processId, $counterService, $systemInstall

@@ -129,13 +129,12 @@ class QuickbooksGetnumberCustomerConnector implements ConnectorInterface, Logger
 
             $data['body'] = json_encode($body);
 
-            return $dto->setData(json_encode($data));
+            $dto->setData(json_encode($data));
         } catch (CurlException $e) {
-            if ($e->getResponse()) {
-                $this->logError($e->getResponse()->getStatusCode(), $this->system, $systemInstall);
-            }
-            throw $e;
+            $this->connectorError($e, $this->system, $systemInstall, $dto);
         }
+
+        return $dto;
     }
 
     /**

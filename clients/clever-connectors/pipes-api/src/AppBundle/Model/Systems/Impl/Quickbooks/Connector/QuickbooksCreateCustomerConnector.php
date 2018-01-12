@@ -3,7 +3,6 @@
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
-use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\Mapper\QuickbooksCreateCustomerMapper;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\QuickbooksSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
@@ -93,7 +92,7 @@ class QuickbooksCreateCustomerConnector implements ConnectorInterface, LoggerAwa
      * @param ProcessDto $dto
      *
      * @return ProcessDto
-     * @throws CleverConnectorsException
+     * @throws CurlException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {
@@ -120,15 +119,8 @@ class QuickbooksCreateCustomerConnector implements ConnectorInterface, LoggerAwa
                 $data[QuickbooksCreateCustomerMapper::SUCCESS] = TRUE;
                 $data['body']                                  = $res->getBody();
             } catch (CurlException $e) {
-                if ($e->getResponse()) {
-                    $this->logError($e->getResponse()->getStatusCode(), $this->system, $systemInstall);
-                }
-
                 if ($data[QuickbooksCreateCustomerMapper::ATTEMPT]) {
-                    throw new CleverConnectorsException(
-                        'Failed to create new customer, Quickbooks createCustomer.',
-                        CleverConnectorsException::REQUEST_FAILED
-                    );
+                    $this->connectorError($e, $this->system, $systemInstall, $dto);
                 }
             }
 
