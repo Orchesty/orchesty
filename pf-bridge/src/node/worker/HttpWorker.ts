@@ -225,10 +225,14 @@ class HttpWorker implements IWorker {
      */
     private onRequestError(msg: JobMessage, reqParams: request.Options, err: any): void {
         logger.warn(
-            `Worker[type='http'] did not receive response. Request params: ${JSON.stringify(reqParams)}.`,
+            `Worker[type='http'] http error: ${err}. Request params: ${JSON.stringify(reqParams)}.`,
             logger.ctxFromMsg(msg, err),
         );
-        msg.setResult({ code: ResultCode.HTTP_ERROR, message: err });
+        msg.setResult(
+            {
+                code: ResultCode.HTTP_ERROR,
+                message: err },
+            );
     }
 
     /**
