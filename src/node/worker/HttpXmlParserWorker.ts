@@ -59,7 +59,7 @@ class HttpXmlParserWorker extends HttpWorker {
             setStr = JSON.stringify(this.settings.parser_settings);
         }
 
-        return `{"data":${data ? data : ""},"settings":${setStr}`;
+        return `{"data":${data ? data : ""},"settings":${setStr}}`;
     }
 
 }
