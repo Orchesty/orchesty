@@ -126,8 +126,8 @@ abstract class QuickbooksCustomerConnectorAbstract implements BatchInterface, Co
                 return $this->getTotalPages($response);
             },
             function (ResponseException $exception) use ($systemInstall): void {
-                if ($exception->getResponse()) {
-                    $this->logError($exception->getResponse()->getStatusCode(), $this->system, $systemInstall);
+                if ($exception->getCode() == 401 || $exception->getCode() == 500) {
+                    $this->logError($exception->getCode(), $this->system, $systemInstall);
                 }
                 throw $exception;
             }

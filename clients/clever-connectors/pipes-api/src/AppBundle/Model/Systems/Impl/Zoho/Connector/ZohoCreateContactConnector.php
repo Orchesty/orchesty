@@ -6,25 +6,31 @@ use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Zoho\ZohoSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
+use CleverConnectors\AppBundle\Traits\LoggerTrait;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlException;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
 use Nette\Utils\Json;
 use Nette\Utils\Strings;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\NullLogger;
 
 /**
  * Class ZohoCreateContactConnector
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Zoho\Connector
  */
-class ZohoCreateContactConnector implements ConnectorInterface
+class ZohoCreateContactConnector implements ConnectorInterface, LoggerAwareInterface
 {
+
+    use LoggerTrait;
 
     private const URL = '%s&newFormat=1&xmlData=%s';
 
@@ -55,6 +61,7 @@ class ZohoCreateContactConnector implements ConnectorInterface
         $this->system                  = $system;
         $this->systemInstallRepository = $dm->getRepository(SystemInstall::class);
         $this->manager                 = $manager;
+        $this->logger                  = new NullLogger();
     }
 
     /**
@@ -70,6 +77,7 @@ class ZohoCreateContactConnector implements ConnectorInterface
      *
      * @return ProcessDto
      * @throws CleverConnectorsException
+     * @throws CurlException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {
@@ -89,7 +97,15 @@ class ZohoCreateContactConnector implements ConnectorInterface
             ->setUri(new Uri(sprintf($url, 'insertRecords')))
             ->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()));
 
-        $response  = $this->manager->send($requestDto);
+        try {
+            $response = $this->manager->send($requestDto);
+        } catch (CurlException $exception) {
+            $response = $exception->getResponse();
+            if ($response->getStatusCode() == 500) {
+                $this->logError($response->getStatusCode(), $this->system, $systemInstall);
+            }
+            throw $exception;
+        }
         $innerData = Json::decode($response->getBody(), TRUE);
 
         if (!is_array($innerData) || !isset($innerData['response']['result']['recorddetail']['FL'][0]['content'])) {

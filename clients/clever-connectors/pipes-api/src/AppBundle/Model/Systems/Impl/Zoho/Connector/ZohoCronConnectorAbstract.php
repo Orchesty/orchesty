@@ -62,7 +62,7 @@ abstract class ZohoCronConnectorAbstract extends ZohoContactConnectorAbstract
         $lastSync = $this->lastSyncManager->getLastSync($systemInstall, $dto->getHeaders());
         $times    = CronUtils::getTimes($lastSync);
 
-        $promise = $this->getPage($sender, $requestDto, $callbackItem, 1, $times->getStart());
+        $promise = $this->getPage($sender, $requestDto, $callbackItem, 1, $systemInstall, $times->getStart());
 
         $lastSync->setTimestamp($times->getEnd());
         $this->lastSyncManager->updateLastSync($lastSync);

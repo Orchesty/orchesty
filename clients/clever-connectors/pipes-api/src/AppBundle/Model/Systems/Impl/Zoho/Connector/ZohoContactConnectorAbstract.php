@@ -2,9 +2,12 @@
 
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Zoho\Connector;
 
+use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\ProgressCounter\ProgressCounterService;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Zoho\ZohoSystem;
+use CleverConnectors\AppBundle\Traits\LoggerTrait;
+use Clue\React\Buzz\Message\ResponseException;
 use DateTime;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
@@ -15,6 +18,8 @@ use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\BatchInterface;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\NullLogger;
 use React\Promise\PromiseInterface;
 use function React\Promise\resolve;
 
@@ -23,8 +28,10 @@ use function React\Promise\resolve;
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Zoho\Connector
  */
-abstract class ZohoContactConnectorAbstract implements ConnectorInterface, BatchInterface
+abstract class ZohoContactConnectorAbstract implements ConnectorInterface, BatchInterface, LoggerAwareInterface
 {
+
+    use LoggerTrait;
 
     protected const ITEMS_PER_PAGE = 50;
 
@@ -59,6 +66,7 @@ abstract class ZohoContactConnectorAbstract implements ConnectorInterface, Batch
         $this->system         = $system;
         $this->factory        = $factory;
         $this->counterService = $counterService;
+        $this->logger         = new NullLogger();
     }
 
     /**
@@ -99,6 +107,7 @@ abstract class ZohoContactConnectorAbstract implements ConnectorInterface, Batch
      * @param RequestDto    $requestDto
      * @param callable      $callbackItem
      * @param int           $page
+     * @param SystemInstall $systemInstall
      * @param DateTime|null $from
      * @param null|string   $processId
      *
@@ -109,6 +118,7 @@ abstract class ZohoContactConnectorAbstract implements ConnectorInterface, Batch
         RequestDto $requestDto,
         callable $callbackItem,
         int $page,
+        SystemInstall $systemInstall,
         ?DateTime $from = NULL,
         ?string $processId = NULL
     ): PromiseInterface
@@ -116,12 +126,15 @@ abstract class ZohoContactConnectorAbstract implements ConnectorInterface, Batch
         $uri = $this->getUri($requestDto, $page, $from);
 
         return $this->fetchData($sender, RequestDto::from($requestDto, $uri))->then(
-            function (ResponseInterface $response) use ($sender, $requestDto, $callbackItem, $page, $from, $processId) {
+            function (ResponseInterface $response) use (
+                $sender, $requestDto, $callbackItem, $page, $from, $processId, $systemInstall
+            ) {
                 $data = json_decode($response->getBody()->getContents(), TRUE);
                 if (!$this->isEmpty($data)) {
                     $callbackItem($this->createSuccessMessage($data, $page));
 
-                    return $this->getPage($sender, $requestDto, $callbackItem, $page + 1, $from, $processId);
+                    return $this->getPage($sender, $requestDto, $callbackItem, $page + 1, $systemInstall, $from,
+                        $processId);
                 } else {
                     if ($processId) {
                         $this->counterService->setTotal($processId, $page * self::ITEMS_PER_PAGE);
@@ -129,7 +142,15 @@ abstract class ZohoContactConnectorAbstract implements ConnectorInterface, Batch
 
                     return resolve();
                 }
+            },
+            function (ResponseException $exception) use ($systemInstall): void {
+                $statusCode = $exception->getResponse()->getStatusCode();
+                if ($statusCode == 500) {
+                    $this->logError($statusCode, $this->system, $systemInstall);
+                }
+                throw $exception;
             }
+
         );
     }
 

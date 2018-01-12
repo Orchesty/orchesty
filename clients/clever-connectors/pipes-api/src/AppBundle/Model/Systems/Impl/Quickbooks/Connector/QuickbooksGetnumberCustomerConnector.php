@@ -94,6 +94,7 @@ class QuickbooksGetnumberCustomerConnector implements ConnectorInterface, Logger
      *
      * @return ProcessDto
      * @throws CleverConnectorsException
+     * @throws CurlException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {
@@ -111,8 +112,7 @@ class QuickbooksGetnumberCustomerConnector implements ConnectorInterface, Logger
             ->setUri(new Uri(rtrim($requestDto->getUri(TRUE), '/') . $this->getQuery($body)));
 
         try {
-            $res = $this->curl->send($requestDto);
-
+            $res     = $this->curl->send($requestDto);
             $resBody = json_decode($res->getBody(), TRUE);
 
             if ($res->getStatusCode() !== 200

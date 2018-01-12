@@ -76,7 +76,7 @@ class ZohoSyncContactConnector extends ZohoContactConnectorAbstract
         $requestDto->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()));
         $processId = CMHeaders::get(CMHeaders::PROCESS_ID, $dto->getHeaders());
 
-        $promise = $this->getPage($sender, $requestDto, $callbackItem, 1, NULL, $processId);
+        $promise = $this->getPage($sender, $requestDto, $callbackItem, 1, $systemInstall, NULL, $processId);
 
         $this->systemInstallRepository->setSyncTime($systemInstall);
 

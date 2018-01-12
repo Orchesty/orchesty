@@ -10,12 +10,12 @@
 namespace Tests\Live\AppBundle\Model\Systems\Impl\Quickbooks\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\Mapper\QuickbooksCreateCustomerMapper;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Hanaboso\PipesFramework\Commons\Crypt\CryptManager;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
-use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
 use Nette\Utils\Json;
 use React\EventLoop\Factory;
 use Tests\DatabaseTestCaseAbstract;
@@ -34,8 +34,6 @@ class QuickbooksCreateCustomerConnectorTest extends DatabaseTestCaseAbstract
     public function testProcessBatch(): void
     {
         $this->markTestSkipped();
-        /** @var SuccessMessage $result */
-        $result    = NULL;
         $connector = $this->container->get('hbpf.connector.quickbooks-create-customer-connector');
 
         $topology = (new Topology())->setName('Topology');
@@ -56,14 +54,16 @@ class QuickbooksCreateCustomerConnectorTest extends DatabaseTestCaseAbstract
         $this->persistAndFlush($system);
 
         $dtoData = [
-            'system_install' => [
+            'system_install'                        => [
                 '_id'               => $system->getId(),
                 'user'              => $system->getUser(),
                 'token'             => $system->getToken(),
                 'system'            => $system->getSystem(),
                 'encryptedSettings' => CryptManager::encrypt($settings),
             ],
-            'topology'       => ['name' => 'top-name-ever'],
+            'topology'                              => ['name' => 'top-name-ever'],
+            QuickbooksCreateCustomerMapper::SUCCESS => FALSE,
+            'body'                                  => '',
         ];
 
         $node = (new Node())
@@ -81,16 +81,11 @@ class QuickbooksCreateCustomerConnectorTest extends DatabaseTestCaseAbstract
 
         $loop = Factory::create();
 
-        $process = $connector->processBatch($processDto, $loop,
-            function (SuccessMessage $message) use (&$result): void {
-                $result = $message;
-            });
-        $process->done();
+        $connector->processAction($processDto);
 
         $loop->run();
 
-        $this->assertInstanceOf(SuccessMessage::class, $result);
-        $data = json_decode($result->getData());
+        $data = json_decode($processDto->getData());
         $this->assertTrue(is_array($data));
     }
 

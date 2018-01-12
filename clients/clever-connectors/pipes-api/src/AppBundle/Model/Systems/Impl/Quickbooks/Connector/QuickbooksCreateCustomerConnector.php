@@ -107,7 +107,15 @@ class QuickbooksCreateCustomerConnector implements ConnectorInterface, LoggerAwa
                 ->setUri(new Uri(rtrim($requestDto->getUri(TRUE), '/') . self::SUB_URL));
 
             try {
-                $res = $this->curl->send($requestDto);
+                try {
+                    $res = $this->curl->send($requestDto);
+                } catch (CurlException $exception) {
+                    $response = $exception->getResponse();
+                    if ($response->getStatusCode() == 500 || $response->getStatusCode() == 401) {
+                        $this->logError($response->getStatusCode(), $this->system, $systemInstall);
+                    }
+                    throw $exception;
+                }
 
                 $data[QuickbooksCreateCustomerMapper::SUCCESS] = TRUE;
                 $data['body']                                  = $res->getBody();

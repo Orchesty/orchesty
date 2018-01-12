@@ -8,24 +8,29 @@ use CleverConnectors\AppBundle\Enum\CleverFieldsEnum;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Zoho\ZohoSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
+use CleverConnectors\AppBundle\Traits\LoggerTrait;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlException;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
 use Nette\Utils\Json;
+use Psr\Log\LoggerAwareInterface;
 
 /**
  * Class ZohoUpdateContactConnector
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Zoho\Connector
  */
-class ZohoUpdateContactConnector implements ConnectorInterface
+class ZohoUpdateContactConnector implements ConnectorInterface, LoggerAwareInterface
 {
+
+    use LoggerTrait;
 
     private const URL = '%s&id=%s&newFormat=1&xmlData=%s';
 
@@ -71,6 +76,7 @@ class ZohoUpdateContactConnector implements ConnectorInterface
      *
      * @return ProcessDto
      * @throws CleverConnectorsException
+     * @throws CurlException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {
@@ -101,7 +107,15 @@ class ZohoUpdateContactConnector implements ConnectorInterface
             ->setUri(new Uri(sprintf($url, 'updateRecords')))
             ->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()));
 
-        $response = $this->manager->send($requestDto);
+        try {
+            $response = $this->manager->send($requestDto);
+        } catch (CurlException $exception) {
+            $response = $exception->getResponse();
+            if ($response->getStatusCode() == 500) {
+                $this->logError($response->getStatusCode(), $this->system, $systemInstall);
+            }
+            throw $exception;
+        }
 
         return $dto->setData($response->getBody());
     }
