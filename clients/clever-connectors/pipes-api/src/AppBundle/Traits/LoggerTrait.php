@@ -124,7 +124,7 @@ trait LoggerTrait
      */
     protected function logError(int $status, SystemInterface $system, SystemInstall $systemInstall): void
     {
-        $msg = $this->getMessage($system, $systemInstall);
+        $msg = self::getMessage($system, $systemInstall);
 
         switch ($status) {
             case 400:
@@ -150,7 +150,7 @@ trait LoggerTrait
      *
      * @return array
      */
-    private function getMessage(SystemInterface $system, SystemInstall $systemInstall): array
+    public static function getMessage(SystemInterface $system, SystemInstall $systemInstall): array
     {
         return [
             self::$guid       => $systemInstall->getUser(),

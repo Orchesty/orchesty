@@ -5,9 +5,8 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\Zoho\Connector;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\ProgressCounter\ProgressCounterService;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
+use CleverConnectors\AppBundle\Model\Systems\Impl\Zoho\Traits\ZohoLoggerTrait;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Zoho\ZohoSystem;
-use CleverConnectors\AppBundle\Traits\LoggerTrait;
-use Clue\React\Buzz\Message\ResponseException;
 use DateTime;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
@@ -24,14 +23,14 @@ use React\Promise\PromiseInterface;
 use function React\Promise\resolve;
 
 /**
- * Class ZohoContactsConnectorAbstract
+ * Class ZohoContactBatchConnectorAbstract
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Zoho\Connector
  */
-abstract class ZohoContactConnectorAbstract implements ConnectorInterface, BatchInterface, LoggerAwareInterface
+abstract class ZohoContactBatchConnectorAbstract implements ConnectorInterface, BatchInterface, LoggerAwareInterface
 {
 
-    use LoggerTrait;
+    use ZohoLoggerTrait;
 
     protected const ITEMS_PER_PAGE = 50;
 
@@ -131,6 +130,12 @@ abstract class ZohoContactConnectorAbstract implements ConnectorInterface, Batch
             ) {
                 $data = json_decode($response->getBody()->getContents(), TRUE);
                 if (!$this->isEmpty($data)) {
+                    if (array_key_exists('error', $data['response'])) {
+                        $status = $data['response']['error']['code'] ?? 400;
+
+                        return $callbackItem($this->batchConnectorError($status, $this->system, $systemInstall, $page));
+                    }
+
                     $callbackItem($this->createSuccessMessage($data, $page));
 
                     return $this->getPage($sender, $requestDto, $callbackItem, $page + 1, $systemInstall, $from,
@@ -142,15 +147,7 @@ abstract class ZohoContactConnectorAbstract implements ConnectorInterface, Batch
 
                     return resolve();
                 }
-            },
-            function (ResponseException $exception) use ($systemInstall): void {
-                $statusCode = $exception->getResponse()->getStatusCode();
-                if ($statusCode == 500) {
-                    $this->logError($statusCode, $this->system, $systemInstall);
-                }
-                throw $exception;
             }
-
         );
     }
 

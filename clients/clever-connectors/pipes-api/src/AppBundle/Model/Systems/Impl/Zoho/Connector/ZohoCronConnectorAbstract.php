@@ -19,7 +19,7 @@ use React\Promise\PromiseInterface;
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Zoho\Connector
  */
-abstract class ZohoCronConnectorAbstract extends ZohoContactConnectorAbstract
+abstract class ZohoCronConnectorAbstract extends ZohoContactBatchConnectorAbstract
 {
 
     /**

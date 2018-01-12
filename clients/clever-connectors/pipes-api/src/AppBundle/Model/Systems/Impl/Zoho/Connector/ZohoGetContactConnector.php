@@ -4,9 +4,9 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\Zoho\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
+use CleverConnectors\AppBundle\Model\Systems\Impl\Zoho\Traits\ZohoLoggerTrait;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Zoho\ZohoSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
-use CleverConnectors\AppBundle\Traits\LoggerTrait;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -28,7 +28,7 @@ use Psr\Log\LoggerAwareInterface;
 class ZohoGetContactConnector implements ConnectorInterface, LoggerAwareInterface
 {
 
-    use LoggerTrait;
+    use ZohoLoggerTrait;
 
     private const URL = '%s&id=%s';
 
@@ -94,25 +94,26 @@ class ZohoGetContactConnector implements ConnectorInterface, LoggerAwareInterfac
             ->setUri(new Uri(sprintf($url, 'getRecordById')))
             ->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()));
 
-        try {
-            $response = $this->manager->send($requestDto);
-        } catch (CurlException $exception) {
-            $response = $exception->getResponse();
-            if ($response->getStatusCode() == 500) {
-                $this->logError($response->getStatusCode(), $this->system, $systemInstall);
-            }
-            throw $exception;
-        }
+        $response  = $this->manager->send($requestDto);
         $innerData = Json::decode($response->getBody(), TRUE);
 
-        if (!is_array($innerData) || !isset($innerData['response']['result']['Contacts']['row']['FL'][6]['content'])) {
-            throw new CleverConnectorsException(
-                'Missing data or required field response_result_Contacts_row_FL_6_content',
-                CleverConnectorsException::MISSING_DATA
-            );
+        if (array_key_exists('error', $innerData['response'])) {
+            $status = intval($innerData['response']['error']['code']) ?? 400;
+
+            $this->connectorError($status, $this->system, $systemInstall, $dto);
+        } else {
+
+            if (!is_array($innerData) || !isset($innerData['response']['result']['Contacts']['row']['FL'][6]['content'])) {
+                throw new CleverConnectorsException(
+                    'Missing data or required field response_result_Contacts_row_FL_6_content',
+                    CleverConnectorsException::MISSING_DATA
+                );
+            }
+
+            $dto->setData(Json::encode($innerData['response']['result']['Contacts']['row']));
         }
 
-        return $dto->setData(Json::encode($innerData['response']['result']['Contacts']['row']));
+        return $dto;
     }
 
     /**
