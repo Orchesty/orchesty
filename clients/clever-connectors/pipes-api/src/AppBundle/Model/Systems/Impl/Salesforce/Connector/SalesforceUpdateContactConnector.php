@@ -11,6 +11,7 @@ use CleverConnectors\AppBundle\Model\Systems\Impl\Salesforce\SalesforceSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use CleverConnectors\AppBundle\Traits\LoggerTrait;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
+use Clue\React\Buzz\Message\ResponseException;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Uri;
@@ -105,22 +106,11 @@ class SalesforceUpdateContactConnector implements ConnectorInterface, LoggerAwar
 
         try {
             $response = $this->manager->send($requestDto);
-
-            return $dto->setData($response->getBody());
         } catch (CurlException $e) {
-            if ($e->getResponse()) {
-                $this->logError($e->getResponse()->getStatusCode(), $this->system, $systemInstall);
-            }
-
-            if (Strings::contains($e->getMessage(), '"errorCode":"INVALID_FIELD"')) {
-                throw new CleverConnectorsException(
-                    'Missing required field cm_unsubscribe or cm_hard_bounce',
-                    CleverConnectorsException::MISSING_DATA
-                );
-            }
-
-            throw $e;
+            return $this->connectorError($e, $this->system, $systemInstall, $dto);
         }
+
+        return $dto->setData($response->getBody());
     }
 
     /**
@@ -135,6 +125,15 @@ class SalesforceUpdateContactConnector implements ConnectorInterface, LoggerAwar
             'Salesforce has no support for event!',
             ConnectorException::CONNECTOR_DOES_NOT_HAVE_PROCESS_EVENT
         );
+    }
+
+    /** @param CurlException|ResponseException $e
+     *
+     * @return bool
+     */
+    protected function limitReached($e): bool
+    {
+        return Strings::contains($e->getResponse()->getBody()->getContents(), 'REQUEST_LIMIT_EXCEEDED');
     }
 
 }

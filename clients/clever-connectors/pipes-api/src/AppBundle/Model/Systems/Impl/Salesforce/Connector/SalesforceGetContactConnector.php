@@ -9,6 +9,7 @@ use CleverConnectors\AppBundle\Model\Systems\Impl\Salesforce\SalesforceSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use CleverConnectors\AppBundle\Traits\LoggerTrait;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
+use Clue\React\Buzz\Message\ResponseException;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Uri;
@@ -19,6 +20,7 @@ use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
 use Nette\Utils\Json;
+use Nette\Utils\Strings;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\NullLogger;
 
@@ -113,22 +115,20 @@ class SalesforceGetContactConnector implements ConnectorInterface, LoggerAwareIn
         try {
             $response = $this->manager->send($requestDto);
         } catch (CurlException $e) {
-            if ($e->getResponse()) {
-                $this->logError($e->getResponse()->getStatusCode(), $this->system, $systemInstall);
-            }
-            throw $e;
-        }
-
-        $innerData = Json::decode($response->getBody(), TRUE);
-
-        if (!is_array($innerData) || !isset($innerData['Email'])) {
-            throw new CleverConnectorsException(
-                'Empty data or bad format.',
-                CleverConnectorsException::MISSING_DATA
-            );
+            return $this->connectorError($e, $this->system, $systemInstall, $dto);
         }
 
         return $dto->setData($response->getBody());
+    }
+
+    /**
+     * @param CurlException|ResponseException $e
+     *
+     * @return bool
+     */
+    protected function limitReached($e): bool
+    {
+        return Strings::contains($e->getResponse()->getBody()->getContents(), 'REQUEST_LIMIT_EXCEEDED');
     }
 
 }

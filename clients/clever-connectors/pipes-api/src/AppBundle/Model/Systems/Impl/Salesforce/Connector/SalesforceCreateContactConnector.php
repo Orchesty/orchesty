@@ -4,11 +4,11 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\Salesforce\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
-use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Salesforce\SalesforceSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use CleverConnectors\AppBundle\Traits\LoggerTrait;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
+use Clue\React\Buzz\Message\ResponseException;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Uri;
@@ -19,6 +19,7 @@ use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
 use Nette\Utils\Json;
+use Nette\Utils\Strings;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\NullLogger;
 
@@ -77,7 +78,6 @@ class SalesforceCreateContactConnector implements ConnectorInterface, LoggerAwar
      *
      * @return ProcessDto
      * @throws CleverConnectorsException
-     * @throws SystemException
      * @throws CurlException
      */
     public function processAction(ProcessDto $dto): ProcessDto
@@ -101,10 +101,7 @@ class SalesforceCreateContactConnector implements ConnectorInterface, LoggerAwar
         try {
             $response = $this->manager->send($requestDto);
         } catch (CurlException $e) {
-            if ($e->getResponse()) {
-                $this->logError($e->getResponse()->getStatusCode(), $this->system, $systemInstall);
-            }
-            throw $e;
+            return $this->connectorError($e, $this->system, $systemInstall, $dto);
         }
 
         return $dto->setData($response->getBody());
@@ -122,6 +119,16 @@ class SalesforceCreateContactConnector implements ConnectorInterface, LoggerAwar
             'Salesforce has no support for action!',
             ConnectorException::CONNECTOR_DOES_NOT_HAVE_PROCESS_BATCH
         );
+    }
+
+    /**
+     * @param CurlException|ResponseException $e
+     *
+     * @return bool
+     */
+    protected function limitReached($e): bool
+    {
+        return Strings::contains($e->getResponse()->getBody()->getContents(), 'REQUEST_LIMIT_EXCEEDED');
     }
 
 }

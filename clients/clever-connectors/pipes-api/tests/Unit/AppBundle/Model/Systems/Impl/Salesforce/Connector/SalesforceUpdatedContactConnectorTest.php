@@ -37,6 +37,7 @@ final class SalesforceUpdatedContactConnectorTest extends KernelTestCaseAbstract
 {
 
     /**
+     *
      */
     public function testProcessBatch(): void
     {

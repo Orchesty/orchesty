@@ -16,6 +16,7 @@ use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Salesforce\SalesforceSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
+use Clue\React\Buzz\Message\ResponseException;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Uri;
@@ -88,6 +89,9 @@ class SalesforceSyncContactConnector extends SalesforceContactConnectorAbstract
             ->then(
                 function (ResponseInterface $response): int {
                     return $this->getTotalPages($response);
+                },
+                function (ResponseException $e) use ($systemInstall, $callbackItem) {
+                    return $callbackItem($this->batchConnectorError($e, $this->system, $systemInstall, 1));
                 }
             )->then(
                 function (int $total) use ($sender, $callbackItem, $requestDto, $processId, $systemInstall) {
