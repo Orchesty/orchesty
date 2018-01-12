@@ -1,9 +1,9 @@
 import {IConnectionOptions} from "amqplib-plus/dist/lib/Connection";
 import {IRedisStorageSettings} from "./counter/storage/RedisStorage";
+import {ILimiterOptions} from "./limiter/Limiter";
 import {IProbeSettings} from "./probe/Probe";
 import {IRepeaterSettings} from "./repeater/Repeater";
 import {IMongoMessageStorageSettings} from "./repeater/storage/MongoMessageStorage";
-import {ILimiterOptions} from "./limiter/Limiter";
 
 // Set timeouts and other env values differently for tests
 if (process.env.NODE_ENV === "test") {
@@ -75,4 +75,3 @@ export const limiterOptions: ILimiterOptions = {
     host: process.env.LIMITER_HOST || "limiter",
     port: parseInt(process.env.LIMITER_PORT, 10) || 3333,
 };
-
