@@ -13,7 +13,7 @@ services:
           DEV_GID: ${DEV_GID}
         volumes:
           - ../../:/var/www/pipes
-          - ${SSH_AUTH_SOCK}:/ssh-agent
+          - ${SSH_AUTH_SOCK}:/tmp/bound-ssh-agent
           - ${HOME}/.composer:/srv/.composer
         depends_on:
           - mongo
@@ -29,7 +29,7 @@ services:
           DEV_GID: ${DEV_GID}
         volumes:
           - ../../:/var/www/pipes
-          - ${SSH_AUTH_SOCK}:/ssh-agent
+          - ${SSH_AUTH_SOCK}:/tmp/bound-ssh-agent
           - ${HOME}/.composer:/srv/.composer
         depends_on:
           - mongo
@@ -50,7 +50,7 @@ services:
           DOCKER_SOCKET_PATH: ${DOCKER_SOCKET_PATH}
         volumes:
           - ../../:/var/www/pipes
-          - ${SSH_AUTH_SOCK}:/ssh-agent
+          - ${SSH_AUTH_SOCK}:/tmp/bound-ssh-agent
           - ./../topology:${GENERATOR_PATH}
           - ${DOCKER_SOCKET_PATH}:/var/run/docker.sock
         depends_on:
@@ -69,7 +69,7 @@ services:
           DEV_GID: ${DEV_GID}
         volumes:
           - ../../:/var/www/pipes
-          - ${SSH_AUTH_SOCK}:/ssh-agent
+          - ${SSH_AUTH_SOCK}:/tmp/bound-ssh-agent
           - ${HOME}/.composer:/srv/.composer
         depends_on:
           - mongo
@@ -138,7 +138,7 @@ services:
           DEV_GID: ${DEV_GID}
         volumes:
           - ../../:/var/www/pipes
-          - ${SSH_AUTH_SOCK}:/ssh-agent
+          - ${SSH_AUTH_SOCK}:/tmp/bound-ssh-agent
           - ${HOME}/.composer:/srv/.composer
         depends_on:
           - mongo
@@ -160,7 +160,7 @@ services:
           DOCKER_SOCKET_PATH: ${DOCKER_SOCKET_PATH}
         volumes:
           - ../../:/var/www/pipes
-          - ${SSH_AUTH_SOCK}:/ssh-agent
+          - ${SSH_AUTH_SOCK}:/tmp/bound-ssh-agent
           - ./../topology:${GENERATOR_PATH}
           - ${DOCKER_SOCKET_PATH}:/var/run/docker.sock
         depends_on:
@@ -195,7 +195,7 @@ services:
           - ${DEV_IP}:81:8080
         volumes:
           - ../../:/var/www/pipes
-          - ${SSH_AUTH_SOCK}:/ssh-agent
+          - ${SSH_AUTH_SOCK}:/tmp/bound-ssh-agent
     ## END DEV
     ## BEGIN STAGE
     #    image: dkr.hanaboso.net/pipes/pipes/frontend:dev
@@ -331,7 +331,7 @@ services:
           DEV_GID: ${DEV_GID}
         volumes:
           - ../../:/var/www/pipes
-          - ${SSH_AUTH_SOCK}:/ssh-agent
+          - ${SSH_AUTH_SOCK}:/tmp/bound-ssh-agent
           - ${HOME}/.composer:/srv/.composer
         depends_on:
           - rabbitmq
