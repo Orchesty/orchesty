@@ -8,12 +8,16 @@ use CleverConnectors\AppBundle\Model\Systems\Impl\Zendesk\Connector\ZendeskUpdat
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlException;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
 use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit_Framework_MockObject_MockObject;
+use Psr\Log\LoggerInterface;
 use Tests\ConnectorTestCaseAbstract;
 
 /**
@@ -59,6 +63,56 @@ final class ZendeskUpdateUserConnectorTest extends ConnectorTestCaseAbstract
     }
 
     /**
+     *
+     */
+    public function testConnectorLimit(): void
+    {
+        $this->auth = base64_encode('eml@eml.com/token:smToken');
+        $conn       = new ZendeskUpdateUserConnector(
+            $this->container->get('systems.zendesk'),
+            $this->mockDm(),
+            $this->mockCurl(429)
+        );
+
+        $dto = new ProcessDto();
+        $dto->setHeaders([
+            CMHeaders::createKey(CMHeaders::CM_EVENT_TYPE) => SystemInstall::EVENT_UNSUBSCRIBE,
+        ])->setData(json_encode([
+            'body' => json_encode([]),
+            'id'   => '1',
+        ]));
+
+        $res = $conn->processAction($dto);
+        self::assertArrayHasKey('pf-result-code', $res->getHeaders());
+        self::assertEquals(1004, $res->getHeaders()['pf-result-code']);
+    }
+
+    /**
+     *
+     */
+    public function testConnectorError(): void
+    {
+        $this->auth = base64_encode('eml@eml.com/token:smToken');
+        $conn       = new ZendeskUpdateUserConnector(
+            $this->container->get('systems.zendesk'),
+            $this->mockDm(),
+            $this->mockCurl(400)
+        );
+
+        $dto = new ProcessDto();
+        $dto->setHeaders([
+            CMHeaders::createKey(CMHeaders::CM_EVENT_TYPE) => SystemInstall::EVENT_UNSUBSCRIBE,
+        ])->setData(json_encode([
+            'body' => json_encode([]),
+            'id'   => '1',
+        ]));
+
+        $conn->setLogger($this->mockLogger());
+        $this->expectException(CurlException::class);
+        $conn->processAction($dto);
+    }
+
+    /**
      * @return DocumentManager|MockObject
      */
     private function mockDm(): DocumentManager
@@ -68,7 +122,7 @@ final class ZendeskUpdateUserConnectorTest extends ConnectorTestCaseAbstract
             'user_email' => 'eml@eml.com',
             'api_token'  => 'smToken',
             'domain'     => 'hbpf',
-        ]);
+        ])->setToken('tkn')->setUser('gguid');
 
         $repo = $this->createMock(SystemInstallRepository::class);
         $repo->expects($this->once())
@@ -82,13 +136,20 @@ final class ZendeskUpdateUserConnectorTest extends ConnectorTestCaseAbstract
     }
 
     /**
-     * @return CurlManagerInterface|MockObject
+     * @param int $status
+     *
+     * @return CurlManagerInterface
      */
-    private function mockCurl(): CurlManagerInterface
+    private function mockCurl(int $status = 200): CurlManagerInterface
     {
+        /** @var CurlManagerInterface|PHPUnit_Framework_MockObject_MockObject $curl */
         $curl = $this->createMock(CurlManagerInterface::class);
         $curl->expects($this->once())
-            ->method('send')->will($this->returnCallback(function (RequestDto $requestDto) {
+            ->method('send')->will($this->returnCallback(function (RequestDto $requestDto) use ($status) {
+                if ($status >= 300) {
+                    throw new CurlException('', 0, NULL, new Response($status));
+                }
+
                 $expt = new RequestDto('PUT', new Uri('https://hbpf.zendesk.com/api/v2/users/123456.json'));
                 $expt->setHeaders([
                     'Content-Type'  => 'application/json',
@@ -108,6 +169,29 @@ final class ZendeskUpdateUserConnectorTest extends ConnectorTestCaseAbstract
             }));
 
         return $curl;
+    }
+
+    /**
+     * @return LoggerInterface
+     */
+    private function mockLogger(): LoggerInterface
+    {
+        /** @var LoggerInterface|PHPUnit_Framework_MockObject_MockObject $logger */
+        $logger = $this->createMock(LoggerInterface::class);
+        $logger->expects($this->once())
+            ->method('info')->will($this->returnCallback(
+                function (string $type, $data): void {
+                    self::assertEquals('data_error', $type);
+                    self::assertEquals([
+                        'guid'        => 'gguid',
+                        'token'         => 'tkn',
+                        'system_key'  => 'zendesk',
+                        'system_name' => 'Zendesk',
+                    ], $data);
+                }
+            ));
+
+        return $logger;
     }
 
 }

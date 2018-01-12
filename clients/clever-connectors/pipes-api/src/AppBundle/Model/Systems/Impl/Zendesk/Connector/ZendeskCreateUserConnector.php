@@ -105,19 +105,12 @@ class ZendeskCreateUserConnector implements ConnectorInterface, LoggerAwareInter
 
         try {
             $res = $this->curl->send($requestDto);
+            $dto->setData($res->getBody());
         } catch (CurlException $e) {
-            if ($e->getResponse()) {
-                $this->logError($e->getResponse()->getStatusCode(), $this->system, $systemInstall);
-            }
-            throw $e;
+            $this->connectorError($e, $this->system, $systemInstall, $dto);
         }
 
-        if ($res->getStatusCode() !== 201) {
-            throw new CleverConnectorsException('Failed to create new user / email already taken, Zendesk createUserConnector.',
-                CleverConnectorsException::REQUEST_FAILED);
-        }
-
-        return $dto->setData($res->getBody());
+        return $dto;
     }
 
 }
