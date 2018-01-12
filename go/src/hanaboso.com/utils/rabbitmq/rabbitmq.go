@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"github.com/streadway/amqp"
+	"time"
 )
 
 type RabbitMq interface {
@@ -12,7 +13,9 @@ type RabbitMq interface {
 	Setup()
 	Connect()
 	Disconnect()
-	createChannel() (ch *amqp.Channel)
+	CreateChannel() int
+	GetChannel(int) (ch *amqp.Channel)
+	Reconnect()
 }
 
 type rabbitMq struct {
@@ -23,6 +26,7 @@ type rabbitMq struct {
 	queues    []Queue
 	exchanges []Exchange
 	conn      *amqp.Connection
+	channels  []*amqp.Channel
 }
 
 func (r *rabbitMq) AddQueue(q Queue) {
@@ -36,10 +40,11 @@ func (r *rabbitMq) AddExchange(e Exchange) {
 func (r *rabbitMq) Setup() {
 
 	if r.conn == nil {
-		log.Fatalln("RabbitMq setup error: not connected.")
+		log.Println("RabbitMq setup error: not connected.")
+		r.Connect()
 	}
 
-	ch := r.createChannel()
+	ch, _ := r.conn.Channel()
 	defer ch.Close()
 
 	// Declare exchanges
@@ -98,7 +103,9 @@ func (r *rabbitMq) Connect() {
 	r.conn, err = amqp.Dial(connString)
 
 	if err != nil {
-		log.Fatalln(fmt.Sprintf("Rabbit MQ connection error: %s", err))
+		log.Println(fmt.Sprintf("Rabbit MQ connection error: %s", err))
+		r.Reconnect()
+		return
 	}
 
 	log.Println(fmt.Sprintf("Rabbit MQ connected to %s", connString))
@@ -110,7 +117,7 @@ func (r *rabbitMq) Disconnect() {
 	}
 }
 
-func (r *rabbitMq) createChannel() (ch *amqp.Channel) {
+func (r *rabbitMq) CreateChannel() int {
 
 	ch, err := r.conn.Channel()
 
@@ -118,7 +125,20 @@ func (r *rabbitMq) createChannel() (ch *amqp.Channel) {
 		log.Fatalln(fmt.Sprintf("Rabbit MQ channel error: %s", err))
 	}
 
-	return ch
+	r.channels = append(r.channels, ch)
+
+	return len(r.channels) - 1
+}
+
+func (r *rabbitMq) GetChannel(id int) (ch *amqp.Channel) {
+	return r.channels[id]
+}
+
+func (r *rabbitMq) Reconnect() {
+	log.Println("Waiting 1s.")
+	time.Sleep(time.Second)
+	r.Disconnect()
+	r.Connect()
 }
 
 func NewRabbitMq(host string, port int, user string, password string) (r RabbitMq) {

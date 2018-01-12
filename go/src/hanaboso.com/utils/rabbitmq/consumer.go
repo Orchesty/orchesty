@@ -10,34 +10,41 @@ type Callback func(msg <-chan amqp.Delivery)
 
 type Consumer interface {
 	Consume(Callback)
+	SetPrefetchCount(int)
+	SetPrefetchSize(int)
+	SetConsumerTag(string string)
+	SetNoAck(bool)
+	SetExclusive(bool)
+	SetNoLocal(bool)
+	SetNoWait(bool)
 }
 
 type consumer struct {
 	rabbitMq      RabbitMq
-	channel       *amqp.Channel
+	channelId     int
 	queue         string
-	PrefetchCount int
-	PrefetchSize  int
-	ConsumerTag   string
-	NoAck         bool
-	Exclusive     bool
-	NoLocal       bool
-	NoWait        bool
+	prefetchCount int
+	prefetchSize  int
+	consumerTag   string
+	noAck         bool
+	exclusive     bool
+	noLocal       bool
+	noWait        bool
 }
 
 func (c *consumer) Consume(callback Callback) {
 
-	if c.channel == nil {
-		c.channel = c.rabbitMq.createChannel()
+	if c.channelId == -1 {
+		c.channelId = c.rabbitMq.CreateChannel()
 	}
 
-	err := c.channel.Qos(c.PrefetchCount, c.PrefetchSize, false)
+	err := c.rabbitMq.GetChannel(c.channelId).Qos(c.prefetchCount, c.prefetchSize, false)
 
 	if err != nil {
 		log.Fatalln(fmt.Sprintf("Rabbit MQ channel qos: %s", err))
 	}
 
-	msgs, err := c.channel.Consume(c.queue, c.ConsumerTag, c.NoAck, c.Exclusive, c.NoLocal, c.NoWait, nil)
+	msgs, err := c.rabbitMq.GetChannel(c.channelId).Consume(c.queue, c.consumerTag, c.noAck, c.exclusive, c.noLocal, c.noWait, nil)
 
 	if err != nil {
 		log.Fatalln(fmt.Sprintf("Rabbit MQ consumer error: %s", err))
@@ -49,6 +56,34 @@ func (c *consumer) Consume(callback Callback) {
 	<-forever
 }
 
+func (c *consumer) SetPrefetchCount(count int) {
+	c.prefetchCount = count
+}
+
+func (c *consumer) SetPrefetchSize(size int) {
+	c.prefetchSize = size
+}
+
+func (c *consumer) SetConsumerTag(tag string) {
+	c.consumerTag = tag
+}
+
+func (c *consumer) SetNoAck(noAck bool) {
+	c.noAck = noAck
+}
+
+func (c *consumer) SetExclusive(exclusive bool) {
+	c.exclusive = exclusive
+}
+
+func (c *consumer) SetNoLocal(noLocal bool) {
+	c.noLocal = noLocal
+}
+
+func (c *consumer) SetNoWait(noWait bool) {
+	c.noWait = noWait
+}
+
 func NewConsumer(r RabbitMq, queue string) (c Consumer) {
-	return &consumer{rabbitMq: r, queue: queue}
+	return &consumer{rabbitMq: r, queue: queue, channelId: -1}
 }
