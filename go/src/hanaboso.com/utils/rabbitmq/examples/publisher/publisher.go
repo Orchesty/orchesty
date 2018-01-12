@@ -10,12 +10,11 @@ func main() {
 
 	// Queue
 	q := rabbitmq.Queue{Name: "my-queue"}
-	qb := rabbitmq.Binding{Exchange: "my-exchange", RoutingKey: "routing-key"}
-	q.AddBinding(qb)
+	q.AddBinding(rabbitmq.Binding{Exchange: "my-exchange", RoutingKey: "routing-key"})
 	// Exchange
 	e := rabbitmq.Exchange{Name: "my-exchange", Type: "direct"}
 
-	r := rabbitmq.RabbitMq{Host: "127.0.0.10", Port: 5672, User: "guest", Password: "guest"}
+	r := rabbitmq.NewRabbitMq("127.0.0.10", 5672, "guest", "guest")
 	r.AddQueue(q)
 	r.AddExchange(e)
 
@@ -25,7 +24,7 @@ func main() {
 
 	m := amqp.Publishing{Body: []byte("Test message")}
 
-	p := rabbitmq.Publisher{RabbitMq: r, RoutingKey: "my-queue"}
+	p := rabbitmq.NewPublisher(r, "my-queue")
 	p.Publish(m)
 
 	r.Disconnect()

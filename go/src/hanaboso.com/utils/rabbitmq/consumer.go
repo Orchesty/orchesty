@@ -6,9 +6,16 @@ import (
 	"fmt"
 )
 
-type Consumer struct {
-	RabbitMq      RabbitMq
-	Queue         string
+type Callback func(msg <-chan amqp.Delivery)
+
+type Consumer interface {
+	Consume(Callback)
+}
+
+type consumer struct {
+	rabbitMq      RabbitMq
+	channel       *amqp.Channel
+	queue         string
 	PrefetchCount int
 	PrefetchSize  int
 	ConsumerTag   string
@@ -16,13 +23,12 @@ type Consumer struct {
 	Exclusive     bool
 	NoLocal       bool
 	NoWait        bool
-	channel       *amqp.Channel
 }
 
-func (c *Consumer) Consume(callback Callback) {
+func (c *consumer) Consume(callback Callback) {
 
 	if c.channel == nil {
-		c.channel = c.RabbitMq.createChannel()
+		c.channel = c.rabbitMq.createChannel()
 	}
 
 	err := c.channel.Qos(c.PrefetchCount, c.PrefetchSize, false)
@@ -31,7 +37,7 @@ func (c *Consumer) Consume(callback Callback) {
 		log.Fatalln(fmt.Sprintf("Rabbit MQ channel qos: %s", err))
 	}
 
-	msgs, err := c.channel.Consume(c.Queue, c.ConsumerTag, c.NoAck, c.Exclusive, c.NoLocal, c.NoWait, nil)
+	msgs, err := c.channel.Consume(c.queue, c.ConsumerTag, c.NoAck, c.Exclusive, c.NoLocal, c.NoWait, nil)
 
 	if err != nil {
 		log.Fatalln(fmt.Sprintf("Rabbit MQ consumer error: %s", err))
@@ -41,7 +47,8 @@ func (c *Consumer) Consume(callback Callback) {
 	go callback(msgs)
 	log.Println("[*] Waiting for messages. To exit press CTRL+C")
 	<-forever
-
 }
 
-type Callback func(msg <-chan amqp.Delivery)
+func NewConsumer(r RabbitMq, queue string) (c Consumer) {
+	return &consumer{rabbitMq: r, queue: queue}
+}

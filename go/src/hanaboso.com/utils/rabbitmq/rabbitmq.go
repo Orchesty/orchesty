@@ -6,25 +6,34 @@ import (
 	"github.com/streadway/amqp"
 )
 
-type RabbitMq struct {
-	Host      string
-	Port      int
-	User      string
-	Password  string
+type RabbitMq interface {
+	AddQueue(Queue)
+	AddExchange(Exchange)
+	Setup()
+	Connect()
+	Disconnect()
+	createChannel() (ch *amqp.Channel)
+}
+
+type rabbitMq struct {
+	host      string
+	port      int
+	user      string
+	password  string
 	queues    []Queue
 	exchanges []Exchange
 	conn      *amqp.Connection
 }
 
-func (r *RabbitMq) AddQueue(q Queue) {
+func (r *rabbitMq) AddQueue(q Queue) {
 	r.queues = append(r.queues, q)
 }
 
-func (r *RabbitMq) AddExchange(e Exchange) {
+func (r *rabbitMq) AddExchange(e Exchange) {
 	r.exchanges = append(r.exchanges, e)
 }
 
-func (r *RabbitMq) Setup() {
+func (r *rabbitMq) Setup() {
 
 	if r.conn == nil {
 		log.Fatalln("RabbitMq setup error: not connected.")
@@ -77,13 +86,13 @@ func (r *RabbitMq) Setup() {
 				log.Fatalln(fmt.Sprintf("Rabbit MQ queue bind error: %s", err))
 			}
 
-			log.Println(fmt.Sprintf("Rabbit MQ queue bind %s to exhange %s", q.Name,b.Exchange))
+			log.Println(fmt.Sprintf("Rabbit MQ queue bind %s to exhange %s", q.Name, b.Exchange))
 		}
 	}
 }
 
-func (r *RabbitMq) Connect() {
-	connString := fmt.Sprintf("amqp://%s:%s@%s:%d/", r.User, r.Password, r.Host, r.Port)
+func (r *rabbitMq) Connect() {
+	connString := fmt.Sprintf("amqp://%s:%s@%s:%d/", r.user, r.password, r.host, r.port)
 
 	var err error
 	r.conn, err = amqp.Dial(connString)
@@ -95,13 +104,13 @@ func (r *RabbitMq) Connect() {
 	log.Println(fmt.Sprintf("Rabbit MQ connected to %s", connString))
 }
 
-func (r *RabbitMq) Disconnect() {
+func (r *rabbitMq) Disconnect() {
 	if r.conn != nil {
 		r.conn.Close()
 	}
 }
 
-func (r *RabbitMq) createChannel() (ch *amqp.Channel) {
+func (r *rabbitMq) createChannel() (ch *amqp.Channel) {
 
 	ch, err := r.conn.Channel()
 
@@ -110,4 +119,8 @@ func (r *RabbitMq) createChannel() (ch *amqp.Channel) {
 	}
 
 	return ch
+}
+
+func NewRabbitMq(host string, port int, user string, password string) (r RabbitMq) {
+	return &rabbitMq{host: host, port: port, user: user, password: password}
 }
