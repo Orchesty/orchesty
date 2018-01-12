@@ -108,29 +108,26 @@ class ZendeskUpdateUserConnector implements ConnectorInterface, LoggerAwareInter
 
         try {
             $res = $this->curl->send($requestDto);
-        } catch (CurlException $e) {
-            if ($e->getResponse()) {
-                $this->logError($e->getResponse()->getStatusCode(), $this->system, $systemInstall);
+
+            $data  = json_decode($res->getBody(), TRUE);
+            $field = CMHeaders::get(CMHeaders::CM_EVENT_TYPE, $dto->getHeaders()) ?? '';
+
+            if (!array_key_exists('user', $data)
+                || !array_key_exists('user_fields', $data['user'])
+                || !array_key_exists(CleverCustomKeysEnum::getFromType($field), $data['user']['user_fields'])
+            ) {
+                $this->logError(400, $this->system, $systemInstall);
+
+                throw new CleverConnectorsException('CM field does not exist, Zendesk updateUserConnector.',
+                    CleverConnectorsException::MISSING_DATA);
             }
 
-            throw $e;
+            $dto->setData($res->getBody());
+        } catch (CurlException $e) {
+            $this->connectorError($e, $this->system, $systemInstall, $dto);
         }
 
-        $data  = json_decode($res->getBody(), TRUE);
-        $field = CMHeaders::get(CMHeaders::CM_EVENT_TYPE, $dto->getHeaders()) ?? '';
-
-        if (!array_key_exists('user', $data)
-            || !array_key_exists('user_fields', $data['user'])
-            || !array_key_exists(CleverCustomKeysEnum::getFromType($field), $data['user']['user_fields'])
-        ) {
-            throw new CleverConnectorsException('CM field does not exist, Zendesk updateUserConnector.',
-                CleverConnectorsException::MISSING_DATA);
-        } else if ($res->getStatusCode() !== 200) {
-            throw new CleverConnectorsException('Failed to update user - unknown error, Zendesk updateUserConnector.',
-                CleverConnectorsException::MISSING_DATA);
-        }
-
-        return $dto->setData($res->getBody());
+        return $dto;
     }
 
 }
