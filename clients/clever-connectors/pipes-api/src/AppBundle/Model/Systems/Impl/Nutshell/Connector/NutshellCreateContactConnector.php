@@ -93,14 +93,12 @@ class NutshellCreateContactConnector implements ConnectorInterface, LoggerAwareI
         try {
             $response = $this->manager->send($requestDto);
 
-            return $dto->setData($response->getBody());
+            $dto->setData($response->getBody());
         } catch (CurlException $e) {
-            if ($e->getResponse()) {
-                $this->logError($e->getResponse()->getStatusCode(), $this->system, $systemInstall);
-            }
-
-            throw $e;
+            $this->connectorError($e, $this->system, $systemInstall, $dto);
         }
+
+        return $dto;
     }
 
     /**

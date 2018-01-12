@@ -226,12 +226,8 @@ class NutshellSyncContactConnector implements BatchInterface, ConnectorInterface
                     return resolve();
                 }
             },
-            function (ResponseException $e) use ($systemInstall): void {
-                if ($e->getResponse()) {
-                    $this->logError($e->getResponse()->getStatusCode(), $this->system, $systemInstall);
-                }
-
-                throw $e;
+            function (ResponseException $e) use ($systemInstall, $callbackItem, $page): SuccessMessage {
+                return $callbackItem($this->batchConnectorError($e, $this->system, $systemInstall, $page));
             }
         );
 
@@ -273,12 +269,8 @@ class NutshellSyncContactConnector implements BatchInterface, ConnectorInterface
 
                         return $this->createSuccessMessage($data, ($page - 1) * self::PER_PAGE + $i + 1);
                     },
-                    function (ResponseException $e) use ($systemInstall): void {
-                        if ($e->getResponse()) {
-                            $this->logError($e->getResponse()->getStatusCode(), $this->system, $systemInstall);
-                        }
-
-                        throw $e;
+                    function (ResponseException $e) use ($systemInstall, $page, $i): SuccessMessage {
+                        return $this->batchConnectorError($e, $this->system, $systemInstall, $page + $i + 1);
                     })->then($callbackItem);
         }
 

@@ -212,9 +212,8 @@ class PluginSyncSubscriberConnector implements ConnectorInterface, BatchInterfac
                         return $this->getPages($sender, $requestDto, $callbackItem, $system, $systemInstall, $total);
                     }
                 },
-                function (ResponseException $e) use ($system, $systemInstall): void {
-                    $this->logError($e->getResponse()->getStatusCode(), $system, $systemInstall);
-                    throw $e;
+                function (ResponseException $e) use ($system, $systemInstall, $callbackItem): SuccessMessage {
+                    return $callbackItem($this->batchConnectorError($e, $system, $systemInstall, 1));
                 }
             );
 
@@ -250,9 +249,8 @@ class PluginSyncSubscriberConnector implements ConnectorInterface, BatchInterfac
                     function (ResponseInterface $response) use ($i): SuccessMessage {
                         return $this->createSuccessMessage(json_decode($response, TRUE), $i);
                     },
-                    function (ResponseException $e) use ($system, $systemInstall): void {
-                        $this->logError($e->getResponse()->getStatusCode(), $system, $systemInstall);
-                        throw $e;
+                    function (ResponseException $e) use ($system, $systemInstall, $i): SuccessMessage {
+                        return $this->batchConnectorError($e, $system, $systemInstall, $i);
                     }
                 )->then($callbackItem);
         }

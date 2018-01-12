@@ -18,7 +18,6 @@ use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
 use Nette\Utils\Json;
-use Nette\Utils\Strings;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\NullLogger;
 
@@ -104,28 +103,12 @@ class NutshellUpdateContactConnector implements ConnectorInterface, LoggerAwareI
         try {
             $response = $this->manager->send($requestDto);
 
-            return $dto->setData($response->getBody());
+            $dto->setData($response->getBody());
         } catch (CurlException $e) {
-            if ($e->getResponse()) {
-                $this->logError($e->getResponse()->getStatusCode(), $this->system, $systemInstall);
-            }
-
-            if (Strings::contains($e->getMessage(), 'is not a custom field')) {
-                throw new CleverConnectorsException(
-                    'Missing required field cm_unsubscribe or cm_hard_bounce',
-                    CleverConnectorsException::MISSING_DATA
-                );
-            }
-
-            if (Strings::contains($e->getMessage(), 'rev key is out-of-date')) {
-                throw new CleverConnectorsException(
-                    'Incorrect required field rev',
-                    CleverConnectorsException::MISSING_DATA
-                );
-            }
-
-            throw $e;
+            $this->connectorError($e, $this->system, $systemInstall, $dto);
         }
+
+        return $dto;
     }
 
     /**
