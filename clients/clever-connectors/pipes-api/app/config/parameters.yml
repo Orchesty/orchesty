@@ -23,7 +23,7 @@ parameters:
     influx.node_table: pipes_node
     influx.fpm_table: pipes_monolith_fpm
     influx.rabbit_table: rabbitmq_queue
-    backend_host: 'https://cleverconn.stage.hanaboso.net/'
+    backend_host: '%env(BACKEND_HOST)%'
     cron_host: 'http://cron-api:5000'
     monolith_host: 'http://monolith-api'
     clevermonitor:

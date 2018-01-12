@@ -111,6 +111,8 @@ services:
     monolith-fpm:
         image: dkr.hanaboso.net/pipes/pipes/php-dev:dev
         user: ${DEV_UID}:${DEV_GID}
+        environment:
+          BACKEND_HOST: ${BACKEND_URL}/
         working_dir: /var/www/pipes/clients/clever-connectors/pipes-api
         volumes:
           - ../../:/var/www/pipes
@@ -120,6 +122,8 @@ services:
     ## BEGIN STAGE
     #monolith-fpm:
     #    image: dkr.hanaboso.net/pipes/client-cm/monolith-fpm:prod-images
+    #    environment:
+    #      BACKEND_HOST: ${BACKEND_URL}/
     #    secrets:
     #      - source: clevermonitor-ca.pem
     #        target: /var/www/html/var/secret/ca.crt
@@ -380,6 +384,16 @@ services:
           - ${DEV_IP}:5000:5000
         links:
           - mongo
+
+## BEGIN DEV
+volumes:
+  mongodb: {}
+  grafana: {}
+  rabbitmq: {}
+  elasticsearch: {}
+  redis: {}
+  influxdb: {}
+## END DEV
 
 ## BEGIN STAGE
 #volumes:
