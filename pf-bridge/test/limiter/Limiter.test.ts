@@ -114,14 +114,14 @@ describe("Limiter", () => {
     // Tests against real go app
     //
 
-    it("isReady against live go server", async () => {
+    it.skip("isReady against live go server", async () => {
         const tcp = new TcpClient("localhost", 3333);
         const limiter = new Limiter(tcp);
         const result = await limiter.isReady();
         assert.isTrue(result);
     });
 
-    it("check limit against live go server", async () => {
+    it.skip("check limit against live go server", async () => {
         const tcp = new TcpClient("localhost", 3333);
         const limiter = new Limiter(tcp);
 

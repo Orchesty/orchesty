@@ -3,11 +3,11 @@ import {Connection} from "amqplib-plus/dist/lib/Connection";
 import {Container} from "hb-utils/dist/lib/Container";
 import {Metrics} from "metrics-sender/dist/lib/metrics/Metrics";
 import {
-    amqpConnectionOptions, metricsOptions, multiProbeOptions, redisStorageOptions,
+    amqpConnectionOptions, limiterOptions, metricsOptions, multiProbeOptions, redisStorageOptions,
     topologyTerminatorOptions,
 } from "./config";
 import RedisStorage from "./counter/storage/RedisStorage";
-import {default as Limiter, ILimiterOptions} from "./limiter/Limiter";
+import {default as Limiter} from "./limiter/Limiter";
 import TcpClient from "./limiter/TcpClient";
 import CounterPublisher from "./node/drain/amqp/CounterPublisher";
 import FollowersPublisher from "./node/drain/amqp/FollowersPublisher";
@@ -71,11 +71,7 @@ class DIContainer extends Container {
             );
         });
 
-        this.set("limiter", (settings: ILimiterOptions) => {
-            const tcpClient = new TcpClient(settings.host, settings.port);
-
-            return new Limiter(tcpClient);
-        });
+        this.set("limiter", new Limiter(new TcpClient(limiterOptions.host, limiterOptions.port)));
 
         this.set("faucet.amqp", (settings: IAmqpFaucetSettings) => {
             return new AmqpFaucet(settings, this.get("amqp.connection"));
