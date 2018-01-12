@@ -80,19 +80,14 @@ class ShipstationSyncCustomerConnector extends ShipstationCustomerConnectorAbstr
                 function (ResponseInterface $response): int {
                     return $this->getTotalPages($response);
                 },
-                function (ResponseException $exception) use ($systemInstall): void {
-                    $this->logResponseException($exception, $systemInstall);
-                    throw $exception;
+                function (ResponseException $e) use ($systemInstall, $callbackItem) {
+                    return $callbackItem($this->batchConnectorError($e, $this->system, $systemInstall, 1));
                 }
             )->then(
-                function (int $total) use ($sender, $callbackItem, $requestDto, $processId) {
+                function (int $total) use ($sender, $callbackItem, $requestDto, $processId, $systemInstall) {
                     $this->counterService->setTotal($processId, $total * self::PAGE_LIMIT);
 
-                    return all($this->doPageLoop($total, $sender, $callbackItem, $requestDto));
-                },
-                function (ResponseException $exception) use ($systemInstall): void {
-                    $this->logResponseException($exception, $systemInstall);
-                    throw $exception;
+                    return all($this->doPageLoop($total, $sender, $callbackItem, $requestDto, $systemInstall));
                 }
             );
 

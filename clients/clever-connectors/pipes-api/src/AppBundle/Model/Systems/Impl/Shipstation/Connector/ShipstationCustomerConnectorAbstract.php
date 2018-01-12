@@ -160,10 +160,11 @@ abstract class ShipstationCustomerConnectorAbstract implements BatchInterface, C
     }
 
     /**
-     * @param int        $total
-     * @param CurlSender $sender
-     * @param callable   $callbackItem
-     * @param RequestDto $dto
+     * @param int           $total
+     * @param CurlSender    $sender
+     * @param callable      $callbackItem
+     * @param RequestDto    $dto
+     * @param SystemInstall $systemInstall
      *
      * @return array
      */
@@ -171,32 +172,25 @@ abstract class ShipstationCustomerConnectorAbstract implements BatchInterface, C
         int $total,
         CurlSender $sender,
         callable $callbackItem,
-        RequestDto $dto
+        RequestDto $dto,
+        SystemInstall $systemInstall
     ): array
     {
         $requests = [];
         for ($i = 1; $i <= $total; $i++) {
             $requests[] = $this
                 ->fetchData($sender, $this->createPageContactRequest($i, $dto))
-                ->then(function (ResponseInterface $response) use ($i): SuccessMessage {
-
-                    return $this->createSuccessMessage($response, $i);
-                })->then($callbackItem);
+                ->then(
+                    function (ResponseInterface $response) use ($i): SuccessMessage {
+                        return $this->createSuccessMessage($response, $i);
+                    },
+                    function (ResponseException $e) use ($systemInstall, $i): SuccessMessage {
+                        return $this->batchConnectorError($e, $this->system, $systemInstall, $i + 1);
+                    }
+                )->then($callbackItem, $callbackItem);
         }
 
         return $requests;
-    }
-
-    /**
-     * @param ResponseException $exception
-     * @param SystemInstall     $systemInstall
-     */
-    protected function logResponseException(ResponseException $exception, SystemInstall $systemInstall): void
-    {
-        $statusCode = $exception->getResponse()->getStatusCode();
-        if ($statusCode == 500 || $statusCode == 401) {
-            $this->logError($statusCode, $this->system, $systemInstall);
-        }
     }
 
     /**
