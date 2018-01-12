@@ -3,7 +3,6 @@
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
-use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\HubspotSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
@@ -89,7 +88,6 @@ class HubspotCreateContactConnector implements ConnectorInterface, LoggerAwareIn
      * @param ProcessDto $dto
      *
      * @return ProcessDto
-     * @throws CleverConnectorsException
      * @throws CurlException
      * @throws SystemException
      */
@@ -106,22 +104,7 @@ class HubspotCreateContactConnector implements ConnectorInterface, LoggerAwareIn
         try {
             $res = $this->curl->send($requestDto);
         } catch (CurlException $e) {
-            if ($e->getResponse()) {
-                $this->logError($e->getResponse()->getStatusCode(), $this->system, $systemInstall);
-            }
-            throw $e;
-        }
-
-        if ($res->getStatusCode() === 409) {
-            throw new CleverConnectorsException(
-                'Contact already exists, Hubspot createContactConnector.',
-                CleverConnectorsException::REQUEST_FAILED
-            );
-        } elseif ($res->getStatusCode() !== 200) {
-            throw new CleverConnectorsException(
-                'Failed to create new contact / email already taken, Hubspot createContactConnector.',
-                CleverConnectorsException::REQUEST_FAILED
-            );
+            return $this->connectorError($e, $this->system, $systemInstall, $dto);
         }
 
         $tmp                     = json_decode($res->getBody(), TRUE);

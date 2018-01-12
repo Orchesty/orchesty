@@ -11,11 +11,14 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSender;
 use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSenderFactory;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
+use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use React\EventLoop\Factory;
 use Tests\KernelTestCaseAbstract;
+use function React\Promise\reject;
 use function React\Promise\resolve;
 
 /**
@@ -27,6 +30,7 @@ final class HubspotSyncContactConnectorTest extends KernelTestCaseAbstract
 {
 
     /**
+     *
      */
     public function testProcessBatch(): void
     {
@@ -62,9 +66,50 @@ final class HubspotSyncContactConnectorTest extends KernelTestCaseAbstract
     }
 
     /**
+     *
+     */
+    public function testProcessBatchLimit(): void
+    {
+        $dtoData = [
+            'data' => [
+                'system_install' => ['user' => '123'],
+            ],
+        ];
+
+        $headers[CMHeaders::createKey(CMHeaders::GUID)]       = 'user123';
+        $headers[CMHeaders::createKey(CMHeaders::TOKEN)]      = 'token123';
+        $headers[CMHeaders::createKey(CMHeaders::SYSTEM_KEY)] = 'system123';
+        $headers[CMHeaders::createKey(CMHeaders::PROCESS_ID)] = '123';
+
+        $loop       = Factory::create();
+        $processDto = new ProcessDto();
+        $processDto
+            ->setHeaders($headers)
+            ->setData(json_encode($dtoData));
+
+        /** @var HubspotSyncContactConnector $syncConn */
+        $syncConn = $this->mockSync(TRUE);
+        $data     = $syncConn->processBatch($processDto, $loop, function (): void {
+        });
+
+        $data->then(
+            function (): void {
+                $this->assertTrue(FALSE);
+            },
+            function (): void {
+                $this->assertTrue(TRUE);
+            }
+        )->done();
+
+        $loop->run();
+    }
+
+    /**
+     * @param bool $limit
+     *
      * @return MockObject|HubspotSyncContactConnector
      */
-    private function mockSync()
+    private function mockSync($limit = FALSE)
     {
         $systemInstall = $this->createMock(SystemInstallRepository::class);
         $systemInstall->method('setSyncTime')->willReturn(NULL);
@@ -74,14 +119,21 @@ final class HubspotSyncContactConnectorTest extends KernelTestCaseAbstract
             ->method('getRepository')
             ->willReturn($systemInstall);
 
-        $sender = $this->createMock(CurlSenderFactory::class);
+        /** @var MockObject|CurlManagerInterface $sender */
+        $sender = $this->createMock(CurlSender::class);
+
+        /** @var MockObject|CurlSenderFactory $factory */
+        $factory = $this->createMock(CurlSenderFactory::class);
+        $factory
+            ->method('create')
+            ->willReturn($sender);
 
         $progressCounter = $this->createMock(ProgressCounterService::class);
         $progressCounter->method('setTotal')->willReturn(TRUE);
 
         $syncConn = $this->getMockBuilder(HubspotSyncContactConnector::class)
             ->setMethods(['fetchData'])
-            ->setConstructorArgs([$this->mockSystem(), $dm, $sender, $progressCounter])
+            ->setConstructorArgs([$this->mockSystem(), $dm, $factory, $progressCounter])
             ->getMock();
 
         $contacts = [
@@ -92,9 +144,15 @@ final class HubspotSyncContactConnectorTest extends KernelTestCaseAbstract
             'vid-offset' => 123,
         ];
 
-        $syncConn->expects($this->at(0))
-            ->method('fetchData')
-            ->willReturn(resolve(new Response(200, [], json_encode($contacts))));
+        if ($limit) {
+            $syncConn->expects($this->at(0))
+                ->method('fetchData')
+                ->willReturn(reject(new Response(429)));
+        } else {
+            $syncConn->expects($this->at(0))
+                ->method('fetchData')
+                ->willReturn(resolve(new Response(200, [], json_encode($contacts))));
+        }
 
         return $syncConn;
     }
