@@ -7,13 +7,16 @@ use CleverConnectors\AppBundle\Model\Systems\Impl\Salesforce\Connector\Salesforc
 use CleverConnectors\AppBundle\Model\Systems\Impl\Salesforce\SalesforceSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlException;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
 use Nette\Utils\Json;
 use PHPUnit\Framework\MockObject\MockObject;
+use Psr\Log\LoggerInterface;
 use Tests\ConnectorTestCaseAbstract;
 
 /**
@@ -29,7 +32,14 @@ final class SalesforceGetContactConnectorTest extends ConnectorTestCaseAbstract
      */
     public function testProcessEvent(): void
     {
-        $result = Json::decode($this->getConnectorMock()->processEvent(
+        $result = Json::decode($this->getConnectorMock(function (RequestDto $dto, array $options = []) {
+            $this->assertEquals(
+                new Uri('https://na73.salesforce.com/services/data/v40.0/sobjects/Contact/id/1'),
+                $dto->getUri()
+            );
+
+            return new ResponseDto(200, 'OK', $this->getRequest('SalesforceSingleContactItem.json'), []);
+        })->processEvent(
             (new ProcessDto())->setData(Json::encode([
                 'id' => 1,
             ]))->setHeaders([])
@@ -106,47 +116,101 @@ final class SalesforceGetContactConnectorTest extends ConnectorTestCaseAbstract
     }
 
     /**
-     * @return SalesforceGetContactConnector
+     *
      */
-    private function getConnectorMock(): SalesforceGetContactConnector
+    public function testProcessActionWithLimiter(): void
     {
-        $systemInstall = $this->createMock(SystemInstallRepository::class);
-        $systemInstall->method('getSystemInstall')->willReturn((new SystemInstall()));
+        $headers = $this->getConnectorMock(function (RequestDto $dto, array $options = []): void {
+            $this->assertEquals(
+                new Uri('https://na73.salesforce.com/services/data/v40.0/sobjects/Contact/id/1'),
+                $dto->getUri()
+            );
 
-        /** @var MockObject|DocumentManager $documentManager */
-        $documentManager = $this->createMock(DocumentManager::class);
-        $documentManager->method('getRepository')->willReturn($systemInstall);
+            throw new CurlException('', CurlException::REQUEST_FAILED, NULL,
+                new Response(403, [], '"errorCode":"REQUEST_LIMIT_EXCEEDED"')
+            );
+        })->processEvent((new ProcessDto())->setData(Json::encode(['id' => 1]))->setHeaders([]))->getHeaders();
 
-        /** @var CurlManagerInterface|MockObject $curlManager */
-        $curlManager = $this->createMock(CurlManagerInterface::class);
-        $curlManager->method('send')
-            ->will($this->returnCallback(function (RequestDto $dto, array $options = []) {
+        $this->assertEquals(['pf-result-code' => 1004], $headers);
+    }
+
+    /**
+     *
+     */
+    public function testProcessActionWithException(): void
+    {
+        $this->expectException(CurlException::class);
+        $this->expectExceptionCode(CurlException::REQUEST_FAILED);
+
+        $this->getConnectorMock(
+            function (RequestDto $dto, array $options = []): void {
                 $this->assertEquals(
                     new Uri('https://na73.salesforce.com/services/data/v40.0/sobjects/Contact/id/1'),
                     $dto->getUri()
                 );
 
-                return new ResponseDto(200, 'OK', $this->getRequest('SalesforceSingleContactItem.json'), []);
-            }));
-
-        return new SalesforceGetContactConnector($this->getSystemMock(), $documentManager, $curlManager);
+                throw new CurlException('', CurlException::REQUEST_FAILED, NULL, new Response(401));
+            },
+            function (string $type, array $content): void {
+                $this->assertEquals('access_expiration', $type);
+                $this->assertEquals([
+                    'guid'        => 'User',
+                    'token'       => 'Token',
+                    'system_key'  => 'salesforce',
+                    'system_name' => 'Salesforce',
+                ], $content);
+            }
+        )->processEvent((new ProcessDto())->setData(Json::encode(['id' => 1]))->setHeaders([]));
     }
 
     /**
-     * @return MockObject|SalesforceSystem
+     * @param callable      $curlCallback
+     * @param callable|NULL $loggerCallback
+     *
+     * @return SalesforceGetContactConnector
      */
-    private function getSystemMock()
+    private function getConnectorMock(
+        callable $curlCallback,
+        ?callable $loggerCallback = NULL
+    ): SalesforceGetContactConnector
     {
-        $requestDto = (new RequestDto('POST', new Uri('https://na73.salesforce.com')))->setHeaders([
-            'Authorization' => 'Bearer 00D1I000001WyE7!ARAAQCPw1z3hchprOA9t08aqFqrY4RdcjNaEmRBHf170davnludWxhbo4WjBgWptw9OSk1yi1c4lfZm5RVo8h9sNsoGEysPd',
-            'Content-Type'  => 'application/json',
-            'Accept'        => 'application/json',
-        ]);
+        $dto = (new RequestDto('POST', new Uri('https://na73.salesforce.com')))
+            ->setHeaders([
+                'Authorization' => 'Bearer 00D1I000001WyE7!ARAAQCPw1z3hchprOA9t08aqFqrY4RdcjNaEmRBHf170davnludWxhbo4WjBgWptw9OSk1yi1c4lfZm5RVo8h9sNsoGEysPd',
+                'Content-Type'  => 'application/json',
+                'Accept'        => 'application/json',
+            ]);
 
-        $system = $this->createMock(SalesforceSystem::class);
-        $system->method('getRequestDto')->willReturn($requestDto);
+        /** @var SalesforceSystem|MockObject $system */
+        $system = $this->createPartialMock(SalesforceSystem::class, ['getRequestDto']);
+        $system->method('getRequestDto')->willReturn($dto);
 
-        return $system;
+        /** @var SystemInstall|MockObject $systemInstall */
+        $systemInstall = $this->createPartialMock(SystemInstallRepository::class, ['getSystemInstallFromHeaders']);
+        $systemInstall->method('getSystemInstallFromHeaders')->willReturn(
+            (new SystemInstall())
+                ->setUser('User')
+                ->setToken('Token')
+        );
+
+        /** @var DocumentManager|MockObject $documentManager */
+        $documentManager = $this->createMock(DocumentManager::class);
+        $documentManager->method('getRepository')->willReturn($systemInstall);
+
+        /** @var CurlManagerInterface|MockObject $curlManager */
+        $curlManager = $this->createMock(CurlManagerInterface::class);
+        $curlManager->method('send')->willReturnCallback($curlCallback);
+
+        $connector = new SalesforceGetContactConnector($system, $documentManager, $curlManager);
+
+        if ($loggerCallback) {
+            /** @var LoggerInterface|MockObject $logger */
+            $logger = $this->createMock(LoggerInterface::class);
+            $logger->method('info')->willReturnCallback($loggerCallback);
+            $connector->setLogger($logger);
+        }
+
+        return $connector;
     }
 
 }

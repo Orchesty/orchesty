@@ -37,6 +37,7 @@ final class SalesforceDeletedContactConnectorTest extends KernelTestCaseAbstract
 {
 
     /**
+     *
      */
     public function testProcessBatch(): void
     {

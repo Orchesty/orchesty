@@ -6,6 +6,7 @@ use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use CleverConnectors\AppBundle\Utils\CronUtils;
+use Clue\React\Buzz\Message\ResponseException;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
@@ -54,12 +55,23 @@ class SalesforceDeletedContactConnector extends SalesforceContactConnectorAbstra
         $countReq  = $this->createCountRequest($requestDto, $timeQuery);
 
         $promise = $this->fetchData($browser, $countReq)
-            ->then(function (ResponseInterface $response): int {
-                return $this->getTotalPages($response);
-            }
+            ->then(
+                function (ResponseInterface $response): int {
+                    return $this->getTotalPages($response);
+                },
+                function (ResponseException $e) use ($systemInstall, $callbackItem) {
+                    return $callbackItem($this->batchConnectorError($e, $this->system, $systemInstall, 1));
+                }
             )->then(
                 function (int $total) use ($browser, $callbackItem, $timeQuery, $requestDto, $systemInstall) {
-                    return all($this->doPageLoop($total, $browser, $callbackItem, $requestDto, $timeQuery, $systemInstall));
+                    return all($this->doPageLoop(
+                        $total,
+                        $browser,
+                        $callbackItem,
+                        $requestDto,
+                        $timeQuery,
+                        $systemInstall
+                    ));
                 }
             );
 

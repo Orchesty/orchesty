@@ -13,11 +13,13 @@ use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSender;
 use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSenderFactory;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlException;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\BatchInterface;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
+use Nette\Utils\Strings;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\NullLogger;
@@ -208,14 +210,23 @@ abstract class SalesforceContactConnectorAbstract implements BatchInterface, Con
                     function (ResponseInterface $response) use ($i): SuccessMessage {
                         return $this->createSuccessMessage($response, $i);
                     },
-                    function (ResponseException $e) use ($systemInstall): void {
-                        $this->logError($e->getResponse()->getStatusCode(), $this->system, $systemInstall);
-                        throw $e;
+                    function (ResponseException $e) use ($i, $systemInstall): SuccessMessage {
+                        return $this->batchConnectorError($e, $this->system, $systemInstall, $i + 1);
                     }
-                )->then($callbackItem);
+                )->then($callbackItem, $callbackItem);
         }
 
         return $requests;
+    }
+
+    /**
+     * @param CurlException|ResponseException $e
+     *
+     * @return bool
+     */
+    protected function limitReached($e): bool
+    {
+        return Strings::contains($e->getResponse()->getBody()->getContents(), 'REQUEST_LIMIT_EXCEEDED');
     }
 
     /**
