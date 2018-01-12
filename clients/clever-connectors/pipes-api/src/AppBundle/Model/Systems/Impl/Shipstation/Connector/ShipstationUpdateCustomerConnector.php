@@ -50,17 +50,12 @@ class ShipstationUpdateCustomerConnector extends ShipstationCustomerConnectorAbs
                 function (ResponseInterface $response): int {
                     return $this->getTotalPages($response);
                 },
-                function (ResponseException $exception) use ($systemInstall): void {
-                    $this->logResponseException($exception, $systemInstall);
-                    throw $exception;
+                function (ResponseException $e) use ($systemInstall, $callbackItem) {
+                    return $callbackItem($this->batchConnectorError($e, $this->system, $systemInstall, 1));
                 }
             )->then(
-                function (int $total) use ($browser, $callbackItem, $requestDto) {
-                    return all($this->doPageLoop($total, $browser, $callbackItem, $requestDto));
-                },
-                function (ResponseException $exception) use ($systemInstall): void {
-                    $this->logResponseException($exception, $systemInstall);
-                    throw $exception;
+                function (int $total) use ($browser, $callbackItem, $requestDto, $systemInstall) {
+                    return all($this->doPageLoop($total, $browser, $callbackItem, $requestDto, $systemInstall));
                 }
             );
 
