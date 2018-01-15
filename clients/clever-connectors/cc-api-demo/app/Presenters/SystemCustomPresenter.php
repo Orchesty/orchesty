@@ -1,14 +1,15 @@
 <?php declare(strict_types=1);
 
+namespace App\Presenters;
+
 use App\Model\DistributionList;
-use App\Presenters\BasePresenter;
 use CcApi\ApiEntity\UserSystem;
 use CcApi\Connector\ConnectorManager;
 
 /**
  * Class SystemCustomPresenter
  */
-class SystemCustomPresenter extends BasePresenter
+abstract class SystemCustomPresenter extends BasePresenter
 {
 
     /**
@@ -45,9 +46,19 @@ class SystemCustomPresenter extends BasePresenter
     }
 
     /**
-     * @param $systemKey
      *
-     * @throws \CcApi\Connector\Exception\ConnectorException
+     */
+    public function startup()
+    {
+        parent::startup();
+
+        if (!$this->getUser()->isLoggedIn()) {
+            $this->redirect('System:default');
+        }
+    }
+
+    /**
+     * @param $systemKey
      */
     public function actionDefault($systemKey)
     {

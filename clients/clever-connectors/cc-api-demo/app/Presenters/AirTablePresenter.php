@@ -8,7 +8,6 @@ use CcApi\Connector\ConnectorManager;
 use Nette\Application\UI\Form;
 use Nette\Forms\Controls\SubmitButton;
 use Nette\Utils\Strings;
-use SystemCustomPresenter;
 
 /**
  * Class AirTablePresenter

@@ -9,6 +9,8 @@
 namespace App\Presenters;
 
 use App\Forms\SystemInstallFormFactory;
+use CcApi\ApiEntity\System;
+use CcApi\ApiEntity\UserSystem;
 use CcApi\Connector\ConnectorManager;
 use Nette\Forms\Form;
 
@@ -52,6 +54,10 @@ class SystemPresenter extends BasePresenter
     {
         $systems = $this->connectorManager->getAllSystems();
 
+        usort($systems, function(System $systemOne, System $systemTwo) {
+            return strcasecmp($systemOne->getKey(), $systemTwo->getKey());
+        });
+
         $items = [];
         foreach ($systems as $system) {
             $items[$system->getKey()] = $system->getName();
@@ -94,6 +100,10 @@ class SystemPresenter extends BasePresenter
 
         if ($this->user->isLoggedIn()) {
             $userSystems = $this->connectorManager->getAllUserSystems($this->userId);
+
+            usort($userSystems, function(UserSystem $userSystemOne, UserSystem $userSystemTwo) {
+                return strcasecmp($userSystemOne->getKey(), $userSystemTwo->getKey());
+            });
 
             $this->template->installedSystems = $userSystems;
         }

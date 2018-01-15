@@ -13,7 +13,6 @@ use App\Model\DistributionList;
 use CcApi\Connector\ConnectorManager;
 use Nette\Application\UI\Form;
 use Nette\Forms\Controls\SubmitButton;
-use SystemCustomPresenter;
 
 /**
  * Class WisePopPresenter
