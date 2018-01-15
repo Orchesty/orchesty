@@ -4,13 +4,12 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\Connect
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\FacebookaudienceSystem;
+use CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\Traits\FacebookTrait;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use CleverConnectors\AppBundle\Traits\LoggerTrait;
-use CleverConnectors\AppBundle\Utils\HeadersUtils;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
-use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlException;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
@@ -26,6 +25,7 @@ abstract class FacebookaudienceConnectorAbstract implements ConnectorInterface, 
 {
 
     use LoggerTrait;
+    use FacebookTrait;
 
     /**
      * @var FacebookaudienceSystem
@@ -75,53 +75,6 @@ abstract class FacebookaudienceConnectorAbstract implements ConnectorInterface, 
             'Facebook Audience has no support for event!',
             ConnectorException::CONNECTOR_DOES_NOT_HAVE_PROCESS_BATCH
         );
-    }
-
-    /**
-     * 4 - application request limit reached
-     * 17 - user request limit reached
-     * 100 - invalid parameter
-     * 190 - invalid access token
-     *
-     * @param CurlException $exception
-     * @param SystemInstall $systemInstall
-     * @param ProcessDto    $dto
-     *
-     * @return ProcessDto
-     * @throws CurlException
-     */
-    protected function logConnectorError(
-        CurlException $exception,
-        SystemInstall $systemInstall,
-        ?ProcessDto $dto = NULL
-    ): ?ProcessDto
-    {
-        $response = $exception->getResponse();
-
-        if (isset($response)) {
-            $httpCode = $response->getStatusCode();
-            if ($response->getStatusCode() == 400) {
-                $data      = json_decode($response->getBody()->getContents(), TRUE);
-                $errorCode = isset($data['error']['code']) ? $data['error']['code'] : NULL;
-                if (in_array($errorCode, [4, 17])) {
-                    if ($dto) {
-                        return HeadersUtils::setLimitHeaderToDto($dto);
-                    } else {
-                        $httpCode = 429;
-                    }
-                } elseif ($errorCode == 100) {
-                    $httpCode = 400;
-                } elseif ($errorCode == 190) {
-                    $httpCode = 401;
-                } else {
-                    $httpCode = 500;
-                }
-            }
-
-            $this->logError($httpCode, $this->system, $systemInstall);
-        }
-
-        throw $exception;
     }
 
 }

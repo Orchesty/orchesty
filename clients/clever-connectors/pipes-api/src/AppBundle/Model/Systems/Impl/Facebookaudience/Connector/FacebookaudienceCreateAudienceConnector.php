@@ -135,7 +135,7 @@ class FacebookaudienceCreateAudienceConnector extends FacebookaudienceConnectorA
         try {
             $response = $this->manager->send($requestDto);
         } catch (CurlException $e) {
-            return $this->logConnectorError($e, $systemInstall, $dto);
+            return $this->logConnectorError($e, $systemInstall, $this->system, $dto);
         }
 
         $this->saveAudience($response, $systemInstall);

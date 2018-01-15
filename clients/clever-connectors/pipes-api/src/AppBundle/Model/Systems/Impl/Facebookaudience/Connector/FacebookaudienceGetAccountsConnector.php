@@ -45,7 +45,7 @@ class FacebookaudienceGetAccountsConnector extends FacebookaudienceConnectorAbst
         try {
             $response = $this->manager->send($requestDto);
         } catch (CurlException $e) {
-            return $this->logConnectorError($e, $systemInstall, $dto);
+            return $this->logConnectorError($e, $systemInstall, $this->system, $dto);
         }
 
         return $dto->setData($response->getBody());
@@ -66,7 +66,7 @@ class FacebookaudienceGetAccountsConnector extends FacebookaudienceConnectorAbst
         try {
             $response = $this->manager->send($requestDto);
         } catch (CurlException $e) {
-            $this->logConnectorError($e, $systemInstall);
+            $this->logConnectorError($e, $systemInstall, $this->system);
         }
 
         if (isset($response) && $response->getStatusCode() == 200) {
