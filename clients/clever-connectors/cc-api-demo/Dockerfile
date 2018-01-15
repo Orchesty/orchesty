@@ -34,7 +34,8 @@ RUN wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg
       php7.1-xml \
       php7.1-mbstring \
       php7.1-curl \
-      php7.1-xdebug
+      php7.1-xdebug && \
+      sudo sed -i -e 's/session\.gc_maxlifetime = 1440/session\.gc_maxlifetime = 1209600/g' /etc/php/7.1/apache2/php.ini
 
 RUN a2enmod rewrite
 

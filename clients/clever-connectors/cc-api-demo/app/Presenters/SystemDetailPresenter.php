@@ -63,13 +63,26 @@ class SystemDetailPresenter extends BasePresenter
      */
     public function __construct(ConnectorManager $connectorManager,
                                 AuthorizationSettingGeneratorFactory $authorizationSettingGeneratorFactory,
-                                SwitchTokenFormFactory $switchTokenFormFactory, DistributionList $distributionList)
+                                SwitchTokenFormFactory $switchTokenFormFactory,
+                                DistributionList $distributionList)
     {
         parent::__construct();
         $this->connectorManager                     = $connectorManager;
         $this->authorizationSettingGeneratorFactory = $authorizationSettingGeneratorFactory;
         $this->switchTokenFormFactory               = $switchTokenFormFactory;
         $this->distributionList                     = $distributionList;
+    }
+
+    /**
+     *
+     */
+    public function startup()
+    {
+        parent::startup();
+
+        if (!$this->getUser()->isLoggedIn()) {
+            $this->redirect('System:default');
+        }
     }
 
     /**

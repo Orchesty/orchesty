@@ -3,6 +3,7 @@
 namespace App\Presenters;
 
 use App\Forms\SystemFilterFormFactory;
+use CcApi\ApiEntity\System;
 use CcApi\Connector\ConnectorManager;
 use Nette\Application\UI\Form;
 
@@ -73,6 +74,10 @@ class HomepagePresenter extends BasePresenter
     public function actionDefault(): void
     {
         $systems = $this->connectorManager->getAllSystems();
+
+        usort($systems, function(System $systemOne, System $systemTwo) {
+            return strcasecmp($systemOne->getKey(), $systemTwo->getKey());
+        });
 
         $this->template->systems = $systems;
     }
