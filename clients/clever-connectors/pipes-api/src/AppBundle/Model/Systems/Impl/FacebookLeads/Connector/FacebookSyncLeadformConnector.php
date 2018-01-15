@@ -12,11 +12,8 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\FacebookLeads\Connector;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\FacebookLeads\FacebookLeadsSystem;
-use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
-use CleverConnectors\AppBundle\Traits\LoggerTrait;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Clue\React\Buzz\Message\ResponseException;
-use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider;
@@ -24,12 +21,9 @@ use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSenderFactory;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
-use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\BatchInterface;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
 use Psr\Http\Message\ResponseInterface;
-use Psr\Log\LoggerAwareInterface;
-use Psr\Log\NullLogger;
 use React\EventLoop\LoopInterface;
 use React\Promise\PromiseInterface;
 
@@ -38,25 +32,13 @@ use React\Promise\PromiseInterface;
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\FacebookLeads\Connector
  */
-class FacebookSyncLeadformConnector implements BatchInterface, ConnectorInterface, LoggerAwareInterface
+class FacebookSyncLeadformConnector extends FacebookLeadConnectorAbstract implements BatchInterface
 {
-
-    use LoggerTrait;
-
-    /**
-     * @var SystemInstallRepository|ObjectRepository
-     */
-    private $systemInstallRepository;
-    /**
-     *
-     * @var FacebookLeadsSystem
-     */
-    private $system;
 
     /**
      * @var CurlSenderFactory
      */
-    private $factory;
+    protected $factory;
 
     /**
      * FacebookSyncLeadformConnector constructor.
@@ -71,10 +53,9 @@ class FacebookSyncLeadformConnector implements BatchInterface, ConnectorInterfac
         DocumentManager $dm
     )
     {
-        $this->system                  = $system;
-        $this->factory                 = $factory;
-        $this->systemInstallRepository = $dm->getRepository(SystemInstall::class);
-        $this->logger                  = new NullLogger();
+        parent::__construct($system, $dm);
+
+        $this->factory = $factory;
     }
 
     /**
@@ -98,26 +79,16 @@ class FacebookSyncLeadformConnector implements BatchInterface, ConnectorInterfac
             urlencode('created_time,id,ad_id,form_id,field_data'),
             urlencode($settings[OAuth2Provider::ACCESS_TOKEN])
         ));
-        $promise  = $sender->send(RequestDto::from($requestDto, $url))
+
+        $promise  = $this->fetchData($sender, RequestDto::from($requestDto, $url))
             ->then(
-                function (ResponseInterface $response): SuccessMessage {
-                    return $this->createSuccessMessage($response);
+                function (ResponseInterface $response) use ($callbackItem) {
+                    return $callbackItem($this->createSuccessMessage($response));
                 },
-                function (ResponseException $exception) use ($systemInstall): void {
-                    if ($exception->getCode() == 400) {
-                        $body = $exception->getResponse()->getBody()->getContents();
-                        $data = json_decode($body, TRUE);
-                        if (isset($data['error']['code']) && $data['error']['code'] == 190) {
-                            $this->logError(401, $this->system, $systemInstall);
-                        }
-                    }
-                    if ($exception->getCode() == 500) {
-                        $this->logError(500, $this->system, $systemInstall);
-                    }
-                    throw $exception;
+                function (ResponseException $exception) use ($systemInstall, $callbackItem) {
+                    return $callbackItem($this->logBatchConnectorError($exception, $systemInstall, $this->system, 0));
                 }
-            )
-            ->then($callbackItem);
+            );
 
         $this->systemInstallRepository->setSyncTime($systemInstall);
 
@@ -130,17 +101,6 @@ class FacebookSyncLeadformConnector implements BatchInterface, ConnectorInterfac
     public function getId(): string
     {
         return 'facebook-sync-leadform-conector';
-    }
-
-    /**
-     * @param ProcessDto $dto
-     *
-     * @return ProcessDto|void
-     * @throws SystemException
-     */
-    public function processEvent(ProcessDto $dto): ProcessDto
-    {
-        throw new SystemException('Facebook Leads has not implemented "processEvent" function.');
     }
 
     /**

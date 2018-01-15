@@ -16,9 +16,11 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlException;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit_Framework_MockObject_MockObject;
 use Tests\ConnectorTestCaseAbstract;
 
@@ -48,31 +50,77 @@ class FacebookGetPageConnectorTest extends ConnectorTestCaseAbstract
         $curlManager = $this->createMock(CurlManager::class);
         $curlManager->expects($this->at(0))->method('send')->willReturn($responseDto);
 
+        $connector = new FacebookGetPageConnector($this->getSystem(), $this->getDm(), $curlManager);
+        $result    = $connector->getAccounts($this->getSystemInstall());
+
+        $this->assertCount(5, $result);
+        $this->assertEquals('Cerv fiction', $result['787114551385792']);
+    }
+
+    /**
+     *
+     */
+    public function testGetAccountsLimit(): void
+    {
+        /** @var MockObject|CurlManager $sender */
+        $sender = $this->createMock(CurlManager::class);
+        $sender
+            ->expects($this->exactly(1))
+            ->method('send')
+            ->willReturnCallback(function (RequestDto $requestDto): void {
+                $body = json_encode([
+                    'error' => [
+                        'code' => 4, // means: request limit reached
+                    ],
+                ]);
+                throw new CurlException('', CurlException::REQUEST_FAILED, NULL, new Response(400, [], $body));
+            });
+
+        $connector = new FacebookGetPageConnector($this->getSystem(), $this->getDm(), $sender);
+
+        $this->expectException(CurlException::class);
+
+        $connector->getAccounts($this->getSystemInstall());
+    }
+
+    /**
+     * @return MockObject|DocumentManager
+     */
+    private function getDm()
+    {
+        return $this->createMock(DocumentManager::class);
+    }
+
+    /**
+     * @return FacebookLeadsSystem|MockObject
+     */
+    private function getSystem()
+    {
         $requestDto = new RequestDto('GET', new Uri('http://test.neco'));
         $requestDto->setHeaders([
             'Content-Type' => 'application/json',
             'Accept'       => 'application/json',
         ]);
 
-        /** @var PHPUnit_Framework_MockObject_MockObject|FacebookLeadsSystem $system */
+        /** @var MockObject|FacebookLeadsSystem $system */
         $system = $this->createMock(FacebookLeadsSystem::class);
         $system->method('getRequestDto')->willReturn($requestDto);
 
-        /** @var PHPUnit_Framework_MockObject_MockObject|SystemInstall $systemInstall */
+        return $system;
+    }
+
+    /**
+     * @return SystemInstall|MockObject
+     */
+    private function getSystemInstall()
+    {
+        /** @var MockObject|SystemInstall $systemInstall */
         $systemInstall = $this->createMock(SystemInstall::class);
         $systemInstall->method('getSettings')->willReturn([
             OAuth2Provider::ACCESS_TOKEN => '987654321',
         ]);
 
-        /** @var PHPUnit_Framework_MockObject_MockObject|DocumentManager $dm */
-        $dm = $this->createMock(DocumentManager::class);
-
-        $connector = new FacebookGetPageConnector($system, $dm, $curlManager);
-
-        $result = $connector->getAccounts($systemInstall);
-
-        $this->assertCount(5, $result);
-        $this->assertEquals('Cerv fiction', $result['787114551385792']);
+        return $systemInstall;
     }
 
 }
