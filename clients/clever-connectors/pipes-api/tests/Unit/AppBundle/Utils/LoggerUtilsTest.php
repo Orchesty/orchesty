@@ -3,6 +3,7 @@
 namespace Tests\Unit\AppBundle\Utils;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Enum\NotificationTypeEnum;
 use CleverConnectors\AppBundle\Model\Systems\SystemInterface;
 use CleverConnectors\AppBundle\Traits\LoggerTrait;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -34,11 +35,12 @@ final class LoggerUtilsTest extends KernelTestCaseAbstract
         $systemInstall->method('getToken')->willReturn('Token');
 
         $this->assertEquals([
-            'guid'        => 'User',
-            'token'       => 'Token',
-            'system_key'  => 'Key',
-            'system_name' => 'Name',
-        ], self::getMessage($system, $systemInstall));
+            'notification_type' => 'data_error',
+            'guid'              => 'User',
+            'token'             => 'Token',
+            'system_key'        => 'Key',
+            'system_name'       => 'Name',
+        ], self::getMessage(NotificationTypeEnum::DATA_ERROR, $system, $systemInstall));
     }
 
 }

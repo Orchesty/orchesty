@@ -153,7 +153,8 @@ final class BasecrmQueueContactConnectorTest extends ConnectorTestCaseAbstract
                         throw new CurlException('', $status, NULL, new Response($status));
                     }
 
-                    return new ResponseDto($status, '', $this->getRequest('syncStartResponse.json'), $expt->getHeaders());
+                    return new ResponseDto($status, '', $this->getRequest('syncStartResponse.json'),
+                        $expt->getHeaders());
                 }
             ));
 
@@ -191,10 +192,11 @@ final class BasecrmQueueContactConnectorTest extends ConnectorTestCaseAbstract
 
                     $this->assertEquals(NotificationTypeEnum::DATA_ERROR, $type);
                     $this->assertEquals([
-                        'guid'        => 'user',
-                        'token'       => 'token',
-                        'system_key'  => 'basecrm',
-                        'system_name' => 'BaseCRM',
+                        'notification_type' => 'data_error',
+                        'guid'              => 'user',
+                        'token'             => 'token',
+                        'system_key'        => 'basecrm',
+                        'system_name'       => 'BaseCRM',
                     ], $data);
                 }
             ));

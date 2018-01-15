@@ -215,10 +215,11 @@ final class QuickbooksCreateCustomerConnectorTest extends KernelTestCaseAbstract
                 function (string $type, $data): void {
                     self::assertEquals('data_error', $type);
                     self::assertEquals([
-                        'guid'        => 'user',
-                        'token'       => 'tkn',
-                        'system_key'  => 'quickbooks',
-                        'system_name' => 'Quickbooks',
+                        'notification_type' => 'data_error',
+                        'guid'              => 'user',
+                        'token'             => 'tkn',
+                        'system_key'        => 'quickbooks',
+                        'system_name'       => 'Quickbooks',
                     ], $data);
                 }
             ));

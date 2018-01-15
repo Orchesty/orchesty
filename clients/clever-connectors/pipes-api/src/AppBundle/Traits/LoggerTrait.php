@@ -41,6 +41,11 @@ trait LoggerTrait
     private static $systemName = 'system_name';
 
     /**
+     * @var string
+     */
+    private static $notificationType = 'notification_type';
+
+    /**
      * @var LoggerInterface
      */
     protected $logger;
@@ -124,39 +129,51 @@ trait LoggerTrait
      */
     protected function logError(int $status, SystemInterface $system, SystemInstall $systemInstall): void
     {
-        $msg = self::getMessage($system, $systemInstall);
-
         switch ($status) {
             case 400:
             case 404:
             case 409:
             case 422:
-                $this->logger->info(NotificationTypeEnum::DATA_ERROR, $msg);
+                $this->logger->info(
+                    NotificationTypeEnum::DATA_ERROR,
+                    self::getMessage(NotificationTypeEnum::DATA_ERROR, $system, $systemInstall)
+                );
                 break;
             case 401:
-                $this->logger->info(NotificationTypeEnum::ACCESS_EXPIRATION, $msg);
+                $this->logger->info(
+                    NotificationTypeEnum::ACCESS_EXPIRATION,
+                    self::getMessage(NotificationTypeEnum::ACCESS_EXPIRATION, $system, $systemInstall)
+                );
                 break;
             case 429:
-                $this->logger->info(NotificationTypeEnum::SERVICE_UNAVAILABLE, $msg);
+                $this->logger->info(
+                    NotificationTypeEnum::SERVICE_UNAVAILABLE,
+                    self::getMessage(NotificationTypeEnum::SERVICE_UNAVAILABLE, $system, $systemInstall)
+                );
                 break;
             default:
-                $this->logger->info(NotificationTypeEnum::SERVICE_UNAVAILABLE, $msg);
+                $this->logger->info(
+                    NotificationTypeEnum::SERVICE_UNAVAILABLE,
+                    self::getMessage(NotificationTypeEnum::SERVICE_UNAVAILABLE, $system, $systemInstall)
+                );
         }
     }
 
     /**
+     * @param string          $type
      * @param SystemInterface $system
      * @param SystemInstall   $systemInstall
      *
      * @return array
      */
-    public static function getMessage(SystemInterface $system, SystemInstall $systemInstall): array
+    public static function getMessage(string $type, SystemInterface $system, SystemInstall $systemInstall): array
     {
         return [
-            self::$guid       => $systemInstall->getUser(),
-            self::$token      => $systemInstall->getToken(),
-            self::$systemKey  => $system->getKey(),
-            self::$systemName => $system->getName(),
+            self::$notificationType => $type,
+            self::$guid             => $systemInstall->getUser(),
+            self::$token            => $systemInstall->getToken(),
+            self::$systemKey        => $system->getKey(),
+            self::$systemName       => $system->getName(),
         ];
     }
 

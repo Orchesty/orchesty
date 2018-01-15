@@ -154,10 +154,11 @@ final class SalesforceGetContactConnectorTest extends ConnectorTestCaseAbstract
             function (string $type, array $content): void {
                 $this->assertEquals('access_expiration', $type);
                 $this->assertEquals([
-                    'guid'        => 'User',
-                    'token'       => 'Token',
-                    'system_key'  => 'salesforce',
-                    'system_name' => 'Salesforce',
+                    'notification_type' => 'access_expiration',
+                    'guid'              => 'User',
+                    'token'             => 'Token',
+                    'system_key'        => 'salesforce',
+                    'system_name'       => 'Salesforce',
                 ], $content);
             }
         )->processEvent((new ProcessDto())->setData(Json::encode(['id' => 1]))->setHeaders([]));

@@ -164,10 +164,11 @@ final class ZendeskCreateUserConnectorTest extends ConnectorTestCaseAbstract
                 function (string $type, $data): void {
                     self::assertEquals('data_error', $type);
                     self::assertEquals([
-                        'guid'        => 'gguid',
-                        'token'         => 'tkn',
-                        'system_key'  => 'zendesk',
-                        'system_name' => 'Zendesk',
+                        'notification_type' => 'data_error',
+                        'guid'              => 'gguid',
+                        'token'             => 'tkn',
+                        'system_key'        => 'zendesk',
+                        'system_name'       => 'Zendesk',
                     ], $data);
                 }
             ));

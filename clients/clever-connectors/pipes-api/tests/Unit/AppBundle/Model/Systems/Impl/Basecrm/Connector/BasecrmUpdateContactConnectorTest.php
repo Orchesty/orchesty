@@ -192,10 +192,11 @@ final class BasecrmUpdateContactConnectorTest extends ConnectorTestCaseAbstract
 
                     $this->assertEquals(NotificationTypeEnum::DATA_ERROR, $type);
                     $this->assertEquals([
-                        'guid'        => 'asd',
-                        'token'       => 'qew',
-                        'system_key'  => 'basecrm',
-                        'system_name' => 'BaseCRM',
+                        'notification_type' => 'data_error',
+                        'guid'              => 'asd',
+                        'token'             => 'qew',
+                        'system_key'        => 'basecrm',
+                        'system_name'       => 'BaseCRM',
                     ], $data);
                 }
             ));

@@ -190,10 +190,11 @@ final class ShopifyCreateCustomerConnectorTest extends ConnectorTestCaseAbstract
             ->method('info')->willReturnCallback(function (string $type, array $content): void {
                 $this->assertEquals('access_expiration', $type);
                 $this->assertEquals([
-                    'guid'        => 'User',
-                    'token'       => 'Token',
-                    'system_key'  => 'shopify',
-                    'system_name' => 'Shopify',
+                    'notification_type' => 'access_expiration',
+                    'guid'              => 'User',
+                    'token'             => 'Token',
+                    'system_key'        => 'shopify',
+                    'system_name'       => 'Shopify',
                 ], $content);
             });
 
