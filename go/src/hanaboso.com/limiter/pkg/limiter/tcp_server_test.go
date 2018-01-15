@@ -13,7 +13,7 @@ type positiveLimiter struct {}
 func (dec *positiveLimiter) IsFreeLimit(key string, time string, value string) (bool, error) {
 	return true, nil
 }
-func (dec *positiveLimiter) PostponeMessage(msg storage.Message) (error) {
+func (dec *positiveLimiter) PostponeMessage(msg *storage.Message) (error) {
 	return nil
 }
 
@@ -21,7 +21,7 @@ type negativeLimiter struct {}
 func (dec *negativeLimiter) IsFreeLimit(key string, time string, value string) (bool, error) {
 	return false, nil
 }
-func (dec *negativeLimiter) PostponeMessage(msg storage.Message) (error) {
+func (dec *negativeLimiter) PostponeMessage(msg *storage.Message) (error) {
 	return nil
 }
 

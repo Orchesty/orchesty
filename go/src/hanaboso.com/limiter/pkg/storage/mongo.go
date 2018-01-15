@@ -57,7 +57,7 @@ func (s *Mongo) Save(m *Message) (string, error) {
 func (s *Mongo) Get(key string, length int) ([]*Message, error) {
 	var messages []*Message
 	c := s.session.DB(s.db).C(s.collection)
-	err := c.Find(bson.M{"limitKey": key}).All(messages)
+	err := c.Find(bson.M{"limitkey": key}).Limit(length).Iter().All(&messages)
 
 	if err != nil {
 		return make([]*Message, 0), err
@@ -66,10 +66,22 @@ func (s *Mongo) Get(key string, length int) ([]*Message, error) {
 	return messages, nil
 }
 
+func (s *Mongo) GetAllKeys() ([]string, error) {
+	var keys []string
+	c := s.session.DB(s.db).C(s.collection)
+	err := c.Find(nil).Distinct("limitkey", &keys)
+
+	if err != nil {
+		return make([]string, 0), err
+	}
+
+	return keys, nil
+}
+
 // Exists return boolean if any document found with given key or returns error if some mongo error occurs
 func (s *Mongo) Exists(key string) (bool, error) {
 	c := s.session.DB(s.db).C(s.collection)
-	count, err := c.Find(bson.M{"limitKey": key}).Count()
+	count, err := c.Find(bson.M{"limitkey": key}).Count()
 
 	if err != nil {
 		return false, err

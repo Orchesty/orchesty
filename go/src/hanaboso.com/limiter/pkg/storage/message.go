@@ -14,7 +14,7 @@ type Message struct {
 }
 
 // NewMessage creates storage Message struct by converting amqp Delivery to Publishing message and adding limit info
-func NewMessage(delivery amqp.Delivery) (*Message, error) {
+func NewMessage(delivery *amqp.Delivery) (*Message, error) {
 
 	key, ok := delivery.Headers["pf-limit-key"]
 	if !ok {
