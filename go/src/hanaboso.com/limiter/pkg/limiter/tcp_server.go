@@ -131,25 +131,22 @@ func (srv *TcpServer) handleRequest(conn net.Conn) {
 		fmt.Println("TCP server error reading request:", err.Error())
 		return
 	}
-
 	log.Println("Tcp Server request received:", req)
-
-	resultPrefix := req.name + ";" + req.id + ";"
-	res := ""
+	result := ""
 
 	switch req.name {
 	case healthCheckRequest:
-		res = srv.handleHealthCheckRequest(req)
+		result = srv.handleHealthCheckRequest(req)
 		break
 	case limitCheckRequest:
-		res = srv.handleLimitCheckRequest(req)
+		result = srv.handleLimitCheckRequest(req)
 		break
 	}
 
-	res = resultPrefix + res
-	conn.Write([]byte(res))
+	response := strings.Join([]string{req.name, req.id, result}, ";")
+	conn.Write([]byte(response))
 
-	log.Println("Tcp Server response sent:", res)
+	log.Println("Tcp Server response sent:", response)
 }
 
 // handleHealthCheckRequest just writes the given string to response which means that it is alive
