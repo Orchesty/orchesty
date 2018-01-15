@@ -5,11 +5,19 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\Traits;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\Systems\SystemInterface;
 use CleverConnectors\AppBundle\Utils\HeadersUtils;
+use Clue\React\Buzz\Message\ResponseException;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlException;
+use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
 
 /**
  * Trait FacebookTrait
+ *
+ * Facebook API error codes
+ * 4 - application request limit reached
+ * 17 - user request limit reached
+ * 100 - invalid parameter
+ * 190 - invalid access token
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\Traits
  */
@@ -17,17 +25,12 @@ trait FacebookTrait
 {
 
     /**
-     * 4 - application request limit reached
-     * 17 - user request limit reached
-     * 100 - invalid parameter
-     * 190 - invalid access token
-     *
      * @param CurlException   $exception
      * @param SystemInstall   $systemInstall
      * @param SystemInterface $system
      * @param ProcessDto      $dto
      *
-     * @return ProcessDto
+     * @return ProcessDto|null
      * @throws CurlException
      */
     protected function logConnectorError(
@@ -37,6 +40,49 @@ trait FacebookTrait
         ?ProcessDto $dto = NULL
     ): ?ProcessDto
     {
+        $throw = isset($dto) ? FALSE : TRUE;
+        $this->processErrorCode($exception, $systemInstall, $system, $throw);
+
+        return HeadersUtils::setLimitHeaderToDto($dto);
+    }
+
+    /**
+     * @param ResponseException $exception
+     * @param SystemInstall     $systemInstall
+     * @param SystemInterface   $system
+     * @param int               $i
+     *
+     * @return SuccessMessage
+     * @throws CurlException
+     */
+    protected function logBatchConnectorError(
+        ResponseException $exception,
+        SystemInstall $systemInstall,
+        SystemInterface $system,
+        int $i
+    ): SuccessMessage
+    {
+        $this->processErrorCode($exception, $systemInstall, $system, FALSE);
+
+        return HeadersUtils::setLimitHeaderToMessage(new SuccessMessage($i));
+    }
+
+    /**
+     * @param CurlException|ResponseException $exception
+     * @param SystemInstall                   $systemInstall
+     * @param SystemInterface                 $system
+     * @param bool                            $throw
+     *
+     * @return int|null
+     * @throws CurlException
+     */
+    protected function processErrorCode(
+        $exception,
+        SystemInstall $systemInstall,
+        SystemInterface $system,
+        bool $throw = TRUE
+    ): ?int
+    {
         $response = $exception->getResponse();
 
         if (isset($response)) {
@@ -45,10 +91,10 @@ trait FacebookTrait
                 $data      = json_decode($response->getBody()->getContents(), TRUE);
                 $errorCode = isset($data['error']['code']) ? $data['error']['code'] : NULL;
                 if (in_array($errorCode, [4, 17])) {
-                    if ($dto) {
-                        return HeadersUtils::setLimitHeaderToDto($dto);
-                    } else {
+                    if ($throw) {
                         $httpCode = 429;
+                    } else {
+                        return 429;
                     }
                 } elseif ($errorCode == 100) {
                     $httpCode = 400;

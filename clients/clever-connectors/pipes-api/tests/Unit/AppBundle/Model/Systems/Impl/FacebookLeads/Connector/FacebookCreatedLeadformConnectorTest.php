@@ -14,6 +14,7 @@ use CleverConnectors\AppBundle\Model\LastSync\LastSyncManager;
 use CleverConnectors\AppBundle\Model\Systems\Impl\FacebookLeads\Connector\FacebookCreatedLeadformConnector;
 use CleverConnectors\AppBundle\Model\Systems\Impl\FacebookLeads\FacebookLeadsSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
+use Clue\React\Buzz\Message\ResponseException;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\Uri;
@@ -22,7 +23,7 @@ use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSender;
 use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSenderFactory;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
-use PHPUnit_Framework_MockObject_MockObject;
+use PHPUnit\Framework\MockObject\MockObject;
 use React\EventLoop\Factory;
 use Tests\ConnectorTestCaseAbstract;
 use function React\Promise\resolve;
@@ -36,32 +37,32 @@ class FacebookCreatedLeadformConnectorTest extends ConnectorTestCaseAbstract
 {
 
     /**
-     * @var PHPUnit_Framework_MockObject_MockObject|CurlSender
+     * @var MockObject|CurlSender
      */
     protected $sender;
 
     /**
-     * @var PHPUnit_Framework_MockObject_MockObject|FacebookLeadsSystem
+     * @var MockObject|FacebookLeadsSystem
      */
     protected $system;
 
     /**
-     * @var PHPUnit_Framework_MockObject_MockObject|LastSyncManager
+     * @var MockObject|LastSyncManager
      */
     protected $lastSyncManager;
 
     /**
-     * @var PHPUnit_Framework_MockObject_MockObject|CurlSenderFactory
+     * @var MockObject|CurlSenderFactory
      */
     protected $factory;
 
     /**
-     * @var PHPUnit_Framework_MockObject_MockObject|SystemInstall
+     * @var MockObject|SystemInstall
      */
     protected $systemInstall;
 
     /**
-     * @var PHPUnit_Framework_MockObject_MockObject|DocumentManager
+     * @var MockObject|DocumentManager
      */
     private $mockDm;
 
@@ -96,6 +97,50 @@ class FacebookCreatedLeadformConnectorTest extends ConnectorTestCaseAbstract
         $this->assertTrue(is_array($data));
         $this->assertCount(2, $data);
         $this->assertEquals(0, $result->getSequenceId());
+    }
+
+    /**
+     *
+     */
+    public function testProcessBatchLimit(): void
+    {
+        $loop = Factory::create();
+
+        $processDto = new ProcessDto();
+        $processDto
+            ->setHeaders([]);
+
+        $this->initMocks();
+
+        $this->sender
+            ->expects($this->once())
+            ->method('send')
+            ->willReturnCallback(function (RequestDto $requestDto) {
+                $body = json_encode([
+                    'error' => [
+                        'code' => 4, // means: request limit reached
+                    ],
+                ]);
+
+                return resolve(new ResponseException(new Response(400, [], $body)));
+            });
+
+        $connector = new FacebookCreatedLeadformConnector($this->system, $this->lastSyncManager, $this->factory,
+            $this->mockDm);
+
+        $data = $connector->processBatch($processDto, $loop, function (): void {
+        });
+
+        $data->then(
+            function (): void {
+                $this->assertTrue(FALSE);
+            },
+            function (): void {
+                $this->assertTrue(TRUE);
+            }
+        )->done();
+
+        $loop->run();
     }
 
     /**

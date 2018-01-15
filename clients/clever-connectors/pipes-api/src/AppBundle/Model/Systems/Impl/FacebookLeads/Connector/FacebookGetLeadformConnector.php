@@ -11,12 +11,8 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\FacebookLeads\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
-use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\FacebookLeads\FacebookLeadsSystem;
-use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
-use CleverConnectors\AppBundle\Traits\LoggerTrait;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
-use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider;
@@ -24,38 +20,19 @@ use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlException;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
-use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
-use Hanaboso\PipesFramework\Connector\ConnectorInterface;
-use Psr\Log\LoggerAwareInterface;
-use Psr\Log\NullLogger;
 
 /**
  * Class FacebookGetLeadformConnector
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\FacebookLeads\Connector
  */
-class FacebookGetLeadformConnector implements ConnectorInterface, LoggerAwareInterface
+class FacebookGetLeadformConnector extends FacebookLeadConnectorAbstract
 {
-
-    use LoggerTrait;
 
     /**
      * @var CurlManager
      */
     private $curlManager;
-
-    /**
-     * @var DocumentManager
-     */
-    private $dm;
-
-    /**
-     * @var FacebookLeadsSystem
-     */
-    private $system;
-
-    /** @var SystemInstallRepository|ObjectRepository */
-    private $systemInstallRepository;
 
     /**
      * FacebookGetLeadformConnector constructor.
@@ -70,11 +47,9 @@ class FacebookGetLeadformConnector implements ConnectorInterface, LoggerAwareInt
         CurlManager $curlManager
     )
     {
-        $this->curlManager             = $curlManager;
-        $this->dm                      = $dm;
-        $this->system                  = $system;
-        $this->systemInstallRepository = $dm->getRepository(SystemInstall::class);
-        $this->logger                  = new NullLogger();
+        parent::__construct($system, $dm);
+
+        $this->curlManager = $curlManager;
     }
 
     /**
@@ -88,24 +63,20 @@ class FacebookGetLeadformConnector implements ConnectorInterface, LoggerAwareInt
     /**
      * @param ProcessDto $dto
      *
-     * @return ProcessDto|void
-     * @throws SystemException
-     */
-    public function processEvent(ProcessDto $dto): ProcessDto
-    {
-        throw new SystemException('Facebook Leads has not implemented "processEvent" function.');
-    }
-
-    /**
-     * @param ProcessDto $dto
-     *
      * @return ProcessDto
+     * @throws CurlException
      * @throws CleverConnectorsException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {
         $systemInstall = $this->systemInstallRepository->getSystemInstallFromHeaders($dto->getHeaders());
-        $response      = $this->makeRequest($systemInstall, $dto);
+        $requestDto    = $this->prepareRequestDto($systemInstall, $dto);
+
+        try {
+            $response = $this->curlManager->send($requestDto);
+        } catch (CurlException $e) {
+            return $this->logConnectorError($e, $systemInstall, $this->system, $dto);
+        }
 
         return $dto->setData($response->getBody());
     }
@@ -116,8 +87,7 @@ class FacebookGetLeadformConnector implements ConnectorInterface, LoggerAwareInt
      *
      * @return array
      * @throws CleverConnectorsException
-     * @internal param string $pageId
-     *
+     * @throws CurlException
      */
     public function getLeadForms(SystemInstall $systemInstall, array $data): array
     {
@@ -136,10 +106,16 @@ class FacebookGetLeadformConnector implements ConnectorInterface, LoggerAwareInt
         ]);
         $this->dm->flush();
 
-        $settings = $systemInstall->getSettings();
+        $settings   = $systemInstall->getSettings();
+        $requestDto = $this->prepareRequestDto($systemInstall);
 
-        $response = $this->makeRequest($systemInstall);
-        if ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300) {
+        try {
+            $response = $this->curlManager->send($requestDto);
+        } catch (CurlException $e) {
+            $this->logConnectorError($e, $systemInstall, $this->system);
+        }
+
+        if (isset($response) && $response->getStatusCode() >= 200 && $response->getStatusCode() < 300) {
             $data = json_decode($response->getBody(), TRUE);
 
             $sForms = [];
@@ -184,8 +160,7 @@ class FacebookGetLeadformConnector implements ConnectorInterface, LoggerAwareInt
      *
      * @return string
      * @throws CleverConnectorsException
-     * @internal param array $data
-     *
+     * @throws CurlException
      */
     private function getPageAccessToken(SystemInstall $systemInstall, string $pageId): string
     {
@@ -194,8 +169,14 @@ class FacebookGetLeadformConnector implements ConnectorInterface, LoggerAwareInt
         $url        = new Uri(
             $requestDto->getUri(TRUE) . '/' . $pageId . '?fields=access_token&access_token=' . urlencode($settings[OAuth2Provider::ACCESS_TOKEN])
         );
-        $response   = $this->curlManager->send(RequestDto::from($requestDto, $url));
-        if ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300) {
+
+        try {
+            $response = $this->curlManager->send(RequestDto::from($requestDto, $url));
+        } catch (CurlException $e) {
+            $this->logConnectorError($e, $systemInstall, $this->system);
+        }
+
+        if (isset($response) && $response->getStatusCode() >= 200 && $response->getStatusCode() < 300) {
             $data = json_decode($response->getBody(), TRUE);
 
             return $data['access_token'];
@@ -230,10 +211,11 @@ class FacebookGetLeadformConnector implements ConnectorInterface, LoggerAwareInt
      * @param SystemInstall   $systemInstall
      * @param ProcessDto|null $dto
      *
-     * @return ResponseDto
+     * @return RequestDto
+     * @throws CleverConnectorsException
      * @throws CurlException
      */
-    private function makeRequest(SystemInstall $systemInstall, ?ProcessDto $dto = NULL): ResponseDto
+    private function prepareRequestDto(SystemInstall $systemInstall, ?ProcessDto $dto = NULL): RequestDto
     {
         $settings        = $systemInstall->getSettings();
         $pageId          = $settings[FacebookLeadsSystem::PAGE_ID];
@@ -243,26 +225,12 @@ class FacebookGetLeadformConnector implements ConnectorInterface, LoggerAwareInt
         $url        = new Uri(
             $requestDto->getUri(TRUE) . '/' . $pageId . '/leadgen_forms?limit=1000&fields=id%2Cname&access_token=' . urlencode($pageAccessToken)
         );
+
         if ($dto) {
             $requestDto->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()));
         }
 
-        try {
-            return $this->curlManager->send(RequestDto::from($requestDto, $url));
-        } catch (CurlException $e) {
-            $response = $e->getResponse();
-            if (isset($response) && $response->getStatusCode() == 400) {
-                $body = $response->getBody()->getContents();
-                $data = json_decode($body, TRUE);
-                if (isset($data['error']['code']) && $data['error']['code'] == 190) {
-                    $this->logError(401, $this->system, $systemInstall);
-                }
-            }
-            if (isset($response) && $response->getStatusCode() == 500) {
-                $this->logError(500, $this->system, $systemInstall);
-            }
-            throw $e;
-        }
+        return RequestDto::from($requestDto, $url);
     }
 
 }

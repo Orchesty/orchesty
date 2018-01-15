@@ -13,12 +13,9 @@ use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\LastSync\LastSyncManager;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\FacebookLeads\FacebookLeadsSystem;
-use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
-use CleverConnectors\AppBundle\Traits\LoggerTrait;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use CleverConnectors\AppBundle\Utils\CronUtils;
 use Clue\React\Buzz\Message\ResponseException;
-use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider;
@@ -26,12 +23,9 @@ use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSenderFactory;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
-use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\BatchInterface;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
 use Psr\Http\Message\ResponseInterface;
-use Psr\Log\LoggerAwareInterface;
-use Psr\Log\NullLogger;
 use React\EventLoop\LoopInterface;
 use React\Promise\PromiseInterface;
 
@@ -40,20 +34,8 @@ use React\Promise\PromiseInterface;
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\FacebookLeads\Connector
  */
-class FacebookCreatedLeadformConnector implements BatchInterface, ConnectorInterface, LoggerAwareInterface
+class FacebookCreatedLeadformConnector extends FacebookLeadConnectorAbstract implements BatchInterface
 {
-
-    use LoggerTrait;
-
-    /**
-     * @var SystemInstallRepository|ObjectRepository
-     */
-    private $systemInstallRepository;
-
-    /**
-     * @var FacebookLeadsSystem
-     */
-    private $system;
 
     /**
      * @var LastSyncManager
@@ -63,7 +45,7 @@ class FacebookCreatedLeadformConnector implements BatchInterface, ConnectorInter
     /**
      * @var CurlSenderFactory
      */
-    private $factory;
+    protected $factory;
 
     /**
      * FacebookCreatedLeadformConnector constructor.
@@ -80,11 +62,10 @@ class FacebookCreatedLeadformConnector implements BatchInterface, ConnectorInter
         DocumentManager $dm
     )
     {
-        $this->system                  = $system;
-        $this->lastSyncManager         = $lastSyncManager;
-        $this->factory                 = $factory;
-        $this->systemInstallRepository = $dm->getRepository(SystemInstall::class);
-        $this->logger                  = new NullLogger();
+        parent::__construct($system, $dm);
+
+        $this->lastSyncManager = $lastSyncManager;
+        $this->factory         = $factory;
     }
 
     /**
@@ -128,23 +109,13 @@ class FacebookCreatedLeadformConnector implements BatchInterface, ConnectorInter
         ));
 
         $promise = $sender->send(RequestDto::from($requestDto, $url))->then(
-            function (ResponseInterface $response): SuccessMessage {
-                return $this->createSuccessMessage($response);
+            function (ResponseInterface $response) use ($callbackItem) {
+                return $callbackItem($this->createSuccessMessage($response));
             },
-            function (ResponseException $exception) use ($systemInstall): void {
-                if ($exception->getCode() == 400) {
-                    $body = $exception->getResponse()->getBody()->getContents();
-                    $data = json_decode($body, TRUE);
-                    if (isset($data['error']['code']) && $data['error']['code'] == 190) {
-                        $this->logError(401, $this->system, $systemInstall);
-                    }
-                }
-                if ($exception->getCode() == 500) {
-                    $this->logError(500, $this->system, $systemInstall);
-                }
-                throw $exception;
+            function (ResponseException $exception) use ($systemInstall, $callbackItem) {
+                return $callbackItem($this->logBatchConnectorError($exception, $systemInstall, $this->system, 0));
             }
-        )->then($callbackItem);
+        );
 
         $lastSync = $this->lastSyncManager->getLastSync($systemInstall, $dto->getHeaders());
         $times    = CronUtils::getTimes($lastSync);
@@ -160,17 +131,6 @@ class FacebookCreatedLeadformConnector implements BatchInterface, ConnectorInter
     public function getId(): string
     {
         return 'facebook-created-leadform-conector';
-    }
-
-    /**
-     * @param ProcessDto $dto
-     *
-     * @return ProcessDto|void
-     * @throws SystemException
-     */
-    public function processEvent(ProcessDto $dto): ProcessDto
-    {
-        throw new SystemException('Facebook Leads  has not implemented "processEvent" function.');
     }
 
     /**
