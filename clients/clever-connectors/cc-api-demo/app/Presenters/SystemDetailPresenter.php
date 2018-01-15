@@ -9,8 +9,10 @@
 namespace App\Presenters;
 
 use App\Forms\AuthorizationSettingGeneratorFactory;
+use App\Forms\SendEventFormFactory;
 use App\Forms\SwitchTokenFormFactory;
 use App\Model\DistributionList;
+use CcApi\ApiEntity\Subscriber;
 use CcApi\ApiEntity\UserSystem;
 use CcApi\Connector\ConnectorManager;
 use Nette\Application\UI\Form;
@@ -44,9 +46,19 @@ class SystemDetailPresenter extends BasePresenter
     private $switchTokenFormFactory;
 
     /**
+     * @var SendEventFormFactory
+     */
+    private $sendEventFormFactory;
+
+    /**
      * @var DistributionList
      */
     private $distributionList;
+
+    /**
+     * @var array
+     */
+    private $actions = [];
 
     /**
      * @var array
@@ -59,17 +71,20 @@ class SystemDetailPresenter extends BasePresenter
      * @param ConnectorManager                     $connectorManager
      * @param AuthorizationSettingGeneratorFactory $authorizationSettingGeneratorFactory
      * @param SwitchTokenFormFactory               $switchTokenFormFactory
+     * @param SendEventFormFactory                 $sendEventFormFactory
      * @param DistributionList                     $distributionList
      */
     public function __construct(ConnectorManager $connectorManager,
                                 AuthorizationSettingGeneratorFactory $authorizationSettingGeneratorFactory,
                                 SwitchTokenFormFactory $switchTokenFormFactory,
+                                SendEventFormFactory $sendEventFormFactory,
                                 DistributionList $distributionList)
     {
         parent::__construct();
         $this->connectorManager                     = $connectorManager;
         $this->authorizationSettingGeneratorFactory = $authorizationSettingGeneratorFactory;
         $this->switchTokenFormFactory               = $switchTokenFormFactory;
+        $this->sendEventFormFactory                 = $sendEventFormFactory;
         $this->distributionList                     = $distributionList;
     }
 
@@ -101,6 +116,22 @@ class SystemDetailPresenter extends BasePresenter
             );
             $this->template->additionalSetting = $this->createLink($this->userSystem);
             $this->template->system            = $this->userSystem;
+
+            foreach ($this->userSystem->getSettingFields() as $settingField) {
+                if ($settingField->getKey() === 'eventCreate' && $settingField->getValue() === TRUE) {
+                    $this->actions[SendEventFormFactory::CREATE] = 'Create';
+                }
+
+                if ($settingField->getKey() === 'eventUnsubscribe' && $settingField->getValue() === TRUE) {
+                    $this->actions[SendEventFormFactory::UNSUBSCRIBE] = 'UnSubscribe';
+                }
+
+                if ($settingField->getKey() === 'eventHardBounce' && $settingField->getValue() === TRUE) {
+                    $this->actions[SendEventFormFactory::HARD_BOUNCE] = 'Hard Bounce';
+                }
+            }
+
+            $this->template->hasActions = !empty($this->actions);
         } else {
             $this->template->system = NULL;
         }
@@ -130,6 +161,7 @@ class SystemDetailPresenter extends BasePresenter
     }
 
     /**
+     *
      */
     public function handleAuthorize()
     {
@@ -220,6 +252,45 @@ class SystemDetailPresenter extends BasePresenter
 
         $this->flashMessage('Token was switched.');
         $this->redirect('SystemDetail:', ['systemKey' => $this->userSystem->getKey()]);
+    }
+
+    /**
+     * @return Form
+     */
+    public function createComponentSendEventForm(): Form
+    {
+        $form = $this->sendEventFormFactory->create($this->userSystem, $this->list, $this->actions);
+
+        $form->onSuccess[] = [$this, 'processSendEvent'];
+
+        return $form;
+    }
+
+    /**
+     * @param Form $form
+     */
+    public function processSendEvent(Form $form, array $values): void
+    {
+        $subscriber = (new Subscriber())
+            ->setEmail($values['email'])
+            ->setLastName($values['last_name'])
+            ->setFirstName($values['first_name'])
+            ->setForeignId($values['_foreign_id'])
+            ->setLists([$values['lists']]);
+
+        switch ($values['type']) {
+            case SendEventFormFactory::CREATE:
+                $this->connectorManager->subscribe($this->userId, $subscriber);
+                break;
+
+            case SendEventFormFactory::UNSUBSCRIBE:
+                $this->connectorManager->unSubscribe($this->userId, $subscriber);
+                break;
+
+            case SendEventFormFactory::HARD_BOUNCE:
+                $this->connectorManager->hardBounce($this->userId, $subscriber);
+                break;
+        }
     }
 
 }

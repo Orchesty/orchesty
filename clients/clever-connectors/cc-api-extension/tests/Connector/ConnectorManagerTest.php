@@ -346,7 +346,7 @@ class ConnectorManagerTest extends TestCase
     public function testSubscribe(): void
     {
         $cb = function (Request $request) {
-            $content = '{"email":"email@example.com","first_name":"First Name","last_name":"Last Name","_foreign_id":"123","reactivate":true}';
+            $content = '{"email":"email@example.com","first_name":"First Name","last_name":"Last Name","_foreign_id":"123","reactivate":true,"lists":[]}';
 
             $this->assertSame('application/json', $request->getHeader('content-type')[0]);
             $this->assertSame(CurlSender::POST, $request->getMethod());
@@ -374,7 +374,7 @@ class ConnectorManagerTest extends TestCase
     public function testUnSubscribe(): void
     {
         $cb = function (Request $request) {
-            $content = '{"email":"email@example.com","first_name":"First Name","last_name":"Last Name","_foreign_id":"123","reactivate":true}';
+            $content = '{"email":"email@example.com","first_name":"First Name","last_name":"Last Name","_foreign_id":"123","reactivate":true,"lists":[]}';
 
             $this->assertSame('application/json', $request->getHeader('content-type')[0]);
             $this->assertSame(CurlSender::POST, $request->getMethod());
@@ -402,7 +402,7 @@ class ConnectorManagerTest extends TestCase
     public function testHardBounce(): void
     {
         $cb = function (Request $request) {
-            $content = '{"email":"email@example.com","first_name":"First Name","last_name":"Last Name","_foreign_id":"123","reactivate":true}';
+            $content = '{"email":"email@example.com","first_name":"First Name","last_name":"Last Name","_foreign_id":"123","reactivate":true,"lists":[]}';
 
             $this->assertSame('application/json', $request->getHeader('content-type')[0]);
             $this->assertSame(CurlSender::POST, $request->getMethod());

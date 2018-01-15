@@ -36,6 +36,11 @@ class Subscriber
     protected $reactivate;
 
     /**
+     * @var array
+     */
+    private $lists = [];
+
+    /**
      * @return string
      */
     public function getEmail(): string
@@ -138,6 +143,26 @@ class Subscriber
     /**
      * @return array
      */
+    public function getLists(): array
+    {
+        return $this->lists;
+    }
+
+    /**
+     * @param array $lists
+     *
+     * @return Subscriber
+     */
+    public function setLists(array $lists): Subscriber
+    {
+        $this->lists = $lists;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
     public function toArray(): array
     {
         return [
@@ -146,6 +171,7 @@ class Subscriber
             'last_name'   => $this->lastName,
             '_foreign_id' => $this->foreignId,
             'reactivate'  => $this->reactivate,
+            'lists'       => $this->lists,
         ];
     }
 
