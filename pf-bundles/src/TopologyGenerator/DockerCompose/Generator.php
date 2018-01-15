@@ -19,6 +19,7 @@ use Hanaboso\PipesFramework\TopologyGenerator\Environment;
 use Hanaboso\PipesFramework\TopologyGenerator\GeneratorInterface;
 use Hanaboso\PipesFramework\TopologyGenerator\GeneratorUtils;
 use Hanaboso\PipesFramework\TopologyGenerator\HostMapper;
+use stdClass;
 
 /**
  * Class Generator
@@ -374,7 +375,7 @@ class Generator implements GeneratorInterface
     {
         return [
             'type'     => 'splitter.json',
-            'settings' => [],
+            'settings' => new stdClass(),
         ];
     }
 
@@ -385,7 +386,7 @@ class Generator implements GeneratorInterface
     {
         return [
             'type'     => 'worker.null',
-            'settings' => [],
+            'settings' => new stdClass(),
         ];
     }
 
@@ -397,7 +398,7 @@ class Generator implements GeneratorInterface
     {
         return [
             'type'     => 'worker.resequencer',
-            'settings' => [],
+            'settings' => new stdClass(),
         ];
     }
 
