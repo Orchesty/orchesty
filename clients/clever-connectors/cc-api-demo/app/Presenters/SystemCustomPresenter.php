@@ -63,12 +63,13 @@ abstract class SystemCustomPresenter extends BasePresenter
     public function actionDefault($systemKey)
     {
         if ($systemKey) {
-            $this->userSystem       = $this->connectorManager->getUserSystem($this->userId, $systemKey);
-            $this->list             = $this->distributionList->getListsForSelect(
+            $this->userSystem          = $this->connectorManager->getUserSystem($this->userId, $systemKey);
+            $this->list                = $this->distributionList->getListsForSelect(
                 $this->userSystem->getToken(),
                 $this->userId
             );
-            $this->template->system = $this->userSystem;
+            $this->template->system    = $this->userSystem;
+            $this->template->systemKey = $systemKey;
         } else {
             $this->template->system = NULL;
         }

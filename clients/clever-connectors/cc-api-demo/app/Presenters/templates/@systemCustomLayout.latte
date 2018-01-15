@@ -12,7 +12,10 @@
     {if $user->isLoggedIn()}
 
         <div class="row">
-            <div class="col-md-10 text-center" style="line-height: 3rem">
+            <div class="col-md-2" style="line-height: 3rem">
+                <a n:href='SystemDetail:default $systemKey'>Back to Settings</a>
+            </div>
+            <div class="col-md-8 text-center" style="line-height: 3rem">
                 <strong>UserId:</strong> {$userId}
             </div>
             <div class="col-md-2" style="line-height: 3rem">

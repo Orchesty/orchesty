@@ -61,6 +61,9 @@ services:
 	switch_token_form_factory:
 		class: App\Forms\SwitchTokenFormFactory
 
+	send_event_form_factory:
+		class: App\Forms\SendEventFormFactory
+
 	authorize_generator_form_factory:
 		class: App\Forms\AuthorizationSettingGeneratorFactory
 

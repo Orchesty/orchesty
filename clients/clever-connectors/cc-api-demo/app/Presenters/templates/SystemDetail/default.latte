@@ -110,6 +110,17 @@
                     {control switchTokenForm}
                 </div>
             </div>
+
+            {if $hasActions}
+                <hr>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <h2>Event sender</h2>
+                        {control sendEventForm}
+                    </div>
+                </div>
+            {/if}
         {else}
             <div class="row">
                 <div class="col-md-12">
