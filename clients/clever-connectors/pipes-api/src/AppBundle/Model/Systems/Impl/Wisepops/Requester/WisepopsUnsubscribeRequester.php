@@ -10,6 +10,7 @@
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Wisepops\Requester;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Requester\RequesterInterface;
 use CleverConnectors\AppBundle\Model\Requester\RequesterTrait;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Wisepops\WisepopsSystem;
@@ -47,6 +48,7 @@ final class WisepopsUnsubscribeRequester implements RequesterInterface
      * @param array $data
      *
      * @return RequestDto
+     * @throws CleverConnectorsException
      */
     public function getRequestDto(array $data): RequestDto
     {
