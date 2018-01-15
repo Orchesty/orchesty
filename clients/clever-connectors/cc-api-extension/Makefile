@@ -1,10 +1,11 @@
 PHONY: init test phpunit phpstan codesniffer
 
 # Docker
-DR=docker run --rm --name php -v "$(shell pwd)":/var/www/html php-image
+DR= docker pull dkr.hanaboso.net/pipes/pipes/cc-api-extension:dev && docker run --rm --name php -v "$(shell pwd)":/var/www/html dkr.hanaboso.net/pipes/pipes/cc-api-extension:dev
 
 build:
-	docker build --build-arg DEV_USERNAME=$(shell id -un) --build-arg DEV_UID=$(shell id -u) -t php-image .
+	docker build --build-arg DEV_USERNAME=$(shell id -un) --build-arg DEV_UID=$(shell id -u) -t dkr.hanaboso.net/pipes/pipes/cc-api-extension:dev .
+	docker push dkr.hanaboso.net/pipes/pipes/cc-api-extension:dev
 
 init: build composer-install
 
