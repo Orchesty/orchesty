@@ -42,7 +42,7 @@ func (s *Mongo) reconnect() {
 }
 
 // Save persists Message to mongo storage and returns it's limitKey
-func (s *Mongo) Save(m Message) (string, error) {
+func (s *Mongo) Save(m *Message) (string, error) {
 	c := s.session.DB(s.db).C(s.collection)
 	err := c.Insert(m)
 

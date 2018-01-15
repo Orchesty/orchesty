@@ -9,12 +9,13 @@ import (
 	"hanaboso.com/limiter/pkg/rabbitmq"
 	"github.com/streadway/amqp"
 	"hanaboso.com/limiter/pkg/storage"
+	"fmt"
 )
 
 // main runs the limiter program
 func main() {
 	// connects to mongodb
-	db := storage.NewMongo("127.0.0.1", "test", "messages")
+	db := storage.NewMongo("127.0.0.10", "test", "messages")
 	db.Connect()
 
 	// create limiter
@@ -35,6 +36,14 @@ func main() {
 	go c.Consume(func(msg <-chan amqp.Delivery) {
 		for m := range msg {
 			log.Println(m)
+
+			msg, err := storage.NewMessage(m)
+
+			if err != nil {
+				log.Println(fmt.Sprintf("Message error: %s", err))
+			}else {
+				lim.PostponeMessage(msg)
+			}
 
 			m.Ack(false)
 		}
