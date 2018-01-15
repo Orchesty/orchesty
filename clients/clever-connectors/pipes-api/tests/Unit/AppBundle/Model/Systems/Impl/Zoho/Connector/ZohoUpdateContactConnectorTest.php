@@ -169,10 +169,11 @@ final class ZohoUpdateContactConnectorTest extends ConnectorTestCaseAbstract
                 function (string $type, $data): void {
                     self::assertEquals('access_expiration', $type);
                     self::assertEquals([
-                        'guid'        => 'usr',
-                        'token'       => 'tkn',
-                        'system_key'  => 'zoho',
-                        'system_name' => 'ZOHO',
+                        'notification_type' => 'access_expiration',
+                        'guid'              => 'usr',
+                        'token'             => 'tkn',
+                        'system_key'        => 'zoho',
+                        'system_name'       => 'ZOHO',
                     ], $data);
                 }
             ));

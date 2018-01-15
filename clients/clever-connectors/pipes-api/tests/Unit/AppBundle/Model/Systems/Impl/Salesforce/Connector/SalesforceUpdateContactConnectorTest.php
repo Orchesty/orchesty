@@ -100,10 +100,11 @@ final class SalesforceUpdateContactConnectorTest extends ConnectorTestCaseAbstra
             function (string $type, array $content): void {
                 $this->assertEquals('access_expiration', $type);
                 $this->assertEquals([
-                    'guid'        => 'User',
-                    'token'       => 'Token',
-                    'system_key'  => 'salesforce',
-                    'system_name' => 'Salesforce',
+                    'notification_type' => 'access_expiration',
+                    'guid'              => 'User',
+                    'token'             => 'Token',
+                    'system_key'        => 'salesforce',
+                    'system_name'       => 'Salesforce',
                 ], $content);
             }
         )->processAction(

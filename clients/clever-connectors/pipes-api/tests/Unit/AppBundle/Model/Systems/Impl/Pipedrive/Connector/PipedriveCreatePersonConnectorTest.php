@@ -160,10 +160,11 @@ final class PipedriveCreatePersonConnectorTest extends KernelTestCaseAbstract
                 function (string $type, $data): void {
                     self::assertEquals('data_error', $type);
                     self::assertEquals([
-                        'guid'        => 'usr',
-                        'token'       => 'tkn',
-                        'system_key'  => 'pipedrive',
-                        'system_name' => 'Pipedrive',
+                        'notification_type' => 'data_error',
+                        'guid'              => 'usr',
+                        'token'             => 'tkn',
+                        'system_key'        => 'pipedrive',
+                        'system_name'       => 'Pipedrive',
                     ], $data);
                 }
             ));

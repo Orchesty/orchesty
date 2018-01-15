@@ -98,10 +98,11 @@ final class BigCommerceCreateCustomerConnectorTest extends KernelTestCaseAbstrac
             function (string $type, array $content): void {
                 $this->assertEquals('access_expiration', $type);
                 $this->assertEquals([
-                    'guid'        => 'User',
-                    'token'       => 'Token',
-                    'system_key'  => 'bigcommerce',
-                    'system_name' => 'Bigcommerce',
+                    'notification_type' => 'access_expiration',
+                    'guid'              => 'User',
+                    'token'             => 'Token',
+                    'system_key'        => 'bigcommerce',
+                    'system_name'       => 'Bigcommerce',
                 ], $content);
             }
         )->processAction((new ProcessDto())->setData('{"id":1}')->setHeaders([]));
