@@ -13,8 +13,15 @@ import (
 
 // main runs the limiter program
 func main() {
-	lim := limiter.Limiter{}
-	tcpServer := limiter.NewTcpServer(&lim)
+	// connects to mongodb
+	db := storage.NewMongo("127.0.0.1", "test", "messages")
+	db.Connect()
+
+	// create limiter
+	lim := limiter.NewLimiter(db)
+
+	// starts the tcp server
+	tcpServer := limiter.NewTcpServer(lim)
 	go tcpServer.Start(3333)
 
 	conn := rabbitmq.NewConnection("127.0.0.10", 5672, "guest", "guest")
@@ -24,13 +31,6 @@ func main() {
 	conn.Setup()
 
 	c := rabbitmq.NewConsumer(conn, "test-q")
-
-	s:= storage.NewStorage("127.0.0.10", "test", "messages")
-	s.Connect()
-
-	mes := storage.Message{LimitKey: "123"}
-
-	s.Save(mes)
 
 	go c.Consume(func(msg <-chan amqp.Delivery) {
 		for m := range msg {

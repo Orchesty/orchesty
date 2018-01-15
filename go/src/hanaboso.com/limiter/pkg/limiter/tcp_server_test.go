@@ -6,21 +6,28 @@ import (
 	"bufio"
 	"fmt"
 	"net"
+	"hanaboso.com/limiter/pkg/storage"
 )
 
-type positiveDecider struct {}
-func (dec *positiveDecider) Decide(key string, time string, value string) (bool, error) {
+type positiveLimiter struct {}
+func (dec *positiveLimiter) IsFreeLimit(key string, time string, value string) (bool, error) {
 	return true, nil
 }
+func (dec *positiveLimiter) PostponeMessage(msg storage.Message) (error) {
+	return nil
+}
 
-type negativeDecider struct {}
-func (dec *negativeDecider) Decide(key string, time string, value string) (bool, error) {
+type negativeLimiter struct {}
+func (dec *negativeLimiter) IsFreeLimit(key string, time string, value string) (bool, error) {
 	return false, nil
+}
+func (dec *negativeLimiter) PostponeMessage(msg storage.Message) (error) {
+	return nil
 }
 
 // TestServer tests TcpServer healthCheck route
 func TestServerHealthCheck(t *testing.T) {
-	pos := positiveDecider{}
+	pos := positiveLimiter{}
 	tcpServer := NewTcpServer(&pos)
 	go tcpServer.Start(3334)
 	defer tcpServer.Stop()
@@ -41,8 +48,8 @@ func TestServerHealthCheck(t *testing.T) {
 
 // TestServer tests TcpServer healthCheck route
 func TestServerLimitCheck(t *testing.T) {
-	posServer := NewTcpServer(&positiveDecider{})
-	negServer := NewTcpServer(&negativeDecider{})
+	posServer := NewTcpServer(&positiveLimiter{})
+	negServer := NewTcpServer(&negativeLimiter{})
 	go posServer.Start(3334)
 	go negServer.Start(3335)
 
