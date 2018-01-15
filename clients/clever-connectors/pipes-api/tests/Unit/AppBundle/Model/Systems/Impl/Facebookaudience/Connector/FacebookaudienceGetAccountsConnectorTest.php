@@ -7,9 +7,11 @@ use CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\Connector\Fac
 use CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\FacebookaudienceSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlException;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
@@ -48,6 +50,43 @@ final class FacebookaudienceGetAccountsConnectorTest extends ConnectorTestCaseAb
     }
 
     /**
+     * @covers FacebookaudienceGetAccountsConnector::processAction()
+     */
+    public function testProcessActionLimit(): void
+    {
+        $dto = (new ProcessDto())->setHeaders([]);
+
+        $systemInstall = new SystemInstall();
+        $systemInstall->setSettings([
+            OAuth2Provider::ACCESS_TOKEN => 'access-token-123',
+        ]);
+
+        /** @var MockObject|CurlManagerInterface $sender */
+        $sender = $this->createMock(CurlManagerInterface::class);
+        $sender
+            ->expects($this->exactly(1))
+            ->method('send')
+            ->willReturnCallback(function (RequestDto $requestDto): void {
+                $body = json_encode([
+                    'error' => [
+                        'code' => 4, // means: request limit reached
+                    ],
+                ]);
+                throw new CurlException('', CurlException::REQUEST_FAILED, NULL, new Response(400, [], $body));
+            });
+
+        $connector = new FacebookaudienceGetAccountsConnector(
+            $this->getSystemMock(),
+            $this->getDmMock($systemInstall),
+            $sender
+        );
+
+        $result = $connector->processAction($dto);
+
+        $this->assertEquals(1004, $result->getHeader('pf-result-code'));
+    }
+
+    /**
      * @covers FacebookaudienceGetAccountsConnector::getAccounts()
      */
     public function testGetAccounts(): void
@@ -66,19 +105,49 @@ final class FacebookaudienceGetAccountsConnectorTest extends ConnectorTestCaseAb
     }
 
     /**
+     * @covers FacebookaudienceGetAccountsConnector::getAccounts()
+     */
+    public function testGetAccountsLimit(): void
+    {
+        $systemInstall = new SystemInstall();
+        $systemInstall->setSettings([
+            OAuth2Provider::ACCESS_TOKEN => 'access-token-123',
+        ]);
+        $systemInstall->setUser('user123');
+        $systemInstall->setToken('token123');
+
+        /** @var MockObject|CurlManagerInterface $sender */
+        $sender = $this->createMock(CurlManagerInterface::class);
+        $sender
+            ->expects($this->exactly(1))
+            ->method('send')
+            ->willReturnCallback(function (RequestDto $requestDto): void {
+                $body = json_encode([
+                    'error' => [
+                        'code' => 4, // means: request limit reached
+                    ],
+                ]);
+                throw new CurlException('', CurlException::REQUEST_FAILED, NULL, new Response(400, [], $body));
+            });
+
+        $connector = new FacebookaudienceGetAccountsConnector(
+            $this->getSystemMock(),
+            $this->getDmMock($systemInstall),
+            $sender
+        );
+
+        $this->expectException(CurlException::class);
+
+        $connector->getAccounts($systemInstall);
+    }
+
+    /**
      * @param SystemInstall $systemInstall
      *
      * @return FacebookaudienceGetAccountsConnector
      */
     private function getConnectorMock(SystemInstall $systemInstall): FacebookaudienceGetAccountsConnector
     {
-        $systemInstallRepository = $this->createMock(SystemInstallRepository::class);
-        $systemInstallRepository->method('getSystemInstallFromHeaders')->willReturn($systemInstall);
-
-        /** @var MockObject|DocumentManager $documentManager */
-        $documentManager = $this->createMock(DocumentManager::class);
-        $documentManager->method('getRepository')->willReturn($systemInstallRepository);
-
         /** @var CurlManagerInterface|MockObject $curlManager */
         $curlManager = $this->createMock(CurlManagerInterface::class);
         $curlManager
@@ -98,7 +167,28 @@ final class FacebookaudienceGetAccountsConnectorTest extends ConnectorTestCaseAb
                 ]), []);
             }));
 
-        return new FacebookaudienceGetAccountsConnector($this->getSystemMock(), $documentManager, $curlManager);
+        return new FacebookaudienceGetAccountsConnector(
+            $this->getSystemMock(),
+            $this->getDmMock($systemInstall),
+            $curlManager
+        );
+    }
+
+    /**
+     * @param SystemInstall $systemInstall
+     *
+     * @return DocumentManager|MockObject
+     */
+    private function getDmMock(SystemInstall $systemInstall)
+    {
+        $systemInstallRepository = $this->createMock(SystemInstallRepository::class);
+        $systemInstallRepository->method('getSystemInstallFromHeaders')->willReturn($systemInstall);
+
+        /** @var MockObject|DocumentManager $documentManager */
+        $documentManager = $this->createMock(DocumentManager::class);
+        $documentManager->method('getRepository')->willReturn($systemInstallRepository);
+
+        return $documentManager;
     }
 
     /**

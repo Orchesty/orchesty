@@ -4,12 +4,12 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\Connect
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\FacebookaudienceSystem;
+use CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\Traits\FacebookTrait;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use CleverConnectors\AppBundle\Traits\LoggerTrait;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
-use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlException;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
@@ -25,6 +25,7 @@ abstract class FacebookaudienceConnectorAbstract implements ConnectorInterface, 
 {
 
     use LoggerTrait;
+    use FacebookTrait;
 
     /**
      * @var FacebookaudienceSystem
@@ -74,25 +75,6 @@ abstract class FacebookaudienceConnectorAbstract implements ConnectorInterface, 
             'Facebook Audience has no support for event!',
             ConnectorException::CONNECTOR_DOES_NOT_HAVE_PROCESS_BATCH
         );
-    }
-
-    /**
-     * @param CurlException $exception
-     * @param SystemInstall $systemInstall
-     */
-    protected function logCurlException(CurlException $exception, SystemInstall $systemInstall): void
-    {
-        $response = $exception->getResponse();
-        if (isset($response) && $response->getStatusCode() == 400) {
-            $body = $response->getBody()->getContents();
-            $data = json_decode($body, TRUE);
-            if (isset($data['error']['code']) && $data['error']['code'] == 190) {
-                $this->logError(401, $this->system, $systemInstall);
-            }
-        }
-        if (isset($response) && $response->getStatusCode() == 500) {
-            $this->logError(500, $this->system, $systemInstall);
-        }
     }
 
 }
