@@ -68,15 +68,15 @@ func populateRequest(conn net.Conn) (request, error) {
 }
 
 type TcpServer struct {
-	dec      Decider
+	lim      Limiter
 	listener *net.TCPListener
 	wg       *sync.WaitGroup
 }
 
 // NewTcpServer creates new instance of TcpServer struct and returns pointer to it
-func NewTcpServer(dec Decider) *TcpServer {
+func NewTcpServer(dec Limiter) *TcpServer {
 	return &TcpServer{
-		dec: dec,
+		lim: dec,
 		wg:  &sync.WaitGroup{},
 	}
 }
@@ -156,7 +156,7 @@ func (*TcpServer) handleHealthCheckRequest(req request) string {
 
 // handleLimitCheckRequest returns
 func (srv *TcpServer) handleLimitCheckRequest(req request) string {
-	isFree, err := srv.dec.Decide(req.key, req.time, req.value)
+	isFree, err := srv.lim.IsFreeLimit(req.key, req.time, req.value)
 	if err != nil {
 		return "Error evaluating limit: " + err.Error()
 	}
