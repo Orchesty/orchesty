@@ -16,17 +16,19 @@ type Connection interface {
 	CreateChannel() int
 	GetChannel(int) (ch *amqp.Channel)
 	Reconnect()
+	GetRestartChan() (chan bool)
 }
 
 type connection struct {
-	host      string
-	port      int
-	user      string
-	password  string
-	queues    []Queue
-	exchanges []Exchange
-	conn      *amqp.Connection
-	channels  []*amqp.Channel
+	host        string
+	port        int
+	user        string
+	password    string
+	queues      []Queue
+	exchanges   []Exchange
+	conn        *amqp.Connection
+	channels    []*amqp.Channel
+	restartChan chan bool
 }
 
 func (c *connection) AddQueue(q Queue) {
@@ -109,8 +111,18 @@ func (c *connection) Connect() {
 	}
 
 	go func() {
-		log.Println(fmt.Sprintf("Consumer connection error: %s", <-c.conn.NotifyClose(make(chan *amqp.Error))))
+		log.Println(fmt.Sprintf("Rabbit MQ connection close error: %s", <-c.conn.NotifyClose(make(chan *amqp.Error))))
+
+		c.Reconnect()
+		c.restartChan <- true
 	}()
+
+	// Restore channels
+	ids := len(c.channels)
+	c.channels = nil
+	for i := 0; i < ids; i++ {
+		c.CreateChannel()
+	}
 
 	log.Println(fmt.Sprintf("Rabbit MQ connected to %s", connString))
 }
@@ -145,6 +157,10 @@ func (c *connection) Reconnect() {
 	c.Connect()
 }
 
+func (c *connection) GetRestartChan() (chan bool) {
+	return c.restartChan
+}
+
 func NewConnection(host string, port int, user string, password string) (r Connection) {
-	return &connection{host: host, port: port, user: user, password: password}
+	return &connection{host: host, port: port, user: user, password: password, restartChan: make(chan bool)}
 }

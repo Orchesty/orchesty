@@ -3,6 +3,7 @@ package main
 import (
 	"hanaboso.com/limiter/pkg/rabbitmq"
 	"github.com/streadway/amqp"
+	"time"
 )
 
 func main() {
@@ -13,5 +14,10 @@ func main() {
 	conn.Setup()
 
 	p := rabbitmq.NewPublisher(conn, "test-q")
-	p.Publish(amqp.Publishing{Headers: amqp.Table{"limit-key": "#123"}, Body: []byte("My test message")})
+
+	for i := 0; i < 10; i++ {
+		p.Publish(amqp.Publishing{Headers: amqp.Table{"limit-key": "#123"}, Body: []byte("My test message")})
+		println(i)
+		time.Sleep(time.Second * 2)
+	}
 }

@@ -50,10 +50,15 @@ func (c *consumer) Consume(callback Callback) {
 		log.Fatalln(fmt.Sprintf("Rabbit MQ consumer error: %s", err))
 	}
 
-	forever := make(chan bool)
 	go callback(msgs)
+
 	log.Println("[*] Waiting for messages. To exit press CTRL+C")
-	<-forever
+
+	// waiting forever
+	if <-c.connection.GetRestartChan() != false {
+		c.connection.Setup()
+		c.Consume(callback)
+	}
 }
 
 func (c *consumer) SetPrefetchCount(count int) {

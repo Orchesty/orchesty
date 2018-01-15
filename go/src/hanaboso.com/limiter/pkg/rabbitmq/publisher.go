@@ -32,8 +32,12 @@ func (p *publisher) Publish(msg amqp.Publishing) {
 
 	if err != nil {
 		log.Println(fmt.Sprintf("Rabbit MQ publish error: %s", err))
-		p.connection.Reconnect()
-		p.Publish(msg)
+
+		v := <-p.connection.GetRestartChan()
+
+		if v == true {
+			p.Publish(msg)
+		}
 	}
 
 	log.Println("Rabbit MQ publish message")
