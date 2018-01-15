@@ -16,6 +16,7 @@ framework:
         handler_id: session.handler.native_file
         save_path: '%kernel.root_dir%/../var/sessions/%kernel.environment%'
         cookie_lifetime: 86400
+        gc_maxlifetime: 7200
     fragments: ~
     http_method_override: true
     assets: ~
