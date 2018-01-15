@@ -137,6 +137,8 @@ func (c *connection) CreateChannel() int {
 
 	ch, err := c.conn.Channel()
 
+	//@todo add reconnect go routine
+
 	if err != nil {
 		log.Fatalln(fmt.Sprintf("Rabbit MQ channel error: %s", err))
 	}
