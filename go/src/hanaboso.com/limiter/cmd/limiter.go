@@ -17,15 +17,15 @@ func main() {
 	tcpServer := limiter.NewTcpServer(&lim)
 	go tcpServer.Start(3333)
 
-	r := rabbitmq.NewRabbitMq("rabbitmq", 5672, "guest", "guest")
-	r.AddQueue(rabbitmq.Queue{Name: "test-q"})
+	conn := rabbitmq.NewConnection("127.0.0.10", 5672, "guest", "guest")
+	conn.AddQueue(rabbitmq.Queue{Name: "test-q"})
 
-	r.Connect()
-	r.Setup()
+	conn.Connect()
+	conn.Setup()
 
-	c := rabbitmq.NewConsumer(r, "test-q")
+	c := rabbitmq.NewConsumer(conn, "test-q")
 
-	s:= storage.NewStorage("mongodb", "test", "messages")
+	s:= storage.NewStorage("127.0.0.10", "test", "messages")
 	s.Connect()
 
 	mes := storage.Message{LimitKey: "123"}

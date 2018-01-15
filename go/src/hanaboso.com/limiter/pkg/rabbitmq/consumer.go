@@ -20,7 +20,7 @@ type Consumer interface {
 }
 
 type consumer struct {
-	rabbitMq      RabbitMq
+	connection    Connection
 	channelId     int
 	queue         string
 	prefetchCount int
@@ -35,16 +35,16 @@ type consumer struct {
 func (c *consumer) Consume(callback Callback) {
 
 	if c.channelId == -1 {
-		c.channelId = c.rabbitMq.CreateChannel()
+		c.channelId = c.connection.CreateChannel()
 	}
 
-	err := c.rabbitMq.GetChannel(c.channelId).Qos(c.prefetchCount, c.prefetchSize, false)
+	err := c.connection.GetChannel(c.channelId).Qos(c.prefetchCount, c.prefetchSize, false)
 
 	if err != nil {
 		log.Fatalln(fmt.Sprintf("Rabbit MQ channel qos: %s", err))
 	}
 
-	msgs, err := c.rabbitMq.GetChannel(c.channelId).Consume(c.queue, c.consumerTag, c.noAck, c.exclusive, c.noLocal, c.noWait, nil)
+	msgs, err := c.connection.GetChannel(c.channelId).Consume(c.queue, c.consumerTag, c.noAck, c.exclusive, c.noLocal, c.noWait, nil)
 
 	if err != nil {
 		log.Fatalln(fmt.Sprintf("Rabbit MQ consumer error: %s", err))
@@ -84,6 +84,6 @@ func (c *consumer) SetNoWait(noWait bool) {
 	c.noWait = noWait
 }
 
-func NewConsumer(r RabbitMq, queue string) (c Consumer) {
-	return &consumer{rabbitMq: r, queue: queue, channelId: -1}
+func NewConsumer(conn Connection, queue string) (c Consumer) {
+	return &consumer{connection: conn, queue: queue, channelId: -1}
 }

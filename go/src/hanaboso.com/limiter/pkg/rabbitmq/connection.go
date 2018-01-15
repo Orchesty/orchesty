@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-type RabbitMq interface {
+type Connection interface {
 	AddQueue(Queue)
 	AddExchange(Exchange)
 	Setup()
@@ -18,7 +18,7 @@ type RabbitMq interface {
 	Reconnect()
 }
 
-type rabbitMq struct {
+type connection struct {
 	host      string
 	port      int
 	user      string
@@ -29,26 +29,26 @@ type rabbitMq struct {
 	channels  []*amqp.Channel
 }
 
-func (r *rabbitMq) AddQueue(q Queue) {
-	r.queues = append(r.queues, q)
+func (c *connection) AddQueue(q Queue) {
+	c.queues = append(c.queues, q)
 }
 
-func (r *rabbitMq) AddExchange(e Exchange) {
-	r.exchanges = append(r.exchanges, e)
+func (c *connection) AddExchange(e Exchange) {
+	c.exchanges = append(c.exchanges, e)
 }
 
-func (r *rabbitMq) Setup() {
+func (c *connection) Setup() {
 
-	if r.conn == nil {
-		log.Println("RabbitMq setup error: not connected.")
-		r.Connect()
+	if c.conn == nil {
+		log.Println("Connection setup error: not connected.")
+		c.Connect()
 	}
 
-	ch, _ := r.conn.Channel()
+	ch, _ := c.conn.Channel()
 	defer ch.Close()
 
 	// Declare exchanges
-	for _, e := range r.exchanges {
+	for _, e := range c.exchanges {
 		err := ch.ExchangeDeclare(e.Name, e.Type, e.Durable, e.AutoDelete, e.Internal, e.NoWait, nil)
 
 		if err != nil {
@@ -59,7 +59,7 @@ func (r *rabbitMq) Setup() {
 	}
 
 	// Bindings exchange to exchange
-	for _, e := range r.exchanges {
+	for _, e := range c.exchanges {
 		for _, b := range e.Bindings {
 
 			err := ch.ExchangeBind(e.Name, b.RoutingKey, b.Exchange, b.NoWait, nil)
@@ -73,7 +73,7 @@ func (r *rabbitMq) Setup() {
 	}
 
 	// Declare queues
-	for _, q := range r.queues {
+	for _, q := range c.queues {
 
 		_, err := ch.QueueDeclare(q.Name, q.Durable, q.AutoDelete, q.Exclusive, q.NoWait, nil)
 
@@ -96,51 +96,55 @@ func (r *rabbitMq) Setup() {
 	}
 }
 
-func (r *rabbitMq) Connect() {
-	connString := fmt.Sprintf("amqp://%s:%s@%s:%d/", r.user, r.password, r.host, r.port)
+func (c *connection) Connect() {
+	connString := fmt.Sprintf("amqp://%s:%s@%s:%d/", c.user, c.password, c.host, c.port)
 
 	var err error
-	r.conn, err = amqp.Dial(connString)
+	c.conn, err = amqp.Dial(connString)
 
 	if err != nil {
 		log.Println(fmt.Sprintf("Rabbit MQ connection error: %s", err))
-		r.Reconnect()
+		c.Reconnect()
 		return
 	}
+
+	go func() {
+		log.Println(fmt.Sprintf("Consumer connection error: %s", <-c.conn.NotifyClose(make(chan *amqp.Error))))
+	}()
 
 	log.Println(fmt.Sprintf("Rabbit MQ connected to %s", connString))
 }
 
-func (r *rabbitMq) Disconnect() {
-	if r.conn != nil {
-		r.conn.Close()
+func (c *connection) Disconnect() {
+	if c.conn != nil {
+		c.conn.Close()
 	}
 }
 
-func (r *rabbitMq) CreateChannel() int {
+func (c *connection) CreateChannel() int {
 
-	ch, err := r.conn.Channel()
+	ch, err := c.conn.Channel()
 
 	if err != nil {
 		log.Fatalln(fmt.Sprintf("Rabbit MQ channel error: %s", err))
 	}
 
-	r.channels = append(r.channels, ch)
+	c.channels = append(c.channels, ch)
 
-	return len(r.channels) - 1
+	return len(c.channels) - 1
 }
 
-func (r *rabbitMq) GetChannel(id int) (ch *amqp.Channel) {
-	return r.channels[id]
+func (c *connection) GetChannel(id int) (ch *amqp.Channel) {
+	return c.channels[id]
 }
 
-func (r *rabbitMq) Reconnect() {
+func (c *connection) Reconnect() {
 	log.Println("Waiting 1s.")
 	time.Sleep(time.Second)
-	r.Disconnect()
-	r.Connect()
+	c.Disconnect()
+	c.Connect()
 }
 
-func NewRabbitMq(host string, port int, user string, password string) (r RabbitMq) {
-	return &rabbitMq{host: host, port: port, user: user, password: password}
+func NewConnection(host string, port int, user string, password string) (r Connection) {
+	return &connection{host: host, port: port, user: user, password: password}
 }

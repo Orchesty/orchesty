@@ -14,7 +14,7 @@ type Publisher interface {
 }
 
 type publisher struct {
-	rabbitMq   RabbitMq
+	connection Connection
 	channelId  int
 	routingKey string
 	exchange   string
@@ -25,14 +25,14 @@ type publisher struct {
 func (p *publisher) Publish(msg amqp.Publishing) {
 
 	if p.channelId == -1 {
-		p.channelId = p.rabbitMq.CreateChannel()
+		p.channelId = p.connection.CreateChannel()
 	}
 
-	err := p.rabbitMq.GetChannel(p.channelId).Publish(p.exchange, p.routingKey, p.mandatory, p.immediate, msg)
+	err := p.connection.GetChannel(p.channelId).Publish(p.exchange, p.routingKey, p.mandatory, p.immediate, msg)
 
 	if err != nil {
 		log.Println(fmt.Sprintf("Rabbit MQ publish error: %s", err))
-		p.rabbitMq.Reconnect()
+		p.connection.Reconnect()
 		p.Publish(msg)
 	}
 
@@ -51,6 +51,6 @@ func (p *publisher) SetImmediate(i bool) {
 	p.immediate = i
 }
 
-func NewPublisher(r RabbitMq, routingKey string) (p Publisher) {
-	return &publisher{rabbitMq: r, routingKey: routingKey, channelId: -1}
+func NewPublisher(conn Connection, routingKey string) (p Publisher) {
+	return &publisher{connection: conn, routingKey: routingKey, channelId: -1}
 }

@@ -12,6 +12,6 @@ services:
     ports:
       - ${DEV_IP}:27017:27017
 
-  limiter:
-    image: dkr.hanaboso.net/pipes/pipes/limiter:dev
-    command: limiter
+  #limiter:
+    #image: dkr.hanaboso.net/pipes/pipes/limiter:dev
+    #command: limiter
