@@ -88,9 +88,8 @@ class ShoptetSyncCustomerConnector implements ConnectorInterface, BatchInterface
                 function (ResponseInterface $response): SuccessMessage {
                     return $this->createSuccessMessage($response);
                 },
-                function (ResponseException $e) use ($systemInstall): void {
-                    $this->logError($e->getResponse()->getStatusCode(), $this->shoptetSystem, $systemInstall);
-                    throw $e;
+                function (ResponseException $e) use ($systemInstall): SuccessMessage {
+                    return $this->batchConnectorError($e, $this->shoptetSystem, $systemInstall, 1);
                 }
             )->then($callbackItem);
 

@@ -109,16 +109,14 @@ class NutshellGetContactConnector implements ConnectorInterface, LoggerAwareInte
                 );
             }
 
-            return $dto->setData(Json::encode(array_merge($innerData,
+            $dto->setData(Json::encode(array_merge($innerData,
                 [CleverFieldsEnum::FOREIGN_ID => $data[CleverFieldsEnum::FOREIGN_ID]]
             )));
         } catch (CurlException $e) {
-            if ($e->getResponse()) {
-                $this->logError($e->getResponse()->getStatusCode(), $this->system, $systemInstall);
-            }
-
-            throw $e;
+            $this->connectorError($e, $this->system, $systemInstall, $dto);
         }
+
+        return $dto;
     }
 
     /**

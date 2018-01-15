@@ -98,14 +98,12 @@ abstract class PluginSubscriberConnectorAbstract implements ConnectorInterface, 
 
         try {
             $res = $this->curl->send($reqDto);
+            $dto->setData($res->getBody());
         } catch (CurlException $e) {
-            if ($e->getResponse()) {
-                $this->logError($e->getResponse()->getStatusCode(), $system, $systemInstall);
-            }
-            throw $e;
+            $this->connectorError($e, $system, $systemInstall, $dto);
         }
 
-        return $dto->setData($res->getBody());
+        return $dto;
     }
 
     /**
