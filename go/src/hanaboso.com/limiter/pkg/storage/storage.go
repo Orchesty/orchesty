@@ -12,5 +12,5 @@ type Storage interface {
 	// Delete removes the document by it's unique object id
 	Delete(id bson.ObjectId) (bool, error)
 	// GetDistinctFirstItems returns for every distinct limitkey the first record
-	GetDistinctFirstItems() ([]string, error)
+	GetDistinctFirstItems() (map[string]Message, error)
 }

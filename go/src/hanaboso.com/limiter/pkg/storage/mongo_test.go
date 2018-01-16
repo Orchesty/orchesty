@@ -66,15 +66,17 @@ func TestMongoMethods(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Len(t, fetched, 1, "Get should return maximally the required length of messages")
 
-	keys, err = m.GetDistinctFirstItems()
+	items, err := m.GetDistinctFirstItems()
 	assert.Nil(t, err)
-	assert.Len(t, keys, 2, "GetAllKeys should return distinct keys")
-	assert.Contains(t, keys, "abcd123")
-	assert.Contains(t, keys, "efgh456")
+	assert.Len(t, items, 2, "GetDistinctFirstItems should return distinct keys and 1 message for each key")
+	assert.Equal(t, items["abcd123"].LimitKey, "abcd123")
+	assert.Equal(t, items["efgh456"].LimitKey, "efgh456")
 
-	fetched, err = m.Get("abcd123", 5)
-	del, err := m.Delete(fetched[0].ID)
+	del, err := m.Delete(items["efgh456"].ID)
 	assert.Nil(t, err)
-	assert.True(t, del)
+	assert.True(t, del, "Delete should proceed")
 
+	items, err = m.GetDistinctFirstItems()
+	assert.Nil(t, err)
+	assert.Len(t, items, 1)
 }

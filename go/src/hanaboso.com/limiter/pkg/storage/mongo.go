@@ -67,16 +67,28 @@ func (s *Mongo) Get(key string, length int) ([]*Message, error) {
 	return messages, nil
 }
 
-func (s *Mongo) GetDistinctFirstItems() ([]string, error) {
-	var keys []string
-	c := s.session.DB(s.db).C(s.collection)
-	err := c.Find(nil).Distinct("limitkey", &keys)
+// GetDistinctFirstItems returns for every distinct limitkey the first record
+func (s *Mongo) GetDistinctFirstItems() (map[string]*Message, error) {
+	items := make(map[string]*Message, 0)
 
+	keys, err := s.getDistinctKeys()
 	if err != nil {
-		return make([]string, 0), err
+		return items, err
+	}
+	if len(keys) == 0 {
+		return items, nil
 	}
 
-	return keys, nil
+	for _, key := range keys {
+		item, err := s.Get(key, 1)
+		if err != nil {
+			return items, err
+		}
+
+		items[key] = item[0]
+	}
+
+	return items, nil
 }
 
 // Exists return boolean if any document found with given key or returns error if some mongo error occurs
@@ -105,6 +117,19 @@ func (s *Mongo) Delete(id bson.ObjectId) (bool, error) {
 	}
 
 	return true, nil
+}
+
+// getDistinctKeys returns the distint limitkey values from collection
+func (s *Mongo) getDistinctKeys() ([]string, error) {
+	var keys []string
+	c := s.session.DB(s.db).C(s.collection)
+	err := c.Find(nil).Distinct("limitkey", &keys)
+
+	if err != nil {
+		return make([]string, 0), err
+	}
+
+	return keys, nil
 }
 
 // Returns the pointer to new created mongo storage instance
