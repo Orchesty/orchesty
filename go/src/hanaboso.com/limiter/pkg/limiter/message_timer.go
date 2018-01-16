@@ -31,12 +31,12 @@ func (mt *MessageTimer) addTicker(key string, duration int, count int) {
 	go func() {
 		for t := range mt.tickers[key].C {
 
-			next := mt.release(key, count)
+			hasNext := mt.release(key, count)
 
-			if next == false {
+			if hasNext == false {
 				mt.tickers[key].Stop()
 				delete(mt.tickers, key)
-				log.Println(fmt.Sprintf("remove tiker for key '%s'", key))
+				log.Println(fmt.Sprintf("removed ticker for key '%s'", key))
 				return
 			}
 
@@ -55,14 +55,14 @@ func (mt *MessageTimer) release(key string, count int) (bool) {
 
 	for _, m := range msgs {
 		mt.publisher.Publish(m.Message)
-		_, err := mt.storage.Remove(m.ID)
+		_, err := mt.storage.Remove(m.LimitKey, m.ID)
 
 		if err != nil {
 			log.Println(fmt.Sprintf("Release delete item error: %s", err))
 		}
 	}
 
-	exists, err := mt.storage.Check(key)
+	exists, err := mt.storage.Exists(key)
 
 	if err != nil {
 		log.Println(fmt.Sprintf("Release check exist error: %s", err))

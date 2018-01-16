@@ -30,8 +30,8 @@ type request struct {
 	name  string
 	id    string
 	key   string
-	time  string
-	value string
+	time  int
+	value int
 }
 
 func populateRequest(conn net.Conn) (request, error) {
@@ -58,8 +58,18 @@ func populateRequest(conn net.Conn) (request, error) {
 		req.name = data[0]
 		req.id = data[1]
 		req.key = data[2]
-		req.time = data[3]
-		req.value = data[4]
+
+		timeParam, err := strconv.Atoi(data[3])
+		if err != nil {
+			return req, fmt.Errorf("invalid time param")
+		}
+		req.time = timeParam
+
+		valueParam, err := strconv.Atoi(data[4])
+		if err != nil {
+			return req, fmt.Errorf("invalid value param")
+		}
+		req.value = valueParam
 
 		return req, nil
 	}

@@ -15,7 +15,8 @@ type CheckerSaver interface {
 
 type Checker interface {
 	// Check returns true if any message with given key is present in storage
-	Check(key string) (bool, error)
+	Check(key string, time int, value int) (bool, error)
+	Exists(key string) (bool, error)
 }
 
 type Saver interface {
@@ -25,7 +26,7 @@ type Saver interface {
 
 type Remover interface {
 	// Remove removes the document by it's unique object id
-	Remove(id bson.ObjectId) (bool, error)
+	Remove(key string, id bson.ObjectId) (bool, error)
 }
 
 type Finder interface {

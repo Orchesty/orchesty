@@ -22,7 +22,7 @@ func TestMongoMethods(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Len(t, keys, 0, "GetAllKeys should return empty slice when collection is empty")
 
-	ex, err := m.Check("abcd123")
+	ex, err := m.Exists("abcd123")
 	assert.Nil(t, err)
 	assert.False(t, ex, "Exists should return fail when key does not exist")
 
@@ -39,7 +39,7 @@ func TestMongoMethods(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Equal(t, "abcd123", k, "Save should return the inserted key")
 
-	ex, err = m.Check("abcd123")
+	ex, err = m.Exists("abcd123")
 	assert.Nil(t, err)
 	assert.True(t, ex, "Exists should return true when key exists")
 
@@ -72,7 +72,7 @@ func TestMongoMethods(t *testing.T) {
 	assert.Equal(t, items["abcd123"].LimitKey, "abcd123")
 	assert.Equal(t, items["efgh456"].LimitKey, "efgh456")
 
-	del, err := m.Remove(items["efgh456"].ID)
+	del, err := m.Remove(items["efgh456"].LimitKey, items["efgh456"].ID)
 	assert.Nil(t, err)
 	assert.True(t, del, "Delete should proceed")
 

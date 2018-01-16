@@ -9,7 +9,7 @@ import (
 )
 
 type Limiter interface {
-	IsFreeLimit(key string, time string, value string) (bool, error)
+	IsFreeLimit(key string, time int, value int) (bool, error)
 	Start()
 	Stop()
 }
@@ -59,8 +59,8 @@ func (l *limiter) Stop() {
 }
 
 // isFreeLimit returns boolean whether message can be processed or not considering system limits
-func (l *limiter) IsFreeLimit(key string, time string, value string) (bool, error) {
-	exists, err := l.storage.Check(key)
+func (l *limiter) IsFreeLimit(key string, time int, value int) (bool, error) {
+	exists, err := l.storage.Exists(key)
 	if err != nil {
 		return false, err
 	}

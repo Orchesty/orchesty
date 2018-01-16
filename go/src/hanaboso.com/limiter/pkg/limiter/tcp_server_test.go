@@ -11,14 +11,14 @@ import (
 type positiveLimiter struct {}
 func (dec *positiveLimiter) Start() {}
 func (dec *positiveLimiter) Stop() {}
-func (dec *positiveLimiter) IsFreeLimit(key string, time string, value string) (bool, error) {
+func (dec *positiveLimiter) IsFreeLimit(key string, time int, value int) (bool, error) {
 	return true, nil
 }
 
 type negativeLimiter struct {}
 func (dec *negativeLimiter) Start() {}
 func (dec *negativeLimiter) Stop() {}
-func (dec *negativeLimiter) IsFreeLimit(key string, time string, value string) (bool, error) {
+func (dec *negativeLimiter) IsFreeLimit(key string, time int, value int) (bool, error) {
 	return false, nil
 }
 
@@ -58,7 +58,7 @@ func TestServerLimitCheck(t *testing.T) {
 		assert.Fail(t, "Could not create tcp message.")
 	}
 	for {
-		fmt.Fprintf(conn, "pf-check;someRequestId;key;time;val\n")
+		fmt.Fprintf(conn, "pf-check;someRequestId;key;10;50\n")
 		// listen for reply
 		response, _ := bufio.NewReader(conn).ReadString('\n')
 		assert.Equal(t, "pf-check;someRequestId;ok", response)
@@ -70,7 +70,7 @@ func TestServerLimitCheck(t *testing.T) {
 		assert.Fail(t, "Could not create tcp message.")
 	}
 	for {
-		fmt.Fprintf(conn, "pf-check;someRequestId;key;time;val\n")
+		fmt.Fprintf(conn, "pf-check;someRequestId;key;10;50\n")
 		// listen for reply
 		response, _ := bufio.NewReader(conn).ReadString('\n')
 		assert.Equal(t, "pf-check;someRequestId;nok", response)
