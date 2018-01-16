@@ -24,7 +24,7 @@ services:
     ## END DEV
     ## BEGIN STAGE
     #batch:
-    #    image: dkr.hanaboso.net/pipes/client-cm/monolith-fpm:prod-images
+    #    image: dkr.hanaboso.net/pipes/client-cm/monolith-fpm:dev
     #    command: bin/console rabbit-mq:async-consumer batch
     #    environment:
     #      BACKEND_HOST: ${BACKEND_URL}/
@@ -46,7 +46,7 @@ services:
     ## END DEV
     ## BEGIN STAGE
     #batch-connector:
-    #    image: dkr.hanaboso.net/pipes/client-cm/monolith-fpm:prod-images
+    #    image: dkr.hanaboso.net/pipes/client-cm/monolith-fpm:dev
     #    command: bin/console rabbit-mq:async-consumer batch-connector
     #    environment:
     #      BACKEND_HOST: ${BACKEND_URL}/
@@ -67,7 +67,7 @@ services:
     ## END DEV
     ## BEGIN STAGE
     #status-service:
-    #    image: dkr.hanaboso.net/pipes/client-cm/monolith-fpm:prod-images
+    #    image: dkr.hanaboso.net/pipes/client-cm/monolith-fpm:dev
     #    command: bin/console rabbit-mq:consumer status-service
     #    environment:
     #      BACKEND_HOST: ${BACKEND_URL}/
@@ -133,7 +133,7 @@ services:
     ## END DEV
     ## BEGIN STAGE
     #monolith-fpm:
-    #    image: dkr.hanaboso.net/pipes/client-cm/monolith-fpm:prod-images
+    #    image: dkr.hanaboso.net/pipes/client-cm/monolith-fpm:dev
     #    environment:
     #      BACKEND_HOST: ${BACKEND_URL}/
     #    secrets:
@@ -223,7 +223,7 @@ services:
           - spitter
     ## END DEV
     ## BEGIN STAGE
-    #    image: dkr.hanaboso.net/pipes/pipes/frontend:prod-images
+    #    image: dkr.hanaboso.net/pipes/pipes/frontend:dev
     #    environment:
     #      BACKEND_URL: ${BACKEND_URL}/api
     #      PHP_WEBROOT: /var/www/html/web
