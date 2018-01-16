@@ -12,6 +12,7 @@ namespace Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller;
 use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Controller\FOSRestController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -25,7 +26,7 @@ class StartingPointController extends FOSRestController
 {
 
     /**
-     * @Route("/topologies/{topologyId}/nodes/{nodeId}/run", defaults={}, requirements={"topologyId": "\w+", "nodeId": "[\w-\.]+"})
+     * @Route("/topologies/{topologyId}/nodes/{nodeId}/run")
      * @Method({"POST"})
      *
      * @param string $topologyId
@@ -40,7 +41,23 @@ class StartingPointController extends FOSRestController
     }
 
     /**
-     * @Route("/topologies/{topologyId}/test", defaults={}, requirements={"topologyId": "\w+"})
+     * @Route("/topologies/{topologyName}/nodes/{nodeName}/run")
+     * @Method({"POST"})
+     *
+     * @param Request $request
+     * @param string  $topologyName
+     * @param string  $nodeName
+     *
+     * @return Response
+     */
+    public function runActionByName(Request $request, string $topologyName, string $nodeName): Response
+    {
+        return $this->forward('HbPFConfiguratorBundle:StartingPoint:run',
+            ['request' => $request, 'topologyName' => $topologyName, 'nodeName' => $nodeName]);
+    }
+
+    /**
+     * @Route("/topologies/{topologyId}/test")
      * @Method({"GET"})
      *
      * @param string $topologyId

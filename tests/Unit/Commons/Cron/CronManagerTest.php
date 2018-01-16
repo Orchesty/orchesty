@@ -12,6 +12,7 @@ use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
+use Hanaboso\PipesFramework\Configurator\Exception\NodeException;
 use Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository;
 use Nette\Utils\Json;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -27,6 +28,8 @@ final class CronManagerTest extends KernelTestCaseAbstract
 
     /**
      * @throws CronException
+     * @throws CurlException
+     * @throws NodeException
      */
     public function testCreate(): void
     {
@@ -36,7 +39,7 @@ final class CronManagerTest extends KernelTestCaseAbstract
             $this->assertEquals([
                 'hash'    => 'topology-1-1-node-1',
                 'time'    => '1 1 1 1 1',
-                'command' => 'curl -X POST http://example.com/topologies/topology-1/nodes/node-1/run',
+                'command' => 'curl -H "Accept: application/json" -H "Content-Type: application/json" -X POST -d "params":"abc" http://example.com/topologies/topology-1/nodes/node-1/run',
             ], Json::decode($request->getBody(), TRUE));
 
             return new ResponseDto(200, 'OK', '', []);
@@ -45,6 +48,8 @@ final class CronManagerTest extends KernelTestCaseAbstract
 
     /**
      * @throws CronException
+     * @throws CurlException
+     * @throws NodeException
      */
     public function testUpdate(): void
     {
@@ -53,7 +58,7 @@ final class CronManagerTest extends KernelTestCaseAbstract
             $this->assertEquals('http://example.com/cron-api/update/topology-1-1-node-1', $request->getUri(TRUE));
             $this->assertEquals([
                 'time'    => '1 1 1 1 1',
-                'command' => 'curl -X POST http://example.com/topologies/topology-1/nodes/node-1/run',
+                'command' => 'curl -H "Accept: application/json" -H "Content-Type: application/json" -X POST -d "params":"abc" http://example.com/topologies/topology-1/nodes/node-1/run',
             ], Json::decode($request->getBody(), TRUE));
 
             return new ResponseDto(200, 'OK', '', []);
@@ -62,6 +67,8 @@ final class CronManagerTest extends KernelTestCaseAbstract
 
     /**
      * @throws CronException
+     * @throws CurlException
+     * @throws NodeException
      */
     public function testPatch(): void
     {
@@ -70,7 +77,7 @@ final class CronManagerTest extends KernelTestCaseAbstract
             $this->assertEquals('http://example.com/cron-api/patch/topology-1-1-node-1', $request->getUri(TRUE));
             $this->assertEquals([
                 'time'    => '1 1 1 1 1',
-                'command' => 'curl -X POST http://example.com/topologies/topology-1/nodes/node-1/run',
+                'command' => 'curl -H "Accept: application/json" -H "Content-Type: application/json" -X POST -d "params":"abc" http://example.com/topologies/topology-1/nodes/node-1/run',
             ], Json::decode($request->getBody(), TRUE));
 
             return new ResponseDto(200, 'OK', '', []);
@@ -79,6 +86,7 @@ final class CronManagerTest extends KernelTestCaseAbstract
 
     /**
      * @throws CronException
+     * @throws NodeException
      */
     public function testDelete(): void
     {
@@ -93,6 +101,8 @@ final class CronManagerTest extends KernelTestCaseAbstract
 
     /**
      * @throws CronException
+     * @throws CurlException
+     * @throws NodeException
      */
     public function testBatchCreate(): void
     {
@@ -103,17 +113,17 @@ final class CronManagerTest extends KernelTestCaseAbstract
                 0 => [
                     'hash'    => 'topology-1-1-node-1',
                     'time'    => '1 1 1 1 1',
-                    'command' => 'curl -X POST http://example.com/topologies/topology-1/nodes/node-1/run',
+                    'command' => 'curl -H "Accept: application/json" -H "Content-Type: application/json" -X POST -d "params":"abc" http://example.com/topologies/topology-1/nodes/node-1/run',
                 ],
                 1 => [
                     'hash'    => 'topology-1-1-node-2',
                     'time'    => '2 2 2 2 2',
-                    'command' => 'curl -X POST http://example.com/topologies/topology-1/nodes/node-2/run',
+                    'command' => 'curl -H "Accept: application/json" -H "Content-Type: application/json" -X POST -d "params":"abc" http://example.com/topologies/topology-1/nodes/node-2/run',
                 ],
                 2 => [
                     'hash'    => 'topology-1-1-node-3',
                     'time'    => '3 3 3 3 3',
-                    'command' => 'curl -X POST http://example.com/topologies/topology-1/nodes/node-3/run',
+                    'command' => 'curl -H "Accept: application/json" -H "Content-Type: application/json" -X POST -d "params":"abc" http://example.com/topologies/topology-1/nodes/node-3/run',
                 ],
             ], Json::decode($request->getBody(), TRUE));
 
@@ -123,6 +133,8 @@ final class CronManagerTest extends KernelTestCaseAbstract
 
     /**
      * @throws CronException
+     * @throws CurlException
+     * @throws NodeException
      */
     public function testBatchUpdate(): void
     {
@@ -133,17 +145,17 @@ final class CronManagerTest extends KernelTestCaseAbstract
                 0 => [
                     'hash'    => 'topology-1-1-node-1',
                     'time'    => '1 1 1 1 1',
-                    'command' => 'curl -X POST http://example.com/topologies/topology-1/nodes/node-1/run',
+                    'command' => 'curl -H "Accept: application/json" -H "Content-Type: application/json" -X POST -d "params":"abc" http://example.com/topologies/topology-1/nodes/node-1/run',
                 ],
                 1 => [
                     'hash'    => 'topology-1-1-node-2',
                     'time'    => '2 2 2 2 2',
-                    'command' => 'curl -X POST http://example.com/topologies/topology-1/nodes/node-2/run',
+                    'command' => 'curl -H "Accept: application/json" -H "Content-Type: application/json" -X POST -d "params":"abc" http://example.com/topologies/topology-1/nodes/node-2/run',
                 ],
                 2 => [
                     'hash'    => 'topology-1-1-node-3',
                     'time'    => '3 3 3 3 3',
-                    'command' => 'curl -X POST http://example.com/topologies/topology-1/nodes/node-3/run',
+                    'command' => 'curl -H "Accept: application/json" -H "Content-Type: application/json" -X POST -d "params":"abc" http://example.com/topologies/topology-1/nodes/node-3/run',
                 ],
             ], Json::decode($request->getBody(), TRUE));
 
@@ -153,6 +165,8 @@ final class CronManagerTest extends KernelTestCaseAbstract
 
     /**
      * @throws CronException
+     * @throws CurlException
+     * @throws NodeException
      */
     public function testBatchPatch(): void
     {
@@ -163,17 +177,17 @@ final class CronManagerTest extends KernelTestCaseAbstract
                 0 => [
                     'hash'    => 'topology-1-1-node-1',
                     'time'    => '1 1 1 1 1',
-                    'command' => 'curl -X POST http://example.com/topologies/topology-1/nodes/node-1/run',
+                    'command' => 'curl -H "Accept: application/json" -H "Content-Type: application/json" -X POST -d "params":"abc" http://example.com/topologies/topology-1/nodes/node-1/run',
                 ],
                 1 => [
                     'hash'    => 'topology-1-1-node-2',
                     'time'    => '2 2 2 2 2',
-                    'command' => 'curl -X POST http://example.com/topologies/topology-1/nodes/node-2/run',
+                    'command' => 'curl -H "Accept: application/json" -H "Content-Type: application/json" -X POST -d "params":"abc" http://example.com/topologies/topology-1/nodes/node-2/run',
                 ],
                 2 => [
                     'hash'    => 'topology-1-1-node-3',
                     'time'    => '3 3 3 3 3',
-                    'command' => 'curl -X POST http://example.com/topologies/topology-1/nodes/node-3/run',
+                    'command' => 'curl -H "Accept: application/json" -H "Content-Type: application/json" -X POST -d "params":"abc" http://example.com/topologies/topology-1/nodes/node-3/run',
                 ],
             ], Json::decode($request->getBody(), TRUE));
 
@@ -183,6 +197,8 @@ final class CronManagerTest extends KernelTestCaseAbstract
 
     /**
      * @throws CronException
+     * @throws CurlException
+     * @throws NodeException
      */
     public function testBatchDelete(): void
     {
@@ -201,6 +217,8 @@ final class CronManagerTest extends KernelTestCaseAbstract
 
     /**
      * @throws CronException
+     * @throws CurlException
+     * @throws NodeException
      */
     public function testRequestFail(): void
     {
@@ -245,6 +263,7 @@ final class CronManagerTest extends KernelTestCaseAbstract
      * @param int $count
      *
      * @return Node|Node[]
+     * @throws NodeException
      */
     private function getNodes(int $count = 1)
     {
@@ -256,6 +275,7 @@ final class CronManagerTest extends KernelTestCaseAbstract
                 ->setName(sprintf('node-%s', $i))
                 ->setTopology(sprintf('topology-%s', $i))
                 ->setType(TypeEnum::CRON)
+                ->setCronParams('"params":"abc"')
                 ->setCron(sprintf('%s %s %s %s %s', $i, $i, $i, $i, $i));
         }
 

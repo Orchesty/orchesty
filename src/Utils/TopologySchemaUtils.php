@@ -2,9 +2,9 @@
 
 namespace Hanaboso\PipesFramework\Utils;
 
+use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
 use Hanaboso\PipesFramework\Utils\Dto\Schema;
 use Nette\Utils\Arrays;
-use Nette\Utils\Json;
 
 /**
  * Class TopologySchemaUtils
@@ -58,11 +58,12 @@ class TopologySchemaUtils
                         }
 
                         $schema->addNode($innerProcess['@id'], [
-                            'handler'    => $handler,
-                            'id'         => $innerProcess['@id'],
-                            'name'       => $innerProcess['@name'] ?? '',
-                            'cron_time'  => $innerProcess['@pipes:cronTime'] ?? '',
-                            'pipes_type' => $innerProcess['@pipes:pipesType'] ?? '',
+                            'handler'     => $handler,
+                            'id'          => $innerProcess['@id'],
+                            'name'        => $innerProcess['@name'] ?? '',
+                            'cron_time'   => $innerProcess['@pipes:cronTime'] ?? '',
+                            'cron_params' => $innerProcess['@pipes:cronParams'] ?? '',
+                            'pipes_type'  => $innerProcess['@pipes:pipesType'] ?? '',
                         ]);
                     }
                 }
@@ -88,10 +89,11 @@ class TopologySchemaUtils
      * @param Schema $schema
      *
      * @return string
+     * @throws TopologyException
      */
     public static function getIndexHash(Schema $schema): string
     {
-        return md5(Json::encode($schema->buildIndex()));
+        return md5(json_encode($schema->buildIndex()));
     }
 
 }

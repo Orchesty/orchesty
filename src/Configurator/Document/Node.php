@@ -76,6 +76,13 @@ class Node
     protected $cron;
 
     /**
+     * @var string|null
+     *
+     * @MongoDB\Field(type="string")
+     */
+    protected $cronParams;
+
+    /**
      * @return string
      */
     public function getName(): string
@@ -227,6 +234,26 @@ class Node
     public function setCron(string $cron): Node
     {
         $this->cron = $cron;
+
+        return $this;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getCronParams(): ?string
+    {
+        return $this->cronParams;
+    }
+
+    /**
+     * @param null|string $cronParams
+     *
+     * @return Node
+     */
+    public function setCronParams(?string $cronParams): Node
+    {
+        $this->cronParams = $cronParams;
 
         return $this;
     }

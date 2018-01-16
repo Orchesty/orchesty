@@ -8,9 +8,9 @@ use Hanaboso\PipesFramework\Commons\Enum\TypeEnum;
 use Hanaboso\PipesFramework\Configurator\Document\Embed\EmbedNode;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
+use Hanaboso\PipesFramework\Configurator\Exception\NodeException;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
 use Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository;
-use Nette\Utils\Json;
 use Tests\DatabaseTestCaseAbstract;
 
 /**
@@ -22,7 +22,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
 {
 
     /**
-     *
+     * @throws TopologyException
      */
     public function testCreateTopologyWithSameName(): void
     {
@@ -35,7 +35,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     *
+     * @throws TopologyException
      */
     public function testUpdateUnpublishedTopologyWithName(): void
     {
@@ -49,7 +49,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     *
+     * @throws TopologyException
      */
     public function testUpdatePublishedTopologyWithName(): void
     {
@@ -65,7 +65,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     *
+     * @throws TopologyException
      */
     public function testCheckTopologyNameUnPublished(): void
     {
@@ -81,7 +81,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     *
+     * @throws TopologyException
      */
     public function testUpdateTopology(): void
     {
@@ -115,7 +115,8 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     *
+     * @throws TopologyException
+     * @throws NodeException
      */
     public function testPublishTopology(): void
     {
@@ -139,7 +140,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     *
+     * @throws TopologyException
      */
     public function testPublishTopologyNoNodes(): void
     {
@@ -156,7 +157,8 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     *
+     * @throws TopologyException
+     * @throws NodeException
      */
     public function testCloneTopology(): void
     {
@@ -294,7 +296,8 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     *
+     * @throws TopologyException
+     * @throws NodeException
      */
     public function testCloneTopologyWithoutBpmn(): void
     {
@@ -320,7 +323,8 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     *
+     * @throws TopologyException
+     * @throws NodeException
      */
     public function testSaveTopologySchema(): void
     {
@@ -371,7 +375,8 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     *
+     * @throws TopologyException
+     * @throws NodeException
      */
     public function testSaveTopologySchemaNameNotFound(): void
     {
@@ -391,7 +396,8 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     *
+     * @throws TopologyException
+     * @throws NodeException
      */
     public function testSaveTopologySchemaTypeNotFound(): void
     {
@@ -411,7 +417,8 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     *
+     * @throws TopologyException
+     * @throws NodeException
      */
     public function testSaveTopologySchemaTypeNotExist(): void
     {
@@ -431,7 +438,8 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     *
+     * @throws TopologyException
+     * @throws NodeException
      */
     public function testSaveTopologySchemaCronNotValid(): void
     {
@@ -451,7 +459,8 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     *
+     * @throws TopologyException
+     * @throws NodeException
      */
     public function testDeleteTopology(): void
     {
@@ -484,7 +493,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
      */
     private function getSchema(string $name = 'schema.json'): array
     {
-        return Json::decode(file_get_contents(sprintf('%s/data/%s', __DIR__, $name)), Json::FORCE_ARRAY);
+        return json_decode(file_get_contents(sprintf('%s/data/%s', __DIR__, $name)), TRUE);
     }
 
 }

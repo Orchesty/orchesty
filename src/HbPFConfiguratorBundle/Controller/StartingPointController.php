@@ -16,6 +16,7 @@ use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\StartingPointHandler;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Throwable;
 
 /**
  * Class StartingPointController
@@ -47,7 +48,11 @@ class StartingPointController extends FOSRestController
     public function runAction(Request $request, string $topologyName, string $nodeName): Response
     {
         $this->construct();
-        $this->handler->runWithRequest($request, $topologyName, $nodeName);
+        try {
+            $this->handler->runWithRequest($request, $topologyName, $nodeName);
+        } catch (Throwable $e) {
+            return $this->getErrorResponse($e);
+        }
 
         return $this->getResponse([]);
     }
@@ -65,7 +70,11 @@ class StartingPointController extends FOSRestController
     public function runByIdAction(Request $request, string $topologyId, string $nodeId): Response
     {
         $this->construct();
-        $this->handler->runWithRequestById($request, $topologyId, $nodeId);
+        try {
+            $this->handler->runWithRequestById($request, $topologyId, $nodeId);
+        } catch (Throwable $e) {
+            return $this->getErrorResponse($e);
+        }
 
         return $this->getResponse([]);
     }
