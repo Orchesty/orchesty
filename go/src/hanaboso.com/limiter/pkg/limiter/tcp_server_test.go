@@ -6,23 +6,20 @@ import (
 	"bufio"
 	"fmt"
 	"net"
-	"hanaboso.com/limiter/pkg/storage"
 )
 
 type positiveLimiter struct {}
+func (dec *positiveLimiter) Start() {}
+func (dec *positiveLimiter) Stop() {}
 func (dec *positiveLimiter) IsFreeLimit(key string, time string, value string) (bool, error) {
 	return true, nil
 }
-func (dec *positiveLimiter) PostponeMessage(msg *storage.Message) (error) {
-	return nil
-}
 
 type negativeLimiter struct {}
+func (dec *negativeLimiter) Start() {}
+func (dec *negativeLimiter) Stop() {}
 func (dec *negativeLimiter) IsFreeLimit(key string, time string, value string) (bool, error) {
 	return false, nil
-}
-func (dec *negativeLimiter) PostponeMessage(msg *storage.Message) (error) {
-	return nil
 }
 
 // TestServer tests TcpServer healthCheck route

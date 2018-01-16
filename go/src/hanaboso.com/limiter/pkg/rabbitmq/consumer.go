@@ -10,6 +10,7 @@ type Callback func(msg <-chan amqp.Delivery)
 
 type Consumer interface {
 	Consume(Callback)
+	Stop()
 	SetPrefetchCount(int)
 	SetPrefetchSize(int)
 	SetConsumerTag(string string)
@@ -59,6 +60,11 @@ func (c *consumer) Consume(callback Callback) {
 		c.connection.Setup()
 		c.Consume(callback)
 	}
+}
+
+// Stop cancels consumption
+func (c *consumer) Stop() {
+	c.connection.GetChannel(c.channelId).Cancel(c.consumerTag, true)
 }
 
 func (c *consumer) SetPrefetchCount(count int) {

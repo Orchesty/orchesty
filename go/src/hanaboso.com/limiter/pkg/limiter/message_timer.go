@@ -15,6 +15,16 @@ type MessageTimer struct {
 	timerChan chan *storage.Message
 }
 
+func NewMessageTimer(s storage.Storage, p rabbitmq.Publisher, timerChan chan *storage.Message) *MessageTimer {
+	return &MessageTimer{storage: s, publisher: p, timerChan: timerChan, tickers: make(map[string]*time.Ticker)}
+}
+
+// Init loads and sets timers for already persisted messages and starts new timers handler
+func (mt *MessageTimer) Init() {
+	mt.loadExistingTimers()
+	mt.startHandleNewTimers()
+}
+
 func (mt *MessageTimer) addTicker(key string, duration int, count int) {
 	mt.tickers[key] = time.NewTicker(time.Second * time.Duration(duration))
 
@@ -62,12 +72,6 @@ func (mt *MessageTimer) release(key string, count int) (bool) {
 	return exists
 }
 
-// Init loads and sets timers for already persisted messages and starts new timers handler
-func (mt *MessageTimer) Init() {
-	mt.loadExistingTimers()
-	mt.startHandleNewTimers()
-}
-
 func (mt *MessageTimer) loadExistingTimers() {
 	items, err := mt.storage.GetDistinctFirstItems()
 	if err != nil {
@@ -85,8 +89,4 @@ func (mt *MessageTimer) startHandleNewTimers() {
 			mt.addTicker(m.LimitKey, m.LimitTime, m.LimitValue)
 		}
 	}
-}
-
-func NewMessageTimer(s storage.Storage, p rabbitmq.Publisher, timerChan chan *storage.Message) *MessageTimer {
-	return &MessageTimer{storage: s, publisher: p, timerChan: timerChan, tickers: make(map[string]*time.Ticker)}
 }
