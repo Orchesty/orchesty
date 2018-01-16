@@ -48,12 +48,15 @@ final class WisepopsSubscribeRequester implements RequesterInterface
      * @param array $data
      *
      * @return RequestDto
+     * @throws CleverConnectorsException
      */
     public function getRequestDto(array $data): RequestDto
     {
+        $targetUrl = sprintf('%s?hash=%s', $this->getWebhookUrl($data), md5(strval(time())));
+
         $dto = new RequestDto(CurlManager::METHOD_POST, new Uri(WisepopsSystem::WEBHOOK_URL));
         $dto->setHeaders($this->headers);
-        $dto->setBody(sprintf('{"event":"email", "target_url":"%s"}', $this->getWebhookUrl($data)));
+        $dto->setBody(sprintf('{"event":"email", "target_url":"%s"}', $targetUrl));
 
         return $dto;
     }
