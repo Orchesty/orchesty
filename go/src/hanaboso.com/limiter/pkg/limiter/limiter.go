@@ -33,23 +33,7 @@ func (l *limiter) PostponeMessage(msg *storage.Message) (error) {
 		return err
 	}
 
-	// TODO - start goroutine to check and publish messages from storage after msg.limitTime
-	timer := time.NewTimer(time.Second * time.Duration(msg.LimitTime))
-	go l.unleashMessages(timer, msg.LimitKey, msg.LimitValue)
-
 	return nil
-}
-
-func (l *limiter) unleashMessages(tim *time.Timer, key string, length int) {
-	<- tim.C
-	//fmt.Println("Timer call:", key)
-	//_, err := l.Db.Get(key, length)
-	//
-	//if err != nil {
-	//	log.Println("Error unleashing messages", err.Error())
-	//}
-
-	// TODO - send messages via publisher
 }
 
 func NewLimiter(storage storage.Storage) (l *limiter) {
