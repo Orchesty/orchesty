@@ -35,7 +35,6 @@ class SystemMetricsListenerTest extends ControllerTestCaseAbstract
      */
     public function testListenerWithPipesHeader(): void
     {
-        $this->markTestSkipped();
         $headers = [
             'HTTP_' . PipesHeaders::createKey(PipesHeaders::TOPOLOGY_ID) => 'topoId',
             'HTTP_' . PipesHeaders::createKey(PipesHeaders::CORRELATION_ID) => 'correlationId',
