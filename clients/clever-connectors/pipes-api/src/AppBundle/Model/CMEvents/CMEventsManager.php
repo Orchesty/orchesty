@@ -21,6 +21,7 @@ use CleverConnectors\AppBundle\Utils\TopologyNameUtils;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Exception;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Repository\NodeRepository;
@@ -165,7 +166,8 @@ class CMEventsManager implements LoggerAwareInterface
             return $systemInstall;
         }
 
-        $request    = InnerRequestUtils::getRequest($systemInstall, $changed);
+        $request = InnerRequestUtils::getRequest($systemInstall, $changed);
+        $request->setMethod(CurlManager::METHOD_POST);
         $topologies = $this->getTopologiesForSave($system, $systemInstall);
         foreach ($topologies as $topology) {
             try {
