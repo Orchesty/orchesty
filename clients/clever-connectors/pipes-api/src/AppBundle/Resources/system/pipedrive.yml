@@ -57,8 +57,6 @@ services:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Pipedrive\Mapper\PipedriveSyncPersonMapper
         arguments:
             - '@doctrine_mongodb.odm.default_document_manager'
-        calls:
-            - ['setLogger', ['@monolog.logger.notification']]
 
     hbpf.custom_node.pipedrive-created-person-mapper:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Pipedrive\Mapper\PipedriveCreatedPersonMapper
