@@ -45,9 +45,13 @@ func (mt *MessageTimer) release(key string, count int) (bool) {
 
 	for _, m := range msgs {
 		mt.publisher.Publish(m.Message)
+		_, err := mt.storage.Delete(m.ID)
+
+		if err != nil {
+			log.Println(fmt.Sprintf("Release delete item error: %s", err))
+		}
 	}
 
-	// clear
 	exists, err := mt.storage.Exists(key)
 
 	if err != nil {
