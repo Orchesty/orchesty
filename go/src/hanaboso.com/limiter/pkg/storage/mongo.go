@@ -92,7 +92,7 @@ func (s *Mongo) GetDistinctFirstItems() (map[string]*Message, error) {
 }
 
 // Exists return boolean if any document found with given key or returns error if some mongo error occurs
-func (s *Mongo) Exists(key string) (bool, error) {
+func (s *Mongo) Check(key string) (bool, error) {
 	c := s.session.DB(s.db).C(s.collection)
 	count, err := c.Find(bson.M{"limitkey": key}).Count()
 
@@ -108,7 +108,7 @@ func (s *Mongo) Exists(key string) (bool, error) {
 }
 
 // Delete removes the document by it's unique id
-func (s *Mongo) Delete(id bson.ObjectId) (bool, error) {
+func (s *Mongo) Remove(id bson.ObjectId) (bool, error) {
 	c := s.session.DB(s.db).C(s.collection)
 	err := c.RemoveId(id)
 

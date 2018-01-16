@@ -15,7 +15,7 @@ type Limiter interface {
 }
 
 type limiter struct {
-	db        storage.Storage
+	storage   storage.CheckerSaver
 	consumer  rabbitmq.Consumer
 	msgTimer  *MessageTimer
 	timerChan chan *storage.Message
@@ -60,7 +60,7 @@ func (l *limiter) Stop() {
 
 // isFreeLimit returns boolean whether message can be processed or not considering system limits
 func (l *limiter) IsFreeLimit(key string, time string, value string) (bool, error) {
-	exists, err := l.db.Exists(key)
+	exists, err := l.storage.Check(key)
 	if err != nil {
 		return false, err
 	}
@@ -68,10 +68,9 @@ func (l *limiter) IsFreeLimit(key string, time string, value string) (bool, erro
 	return exists, nil
 }
 
-
 // PostponeMessage
 func (l *limiter) saveMessage(msg *storage.Message) (error) {
-	_, err := l.db.Save(msg)
+	_, err := l.storage.Save(msg)
 	if err != nil {
 		return err
 	}
