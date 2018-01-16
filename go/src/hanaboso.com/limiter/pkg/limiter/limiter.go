@@ -60,7 +60,7 @@ func (l *limiter) Stop() {
 
 // isFreeLimit returns boolean whether message can be processed or not considering system limits
 func (l *limiter) IsFreeLimit(key string, time int, value int) (bool, error) {
-	exists, err := l.storage.Exists(key)
+	exists, err := l.storage.Check(key, time, value)
 	if err != nil {
 		return false, err
 	}

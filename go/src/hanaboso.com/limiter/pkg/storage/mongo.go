@@ -109,7 +109,7 @@ func (s *Mongo) Exists(key string) (bool, error) {
 
 // Check return boolean if any document found with given key or returns error if some mongo error occurs
 func (s *Mongo) Check(key string, time int, value int) (bool, error) {
-	// TODO - possible additional computing using time and limit
+	// in case of pure mongo without cache we're ok with checking only for existence
 	return s.Exists(key)
 }
 

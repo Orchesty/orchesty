@@ -21,8 +21,12 @@ func (cm *CachedMongo) GetDistinctFirstItems() (map[string]*Message, error) {
 }
 
 func (cm *CachedMongo) Check(key string, time int, value int) (bool, error) {
-	actual := cm.getCount(key)
+	exists, _ := cm.Exists(key)
+	if exists == false {
+		return true, nil
+	}
 
+	actual := cm.getCount(key)
 	if actual > 0 {
 		return false, nil
 	}
