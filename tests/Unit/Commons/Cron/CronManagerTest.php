@@ -26,6 +26,10 @@ use Tests\KernelTestCaseAbstract;
 final class CronManagerTest extends KernelTestCaseAbstract
 {
 
+    private const COM1 = 'curl -H "Accept: application/json" -H "Content-Type: application/json" -X POST -d {"params":"abc"} http://example.com/api/topologies/topology-1/nodes/node-1/run';
+    private const COM2 = 'curl -H "Accept: application/json" -H "Content-Type: application/json" -X POST -d {"params":"abc"} http://example.com/api/topologies/topology-1/nodes/node-2/run';
+    private const COM3 = 'curl -H "Accept: application/json" -H "Content-Type: application/json" -X POST -d {"params":"abc"} http://example.com/api/topologies/topology-1/nodes/node-3/run';
+
     /**
      * @throws CronException
      * @throws CurlException
@@ -39,7 +43,7 @@ final class CronManagerTest extends KernelTestCaseAbstract
             $this->assertEquals([
                 'hash'    => 'topology-1-1-node-1',
                 'time'    => '1 1 1 1 1',
-                'command' => 'curl -H "Accept: application/json" -H "Content-Type: application/json" -X POST -d "params":"abc" http://example.com/topologies/topology-1/nodes/node-1/run',
+                'command' => self::COM1,
             ], Json::decode($request->getBody(), TRUE));
 
             return new ResponseDto(200, 'OK', '', []);
@@ -58,7 +62,7 @@ final class CronManagerTest extends KernelTestCaseAbstract
             $this->assertEquals('http://example.com/cron-api/update/topology-1-1-node-1', $request->getUri(TRUE));
             $this->assertEquals([
                 'time'    => '1 1 1 1 1',
-                'command' => 'curl -H "Accept: application/json" -H "Content-Type: application/json" -X POST -d "params":"abc" http://example.com/topologies/topology-1/nodes/node-1/run',
+                'command' => self::COM1,
             ], Json::decode($request->getBody(), TRUE));
 
             return new ResponseDto(200, 'OK', '', []);
@@ -77,7 +81,7 @@ final class CronManagerTest extends KernelTestCaseAbstract
             $this->assertEquals('http://example.com/cron-api/patch/topology-1-1-node-1', $request->getUri(TRUE));
             $this->assertEquals([
                 'time'    => '1 1 1 1 1',
-                'command' => 'curl -H "Accept: application/json" -H "Content-Type: application/json" -X POST -d "params":"abc" http://example.com/topologies/topology-1/nodes/node-1/run',
+                'command' => self::COM1,
             ], Json::decode($request->getBody(), TRUE));
 
             return new ResponseDto(200, 'OK', '', []);
@@ -113,17 +117,17 @@ final class CronManagerTest extends KernelTestCaseAbstract
                 0 => [
                     'hash'    => 'topology-1-1-node-1',
                     'time'    => '1 1 1 1 1',
-                    'command' => 'curl -H "Accept: application/json" -H "Content-Type: application/json" -X POST -d "params":"abc" http://example.com/topologies/topology-1/nodes/node-1/run',
+                    'command' => self::COM1,
                 ],
                 1 => [
                     'hash'    => 'topology-1-1-node-2',
                     'time'    => '2 2 2 2 2',
-                    'command' => 'curl -H "Accept: application/json" -H "Content-Type: application/json" -X POST -d "params":"abc" http://example.com/topologies/topology-1/nodes/node-2/run',
+                    'command' => self::COM2,
                 ],
                 2 => [
                     'hash'    => 'topology-1-1-node-3',
                     'time'    => '3 3 3 3 3',
-                    'command' => 'curl -H "Accept: application/json" -H "Content-Type: application/json" -X POST -d "params":"abc" http://example.com/topologies/topology-1/nodes/node-3/run',
+                    'command' => self::COM3,
                 ],
             ], Json::decode($request->getBody(), TRUE));
 
@@ -145,17 +149,17 @@ final class CronManagerTest extends KernelTestCaseAbstract
                 0 => [
                     'hash'    => 'topology-1-1-node-1',
                     'time'    => '1 1 1 1 1',
-                    'command' => 'curl -H "Accept: application/json" -H "Content-Type: application/json" -X POST -d "params":"abc" http://example.com/topologies/topology-1/nodes/node-1/run',
+                    'command' => self::COM1,
                 ],
                 1 => [
                     'hash'    => 'topology-1-1-node-2',
                     'time'    => '2 2 2 2 2',
-                    'command' => 'curl -H "Accept: application/json" -H "Content-Type: application/json" -X POST -d "params":"abc" http://example.com/topologies/topology-1/nodes/node-2/run',
+                    'command' => self::COM2,
                 ],
                 2 => [
                     'hash'    => 'topology-1-1-node-3',
                     'time'    => '3 3 3 3 3',
-                    'command' => 'curl -H "Accept: application/json" -H "Content-Type: application/json" -X POST -d "params":"abc" http://example.com/topologies/topology-1/nodes/node-3/run',
+                    'command' => self::COM3,
                 ],
             ], Json::decode($request->getBody(), TRUE));
 
@@ -177,17 +181,17 @@ final class CronManagerTest extends KernelTestCaseAbstract
                 0 => [
                     'hash'    => 'topology-1-1-node-1',
                     'time'    => '1 1 1 1 1',
-                    'command' => 'curl -H "Accept: application/json" -H "Content-Type: application/json" -X POST -d "params":"abc" http://example.com/topologies/topology-1/nodes/node-1/run',
+                    'command' => self::COM1,
                 ],
                 1 => [
                     'hash'    => 'topology-1-1-node-2',
                     'time'    => '2 2 2 2 2',
-                    'command' => 'curl -H "Accept: application/json" -H "Content-Type: application/json" -X POST -d "params":"abc" http://example.com/topologies/topology-1/nodes/node-2/run',
+                    'command' => self::COM2,
                 ],
                 2 => [
                     'hash'    => 'topology-1-1-node-3',
                     'time'    => '3 3 3 3 3',
-                    'command' => 'curl -H "Accept: application/json" -H "Content-Type: application/json" -X POST -d "params":"abc" http://example.com/topologies/topology-1/nodes/node-3/run',
+                    'command' => self::COM3,
                 ],
             ], Json::decode($request->getBody(), TRUE));
 

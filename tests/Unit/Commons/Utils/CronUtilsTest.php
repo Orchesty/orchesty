@@ -12,7 +12,7 @@ use Tests\KernelTestCaseAbstract;
  *
  * @package Tests\Unit\Commons\Utils
  */
-class CronUtilsTest extends KernelTestCaseAbstract
+final class CronUtilsTest extends KernelTestCaseAbstract
 {
 
     /**
@@ -26,7 +26,7 @@ class CronUtilsTest extends KernelTestCaseAbstract
         $node->setName('nodeName');
 
         self::assertEquals(
-            '/topologies/topName/nodes/nodeName/run',
+            '/api/topologies/topName/nodes/nodeName/run',
             CronUtils::getTopologyUrl($topology, $node)
         );
     }

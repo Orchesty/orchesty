@@ -64,9 +64,9 @@ class GeneratorController extends FOSRestController
 
         if ($this->generatorHandler) {
             $result = $this->generatorHandler->generateTopology($id);
-            //@todo better solution
-            $statusCode = 200;
-
+            if ($result) {
+                $statusCode = 200;
+            }
         }
 
         return $this->getResponse(["result" => $statusCode], $statusCode);

@@ -127,7 +127,7 @@ class SuccessMessage
      */
     public function setResultCode(int $code): SuccessMessage
     {
-        return $this->addHeader(PipesHeaders::RESULT_CODE, (string) $code);
+        return $this->addHeader(PipesHeaders::createKey(PipesHeaders::RESULT_CODE), (string) $code);
     }
 
     /**
@@ -137,7 +137,7 @@ class SuccessMessage
      */
     public function setMessage(string $message): SuccessMessage
     {
-        return $this->addHeader(PipesHeaders::RESULT_MESSAGE, $message);
+        return $this->addHeader(PipesHeaders::createKey(PipesHeaders::RESULT_MESSAGE), $message);
     }
 
 }
