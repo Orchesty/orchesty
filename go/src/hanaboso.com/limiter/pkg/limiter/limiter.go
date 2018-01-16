@@ -2,7 +2,6 @@ package limiter
 
 import (
 	"hanaboso.com/limiter/pkg/storage"
-	"time"
 	_ "fmt"
 	_ "log"
 )

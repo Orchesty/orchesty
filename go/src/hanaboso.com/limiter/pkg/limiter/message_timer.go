@@ -64,7 +64,10 @@ func (mt *MessageTimer) release(key string, count int) (bool) {
 
 func (mt *MessageTimer) Init() {
 	for m := range mt.timerChan {
-		mt.addTicker(m.LimitKey, m.LimitTime, m.LimitValue)
+
+		if _, ok := mt.tickers[m.LimitKey]; !ok {
+			mt.addTicker(m.LimitKey, m.LimitTime, m.LimitValue)
+		}
 	}
 }
 
