@@ -22,6 +22,11 @@
           "name": "cronTime",
           "isAttr": true,
           "type": "String"
+        },
+        {
+          "name": "cronParams",
+          "isAttr": true,
+          "type": "String"
         }
       ]
     }

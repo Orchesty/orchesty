@@ -7,6 +7,7 @@ import CustomIdProps from './parts/CustomIdProps';
 import CustomNameProps from './parts/CustomNameProps';
 import ElementPipesTypeProps from './parts/PipesTypeProps';
 import CronTimeProps from './parts/CronTimeProps.js';
+import CronParamsProps from './parts/CronParamsProps.js';
 
 function createGeneralTabGroups(element, bpmnFactory, elementRegistry, translate) {
   const generalGroup = {
@@ -19,7 +20,15 @@ function createGeneralTabGroups(element, bpmnFactory, elementRegistry, translate
   CustomNameProps(generalGroup, element, translate);
   processProps(generalGroup, element, translate);
   ElementPipesTypeProps(generalGroup, element, translate);
-  CronTimeProps(generalGroup, element, translate);
+
+  const cronGroup = {
+      id: 'cron',
+      label: translate('Cron'),
+      entries: [],
+  };
+
+  CronTimeProps(cronGroup, element, translate);
+  CronParamsProps(cronGroup, element, translate);
 
   const detailsGroup = {
     id: 'details',
@@ -33,6 +42,7 @@ function createGeneralTabGroups(element, bpmnFactory, elementRegistry, translate
   return [
     generalGroup,
     detailsGroup,
+    cronGroup,
   ];
 }
 

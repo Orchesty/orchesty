@@ -15,6 +15,8 @@ export default function (group, element, translate) {
       description: 'eg. */2 * * * *',
       modelProperty: 'cronTime',
       validate: (element, values) => {
+        if (!values.cronTime) return {};
+
         try {
           cronParser.parseExpression(values.cronTime);
         } catch (err) {
