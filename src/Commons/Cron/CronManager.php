@@ -231,6 +231,7 @@ class CronManager
      */
     private function getHash(Node $node): string
     {
+        /** @var Topology $topology */
         $topology = $this->topologyRepository->findOneBy(['id' => $node->getTopology()]);
 
         return CronUtils::getHash($topology, $node);
@@ -243,6 +244,7 @@ class CronManager
      */
     private function getCommand(Node $node): string
     {
+        /** @var Topology $topology */
         $topology = $this->topologyRepository->findOneBy(['id' => $node->getTopology()]);
 
         return sprintf(

@@ -28,14 +28,14 @@ class Group extends EntityAbstract implements GroupInterface
     private $name;
 
     /**
-     * @var RuleInterface[]|ArrayCollection
+     * @var RuleInterface[]|ArrayCollection|array
      *
      * @ORM\OneToMany(targetEntity="Hanaboso\PipesFramework\Acl\Entity\Rule", mappedBy="group")
      */
     private $rules = [];
 
     /**
-     * @var UserInterface[]|ArrayCollection
+     * @var UserInterface[]|ArrayCollection|array
      *
      * @ORM\ManyToMany(targetEntity="Hanaboso\PipesFramework\User\Entity\User")
      * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
@@ -43,7 +43,7 @@ class Group extends EntityAbstract implements GroupInterface
     private $users = [];
 
     /**
-     * @var UserInterface[]
+     * @var UserInterface[]|ArrayCollection|array
      *
      * @ORM\ManyToMany(targetEntity="Hanaboso\PipesFramework\User\Entity\User")
      * @ORM\JoinColumn(name="group_id", referencedColumnName="id", nullable=true)
@@ -79,7 +79,7 @@ class Group extends EntityAbstract implements GroupInterface
     }
 
     /**
-     * @return RuleInterface[]|ArrayCollection
+     * @return RuleInterface[]|ArrayCollection|array
      */
     public function getRules()
     {
@@ -111,7 +111,7 @@ class Group extends EntityAbstract implements GroupInterface
     }
 
     /**
-     * @return UserInterface[]|ArrayCollection
+     * @return UserInterface[]|ArrayCollection|array
      */
     public function getUsers()
     {

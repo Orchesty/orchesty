@@ -39,8 +39,8 @@ class ListUsersCommand extends Command
     )
     {
         parent::__construct();
-        $dm         = $userDml->get();
-        $this->repo = $dm->getRepository($provider->getResource(ResourceEnum::USER));
+        $dm = $userDml->get();
+        $this->repo       = $dm->getRepository($provider->getResource(ResourceEnum::USER));
     }
 
     /**

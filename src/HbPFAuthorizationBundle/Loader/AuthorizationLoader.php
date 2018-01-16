@@ -134,13 +134,10 @@ class AuthorizationLoader
      */
     private function getInstalled(): array
     {
-        // Check for PHPStan
+        /** @var AuthorizationRepository $repo $repo */
         $repo = $this->dm->getRepository(Authorization::class);
-        if ($repo instanceof AuthorizationRepository) {
-            return $repo->getInstalledKeys();
-        }
 
-        return [];
+        return $repo->getInstalledKeys();
     }
 
 }

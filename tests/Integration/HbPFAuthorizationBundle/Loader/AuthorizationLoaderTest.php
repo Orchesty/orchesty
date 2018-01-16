@@ -11,6 +11,7 @@ namespace Tests\Integration\HbPFAuthorizationBundle\Loader;
 
 use Hanaboso\PipesFramework\Authorization\Document\Authorization;
 use Hanaboso\PipesFramework\Authorization\Repository\AuthorizationRepository;
+use Hanaboso\PipesFramework\HbPFAuthorizationBundle\Loader\AuthorizationLoader;
 use Tests\DatabaseTestCaseAbstract;
 
 /**
@@ -27,6 +28,7 @@ class AuthorizationLoaderTest extends DatabaseTestCaseAbstract
      */
     public function testInstallAllAuthorizations(): void
     {
+        /** @var AuthorizationLoader $loader */
         $loader = $this->container->get('hbpf.loader.authorization');
         /** @var AuthorizationRepository $repo */
         $repo = $this->dm->getRepository(Authorization::class);

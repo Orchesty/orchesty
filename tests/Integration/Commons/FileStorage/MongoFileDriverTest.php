@@ -11,6 +11,7 @@ namespace Tests\Integration\Commons\FileStorage;
 
 use Hanaboso\PipesFramework\Commons\Exception\FileStorageException;
 use Hanaboso\PipesFramework\Commons\FileStorage\Driver\FileMongo;
+use Hanaboso\PipesFramework\Commons\FileStorage\Driver\MongoFileDriver;
 use Tests\DatabaseTestCaseAbstract;
 
 /**
@@ -29,6 +30,7 @@ class MongoFileDriverTest extends DatabaseTestCaseAbstract
      */
     public function testFileStorage(): void
     {
+        /** @var MongoFileDriver $driver */
         $driver = $this->container->get('hbpf.file_storage.driver.mongo');
 
         $res = $driver->save('test_content', 'test_name');

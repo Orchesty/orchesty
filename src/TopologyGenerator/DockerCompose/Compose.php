@@ -113,7 +113,7 @@ class Compose
     }
 
     /**
-     * @return mixed
+     * @return array
      */
     public function getConfigs(): array
     {

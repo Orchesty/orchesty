@@ -17,6 +17,7 @@ use Hanaboso\PipesFramework\HbPFCustomNodeBundle\Handler\CustomNodeHandler;
 use Hanaboso\PipesFramework\Utils\ControllerUtils;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -40,9 +41,9 @@ class CustomNodeController extends FOSRestController implements LoggerAwareInter
     private $handler;
 
     /**
-     * @var null|LoggerInterface
+     * @var LoggerInterface
      */
-    private $logger = NULL;
+    private $logger;
 
     /**
      * CustomNodeController constructor.
@@ -52,6 +53,7 @@ class CustomNodeController extends FOSRestController implements LoggerAwareInter
     public function __construct(CustomNodeHandler $handler)
     {
         $this->handler = $handler;
+        $this->logger  = new NullLogger();
     }
 
     /**

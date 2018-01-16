@@ -103,7 +103,7 @@ class Configs
     }
 
     /**
-     * @param null|string $target
+     * @param string $target
      *
      * @return Configs
      */
