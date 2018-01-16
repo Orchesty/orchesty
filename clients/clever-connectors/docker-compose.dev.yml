@@ -221,6 +221,7 @@ services:
           - kibana
           - grafana
           - spitter
+          - topology-api
     ## END DEV
     ## BEGIN STAGE
     #    image: dkr.hanaboso.net/pipes/pipes/frontend:dev
