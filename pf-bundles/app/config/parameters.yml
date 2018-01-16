@@ -34,8 +34,8 @@ parameters:
 
     frontend_host: 127.0.0.1
     backend_host: 127.0.0.2
-    cron_host: cron-api:5000
-    monolith_host: 127.0.0.2
+    cron_host: 'http://cron-api:5000'
+    monolith_host: 'http://php-dev'
     notification_host: 127.0.0.2
 
     # InfluxDb

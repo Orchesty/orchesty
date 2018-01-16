@@ -12,6 +12,7 @@ use Hanaboso\PipesFramework\Commons\Enum\TopologyStatusEnum;
 use Hanaboso\PipesFramework\Commons\Enum\TypeEnum;
 use Hanaboso\PipesFramework\Commons\Exception\CronException;
 use Hanaboso\PipesFramework\Commons\Exception\EnumException;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlException;
 use Hanaboso\PipesFramework\Configurator\Document\Embed\EmbedNode;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
@@ -248,6 +249,7 @@ class TopologyManager
      * @param Schema   $dto
      *
      * @throws TopologyException
+     * @throws NodeException
      */
     private function generateNodes(Topology $topology, Schema $dto): void
     {
@@ -263,11 +265,12 @@ class TopologyManager
                 $topology,
                 $id,
                 $node['handler'],
+                $nodes,
+                $embedNodes,
                 $node['name'],
                 $node['pipes_type'],
                 $node['cron_time'],
-                $nodes,
-                $embedNodes
+                $node['cron_params']
             );
         }
 
@@ -284,24 +287,27 @@ class TopologyManager
      * @param Topology    $topology
      * @param string      $id
      * @param string      $handler
+     * @param array       $nodes
+     * @param array       $embedNodes
      * @param string|null $name
      * @param string|null $type
      * @param string|null $cron
-     * @param array       $nodes
-     * @param array       $embedNodes
+     * @param string|null $cron_params
      *
      * @return Node
+     * @throws NodeException
      * @throws TopologyException
      */
     private function createNode(
         Topology $topology,
         string $id,
         string $handler,
+        array &$nodes,
+        array &$embedNodes,
         ?string $name = NULL,
         ?string $type = NULL,
         ?string $cron = NULL,
-        array &$nodes,
-        array &$embedNodes
+        ?string $cron_params = NULL
     ): Node
     {
         if (!$name) {
@@ -339,6 +345,7 @@ class TopologyManager
             ->setType($type)
             ->setTopology($topology->getId())
             ->setHandler(Strings::endsWith($handler, 'vent') ? HandlerEnum::EVENT : HandlerEnum::ACTION)
+            ->setCronParams(urldecode($cron_params))
             ->setCron($cron);
         $this->dm->persist($node);
 
@@ -348,7 +355,7 @@ class TopologyManager
         if ($cron) {
             try {
                 $this->cronManager->patch($node);
-            } catch (CronException $e) {
+            } catch (CronException | CurlException $e) {
                 throw new TopologyException(
                     sprintf('Saving of Node [%s] & cron [%s] failed.', $id, $type),
                     TopologyException::TOPOLOGY_NODE_CRON_NOT_AVAILABLE,

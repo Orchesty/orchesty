@@ -6,6 +6,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\PipesFramework\Commons\Cron\CronManager;
 use Hanaboso\PipesFramework\Commons\Enum\TypeEnum;
 use Hanaboso\PipesFramework\Commons\Exception\CronException;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlException;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -66,7 +67,7 @@ class RefreshCronCommand extends Command
         try {
             $this->cronManager->batchCreate($nodes);
             $output->writeln(' SUCCESS');
-        } catch (CronException $e) {
+        } catch (CronException | CurlException $e) {
             $output->writeln(sprintf(' FAIL (%s)', $e->getMessage()));
         }
     }

@@ -6,6 +6,7 @@ use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Exception\CronException;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlException;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
@@ -14,7 +15,6 @@ use Hanaboso\PipesFramework\Commons\Utils\CronUtils;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository;
-use Nette\Utils\Json;
 use Throwable;
 
 /**
@@ -25,7 +25,7 @@ use Throwable;
 class CronManager
 {
 
-    private const CURL_COMMAND = 'curl -X POST %s%s';
+    private const CURL_COMMAND = 'curl -H "Accept: application/json" -H "Content-Type: application/json" -X POST -d %s %s%s';
 
     private const CREATE = '%s/cron-api/create';
     private const UPDATE = '%s/cron-api/update/%s';
@@ -87,11 +87,12 @@ class CronManager
      *
      * @return ResponseDto
      * @throws CronException
+     * @throws CurlException
      */
     public function create(Node $node): ResponseDto
     {
         $url = $this->getUrl(self::CREATE);
-        $dto = (new RequestDto(CurlManager::METHOD_POST, $url))->setBody(Json::encode([
+        $dto = (new RequestDto(CurlManager::METHOD_POST, $url))->setBody(json_encode([
             'hash'    => $this->getHash($node),
             'time'    => $node->getCron(),
             'command' => $this->getCommand($node),
@@ -105,11 +106,12 @@ class CronManager
      *
      * @return ResponseDto
      * @throws CronException
+     * @throws CurlException
      */
     public function update(Node $node): ResponseDto
     {
         $url = $this->getUrl(self::UPDATE, $this->getHash($node));
-        $dto = (new RequestDto(CurlManager::METHOD_POST, $url))->setBody(Json::encode([
+        $dto = (new RequestDto(CurlManager::METHOD_POST, $url))->setBody(json_encode([
             'time'    => $node->getCron(),
             'command' => $this->getCommand($node),
         ]));
@@ -122,11 +124,12 @@ class CronManager
      *
      * @return ResponseDto
      * @throws CronException
+     * @throws CurlException
      */
     public function patch(Node $node): ResponseDto
     {
         $url = $this->getUrl(self::PATCH, $this->getHash($node));
-        $dto = (new RequestDto(CurlManager::METHOD_POST, $url))->setBody(Json::encode([
+        $dto = (new RequestDto(CurlManager::METHOD_POST, $url))->setBody(json_encode([
             'time'    => $node->getCron(),
             'command' => $this->getCommand($node),
         ]));
@@ -153,6 +156,7 @@ class CronManager
      *
      * @return ResponseDto
      * @throws CronException
+     * @throws CurlException
      */
     public function batchCreate(array $nodes): ResponseDto
     {
@@ -167,6 +171,7 @@ class CronManager
      *
      * @return ResponseDto
      * @throws CronException
+     * @throws CurlException
      */
     public function batchUpdate(array $nodes): ResponseDto
     {
@@ -181,6 +186,7 @@ class CronManager
      *
      * @return ResponseDto
      * @throws CronException
+     * @throws CurlException
      */
     public function batchPatch(array $nodes): ResponseDto
     {
@@ -195,6 +201,7 @@ class CronManager
      *
      * @return ResponseDto
      * @throws CronException
+     * @throws CurlException
      */
     public function batchDelete(array $nodes): ResponseDto
     {
@@ -238,7 +245,12 @@ class CronManager
     {
         $topology = $this->topologyRepository->findOneBy(['id' => $node->getTopology()]);
 
-        return sprintf(self::CURL_COMMAND, rtrim($this->backend, '/'), CronUtils::getTopologyUrl($topology, $node));
+        return sprintf(
+            self::CURL_COMMAND,
+            $node->getCronParams(),
+            rtrim($this->backend, '/'),
+            CronUtils::getTopologyUrl($topology, $node)
+        );
     }
 
     /**
@@ -267,7 +279,7 @@ class CronManager
             }
         }
 
-        return Json::encode($processedNodes);
+        return json_encode($processedNodes);
     }
 
     /**
