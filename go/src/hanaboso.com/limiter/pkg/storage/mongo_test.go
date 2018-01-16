@@ -18,7 +18,7 @@ func TestMongoMethods(t *testing.T) {
 	m.Connect()
 	m.session.DB("test").C("messages_test").DropCollection()
 
-	keys, err := m.GetAllKeys()
+	keys, err := m.GetDistinctFirstItems()
 	assert.Nil(t, err)
 	assert.Len(t, keys, 0, "GetAllKeys should return empty slice when collection is empty")
 
@@ -66,7 +66,7 @@ func TestMongoMethods(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Len(t, fetched, 1, "Get should return maximally the required length of messages")
 
-	keys, err = m.GetAllKeys()
+	keys, err = m.GetDistinctFirstItems()
 	assert.Nil(t, err)
 	assert.Len(t, keys, 2, "GetAllKeys should return distinct keys")
 	assert.Contains(t, keys, "abcd123")

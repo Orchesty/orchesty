@@ -67,7 +67,7 @@ func (s *Mongo) Get(key string, length int) ([]*Message, error) {
 	return messages, nil
 }
 
-func (s *Mongo) GetAllKeys() ([]string, error) {
+func (s *Mongo) GetDistinctFirstItems() ([]string, error) {
 	var keys []string
 	c := s.session.DB(s.db).C(s.collection)
 	err := c.Find(nil).Distinct("limitkey", &keys)
@@ -93,6 +93,18 @@ func (s *Mongo) Exists(key string) (bool, error) {
 	}
 
 	return false, nil
+}
+
+// Delete removes the document by it's unique id
+func (s *Mongo) Delete(id string) (bool, error) {
+	c := s.session.DB(s.db).C(s.collection)
+	err := c.RemoveId(id)
+
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
 }
 
 // Returns the pointer to new created mongo storage instance
