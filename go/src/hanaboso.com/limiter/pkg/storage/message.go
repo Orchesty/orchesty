@@ -4,9 +4,11 @@ import (
 	"github.com/streadway/amqp"
 	"fmt"
 	"strconv"
+	"gopkg.in/mgo.v2/bson"
 )
 
 type Message struct {
+	ID         bson.ObjectId `bson:"_id,omitempty"`
 	LimitKey   string
 	LimitTime  int
 	LimitValue int
@@ -40,5 +42,5 @@ func NewMessage(delivery *amqp.Delivery) (*Message, error) {
 		Body:        delivery.Body,
 	}
 
-	return &Message{key.(string), t, tv, innerMsg}, nil
+	return &Message{"",key.(string), t, tv, innerMsg}, nil
 }

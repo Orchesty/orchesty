@@ -57,6 +57,7 @@ func (s *Mongo) Save(m *Message) (string, error) {
 func (s *Mongo) Get(key string, length int) ([]*Message, error) {
 	var messages []*Message
 	c := s.session.DB(s.db).C(s.collection)
+
 	err := c.Find(bson.M{"limitkey": key}).Limit(length).Iter().All(&messages)
 
 	if err != nil {

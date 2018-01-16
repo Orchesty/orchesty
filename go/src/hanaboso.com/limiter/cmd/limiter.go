@@ -27,17 +27,20 @@ func main() {
 
 	conn := rabbitmq.NewConnection("127.0.0.10", 5672, "guest", "guest")
 	conn.AddQueue(rabbitmq.Queue{Name: "test-q"})
+	conn.AddQueue(rabbitmq.Queue{Name: "output"})
 
 	conn.Connect()
 	conn.Setup()
 
 	c := rabbitmq.NewConsumer(conn, "test-q")
 
+	timerChan := make (chan *storage.Message)
+
 	go c.Consume(func(msg <-chan amqp.Delivery) {
 		for m := range msg {
 			log.Println(m)
 
-			msg, err := storage.NewMessage(m)
+			msg, err := storage.NewMessage(&m)
 
 			if err != nil {
 				log.Println(fmt.Sprintf("Message error: %s", err))
@@ -45,9 +48,15 @@ func main() {
 				lim.PostponeMessage(msg)
 			}
 
+			timerChan <- msg
+
 			m.Ack(false)
 		}
 	})
+
+	mt := limiter.NewMessageTimer(db, rabbitmq.NewPublisher(conn, "output"), timerChan)
+
+	go mt.Init()
 
 	gracefulShutdown(tcpServer)
 }
