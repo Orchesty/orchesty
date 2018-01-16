@@ -28,7 +28,7 @@ func (s *Mongo) Connect() {
 	log.Println(fmt.Sprintf("Mongo DB is connected to %s", s.host))
 }
 
-func (s *Mongo) disconnect() {
+func (s *Mongo) Disconnect() {
 	if s.session != nil {
 		s.session.Close()
 	}
@@ -37,7 +37,7 @@ func (s *Mongo) disconnect() {
 func (s *Mongo) reconnect() {
 	log.Println("Waiting 1s.")
 	time.Sleep(time.Second)
-	s.disconnect()
+	s.Disconnect()
 	s.Connect()
 }
 

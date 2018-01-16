@@ -62,9 +62,25 @@ func (mt *MessageTimer) release(key string, count int) (bool) {
 	return exists
 }
 
+// Init loads and sets timers for already persisted messages and starts new timers handler
 func (mt *MessageTimer) Init() {
-	for m := range mt.timerChan {
+	mt.loadExistingTimers()
+	mt.startHandleNewTimers()
+}
 
+func (mt *MessageTimer) loadExistingTimers() {
+	items, err := mt.storage.GetDistinctFirstItems()
+	if err != nil {
+		log.Println("Init error:", err.Error())
+	}
+
+	for _, i := range items {
+		mt.addTicker(i.LimitKey, i.LimitTime, i.LimitValue)
+	}
+}
+
+func (mt *MessageTimer) startHandleNewTimers() {
+	for m := range mt.timerChan {
 		if _, ok := mt.tickers[m.LimitKey]; !ok {
 			mt.addTicker(m.LimitKey, m.LimitTime, m.LimitValue)
 		}
