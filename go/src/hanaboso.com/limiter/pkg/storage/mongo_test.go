@@ -71,4 +71,10 @@ func TestMongoMethods(t *testing.T) {
 	assert.Len(t, keys, 2, "GetAllKeys should return distinct keys")
 	assert.Contains(t, keys, "abcd123")
 	assert.Contains(t, keys, "efgh456")
+
+	fetched, err = m.Get("abcd123", 5)
+	del, err := m.Delete(fetched[0].ID)
+	assert.Nil(t, err)
+	assert.True(t, del)
+
 }

@@ -96,7 +96,7 @@ func (s *Mongo) Exists(key string) (bool, error) {
 }
 
 // Delete removes the document by it's unique id
-func (s *Mongo) Delete(id string) (bool, error) {
+func (s *Mongo) Delete(id bson.ObjectId) (bool, error) {
 	c := s.session.DB(s.db).C(s.collection)
 	err := c.RemoveId(id)
 
