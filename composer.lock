@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "1a45b1f96045f1353e18cc28c90a0c3d",
+    "content-hash": "a79128c110a2d829d141b5d8d7e803f0",
     "packages": [
         {
             "name": "alcaeus/mongo-php-adapter",
@@ -5192,11 +5192,17 @@
     "packages-dev": [
         {
             "name": "hanaboso/php-check-utils",
-            "version": "dev-master",
+            "version": "1.0.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/hanaboso/php-check-utils",
-                "reference": "8ac9bd103226f1d2c47f541995838b49288f52ff"
+                "url": "https://github.com/hanaboso/php-check-utils.git",
+                "reference": "33c304dbbae5bbd5b0ba1fba54dc98777eafe954"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/hanaboso/php-check-utils/zipball/33c304dbbae5bbd5b0ba1fba54dc98777eafe954",
+                "reference": "33c304dbbae5bbd5b0ba1fba54dc98777eafe954",
+                "shasum": ""
             },
             "require": {
                 "php": ">=7.1",
@@ -5207,6 +5213,7 @@
                 "squizlabs/php_codesniffer": "^3.2"
             },
             "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -5217,7 +5224,7 @@
                 }
             ],
             "description": "Utils for php development - codesniffer, phpstan",
-            "time": "2018-01-16T16:33:26+00:00"
+            "time": "2018-01-16T16:20:26+00:00"
         },
         {
             "name": "jean85/pretty-package-versions",
@@ -7499,9 +7506,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "hanaboso/php-check-utils": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": [],

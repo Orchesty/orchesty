@@ -43,14 +43,8 @@
     "symfony/symfony": "^3.3"
   },
   "require-dev": {
-    "hanaboso/php-check-utils": "dev-master",
+    "hanaboso/php-check-utils": "^1.0",
     "sensio/framework-extra-bundle": "^5.1",
     "phpunit/phpunit": "^6.5"
-  },
-  "repositories": [
-    {
-      "type": "git",
-      "url": "https://github.com/hanaboso/php-check-utils"
-    }
-  ]
+  }
 }
