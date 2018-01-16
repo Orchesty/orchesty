@@ -29,14 +29,14 @@ class Group extends DocumentAbstract implements GroupInterface
     private $name;
 
     /**
-     * @var RuleInterface[]|ArrayCollection
+     * @var RuleInterface[]|ArrayCollection|array
      *
      * @ODM\ReferenceMany(targetDocument="Hanaboso\PipesFramework\Acl\Document\Rule", strategy="set")
      */
     private $rules = [];
 
     /**
-     * @var UserInterface[]|ArrayCollection
+     * @var UserInterface[]|ArrayCollection|array
      *
      * @ODM\ReferenceMany(targetDocument="Hanaboso\PipesFramework\User\Document\User", strategy="set")
      */
@@ -70,7 +70,7 @@ class Group extends DocumentAbstract implements GroupInterface
     }
 
     /**
-     * @return RuleInterface[]|ArrayCollection
+     * @return RuleInterface[]|ArrayCollection|array
      */
     public function getRules()
     {
@@ -102,7 +102,7 @@ class Group extends DocumentAbstract implements GroupInterface
     }
 
     /**
-     * @return UserInterface[]|ArrayCollection
+     * @return UserInterface[]|ArrayCollection|array
      */
     public function getUsers()
     {

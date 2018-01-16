@@ -168,7 +168,7 @@ class RequestDto
      */
     public static function from(RequestDto $dto, ?Uri $uri = NULL, ?string $method = NULL): RequestDto
     {
-        $self = new self($method ?? $dto->getMethod(), $uri ?? new Uri($dto->getUri(TRUE)));
+        $self = new self($method ?? $dto->getMethod(), $uri ?? new Uri((string) $dto->getUri(TRUE)));
         $self
             ->setHeaders($dto->getHeaders())
             ->setDebugInfo($dto->getDebugInfo());

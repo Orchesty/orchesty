@@ -340,11 +340,6 @@ class GeneratorHandlerTest extends TestCase
         /** @var DocumentManager|\PHPUnit_Framework_MockObject_MockObject $dm */
         $dm = $this->createMock(DocumentManager::class);
         $dm->method('getRepository')->willReturnCallback(
-        /**
-         * @param $class
-         *
-         * @return DocumentRepository|null
-         */
             function ($class) use ($repositoryTopology, $repositoryNode): ?DocumentRepository {
                 if ($class == Topology::class) {
 

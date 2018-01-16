@@ -78,6 +78,7 @@ class HostMapper
      */
     public function getRoute(TypeEnum $enum, string $serviceId): string
     {
+        $route = '';
         switch ($enum->getValue()) {
             case TypeEnum::CONNECTOR:
             case TypeEnum::API:

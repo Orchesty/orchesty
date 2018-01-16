@@ -87,7 +87,7 @@ class CurlSender implements LoggerAwareInterface
             ->then(function (ResponseInterface $response) use ($dto, $startTimes) {
                 $this->logResponse($response, $dto->getDebugInfo());
                 $times = CurlMetricUtils::getTimes($startTimes);
-                CurlMetricUtils::sendCurlMetrics($this->influxSender, $times, $dto->getUri(TRUE));
+                CurlMetricUtils::sendCurlMetrics($this->influxSender, $times, (string) $dto->getUri(TRUE));
 
                 return resolve($response);
             }, function (Exception $e) use ($dto) {

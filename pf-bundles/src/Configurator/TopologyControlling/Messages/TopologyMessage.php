@@ -21,9 +21,9 @@ class TopologyMessage
     public const DELETE = 'delete';
 
     /**
-     * @var null|string
+     * @var string
      */
-    protected $topologyId = NULL;
+    protected $topologyId;
 
     /**
      * @var string

@@ -5,12 +5,12 @@
   "version": "1.0.12",
   "autoload": {
     "psr-4": {
-      "Hanaboso\\PipesFramework\\": "src/",
-      "Tests\\": "tests/"
+      "Hanaboso\\PipesFramework\\": "src/"
     }
   },
   "autoload-dev": {
     "psr-4": {
+      "Tests\\": "tests/"
     }
   },
   "require": {
@@ -43,13 +43,14 @@
     "symfony/symfony": "^3.3"
   },
   "require-dev": {
-    "hanaboso/php-check-utils": "^1.0",
-    "sensio/framework-extra-bundle": "^5.1"
+    "hanaboso/php-check-utils": "dev-master",
+    "sensio/framework-extra-bundle": "^5.1",
+    "phpunit/phpunit": "^6.5"
   },
   "repositories": [
     {
       "type": "git",
-      "url": "git@gitlab.hanaboso.net:hanaboso/php-check-utils.git"
+      "url": "https://github.com/hanaboso/php-check-utils"
     }
   ]
 }

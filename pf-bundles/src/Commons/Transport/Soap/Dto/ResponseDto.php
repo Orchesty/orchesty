@@ -39,6 +39,7 @@ class ResponseDto
         $this->soapCallResponse    = $soapCallResponse;
         $this->lastResponseHeaders = $lastResponseHeaders;
 
+        //@todo fatal error
         $parsedHeaders           = SoapHelper::parseResponseHeaders($outputHeaders);
         $this->responseHeaderDto = new ResponseHeaderDto(
             $parsedHeaders['headers'],

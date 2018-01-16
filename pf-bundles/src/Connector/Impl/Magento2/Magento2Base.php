@@ -55,10 +55,12 @@ abstract class Magento2Base implements ConnectorInterface
         $this->curl          = $curl;
     }
 
+    // @codingStandardsIgnoreStart
+
     /**
      * @param ProcessDto $dto
      *
-     * @return ProcessDto|void
+     * @return ProcessDto
      * @throws ConnectorException
      */
     public function processEvent(ProcessDto $dto): ProcessDto
@@ -68,6 +70,7 @@ abstract class Magento2Base implements ConnectorInterface
             ConnectorException::CONNECTOR_DOES_NOT_HAVE_PROCESS_EVENT
         );
     }
+    // @codingStandardsIgnoreEnd
 
     /**
      * @param string $method

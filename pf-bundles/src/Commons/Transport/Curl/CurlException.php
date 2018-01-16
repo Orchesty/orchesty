@@ -2,8 +2,8 @@
 
 namespace Hanaboso\PipesFramework\Commons\Transport\Curl;
 
-use GuzzleHttp\Psr7\Response;
 use Hanaboso\PipesFramework\Commons\Exception\PipesFrameworkException;
+use Psr\Http\Message\ResponseInterface;
 use Throwable;
 
 /**
@@ -21,28 +21,33 @@ final class CurlException extends PipesFrameworkException
     public const REQUEST_FAILED = self::OFFSET + 3;
 
     /**
-     * @var Response|null
+     * @var ResponseInterface|null
      */
     private $response;
 
     /**
      * CurlException constructor.
      *
-     * @param string         $message
-     * @param int            $code
-     * @param Throwable|NULL $previous
-     * @param Response|NULL  $response
+     * @param string                 $message
+     * @param int                    $code
+     * @param Throwable|NULL         $previous
+     * @param ResponseInterface|NULL $response
      */
-    public function __construct($message = "", $code = 0, ?Throwable $previous = NULL, ?Response $response = NULL)
+    public function __construct(
+        $message = "",
+        $code = 0,
+        ?Throwable $previous = NULL,
+        ?ResponseInterface $response = NULL
+    )
     {
         parent::__construct($message, $code, $previous);
         $this->response = $response;
     }
 
     /**
-     * @return Response|NULL
+     * @return ResponseInterface|NULL
      */
-    public function getResponse(): ?Response
+    public function getResponse(): ?ResponseInterface
     {
         return $this->response;
     }
