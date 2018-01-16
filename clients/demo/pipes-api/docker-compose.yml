@@ -10,6 +10,8 @@ services:
     environment:
       DEV_UID: ${DEV_UID}
       DEV_GID: ${DEV_GID}
+      DEPLOYMENT_PREFIX: ${DEPLOYMENT_PREFIX}
+      TOPOLOGY_MODE: ${TOPOLOGY_MODE}
     volumes:
       - ../../../:/var/www/pipes
       - ${SSH_AUTH_SOCK}:/tmp/bound-ssh-agent

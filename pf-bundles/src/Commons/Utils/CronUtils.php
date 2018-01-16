@@ -22,7 +22,7 @@ class CronUtils
     public static function getTopologyUrl(Topology $topology, Node $node): string
     {
         return sprintf(
-            '/topologies/%s/nodes/%s/run',
+            '/api/topologies/%s/nodes/%s/run',
             $topology->getName(),
             $node->getName()
         );

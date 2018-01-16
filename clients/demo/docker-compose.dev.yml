@@ -13,6 +13,7 @@ services:
         environment:
           DEV_UID: ${DEV_UID}
           DEV_GID: ${DEV_GID}
+          DEPLOYMENT_PREFIX: ${DEPLOYMENT_PREFIX}
         volumes:
           - ../../:/var/www/pipes
           - ${SSH_AUTH_SOCK}:/ssh-agent
@@ -31,6 +32,7 @@ services:
         environment:
           DEV_UID: ${DEV_UID}
           DEV_GID: ${DEV_GID}
+          DEPLOYMENT_PREFIX: ${DEPLOYMENT_PREFIX}
           GENERATOR_PATH: ${GENERATOR_PATH}
           DOCKER_NETWORK: ${DOCKER_NETWORK}
         volumes:

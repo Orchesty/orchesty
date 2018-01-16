@@ -10,6 +10,7 @@ services:
         environment:
           DEV_UID: ${DEV_UID}
           DEV_GID: ${DEV_GID}
+          BACKEND_HOST: ${BACKEND_HOST}
         volumes:
           - ../../../:/var/www/pipes
           - ${SSH_AUTH_SOCK}:/tmp/bound-ssh-agent

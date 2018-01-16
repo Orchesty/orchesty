@@ -5,7 +5,7 @@ parameters:
     env(DOCKER_NETWORK): "demo_default"
     project_source_path: "%env(PROJECT_SOURCE_PATH)%"
     env(PROJECT_SOURCE_PATH): null
-    deployment_prefix: %env(DEPLOYMENT_PREFIX)%
+    deployment_prefix: "%env(DEPLOYMENT_PREFIX)%"
     env(DEPLOYMENT_PREFIX): demo
-    topology_mode: %env(TOPOLOGY_MODE)%
+    topology_mode: "%env(TOPOLOGY_MODE)%"
     env(TOPOLOGY_MODE): swarm
