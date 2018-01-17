@@ -16,31 +16,19 @@ import (
 func main() {
 	// connects to mongodb
 	db := storage.NewMongo(
-		env.GetEnv("MONGO_HOST", "localhost"),
+		env.GetEnv("MONGO_HOST", "127.0.0.10"),
 		env.GetEnv("MONGO_DB", "limiter"),
 		env.GetEnv("MONGO_COLLECTION", "messages"),
 	)
 	db.Connect()
 
-	rabbitPort, _ := strconv.Atoi(env.GetEnv("RABBITMQ_PORT", "5672"))
 	rabbitInput := env.GetEnv("RABBITMQ_INPUT_QUEUE", "limiter_input")
-	// TODO - remove limiter_output queue
-	// TODO - rename limiter_input to limiter
-	rabbitOutput := env.GetEnv("RABBITMQ_OUTPUT_QUEUE", "limiter_input")
-	conn := rabbitmq.NewConnection(
-		env.GetEnv("RABBITMQ_HOST", "localhost"),
-		rabbitPort,
-		env.GetEnv("RABBITMQ_USER", "guest"),
-		env.GetEnv("RABBITMQ_PASS", "guest"),
-	)
-
-	conn.AddQueue(rabbitmq.Queue{Name: rabbitInput})
-	conn.AddQueue(rabbitmq.Queue{Name: rabbitOutput})
+	conn := createRabbitMQConn(rabbitInput)
 	conn.Connect()
 	conn.Setup()
 
 	consumer := rabbitmq.NewConsumer(conn, rabbitInput)
-	publisher := rabbitmq.NewPublisher(conn, rabbitOutput)
+	publisher := rabbitmq.NewPublisher(conn, "")
 	timerChan := make(chan *storage.Message)
 	mt := limiter.NewMessageTimer(db, publisher, timerChan)
 
@@ -55,6 +43,31 @@ func main() {
 	lim.Start()
 
 	gracefulShutdown(tcpServer)
+}
+
+func createRabbitMQConn(inputQ string) rabbitmq.Connection {
+	rabbitPort, _ := strconv.Atoi(env.GetEnv("RABBITMQ_PORT", "5672"))
+	conn := rabbitmq.NewConnection(
+		env.GetEnv("RABBITMQ_HOST", "127.0.0.10"),
+		rabbitPort,
+		env.GetEnv("RABBITMQ_USER", "guest"),
+		env.GetEnv("RABBITMQ_PASS", "guest"),
+	)
+
+	// Input queue
+	conn.AddQueue(rabbitmq.Queue{Name: inputQ})
+	// Output exchange
+	//oe := rabbitmq.Exchange{Name: "limiter-exchange", Type: "direct", Args: make(map[string]interface{})}
+	//oe.Args["alternate-exchange"] = "limiter-trash"
+	//conn.AddExchange(oe)
+	// Alternative exchange - trash
+	//conn.AddExchange(rabbitmq.Exchange{Name: "limiter-trash", Type: "topic"})
+	// Alternative queue - trash for messages
+	tq := rabbitmq.Queue{Name: "limiter-trash"}
+	//tq.AddBinding(rabbitmq.Binding{Exchange: "limiter-trash", RoutingKey: "#"})
+	conn.AddQueue(tq)
+
+	return conn
 }
 
 // gracefulShutdown handles SIGINT and SIGTERM signal to stop the app gracefully

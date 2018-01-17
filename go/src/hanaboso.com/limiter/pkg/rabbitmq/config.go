@@ -1,5 +1,7 @@
 package rabbitmq
 
+import "github.com/streadway/amqp"
+
 type Exchange struct {
 	Name       string
 	Type       string
@@ -8,6 +10,7 @@ type Exchange struct {
 	Internal   bool
 	NoWait     bool
 	Bindings   []Binding
+	Args       amqp.Table
 }
 
 func (q *Exchange) AddBinding(binding Binding) {
@@ -21,6 +24,7 @@ type Queue struct {
 	Exclusive  bool
 	NoWait     bool
 	Bindings   []Binding
+	Args       amqp.Table
 }
 
 func (q *Queue) AddBinding(b Binding) {
@@ -31,4 +35,5 @@ type Binding struct {
 	Exchange   string
 	RoutingKey string
 	NoWait     bool
+	Args       amqp.Table
 }

@@ -40,7 +40,8 @@ func NewMessage(delivery *amqp.Delivery) (*Message, error) {
 		ContentType: delivery.ContentType,
 		Priority:    delivery.Priority,
 		Body:        delivery.Body,
+		ReplyTo:     delivery.ReplyTo,
 	}
 
-	return &Message{"",key.(string), t, tv, innerMsg}, nil
+	return &Message{"", key.(string), t, tv, innerMsg}, nil
 }

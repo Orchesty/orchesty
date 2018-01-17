@@ -33,20 +33,27 @@ type consumer struct {
 	noWait        bool
 }
 
+func (c *consumer) getChannel() *amqp.Channel {
+	if c.channelId == -1 {
+		c.channelId = c.connection.CreateChannel()
+	}
+
+	return c.connection.GetChannel(c.channelId)
+}
+
 func (c *consumer) Consume(callback Callback) {
 
 	if c.channelId == -1 {
 		c.channelId = c.connection.CreateChannel()
 	}
 
-	err := c.connection.GetChannel(c.channelId).Qos(c.prefetchCount, c.prefetchSize, false)
+	err := c.getChannel().Qos(c.prefetchCount, c.prefetchSize, false)
 
 	if err != nil {
 		log.Fatalln(fmt.Sprintf("Rabbit MQ channel qos: %s", err))
 	}
 
-	log.Println("Starting consuming: ", c.queue)
-	msgs, err := c.connection.GetChannel(c.channelId).Consume(c.queue, c.consumerTag, c.noAck, c.exclusive, c.noLocal, c.noWait, nil)
+	msgs, err := c.getChannel().Consume(c.queue, c.consumerTag, c.noAck, c.exclusive, c.noLocal, c.noWait, nil)
 
 	if err != nil {
 		log.Fatalln(fmt.Sprintf("Rabbit MQ consumer error: %s", err))
@@ -65,7 +72,7 @@ func (c *consumer) Consume(callback Callback) {
 
 // Stop cancels consumption
 func (c *consumer) Stop() {
-	c.connection.GetChannel(c.channelId).Cancel(c.consumerTag, true)
+	c.getChannel().Cancel(c.consumerTag, true)
 }
 
 func (c *consumer) SetPrefetchCount(count int) {

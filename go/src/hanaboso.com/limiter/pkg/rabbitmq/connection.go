@@ -15,7 +15,6 @@ type Connection interface {
 	Disconnect()
 	CreateChannel() int
 	GetChannel(int) (ch *amqp.Channel)
-	Reconnect()
 	GetRestartChan() (chan bool)
 }
 
@@ -51,7 +50,7 @@ func (c *connection) Setup() {
 
 	// Declare exchanges
 	for _, e := range c.exchanges {
-		err := ch.ExchangeDeclare(e.Name, e.Type, e.Durable, e.AutoDelete, e.Internal, e.NoWait, nil)
+		err := ch.ExchangeDeclare(e.Name, e.Type, e.Durable, e.AutoDelete, e.Internal, e.NoWait, e.Args)
 
 		if err != nil {
 			log.Fatalln(fmt.Sprintf("Rabbit MQ exchange declare error: %s", err))
@@ -64,7 +63,7 @@ func (c *connection) Setup() {
 	for _, e := range c.exchanges {
 		for _, b := range e.Bindings {
 
-			err := ch.ExchangeBind(e.Name, b.RoutingKey, b.Exchange, b.NoWait, nil)
+			err := ch.ExchangeBind(e.Name, b.RoutingKey, b.Exchange, b.NoWait, b.Args)
 
 			if err != nil {
 				log.Fatalln(fmt.Sprintf("Rabbit MQ exchange bind error: %s", err))
@@ -77,7 +76,7 @@ func (c *connection) Setup() {
 	// Declare queues
 	for _, q := range c.queues {
 
-		_, err := ch.QueueDeclare(q.Name, q.Durable, q.AutoDelete, q.Exclusive, q.NoWait, nil)
+		_, err := ch.QueueDeclare(q.Name, q.Durable, q.AutoDelete, q.Exclusive, q.NoWait, q.Args)
 
 		if err != nil {
 			log.Fatalln(fmt.Sprintf("Rabbit MQ queue declare error: %s", err))
@@ -87,7 +86,7 @@ func (c *connection) Setup() {
 
 		for _, b := range q.Bindings {
 
-			err := ch.QueueBind(q.Name, b.RoutingKey, b.Exchange, b.NoWait, nil)
+			err := ch.QueueBind(q.Name, b.RoutingKey, b.Exchange, b.NoWait, b.Args)
 
 			if err != nil {
 				log.Fatalln(fmt.Sprintf("Rabbit MQ queue bind error: %s", err))
@@ -106,14 +105,14 @@ func (c *connection) Connect() {
 
 	if err != nil {
 		log.Println(fmt.Sprintf("Rabbit MQ connection error: %s", err))
-		c.Reconnect()
+		c.reconnect()
 		return
 	}
 
 	go func() {
 		log.Println(fmt.Sprintf("Rabbit MQ connection close error: %s", <-c.conn.NotifyClose(make(chan *amqp.Error))))
 
-		c.Reconnect()
+		c.reconnect()
 		c.restartChan <- true
 	}()
 
@@ -152,7 +151,7 @@ func (c *connection) GetChannel(id int) (ch *amqp.Channel) {
 	return c.channels[id]
 }
 
-func (c *connection) Reconnect() {
+func (c *connection) reconnect() {
 	log.Println("Waiting 1s.")
 	time.Sleep(time.Second)
 	c.Disconnect()

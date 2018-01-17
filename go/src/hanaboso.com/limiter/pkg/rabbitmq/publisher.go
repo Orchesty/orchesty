@@ -8,6 +8,8 @@ import (
 
 type Publisher interface {
 	Publish(msg amqp.Publishing)
+	PublishToQueue(msg amqp.Publishing, queue string)
+	SetRoutingKey(string)
 	SetExchange(string)
 	SetMandatory(bool)
 	SetImmediate(bool)
@@ -22,13 +24,17 @@ type publisher struct {
 	immediate  bool
 }
 
-func (p *publisher) Publish(msg amqp.Publishing) {
-
+func (p *publisher) getChannel() (*amqp.Channel) {
 	if p.channelId == -1 {
 		p.channelId = p.connection.CreateChannel()
 	}
 
-	err := p.connection.GetChannel(p.channelId).Publish(p.exchange, p.routingKey, p.mandatory, p.immediate, msg)
+	return p.connection.GetChannel(p.channelId)
+}
+
+func (p *publisher) Publish(msg amqp.Publishing) {
+
+	err := p.getChannel().Publish(p.exchange, p.routingKey, p.mandatory, p.immediate, msg)
 
 	if err != nil {
 		log.Println(fmt.Sprintf("Rabbit MQ publish error: %s", err))
@@ -40,7 +46,23 @@ func (p *publisher) Publish(msg amqp.Publishing) {
 		}
 	}
 
-	log.Println("Rabbit MQ publish message")
+	log.Println(fmt.Sprintf("Rabbit MQ publish message to exchange '%s' with routing key '%s'", p.exchange, p.routingKey))
+}
+
+func (p *publisher) PublishToQueue(msg amqp.Publishing, queue string) {
+
+	if _, err := p.getChannel().QueueInspect(queue); err != nil {
+		log.Println(err)
+		p.routingKey = "limiter-trash"
+		p.Publish(msg)
+		return
+	}
+
+	p.Publish(msg)
+}
+
+func (p *publisher) SetRoutingKey(k string) {
+	p.routingKey = k
 }
 
 func (p *publisher) SetExchange(e string) {

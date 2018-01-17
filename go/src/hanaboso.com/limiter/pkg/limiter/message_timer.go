@@ -54,7 +54,20 @@ func (mt *MessageTimer) release(key string, count int) (bool) {
 	}
 
 	for _, m := range msgs {
-		mt.publisher.Publish(m.Message)
+
+		log.Println(m.Message.ReplyTo)
+		if m.Message.ReplyTo == "" {
+			log.Println("Limiter message has no 'reply-to' header")
+
+			_, err := mt.storage.Remove(m.LimitKey, m.ID)
+
+			if err != nil {
+				log.Println(fmt.Sprintf("Release delete item error: %s", err))
+			}
+			continue
+		}
+
+		mt.publisher.PublishToQueue(m.Message, m.Message.ReplyTo)
 		_, err := mt.storage.Remove(m.LimitKey, m.ID)
 
 		if err != nil {
