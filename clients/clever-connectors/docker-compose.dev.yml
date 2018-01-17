@@ -154,6 +154,7 @@ services:
           MONGO_HOST: mongo
           MONGO_DATABASE: clever-connectors
           RABBITMQ_HOST: rabbitmq
+          PROJECT_SOURCE_PATH: ${PROJECT_SOURCE_PATH}/../topology
         volumes:
           - ${DOCKER_SOCKET_PATH}:/var/run/docker.sock
           - ../topology:/srv/topology
