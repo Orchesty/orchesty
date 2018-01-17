@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:pipes="http://www.omg.org/spec/Pipes/20100524/MODEL" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn">
   <bpmn:process id="Process_1" isExecutable="false">
-    <bpmn:event id="Event_0k23hu2" pipes:pipesType="cron" pipes:cronTime="0 * * * *" name="Cron">
+    <bpmn:event id="Event_0k23hu2" pipes:pipesType="cron" pipes:cronTime="" name="Cron">
       <bpmn:outgoing>SequenceFlow_1qv8vje</bpmn:outgoing>
     </bpmn:event>
     <bpmn:task id="Task_05gsa86" pipes:pipesType="batch" name="user-message-generator">
@@ -34,7 +34,7 @@
       <bpmndi:BPMNShape id="Event_0k23hu2_di" bpmnElement="Event_0k23hu2">
         <dc:Bounds x="236" y="233" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="241" y="273" width="26" height="12" />
+          <dc:Bounds x="242" y="273" width="24" height="12" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Task_05gsa86_di" bpmnElement="Task_05gsa86">
