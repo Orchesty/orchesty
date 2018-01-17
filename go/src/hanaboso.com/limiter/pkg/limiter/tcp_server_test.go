@@ -31,7 +31,7 @@ func TestServerHealthCheck(t *testing.T) {
 
 	conn, err := net.Dial("tcp", "localhost:3334")
 	if err != nil {
-		assert.Fail(t, "Could not create tcp message.")
+		assert.Fail(t, "Could not create tcp connection.")
 	}
 	for {
 		text := "pf-health-check;someRequestId\n"
@@ -55,7 +55,7 @@ func TestServerLimitCheck(t *testing.T) {
 
 	conn, err := net.Dial("tcp", "localhost:3334")
 	if err != nil {
-		assert.Fail(t, "Could not create tcp message.")
+		assert.Fail(t, "Could not create tcp connection.")
 	}
 	for {
 		fmt.Fprintf(conn, "pf-check;someRequestId;key;10;50\n")

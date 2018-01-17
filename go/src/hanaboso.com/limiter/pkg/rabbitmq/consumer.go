@@ -45,6 +45,7 @@ func (c *consumer) Consume(callback Callback) {
 		log.Fatalln(fmt.Sprintf("Rabbit MQ channel qos: %s", err))
 	}
 
+	log.Println("Starting consuming: ", c.queue)
 	msgs, err := c.connection.GetChannel(c.channelId).Consume(c.queue, c.consumerTag, c.noAck, c.exclusive, c.noLocal, c.noWait, nil)
 
 	if err != nil {

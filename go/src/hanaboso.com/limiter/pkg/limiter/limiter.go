@@ -43,6 +43,7 @@ func (l *limiter) Start() {
 			if err != nil {
 				log.Println(fmt.Sprintf("Message error: %s", err))
 			} else {
+				log.Println("Message accepted: ", msg.LimitKey)
 				l.saveMessage(msg)
 			}
 

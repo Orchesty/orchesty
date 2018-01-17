@@ -22,7 +22,7 @@ func NewMessageTimer(s storage.Storage, p rabbitmq.Publisher, timerChan chan *st
 // Init loads and sets timers for already persisted messages and starts new timers handler
 func (mt *MessageTimer) Init() {
 	mt.loadExistingTimers()
-	mt.startHandleNewTimers()
+	go mt.startHandleNewTimers()
 }
 
 func (mt *MessageTimer) addTicker(key string, duration int, count int) {

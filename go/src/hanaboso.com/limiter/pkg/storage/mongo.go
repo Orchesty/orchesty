@@ -139,6 +139,11 @@ func (s *Mongo) getDistinctKeys() ([]string, error) {
 	return keys, nil
 }
 
+// DropCollection drops current collection
+func (s *Mongo) DropCollection() {
+	s.session.DB(s.db).C(s.collection).DropCollection()
+}
+
 // Returns the pointer to new created mongo storage instance
 func NewMongo(host string, db string, collection string) (*Mongo) {
 	return &Mongo{host: host, db: db, collection: collection}

@@ -24,6 +24,8 @@ func main() {
 
 	rabbitPort, _ := strconv.Atoi(env.GetEnv("RABBITMQ_PORT", "5672"))
 	rabbitInput := env.GetEnv("RABBITMQ_INPUT_QUEUE", "limiter_input")
+	// TODO - remove limiter_output queue
+	// TODO - rename limiter_input to limiter
 	rabbitOutput := env.GetEnv("RABBITMQ_OUTPUT_QUEUE", "limiter_input")
 	conn := rabbitmq.NewConnection(
 		env.GetEnv("RABBITMQ_HOST", "localhost"),
@@ -49,6 +51,8 @@ func main() {
 	tcpServer := limiter.NewTcpServer(lim)
 	limiterPort, _ := strconv.Atoi(env.GetEnv("LIMITER_PORT", "3333"))
 	go tcpServer.Start(limiterPort)
+
+	lim.Start()
 
 	gracefulShutdown(tcpServer)
 }

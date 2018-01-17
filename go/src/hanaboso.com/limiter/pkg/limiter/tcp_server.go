@@ -61,13 +61,13 @@ func populateRequest(conn net.Conn) (request, error) {
 
 		timeParam, err := strconv.Atoi(data[3])
 		if err != nil {
-			return req, fmt.Errorf("invalid time param")
+			return req, fmt.Errorf("invalid time param " + err.Error())
 		}
 		req.time = timeParam
 
 		valueParam, err := strconv.Atoi(data[4])
 		if err != nil {
-			return req, fmt.Errorf("invalid value param")
+			return req, fmt.Errorf("invalid value param " + err.Error())
 		}
 		req.value = valueParam
 
