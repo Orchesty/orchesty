@@ -2,6 +2,7 @@
 import logging
 
 from errors.bad_body_parameters import BadBodyParameters
+from errors.record_not_found import RecordNotFound
 from handler.cron_handler_base import CronHandlerBase
 from handler.response_handler import get_json_content
 from model.request import Request
@@ -85,8 +86,11 @@ class CronHandler(CronHandlerBase):
                 raise BadBodyParameters(message, 400)
         except KeyError as e:
             if len(body) == 0:
-                self.db.remove(hash_key)
-                logger.debug('remove hash: {} '.format(hash_key))
+                try:
+                    self.db.remove(hash_key)
+                    logger.debug('remove hash: {} '.format(hash_key))
+                except RecordNotFound as e:
+                    pass
             else:
                 message = 'Unknown body format key: {}'.format(e)
                 logger.error(message)
