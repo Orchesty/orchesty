@@ -20,7 +20,7 @@ class CronBuilder:
         """
         self.db = db
         self.cron_tab = cron_tab
-    
+
     def build(self) -> bool:
         """
         
@@ -28,16 +28,17 @@ class CronBuilder:
         :rtype: bool
         """
         logger.debug('start build cron')
-        
+        exist = []
         self.cron_tab.remove_all()
-        
         for row in self.db.get_all():
-            job = self.cron_tab.new(row['command'])
-            job.setall(row['time'])
-            logger.debug('{}'.format(repr(job)))
+            if row['command'] not in exist:
+                job = self.cron_tab.new(row['command'])
+                job.setall(row['time'])
+                logger.debug('{}'.format(repr(job)))
+                exist.append(row['command'])
 
         self.cron_tab.write()
         del self.cron_tab
-        
+
         logger.debug('finish build cron')
         return True

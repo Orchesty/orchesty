@@ -73,7 +73,6 @@ class CronHandler(CronHandlerBase):
         :return:
         """
         body = request.get_body()
-
         try:
             time, command = body['time'], body['command']
             logger.debug('update rules: {} {} {}'.format(hash_key, time, command))
@@ -85,9 +84,13 @@ class CronHandler(CronHandlerBase):
                 logger.warning(message)
                 raise BadBodyParameters(message, 400)
         except KeyError as e:
-            message = 'Unknown body format key: {}'.format(e)
-            logger.error(message)
-            raise BadBodyParameters(message, 400)
+            if len(body) == 0:
+                self.db.remove(hash_key)
+                logger.debug('remove hash: {} '.format(hash_key))
+            else:
+                message = 'Unknown body format key: {}'.format(e)
+                logger.error(message)
+                raise BadBodyParameters(message, 400)
 
         return get_json_content(200, "")
 
