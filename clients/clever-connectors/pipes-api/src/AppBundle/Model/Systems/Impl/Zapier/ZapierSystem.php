@@ -15,6 +15,7 @@ use CleverConnectors\AppBundle\Model\Webhook\Traits\WebhookSystemTrait;
 use CleverConnectors\AppBundle\Model\Webhook\WebhookSubscribes;
 use CleverConnectors\AppBundle\Model\Webhook\WebhookSystemInterface;
 use CleverConnectors\AppBundle\Utils\TopologyNameUtils;
+use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 
 /**
@@ -28,6 +29,9 @@ class ZapierSystem implements WebhookSystemInterface, AuthorizationInterface
     use SystemTrait;
     use WebhookSystemTrait;
     use AuthorizationTrait;
+
+    public const CREATE_WEBHOOK_URL = 'create_webhook_url';
+    public const UPDATE_WEBHOOK_URL = 'update_webhook_url';
 
     /**
      * ZapierSystem constructor.
@@ -116,10 +120,13 @@ class ZapierSystem implements WebhookSystemInterface, AuthorizationInterface
      */
     public function getRequestDto(SystemInstall $systemInstall, string $method): RequestDto
     {
-        throw new SystemException(
-            'Method [getRequestDto] not implemented in Zapier system.',
-            SystemException::SYSTEM_METHOD_NOT_FOUND
-        );
+        $dto = new RequestDto($method, new Uri());
+        $dto->setHeaders([
+            'Content-Type' => 'application/json',
+            'Accept'       => 'application/json',
+        ]);
+
+        return $dto;
     }
 
     /**
@@ -152,11 +159,29 @@ class ZapierSystem implements WebhookSystemInterface, AuthorizationInterface
             $this->prepareValue(SystemInstall::SELECT_LIST, $systemInstall->getSettings())
         );
 
+        $field4 = new Field(
+            Field::URL,
+            self::CREATE_WEBHOOK_URL,
+            'Create webhook URL',
+            $this->prepareValue(self::CREATE_WEBHOOK_URL, $systemInstall->getSettings()),
+            FALSE
+        );
+
+        $field5 = new Field(
+            Field::URL,
+            self::UPDATE_WEBHOOK_URL,
+            'Update webhook URL',
+            $this->prepareValue(self::UPDATE_WEBHOOK_URL, $systemInstall->getSettings()),
+            FALSE
+        );
+
         $form = new Form();
         $form
             ->addField($field1)
             ->addField($field2)
-            ->addField($field3);
+            ->addField($field3)
+            ->addField($field4)
+            ->addField($field5);
 
         return $form->toArray();
     }
