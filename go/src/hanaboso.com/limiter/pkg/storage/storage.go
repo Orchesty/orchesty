@@ -14,8 +14,7 @@ type CheckerSaver interface {
 }
 
 type Checker interface {
-	// Check returns true if any message with given key is present in storage
-	Check(key string, time int, value int) (bool, error)
+	// Exists returns true if any message with given key is present in storage
 	Exists(key string) (bool, error)
 }
 
@@ -32,6 +31,8 @@ type Remover interface {
 type Finder interface {
 	// Returns the message or error if no message was found
 	Get(key string, length int) ([]*Message, error)
+	// Count returns the number of messages with given key
+	Count(key string) (int, error)
 	// GetDistinctFirstItems returns for every distinct limitkey the first record
 	GetDistinctFirstItems() (map[string]*Message, error)
 }

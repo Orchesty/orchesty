@@ -18,6 +18,10 @@ func TestMongoMethods(t *testing.T) {
 	m.Connect()
 	m.session.DB("test").C("messages_test").DropCollection()
 
+	count, err := m.Count("abcd123")
+	assert.Nil(t, err)
+	assert.Equal(t, 0, count)
+
 	keys, err := m.GetDistinctFirstItems()
 	assert.Nil(t, err)
 	assert.Len(t, keys, 0, "GetAllKeys should return empty slice when collection is empty")
@@ -57,6 +61,14 @@ func TestMongoMethods(t *testing.T) {
 	k, err = m.Save(msgOne)
 	assert.Nil(t, err)
 	assert.Equal(t, "abcd123", k, "Save should allow saving multiple messages with same key")
+
+	count, err = m.Count("abcd123")
+	assert.Nil(t, err)
+	assert.Equal(t, 2, count)
+
+	count, err = m.Count("efgh456")
+	assert.Nil(t, err)
+	assert.Equal(t, 1, count)
 
 	fetched, err = m.Get("abcd123", 5)
 	assert.Nil(t, err)

@@ -9,7 +9,7 @@ import (
 
 type checkerSaverMock struct {}
 func (db *checkerSaverMock) Exists(key string) (bool, error) {
-	if key == "on-negative" {
+	if key == "when-not-exists" {
 		return false, nil
 	}
 	if key == "on-error" {
@@ -28,13 +28,13 @@ func (db *checkerSaverMock) Save(m *storage.Message) (string, error) {
 func TestIsFreeLimit(t *testing.T) {
 	l := limiter{storage: &checkerSaverMock{}}
 
-	res, err := l.IsFreeLimit("on-negative", 10, 10)
-	assert.Nil(t, err)
-	assert.False(t, res)
-
-	res, err = l.IsFreeLimit("on-positive",10, 10)
+	res, err := l.IsFreeLimit("when-not-exists", 10, 10)
 	assert.Nil(t, err)
 	assert.True(t, res)
+
+	res, err = l.IsFreeLimit("when-exists",10, 10)
+	assert.Nil(t, err)
+	assert.False(t, res)
 
 	res, err = l.IsFreeLimit("on-error", 10, 10)
 	assert.Equal(t, "some error", err.Error() )

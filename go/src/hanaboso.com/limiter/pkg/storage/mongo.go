@@ -41,6 +41,34 @@ func (s *Mongo) reconnect() {
 	s.Connect()
 }
 
+// Exists return boolean if any document found with given key or returns error if some mongo error occurs
+func (s *Mongo) Exists(key string) (bool, error) {
+	c := s.session.DB(s.db).C(s.collection)
+	count, err := c.Find(bson.M{"limitkey": key}).Limit(1).Count()
+
+	if err != nil {
+		return false, err
+	}
+
+	if count > 0 {
+		return true, nil
+	}
+
+	return false, nil
+}
+
+// Delete removes the document by it's unique id
+func (s *Mongo) Remove(key string, id bson.ObjectId) (bool, error) {
+	c := s.session.DB(s.db).C(s.collection)
+	err := c.RemoveId(id)
+
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
+}
+
 // Save persists Message to mongo storage and returns it's limitKey
 func (s *Mongo) Save(m *Message) (string, error) {
 	c := s.session.DB(s.db).C(s.collection)
@@ -67,6 +95,13 @@ func (s *Mongo) Get(key string, length int) ([]*Message, error) {
 	return messages, nil
 }
 
+// Get tries to find up to X messages in the storage by their key, where X is the length param value
+func (s *Mongo) Count(key string) (int, error) {
+	c := s.session.DB(s.db).C(s.collection)
+
+	return c.Find(bson.M{"limitkey": key}).Count()
+}
+
 // GetDistinctFirstItems returns for every distinct limitkey the first record
 func (s *Mongo) GetDistinctFirstItems() (map[string]*Message, error) {
 	items := make(map[string]*Message, 0)
@@ -89,40 +124,6 @@ func (s *Mongo) GetDistinctFirstItems() (map[string]*Message, error) {
 	}
 
 	return items, nil
-}
-
-// Exists return boolean if any document found with given key or returns error if some mongo error occurs
-func (s *Mongo) Exists(key string) (bool, error) {
-	c := s.session.DB(s.db).C(s.collection)
-	count, err := c.Find(bson.M{"limitkey": key}).Limit(1).Count()
-
-	if err != nil {
-		return false, err
-	}
-
-	if count > 0 {
-		return true, nil
-	}
-
-	return false, nil
-}
-
-// Check return boolean if any document found with given key or returns error if some mongo error occurs
-func (s *Mongo) Check(key string, time int, value int) (bool, error) {
-	// in case of pure mongo without cache we're ok with checking only for existence
-	return s.Exists(key)
-}
-
-// Delete removes the document by it's unique id
-func (s *Mongo) Remove(key string, id bson.ObjectId) (bool, error) {
-	c := s.session.DB(s.db).C(s.collection)
-	err := c.RemoveId(id)
-
-	if err != nil {
-		return false, err
-	}
-
-	return true, nil
 }
 
 // getDistinctKeys returns the distint limitkey values from collection
