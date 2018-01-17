@@ -26,7 +26,7 @@ use Throwable;
 class CronManager
 {
 
-    private const CURL_COMMAND = 'curl -H "Accept: application/json" -H "Content-Type: application/json" -X POST -d {%s} %s%s';
+    private const CURL_COMMAND = 'curl -H "Accept: application/json" -H "Content-Type: application/json" -X POST -d \'{%s}\' %s%s';
 
     private const CREATE = '%s/cron-api/create';
     private const UPDATE = '%s/cron-api/update/%s';
