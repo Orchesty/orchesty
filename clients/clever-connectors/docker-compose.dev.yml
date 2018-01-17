@@ -156,7 +156,7 @@ services:
           RABBITMQ_HOST: rabbitmq
         volumes:
           - ${DOCKER_SOCKET_PATH}:/var/run/docker.sock
-          - ./.topology:/srv/topology
+          - ../topology:/srv/topology
     ## END DEV
     ## BEGIN STAGE
     #topology-api:
