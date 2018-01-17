@@ -135,7 +135,7 @@ class CronBatchHandler(CronHandlerBase):
                         self.db.remove(item['hash'])
                     except RecordNotFound as e:
                         logger.info('batch patch => delete hash:{} {}'.format(item['hash'], e.message))
-                        result.append({'hash': item['hash'], 'message': e.message})
+                        #result.append({'hash': item['hash'], 'message': e.message})
                 else:
                     message = 'Item key {} missing'.format(str(e))
                     logger.error(message)
