@@ -36,11 +36,11 @@ func (mt *MessageTimer) addTicker(key string, duration int, count int) {
 			if hasNext == false {
 				mt.tickers[key].Stop()
 				delete(mt.tickers, key)
-				log.Println(fmt.Sprintf("removed ticker for key '%s'", key))
+				log.Println(fmt.Sprintf("Removed ticker for key '%s'", key))
 				return
 			}
 
-			log.Println(fmt.Sprintf("tick at: %s", t))
+			log.Println(fmt.Sprintf("Tick for key: '%s' at: %s", key, t))
 		}
 	}()
 }
@@ -54,6 +54,7 @@ func (mt *MessageTimer) release(key string, count int) (bool) {
 	}
 
 	for _, m := range msgs {
+<<<<<<< HEAD
 
 		log.Println(m.Message.ReplyTo)
 		if m.Message.ReplyTo == "" {
@@ -68,6 +69,10 @@ func (mt *MessageTimer) release(key string, count int) (bool) {
 		}
 
 		mt.publisher.PublishToQueue(m.Message, m.Message.ReplyTo)
+=======
+		log.Println("Releasing message for key: ", m.LimitKey)
+		mt.publisher.Publish(m.Message)
+>>>>>>> cc-352
 		_, err := mt.storage.Remove(m.LimitKey, m.ID)
 
 		if err != nil {
