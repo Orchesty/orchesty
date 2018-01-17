@@ -126,14 +126,25 @@ abstract class ZohoContactBatchConnectorAbstract implements ConnectorInterface, 
 
         return $this->fetchData($sender, RequestDto::from($requestDto, $uri))->then(
             function (ResponseInterface $response) use (
-                $sender, $requestDto, $callbackItem, $page, $from, $processId, $systemInstall
+                $sender,
+                $requestDto,
+                $callbackItem,
+                $page,
+                $from,
+                $processId,
+                $systemInstall
             ) {
                 $data = json_decode($response->getBody()->getContents(), TRUE);
                 if (!$this->isEmpty($data)) {
                     if (array_key_exists('error', $data['response'])) {
                         $status = $data['response']['error']['code'] ?? 400;
 
-                        return $callbackItem($this->batchConnectorError($status, $this->system, $systemInstall, $page));
+                        return $callbackItem($this->batchConnectorError(
+                            (int) $status,
+                            $this->system,
+                            $systemInstall,
+                            $page
+                        ));
                     }
 
                     $callbackItem($this->createSuccessMessage($data, $page));
