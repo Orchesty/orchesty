@@ -26,7 +26,7 @@ final class CronUtilsTest extends KernelTestCaseAbstract
         $node->setName('nodeName');
 
         self::assertEquals(
-            '/api/topologies/topName/nodes/nodeName/run',
+            '/api/topologies/topName/nodes/nodeName/run_by_name',
             CronUtils::getTopologyUrl($topology, $node)
         );
     }

@@ -26,9 +26,9 @@ use Tests\KernelTestCaseAbstract;
 final class CronManagerTest extends KernelTestCaseAbstract
 {
 
-    private const COM1 = 'curl -H "Accept: application/json" -H "Content-Type: application/json" -X POST -d {"params":"abc"} http://example.com/api/topologies/topology-1/nodes/node-1/run';
-    private const COM2 = 'curl -H "Accept: application/json" -H "Content-Type: application/json" -X POST -d {"params":"abc"} http://example.com/api/topologies/topology-1/nodes/node-2/run';
-    private const COM3 = 'curl -H "Accept: application/json" -H "Content-Type: application/json" -X POST -d {"params":"abc"} http://example.com/api/topologies/topology-1/nodes/node-3/run';
+    private const COM1 = 'curl -H "Accept: application/json" -H "Content-Type: application/json" -X POST -d {"params":"abc"} http://example.com/api/topologies/topology-1/nodes/node-1/run_by_name';
+    private const COM2 = 'curl -H "Accept: application/json" -H "Content-Type: application/json" -X POST -d {"params":"abc"} http://example.com/api/topologies/topology-1/nodes/node-2/run_by_name';
+    private const COM3 = 'curl -H "Accept: application/json" -H "Content-Type: application/json" -X POST -d {"params":"abc"} http://example.com/api/topologies/topology-1/nodes/node-3/run_by_name';
 
     /**
      * @throws CronException
