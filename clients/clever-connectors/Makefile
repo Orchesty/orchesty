@@ -23,6 +23,7 @@ DE_DEVT=docker-compose -f $(DEV_YML) exec
 	sed -e "s|{DEV_UID}|$(shell id -u)|g" \
 		-e "s|{DEV_GID}|$(shell id -u)|g" \
 		-e "s|{DOCKER_SOCKET_PATH}|$(shell test -S /var/run/docker-$${USER}.sock && echo /var/run/docker-$${USER}.sock || echo /var/run/docker.sock)|g" \
+		-e "s|{PROJECT_SOURCE_PATH}|$(shell pwd)|g" \
 		.env.dist >> .env; \
 
 docker-pull-dev:
