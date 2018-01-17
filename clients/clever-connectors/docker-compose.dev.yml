@@ -151,14 +151,14 @@ services:
           DEPLOYMENT_PREFIX: cleverconnectors
           GENERATOR_NETWORK: cleverconnectors_default
           GENERATOR_MODE: compose
-          GENERATOR_PATH: /tmp/topology
+          GENERATOR_PATH: /srv/topology
           MONGO_HOST: mongo
           MONGO_DATABASE: clever-connectors
           RABBITMQ_HOST: rabbitmq
           PROJECT_SOURCE_PATH: ${PROJECT_SOURCE_PATH}/../topology
         volumes:
           - ${DOCKER_SOCKET_PATH}:/var/run/docker.sock
-          - ../topology:/tmp/topology
+          - ../topology:/srv/topology
     ## END DEV
     ## BEGIN STAGE
     #topology-api:
