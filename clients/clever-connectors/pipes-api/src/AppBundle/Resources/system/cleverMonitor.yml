@@ -47,3 +47,19 @@ services:
             - '@hbpf.transport.async_curl_factory'
             - '@cc.progress_counter.async_progress_counter_service'
             - '%clevermonitor%'
+
+    hbpf.custom_node.cleverconnectors-benchmark-batch-generator:
+        class: CleverConnectors\AppBundle\Model\CM\TestBenchmarkConnector\CMTestBenchmarkBatchGenerator
+        calls:
+            - ['setLogger', ['@monolog.logger.commons']]
+
+    hbpf.custom_node.cleverconnectors-benchmark-mapper:
+        class: CleverConnectors\AppBundle\Model\CM\TestBenchmarkConnector\CMTestBenchmarkMapper
+
+    hbpf.connector.cleverconnectors-benchmark-spitter-connector:
+        class: CleverConnectors\AppBundle\Model\CM\TestBenchmarkConnector\CMTestBenchmarkSpitterConnector
+        arguments:
+            - '@hbpf.transport.curl_manager'
+            - '%spitter_host%'
+        calls:
+            - ['setLogger', ['@monolog.logger.commons']]
