@@ -37,9 +37,8 @@ class CronUtils
     public static function getHash(Topology $topology, Node $node): string
     {
         return sprintf(
-            '%s-%s-%s',
+            '%s-%s',
             $topology->getName(),
-            $topology->getVersion(),
             $node->getName()
         );
     }

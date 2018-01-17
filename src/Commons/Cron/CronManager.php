@@ -15,6 +15,7 @@ use Hanaboso\PipesFramework\Commons\Utils\CronUtils;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository;
+use stdClass;
 use Throwable;
 
 /**
@@ -121,18 +122,25 @@ class CronManager
 
     /**
      * @param Node $node
+     * @param bool $empty
      *
      * @return ResponseDto
      * @throws CronException
      * @throws CurlException
      */
-    public function patch(Node $node): ResponseDto
+    public function patch(Node $node, bool $empty = FALSE): ResponseDto
     {
-        $url = $this->getUrl(self::PATCH, $this->getHash($node));
-        $dto = (new RequestDto(CurlManager::METHOD_POST, $url))->setBody(json_encode([
+        $body = [
             'time'    => $node->getCron(),
             'command' => $this->getCommand($node),
-        ]));
+        ];
+
+        if ($empty) {
+            $body = new stdClass();
+        }
+
+        $url = $this->getUrl(self::PATCH, $this->getHash($node));
+        $dto = (new RequestDto(CurlManager::METHOD_POST, $url))->setBody(json_encode($body));
 
         return $this->sendAndProcessRequest($dto);
     }
@@ -183,14 +191,20 @@ class CronManager
 
     /**
      * @param Node[] $nodes
+     * @param bool   $empty
      *
      * @return ResponseDto
      * @throws CronException
      * @throws CurlException
      */
-    public function batchPatch(array $nodes): ResponseDto
+    public function batchPatch(array $nodes, bool $empty = FALSE): ResponseDto
     {
-        $body = $this->processNodes($nodes);
+        $exclude = [];
+        if ($empty) {
+            $exclude = [self::TIME, self::COMMAND];
+        }
+
+        $body = $this->processNodes($nodes, $exclude);
         $dto  = (new RequestDto(CurlManager::METHOD_POST, $this->getUrl(self::BATCH_PATCH)))->setBody($body);
 
         return $this->sendAndProcessRequest($dto);

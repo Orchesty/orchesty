@@ -352,9 +352,9 @@ class TopologyManager
         $nodes[$id]      = $node;
         $embedNodes[$id] = EmbedNode::from($node);
 
-        if ($cron) {
+        if ($type == TypeEnum::CRON) {
             try {
-                $this->cronManager->patch($node);
+                $this->cronManager->patch($node, empty($cron));
             } catch (CronException | CurlException $e) {
                 throw new TopologyException(
                     sprintf('Saving of Node [%s] & cron [%s] failed.', $id, $type),
