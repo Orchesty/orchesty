@@ -145,19 +145,20 @@ services:
 
     ## BEGIN DEV
     topology-api:
+        user: ${DEV_UID}:${DEV_GID}
         image: dkr.hanaboso.net/pipes/pipes/topology-api:dev
         environment:
           DEPLOYMENT_PREFIX: cleverconnectors
           GENERATOR_NETWORK: cleverconnectors_default
           GENERATOR_MODE: compose
-          GENERATOR_PATH: /srv/topology
+          GENERATOR_PATH: /tmp/topology
           MONGO_HOST: mongo
           MONGO_DATABASE: clever-connectors
           RABBITMQ_HOST: rabbitmq
           PROJECT_SOURCE_PATH: ${PROJECT_SOURCE_PATH}/../topology
         volumes:
           - ${DOCKER_SOCKET_PATH}:/var/run/docker.sock
-          - ../topology:/srv/topology
+          - ../topology:/tmp/topology
     ## END DEV
     ## BEGIN STAGE
     #topology-api:
