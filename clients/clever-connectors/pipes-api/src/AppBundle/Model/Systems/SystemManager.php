@@ -22,6 +22,7 @@ use CleverConnectors\AppBundle\Utils\InnerRequestUtils;
 use CleverConnectors\AppBundle\Utils\TopologyNameUtils;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Repository\NodeRepository;
@@ -564,6 +565,7 @@ class SystemManager
         $systemInstall = $this->getSystemInstall($user, $system);
         $system        = $this->systemLoader->getSystem($system);
         $request       = InnerRequestUtils::getRequest($systemInstall, $data);
+        $request->setMethod(CurlManager::METHOD_POST);
         $topologies    = $this->topologyRepository->getRunnableTopologies(
             TopologyNameUtils::getTopologyName(
                 $topology,
