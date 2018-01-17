@@ -5,7 +5,7 @@ DE=docker-compose exec app
 IMAGE_API_DEMO_FPM=dkr.hanaboso.net/pipes/client-cm/api-demo:latest
 
 .env:
-	sed -e "s/{DEV_UID}/$(shell id -u)/g; s/{DEV_USERNAME}/$(shell id -un)/g;" .env.dist > .env
+	sed -e "s/{DEV_UID}/$(shell id -u)/g; s/{DEV_GID}/$(shell id -u)/g; s/{DEV_USERNAME}/$(shell id -un)/g;" .env.dist > .env
 
 init: .env
 	$(DC) up -d --force-recreate
