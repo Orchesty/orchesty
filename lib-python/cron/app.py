@@ -84,7 +84,7 @@ def batch_delete_cron():
     return cron_batch_handler.batch_delete(request)
 
 
-@app.route("/cron-api/clear", methods=['GET'])
+@app.route("/cron-api/clear", methods=['GET', 'POST'])
 def clear_cron():
     return cron_handler.clear()
 
