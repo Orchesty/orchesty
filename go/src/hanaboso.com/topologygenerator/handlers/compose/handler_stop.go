@@ -4,11 +4,11 @@ import (
 	"net/http"
 	"github.com/gorilla/mux"
 	"hanaboso.com/topologygenerator/response"
-	"hanaboso.com/pipescommon/topology"
 	"fmt"
 	"github.com/docker/docker/api/types"
 	"hanaboso.com/topologygenerator/managers/compose"
 	"log"
+	"hanaboso.com/utils/topology"
 )
 
 func (h *DockerCompose) StopAction(w http.ResponseWriter, r *http.Request) {

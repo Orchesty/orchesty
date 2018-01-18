@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"gopkg.in/mgo.v2/bson"
 	"log"
-	"hanaboso.com/pipescommon/topology"
 	"github.com/spf13/viper"
+	"hanaboso.com/utils/topology"
 )
 
 type MongoDb struct {

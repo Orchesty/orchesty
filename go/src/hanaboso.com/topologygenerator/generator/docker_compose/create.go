@@ -6,6 +6,8 @@ import (
 	"hanaboso.com/topologygenerator/generator"
 	"hanaboso.com/utils/topology"
 	str "hanaboso.com/utils/string"
+	"gopkg.in/yaml.v2"
+	"hanaboso.com/utils/servicename"
 )
 
 func Create(te topology.Topology, nodes []topology.Node, mode string) ([]byte, error) {
@@ -98,7 +100,7 @@ func getServices(te topology.Topology, nodes []topology.Node, mode string) map[s
 				Networks:    getServiceNetworks(),
 				Volumes:     getVolumes(mode, te),
 				Configs:     getServiceConfigs(mode, te),
-				Command:     getCommand(utils.CreateServiceName(node.GetServiceName())),
+				Command:     getCommand(servicename.CreateServiceName(node.GetServiceName())),
 			}
 		}
 	}

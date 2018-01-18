@@ -1,9 +1,13 @@
+/*
+ * Copyright (c) $today.year.Hanaboso s.r.o.
+ */
+
 package topology
 
 import (
 	"fmt"
 	"gopkg.in/mgo.v2/bson"
-	"hanaboso/pipescommon/utils"
+	"hanaboso.com/utils/servicename"
 )
 
 type Node struct {
@@ -31,7 +35,7 @@ func (n Node) GetNext() []string {
 	nexts = make([]string, 0)
 
 	for _, next := range n.Next {
-		nexts = append(nexts, utils.CreateServiceName(fmt.Sprintf("%s-%s", next.ID, next.Name)))
+		nexts = append(nexts, servicename.CreateServiceName(fmt.Sprintf("%s-%s", next.ID, next.Name)))
 	}
 
 	return nexts

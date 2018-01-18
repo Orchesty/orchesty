@@ -6,7 +6,7 @@ import (
 	"strings"
 	"encoding/json"
 	"hanaboso.com/utils/topology"
-	str "hanaboso.com/utils/string"
+	"hanaboso.com/utils/servicename"
 )
 
 const DEFAULTPORT = 8008
@@ -16,7 +16,7 @@ func Create(te topology.Topology, node []topology.Node) ([]byte, error) {
 	var bridges = getBridges(te, node)
 
 	t := topology.TopologyJson{
-		ID:           CreateServiceName(te.NormalizeName()),
+		ID:           servicename.CreateServiceName(te.NormalizeName()),
 		TopologyName: te.Name,
 		TopologyId:   te.ID.Hex(),
 		Bridges:      bridges,
@@ -39,14 +39,14 @@ func getBridges(te topology.Topology, nodes []topology.Node) []topology.Topology
 
 		port = DEFAULTPORT + i
 
-		nodeId := CreateServiceName(node.GetServiceName())
+		nodeId := servicename.CreateServiceName(node.GetServiceName())
 
 		bridges = append(bridges, topology.TopologyBridgeJson{
-			ID: CreateServiceName(nodeId),
+			ID: servicename.CreateServiceName(nodeId),
 			Label: topology.TopologyBridgeLabelJson{
-				ID:       CreateServiceName(nodeId),
-				NoneId:   node.ID.Hex(),
-				NoneName: node.Name,
+				ID:       servicename.CreateServiceName(nodeId),
+				NodeId:   node.ID.Hex(),
+				NodeName: node.Name,
 			},
 			Worker: getWorkers(node),
 			Next:   node.GetNext(),
@@ -145,22 +145,4 @@ func getRoute(nodeType string, serviceId string) string {
 	}
 
 	return strings.Replace(url, "{service_id}", serviceId, -1)
-}
-
-func CreateServiceName(s string) string {
-	var (
-		item string
-		i int
-		result []string
-	)
-
-	for i, item = range strings.Split(s, "-") {
-		if i == 0 {
-			result = append(result, item)
-		} else {
-			result = append(result, str.Substring(item,0,3))
-		}
-	}
-
-	return strings.ToLower(str.Substring(strings.Join(result, "-"),0,64))
 }

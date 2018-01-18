@@ -1,9 +1,13 @@
+/*
+ * Copyright (c) $today.year.Hanaboso s.r.o.
+ */
+
 package topology
 
 import (
 	"gopkg.in/mgo.v2/bson"
 	"fmt"
-	"hanaboso/pipescommon/utils"
+	str "hanaboso.com/utils/string"
 )
 
 type Topology struct {
@@ -42,7 +46,7 @@ func (t *Topology) GetSaveDir() string {
 }
 
 func (t *Topology) GetSwarmName(prefix string) string {
-	return fmt.Sprintf("%s_%s", prefix, utils.Substring(t.ID.Hex(), 8, len(t.ID.Hex())))
+	return fmt.Sprintf("%s_%s", prefix, str.Substring(t.ID.Hex(), 8, len(t.ID.Hex())))
 }
 
 func (t *Topology) GetProbeServiceName() string {
