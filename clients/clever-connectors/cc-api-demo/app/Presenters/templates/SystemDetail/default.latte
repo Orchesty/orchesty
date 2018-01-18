@@ -89,7 +89,7 @@
                 </div>
             {/if}
 
-            {if $additionalSetting !== ''}
+            {if $additionalSetting !== '' && $system->isAuthorized()}
                 <hr>
 
                 <div class="row">

@@ -34,6 +34,8 @@ class AuthorizationSettingGeneratorFactory
             foreach ($userSystem->getSettingFields() as $field) {
 
                 if ($field->getKey() === 'list') {
+                    natcasesort($distributionList);
+
                     $form
                         ->addSelect($field->getKey(), $field->getLabel(), $distributionList)
                         ->setPrompt('Choose list')

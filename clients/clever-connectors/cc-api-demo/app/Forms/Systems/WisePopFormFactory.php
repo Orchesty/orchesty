@@ -22,6 +22,8 @@ class WisePopFormFactory
      */
     public function create(UserSystem $system, array $list = []): Form
     {
+        natcasesort($list);
+
         $form = new Form();
 
         for ($i = 0; $i < count($system->getCustomForm()); $i++) {

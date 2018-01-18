@@ -76,6 +76,8 @@ class AirTableFormFactory
      */
     public function create(UserSystem $system, array $distributionList = [], $presenter): Form
     {
+        natcasesort($distributionList);
+
         $this->system           = $system;
         $this->presenter        = $presenter;
         $this->distributionList = $distributionList;
@@ -83,7 +85,7 @@ class AirTableFormFactory
 
         foreach ($data as &$table) {
             $table['table_url'] = $table['table-url'] ?? '';
-            $table['list_id']   = $table['list-id'] ?? '';
+            $table['list_id']   = $table['list-id'] ?? NULL;
             unset($table['table-url'], $table['list-id']);
         }
 

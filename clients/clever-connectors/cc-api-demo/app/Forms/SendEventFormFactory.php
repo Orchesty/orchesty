@@ -6,6 +6,7 @@ use AlesWita\FormRenderer\BootstrapV4Renderer;
 use CcApi\ApiEntity\UserSystem;
 use DateTime;
 use Nette\Application\UI\Form;
+use Nette\Utils\Strings;
 
 /**
  * Class SendEventFormFactory
@@ -28,6 +29,8 @@ class SendEventFormFactory
      */
     public function create(UserSystem $userSystem, array $lists, array $actions): Form
     {
+        natcasesort($lists);
+
         $form = new Form();
 
         $form
@@ -68,7 +71,9 @@ class SendEventFormFactory
 
         $date = (new DateTime())->format('Y-m-d-H-i');
         $form->setDefaults([
-            'lists'       => array_search($userSystem->getName(), $lists, TRUE) ?: array_keys($lists)[0],
+            'lists'       => array_search(Strings::lower($userSystem->getName()), array_map(function (string $item) {
+                return Strings::lower($item);
+            }, $lists), TRUE) ?: array_keys($lists)[0],
             'email'       => sprintf('%s@%s.com', $date, $userSystem->getKey()),
             'last_name'   => $date,
             'first_name'  => $date,
