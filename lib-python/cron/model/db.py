@@ -31,7 +31,12 @@ class Db:
         :param command: action to execute
         :type command: str
         """
-        if self.conn.select(self.collection, {'hash': hash_key}):
+        if self.conn.select(self.collection, {'command': command}):
+            message = 'Record with hash key: "{}" has not unique command: {}'.format(hash_key, command)
+            logger.info(message)
+            raise RecordExist(message)
+        
+        elif self.conn.select(self.collection, {'hash': hash_key}):
             message = 'Record with hash key: "{}" exist'.format(hash_key)
             logger.info(message)
             raise RecordExist(message)
