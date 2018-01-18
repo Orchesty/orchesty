@@ -2,6 +2,7 @@ import * as uuid4 from "uuid/v4";
 import logger from "../logger/Logger";
 import Headers from "../message/Headers";
 import JobMessage from "../message/JobMessage";
+import LimiterPublisher from "./amqp/LimiterPublisher";
 import ILimiter from "./ILimiter";
 import TcpClient from "./TcpClient";
 
@@ -11,9 +12,13 @@ const HEALTH_CHECK_VALID_RESPONSE = "ok";
 const LIMIT_CHECK_PREFIX = "pf-check";
 const LIMIT_CHECK_RESPONSE_FREE = "ok";
 
-export interface ILimiterOptions {
+export interface ILimiterSettings {
     host: string;
     port: number;
+    queue: {
+        name: string;
+        options: any;
+    };
 }
 
 /**
@@ -48,6 +53,7 @@ export default class Limiter implements ILimiter {
 
     constructor(
         private tcpClient: TcpClient,
+        private publisher: LimiterPublisher,
     ) {}
 
     /**
@@ -113,7 +119,13 @@ export default class Limiter implements ILimiter {
      * @return {Promise<void>}
      */
     public async postpone(msg: JobMessage): Promise<void> {
-        return;
+        if (!msg.getHeaders().hasPFHeader(Headers.LIMIT_RETURN_ROUTING_KEY) ||
+            !msg.getHeaders().hasPFHeader(Headers.LIMIT_RETURN_EXCHANGE)
+        ) {
+            throw new Error("To postpone a message to limiter, it must contain limit-return-* headers.");
+        }
+
+        return this.publisher.send(msg);
     }
 
 }
