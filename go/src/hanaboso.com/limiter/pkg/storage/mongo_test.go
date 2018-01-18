@@ -4,16 +4,31 @@ import (
 	"testing"
 	"github.com/stretchr/testify/assert"
 	"github.com/streadway/amqp"
+	"time"
+	"os"
+	"hanaboso.com/utils/env"
 )
 
 const (
-	mongoHost       = "127.0.0.1"
 	mongoDb         = "test"
 	mongoCollection = "messages_test"
 )
 
 // TestMongoMethods checks implementation of storage interface methods against real mongo instance
 func TestMongoMethods(t *testing.T) {
+	stopTest := make(chan bool, 1)
+	go timeoutExit(t, stopTest)
+
+	os.Setenv("MONGO_HOST", env.GetEnv("MONGO_HOST", "localhost"))
+
+	go runTestCommandsInSeries(t, stopTest)
+
+	// wait for stopTest message
+	<-stopTest
+}
+
+func runTestCommandsInSeries(t *testing.T, stopTest chan bool) {
+	mongoHost := os.Getenv("MONGO_HOST")
 	m := NewMongo(mongoHost, mongoDb, mongoCollection)
 	m.Connect()
 	m.session.DB("test").C("messages_test").DropCollection()
@@ -91,4 +106,12 @@ func TestMongoMethods(t *testing.T) {
 	items, err = m.GetDistinctFirstItems()
 	assert.Nil(t, err)
 	assert.Len(t, items, 1)
+
+	stopTest <- true
+}
+
+func timeoutExit(t *testing.T, stopTest chan bool) {
+	time.Sleep(time.Second * 1)
+	assert.Fail(t, "Test exceeded max permitted duration limit")
+	stopTest <- true
 }

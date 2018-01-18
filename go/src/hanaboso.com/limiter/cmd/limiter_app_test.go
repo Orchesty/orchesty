@@ -14,6 +14,7 @@ import (
 	"hanaboso.com/limiter/pkg/rabbitmq"
 	"github.com/streadway/amqp"
 	"hanaboso.com/limiter/pkg/storage"
+	"hanaboso.com/utils/env"
 )
 
 const outputQueue = "test-output"
@@ -35,22 +36,17 @@ func TestLimiterApp(t *testing.T) {
 }
 
 func setTestEnv() {
-	os.Setenv("MONGO_HOST", "localhost")
+	os.Setenv("MONGO_HOST", env.GetEnv("MONGO_HOST", "localhost"))
 	os.Setenv("MONGO_DB", "limiter_test")
 	os.Setenv("MONGO_COLLECTION", "messages")
 
-	os.Setenv("RABBITMQ_HOST", "localhost")
+	os.Setenv("RABBITMQ_HOST", env.GetEnv("RABBITMQ_HOST", "localhost"))
 	os.Setenv("RABBITMQ_PORT", "5672")
 	os.Setenv("RABBITMQ_USER", "guest")
 	os.Setenv("RABBITMQ_PASS", "guest")
 	os.Setenv("RABBITMQ_INPUT_QUEUE", "limiter_input_test")
 
 	os.Setenv("LIMITER_PORT", "3030")
-
-	// Clean database before each test
-	m := storage.NewMongo(os.Getenv("MONGO_HOST"), os.Getenv("MONGO_DB"), os.Getenv("MONGO_COLLECTION"))
-	m.Connect()
-	m.DropCollection()
 }
 
 func timeoutExit(t *testing.T, stopTest chan bool) {
@@ -60,11 +56,7 @@ func timeoutExit(t *testing.T, stopTest chan bool) {
 }
 
 func simulateTraffic(t *testing.T, stopTest chan bool) {
-	rabbitPort, _ := strconv.Atoi(os.Getenv("RABBITMQ_PORT"))
-	conn := rabbitmq.NewConnection(os.Getenv("RABBITMQ_HOST"), rabbitPort, os.Getenv("RABBITMQ_USER"), os.Getenv("RABBITMQ_PASS"))
-	conn.Connect()
-	conn.AddQueue(rabbitmq.Queue{Name: outputQueue})
-	conn.Setup()
+	conn, _ := connectRemotes()
 	publisher := rabbitmq.NewPublisher(conn, os.Getenv("RABBITMQ_INPUT_QUEUE"))
 
 	go assertTcpCheckResult(t, sendTcpCheck(t, "A", 1, 2), true)
@@ -103,6 +95,22 @@ func simulateTraffic(t *testing.T, stopTest chan bool) {
 			}
 		}
 	})
+}
+
+// connectRemotes creates connection to rabbitmq and mongo which are necessary for this integration test
+func connectRemotes() (rabbitmq.Connection, *storage.Mongo) {
+	rabbitPort, _ := strconv.Atoi(os.Getenv("RABBITMQ_PORT"))
+	conn := rabbitmq.NewConnection(os.Getenv("RABBITMQ_HOST"), rabbitPort, os.Getenv("RABBITMQ_USER"), os.Getenv("RABBITMQ_PASS"))
+	conn.Connect()
+	conn.AddQueue(rabbitmq.Queue{Name: outputQueue})
+	conn.Setup()
+
+	// Clean database before each test
+	m := storage.NewMongo(os.Getenv("MONGO_HOST"), os.Getenv("MONGO_DB"), os.Getenv("MONGO_COLLECTION"))
+	m.Connect()
+	m.DropCollection()
+
+	return conn, m
 }
 
 func sendTcpCheck(t *testing.T, key string, time int, val int) string {

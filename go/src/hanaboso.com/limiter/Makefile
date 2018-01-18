@@ -16,4 +16,6 @@ docker-push:
 	docker push $(DOCKER_REGISTRY)$(DOCKER_SERVICE_NAME):$(DOCKER_DEFAULT_TAG)
 
 go-test:
-	go test ./...
+	# for mac users: $ sudo ifconfig lo0 alias 127.0.0.10 up
+	docker-compose up -d
+	RABBITMQ_HOST=127.0.0.10 MONGO_HOST=127.0.0.10 go test ./...
