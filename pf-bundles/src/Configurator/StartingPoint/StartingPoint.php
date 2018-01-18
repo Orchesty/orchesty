@@ -99,17 +99,11 @@ class StartingPoint implements LoggerAwareInterface
     }
 
     /**
-     * @param Topology $topology
-     *
      * @return string
      */
-    public static function createCounterQueueName(Topology $topology): string
+    public static function createCounterQueueName(): string
     {
-        return sprintf(
-            self::QUEUE_PATTERN,
-            GeneratorUtils::createNormalizedServiceName($topology->getId(), $topology->getName()),
-            'counter'
-        );
+        return 'pipes.multi-counter';
     }
 
     /**
@@ -263,7 +257,7 @@ class StartingPoint implements LoggerAwareInterface
         /** @var Channel $channel */
         $channel = $this->bunnyManager->getChannel();
         $channel->queueDeclare(self::createQueueName($topology, $node), FALSE, TRUE);
-        $channel->queueDeclare(self::createCounterQueueName($topology), FALSE, TRUE);
+        $channel->queueDeclare(self::createCounterQueueName(), FALSE, TRUE);
 
         $this->logger->info('Starting point info message', [
             'correlation_id' => PipesHeaders::get(PipesHeaders::CORRELATION_ID, $headers->getHeaders()),
@@ -277,7 +271,7 @@ class StartingPoint implements LoggerAwareInterface
         ]);
 
         // Publish messages
-        $this->publishInitializeCounterProcess($channel, self::createCounterQueueName($topology), $headers, $node);
+        $this->publishInitializeCounterProcess($channel, self::createCounterQueueName(), $headers, $node);
         $this->publishProcessMessage($channel, self::createQueueName($topology, $node), $headers, $content);
     }
 

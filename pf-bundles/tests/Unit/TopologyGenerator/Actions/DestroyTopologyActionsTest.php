@@ -153,7 +153,7 @@ class DestroyTopologyActionsTest extends TestCase
             [
                 '111222333',
                 'too',
-                ['pipes.111222333-too.counter', 'pipes.111222333-too.node1-1', 'pipes.111222333-too.node2-2'],
+                ['pipes.multi-counter', 'pipes.111222333-too.node1-1', 'pipes.111222333-too.node2-2'],
                 'pipes.111222333-too.events',
             ],
         ];

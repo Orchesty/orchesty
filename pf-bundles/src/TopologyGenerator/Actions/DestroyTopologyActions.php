@@ -49,7 +49,7 @@ class DestroyTopologyActions extends ActionsAbstract
     public function deleteQueues(Topology $topology, array $nodes): void
     {
         $queues   = [];
-        $queues[] = StartingPoint::createCounterQueueName($topology);
+        $queues[] = StartingPoint::createCounterQueueName();
 
         foreach ($nodes as $node) {
             $queues[] = StartingPoint::createQueueName($topology, $node);
