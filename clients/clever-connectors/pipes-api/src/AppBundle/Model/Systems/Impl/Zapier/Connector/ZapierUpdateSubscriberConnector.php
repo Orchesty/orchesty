@@ -23,7 +23,7 @@ use Psr\Log\LoggerAwareInterface;
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Zapier\Connector
  */
-class ZapierCreateSubscriberConnector implements ConnectorInterface, LoggerAwareInterface
+class ZapierUpdateSubscriberConnector implements ConnectorInterface, LoggerAwareInterface
 {
 
     use LoggerTrait;
@@ -62,7 +62,7 @@ class ZapierCreateSubscriberConnector implements ConnectorInterface, LoggerAware
      */
     public function getId(): string
     {
-        return 'zapier-create-subscriber-connector';
+        return 'zapier-update-subscriber-connector';
     }
 
     /**
@@ -94,7 +94,7 @@ class ZapierCreateSubscriberConnector implements ConnectorInterface, LoggerAware
 
         $requestDto->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()))
             ->setBody($dto->getData())
-            ->setUri(new Uri($sett[ZapierSystem::CREATE_WEBHOOK_URL]));
+            ->setUri(new Uri($sett[ZapierSystem::UPDATE_WEBHOOK_URL]));
 
         try {
             $res = $this->curl->send($requestDto);

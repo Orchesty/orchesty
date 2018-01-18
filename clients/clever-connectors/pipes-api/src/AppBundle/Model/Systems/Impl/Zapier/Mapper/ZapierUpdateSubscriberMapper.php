@@ -11,7 +11,7 @@ use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Zapier\Mapper
  */
-class ZapierCreateSubscriberMapper implements CustomNodeInterface
+class ZapierUpdateSubscriberMapper implements CustomNodeInterface
 {
 
     /**
@@ -36,9 +36,12 @@ class ZapierCreateSubscriberMapper implements CustomNodeInterface
         if (array_key_exists(CleverFieldsEnum::FOREIGN_ID, $data)) {
             $fields['id'] = $data[CleverFieldsEnum::FOREIGN_ID];
         }
-
-        $fields['unsubscribe'] = FALSE;
-        $fields['hard_bounce'] = FALSE;
+        if (array_key_exists(CleverFieldsEnum::UNSUBSCRIBE, $data)) {
+            $fields[CleverFieldsEnum::UNSUBSCRIBE] = $data[CleverFieldsEnum::UNSUBSCRIBE];
+        }
+        if (array_key_exists(CleverFieldsEnum::HARD_BOUNCE, $data)) {
+            $fields[CleverFieldsEnum::HARD_BOUNCE] = $data[CleverFieldsEnum::HARD_BOUNCE];
+        }
 
         return $dto->setData(json_encode($fields));
     }

@@ -13,11 +13,11 @@ use Nette\Utils\Json;
 use Tests\DatabaseTestCaseAbstract;
 
 /**
- * Class ZapierCreateSubscriberConnectorTest
+ * Class ZapierUpdateSubscriberConnectorTest
  *
  * @package Tests\Live\AppBundle\Model\Systems\Impl\Zapier\Connector
  */
-class ZapierCreateSubscriberConnectorTest extends DatabaseTestCaseAbstract
+class ZapierUpdateSubscriberConnectorTest extends DatabaseTestCaseAbstract
 {
 
     /**
@@ -26,7 +26,7 @@ class ZapierCreateSubscriberConnectorTest extends DatabaseTestCaseAbstract
     public function testProcessAction(): void
     {
         $this->markTestSkipped();
-        $connector = $this->container->get('hbpf.connector.zapier-create-subscriber-connector');
+        $connector = $this->container->get('hbpf.connector.zapier-update-subscriber-connector');
 
         $topology = (new Topology())->setName('Topology');
         $this->persistAndFlush($topology);
@@ -50,7 +50,7 @@ class ZapierCreateSubscriberConnectorTest extends DatabaseTestCaseAbstract
 
         $dtoData = [
             CleverFieldsEnum::HARD_BOUNCE => FALSE,
-            CleverFieldsEnum::UNSUBSCRIBE => FALSE,
+            CleverFieldsEnum::UNSUBSCRIBE => TRUE,
             CleverFieldsEnum::EMAIL       => 'test5@asdfg.com',
             CleverFieldsEnum::FIRST_NAME  => 'Karel5',
             CleverFieldsEnum::LAST_NAME   => 'Barel5',
