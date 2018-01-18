@@ -7,6 +7,7 @@ import {
     topologyTerminatorOptions,
 } from "./config";
 import RedisStorage from "./counter/storage/RedisStorage";
+import LimiterPublisher from "./limiter/amqp/LimiterPublisher";
 import {default as Limiter} from "./limiter/Limiter";
 import TcpClient from "./limiter/TcpClient";
 import logger from "./logger/Logger";
@@ -28,13 +29,14 @@ import TestCaptureWorker from "./node/worker/TestCaptureWorker";
 import UppercaseWorker from "./node/worker/UppercaseWorker";
 import MultiProbeConnector from "./probe/MultiProbeConnector";
 import Terminator from "./terminator/Terminator";
+import INodeConfigProvider from "./topology/INodeConfigProvider";
 
 class DIContainer extends Container {
 
     public static readonly WORKER_TYPE_WORKER = "worker";
     public static readonly WORKER_TYPE_SPLITTER = "splitter";
 
-    constructor() {
+    constructor(private nodeConfigurator: INodeConfigProvider) {
         super();
         this.setServices();
         this.setWorkers();
@@ -72,7 +74,13 @@ class DIContainer extends Container {
             );
         });
 
-        this.set("limiter", new Limiter(new TcpClient(limiterOptions.host, limiterOptions.port)));
+        this.set("limiter", new Limiter(
+            new TcpClient(limiterOptions.host, limiterOptions.port),
+            new LimiterPublisher(
+                this.get("amqp.connection"),
+                limiterOptions,
+            ),
+        ));
 
         this.set("faucet.amqp", (settings: IAmqpFaucetSettings) => {
             return new AmqpFaucet(settings, this.get("amqp.connection"));
@@ -109,6 +117,7 @@ class DIContainer extends Container {
             return new LimiterWorker(
                 this.get("limiter"),
                 this.get(`${wPrefix}.http`)(settings),
+                this.nodeConfigurator.getNodeConfig(settings.node_label.id, false).faucet,
             );
         });
         this.set(`${wPrefix}.http_xml_parser`, (settings: IHttpXmlParserWorkerSettings) => {
@@ -137,6 +146,7 @@ class DIContainer extends Container {
             return new LimiterWorker(
                 this.get("limiter"),
                 this.get(`${sPrefix}.amqprpc`)(settings, forwarder),
+                this.nodeConfigurator.getNodeConfig(settings.node_label.id, false).faucet,
             );
         });
 

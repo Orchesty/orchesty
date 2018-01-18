@@ -24,7 +24,8 @@ const createBasicMessage = (): JobMessage => {
 describe("Limiter", () => {
     it("isReady should return negative result on requesting invalid limiter", async () => {
         const tcp = new TcpClient("invalidhost", 3333);
-        const limiter = new Limiter(tcp);
+        const publisher: any = {};
+        const limiter = new Limiter(tcp, publisher);
         const result = await limiter.isReady();
         assert.isFalse(result);
     });
@@ -38,7 +39,8 @@ describe("Limiter", () => {
 
         setTimeout( async () => {
             const tcp = new TcpClient("localhost", 1337);
-            const limiter = new Limiter(tcp);
+            const publisher: any = {};
+            const limiter = new Limiter(tcp, publisher);
             const result = await limiter.isReady();
             assert.isTrue(result);
             done();
@@ -47,7 +49,8 @@ describe("Limiter", () => {
 
     it("canBeProcessed should returns true when missing mandatory message headers", async () => {
         const tcp = new TcpClient("localhost", 3333);
-        const limiter = new Limiter(tcp);
+        const publisher: any = {};
+        const limiter = new Limiter(tcp, publisher);
         const msg = createBasicMessage();
         const resultOne = await limiter.canBeProcessed(msg);
         assert.isTrue(resultOne);
@@ -61,7 +64,8 @@ describe("Limiter", () => {
 
     it("canBeProcessed should return true when cannot contact remote server", async () => {
         const tcp = new TcpClient("invalidhost", 3333);
-        const limiter = new Limiter(tcp);
+        const publisher: any = {};
+        const limiter = new Limiter(tcp, publisher);
 
         const msg = createBasicMessage();
         msg.getHeaders().setPFHeader(Headers.LIMIT_KEY, "lkey");
@@ -80,7 +84,8 @@ describe("Limiter", () => {
         positive.listen(1338, "localhost");
 
         const tcp = new TcpClient("localhost", 1338);
-        const limiter = new Limiter(tcp);
+        const publisher: any = {};
+        const limiter = new Limiter(tcp, publisher);
 
         const msg = createBasicMessage();
         msg.getHeaders().setPFHeader(Headers.LIMIT_KEY, "lkey");
@@ -99,7 +104,8 @@ describe("Limiter", () => {
         positive.listen(1339, "localhost");
 
         const tcp = new TcpClient("localhost", 1339);
-        const limiter = new Limiter(tcp);
+        const publisher: any = {};
+        const limiter = new Limiter(tcp, publisher);
 
         const msg = createBasicMessage();
         msg.getHeaders().setPFHeader(Headers.LIMIT_KEY, "lkey");
@@ -116,14 +122,16 @@ describe("Limiter", () => {
 
     it.skip("isReady against live go server", async () => {
         const tcp = new TcpClient("localhost", 3333);
-        const limiter = new Limiter(tcp);
+        const publisher: any = {};
+        const limiter = new Limiter(tcp, publisher);
         const result = await limiter.isReady();
         assert.isTrue(result);
     });
 
     it.skip("check limit against live go server", async () => {
         const tcp = new TcpClient("localhost", 3333);
-        const limiter = new Limiter(tcp);
+        const publisher: any = {};
+        const limiter = new Limiter(tcp, publisher);
 
         const msg = createBasicMessage();
         msg.getHeaders().setPFHeader(Headers.LIMIT_KEY, "lkey");

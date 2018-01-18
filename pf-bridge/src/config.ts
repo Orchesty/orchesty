@@ -1,6 +1,6 @@
 import {IConnectionOptions} from "amqplib-plus/dist/lib/Connection";
 import {IRedisStorageSettings} from "./counter/storage/RedisStorage";
-import {ILimiterOptions} from "./limiter/Limiter";
+import {ILimiterSettings} from "./limiter/Limiter";
 import {IProbeSettings} from "./probe/Probe";
 import {IRepeaterSettings} from "./repeater/Repeater";
 import {IMongoMessageStorageSettings} from "./repeater/storage/MongoMessageStorage";
@@ -71,7 +71,11 @@ export const redisStorageOptions: IRedisStorageSettings = {
     db: parseInt(process.env.REDIS_DB, 10) || 0,
 };
 
-export const limiterOptions: ILimiterOptions = {
+export const limiterOptions: ILimiterSettings = {
     host: process.env.LIMITER_HOST || "limiter",
     port: parseInt(process.env.LIMITER_PORT, 10) || 3333,
+    queue: {
+        name: process.env.LIMITER_QUEUE || "pipes.limiter",
+        options: {},
+    },
 };
