@@ -271,26 +271,35 @@ class SystemDetailPresenter extends BasePresenter
      */
     public function processSendEvent(Form $form, array $values): void
     {
-        $subscriber = (new Subscriber())
-            ->setEmail($values['email'])
-            ->setLastName($values['last_name'])
-            ->setFirstName($values['first_name'])
-            ->setForeignId($values['_foreign_id'])
-            ->setLists([$values['lists']]);
-
         switch ($values['type']) {
             case SendEventFormFactory::CREATE:
-                $this->connectorManager->subscribe($this->userId, $subscriber);
+                $this->connectorManager->subscribe($this->userId, (new Subscriber())
+                    ->setEmail($values['email'])
+                    ->setLastName($values['last_name'])
+                    ->setFirstName($values['first_name'])
+                    ->setLists([$values['lists']])
+                );
+                $this->flashMessage('Create event was successfully send.');
                 break;
 
             case SendEventFormFactory::UNSUBSCRIBE:
-                $this->connectorManager->unSubscribe($this->userId, $subscriber);
+                $this->connectorManager->unSubscribe($this->userId, (new Subscriber())
+                    ->setForeignId($values['_foreign_id'])
+                    ->setLists([$values['lists']])
+                );
+                $this->flashMessage('UnSubscribe event was successfully send.');
                 break;
 
             case SendEventFormFactory::HARD_BOUNCE:
-                $this->connectorManager->hardBounce($this->userId, $subscriber);
+                $this->connectorManager->hardBounce($this->userId, (new Subscriber())
+                    ->setForeignId($values['_foreign_id'])
+                    ->setLists([$values['lists']])
+                );
+                $this->flashMessage('Hard Bounce event was successfully send.');
                 break;
         }
+
+        $this->redirect('this');
     }
 
 }

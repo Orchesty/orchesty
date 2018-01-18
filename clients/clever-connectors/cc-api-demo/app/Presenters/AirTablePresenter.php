@@ -84,12 +84,14 @@ class AirTablePresenter extends SystemCustomPresenter
 
             $templateOut = [];
             foreach ($table['data_layout'] as $key => $innerDataLayout) {
-                $key           = str_replace('-', '_', Strings::webalize($innerDataLayout['key']));
-                $templateOut[] = [
-                    'key'   => $innerDataLayout['key'],
-                    'type'  => $table['template_out'][0][$key . '_type'],
-                    'items' => [$table['template_out'][0][$key]],
-                ];
+                if (isset($table['template_out'][0])) {
+                    $key           = str_replace('-', '_', Strings::webalize($innerDataLayout['key']));
+                    $templateOut[] = [
+                        'key'   => $innerDataLayout['key'],
+                        'type'  => $table['template_out'][0][$key . '_type'],
+                        'items' => [$table['template_out'][0][$key]],
+                    ];
+                }
             }
             $templateOut[] = [
                 'key'   => 'id',

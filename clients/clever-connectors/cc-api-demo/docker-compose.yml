@@ -25,6 +25,8 @@ services:
     volumes:
       - ../../../:/var/www/html
       - ${HOME}/.composer:/srv/.composer
+    environment:
+      BASE_URI: https://clever-conn1.stage.hanaboso.net/
 
   webserver:
     image: nginx

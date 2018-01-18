@@ -95,7 +95,9 @@ class CurlSender
             if ($response !== NULL) {
                 $this->logResponse($response);
             }
-            throw new CurlException(sprintf('Curl sender error: %s', $e->getMessage()), $e->getCode(), $e);
+            $message = $response ? $response->getBody()->getContents() : $e->getMessage();
+
+            throw new CurlException(sprintf('Curl sender error: %s', $message), $e->getCode(), $e);
         } catch (Exception $e) {
             throw new CurlException(sprintf('Curl sender error: %s', $e->getMessage()), $e->getCode(), $e);
         }
