@@ -37,9 +37,9 @@ func NewMessage(delivery *amqp.Delivery) (*Message, error) {
 
 	innerMsg := amqp.Publishing{
 		Headers:     delivery.Headers,
+		Body:        delivery.Body,
 		ContentType: delivery.ContentType,
 		Priority:    delivery.Priority,
-		Body:        delivery.Body,
 		ReplyTo:     delivery.ReplyTo,
 	}
 

@@ -16,6 +16,8 @@ import (
 	"hanaboso.com/limiter/pkg/storage"
 )
 
+const outputQueue = "test-output"
+
 func TestLimiterApp(t *testing.T) {
 	stopTest := make(chan bool, 1)
 	go timeoutExit(t, stopTest)
@@ -45,6 +47,7 @@ func setTestEnv() {
 
 	os.Setenv("LIMITER_PORT", "3030")
 
+	// Clean database before each test
 	m := storage.NewMongo(os.Getenv("MONGO_HOST"), os.Getenv("MONGO_DB"), os.Getenv("MONGO_COLLECTION"))
 	m.Connect()
 	m.DropCollection()
@@ -60,13 +63,16 @@ func simulateTraffic(t *testing.T, stopTest chan bool) {
 	rabbitPort, _ := strconv.Atoi(os.Getenv("RABBITMQ_PORT"))
 	conn := rabbitmq.NewConnection(os.Getenv("RABBITMQ_HOST"), rabbitPort, os.Getenv("RABBITMQ_USER"), os.Getenv("RABBITMQ_PASS"))
 	conn.Connect()
+	conn.AddQueue(rabbitmq.Queue{Name: outputQueue})
+	conn.Setup()
 	publisher := rabbitmq.NewPublisher(conn, os.Getenv("RABBITMQ_INPUT_QUEUE"))
 
 	go assertTcpCheckResult(t, sendTcpCheck(t, "A", 1, 2), true)
 	go assertTcpCheckResult(t, sendTcpCheck(t, "B", 2, 50), true)
 
 	// A can have max 2 requests within 1s and we publish 3 so it should wait and tick there for 2s
-	for i := 1; i <= 3; i++ {
+	msgsSent := 3
+	for i := 1; i <= msgsSent; i++ {
 		publisher.Publish(newAmqpInputMessage("A", 1, 2, "test" + strconv.Itoa(i)))
 	}
 
@@ -77,14 +83,25 @@ func simulateTraffic(t *testing.T, stopTest chan bool) {
 	go assertTcpCheckResult(t, sendTcpCheck(t, "A", 1, 2), false) // here should be false now
 	go assertTcpCheckResult(t, sendTcpCheck(t, "B", 2, 50), true)
 
-	//// after limit is free again we should get positive responses
+	//// after limit should be free again we should get positive responses
 	time.Sleep(time.Second * 2)
 	assertTcpCheckResult(t, sendTcpCheck(t, "A", 1, 2), true)
 	assertTcpCheckResult(t, sendTcpCheck(t, "B", 2, 50), true)
 
-	// TODO - add check of output queue
+	consumer := rabbitmq.NewConsumer(conn, outputQueue)
+	msgsReceived := 0
+	go consumer.Consume(func(msgs <- chan amqp.Delivery) {
+		for m := range msgs {
+			msgsReceived++
 
-	stopTest <- true
+			assert.Equal(t, "test" + strconv.Itoa(msgsReceived), string(m.Body), "Messages on the output should be properly FIFO sorted")
+			assert.Equal(t, "A", m.Headers["pf-limit-key"])
+
+			if msgsReceived == msgsSent {
+				stopTest <- true
+			}
+		}
+	})
 }
 
 func sendTcpCheck(t *testing.T, key string, time int, val int) string {
@@ -116,11 +133,12 @@ func assertTcpCheckResult(t *testing.T, response string, expected bool) {
 
 func newAmqpInputMessage(key string, time int, value int, body string) amqp.Publishing {
 	return amqp.Publishing{
+		Body: []byte(body),
 		Headers: amqp.Table{
 			"pf-limit-key":   key,
 			"pf-limit-time":  strconv.Itoa(time),
 			"pf-limit-value": strconv.Itoa(value),
 		},
-		Body: []byte(body),
+		ReplyTo: outputQueue,
 	}
 }

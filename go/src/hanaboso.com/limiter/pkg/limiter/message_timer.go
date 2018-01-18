@@ -49,41 +49,29 @@ func (mt *MessageTimer) release(key string, count int) (bool) {
 	msgs, err := mt.storage.Get(key, count)
 
 	if err != nil {
-		log.Println(fmt.Sprintf("Release error: %s", err))
+		log.Println(fmt.Sprintf("Release could not get messages from storage. Error: %s", err))
 		return true
 	}
 
 	for _, m := range msgs {
-<<<<<<< HEAD
-
-		log.Println(m.Message.ReplyTo)
+		log.Println("Trying to release message with key: ", m.LimitKey)
 		if m.Message.ReplyTo == "" {
 			log.Println("Limiter message has no 'reply-to' header")
-
-			_, err := mt.storage.Remove(m.LimitKey, m.ID)
-
-			if err != nil {
-				log.Println(fmt.Sprintf("Release delete item error: %s", err))
-			}
+			mt.deleteMessage(m)
 			continue
 		}
 
+		// TODO - send to given EX with given RK
+		mt.publisher.SetRoutingKey("test-output")
+		mt.publisher.SetExchange("")
 		mt.publisher.PublishToQueue(m.Message, m.Message.ReplyTo)
-=======
-		log.Println("Releasing message for key: ", m.LimitKey)
-		mt.publisher.Publish(m.Message)
->>>>>>> cc-352
-		_, err := mt.storage.Remove(m.LimitKey, m.ID)
-
-		if err != nil {
-			log.Println(fmt.Sprintf("Release delete item error: %s", err))
-		}
+		mt.deleteMessage(m)
 	}
 
 	exists, err := mt.storage.Exists(key)
 
 	if err != nil {
-		log.Println(fmt.Sprintf("Release check exist error: %s", err))
+		log.Println(fmt.Sprintf("Release could not check if some messages exist for key %s Error: %s", key, err))
 		return true
 	}
 
@@ -106,5 +94,14 @@ func (mt *MessageTimer) startHandleNewTimers() {
 		if _, ok := mt.tickers[m.LimitKey]; !ok {
 			mt.addTicker(m.LimitKey, m.LimitTime, m.LimitValue)
 		}
+	}
+}
+
+// deleteMessage removes message from storage or logs an error
+func (mt *MessageTimer) deleteMessage(m *storage.Message) {
+	_, err := mt.storage.Remove(m.LimitKey, m.ID)
+
+	if err != nil {
+		log.Println(fmt.Sprintf("Message timer cannot delete message from storage. Error: %s", err))
 	}
 }
