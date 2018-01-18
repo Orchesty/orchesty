@@ -128,13 +128,20 @@ class CurlManager implements CurlManagerInterface, LoggerAwareInterface
             ));
 
             unset($psrResponse);
-        } catch (RequestException $exception){
-            $this->logger->error(sprintf('CurlManager::send() failed: %s', $exception->getMessage()));
+        } catch (RequestException $exception) {
+            $response = $exception->getResponse();
+            $message  = $exception->getMessage();
+            if ($response) {
+                $message = $response->getBody()->getContents();
+                $response->getBody()->rewind();
+            }
+            $this->logger->error(sprintf('CurlManager::send() failed: %s', $message));
+
             throw new CurlException(
-                sprintf('CurlManager::send() failed: %s', $exception->getMessage()),
+                sprintf('CurlManager::send() failed: %s', $message),
                 CurlException::REQUEST_FAILED,
                 $exception->getPrevious(),
-                $exception->getResponse()
+                $response
             );
         } catch (Exception $exception) {
             $this->logger->error(sprintf('CurlManager::send() failed: %s', $exception->getMessage()));
