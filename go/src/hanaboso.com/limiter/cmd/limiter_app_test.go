@@ -93,6 +93,7 @@ func simulateTraffic(t *testing.T, stopTest chan bool) {
 	go consumer.Consume(func(msgs <- chan amqp.Delivery) {
 		for m := range msgs {
 			msgsReceived++
+			m.Ack(false)
 
 			assert.Equal(t, "test" + strconv.Itoa(msgsReceived), string(m.Body), "Messages on the output should be properly FIFO sorted")
 			assert.Equal(t, "A", m.Headers["pf-limit-key"])
