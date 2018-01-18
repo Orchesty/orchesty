@@ -9,6 +9,7 @@ import {
 import RedisStorage from "./counter/storage/RedisStorage";
 import {default as Limiter} from "./limiter/Limiter";
 import TcpClient from "./limiter/TcpClient";
+import logger from "./logger/Logger";
 import CounterPublisher from "./node/drain/amqp/CounterPublisher";
 import FollowersPublisher from "./node/drain/amqp/FollowersPublisher";
 import {default as AmqpDrain, IAmqpDrainSettings} from "./node/drain/AmqpDrain";
@@ -40,7 +41,7 @@ class DIContainer extends Container {
     }
 
     private setServices() {
-        this.set("amqp.connection", new Connection(amqpConnectionOptions));
+        this.set("amqp.connection", new Connection(amqpConnectionOptions, logger));
 
         // this.set("counter.storage", new InMemoryStorage());
         this.set("counter.storage", new RedisStorage(redisStorageOptions));

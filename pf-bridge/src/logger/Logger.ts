@@ -1,3 +1,4 @@
+import {ILogger} from "amqplib-plus/dist/lib/ILogger";
 import {Sender} from "metrics-sender/dist/lib/udp/Sender";
 import * as os from "os";
 import {loggerOptions} from "../config";
@@ -33,7 +34,7 @@ interface ILoggerFormat {
     };
 }
 
-class Logger {
+class Logger implements ILogger {
 
     /**
      *
@@ -157,7 +158,7 @@ class Logger {
      * @param {string} message
      * @param {ILogContext} context
      */
-    private log(severity: string, message: string, context?: ILogContext): void {
+    public log(severity: string, message: string, context?: ILogContext): void {
         const data = Logger.format(severity, message, context);
 
         winston.log(severity, data);
