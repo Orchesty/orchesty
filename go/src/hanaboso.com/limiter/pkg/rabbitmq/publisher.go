@@ -8,7 +8,6 @@ import (
 
 type Publisher interface {
 	Publish(msg amqp.Publishing)
-	PublishToQueue(msg amqp.Publishing, queue string)
 	SetRoutingKey(string)
 	SetExchange(string)
 	SetMandatory(bool)
@@ -47,18 +46,6 @@ func (p *publisher) Publish(msg amqp.Publishing) {
 	}
 
 	log.Println(fmt.Sprintf("Rabbit MQ publish message to exchange '%s' with routing key '%s'", p.exchange, p.routingKey))
-}
-
-func (p *publisher) PublishToQueue(msg amqp.Publishing, queue string) {
-
-	if _, err := p.getChannel().QueueInspect(queue); err != nil {
-		log.Println(err)
-		p.routingKey = "limiter-trash"
-		p.Publish(msg)
-		return
-	}
-
-	p.Publish(msg)
 }
 
 func (p *publisher) SetRoutingKey(k string) {

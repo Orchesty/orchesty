@@ -54,17 +54,9 @@ func (mt *MessageTimer) release(key string, count int) (bool) {
 	}
 
 	for _, m := range msgs {
-		log.Println("Trying to release message with key: ", m.LimitKey)
-		if m.Message.ReplyTo == "" {
-			log.Println("Limiter message has no 'reply-to' header")
-			mt.deleteMessage(m)
-			continue
-		}
-
-		// TODO - send to given EX with given RK
-		mt.publisher.SetRoutingKey("test-output")
-		mt.publisher.SetExchange("")
-		mt.publisher.PublishToQueue(m.Message, m.Message.ReplyTo)
+		mt.publisher.SetRoutingKey(m.ReturnRoutingKey)
+		mt.publisher.SetExchange(m.ReturnExchange)
+		mt.publisher.Publish(m.Message)
 		mt.deleteMessage(m)
 	}
 

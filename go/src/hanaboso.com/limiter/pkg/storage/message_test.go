@@ -8,23 +8,52 @@ import (
 
 // TestNewMessageWithSomeMissingHeaders checks returning error on missing mandatory header
 func TestNewMessageWithSomeMissingHeaders(t *testing.T) {
+	// missing pf-limit-key
 	msg, err := NewMessage(&amqp.Delivery{Headers: amqp.Table{
-		"pf-limit-time":  "10",
-		"pf-limit-value": "10",
+		"pf-limit-time":         "10",
+		"pf-limit-value":        "10",
+		"pf-return-exchange":    "exchange",
+		"pf-return-routing-key": "routing-key",
 	}})
 	assert.Nil(t, msg)
 	assert.NotNil(t, err)
 
+	// missing pf-limit-value
 	msg, err = NewMessage(&amqp.Delivery{Headers: amqp.Table{
-		"pf-limit-key":   "abcd123",
-		"pf-limit-time":  "10",
+		"pf-limit-key":          "abcd123",
+		"pf-limit-time":         "10",
+		"pf-return-exchange":    "exchange",
+		"pf-return-routing-key": "routing-key",
 	}})
 	assert.Nil(t, msg)
 	assert.NotNil(t, err)
 
+	// missing pf-limit-time
 	msg, err = NewMessage(&amqp.Delivery{Headers: amqp.Table{
-		"pf-limit-key":   "abcd123",
-		"pf-limit-value": "10",
+		"pf-limit-key":          "abcd123",
+		"pf-limit-value":        "10",
+		"pf-return-exchange":    "exchange",
+		"pf-return-routing-key": "routing-key",
+	}})
+	assert.Nil(t, msg)
+	assert.NotNil(t, err)
+
+	// missing pf-return-exchange
+	msg, err = NewMessage(&amqp.Delivery{Headers: amqp.Table{
+		"pf-limit-key":          "abcd123",
+		"pf-limit-value":        "10",
+		"pf-limit-time":         "10",
+		"pf-return-routing-key": "routing-key",
+	}})
+	assert.Nil(t, msg)
+	assert.NotNil(t, err)
+
+	// missing pf-return-routing-key
+	msg, err = NewMessage(&amqp.Delivery{Headers: amqp.Table{
+		"pf-limit-key":       "abcd123",
+		"pf-limit-value":     "10",
+		"pf-limit-time":      "10",
+		"pf-return-exchange": "exchange",
 	}})
 	assert.Nil(t, msg)
 	assert.NotNil(t, err)
@@ -33,9 +62,11 @@ func TestNewMessageWithSomeMissingHeaders(t *testing.T) {
 // TestNewMessageOK checks if Message struct is properly filled with data
 func TestNewMessageOK(t *testing.T) {
 	msg, err := NewMessage(&amqp.Delivery{Headers: amqp.Table{
-		"pf-limit-key":   "abcd123",
-		"pf-limit-time":  "10",
-		"pf-limit-value": "500",
+		"pf-limit-key":          "abcd123",
+		"pf-limit-time":         "10",
+		"pf-limit-value":        "500",
+		"pf-return-exchange":    "exchange",
+		"pf-return-routing-key": "routing-key",
 	}, Body: []byte("Some content")})
 	assert.NotNil(t, msg)
 	assert.Nil(t, err)
