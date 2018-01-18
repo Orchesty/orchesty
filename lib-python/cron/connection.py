@@ -118,3 +118,18 @@ class Connection:
         
         except ServerSelectionTimeoutError:
             return None
+
+    def remove(self, collection: str) -> int:
+        """
+
+        :param collection: collection name
+        :type collection: str
+        :return:
+        :rtype: int
+        """
+        try:
+            result = self.db[collection].remove()
+        except ServerSelectionTimeoutError as e:
+            raise MongoException(str(e), 500)
+
+        return result['n']
