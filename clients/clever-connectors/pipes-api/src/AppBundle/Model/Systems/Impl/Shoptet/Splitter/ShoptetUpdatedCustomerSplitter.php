@@ -44,6 +44,7 @@ class ShoptetUpdatedCustomerSplitter implements CustomNodeInterface, BatchInterf
      *
      * @return PromiseInterface
      * @throws CleverConnectorsException
+     * @throws SystemException
      */
     public function processBatch(ProcessDto $dto, LoopInterface $loop, callable $callbackItem): PromiseInterface
     {
@@ -59,13 +60,15 @@ class ShoptetUpdatedCustomerSplitter implements CustomNodeInterface, BatchInterf
         $i         = 0;
         $customers = $data['CUSTOMERS']['CUSTOMER'];
 
-        // when there is exactly 1 customer
-        if (array_key_exists('GUID', $customers)) {
-            $this->processCustomer($customers, $callbackItem, $i);
-        } else {
-            foreach ($customers as $key => $customer) {
-                $this->processCustomer($customer, $callbackItem, $i);
-                unset($customers[$key]);
+        if (is_array($customers)) {
+            // when there is exactly 1 customer
+            if (array_key_exists('GUID', $customers)) {
+                $this->processCustomer($customers, $callbackItem, $i);
+            } else {
+                foreach ($customers as $key => $customer) {
+                    $this->processCustomer($customer, $callbackItem, $i);
+                    unset($customers[$key]);
+                }
             }
         }
 
@@ -110,6 +113,8 @@ class ShoptetUpdatedCustomerSplitter implements CustomNodeInterface, BatchInterf
      * @param array    $customer
      * @param callable $callbackItem
      * @param int      $i
+     *
+     * @throws SystemException
      */
     private function processCustomer(array $customer, callable $callbackItem, int &$i): void
     {
@@ -119,13 +124,15 @@ class ShoptetUpdatedCustomerSplitter implements CustomNodeInterface, BatchInterf
             unset($customer['ACCOUNTS']);
             $newCustomer = $customer;
 
-            // when there is exactly 1 account
-            if (array_key_exists('GUID', $accounts)) {
-                $this->processAccount($accounts, $newCustomer, $callbackItem, $i);
-            } else {
-                foreach ($accounts as $key2 => $account) {
-                    $this->processAccount($account, $newCustomer, $callbackItem, $i);
-                    unset($accounts[$key2]);
+            if (is_array($accounts)) {
+                // when there is exactly 1 account
+                if (array_key_exists('GUID', $accounts)) {
+                    $this->processAccount($accounts, $newCustomer, $callbackItem, $i);
+                } else {
+                    foreach ($accounts as $key2 => $account) {
+                        $this->processAccount($account, $newCustomer, $callbackItem, $i);
+                        unset($accounts[$key2]);
+                    }
                 }
             }
         }
@@ -136,6 +143,8 @@ class ShoptetUpdatedCustomerSplitter implements CustomNodeInterface, BatchInterf
      * @param array    $newCustomer
      * @param callable $callbackItem
      * @param int      $i
+     *
+     * @throws SystemException
      */
     public function processAccount(array $account, array $newCustomer, callable $callbackItem, int &$i): void
     {
