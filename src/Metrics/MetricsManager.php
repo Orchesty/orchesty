@@ -15,11 +15,9 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Repository\NodeRepository;
-use Hanaboso\PipesFramework\Metrics\Builder\Builder;
 use Hanaboso\PipesFramework\Metrics\Client\ClientInterface;
 use Hanaboso\PipesFramework\Metrics\Dto\MetricsDto;
 use Hanaboso\PipesFramework\TopologyGenerator\GeneratorUtils;
-use InfluxDB\Query\Builder as InfluxDbBuilder;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -82,9 +80,9 @@ class MetricsManager implements LoggerAwareInterface
     private const QUEUE_MAX     = 'queue_max';
 
     /**
-     * @var Builder|InfluxDbBuilder
+     * @var ClientInterface
      */
-    private $builder;
+    private $client;
 
     /**
      * @var NodeRepository|ObjectRepository
@@ -128,7 +126,7 @@ class MetricsManager implements LoggerAwareInterface
         string $rabbitTable
     )
     {
-        $this->builder        = $client->getQueryBuilder();
+        $this->client         = $client;
         $this->nodeTable      = $nodeTable;
         $this->fpmTable       = $fpmTable;
         $this->rabbitTable    = $rabbitTable;
@@ -233,7 +231,7 @@ class MetricsManager implements LoggerAwareInterface
      */
     private function runQuery(string $select, array $where, ?string $from = NULL, ?string $to = NULL): array
     {
-        $qb = $this->builder
+        $qb = $this->client->getQueryBuilder()
             ->select($select)
             ->from(sprintf('%s,%s,%s', $this->nodeTable, $this->fpmTable, $this->rabbitTable))
             ->where(self::getConditions($where));
