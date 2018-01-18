@@ -190,7 +190,7 @@ class UserMessageGenerator implements BatchInterface, CustomNodeInterface
     /**
      * @param ProcessDto $dto
      *
-     * @return ProcessDto|void
+     * @return ProcessDto
      */
     public function process(ProcessDto $dto): ProcessDto
     {

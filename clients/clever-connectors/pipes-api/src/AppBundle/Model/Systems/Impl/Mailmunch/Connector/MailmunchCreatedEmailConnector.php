@@ -46,7 +46,7 @@ class MailmunchCreatedEmailConnector implements ConnectorInterface
     /**
      * @param ProcessDto $dto
      *
-     * @return ProcessDto|void
+     * @return ProcessDto
      * @throws ConnectorException
      */
     public function processAction(ProcessDto $dto): ProcessDto

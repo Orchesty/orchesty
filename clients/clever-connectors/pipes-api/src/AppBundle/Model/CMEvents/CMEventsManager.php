@@ -259,9 +259,9 @@ class CMEventsManager implements LoggerAwareInterface
     }
 
     /**
-     * @param CMEventSystemInterface|SystemInterface $system
-     * @param SystemInstall                          $systemInstall
-     * @param array                                  $data
+     * @param CMEventSystemInterface $system
+     * @param SystemInstall          $systemInstall
+     * @param array                  $data
      *
      * @return array
      */
@@ -285,11 +285,11 @@ class CMEventsManager implements LoggerAwareInterface
     }
 
     /**
-     * @param CMEventSystemInterface|SystemInterface $system
-     * @param SystemInstall                          $systemInstall
-     * @param array                                  $data
-     * @param array                                  $changed
-     * @param string                                 $event
+     * @param CMEventSystemInterface $system
+     * @param SystemInstall          $systemInstall
+     * @param array                  $data
+     * @param array                  $changed
+     * @param string                 $event
      */
     private function processEventData(
         CMEventSystemInterface $system,

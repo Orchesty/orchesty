@@ -136,7 +136,7 @@ class FacebookCreatedLeadformConnector extends FacebookLeadConnectorAbstract imp
     /**
      * @param ProcessDto $dto
      *
-     * @return ProcessDto|void
+     * @return ProcessDto
      * @throws SystemException
      */
     public function processAction(ProcessDto $dto): ProcessDto

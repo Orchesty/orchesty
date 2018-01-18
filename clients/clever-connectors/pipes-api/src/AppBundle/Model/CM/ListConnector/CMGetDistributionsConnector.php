@@ -50,7 +50,7 @@ class CMGetDistributionsConnector extends CMAuthorization implements ConnectorIn
     /**
      * @param ProcessDto $dto
      *
-     * @return ProcessDto|void
+     * @return ProcessDto
      * @throws ConnectorException
      */
     public function processEvent(ProcessDto $dto): ProcessDto

@@ -235,7 +235,7 @@ class NutshellSystem implements AuthorizationInterface, CMEventSystemInterface, 
     /**
      * @param SystemInstall $systemInstall
      *
-     * @return RequesterInterface|void
+     * @return RequesterInterface
      * @throws SystemException
      */
     public function getSubscribeRequester(SystemInstall $systemInstall): RequesterInterface
@@ -249,7 +249,7 @@ class NutshellSystem implements AuthorizationInterface, CMEventSystemInterface, 
     /**
      * @param SystemInstall $systemInstall
      *
-     * @return RequesterInterface|void
+     * @return RequesterInterface
      * @throws SystemException
      */
     public function getUnsubscribeRequester(SystemInstall $systemInstall): RequesterInterface

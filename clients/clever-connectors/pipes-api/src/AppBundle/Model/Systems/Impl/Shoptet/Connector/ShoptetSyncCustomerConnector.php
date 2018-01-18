@@ -109,7 +109,7 @@ class ShoptetSyncCustomerConnector implements ConnectorInterface, BatchInterface
     /**
      * @param ProcessDto $dto
      *
-     * @return ProcessDto|void
+     * @return ProcessDto
      * @throws SystemException
      */
     public function processEvent(ProcessDto $dto): ProcessDto
@@ -120,7 +120,7 @@ class ShoptetSyncCustomerConnector implements ConnectorInterface, BatchInterface
     /**
      * @param ProcessDto $dto
      *
-     * @return ProcessDto|void
+     * @return ProcessDto
      * @throws SystemException
      */
     public function processAction(ProcessDto $dto): ProcessDto

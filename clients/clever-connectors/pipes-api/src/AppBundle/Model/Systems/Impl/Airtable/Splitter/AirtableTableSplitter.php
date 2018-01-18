@@ -78,7 +78,7 @@ class AirtableTableSplitter implements BatchInterface, CustomNodeInterface
     /**
      * @param ProcessDto $dto
      *
-     * @return ProcessDto|void
+     * @return ProcessDto
      * @throws SystemException
      */
     public function process(ProcessDto $dto): ProcessDto

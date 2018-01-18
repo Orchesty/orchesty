@@ -66,7 +66,7 @@ abstract class FacebookaudienceConnectorAbstract implements ConnectorInterface, 
     /**
      * @param ProcessDto $dto
      *
-     * @return ProcessDto|void
+     * @return ProcessDto
      * @throws ConnectorException
      */
     public function processEvent(ProcessDto $dto): ProcessDto

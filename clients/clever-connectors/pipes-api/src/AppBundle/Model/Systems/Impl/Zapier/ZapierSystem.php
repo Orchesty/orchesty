@@ -111,7 +111,7 @@ class ZapierSystem implements WebhookSystemInterface, AuthorizationInterface
      * @param SystemInstall $systemInstall
      * @param string        $method
      *
-     * @return RequestDto|void
+     * @return RequestDto
      * @throws SystemException
      */
     public function getRequestDto(SystemInstall $systemInstall, string $method): RequestDto
@@ -164,7 +164,7 @@ class ZapierSystem implements WebhookSystemInterface, AuthorizationInterface
     /**
      * @param SystemInstall $systemInstall
      *
-     * @return RequesterInterface|void
+     * @return RequesterInterface
      * @throws SystemException
      *
      */
@@ -181,7 +181,7 @@ class ZapierSystem implements WebhookSystemInterface, AuthorizationInterface
     /**
      * @param SystemInstall $systemInstall
      *
-     * @return RequesterInterface|void
+     * @return RequesterInterface
      * @throws SystemException
      *
      */

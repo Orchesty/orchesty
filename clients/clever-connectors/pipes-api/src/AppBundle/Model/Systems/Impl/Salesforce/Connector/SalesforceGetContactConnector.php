@@ -75,7 +75,7 @@ class SalesforceGetContactConnector implements ConnectorInterface, LoggerAwareIn
     /**
      * @param ProcessDto $dto
      *
-     * @return ProcessDto|void
+     * @return ProcessDto
      * @throws ConnectorException
      */
     public function processAction(ProcessDto $dto): ProcessDto

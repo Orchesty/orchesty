@@ -121,7 +121,7 @@ class FacebookLeadsSystem implements SystemInterface, OAuth2Interface
     /**
      * @param SystemInstall $systemInstall
      *
-     * @return SystemInstall|void
+     * @return SystemInstall
      * @throws SystemException
      */
     public function refreshToken(SystemInstall $systemInstall): SystemInstall

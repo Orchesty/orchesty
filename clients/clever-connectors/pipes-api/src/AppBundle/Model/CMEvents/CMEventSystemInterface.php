@@ -11,13 +11,14 @@ namespace CleverConnectors\AppBundle\Model\CMEvents;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\Requester\RequesterInterface;
+use CleverConnectors\AppBundle\Model\Systems\SystemInterface;
 
 /**
  * Interface CMEventSystemInterface
  *
  * @package CleverConnectors\AppBundle\Model\CMEvents
  */
-interface CMEventSystemInterface
+interface CMEventSystemInterface extends SystemInterface
 {
 
     /**

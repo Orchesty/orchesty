@@ -126,7 +126,7 @@ class PluginSyncSubscriberConnector implements ConnectorInterface, BatchInterfac
     /**
      * @param ProcessDto $dto
      *
-     * @return ProcessDto|void
+     * @return ProcessDto
      * @throws ConnectorException
      */
     public function processEvent(ProcessDto $dto): ProcessDto
@@ -140,7 +140,7 @@ class PluginSyncSubscriberConnector implements ConnectorInterface, BatchInterfac
     /**
      * @param ProcessDto $dto
      *
-     * @return ProcessDto|void
+     * @return ProcessDto
      * @throws ConnectorException
      */
     public function processAction(ProcessDto $dto): ProcessDto

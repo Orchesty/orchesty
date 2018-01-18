@@ -81,7 +81,7 @@ class ShoptetUpdatedCustomerSplitter implements CustomNodeInterface, BatchInterf
     /**
      * @param ProcessDto $dto
      *
-     * @return ProcessDto|void
+     * @return ProcessDto
      * @throws SystemException
      */
     public function process(ProcessDto $dto): ProcessDto

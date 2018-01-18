@@ -69,7 +69,7 @@ abstract class ShipstationCustomerConnectorAbstract implements BatchInterface, C
     /**
      * @param ProcessDto $dto
      *
-     * @return ProcessDto|void
+     * @return ProcessDto
      * @throws ConnectorException
      */
     public function processEvent(ProcessDto $dto): ProcessDto
@@ -80,7 +80,7 @@ abstract class ShipstationCustomerConnectorAbstract implements BatchInterface, C
     /**
      * @param ProcessDto $dto
      *
-     * @return ProcessDto|void
+     * @return ProcessDto
      * @throws ConnectorException
      */
     public function processAction(ProcessDto $dto): ProcessDto

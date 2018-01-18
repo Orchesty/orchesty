@@ -110,7 +110,7 @@ class SalesforceCreateContactConnector implements ConnectorInterface, LoggerAwar
     /**
      * @param ProcessDto $dto
      *
-     * @return ProcessDto|void
+     * @return ProcessDto
      * @throws ConnectorException
      */
     public function processEvent(ProcessDto $dto): ProcessDto

@@ -81,7 +81,7 @@ abstract class AirtableContactConnectorAbstract implements BatchInterface, Conne
     /**
      * @param ProcessDto $dto
      *
-     * @return ProcessDto|void
+     * @return ProcessDto
      * @throws ConnectorException
      */
     public function processEvent(ProcessDto $dto): ProcessDto
@@ -92,7 +92,7 @@ abstract class AirtableContactConnectorAbstract implements BatchInterface, Conne
     /**
      * @param ProcessDto $dto
      *
-     * @return ProcessDto|void
+     * @return ProcessDto
      * @throws ConnectorException
      */
     public function processAction(ProcessDto $dto): ProcessDto

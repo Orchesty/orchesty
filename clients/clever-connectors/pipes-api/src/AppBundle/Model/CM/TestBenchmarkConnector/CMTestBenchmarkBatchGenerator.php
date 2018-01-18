@@ -58,7 +58,7 @@ class CMTestBenchmarkBatchGenerator implements BatchInterface, CustomNodeInterfa
     /**
      * @param ProcessDto $dto
      *
-     * @return ProcessDto|void
+     * @return ProcessDto
      */
     public function process(ProcessDto $dto): ProcessDto
     {

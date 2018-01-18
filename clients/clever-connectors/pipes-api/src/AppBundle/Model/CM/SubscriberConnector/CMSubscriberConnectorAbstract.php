@@ -62,7 +62,7 @@ abstract class CMSubscriberConnectorAbstract extends CMAuthorization implements 
     /**
      * @param ProcessDto $dto
      *
-     * @return ProcessDto|void
+     * @return ProcessDto
      * @throws ConnectorException
      */
     public function processEvent(ProcessDto $dto): ProcessDto

@@ -3,6 +3,7 @@
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Basecrm\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Basecrm\BasecrmSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
@@ -74,7 +75,7 @@ class BasecrmQueueContactConnector implements ConnectorInterface, LoggerAwareInt
     /**
      * @param ProcessDto $dto
      *
-     * @return ProcessDto|void
+     * @return ProcessDto
      * @throws ConnectorException
      */
     public function processEvent(ProcessDto $dto): ProcessDto
@@ -88,7 +89,7 @@ class BasecrmQueueContactConnector implements ConnectorInterface, LoggerAwareInt
      *
      * @return ProcessDto
      * @throws SystemException
-     * @throws \CleverConnectors\AppBundle\Exceptions\CleverConnectorsException
+     * @throws CleverConnectorsException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {

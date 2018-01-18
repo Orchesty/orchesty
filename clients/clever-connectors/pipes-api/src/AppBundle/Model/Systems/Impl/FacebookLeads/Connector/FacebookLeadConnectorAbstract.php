@@ -65,7 +65,7 @@ abstract class FacebookLeadConnectorAbstract implements ConnectorInterface, Logg
     /**
      * @param ProcessDto $dto
      *
-     * @return ProcessDto|void
+     * @return ProcessDto
      * @throws SystemException
      */
     public function processEvent(ProcessDto $dto): ProcessDto

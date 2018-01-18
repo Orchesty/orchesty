@@ -106,7 +106,7 @@ class FacebookSyncLeadformConnector extends FacebookLeadConnectorAbstract implem
     /**
      * @param ProcessDto $dto
      *
-     * @return ProcessDto|void
+     * @return ProcessDto
      * @throws SystemException
      */
     public function processAction(ProcessDto $dto): ProcessDto

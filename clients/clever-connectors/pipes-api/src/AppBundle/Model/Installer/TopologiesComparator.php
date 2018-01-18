@@ -12,7 +12,6 @@ namespace CleverConnectors\AppBundle\Model\Installer;
 use CleverConnectors\AppBundle\Model\Installer\Dto\CompareResultDto;
 use CleverConnectors\AppBundle\Model\Installer\Dto\TopologyFile;
 use CleverConnectors\AppBundle\Model\Installer\Dto\UpdateObject;
-use Doctrine\Common\Persistence\ObjectRepository;
 use FOS\RestBundle\Decoder\XmlDecoder;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository;
@@ -33,15 +32,15 @@ class TopologiesComparator
     private $dirs;
 
     /**
-     * @var ObjectRepository|TopologyRepository
+     * @var TopologyRepository
      */
     private $repository;
 
     /**
      * TopologiesComparator constructor.
      *
-     * @param TopologyRepository|ObjectRepository $repository
-     * @param array                               $dirs
+     * @param TopologyRepository $repository
+     * @param array              $dirs
      */
     public function __construct(TopologyRepository $repository, array $dirs)
     {

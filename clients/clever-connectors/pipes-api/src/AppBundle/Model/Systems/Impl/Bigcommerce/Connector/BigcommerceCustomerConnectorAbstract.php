@@ -19,7 +19,7 @@ abstract class BigcommerceCustomerConnectorAbstract implements ConnectorInterfac
     /**
      * @param ProcessDto $dto
      *
-     * @return ProcessDto|void
+     * @return ProcessDto
      * @throws ConnectorException
      */
     public function processAction(ProcessDto $dto): ProcessDto

@@ -34,7 +34,8 @@
     "require-dev": {
         "hanaboso/php-check-utils": "^1.0",
         "sensio/generator-bundle": "^3.1",
-        "symfony/phpunit-bridge": "^3.4"
+        "symfony/phpunit-bridge": "^3.4",
+        "phpunit/phpunit": "^6.5"
     },
     "scripts": {
         "symfony-scripts": [
@@ -68,10 +69,6 @@
         "branch-alias": null
     },
     "repositories": [
-        {
-            "type": "git",
-            "url": "git@gitlab.hanaboso.net:hanaboso/php-check-utils.git"
-        },
         {
             "type": "path",
             "url": "../../../pf-bundles",
