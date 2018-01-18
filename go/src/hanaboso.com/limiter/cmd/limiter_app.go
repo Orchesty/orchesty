@@ -22,7 +22,7 @@ func main() {
 	)
 	db.Connect()
 
-	rabbitInput := env.GetEnv("RABBITMQ_INPUT_QUEUE", "limiter_input")
+	rabbitInput := env.GetEnv("RABBITMQ_INPUT_QUEUE", "pipes.limiter")
 	rabbitPort, _ := strconv.Atoi(env.GetEnv("RABBITMQ_PORT", "5672"))
 	conn := rabbitmq.NewConnection(
 		env.GetEnv("RABBITMQ_HOST", "127.0.0.10"),

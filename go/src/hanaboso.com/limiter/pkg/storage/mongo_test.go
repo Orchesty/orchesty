@@ -50,9 +50,11 @@ func runTestCommandsInSeries(t *testing.T, stopTest chan bool) {
 	assert.Len(t, fetched, 0, "Get should return empty slice when key does not exist")
 
 	msgOne, _ := NewMessage(&amqp.Delivery{Headers: amqp.Table{
-		"pf-limit-key":   "abcd123",
-		"pf-limit-time":  "10",
-		"pf-limit-value": "10",
+		LimitKeyHeader:         "abcd123",
+		LimitTimeHeader:        "10",
+		LimitValueHeader:       "500",
+		ReturnExchangeHeader:   "exchange",
+		ReturnRoutingKeyHeader: "routing-key",
 	}})
 	k, err := m.Save(msgOne)
 	assert.Nil(t, err)
@@ -67,9 +69,11 @@ func runTestCommandsInSeries(t *testing.T, stopTest chan bool) {
 	assert.Len(t, fetched, 1, "Get should return one item when there is just one in db")
 
 	msgTwo, _ := NewMessage(&amqp.Delivery{Headers: amqp.Table{
-		"pf-limit-key":   "efgh456",
-		"pf-limit-time":  "10",
-		"pf-limit-value": "10",
+		LimitKeyHeader:         "efgh456",
+		LimitTimeHeader:        "10",
+		LimitValueHeader:       "500",
+		ReturnExchangeHeader:   "exchange",
+		ReturnRoutingKeyHeader: "routing-key",
 	}})
 	m.Save(msgTwo)
 

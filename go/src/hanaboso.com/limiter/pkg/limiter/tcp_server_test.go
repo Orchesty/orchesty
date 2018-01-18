@@ -6,18 +6,21 @@ import (
 	"bufio"
 	"fmt"
 	"net"
+	"time"
 )
 
-type positiveLimiter struct {}
+type positiveLimiter struct{}
+
 func (dec *positiveLimiter) Start() {}
-func (dec *positiveLimiter) Stop() {}
+func (dec *positiveLimiter) Stop()  {}
 func (dec *positiveLimiter) IsFreeLimit(key string, time int, value int) (bool, error) {
 	return true, nil
 }
 
-type negativeLimiter struct {}
+type negativeLimiter struct{}
+
 func (dec *negativeLimiter) Start() {}
-func (dec *negativeLimiter) Stop() {}
+func (dec *negativeLimiter) Stop()  {}
 func (dec *negativeLimiter) IsFreeLimit(key string, time int, value int) (bool, error) {
 	return false, nil
 }
@@ -49,6 +52,9 @@ func TestServerLimitCheck(t *testing.T) {
 	negServer := NewTcpServer(&negativeLimiter{})
 	go posServer.Start(3334)
 	go negServer.Start(3335)
+
+	// waiting for server
+	time.Sleep(time.Millisecond * 10)
 
 	defer posServer.Stop()
 	defer negServer.Stop()

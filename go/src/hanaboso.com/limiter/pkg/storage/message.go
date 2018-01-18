@@ -7,6 +7,12 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
+const LimitKeyHeader = "pf-limit-key"
+const LimitTimeHeader = "pf-limit-time"
+const LimitValueHeader = "pf-limit-value"
+const ReturnExchangeHeader = "pf-limit-return-exchange"
+const ReturnRoutingKeyHeader = "pf-limit-return-routing-key"
+
 type Message struct {
 	ID               bson.ObjectId `bson:"_id,omitempty"`
 	LimitKey         string
@@ -20,32 +26,35 @@ type Message struct {
 // NewMessage creates storage Message struct by converting amqp Delivery to Publishing message and adding limit info
 func NewMessage(delivery *amqp.Delivery) (*Message, error) {
 
-	key, ok := delivery.Headers["pf-limit-key"]
+	key, ok := delivery.Headers[LimitKeyHeader]
 	if !ok {
-		return nil, fmt.Errorf("missing header pf-limit-key")
+		return nil, fmt.Errorf("missing header %s", LimitKeyHeader)
 	}
 
-	time, ok := delivery.Headers["pf-limit-time"]
+	time, ok := delivery.Headers[LimitTimeHeader]
 	if !ok {
-		return nil, fmt.Errorf("missing header pf-limit-time")
+		return nil, fmt.Errorf("missing header %s", LimitTimeHeader)
 	}
 	t, _ := strconv.Atoi(time.(string))
 
-	timeValue, ok := delivery.Headers["pf-limit-value"]
+	timeValue, ok := delivery.Headers[LimitValueHeader]
 	if !ok {
-		return nil, fmt.Errorf("missing header pf-limit-value")
+		return nil, fmt.Errorf("missing header %s", LimitValueHeader)
 	}
 	tv, _ := strconv.Atoi(timeValue.(string))
 
-	exchange, ok := delivery.Headers["pf-return-exchange"]
+	exchange, ok := delivery.Headers[ReturnExchangeHeader]
 	if !ok || exchange == "" {
-		return nil, fmt.Errorf("missing or empty header pf-return-exchange")
+		return nil, fmt.Errorf("missing or empty header %s", ReturnExchangeHeader)
 	}
 
-	routingKey, ok := delivery.Headers["pf-return-routing-key"]
+	routingKey, ok := delivery.Headers[ReturnRoutingKeyHeader]
 	if !ok || routingKey == "" {
-		return nil, fmt.Errorf("missing or empty header pf-return-routing-key")
+		return nil, fmt.Errorf("missing or empty header %s", ReturnRoutingKeyHeader)
 	}
+
+	delete(delivery.Headers, ReturnExchangeHeader)
+	delete(delivery.Headers, ReturnRoutingKeyHeader)
 
 	innerMsg := amqp.Publishing{
 		Headers:     delivery.Headers,

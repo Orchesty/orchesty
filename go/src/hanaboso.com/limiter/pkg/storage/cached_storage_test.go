@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-type mongoMock struct {}
+type mongoMock struct{}
 
 func (mm *mongoMock) Exists(key string) (bool, error) {
 	if key == "not-in-db" {
@@ -42,9 +42,11 @@ func TestCachedMongoCountingWhenNotPreviouslyInDb(t *testing.T) {
 	ex, _ := s.Exists("not-in-db")
 	assert.False(t, ex)
 	msgA, _ := NewMessage(&amqp.Delivery{Headers: amqp.Table{
-		"pf-limit-key":   "not-in-db",
-		"pf-limit-time":  "10",
-		"pf-limit-value": "10",
+		LimitKeyHeader:         "not-in-db",
+		LimitTimeHeader:        "10",
+		LimitValueHeader:       "500",
+		ReturnExchangeHeader:   "exchange",
+		ReturnRoutingKeyHeader: "routing-key",
 	}})
 	s.Save(msgA)
 	ex, _ = s.Exists("not-in-db")
@@ -70,9 +72,11 @@ func TestCachedMongoCountingWhenAlreadyInDb(t *testing.T) {
 	ex, _ := s.Exists("was-in-db")
 	assert.True(t, ex)
 	msgA, _ := NewMessage(&amqp.Delivery{Headers: amqp.Table{
-		"pf-limit-key":   "was-in-db",
-		"pf-limit-time":  "10",
-		"pf-limit-value": "10",
+		LimitKeyHeader:         "was-in-db",
+		LimitTimeHeader:        "10",
+		LimitValueHeader:       "500",
+		ReturnExchangeHeader:   "exchange",
+		ReturnRoutingKeyHeader: "routing-key",
 	}})
 	s.Save(msgA)
 	ex, _ = s.Exists("was-in-db")

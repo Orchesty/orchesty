@@ -17,7 +17,7 @@ import (
 	"hanaboso.com/utils/env"
 )
 
-const outputQueue = "test-output"
+const outputQueue = "limiter-test-output"
 
 func TestLimiterApp(t *testing.T) {
 	stopTest := make(chan bool, 1)
@@ -65,7 +65,7 @@ func simulateTraffic(t *testing.T, stopTest chan bool) {
 	// A can have max 2 requests within 1s and we publish 3 so it should wait and tick there for 2s
 	msgsSent := 3
 	for i := 1; i <= msgsSent; i++ {
-		publisher.Publish(newAmqpInputMessage("A", 1, 2, "test" + strconv.Itoa(i)))
+		publisher.Publish(newAmqpInputMessage("A", 1, 2, "test"+strconv.Itoa(i)))
 	}
 
 	// give limiter some time to handle incoming messages
@@ -82,12 +82,12 @@ func simulateTraffic(t *testing.T, stopTest chan bool) {
 
 	consumer := rabbitmq.NewConsumer(conn, outputQueue)
 	msgsReceived := 0
-	go consumer.Consume(func(msgs <- chan amqp.Delivery) {
+	go consumer.Consume(func(msgs <-chan amqp.Delivery) {
 		for m := range msgs {
 			msgsReceived++
 			m.Ack(false)
 
-			assert.Equal(t, "test" + strconv.Itoa(msgsReceived), string(m.Body), "Messages on the output should be properly FIFO sorted")
+			assert.Equal(t, "test"+strconv.Itoa(msgsReceived), string(m.Body), "Messages on the output should be properly FIFO sorted")
 			assert.Equal(t, "A", m.Headers["pf-limit-key"])
 
 			if msgsReceived == msgsSent {
@@ -102,7 +102,10 @@ func connectRemotes() (rabbitmq.Connection, *storage.Mongo) {
 	rabbitPort, _ := strconv.Atoi(os.Getenv("RABBITMQ_PORT"))
 	conn := rabbitmq.NewConnection(os.Getenv("RABBITMQ_HOST"), rabbitPort, os.Getenv("RABBITMQ_USER"), os.Getenv("RABBITMQ_PASS"))
 	conn.Connect()
-	conn.AddQueue(rabbitmq.Queue{Name: outputQueue})
+	conn.AddExchange(rabbitmq.Exchange{Name: "limiter-exchange", Type: "direct"})
+	q := rabbitmq.Queue{Name: outputQueue}
+	q.AddBinding(rabbitmq.Binding{Exchange: "limiter-exchange", RoutingKey: outputQueue})
+	conn.AddQueue(q)
 	conn.Setup()
 
 	// Clean database before each test
@@ -144,9 +147,11 @@ func newAmqpInputMessage(key string, time int, value int, body string) amqp.Publ
 	return amqp.Publishing{
 		Body: []byte(body),
 		Headers: amqp.Table{
-			"pf-limit-key":   key,
-			"pf-limit-time":  strconv.Itoa(time),
-			"pf-limit-value": strconv.Itoa(value),
+			storage.LimitKeyHeader:         key,
+			storage.LimitTimeHeader:        strconv.Itoa(time),
+			storage.LimitValueHeader:       strconv.Itoa(value),
+			storage.ReturnExchangeHeader:   "limiter-exchange",
+			storage.ReturnRoutingKeyHeader: outputQueue,
 		},
 		ReplyTo: outputQueue,
 	}
