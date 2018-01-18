@@ -84,6 +84,11 @@ def batch_delete_cron():
     return cron_batch_handler.batch_delete(request)
 
 
+@app.route("/cron-api/clear", methods=['GET', 'POST'])
+def clear_cron():
+    return cron_handler.clear()
+
+
 @app.errorhandler(404)
 def page_not_found(error):
     return get_json_content(404, json.dumps({"message": str(error)}))
@@ -124,7 +129,7 @@ def get_connection():
             os.environ.get('CRON_MONGODB_HOST'),
             os.environ.get('CRON_MONGODB_PORT')
         ), collection)
-
+        
         return db
     except MongoException as e:
         print('Error({}) during db create'.format(str(e.message)))
@@ -134,14 +139,14 @@ def get_connection():
 if __name__ == '__main__':
     logger = logging.getLogger(__name__)
     logger.info('Start application {}'.format(__version__))
-
+    
     db = get_connection()
     cron_handler = CronHandler(db)
     cron_batch_handler = CronBatchHandler(db)
-
+    
     service = CronService(get_connection(), os.environ.get('CRON_PERIOD'))
     service.start()
-
+    
     app.run(
         host=os.environ.get('CRON_HOST'),
         port=int(os.environ.get('CRON_PORT')),

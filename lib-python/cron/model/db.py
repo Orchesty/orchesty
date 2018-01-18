@@ -50,7 +50,15 @@ class Db:
             message = 'Record "{}" not found'.format(hash_key)
             logger.info(message)
             raise RecordNotFound(message)
+    
+    def remove_all(self) -> int:
+        """
 
+        :rtype: inbt
+        :return:
+        """
+        return self.conn.remove(self.collection)
+    
     def update(self, hash_key: str, time: str, command: str):
         """
         
@@ -84,9 +92,9 @@ class Db:
         result = self.conn.update(self.collection, {'hash': hash_key}, {'time': time, 'command': command})
         if not result:
             result = self.conn.insert(self.collection, {'hash': hash_key, 'time': time, 'command': command})
-
+        
         return result
-
+    
     def get_all(self):
         """
         
