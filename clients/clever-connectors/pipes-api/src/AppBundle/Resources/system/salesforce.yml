@@ -25,6 +25,13 @@ services:
         calls:
             - ['setLogger', ['@monolog.logger.notification']]
 
+    hbpf.connector.salesforce-get-limit-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Salesforce\Connector\SalesforceGetLimitConnector
+        arguments:
+            - '@systems.salesforce'
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.transport.curl_manager'
+
     hbpf.connector.salesforce-create-contact-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Salesforce\Connector\SalesforceCreateContactConnector
         arguments:

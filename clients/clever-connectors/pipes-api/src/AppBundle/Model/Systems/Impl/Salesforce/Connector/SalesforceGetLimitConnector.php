@@ -30,9 +30,7 @@ class SalesforceGetLimitConnector implements ConnectorInterface, LoggerAwareInte
 
     use LoggerTrait;
 
-    private const URL       = '%s/services/data/v40.0/limits';
-    private const KEY_DAILY = 'DailyApiRequests';
-    private const KEY_MAX   = 'Max';
+    private const URL = '%s/services/data/v40.0/limits';
 
     /**
      * @var SalesforceSystem
@@ -112,20 +110,10 @@ class SalesforceGetLimitConnector implements ConnectorInterface, LoggerAwareInte
         }
 
         $body = Json::decode($response->getBody(), TRUE);
+        $this->system->saveLimit($systemInstall, $body);
+        $this->dm->flush();
 
-        if (is_array($body) && !empty($body) &&
-            array_key_exists(self::KEY_DAILY, $body) &&
-            array_key_exists(self::KEY_MAX, $body[self::KEY_DAILY])
-        ) {
-            return (int) $body[self::KEY_DAILY][self::KEY_MAX];
-
-            //return $dto->setData($response->getBody());
-        }
-
-        throw new CleverConnectorsException(
-            sprintf('Missing %s.%s value in response body', self::KEY_DAILY, self::KEY_MAX),
-            CleverConnectorsException::MISSING_DATA
-        );
+        return $dto;
     }
 
     /**

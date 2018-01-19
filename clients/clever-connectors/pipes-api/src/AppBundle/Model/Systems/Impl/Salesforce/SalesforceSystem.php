@@ -12,6 +12,7 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\Salesforce;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\CleverCustomKeysEnum;
 use CleverConnectors\AppBundle\Enum\SystemTypeEnum;
+use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\CMEvents\CMEventObject;
 use CleverConnectors\AppBundle\Model\CMEvents\CMEventSystemInterface;
 use CleverConnectors\AppBundle\Model\CMEvents\Traits\CMEventSystemTrait;
@@ -31,7 +32,6 @@ use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Authorization\Provider\Dto\OAuth2Dto;
 use Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Class SalesforceSystem
@@ -45,13 +45,15 @@ class SalesforceSystem implements OAuth2Interface, CMEventSystemInterface, Syste
     use CMEventSystemTrait;
     use AuthorizationTrait;
 
-    private const LIMIT_TIME    = 86400;
     private const CLIENT_ID     = 'client_id';
     private const CLIENT_SECRET = 'client_secret';
     private const AUTHORIZE_URL = 'https://login.salesforce.com/services/oauth2/authorize';
     private const TOKEN_URL     = 'https://na1.salesforce.com/services/oauth2/token';
+    private const API_URL       = 'instance_url';
 
-    private const API_URL = 'instance_url';
+    private const LIMIT_TIME = 86400;
+    private const KEY_DAILY  = 'DailyApiRequests';
+    private const KEY_MAX    = 'Max';
 
     /**
      * @var OAuth2Provider
@@ -59,20 +61,13 @@ class SalesforceSystem implements OAuth2Interface, CMEventSystemInterface, Syste
     private $provider;
 
     /**
-     * @var ContainerInterface
-     */
-    private $container;
-
-    /**
      * SalesforceSystem constructor.
      *
-     * @param OAuth2Provider     $provider
-     * @param ContainerInterface $container
+     * @param OAuth2Provider $provider
      */
-    public function __construct(OAuth2Provider $provider, ContainerInterface $container)
+    public function __construct(OAuth2Provider $provider)
     {
-        $this->provider  = $provider;
-        $this->container = $container;
+        $this->provider = $provider;
 
         $this->addCMEvent(new CMEventObject('', SystemInstall::EVENT_CREATE, ''));
         $this->addCMEvent(new CMEventObject(CleverCustomKeysEnum::UNSUBSCRIBE, SystemInstall::EVENT_UNSUBSCRIBE, ''));
@@ -249,16 +244,24 @@ class SalesforceSystem implements OAuth2Interface, CMEventSystemInterface, Syste
      * @param array         $data
      *
      * @return SystemInstall
+     * @throws CleverConnectorsException
      */
     public function saveLimit(SystemInstall $systemInstall, array $data): SystemInstall
     {
-        // todo
-        $this->setSettings($systemInstall, [
-            SystemInstall::SYSTEM_LIMITS       => $limit,
-            SystemInstall::SYSTEM_LIMIT_UPDATE => new DateTime(),
-        ]);
+        if (array_key_exists(self::KEY_DAILY, $data) && array_key_exists(self::KEY_MAX, $data[self::KEY_DAILY])) {
+            $limit = $data[self::KEY_DAILY][self::KEY_MAX];
+            $this->setSettings($systemInstall, [
+                SystemInstall::SYSTEM_LIMITS       => $limit,
+                SystemInstall::SYSTEM_LIMIT_UPDATE => new DateTime(),
+            ]);
 
-        return $systemInstall;
+            return $systemInstall;
+        }
+
+        throw new CleverConnectorsException(
+            sprintf('Missing %s.%s value in response body', self::KEY_DAILY, self::KEY_MAX),
+            CleverConnectorsException::MISSING_DATA
+        );
     }
 
     /**
