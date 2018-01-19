@@ -3,9 +3,6 @@ package limiter
 import (
 	"testing"
 	"github.com/stretchr/testify/assert"
-	"bufio"
-	"fmt"
-	"net"
 	"time"
 )
 
@@ -32,18 +29,9 @@ func TestServerHealthCheck(t *testing.T) {
 	go tcpServer.Start(3334)
 	defer tcpServer.Stop()
 
-	conn, err := net.Dial("tcp", "localhost:3334")
-	if err != nil {
-		assert.Fail(t, "Could not create tcp connection.")
-	}
-	for {
-		text := "pf-health-check;someRequestId\n"
-		fmt.Fprintf(conn, text)
-		// listen for reply
-		response, _ := bufio.NewReader(conn).ReadString('\n')
-		assert.Equal(t, "pf-health-check;someRequestId;ok", response)
-		break
-	}
+	resp, err := SendTcpPacket("localhost:3334", CreateTcpHealtCheckRequestContent("someId"))
+	assert.Nil(t, err)
+	assert.Equal(t, "pf-health-check;someId;ok", resp)
 }
 
 // TestServer tests TcpServer healthCheck route
@@ -52,34 +40,17 @@ func TestServerLimitCheck(t *testing.T) {
 	negServer := NewTcpServer(&negativeLimiter{})
 	go posServer.Start(3334)
 	go negServer.Start(3335)
-
-	// waiting for server
-	time.Sleep(time.Millisecond * 10)
-
 	defer posServer.Stop()
 	defer negServer.Stop()
 
-	conn, err := net.Dial("tcp", "localhost:3334")
-	if err != nil {
-		assert.Fail(t, "Could not create tcp connection.")
-	}
-	for {
-		fmt.Fprintf(conn, "pf-check;someRequestId;key;10;50\n")
-		// listen for reply
-		response, _ := bufio.NewReader(conn).ReadString('\n')
-		assert.Equal(t, "pf-check;someRequestId;ok", response)
-		break
-	}
+	// waiting for servers to start
+	time.Sleep(time.Millisecond * 10)
 
-	conn, err = net.Dial("tcp", "localhost:3335")
-	if err != nil {
-		assert.Fail(t, "Could not create tcp message.")
-	}
-	for {
-		fmt.Fprintf(conn, "pf-check;someRequestId;key;10;50\n")
-		// listen for reply
-		response, _ := bufio.NewReader(conn).ReadString('\n')
-		assert.Equal(t, "pf-check;someRequestId;nok", response)
-		break
-	}
+	resp, err := SendTcpPacket("localhost:3334", CreateTcpCheckRequestContent("someId", "someKey", 10, 50))
+	assert.Nil(t, err)
+	assert.Equal(t, "pf-check;someId;ok", resp)
+
+	resp, err = SendTcpPacket("localhost:3335", CreateTcpCheckRequestContent("someId", "someKey", 10, 50))
+	assert.Nil(t, err)
+	assert.Equal(t, "pf-check;someId;nok", resp)
 }

@@ -5,9 +5,6 @@ import (
 	"os"
 	"time"
 	"github.com/stretchr/testify/assert"
-	"net"
-	"fmt"
-	"bufio"
 	stringsUtils "hanaboso.com/utils/strings"
 	"strconv"
 	"strings"
@@ -15,6 +12,7 @@ import (
 	"github.com/streadway/amqp"
 	"hanaboso.com/limiter/pkg/storage"
 	"hanaboso.com/utils/env"
+	"hanaboso.com/limiter/pkg/limiter"
 )
 
 const outputQueue = "limiter.test_output"
@@ -59,8 +57,8 @@ func simulateTraffic(t *testing.T, stopTest chan bool) {
 	conn, _ := connectRemotes()
 	publisher := rabbitmq.NewPublisher(conn, os.Getenv("RABBITMQ_INPUT_QUEUE"))
 
-	go assertTcpCheckResult(t, sendTcpCheck(t, "A", 1, 2), true)
-	go assertTcpCheckResult(t, sendTcpCheck(t, "B", 2, 50), true)
+	go tcpCheck(t, "A", 1, 2, true)
+	go tcpCheck(t, "B", 2, 5, true)
 
 	// A can have max 2 requests within 1s and we publish 3 so it should wait and tick there for 2s
 	msgsSent := 3
@@ -72,13 +70,13 @@ func simulateTraffic(t *testing.T, stopTest chan bool) {
 	time.Sleep(time.Millisecond * 50)
 
 	// now we should be notified about existing limit for A, but B should not be affected by A's limit
-	go assertTcpCheckResult(t, sendTcpCheck(t, "A", 1, 2), false) // here should be false now
-	go assertTcpCheckResult(t, sendTcpCheck(t, "B", 2, 50), true)
+	go tcpCheck(t, "A", 1, 2, false) // here should be false now
+	go tcpCheck(t, "B", 2, 50, true)
 
 	//// after limit should be free again we should get positive responses
 	time.Sleep(time.Second * 2)
-	assertTcpCheckResult(t, sendTcpCheck(t, "A", 1, 2), true)
-	assertTcpCheckResult(t, sendTcpCheck(t, "B", 2, 50), true)
+	go tcpCheck(t, "A", 1, 2, true)
+	go tcpCheck(t, "B", 2, 50, true)
 
 	consumer := rabbitmq.NewConsumer(conn, outputQueue)
 	msgsReceived := 0
@@ -122,23 +120,15 @@ func connectRemotes() (rabbitmq.Connection, *storage.Mongo) {
 	return conn, m
 }
 
-func sendTcpCheck(t *testing.T, key string, time int, val int) string {
-	conn, err := net.Dial("tcp", "localhost:"+os.Getenv("LIMITER_PORT"))
-	if err != nil {
-		assert.Fail(t, "Could not create tcp connection. Err:"+err.Error())
-	}
-	for {
-		// max 2request in 1s for key a1
-		id := stringsUtils.Random(5, true)
-		fmt.Fprintf(conn, "pf-check;"+id+";"+key+";"+strconv.Itoa(time)+";"+strconv.Itoa(val)+"\n")
-		// listen for reply
-		response, _ := bufio.NewReader(conn).ReadString('\n')
+func tcpCheck(t *testing.T, key string, time int, val int, expected bool) {
+	limiterHost := "localhost:"+os.Getenv("LIMITER_PORT")
 
-		return response
-	}
-}
+	reqID := stringsUtils.Random(5, true)
+	content := limiter.CreateTcpCheckRequestContent(reqID, key, time, val)
 
-func assertTcpCheckResult(t *testing.T, response string, expected bool) {
+	response, err := limiter.SendTcpPacket(limiterHost, content)
+	assert.Nil(t, err, "There should be no error when sending tcp check request")
+
 	sl := strings.Split(response, ";")
 	last := sl[len(sl)-1]
 
