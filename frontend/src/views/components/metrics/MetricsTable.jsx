@@ -20,7 +20,7 @@ class MetricsTable extends React.Component {
               <th>Waiting time [ms]</th>
               <th>Process time [ms]</th>
               <th>CPU time</th>
-              <th>Error</th>
+              <th>Error [%]</th>
               <th>Request time [ms]</th>
             </tr>
           </thead>
