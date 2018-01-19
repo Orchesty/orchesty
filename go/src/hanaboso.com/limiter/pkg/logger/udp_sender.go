@@ -8,51 +8,75 @@ import (
 )
 
 type Sender interface {
-	Send()
+	Send(data string) error
 }
 
 type updSender struct {
-	host   string
-	port   string
-	ipAddr string
+	host string
+	port string
+	addr *net.UDPAddr
+	conn *net.UDPConn
 }
 
-func (u *updSender) resolveHost() {
-	ticker := time.NewTicker(time.Minute * 1)
-
-	for t := range ticker.C {
-
-		ip, err := net.LookupIP(u.host + u.port)
-
-		log.Println(ip)
-
-		if err != nil {
-			log.Println(fmt.Sprintf("Upd sender error: %s", err))
-		}
-
-		log.Println(fmt.Sprintf("Resolve host for upd sender in %s", t))
-	}
-}
-
-func (u *updSender) Send() {
-	// @todo add start resolver
-	log.Println(u.ipAddr+u.port)
-	conn, err := net.Dial("udp", u.host+ ":" +u.port)
+func (u *updSender) findHost(url string) error {
+	var err error
+	u.addr, err = net.ResolveUDPAddr("udp", url)
 
 	if err != nil {
-		log.Println(fmt.Sprintf("conn error: %s", err))
-		return
+		log.Println(fmt.Sprintf("Resolve ip addr error: %s", err))
+		return err
 	}
 
-	_, err2 := conn.Write([]byte("test"))
-
-	if err2 != nil {
-		log.Println(fmt.Sprintf("write error: %s", err))
-	}
-
-	time.Sleep(time.Second * 3)
+	return nil
 }
 
-func NewUpdSender() Sender {
-	return &updSender{host: "google.com", port: "80"}
+func (u *updSender) resolveHost(url string) error {
+
+	err := u.findHost(url)
+
+	if err != nil {
+		return err
+	}
+
+	ticker := time.NewTicker(time.Minute * 1)
+	go func() {
+		for t := range ticker.C {
+			u.findHost(url)
+			log.Println(fmt.Sprintf("Resolving host in %s", t))
+		}
+	}()
+
+	return nil
+}
+
+func (u *updSender) Send(data string) error {
+
+	resErr := u.resolveHost(fmt.Sprintf("%s:%s", u.host, u.port))
+
+	if resErr != nil {
+		return resErr
+	}
+
+	if u.conn == nil {
+		var err error
+		u.conn, err = net.DialUDP("udp", nil, u.addr)
+
+		if err != nil {
+			log.Println(fmt.Sprintf("Udp sender coonection error: %s", err))
+			return err
+		}
+	}
+
+	_, err := u.conn.Write([]byte(data))
+
+	if err != nil {
+		log.Println(fmt.Sprintf("Udp sender write error: %s", err))
+		return err
+	}
+
+	return nil
+}
+
+func NewUpdSender(host string, port string) Sender {
+	return &updSender{host: host, port: port}
 }
