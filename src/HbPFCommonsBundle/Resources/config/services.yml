@@ -56,10 +56,16 @@ services:
         arguments:
             - '%docker.connection.settings%'
 
+    udp_metrics_sender:
+        class: Hanaboso\PipesFramework\Commons\Metrics\UDPSender
+        arguments:
+            - '%influx.host%'
+            - '%influx.port%'
+
     hbpf.influxdb_sender:
         class: Hanaboso\PipesFramework\Commons\Metrics\InfluxDbSender
         arguments:
-            - '@udp_sender'
+            - '@udp_metrics_sender'
             - '%metrics.measurement%'
 
     hbpf.cron.manager:

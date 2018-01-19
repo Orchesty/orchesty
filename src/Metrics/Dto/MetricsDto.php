@@ -74,7 +74,7 @@ final class MetricsDto
     public function setAvg($count, $sum): MetricsDto
     {
         if (!empty($count) && !empty($sum)) {
-            $this->avg = (string) ($sum / $count);
+            $this->avg = (string) number_format((float) ($sum / $count), 2, '.', '');
         }
 
         return $this;
@@ -89,7 +89,7 @@ final class MetricsDto
     public function setTotal($count, $sum): MetricsDto
     {
         if (!empty($count) && !empty($sum)) {
-            $this->total = (string) (($sum / $count) * 100);
+            $this->total = (string) ceil(($sum / $count) * 100);
         }
 
         return $this;
