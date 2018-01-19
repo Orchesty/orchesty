@@ -26,7 +26,7 @@ func (db *checkerSaverMock) Save(m *storage.Message) (string, error) {
 
 // TestIsFreeLimit tests the function using checkerSaver mock object
 func TestIsFreeLimit(t *testing.T) {
-	l := limiter{storage: &checkerSaverMock{}}
+	l := limiter{store: &checkerSaverMock{}}
 
 	res, err := l.IsFreeLimit("when-not-exists", 10, 10)
 	assert.Nil(t, err)

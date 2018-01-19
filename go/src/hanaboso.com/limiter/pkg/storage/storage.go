@@ -14,8 +14,8 @@ type CheckerSaver interface {
 }
 
 type Checker interface {
-	// Exists returns true if any message with given key is present in storage
-	Exists(key string) (bool, error)
+	// Check returns true if message can be processed
+	Check(key string, time int, val int) (bool, error)
 }
 
 type Saver interface {
@@ -29,6 +29,8 @@ type Remover interface {
 }
 
 type Finder interface {
+	// Exists returns true if any message with given key is present in storage
+	Exists(key string) (bool, error)
 	// Returns the message or error if no message was found
 	Get(key string, length int) ([]*Message, error)
 	// Count returns the number of messages with given key

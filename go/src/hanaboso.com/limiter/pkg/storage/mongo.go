@@ -41,20 +41,9 @@ func (s *Mongo) reconnect() {
 	s.Connect()
 }
 
-// Exists return boolean if any document found with given key or returns error if some mongo error occurs
-func (s *Mongo) Exists(key string) (bool, error) {
-	c := s.session.DB(s.db).C(s.collection)
-	count, err := c.Find(bson.M{"limitkey": key}).Limit(1).Count()
-
-	if err != nil {
-		return false, err
-	}
-
-	if count > 0 {
-		return true, nil
-	}
-
-	return false, nil
+// Check just calls Exists method
+func (s *Mongo) Check(key string, time int, value int) (bool, error) {
+	return s.Exists(key)
 }
 
 // Delete removes the document by it's unique id
@@ -79,6 +68,22 @@ func (s *Mongo) Save(m *Message) (string, error) {
 	}
 
 	return m.LimitKey, nil
+}
+
+// Exists return boolean if any document found with given key or returns error if some mongo error occurs
+func (s *Mongo) Exists(key string) (bool, error) {
+	c := s.session.DB(s.db).C(s.collection)
+	count, err := c.Find(bson.M{"limitkey": key}).Limit(1).Count()
+
+	if err != nil {
+		return false, err
+	}
+
+	if count > 0 {
+		return true, nil
+	}
+
+	return false, nil
 }
 
 // Get tries to find up to X messages in the storage by their key, where X is the length param value

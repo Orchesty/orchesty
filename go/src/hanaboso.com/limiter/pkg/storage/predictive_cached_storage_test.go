@@ -9,6 +9,10 @@ import (
 
 type mongoMock struct{}
 
+func (mm *mongoMock) Check(key string, time int, value int) (bool, error) {
+	return mm.Exists(key)
+}
+
 func (mm *mongoMock) Exists(key string) (bool, error) {
 	if key == "not-in-db" {
 		return false, nil

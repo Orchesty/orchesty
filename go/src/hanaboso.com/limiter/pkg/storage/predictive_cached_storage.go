@@ -2,26 +2,45 @@ package storage
 
 import (
 	"gopkg.in/mgo.v2/bson"
+	"time"
 )
 
 type CachedStorage struct {
 	db    Storage
-	cache map[string]int
+	cache map[string]cacheItem
+}
+
+type cacheItem struct {
+	ticker *time.Ticker
+	max    int
+	count  int
 }
 
 // Returns the pointer to new created mongo storage instance
 func NewPredictiveCachedStorage(db Storage) (*CachedStorage) {
-	return &CachedStorage{db, make(map[string]int, 0)}
+	// TODO start invalidate cache ticker here
+	return &CachedStorage{db, make(map[string]cacheItem, 0)}
+}
+
+// Check decides whether the message can be processed
+func (cm *CachedStorage) Check(key string, time int, value int) (bool, error) {
+	return cm.Exists(key)
 }
 
 func (cm *CachedStorage) Get(key string, length int) ([]*Message, error) {
 	return cm.db.Get(key, length)
 }
 
+// GetDistinctFirstItems returns first message for every distinct key in storage
+func (cm *CachedStorage) GetDistinctFirstItems() (map[string]*Message, error) {
+	return cm.db.GetDistinctFirstItems()
+}
+
+// Count return the amount of messages with given key in storage
 func (cm *CachedStorage) Count(key string) (int, error) {
 	_, ok := cm.cache[key]
 	if ok {
-		return cm.cache[key], nil
+		return cm.cache[key].count, nil
 	}
 
 	num, err := cm.db.Count(key)
@@ -29,14 +48,9 @@ func (cm *CachedStorage) Count(key string) (int, error) {
 		return 0, err
 	}
 
-	// TODO - how to delete unused keys? (start ticker to find 0 values and delete them?)
-	cm.cache[key] = num
+	cm.setCount(key, num)
 
 	return num, nil
-}
-
-func (cm *CachedStorage) GetDistinctFirstItems() (map[string]*Message, error) {
-	return cm.db.GetDistinctFirstItems()
 }
 
 func (cm *CachedStorage) Exists(key string) (bool, error) {
@@ -75,18 +89,27 @@ func (cm *CachedStorage) Remove(key string, id bson.ObjectId) (bool, error) {
 }
 
 func (cm *CachedStorage) increaseCount(key string) {
-	cm.cache[key] = cm.getCount(key) + 1
+	cm.setCount(key, cm.getCount(key) + 1)
 }
 
 func (cm *CachedStorage) decreaseCount(key string) {
-	cm.cache[key] = cm.getCount(key) - 1
+	cm.setCount(key, cm.getCount(key) - 1)
 }
 
 func (cm *CachedStorage) getCount(key string) int {
-	val, ok := cm.cache[key]
+	item, ok := cm.cache[key]
 	if !ok {
 		return 0
 	}
 
-	return val
+	return item.count
+}
+
+func (cm *CachedStorage) setCount(key string, val int) {
+	item, ok := cm.cache[key]
+	if !ok {
+		return
+	}
+
+	item.count = val
 }
