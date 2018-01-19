@@ -34,6 +34,7 @@ class Headers {
     public static readonly LIMIT_VALUE = "limit-value";
 
     // Other headers
+    public static readonly PUBLISHED_TIMESTAMP = "published-timestamp";
     public static readonly CONTENT_TYPE = "content-type";
 
     public static readonly HEADERS_WHITELIST = [
