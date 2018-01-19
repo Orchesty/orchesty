@@ -1,0 +1,24 @@
+generator:
+  multimode: true
+
+mongodb:
+  topology-collection: Topology
+  node-collection: Node
+
+environment:
+  docker-registry: dkr.hanaboso.net/pipes/pipes
+  docker-pf-bridge-image: pf-bridge:dev
+  rabbitmq-host: rabbitmq
+  rabbitmq-port: 5672
+  rabbitmq-user: guest
+  rabbitmq-pass: guest
+  rabbitmq-vhost: /
+  multi-probe-host: multi-probe
+  multi-probe-port: 8007
+
+queues:
+  consumer:
+    name: "pipes.topology.controlling"
+    durable: true
+    auto_delete: false
+    callback: topologyHandle
