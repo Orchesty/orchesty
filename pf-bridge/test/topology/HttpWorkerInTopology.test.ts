@@ -164,6 +164,6 @@ describe("Topology with HttpWorker Node", () => {
             assert.equal(h.getPFHeader(Headers.TOPOLOGY_ID), testTopology.id);
             assert.equal(h.getHeader(Headers.CONTENT_TYPE), "text/plain; charset=utf-8");
         }
-    });
+    }).timeout(5000);
 
 });
