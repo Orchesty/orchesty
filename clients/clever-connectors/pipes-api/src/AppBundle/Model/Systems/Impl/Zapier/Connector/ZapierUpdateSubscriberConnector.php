@@ -68,7 +68,7 @@ class ZapierUpdateSubscriberConnector implements ConnectorInterface, LoggerAware
     /**
      * @param ProcessDto $dto
      *
-     * @return ProcessDto|void
+     * @return ProcessDto
      * @throws ConnectorException
      */
     public function processEvent(ProcessDto $dto): ProcessDto
@@ -89,6 +89,9 @@ class ZapierUpdateSubscriberConnector implements ConnectorInterface, LoggerAware
     {
         $systemInstall = $this->systemInstallRepository->getSystemInstallFromHeaders($dto->getHeaders());
         $sett          = $systemInstall->getSettings();
+        if (empty($sett[ZapierSystem::UPDATE_WEBHOOK_URL])) {
+            throw new ConnectorException('Missing update webhook url', ConnectorException::INVALID_SETTING);
+        }
 
         $requestDto = $this->system->getRequestDto($systemInstall, CurlManager::METHOD_POST);
 

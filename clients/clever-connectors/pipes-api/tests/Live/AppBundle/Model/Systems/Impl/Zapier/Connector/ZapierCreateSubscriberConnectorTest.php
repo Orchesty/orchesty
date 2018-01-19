@@ -32,7 +32,7 @@ class ZapierCreateSubscriberConnectorTest extends DatabaseTestCaseAbstract
         $this->persistAndFlush($topology);
 
         $settings = [
-            ZapierSystem::CREATE_WEBHOOK_URL => 'https://hooks.zapier.com/hooks/catch/2624456/8e693z/',
+            ZapierSystem::CREATE_WEBHOOK_URL => 'https://hooks.zapier.com/hooks/catch/2624456/8e4qdj/',
         ];
 
         $system = new SystemInstall();
