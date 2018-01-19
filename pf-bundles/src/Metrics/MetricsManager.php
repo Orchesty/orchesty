@@ -17,10 +17,12 @@ use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Repository\NodeRepository;
 use Hanaboso\PipesFramework\Metrics\Client\ClientInterface;
 use Hanaboso\PipesFramework\Metrics\Dto\MetricsDto;
+use Hanaboso\PipesFramework\Metrics\Exception\MetricsException;
 use Hanaboso\PipesFramework\TopologyGenerator\GeneratorUtils;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
+use Throwable;
 
 /**
  * Class MetricsManager
@@ -153,6 +155,7 @@ class MetricsManager implements LoggerAwareInterface
      * @param array    $params
      *
      * @return array
+     * @throws MetricsException
      */
     public function getTopologyMetrics(Topology $topology, array $params): array
     {
@@ -171,6 +174,7 @@ class MetricsManager implements LoggerAwareInterface
      * @param array    $params
      *
      * @return array
+     * @throws MetricsException
      */
     public function getNodeMetrics(Node $node, Topology $topology, array $params): array
     {
@@ -228,6 +232,7 @@ class MetricsManager implements LoggerAwareInterface
      * @param string|NULL $to
      *
      * @return array
+     * @throws MetricsException
      */
     private function runQuery(string $select, array $where, ?string $from = NULL, ?string $to = NULL): array
     {
@@ -240,38 +245,139 @@ class MetricsManager implements LoggerAwareInterface
             $qb->setTimeRange((new DateTime($from))->getTimestamp(), (new DateTime($to))->getTimestamp());
         }
         $this->logger->info('Metrics was selected.', ['Query' => $qb->getQuery()]);
-        $result = $qb->getResultSet()->getPoints();
+        try {
+            $series = $qb->getResultSet()->getSeries();
+        } catch (Throwable $e) {
+            $this->logger->info($e->getMessage(), ['Exception' => $e]);
+            throw new MetricsException('Unknown error occurred during query.', MetricsException::QUERY_ERROR);
+        }
 
+        return $this->processResultSet($this->getPoints($series));
+    }
+
+    /**
+     * @param array $series
+     *
+     * @return array $points
+     */
+    public function getPoints(array $series): array
+    {
+        $points = [];
+
+        foreach ($series as $serie) {
+            if (isset($serie['values']) && isset($serie['name'])) {
+                foreach ($this->getPointsFromSerie($serie) as $point) {
+                    $points[$serie['name']] = $point;
+                }
+            }
+        }
+
+        return $points;
+    }
+
+    /**
+     * @param  array $serie
+     *
+     * @return array
+     */
+    private function getPointsFromSerie(array $serie): array
+    {
+        $points = [];
+
+        foreach ($serie['values'] as $point) {
+            $points[] = array_combine($serie['columns'], $point);
+        }
+
+        return $points;
+    }
+
+    /**
+     * @param array $result
+     *
+     * @return array
+     */
+    private function processResultSet(array $result): array
+    {
         $waiting = new MetricsDto();
-        $waiting
-            ->setMin($result[1][self::WAIT_MIN] ?? '')
-            ->setMax($result[1][self::WAIT_MAX] ?? '')
-            ->setAvg($result[1][self::WAIT_COUNT] ?? '', $result[1][self::WAIT_SUM] ?? '');
         $process = new MetricsDto();
-        $process
-            ->setMin($result[1][self::PROCESSED_MIN] ?? '')
-            ->setMax($result[1][self::PROCESSED_MAX] ?? '')
-            ->setAvg($result[1][self::PROCESSED_COUNT] ?? '', $result[1][self::PROCESSED_SUM] ?? '');
-        $cpu = new MetricsDto();
-        $cpu
-            ->setMin($result[0][self::CPU_MIN] ?? '')
-            ->setMax($result[0][self::CPU_MAX] ?? '')
-            ->setAvg($result[0][self::CPU_COUNT] ?? '', $result[0][self::CPU_SUM] ?? '');
+        $cpu     = new MetricsDto();
         $request = new MetricsDto();
-        $request
-            ->setMin($result[0][self::REQUEST_MIN] ?? '')
-            ->setMax($result[0][self::REQUEST_MAX] ?? '')
-            ->setAvg($result[0][self::REQUEST_COUNT] ?? '', $result[0][self::REQUEST_SUM] ?? '');
-        $queue = new MetricsDto();
-        $queue
-            ->setMin($result[2][self::QUEUE_MIN] ?? '')
-            ->setMax($result[2][self::QUEUE_MAX] ?? '');
+        $queue   = new MetricsDto();
+        $error   = new MetricsDto();
 
-        $error = new MetricsDto();
-        $error
-            ->setTotal($result[1][self::REQUEST_ERROR_COUNT] ?? '', $result[1][self::REQUEST_ERROR_SUM] ?? '');
+        if (isset($result[$this->fpmTable])) {
+            $cpu
+                ->setMin($result[$this->fpmTable][self::CPU_MIN] ?? '')
+                ->setMax($result[$this->fpmTable][self::CPU_MAX] ?? '')
+                ->setAvg($result[$this->fpmTable][self::CPU_COUNT] ?? '', $result[0][self::CPU_SUM] ?? '');
+            $request
+                ->setMin($result[$this->fpmTable][self::REQUEST_MIN] ?? '')
+                ->setMax($result[$this->fpmTable][self::REQUEST_MAX] ?? '')
+                ->setAvg($result[$this->fpmTable][self::REQUEST_COUNT] ?? '', $result[0][self::REQUEST_SUM] ?? '');
+        }
+        if (isset($result[$this->nodeTable])) {
+            $waiting
+                ->setMin($result[$this->nodeTable][self::WAIT_MIN] ?? '')
+                ->setMax($result[$this->nodeTable][self::WAIT_MAX] ?? '')
+                ->setAvg($result[$this->nodeTable][self::WAIT_COUNT] ?? '', $result[1][self::WAIT_SUM] ?? '');
+            $process
+                ->setMin($result[$this->nodeTable][self::PROCESSED_MIN] ?? '')
+                ->setMax($result[$this->nodeTable][self::PROCESSED_MAX] ?? '')
+                ->setAvg($result[$this->nodeTable][self::PROCESSED_COUNT] ?? '', $result[1][self::PROCESSED_SUM] ?? '');
+            $error
+                ->setTotal($result[$this->nodeTable][self::REQUEST_ERROR_COUNT] ?? '',
+                    $result[1][self::REQUEST_ERROR_SUM] ?? '');
+        }
+        if (isset($result[$this->rabbitTable])) {
+            $queue
+                ->setMin($result[$this->rabbitTable][self::QUEUE_MIN] ?? '')
+                ->setMax($result[$this->rabbitTable][self::QUEUE_MAX] ?? '');
+        }
 
         return $this->generateOutput($queue, $waiting, $process, $cpu, $request, $error);
+    }
+
+    /**
+     * @param MetricsDto $queue
+     * @param MetricsDto $waiting
+     * @param MetricsDto $process
+     * @param MetricsDto $cpu
+     * @param MetricsDto $request
+     * @param MetricsDto $error
+     *
+     * @return array
+     */
+    private function generateOutput(
+        MetricsDto $queue,
+        MetricsDto $waiting,
+        MetricsDto $process,
+        MetricsDto $cpu,
+        MetricsDto $request,
+        MetricsDto $error
+    ): array
+    {
+        $output = [
+            self::QUEUE_DEPTH  => [
+                'max' => $queue->getMax(), 'min' => $queue->getMin(),
+            ],
+            self::WAITING_TIME => [
+                'max' => $waiting->getMax(), 'min' => $waiting->getMin(), 'avg' => $waiting->getAvg(),
+            ],
+            self::PROCESS_TIME => [
+                'max' => $process->getMax(), 'min' => $process->getMin(), 'avg' => $process->getAvg(),
+            ],
+            self::CPU_TIME     => [
+                'max' => $cpu->getMax(), 'min' => $cpu->getMin(), 'avg' => $cpu->getAvg(),
+            ],
+            self::REQUEST_TIME => [
+                'max' => $request->getMax(), 'min' => $request->getMin(), 'avg' => $request->getAvg(),
+            ],
+            self::ERROR        => [
+                'total' => $error->getTotal(),
+            ],
+        ];
+
+        return $output;
     }
 
     /**
@@ -366,49 +472,6 @@ class MetricsManager implements LoggerAwareInterface
         }
 
         return $ret;
-    }
-
-    /**
-     * @param MetricsDto $queue
-     * @param MetricsDto $waiting
-     * @param MetricsDto $process
-     * @param MetricsDto $cpu
-     * @param MetricsDto $request
-     * @param MetricsDto $error
-     *
-     * @return array
-     */
-    private function generateOutput(
-        MetricsDto $queue,
-        MetricsDto $waiting,
-        MetricsDto $process,
-        MetricsDto $cpu,
-        MetricsDto $request,
-        MetricsDto $error
-    ): array
-    {
-        $output = [
-            self::QUEUE_DEPTH  => [
-                'max' => $queue->getMax(), 'min' => $queue->getMin(),
-            ],
-            self::WAITING_TIME => [
-                'max' => $waiting->getMax(), 'min' => $waiting->getMin(), 'avg' => $waiting->getAvg(),
-            ],
-            self::PROCESS_TIME => [
-                'max' => $process->getMax(), 'min' => $process->getMin(), 'avg' => $process->getAvg(),
-            ],
-            self::CPU_TIME     => [
-                'max' => $cpu->getMax(), 'min' => $cpu->getMin(), 'avg' => $cpu->getAvg(),
-            ],
-            self::REQUEST_TIME => [
-                'max' => $request->getMax(), 'min' => $request->getMin(), 'avg' => $request->getAvg(),
-            ],
-            self::ERROR        => [
-                'total' => $error->getTotal(),
-            ],
-        ];
-
-        return $output;
     }
 
 }
