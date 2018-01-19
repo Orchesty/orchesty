@@ -23,26 +23,28 @@ use MongoDate;
 class SystemInstall
 {
 
-    private const ID                 = '_id';
-    public const  USER               = 'user';
-    public const  TOKEN              = 'token';
-    public const  SYSTEM             = 'system';
-    public const  EXPIRES            = 'expires';
-    public const  SYNCHRONIZED       = 'synchronized';
-    public const  SYNCHRONIZED_TIME  = 'synchronizedTime';
-    public const  CREATED            = 'created';
-    public const  ENCRYPTED_SETTINGS = 'encryptedSettings';
-    public const  EVENT_CREATE       = 'eventCreate';
-    public const  EVENT_UNSUBSCRIBE  = 'eventUnsubscribe';
-    public const  EVENT_HARD_BOUNCE  = 'eventHardBounce';
-    public const  EVENT_SUBSCRIBE    = 'eventSubscribe';
-    public const  PLUGIN_VERSION     = 'pluginVersion';
-    public const  SYSTEM_URL         = 'system_url';
-    public const  DISTRIBUTION_LISTS = 'distribution_lists';
-    public const  DISTRIBUTION_LIST  = 'distribution_list';
-    public const  REMOTE_HOST        = 'remote_host';
-    public const  SELECT_LIST        = 'list';
-    public const  FORMS              = 'custom_form';
+    private const ID                  = '_id';
+    public const  USER                = 'user';
+    public const  TOKEN               = 'token';
+    public const  SYSTEM              = 'system';
+    public const  EXPIRES             = 'expires';
+    public const  SYNCHRONIZED        = 'synchronized';
+    public const  SYNCHRONIZED_TIME   = 'synchronizedTime';
+    public const  CREATED             = 'created';
+    public const  ENCRYPTED_SETTINGS  = 'encryptedSettings';
+    public const  EVENT_CREATE        = 'eventCreate';
+    public const  EVENT_UNSUBSCRIBE   = 'eventUnsubscribe';
+    public const  EVENT_HARD_BOUNCE   = 'eventHardBounce';
+    public const  EVENT_SUBSCRIBE     = 'eventSubscribe';
+    public const  PLUGIN_VERSION      = 'pluginVersion';
+    public const  SYSTEM_URL          = 'system_url';
+    public const  DISTRIBUTION_LISTS  = 'distribution_lists';
+    public const  DISTRIBUTION_LIST   = 'distribution_list';
+    public const  REMOTE_HOST         = 'remote_host';
+    public const  SELECT_LIST         = 'list';
+    public const  FORMS               = 'custom_form';
+    public const  SYSTEM_LIMITS       = 'system_limits';
+    public const  SYSTEM_LIMIT_UPDATE = 'system_limit_update';
 
     use IdTrait;
 
