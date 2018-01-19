@@ -14,6 +14,7 @@ use DateTime;
 use DateTimeZone;
 use Exception;
 use GuzzleHttp\Psr7\Uri;
+use Hanaboso\PipesFramework\Commons\Metrics\SystemMetrics;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
@@ -176,7 +177,8 @@ class StartingPoint implements LoggerAwareInterface
             ->addHeader(PipesHeaders::createKey(PipesHeaders::TOPOLOGY_ID), $topology->getId())
             ->addHeader(PipesHeaders::createKey(PipesHeaders::TOPOLOGY_NAME), $topology->getName())
             ->addHeader('content-type', $requestHeaders['content-type'][0] ?? 'application/json')
-            ->addHeader('timestamp', new DateTime('now', new DateTimeZone('UTC')));
+            ->addHeader('timestamp', new DateTime('now', new DateTimeZone('UTC')))
+            ->addHeader(PipesHeaders::createKey(PipesHeaders::TIMESTAMP), SystemMetrics::getCurrentTimestamp());
 
         foreach (PipesHeaders::clear($requestHeaders) as $key => $value) {
             $headers->addHeader($key, (string) $value[0]);
