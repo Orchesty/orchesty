@@ -10,6 +10,7 @@
 namespace Hanaboso\PipesFramework\HbPFRabbitMqBundle;
 
 use Bunny\Message;
+use DateTime;
 
 /**
  * Trait DebugMessageTrait
@@ -50,7 +51,8 @@ trait DebugMessageTrait
         if (!empty($headers)) {
             $result = [];
             foreach ($headers as $key => $value) {
-                if ($key === 'timestamp') {
+                if ($key === 'timestamp' && !is_scalar($value)) {
+                    /** @var DateTime $value */
                     $value = $value->getTimestamp();
                 }
                 $result[] = sprintf('%s=%s', $key, $value);

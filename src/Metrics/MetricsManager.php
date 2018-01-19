@@ -309,24 +309,38 @@ class MetricsManager implements LoggerAwareInterface
             $cpu
                 ->setMin($result[$this->fpmTable][self::CPU_MIN] ?? '')
                 ->setMax($result[$this->fpmTable][self::CPU_MAX] ?? '')
-                ->setAvg($result[$this->fpmTable][self::CPU_COUNT] ?? '', $result[0][self::CPU_SUM] ?? '');
+                ->setAvg(
+                    $result[$this->fpmTable][self::CPU_COUNT] ?? '',
+                    $result[$this->fpmTable][self::CPU_SUM] ?? ''
+                );
             $request
                 ->setMin($result[$this->fpmTable][self::REQUEST_MIN] ?? '')
                 ->setMax($result[$this->fpmTable][self::REQUEST_MAX] ?? '')
-                ->setAvg($result[$this->fpmTable][self::REQUEST_COUNT] ?? '', $result[0][self::REQUEST_SUM] ?? '');
+                ->setAvg(
+                    $result[$this->fpmTable][self::REQUEST_COUNT] ?? '',
+                    $result[$this->fpmTable][self::REQUEST_SUM] ?? ''
+                );
         }
         if (isset($result[$this->nodeTable])) {
             $waiting
                 ->setMin($result[$this->nodeTable][self::WAIT_MIN] ?? '')
                 ->setMax($result[$this->nodeTable][self::WAIT_MAX] ?? '')
-                ->setAvg($result[$this->nodeTable][self::WAIT_COUNT] ?? '', $result[1][self::WAIT_SUM] ?? '');
+                ->setAvg(
+                    $result[$this->nodeTable][self::WAIT_COUNT] ?? '',
+                    $result[$this->nodeTable][self::WAIT_SUM] ?? ''
+                );
             $process
                 ->setMin($result[$this->nodeTable][self::PROCESSED_MIN] ?? '')
                 ->setMax($result[$this->nodeTable][self::PROCESSED_MAX] ?? '')
-                ->setAvg($result[$this->nodeTable][self::PROCESSED_COUNT] ?? '', $result[1][self::PROCESSED_SUM] ?? '');
+                ->setAvg(
+                    $result[$this->nodeTable][self::PROCESSED_COUNT] ?? '',
+                    $result[$this->nodeTable][self::PROCESSED_SUM] ?? ''
+                );
             $error
-                ->setTotal($result[$this->nodeTable][self::REQUEST_ERROR_COUNT] ?? '',
-                    $result[1][self::REQUEST_ERROR_SUM] ?? '');
+                ->setTotal(
+                    $result[$this->nodeTable][self::REQUEST_ERROR_COUNT] ?? '',
+                    $result[$this->nodeTable][self::REQUEST_ERROR_SUM] ?? ''
+                );
         }
         if (isset($result[$this->rabbitTable])) {
             $queue
