@@ -17,11 +17,11 @@ class MetricsTable extends React.Component {
           <thead>
             <tr>
               <th>Queue depth</th>
-              <th>Waiting time</th>
-              <th>Process time</th>
+              <th>Waiting time [ms]</th>
+              <th>Process time [ms]</th>
               <th>CPU time</th>
               <th>Error</th>
-              <th>Request time</th>
+              <th>Request time [ms]</th>
             </tr>
           </thead>
           <tbody>
