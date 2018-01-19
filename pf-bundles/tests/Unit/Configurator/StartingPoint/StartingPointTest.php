@@ -28,7 +28,7 @@ use Tests\PrivateTrait;
  *
  * @package Tests\Unit\Configurator\StartingPoint
  */
-class StartingPointTest extends TestCase
+final class StartingPointTest extends TestCase
 {
 
     use PrivateTrait;
