@@ -4188,16 +4188,16 @@
         },
         {
             "name": "react/socket",
-            "version": "v0.8.8",
+            "version": "v0.8.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/reactphp/socket.git",
-                "reference": "e9e206b6277023bf4afd910a764f0cd3d470e7ed"
+                "reference": "9db38c58cbb1343bbe6523d1b930a40d0e110839"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/reactphp/socket/zipball/e9e206b6277023bf4afd910a764f0cd3d470e7ed",
-                "reference": "e9e206b6277023bf4afd910a764f0cd3d470e7ed",
+                "url": "https://api.github.com/repos/reactphp/socket/zipball/9db38c58cbb1343bbe6523d1b930a40d0e110839",
+                "reference": "9db38c58cbb1343bbe6523d1b930a40d0e110839",
                 "shasum": ""
             },
             "require": {
@@ -4231,7 +4231,7 @@
                 "reactphp",
                 "stream"
             ],
-            "time": "2018-01-06T12:13:20+00:00"
+            "time": "2018-01-18T11:29:21+00:00"
         },
         {
             "name": "react/stream",
@@ -5192,16 +5192,16 @@
     "packages-dev": [
         {
             "name": "hanaboso/php-check-utils",
-            "version": "1.0.0",
+            "version": "1.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hanaboso/php-check-utils.git",
-                "reference": "33c304dbbae5bbd5b0ba1fba54dc98777eafe954"
+                "reference": "30beb7b53bcad9bf6aa3356d352162d1103b0258"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hanaboso/php-check-utils/zipball/33c304dbbae5bbd5b0ba1fba54dc98777eafe954",
-                "reference": "33c304dbbae5bbd5b0ba1fba54dc98777eafe954",
+                "url": "https://api.github.com/repos/hanaboso/php-check-utils/zipball/30beb7b53bcad9bf6aa3356d352162d1103b0258",
+                "reference": "30beb7b53bcad9bf6aa3356d352162d1103b0258",
                 "shasum": ""
             },
             "require": {
@@ -5223,8 +5223,8 @@
                     "email": "venca.email@gmail.com"
                 }
             ],
-            "description": "Utils for php development - codesniffer, phpstan",
-            "time": "2018-01-16T16:20:26+00:00"
+            "description": "Utils for php development - CodeSniffer, PhpStan, PhpStorm",
+            "time": "2018-01-18T10:03:34+00:00"
         },
         {
             "name": "jean85/pretty-package-versions",
