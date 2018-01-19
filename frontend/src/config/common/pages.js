@@ -63,6 +63,9 @@ export default {
   topology_detail: {
     id: 'topology_detail',
     caption: 'Topology detail',
+    defaultArgs: {
+      activeTab: 'nodes'
+    },
     needAuth: true,
     acceptUrl: (path, query) => {
       const match = /\/topology\/(\w+)\/detail/g.exec(path);

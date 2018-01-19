@@ -11,7 +11,7 @@ import * as processActions from './processActions';
 import * as nodeActions from './nodeActions';
 import * as applicationActions from './applicationActions';
 import * as topologyGroupActions from './topologyGroupActions';
-import {listType} from 'rootApp/types';
+import {listType, stateType} from 'rootApp/types';
 import filterCallback from 'rootApp/utils/filterCallback';
 import nestedValue from 'rootApp/utils/nestedValue';
 
@@ -146,6 +146,8 @@ export function needTopologyList(listId, filter) {
       const create = config.params.preferPaging ?
         local => createPaginationList(listId, config.params.defaultPageSize, local, null, filter) : local => createCompleteList(listId, local, null, filter);
       dispatch(create(true));
+    }
+    if (!list || list.state == stateType.NOT_LOADED || list.state == stateType.ERROR) {
       return dispatch(loadList(listId));
     } else {
       return Promise.resolve(true);
