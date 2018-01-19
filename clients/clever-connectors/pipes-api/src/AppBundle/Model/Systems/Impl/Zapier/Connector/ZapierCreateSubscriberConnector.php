@@ -90,6 +90,7 @@ class ZapierCreateSubscriberConnector implements ConnectorInterface, LoggerAware
         $systemInstall = $this->systemInstallRepository->getSystemInstallFromHeaders($dto->getHeaders());
         $sett          = $systemInstall->getSettings();
         if (empty($sett[ZapierSystem::CREATE_WEBHOOK_URL])) {
+            $this->logError(500, $this->system, $systemInstall);
             throw new ConnectorException('Missing create webhook url', ConnectorException::INVALID_SETTING);
         }
 

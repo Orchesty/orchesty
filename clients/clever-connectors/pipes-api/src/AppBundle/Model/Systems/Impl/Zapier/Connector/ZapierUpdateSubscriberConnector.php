@@ -90,6 +90,7 @@ class ZapierUpdateSubscriberConnector implements ConnectorInterface, LoggerAware
         $systemInstall = $this->systemInstallRepository->getSystemInstallFromHeaders($dto->getHeaders());
         $sett          = $systemInstall->getSettings();
         if (empty($sett[ZapierSystem::UPDATE_WEBHOOK_URL])) {
+            $this->logError(500, $this->system, $systemInstall);
             throw new ConnectorException('Missing update webhook url', ConnectorException::INVALID_SETTING);
         }
 
