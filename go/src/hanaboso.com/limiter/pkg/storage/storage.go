@@ -14,8 +14,8 @@ type CheckerSaver interface {
 }
 
 type Checker interface {
-	// Check returns true if message can be processed
-	Check(key string, time int, val int) (bool, error)
+	// CanHandle returns true if message can be processed
+	CanHandle(key string, time int, val int) (bool, error)
 }
 
 type Saver interface {

@@ -42,7 +42,7 @@ func (s *Mongo) reconnect() {
 }
 
 // Check just calls Exists method
-func (s *Mongo) Check(key string, time int, value int) (bool, error) {
+func (s *Mongo) CanHandle(key string, time int, value int) (bool, error) {
 	return s.Exists(key)
 }
 

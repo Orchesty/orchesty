@@ -10,14 +10,14 @@ import (
 type checkerSaverMock struct {}
 func (db *checkerSaverMock) Exists(key string) (bool, error) {
 	if key == "when-not-exists" {
-		return false, nil
+		return true, nil
 	}
 	if key == "on-error" {
-		return false, fmt.Errorf("some error")
+		return true, fmt.Errorf("some error")
 	}
-	return true, nil
+	return false, nil
 }
-func (db *checkerSaverMock) Check(key string, time int, value int) (bool, error) {
+func (db *checkerSaverMock) CanHandle(key string, time int, value int) (bool, error) {
 	return db.Exists(key)
 }
 func (db *checkerSaverMock) Save(m *storage.Message) (string, error) {
