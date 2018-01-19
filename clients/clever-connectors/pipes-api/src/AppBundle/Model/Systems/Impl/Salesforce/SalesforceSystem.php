@@ -17,6 +17,8 @@ use CleverConnectors\AppBundle\Model\CMEvents\CMEventSystemInterface;
 use CleverConnectors\AppBundle\Model\CMEvents\Traits\CMEventSystemTrait;
 use CleverConnectors\AppBundle\Model\Form\Field;
 use CleverConnectors\AppBundle\Model\Form\Form;
+use CleverConnectors\AppBundle\Model\Limits\SystemLimitDto;
+use CleverConnectors\AppBundle\Model\Limits\SystemLimitInterface;
 use CleverConnectors\AppBundle\Model\Requester\RequesterInterface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\OAuth2Interface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\Traits\AuthorizationTrait;
@@ -24,23 +26,26 @@ use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Traits\SystemTrait;
 use CleverConnectors\AppBundle\Utils\AuthorizationUtils;
 use CleverConnectors\AppBundle\Utils\TopologyNameUtils;
+use DateTime;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Authorization\Provider\Dto\OAuth2Dto;
 use Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Class SalesforceSystem
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Salesforce
  */
-class SalesforceSystem implements OAuth2Interface, CMEventSystemInterface
+class SalesforceSystem implements OAuth2Interface, CMEventSystemInterface, SystemLimitInterface
 {
 
     use SystemTrait;
     use CMEventSystemTrait;
     use AuthorizationTrait;
 
+    private const LIMIT_TIME    = 86400;
     private const CLIENT_ID     = 'client_id';
     private const CLIENT_SECRET = 'client_secret';
     private const AUTHORIZE_URL = 'https://login.salesforce.com/services/oauth2/authorize';
@@ -54,13 +59,21 @@ class SalesforceSystem implements OAuth2Interface, CMEventSystemInterface
     private $provider;
 
     /**
+     * @var ContainerInterface
+     */
+    private $container;
+
+    /**
      * SalesforceSystem constructor.
      *
-     * @param OAuth2Provider $provider
+     * @param OAuth2Provider     $provider
+     * @param ContainerInterface $container
      */
-    public function __construct(OAuth2Provider $provider)
+    public function __construct(OAuth2Provider $provider, ContainerInterface $container)
     {
-        $this->provider = $provider;
+        $this->provider  = $provider;
+        $this->container = $container;
+
         $this->addCMEvent(new CMEventObject('', SystemInstall::EVENT_CREATE, ''));
         $this->addCMEvent(new CMEventObject(CleverCustomKeysEnum::UNSUBSCRIBE, SystemInstall::EVENT_UNSUBSCRIBE, ''));
         $this->addCMEvent(new CMEventObject(CleverCustomKeysEnum::HARD_BOUNCE, SystemInstall::EVENT_HARD_BOUNCE, ''));
@@ -137,6 +150,8 @@ class SalesforceSystem implements OAuth2Interface, CMEventSystemInterface
 
     /**
      * @param SystemInstall $systemInstall
+     *
+     * @throws SystemException
      */
     public function authorize(SystemInstall $systemInstall): void
     {
@@ -149,6 +164,7 @@ class SalesforceSystem implements OAuth2Interface, CMEventSystemInterface
      * @param array         $data
      *
      * @return SystemInstall
+     * @throws SystemException
      */
     public function saveToken(SystemInstall $systemInstall, array $data): SystemInstall
     {
@@ -163,6 +179,7 @@ class SalesforceSystem implements OAuth2Interface, CMEventSystemInterface
      * @param SystemInstall $systemInstall
      *
      * @return SystemInstall
+     * @throws SystemException
      */
     public function refreshToken(SystemInstall $systemInstall): SystemInstall
     {
@@ -193,6 +210,55 @@ class SalesforceSystem implements OAuth2Interface, CMEventSystemInterface
         $dto->setHeaders(array_merge($headers, $dto->getHeaders()));
 
         return $dto;
+    }
+
+    /**
+     * @param SystemInstall $systemInstall
+     *
+     * @return RequesterInterface|null ?RequesterInterface
+     */
+    public function getCMEventRequester(SystemInstall $systemInstall): ?RequesterInterface
+    {
+        return NULL;
+    }
+
+    /**
+     * @param SystemInstall $systemInstall
+     *
+     * @return SystemLimitDto|null
+     */
+    public function getLimit(SystemInstall $systemInstall): ?SystemLimitDto
+    {
+        $settings = $systemInstall->getSettings();
+        if (array_key_exists(SystemInstall::SYSTEM_LIMITS, $settings)) {
+
+            return new SystemLimitDto(
+                $systemInstall,
+                SystemLimitDto::LIMIT_FOR_USER,
+                self::LIMIT_TIME,
+                $settings[SystemInstall::SYSTEM_LIMITS],
+                $settings[SystemInstall::SYSTEM_LIMIT_UPDATE] ?? NULL
+            );
+        }
+
+        return NULL;
+    }
+
+    /**
+     * @param SystemInstall $systemInstall
+     * @param array         $data
+     *
+     * @return SystemInstall
+     */
+    public function saveLimit(SystemInstall $systemInstall, array $data): SystemInstall
+    {
+        // todo
+        $this->setSettings($systemInstall, [
+            SystemInstall::SYSTEM_LIMITS       => $limit,
+            SystemInstall::SYSTEM_LIMIT_UPDATE => new DateTime(),
+        ]);
+
+        return $systemInstall;
     }
 
     /**
@@ -288,16 +354,6 @@ class SalesforceSystem implements OAuth2Interface, CMEventSystemInterface
         $dto->setCustomAppDependencies($systemInstall->getUser(), $systemInstall->getSystem());
 
         return $dto;
-    }
-
-    /**
-     * @param SystemInstall $systemInstall
-     *
-     * @return RequesterInterface|null ?RequesterInterface
-     */
-    public function getCMEventRequester(SystemInstall $systemInstall): ?RequesterInterface
-    {
-        return NULL;
     }
 
 }
