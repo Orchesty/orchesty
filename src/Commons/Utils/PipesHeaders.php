@@ -37,6 +37,9 @@ class PipesHeaders
     public const REPEAT_MAX_HOPS     = "repeat-max-hops";
     public const REPEAT_HOPS         = "repeat-hops";
 
+    // --- MicroTimestamp because Bunny
+    public const TIMESTAMP = "published-timestamp";
+
     private const WHITE_LIST = ['content-type'];
 
     /**

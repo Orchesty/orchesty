@@ -160,7 +160,7 @@ final class StartingPointTest extends TestCase
         $startingPoint = new StartingPoint($this->bunnyManager, $this->curlManager);
         $headers       = $startingPoint->createHeaders($topology);
 
-        $this->assertCount(8, $headers->getHeaders());
+        $this->assertCount(9, $headers->getHeaders());
         $this->assertArrayHasKey(PipesHeaders::PF_PREFIX . 'process-id', $headers->getHeaders());
         $this->assertArrayHasKey(PipesHeaders::PF_PREFIX . 'parent-id', $headers->getHeaders());
         $this->assertArrayHasKey(PipesHeaders::PF_PREFIX . 'correlation-id', $headers->getHeaders());
@@ -169,6 +169,7 @@ final class StartingPointTest extends TestCase
         $this->assertArrayHasKey(PipesHeaders::PF_PREFIX . 'topology-name', $headers->getHeaders());
         $this->assertArrayHasKey('content-type', $headers->getHeaders());
         $this->assertArrayHasKey('timestamp', $headers->getHeaders());
+        $this->assertArrayHasKey(PipesHeaders::PF_PREFIX . 'published-timestamp', $headers->getHeaders());
     }
 
     /**
