@@ -2,8 +2,6 @@ parameters:
     logger_handler: syslog
     mongo_host: mongo
 
-    metrics.measurement: 'pipes_monolith_fpm'
-
     docker.connection.settings:
         remote_socket: 'unix:///var/run/docker.sock'
 
