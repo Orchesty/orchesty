@@ -68,12 +68,14 @@ class SystemMetricsListener implements EventSubscriberInterface, LoggerAwareInte
     public function onKernelRequest(GetResponseEvent $event): void
     {
         try {
-            if (!$this->isPipesRequest($event->getRequest())) {
+            $request = $event->getRequest();
+            $this->logger->info('onKernelRequest', ['Request' => json_encode($request)]);
+            if (!$this->isPipesRequest($request)) {
                 return;
             }
 
             $metricsData = CurlMetricUtils::getCurrentMetrics();
-            $event->getRequest()->attributes->add([self::METRICS_ATTRIBUTES_KEY => $metricsData]);
+            $request->attributes->add([self::METRICS_ATTRIBUTES_KEY => $metricsData]);
         } catch (Exception $e) {
             $this->logger->error('Metrics listener onKernelRequest exception', ['exception' => $e]);
         }
@@ -84,8 +86,10 @@ class SystemMetricsListener implements EventSubscriberInterface, LoggerAwareInte
      */
     public function onKernelTerminate(PostResponseEvent $event): void
     {
+
         try {
             $request = $event->getRequest();
+            $this->logger->info('onKernelTerminate', ['Request' => json_encode($request)]);
 
             if (!$this->isPipesRequest($request)) {
                 return;
@@ -118,6 +122,8 @@ class SystemMetricsListener implements EventSubscriberInterface, LoggerAwareInte
     {
         $startMetrics = $request->attributes->get(self::METRICS_ATTRIBUTES_KEY);
         $times        = CurlMetricUtils::getTimes($startMetrics);
+
+        $this->logger->debug('mtrics Send');
 
         $this->sender->send(
             [
@@ -153,7 +159,8 @@ class SystemMetricsListener implements EventSubscriberInterface, LoggerAwareInte
         $nodeIdHeader        = PipesHeaders::createKey(PipesHeaders::NODE_ID);
 
         if (
-            $request->headers->has($topologyIdHeader) && $request->headers->has($correlationIdHeader)
+            $request->headers->has($topologyIdHeader)
+            && $request->headers->has($correlationIdHeader)
             && $request->headers->has($nodeIdHeader)
         ) {
             return TRUE;
