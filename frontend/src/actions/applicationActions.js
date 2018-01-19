@@ -1,4 +1,5 @@
 import * as types from 'rootApp/actionTypes';
+import config from 'rootApp/config';
 
 export function toggleMainSubMenu(id){
   return {
@@ -21,6 +22,10 @@ export function setPageData(data){
 }
 
 export function selectPage(key, args = null, data = null){
+  const page = config.pages[key];
+  if (page && page.defaultArgs){
+    args = Object.assign({}, page.defaultArgs, args);
+  }
   return {
     type: types.SELECT_PAGE,
     key,
