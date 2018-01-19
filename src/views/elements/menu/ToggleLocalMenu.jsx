@@ -39,7 +39,7 @@ class ToggleLocalMenu extends React.Component {
     const {right, items} = this.props;
     return (
       <div ref={self => {this._self = self}}  className={'open' + (right ? ' pull-right' : '')}>
-        <LocalMenu items={items} right={right} onAction={this._close}></LocalMenu>
+        <LocalMenu items={items} right={right} onAction={this._close} />
       </div>
     );
   }

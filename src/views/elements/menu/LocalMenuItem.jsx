@@ -18,7 +18,8 @@ class LocalMenuItem extends React.Component {
   }
 
   render() {
-    return <li><a href="" onClick={this.makeAction.bind(this)}>{this.props.item.caption}</a></li>
+    const {item} = this.props;
+    return <li className={item.disabled ? 'disabled' : ''}><a href="#" onClick={!item.disabled ? this.makeAction.bind(this) : null}>{item.caption}</a></li>
   }
 }
 
