@@ -37,7 +37,7 @@ func (mm *mongoMock) GetDistinctFirstItems() (map[string]*Message, error) {
 }
 
 func TestCachedMongoCountingWhenNotPreviouslyInDb(t *testing.T) {
-	s := NewCachedMongo(&mongoMock{})
+	s := NewPredictiveCachedStorage(&mongoMock{})
 
 	ex, _ := s.Exists("not-in-db")
 	assert.False(t, ex)
@@ -67,7 +67,7 @@ func TestCachedMongoCountingWhenNotPreviouslyInDb(t *testing.T) {
 }
 
 func TestCachedMongoCountingWhenAlreadyInDb(t *testing.T) {
-	s := NewCachedMongo(&mongoMock{})
+	s := NewPredictiveCachedStorage(&mongoMock{})
 
 	ex, _ := s.Exists("was-in-db")
 	assert.True(t, ex)

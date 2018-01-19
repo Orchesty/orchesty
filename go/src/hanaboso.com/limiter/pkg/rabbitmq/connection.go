@@ -16,6 +16,7 @@ type Connection interface {
 	CreateChannel() int
 	GetChannel(int) (ch *amqp.Channel)
 	GetRestartChan() (chan bool)
+	PurgeQueue(Queue)
 }
 
 type connection struct {
@@ -32,6 +33,13 @@ type connection struct {
 
 func (c *connection) AddQueue(q Queue) {
 	c.queues = append(c.queues, q)
+}
+
+func (c *connection) PurgeQueue(q Queue) {
+	ch, _ := c.conn.Channel()
+	defer ch.Close()
+
+	ch.QueuePurge(q.Name, true)
 }
 
 func (c *connection) AddExchange(e Exchange) {

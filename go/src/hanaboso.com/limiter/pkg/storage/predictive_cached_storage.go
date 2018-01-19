@@ -10,7 +10,7 @@ type CachedStorage struct {
 }
 
 // Returns the pointer to new created mongo storage instance
-func NewCachedMongo(db Storage) (*CachedStorage) {
+func NewPredictiveCachedStorage(db Storage) (*CachedStorage) {
 	return &CachedStorage{db, make(map[string]int, 0)}
 }
 

@@ -17,7 +17,7 @@ import (
 	"hanaboso.com/utils/env"
 )
 
-const outputQueue = "limiter-test-output"
+const outputQueue = "limiter.test_output"
 
 func TestLimiterApp(t *testing.T) {
 	stopTest := make(chan bool, 1)
@@ -44,13 +44,13 @@ func setTestEnv() {
 	os.Setenv("RABBITMQ_PORT", "5672")
 	os.Setenv("RABBITMQ_USER", "guest")
 	os.Setenv("RABBITMQ_PASS", "guest")
-	os.Setenv("RABBITMQ_INPUT_QUEUE", "limiter_input_test")
+	os.Setenv("RABBITMQ_INPUT_QUEUE", "limiter.test_input")
 
 	os.Setenv("LIMITER_PORT", "3030")
 }
 
 func timeoutExit(t *testing.T, stopTest chan bool) {
-	time.Sleep(time.Second * 5)
+	time.Sleep(time.Second * 500)
 	assert.Fail(t, "Test exceeded max permitted duration limit")
 	stopTest <- true
 }
@@ -102,10 +102,16 @@ func connectRemotes() (rabbitmq.Connection, *storage.Mongo) {
 	rabbitPort, _ := strconv.Atoi(os.Getenv("RABBITMQ_PORT"))
 	conn := rabbitmq.NewConnection(os.Getenv("RABBITMQ_HOST"), rabbitPort, os.Getenv("RABBITMQ_USER"), os.Getenv("RABBITMQ_PASS"))
 	conn.Connect()
+
+	inQueue := rabbitmq.Queue{Name: os.Getenv("RABBITMQ_INPUT_QUEUE")}
+	conn.PurgeQueue(inQueue)
+
+	outQueue := rabbitmq.Queue{Name: outputQueue}
+	outQueue.AddBinding(rabbitmq.Binding{Exchange: "limiter-exchange", RoutingKey: outputQueue})
+	conn.AddQueue(outQueue)
 	conn.AddExchange(rabbitmq.Exchange{Name: "limiter-exchange", Type: "direct"})
-	q := rabbitmq.Queue{Name: outputQueue}
-	q.AddBinding(rabbitmq.Binding{Exchange: "limiter-exchange", RoutingKey: outputQueue})
-	conn.AddQueue(q)
+	conn.PurgeQueue(outQueue)
+
 	conn.Setup()
 
 	// Clean database before each test

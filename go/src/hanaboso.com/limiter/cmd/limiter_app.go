@@ -14,35 +14,12 @@ import (
 
 // main runs the limiter program
 func main() {
-	// connects to mongodb
-	db := storage.NewMongo(
-		env.GetEnv("MONGO_HOST", "127.0.0.10"),
-		env.GetEnv("MONGO_DB", "limiter"),
-		env.GetEnv("MONGO_COLLECTION", "messages"),
-	)
-	db.Connect()
+	store := prepareStorage()
+	consumer, publisher := prepareRabbit()
 
-	rabbitInput := env.GetEnv("RABBITMQ_INPUT_QUEUE", "pipes.limiter")
-	rabbitPort, _ := strconv.Atoi(env.GetEnv("RABBITMQ_PORT", "5672"))
-	conn := rabbitmq.NewConnection(
-		env.GetEnv("RABBITMQ_HOST", "127.0.0.10"),
-		rabbitPort,
-		env.GetEnv("RABBITMQ_USER", "guest"),
-		env.GetEnv("RABBITMQ_PASS", "guest"),
-	)
-
-	// Input queue
-	conn.AddQueue(rabbitmq.Queue{Name: rabbitInput})
-	conn.Connect()
-	conn.Setup()
-
-	consumer := rabbitmq.NewConsumer(conn, rabbitInput)
-	publisher := rabbitmq.NewPublisher(conn, "")
 	timerChan := make(chan *storage.Message)
-	mt := limiter.NewMessageTimer(db, publisher, timerChan)
-
-	// create limiter
-	lim := limiter.NewLimiter(db, consumer, mt, timerChan)
+	mt := limiter.NewMessageTimer(store, publisher, timerChan)
+	lim := limiter.NewLimiter(store, consumer, mt, timerChan)
 
 	// starts the tcp server
 	tcpServer := limiter.NewTcpServer(lim)
@@ -52,6 +29,37 @@ func main() {
 	lim.Start()
 
 	gracefulShutdown(tcpServer)
+}
+
+func prepareStorage() storage.Storage {
+	db := storage.NewMongo(
+		env.GetEnv("MONGO_HOST", "mongodb"),
+		env.GetEnv("MONGO_DB", "limiter"),
+		env.GetEnv("MONGO_COLLECTION", "messages"),
+	)
+	db.Connect()
+	return storage.NewPredictiveCachedStorage(db)
+}
+
+func prepareRabbit() (rabbitmq.Consumer, rabbitmq.Publisher) {
+	inputQueue := env.GetEnv("RABBITMQ_INPUT_QUEUE", "pipes.limiter")
+	rabbitPort, _ := strconv.Atoi(env.GetEnv("RABBITMQ_PORT", "5672"))
+	conn := rabbitmq.NewConnection(
+		env.GetEnv("RABBITMQ_HOST", "rabbitmq"),
+		rabbitPort,
+		env.GetEnv("RABBITMQ_USER", "guest"),
+		env.GetEnv("RABBITMQ_PASS", "guest"),
+	)
+
+	// Input queue
+	conn.AddQueue(rabbitmq.Queue{Name: inputQueue})
+	conn.Connect()
+	conn.Setup()
+
+	consumer := rabbitmq.NewConsumer(conn, inputQueue)
+	publisher := rabbitmq.NewPublisher(conn, "")
+
+	return consumer, publisher
 }
 
 // gracefulShutdown handles SIGINT and SIGTERM signal to stop the app gracefully
