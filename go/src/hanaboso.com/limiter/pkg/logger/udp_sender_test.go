@@ -35,6 +35,7 @@ func TestUpdSender_Send(t *testing.T) {
 			}
 
 			quitTest <- true
+			break
 		}
 	}()
 
