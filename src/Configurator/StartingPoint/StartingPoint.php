@@ -178,7 +178,10 @@ class StartingPoint implements LoggerAwareInterface
             ->addHeader(PipesHeaders::createKey(PipesHeaders::TOPOLOGY_NAME), $topology->getName())
             ->addHeader('content-type', $requestHeaders['content-type'][0] ?? 'application/json')
             ->addHeader('timestamp', new DateTime('now', new DateTimeZone('UTC')))
-            ->addHeader(PipesHeaders::createKey(PipesHeaders::TIMESTAMP), SystemMetrics::getCurrentTimestamp());
+            ->addHeader(
+                PipesHeaders::createKey(PipesHeaders::TIMESTAMP),
+                (string) SystemMetrics::getCurrentTimestamp()
+            );
 
         foreach (PipesHeaders::clear($requestHeaders) as $key => $value) {
             $headers->addHeader($key, (string) $value[0]);

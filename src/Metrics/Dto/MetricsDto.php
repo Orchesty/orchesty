@@ -35,7 +35,7 @@ final class MetricsDto
     /**
      * @var string
      */
-    private $total = 'n/a';
+    private $total = '0';
 
     /**
      * @param mixed $min
