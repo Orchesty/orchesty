@@ -105,6 +105,7 @@ class SystemLimitDto
             PipesHeaders::createKey(self::LIMIT_KEY_HEADER)   => $this->limitKey,
             PipesHeaders::createKey(self::LIMIT_TIME_HEADER)  => $this->limitTime,
             PipesHeaders::createKey(self::LIMIT_VALUE_HEADER) => $this->limitValue,
+            'limit-last-update'                               => $this->lastUpdate,
         ];
     }
 
