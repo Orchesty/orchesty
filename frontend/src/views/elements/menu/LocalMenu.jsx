@@ -16,7 +16,7 @@ class LocalMenu extends React.Component {
 
   render() {
     const {items, right} = this.props;
-    const menuItems = items.map((item, index) => <LocalMenuItem onAction={this.actionMade.bind(this)} item={item} key={index}></LocalMenuItem>);
+    const menuItems = items.map((item, index) => <LocalMenuItem onAction={this.actionMade.bind(this)} item={item} key={index} />);
     const alignClassName = right ? ' dropdown-menu-right' : '';
     return (
       <ul className={`dropdown-menu${alignClassName}`}>
