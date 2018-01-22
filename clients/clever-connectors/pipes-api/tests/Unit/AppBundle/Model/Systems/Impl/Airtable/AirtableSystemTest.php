@@ -3,7 +3,9 @@
 namespace Tests\Unit\AppBundle\Model\Systems\Impl\Airtable;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Model\Limits\SystemLimitDto;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Airtable\AirtableSystem;
+use Hanaboso\PipesFramework\Commons\Utils\PipesHeaders;
 use Tests\KernelTestCaseAbstract;
 
 /**
@@ -65,6 +67,75 @@ class AirtableSystemTest extends KernelTestCaseAbstract
         $res = $sys->saveCustomForm($systemInstall, $data);
 
         self::assertEquals(2, count($res[SystemInstall::FORMS]));
+    }
+
+    /**
+     *
+     */
+    public function testGetLimitDefault(): void
+    {
+        $system        = new AirtableSystem();
+        $systemInstall = new SystemInstall();
+        $systemInstall
+            ->setUser('user123')
+            ->setSystem('sys123')
+            ->setSettings([
+                'instance_url' => 'systemUrl',
+                'access_token' => '123',
+            ]);
+
+        $systemLimit = $system->getLimit($systemInstall);
+
+        $this->assertEquals([
+            PipesHeaders::createKey(SystemLimitDto::LIMIT_KEY_HEADER)   => 'user123-sys123',
+            PipesHeaders::createKey(SystemLimitDto::LIMIT_TIME_HEADER)  => 1,
+            PipesHeaders::createKey(SystemLimitDto::LIMIT_VALUE_HEADER) => 5,
+            SystemLimitDto::LIMIT_LAST_UPDATE                           => NULL,
+        ], $systemLimit->toArray());
+    }
+
+    /**
+     *
+     */
+    public function testGetLimit(): void
+    {
+        $system        = new AirtableSystem();
+        $systemInstall = new SystemInstall();
+        $systemInstall
+            ->setUser('user123')
+            ->setSystem('sys123')
+            ->setSettings([
+                'instance_url'                    => 'systemUrl',
+                'access_token'                    => '123',
+                SystemInstall::SYSTEM_LIMIT_VALUE => 10,
+            ]);
+
+        $systemLimit = $system->getLimit($systemInstall);
+
+        $this->assertEquals([
+            PipesHeaders::createKey(SystemLimitDto::LIMIT_KEY_HEADER)   => 'user123-sys123',
+            PipesHeaders::createKey(SystemLimitDto::LIMIT_TIME_HEADER)  => 1,
+            PipesHeaders::createKey(SystemLimitDto::LIMIT_VALUE_HEADER) => 10,
+            SystemLimitDto::LIMIT_LAST_UPDATE                           => NULL,
+        ], $systemLimit->toArray());
+    }
+
+    /**
+     *
+     */
+    public function testSaveLimit(): void
+    {
+        $system        = new AirtableSystem();
+        $systemInstall = new SystemInstall();
+        $systemInstall
+            ->setSettings([
+                SystemInstall::SYSTEM_LIMIT_VALUE => 10,
+            ]);
+
+        $systemInstall = $system->saveLimit($systemInstall, []);
+
+        $this->assertArrayHasKey(SystemInstall::SYSTEM_LIMIT_VALUE, $systemInstall->getSettings());
+        $this->assertEquals(10, $systemInstall->getSettings()[SystemInstall::SYSTEM_LIMIT_VALUE]);
     }
 
 }
