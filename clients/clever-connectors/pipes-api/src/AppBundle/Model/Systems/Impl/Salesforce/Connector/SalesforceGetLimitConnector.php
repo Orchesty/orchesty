@@ -8,6 +8,8 @@ use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Salesforce\SalesforceSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use CleverConnectors\AppBundle\Traits\LoggerTrait;
+use Clue\React\Buzz\Message\ResponseException;
+use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
@@ -18,6 +20,7 @@ use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
 use Nette\Utils\Json;
+use Nette\Utils\Strings;
 use Psr\Log\LoggerAwareInterface;
 
 /**
@@ -48,7 +51,7 @@ class SalesforceGetLimitConnector implements ConnectorInterface, LoggerAwareInte
     private $dm;
 
     /**
-     * @var SystemInstallRepository
+     * @var SystemInstallRepository|ObjectRepository
      */
     private $systemInstallRepository;
 
@@ -114,6 +117,16 @@ class SalesforceGetLimitConnector implements ConnectorInterface, LoggerAwareInte
         $this->dm->flush();
 
         return $dto;
+    }
+
+    /**
+     * @param CurlException|ResponseException $e
+     *
+     * @return bool
+     */
+    protected function limitReached($e): bool
+    {
+        return Strings::contains($e->getResponse()->getBody()->getContents(), 'REQUEST_LIMIT_EXCEEDED');
     }
 
     /**

@@ -337,6 +337,7 @@ class SalesforceSystem implements OAuth2Interface, CMEventSystemInterface, Syste
      * @param SystemInstall $systemInstall
      *
      * @return OAuth2Dto
+     * @throws SystemException
      */
     private function createDto(SystemInstall $systemInstall): OAuth2Dto
     {
@@ -351,9 +352,14 @@ class SalesforceSystem implements OAuth2Interface, CMEventSystemInterface, Syste
         }
 
         $redirectUrl = AuthorizationUtils::generateUrl();
+        $dto         = new OAuth2Dto(
+            $sett[self::CLIENT_ID],
+            $sett[self::CLIENT_SECRET],
+            $redirectUrl,
+            self::AUTHORIZE_URL,
+            self::TOKEN_URL
+        );
 
-        $dto = new OAuth2Dto($sett[self::CLIENT_ID], $sett[self::CLIENT_SECRET], $redirectUrl, self::AUTHORIZE_URL,
-            self::TOKEN_URL);
         $dto->setCustomAppDependencies($systemInstall->getUser(), $systemInstall->getSystem());
 
         return $dto;

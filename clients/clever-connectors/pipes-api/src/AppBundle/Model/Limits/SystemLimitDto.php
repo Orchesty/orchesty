@@ -121,7 +121,7 @@ class SystemLimitDto
         if ($limitType === self::LIMIT_FOR_USER) {
             $key = sprintf('%s-%s', $systemInstall->getUser(), $systemInstall->getSystem());
         } else {
-            $key = sprintf('%s', $systemInstall->getSystem());
+            $key = $systemInstall->getSystem();
         }
 
         return $key;
