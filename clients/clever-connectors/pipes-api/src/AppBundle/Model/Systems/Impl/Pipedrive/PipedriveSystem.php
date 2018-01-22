@@ -5,11 +5,14 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\Pipedrive;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\CleverCustomKeysEnum;
 use CleverConnectors\AppBundle\Enum\SystemTypeEnum;
+use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\CMEvents\CMEventObject;
 use CleverConnectors\AppBundle\Model\CMEvents\CMEventSystemInterface;
 use CleverConnectors\AppBundle\Model\CMEvents\Traits\CMEventSystemTrait;
 use CleverConnectors\AppBundle\Model\Form\Field;
 use CleverConnectors\AppBundle\Model\Form\Form;
+use CleverConnectors\AppBundle\Model\Limits\SystemLimitDto;
+use CleverConnectors\AppBundle\Model\Limits\SystemLimitInterface;
 use CleverConnectors\AppBundle\Model\Requester\RequesterInterface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\AuthorizationInterface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\Traits\AuthorizationTrait;
@@ -22,6 +25,7 @@ use CleverConnectors\AppBundle\Model\Webhook\Traits\WebhookSystemTrait;
 use CleverConnectors\AppBundle\Model\Webhook\WebhookSubscribes;
 use CleverConnectors\AppBundle\Model\Webhook\WebhookSystemInterface;
 use CleverConnectors\AppBundle\Utils\TopologyNameUtils;
+use DateTime;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
@@ -31,7 +35,7 @@ use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Pipedrive
  */
-class PipedriveSystem implements WebhookSystemInterface, AuthorizationInterface, CMEventSystemInterface
+class PipedriveSystem implements WebhookSystemInterface, AuthorizationInterface, CMEventSystemInterface, SystemLimitInterface
 {
 
     use SystemTrait;
@@ -39,7 +43,9 @@ class PipedriveSystem implements WebhookSystemInterface, AuthorizationInterface,
     use WebhookSystemTrait;
     use CMEventSystemTrait;
 
-    public const API_TOKEN = 'api_token';
+    public const API_TOKEN          = 'api_token';
+    public const HEADER_LIMIT_TIME  = 'X-RateLimit-Reset';
+    public const HEADER_LIMIT_VALUE = 'X-RateLimit-Limit';
 
     private const CUSTOM_FIELDS_URL = 'https://api.pipedrive.com/v1/personFields?api_token=%s';
     private const BASE_URL          = 'https://api.pipedrive.com/v1/';
@@ -240,6 +246,51 @@ class PipedriveSystem implements WebhookSystemInterface, AuthorizationInterface,
     public function getCMEventRequester(SystemInstall $systemInstall): RequesterInterface
     {
         return new PipedriveCMEventRequester($systemInstall, $this->getHeaders(), $this->dm);
+    }
+
+    /**
+     * @param SystemInstall $systemInstall
+     *
+     * @return SystemLimitDto
+     */
+    public function getLimit(SystemInstall $systemInstall): SystemLimitDto
+    {
+        $sett = $systemInstall->getSettings();
+
+        return new SystemLimitDto(
+            $systemInstall,
+            SystemLimitDto::LIMIT_FOR_USER,
+            intval($sett[SystemInstall::SYSTEM_LIMITS][self::HEADER_LIMIT_TIME]),
+            intval($sett[SystemInstall::SYSTEM_LIMITS][self::HEADER_LIMIT_VALUE]),
+            $sett[SystemInstall::SYSTEM_LIMITS][SystemInstall::SYSTEM_LIMIT_UPDATE]
+        );
+    }
+
+    /**
+     * @param SystemInstall $systemInstall
+     * @param array         $data
+     *
+     * @return SystemInstall
+     * @throws CleverConnectorsException
+     */
+    public function saveLimit(SystemInstall $systemInstall, array $data): SystemInstall
+    {
+        $sett = $systemInstall->getSettings();
+
+        if (!array_key_exists(self::HEADER_LIMIT_TIME, $data)
+            || !array_key_exists(self::HEADER_LIMIT_VALUE, $data)
+        ) {
+            throw new CleverConnectorsException(
+                'Missing limit headers in PipeDrive response',
+                CleverConnectorsException::MISSING_DATA
+            );
+        }
+
+        $sett[SystemInstall::SYSTEM_LIMITS][self::HEADER_LIMIT_TIME]            = $data[self::HEADER_LIMIT_TIME][0];
+        $sett[SystemInstall::SYSTEM_LIMITS][self::HEADER_LIMIT_VALUE]           = $data[self::HEADER_LIMIT_VALUE][0];
+        $sett[SystemInstall::SYSTEM_LIMITS][SystemInstall::SYSTEM_LIMIT_UPDATE] = new DateTime();
+
+        return $systemInstall->setSettings($sett);
     }
 
     /**
