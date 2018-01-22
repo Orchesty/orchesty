@@ -16,20 +16,27 @@ const (
 
 // TestMongoMethods checks implementation of storage interface methods against real mongo instance
 func TestMongoMethods(t *testing.T) {
-	stopTest := make(chan bool, 1)
-	go timeoutExit(t, stopTest)
+	endTestCh := make(chan bool)
 
-	os.Setenv("MONGO_HOST", env.GetEnv("MONGO_HOST", "localhost"))
+	go func (stopMongoTest chan bool) {
+		time.Sleep(time.Second * 1)
+		stopMongoTest <- false
+	}(endTestCh)
 
-	go runTestCommandsInSeries(t, stopTest)
+	go runTestCommandsInSeries(t, endTestCh)
 
 	// wait for stopTest message
-	<-stopTest
+	result := <-endTestCh
+	if result == false {
+		assert.Fail(t, "Test timeout")
+	}
 }
 
-func runTestCommandsInSeries(t *testing.T, stopTest chan bool) {
+func runTestCommandsInSeries(t *testing.T, endTestCh chan bool) {
+	os.Setenv("MONGO_HOST", env.GetEnv("MONGO_HOST", "localhost"))
 	mongoHost := os.Getenv("MONGO_HOST")
 	m := NewMongo(mongoHost, mongoDb, mongoCollection)
+
 	m.Connect()
 	m.session.DB("test").C("messages_test").DropCollection()
 
@@ -111,11 +118,5 @@ func runTestCommandsInSeries(t *testing.T, stopTest chan bool) {
 	assert.Nil(t, err)
 	assert.Len(t, items, 1)
 
-	stopTest <- true
-}
-
-func timeoutExit(t *testing.T, stopTest chan bool) {
-	time.Sleep(time.Second * 1)
-	assert.Fail(t, "Test exceeded max permitted duration limit")
-	stopTest <- true
+	endTestCh <- true
 }

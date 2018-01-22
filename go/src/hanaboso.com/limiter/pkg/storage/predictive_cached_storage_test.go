@@ -41,6 +41,8 @@ func (mm *mongoMock) GetDistinctFirstItems() (map[string]*Message, error) {
 	return make(map[string]*Message, 0), nil
 }
 
+// TestPredictiveCachedStorageMongoEmptyDb tests keeping the cache items and it's tickers
+// calling save() and remove() should not influence the cached tickers
 func TestPredictiveCachedStorageMongoEmptyDb(t *testing.T) {
 	s := NewPredictiveCachedStorage(&mongoMock{})
 
@@ -51,6 +53,8 @@ func TestPredictiveCachedStorageMongoEmptyDb(t *testing.T) {
 		ReturnExchangeHeader:   "exchange",
 		ReturnRoutingKeyHeader: "routing-key",
 	}})
+
+	assert.False(t, s.hasCachedItem("not-in-db"))
 
 	can, _ := s.CanHandle("not-in-db", 1, 2)
 	assert.True(t, can)
@@ -64,31 +68,62 @@ func TestPredictiveCachedStorageMongoEmptyDb(t *testing.T) {
 	assert.False(t, can) // now this should be false
 	s.Save(msg)
 
+	assert.True(t, s.hasCachedItem("not-in-db"))
+
 	s.Remove("not-in-db", bson.NewObjectId())
 	s.Remove("not-in-db", bson.NewObjectId())
 	s.Remove("not-in-db", bson.NewObjectId())
 
-	can, _ = s.CanHandle("not-in-db", 1, 2)
-	assert.True(t, can)
-
-	can, _ = s.CanHandle("not-in-db", 1, 2)
-	assert.True(t, can)
+	assert.True(t, s.hasCachedItem("not-in-db"))
 
 	can, _ = s.CanHandle("not-in-db", 1, 2)
 	assert.False(t, can)
+
+	can, _ = s.CanHandle("not-in-db", 1, 2)
+	assert.False(t, can)
+
+	can, _ = s.CanHandle("not-in-db", 1, 2)
+	assert.False(t, can)
+
+	assert.True(t, s.hasCachedItem("not-in-db"))
+
+	// In 3s limit should be free again
+	time.Sleep(time.Millisecond * 3050)
+
+	assert.False(t, s.hasCachedItem("not-in-db"))
+
+	can, _ = s.CanHandle("not-in-db", 1, 2)
+	assert.True(t, can)
+	assert.True(t, s.hasCachedItem("not-in-db"))
 }
 
 func TestPredictiveCachedStorageMongoNonEmptyDb(t *testing.T) {
 	s := NewPredictiveCachedStorage(&mongoMock{})
 
+	assert.False(t, s.hasCachedItem("already-in-db"))
+
 	can, _ := s.CanHandle("already-in-db", 1, 2)
 	assert.False(t, can)
+	assert.True(t, s.hasCachedItem("already-in-db"))
 
+	// remove does not impact the cache
 	s.Remove("already-in-db", bson.NewObjectId())
 	s.Remove("already-in-db", bson.NewObjectId())
+
+	assert.True(t, s.hasCachedItem("already-in-db"))
 
 	can, _ = s.CanHandle("already-in-db", 1, 2)
-	assert.True(t, can)
+	assert.False(t, can)
+
+	can, _ = s.CanHandle("already-in-db", 1, 2)
+	assert.False(t, can)
+
+	assert.True(t, s.hasCachedItem("already-in-db"))
+
+	// In 3s limit should be free again
+	time.Sleep(time.Millisecond * 3050)
+
+	assert.False(t, s.hasCachedItem("already-in-db"))
 }
 
 func TestPredictiveCacheStorageItemTicker(t *testing.T) {
@@ -124,8 +159,4 @@ func TestPredictiveCacheStorageItemTicker(t *testing.T) {
 
 	num, _ := s.Count("key-a")
 	assert.Equal(t, 0, num)
-}
-
-func TestPredictiveCachedStorageMixingTickersWithSaveAndRemove(t *testing.T) {
-	assert.Fail(t, "TODO - test while mixing tickers with save/remove methods")
 }

@@ -17,6 +17,7 @@ type Mongo struct {
 
 func (s *Mongo) Connect() {
 	var err error
+	log.Println(fmt.Sprintf("Mongo db connecting to: %s", s.host))
 	s.session, err = mgo.Dial(s.host)
 
 	if err != nil {
