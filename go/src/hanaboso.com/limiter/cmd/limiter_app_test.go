@@ -34,11 +34,11 @@ func TestLimiterApp(t *testing.T) {
 }
 
 func setTestEnv() {
-	os.Setenv("MONGO_HOST", env.GetEnv("MONGO_HOST", "localhost"))
+	os.Setenv("MONGO_HOST", env.GetEnv("MONGO_HOST", "mongodb"))
 	os.Setenv("MONGO_DB", "limiter_test")
 	os.Setenv("MONGO_COLLECTION", "messages")
 
-	os.Setenv("RABBITMQ_HOST", env.GetEnv("RABBITMQ_HOST", "localhost"))
+	os.Setenv("RABBITMQ_HOST", env.GetEnv("RABBITMQ_HOST", "rabbitmq"))
 	os.Setenv("RABBITMQ_PORT", "5672")
 	os.Setenv("RABBITMQ_USER", "guest")
 	os.Setenv("RABBITMQ_PASS", "guest")

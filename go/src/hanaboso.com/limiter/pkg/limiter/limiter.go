@@ -4,7 +4,7 @@ import (
 	"hanaboso.com/limiter/pkg/storage"
 	"hanaboso.com/limiter/pkg/rabbitmq"
 	"github.com/streadway/amqp"
-	"log"
+	"hanaboso.com/limiter/pkg/logger"
 	"fmt"
 )
 
@@ -19,6 +19,7 @@ type limiter struct {
 	consumer  rabbitmq.Consumer
 	msgTimer  *MessageTimer
 	timerChan chan *storage.Message
+	logger    logger.Logger
 }
 
 // NewLimiter creates new limiter instance
@@ -27,8 +28,9 @@ func NewLimiter(
 	consumer rabbitmq.Consumer,
 	msgTimer *MessageTimer,
 	timerChan chan *storage.Message,
+	logger logger.Logger,
 ) (l *limiter) {
-	return &limiter{store, consumer, msgTimer, timerChan}
+	return &limiter{store, consumer, msgTimer, timerChan, logger}
 }
 
 // Start initializes the timers and starts consumption
@@ -36,14 +38,16 @@ func (l *limiter) Start() {
 	l.msgTimer.Init()
 	go l.consumer.Consume(func(msg <-chan amqp.Delivery) {
 		for m := range msg {
-			log.Println(m)
+			context := logger.CtxFromDelivery(m)
+			l.logger.Info("Received message from RabbitMQ", context)
 
 			msg, err := storage.NewMessage(&m)
 
 			if err != nil {
-				log.Println(fmt.Sprintf("Message error: %s", err))
+				context["error"] = err
+				l.logger.Error("Limiter create message error", context)
 			} else {
-				log.Println("Message accepted, key: ", msg.LimitKey)
+				l.logger.Info(fmt.Sprintf("Message accepted, key: %s", msg.LimitKey), context)
 				l.saveMessage(msg)
 			}
 

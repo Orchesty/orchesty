@@ -12,6 +12,9 @@ services:
     ports:
       - ${DEV_IP}:27017:27017
 
-  #limiter:
-    #image: dkr.hanaboso.net/pipes/pipes/limiter:dev
-    #command: limiter
+  limiter:
+    image: golang:latest
+    working_dir: /go/src/hanaboso.com/limiter
+    volumes:
+      - ../:/go/src/hanaboso.com
+    command: bash -c 'sleep infinity'

@@ -19,3 +19,8 @@ go-test:
 	# for mac users: $ sudo ifconfig lo0 alias 127.0.0.10 up
 	docker-compose up -d
 	RABBITMQ_HOST=127.0.0.10 MONGO_HOST=127.0.0.10 go test ./...
+
+ci-test:
+	docker-compose up -d --force-recreate
+	docker-compose exec limiter make install-deps
+	docker-compose exec limiter go test ./...

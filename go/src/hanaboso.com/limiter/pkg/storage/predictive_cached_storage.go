@@ -8,8 +8,9 @@ import (
 )
 
 type predictiveCachedStorage struct {
-	db    Storage
-	cache map[string]cacheItem
+	db     Storage
+	cache  map[string]cacheItem
+	logger logger.Logger
 }
 
 type cacheItem struct {
@@ -19,8 +20,8 @@ type cacheItem struct {
 }
 
 // Returns the pointer to new created mongo storage instance
-func NewPredictiveCachedStorage(db Storage, duration time.Duration) (*predictiveCachedStorage) {
-	c := predictiveCachedStorage{db, make(map[string]cacheItem, 100)}
+func NewPredictiveCachedStorage(db Storage, duration time.Duration, logger logger.Logger) (*predictiveCachedStorage) {
+	c := predictiveCachedStorage{db, make(map[string]cacheItem, 100), logger}
 	c.runCacheAutoClean(duration)
 
 	return &c
@@ -128,19 +129,18 @@ func (cm *predictiveCachedStorage) saveCachedItem(key string, item cacheItem) {
 func (cm *predictiveCachedStorage) runCacheAutoClean(duration time.Duration) {
 	cleanTick := time.NewTicker(duration)
 	go func() {
-		ctx := logger.NewEmptyContext()
 		for range cleanTick.C {
-			logger.GetLogger().Warning(fmt.Sprintf("Cleaning predictive cache %sx items...", len(cm.cache)), ctx)
+			cm.logger.Warning(fmt.Sprintf("Cleaning predictive cache %sx items...", len(cm.cache)), nil)
 			for k, item := range cm.cache {
 				if item.ticker != nil {
 					item.ticker.Stop()
-					logger.GetLogger().Info("Cleaning predictive cache - " + k, ctx)
+					cm.logger.Info("Cleaning predictive cache - "+k, nil)
 				} else {
-					logger.GetLogger().Warning("Cleaning predictive cache - " + k + " (no ticker)", ctx)
+					cm.logger.Warning("Cleaning predictive cache - "+k+" (no ticker)", nil)
 				}
 			}
 
-			logger.GetLogger().Warning("Cleaning predictive cache ended.", ctx)
+			cm.logger.Warning("Cleaning predictive cache ended.", nil)
 
 			cm.cache = make(map[string]cacheItem, 100)
 		}

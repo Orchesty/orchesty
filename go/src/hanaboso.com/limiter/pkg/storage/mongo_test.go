@@ -33,7 +33,7 @@ func TestMongoMethods(t *testing.T) {
 }
 
 func runTestCommandsInSeries(t *testing.T, endTestCh chan bool) {
-	os.Setenv("MONGO_HOST", env.GetEnv("MONGO_HOST", "localhost"))
+	os.Setenv("MONGO_HOST", env.GetEnv("MONGO_HOST", "mongodb"))
 	mongoHost := os.Getenv("MONGO_HOST")
 	m := NewMongo(mongoHost, mongoDb, mongoCollection)
 

@@ -10,7 +10,7 @@ type mockSender struct {
 	t *testing.T
 }
 
-func (m *mockSender) Send(data []byte) error {
+func (m *mockSender) Send(data []byte) {
 
 	var result = make(map[string]interface{})
 
@@ -27,8 +27,6 @@ func (m *mockSender) Send(data []byte) error {
 	assert.Contains(m.t, result, "notification_type")
 	assert.Equal(m.t, "test", result["notification_type"])
 	assert.Len(m.t, result, 6)
-
-	return nil
 }
 
 func TestLogger_Log(t *testing.T) {

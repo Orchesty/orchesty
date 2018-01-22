@@ -46,32 +46,32 @@ func (u *updSender) resolveHost(url string) error {
 	return nil
 }
 
-func (u *updSender) Send(data []byte) error {
+func (u *updSender) Send(data []byte) {
 
-	resErr := u.resolveHost(fmt.Sprintf("%s:%s", u.host, u.port))
+	go func() {
+		resErr := u.resolveHost(fmt.Sprintf("%s:%s", u.host, u.port))
 
-	if resErr != nil {
-		return resErr
-	}
+		if resErr != nil {
+			log.Println(fmt.Sprintf("Udp resolve host error: %s", resErr))
+		}
 
-	if u.conn == nil {
-		var err error
-		u.conn, err = net.DialUDP("udp", nil, u.addr)
+		if u.conn == nil {
+			var err error
+			u.conn, err = net.DialUDP("udp", nil, u.addr)
+
+			if err != nil {
+				log.Println(fmt.Sprintf("Udp sender coonection error: %s", err))
+			}
+		}
+
+		_, err := u.conn.Write(data)
 
 		if err != nil {
-			log.Println(fmt.Sprintf("Udp sender coonection error: %s", err))
-			return err
+			log.Println(fmt.Sprintf("Udp sender write error: %s", err))
 		}
-	}
 
-	_, err := u.conn.Write(data)
+	}()
 
-	if err != nil {
-		log.Println(fmt.Sprintf("Udp sender write error: %s", err))
-		return err
-	}
-
-	return nil
 }
 
 func NewUpdSender(host string, port string) Sender {

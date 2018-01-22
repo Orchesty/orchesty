@@ -22,7 +22,7 @@ func main() {
 
 	timerChan := make(chan *storage.Message)
 	mt := limiter.NewMessageTimer(store, publisher, timerChan)
-	lim := limiter.NewLimiter(store, consumer, mt, timerChan)
+	lim := limiter.NewLimiter(store, consumer, mt, timerChan, logger.GetLogger())
 
 	// starts the tcp server
 	tcpServer := limiter.NewTcpServer(lim)
@@ -41,7 +41,7 @@ func prepareStorage() storage.Storage {
 		env.GetEnv("MONGO_COLLECTION", "messages"),
 	)
 	db.Connect()
-	return storage.NewPredictiveCachedStorage(db, time.Hour * 24)
+	return storage.NewPredictiveCachedStorage(db, time.Hour * 24, logger.GetLogger())
 }
 
 func prepareRabbit() (rabbitmq.Consumer, rabbitmq.Publisher) {

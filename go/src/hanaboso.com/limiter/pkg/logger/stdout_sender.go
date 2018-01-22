@@ -7,9 +7,8 @@ import (
 type stdOutSender struct {
 }
 
-func (s *stdOutSender) Send(data []byte) error {
+func (s *stdOutSender) Send(data []byte) {
 	log.Println(string(data))
-	return nil
 }
 
 func NewStdOutSender() Sender {

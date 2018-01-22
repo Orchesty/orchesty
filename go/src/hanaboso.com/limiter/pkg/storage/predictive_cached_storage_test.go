@@ -6,6 +6,7 @@ import (
 	"github.com/streadway/amqp"
 	"github.com/stretchr/testify/assert"
 	"time"
+	"hanaboso.com/limiter/pkg/logger"
 )
 
 type mongoMock struct{}
@@ -44,7 +45,7 @@ func (mm *mongoMock) GetDistinctFirstItems() (map[string]*Message, error) {
 // TestPredictiveCachedStorage_MongoEmptyDb tests keeping the cache items and it's tickers
 // calling save() and remove() should not influence the cached tickers
 func TestPredictiveCachedStorage_MongoEmptyDb(t *testing.T) {
-	s := NewPredictiveCachedStorage(&mongoMock{}, time.Hour * time.Duration(24))
+	s := NewPredictiveCachedStorage(&mongoMock{}, time.Hour * time.Duration(24), logger.GetNullLogger())
 
 	msg, _ := NewMessage(&amqp.Delivery{Headers: amqp.Table{
 		LimitKeyHeader:         "not-in-db",
@@ -98,7 +99,7 @@ func TestPredictiveCachedStorage_MongoEmptyDb(t *testing.T) {
 }
 
 func TestPredictiveCachedStorage_MongoNonEmptyDb(t *testing.T) {
-	s := NewPredictiveCachedStorage(&mongoMock{}, time.Hour * 24)
+	s := NewPredictiveCachedStorage(&mongoMock{}, time.Hour * 24, logger.GetNullLogger())
 
 	assert.False(t, s.hasCachedItem("already-in-db"))
 
@@ -127,7 +128,7 @@ func TestPredictiveCachedStorage_MongoNonEmptyDb(t *testing.T) {
 }
 
 func TestPredictiveCacheStorage_ItemTicker(t *testing.T) {
-	s := NewPredictiveCachedStorage(&mongoMock{}, time.Hour * 24)
+	s := NewPredictiveCachedStorage(&mongoMock{}, time.Hour * 24, logger.GetNullLogger())
 
 	can, _ := s.CanHandle("key-A", 1, 2)
 	assert.True(t, can)
@@ -162,7 +163,7 @@ func TestPredictiveCacheStorage_ItemTicker(t *testing.T) {
 }
 
 func TestPredictiveCachedStorage_AutoClean(t *testing.T) {
-	s := NewPredictiveCachedStorage(&mongoMock{}, time.Second)
+	s := NewPredictiveCachedStorage(&mongoMock{}, time.Second, logger.GetNullLogger())
 
 	assert.False(t, s.hasCachedItem("not-in-db"))
 	assert.False(t, s.hasCachedItem("already-in-db"))

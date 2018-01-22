@@ -1,12 +1,19 @@
 package logger
 
-import "sync"
+import (
+	"sync"
+	"github.com/streadway/amqp"
+)
 
 // Context
 type Context map[string]interface{}
 
-func NewEmptyContext() Context {
-	return make(map[string]interface{}, 0)
+func CtxFromDelivery(m amqp.Delivery) Context {
+	return Context{"headers": m.Headers, "body": string(m.Body)}
+}
+
+func CtxFromPublishing(m amqp.Publishing) Context {
+	return Context{"headers": m.Headers, "body": string(m.Body)}
 }
 
 // Logger
@@ -25,7 +32,7 @@ type Formatter interface {
 
 // Sender
 type Sender interface {
-	Send(data []byte) error
+	Send(data []byte)
 }
 
 // Handler
@@ -39,6 +46,10 @@ type logger struct {
 }
 
 func (l *logger) Log(severity string, msg string, context Context) {
+
+	if context == nil {
+		context = Context{}
+	}
 
 	context["message"] = msg
 	context["severity"] = severity
