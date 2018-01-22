@@ -5,6 +5,10 @@ import "sync"
 // Context
 type Context map[string]interface{}
 
+func NewEmptyContext() Context {
+	return make(map[string]interface{}, 0)
+}
+
 // Logger
 type Logger interface {
 	AddHandler(handler Handler)

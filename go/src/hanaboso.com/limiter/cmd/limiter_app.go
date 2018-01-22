@@ -11,6 +11,7 @@ import (
 	"hanaboso.com/utils/env"
 	"strconv"
 	"hanaboso.com/limiter/pkg/logger"
+	"time"
 )
 
 // main runs the limiter program
@@ -40,7 +41,7 @@ func prepareStorage() storage.Storage {
 		env.GetEnv("MONGO_COLLECTION", "messages"),
 	)
 	db.Connect()
-	return storage.NewPredictiveCachedStorage(db)
+	return storage.NewPredictiveCachedStorage(db, time.Hour * 24)
 }
 
 func prepareRabbit() (rabbitmq.Consumer, rabbitmq.Publisher) {

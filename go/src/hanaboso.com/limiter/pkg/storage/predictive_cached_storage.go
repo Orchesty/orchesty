@@ -3,6 +3,8 @@ package storage
 import (
 	"gopkg.in/mgo.v2/bson"
 	"time"
+	"hanaboso.com/limiter/pkg/logger"
+	"fmt"
 )
 
 type predictiveCachedStorage struct {
@@ -17,9 +19,11 @@ type cacheItem struct {
 }
 
 // Returns the pointer to new created mongo storage instance
-func NewPredictiveCachedStorage(db Storage) (*predictiveCachedStorage) {
-	// TODO start invalidate cache tickers here
-	return &predictiveCachedStorage{db, make(map[string]cacheItem, 0)}
+func NewPredictiveCachedStorage(db Storage, duration time.Duration) (*predictiveCachedStorage) {
+	c := predictiveCachedStorage{db, make(map[string]cacheItem, 100)}
+	c.runCacheAutoClean(duration)
+
+	return &c
 }
 
 func (cm *predictiveCachedStorage) Get(key string, length int) ([]*Message, error) {
@@ -48,32 +52,26 @@ func (cm *predictiveCachedStorage) CanHandle(key string, interval int, value int
 		item.max = value
 
 		item.ticker = time.NewTicker(time.Second * time.Duration(interval))
-		go func(cm *predictiveCachedStorage, key string) {
+		go func() {
 			for range item.ticker.C {
-				//fmt.Println("tick")
 				i, _ := cm.getCachedItem(key)
-				//fmt.Println(i)
 				i.count = i.count - i.max
-				//fmt.Println(i)
 
 				if i.count > 0 {
 					cm.saveCachedItem(key, i)
-					//fmt.Println("keeping tick")
 					continue
 				}
 
 				if i.ticker != nil {
-					//fmt.Println("deleting tick")
 					i.ticker.Stop()
 				}
 
 				delete(cm.cache, key)
 			}
-		}(cm, key)
+		}()
 	}
 
 	item.count++
-
 	cm.saveCachedItem(key, item)
 
 	return item.count <= item.max, nil
@@ -95,14 +93,14 @@ func (cm *predictiveCachedStorage) Exists(key string) (bool, error) {
 	return num > 0, nil
 }
 
-func (cm *predictiveCachedStorage) hasCachedItem(key string)  bool {
+func (cm *predictiveCachedStorage) hasCachedItem(key string) bool {
 	_, ok := cm.cache[key]
 
 	return ok
 }
 
 // getCachedItem returns cachedItem for given key. New is set to true if cachedItem was created
-func (cm *predictiveCachedStorage) getCachedItem(key string)  (cacheItem, bool) {
+func (cm *predictiveCachedStorage) getCachedItem(key string) (cacheItem, bool) {
 	item, ok := cm.cache[key]
 	if ok {
 		return item, false
@@ -124,4 +122,27 @@ func (cm *predictiveCachedStorage) getCachedItem(key string)  (cacheItem, bool) 
 // saveCachedItem saves the item struct to memory
 func (cm *predictiveCachedStorage) saveCachedItem(key string, item cacheItem) {
 	cm.cache[key] = item
+}
+
+// runCacheAutoClean starts ticker for cleaning cache
+func (cm *predictiveCachedStorage) runCacheAutoClean(duration time.Duration) {
+	cleanTick := time.NewTicker(duration)
+	go func() {
+		ctx := logger.NewEmptyContext()
+		for range cleanTick.C {
+			logger.GetLogger().Warning(fmt.Sprintf("Cleaning predictive cache %sx items...", len(cm.cache)), ctx)
+			for k, item := range cm.cache {
+				if item.ticker != nil {
+					item.ticker.Stop()
+					logger.GetLogger().Info("Cleaning predictive cache - " + k, ctx)
+				} else {
+					logger.GetLogger().Warning("Cleaning predictive cache - " + k + " (no ticker)", ctx)
+				}
+			}
+
+			logger.GetLogger().Warning("Cleaning predictive cache ended.", ctx)
+
+			cm.cache = make(map[string]cacheItem, 100)
+		}
+	}()
 }

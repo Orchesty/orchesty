@@ -41,10 +41,10 @@ func (mm *mongoMock) GetDistinctFirstItems() (map[string]*Message, error) {
 	return make(map[string]*Message, 0), nil
 }
 
-// TestPredictiveCachedStorageMongoEmptyDb tests keeping the cache items and it's tickers
+// TestPredictiveCachedStorage_MongoEmptyDb tests keeping the cache items and it's tickers
 // calling save() and remove() should not influence the cached tickers
-func TestPredictiveCachedStorageMongoEmptyDb(t *testing.T) {
-	s := NewPredictiveCachedStorage(&mongoMock{})
+func TestPredictiveCachedStorage_MongoEmptyDb(t *testing.T) {
+	s := NewPredictiveCachedStorage(&mongoMock{}, time.Hour * time.Duration(24))
 
 	msg, _ := NewMessage(&amqp.Delivery{Headers: amqp.Table{
 		LimitKeyHeader:         "not-in-db",
@@ -97,8 +97,8 @@ func TestPredictiveCachedStorageMongoEmptyDb(t *testing.T) {
 	assert.True(t, s.hasCachedItem("not-in-db"))
 }
 
-func TestPredictiveCachedStorageMongoNonEmptyDb(t *testing.T) {
-	s := NewPredictiveCachedStorage(&mongoMock{})
+func TestPredictiveCachedStorage_MongoNonEmptyDb(t *testing.T) {
+	s := NewPredictiveCachedStorage(&mongoMock{}, time.Hour * 24)
 
 	assert.False(t, s.hasCachedItem("already-in-db"))
 
@@ -126,8 +126,8 @@ func TestPredictiveCachedStorageMongoNonEmptyDb(t *testing.T) {
 	assert.False(t, s.hasCachedItem("already-in-db"))
 }
 
-func TestPredictiveCacheStorageItemTicker(t *testing.T) {
-	s := NewPredictiveCachedStorage(&mongoMock{})
+func TestPredictiveCacheStorage_ItemTicker(t *testing.T) {
+	s := NewPredictiveCachedStorage(&mongoMock{}, time.Hour * 24)
 
 	can, _ := s.CanHandle("key-A", 1, 2)
 	assert.True(t, can)
@@ -159,4 +159,29 @@ func TestPredictiveCacheStorageItemTicker(t *testing.T) {
 
 	num, _ := s.Count("key-a")
 	assert.Equal(t, 0, num)
+}
+
+func TestPredictiveCachedStorage_AutoClean(t *testing.T) {
+	s := NewPredictiveCachedStorage(&mongoMock{}, time.Second)
+
+	assert.False(t, s.hasCachedItem("not-in-db"))
+	assert.False(t, s.hasCachedItem("already-in-db"))
+
+	s.CanHandle("not-in-db", 10, 2)
+	s.CanHandle("already-in-db", 10, 2)
+
+	assert.True(t, s.hasCachedItem("not-in-db"))
+	assert.True(t, s.hasCachedItem("already-in-db"))
+
+	time.Sleep(time.Millisecond * 1050)
+
+	assert.False(t, s.hasCachedItem("not-in-db"))
+	assert.False(t, s.hasCachedItem("already-in-db"))
+
+	can, _ := s.CanHandle("not-in-db", 10, 2)
+	assert.True(t, can)
+
+	// This key is found in db and even though the cache item does not exist CanHandle() should return false
+	can, _ = s.CanHandle("already-in-db", 10, 2)
+	assert.False(t, can)
 }
