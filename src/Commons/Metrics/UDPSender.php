@@ -69,9 +69,9 @@ class UDPSender implements LoggerAwareInterface
         $this->collectorPort = $collectorPort;
         $this->logger        = new NullLogger();
 
-        if (apcu_exists(self::APCU_IP) && apcu_exists(self::APCU_REFRESH)) {
-            $this->ip = apcu_fetch(self::APCU_IP);
-            $this->lastIPRefresh = apcu_fetch(self::APCU_REFRESH);
+        if (apcu_exists(self::APCU_IP . $collectorHost) && apcu_exists(self::APCU_REFRESH . $collectorHost)) {
+            $this->ip            = apcu_fetch(self::APCU_IP . $collectorHost);
+            $this->lastIPRefresh = apcu_fetch(self::APCU_REFRESH . $collectorHost);
         } else {
             $this->refreshCollectorIp();
         }
@@ -176,11 +176,11 @@ class UDPSender implements LoggerAwareInterface
         $this->ip            = gethostbyname($this->collectorHost);
         $this->lastIPRefresh = (new DateTime())->getTimestamp();
 
-        apcu_delete(self::APCU_IP);
-        apcu_delete(self::APCU_REFRESH);
+        apcu_delete(self::APCU_IP . $this->collectorHost);
+        apcu_delete(self::APCU_REFRESH . $this->collectorHost);
 
-        apcu_add(self::APCU_IP, $this->ip);
-        apcu_add(self::APCU_REFRESH, $this->lastIPRefresh);
+        apcu_add(self::APCU_IP . $this->collectorHost, $this->ip);
+        apcu_add(self::APCU_REFRESH . $this->collectorHost, $this->lastIPRefresh);
 
         return $this->ip;
     }

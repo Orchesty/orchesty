@@ -57,14 +57,11 @@ class InfluxDbSender
             throw new InvalidArgumentException('The fields must not be empty.');
         }
 
-        $nanoTimestamp = (round(microtime(TRUE) * 1000)) . '000000';
-
         return sprintf(
-            '%s,%s %s %s',
+            '%s,%s %s',
             $this->measurement,
             $this->join($this->prepareTags($tags)),
-            $this->join($this->prepareFields($fields)),
-            $nanoTimestamp
+            $this->join($this->prepareFields($fields))
         );
     }
 

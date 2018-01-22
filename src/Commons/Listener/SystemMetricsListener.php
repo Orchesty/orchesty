@@ -13,7 +13,7 @@ use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\Event\GetResponseEvent;
+use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
 use Symfony\Component\HttpKernel\Event\PostResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 
@@ -54,30 +54,30 @@ class SystemMetricsListener implements EventSubscriberInterface, LoggerAwareInte
     public static function getSubscribedEvents(): array
     {
         return [
-            KernelEvents::REQUEST   => 'onKernelRequest',
             KernelEvents::TERMINATE => 'onKernelTerminate',
+            KernelEvents::CONTROLLER => 'onKernelController',
         ];
     }
 
     /**
      * Adds system metrics values to request object
      *
-     * @param GetResponseEvent $event
+     * @param FilterControllerEvent $event
      *
      */
-    public function onKernelRequest(GetResponseEvent $event): void
+    public function onKernelController(FilterControllerEvent $event): void
     {
         try {
-            $request = $event->getRequest();
-            $this->logger->info('onKernelRequest', ['Request' => json_encode($request)]);
-            if (!$this->isPipesRequest($request)) {
+            if (!$event->isMasterRequest() || !$this->isPipesRequest($event->getRequest())) {
                 return;
             }
 
             $metricsData = CurlMetricUtils::getCurrentMetrics();
-            $request->attributes->add([self::METRICS_ATTRIBUTES_KEY => $metricsData]);
+            $event->getRequest()->attributes->add([self::METRICS_ATTRIBUTES_KEY => $metricsData]);
+            $this->logger->info('onKernelController', ['RequestC' => json_encode($event->getRequest()->attributes->all())]);
+            $this->logger->info('onKernelController', ['RequestC' => json_encode($event->getRequest()->headers->all())]);
         } catch (Exception $e) {
-            $this->logger->error('Metrics listener onKernelRequest exception', ['exception' => $e]);
+            $this->logger->error('Metrics listener onKernelController exception', ['exception' => $e]);
         }
     }
 
@@ -86,15 +86,15 @@ class SystemMetricsListener implements EventSubscriberInterface, LoggerAwareInte
      */
     public function onKernelTerminate(PostResponseEvent $event): void
     {
-
         try {
-            $request = $event->getRequest();
-            $this->logger->info('onKernelTerminate', ['Request' => json_encode($request)]);
-
-            if (!$this->isPipesRequest($request)) {
+            if (!$event->isMasterRequest() || !$this->isPipesRequest($event->getRequest())) {
                 return;
             }
 
+            $this->logger->info('onKernelTerminate', ['RequestT' => json_encode($event->getRequest()->attributes->all())]);
+            $this->logger->info('onKernelTerminate', ['RequestT' => json_encode($event->getRequest()->headers->all())]);
+
+            $request = $event->getRequest();
             if (!$request->attributes->has(self::METRICS_ATTRIBUTES_KEY)) {
                 throw new SystemMetricException('Initial system metrics not found.');
             }
@@ -122,8 +122,6 @@ class SystemMetricsListener implements EventSubscriberInterface, LoggerAwareInte
     {
         $startMetrics = $request->attributes->get(self::METRICS_ATTRIBUTES_KEY);
         $times        = CurlMetricUtils::getTimes($startMetrics);
-
-        $this->logger->debug('mtrics Send');
 
         $this->sender->send(
             [
