@@ -10,10 +10,12 @@ import (
 	"hanaboso.com/limiter/pkg/storage"
 	"hanaboso.com/utils/env"
 	"strconv"
+	"hanaboso.com/limiter/pkg/logger"
 )
 
 // main runs the limiter program
 func main() {
+	prepareLogger()
 	store := prepareStorage()
 	consumer, publisher := prepareRabbit()
 
@@ -60,6 +62,18 @@ func prepareRabbit() (rabbitmq.Consumer, rabbitmq.Publisher) {
 	publisher := rabbitmq.NewPublisher(conn, "")
 
 	return consumer, publisher
+}
+
+func prepareLogger() {
+	logger.GetLogger().AddHandler(logger.NewLogStashHandler(logger.NewStdOutSender()))
+	logger.GetLogger().AddHandler(
+		logger.NewLogStashHandler(
+			logger.NewUpdSender(
+				env.GetEnv("LOGSTASH_HOST", "logstash"),
+				env.GetEnv("LOGSTASH_PORT", "5120"),
+			),
+		),
+	)
 }
 
 // gracefulShutdown handles SIGINT and SIGTERM signal to stop the app gracefully
