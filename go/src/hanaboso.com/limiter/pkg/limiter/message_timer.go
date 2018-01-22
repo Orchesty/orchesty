@@ -27,12 +27,12 @@ func (mt *MessageTimer) Init() {
 
 func (mt *MessageTimer) addTicker(key string, duration int, count int) {
 	mt.tickers[key] = time.NewTicker(time.Second * time.Duration(duration))
-
+	log.Println(fmt.Sprintf("Added ticker for key '%s'", key))
 	go func() {
 		for t := range mt.tickers[key].C {
+			log.Println(fmt.Sprintf("Tick for key: '%s' at: %s", key, t))
 
 			hasNext := mt.release(key, count)
-
 			if hasNext == false {
 				mt.tickers[key].Stop()
 				delete(mt.tickers, key)
@@ -40,7 +40,6 @@ func (mt *MessageTimer) addTicker(key string, duration int, count int) {
 				return
 			}
 
-			log.Println(fmt.Sprintf("Tick for key: '%s' at: %s", key, t))
 		}
 	}()
 }

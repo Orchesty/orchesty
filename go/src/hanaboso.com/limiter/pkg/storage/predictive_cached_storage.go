@@ -2,44 +2,91 @@ package storage
 
 import (
 	"gopkg.in/mgo.v2/bson"
+	"time"
 )
 
-type CachedStorage struct {
+type predictiveCachedStorage struct {
 	db    Storage
-	cache map[string]int
+	cache map[string]cacheItem
+}
+
+type cacheItem struct {
+	ticker *time.Ticker
+	max    int
+	count  int
 }
 
 // Returns the pointer to new created mongo storage instance
-func NewPredictiveCachedStorage(db Storage) (*CachedStorage) {
-	return &CachedStorage{db, make(map[string]int, 0)}
+func NewPredictiveCachedStorage(db Storage) (*predictiveCachedStorage) {
+	// TODO start invalidate cache tickers here
+	return &predictiveCachedStorage{db, make(map[string]cacheItem, 0)}
 }
 
-func (cm *CachedStorage) Get(key string, length int) ([]*Message, error) {
+func (cm *predictiveCachedStorage) Get(key string, length int) ([]*Message, error) {
 	return cm.db.Get(key, length)
 }
 
-func (cm *CachedStorage) Count(key string) (int, error) {
-	_, ok := cm.cache[key]
-	if ok {
-		return cm.cache[key], nil
-	}
-
-	num, err := cm.db.Count(key)
-	if err != nil {
-		return 0, err
-	}
-
-	// TODO - how to delete unused keys? (start ticker to find 0 values and delete them?)
-	cm.cache[key] = num
-
-	return num, nil
-}
-
-func (cm *CachedStorage) GetDistinctFirstItems() (map[string]*Message, error) {
+// GetDistinctFirstItems returns first message for every distinct key in storage
+func (cm *predictiveCachedStorage) GetDistinctFirstItems() (map[string]*Message, error) {
 	return cm.db.GetDistinctFirstItems()
 }
 
-func (cm *CachedStorage) Exists(key string) (bool, error) {
+// Save persists document to mongo. Increases of cache counter should have already been done in Check
+func (cm *predictiveCachedStorage) Save(m *Message) (string, error) {
+	return cm.db.Save(m)
+}
+
+// Remove tries to delete the concrete message from storage
+func (cm *predictiveCachedStorage) Remove(key string, id bson.ObjectId) (bool, error) {
+	return cm.db.Remove(key, id)
+}
+
+// Check decides whether the message can be processed
+func (cm *predictiveCachedStorage) CanHandle(key string, interval int, value int) (bool, error) {
+	item, isNew := cm.getCachedItem(key)
+	if isNew {
+		item.max = value
+
+		item.ticker = time.NewTicker(time.Second * time.Duration(interval))
+		go func(cm *predictiveCachedStorage, key string) {
+			for range item.ticker.C {
+				//fmt.Println("tick")
+				i, _ := cm.getCachedItem(key)
+				//fmt.Println(i)
+				i.count = i.count - i.max
+				//fmt.Println(i)
+
+				if i.count > 0 {
+					cm.saveCachedItem(key, i)
+					//fmt.Println("keeping tick")
+					continue
+				}
+
+				if i.ticker != nil {
+					//fmt.Println("deleting tick")
+					i.ticker.Stop()
+				}
+
+				delete(cm.cache, key)
+			}
+		}(cm, key)
+	}
+
+	item.count++
+
+	cm.saveCachedItem(key, item)
+
+	return item.count <= item.max, nil
+}
+
+// Count return the amount of messages with given key in storage
+func (cm *predictiveCachedStorage) Count(key string) (int, error) {
+	i, _ := cm.getCachedItem(key)
+
+	return i.count, nil
+}
+
+func (cm *predictiveCachedStorage) Exists(key string) (bool, error) {
 	num, err := cm.Count(key)
 	if err != nil {
 		return false, err
@@ -48,45 +95,33 @@ func (cm *CachedStorage) Exists(key string) (bool, error) {
 	return num > 0, nil
 }
 
-// Save persists document to mongo and then increases local counter for particular key
-func (cm *CachedStorage) Save(m *Message) (string, error) {
-	_, err := cm.db.Save(m)
+func (cm *predictiveCachedStorage) hasCachedItem(key string)  bool {
+	_, ok := cm.cache[key]
+
+	return ok
+}
+
+// getCachedItem returns cachedItem for given key. New is set to true if cachedItem was created
+func (cm *predictiveCachedStorage) getCachedItem(key string)  (cacheItem, bool) {
+	item, ok := cm.cache[key]
+	if ok {
+		return item, false
+	}
+
+	item = cacheItem{}
+
+	num, err := cm.db.Count(key)
 	if err != nil {
-		return m.LimitKey, err
+		return item, true
 	}
 
-	cm.increaseCount(m.LimitKey)
+	item.count = num
+	cm.saveCachedItem(key, item)
 
-	return m.LimitKey, nil
+	return item, true
 }
 
-func (cm *CachedStorage) Remove(key string, id bson.ObjectId) (bool, error) {
-	_, err := cm.db.Remove(key, id)
-	if err != nil {
-		return false, err
-	}
-
-	cm.decreaseCount(key)
-	if cm.getCount(key) == 0 {
-		delete(cm.cache, key)
-	}
-
-	return true, nil
-}
-
-func (cm *CachedStorage) increaseCount(key string) {
-	cm.cache[key] = cm.getCount(key) + 1
-}
-
-func (cm *CachedStorage) decreaseCount(key string) {
-	cm.cache[key] = cm.getCount(key) - 1
-}
-
-func (cm *CachedStorage) getCount(key string) int {
-	val, ok := cm.cache[key]
-	if !ok {
-		return 0
-	}
-
-	return val
+// saveCachedItem saves the item struct to memory
+func (cm *predictiveCachedStorage) saveCachedItem(key string, item cacheItem) {
+	cm.cache[key] = item
 }

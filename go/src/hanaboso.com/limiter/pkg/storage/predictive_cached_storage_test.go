@@ -5,9 +5,14 @@ import (
 	"gopkg.in/mgo.v2/bson"
 	"github.com/streadway/amqp"
 	"github.com/stretchr/testify/assert"
+	"time"
 )
 
 type mongoMock struct{}
+
+func (mm *mongoMock) CanHandle(key string, time int, value int) (bool, error) {
+	return mm.Exists(key)
+}
 
 func (mm *mongoMock) Exists(key string) (bool, error) {
 	if key == "not-in-db" {
@@ -27,78 +32,131 @@ func (mm *mongoMock) Get(key string, length int) ([]*Message, error) {
 	return make([]*Message, 0), nil
 }
 func (mm *mongoMock) Count(key string) (int, error) {
-	if key == "not-in-db" {
-		return 0, nil
+	if key == "already-in-db" {
+		return 2, nil
 	}
-	return 2, nil
+	return 0, nil
 }
 func (mm *mongoMock) GetDistinctFirstItems() (map[string]*Message, error) {
 	return make(map[string]*Message, 0), nil
 }
 
-func TestCachedMongoCountingWhenNotPreviouslyInDb(t *testing.T) {
+// TestPredictiveCachedStorageMongoEmptyDb tests keeping the cache items and it's tickers
+// calling save() and remove() should not influence the cached tickers
+func TestPredictiveCachedStorageMongoEmptyDb(t *testing.T) {
 	s := NewPredictiveCachedStorage(&mongoMock{})
 
-	ex, _ := s.Exists("not-in-db")
-	assert.False(t, ex)
-	msgA, _ := NewMessage(&amqp.Delivery{Headers: amqp.Table{
+	msg, _ := NewMessage(&amqp.Delivery{Headers: amqp.Table{
 		LimitKeyHeader:         "not-in-db",
-		LimitTimeHeader:        "10",
-		LimitValueHeader:       "500",
+		LimitTimeHeader:        "1",
+		LimitValueHeader:       "2",
 		ReturnExchangeHeader:   "exchange",
 		ReturnRoutingKeyHeader: "routing-key",
 	}})
-	s.Save(msgA)
-	ex, _ = s.Exists("not-in-db")
-	assert.True(t, ex)
 
-	s.Save(msgA)
-	s.Save(msgA)
+	assert.False(t, s.hasCachedItem("not-in-db"))
 
-	ex, _ = s.Exists("not-in-db")
-	assert.True(t, ex)
+	can, _ := s.CanHandle("not-in-db", 1, 2)
+	assert.True(t, can)
+	s.Save(msg)
+
+	can, _ = s.CanHandle("not-in-db", 1, 2)
+	assert.True(t, can)
+	s.Save(msg)
+
+	can, _ = s.CanHandle("not-in-db", 1, 2)
+	assert.False(t, can) // now this should be false
+	s.Save(msg)
+
+	assert.True(t, s.hasCachedItem("not-in-db"))
 
 	s.Remove("not-in-db", bson.NewObjectId())
 	s.Remove("not-in-db", bson.NewObjectId())
 	s.Remove("not-in-db", bson.NewObjectId())
 
-	ex, _ = s.Exists("not-in-db")
-	assert.False(t, ex)
+	assert.True(t, s.hasCachedItem("not-in-db"))
+
+	can, _ = s.CanHandle("not-in-db", 1, 2)
+	assert.False(t, can)
+
+	can, _ = s.CanHandle("not-in-db", 1, 2)
+	assert.False(t, can)
+
+	can, _ = s.CanHandle("not-in-db", 1, 2)
+	assert.False(t, can)
+
+	assert.True(t, s.hasCachedItem("not-in-db"))
+
+	// In 3s limit should be free again
+	time.Sleep(time.Millisecond * 3050)
+
+	assert.False(t, s.hasCachedItem("not-in-db"))
+
+	can, _ = s.CanHandle("not-in-db", 1, 2)
+	assert.True(t, can)
+	assert.True(t, s.hasCachedItem("not-in-db"))
 }
 
-func TestCachedMongoCountingWhenAlreadyInDb(t *testing.T) {
+func TestPredictiveCachedStorageMongoNonEmptyDb(t *testing.T) {
 	s := NewPredictiveCachedStorage(&mongoMock{})
 
-	ex, _ := s.Exists("was-in-db")
-	assert.True(t, ex)
-	msgA, _ := NewMessage(&amqp.Delivery{Headers: amqp.Table{
-		LimitKeyHeader:         "was-in-db",
-		LimitTimeHeader:        "10",
-		LimitValueHeader:       "500",
-		ReturnExchangeHeader:   "exchange",
-		ReturnRoutingKeyHeader: "routing-key",
-	}})
-	s.Save(msgA)
-	ex, _ = s.Exists("was-in-db")
-	assert.True(t, ex)
+	assert.False(t, s.hasCachedItem("already-in-db"))
 
-	num, _ := s.Count("was-in-db")
-	assert.Equal(t, 3, num)
+	can, _ := s.CanHandle("already-in-db", 1, 2)
+	assert.False(t, can)
+	assert.True(t, s.hasCachedItem("already-in-db"))
 
-	s.Save(msgA)
-	s.Save(msgA)
+	// remove does not impact the cache
+	s.Remove("already-in-db", bson.NewObjectId())
+	s.Remove("already-in-db", bson.NewObjectId())
 
-	num, _ = s.Count("was-in-db")
-	assert.Equal(t, 5, num)
+	assert.True(t, s.hasCachedItem("already-in-db"))
 
-	ex, _ = s.Exists("was-in-db")
-	assert.True(t, ex)
+	can, _ = s.CanHandle("already-in-db", 1, 2)
+	assert.False(t, can)
 
-	s.Remove("was-in-db", bson.NewObjectId())
-	s.Remove("was-in-db", bson.NewObjectId())
-	s.Remove("was-in-db", bson.NewObjectId())
-	s.Remove("was-in-db", bson.NewObjectId())
+	can, _ = s.CanHandle("already-in-db", 1, 2)
+	assert.False(t, can)
 
-	num, _ = s.Count("was-in-db")
-	assert.Equal(t, 1, num)
+	assert.True(t, s.hasCachedItem("already-in-db"))
+
+	// In 3s limit should be free again
+	time.Sleep(time.Millisecond * 3050)
+
+	assert.False(t, s.hasCachedItem("already-in-db"))
+}
+
+func TestPredictiveCacheStorageItemTicker(t *testing.T) {
+	s := NewPredictiveCachedStorage(&mongoMock{})
+
+	can, _ := s.CanHandle("key-A", 1, 2)
+	assert.True(t, can)
+
+	can, _ = s.CanHandle("key-A", 1, 2)
+	assert.True(t, can)
+
+	can, _ = s.CanHandle("key-A", 1, 2)
+	assert.False(t, can) // this one is over limit
+
+	time.Sleep(time.Millisecond * 1050)
+
+	can, _ = s.CanHandle("key-A", 1, 2)
+	assert.True(t, can)
+
+	can, _ = s.CanHandle("key-A", 1, 2)
+	assert.False(t, can) // this one is over limit
+
+	can, _ = s.CanHandle("key-A", 1, 2)
+	assert.False(t, can) // this one is over limit too
+
+	can, _ = s.CanHandle("key-A", 1, 2)
+	assert.False(t, can) // this one is over limit as well
+
+	time.Sleep(time.Millisecond * 3050)
+
+	can, _ = s.CanHandle("key-A", 1, 2)
+	assert.True(t, can)
+
+	num, _ := s.Count("key-a")
+	assert.Equal(t, 0, num)
 }

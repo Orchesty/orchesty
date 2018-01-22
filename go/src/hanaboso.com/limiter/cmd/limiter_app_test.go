@@ -22,9 +22,9 @@ func TestLimiterApp(t *testing.T) {
 	go timeoutExit(t, stopTest)
 
 	setTestEnv()
-	// run app and give it some time to init
+	// run app and give it some time to init tcp server
 	go main()
-	time.Sleep(time.Millisecond * 100)
+	time.Sleep(time.Millisecond * 50)
 
 	// send tcp and amqp requests to limiter
 	go simulateTraffic(t, stopTest)
@@ -48,7 +48,7 @@ func setTestEnv() {
 }
 
 func timeoutExit(t *testing.T, stopTest chan bool) {
-	time.Sleep(time.Second * 500)
+	time.Sleep(time.Second * 5)
 	assert.Fail(t, "Test exceeded max permitted duration limit")
 	stopTest <- true
 }
@@ -57,38 +57,40 @@ func simulateTraffic(t *testing.T, stopTest chan bool) {
 	conn, _ := connectRemotes()
 	publisher := rabbitmq.NewPublisher(conn, os.Getenv("RABBITMQ_INPUT_QUEUE"))
 
-	go tcpCheck(t, "A", 1, 2, true)
-	go tcpCheck(t, "B", 2, 5, true)
+	// max 2 requests per 1 second
+	timA := 2
+	valA := 2
+	// max 5 requests per 2 seconds
+	timB := 3
+	valB := 5
 
-	// A can have max 2 requests within 1s and we publish 3 so it should wait and tick there for 2s
-	msgsSent := 3
-	for i := 1; i <= msgsSent; i++ {
-		publisher.Publish(newAmqpInputMessage("A", 1, 2, "test"+strconv.Itoa(i)))
+	// A can have max 2 requests within 1s and we publish 6 messages, so 4 should be postponed (2 by 2s and 2 by 4s)
+	// B can have max 5 requests within 2s and we publish 6 messages, so 1 should be postponed by 3s
+	for i := 1; i <= 6; i++ {
+		isOverLimitA := i > valA
+		clientCheckCall(t, publisher, "A", timA, valA, !isOverLimitA)
+		isOverLimitB := i > valB
+		clientCheckCall(t, publisher, "B", timB, valB, !isOverLimitB)
 	}
 
-	// give limiter some time to handle incoming messages
-	time.Sleep(time.Millisecond * 50)
-
-	// now we should be notified about existing limit for A, but B should not be affected by A's limit
-	go tcpCheck(t, "A", 1, 2, false) // here should be false now
-	go tcpCheck(t, "B", 2, 50, true)
-
-	//// after limit should be free again we should get positive responses
-	time.Sleep(time.Second * 2)
-	go tcpCheck(t, "A", 1, 2, true)
-	go tcpCheck(t, "B", 2, 50, true)
-
 	consumer := rabbitmq.NewConsumer(conn, outputQueue)
-	msgsReceived := 0
+	var rcvdMsgs [5]amqp.Delivery
+	rcvdCount := 0
+	expectedCount := 5
 	go consumer.Consume(func(msgs <-chan amqp.Delivery) {
+		i := 0
 		for m := range msgs {
-			msgsReceived++
+			rcvdMsgs[i] = m
 			m.Ack(false)
+			i++
+			rcvdCount++
 
-			assert.Equal(t, "test"+strconv.Itoa(msgsReceived), string(m.Body), "Messages on the output should be properly FIFO sorted")
-			assert.Equal(t, "A", m.Headers["pf-limit-key"])
-
-			if msgsReceived == msgsSent {
+			if rcvdCount == expectedCount {
+				assert.Equal(t, "testA", string(rcvdMsgs[0].Body))
+				assert.Equal(t, "testA", string(rcvdMsgs[1].Body))
+				assert.Equal(t, "testB", string(rcvdMsgs[2].Body))
+				assert.Equal(t, "testA", string(rcvdMsgs[3].Body))
+				assert.Equal(t, "testA", string(rcvdMsgs[4].Body))
 				stopTest <- true
 			}
 		}
@@ -120,7 +122,7 @@ func connectRemotes() (rabbitmq.Connection, *storage.Mongo) {
 	return conn, m
 }
 
-func tcpCheck(t *testing.T, key string, time int, val int, expected bool) {
+func clientCheckCall(t *testing.T, publisher rabbitmq.Publisher, key string, time int, val int, expected bool) bool {
 	limiterHost := "localhost:"+os.Getenv("LIMITER_PORT")
 
 	reqID := stringsUtils.Random(5, true)
@@ -132,11 +134,15 @@ func tcpCheck(t *testing.T, key string, time int, val int, expected bool) {
 	sl := strings.Split(response, ";")
 	last := sl[len(sl)-1]
 
-	if expected {
-		assert.Equal(t, "ok", last)
-	} else {
-		assert.Equal(t, "nok", last)
+	if last == "ok" {
+		assert.Equal(t, expected, true)
+		return true
 	}
+
+	assert.Equal(t, expected, false)
+	publisher.Publish(newAmqpInputMessage(key, time, val, "test" + key))
+
+	return false
 }
 
 func newAmqpInputMessage(key string, time int, value int, body string) amqp.Publishing {
@@ -149,6 +155,5 @@ func newAmqpInputMessage(key string, time int, value int, body string) amqp.Publ
 			storage.ReturnExchangeHeader:   "limiter-exchange",
 			storage.ReturnRoutingKeyHeader: outputQueue,
 		},
-		ReplyTo: outputQueue,
 	}
 }
