@@ -51,10 +51,12 @@ final class SalesforceSystemTest extends KernelTestCaseAbstract
                 ->setUser('user123')
                 ->setSystem('sys123')
                 ->setSettings([
-                    'instance_url'                     => 'systemUrl',
-                    'access_token'                     => self::ACCESS_TOKEN,
-                    SystemInstall::SYSTEM_LIMITS       => 15000,
-                    SystemInstall::SYSTEM_LIMIT_UPDATE => new DateTime(),
+                    'instance_url'               => 'systemUrl',
+                    'access_token'               => self::ACCESS_TOKEN,
+                    SystemInstall::SYSTEM_LIMITS => [
+                        SystemInstall::SYSTEM_LIMIT_VALUE  => 15000,
+                        SystemInstall::SYSTEM_LIMIT_UPDATE => new DateTime(),
+                    ],
                 ]);
         }
     }
@@ -70,7 +72,7 @@ final class SalesforceSystemTest extends KernelTestCaseAbstract
             PipesHeaders::createKey(SystemLimitDto::LIMIT_KEY_HEADER)   => 'user123-sys123',
             PipesHeaders::createKey(SystemLimitDto::LIMIT_TIME_HEADER)  => '86400',
             PipesHeaders::createKey(SystemLimitDto::LIMIT_VALUE_HEADER) => '15000',
-            SystemLimitDto::LIMIT_LAST_UPDATE                           => $this->systemInstall->getSettings()[SystemInstall::SYSTEM_LIMIT_UPDATE],
+            SystemLimitDto::LIMIT_LAST_UPDATE                           => $this->systemInstall->getSettings()[SystemInstall::SYSTEM_LIMITS][SystemInstall::SYSTEM_LIMIT_UPDATE],
         ], $systemLimit->toArray());
     }
 
@@ -86,9 +88,10 @@ final class SalesforceSystemTest extends KernelTestCaseAbstract
         ];
 
         $systemInstall = $this->system->saveLimit($this->systemInstall, $data);
+        $systemLimits  = $systemInstall->getSettings()[SystemInstall::SYSTEM_LIMITS];
 
-        $this->assertEquals(15000, $systemInstall->getSettings()[SystemInstall::SYSTEM_LIMITS]);
-        $this->assertInstanceOf(DateTime::class, $systemInstall->getSettings()[SystemInstall::SYSTEM_LIMIT_UPDATE]);
+        $this->assertEquals(15000, $systemLimits[SystemInstall::SYSTEM_LIMIT_VALUE]);
+        $this->assertInstanceOf(DateTime::class, $systemLimits[SystemInstall::SYSTEM_LIMIT_UPDATE]);
     }
 
     /**

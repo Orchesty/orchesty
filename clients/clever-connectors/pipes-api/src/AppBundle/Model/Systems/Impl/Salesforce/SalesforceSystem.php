@@ -226,14 +226,17 @@ class SalesforceSystem implements OAuth2Interface, CMEventSystemInterface, Syste
     {
         $settings = $systemInstall->getSettings();
         if (array_key_exists(SystemInstall::SYSTEM_LIMITS, $settings)) {
+            $systemLimits = $settings[SystemInstall::SYSTEM_LIMITS];
 
-            return new SystemLimitDto(
-                $systemInstall,
-                SystemLimitDto::LIMIT_FOR_USER,
-                self::LIMIT_TIME,
-                $settings[SystemInstall::SYSTEM_LIMITS],
-                $settings[SystemInstall::SYSTEM_LIMIT_UPDATE] ?? NULL
-            );
+            if (array_key_exists(SystemInstall::SYSTEM_LIMIT_VALUE, $systemLimits)) {
+                return new SystemLimitDto(
+                    $systemInstall,
+                    SystemLimitDto::LIMIT_FOR_USER,
+                    self::LIMIT_TIME,
+                    $systemLimits[SystemInstall::SYSTEM_LIMIT_VALUE],
+                    $systemLimits[SystemInstall::SYSTEM_LIMIT_UPDATE] ?? NULL
+                );
+            }
         }
 
         return NULL;
@@ -251,8 +254,10 @@ class SalesforceSystem implements OAuth2Interface, CMEventSystemInterface, Syste
         if (array_key_exists(self::KEY_DAILY, $data) && array_key_exists(self::KEY_MAX, $data[self::KEY_DAILY])) {
             $limit = $data[self::KEY_DAILY][self::KEY_MAX];
             $this->setSettings($systemInstall, [
-                SystemInstall::SYSTEM_LIMITS       => $limit,
-                SystemInstall::SYSTEM_LIMIT_UPDATE => new DateTime(),
+                SystemInstall::SYSTEM_LIMITS => [
+                    SystemInstall::SYSTEM_LIMIT_VALUE  => $limit,
+                    SystemInstall::SYSTEM_LIMIT_UPDATE => new DateTime(),
+                ],
             ]);
 
             return $systemInstall;
