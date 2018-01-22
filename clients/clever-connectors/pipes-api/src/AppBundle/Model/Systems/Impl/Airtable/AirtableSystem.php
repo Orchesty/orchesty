@@ -11,6 +11,8 @@ use CleverConnectors\AppBundle\Model\CMEvents\CMEventSystemInterface;
 use CleverConnectors\AppBundle\Model\CMEvents\Traits\CMEventSystemTrait;
 use CleverConnectors\AppBundle\Model\Form\Field;
 use CleverConnectors\AppBundle\Model\Form\Form;
+use CleverConnectors\AppBundle\Model\Limits\SystemLimitDto;
+use CleverConnectors\AppBundle\Model\Limits\SystemLimitInterface;
 use CleverConnectors\AppBundle\Model\Requester\RequesterInterface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\AuthorizationInterface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\Traits\AuthorizationTrait;
@@ -26,7 +28,7 @@ use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Airtable
  */
-class AirtableSystem implements AuthorizationInterface, CMEventSystemInterface
+class AirtableSystem implements AuthorizationInterface, CMEventSystemInterface, SystemLimitInterface
 {
 
     use SystemTrait {
@@ -46,7 +48,8 @@ class AirtableSystem implements AuthorizationInterface, CMEventSystemInterface
     public const VIEW         = 'view';
     public const LAST_SYNC    = 'last_sync';
 
-    private const API_KEY = 'api_key';
+    private const API_KEY    = 'api_key';
+    private const LIMIT_TIME = 1;
 
     /**
      * AirtableSystem constructor.
@@ -183,6 +186,14 @@ class AirtableSystem implements AuthorizationInterface, CMEventSystemInterface
             TRUE
         );
 
+        $field2 = new Field(
+            Field::TEXT,
+            SystemInstall::SYSTEM_LIMIT_VALUE,
+            'System Limit',
+            $this->prepareValue(SystemInstall::SYSTEM_LIMIT_VALUE, $settings),
+            TRUE
+        );
+
         $field4 = new Field(
             Field::CHECKBOX,
             SystemInstall::EVENT_CREATE,
@@ -207,6 +218,7 @@ class AirtableSystem implements AuthorizationInterface, CMEventSystemInterface
         $form = new Form();
         $form
             ->addField($field1)
+            ->addField($field2)
             ->addField($field4)
             ->addField($field5)
             ->addField($field6);
@@ -263,6 +275,39 @@ class AirtableSystem implements AuthorizationInterface, CMEventSystemInterface
         }
 
         return $arr;
+    }
+
+    /**
+     * @param SystemInstall $systemInstall
+     *
+     * @return SystemLimitDto|null
+     */
+    public function getLimit(SystemInstall $systemInstall): ?SystemLimitDto
+    {
+        $limitValue = 5; // default value
+        $settings   = $systemInstall->getSettings();
+
+        if (array_key_exists(SystemInstall::SYSTEM_LIMIT_VALUE, $settings)) {
+            $limitValue = $settings[SystemInstall::SYSTEM_LIMIT_VALUE];
+        }
+
+        return new SystemLimitDto(
+            $systemInstall,
+            SystemLimitDto::LIMIT_FOR_USER,
+            self::LIMIT_TIME,
+            $limitValue
+        );
+    }
+
+    /**
+     * @param SystemInstall $systemInstall
+     * @param array         $data
+     *
+     * @return SystemInstall
+     */
+    public function saveLimit(SystemInstall $systemInstall, array $data): SystemInstall
+    {
+        return $systemInstall;
     }
 
 }
