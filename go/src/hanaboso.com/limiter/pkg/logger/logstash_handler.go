@@ -15,7 +15,10 @@ func (f *logStashFormatter) Format(data map[string]interface{}) ([]byte, error) 
 	hostname, _ := os.Hostname()
 	data["timestamp"] = time.Now().Unix()
 	data["hostname"] = hostname
-	data["type"] = "limiter"
+
+	if val, ok := data["type"]; !ok || val == "" {
+		data["type"] = "limiter"
+	}
 
 	return json.Marshal(data)
 }
