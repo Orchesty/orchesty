@@ -5,6 +5,8 @@ namespace CleverConnectors\AppBundle\Listeners;
 use CleverConnectors\AppBundle\Controller\WebhookController;
 use CleverConnectors\AppBundle\Document\Webhook;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
+use CleverConnectors\AppBundle\Model\Systems\SystemLoader;
+use CleverConnectors\AppBundle\Model\Systems\SystemManager;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -35,15 +37,22 @@ class WebhookSecurityListener implements EventSubscriberInterface
     private $curl;
 
     /**
+     * @var SystemManager
+     */
+    private $systemManager;
+
+    /**
      * WebhookSecurityListener constructor.
      *
      * @param DocumentManager      $dm
      * @param CurlManagerInterface $curl
+     * @param SystemManager        $systemManager
      */
-    function __construct(DocumentManager $dm, CurlManagerInterface $curl)
+    function __construct(DocumentManager $dm, CurlManagerInterface $curl, SystemManager $systemManager)
     {
-        $this->repo = $dm->getRepository(Webhook::class);
-        $this->curl = $curl;
+        $this->repo          = $dm->getRepository(Webhook::class);
+        $this->curl          = $curl;
+        $this->systemManager = $systemManager;
     }
 
     /**
@@ -84,6 +93,13 @@ class WebhookSecurityListener implements EventSubscriberInterface
             $ev->getRequest()->headers->set(CMHeaders::createKey(CMHeaders::GUID), $params['userId']);
             $ev->getRequest()->headers->set(CMHeaders::createKey(CMHeaders::TOKEN), $params['token']);
             $ev->getRequest()->headers->set(CMHeaders::createKey(CMHeaders::SYSTEM_KEY), $res->getSystemKey());
+
+            $this->systemManager->addSystemLimitToHeaders(
+                $params['userId'],
+                $params['token'],
+                $res->getSystemKey(),
+                $ev->getRequest()->headers
+            );
 
             $req = new RequestDto('GET', new Uri('https://api.dev.clevermonitor.com/v1.2'));
             $req->setHeaders([

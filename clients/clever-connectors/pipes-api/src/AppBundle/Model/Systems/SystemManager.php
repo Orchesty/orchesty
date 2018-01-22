@@ -11,6 +11,8 @@ use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\CMEvents\CMEventsManager;
 use CleverConnectors\AppBundle\Model\CMEvents\CMEventSystemInterface;
 use CleverConnectors\AppBundle\Model\DataLayout\LayoutManager;
+use CleverConnectors\AppBundle\Model\Limits\SystemLimitDto;
+use CleverConnectors\AppBundle\Model\Limits\SystemLimitInterface;
 use CleverConnectors\AppBundle\Model\MapTemplate\MapManager;
 use CleverConnectors\AppBundle\Model\SystemMetrics\SystemMetricsDto;
 use CleverConnectors\AppBundle\Model\SystemMetrics\SystemMetricsInterface;
@@ -21,6 +23,7 @@ use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Webhook\WebhookManager;
 use CleverConnectors\AppBundle\Model\Webhook\WebhookSystemInterface;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
+use CleverConnectors\AppBundle\Utils\CMHeaders;
 use CleverConnectors\AppBundle\Utils\DateTimeUtils;
 use CleverConnectors\AppBundle\Utils\InnerRequestUtils;
 use CleverConnectors\AppBundle\Utils\TopologyNameUtils;
@@ -34,6 +37,7 @@ use Hanaboso\PipesFramework\Configurator\Repository\NodeRepository;
 use Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository;
 use Hanaboso\PipesFramework\Configurator\StartingPoint\StartingPoint;
 use Hanaboso\PipesFramework\TopologyGenerator\Request\RequestHandler;
+use Symfony\Component\HttpFoundation\HeaderBag;
 
 /**
  * Class SystemManager
@@ -510,6 +514,7 @@ class SystemManager
     }
 
     /**
+<<<<<<< 5bfd9229ac9b2d15a374a8a49225ea49254ca806
      * @return int
      * @throws SystemException
      */
@@ -589,6 +594,26 @@ class SystemManager
         $dto = new SystemMetricsDto($systemKey, $from, $to, $interval, $guid);
 
         return $this->systemMetrics->getSystemRequestCount($dto);
+=======
+     * @param string    $user
+     * @param string    $token
+     * @param string    $systemKey
+     * @param HeaderBag $headers
+     */
+    public function addSystemLimitToHeaders(string $user, string $token, string $systemKey, HeaderBag $headers): void
+    {
+        /** @var AuthorizationInterface|SystemLimitInterface $system */
+        $system = $this->systemLoader->getSystem($systemKey);
+        $systemInstall = $this->systemRepository->getSystemInstall($user, $token, $systemKey);
+        $systemLimitDto = $system->getLimit($systemInstall);
+
+        if ($systemLimitDto) {
+            $headers->set(CMHeaders::createKey(SystemLimitDto::LIMIT_KEY_HEADER), $systemLimitDto->getLimitKey());
+            $headers->set(CMHeaders::createKey(SystemLimitDto::LIMIT_LAST_UPDATE), $systemLimitDto->getLastUpdate());
+            $headers->set(CMHeaders::createKey(SystemLimitDto::LIMIT_TIME_HEADER), $systemLimitDto->getLimitTime());
+            $headers->set(CMHeaders::createKey(SystemLimitDto::LIMIT_VALUE_HEADER), $systemLimitDto->getLimitValue());
+        }
+>>>>>>> System limits to headers - WIP
     }
 
     /**
