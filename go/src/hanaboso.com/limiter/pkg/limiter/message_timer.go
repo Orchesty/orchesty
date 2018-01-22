@@ -6,6 +6,7 @@ import (
 	"log"
 	"fmt"
 	"hanaboso.com/limiter/pkg/rabbitmq"
+	"hanaboso.com/limiter/pkg/logger"
 )
 
 type MessageTimer struct {
@@ -13,10 +14,11 @@ type MessageTimer struct {
 	storage   storage.Storage
 	publisher rabbitmq.Publisher
 	timerChan chan *storage.Message
+	logger    logger.Logger
 }
 
-func NewMessageTimer(s storage.Storage, p rabbitmq.Publisher, timerChan chan *storage.Message) *MessageTimer {
-	return &MessageTimer{storage: s, publisher: p, timerChan: timerChan, tickers: make(map[string]*time.Ticker)}
+func NewMessageTimer(s storage.Storage, p rabbitmq.Publisher, timerChan chan *storage.Message, logger logger.Logger) *MessageTimer {
+	return &MessageTimer{storage: s, publisher: p, timerChan: timerChan, tickers: make(map[string]*time.Ticker), logger: logger}
 }
 
 // Init loads and sets timers for already persisted messages and starts new timers handler
@@ -27,16 +29,16 @@ func (mt *MessageTimer) Init() {
 
 func (mt *MessageTimer) addTicker(key string, duration int, count int) {
 	mt.tickers[key] = time.NewTicker(time.Second * time.Duration(duration))
-	log.Println(fmt.Sprintf("Added ticker for key '%s'", key))
+	mt.logger.Info(fmt.Sprintf("Added ticker for key '%s'", key), nil)
 	go func() {
 		for t := range mt.tickers[key].C {
-			log.Println(fmt.Sprintf("Tick for key: '%s' at: %s", key, t))
+			mt.logger.Info(fmt.Sprintf("Tick for key: '%s' at: %s", key, t), nil)
 
 			hasNext := mt.release(key, count)
 			if hasNext == false {
 				mt.tickers[key].Stop()
 				delete(mt.tickers, key)
-				log.Println(fmt.Sprintf("Removed ticker for key '%s'", key))
+				mt.logger.Info(fmt.Sprintf("Removed ticker for key '%s'", key), nil)
 				return
 			}
 
@@ -48,7 +50,7 @@ func (mt *MessageTimer) release(key string, count int) (bool) {
 	msgs, err := mt.storage.Get(key, count)
 
 	if err != nil {
-		log.Println(fmt.Sprintf("Release could not get messages from storage. Error: %s", err))
+		mt.logger.Error(fmt.Sprintf("Release could not get messages from storage. Error: %s", err), logger.Context{"error": err})
 		return true
 	}
 
@@ -62,7 +64,7 @@ func (mt *MessageTimer) release(key string, count int) (bool) {
 	exists, err := mt.storage.Exists(key)
 
 	if err != nil {
-		log.Println(fmt.Sprintf("Release could not check if some messages exist for key %s Error: %s", key, err))
+		mt.logger.Error(fmt.Sprintf("Release could not check if some messages exist for key %s Error: %s", key, err), logger.Context{"error": err})
 		return true
 	}
 
@@ -93,6 +95,6 @@ func (mt *MessageTimer) deleteMessage(m *storage.Message) {
 	_, err := mt.storage.Remove(m.LimitKey, m.ID)
 
 	if err != nil {
-		log.Println(fmt.Sprintf("Message timer cannot delete message from storage. Error: %s", err))
+		mt.logger.Error(fmt.Sprintf("Message timer cannot delete message from storage. Error: %s", err), logger.Context{"error": err})
 	}
 }

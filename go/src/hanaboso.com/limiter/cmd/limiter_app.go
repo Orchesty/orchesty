@@ -21,7 +21,7 @@ func main() {
 	consumer, publisher := prepareRabbit()
 
 	timerChan := make(chan *storage.Message)
-	mt := limiter.NewMessageTimer(store, publisher, timerChan)
+	mt := limiter.NewMessageTimer(store, publisher, timerChan, logger.GetLogger())
 	lim := limiter.NewLimiter(store, consumer, mt, timerChan, logger.GetLogger())
 
 	// starts the tcp server
