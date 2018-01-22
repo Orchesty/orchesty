@@ -2,8 +2,8 @@ package rabbitmq
 
 import (
 	"github.com/streadway/amqp"
-	"log"
 	"fmt"
+	"hanaboso.com/limiter/pkg/logger"
 )
 
 type Callback func(msg <-chan amqp.Delivery)
@@ -31,6 +31,7 @@ type consumer struct {
 	exclusive     bool
 	noLocal       bool
 	noWait        bool
+	logger        logger.Logger
 }
 
 func (c *consumer) getChannel() *amqp.Channel {
@@ -50,18 +51,18 @@ func (c *consumer) Consume(callback Callback) {
 	err := c.getChannel().Qos(c.prefetchCount, c.prefetchSize, false)
 
 	if err != nil {
-		log.Fatalln(fmt.Sprintf("Rabbit MQ channel qos: %s", err))
+		c.logger.Fatal(fmt.Sprintf("Rabbit MQ channel qos: %s", err), logger.Context{"error": err})
 	}
 
 	msgs, err := c.getChannel().Consume(c.queue, c.consumerTag, c.noAck, c.exclusive, c.noLocal, c.noWait, nil)
 
 	if err != nil {
-		log.Fatalln(fmt.Sprintf("Rabbit MQ consumer error: %s", err))
+		c.logger.Fatal(fmt.Sprintf("Rabbit MQ consumer error: %s", err), logger.Context{"error": err})
 	}
 
 	go callback(msgs)
 
-	log.Println("[*] Waiting for messages. To exit press CTRL+C")
+	c.logger.Info("[*] Waiting for messages. To exit press CTRL+C", nil)
 
 	// waiting forever
 	if <-c.connection.GetRestartChan() != false {
@@ -103,6 +104,6 @@ func (c *consumer) SetNoWait(noWait bool) {
 	c.noWait = noWait
 }
 
-func NewConsumer(conn Connection, queue string) (c Consumer) {
-	return &consumer{connection: conn, queue: queue, channelId: -1}
+func NewConsumer(conn Connection, queue string, logger logger.Logger) (c Consumer) {
+	return &consumer{connection: conn, queue: queue, channelId: -1, logger: logger}
 }

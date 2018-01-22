@@ -3,6 +3,7 @@ package logger
 import (
 	"sync"
 	"github.com/streadway/amqp"
+	"os"
 )
 
 // Context
@@ -23,6 +24,7 @@ type Logger interface {
 	Info(msg string, context Context)
 	Error(msg string, context Context)
 	Warning(msg string, context Context)
+	Fatal(msg string, context Context)
 }
 
 // Formatter
@@ -69,6 +71,11 @@ func (l *logger) Error(msg string, context Context) {
 
 func (l *logger) Warning(msg string, context Context) {
 	l.Log("warning", msg, context)
+}
+
+func (l *logger) Fatal(msg string, context Context) {
+	l.Log("warning", msg, context)
+	os.Exit(1)
 }
 
 func (l *logger) AddHandler(handler Handler) {

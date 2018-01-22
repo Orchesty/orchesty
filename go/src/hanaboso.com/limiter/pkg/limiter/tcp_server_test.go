@@ -4,6 +4,7 @@ import (
 	"testing"
 	"github.com/stretchr/testify/assert"
 	"time"
+	"hanaboso.com/limiter/pkg/logger"
 )
 
 type positiveLimiter struct{}
@@ -25,7 +26,7 @@ func (dec *negativeLimiter) IsFreeLimit(key string, time int, value int) (bool, 
 // TestServer tests TcpServer healthCheck route
 func TestServerHealthCheck(t *testing.T) {
 	pos := positiveLimiter{}
-	tcpServer := NewTcpServer(&pos)
+	tcpServer := NewTcpServer(&pos, logger.GetNullLogger())
 	go tcpServer.Start(3334)
 	defer tcpServer.Stop()
 
@@ -36,8 +37,8 @@ func TestServerHealthCheck(t *testing.T) {
 
 // TestServer tests TcpServer healthCheck route
 func TestServerLimitCheck(t *testing.T) {
-	posServer := NewTcpServer(&positiveLimiter{})
-	negServer := NewTcpServer(&negativeLimiter{})
+	posServer := NewTcpServer(&positiveLimiter{}, logger.GetNullLogger())
+	negServer := NewTcpServer(&negativeLimiter{}, logger.GetNullLogger())
 	go posServer.Start(3334)
 	go negServer.Start(3335)
 	defer posServer.Stop()

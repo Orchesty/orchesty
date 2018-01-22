@@ -2,10 +2,10 @@ package storage
 
 import (
 	"gopkg.in/mgo.v2"
-	"log"
 	"time"
 	"fmt"
 	"gopkg.in/mgo.v2/bson"
+	"hanaboso.com/limiter/pkg/logger"
 )
 
 type Mongo struct {
@@ -13,20 +13,21 @@ type Mongo struct {
 	db         string
 	collection string
 	session    *mgo.Session
+	logger     logger.Logger
 }
 
 func (s *Mongo) Connect() {
 	var err error
-	log.Println(fmt.Sprintf("Mongo db connecting to: %s", s.host))
+	s.logger.Info(fmt.Sprintf("Mongo DB connecting to: %s", s.host), nil)
 	s.session, err = mgo.Dial(s.host)
 
 	if err != nil {
-		log.Println(fmt.Sprintf("Mongo db error: %s", err))
+		s.logger.Error(fmt.Sprintf("Mongo DB error: %s", err), logger.Context{"error": err})
 		s.reconnect()
 		return
 	}
 
-	log.Println(fmt.Sprintf("Mongo DB is connected to %s", s.host))
+	s.logger.Info(fmt.Sprintf("Mongo DB is connected to: %s", s.host), nil)
 }
 
 func (s *Mongo) Disconnect() {
@@ -36,8 +37,8 @@ func (s *Mongo) Disconnect() {
 }
 
 func (s *Mongo) reconnect() {
-	log.Println("Waiting 1s.")
-	time.Sleep(time.Second)
+	s.logger.Info("Waiting 1s.", nil)
+	time.Sleep(time.Second * 1)
 	s.Disconnect()
 	s.Connect()
 }
@@ -151,6 +152,6 @@ func (s *Mongo) DropCollection() {
 }
 
 // Returns the pointer to new created mongo storage instance
-func NewMongo(host string, db string, collection string) (*Mongo) {
-	return &Mongo{host: host, db: db, collection: collection}
+func NewMongo(host string, db string, collection string, logger logger.Logger) (*Mongo) {
+	return &Mongo{host: host, db: db, collection: collection, logger: logger}
 }

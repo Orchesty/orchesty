@@ -1,6 +1,9 @@
 package logger
 
-import "sync"
+import (
+	"sync"
+	"os"
+)
 
 type nullLogger struct {
 }
@@ -10,15 +13,19 @@ func (l *nullLogger) Log(severity string, msg string, context Context) {
 }
 
 func (l *nullLogger) Info(msg string, context Context) {
-	l.Log("info", msg, context)
+	// void
 }
 
 func (l *nullLogger) Error(msg string, context Context) {
-	l.Log("error", msg, context)
+	// void
 }
 
 func (l *nullLogger) Warning(msg string, context Context) {
-	l.Log("warning", msg, context)
+	// void
+}
+
+func (l *nullLogger) Fatal(msg string, context Context) {
+	os.Exit(1)
 }
 
 func (l *nullLogger) AddHandler(handler Handler) {

@@ -25,7 +25,7 @@ func main() {
 	lim := limiter.NewLimiter(store, consumer, mt, timerChan, logger.GetLogger())
 
 	// starts the tcp server
-	tcpServer := limiter.NewTcpServer(lim)
+	tcpServer := limiter.NewTcpServer(lim, logger.GetLogger())
 	limiterPort, _ := strconv.Atoi(env.GetEnv("LIMITER_PORT", "3333"))
 	go tcpServer.Start(limiterPort)
 
@@ -39,9 +39,10 @@ func prepareStorage() storage.Storage {
 		env.GetEnv("MONGO_HOST", "mongodb"),
 		env.GetEnv("MONGO_DB", "limiter"),
 		env.GetEnv("MONGO_COLLECTION", "messages"),
+		logger.GetLogger(),
 	)
 	db.Connect()
-	return storage.NewPredictiveCachedStorage(db, time.Hour * 24, logger.GetLogger())
+	return storage.NewPredictiveCachedStorage(db, time.Hour*24, logger.GetLogger())
 }
 
 func prepareRabbit() (rabbitmq.Consumer, rabbitmq.Publisher) {
@@ -52,6 +53,7 @@ func prepareRabbit() (rabbitmq.Consumer, rabbitmq.Publisher) {
 		rabbitPort,
 		env.GetEnv("RABBITMQ_USER", "guest"),
 		env.GetEnv("RABBITMQ_PASS", "guest"),
+		logger.GetLogger(),
 	)
 
 	// Input queue
@@ -59,8 +61,8 @@ func prepareRabbit() (rabbitmq.Consumer, rabbitmq.Publisher) {
 	conn.Connect()
 	conn.Setup()
 
-	consumer := rabbitmq.NewConsumer(conn, inputQueue)
-	publisher := rabbitmq.NewPublisher(conn, "")
+	consumer := rabbitmq.NewConsumer(conn, inputQueue, logger.GetLogger())
+	publisher := rabbitmq.NewPublisher(conn, "", logger.GetLogger())
 
 	return consumer, publisher
 }

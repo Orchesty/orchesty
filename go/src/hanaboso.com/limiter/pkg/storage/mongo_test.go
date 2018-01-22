@@ -7,6 +7,7 @@ import (
 	"time"
 	"os"
 	"hanaboso.com/utils/env"
+	"hanaboso.com/limiter/pkg/logger"
 )
 
 const (
@@ -18,7 +19,7 @@ const (
 func TestMongoMethods(t *testing.T) {
 	endTestCh := make(chan bool)
 
-	go func (stopMongoTest chan bool) {
+	go func(stopMongoTest chan bool) {
 		time.Sleep(time.Second * 1)
 		stopMongoTest <- false
 	}(endTestCh)
@@ -35,7 +36,7 @@ func TestMongoMethods(t *testing.T) {
 func runTestCommandsInSeries(t *testing.T, endTestCh chan bool) {
 	os.Setenv("MONGO_HOST", env.GetEnv("MONGO_HOST", "mongodb"))
 	mongoHost := os.Getenv("MONGO_HOST")
-	m := NewMongo(mongoHost, mongoDb, mongoCollection)
+	m := NewMongo(mongoHost, mongoDb, mongoCollection, logger.GetNullLogger())
 
 	m.Connect()
 	m.session.DB("test").C("messages_test").DropCollection()

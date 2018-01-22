@@ -2,9 +2,9 @@ package rabbitmq
 
 import (
 	"fmt"
-	"log"
 	"github.com/streadway/amqp"
 	"time"
+	"hanaboso.com/limiter/pkg/logger"
 )
 
 type Connection interface {
@@ -29,6 +29,7 @@ type connection struct {
 	conn        *amqp.Connection
 	channels    []*amqp.Channel
 	restartChan chan bool
+	logger      logger.Logger
 }
 
 func (c *connection) AddQueue(q Queue) {
@@ -49,7 +50,7 @@ func (c *connection) AddExchange(e Exchange) {
 func (c *connection) Setup() {
 
 	if c.conn == nil {
-		log.Println("Connection setup error: not connected.")
+		c.logger.Error("Connection setup error: not connected.", nil)
 		c.Connect()
 	}
 
@@ -61,10 +62,10 @@ func (c *connection) Setup() {
 		err := ch.ExchangeDeclare(e.Name, e.Type, e.Durable, e.AutoDelete, e.Internal, e.NoWait, e.Args)
 
 		if err != nil {
-			log.Fatalln(fmt.Sprintf("Rabbit MQ exchange declare error: %s", err))
+			c.logger.Fatal(fmt.Sprintf("Rabbit MQ exchange declare error: %s", err), logger.Context{"error": err})
 		}
 
-		log.Println(fmt.Sprintf("Rabbit MQ exchange declare %s", e.Name))
+		c.logger.Info(fmt.Sprintf("Rabbit MQ exchange declare %s", e.Name), nil)
 	}
 
 	// Bindings exchange to exchange
@@ -74,10 +75,10 @@ func (c *connection) Setup() {
 			err := ch.ExchangeBind(e.Name, b.RoutingKey, b.Exchange, b.NoWait, b.Args)
 
 			if err != nil {
-				log.Fatalln(fmt.Sprintf("Rabbit MQ exchange bind error: %s", err))
+				c.logger.Fatal(fmt.Sprintf("Rabbit MQ exchange bind error: %s", err), logger.Context{"error": err})
 			}
 
-			log.Println(fmt.Sprintf("Rabbit MQ exchange bind %s to %s", e.Name, b.Exchange))
+			c.logger.Info(fmt.Sprintf("Rabbit MQ exchange bind %s to %s", e.Name, b.Exchange), nil)
 		}
 	}
 
@@ -87,20 +88,20 @@ func (c *connection) Setup() {
 		_, err := ch.QueueDeclare(q.Name, q.Durable, q.AutoDelete, q.Exclusive, q.NoWait, q.Args)
 
 		if err != nil {
-			log.Fatalln(fmt.Sprintf("Rabbit MQ queue declare error: %s", err))
+			c.logger.Fatal(fmt.Sprintf("Rabbit MQ queue declare error: %s", err), logger.Context{"error": err})
 		}
 
-		log.Println(fmt.Sprintf("Rabbit MQ queue declare %s", q.Name))
+		c.logger.Info(fmt.Sprintf("Rabbit MQ queue declare %s", q.Name), nil)
 
 		for _, b := range q.Bindings {
 
 			err := ch.QueueBind(q.Name, b.RoutingKey, b.Exchange, b.NoWait, b.Args)
 
 			if err != nil {
-				log.Fatalln(fmt.Sprintf("Rabbit MQ queue bind error: %s", err))
+				c.logger.Fatal(fmt.Sprintf("Rabbit MQ queue bind error: %s", err), logger.Context{"error": err})
 			}
 
-			log.Println(fmt.Sprintf("Rabbit MQ queue bind %s to exhange %s", q.Name, b.Exchange))
+			c.logger.Info(fmt.Sprintf("Rabbit MQ queue bind %s to exhange %s", q.Name, b.Exchange), nil)
 		}
 	}
 }
@@ -112,13 +113,13 @@ func (c *connection) Connect() {
 	c.conn, err = amqp.Dial(connString)
 
 	if err != nil {
-		log.Println(fmt.Sprintf("Rabbit MQ connection error: %s", err))
+		c.logger.Error(fmt.Sprintf("Rabbit MQ connection error: %s", err), logger.Context{"error": err})
 		c.reconnect()
 		return
 	}
 
 	go func() {
-		log.Println(fmt.Sprintf("Rabbit MQ connection close error: %s", <-c.conn.NotifyClose(make(chan *amqp.Error))))
+		c.logger.Error(fmt.Sprintf("Rabbit MQ connection close error: %s", <-c.conn.NotifyClose(make(chan *amqp.Error))), logger.Context{"error": err})
 
 		c.reconnect()
 		c.restartChan <- true
@@ -131,7 +132,7 @@ func (c *connection) Connect() {
 		c.CreateChannel()
 	}
 
-	log.Println(fmt.Sprintf("Rabbit MQ connected to %s", connString))
+	c.logger.Info(fmt.Sprintf("Rabbit MQ connected to %s", connString), nil)
 }
 
 func (c *connection) Disconnect() {
@@ -147,7 +148,7 @@ func (c *connection) CreateChannel() int {
 	//@todo add reconnect go routine
 
 	if err != nil {
-		log.Fatalln(fmt.Sprintf("Rabbit MQ channel error: %s", err))
+		c.logger.Fatal(fmt.Sprintf("Rabbit MQ channel error: %s", err), logger.Context{"error": err})
 	}
 
 	c.channels = append(c.channels, ch)
@@ -160,8 +161,8 @@ func (c *connection) GetChannel(id int) (ch *amqp.Channel) {
 }
 
 func (c *connection) reconnect() {
-	log.Println("Waiting 1s.")
-	time.Sleep(time.Second)
+	c.logger.Info("Waiting 1s.", nil)
+	time.Sleep(time.Second * 1)
 	c.Disconnect()
 	c.Connect()
 }
@@ -170,6 +171,6 @@ func (c *connection) GetRestartChan() (chan bool) {
 	return c.restartChan
 }
 
-func NewConnection(host string, port int, user string, password string) (r Connection) {
-	return &connection{host: host, port: port, user: user, password: password, restartChan: make(chan bool)}
+func NewConnection(host string, port int, user string, password string, logger logger.Logger) (r Connection) {
+	return &connection{host: host, port: port, user: user, password: password, restartChan: make(chan bool), logger: logger}
 }

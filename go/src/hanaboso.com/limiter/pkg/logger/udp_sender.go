@@ -53,6 +53,7 @@ func (u *updSender) Send(data []byte) {
 
 		if resErr != nil {
 			log.Println(fmt.Sprintf("Udp resolve host error: %s", resErr))
+			return
 		}
 
 		if u.conn == nil {
@@ -61,6 +62,7 @@ func (u *updSender) Send(data []byte) {
 
 			if err != nil {
 				log.Println(fmt.Sprintf("Udp sender coonection error: %s", err))
+				return
 			}
 		}
 
@@ -70,6 +72,7 @@ func (u *updSender) Send(data []byte) {
 			log.Println(fmt.Sprintf("Udp sender write error: %s", err))
 		}
 
+		return
 	}()
 
 }

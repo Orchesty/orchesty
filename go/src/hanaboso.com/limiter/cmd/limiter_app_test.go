@@ -13,6 +13,7 @@ import (
 	"hanaboso.com/limiter/pkg/storage"
 	"hanaboso.com/utils/env"
 	"hanaboso.com/limiter/pkg/limiter"
+	"hanaboso.com/limiter/pkg/logger"
 )
 
 const outputQueue = "limiter.test_output"
@@ -55,7 +56,7 @@ func timeoutExit(t *testing.T, stopTest chan bool) {
 
 func simulateTraffic(t *testing.T, stopTest chan bool) {
 	conn, _ := connectRemotes()
-	publisher := rabbitmq.NewPublisher(conn, os.Getenv("RABBITMQ_INPUT_QUEUE"))
+	publisher := rabbitmq.NewPublisher(conn, os.Getenv("RABBITMQ_INPUT_QUEUE"), logger.GetNullLogger())
 
 	// max 2 requests per 1 second
 	timA := 2
@@ -73,7 +74,7 @@ func simulateTraffic(t *testing.T, stopTest chan bool) {
 		clientCheckCall(t, publisher, "B", timB, valB, !isOverLimitB)
 	}
 
-	consumer := rabbitmq.NewConsumer(conn, outputQueue)
+	consumer := rabbitmq.NewConsumer(conn, outputQueue, logger.GetNullLogger())
 	var rcvdMsgs [5]amqp.Delivery
 	rcvdCount := 0
 	expectedCount := 5
@@ -100,7 +101,7 @@ func simulateTraffic(t *testing.T, stopTest chan bool) {
 // connectRemotes creates connection to rabbitmq and mongo which are necessary for this integration test
 func connectRemotes() (rabbitmq.Connection, *storage.Mongo) {
 	rabbitPort, _ := strconv.Atoi(os.Getenv("RABBITMQ_PORT"))
-	conn := rabbitmq.NewConnection(os.Getenv("RABBITMQ_HOST"), rabbitPort, os.Getenv("RABBITMQ_USER"), os.Getenv("RABBITMQ_PASS"))
+	conn := rabbitmq.NewConnection(os.Getenv("RABBITMQ_HOST"), rabbitPort, os.Getenv("RABBITMQ_USER"), os.Getenv("RABBITMQ_PASS"), logger.GetNullLogger())
 	conn.Connect()
 
 	inQueue := rabbitmq.Queue{Name: os.Getenv("RABBITMQ_INPUT_QUEUE")}
@@ -115,7 +116,7 @@ func connectRemotes() (rabbitmq.Connection, *storage.Mongo) {
 	conn.Setup()
 
 	// Clean database before each test
-	m := storage.NewMongo(os.Getenv("MONGO_HOST"), os.Getenv("MONGO_DB"), os.Getenv("MONGO_COLLECTION"))
+	m := storage.NewMongo(os.Getenv("MONGO_HOST"), os.Getenv("MONGO_DB"), os.Getenv("MONGO_COLLECTION"), logger.GetNullLogger())
 	m.Connect()
 	m.DropCollection()
 
@@ -123,7 +124,7 @@ func connectRemotes() (rabbitmq.Connection, *storage.Mongo) {
 }
 
 func clientCheckCall(t *testing.T, publisher rabbitmq.Publisher, key string, time int, val int, expected bool) bool {
-	limiterHost := "localhost:"+os.Getenv("LIMITER_PORT")
+	limiterHost := "localhost:" + os.Getenv("LIMITER_PORT")
 
 	reqID := stringsUtils.Random(5, true)
 	content := limiter.CreateTcpCheckRequestContent(reqID, key, time, val)
@@ -140,7 +141,7 @@ func clientCheckCall(t *testing.T, publisher rabbitmq.Publisher, key string, tim
 	}
 
 	assert.Equal(t, expected, false)
-	publisher.Publish(newAmqpInputMessage(key, time, val, "test" + key))
+	publisher.Publish(newAmqpInputMessage(key, time, val, "test"+key))
 
 	return false
 }

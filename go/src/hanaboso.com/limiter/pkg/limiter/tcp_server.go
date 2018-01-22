@@ -6,12 +6,12 @@ import (
 	"os"
 	"bufio"
 	"strings"
-	"log"
 	"os/signal"
 	"syscall"
 	"time"
 	"sync"
 	"strconv"
+	"hanaboso.com/limiter/pkg/logger"
 )
 
 const (
@@ -81,13 +81,15 @@ type TcpServer struct {
 	lim      Limiter
 	listener *net.TCPListener
 	wg       *sync.WaitGroup
+	logger   logger.Logger
 }
 
 // NewTcpServer creates new instance of TcpServer struct and returns pointer to it
-func NewTcpServer(dec Limiter) *TcpServer {
+func NewTcpServer(dec Limiter, logger logger.Logger) *TcpServer {
 	return &TcpServer{
-		lim: dec,
-		wg:  &sync.WaitGroup{},
+		lim:    dec,
+		wg:     &sync.WaitGroup{},
+		logger: logger,
 	}
 }
 
@@ -96,10 +98,10 @@ func (srv *TcpServer) Start(port int) {
 	cmdAddr, _ := net.ResolveTCPAddr(connType, connHost+":"+strconv.Itoa(port))
 	listener, err := net.ListenTCP(connType, cmdAddr)
 	if err != nil {
-		log.Fatalln("TCP Server error listening: ", err.Error())
+		srv.logger.Fatal(fmt.Sprintf("TCP Server error listening: %s", err.Error()), logger.Context{"error": err})
 	}
 
-	log.Println("TCP server listening on port:", port)
+	srv.logger.Info(fmt.Sprintf("TCP server listening on port: %s", strconv.Itoa(port)), nil)
 
 	srv.listener = listener
 	defer listener.Close()
@@ -114,7 +116,7 @@ func (srv *TcpServer) Start(port int) {
 			continue
 		}
 		if err != nil {
-			log.Println("Tcp Server error accepting: ", err.Error())
+			srv.logger.Error(fmt.Sprintf("Tcp Server error accepting: %s", err.Error()), nil)
 			continue
 		}
 		srv.wg.Add(1)
@@ -138,10 +140,10 @@ func (srv *TcpServer) handleRequest(conn net.Conn) {
 
 	req, err := populateRequest(conn)
 	if err != nil {
-		fmt.Println("TCP server error reading request:", err.Error())
+		srv.logger.Error(fmt.Sprintf("TCP server error reading request: %s", err), logger.Context{"error": err})
 		return
 	}
-	log.Println("Tcp Server request received:", req)
+	srv.logger.Info(fmt.Sprintf("Tcp Server request received: %s", req), nil)
 	result := ""
 
 	switch req.name {
@@ -156,7 +158,7 @@ func (srv *TcpServer) handleRequest(conn net.Conn) {
 	response := strings.Join([]string{req.name, req.id, result}, ";")
 	conn.Write([]byte(response))
 
-	log.Println("Tcp Server response sent:", response)
+	srv.logger.Info(fmt.Sprintf("Tcp Server response sent: %s", response), nil)
 }
 
 // handleHealthCheckRequest just writes the given string to response which means that it is alive

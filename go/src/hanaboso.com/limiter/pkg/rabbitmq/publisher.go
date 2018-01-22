@@ -2,8 +2,8 @@ package rabbitmq
 
 import (
 	"github.com/streadway/amqp"
-	"log"
 	"fmt"
+	"hanaboso.com/limiter/pkg/logger"
 )
 
 type Publisher interface {
@@ -21,6 +21,7 @@ type publisher struct {
 	exchange   string
 	mandatory  bool
 	immediate  bool
+	logger     logger.Logger
 }
 
 func (p *publisher) getChannel() (*amqp.Channel) {
@@ -35,8 +36,11 @@ func (p *publisher) Publish(msg amqp.Publishing) {
 
 	err := p.getChannel().Publish(p.exchange, p.routingKey, p.mandatory, p.immediate, msg)
 
+	context := logger.CtxFromPublishing(msg)
+
 	if err != nil {
-		log.Println(fmt.Sprintf("Rabbit MQ publish error: %s", err))
+		context["error"] = err
+		p.logger.Error(fmt.Sprintf("Rabbit MQ publish error: %s", err), context)
 
 		v := <-p.connection.GetRestartChan()
 
@@ -45,7 +49,7 @@ func (p *publisher) Publish(msg amqp.Publishing) {
 		}
 	}
 
-	log.Println(fmt.Sprintf("Rabbit MQ publish message to exchange '%s' with routing key '%s'", p.exchange, p.routingKey))
+	p.logger.Info(fmt.Sprintf("Rabbit MQ publish message to exchange '%s' with routing key '%s'", p.exchange, p.routingKey), context)
 }
 
 func (p *publisher) SetRoutingKey(k string) {
@@ -64,6 +68,6 @@ func (p *publisher) SetImmediate(i bool) {
 	p.immediate = i
 }
 
-func NewPublisher(conn Connection, routingKey string) (p Publisher) {
-	return &publisher{connection: conn, routingKey: routingKey, channelId: -1}
+func NewPublisher(conn Connection, routingKey string, logger logger.Logger) (p Publisher) {
+	return &publisher{connection: conn, routingKey: routingKey, channelId: -1, logger: logger}
 }
