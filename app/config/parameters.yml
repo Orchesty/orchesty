@@ -40,7 +40,8 @@ parameters:
 
     # InfluxDb
     influx.host: influxdb
-    influx.port: 8086
+    influx.api_port: 8086
+    influx.udp_port: 8089
     influx.user: admin
     influx.password: password
     influx.database: pipes

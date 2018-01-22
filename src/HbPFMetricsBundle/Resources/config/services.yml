@@ -3,7 +3,7 @@ services:
         class: Hanaboso\PipesFramework\Metrics\Client\MetricsClient
         arguments:
             - "%influx.host%"
-            - "%influx.port%"
+            - "%influx.api_port%"
             - "%influx.user%"
             - "%influx.password%"
             - "%influx.database%"
