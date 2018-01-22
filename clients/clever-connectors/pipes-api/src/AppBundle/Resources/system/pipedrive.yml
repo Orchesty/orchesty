@@ -84,3 +84,12 @@ services:
             - '@hbpf.transport.async_curl_factory'
             - '@rabbit-mq.producer.cm_activator_stream'
 
+    hbpf.connector.pipedrive-get-limit-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Pipedrive\Connector\PipedriveGetLimitsConnector
+        arguments:
+            - '@systems.pipedrive'
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.transport.curl_manager'
+        calls:
+            - ['setLogger', ['@monolog.logger.notification']]
+
