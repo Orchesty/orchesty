@@ -73,14 +73,16 @@ class InfluxDbSender
     private function join(array $items): string
     {
         $result = '';
-        foreach ($items as $key => $value) {
 
-            $result .= sprintf('%s=%s,', $key, $value);
-
-            if (!next($items)) {
-                $result = substr($result, 0, -1);
-            }
+        if (empty($items)) {
+            return $result;
         }
+
+        foreach ($items as $key => $value) {
+            $result .= sprintf('%s=%s,', $key, $value);
+        }
+
+        $result = substr($result, 0, -1);
 
         return $result;
     }

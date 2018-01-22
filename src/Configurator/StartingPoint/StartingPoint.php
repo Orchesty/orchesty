@@ -64,7 +64,7 @@ class StartingPoint implements LoggerAwareInterface
     /**
      * @var InfluxDbSender
      */
-    private $dbSender;
+    private $sender;
 
     /**
      * @var LoggerInterface
@@ -72,22 +72,17 @@ class StartingPoint implements LoggerAwareInterface
     private $logger;
 
     /**
-     * @var array
-     */
-    private $currentMetrics = [];
-
-    /**
      * StartingPoint constructor.
      *
      * @param BunnyManager         $bunnyManager
      * @param CurlManagerInterface $curlManager
-     * @param InfluxDbSender       $dbSender
+     * @param InfluxDbSender       $sender
      */
-    public function __construct(BunnyManager $bunnyManager, CurlManagerInterface $curlManager, InfluxDbSender $dbSender)
+    public function __construct(BunnyManager $bunnyManager, CurlManagerInterface $curlManager, InfluxDbSender $sender)
     {
         $this->bunnyManager = $bunnyManager;
         $this->curlManager  = $curlManager;
-        $this->dbSender     = $dbSender;
+        $this->sender       = $sender;
         $this->logger       = new NullLogger();
     }
 
@@ -271,7 +266,7 @@ class StartingPoint implements LoggerAwareInterface
      */
     protected function runTopology(Topology $topology, Node $node, Headers $headers, string $content = ''): void
     {
-        $this->startMetrics();
+        $currentMetrics = $this->startMetrics();
         $this->validateTopology($topology, $node);
 
         // Create channel and queues
@@ -295,7 +290,7 @@ class StartingPoint implements LoggerAwareInterface
         // Publish messages
         $this->publishInitializeCounterProcess($channel, self::createCounterQueueName(), $headers, $node);
         $this->publishProcessMessage($channel, self::createQueueName($topology, $node), $headers, $content);
-        $this->sendMetrics($correlation_id, $topology, $node);
+        $this->sendMetrics($currentMetrics, $correlation_id, $topology, $node);
     }
 
     /**
@@ -308,8 +303,7 @@ class StartingPoint implements LoggerAwareInterface
     {
         $uri = sprintf('multi-probe:%s/topology/status?topologyId=%s', 8007, $topology->getId());
 
-        $requestDto = new RequestDto(CurlManager::METHOD_GET, new Uri($uri));
-
+        $requestDto  = new RequestDto(CurlManager::METHOD_GET, new Uri($uri));
         $responseDto = $this->curlManager->send($requestDto);
 
         if ($responseDto->getStatusCode() === 200) {
@@ -342,8 +336,12 @@ class StartingPoint implements LoggerAwareInterface
      * @param Headers $headers
      * @param Node    $node
      */
-    private function publishInitializeCounterProcess(Channel $channel, string $queue, Headers $headers,
-                                                     Node $node): void
+    private function publishInitializeCounterProcess(
+        Channel $channel,
+        string $queue,
+        Headers $headers,
+        Node $node
+    ): void
     {
         $content = [
             'result' => [
@@ -383,8 +381,12 @@ class StartingPoint implements LoggerAwareInterface
      * @param Headers $headers
      * @param string  $content
      */
-    private function publishProcessMessage(Channel $channel, string $queue, Headers $headers,
-                                           string $content = ''): void
+    private function publishProcessMessage(
+        Channel $channel,
+        string $queue,
+        Headers $headers,
+        string $content = ''
+    ): void
     {
         $channel->publish(
             $content,
@@ -402,23 +404,24 @@ class StartingPoint implements LoggerAwareInterface
     }
 
     /**
-     *
+     * @return array
      */
-    private function startMetrics(): void
+    private function startMetrics(): array
     {
-        $this->currentMetrics = CurlMetricUtils::getCurrentMetrics();
+        return CurlMetricUtils::getCurrentMetrics();
     }
 
     /**
+     * @param array    $currentMetrics
      * @param string   $correlationId
      * @param Topology $topology
      * @param Node     $node
      */
-    private function sendMetrics(string $correlationId, Topology $topology, Node $node): void
+    private function sendMetrics(array $currentMetrics, string $correlationId, Topology $topology, Node $node): void
     {
-        $times = CurlMetricUtils::getTimes($this->currentMetrics);
+        $times = CurlMetricUtils::getTimes($currentMetrics);
 
-        $this->dbSender->send(
+        $this->sender->send(
             [
                 MetricsEnum::REQUEST_TOTAL_DURATION => $times[CurlMetricUtils::KEY_REQUEST_DURATION],
                 MetricsEnum::CPU_USER_TIME          => $times[CurlMetricUtils::KEY_USER_TIME],

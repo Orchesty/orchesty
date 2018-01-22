@@ -434,7 +434,6 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
     private function sendMetrics(Message $message, array $startMetrics): void
     {
         $times = CurlMetricUtils::getTimes($startMetrics);
-        $this->logger->info('Batch', ['BatchMetrics' => json_encode($times)]);
         $this->sender->send(
             [
                 MetricsEnum::REQUEST_TOTAL_DURATION => $times[CurlMetricUtils::KEY_REQUEST_DURATION],
