@@ -6,12 +6,14 @@ use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Form\Field;
 use CleverConnectors\AppBundle\Model\Form\Form;
+use CleverConnectors\AppBundle\Model\Limits\SystemLimitDto;
 use CleverConnectors\AppBundle\Model\Requester\RequesterInterface;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\ShopifySystem;
 use CleverConnectors\AppBundle\Model\Webhook\WebhookSubscribes;
 use Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
+use Hanaboso\PipesFramework\Commons\Utils\PipesHeaders;
 use Tests\KernelTestCaseAbstract;
 
 /**
@@ -47,10 +49,13 @@ final class ShopifySystemTest extends KernelTestCaseAbstract
             $this->system = new ShopifySystem($provider);
 
             $this->systemInstall = new SystemInstall();
-            $this->systemInstall->setSettings([
-                'system_url'   => 'systemUrl',
-                'access_token' => self::ACCESS_TOKEN,
-            ]);
+            $this->systemInstall
+                ->setUser('user123')
+                ->setSystem('sys123')
+                ->setSettings([
+                    'system_url'   => 'systemUrl',
+                    'access_token' => self::ACCESS_TOKEN,
+                ]);
         }
     }
 
@@ -135,6 +140,32 @@ final class ShopifySystemTest extends KernelTestCaseAbstract
         self::assertEquals(5, count($form));
         self::assertEquals('system_url', $form[0]['key']);
         self::assertEquals(Field::TEXT, $form[0]['type']);
+    }
+
+    /**
+     *
+     */
+    public function testGetLimit(): void
+    {
+        $systemLimit = $this->system->getLimit($this->systemInstall);
+
+        $this->assertEquals([
+            PipesHeaders::createKey(SystemLimitDto::LIMIT_KEY_HEADER)   => 'user123-sys123',
+            PipesHeaders::createKey(SystemLimitDto::LIMIT_TIME_HEADER)  => 20,
+            PipesHeaders::createKey(SystemLimitDto::LIMIT_VALUE_HEADER) => 40,
+            SystemLimitDto::LIMIT_LAST_UPDATE                           => NULL,
+        ], $systemLimit->toArray());
+    }
+
+    /**
+     *
+     */
+    public function testSaveLimit(): void
+    {
+        $systemInstall = new SystemInstall();
+        $systemInstall = $this->system->saveLimit($systemInstall, []);
+
+        $this->assertArrayNotHasKey(SystemInstall::SYSTEM_LIMIT_VALUE, $systemInstall->getSettings());
     }
 
 }
