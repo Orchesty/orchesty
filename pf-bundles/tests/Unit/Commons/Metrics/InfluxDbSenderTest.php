@@ -49,11 +49,11 @@ final class InfluxDbSenderTest extends TestCase
 
         $service = new InfluxDbSender($sender, 'test_measurement');
 
-        $fields = ['foo' => 'bar"s', 'baz' => 10, 'bool' => TRUE, 'nil' => NULL];
+        $fields = ['foo' => 'bar"s', 'baz' => 10, 'a' => 0, 'bool' => TRUE, 'nil' => NULL];
         $tags   = ['environment' => 'test', 'host' => 'localhost'];
 
         $message  = $service->createMessage($fields, $tags);
-        $expected = 'test_measurement,environment=test,host=localhost foo="bar\"s",baz=10,bool=true,nil="null"';
+        $expected = 'test_measurement,environment=test,host=localhost foo="bar\"s",baz=10,a=0,bool=true,nil="null"';
 
         // expected is appended by current timestamp
         $this->assertStringStartsWith($expected, $message);
