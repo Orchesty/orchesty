@@ -9,6 +9,9 @@ type Context map[string]interface{}
 type Logger interface {
 	AddHandler(handler Handler)
 	Log(severity string, msg string, context Context)
+	Info(msg string, context Context)
+	Error(msg string, context Context)
+	Warning(msg string, context Context)
 }
 
 // Formatter
@@ -39,6 +42,18 @@ func (l *logger) Log(severity string, msg string, context Context) {
 	for _, h := range l.handlers {
 		h.Handle(context)
 	}
+}
+
+func (l *logger) Info(msg string, context Context) {
+	l.Log("info", msg, context)
+}
+
+func (l *logger) Error(msg string, context Context) {
+	l.Log("error", msg, context)
+}
+
+func (l *logger) Warning(msg string, context Context) {
+	l.Log("warning", msg, context)
 }
 
 func (l *logger) AddHandler(handler Handler) {
