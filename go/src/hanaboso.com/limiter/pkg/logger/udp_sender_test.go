@@ -40,14 +40,7 @@ func TestUpdSender_Send(t *testing.T) {
 	}()
 
 	s := NewUpdSender("localhost", "5120")
-	s.Send("test")
+	s.Send([]byte("test"))
 
 	<-quitTest
-}
-
-func TestNewUpdSender(t *testing.T) {
-	s := NewUpdSender("xyz", "5120")
-	err := s.Send("test")
-
-	assert.NotNil(t, err)
 }

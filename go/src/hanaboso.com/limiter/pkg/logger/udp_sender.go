@@ -7,15 +7,12 @@ import (
 	"time"
 )
 
-type Sender interface {
-	Send(data string) error
-}
-
 type updSender struct {
-	host string
-	port string
-	addr *net.UDPAddr
-	conn *net.UDPConn
+	host        string
+	port        string
+	refreshTime int
+	addr        *net.UDPAddr
+	conn        *net.UDPConn
 }
 
 func (u *updSender) findHost(url string) error {
@@ -38,7 +35,7 @@ func (u *updSender) resolveHost(url string) error {
 		return err
 	}
 
-	ticker := time.NewTicker(time.Minute * 1)
+	ticker := time.NewTicker(time.Second * time.Duration(u.refreshTime))
 	go func() {
 		for t := range ticker.C {
 			u.findHost(url)
@@ -49,7 +46,7 @@ func (u *updSender) resolveHost(url string) error {
 	return nil
 }
 
-func (u *updSender) Send(data string) error {
+func (u *updSender) Send(data []byte) error {
 
 	resErr := u.resolveHost(fmt.Sprintf("%s:%s", u.host, u.port))
 
@@ -67,7 +64,7 @@ func (u *updSender) Send(data string) error {
 		}
 	}
 
-	_, err := u.conn.Write([]byte(data))
+	_, err := u.conn.Write(data)
 
 	if err != nil {
 		log.Println(fmt.Sprintf("Udp sender write error: %s", err))
@@ -78,5 +75,5 @@ func (u *updSender) Send(data string) error {
 }
 
 func NewUpdSender(host string, port string) Sender {
-	return &updSender{host: host, port: port}
+	return &updSender{host: host, port: port, refreshTime: 60}
 }
