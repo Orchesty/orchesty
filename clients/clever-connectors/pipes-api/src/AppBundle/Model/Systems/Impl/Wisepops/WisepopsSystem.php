@@ -6,6 +6,8 @@ use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\SystemTypeEnum;
 use CleverConnectors\AppBundle\Model\Form\Field;
 use CleverConnectors\AppBundle\Model\Form\Form;
+use CleverConnectors\AppBundle\Model\Limits\SystemLimitDto;
+use CleverConnectors\AppBundle\Model\Limits\SystemLimitInterface;
 use CleverConnectors\AppBundle\Model\Requester\RequesterInterface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\AuthorizationInterface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\Traits\AuthorizationTrait;
@@ -18,6 +20,7 @@ use CleverConnectors\AppBundle\Model\Webhook\Traits\WebhookSystemTrait;
 use CleverConnectors\AppBundle\Model\Webhook\WebhookSubscribes;
 use CleverConnectors\AppBundle\Model\Webhook\WebhookSystemInterface;
 use CleverConnectors\AppBundle\Utils\TopologyNameUtils;
+use DateTime;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 
@@ -26,7 +29,7 @@ use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Wisepops
  */
-class WisepopsSystem implements WebhookSystemInterface, AuthorizationInterface
+class WisepopsSystem implements WebhookSystemInterface, AuthorizationInterface, SystemLimitInterface
 {
 
     use SystemTrait {
@@ -151,9 +154,18 @@ class WisepopsSystem implements WebhookSystemInterface, AuthorizationInterface
             $this->prepareValue(self::API_KEY, $systemInstall->getSettings()),
             TRUE
         );
+        $field2 = new Field(
+            Field::NUMBER,
+            SystemInstall::SYSTEM_LIMIT_VALUE,
+            'Requests limit.',
+            $this->prepareValue(SystemInstall::SYSTEM_LIMIT_VALUE, $systemInstall->getSettings()) ?? 500,
+            TRUE
+        );
 
         $form = new Form();
-        $form->addField($field1);
+        $form
+            ->addField($field1)
+            ->addField($field2);
 
         return $form->toArray();
     }
@@ -207,6 +219,35 @@ class WisepopsSystem implements WebhookSystemInterface, AuthorizationInterface
         $this->setSettings($systemInstall, [SystemInstall::FORMS => $data]);
 
         return $this->toArray($systemInstall);
+    }
+
+    /**
+     * @param SystemInstall $systemInstall
+     *
+     * @return SystemLimitDto
+     */
+    public function getLimit(SystemInstall $systemInstall): SystemLimitDto
+    {
+        $sett = $systemInstall->getSettings();
+
+        return new SystemLimitDto(
+            $systemInstall,
+            SystemLimitDto::LIMIT_FOR_USER,
+            2592000,
+            intval($sett[SystemInstall::SYSTEM_LIMIT_VALUE]) ?? 500,
+            new DateTime()
+        );
+    }
+
+    /**
+     * @param SystemInstall $systemInstall
+     * @param array         $data
+     *
+     * @return SystemInstall
+     */
+    public function saveLimit(SystemInstall $systemInstall, array $data): SystemInstall
+    {
+        return $systemInstall;
     }
 
     /**
