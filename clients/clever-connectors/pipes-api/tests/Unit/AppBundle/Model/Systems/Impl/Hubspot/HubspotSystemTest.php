@@ -50,6 +50,7 @@ final class HubspotSystemTest extends KernelTestCaseAbstract
 
             $this->systemInstall = new SystemInstall();
             $this->systemInstall
+                ->setSystem('hubspot')
                 ->setUser('user123')
                 ->setToken('token123');
             $this->systemInstall->setSettings([
@@ -171,6 +172,29 @@ final class HubspotSystemTest extends KernelTestCaseAbstract
             'Authorization' => 'Bearer abc123',
             'Content-Type'  => 'application/json',
         ], $result->getHeaders());
+    }
+
+    /**
+     *
+     */
+    public function testGetLimit(): void
+    {
+        $data = $this->system->getLimit($this->systemInstall)->toArray();
+        unset($data['limit-last-update']);
+
+        $this->assertEquals([
+            'pf-limit-key'   => 'hubspot',
+            'pf-limit-value' => 10,
+            'pf-limit-time'  => 1,
+        ], $data);
+    }
+
+    /**
+     *
+     */
+    public function testSaveLimit(): void
+    {
+        $this->assertInstanceOf(SystemInstall::class, $this->system->saveLimit($this->systemInstall));
     }
 
 }
