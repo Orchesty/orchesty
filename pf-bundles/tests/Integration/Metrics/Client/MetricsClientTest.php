@@ -37,7 +37,6 @@ final class MetricsClientTest extends KernelTestCaseAbstract
     }
 
     /**
-     *
      * @throws MetricsException
      * @throws Database\Exception
      */
@@ -57,7 +56,6 @@ final class MetricsClientTest extends KernelTestCaseAbstract
     }
 
     /**
-     *
      * @throws MetricsException
      * @throws Database\Exception
      */
@@ -80,7 +78,7 @@ final class MetricsClientTest extends KernelTestCaseAbstract
     private function getMetricsClient(): MetricsClient
     {
         $host = $this->container->getParameter('influx.host');
-        $port = $this->container->getParameter('influx.port');
+        $port = $this->container->getParameter('influx.api_port');
         $user = $this->container->getParameter('influx.user');
         $pass = $this->container->getParameter('influx.password');
         $db   = $this->container->getParameter('influx.database');

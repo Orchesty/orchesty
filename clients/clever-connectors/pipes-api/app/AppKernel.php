@@ -12,6 +12,7 @@ use Hanaboso\PipesFramework\HbPFConnectorBundle\HbPFConnectorBundle;
 use Hanaboso\PipesFramework\HbPFCustomNodeBundle\HbPFCustomNodeBundle;
 use Hanaboso\PipesFramework\HbPFMapperBundle\HbPFMapperBundle;
 use Hanaboso\PipesFramework\HbPFMetricsBundle\HbPFMetricsBundle;
+use Hanaboso\PipesFramework\HbPFNotificationBundle\HbPFNotificationBundle;
 use Hanaboso\PipesFramework\HbPFRabbitMqBundle\HbPFRabbitMqBundle;
 use Hanaboso\PipesFramework\HbPFUserBundle\HbPFUserBundle;
 use JMS\SerializerBundle\JMSSerializerBundle;
@@ -60,6 +61,7 @@ class AppKernel extends Kernel
             new HbPFConfiguratorBundle(),
             new HbPFUserBundle(),
             new HbPFMetricsBundle(),
+            new HbPFNotificationBundle()
         ];
 
         if (in_array($this->getEnvironment(), ['dev', 'test'], TRUE)) {

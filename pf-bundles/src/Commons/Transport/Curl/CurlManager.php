@@ -96,8 +96,9 @@ class CurlManager implements CurlManagerInterface, LoggerAwareInterface
      */
     public function send(RequestDto $dto, array $options = []): ResponseDto
     {
+        $startTimes = CurlMetricUtils::getCurrentMetrics();
+        $request    = new Request($dto->getMethod(), $dto->getUri(), $dto->getHeaders(), $dto->getBody());
         try {
-            $request = new Request($dto->getMethod(), $dto->getUri(), $dto->getHeaders(), $dto->getBody());
 
             $this->logger->info(TransportFormatter::requestToString(
                 $dto->getMethod(),
@@ -108,7 +109,6 @@ class CurlManager implements CurlManagerInterface, LoggerAwareInterface
 
             $client = $this->curlClientFactory->create();
 
-            $startTimes  = CurlMetricUtils::getCurrentMetrics();
             $psrResponse = $client->send($request, $this->prepareOptions($options));
             $times       = CurlMetricUtils::getTimes($startTimes);
             CurlMetricUtils::sendCurlMetrics($this->influxSender, $times, $request->getUri()->__toString());
@@ -129,6 +129,8 @@ class CurlManager implements CurlManagerInterface, LoggerAwareInterface
 
             unset($psrResponse);
         } catch (RequestException $exception) {
+            $times = CurlMetricUtils::getTimes($startTimes);
+            CurlMetricUtils::sendCurlMetrics($this->influxSender, $times, $request->getUri()->__toString());
             $response = $exception->getResponse();
             $message  = $exception->getMessage();
             if ($response) {
@@ -144,6 +146,8 @@ class CurlManager implements CurlManagerInterface, LoggerAwareInterface
                 $response
             );
         } catch (Exception $exception) {
+            $times = CurlMetricUtils::getTimes($startTimes);
+            CurlMetricUtils::sendCurlMetrics($this->influxSender, $times, $request->getUri()->__toString());
             $this->logger->error(sprintf('CurlManager::send() failed: %s', $exception->getMessage()));
             throw new CurlException(
                 sprintf('CurlManager::send() failed: %s', $exception->getMessage()),
