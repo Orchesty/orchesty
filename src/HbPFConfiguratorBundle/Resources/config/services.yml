@@ -5,6 +5,7 @@ services:
         arguments:
             - '@rabbit-mq.manager'
             - '@hbpf.transport.curl_manager'
+            - '@hbpf.influxdb_sender'
         calls:
             - ['setLogger', ['@monolog.logger.commons']]
 

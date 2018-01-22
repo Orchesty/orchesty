@@ -40,13 +40,11 @@ class ControllerUtils
     public static function createHeaders(array $headers = [], ?Throwable $e = NULL): array
     {
         $code    = 0;
-        $status  = 'OK';
         $message = '';
         $detail  = '';
 
         if ($e) {
             $code    = 2001;
-            $status  = 'ERROR';
             $message = $e->getMessage();
             $detail  = json_encode($e->getTraceAsString());
         }

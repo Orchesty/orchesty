@@ -10,6 +10,8 @@
 namespace Tests\Unit\Configurator\StartingPoint;
 
 use Bunny\Channel;
+use Exception;
+use Hanaboso\PipesFramework\Commons\Metrics\InfluxDbSender;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Commons\Utils\PipesHeaders;
@@ -54,6 +56,11 @@ final class StartingPointTest extends TestCase
     private $curlManager;
 
     /**
+     * @var InfluxDbSender
+     */
+    private $influxDb;
+
+    /**
      *
      */
     public function setUp(): void
@@ -80,28 +87,32 @@ final class StartingPointTest extends TestCase
             ->setEnabled(TRUE);
 
         $this->curlManager = $this->createMock(CurlManagerInterface::class);
+        $this->influxDb    = $this->createMock(InfluxDbSender::class);
     }
 
     /**
      * @covers StartingPoint::run()
+     * @throws Exception
      */
     public function testRun(): void
     {
-        $startingPoint = new StartingPoint($this->bunnyManager, $this->curlManager);
+        $startingPoint = new StartingPoint($this->bunnyManager, $this->curlManager, $this->influxDb);
         $startingPoint->run($this->topology, $this->node);
     }
 
     /**
      * @covers StartingPoint::runWithRequest()
+     * @throws Exception
      */
     public function testRunWithRequest(): void
     {
-        $startingPoint = new StartingPoint($this->bunnyManager, $this->curlManager);
+        $startingPoint = new StartingPoint($this->bunnyManager, $this->curlManager, $this->influxDb);
         $startingPoint->runWithRequest(Request::createFromGlobals(), $this->topology, $this->node);
     }
 
     /**
      * @covers StartingPoint::validateTopology()
+     * @throws Exception
      */
     public function testValidateBadNode(): void
     {
@@ -109,12 +120,13 @@ final class StartingPointTest extends TestCase
 
         $this->expectException(StartingPointException::class);
         $this->expectExceptionMessage('The node[id=1] does not belong to the topology[id=1].');
-        $startingPoint = new StartingPoint($this->bunnyManager, $this->curlManager);
+        $startingPoint = new StartingPoint($this->bunnyManager, $this->curlManager, $this->influxDb);
         $startingPoint->run($this->topology, $this->node);
     }
 
     /**
      * @covers StartingPoint::validateTopology()
+     * @throws Exception
      */
     public function testValidateEnableTopology(): void
     {
@@ -122,12 +134,13 @@ final class StartingPointTest extends TestCase
 
         $this->expectException(StartingPointException::class);
         $this->expectExceptionMessage('The topology[id=1] does not enable.');
-        $startingPoint = new StartingPoint($this->bunnyManager, $this->curlManager);
+        $startingPoint = new StartingPoint($this->bunnyManager, $this->curlManager, $this->influxDb);
         $startingPoint->run($this->topology, $this->node);
     }
 
     /**
      * @covers StartingPoint::validateTopology()
+     * @throws Exception
      */
     public function testValidateEnableNode(): void
     {
@@ -135,7 +148,7 @@ final class StartingPointTest extends TestCase
 
         $this->expectException(StartingPointException::class);
         $this->expectExceptionMessage('The node[id=1] does not enable.');
-        $startingPoint = new StartingPoint($this->bunnyManager, $this->curlManager);
+        $startingPoint = new StartingPoint($this->bunnyManager, $this->curlManager, $this->influxDb);
         $startingPoint->run($this->topology, $this->node);
     }
 
@@ -157,7 +170,7 @@ final class StartingPointTest extends TestCase
         $topology = $this->createMock(Topology::class);
         $topology->method('getId')->willReturn('13');
         $topology->method('getName')->willReturn('name');
-        $startingPoint = new StartingPoint($this->bunnyManager, $this->curlManager);
+        $startingPoint = new StartingPoint($this->bunnyManager, $this->curlManager, $this->influxDb);
         $headers       = $startingPoint->createHeaders($topology);
 
         $this->assertCount(9, $headers->getHeaders());
@@ -177,7 +190,7 @@ final class StartingPointTest extends TestCase
      */
     public function testCreateBodyFromRequestXml(): void
     {
-        $startingPoint = new StartingPoint($this->bunnyManager, $this->curlManager);
+        $startingPoint = new StartingPoint($this->bunnyManager, $this->curlManager, $this->influxDb);
 
         $request = new Request([], [], [], [], [], [
             'CONTENT_TYPE' => 'application/xml',
@@ -205,7 +218,7 @@ final class StartingPointTest extends TestCase
      */
     public function testCreateBodyFromRequestJson(): void
     {
-        $startingPoint = new StartingPoint($this->bunnyManager, $this->curlManager);
+        $startingPoint = new StartingPoint($this->bunnyManager, $this->curlManager, $this->influxDb);
 
         $request = new Request([], [], [], [], [], [
             'CONTENT_TYPE' => 'application/json',
@@ -224,7 +237,7 @@ final class StartingPointTest extends TestCase
      */
     public function testCreateBodyFromRequestCsv(): void
     {
-        $startingPoint = new StartingPoint($this->bunnyManager, $this->curlManager);
+        $startingPoint = new StartingPoint($this->bunnyManager, $this->curlManager, $this->influxDb);
 
         $request = new Request([], [], [], [], [], [
             'CONTENT_TYPE' => 'text/csv',
@@ -243,7 +256,7 @@ final class StartingPointTest extends TestCase
      */
     public function testCreateBodyEmpty(): void
     {
-        $startingPoint = new StartingPoint($this->bunnyManager, $this->curlManager);
+        $startingPoint = new StartingPoint($this->bunnyManager, $this->curlManager, $this->influxDb);
         $body          = $startingPoint->createBody();
 
         $this->assertSame("", $body);
@@ -254,7 +267,7 @@ final class StartingPointTest extends TestCase
      */
     public function testCreateBody(): void
     {
-        $startingPoint = new StartingPoint($this->bunnyManager, $this->curlManager);
+        $startingPoint = new StartingPoint($this->bunnyManager, $this->curlManager, $this->influxDb);
         $body          = $startingPoint->createBody(json_encode(['param' => 'test']));
 
         $body = json_decode($body, TRUE);
@@ -278,7 +291,7 @@ final class StartingPointTest extends TestCase
             new ResponseDto(200, '', $responseBody, ['application/json'])
         );
 
-        $startingPoint = new StartingPoint($this->bunnyManager, $this->curlManager);
+        $startingPoint = new StartingPoint($this->bunnyManager, $this->curlManager, $this->influxDb);
         $body          = $startingPoint->runTest($this->topology);
 
         $this->assertEquals(json_decode($responseBody, TRUE), $body);
@@ -294,7 +307,7 @@ final class StartingPointTest extends TestCase
             new ResponseDto(400, 'Error', '', ['application/json'])
         );
 
-        $startingPoint = new StartingPoint($this->bunnyManager, $this->curlManager);
+        $startingPoint = new StartingPoint($this->bunnyManager, $this->curlManager, $this->influxDb);
         $this->expectException(StartingPointException::class);
         $this->expectExceptionMessage('Request error: Error');
         $startingPoint->runTest($this->topology);

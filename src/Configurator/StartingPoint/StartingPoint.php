@@ -14,11 +14,14 @@ use DateTime;
 use DateTimeZone;
 use Exception;
 use GuzzleHttp\Psr7\Uri;
+use Hanaboso\PipesFramework\Commons\Enum\MetricsEnum;
+use Hanaboso\PipesFramework\Commons\Metrics\InfluxDbSender;
 use Hanaboso\PipesFramework\Commons\Metrics\SystemMetrics;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Commons\Transport\Utils\TransportFormatter;
+use Hanaboso\PipesFramework\Commons\Utils\CurlMetricUtils;
 use Hanaboso\PipesFramework\Commons\Utils\PipesHeaders;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
@@ -59,20 +62,32 @@ class StartingPoint implements LoggerAwareInterface
     private $curlManager;
 
     /**
+     * @var InfluxDbSender
+     */
+    private $dbSender;
+
+    /**
      * @var LoggerInterface
      */
     private $logger;
+
+    /**
+     * @var array
+     */
+    private $currentMetrics = [];
 
     /**
      * StartingPoint constructor.
      *
      * @param BunnyManager         $bunnyManager
      * @param CurlManagerInterface $curlManager
+     * @param InfluxDbSender       $dbSender
      */
-    public function __construct(BunnyManager $bunnyManager, CurlManagerInterface $curlManager)
+    public function __construct(BunnyManager $bunnyManager, CurlManagerInterface $curlManager, InfluxDbSender $dbSender)
     {
         $this->bunnyManager = $bunnyManager;
         $this->curlManager  = $curlManager;
+        $this->dbSender     = $dbSender;
         $this->logger       = new NullLogger();
     }
 
@@ -256,6 +271,7 @@ class StartingPoint implements LoggerAwareInterface
      */
     protected function runTopology(Topology $topology, Node $node, Headers $headers, string $content = ''): void
     {
+        $this->startMetrics();
         $this->validateTopology($topology, $node);
 
         // Create channel and queues
@@ -264,8 +280,9 @@ class StartingPoint implements LoggerAwareInterface
         $channel->queueDeclare(self::createQueueName($topology, $node), FALSE, TRUE);
         $channel->queueDeclare(self::createCounterQueueName(), FALSE, TRUE);
 
+        $correlation_id = PipesHeaders::get(PipesHeaders::CORRELATION_ID, $headers->getHeaders());
         $this->logger->info('Starting point info message', [
-            'correlation_id' => PipesHeaders::get(PipesHeaders::CORRELATION_ID, $headers->getHeaders()),
+            'correlation_id' => $correlation_id,
             'process_id'     => PipesHeaders::get(PipesHeaders::PROCESS_ID, $headers->getHeaders()),
             'parent_id'      => PipesHeaders::get(PipesHeaders::PARENT_ID, $headers->getHeaders()),
             'node_id'        => $node->getId(),
@@ -278,6 +295,7 @@ class StartingPoint implements LoggerAwareInterface
         // Publish messages
         $this->publishInitializeCounterProcess($channel, self::createCounterQueueName(), $headers, $node);
         $this->publishProcessMessage($channel, self::createQueueName($topology, $node), $headers, $content);
+        $this->sendMetrics($correlation_id, $topology, $node);
     }
 
     /**
@@ -380,6 +398,38 @@ class StartingPoint implements LoggerAwareInterface
                 $this->prepareMessage($content, '', $queue, $headers->getHeaders()),
                 PipesHeaders::debugInfo($headers->getHeaders())
             )
+        );
+    }
+
+    /**
+     *
+     */
+    private function startMetrics(): void
+    {
+        $this->currentMetrics = CurlMetricUtils::getCurrentMetrics();
+    }
+
+    /**
+     * @param string   $correlationId
+     * @param Topology $topology
+     * @param Node     $node
+     */
+    private function sendMetrics(string $correlationId, Topology $topology, Node $node): void
+    {
+        $times = CurlMetricUtils::getTimes($this->currentMetrics);
+
+        $this->dbSender->send(
+            [
+                MetricsEnum::REQUEST_TOTAL_DURATION => $times[CurlMetricUtils::KEY_REQUEST_DURATION],
+                MetricsEnum::CPU_USER_TIME          => $times[CurlMetricUtils::KEY_USER_TIME],
+                MetricsEnum::CPU_KERNEL_TIME        => $times[CurlMetricUtils::KEY_KERNEL_TIME],
+            ],
+            [
+                MetricsEnum::HOST           => gethostname(),
+                MetricsEnum::TOPOLOGY_ID    => $topology->getId(),
+                MetricsEnum::CORRELATION_ID => $correlationId,
+                MetricsEnum::NODE_ID        => $node->getId(),
+            ]
         );
     }
 
