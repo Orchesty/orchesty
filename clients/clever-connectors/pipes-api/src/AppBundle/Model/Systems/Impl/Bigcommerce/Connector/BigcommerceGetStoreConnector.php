@@ -3,7 +3,6 @@
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Bigcommerce\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
-use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Bigcommerce\BigcommerceSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use CleverConnectors\AppBundle\Traits\LoggerTrait;
@@ -23,16 +22,21 @@ use Psr\Log\LoggerAwareInterface;
 use Psr\Log\NullLogger;
 
 /**
- * Class BigcommerceGetCustomerConnector
+ * Class BigcommerceGetStoreConnector
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Bigcommerce\Connector
  */
-class BigcommerceGetCustomerConnector implements ConnectorInterface, LoggerAwareInterface
+class BigcommerceGetStoreConnector implements ConnectorInterface, LoggerAwareInterface
 {
 
     use LoggerTrait;
 
-    private const CUSTOMER_URL = 'customers/%s';
+    private const STORE_URL = 'store';
+
+    /**
+     * @var DocumentManager
+     */
+    private $dm;
 
     /**
      * @var BigcommerceSystem
@@ -50,7 +54,7 @@ class BigcommerceGetCustomerConnector implements ConnectorInterface, LoggerAware
     private $systemInstallRepository;
 
     /**
-     * BigcommerceGetCustomerConnector constructor.
+     * BigcommerceGetStoreConnector constructor.
      *
      * @param BigcommerceSystem    $system
      * @param DocumentManager      $dm
@@ -59,6 +63,7 @@ class BigcommerceGetCustomerConnector implements ConnectorInterface, LoggerAware
     public function __construct(BigcommerceSystem $system, DocumentManager $dm, CurlManagerInterface $manager)
     {
         $this->system                  = $system;
+        $this->dm                      = $dm;
         $this->manager                 = $manager;
         $this->systemInstallRepository = $dm->getRepository(SystemInstall::class);
         $this->logger                  = new NullLogger();
@@ -69,40 +74,7 @@ class BigcommerceGetCustomerConnector implements ConnectorInterface, LoggerAware
      */
     public function getId(): string
     {
-        return 'bigcommerce-get-customer-connector';
-    }
-
-    /**
-     * @param ProcessDto $dto
-     *
-     * @return ProcessDto
-     * @throws CleverConnectorsException
-     * @throws CurlException
-     */
-    public function processAction(ProcessDto $dto): ProcessDto
-    {
-        $data = Json::decode($dto->getData(), TRUE);
-
-        if (!is_array($data) || !isset($data['id'])) {
-            throw new CleverConnectorsException(
-                'Empty data or bad format.',
-                CleverConnectorsException::MISSING_DATA
-            );
-        }
-
-        $systemInstall = $this->systemInstallRepository->getSystemInstallFromHeaders($dto->getHeaders());
-        $requestDto    = $this->system->getRequestDto($systemInstall, CurlManager::METHOD_GET);
-        $requestDto->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()));
-
-        try {
-            $response = $this->manager->send($requestDto->setUri(
-                new Uri(sprintf($requestDto->getUri(TRUE) . self::CUSTOMER_URL, $data['id']))
-            ));
-        } catch (CurlException $e) {
-            return $this->connectorError($e, $this->system, $systemInstall, $dto);
-        }
-
-        return $dto->setData($response->getBody());
+        return 'bigcommerce-get-store-connector';
     }
 
     /**
@@ -117,6 +89,30 @@ class BigcommerceGetCustomerConnector implements ConnectorInterface, LoggerAware
             'Bigcommerce has no support for action!',
             ConnectorException::CONNECTOR_DOES_NOT_HAVE_PROCESS_EVENT
         );
+    }
+
+    /**
+     * @param ProcessDto $dto
+     *
+     * @return ProcessDto
+     */
+    public function processAction(ProcessDto $dto): ProcessDto
+    {
+        $systemInstall = $this->systemInstallRepository->getSystemInstallFromHeaders($dto->getHeaders());
+        $requestDto    = $this->system->getRequestDto($systemInstall, CurlManager::METHOD_GET);
+        $requestDto->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()));
+
+        try {
+            $response = $this->manager->send($requestDto->setUri(
+                new Uri(sprintf($requestDto->getUri(TRUE) . self::STORE_URL))
+            ));
+            $this->system->saveLimit($systemInstall, Json::decode($response->getBody(), TRUE));
+            $this->dm->flush();
+        } catch (CurlException $e) {
+            return $this->connectorError($e, $this->system, $systemInstall, $dto);
+        }
+
+        return $dto;
     }
 
     /**

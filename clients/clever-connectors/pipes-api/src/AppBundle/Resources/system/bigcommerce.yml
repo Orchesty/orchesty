@@ -23,6 +23,15 @@ services:
         calls:
             - [setLogger, ['@monolog.logger.notification']]
 
+    hbpf.connector.bigcommerce-get-store-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Bigcommerce\Connector\BigcommerceGetStoreConnector
+        arguments:
+            - '@systems.bigcommerce'
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.transport.curl_manager'
+        calls:
+            - [setLogger, ['@monolog.logger.notification']]
+
     hbpf.connector.bigcommerce-create-customer-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Bigcommerce\Connector\BigcommerceCreateCustomerConnector
         arguments:

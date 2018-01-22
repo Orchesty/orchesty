@@ -4,11 +4,14 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\Bigcommerce;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\SystemTypeEnum;
+use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\CMEvents\CMEventObject;
 use CleverConnectors\AppBundle\Model\CMEvents\CMEventSystemInterface;
 use CleverConnectors\AppBundle\Model\CMEvents\Traits\CMEventSystemTrait;
 use CleverConnectors\AppBundle\Model\Form\Field;
 use CleverConnectors\AppBundle\Model\Form\Form;
+use CleverConnectors\AppBundle\Model\Limits\SystemLimitDto;
+use CleverConnectors\AppBundle\Model\Limits\SystemLimitInterface;
 use CleverConnectors\AppBundle\Model\Requester\RequesterInterface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\AuthorizationInterface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\Traits\AuthorizationTrait;
@@ -20,21 +23,32 @@ use CleverConnectors\AppBundle\Model\Webhook\Traits\WebhookSystemTrait;
 use CleverConnectors\AppBundle\Model\Webhook\WebhookSubscribes;
 use CleverConnectors\AppBundle\Model\Webhook\WebhookSystemInterface;
 use CleverConnectors\AppBundle\Utils\TopologyNameUtils;
+use DateTime;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
+use Nette\Utils\Strings;
 
 /**
  * Class BigcommerceSystem
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Bigcommerce
  */
-class BigcommerceSystem implements WebhookSystemInterface, AuthorizationInterface, CMEventSystemInterface
+class BigcommerceSystem implements WebhookSystemInterface, AuthorizationInterface, CMEventSystemInterface, SystemLimitInterface
 {
 
     public const  STORE_ID     = 'store_id';
     private const SYSTEM_URL   = 'https://api.bigcommerce.com/stores/%s/v2/';
     private const CLIENT_ID    = 'client_id';
     private const ACCESS_TOKEN = 'access_token';
+
+    private const SYSTEM_PLAN         = 'system-plan';
+    private const SYSTEM_LIMIT_UPDATE = 'system-limit-update';
+
+    private const PLAN_STANDARD   = 'standard';
+    private const PLAN_PLUS       = 'plus';
+    private const PLAN_PRO        = 'pro';
+    private const PLAN_ENTERPRISE = 'enterprise';
+    private const PLAN_UNKNOWN    = 'unknown';
 
     use SystemTrait;
     use AuthorizationTrait;
@@ -220,6 +234,96 @@ class BigcommerceSystem implements WebhookSystemInterface, AuthorizationInterfac
         return (new RequestDto($method, new Uri(sprintf(
             self::SYSTEM_URL, $systemInstall->getSettings()[self::STORE_ID]
         ))))->setHeaders($this->getHeaders($systemInstall));
+    }
+
+    /**
+     * @param SystemInstall $systemInstall
+     *
+     * @return SystemLimitDto
+     */
+    public function getLimit(SystemInstall $systemInstall): ?SystemLimitDto
+    {
+        $settings = $this->prepareValue(SystemInstall::SYSTEM_LIMITS, $systemInstall->getSettings());
+
+        if (isset($settings[self::SYSTEM_PLAN])) {
+            switch ($settings[self::SYSTEM_PLAN]) {
+                case self::PLAN_STANDARD:
+                case self::PLAN_PLUS:
+                    $limit = 20000;
+                    break;
+
+                case self::PLAN_PRO:
+                    $limit = 60000;
+                    break;
+
+                case self::PLAN_ENTERPRISE:
+                    return NULL;
+
+                default:
+                    $limit = 20000;
+            }
+
+            return new SystemLimitDto(
+                $systemInstall,
+                SystemLimitDto::LIMIT_FOR_USER,
+                3600,
+                $limit,
+                $settings[self::SYSTEM_LIMIT_UPDATE]
+            );
+        }
+
+        return new SystemLimitDto(
+            $systemInstall,
+            SystemLimitDto::LIMIT_FOR_USER,
+            3600,
+            20000,
+            new DateTime()
+        );
+    }
+
+    /**
+     * @param SystemInstall $systemInstall
+     * @param array         $data
+     *
+     * @return SystemInstall
+     * @throws CleverConnectorsException
+     */
+    public function saveLimit(SystemInstall $systemInstall, array $data): SystemInstall
+    {
+        if (isset($data['plan_level'])) {
+            Strings::lower($level = $data['plan_level']);
+            $plan = self::PLAN_UNKNOWN;
+
+            if (Strings::contains($level, 'standard')) {
+                $plan = self::PLAN_STANDARD;
+            }
+
+            if (Strings::contains($level, 'plus')) {
+                $plan = self::PLAN_PLUS;
+            }
+
+            if (Strings::contains($level, 'pro')) {
+                $plan = self::PLAN_PRO;
+            }
+
+            if (Strings::contains($level, 'enterprise')) {
+                $plan = self::PLAN_ENTERPRISE;
+            }
+
+            $this->setSettings($systemInstall, [
+                SystemInstall::SYSTEM_LIMITS => [
+                    self::SYSTEM_PLAN         => $plan,
+                    self::SYSTEM_LIMIT_UPDATE => new DateTime(),
+                ],
+            ]);
+
+            return $systemInstall;
+        }
+
+        throw new CleverConnectorsException(
+            'Missing plan_level in response body.',
+            CleverConnectorsException::MISSING_DATA
+        );
     }
 
     /**
