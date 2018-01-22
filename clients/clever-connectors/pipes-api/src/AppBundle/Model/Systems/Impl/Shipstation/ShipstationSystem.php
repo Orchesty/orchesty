@@ -6,10 +6,13 @@ use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\SystemTypeEnum;
 use CleverConnectors\AppBundle\Model\Form\Field;
 use CleverConnectors\AppBundle\Model\Form\Form;
+use CleverConnectors\AppBundle\Model\Limits\SystemLimitDto;
+use CleverConnectors\AppBundle\Model\Limits\SystemLimitInterface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\AuthorizationInterface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\Traits\AuthorizationTrait;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Traits\SystemTrait;
+use DateTime;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 
@@ -18,7 +21,7 @@ use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Shipstation
  */
-class ShipstationSystem implements AuthorizationInterface
+class ShipstationSystem implements AuthorizationInterface, SystemLimitInterface
 {
 
     use SystemTrait;
@@ -149,6 +152,27 @@ class ShipstationSystem implements AuthorizationInterface
             ->addField($field3);
 
         return $form->toArray();
+    }
+
+    /**
+     * @param SystemInstall $systemInstall
+     *
+     * @return SystemLimitDto|null
+     */
+    public function getLimit(SystemInstall $systemInstall): ?SystemLimitDto
+    {
+        return new SystemLimitDto($systemInstall, SystemLimitDto::LIMIT_FOR_USER, 60, 40, new DateTime());
+    }
+
+    /**
+     * @param SystemInstall $systemInstall
+     * @param array         $data
+     *
+     * @return SystemInstall
+     */
+    public function saveLimit(SystemInstall $systemInstall, array $data): SystemInstall
+    {
+        return $systemInstall;
     }
 
 }
