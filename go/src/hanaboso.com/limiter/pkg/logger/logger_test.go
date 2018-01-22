@@ -33,7 +33,7 @@ func (m *mockSender) Send(data []byte) error {
 
 func TestLogger_Log(t *testing.T) {
 
-	l := NewLogger()
+	l := GetLogger()
 	l.AddHandler(NewLogStashHandler(&mockSender{t: t}))
 
 	l.Log("info", "my-message", Context{"notification_type": "test"})
