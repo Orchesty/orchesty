@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:pipes="http://www.omg.org/spec/Pipes/20100524/MODEL" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn">
+  <bpmn:process id="Process_1" isExecutable="false">
+    <bpmn:event id="Event_0hhsah7" pipes:pipesType="signal" name="signal-event">
+      <bpmn:outgoing>SequenceFlow_0gu1ufe</bpmn:outgoing>
+    </bpmn:event>
+    <bpmn:task id="Task_1nk1z31" pipes:pipesType="connector" name="salesforce-get-limit-connector">
+      <bpmn:incoming>SequenceFlow_0gu1ufe</bpmn:incoming>
+    </bpmn:task>
+    <bpmn:sequenceFlow id="SequenceFlow_0gu1ufe" sourceRef="Event_0hhsah7" targetRef="Task_1nk1z31" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_1">
+      <bpmndi:BPMNShape id="Event_0hhsah7_di" bpmnElement="Event_0hhsah7">
+        <dc:Bounds x="228" y="190" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="215" y="230" width="62" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_1nk1z31_di" bpmnElement="Task_1nk1z31">
+        <dc:Bounds x="358" y="168" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0gu1ufe_di" bpmnElement="SequenceFlow_0gu1ufe">
+        <di:waypoint xsi:type="dc:Point" x="264" y="208" />
+        <di:waypoint xsi:type="dc:Point" x="358" y="208" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="311" y="187" width="0" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

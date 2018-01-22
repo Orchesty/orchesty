@@ -18,8 +18,9 @@ class SystemLimitDto
     public const LIMIT_FOR_SYSTEM = 1;
 
     public const LIMIT_KEY_HEADER   = 'limit-key';
-    public const LIMIT_VALUE_HEADER = 'limit-time';
-    public const LIMIT_TIME_HEADER  = 'limit-value';
+    public const LIMIT_TIME_HEADER  = 'limit-time';
+    public const LIMIT_VALUE_HEADER = 'limit-value';
+    public const LIMIT_LAST_UPDATE  = 'limit-last-update';
 
     /**
      * @var string
@@ -105,7 +106,7 @@ class SystemLimitDto
             PipesHeaders::createKey(self::LIMIT_KEY_HEADER)   => $this->limitKey,
             PipesHeaders::createKey(self::LIMIT_TIME_HEADER)  => $this->limitTime,
             PipesHeaders::createKey(self::LIMIT_VALUE_HEADER) => $this->limitValue,
-            'limit-last-update'                               => $this->lastUpdate,
+            self::LIMIT_LAST_UPDATE                           => $this->lastUpdate,
         ];
     }
 
@@ -120,7 +121,7 @@ class SystemLimitDto
         if ($limitType === self::LIMIT_FOR_USER) {
             $key = sprintf('%s-%s', $systemInstall->getUser(), $systemInstall->getSystem());
         } else {
-            $key = sprintf('%s', $systemInstall->getSystem());
+            $key = $systemInstall->getSystem();
         }
 
         return $key;

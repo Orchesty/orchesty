@@ -44,6 +44,7 @@ class SystemInstall
     public const  SELECT_LIST         = 'list';
     public const  FORMS               = 'custom_form';
     public const  SYSTEM_LIMITS       = 'system_limits';
+    public const  SYSTEM_LIMIT_VALUE  = 'system_limit_value';
     public const  SYSTEM_LIMIT_UPDATE = 'system_limit_update';
 
     use IdTrait;
