@@ -1,0 +1,50 @@
+{
+  "id": "tr289y8kqz",
+  "domain": "bigcommerce0210.mybigcommerce.com",
+  "secure_url": "https://store-tr289y8kqz.mybigcommerce.com",
+  "status": "prelaunch",
+  "name": "bigcommerce02",
+  "first_name": "First Name",
+  "last_name": "Last Name",
+  "address": "",
+  "country": "Slovakia",
+  "country_code": "SK",
+  "phone": "",
+  "admin_email": "bigcommerce02@mailinator.com",
+  "order_email": "info@bigcommerce0210.mybigcommerce.com",
+  "favicon_url": "https://cdn8.bigcommerce.com/r-a31be21d6da9857c586c9deca302f149a571b60b/img/bc_favicon.ico",
+  "timezone": {
+    "name": "Europe/London",
+    "raw_offset": 0,
+    "dst_offset": 0,
+    "dst_correction": false,
+    "date_format": {
+      "display": "jS M Y",
+      "export": "jS M Y",
+      "extended_display": "jS M Y @ g:i A"
+    }
+  },
+  "language": "en",
+  "currency": "EUR",
+  "currency_symbol": "\u20ac",
+  "decimal_separator": ".",
+  "thousands_separator": ",",
+  "decimal_places": 2,
+  "currency_symbol_location": "left",
+  "weight_units": "KGS",
+  "dimension_units": "Centimeters",
+  "dimension_decimal_places": "2",
+  "dimension_decimal_token": ".",
+  "dimension_thousands_token": ",",
+  "plan_name": "15 Day Trial",
+  "plan_level": "Trial",
+  "industry": "I don't have products to sell",
+  "logo": [],
+  "is_price_entered_with_tax": false,
+  "active_comparison_modules": [],
+  "features": {
+    "stencil_enabled": true,
+    "sitewidehttps_enabled": false,
+    "facebook_catalog_id": ""
+  }
+}

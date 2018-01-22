@@ -7,6 +7,7 @@ use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Requester\RequesterInterface;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Bigcommerce\BigcommerceSystem;
 use CleverConnectors\AppBundle\Model\Webhook\WebhookSubscribes;
+use DateTime;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 use Nette\Utils\Json;
@@ -22,6 +23,15 @@ final class BigcommerceSystemTest extends KernelTestCaseAbstract
 
     private const CLIENT_ID    = 'p7f4o1hfl1zdkz1bp1sy7u8qs0fq7q';
     private const ACCESS_TOKEN = '7ndpkdbqb0h1wycrxhtw43ye0yprtn9';
+
+    private const SYSTEM_PLAN         = 'system-plan';
+    private const SYSTEM_LIMIT_UPDATE = 'system-limit-update';
+
+    private const PLAN_STANDARD   = 'standard';
+    private const PLAN_PLUS       = 'plus';
+    private const PLAN_PRO        = 'pro';
+    private const PLAN_ENTERPRISE = 'enterprise';
+    private const PLAN_UNKNOWN    = 'unknown';
 
     /**
      * @var BigcommerceSystem
@@ -45,7 +55,9 @@ final class BigcommerceSystemTest extends KernelTestCaseAbstract
                 'store_id'     => 'ukcfcghi',
                 'client_id'    => self::CLIENT_ID,
                 'access_token' => self::ACCESS_TOKEN,
-            ]);
+            ])
+                ->setSystem($this->system->getKey())
+                ->setUser('user');
         }
     }
 
@@ -240,6 +252,118 @@ final class BigcommerceSystemTest extends KernelTestCaseAbstract
                 'depends_on'  => '',
             ],
         ], $form);
+    }
+
+    /**
+     *
+     */
+    public function testGetLimitStandard(): void
+    {
+        $this->setPlan(self::PLAN_STANDARD);
+
+        $this->assertEquals([
+            'pf-limit-key'   => 'user-bigcommerce',
+            'pf-limit-time'  => 3600,
+            'pf-limit-value' => 20000,
+        ], $this->getData());
+    }
+
+    /**
+     *
+     */
+    public function testGetLimitPlus(): void
+    {
+        $this->setPlan(self::PLAN_PLUS);;
+
+        $this->assertEquals([
+            'pf-limit-key'   => 'user-bigcommerce',
+            'pf-limit-time'  => 3600,
+            'pf-limit-value' => 20000,
+        ], $this->getData());
+    }
+
+    /**
+     *
+     */
+    public function testGetLimitPro(): void
+    {
+        $this->setPlan(self::PLAN_PRO);
+
+        $this->assertEquals([
+            'pf-limit-key'   => 'user-bigcommerce',
+            'pf-limit-time'  => 3600,
+            'pf-limit-value' => 60000,
+        ], $this->getData());
+    }
+
+    /**
+     *
+     */
+    public function testGetLimitEnterprise(): void
+    {
+        $this->setPlan(self::PLAN_ENTERPRISE);
+
+        $this->assertEquals(NULL, $this->getData());
+    }
+
+    /**
+     *
+     */
+    public function testGetLimitUnknown(): void
+    {
+        $this->setPlan(self::PLAN_UNKNOWN);
+
+        $this->assertEquals([
+            'pf-limit-key'   => 'user-bigcommerce',
+            'pf-limit-time'  => 3600,
+            'pf-limit-value' => 20000,
+        ], $this->getData());
+    }
+
+    /**
+     *
+     */
+    public function testSaveLimit(): void
+    {
+        $systemInstall = $this->system->saveLimit($this->systemInstall, ['plan_level' => self::PLAN_ENTERPRISE]);
+        $settings      = $systemInstall->getSettings();
+        unset($settings[SystemInstall::SYSTEM_LIMITS][self::SYSTEM_LIMIT_UPDATE]);
+        $this->assertEquals([
+            'store_id'      => 'ukcfcghi',
+            'client_id'     => 'p7f4o1hfl1zdkz1bp1sy7u8qs0fq7q',
+            'access_token'  => '7ndpkdbqb0h1wycrxhtw43ye0yprtn9',
+            'system_limits' => ['system-plan' => 'enterprise'],
+        ], $settings);
+    }
+
+    /**
+     * @param string $plan
+     */
+    private function setPlan(string $plan): void
+    {
+        $this->systemInstall->setSettings([
+            SystemInstall::SYSTEM_LIMITS => [
+                self::SYSTEM_PLAN         => $plan,
+                self::SYSTEM_LIMIT_UPDATE => new DateTime(),
+            ],
+        ]);
+    }
+
+    /**
+     * @return array
+     */
+    private function getData(): ?array
+    {
+        $dto = $this->system->getLimit($this->systemInstall);
+
+        if ($dto) {
+            $data = $dto->toArray();
+            unset($data['limit-last-update']);
+
+            return $data;
+        }
+
+        return NULL;
     }
 
 }
