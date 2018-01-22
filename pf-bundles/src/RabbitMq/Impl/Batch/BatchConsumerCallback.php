@@ -13,6 +13,9 @@ use Bunny\Async\Client;
 use Bunny\Channel;
 use Bunny\Message;
 use Exception;
+use Hanaboso\PipesFramework\Commons\Enum\MetricsEnum;
+use Hanaboso\PipesFramework\Commons\Metrics\InfluxDbSender;
+use Hanaboso\PipesFramework\Commons\Utils\CurlMetricUtils;
 use Hanaboso\PipesFramework\Commons\Utils\PipesHeaders;
 use Hanaboso\PipesFramework\HbPFRabbitMqBundle\DebugMessageTrait;
 use Hanaboso\PipesFramework\RabbitMq\Consumer\AsyncCallbackInterface;
@@ -46,18 +49,30 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
     private $batchAction;
 
     /**
+     * @var InfluxDbSender
+     */
+    private $sender;
+
+    /**
      * @var LoggerInterface
      */
     private $logger;
 
     /**
+     * @var array
+     */
+    private $currentMetrics = [];
+
+    /**
      * BatchCallback constructor.
      *
      * @param BatchActionInterface $batchAction
+     * @param InfluxDbSender       $sender
      */
-    public function __construct(BatchActionInterface $batchAction)
+    public function __construct(BatchActionInterface $batchAction, InfluxDbSender $sender)
     {
         $this->batchAction = $batchAction;
+        $this->sender      = $sender;
         $this->logger      = new NullLogger();
     }
 
@@ -67,6 +82,14 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
     public function setLogger(LoggerInterface $logger): void
     {
         $this->logger = $logger;
+    }
+
+    /**
+     *
+     */
+    private function startMetrics(): void
+    {
+        $this->currentMetrics = CurlMetricUtils::getCurrentMetrics();
     }
 
     /**
@@ -90,6 +113,11 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
         if ($this->isEmpty(PipesHeaders::get(PipesHeaders::NODE_ID, $message->headers))) {
             return reject(new InvalidArgumentException(
                 sprintf('Missing "%s" in the message header.', PipesHeaders::createKey(PipesHeaders::NODE_ID))
+            ));
+        }
+        if ($this->isEmpty(PipesHeaders::get(PipesHeaders::TOPOLOGY_ID, $message->headers))) {
+            return reject(new InvalidArgumentException(
+                sprintf('Missing "%s" in the message header.', PipesHeaders::createKey(PipesHeaders::TOPOLOGY_ID))
             ));
         }
         if ($this->isEmpty(PipesHeaders::get(PipesHeaders::CORRELATION_ID, $message->headers))) {
@@ -132,6 +160,8 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
      */
     public function processMessage(Message $message, Channel $channel, Client $client, LoopInterface $loop)
     {
+        $this->startMetrics();
+
         return $this
             ->validate($message)
             ->then(function () use ($message): void {
@@ -182,6 +212,8 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
 
                         return reject($e);
                     });
+            })->always(function () use ($message): void {
+                $this->sendMetrics($message, $this->currentMetrics);
             });
     }
 
@@ -393,6 +425,29 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
                     )
                 );
             });
+    }
+
+    /**
+     * @param Message $message
+     * @param array   $startMetrics
+     */
+    private function sendMetrics(Message $message, array $startMetrics): void
+    {
+        $times = CurlMetricUtils::getTimes($startMetrics);
+        $this->logger->info('Batch', ['BatchMetrics' => json_encode($times)]);
+        $this->sender->send(
+            [
+                MetricsEnum::REQUEST_TOTAL_DURATION => $times[CurlMetricUtils::KEY_REQUEST_DURATION],
+                MetricsEnum::CPU_USER_TIME          => $times[CurlMetricUtils::KEY_USER_TIME],
+                MetricsEnum::CPU_KERNEL_TIME        => $times[CurlMetricUtils::KEY_KERNEL_TIME],
+            ],
+            [
+                MetricsEnum::HOST           => gethostname(),
+                MetricsEnum::TOPOLOGY_ID    => $message->getHeader(PipesHeaders::createKey(PipesHeaders::TOPOLOGY_ID)),
+                MetricsEnum::CORRELATION_ID => $message->getHeader(PipesHeaders::createKey(PipesHeaders::CORRELATION_ID)),
+                MetricsEnum::NODE_ID        => $message->getHeader(PipesHeaders::createKey(PipesHeaders::NODE_ID)),
+            ]
+        );
     }
 
 }

@@ -54,7 +54,7 @@ class SystemMetricsListener implements EventSubscriberInterface, LoggerAwareInte
     public static function getSubscribedEvents(): array
     {
         return [
-            KernelEvents::TERMINATE => 'onKernelTerminate',
+            KernelEvents::TERMINATE  => 'onKernelTerminate',
             KernelEvents::CONTROLLER => 'onKernelController',
         ];
     }
@@ -72,10 +72,9 @@ class SystemMetricsListener implements EventSubscriberInterface, LoggerAwareInte
                 return;
             }
 
-            $metricsData = CurlMetricUtils::getCurrentMetrics();
-            $event->getRequest()->attributes->add([self::METRICS_ATTRIBUTES_KEY => $metricsData]);
-            $this->logger->info('onKernelController', ['RequestC' => json_encode($event->getRequest()->attributes->all())]);
-            $this->logger->info('onKernelController', ['RequestC' => json_encode($event->getRequest()->headers->all())]);
+            $event->getRequest()->attributes->add(
+                [self::METRICS_ATTRIBUTES_KEY => CurlMetricUtils::getCurrentMetrics()]
+            );
         } catch (Exception $e) {
             $this->logger->error('Metrics listener onKernelController exception', ['exception' => $e]);
         }
@@ -90,16 +89,11 @@ class SystemMetricsListener implements EventSubscriberInterface, LoggerAwareInte
             if (!$event->isMasterRequest() || !$this->isPipesRequest($event->getRequest())) {
                 return;
             }
-
-            $this->logger->info('onKernelTerminate', ['RequestT' => json_encode($event->getRequest()->attributes->all())]);
-            $this->logger->info('onKernelTerminate', ['RequestT' => json_encode($event->getRequest()->headers->all())]);
-
-            $request = $event->getRequest();
-            if (!$request->attributes->has(self::METRICS_ATTRIBUTES_KEY)) {
+            if (!$event->getRequest()->attributes->has(self::METRICS_ATTRIBUTES_KEY)) {
                 throw new SystemMetricException('Initial system metrics not found.');
             }
 
-            $this->sendMetrics($request);
+            $this->sendMetrics($event->getRequest());
         } catch (Exception $e) {
             $this->logger->error('Metrics listener onKernelTerminate exception', ['exception' => $e]);
         }
@@ -116,12 +110,16 @@ class SystemMetricsListener implements EventSubscriberInterface, LoggerAwareInte
     }
 
     /**
+     * ------------------------------------------ HELPERS ---------------------------------------
+     */
+
+    /**
      * @param Request $request
      */
     private function sendMetrics(Request $request): void
     {
-        $startMetrics = $request->attributes->get(self::METRICS_ATTRIBUTES_KEY);
-        $times        = CurlMetricUtils::getTimes($startMetrics);
+        $headers = $request->headers;
+        $times   = CurlMetricUtils::getTimes($request->attributes->get(self::METRICS_ATTRIBUTES_KEY));
 
         $this->sender->send(
             [
@@ -132,15 +130,9 @@ class SystemMetricsListener implements EventSubscriberInterface, LoggerAwareInte
             [
                 MetricsEnum::HOST           => gethostname(),
                 MetricsEnum::URI            => $request->getRequestUri(),
-                MetricsEnum::TOPOLOGY_ID    => $request->headers->get(
-                    PipesHeaders::createKey(PipesHeaders::TOPOLOGY_ID)
-                ),
-                MetricsEnum::CORRELATION_ID => $request->headers->get(
-                    PipesHeaders::createKey(PipesHeaders::CORRELATION_ID)
-                ),
-                MetricsEnum::NODE_ID        => $request->headers->get(
-                    PipesHeaders::createKey(PipesHeaders::NODE_ID)
-                ),
+                MetricsEnum::TOPOLOGY_ID    => $headers->get(PipesHeaders::createKey(PipesHeaders::TOPOLOGY_ID)),
+                MetricsEnum::CORRELATION_ID => $headers->get(PipesHeaders::createKey(PipesHeaders::CORRELATION_ID)),
+                MetricsEnum::NODE_ID        => $headers->get(PipesHeaders::createKey(PipesHeaders::NODE_ID)),
             ]
         );
     }
@@ -152,14 +144,10 @@ class SystemMetricsListener implements EventSubscriberInterface, LoggerAwareInte
      */
     private function isPipesRequest(Request $request): bool
     {
-        $topologyIdHeader    = PipesHeaders::createKey(PipesHeaders::TOPOLOGY_ID);
-        $correlationIdHeader = PipesHeaders::createKey(PipesHeaders::CORRELATION_ID);
-        $nodeIdHeader        = PipesHeaders::createKey(PipesHeaders::NODE_ID);
-
         if (
-            $request->headers->has($topologyIdHeader)
-            && $request->headers->has($correlationIdHeader)
-            && $request->headers->has($nodeIdHeader)
+            $request->headers->has(PipesHeaders::createKey(PipesHeaders::TOPOLOGY_ID))
+            && $request->headers->has(PipesHeaders::createKey(PipesHeaders::CORRELATION_ID))
+            && $request->headers->has(PipesHeaders::createKey(PipesHeaders::NODE_ID))
         ) {
             return TRUE;
         }
