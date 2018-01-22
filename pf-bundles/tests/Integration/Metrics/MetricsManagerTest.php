@@ -127,7 +127,7 @@ final class MetricsManagerTest extends KernelTestCaseAbstract
     private function getClient(): MetricsClient
     {
         $host = $this->container->getParameter('influx.host');
-        $port = $this->container->getParameter('influx.port');
+        $port = $this->container->getParameter('influx.api_port');
         $user = $this->container->getParameter('influx.user');
         $pass = $this->container->getParameter('influx.password');
 
