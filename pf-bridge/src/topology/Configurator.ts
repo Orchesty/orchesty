@@ -90,7 +90,7 @@ class Configurator {
                 sub: {
                     queue: {
                         name: "pipes.multi-counter",
-                        prefetch: 1,
+                        prefetch: 6,
                         options: {},
                     },
                 },
