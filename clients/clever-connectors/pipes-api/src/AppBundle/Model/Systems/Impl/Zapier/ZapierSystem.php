@@ -51,6 +51,8 @@ class ZapierSystem implements WebhookSystemInterface, AuthorizationInterface
             'zapier-deleted-subscriber-connector',
             TopologyNameUtils::getTopologyName(TopologyNameUtils::DELETED_SUBSCRIBERS, $this->getKey())
         );
+
+        $this->topologyNames['zapier-hard-bounce-subscriber'] = 'zapier-unsubscribe-subscriber';
     }
 
     /**
