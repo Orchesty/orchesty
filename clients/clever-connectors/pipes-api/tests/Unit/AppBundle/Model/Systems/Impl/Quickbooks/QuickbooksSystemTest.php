@@ -67,7 +67,7 @@ class QuickbooksSystemTest extends TestCase
      */
     public function testSaveLimit(): void
     {
-        $this->assertInstanceOf(SystemInstall::class, $this->system->saveLimit($this->systemInstall));
+        $this->assertInstanceOf(SystemInstall::class, $this->system->saveLimit($this->systemInstall, []));
     }
 
 }

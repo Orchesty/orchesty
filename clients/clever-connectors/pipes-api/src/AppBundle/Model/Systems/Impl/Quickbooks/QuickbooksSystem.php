@@ -248,10 +248,11 @@ class QuickbooksSystem implements OAuth2Interface, CMEventSystemInterface, Syste
 
     /**
      * @param SystemInstall $systemInstall
+     * @param array         $data
      *
      * @return SystemInstall
      */
-    public function saveLimit(SystemInstall $systemInstall): SystemInstall
+    public function saveLimit(SystemInstall $systemInstall, array $data): SystemInstall
     {
         return $systemInstall;
     }
