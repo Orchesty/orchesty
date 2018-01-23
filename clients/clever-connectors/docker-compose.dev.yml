@@ -222,7 +222,7 @@ services:
           - api-demo-fpm
           - kibana
           - grafana
-          - spitter
+          - spitter-api
           - topology-api
     ## END DEV
     ## BEGIN STAGE
@@ -370,14 +370,16 @@ services:
           - ${DEV_IP}:8025:8025
 
     # Spitter
-    spitter:
-      image: dkr.hanaboso.net/hanaboso/spitter/image:dev
-      environment:
-        SPITTER_PORT: 3000
-        SPITTER_HOST: 0.0.0.0
-        SPITTER_PREFFIX: /spitter
-      ports:
-        - ${DEV_IP}:8090:3000
+    spitter-api:
+        image: dkr.hanaboso.net/hanaboso/spitter/image:dev
+        ports:
+            - ${DEV_IP}:8090:80
+        restart: always
+        environment:
+            - NODE_ENV=dev
+            - SPITTER_HOST=0.0.0.0
+            - SPITTER_PORT=80
+#            - SPITTER_PREFFIX=/spitter
 
     api-demo-fpm:
         image: dkr.hanaboso.net/pipes/client-cm/api-demo:latest
