@@ -27,4 +27,5 @@ final class ConnectorException extends PipesFrameworkException
     public const CONNECTOR_DOES_NOT_HAVE_PROCESS_ACTION = self::OFFSET + 4;
     public const CONNECTOR_DOES_NOT_HAVE_PROCESS_BATCH  = self::OFFSET + 5;
 
+
 }
