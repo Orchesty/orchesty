@@ -17,7 +17,7 @@ type Limiter interface {
 type limiter struct {
 	store     storage.CheckerSaver
 	consumer  rabbitmq.Consumer
-	msgTimer  *MessageTimer
+	msgTimer  MessageTimer
 	timerChan chan *storage.Message
 	logger    logger.Logger
 }
@@ -26,7 +26,7 @@ type limiter struct {
 func NewLimiter(
 	store storage.Storage,
 	consumer rabbitmq.Consumer,
-	msgTimer *MessageTimer,
+	msgTimer MessageTimer,
 	timerChan chan *storage.Message,
 	logger logger.Logger,
 ) (l *limiter) {

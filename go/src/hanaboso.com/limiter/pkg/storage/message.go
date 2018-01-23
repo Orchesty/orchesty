@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strconv"
 	"gopkg.in/mgo.v2/bson"
+	"time"
 )
 
 const LimitKeyHeader = "pf-limit-key"
@@ -15,6 +16,7 @@ const ReturnRoutingKeyHeader = "pf-limit-return-routing-key"
 
 type Message struct {
 	ID               bson.ObjectId `bson:"_id,omitempty"`
+	Created			 time.Time
 	LimitKey         string
 	LimitTime        int
 	LimitValue       int
@@ -31,17 +33,17 @@ func NewMessage(delivery *amqp.Delivery) (*Message, error) {
 		return nil, fmt.Errorf("missing header %s", LimitKeyHeader)
 	}
 
-	time, ok := delivery.Headers[LimitTimeHeader]
+	limitTime, ok := delivery.Headers[LimitTimeHeader]
 	if !ok {
 		return nil, fmt.Errorf("missing header %s", LimitTimeHeader)
 	}
-	t, _ := strconv.Atoi(time.(string))
+	lt, _ := strconv.Atoi(limitTime.(string))
 
-	timeValue, ok := delivery.Headers[LimitValueHeader]
+	limitValue, ok := delivery.Headers[LimitValueHeader]
 	if !ok {
 		return nil, fmt.Errorf("missing header %s", LimitValueHeader)
 	}
-	tv, _ := strconv.Atoi(timeValue.(string))
+	lv, _ := strconv.Atoi(limitValue.(string))
 
 	exchange, ok := delivery.Headers[ReturnExchangeHeader]
 	if !ok || exchange == "" {
@@ -64,5 +66,5 @@ func NewMessage(delivery *amqp.Delivery) (*Message, error) {
 		ReplyTo:     delivery.ReplyTo,
 	}
 
-	return &Message{"", key.(string), t, tv, exchange.(string), routingKey.(string), innerMsg}, nil
+	return &Message{"", time.Now(),key.(string), lt, lv, exchange.(string), routingKey.(string), innerMsg}, nil
 }

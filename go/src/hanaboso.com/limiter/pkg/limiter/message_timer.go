@@ -9,7 +9,11 @@ import (
 	"hanaboso.com/limiter/pkg/logger"
 )
 
-type MessageTimer struct {
+type MessageTimer interface {
+	Init()
+}
+
+type messageTimer struct {
 	tickers   map[string]*time.Ticker
 	storage   storage.Storage
 	publisher rabbitmq.Publisher
@@ -17,17 +21,28 @@ type MessageTimer struct {
 	logger    logger.Logger
 }
 
-func NewMessageTimer(s storage.Storage, p rabbitmq.Publisher, timerChan chan *storage.Message, logger logger.Logger) *MessageTimer {
-	return &MessageTimer{storage: s, publisher: p, timerChan: timerChan, tickers: make(map[string]*time.Ticker), logger: logger}
+func NewMessageTimer(
+	s storage.Storage,
+	p rabbitmq.Publisher,
+	timerChan chan *storage.Message,
+	logger logger.Logger,
+) MessageTimer {
+	return &messageTimer{
+		storage: s,
+		publisher: p,
+		timerChan: timerChan,
+		tickers: make(map[string]*time.Ticker),
+		logger: logger,
+	}
 }
 
 // Init loads and sets timers for already persisted messages and starts new timers handler
-func (mt *MessageTimer) Init() {
+func (mt *messageTimer) Init() {
 	mt.loadExistingTimers()
 	go mt.startHandleNewTimers()
 }
 
-func (mt *MessageTimer) addTicker(key string, duration int, count int) {
+func (mt *messageTimer) addTicker(key string, duration int, count int) {
 	mt.tickers[key] = time.NewTicker(time.Second * time.Duration(duration))
 	mt.logger.Info(fmt.Sprintf("Added ticker for key '%s'", key), nil)
 	go func() {
@@ -46,7 +61,7 @@ func (mt *MessageTimer) addTicker(key string, duration int, count int) {
 	}()
 }
 
-func (mt *MessageTimer) release(key string, count int) (bool) {
+func (mt *messageTimer) release(key string, count int) (bool) {
 	msgs, err := mt.storage.Get(key, count)
 
 	if err != nil {
@@ -71,7 +86,7 @@ func (mt *MessageTimer) release(key string, count int) (bool) {
 	return exists
 }
 
-func (mt *MessageTimer) loadExistingTimers() {
+func (mt *messageTimer) loadExistingTimers() {
 	items, err := mt.storage.GetDistinctFirstItems()
 	if err != nil {
 		log.Println("Init error:", err.Error())
@@ -82,7 +97,7 @@ func (mt *MessageTimer) loadExistingTimers() {
 	}
 }
 
-func (mt *MessageTimer) startHandleNewTimers() {
+func (mt *messageTimer) startHandleNewTimers() {
 	for m := range mt.timerChan {
 		if _, ok := mt.tickers[m.LimitKey]; !ok {
 			mt.addTicker(m.LimitKey, m.LimitTime, m.LimitValue)
@@ -91,7 +106,7 @@ func (mt *MessageTimer) startHandleNewTimers() {
 }
 
 // deleteMessage removes message from storage or logs an error
-func (mt *MessageTimer) deleteMessage(m *storage.Message) {
+func (mt *messageTimer) deleteMessage(m *storage.Message) {
 	_, err := mt.storage.Remove(m.LimitKey, m.ID)
 
 	if err != nil {
