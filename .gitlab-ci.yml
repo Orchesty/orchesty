@@ -59,6 +59,15 @@ limiter-image:
     - dev
     - master
 
+limiter-test:
+  stage: stage2
+  script:
+    - DIR=go/src/hanaboso.com/limiter
+    - skip_unmodified $DIR
+    - cd $REPO_ROOT/$DIR
+    - export COMPOSE_FILE=docker-compose.ci.yml
+    - make ${COMPOSE_FILE} ci-test
+
 pf-bundles-test:
   stage: stage2
   script:
