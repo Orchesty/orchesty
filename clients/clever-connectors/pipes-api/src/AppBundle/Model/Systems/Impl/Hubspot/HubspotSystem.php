@@ -358,10 +358,11 @@ class HubspotSystem implements WebhookSystemInterface, OAuth2Interface, CMEventS
 
     /**
      * @param SystemInstall $systemInstall
+     * @param array         $data
      *
      * @return SystemInstall
      */
-    public function saveLimit(SystemInstall $systemInstall): SystemInstall
+    public function saveLimit(SystemInstall $systemInstall, array $data): SystemInstall
     {
         return $systemInstall;
     }
