@@ -65,6 +65,7 @@ limiter-test:
     - DIR=go/src/hanaboso.com/limiter
     - skip_unmodified $DIR
     - cd $REPO_ROOT/$DIR
+    - export COMPOSE_PROJECT_NAME="p${CI_PIPELINE_ID}-go"
     - export COMPOSE_FILE=docker-compose.ci.yml
     - make ${COMPOSE_FILE} ci-test
 
