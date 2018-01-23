@@ -24,6 +24,7 @@ parameters:
     influx.node_table: pipes_node
     influx.fpm_table: pipes_monolith_fpm
     influx.rabbit_table: rabbitmq_queue
+    env(BACKEND_HOST): 127.0.0.5
     backend_host: '%env(BACKEND_HOST)%'
     cron_host: 'http://cron-api:5000'
     spitter_host: 'http://spitter-api'

@@ -5,11 +5,14 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\Zendesk;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\CleverCustomKeysEnum;
 use CleverConnectors\AppBundle\Enum\SystemTypeEnum;
+use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\CMEvents\CMEventObject;
 use CleverConnectors\AppBundle\Model\CMEvents\CMEventSystemInterface;
 use CleverConnectors\AppBundle\Model\CMEvents\Traits\CMEventSystemTrait;
 use CleverConnectors\AppBundle\Model\Form\Field;
 use CleverConnectors\AppBundle\Model\Form\Form;
+use CleverConnectors\AppBundle\Model\Limits\SystemLimitDto;
+use CleverConnectors\AppBundle\Model\Limits\SystemLimitInterface;
 use CleverConnectors\AppBundle\Model\Requester\RequesterInterface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\AuthorizationInterface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\Traits\AuthorizationTrait;
@@ -19,6 +22,7 @@ use CleverConnectors\AppBundle\Model\Systems\SystemInterface;
 use CleverConnectors\AppBundle\Model\Systems\Traits\SystemTrait;
 use CleverConnectors\AppBundle\Model\Webhook\Traits\WebhookSystemTrait;
 use CleverConnectors\AppBundle\Utils\TopologyNameUtils;
+use DateTime;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 
@@ -27,7 +31,7 @@ use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Zendesk
  */
-class ZendeskSystem implements SystemInterface, AuthorizationInterface, CMEventSystemInterface
+class ZendeskSystem implements SystemInterface, AuthorizationInterface, CMEventSystemInterface, SystemLimitInterface
 {
 
     use SystemTrait;
@@ -42,6 +46,9 @@ class ZendeskSystem implements SystemInterface, AuthorizationInterface, CMEventS
 
     private const BASE_URL          = 'https://%s.zendesk.com/';
     private const CUSTOM_FIELDS_URL = 'https://%s.zendesk.com/api/v2/user_fields.json';
+
+    private const RATE_LIMIT = 'X-Rate-Limit';
+    private const LIMIT_TIME = 60;
 
     /**
      * ZendeskSystem constructor.
@@ -219,6 +226,57 @@ class ZendeskSystem implements SystemInterface, AuthorizationInterface, CMEventS
     public function getCMEventRequester(SystemInstall $systemInstall): ?RequesterInterface
     {
         return new ZendeskCmEventRequester($systemInstall, $this->getHeaders($systemInstall));
+    }
+
+    /**
+     * @param SystemInstall $systemInstall
+     *
+     * @return SystemLimitDto|null
+     */
+    public function getLimit(SystemInstall $systemInstall): ?SystemLimitDto
+    {
+        $settings = $systemInstall->getSettings();
+        if (array_key_exists(SystemInstall::SYSTEM_LIMITS, $settings)) {
+            $systemLimits = $settings[SystemInstall::SYSTEM_LIMITS];
+
+            if (array_key_exists(SystemInstall::SYSTEM_LIMIT_VALUE, $systemLimits)) {
+                return new SystemLimitDto(
+                    $systemInstall,
+                    SystemLimitDto::LIMIT_FOR_USER,
+                    self::LIMIT_TIME,
+                    $systemLimits[SystemInstall::SYSTEM_LIMIT_VALUE],
+                    $systemLimits[SystemInstall::SYSTEM_LIMIT_UPDATE] ?? NULL
+                );
+            }
+        }
+
+        return NULL;
+    }
+
+    /**
+     * @param SystemInstall $systemInstall
+     * @param array         $data
+     *
+     * @return SystemInstall
+     * @throws CleverConnectorsException
+     */
+    public function saveLimit(SystemInstall $systemInstall, array $data): SystemInstall
+    {
+        if (array_key_exists(self::RATE_LIMIT, $data) && isset($data[self::RATE_LIMIT][0])) {
+            $this->setSettings($systemInstall, [
+                SystemInstall::SYSTEM_LIMITS => [
+                    SystemInstall::SYSTEM_LIMIT_VALUE  => $data[self::RATE_LIMIT][0],
+                    SystemInstall::SYSTEM_LIMIT_UPDATE => new DateTime(),
+                ],
+            ]);
+
+            return $systemInstall;
+        }
+
+        throw new CleverConnectorsException(
+            sprintf('Missing %s value in response headers', self::RATE_LIMIT),
+            CleverConnectorsException::MISSING_DATA
+        );
     }
 
     /**
