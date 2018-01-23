@@ -5,6 +5,7 @@ import (
 	"github.com/streadway/amqp"
 	"time"
 	"hanaboso.com/limiter/pkg/logger"
+	"strconv"
 )
 
 type Connection interface {
@@ -17,6 +18,8 @@ type Connection interface {
 	GetChannel(int) (ch *amqp.Channel)
 	GetRestartChan() (chan bool)
 	PurgeQueue(Queue)
+	CloseChannel(int)
+	Stop()
 }
 
 type connection struct {
@@ -119,7 +122,13 @@ func (c *connection) Connect() {
 	}
 
 	go func() {
-		c.logger.Error(fmt.Sprintf("Rabbit MQ connection close error: %s", <-c.conn.NotifyClose(make(chan *amqp.Error))), logger.Context{"error": err})
+		err := <-c.conn.NotifyClose(make(chan *amqp.Error))
+
+		if err == nil {
+			c.restartChan <- false
+		}
+
+		c.logger.Error(fmt.Sprintf("Rabbit MQ connection close error: %s", err), logger.Context{"error": err})
 
 		c.reconnect()
 		c.restartChan <- true
@@ -169,6 +178,27 @@ func (c *connection) reconnect() {
 
 func (c *connection) GetRestartChan() (chan bool) {
 	return c.restartChan
+}
+
+func (c *connection) CloseChannel(id int) {
+	c.GetChannel(id).Close()
+	c.channels[id] = nil
+	c.logger.Info(fmt.Sprintf("Rabbit MQ channel with id %s.", strconv.Itoa(id)), nil)
+}
+
+func (c *connection) Stop() {
+	exists := false
+	for _, ch := range c.channels {
+		if ch != nil {
+			exists = true
+		}
+	}
+
+	if exists == false && c.conn != nil {
+		c.conn.Close()
+		c.conn = nil
+		c.logger.Info("Rabbit MQ connection close.", nil)
+	}
 }
 
 func NewConnection(host string, port int, user string, password string, logger logger.Logger) (r Connection) {

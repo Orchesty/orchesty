@@ -8,52 +8,50 @@ import (
 )
 
 type updSender struct {
-	host        string
-	port        string
-	refreshTime int
-	addr        *net.UDPAddr
-	conn        *net.UDPConn
+	url           string
+	refreshTime   int
+	addr          *net.UDPAddr
+	conn          *net.UDPConn
+	resolveTicker *time.Ticker
 }
 
-func (u *updSender) findHost(url string) error {
+func (u *updSender) findHost() error {
 	var err error
-	u.addr, err = net.ResolveUDPAddr("udp", url)
+	u.addr, err = net.ResolveUDPAddr("udp", u.url)
 
 	if err != nil {
-		log.Println(fmt.Sprintf("Resolve ip addr error: %s", err))
+		log.Println(fmt.Sprintf("Resolve ip addr for host %s error: %s", u.url, err))
 		return err
 	}
 
 	return nil
 }
 
-func (u *updSender) resolveHost(url string) error {
-
-	err := u.findHost(url)
-
-	if err != nil {
-		return err
+func (u *updSender) resolveHost() {
+	if u.resolveTicker == nil {
+		u.resolveTicker = time.NewTicker(time.Second * time.Duration(u.refreshTime))
+		go func() {
+			for t := range u.resolveTicker.C {
+				u.findHost()
+				log.Println(fmt.Sprintf("Resolving host in %s", t))
+			}
+		}()
 	}
-
-	ticker := time.NewTicker(time.Second * time.Duration(u.refreshTime))
-	go func() {
-		for t := range ticker.C {
-			u.findHost(url)
-			log.Println(fmt.Sprintf("Resolving host in %s", t))
-		}
-	}()
-
-	return nil
 }
 
 func (u *updSender) Send(data []byte) {
 
-	go func() {
-		resErr := u.resolveHost(fmt.Sprintf("%s:%s", u.host, u.port))
+	u.resolveHost()
 
-		if resErr != nil {
-			log.Println(fmt.Sprintf("Udp resolve host error: %s", resErr))
-			return
+	go func() {
+
+		if u.addr == nil {
+			resErr := u.findHost()
+
+			if resErr != nil {
+				log.Println(fmt.Sprintf("Udp resolve host error: %s", resErr))
+				return
+			}
 		}
 
 		if u.conn == nil {
@@ -78,5 +76,5 @@ func (u *updSender) Send(data []byte) {
 }
 
 func NewUpdSender(host string, port string) Sender {
-	return &updSender{host: host, port: port, refreshTime: 60}
+	return &updSender{url: fmt.Sprintf("%s:%s", host, port), refreshTime: 30}
 }

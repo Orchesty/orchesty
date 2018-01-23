@@ -32,7 +32,7 @@ func main() {
 
 	lim.Start()
 
-	gracefulShutdown(tcpServer)
+	gracefulShutdown(tcpServer, consumer, publisher)
 }
 
 func prepareStorage() storage.Storage {
@@ -81,7 +81,7 @@ func prepareLogger() {
 }
 
 // gracefulShutdown handles SIGINT and SIGTERM signal to stop the app gracefully
-func gracefulShutdown(srv *tcp.TcpServer) {
+func gracefulShutdown(srv *tcp.TcpServer, c rabbitmq.Consumer, p rabbitmq.Publisher) {
 	sigs := make(chan os.Signal, 1)
 	quit := make(chan bool, 1)
 
@@ -93,6 +93,8 @@ func gracefulShutdown(srv *tcp.TcpServer) {
 		log.Println("Signal received: ", sig)
 
 		srv.Stop()
+		c.Stop()
+		p.Stop()
 
 		quit <- true
 	}()

@@ -4,7 +4,15 @@ import (
 	"github.com/streadway/amqp"
 	"fmt"
 	"hanaboso.com/limiter/pkg/logger"
+	"os"
+	"sync/atomic"
 )
+
+var consumerSeq uint64
+
+func uniqueConsumerTag() string {
+	return fmt.Sprintf("ctag-%s-%d", os.Args[0], atomic.AddUint64(&consumerSeq, 1))
+}
 
 type Callback func(msg <-chan amqp.Delivery)
 
@@ -54,6 +62,10 @@ func (c *consumer) Consume(callback Callback) {
 		c.logger.Fatal(fmt.Sprintf("Rabbit MQ channel qos: %s", err), logger.Context{"error": err})
 	}
 
+	if c.consumerTag == "" {
+		c.consumerTag = uniqueConsumerTag()
+	}
+
 	msgs, err := c.getChannel().Consume(c.queue, c.consumerTag, c.noAck, c.exclusive, c.noLocal, c.noWait, nil)
 
 	if err != nil {
@@ -73,7 +85,16 @@ func (c *consumer) Consume(callback Callback) {
 
 // Stop cancels consumption
 func (c *consumer) Stop() {
-	c.getChannel().Cancel(c.consumerTag, true)
+	err := c.getChannel().Cancel(c.consumerTag, false)
+
+	if err != nil {
+		c.logger.Info(fmt.Sprintf("Consumer cancel error: %s", err), logger.Context{"error": err})
+	}
+
+	if c.channelId != -1 {
+		c.connection.CloseChannel(c.channelId)
+	}
+	c.connection.Stop()
 }
 
 func (c *consumer) SetPrefetchCount(count int) {

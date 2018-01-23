@@ -8,6 +8,7 @@ import (
 
 type Publisher interface {
 	Publish(msg amqp.Publishing)
+	Stop()
 	SetRoutingKey(string)
 	SetExchange(string)
 	SetMandatory(bool)
@@ -50,6 +51,13 @@ func (p *publisher) Publish(msg amqp.Publishing) {
 	}
 
 	p.logger.Info(fmt.Sprintf("Rabbit MQ publish message to exchange '%s' with routing key '%s'", p.exchange, p.routingKey), context)
+}
+
+func (p *publisher) Stop() {
+	if p.channelId != -1 {
+		p.connection.CloseChannel(p.channelId)
+	}
+	p.connection.Stop()
 }
 
 func (p *publisher) SetRoutingKey(k string) {
