@@ -10,6 +10,8 @@ use CleverConnectors\AppBundle\Model\CMEvents\CMEventSystemInterface;
 use CleverConnectors\AppBundle\Model\CMEvents\Traits\CMEventSystemTrait;
 use CleverConnectors\AppBundle\Model\Form\Field;
 use CleverConnectors\AppBundle\Model\Form\Form;
+use CleverConnectors\AppBundle\Model\Limits\SystemLimitDto;
+use CleverConnectors\AppBundle\Model\Limits\SystemLimitInterface;
 use CleverConnectors\AppBundle\Model\Requester\RequesterInterface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\OAuth2Interface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\Traits\AuthorizationTrait;
@@ -37,7 +39,7 @@ use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot
  */
-class HubspotSystem implements WebhookSystemInterface, OAuth2Interface, CMEventSystemInterface
+class HubspotSystem implements WebhookSystemInterface, OAuth2Interface, CMEventSystemInterface, SystemLimitInterface
 {
 
     use SystemTrait;
@@ -342,6 +344,27 @@ class HubspotSystem implements WebhookSystemInterface, OAuth2Interface, CMEventS
     public function getCMEventRequester(SystemInstall $systemInstall): ?RequesterInterface
     {
         return new HubspotRequester($this->getHeaders($systemInstall));
+    }
+
+    /**
+     * @param SystemInstall $systemInstall
+     *
+     * @return SystemLimitDto
+     */
+    public function getLimit(SystemInstall $systemInstall): SystemLimitDto
+    {
+        return new SystemLimitDto($systemInstall, SystemLimitDto::LIMIT_FOR_SYSTEM, 1, 10, new DateTime());
+    }
+
+    /**
+     * @param SystemInstall $systemInstall
+     * @param array         $data
+     *
+     * @return SystemInstall
+     */
+    public function saveLimit(SystemInstall $systemInstall, array $data): SystemInstall
+    {
+        return $systemInstall;
     }
 
     /******************************************  HELPERS  ****************************************/
