@@ -26,5 +26,5 @@ docker-compose.ci.yml:
 
 ci-test:
 	docker-compose up -d --force-recreate
-	docker-compose exec limiter make install-deps
-	docker-compose exec limiter go test ./...
+	docker-compose exec -T limiter make install-deps
+	docker-compose exec -T limiter go test ./...
