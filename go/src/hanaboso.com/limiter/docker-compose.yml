@@ -11,6 +11,10 @@ services:
     image: mongo
     ports:
       - ${DEV_IP}:27017:27017
+  logstash:
+    image: kedlas/udplogger:latest
+    ports:
+      - ${DEV_IP}:5120:4444/udp
 
   limiter:
     image: golang:latest

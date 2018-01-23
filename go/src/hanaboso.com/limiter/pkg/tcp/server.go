@@ -78,7 +78,7 @@ func populateRequest(conn net.Conn) (request, error) {
 	return req, fmt.Errorf("unknown number of params")
 }
 
-type TcpServer struct {
+type Server struct {
 	lim      limiter.Limiter
 	listener *net.TCPListener
 	wg       *sync.WaitGroup
@@ -86,8 +86,8 @@ type TcpServer struct {
 }
 
 // NewTcpServer creates new instance of TcpServer struct and returns pointer to it
-func NewTcpServer(lim limiter.Limiter, logger logger.Logger) *TcpServer {
-	return &TcpServer{
+func NewTcpServer(lim limiter.Limiter, logger logger.Logger) *Server {
+	return &Server{
 		lim:    lim,
 		wg:     &sync.WaitGroup{},
 		logger: logger,
@@ -95,7 +95,7 @@ func NewTcpServer(lim limiter.Limiter, logger logger.Logger) *TcpServer {
 }
 
 // Start starts the tcp server
-func (srv *TcpServer) Start(port int) {
+func (srv *Server) Start(port int) {
 	cmdAddr, _ := net.ResolveTCPAddr(connType, connHost+":"+strconv.Itoa(port))
 	listener, err := net.ListenTCP(connType, cmdAddr)
 	if err != nil {
@@ -117,7 +117,7 @@ func (srv *TcpServer) Start(port int) {
 			continue
 		}
 		if err != nil {
-			srv.logger.Error(fmt.Sprintf("Tcp Server error accepting: %s", err.Error()), nil)
+			// srv.logger.Error(fmt.Sprintf("Tcp Server error accepting: %s", err.Error()), nil)
 			continue
 		}
 		srv.wg.Add(1)
@@ -130,13 +130,14 @@ func (srv *TcpServer) Start(port int) {
 }
 
 // Stop stops the tcp server listener and waits for open goroutines to complete
-func (srv *TcpServer) Stop() {
+func (srv *Server) Stop() {
+	srv.logger.Info("Stopping TCP server", nil)
 	srv.listener.Close()
 	srv.wg.Wait()
 }
 
 // handleRequest handles incoming tcp request
-func (srv *TcpServer) handleRequest(conn net.Conn) {
+func (srv *Server) handleRequest(conn net.Conn) {
 	defer conn.Close()
 
 	req, err := populateRequest(conn)
@@ -163,12 +164,12 @@ func (srv *TcpServer) handleRequest(conn net.Conn) {
 }
 
 // handleHealthCheckRequest just writes the given string to response which means that it is alive
-func (*TcpServer) handleHealthCheckRequest(req request) string {
+func (*Server) handleHealthCheckRequest(req request) string {
 	return healthCheckValidResponse
 }
 
 // handleLimitCheckRequest returns
-func (srv *TcpServer) handleLimitCheckRequest(req request) string {
+func (srv *Server) handleLimitCheckRequest(req request) string {
 	isFree, err := srv.lim.IsFreeLimit(req.key, req.time, req.value)
 	if err != nil {
 		return "Error evaluating limit: " + err.Error()

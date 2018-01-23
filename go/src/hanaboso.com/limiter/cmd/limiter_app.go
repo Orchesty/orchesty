@@ -81,7 +81,7 @@ func prepareLogger() {
 }
 
 // gracefulShutdown handles SIGINT and SIGTERM signal to stop the app gracefully
-func gracefulShutdown(srv *tcp.TcpServer, c rabbitmq.Consumer, p rabbitmq.Publisher) {
+func gracefulShutdown(srv *tcp.Server, c rabbitmq.Consumer, p rabbitmq.Publisher) {
 	sigs := make(chan os.Signal, 1)
 	quit := make(chan bool, 1)
 
@@ -90,7 +90,7 @@ func gracefulShutdown(srv *tcp.TcpServer, c rabbitmq.Consumer, p rabbitmq.Publis
 	go func() {
 		sig := <-sigs
 		log.Println()
-		log.Println("Signal received: ", sig)
+		logger.GetLogger().Info("Signal received: " + sig.String(), nil)
 
 		srv.Stop()
 		c.Stop()
