@@ -1,4 +1,4 @@
-package limiter
+package tcp
 
 import (
 	"testing"
@@ -30,7 +30,7 @@ func TestServerHealthCheck(t *testing.T) {
 	go tcpServer.Start(3334)
 	defer tcpServer.Stop()
 
-	resp, err := SendTcpPacket("localhost:3334", CreateTcpHealtCheckRequestContent("someId"))
+	resp, err := SendTcpPacket("localhost:3334", CreateTcpHealthCheckRequestContent("someId"))
 	assert.Nil(t, err)
 	assert.Equal(t, "pf-health-check;someId;ok", resp)
 }

@@ -12,8 +12,8 @@ import (
 	"github.com/streadway/amqp"
 	"hanaboso.com/limiter/pkg/storage"
 	"hanaboso.com/utils/env"
-	"hanaboso.com/limiter/pkg/limiter"
 	"hanaboso.com/limiter/pkg/logger"
+	"hanaboso.com/limiter/pkg/tcp"
 )
 
 const outputQueue = "limiter.test_output"
@@ -127,9 +127,9 @@ func clientCheckCall(t *testing.T, publisher rabbitmq.Publisher, key string, tim
 	limiterHost := "localhost:" + os.Getenv("LIMITER_PORT")
 
 	reqID := stringsUtils.Random(5, true)
-	content := limiter.CreateTcpCheckRequestContent(reqID, key, time, val)
+	content := tcp.CreateTcpCheckRequestContent(reqID, key, time, val)
 
-	response, err := limiter.SendTcpPacket(limiterHost, content)
+	response, err := tcp.SendTcpPacket(limiterHost, content)
 	assert.Nil(t, err, "There should be no error when sending tcp check request")
 
 	sl := strings.Split(response, ";")

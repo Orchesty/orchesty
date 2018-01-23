@@ -1,4 +1,4 @@
-package limiter
+package tcp
 
 import (
 	"strconv"
@@ -7,7 +7,7 @@ import (
 	"bufio"
 )
 
-func CreateTcpHealtCheckRequestContent(reqID string) string {
+func CreateTcpHealthCheckRequestContent(reqID string) string {
 	return "pf-health-check;"+reqID+"\n"
 }
 

@@ -12,6 +12,7 @@ import (
 	"strconv"
 	"hanaboso.com/limiter/pkg/logger"
 	"time"
+	"hanaboso.com/limiter/pkg/tcp"
 )
 
 // main runs the limiter program
@@ -25,7 +26,7 @@ func main() {
 	lim := limiter.NewLimiter(store, consumer, mt, timerChan, logger.GetLogger())
 
 	// starts the tcp server
-	tcpServer := limiter.NewTcpServer(lim, logger.GetLogger())
+	tcpServer := tcp.NewTcpServer(lim, logger.GetLogger())
 	limiterPort, _ := strconv.Atoi(env.GetEnv("LIMITER_PORT", "3333"))
 	go tcpServer.Start(limiterPort)
 
@@ -80,7 +81,7 @@ func prepareLogger() {
 }
 
 // gracefulShutdown handles SIGINT and SIGTERM signal to stop the app gracefully
-func gracefulShutdown(srv *limiter.TcpServer) {
+func gracefulShutdown(srv *tcp.TcpServer) {
 	sigs := make(chan os.Signal, 1)
 	quit := make(chan bool, 1)
 

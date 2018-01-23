@@ -1,4 +1,4 @@
-package limiter
+package tcp
 
 import (
 	"net"
@@ -12,6 +12,7 @@ import (
 	"sync"
 	"strconv"
 	"hanaboso.com/limiter/pkg/logger"
+	"hanaboso.com/limiter/pkg/limiter"
 )
 
 const (
@@ -78,16 +79,16 @@ func populateRequest(conn net.Conn) (request, error) {
 }
 
 type TcpServer struct {
-	lim      Limiter
+	lim      limiter.Limiter
 	listener *net.TCPListener
 	wg       *sync.WaitGroup
 	logger   logger.Logger
 }
 
 // NewTcpServer creates new instance of TcpServer struct and returns pointer to it
-func NewTcpServer(dec Limiter, logger logger.Logger) *TcpServer {
+func NewTcpServer(lim limiter.Limiter, logger logger.Logger) *TcpServer {
 	return &TcpServer{
-		lim:    dec,
+		lim:    lim,
 		wg:     &sync.WaitGroup{},
 		logger: logger,
 	}
