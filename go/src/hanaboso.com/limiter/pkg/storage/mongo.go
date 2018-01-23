@@ -93,7 +93,7 @@ func (s *Mongo) Get(key string, length int) ([]*Message, error) {
 	var messages []*Message
 	c := s.session.DB(s.db).C(s.collection)
 
-	err := c.Find(bson.M{"limitkey": key}).Limit(length).Iter().All(&messages)
+	err := c.Find(bson.M{"limitkey": key}).Limit(length).Sort("created").Iter().All(&messages)
 
 	if err != nil {
 		return make([]*Message, 0), err

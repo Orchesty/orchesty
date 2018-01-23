@@ -19,11 +19,12 @@ import (
 func main() {
 	prepareLogger()
 	store := prepareStorage()
+	guard := prepareGuard(store)
 	consumer, publisher := prepareRabbit()
 
 	timerChan := make(chan *storage.Message)
 	mt := limiter.NewMessageTimer(store, publisher, timerChan, logger.GetLogger())
-	lim := limiter.NewLimiter(store, consumer, mt, timerChan, logger.GetLogger())
+	lim := limiter.NewLimiter(store, consumer, mt, timerChan, guard, logger.GetLogger())
 
 	// starts the tcp server
 	tcpServer := tcp.NewTcpServer(lim, logger.GetLogger())
@@ -78,6 +79,24 @@ func prepareLogger() {
 			),
 		),
 	)
+}
+
+func prepareGuard(storage storage.Storage) limiter.Guard {
+	tooOld := time.Hour * 24
+	guard := limiter.NewLimitGuard(storage, logger.GetLogger())
+
+	// check immediately
+	guard.Check(tooOld)
+
+	// check in future time periods
+	tick := time.NewTicker(time.Hour)
+	go func() {
+		for range tick.C {
+			guard.Check(tooOld)
+		}
+	}()
+
+	return guard
 }
 
 // gracefulShutdown handles SIGINT and SIGTERM signal to stop the app gracefully

@@ -19,6 +19,7 @@ type limiter struct {
 	consumer  rabbitmq.Consumer
 	msgTimer  MessageTimer
 	timerChan chan *storage.Message
+	guard     Guard
 	logger    logger.Logger
 }
 
@@ -28,9 +29,10 @@ func NewLimiter(
 	consumer rabbitmq.Consumer,
 	msgTimer MessageTimer,
 	timerChan chan *storage.Message,
+	guard Guard,
 	logger logger.Logger,
-) (l *limiter) {
-	return &limiter{store, consumer, msgTimer, timerChan, logger}
+) *limiter {
+	return &limiter{store, consumer, msgTimer, timerChan, guard,logger}
 }
 
 // Start initializes the timers and starts consumption
@@ -38,22 +40,7 @@ func (l *limiter) Start() {
 	l.msgTimer.Init()
 	go l.consumer.Consume(func(msg <-chan amqp.Delivery) {
 		for m := range msg {
-			context := logger.CtxFromDelivery(m)
-			l.logger.Info("Received message from RabbitMQ", context)
-
-			msg, err := storage.NewMessage(&m)
-
-			if err != nil {
-				context["error"] = err
-				l.logger.Error("Limiter create message error", context)
-			} else {
-				l.logger.Info(fmt.Sprintf("Message accepted, key: %s", msg.LimitKey), context)
-				l.saveMessage(msg)
-			}
-
-			l.timerChan <- msg
-
-			m.Ack(false)
+			l.handleAmqpMessage(m)
 		}
 	})
 }
@@ -73,12 +60,35 @@ func (l *limiter) IsFreeLimit(key string, time int, value int) (bool, error) {
 	return can, nil
 }
 
-// PostponeMessage
-func (l *limiter) saveMessage(msg *storage.Message) (error) {
-	_, err := l.store.Save(msg)
+// handleAmqpMessage is called whenever new amqp message is consumed
+// should create storage message object and save it, or discard it if the message key is blacklisted
+func (l *limiter) handleAmqpMessage(m amqp.Delivery) {
+	defer m.Ack(false)
+
+	context := logger.CtxFromDelivery(m)
+	l.logger.Info("Limiter received message from RabbitMQ", context)
+
+	msg, err := storage.NewMessage(&m)
+
 	if err != nil {
-		return err
+		context["error"] = err
+		l.logger.Error("Limiter cannot create storage message object.", context)
+		return
 	}
 
-	return nil
+	if l.guard.IsOnBlacklist(msg.LimitKey) {
+		context["error"] = fmt.Errorf(fmt.Sprintf("Limit Key '%s' is in blacklist", msg.LimitKey))
+		l.logger.Warning("Limiter is discarding message.", context)
+		return
+	}
+
+	_, err = l.store.Save(msg)
+	if err != nil {
+		context["error"] = err
+		l.logger.Error("Limiter cannot save mesasge to storage.", context)
+		return
+	}
+
+	l.logger.Info(fmt.Sprintf("Limiter accepted message, key: '%s'", msg.LimitKey), context)
+	l.timerChan <- msg
 }

@@ -121,3 +121,39 @@ func runTestCommandsInSeries(t *testing.T, endTestCh chan bool) {
 
 	endTestCh <- true
 }
+
+// GetDistinctFirstItems should return the map of messages with distinct keys
+// The listed message should be the oldest in storage with the given key
+func TestMongo_GetDistinctFirstItems(t *testing.T) {
+	os.Setenv("MONGO_HOST", env.GetEnv("MONGO_HOST", "mongodb"))
+	mongoHost := os.Getenv("MONGO_HOST")
+	mongo := NewMongo(mongoHost, mongoDb, mongoCollection, logger.GetNullLogger())
+	mongo.Connect()
+	mongo.session.DB("test").C("messages_test").DropCollection()
+
+	items := make(map[string]*Message)
+	items["new"] = &Message{
+		LimitKey: "someKey",
+		Created: time.Now(),
+		ReturnExchange: "most recent",
+	}
+	items["fresh"] = &Message{
+		LimitKey: "someKey",
+		Created: time.Now().Add(-time.Minute * 5),
+		ReturnExchange: "in the middle",
+	}
+	items["rotten"] = &Message{
+		LimitKey: "someKey",
+		Created: time.Now().Add(-time.Hour * 25),
+		ReturnExchange: "oldest",
+	}
+
+	for _, i := range items {
+		mongo.Save(i)
+	}
+
+	found, _ := mongo.GetDistinctFirstItems()
+	rotten, ok := found["someKey"]
+	assert.True(t, ok)
+	assert.Equal(t, "oldest", rotten.ReturnExchange)
+}
