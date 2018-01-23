@@ -17,7 +17,7 @@ services:
         arguments:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@cc.transport.curl.manager'
-            - '@cc.systems.manager'
+            - '@cc.system_limit.manager'
         tags: ['kernel.event_subscriber']
 
     cc.plugins.security.listener:

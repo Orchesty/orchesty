@@ -10,7 +10,11 @@
 namespace CleverConnectors\AppBundle\Model\CustomNode;
 
 use CleverConnectors\AppBundle\Model\Command\AsyncCommandFactory;
+use CleverConnectors\AppBundle\Model\Limits\SystemLimitManager;
+use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
+use Doctrine\Common\Persistence\ObjectRepository;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Exception;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
@@ -52,16 +56,35 @@ class UserMessageGenerator implements BatchInterface, CustomNodeInterface
     private $asyncCommandFactory;
 
     /**
+     * @var SystemLimitManager
+     */
+    private $systemLimitManager;
+
+    /**
+     * @var ObjectRepository|SystemInstallRepository
+     */
+    private $systemInstallRepository;
+
+    /**
      * CronBatchActionCallback constructor.
      *
      * @param Serializer          $serializer
      * @param AsyncCommandFactory $asyncCommandFactory
+     * @param SystemLimitManager  $systemLimitManager
+     * @param DocumentManager     $dm
      */
-    public function __construct(Serializer $serializer, AsyncCommandFactory $asyncCommandFactory)
+    public function __construct(
+        Serializer $serializer,
+        AsyncCommandFactory $asyncCommandFactory,
+        SystemLimitManager $systemLimitManager,
+        DocumentManager $dm
+    )
     {
-        $this->serializer          = $serializer;
-        $this->asyncCommandFactory = $asyncCommandFactory;
-        $this->logger              = new NullLogger();
+        $this->serializer              = $serializer;
+        $this->asyncCommandFactory     = $asyncCommandFactory;
+        $this->logger                  = new NullLogger();
+        $this->systemLimitManager      = $systemLimitManager;
+        $this->systemInstallRepository = $dm->getRepository(SystemInstallRepository::class);
     }
 
     /**
@@ -147,6 +170,12 @@ class UserMessageGenerator implements BatchInterface, CustomNodeInterface
             ->addHeader(CMHeaders::createKey(CMHeaders::TOKEN), $item['token'] ?? '')
             ->addHeader(CMHeaders::createKey(CMHeaders::GUID), $item['user'] ?? '')
             ->addHeader(CMHeaders::createKey(CMHeaders::SYSTEM_KEY), $item['system'] ?? '');
+
+        $systemLimit = $this->systemLimitManager->getSystemLimitBySystemKey($item['system'] ?? '');
+        if ($systemLimit) {
+            $systemInstall = $this->systemInstallRepository->getSystemInstallFromHeaders($message->getHeaders());
+            $this->systemLimitManager->addSystemLimitToSuccessMessage($systemLimit, $systemInstall, $message);
+        }
 
         return resolve($message);
     }

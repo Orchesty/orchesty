@@ -12,6 +12,7 @@ namespace Tests\Unit\AppBundle\Model\Systems;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\CMEvents\CMEventsManager;
 use CleverConnectors\AppBundle\Model\DataLayout\LayoutManager;
+use CleverConnectors\AppBundle\Model\Limits\SystemLimitManager;
 use CleverConnectors\AppBundle\Model\MapTemplate\MapManager;
 use CleverConnectors\AppBundle\Model\SystemMetrics\SystemMetricsInterface;
 use CleverConnectors\AppBundle\Model\Systems\SystemLoader;
@@ -82,6 +83,11 @@ final class SystemManagerTest extends TestCase
     private $metrics;
 
     /**
+     * @var MockObject|SystemLimitManager
+     */
+    private $systemLimitManager;
+
+    /**
      *
      */
     public function setUp(): void
@@ -95,6 +101,7 @@ final class SystemManagerTest extends TestCase
         $this->mapManager     = $this->getClassMock(MapManager::class);
         $this->layoutManager  = $this->getClassMock(LayoutManager::class);
         $this->metrics        = $this->getClassMock(SystemMetricsInterface::class);
+        $this->systemLimitManager = $this->getClassMock(SystemLimitManager::class);
         $this->startingPoint->method('runWithRequest');
     }
 
@@ -114,7 +121,8 @@ final class SystemManagerTest extends TestCase
             $this->eventsManager,
             $this->mapManager,
             $this->layoutManager,
-            $this->metrics
+            $this->metrics,
+            $this->systemLimitManager
         );
 
         $res = $manager->synchronizeSubscriptions('user', 'system');

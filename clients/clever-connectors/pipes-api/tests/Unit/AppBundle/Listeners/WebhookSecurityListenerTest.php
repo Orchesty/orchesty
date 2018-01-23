@@ -5,10 +5,12 @@ namespace Tests\Unit\AppBundle\Listeners;
 use CleverConnectors\AppBundle\Controller\WebhookController;
 use CleverConnectors\AppBundle\Document\Webhook;
 use CleverConnectors\AppBundle\Listeners\WebhookSecurityListener;
+use CleverConnectors\AppBundle\Model\Limits\SystemLimitManager;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit_Framework_MockObject_MockObject;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
@@ -52,7 +54,10 @@ final class WebhookSecurityListenerTest extends KernelTestCaseAbstract
             'userId'       => 'userId',
         ]));
 
-        $security = new WebhookSecurityListener($documentManager, $curlManager);
+        /** @var SystemLimitManager|MockObject $systemLimitManager */
+        $systemLimitManager = $this->createMock(SystemLimitManager::class);
+
+        $security = new WebhookSecurityListener($documentManager, $curlManager, $systemLimitManager);
         $security->checkSecurity($controllerEvent);
         $headers = $controllerEvent->getRequest()->headers;
 

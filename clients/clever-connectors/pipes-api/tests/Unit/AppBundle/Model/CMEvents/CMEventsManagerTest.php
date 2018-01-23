@@ -5,6 +5,7 @@ namespace Tests\Unit\AppBundle\Model\CMEvents;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\CMEvents\CMEventsManager;
+use CleverConnectors\AppBundle\Model\Limits\SystemLimitManager;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
@@ -12,6 +13,7 @@ use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Repository\NodeRepository;
 use Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\StartingPointHandler;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit_Framework_MockObject_MockObject;
 use Symfony\Component\HttpFoundation\Request;
 use Tests\KernelTestCaseAbstract;
@@ -70,7 +72,10 @@ final class CMEventsManagerTest extends KernelTestCaseAbstract
 
         $loader = $this->container->get('cc.systems.loader');
 
-        $mana = new CMEventsManager($dm, $handler, $loader);
+        /** @var SystemLimitManager|MockObject $systemLimitManager */
+        $systemLimitManager = $this->createMock(SystemLimitManager::class);
+
+        $mana = new CMEventsManager($dm, $handler, $loader, $systemLimitManager);
         $mana->runEvent(new Request(), '', SystemInstall::EVENT_CREATE);
     }
 
@@ -106,7 +111,10 @@ final class CMEventsManagerTest extends KernelTestCaseAbstract
         $handler = $this->createMock(StartingPointHandler::class);
         $loader  = $this->container->get('cc.systems.loader');
 
-        $mana = new CMEventsManager($dm, $handler, $loader);
+        /** @var SystemLimitManager|MockObject $systemLimitManager */
+        $systemLimitManager = $this->createMock(SystemLimitManager::class);
+
+        $mana = new CMEventsManager($dm, $handler, $loader, $systemLimitManager);
         $mana->runEvent(new Request(), '', SystemInstall::EVENT_CREATE);
     }
 
@@ -144,7 +152,10 @@ final class CMEventsManagerTest extends KernelTestCaseAbstract
         $handler = $this->createMock(StartingPointHandler::class);
         $loader  = $this->container->get('cc.systems.loader');
 
-        $mana = new CMEventsManager($dm, $handler, $loader);
+        /** @var SystemLimitManager|MockObject $systemLimitManager */
+        $systemLimitManager = $this->createMock(SystemLimitManager::class);
+
+        $mana = new CMEventsManager($dm, $handler, $loader, $systemLimitManager);
         $mana->runEvent(new Request(), '', SystemInstall::EVENT_CREATE);
     }
 
@@ -176,7 +187,10 @@ final class CMEventsManagerTest extends KernelTestCaseAbstract
 
         $loader = $this->container->get('cc.systems.loader');
 
-        $mana = new CMEventsManager($dm, $handler, $loader);
+        /** @var SystemLimitManager|MockObject $systemLimitManager */
+        $systemLimitManager = $this->createMock(SystemLimitManager::class);
+
+        $mana = new CMEventsManager($dm, $handler, $loader, $systemLimitManager);
         $mana->saveEventsForSystemInstall($systemInstall, $data);
     }
 
@@ -215,7 +229,10 @@ final class CMEventsManagerTest extends KernelTestCaseAbstract
 
         $loader = $this->container->get('cc.systems.loader');
 
-        $mana = new CMEventsManager($dm, $handler, $loader);
+        /** @var SystemLimitManager|MockObject $systemLimitManager */
+        $systemLimitManager = $this->createMock(SystemLimitManager::class);
+
+        $mana = new CMEventsManager($dm, $handler, $loader, $systemLimitManager);
         $mana->saveEventsForSystemInstall($systemInstall, $data);
         self::assertArrayNotHasKey(SystemInstall::EVENT_CREATE, $data);
         self::assertArrayNotHasKey(SystemInstall::EVENT_HARD_BOUNCE, $data);
@@ -257,7 +274,10 @@ final class CMEventsManagerTest extends KernelTestCaseAbstract
 
         $loader = $this->container->get('cc.systems.loader');
 
-        $mana = new CMEventsManager($dm, $handler, $loader);
+        /** @var SystemLimitManager|MockObject $systemLimitManager */
+        $systemLimitManager = $this->createMock(SystemLimitManager::class);
+
+        $mana = new CMEventsManager($dm, $handler, $loader, $systemLimitManager);
         $mana->saveEventsForSystemInstall($systemInstall, $data);
         self::assertArrayNotHasKey(SystemInstall::EVENT_CREATE, $data);
         self::assertArrayHasKey('settings', $data);

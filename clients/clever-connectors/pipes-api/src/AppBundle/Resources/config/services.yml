@@ -29,6 +29,11 @@ services:
         arguments:
             - '@service_container'
 
+    cc.system_limit.manager:
+        class: CleverConnectors\AppBundle\Model\Limits\SystemLimitManager
+        arguments:
+            - '@cc.systems.loader'
+
     cc.last_sync.manager:
         class: CleverConnectors\AppBundle\Model\LastSync\LastSyncManager
         arguments:
@@ -50,6 +55,7 @@ services:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.handler.starting_point'
             - '@cc.systems.loader'
+            - '@cc.system_limit.manager'
         calls:
             - [setLogger, ['@monolog.logger']]
 

@@ -5,6 +5,8 @@ services:
         arguments:
             - '@jms_serializer'
             - '@clever_connector.async_command_factory'
+            - '@cc.system_limit.manager'
+            -
         calls:
             - [setLogger, ['@monolog.logger.rabbit-mq']]
 

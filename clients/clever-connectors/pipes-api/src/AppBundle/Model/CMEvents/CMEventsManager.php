@@ -11,6 +11,8 @@ namespace CleverConnectors\AppBundle\Model\CMEvents;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
+use CleverConnectors\AppBundle\Model\Limits\SystemLimitInterface;
+use CleverConnectors\AppBundle\Model\Limits\SystemLimitManager;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\SystemInterface;
 use CleverConnectors\AppBundle\Model\Systems\SystemLoader;
@@ -75,20 +77,32 @@ class CMEventsManager implements LoggerAwareInterface
     private $loader;
 
     /**
+     * @var SystemLimitManager
+     */
+    private $systemLimitManager;
+
+    /**
      * CMEventHandler constructor.
      *
      * @param DocumentManager      $dm
      * @param StartingPointHandler $startingPoint
      * @param SystemLoader         $loader
+     * @param SystemLimitManager   $systemLimitManager
      */
-    public function __construct(DocumentManager $dm, StartingPointHandler $startingPoint, SystemLoader $loader)
+    public function __construct(
+        DocumentManager $dm,
+        StartingPointHandler $startingPoint,
+        SystemLoader $loader,
+        SystemLimitManager $systemLimitManager
+    )
     {
-        $this->dm            = $dm;
-        $this->systemRepo    = $this->dm->getRepository(SystemInstall::class);
-        $this->topologyRepo  = $this->dm->getRepository(Topology::class);
-        $this->nodeRepo      = $this->dm->getRepository(Node::class);
-        $this->startingPoint = $startingPoint;
-        $this->loader        = $loader;
+        $this->dm                 = $dm;
+        $this->systemRepo         = $this->dm->getRepository(SystemInstall::class);
+        $this->topologyRepo       = $this->dm->getRepository(Topology::class);
+        $this->nodeRepo           = $this->dm->getRepository(Node::class);
+        $this->startingPoint      = $startingPoint;
+        $this->loader             = $loader;
+        $this->systemLimitManager = $systemLimitManager;
     }
 
     /**
@@ -132,7 +146,12 @@ class CMEventsManager implements LoggerAwareInterface
         /** @var SystemInstall $systemInstall */
         foreach ($this->systemRepo->getSystemInstallByEvent($event, $userId) as $systemInstall) {
             InnerRequestUtils::addCMHeaders($systemInstall, $request);
-            $system     = $this->loader->getSystem($systemInstall->getSystem());
+            $system = $this->loader->getSystem($systemInstall->getSystem());
+
+            if ($system instanceof SystemLimitInterface) {
+                $this->systemLimitManager->addSystemLimitToRequestHeaders($system, $systemInstall, $request->headers);
+            }
+
             $topologies = $this->getTopologiesForRun($system, $systemInstall, $const);
             foreach ($topologies as $topology) {
                 try {
@@ -168,6 +187,11 @@ class CMEventsManager implements LoggerAwareInterface
 
         $request = InnerRequestUtils::getRequest($systemInstall, $changed);
         $request->setMethod(CurlManager::METHOD_POST);
+
+        if ($system instanceof SystemLimitInterface) {
+            $this->systemLimitManager->addSystemLimitToRequestHeaders($system, $systemInstall, $request->headers);
+        }
+
         $topologies = $this->getTopologiesForSave($system, $systemInstall);
         foreach ($topologies as $topology) {
             try {

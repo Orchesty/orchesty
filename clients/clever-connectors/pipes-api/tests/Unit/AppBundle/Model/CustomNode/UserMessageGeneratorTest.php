@@ -11,12 +11,15 @@ namespace Tests\Unit\AppBundle\Model\CustomNode;
 
 use CleverConnectors\AppBundle\Model\Command\AsyncCommandFactory;
 use CleverConnectors\AppBundle\Model\CustomNode\UserMessageGenerator;
+use CleverConnectors\AppBundle\Model\Limits\SystemLimitManager;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Exception;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
 use InvalidArgumentException;
 use JMS\Serializer\Serializer;
 use MongoDB\Exception\RuntimeException;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use PHPUnit_Framework_MockObject_MockObject;
 use React\EventLoop\Factory;
@@ -70,7 +73,14 @@ final class UserMessageGeneratorTest extends TestCase
         $serializer->method('deserialize')->willThrowException(new Exception('Json error.'));
         /** @var AsyncCommandFactory|PHPUnit_Framework_MockObject_MockObject $asyncCommandFactory */
         $asyncCommandFactory = $this->createMock(AsyncCommandFactory::class);
-        $callback            = new UserMessageGenerator($serializer, $asyncCommandFactory);
+
+        /** @var SystemLimitManager|MockObject $systemLimitManager */
+        $systemLimitManager = $this->createMock(SystemLimitManager::class);
+
+        /** @var DocumentManager|MockObject $dm */
+        $dm = $this->createMock(DocumentManager::class);
+
+        $callback = new UserMessageGenerator($serializer, $asyncCommandFactory, $systemLimitManager, $dm);
 
         $callback
             ->processBatch($this->createMessage(), $loop, $this->callback)
@@ -96,7 +106,14 @@ final class UserMessageGeneratorTest extends TestCase
         $serializer->method('deserialize')->willReturn([]);
         /** @var AsyncCommandFactory|PHPUnit_Framework_MockObject_MockObject $asyncCommandFactory */
         $asyncCommandFactory = $this->createMock(AsyncCommandFactory::class);
-        $callback            = new UserMessageGenerator($serializer, $asyncCommandFactory);
+
+        /** @var SystemLimitManager|MockObject $systemLimitManager */
+        $systemLimitManager = $this->createMock(SystemLimitManager::class);
+
+        /** @var DocumentManager|MockObject $dm */
+        $dm = $this->createMock(DocumentManager::class);
+
+        $callback            = new UserMessageGenerator($serializer, $asyncCommandFactory, $systemLimitManager, $dm);
 
         $callback
             ->processBatch($this->createMessage(), $loop, $this->callback)
@@ -125,7 +142,14 @@ final class UserMessageGeneratorTest extends TestCase
         $asyncCommandFactory->method('create')->willReturn(new Promise(function ($resolve, $reject): void {
             $reject(new RuntimeException('Process exited with code 1.'));
         }));
-        $callback = new UserMessageGenerator($serializer, $asyncCommandFactory);
+
+        /** @var SystemLimitManager|MockObject $systemLimitManager */
+        $systemLimitManager = $this->createMock(SystemLimitManager::class);
+
+        /** @var DocumentManager|MockObject $dm */
+        $dm = $this->createMock(DocumentManager::class);
+
+        $callback = new UserMessageGenerator($serializer, $asyncCommandFactory, $systemLimitManager, $dm);
 
         $callback
             ->processBatch($this->createMessage(['node_id' => '132']), $loop, $this->callback)
@@ -151,7 +175,14 @@ final class UserMessageGeneratorTest extends TestCase
         $serializer->method('deserialize')->willReturn(["param" => "test"], []);
         /** @var AsyncCommandFactory|PHPUnit_Framework_MockObject_MockObject $asyncCommandFactory */
         $asyncCommandFactory = $this->createMock(AsyncCommandFactory::class);
-        $callback            = new UserMessageGenerator($serializer, $asyncCommandFactory);
+
+        /** @var SystemLimitManager|MockObject $systemLimitManager */
+        $systemLimitManager = $this->createMock(SystemLimitManager::class);
+
+        /** @var DocumentManager|MockObject $dm */
+        $dm = $this->createMock(DocumentManager::class);
+
+        $callback            = new UserMessageGenerator($serializer, $asyncCommandFactory, $systemLimitManager, $dm);
         $asyncCommandFactory->method('create')->willReturn(new Promise(function ($resolve): void {
             $resolve('');
         }));
@@ -185,7 +216,14 @@ final class UserMessageGeneratorTest extends TestCase
         $serializer->method('deserialize')->willReturn(["param" => "test"]);
         /** @var AsyncCommandFactory|PHPUnit_Framework_MockObject_MockObject $asyncCommandFactory */
         $asyncCommandFactory = $this->createMock(AsyncCommandFactory::class);
-        $callback            = new UserMessageGenerator($serializer, $asyncCommandFactory);
+
+        /** @var SystemLimitManager|MockObject $systemLimitManager */
+        $systemLimitManager = $this->createMock(SystemLimitManager::class);
+
+        /** @var DocumentManager|MockObject $dm */
+        $dm = $this->createMock(DocumentManager::class);
+
+        $callback            = new UserMessageGenerator($serializer, $asyncCommandFactory, $systemLimitManager, $dm);
 
         $callback
             ->prepareData(['id' => '5', 'token' => '123', 'user' => '123'], 1)

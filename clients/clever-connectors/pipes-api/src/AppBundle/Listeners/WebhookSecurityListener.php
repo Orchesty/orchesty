@@ -5,8 +5,8 @@ namespace CleverConnectors\AppBundle\Listeners;
 use CleverConnectors\AppBundle\Controller\WebhookController;
 use CleverConnectors\AppBundle\Document\Webhook;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
-use CleverConnectors\AppBundle\Model\Systems\SystemLoader;
-use CleverConnectors\AppBundle\Model\Systems\SystemManager;
+use CleverConnectors\AppBundle\Model\Limits\SystemLimitManager;
+use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -37,22 +37,28 @@ class WebhookSecurityListener implements EventSubscriberInterface
     private $curl;
 
     /**
-     * @var SystemManager
+     * @var SystemLimitManager
      */
-    private $systemManager;
+    private $systemLimitManager;
+
+    /**
+     * @var ObjectRepository|SystemInstallRepository
+     */
+    private $systemInstallRepository;
 
     /**
      * WebhookSecurityListener constructor.
      *
      * @param DocumentManager      $dm
      * @param CurlManagerInterface $curl
-     * @param SystemManager        $systemManager
+     * @param SystemLimitManager   $systemLimitManager
      */
-    function __construct(DocumentManager $dm, CurlManagerInterface $curl, SystemManager $systemManager)
+    function __construct(DocumentManager $dm, CurlManagerInterface $curl, SystemLimitManager $systemLimitManager)
     {
-        $this->repo          = $dm->getRepository(Webhook::class);
-        $this->curl          = $curl;
-        $this->systemManager = $systemManager;
+        $this->repo                    = $dm->getRepository(Webhook::class);
+        $this->systemInstallRepository = $dm->getRepository(SystemInstallRepository::class);
+        $this->curl                    = $curl;
+        $this->systemLimitManager      = $systemLimitManager;
     }
 
     /**
@@ -94,12 +100,15 @@ class WebhookSecurityListener implements EventSubscriberInterface
             $ev->getRequest()->headers->set(CMHeaders::createKey(CMHeaders::TOKEN), $params['token']);
             $ev->getRequest()->headers->set(CMHeaders::createKey(CMHeaders::SYSTEM_KEY), $res->getSystemKey());
 
-            $this->systemManager->addSystemLimitToHeaders(
-                $params['userId'],
-                $params['token'],
-                $res->getSystemKey(),
-                $ev->getRequest()->headers
-            );
+            $systemLimit = $this->systemLimitManager->getSystemLimitBySystemKey($res->getSystemKey());
+            if ($systemLimit) {
+                $systemInstall = $this->systemInstallRepository->getSystemInstallFromHeaders($ev->getRequest()->headers->all());
+                $this->systemLimitManager->addSystemLimitToRequestHeaders(
+                    $systemLimit,
+                    $systemInstall,
+                    $ev->getRequest()->headers
+                );
+            }
 
             $req = new RequestDto('GET', new Uri('https://api.dev.clevermonitor.com/v1.2'));
             $req->setHeaders([

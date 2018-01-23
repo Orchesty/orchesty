@@ -11,9 +11,10 @@ use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\CMEvents\CMEventsManager;
 use CleverConnectors\AppBundle\Model\CMEvents\CMEventSystemInterface;
 use CleverConnectors\AppBundle\Model\DataLayout\LayoutManager;
-use CleverConnectors\AppBundle\Model\Limits\SystemLimitDto;
 use CleverConnectors\AppBundle\Model\Limits\SystemLimitInterface;
+use CleverConnectors\AppBundle\Model\Limits\SystemLimitManager;
 use CleverConnectors\AppBundle\Model\MapTemplate\MapManager;
+use CleverConnectors\AppBundle\Model\SystemMetrics\SystemMetrics;
 use CleverConnectors\AppBundle\Model\SystemMetrics\SystemMetricsDto;
 use CleverConnectors\AppBundle\Model\SystemMetrics\SystemMetricsInterface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\AuthorizationInterface;
@@ -37,7 +38,6 @@ use Hanaboso\PipesFramework\Configurator\Repository\NodeRepository;
 use Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository;
 use Hanaboso\PipesFramework\Configurator\StartingPoint\StartingPoint;
 use Hanaboso\PipesFramework\TopologyGenerator\Request\RequestHandler;
-use Symfony\Component\HttpFoundation\HeaderBag;
 
 /**
  * Class SystemManager
@@ -103,9 +103,14 @@ class SystemManager
     private $layoutManager;
 
     /**
-     * @var SystemMetricsInterface
+     * @var SystemMetrics
      */
     private $systemMetrics;
+
+    /**
+     * @var SystemLimitManager
+     */
+    private $systemLimitManager;
 
     /**
      * SystemManager constructor.
@@ -119,6 +124,7 @@ class SystemManager
      * @param MapManager             $mapManager
      * @param LayoutManager          $layoutManager
      * @param SystemMetricsInterface $systemMetrics
+     * @param SystemLimitManager     $systemLimitManager
      */
     public function __construct(
         DocumentManager $dm,
@@ -129,7 +135,8 @@ class SystemManager
         CMEventsManager $eventsManager,
         MapManager $mapManager,
         LayoutManager $layoutManager,
-        SystemMetricsInterface $systemMetrics
+        SystemMetricsInterface $systemMetrics,
+        SystemLimitManager $systemLimitManager
     )
     {
         $this->dm                 = $dm;
@@ -144,6 +151,7 @@ class SystemManager
         $this->mapManager         = $mapManager;
         $this->layoutManager      = $layoutManager;
         $this->systemMetrics      = $systemMetrics;
+        $this->systemLimitManager = $systemLimitManager;
     }
 
     /**
@@ -514,9 +522,7 @@ class SystemManager
     }
 
     /**
-<<<<<<< 5bfd9229ac9b2d15a374a8a49225ea49254ca806
      * @return int
-     * @throws SystemException
      */
     public function getSystemCount(): int
     {
@@ -594,7 +600,9 @@ class SystemManager
         $dto = new SystemMetricsDto($systemKey, $from, $to, $interval, $guid);
 
         return $this->systemMetrics->getSystemRequestCount($dto);
-=======
+    }
+
+    /**
      * @param string    $user
      * @param string    $token
      * @param string    $systemKey
@@ -603,8 +611,8 @@ class SystemManager
     public function addSystemLimitToHeaders(string $user, string $token, string $systemKey, HeaderBag $headers): void
     {
         /** @var AuthorizationInterface|SystemLimitInterface $system */
-        $system = $this->systemLoader->getSystem($systemKey);
-        $systemInstall = $this->systemRepository->getSystemInstall($user, $token, $systemKey);
+        $system         = $this->systemLoader->getSystem($systemKey);
+        $systemInstall  = $this->systemRepository->getSystemInstall($user, $token, $systemKey);
         $systemLimitDto = $system->getLimit($systemInstall);
 
         if ($systemLimitDto) {
@@ -613,7 +621,6 @@ class SystemManager
             $headers->set(CMHeaders::createKey(SystemLimitDto::LIMIT_TIME_HEADER), $systemLimitDto->getLimitTime());
             $headers->set(CMHeaders::createKey(SystemLimitDto::LIMIT_VALUE_HEADER), $systemLimitDto->getLimitValue());
         }
->>>>>>> System limits to headers - WIP
     }
 
     /**
@@ -698,6 +705,11 @@ class SystemManager
         $system        = $this->systemLoader->getSystem($system);
         $request       = InnerRequestUtils::getRequest($systemInstall, $data);
         $request->setMethod(CurlManager::METHOD_POST);
+
+        if ($system instanceof SystemLimitInterface) {
+            $this->systemLimitManager->addSystemLimitToRequestHeaders($system, $systemInstall, $request->headers);
+        }
+
         $topologies = $this->topologyRepository->getRunnableTopologies(
             TopologyNameUtils::getTopologyName(
                 $topology,
