@@ -16,6 +16,24 @@ services:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Zapier\Connector\ZapierDeletedSubscriberConnector
         arguments:
 
+    hbpf.connector.zapier-create-subscriber-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Zapier\Connector\ZapierCreateSubscriberConnector
+        arguments:
+            - '@systems.zapier'
+            - '@hbpf.transport.curl_manager'
+            - '@doctrine_mongodb.odm.default_document_manager'
+        calls:
+            - ['setLogger', ['@monolog.logger.notification']]
+
+    hbpf.connector.zapier-update-subscriber-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Zapier\Connector\ZapierUpdateSubscriberConnector
+        arguments:
+            - '@systems.zapier'
+            - '@hbpf.transport.curl_manager'
+            - '@doctrine_mongodb.odm.default_document_manager'
+        calls:
+            - ['setLogger', ['@monolog.logger.notification']]
+
     hbpf.custom_node.zapier-created-subscriber-mapper:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Zapier\Mapper\ZapierCreatedSubscriberMapper
         arguments:
@@ -25,3 +43,11 @@ services:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Zapier\Mapper\ZapierUpdatedSubscriberMapper
         arguments:
             - '@doctrine_mongodb.odm.default_document_manager'
+
+    hbpf.custom_node.zapier-create-subscriber-mapper:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Zapier\Mapper\ZapierCreateSubscriberMapper
+        arguments:
+
+    hbpf.custom_node.zapier-update-subscriber-mapper:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Zapier\Mapper\ZapierUpdateSubscriberMapper
+        arguments:
