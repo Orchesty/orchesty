@@ -38,8 +38,8 @@ class ZohoSystem implements SystemInterface, AuthorizationInterface, CMEventSyst
     public const LIMIT_STATUS_CODE = 4820;
     public const AUTH_STATUS_CODES = [4600, 4001, 401];
 
-    private const SYSTEM_PLAN          = 'system-plan';
-    private const SYSTEM_USER_LICENCES = 'system-user-licences';
+    private const SYSTEM_PLAN          = 'system_plan';
+    private const SYSTEM_USER_LICENCES = 'system_user_licences';
 
     private const PLAN_STANDARD     = 'standard';
     private const PLAN_PROFESSIONAL = 'professional';
