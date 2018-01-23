@@ -14,8 +14,8 @@ use Tests\KernelTestCaseAbstract;
 final class ZohoSystemTest extends KernelTestCaseAbstract
 {
 
-    private const SYSTEM_PLAN          = 'system-plan';
-    private const SYSTEM_USER_LICENCES = 'system-user-licences';
+    private const SYSTEM_PLAN          = 'system_plan';
+    private const SYSTEM_USER_LICENCES = 'system_user_licences';
 
     private const PLAN_STANDARD     = 'standard';
     private const PLAN_PROFESSIONAL = 'professional';
