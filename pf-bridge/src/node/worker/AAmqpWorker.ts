@@ -166,8 +166,10 @@ abstract class AAmqpWorker implements IWorker {
                 if (msg.getCorrelationId() === AAmqpWorker.TEST_ID &&
                     msg.getResult().code === ResultCode.SUCCESS
                 ) {
+                    logger.info(`Worker[type'amqp'] worker ready.`, {node_id: this.settings.node_label.node_id});
                     resolve(true);
                 } else {
+                    logger.warn(`Worker[type'amqp'] worker not ready.`, {node_id: this.settings.node_label.node_id});
                     resolve(false);
                 }
             };
@@ -181,6 +183,11 @@ abstract class AAmqpWorker implements IWorker {
             const jobMsg = new JobMessage(this.settings.node_label, testHeaders.getRaw(), new Buffer(""));
             const t: IWaiting = { resolveFn: resolveTestFn, message: jobMsg, sequence: 0 };
             this.waiting.set(testCorrelationId, t);
+
+            logger.info(
+                `Worker[type'amqp'] asking worker if is ready via queue ${this.settings.publish_queue.name}`,
+                {node_id: this.settings.node_label.node_id},
+            );
 
             this.publisher.sendToQueue(
                 this.settings.publish_queue.name,

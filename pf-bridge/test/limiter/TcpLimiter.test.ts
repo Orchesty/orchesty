@@ -13,7 +13,7 @@ describe("TcpLimiter", () => {
 
     it("isReady should send and receive tcp packet", (done) => {
         const server = net.createServer((socket) => {
-            socket.write("ok");
+            socket.write("pf-health-check;someid;ok");
             socket.pipe(socket);
         });
         server.listen(1337, "localhost");
@@ -24,12 +24,6 @@ describe("TcpLimiter", () => {
             assert.isTrue(result);
             done();
         }, 100);
-    });
-
-    it.skip("isReady against live go server", async () => {
-        const limiter = new TcpLimiter({host: "localhost", port: 3333});
-        const result = await limiter.isReady();
-        assert.isTrue(result);
     });
 
 });

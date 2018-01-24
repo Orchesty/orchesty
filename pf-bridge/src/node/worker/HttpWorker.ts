@@ -92,18 +92,18 @@ class HttpWorker implements IWorker {
             const nodeId = this.settings.node_label.id;
             const reqParams = { method: "GET", url: this.getUrl(this.settings.status_path)};
 
-            logger.info(`HttpWorker asking worker if is ready on ${reqParams.url}`, {node_id: nodeId});
+            logger.info(`Worker[type'http'] asking worker if is ready on ${reqParams.url}`, {node_id: nodeId});
 
             request(reqParams, (err, response) => {
                 if (err) {
-                    logger.warn("HttpWorker worker not ready.", { node_id: nodeId, error: err });
+                    logger.warn("Worker[type'http'] worker not ready.", { node_id: nodeId, error: err });
 
                     return resolve(false);
                 }
 
                 if (response.statusCode !== 200) {
                     logger.warn(
-                        `HttpWorker worker not ready: statusCode="${response.statusCode}"`,
+                        `Worker[type'http'] worker not ready: statusCode="${response.statusCode}"`,
                         { node_id: nodeId },
                     );
 

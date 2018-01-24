@@ -31,8 +31,9 @@ export default class TcpLimiter implements ILimiter {
     public async isReady(): Promise<boolean> {
         try {
             const resp = await this.sendOverTcp(HEALTH_CHECK_REQUEST);
+            const result = resp.split(";");
 
-            if (resp === HEALTH_CHECK_VALID_RESPONSE) {
+            if (result[2] && result[2] === HEALTH_CHECK_VALID_RESPONSE) {
                 return true;
             } else {
                 logger.warn("TcpLimiter isReady - limiter not responding");
