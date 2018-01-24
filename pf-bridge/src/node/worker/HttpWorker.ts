@@ -1,3 +1,4 @@
+import * as http from "http";
 import {IMetrics} from "metrics-sender/dist/lib/metrics/IMetrics";
 import * as request from "request";
 import logger from "../../logger/Logger";
@@ -23,10 +24,22 @@ export interface IHttpWorkerSettings {
  */
 class HttpWorker implements IWorker {
 
+    private agent: http.Agent;
+
     constructor(
         protected settings: IHttpWorkerSettings,
         protected metrics: IMetrics,
-    ) {}
+    ) {
+        this.agent = new http.Agent({ keepAlive: true, maxSockets: 100 });
+    }
+
+    /**
+     *
+     * @param {"http".Agent} agent
+     */
+    public setAgent(agent: http.Agent) {
+        this.agent = agent;
+    }
 
     /**
      *
@@ -152,6 +165,7 @@ class HttpWorker implements IWorker {
             url: this.getUrl(this.settings.process_path),
             followAllRedirects: true,
             headers: this.getHttpRequestHeaders(inMsg).getRaw(),
+            agent: this.agent,
         };
 
         if (method === "POST" || method === "PATCH" || method === "PUT") {
@@ -224,15 +238,11 @@ class HttpWorker implements IWorker {
      * @param err
      */
     private onRequestError(msg: JobMessage, reqParams: request.Options, err: any): void {
-        logger.warn(
-            `Worker[type='http'] http error: ${err}. Request params: ${JSON.stringify(reqParams)}.`,
-            logger.ctxFromMsg(msg, err),
-        );
-        msg.setResult(
-            {
-                code: ResultCode.HTTP_ERROR,
-                message: err },
-            );
+        logger.warn(`Worker[type='http'] http error: ${err}.`, logger.ctxFromMsg(msg, err));
+        msg.setResult({
+            code: ResultCode.HTTP_ERROR,
+            message: err,
+        });
     }
 
     /**
