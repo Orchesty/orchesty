@@ -14,9 +14,13 @@ const LimitValueHeader = "pf-limit-value"
 const ReturnExchangeHeader = "pf-limit-return-exchange"
 const ReturnRoutingKeyHeader = "pf-limit-return-routing-key"
 
+const SystemKeyHeader = "pf-system-key"
+const GuidHeader = "pf-guid"
+const TokenHeader = "token-guid"
+
 type Message struct {
 	ID               bson.ObjectId `bson:"_id,omitempty"`
-	Created			 time.Time
+	Created          time.Time
 	LimitKey         string
 	LimitTime        int
 	LimitValue       int
@@ -66,5 +70,5 @@ func NewMessage(delivery *amqp.Delivery) (*Message, error) {
 		ReplyTo:     delivery.ReplyTo,
 	}
 
-	return &Message{"", time.Now(),key.(string), lt, lv, exchange.(string), routingKey.(string), innerMsg}, nil
+	return &Message{"", time.Now(), key.(string), lt, lv, exchange.(string), routingKey.(string), innerMsg}, nil
 }

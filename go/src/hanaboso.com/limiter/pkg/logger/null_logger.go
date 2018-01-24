@@ -3,6 +3,7 @@ package logger
 import (
 	"sync"
 	"os"
+	"hanaboso.com/utils/notification"
 )
 
 type nullLogger struct {
@@ -26,6 +27,10 @@ func (l *nullLogger) Warning(msg string, context Context) {
 
 func (l *nullLogger) Fatal(msg string, context Context) {
 	os.Exit(1)
+}
+
+func (l *nullLogger) Notify(t notification.Type, msg string, context Context) {
+	// void
 }
 
 func (l *nullLogger) AddHandler(handler Handler) {

@@ -4,6 +4,8 @@ import (
 	"time"
 	"hanaboso.com/limiter/pkg/storage"
 	"hanaboso.com/limiter/pkg/logger"
+	"hanaboso.com/utils/notification"
+	"fmt"
 )
 
 type Guard interface {
@@ -42,8 +44,9 @@ func (lg *limitGuard) Check(tooOldDuration time.Duration) {
 	for _, i := range items {
 		tooOld := time.Now().Add(- tooOldDuration)
 		if i.Created.Before(tooOld) {
+			// add limit key to blacklist
 			lg.blacklist[i.LimitKey] = true
-			lg.sendNotificationLog(i.LimitKey)
+			lg.sendNotificationLog(i)
 		}
 	}
 
@@ -51,9 +54,14 @@ func (lg *limitGuard) Check(tooOldDuration time.Duration) {
 }
 
 // TODO - format in order to be transformed to notification in logstash
-func (lg *limitGuard) sendNotificationLog(key string) string {
-	msg := "Smells like rotting message of key: "
-	lg.logger.Warning(msg, nil)
-
-	return msg
+func (lg *limitGuard) sendNotificationLog(message *storage.Message) {
+	lg.logger.Notify(
+		notification.ServiceUnavailable,
+		fmt.Sprintf("There is a limiter message rotting in storage for a long time, key: '%s'", message.LimitKey),
+		logger.Context{
+			"system_key": message.Message.Headers[storage.SystemKeyHeader],
+			"guid": message.Message.Headers[storage.GuidHeader],
+			"token": message.Message.Headers[storage.TokenHeader],
+		},
+	)
 }
