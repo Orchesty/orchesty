@@ -62,7 +62,7 @@ func (l *limiter) IsFreeLimit(key string, time int, value int) (bool, error) {
 
 // handleAmqpMessage is called whenever new amqp message is consumed
 // should create storage message object and save it, or discard it if the message key is blacklisted
-func (l *limiter) handleAmqpMessage(m amqp.Delivery) {
+func (l *limiter) handleAmqpMessage(m amqp.Delivery) error {
 	defer m.Ack(false)
 
 	context := logger.CtxFromDelivery(m)
@@ -73,22 +73,25 @@ func (l *limiter) handleAmqpMessage(m amqp.Delivery) {
 	if err != nil {
 		context["error"] = err
 		l.logger.Error("Limiter cannot create storage message object.", context)
-		return
+		return err
 	}
 
 	if l.guard.IsOnBlacklist(msg.LimitKey) {
-		context["error"] = fmt.Errorf(fmt.Sprintf("Limit Key '%s' is in blacklist", msg.LimitKey))
+		err = fmt.Errorf(fmt.Sprintf("Limit Key '%s' is in blacklist", msg.LimitKey))
+		context["error"] = err
 		l.logger.Warning("Limiter is discarding message.", context)
-		return
+		return err
 	}
 
 	_, err = l.store.Save(msg)
 	if err != nil {
 		context["error"] = err
-		l.logger.Error("Limiter cannot save mesasge to storage.", context)
-		return
+		l.logger.Error("Limiter cannot save message to storage.", context)
+		return err
 	}
 
 	l.logger.Info(fmt.Sprintf("Limiter accepted message, key: '%s'", msg.LimitKey), context)
 	l.timerChan <- msg
+
+	return nil
 }

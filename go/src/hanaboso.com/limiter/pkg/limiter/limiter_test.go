@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"github.com/stretchr/testify/assert"
 	"hanaboso.com/limiter/pkg/logger"
+	"github.com/streadway/amqp"
+	"time"
 )
 
 type checkerSaverMock struct{}
@@ -26,6 +28,14 @@ func (db *checkerSaverMock) Save(m *storage.Message) (string, error) {
 	return "msgKey", nil
 }
 
+type guardMock struct {}
+func (gm *guardMock)IsOnBlacklist(key string) bool {
+	return key == "blacklisted"
+}
+func (gm *guardMock)Check(duration time.Duration) {
+	// void
+}
+
 // TestIsFreeLimit tests the function using checkerSaver mock object
 func TestLimiter_IsFreeLimit(t *testing.T) {
 	l := limiter{store: &checkerSaverMock{}, logger: logger.GetNullLogger()}
@@ -41,4 +51,65 @@ func TestLimiter_IsFreeLimit(t *testing.T) {
 	res, err = l.IsFreeLimit("on-error", 10, 10)
 	assert.Equal(t, "some error", err.Error())
 	assert.False(t, res)
+}
+
+func TestLimiter_HandleAmqpMessage_InvalidMessage(t *testing.T) {
+
+	l := limiter{logger: logger.GetNullLogger()}
+
+	msg := amqp.Delivery{
+		Body: []byte("message with missing headers"),
+	}
+
+	err := l.handleAmqpMessage(msg)
+	assert.NotNil(t, err)
+	assert.Contains(t, err.Error(), "missing header")
+}
+
+func TestLimiter_HandleAmqpMessage_BlacklistedKey(t *testing.T) {
+
+	l := limiter{
+		guard: &guardMock{},
+		logger: logger.GetNullLogger(),
+	}
+
+	msg := amqp.Delivery{
+		Body: []byte("test content"),
+		Headers: amqp.Table{
+			storage.LimitKeyHeader:         "blacklisted",
+			storage.LimitTimeHeader:        "10",
+			storage.LimitValueHeader:       "10",
+			storage.ReturnExchangeHeader:   "limiter-exchange",
+			storage.ReturnRoutingKeyHeader: "limiter-rk",
+		},
+	}
+
+	err := l.handleAmqpMessage(msg)
+	assert.NotNil(t, err)
+	assert.Contains(t, err.Error(), "is in blacklist")
+}
+
+func TestLimiter_HandleAmqpMessage_OK(t *testing.T) {
+	timerChan := make(chan *storage.Message, 1)
+	l := limiter{
+		guard: &guardMock{},
+		store: &checkerSaverMock{},
+		logger: logger.GetNullLogger(),
+		timerChan: timerChan,
+	}
+
+	msg := amqp.Delivery{
+		Body: []byte("test content"),
+		Headers: amqp.Table{
+			storage.LimitKeyHeader:         "someKey",
+			storage.LimitTimeHeader:        "10",
+			storage.LimitValueHeader:       "10",
+			storage.ReturnExchangeHeader:   "limiter-exchange",
+			storage.ReturnRoutingKeyHeader: "limiter-rk",
+		},
+	}
+
+	err := l.handleAmqpMessage(msg)
+	assert.Nil(t, err)
+	<- timerChan
 }
