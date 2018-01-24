@@ -11,7 +11,6 @@ use CleverConnectors\AppBundle\Model\CMEvents\Traits\CMEventSystemTrait;
 use CleverConnectors\AppBundle\Model\Form\Field;
 use CleverConnectors\AppBundle\Model\Form\Form;
 use CleverConnectors\AppBundle\Model\Limits\SystemLimitDto;
-use CleverConnectors\AppBundle\Model\Limits\SystemLimitInterface;
 use CleverConnectors\AppBundle\Model\Requester\RequesterInterface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\OAuth2Interface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\Traits\AuthorizationTrait;
@@ -34,7 +33,7 @@ use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Shopify
  */
-class ShopifySystem implements WebhookSystemInterface, OAuth2Interface, CMEventSystemInterface, SystemLimitInterface
+class ShopifySystem implements WebhookSystemInterface, OAuth2Interface, CMEventSystemInterface
 {
 
     use SystemTrait;

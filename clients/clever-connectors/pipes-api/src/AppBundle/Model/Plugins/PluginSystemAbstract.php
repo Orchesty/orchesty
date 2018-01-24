@@ -11,6 +11,7 @@ use CleverConnectors\AppBundle\Model\CMEvents\CMEventSystemInterface;
 use CleverConnectors\AppBundle\Model\CMEvents\Traits\CMEventSystemTrait;
 use CleverConnectors\AppBundle\Model\Form\Field;
 use CleverConnectors\AppBundle\Model\Form\Form;
+use CleverConnectors\AppBundle\Model\Limits\SystemLimitDto;
 use CleverConnectors\AppBundle\Model\Plugins\Requester\SwitchTokenRequester;
 use CleverConnectors\AppBundle\Model\Requester\RequesterInterface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\AuthorizationInterface;
@@ -236,7 +237,7 @@ abstract class PluginSystemAbstract implements AuthorizationInterface, CMEventSy
     /**
      * @return int
      */
-    public function getLimit(): int
+    public function getPageLimit(): int
     {
         return static::LIMIT_PER_PAGE;
     }
@@ -257,6 +258,27 @@ abstract class PluginSystemAbstract implements AuthorizationInterface, CMEventSy
     public function getSwitchTokenRequester(SystemInstall $systemInstall): RequesterInterface
     {
         return new SwitchTokenRequester($this->getRequestDto($systemInstall, CurlManager::METHOD_POST));
+    }
+
+    /**
+     * @param SystemInstall $systemInstall
+     *
+     * @return SystemLimitDto|null
+     */
+    public function getLimit(SystemInstall $systemInstall): ?SystemLimitDto
+    {
+        return NULL;
+    }
+
+    /**
+     * @param SystemInstall $systemInstall
+     * @param array         $data
+     *
+     * @return SystemInstall
+     */
+    public function saveLimit(SystemInstall $systemInstall, array $data): SystemInstall
+    {
+        return $systemInstall;
     }
 
 }
