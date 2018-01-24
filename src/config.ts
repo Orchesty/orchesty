@@ -18,6 +18,11 @@ export const amqpConnectionOptions: IConnectionOptions = {
     heartbeat: parseInt(process.env.RABBITMQ_HEARTBEAT, 10) || 60,
 };
 
+export const amqpFaucetOptions = {
+    prefetch: parseInt(process.env.FAUCET_PREFETCH, 10) || 1000,
+    dead_letter_exchange: { name: "pipes.dead-letter", type: "direct", options: {} },
+};
+
 export const metricsOptions = {
     node_measurement: process.env.METRICS_MEASUREMENT || "pipes_node",
     counter_measurement: process.env.COUNTER_MEASUREMENT || "pipes_counter",

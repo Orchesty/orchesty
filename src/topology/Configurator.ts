@@ -1,4 +1,4 @@
-import {repeaterOptions} from "../config";
+import {amqpFaucetOptions, repeaterOptions} from "../config";
 import { ICounterSettings } from "../counter/Counter";
 import {IAmqpDrainSettings} from "../node/drain/AmqpDrain";
 import {IAmqpFaucetSettings} from "../node/faucet/AmqpFaucet";
@@ -90,7 +90,7 @@ class Configurator {
                 sub: {
                     queue: {
                         name: "pipes.multi-counter",
-                        prefetch: 1,
+                        prefetch: 1, // this should be set to 1 in order to counter work properly (no msgs outruns)
                         options: {},
                     },
                 },
@@ -113,7 +113,7 @@ class Configurator {
             sub: {
                 queue: {
                     name: `pipes.${topoId}.counter`,
-                    prefetch: 1,
+                    prefetch: 1, // this should be set to 1 in order to counter work properly (no msgs outruns)
                     options: {},
                 },
             },
@@ -254,8 +254,8 @@ class Configurator {
             node_label: node.label,
             exchange: { name: `pipes.${topoId}.events`, type: "direct", options: {} },
             queue: { name: `pipes.${topoId}.${node.id}`, options: {} },
-            prefetch: 10000,
-            dead_letter_exchange: { name: "pipes.dead-letter", type: "direct", options: {} },
+            prefetch: amqpFaucetOptions.prefetch,
+            dead_letter_exchange: amqpFaucetOptions.dead_letter_exchange,
             routing_key: `${topoId}.${node.id}`,
         };
 

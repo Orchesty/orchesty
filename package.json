@@ -7,7 +7,8 @@
     "build": "rm -rf ./dist & ./node_modules/.bin/tsc",
     "lint": "./node_modules/.bin/tslint ./src/**/*.ts ./test/**/*.ts",
     "start": "node --use-strict ./dist/src/bin/pipes.js",
-    "test": "npm run build && NODE_ENV=test ./node_modules/mocha/bin/mocha dist/test/ --recursive"
+    "test": "NODE_ENV=test ./node_modules/mocha/bin/mocha dist/test/ --recursive",
+    "fulltest": "npm run build && npm run lint && NODE_ENV=test ./node_modules/mocha/bin/mocha dist/test/ --recursive"
   },
   "repository": {
     "type": "git",
