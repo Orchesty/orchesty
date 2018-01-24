@@ -8,6 +8,7 @@ import JobMessage from "../../../src/message/JobMessage";
 import {ResultCode} from "../../../src/message/ResultCode";
 import HttpWorker from "../../../src/node/worker/HttpWorker";
 import {INodeLabel} from "../../../src/topology/Configurator";
+import * as http from "http";
 
 const httpServer = express();
 const bodyParserRaw = {
@@ -60,6 +61,7 @@ httpServer.post("/empty-result-body", (req, resp) => {
 
     resp.set(replyHeaders.getRaw());
     resp.status(200).send();
+    console.log("sent");
 });
 httpServer.post("/ok-xml", (req, resp) => {
     assert.deepEqual(JSON.parse(req.body), { val: "original" });
@@ -195,6 +197,8 @@ describe("HttpWorker", () => {
         const msg = new JobMessage(node, headers.getRaw(), new Buffer(JSON.stringify({ val: "original" })));
 
         const worker = createHttpWorker(4020, "/empty-result-body");
+        // TODO - find out why this test fails when using agent with keepAlive: true
+        worker.setAgent(new http.Agent({ keepAlive: false }));
 
         return worker.processData(msg)
             .then((outMsgs: JobMessage[]) => {
