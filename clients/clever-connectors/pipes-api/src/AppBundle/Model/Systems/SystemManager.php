@@ -11,7 +11,6 @@ use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\CMEvents\CMEventsManager;
 use CleverConnectors\AppBundle\Model\CMEvents\CMEventSystemInterface;
 use CleverConnectors\AppBundle\Model\DataLayout\LayoutManager;
-use CleverConnectors\AppBundle\Model\Limits\SystemLimitInterface;
 use CleverConnectors\AppBundle\Model\Limits\SystemLimitManager;
 use CleverConnectors\AppBundle\Model\MapTemplate\MapManager;
 use CleverConnectors\AppBundle\Model\SystemMetrics\SystemMetrics;
@@ -706,9 +705,7 @@ class SystemManager
         $request       = InnerRequestUtils::getRequest($systemInstall, $data);
         $request->setMethod(CurlManager::METHOD_POST);
 
-        if ($system instanceof SystemLimitInterface) {
-            $this->systemLimitManager->addSystemLimitToRequestHeaders($system, $systemInstall, $request->headers);
-        }
+        $this->systemLimitManager->addSystemLimitToRequestHeaders($system, $systemInstall, $request->headers);
 
         $topologies = $this->topologyRepository->getRunnableTopologies(
             TopologyNameUtils::getTopologyName(

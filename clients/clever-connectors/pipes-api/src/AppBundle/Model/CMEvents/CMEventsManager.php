@@ -11,7 +11,6 @@ namespace CleverConnectors\AppBundle\Model\CMEvents;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
-use CleverConnectors\AppBundle\Model\Limits\SystemLimitInterface;
 use CleverConnectors\AppBundle\Model\Limits\SystemLimitManager;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\SystemInterface;
@@ -147,10 +146,7 @@ class CMEventsManager implements LoggerAwareInterface
         foreach ($this->systemRepo->getSystemInstallByEvent($event, $userId) as $systemInstall) {
             InnerRequestUtils::addCMHeaders($systemInstall, $request);
             $system = $this->loader->getSystem($systemInstall->getSystem());
-
-            if ($system instanceof SystemLimitInterface) {
-                $this->systemLimitManager->addSystemLimitToRequestHeaders($system, $systemInstall, $request->headers);
-            }
+            $this->systemLimitManager->addSystemLimitToRequestHeaders($system, $systemInstall, $request->headers);
 
             $topologies = $this->getTopologiesForRun($system, $systemInstall, $const);
             foreach ($topologies as $topology) {
@@ -188,9 +184,7 @@ class CMEventsManager implements LoggerAwareInterface
         $request = InnerRequestUtils::getRequest($systemInstall, $changed);
         $request->setMethod(CurlManager::METHOD_POST);
 
-        if ($system instanceof SystemLimitInterface) {
-            $this->systemLimitManager->addSystemLimitToRequestHeaders($system, $systemInstall, $request->headers);
-        }
+        $this->systemLimitManager->addSystemLimitToRequestHeaders($system, $systemInstall, $request->headers);
 
         $topologies = $this->getTopologiesForSave($system, $systemInstall);
         foreach ($topologies as $topology) {

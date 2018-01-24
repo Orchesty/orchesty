@@ -6,7 +6,8 @@ services:
             - '@jms_serializer'
             - '@clever_connector.async_command_factory'
             - '@cc.system_limit.manager'
-            -
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@cc.systems.loader'
         calls:
             - [setLogger, ['@monolog.logger.rabbit-mq']]
 

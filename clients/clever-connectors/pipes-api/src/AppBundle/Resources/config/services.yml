@@ -33,7 +33,8 @@ services:
     cc.system_limit.manager:
         class: CleverConnectors\AppBundle\Model\Limits\SystemLimitManager
         arguments:
-            - '@cc.systems.loader'
+            - '@hbpf.starting_point.starting_point'
+            - '@doctrine_mongodb.odm.default_document_manager'
 
     cc.last_sync.manager:
         class: CleverConnectors\AppBundle\Model\LastSync\LastSyncManager

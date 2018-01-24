@@ -12,6 +12,7 @@ namespace CleverConnectors\AppBundle\Model\CustomNode;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\Command\AsyncCommandFactory;
 use CleverConnectors\AppBundle\Model\Limits\SystemLimitManager;
+use CleverConnectors\AppBundle\Model\Systems\SystemLoader;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Doctrine\Common\Persistence\ObjectRepository;
@@ -67,18 +68,25 @@ class UserMessageGenerator implements BatchInterface, CustomNodeInterface
     private $systemInstallRepository;
 
     /**
+     * @var SystemLoader
+     */
+    private $systemLoader;
+
+    /**
      * CronBatchActionCallback constructor.
      *
      * @param Serializer          $serializer
      * @param AsyncCommandFactory $asyncCommandFactory
      * @param SystemLimitManager  $systemLimitManager
      * @param DocumentManager     $dm
+     * @param SystemLoader        $systemLoader
      */
     public function __construct(
         Serializer $serializer,
         AsyncCommandFactory $asyncCommandFactory,
         SystemLimitManager $systemLimitManager,
-        DocumentManager $dm
+        DocumentManager $dm,
+        SystemLoader $systemLoader
     )
     {
         $this->serializer              = $serializer;
@@ -86,6 +94,7 @@ class UserMessageGenerator implements BatchInterface, CustomNodeInterface
         $this->logger                  = new NullLogger();
         $this->systemLimitManager      = $systemLimitManager;
         $this->systemInstallRepository = $dm->getRepository(SystemInstall::class);
+        $this->systemLoader            = $systemLoader;
     }
 
     /**
@@ -172,11 +181,9 @@ class UserMessageGenerator implements BatchInterface, CustomNodeInterface
             ->addHeader(CMHeaders::createKey(CMHeaders::GUID), $item['user'] ?? '')
             ->addHeader(CMHeaders::createKey(CMHeaders::SYSTEM_KEY), $item['system'] ?? '');
 
-        $systemLimit = $this->systemLimitManager->getSystemLimitBySystemKey($item['system'] ?? '');
-        if ($systemLimit) {
-            $systemInstall = $this->systemInstallRepository->getSystemInstallFromHeaders($message->getHeaders());
-            $this->systemLimitManager->addSystemLimitToSuccessMessage($systemLimit, $systemInstall, $message);
-        }
+        $system        = $this->systemLoader->getSystem($item['system']);
+        $systemInstall = $this->systemInstallRepository->getSystemInstallFromHeaders($message->getHeaders());
+        $this->systemLimitManager->addSystemLimitToSuccessMessage($system, $systemInstall, $message);
 
         return resolve($message);
     }

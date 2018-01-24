@@ -7,6 +7,7 @@ use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Document\Webhook;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Limits\SystemLimitManager;
+use CleverConnectors\AppBundle\Model\Systems\SystemLoader;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Doctrine\Common\Persistence\ObjectRepository;
@@ -48,18 +49,30 @@ class WebhookSecurityListener implements EventSubscriberInterface
     private $systemInstallRepository;
 
     /**
+     * @var SystemLoader
+     */
+    private $systemLoader;
+
+    /**
      * WebhookSecurityListener constructor.
      *
      * @param DocumentManager      $dm
      * @param CurlManagerInterface $curl
      * @param SystemLimitManager   $systemLimitManager
+     * @param SystemLoader         $systemLoader
      */
-    function __construct(DocumentManager $dm, CurlManagerInterface $curl, SystemLimitManager $systemLimitManager)
+    function __construct(
+        DocumentManager $dm,
+        CurlManagerInterface $curl,
+        SystemLimitManager $systemLimitManager,
+        SystemLoader $systemLoader
+    )
     {
         $this->repo                    = $dm->getRepository(Webhook::class);
         $this->systemInstallRepository = $dm->getRepository(SystemInstall::class);
         $this->curl                    = $curl;
         $this->systemLimitManager      = $systemLimitManager;
+        $this->systemLoader            = $systemLoader;
     }
 
     /**
@@ -101,15 +114,13 @@ class WebhookSecurityListener implements EventSubscriberInterface
             $ev->getRequest()->headers->set(CMHeaders::createKey(CMHeaders::TOKEN), $params['token']);
             $ev->getRequest()->headers->set(CMHeaders::createKey(CMHeaders::SYSTEM_KEY), $res->getSystemKey());
 
-            $systemLimit = $this->systemLimitManager->getSystemLimitBySystemKey($res->getSystemKey());
-            if ($systemLimit) {
-                $systemInstall = $this->systemInstallRepository->getSystemInstallFromHeaders($ev->getRequest()->headers->all());
-                $this->systemLimitManager->addSystemLimitToRequestHeaders(
-                    $systemLimit,
-                    $systemInstall,
-                    $ev->getRequest()->headers
-                );
-            }
+            $system        = $this->systemLoader->getSystem($res->getSystemKey());
+            $systemInstall = $this->systemInstallRepository->getSystemInstallFromHeaders($ev->getRequest()->headers->all());
+            $this->systemLimitManager->addSystemLimitToRequestHeaders(
+                $system,
+                $systemInstall,
+                $ev->getRequest()->headers
+            );
 
             $req = new RequestDto('GET', new Uri('https://api.dev.clevermonitor.com/v1.2'));
             $req->setHeaders([
