@@ -57,6 +57,11 @@ class SettingField
     private $description = '';
 
     /**
+     * @var array
+     */
+    private $choices = [];
+
+    /**
      * @return string
      */
     public function getKey(): string
@@ -212,6 +217,26 @@ class SettingField
     public function setDescription(string $description): SettingField
     {
         $this->description = $description;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getChoices(): array
+    {
+        return $this->choices;
+    }
+
+    /**
+     * @param array $choices
+     *
+     * @return SettingField
+     */
+    public function setChoices(array $choices): SettingField
+    {
+        $this->choices = $choices;
 
         return $this;
     }

@@ -48,6 +48,11 @@ class AuthorizationSettingGeneratorFactory
 
                 } else {
                     switch ($field->getType()) {
+                        case 'select':
+                            $form
+                                ->addSelect($field->getKey(), $field->getLabel(), $field->getChoices())
+                                ->setPrompt(sprintf('Choose %s', $field->getLabel()));
+                            break;
                         case 'password':
                             $form
                                 ->addPassword($field->getKey(), $field->getLabel());
@@ -83,7 +88,7 @@ class AuthorizationSettingGeneratorFactory
                     }
 
                     $form[$field->getKey()]
-                        ->setDefaultValue($field->getValue());
+                        ->setDefaultValue($field->getValue() ?: NULL);
                 }
 
                 if ($field->isRequired()) {

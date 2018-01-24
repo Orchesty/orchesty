@@ -24,6 +24,7 @@ class SettingFieldFactory
     private const READ_ONLY   = 'read_only';
     private const DISABLED    = 'disabled';
     private const DESCRIPTION = 'description';
+    private const CHOICES     = 'choices';
 
     /**
      * @param array $data
@@ -42,7 +43,8 @@ class SettingFieldFactory
             ->setRequired($data[self::REQUIRED] ?? FALSE)
             ->setReadOnly($data[self::READ_ONLY] ?? FALSE)
             ->setDisabled($data[self::DISABLED] ?? FALSE)
-            ->setDescription($data[self::DESCRIPTION] ?? '');
+            ->setDescription($data[self::DESCRIPTION] ?? '')
+            ->setChoices($data[self::CHOICES] ?? []);
 
         return $field;
     }
