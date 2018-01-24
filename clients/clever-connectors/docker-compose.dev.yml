@@ -415,6 +415,21 @@ services:
         links:
           - mongo
 
+    notification-sender-api:
+        ## BEGIN DEV
+        user: ${DEV_UID}:${DEV_GID}
+        image: dkr.hanaboso.net/clever-monitor/clever-notification-sender:dev
+        ## END DEV
+        ## BEGIN STAGE
+        #image: dkr.hanaboso.net/clever-monitor/clever-notification-sender:master
+        ## END STAGE
+        environment:
+            - DEV_UID=${DEV_UID}
+            - DEV_GID=${DEV_GID}
+            - BACKEND_HOST=${BACKEND_URL}
+        volumes:
+            - ${SSH_AUTH_SOCK}:/tmp/bound-ssh-agent
+
 ## BEGIN DEV
 volumes:
   mongodb: {}
