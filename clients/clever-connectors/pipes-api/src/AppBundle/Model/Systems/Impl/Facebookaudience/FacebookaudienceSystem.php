@@ -7,6 +7,7 @@ use CleverConnectors\AppBundle\Enum\SystemTypeEnum;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Form\Field;
 use CleverConnectors\AppBundle\Model\Form\Form;
+use CleverConnectors\AppBundle\Model\Limits\SystemLimitDto;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\OAuth2Interface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\Traits\AuthorizationTrait;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
@@ -296,6 +297,27 @@ class FacebookaudienceSystem implements OAuth2Interface
         $connector = $this->container->get('hbpf.connector.facebookaudience-get-audiences-connector');
 
         return $connector->getAudiences($systemInstall, $data);
+    }
+
+    /**
+     * @param SystemInstall $systemInstall
+     *
+     * @return SystemLimitDto|null
+     */
+    public function getLimit(SystemInstall $systemInstall): ?SystemLimitDto
+    {
+        return NULL;
+    }
+
+    /**
+     * @param SystemInstall $systemInstall
+     * @param array         $data
+     *
+     * @return SystemInstall
+     */
+    public function saveLimit(SystemInstall $systemInstall, array $data): SystemInstall
+    {
+        return $systemInstall;
     }
 
     /**

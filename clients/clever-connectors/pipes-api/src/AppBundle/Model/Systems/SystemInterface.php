@@ -3,6 +3,7 @@
 namespace CleverConnectors\AppBundle\Model\Systems;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Model\Limits\SystemLimitDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 
 /**
@@ -81,5 +82,20 @@ interface SystemInterface
      * @return array
      */
     public function toArray(?SystemInstall $systemInstall = NULL): array;
+
+    /**
+     * @param SystemInstall $systemInstall
+     *
+     * @return SystemLimitDto|null
+     */
+    public function getLimit(SystemInstall $systemInstall): ?SystemLimitDto;
+
+    /**
+     * @param SystemInstall $systemInstall
+     * @param array         $data
+     *
+     * @return SystemInstall
+     */
+    public function saveLimit(SystemInstall $systemInstall, array $data): SystemInstall;
 
 }

@@ -11,7 +11,6 @@ use CleverConnectors\AppBundle\Model\CMEvents\Traits\CMEventSystemTrait;
 use CleverConnectors\AppBundle\Model\Form\Field;
 use CleverConnectors\AppBundle\Model\Form\Form;
 use CleverConnectors\AppBundle\Model\Limits\SystemLimitDto;
-use CleverConnectors\AppBundle\Model\Limits\SystemLimitInterface;
 use CleverConnectors\AppBundle\Model\Requester\RequesterInterface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\AuthorizationInterface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\Traits\AuthorizationTrait;
@@ -33,7 +32,7 @@ use Nette\Utils\Strings;
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Bigcommerce
  */
-class BigcommerceSystem implements WebhookSystemInterface, AuthorizationInterface, CMEventSystemInterface, SystemLimitInterface
+class BigcommerceSystem implements WebhookSystemInterface, AuthorizationInterface, CMEventSystemInterface
 {
 
     public const  STORE_ID     = 'store_id';

@@ -204,7 +204,7 @@ class PluginSyncSubscriberConnector implements ConnectorInterface, BatchInterfac
 
                     $total = $data['total_page'];
                     $callbackItem($this->createSuccessMessage($data, 1));
-                    $this->counterService->setTotal($processId, $total * $system->getLimit());
+                    $this->counterService->setTotal($processId, $total * $system->getPageLimit());
 
                     if ($total <= 1) {
                         return resolve();
@@ -291,7 +291,7 @@ class PluginSyncSubscriberConnector implements ConnectorInterface, BatchInterfac
      */
     private function getUri(PluginSystemAbstract $system, SystemInstall $systemInstall, int $page): Uri
     {
-        return $system->createUri($systemInstall, sprintf($system->getSyncUrl(), $page, $system->getLimit()));
+        return $system->createUri($systemInstall, sprintf($system->getSyncUrl(), $page, $system->getPageLimit()));
     }
 
 }
