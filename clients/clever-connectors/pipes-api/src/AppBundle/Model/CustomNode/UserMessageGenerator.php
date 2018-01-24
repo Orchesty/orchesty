@@ -9,6 +9,7 @@
 
 namespace CleverConnectors\AppBundle\Model\CustomNode;
 
+use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\Command\AsyncCommandFactory;
 use CleverConnectors\AppBundle\Model\Limits\SystemLimitManager;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
@@ -84,7 +85,7 @@ class UserMessageGenerator implements BatchInterface, CustomNodeInterface
         $this->asyncCommandFactory     = $asyncCommandFactory;
         $this->logger                  = new NullLogger();
         $this->systemLimitManager      = $systemLimitManager;
-        $this->systemInstallRepository = $dm->getRepository(SystemInstallRepository::class);
+        $this->systemInstallRepository = $dm->getRepository(SystemInstall::class);
     }
 
     /**

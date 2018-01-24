@@ -23,6 +23,7 @@ services:
             - '@cc.map_template.manager'
             - '@cc.layout.manager'
             - '@cc.system_metrics.manager'
+            - '@cc.system_limit.manager'
 
     cc.systems.loader:
         class: CleverConnectors\AppBundle\Model\Systems\SystemLoader

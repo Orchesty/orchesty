@@ -3,6 +3,7 @@
 namespace CleverConnectors\AppBundle\Listeners;
 
 use CleverConnectors\AppBundle\Controller\WebhookController;
+use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Document\Webhook;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Limits\SystemLimitManager;
@@ -56,7 +57,7 @@ class WebhookSecurityListener implements EventSubscriberInterface
     function __construct(DocumentManager $dm, CurlManagerInterface $curl, SystemLimitManager $systemLimitManager)
     {
         $this->repo                    = $dm->getRepository(Webhook::class);
-        $this->systemInstallRepository = $dm->getRepository(SystemInstallRepository::class);
+        $this->systemInstallRepository = $dm->getRepository(SystemInstall::class);
         $this->curl                    = $curl;
         $this->systemLimitManager      = $systemLimitManager;
     }
