@@ -33,6 +33,10 @@ func (l *nullLogger) Notify(t notification.Type, msg string, context Context) {
 	// void
 }
 
+func (l *nullLogger) Metrics(key string, msg string, context Context) {
+	//void
+}
+
 func (l *nullLogger) AddHandler(handler Handler) {
 	// void
 }

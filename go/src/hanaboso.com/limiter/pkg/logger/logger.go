@@ -5,6 +5,7 @@ import (
 	"github.com/streadway/amqp"
 	"os"
 	"hanaboso.com/utils/notification"
+	"strings"
 )
 
 // Context
@@ -27,6 +28,7 @@ type Logger interface {
 	Warning(msg string, context Context)
 	Fatal(msg string, context Context)
 	Notify(t notification.Type, msg string, context Context)
+	Metrics(key string, msg string, context Context)
 }
 
 // Formatter
@@ -88,6 +90,29 @@ func (l *logger) Notify(t notification.Type, msg string, context Context) {
 	context["notification_type"] = t
 
 	l.Log("info", msg, context)
+}
+
+func (l *logger) Metrics(key string, msg string, context Context) {
+
+	data := strings.Split(key, "|")
+
+	if len(data) == 0 {
+		return
+	}
+
+	if context == nil {
+		context = Context{}
+	}
+
+	if len(data) >= 1 {
+		context["system_key"] = data[0]
+	}
+
+	if len(data) >= 2 {
+		context["guid"] = data[1]
+	}
+
+	l.Info(msg, context)
 }
 
 func (l *logger) AddHandler(handler Handler) {

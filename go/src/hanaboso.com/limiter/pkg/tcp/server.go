@@ -170,6 +170,8 @@ func (*Server) handleHealthCheckRequest(req request) string {
 
 // handleLimitCheckRequest returns
 func (srv *Server) handleLimitCheckRequest(req request) string {
+	// send to elastic
+	srv.logger.Metrics(req.key, "", nil)
 	isFree, err := srv.lim.IsFreeLimit(req.key, req.time, req.value)
 	if err != nil {
 		return "Error evaluating limit: " + err.Error()
