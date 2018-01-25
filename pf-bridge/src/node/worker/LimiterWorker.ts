@@ -1,7 +1,10 @@
 import ILimiter from "../../limiter/ILimiter";
 import logger from "../../logger/Logger";
+import Headers from "../../message/Headers";
 import JobMessage from "../../message/JobMessage";
 import {ResultCode} from "../../message/ResultCode";
+import {IFaucetConfig} from "../../topology/Configurator";
+import {IAmqpFaucetSettings} from "../faucet/AmqpFaucet";
 import IWorker from "./IWorker";
 
 export default class LimiterWorker implements IWorker {
@@ -10,10 +13,12 @@ export default class LimiterWorker implements IWorker {
      *
      * @param {ILimiter} limiter
      * @param {IWorker} worker
+     * @param faucetConfig
      */
     public constructor(
         private limiter: ILimiter,
         private worker: IWorker,
+        private faucetConfig: IFaucetConfig,
     ) {}
 
     /**
@@ -67,9 +72,13 @@ export default class LimiterWorker implements IWorker {
      *
      * @param {JobMessage} msg
      */
-    private postpone(msg: JobMessage): void {
+    private async postpone(msg: JobMessage): Promise<void> {
         try {
-            this.limiter.postpone(msg);
+            const faucet: IAmqpFaucetSettings = this.faucetConfig.settings;
+            msg.getHeaders().setPFHeader(Headers.LIMIT_RETURN_EXCHANGE, faucet.exchange.name);
+            msg.getHeaders().setPFHeader(Headers.LIMIT_RETURN_ROUTING_KEY, faucet.routing_key);
+
+            await this.limiter.postpone(msg);
         } catch (e) {
             logger.error("Worker[type='limiter'] cannot postpone message.", {error: e});
         }

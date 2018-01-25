@@ -21,7 +21,8 @@ describe("LimiterWorker", () => {
             processData: async () => null,
         };
 
-        const readyWorker = new LimiterWorker(limiterMock, workerMock);
+        const faucetConf: any = { settings: { exchange: {name: "exname"}, routing_key: "rk"}};
+        const readyWorker = new LimiterWorker(limiterMock, workerMock, faucetConf);
 
         assert.isFalse(await readyWorker.isWorkerReady());
 
@@ -53,7 +54,6 @@ describe("LimiterWorker", () => {
                 canBeProcessed: async () => false,
                 postpone: async (m: JobMessage) => {
                     assert.equal(m, msg, "Postponed message should be the same instance of original message");
-                    resolve();
                 },
             };
 
@@ -62,9 +62,46 @@ describe("LimiterWorker", () => {
                 processData: async () => null,
             };
 
-            const readyWorker = new LimiterWorker(limiterMock, workerMock);
-            const out = await readyWorker.processData(msg);
+            const faucetConf: any = { settings: { exchange: {name: "exname"}, routing_key: "rk"}};
+            const limWorker = new LimiterWorker(limiterMock, workerMock, faucetConf);
+            const out = await limWorker.processData(msg);
             assert.equal(out.length, 0);
+            resolve();
+        });
+    });
+
+    it("processData should call limiter's postpone and do not fail if it throws error", async () => {
+        const hdrs = new Headers();
+        hdrs.setPFHeader(Headers.CORRELATION_ID, "1");
+        hdrs.setPFHeader(Headers.PROCESS_ID, "1");
+        hdrs.setPFHeader(Headers.SEQUENCE_ID, "1");
+        hdrs.setPFHeader(Headers.PARENT_ID, "1");
+        const msg = new JobMessage(
+            {id: "1", node_id: "1", node_name: "1", topology_id: "t"},
+            hdrs.getRaw(),
+            new Buffer(""),
+        );
+
+        return new Promise(async (resolve) => {
+            const limiterMock: ILimiter = {
+                isReady: async () => true,
+                canBeProcessed: async () => false,
+                postpone: async (m: JobMessage) => {
+                    assert.equal(m, msg, "Postponed message should be the same instance of original message");
+                    throw new Error("some error");
+                },
+            };
+
+            const workerMock: IWorker = {
+                isWorkerReady: async () => true,
+                processData: async () => null,
+            };
+
+            const faucetConf: any = { settings: { exchange: {name: "exname"}, routing_key: "rk"}};
+            const limWorker = new LimiterWorker(limiterMock, workerMock, faucetConf);
+            const out = await limWorker.processData(msg);
+            assert.equal(out.length, 0);
+            resolve();
         });
     });
 

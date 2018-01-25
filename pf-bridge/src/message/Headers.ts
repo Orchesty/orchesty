@@ -32,6 +32,8 @@ class Headers {
     public static readonly LIMIT_KEY = "limit-key";
     public static readonly LIMIT_TIME = "limit-time";
     public static readonly LIMIT_VALUE = "limit-value";
+    public static readonly LIMIT_RETURN_EXCHANGE = "pf-limit-return-exchange";
+    public static readonly LIMIT_RETURN_ROUTING_KEY = "pf-limit-return-routing-key";
 
     // Other headers
     public static readonly PUBLISHED_TIMESTAMP = "published-timestamp";

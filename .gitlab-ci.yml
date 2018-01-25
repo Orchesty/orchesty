@@ -59,6 +59,16 @@ limiter-image:
     - dev
     - master
 
+limiter-test:
+  stage: stage2
+  script:
+    - DIR=go/src/hanaboso.com/limiter
+    - skip_unmodified $DIR
+    - cd $REPO_ROOT/$DIR
+    - export COMPOSE_PROJECT_NAME="p${CI_PIPELINE_ID}-go"
+    - export COMPOSE_FILE=docker-compose.ci.yml
+    - make ${COMPOSE_FILE} ci-test
+
 cc-api-extension-image:
   stage: stage1
   script:
