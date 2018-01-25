@@ -26,9 +26,9 @@ class NullWorker implements IWorker {
         msg.setResult({code: ResultCode.SUCCESS, message: "Null worker passed message."});
 
         const opts = {
+            url: "http://spitter-api:80/black-hole",
             method: "GET",
-            url: "http://spitter-api/black-hole",
-            timeout: 1,
+            timeout: 10,
             agent: this.agent,
         };
 
