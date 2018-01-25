@@ -59,6 +59,16 @@ limiter-image:
     - dev
     - master
 
+multi-probe-test:
+  stage: stage2
+  script:
+    - DIR=go/src/hanaboso.com/multi-probe
+    - skip_unmodified $DIR
+    - cd $REPO_ROOT/$DIR
+    - export COMPOSE_PROJECT_NAME="p${CI_PIPELINE_ID}-go"
+    - export COMPOSE_FILE=docker-compose.ci.yml
+    - make ${COMPOSE_FILE} ci-test
+
 limiter-test:
   stage: stage2
   script:
@@ -220,3 +230,10 @@ cleanup:
     - export COMPOSE_FILE=docker-compose.yml
     - export COMPOSE_PROJECT_NAME=p${CI_PIPELINE_ID}-bridge
     - docker-compose down -v || echo "bridge cleanup phase failed"
+
+    - ": limiter"
+    - cd go/src/hanaboso.com/limiter
+    - export COMPOSE_PROJECT_NAME="p${CI_PIPELINE_ID}-go"
+    - export COMPOSE_FILE=docker-compose.ci.yml
+    - docker-compose down -v || echo "limiter cleanup phase failed"
+    
