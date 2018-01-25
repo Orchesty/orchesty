@@ -38,6 +38,11 @@ final class MetricsDto
     private $total = '0';
 
     /**
+     * @var string
+     */
+    private $errors = '0';
+
+    /**
      * @param mixed $min
      *
      * @return MetricsDto
@@ -82,15 +87,24 @@ final class MetricsDto
 
     /**
      * @param mixed $count
-     * @param mixed $sum
      *
      * @return MetricsDto
      */
-    public function setTotal($count, $sum): MetricsDto
+    public function setTotal($count): MetricsDto
     {
-        if (!empty($count) && !empty($sum)) {
-            $this->total = (string) ceil(($sum / $count) * 100);
-        }
+        $this->total = (string) $count;
+
+        return $this;
+    }
+
+    /**
+     * @param int $errors
+     *
+     * @return MetricsDto
+     */
+    public function setErrors($errors): MetricsDto
+    {
+        $this->errors = (string) $errors;
 
         return $this;
     }
@@ -125,6 +139,14 @@ final class MetricsDto
     public function getTotal(): string
     {
         return $this->total;
+    }
+
+    /**
+     * @return string
+     */
+    public function getErrors(): string
+    {
+        return $this->errors;
     }
 
 }

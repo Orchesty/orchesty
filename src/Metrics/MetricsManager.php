@@ -38,7 +38,7 @@ class MetricsManager implements LoggerAwareInterface
     public const PROCESS_TIME = 'process_time';
     public const CPU_TIME     = 'cpu_time';
     public const REQUEST_TIME = 'request_time';
-    public const ERROR        = 'error';
+    public const PROCESS      = 'process';
 
     // TAGS
     public const TOPOLOGY = 'topology_id';
@@ -337,10 +337,8 @@ class MetricsManager implements LoggerAwareInterface
                     $result[$this->nodeTable][self::PROCESSED_SUM] ?? ''
                 );
             $error
-                ->setTotal(
-                    $result[$this->nodeTable][self::REQUEST_ERROR_COUNT] ?? '',
-                    $result[$this->nodeTable][self::REQUEST_ERROR_SUM] ?? ''
-                );
+                ->setTotal($result[$this->nodeTable][self::REQUEST_ERROR_COUNT] ?? '')
+                ->setErrors($result[$this->nodeTable][self::REQUEST_ERROR_SUM] ?? '');
         }
         if (isset($result[$this->rabbitTable])) {
             $queue
@@ -386,8 +384,9 @@ class MetricsManager implements LoggerAwareInterface
             self::REQUEST_TIME => [
                 'max' => $request->getMax(), 'min' => $request->getMin(), 'avg' => $request->getAvg(),
             ],
-            self::ERROR        => [
-                'total' => $error->getTotal(),
+            self::PROCESS      => [
+                'total'  => $error->getTotal(),
+                'errors' => $error->getErrors(),
             ],
         ];
 
