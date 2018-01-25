@@ -3,11 +3,14 @@ import {Connection} from "amqplib-plus/dist/lib/Connection";
 import {Container} from "hb-utils/dist/lib/Container";
 import {Metrics} from "metrics-sender/dist/lib/metrics/Metrics";
 import {
-    amqpConnectionOptions, metricsOptions, multiProbeOptions, redisStorageOptions,
+    amqpConnectionOptions, limiterOptions, metricsOptions, multiProbeOptions, redisStorageOptions,
     topologyTerminatorOptions,
 } from "./config";
 import RedisStorage from "./counter/storage/RedisStorage";
-import FakeLimiter from "./limiter/FakeLimiter";
+import LimiterPublisher from "./limiter/amqp/LimiterPublisher";
+import {default as Limiter} from "./limiter/Limiter";
+import TcpClient from "./limiter/TcpClient";
+import logger from "./logger/Logger";
 import CounterPublisher from "./node/drain/amqp/CounterPublisher";
 import FollowersPublisher from "./node/drain/amqp/FollowersPublisher";
 import {default as AmqpDrain, IAmqpDrainSettings} from "./node/drain/AmqpDrain";
@@ -26,20 +29,21 @@ import TestCaptureWorker from "./node/worker/TestCaptureWorker";
 import UppercaseWorker from "./node/worker/UppercaseWorker";
 import MultiProbeConnector from "./probe/MultiProbeConnector";
 import Terminator from "./terminator/Terminator";
+import INodeConfigProvider from "./topology/INodeConfigProvider";
 
 class DIContainer extends Container {
 
     public static readonly WORKER_TYPE_WORKER = "worker";
     public static readonly WORKER_TYPE_SPLITTER = "splitter";
 
-    constructor() {
+    constructor(private nodeConfigurator: INodeConfigProvider) {
         super();
         this.setServices();
         this.setWorkers();
     }
 
     private setServices() {
-        this.set("amqp.connection", new Connection(amqpConnectionOptions));
+        this.set("amqp.connection", new Connection(amqpConnectionOptions, logger));
 
         // this.set("counter.storage", new InMemoryStorage());
         this.set("counter.storage", new RedisStorage(redisStorageOptions));
@@ -69,6 +73,14 @@ class DIContainer extends Container {
                 metricsOptions.port,
             );
         });
+
+        this.set("limiter", new Limiter(
+            new TcpClient(limiterOptions.host, limiterOptions.port),
+            new LimiterPublisher(
+                this.get("amqp.connection"),
+                limiterOptions,
+            ),
+        ));
 
         this.set("faucet.amqp", (settings: IAmqpFaucetSettings) => {
             return new AmqpFaucet(settings, this.get("amqp.connection"));
@@ -103,8 +115,9 @@ class DIContainer extends Container {
         });
         this.set(`${wPrefix}.http_limited`, (settings: IHttpWorkerSettings) => {
             return new LimiterWorker(
-                new FakeLimiter(),
+                this.get("limiter"),
                 this.get(`${wPrefix}.http`)(settings),
+                this.nodeConfigurator.getNodeConfig(settings.node_label.id, false).faucet,
             );
         });
         this.set(`${wPrefix}.http_xml_parser`, (settings: IHttpXmlParserWorkerSettings) => {
@@ -131,8 +144,9 @@ class DIContainer extends Container {
         });
         this.set(`${sPrefix}.amqprpc_limited`, (settings: IAmqpWorkerSettings, forwarder: IPartialForwarder) => {
             return new LimiterWorker(
-                new FakeLimiter(),
+                this.get("limiter"),
                 this.get(`${sPrefix}.amqprpc`)(settings, forwarder),
+                this.nodeConfigurator.getNodeConfig(settings.node_label.id, false).faucet,
             );
         });
 

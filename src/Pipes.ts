@@ -13,8 +13,9 @@ import Probe from "./probe/Probe";
 import Repeater from "./repeater/Repeater";
 import MongoMessageStorage from "./repeater/storage/MongoMessageStorage";
 import {default as Configurator, INodeConfig, ITopologyConfig, ITopologyConfigSkeleton} from "./topology/Configurator";
+import INodeConfigProvider from "./topology/INodeConfigProvider";
 
-class Pipes {
+class Pipes implements INodeConfigProvider {
 
     public nodes: Container;
     private dic: DIContainer;
@@ -25,7 +26,7 @@ class Pipes {
      */
     constructor(private topology: ITopologyConfig | ITopologyConfigSkeleton) {
         this.nodes = new Container();
-        this.dic = new DIContainer();
+        this.dic = new DIContainer(this);
     }
 
     /**
@@ -164,6 +165,24 @@ class Pipes {
     }
 
     /**
+     * Returns node config for particular node or throws error if node does not exist
+     *
+     * @param {string} nodeId
+     * @param {boolean} isMulti
+     * @return {INodeConfig}
+     */
+    public getNodeConfig(nodeId: string, isMulti: boolean = false): INodeConfig {
+        const topo = this.getTopologyConfig(isMulti);
+        for (const nodeCfg of topo.nodes) {
+            if (nodeCfg.id === nodeId) {
+                return nodeCfg;
+            }
+        }
+
+        throw new Error(`Cannot get config for non-existing node "${nodeId}"`);
+    }
+
+    /**
      *
      * @param {INodeConfig} nodeCfg
      * @return {Node}
@@ -187,24 +206,6 @@ class Pipes {
         this.nodes.set(nodeCfg.id, node);
 
         return node;
-    }
-
-    /**
-     * Returns node config for particular node or throws error if node does not exist
-     *
-     * @param {string} nodeId
-     * @param {boolean} isMulti
-     * @return {INodeConfig}
-     */
-    private getNodeConfig(nodeId: string, isMulti: boolean = false): INodeConfig {
-        const topo = this.getTopologyConfig(isMulti);
-        for (const nodeCfg of topo.nodes) {
-            if (nodeCfg.id === nodeId) {
-                return nodeCfg;
-            }
-        }
-
-        throw new Error(`Cannot get config for non-existing node "${nodeId}"`);
     }
 
 }
