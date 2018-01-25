@@ -1,3 +1,8 @@
 services:
     hbpf.commons.node_handler:
         class: Hanaboso\PipesFramework\HbPFCommonsBundle\Handler\NodeHandler
+
+    hbpf.commons.session_handler:
+        class: Hanaboso\PipesFramework\Commons\Session\Handler\RedisSessionHandler
+        arguments:
+            - '@snc_redis.default'
