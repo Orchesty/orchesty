@@ -17,7 +17,7 @@ describe("Null worker", () => {
         headers.setPFHeader(Headers.SEQUENCE_ID, "1");
         const inMsg = new JobMessage(node, headers.getRaw(), new Buffer("{}{}{}"));
 
-        const worker = new NullWorker();
+        const worker = new NullWorker({node_label: node});
         return worker.processData(inMsg)
             .then((outMsgs: JobMessage[]) => {
                 assert.lengthOf(outMsgs, 1);
@@ -29,7 +29,8 @@ describe("Null worker", () => {
     });
 
     it("should always return that his worker is ready", () => {
-        const worker = new NullWorker();
+        const label: any = {};
+        const worker = new NullWorker(label);
         return worker.isWorkerReady()
             .then((isReady: boolean) => {
                 assert.isTrue(isReady);

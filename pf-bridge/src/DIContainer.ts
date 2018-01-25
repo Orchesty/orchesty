@@ -23,7 +23,7 @@ import HttpWorker, {IHttpWorkerSettings} from "./node/worker/HttpWorker";
 import HttpXmlParserWorker, {IHttpXmlParserWorkerSettings} from "./node/worker/HttpXmlParserWorker";
 import JsonSplitterWorker, {IJsonSplitterWorkerSettings} from "./node/worker/JsonSplitterWorker";
 import LimiterWorker from "./node/worker/LimiterWorker";
-import NullWorker from "./node/worker/NullWorker";
+import NullWorker, {INullWorkerSettings} from "./node/worker/NullWorker";
 import {default as ResequencerWorker, IResequencerWorkerSettings} from "./node/worker/ResequencerWorker";
 import TestCaptureWorker from "./node/worker/TestCaptureWorker";
 import UppercaseWorker from "./node/worker/UppercaseWorker";
@@ -125,8 +125,8 @@ class DIContainer extends Container {
 
             return new HttpXmlParserWorker(settings, metrics);
         });
-        this.set(`${wPrefix}.null`, (settings: {}) => {
-            return new NullWorker();
+        this.set(`${wPrefix}.null`, (settings: INullWorkerSettings) => {
+            return new NullWorker(settings);
         });
         this.set(`${wPrefix}.resequencer`, (settings: IResequencerWorkerSettings) => {
             return new ResequencerWorker(settings);
