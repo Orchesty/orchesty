@@ -50,7 +50,7 @@ class MetricsManager implements LoggerAwareInterface
     public const NODE_PROCESS_TIME  = 'bridge_job_worker_duration';
     public const NODE_RESULT_ERROR  = 'bridge_job_result_error';
     public const CPU_KERNEL_TIME    = 'fpm_cpu_kernel_time';
-    public const REQUEST_TOTAL_TIME = 'fpm_request_total_duration';
+    public const REQUEST_TOTAL_TIME = 'sent_request_total_duration';
     public const MESSAGES           = 'messages';
 
     // ALIASES - COUNT
