@@ -21,6 +21,7 @@ use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Webhook\WebhookManager;
 use CleverConnectors\AppBundle\Model\Webhook\WebhookSystemInterface;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
+use CleverConnectors\AppBundle\Utils\DateTimeUtils;
 use CleverConnectors\AppBundle\Utils\InnerRequestUtils;
 use CleverConnectors\AppBundle\Utils\TopologyNameUtils;
 use DateTime;
@@ -524,7 +525,10 @@ class SystemManager
                 $system->getKey(),
                 $system->getName(),
                 count($this->getSystemUsers($system->getKey())),
-                $this->getSystemRequestCount($system->getKey())
+                $this->getSystemRequestCount(
+                    $system->getKey(),
+                    DateTimeUtils::getUTCDateTime('-1 month')
+                )
             );
         }
 
