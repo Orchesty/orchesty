@@ -54,7 +54,7 @@ final class MetricsManagerTest extends KernelTestCaseAbstract
         self::assertArrayHasKey(MetricsManager::PROCESS_TIME, $result);
         self::assertArrayHasKey(MetricsManager::CPU_TIME, $result);
         self::assertArrayHasKey(MetricsManager::REQUEST_TIME, $result);
-        self::assertArrayHasKey(MetricsManager::ERROR, $result);
+        self::assertArrayHasKey(MetricsManager::PROCESS, $result);
     }
 
     /**
@@ -84,7 +84,7 @@ final class MetricsManagerTest extends KernelTestCaseAbstract
         self::assertArrayHasKey(MetricsManager::PROCESS_TIME, $result);
         self::assertArrayHasKey(MetricsManager::CPU_TIME, $result);
         self::assertArrayHasKey(MetricsManager::REQUEST_TIME, $result);
-        self::assertArrayHasKey(MetricsManager::ERROR, $result);
+        self::assertArrayHasKey(MetricsManager::PROCESS, $result);
     }
 
     /**
