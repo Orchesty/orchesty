@@ -14,14 +14,14 @@ class DashboardPage extends React.Component {
   }
 
   render() {
-    const {selectPage} = this.props;
+    const {selectPage, pageKey} = this.props;
     return (
       <div className="right_col" role="main">
         <div className="main-page">
           <div>
             Welcome, continue to topology list <br/>
             <a className="btn btn-primary" onClick={() => selectPage('topology_list')}>Go To Topology List</a>
-            <TestPanel/>
+            <TestPanel componentKey={pageKey} title="Test panel" icon="fa fa-user"/>
           </div>
         </div>
       </div>
