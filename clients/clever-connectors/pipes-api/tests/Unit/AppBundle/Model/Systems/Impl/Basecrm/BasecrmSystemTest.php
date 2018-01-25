@@ -25,7 +25,7 @@ class BasecrmSystemTest extends KernelTestCaseAbstract
         self::assertEquals([
             'pf-limit-value'    => 36000,
             'pf-limit-time'     => 3600,
-            'pf-limit-key'      => 'basecrm',
+            'pf-limit-key'      => 'basecrm|',
             'limit-last-update' => $dto->getLastUpdate(),
         ], $dto->toArray());
     }

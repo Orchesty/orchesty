@@ -262,7 +262,7 @@ final class BigcommerceSystemTest extends KernelTestCaseAbstract
         $this->setPlan(self::PLAN_STANDARD);
 
         $this->assertEquals([
-            'pf-limit-key'   => 'user-bigcommerce',
+            'pf-limit-key'   => 'bigcommerce|user',
             'pf-limit-time'  => 3600,
             'pf-limit-value' => 20000,
         ], $this->getData());
@@ -276,7 +276,7 @@ final class BigcommerceSystemTest extends KernelTestCaseAbstract
         $this->setPlan(self::PLAN_PLUS);;
 
         $this->assertEquals([
-            'pf-limit-key'   => 'user-bigcommerce',
+            'pf-limit-key'   => 'bigcommerce|user',
             'pf-limit-time'  => 3600,
             'pf-limit-value' => 20000,
         ], $this->getData());
@@ -290,7 +290,7 @@ final class BigcommerceSystemTest extends KernelTestCaseAbstract
         $this->setPlan(self::PLAN_PRO);
 
         $this->assertEquals([
-            'pf-limit-key'   => 'user-bigcommerce',
+            'pf-limit-key'   => 'bigcommerce|user',
             'pf-limit-time'  => 3600,
             'pf-limit-value' => 60000,
         ], $this->getData());
@@ -314,7 +314,7 @@ final class BigcommerceSystemTest extends KernelTestCaseAbstract
         $this->setPlan(self::PLAN_UNKNOWN);
 
         $this->assertEquals([
-            'pf-limit-key'   => 'user-bigcommerce',
+            'pf-limit-key'   => 'bigcommerce|user',
             'pf-limit-time'  => 3600,
             'pf-limit-value' => 20000,
         ], $this->getData());

@@ -56,7 +56,7 @@ final class ZendeskSystemTest extends KernelTestCaseAbstract
         $systemLimit = $this->system->getLimit($this->systemInstall);
 
         $this->assertEquals([
-            PipesHeaders::createKey(SystemLimitDto::LIMIT_KEY_HEADER)   => 'user123-sys123',
+            PipesHeaders::createKey(SystemLimitDto::LIMIT_KEY_HEADER)   => 'sys123|user123',
             PipesHeaders::createKey(SystemLimitDto::LIMIT_TIME_HEADER)  => '60',
             PipesHeaders::createKey(SystemLimitDto::LIMIT_VALUE_HEADER) => '400',
             SystemLimitDto::LIMIT_LAST_UPDATE                           => $this->systemInstall->getSettings()[SystemInstall::SYSTEM_LIMITS][SystemInstall::SYSTEM_LIMIT_UPDATE],

@@ -45,7 +45,7 @@ final class ShipstationSystemTest extends KernelTestCaseAbstract
         unset($data['limit-last-update']);
 
         $this->assertEquals([
-            'pf-limit-key'   => 'user-shipstation',
+            'pf-limit-key'   => 'shipstation|user',
             'pf-limit-value' => 40,
             'pf-limit-time'  => 60,
         ], $data);

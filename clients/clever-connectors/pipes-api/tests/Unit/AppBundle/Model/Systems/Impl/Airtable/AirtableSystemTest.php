@@ -87,7 +87,7 @@ class AirtableSystemTest extends KernelTestCaseAbstract
         $systemLimit = $system->getLimit($systemInstall);
 
         $this->assertEquals([
-            PipesHeaders::createKey(SystemLimitDto::LIMIT_KEY_HEADER)   => 'user123-sys123',
+            PipesHeaders::createKey(SystemLimitDto::LIMIT_KEY_HEADER)   => 'sys123|user123',
             PipesHeaders::createKey(SystemLimitDto::LIMIT_TIME_HEADER)  => 1,
             PipesHeaders::createKey(SystemLimitDto::LIMIT_VALUE_HEADER) => 5,
             SystemLimitDto::LIMIT_LAST_UPDATE                           => NULL,
@@ -113,7 +113,7 @@ class AirtableSystemTest extends KernelTestCaseAbstract
         $systemLimit = $system->getLimit($systemInstall);
 
         $this->assertEquals([
-            PipesHeaders::createKey(SystemLimitDto::LIMIT_KEY_HEADER)   => 'user123-sys123',
+            PipesHeaders::createKey(SystemLimitDto::LIMIT_KEY_HEADER)   => 'sys123|user123',
             PipesHeaders::createKey(SystemLimitDto::LIMIT_TIME_HEADER)  => 1,
             PipesHeaders::createKey(SystemLimitDto::LIMIT_VALUE_HEADER) => 10,
             SystemLimitDto::LIMIT_LAST_UPDATE                           => NULL,

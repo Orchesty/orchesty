@@ -25,13 +25,13 @@ class WisepopsSystemTest extends KernelTestCaseAbstract
             ->setSettings([
                 SystemInstall::SYSTEM_LIMIT_VALUE => '400',
             ])
-            ->setUser('userr');
+            ->setUser('user');
 
         $dto = $system->getLimit($sys);
 
         self::assertEquals([
             'pf-limit-value'    => 400,
-            'pf-limit-key'      => 'userr-wisepops',
+            'pf-limit-key'      => 'wisepops|user',
             'pf-limit-time'     => 2592000,
             'limit-last-update' => $dto->getLastUpdate(),
         ], $dto->toArray());

@@ -50,7 +50,7 @@ final class ZohoSystemTest extends KernelTestCaseAbstract
     public function testGetLimit(): void
     {
         $this->assertEquals([
-            'pf-limit-key'   => 'user-zoho',
+            'pf-limit-key'   => 'zoho|user',
             'pf-limit-time'  => 86400,
             'pf-limit-value' => 1000,
         ], $this->getData());
@@ -64,7 +64,7 @@ final class ZohoSystemTest extends KernelTestCaseAbstract
         $this->setPlan(self::PLAN_STANDARD, 1);
 
         $this->assertEquals([
-            'pf-limit-key'   => 'user-zoho',
+            'pf-limit-key'   => 'zoho|user',
             'pf-limit-time'  => 86400,
             'pf-limit-value' => 2000,
         ], $this->getData());
@@ -78,7 +78,7 @@ final class ZohoSystemTest extends KernelTestCaseAbstract
         $this->setPlan(self::PLAN_STANDARD, 14);
 
         $this->assertEquals([
-            'pf-limit-key'   => 'user-zoho',
+            'pf-limit-key'   => 'zoho|user',
             'pf-limit-time'  => 86400,
             'pf-limit-value' => 3500,
         ], $this->getData());
@@ -92,7 +92,7 @@ final class ZohoSystemTest extends KernelTestCaseAbstract
         $this->setPlan(self::PLAN_STANDARD, 25);
 
         $this->assertEquals([
-            'pf-limit-key'   => 'user-zoho',
+            'pf-limit-key'   => 'zoho|user',
             'pf-limit-time'  => 86400,
             'pf-limit-value' => 5000,
         ], $this->getData());
@@ -106,7 +106,7 @@ final class ZohoSystemTest extends KernelTestCaseAbstract
         $this->setPlan(self::PLAN_PROFESSIONAL, 1);
 
         $this->assertEquals([
-            'pf-limit-key'   => 'user-zoho',
+            'pf-limit-key'   => 'zoho|user',
             'pf-limit-time'  => 86400,
             'pf-limit-value' => 3000,
         ], $this->getData());
@@ -120,7 +120,7 @@ final class ZohoSystemTest extends KernelTestCaseAbstract
         $this->setPlan(self::PLAN_PROFESSIONAL, 26);
 
         $this->assertEquals([
-            'pf-limit-key'   => 'user-zoho',
+            'pf-limit-key'   => 'zoho|user',
             'pf-limit-time'  => 86400,
             'pf-limit-value' => 6500,
         ], $this->getData());
@@ -134,7 +134,7 @@ final class ZohoSystemTest extends KernelTestCaseAbstract
         $this->setPlan(self::PLAN_PROFESSIONAL, 50);
 
         $this->assertEquals([
-            'pf-limit-key'   => 'user-zoho',
+            'pf-limit-key'   => 'zoho|user',
             'pf-limit-time'  => 86400,
             'pf-limit-value' => 10000,
         ], $this->getData());
@@ -148,7 +148,7 @@ final class ZohoSystemTest extends KernelTestCaseAbstract
         $this->setPlan(self::PLAN_ENTERPRISE, 1);
 
         $this->assertEquals([
-            'pf-limit-key'   => 'user-zoho',
+            'pf-limit-key'   => 'zoho|user',
             'pf-limit-time'  => 86400,
             'pf-limit-value' => 4000,
         ], $this->getData());
@@ -162,7 +162,7 @@ final class ZohoSystemTest extends KernelTestCaseAbstract
         $this->setPlan(self::PLAN_ENTERPRISE, 29);
 
         $this->assertEquals([
-            'pf-limit-key'   => 'user-zoho',
+            'pf-limit-key'   => 'zoho|user',
             'pf-limit-time'  => 86400,
             'pf-limit-value' => 14500,
         ], $this->getData());
@@ -176,7 +176,7 @@ final class ZohoSystemTest extends KernelTestCaseAbstract
         $this->setPlan(self::PLAN_ENTERPRISE, 100);
 
         $this->assertEquals([
-            'pf-limit-key'   => 'user-zoho',
+            'pf-limit-key'   => 'zoho|user',
             'pf-limit-time'  => 86400,
             'pf-limit-value' => 25000,
         ], $this->getData());
@@ -190,7 +190,7 @@ final class ZohoSystemTest extends KernelTestCaseAbstract
         $this->setPlan(self::PLAN_ULTIMATE, 1);
 
         $this->assertEquals([
-            'pf-limit-key'   => 'user-zoho',
+            'pf-limit-key'   => 'zoho|user',
             'pf-limit-time'  => 86400,
             'pf-limit-value' => 4000,
         ], $this->getData());
@@ -204,7 +204,7 @@ final class ZohoSystemTest extends KernelTestCaseAbstract
         $this->setPlan(self::PLAN_ULTIMATE, 29);
 
         $this->assertEquals([
-            'pf-limit-key'   => 'user-zoho',
+            'pf-limit-key'   => 'zoho|user',
             'pf-limit-time'  => 86400,
             'pf-limit-value' => 14500,
         ], $this->getData());
@@ -218,7 +218,7 @@ final class ZohoSystemTest extends KernelTestCaseAbstract
         $this->setPlan(self::PLAN_ULTIMATE, 100);
 
         $this->assertEquals([
-            'pf-limit-key'   => 'user-zoho',
+            'pf-limit-key'   => 'zoho|user',
             'pf-limit-time'  => 86400,
             'pf-limit-value' => 25000,
         ], $this->getData());
