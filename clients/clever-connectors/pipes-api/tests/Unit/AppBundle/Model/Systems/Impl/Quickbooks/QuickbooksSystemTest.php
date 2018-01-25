@@ -56,7 +56,7 @@ class QuickbooksSystemTest extends TestCase
         unset($data['limit-last-update']);
 
         $this->assertEquals([
-            'pf-limit-key'   => 'quickbooks',
+            'pf-limit-key'   => 'quickbooks|',
             'pf-limit-value' => 500,
             'pf-limit-time'  => 60,
         ], $data);

@@ -118,13 +118,11 @@ class SystemLimitDto
      */
     private function createLimitKey(SystemInstall $systemInstall, int $limitType): string
     {
-        if ($limitType === self::LIMIT_FOR_USER) {
-            $key = sprintf('%s-%s', $systemInstall->getUser(), $systemInstall->getSystem());
-        } else {
-            $key = $systemInstall->getSystem();
-        }
-
-        return $key;
+        return sprintf(
+            '%s|%s',
+            $systemInstall->getSystem(),
+            $limitType === self::LIMIT_FOR_USER ? $systemInstall->getUser() : ''
+        );
     }
 
 }

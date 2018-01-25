@@ -183,7 +183,7 @@ final class HubspotSystemTest extends KernelTestCaseAbstract
         unset($data['limit-last-update']);
 
         $this->assertEquals([
-            'pf-limit-key'   => 'hubspot',
+            'pf-limit-key'   => 'hubspot|',
             'pf-limit-value' => 10,
             'pf-limit-time'  => 1,
         ], $data);
