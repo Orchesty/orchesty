@@ -44,17 +44,29 @@ class CurlMetricUtils
      * @param InfluxDbSender $sender
      * @param array          $timeData
      * @param string         $uri
+     * @param null|string    $nodeId
      */
-    public static function sendCurlMetrics(InfluxDbSender $sender, array $timeData, string $uri): void
+    public static function sendCurlMetrics(
+        InfluxDbSender $sender,
+        array $timeData,
+        string $uri,
+        ?string $nodeId = NULL
+    ): void
     {
+        $info = [
+            MetricsEnum::HOST => gethostname(),
+            MetricsEnum::URI  => $uri,
+        ];
+
+        if ($nodeId) {
+            $info[MetricsEnum::NODE_ID] = $nodeId;
+        }
+
         $sender->send(
             [
                 MetricsEnum::REQUEST_TOTAL_DURATION_SENT => $timeData[self::KEY_REQUEST_DURATION],
             ],
-            [
-                MetricsEnum::HOST => gethostname(),
-                MetricsEnum::URI  => $uri,
-            ]
+            $info
         );
     }
 
