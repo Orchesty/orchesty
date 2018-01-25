@@ -76,8 +76,7 @@ limiter-test:
     - skip_unmodified $DIR
     - cd $REPO_ROOT/$DIR
     - export COMPOSE_PROJECT_NAME="p${CI_PIPELINE_ID}-go"
-    - export COMPOSE_FILE=docker-compose.ci.yml
-    - make ${COMPOSE_FILE} ci-test
+    - make ci-test
 
 cc-api-extension-image:
   stage: stage1
@@ -234,6 +233,5 @@ cleanup:
     - ": limiter"
     - cd $REPO_ROOT/go/src/hanaboso.com/limiter
     - export COMPOSE_PROJECT_NAME="p${CI_PIPELINE_ID}-go"
-    - export COMPOSE_FILE=docker-compose.ci.yml
     - docker-compose down -v || echo "limiter cleanup phase failed"
     
