@@ -1,9 +1,17 @@
+import * as http from "http";
+import * as request from "request";
 import logger from "../../logger/Logger";
 import JobMessage from "../../message/JobMessage";
 import {ResultCode} from "../../message/ResultCode";
 import IWorker from "./IWorker";
 
 class NullWorker implements IWorker {
+
+    private agent: http.Agent;
+
+    constructor() {
+        this.agent = new http.Agent({ keepAlive: true, maxSockets: Infinity });
+    }
 
     /**
      * Does not modify message, just marks it as processed
@@ -16,6 +24,17 @@ class NullWorker implements IWorker {
             Content: ${msg.getContent()}`, logger.ctxFromMsg(msg));
 
         msg.setResult({code: ResultCode.SUCCESS, message: "Null worker passed message."});
+
+        const opts = {
+            method: "GET",
+            url: "http://spitter-api/black-hole",
+            timeout: 1,
+            agent: this.agent,
+        };
+
+        request(opts, () => {
+            // we don't need response
+        });
 
         return Promise.resolve([msg]);
     }
