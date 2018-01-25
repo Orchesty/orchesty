@@ -12,14 +12,18 @@ use CleverConnectors\AppBundle\Model\CMEvents\CMEventsManager;
 use CleverConnectors\AppBundle\Model\CMEvents\CMEventSystemInterface;
 use CleverConnectors\AppBundle\Model\DataLayout\LayoutManager;
 use CleverConnectors\AppBundle\Model\MapTemplate\MapManager;
+use CleverConnectors\AppBundle\Model\SystemMetrics\SystemMetricsDto;
+use CleverConnectors\AppBundle\Model\SystemMetrics\SystemMetricsInterface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\AuthorizationInterface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\OAuth1Interface;
+use CleverConnectors\AppBundle\Model\Systems\Dto\SystemData;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Webhook\WebhookManager;
 use CleverConnectors\AppBundle\Model\Webhook\WebhookSystemInterface;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use CleverConnectors\AppBundle\Utils\InnerRequestUtils;
 use CleverConnectors\AppBundle\Utils\TopologyNameUtils;
+use DateTime;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
@@ -94,16 +98,22 @@ class SystemManager
     private $layoutManager;
 
     /**
+     * @var SystemMetricsInterface
+     */
+    private $systemMetrics;
+
+    /**
      * SystemManager constructor.
      *
-     * @param DocumentManager $dm
-     * @param SystemLoader    $systemLoader
-     * @param WebhookManager  $webhookManager
-     * @param StartingPoint   $startingPoint
-     * @param RequestHandler  $requestHandler
-     * @param CMEventsManager $eventsManager
-     * @param MapManager      $mapManager
-     * @param LayoutManager   $layoutManager
+     * @param DocumentManager        $dm
+     * @param SystemLoader           $systemLoader
+     * @param WebhookManager         $webhookManager
+     * @param StartingPoint          $startingPoint
+     * @param RequestHandler         $requestHandler
+     * @param CMEventsManager        $eventsManager
+     * @param MapManager             $mapManager
+     * @param LayoutManager          $layoutManager
+     * @param SystemMetricsInterface $systemMetrics
      */
     public function __construct(
         DocumentManager $dm,
@@ -113,7 +123,8 @@ class SystemManager
         RequestHandler $requestHandler,
         CMEventsManager $eventsManager,
         MapManager $mapManager,
-        LayoutManager $layoutManager
+        LayoutManager $layoutManager,
+        SystemMetricsInterface $systemMetrics
     )
     {
         $this->dm                 = $dm;
@@ -127,6 +138,7 @@ class SystemManager
         $this->eventsManager      = $eventsManager;
         $this->mapManager         = $mapManager;
         $this->layoutManager      = $layoutManager;
+        $this->systemMetrics      = $systemMetrics;
     }
 
     /**
@@ -192,19 +204,23 @@ class SystemManager
     }
 
     /**
-     * @param string $system
-     * @param bool   $synchronized
+     * @param string    $system
+     * @param bool|null $synchronized
      *
      * @return string[]
      * @throws SystemException
      */
-    public function getSystemUsers(string $system, bool $synchronized): array
+    public function getSystemUsers(string $system, ?bool $synchronized = NULL): array
     {
         $this->systemLoader->getSystem($system);
 
         /** @var SystemInstall[] $systems */
-        $systems = $this->systemRepository->findBy(['system' => $system, 'synchronized' => $synchronized]);
-        $users   = [];
+        if (is_null($synchronized)) {
+            $systems = $this->systemRepository->findBy(['system' => $system]);
+        } else {
+            $systems = $this->systemRepository->findBy(['system' => $system, 'synchronized' => $synchronized]);
+        }
+        $users = [];
 
         foreach ($systems as $systemInstall) {
             $users[] = $systemInstall->getUser();
@@ -485,6 +501,81 @@ class SystemManager
     }
 
     /**
+     * @return int
+     * @throws SystemException
+     */
+    public function getSystemCount(): int
+    {
+        return count($this->getSystems());
+    }
+
+    /**
+     * @return array
+     * @throws SystemException
+     */
+    public function getSystemList(): array
+    {
+        $systems = $this->getSystems();
+
+        $res = [];
+        /** @var SystemInterface $system */
+        foreach ($systems as $system) {
+            $res[] = new SystemData(
+                $system->getKey(),
+                $system->getName(),
+                count($this->getSystemUsers($system->getKey())),
+                $this->getSystemRequestCount($system->getKey())
+            );
+        }
+
+        return $res;
+    }
+
+    /**
+     * @param string        $systemKey
+     * @param DateTime|null $from
+     * @param DateTime|null $to
+     * @param int|null      $interval
+     * @param null|string   $guid
+     *
+     * @return array
+     */
+    public function getSystemMetrics(
+        string $systemKey,
+        ?DateTime $from = NULL,
+        ?DateTime $to = NULL,
+        ?int $interval = NULL,
+        ?string $guid = NULL
+    ): array
+    {
+        $dto = new SystemMetricsDto($systemKey, $from, $to, $interval, $guid);
+
+        return $this->systemMetrics->getSystemMetrics($dto);
+    }
+
+    /**
+     * @param string        $systemKey
+     * @param DateTime|null $from
+     * @param DateTime|null $to
+     * @param int|null      $interval
+     * @param null|string   $guid
+     *
+     * @return int
+     */
+    public function getSystemRequestCount(
+        string $systemKey,
+        ?DateTime $from = NULL,
+        ?DateTime $to = NULL,
+        ?int $interval = NULL,
+        ?string $guid = NULL
+    ): int
+    {
+        $dto = new SystemMetricsDto($systemKey, $from, $to, $interval, $guid);
+
+        return $this->systemMetrics->getSystemRequestCount($dto);
+    }
+
+    /**
      * ------------------------------------- HELPERS ----------------------------------------
      */
 
@@ -566,7 +657,7 @@ class SystemManager
         $system        = $this->systemLoader->getSystem($system);
         $request       = InnerRequestUtils::getRequest($systemInstall, $data);
         $request->setMethod(CurlManager::METHOD_POST);
-        $topologies    = $this->topologyRepository->getRunnableTopologies(
+        $topologies = $this->topologyRepository->getRunnableTopologies(
             TopologyNameUtils::getTopologyName(
                 $topology,
                 $systemInstall->getSystem(),

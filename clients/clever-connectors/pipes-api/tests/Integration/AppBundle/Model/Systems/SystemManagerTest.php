@@ -7,6 +7,7 @@ use CleverConnectors\AppBundle\Document\MapTemplate;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\TypeEnum;
 use CleverConnectors\AppBundle\Model\Systems\Dto\ActionDto;
+use CleverConnectors\AppBundle\Model\Systems\Dto\SystemData;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\SystemManager;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
@@ -599,6 +600,27 @@ final class SystemManagerTest extends DatabaseTestCaseAbstract
         $manager = $this->container->get('cc.systems.manager');
         $this->expectException(SystemException::class);
         $manager->runCustomAction('null.user.group', '123', 'nonExistAction', []);
+    }
+
+    /**
+     *
+     */
+    public function testSystemCount(): void
+    {
+        $manager = $this->container->get('cc.systems.manager');
+        self::assertGreaterThanOrEqual(25, $manager->getSystemCount());
+    }
+
+    /**
+     *
+     */
+    public function testGetSystemLists(): void
+    {
+        $manager = $this->container->get('cc.systems.manager');
+        $res = $manager->getSystemList();
+
+        self::assertGreaterThanOrEqual(25, count($res));
+        self::assertInstanceOf(SystemData::class, $res[11]);
     }
 
 }

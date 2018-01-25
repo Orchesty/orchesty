@@ -13,6 +13,7 @@ use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\CMEvents\CMEventsManager;
 use CleverConnectors\AppBundle\Model\DataLayout\LayoutManager;
 use CleverConnectors\AppBundle\Model\MapTemplate\MapManager;
+use CleverConnectors\AppBundle\Model\SystemMetrics\SystemMetricsInterface;
 use CleverConnectors\AppBundle\Model\Systems\SystemLoader;
 use CleverConnectors\AppBundle\Model\Systems\SystemManager;
 use CleverConnectors\AppBundle\Model\Webhook\WebhookManager;
@@ -76,6 +77,11 @@ final class SystemManagerTest extends TestCase
     private $layoutManager;
 
     /**
+     * @var MockObject|SystemMetricsInterface
+     */
+    private $metrics;
+
+    /**
      *
      */
     public function setUp(): void
@@ -88,6 +94,7 @@ final class SystemManagerTest extends TestCase
         $this->eventsManager  = $this->getClassMock(CMEventsManager::class);
         $this->mapManager     = $this->getClassMock(MapManager::class);
         $this->layoutManager  = $this->getClassMock(LayoutManager::class);
+        $this->metrics        = $this->getClassMock(SystemMetricsInterface::class);
         $this->startingPoint->method('runWithRequest');
     }
 
@@ -106,7 +113,8 @@ final class SystemManagerTest extends TestCase
             $this->requestHandler,
             $this->eventsManager,
             $this->mapManager,
-            $this->layoutManager
+            $this->layoutManager,
+            $this->metrics
         );
 
         $res = $manager->synchronizeSubscriptions('user', 'system');
