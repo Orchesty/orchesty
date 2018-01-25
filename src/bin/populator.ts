@@ -27,19 +27,19 @@ const publisher = new Publisher(conn, async (ch: Channel) => {
     await ch.assertQueue(firstFaucet.queue.name, firstFaucet.queue.options);
 });
 
-for (let i = 0; i < POPULATOR_COUNT; i++) {
+for (let i = 1; i <= POPULATOR_COUNT; i++) {
     publisher.sendToQueue(
         firstFaucet.queue.name,
         new Buffer("populator test"),
         {
             headers: {
-                "pf-correlation-id" : i,
-                "pf-process-id": i,
+                "pf-correlation-id" : `corr-${i}`,
+                "pf-process-id": `process-${i}`,
                 "pf-parent-id": "",
                 "pf-sequence-id": "1",
             },
         },
     ).then(() => {
-        logger.info(`#${i + 1} populator message sent.`);
+        logger.info(`#${i} populator message sent.`);
     });
 }
