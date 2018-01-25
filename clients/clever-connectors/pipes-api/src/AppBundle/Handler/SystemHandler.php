@@ -7,6 +7,7 @@ use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\OAuth1Interface;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\SystemManager;
+use CleverConnectors\AppBundle\Utils\DateTimeUtils;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\PipesFramework\Utils\ControllerUtils;
 
@@ -256,6 +257,88 @@ class SystemHandler
     public function runCustomAction(string $systemKey, string $user, string $action, array $data = []): array
     {
         return $this->manager->runCustomAction($systemKey, $user, $action, $data);
+    }
+
+    /**
+     * @param string $systemKey
+     *
+     * @return array
+     * @throws SystemException
+     */
+    public function getSystemUsers(string $systemKey): array
+    {
+        $users = $this->manager->getSystemUsers($systemKey);
+
+        return [
+            'count' => count($users),
+            'users' => $users,
+        ];
+    }
+
+    /**
+     * @return array
+     * @throws SystemException
+     */
+    public function getSystemCount(): array
+    {
+        return ['count' => $this->manager->getSystemCount()];
+    }
+
+    /**
+     * @return array
+     * @throws SystemException
+     */
+    public function getSystemList(): array
+    {
+        $a= $this->manager->getSystemList(TRUE);
+
+        return $a;
+    }
+
+    /**
+     * @param string $systemKey
+     * @param array  $data
+     *
+     * @return array
+     */
+    public function getSystemMetrics(string $systemKey, array $data): array
+    {
+        $from     = isset($data['from']) ? (string) $data['from'] : NULL;
+        $to       = isset($data['to']) ? (string) $data['to'] : NULL;
+        $guid     = isset($data['guid']) ? (string) $data['guid'] : NULL;
+        $interval = isset($data['interval']) ? (int) $data['interval'] : NULL;
+
+        return $this->manager->getSystemMetrics(
+            $systemKey,
+            $from ? DateTimeUtils::getUTCDateTime($from) : DateTimeUtils::getUTCDateTime(),
+            $to ? DateTimeUtils::getUTCDateTime($to) : DateTimeUtils::getUTCDateTime(),
+            $interval,
+            $guid
+        );
+    }
+
+    /**
+     * @param string $systemKey
+     * @param array  $data
+     *
+     * @return array
+     */
+    public function getSystemRequestCount(string $systemKey, array $data): array
+    {
+        $from     = isset($data['from']) ? (string) $data['from'] : NULL;
+        $to       = isset($data['to']) ? (string) $data['to'] : NULL;
+        $guid     = isset($data['guid']) ? (string) $data['guid'] : NULL;
+        $interval = isset($data['interval']) ? (int) $data['interval'] : NULL;
+
+        return [
+            'count' => $this->manager->getSystemRequestCount(
+                $systemKey,
+                $from ? DateTimeUtils::getUTCDateTime($from) : DateTimeUtils::getUTCDateTime(),
+                $to ? DateTimeUtils::getUTCDateTime($to) : DateTimeUtils::getUTCDateTime(),
+                $interval,
+                $guid
+            ),
+        ];
     }
 
 }

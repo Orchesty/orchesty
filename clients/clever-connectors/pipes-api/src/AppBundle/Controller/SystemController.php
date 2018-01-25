@@ -45,6 +45,40 @@ class SystemController extends FOSRestController
     }
 
     /**
+     * @Route("/systems/count")
+     * @Method({"GET", "OPTIONS"})
+     *
+     * @return Response
+     */
+    public function getSystemCountAction(): Response
+    {
+        try {
+            $data = $this->handler->getSystemCount();
+
+            return $this->getResponse($data);
+        } catch (SystemException $e) {
+            return $this->processException($e);
+        }
+    }
+
+    /**
+     * @Route("/systems/list")
+     * @Method({"GET", "OPTIONS"})
+     *
+     * @return Response
+     */
+    public function getSystemListAction(): Response
+    {
+        try {
+            $data = $this->handler->getSystemList();
+
+            return $this->getResponse($data);
+        } catch (SystemException $e) {
+            return $this->processException($e);
+        }
+    }
+
+    /**
      * @Route("/systems/{systemKey}")
      * @Method({"GET", "OPTIONS"})
      *
@@ -104,7 +138,9 @@ class SystemController extends FOSRestController
      *
      * @param string $userId
      * @param string $systemKey
-     *
+     *{
+"count": 28
+}
      * @return Response
      */
     public function getUserSystemAction(string $userId, string $systemKey): Response
@@ -319,6 +355,65 @@ class SystemController extends FOSRestController
             $data = $this->handler->runCustomAction($system, $user, $action, $data);
 
             return $this->getResponse($data, 200);
+        } catch (SystemException $e) {
+            return $this->processException($e);
+        }
+    }
+
+    /**
+     * @Route("/system/{system}/users")
+     * @Method({"GET", "OPTIONS"})
+     *
+     * @param string $system
+     *
+     * @return Response
+     */
+    public function getSystemUsersAction(string $system): Response
+    {
+        try {
+            $data = $this->handler->getSystemUsers($system);
+
+            return $this->getResponse($data);
+        } catch (SystemException $e) {
+            return $this->processException($e);
+        }
+    }
+
+    /**
+     * @Route("/system/{system}/metrics")
+     * @Method({"GET", "OPTIONS"})
+     *
+     * @param Request $request
+     * @param string  $system
+     *
+     * @return Response
+     */
+    public function getSystemMetricsAction(Request $request, string $system): Response
+    {
+        try {
+            $data = $this->handler->getSystemMetrics($system, $request->request->all());
+
+            return $this->getResponse($data);
+        } catch (SystemException $e) {
+            return $this->processException($e);
+        }
+    }
+
+    /**
+     * @Route("/system/{system}/request_count")
+     * @Method({"GET", "OPTIONS"})
+     *
+     * @param Request $request
+     * @param string  $system
+     *
+     * @return Response
+     */
+    public function getSystemRequestCountAction(Request $request, string $system): Response
+    {
+        try {
+            $data = $this->handler->getSystemRequestCount($system, $request->request->all());
+
+            return $this->getResponse($data);
         } catch (SystemException $e) {
             return $this->processException($e);
         }

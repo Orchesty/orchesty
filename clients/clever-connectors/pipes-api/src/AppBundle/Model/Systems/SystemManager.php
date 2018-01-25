@@ -511,17 +511,19 @@ class SystemManager
     }
 
     /**
+     * @param bool $toArray
+     *
      * @return array
      * @throws SystemException
      */
-    public function getSystemList(): array
+    public function getSystemList(bool $toArray = FALSE): array
     {
         $systems = $this->getSystems();
 
         $res = [];
         /** @var SystemInterface $system */
         foreach ($systems as $system) {
-            $res[] = new SystemData(
+            $data = new SystemData(
                 $system->getKey(),
                 $system->getName(),
                 count($this->getSystemUsers($system->getKey())),
@@ -530,6 +532,8 @@ class SystemManager
                     DateTimeUtils::getUTCDateTime('-1 month')
                 )
             );
+
+            $res[] = $toArray ? $data->toArray() : $data;
         }
 
         return $res;

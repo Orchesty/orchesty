@@ -40,9 +40,9 @@ final class SystemData
      */
     public function __construct(string $systeKey, string $systemName, int $userCount, int $requestCount)
     {
-        $this->systeKey = $systeKey;
-        $this->systemName = $systemName;
-        $this->userCount = $userCount;
+        $this->systeKey     = $systeKey;
+        $this->systemName   = $systemName;
+        $this->userCount    = $userCount;
         $this->requestCount = $requestCount;
     }
 
@@ -76,6 +76,19 @@ final class SystemData
     public function getRequestCount(): int
     {
         return $this->requestCount;
+    }
+
+    /**
+     * @return array
+     */
+    public function toArray(): array
+    {
+        return [
+            'system_key'    => $this->systeKey,
+            'system_name'   => $this->systemName,
+            'user_count'    => $this->userCount,
+            'request_count' => $this->requestCount,
+        ];
     }
 
 }
