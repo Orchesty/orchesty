@@ -33,8 +33,6 @@ class JsonSplitterWorker implements IWorker {
      * @return {Promise<JobMessage[]>}
      */
     public processData(msg: JobMessage): Promise<JobMessage[]> {
-        msg.getMeasurement().markWorkerStart();
-
         let content: any[];
 
         try {
