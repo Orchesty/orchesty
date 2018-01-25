@@ -7,7 +7,7 @@ package topology
 import (
 	"gopkg.in/mgo.v2/bson"
 	"fmt"
-	str "hanaboso.com/utils/string"
+	str "hanaboso.com/utils/strings"
 )
 
 type Topology struct {

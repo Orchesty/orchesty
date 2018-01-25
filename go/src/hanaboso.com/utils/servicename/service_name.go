@@ -1,7 +1,7 @@
 package servicename
 
 import "strings"
-import str "hanaboso.com/utils/string"
+import str "hanaboso.com/utils/strings"
 
 func CreateServiceName(s string) string {
 	var (
