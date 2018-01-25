@@ -30,7 +30,7 @@ class HttpWorker implements IWorker {
         protected settings: IHttpWorkerSettings,
         protected metrics: IMetrics,
     ) {
-        this.agent = new http.Agent({ keepAlive: true, maxSockets: 1 });
+        this.agent = new http.Agent({ keepAlive: true, maxSockets: 10 });
     }
 
     /**
