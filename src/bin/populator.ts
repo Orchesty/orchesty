@@ -6,7 +6,7 @@ import {IAmqpFaucetSettings} from "../node/faucet/AmqpFaucet";
 import Pipes from "../Pipes";
 import {ITopologyConfig} from "../topology/Configurator";
 
-const POPULATOR_COUNT = parseInt(process.env.RABBITMQ_PORT, 10) || 100;
+const POPULATOR_COUNT = parseInt(process.env.POPULATOR_COUNT, 10) || 100;
 
 const loadTopologyConfigFromFile = (): ITopologyConfig => {
     try {
