@@ -10,7 +10,7 @@ export default (state = initialState, action) => {
       return initialState;
 
     case types.PANEL_TOGGLE:
-      return Object.assign({}, state, {[action.id]: !state[action.id]});
+      return Object.assign({}, state, {[action.id]: state[action.id] === false});
 
     default:
       return state;

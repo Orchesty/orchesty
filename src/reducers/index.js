@@ -16,6 +16,7 @@ import editable from './editable';
 import metrics from './metrics';
 import notificationSettings from './notificationSettings';
 import generalSearch from './generalSearch';
+import panel from './panel';
 
 const rootReducer = combineReducers({
   application,
@@ -32,7 +33,8 @@ const rootReducer = combineReducers({
   editable,
   metrics,
   notificationSettings,
-  generalSearch
+  generalSearch,
+  panel
 });
 
 export default rootReducer;
