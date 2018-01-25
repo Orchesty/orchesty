@@ -88,9 +88,26 @@ class ConnectorManagerTest extends TestCase
     }
 
     /**
+     * @covers ConnectorManager::getAllSystemsCount()
+     */
+    public function testGetAllSystemsCount(): void
+    {
+        $cb = function (Request $request) {
+            $this->assertSame('application/json', $request->getHeader('content-type')[0]);
+            $this->assertSame(CurlSender::GET, $request->getMethod());
+            $this->assertSame('/systems/count', $request->getUri()->getPath());
+
+            return new Response(200, [], '{"count":10}');
+        };
+
+        $cm = new ConnectorManager($this->createSuccessResponse($cb));
+        $this->assertSame(10, $cm->getAllSystemsCount());
+    }
+
+    /**
      * @covers ConnectorManager::getAllSystems()
      */
-    public function testGetAllSystem(): void
+    public function testGetAllSystems(): void
     {
         $cb = function (Request $request) {
             $this->assertSame('application/json', $request->getHeader('content-type')[0]);
@@ -108,6 +125,28 @@ class ConnectorManagerTest extends TestCase
         $this->assertSame('type', $systems[0]->getType());
         $this->assertSame('name', $systems[0]->getName());
         $this->assertSame('description', $systems[0]->getDescription());
+    }
+
+    /**
+     * @covers ConnectorManager::getAllSystemsList()
+     */
+    public function testGetAllSystemsList(): void
+    {
+        $cb = function (Request $request) {
+            $this->assertSame('application/json', $request->getHeader('content-type')[0]);
+            $this->assertSame(CurlSender::GET, $request->getMethod());
+            $this->assertSame('/systems/list', $request->getUri()->getPath());
+
+            return new Response(200, [], '[{"key":"key","name":"name","user_count":10,"request_count":20}]');
+        };
+
+        $cm      = new ConnectorManager($this->createSuccessResponse($cb));
+        $systems = $cm->getAllSystemsList();
+
+        $this->assertSame('key', $systems[0]->getKey());
+        $this->assertSame('name', $systems[0]->getName());
+        $this->assertSame(10, $systems[0]->getUserCount());
+        $this->assertSame(20, $systems[0]->getRequestCount());
     }
 
     /**
@@ -130,6 +169,62 @@ class ConnectorManagerTest extends TestCase
         $this->assertSame('type', $system->getType());
         $this->assertSame('name', $system->getName());
         $this->assertSame('description', $system->getDescription());
+    }
+
+    /**
+     * @covers ConnectorManager::getSystemUsers()
+     */
+    public function testGetSystemUsers(): void
+    {
+        $cb = function (Request $request) {
+            $this->assertSame('application/json', $request->getHeader('content-type')[0]);
+            $this->assertSame(CurlSender::GET, $request->getMethod());
+            $this->assertSame('/system/system/users', $request->getUri()->getPath());
+
+            return new Response(200, [], '{"count":1,"users":["someUser"]}');
+        };
+
+        $cm = new ConnectorManager($this->createSuccessResponse($cb));
+        $this->assertSame([
+            'count' => 1,
+            'users' => [
+                'someUser',
+            ],
+        ], $cm->getSystemUsers('system'));
+    }
+
+    /**
+     * @covers ConnectorManager::getSystemMetrics()
+     */
+    public function testGetSystemMetrics(): void
+    {
+        $cb = function (Request $request) {
+            $this->assertSame('application/json', $request->getHeader('content-type')[0]);
+            $this->assertSame(CurlSender::GET, $request->getMethod());
+            $this->assertSame('/system/system/metrics', $request->getUri()->getPath());
+
+            return new Response(200, [], '[]');
+        };
+
+        $cm = new ConnectorManager($this->createSuccessResponse($cb));
+        $this->assertSame([], $cm->getSystemMetrics('system'));
+    }
+
+    /**
+     * @covers ConnectorManager::getSystemRequestCount()
+     */
+    public function testGetSystemRequestCount(): void
+    {
+        $cb = function (Request $request) {
+            $this->assertSame('application/json', $request->getHeader('content-type')[0]);
+            $this->assertSame(CurlSender::GET, $request->getMethod());
+            $this->assertSame('/system/system/request_count', $request->getUri()->getPath());
+
+            return new Response(200, [], '{"count":10}');
+        };
+
+        $cm = new ConnectorManager($this->createSuccessResponse($cb));
+        $this->assertSame(10, $cm->getSystemRequestCount('system'));
     }
 
     /**

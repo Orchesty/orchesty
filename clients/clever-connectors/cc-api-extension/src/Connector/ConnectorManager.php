@@ -102,6 +102,21 @@ class ConnectorManager implements ConnectorInterface
     }
 
     /**
+     * @return int
+     * @throws ConnectorException
+     */
+    public function getAllSystemsCount(): int
+    {
+        $request = new Request(
+            CurlSender::GET,
+            new Uri('/systems/count'),
+            $this->getDefaultHeaders()->getHeaders()
+        );
+
+        return (int) $this->parseBody($this->send($request))['count'];
+    }
+
+    /**
      * @param null|string $group
      * @param null|string $user
      *
@@ -136,6 +151,28 @@ class ConnectorManager implements ConnectorInterface
     }
 
     /**
+     * @return iterable|System[]
+     * @throws ConnectorException
+     */
+    public function getAllSystemsList(): iterable
+    {
+        $request = new Request(
+            CurlSender::GET,
+            new Uri('/systems/list'),
+            $this->getDefaultHeaders()->getHeaders()
+        );
+
+        $response = $this->send($request);
+
+        $systems = [];
+        foreach ($this->parseBody($response) as $item) {
+            $systems[] = SystemFactory::create($item);
+        }
+
+        return $systems;
+    }
+
+    /**
      * @param string $systemKey
      *
      * @return System
@@ -152,6 +189,57 @@ class ConnectorManager implements ConnectorInterface
         $response = $this->send($request);
 
         return SystemFactory::create($this->parseBody($response));
+    }
+
+    /**
+     * @param string $systemKey
+     *
+     * @return array
+     * @throws ConnectorException
+     */
+    public function getSystemUsers(string $systemKey): array
+    {
+        $request = new Request(
+            CurlSender::GET,
+            new Uri(sprintf('/system/%s/users', $systemKey)),
+            $this->getDefaultHeaders()->getHeaders()
+        );
+
+        return $this->parseBody($this->send($request));
+    }
+
+    /**
+     * @param string $systemKey
+     *
+     * @return array
+     * @throws ConnectorException
+     */
+    public function getSystemMetrics(string $systemKey): array
+    {
+        $request = new Request(
+            CurlSender::GET,
+            new Uri(sprintf('/system/%s/metrics', $systemKey)),
+            $this->getDefaultHeaders()->getHeaders()
+        );
+
+        return $this->parseBody($this->send($request));
+    }
+
+    /**
+     * @param string $systemKey
+     *
+     * @return int
+     * @throws ConnectorException
+     */
+    public function getSystemRequestCount(string $systemKey): int
+    {
+        $request = new Request(
+            CurlSender::GET,
+            new Uri(sprintf('/system/%s/request_count', $systemKey)),
+            $this->getDefaultHeaders()->getHeaders()
+        );
+
+        return (int) $this->parseBody($this->send($request))['count'];
     }
 
     /**

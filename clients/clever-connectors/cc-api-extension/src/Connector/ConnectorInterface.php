@@ -21,6 +21,11 @@ interface ConnectorInterface
 {
 
     /**
+     * @return int
+     */
+    public function getAllSystemsCount(): int;
+
+    /**
      * @param null|string $group
      * @param null|string $user
      *
@@ -29,11 +34,37 @@ interface ConnectorInterface
     public function getAllSystems(?string $group = NULL, ?string $user = NULL): iterable;
 
     /**
+     * @return iterable|System[]
+     */
+    public function getAllSystemsList(): iterable;
+
+    /**
      * @param string $systemKey
      *
      * @return System
      */
     public function getSystem(string $systemKey): System;
+
+    /**
+     * @param string $systemKey
+     *
+     * @return array
+     */
+    public function getSystemUsers(string $systemKey): array;
+
+    /**
+     * @param string $systemKey
+     *
+     * @return array
+     */
+    public function getSystemMetrics(string $systemKey): array;
+
+    /**
+     * @param string $systemKey
+     *
+     * @return int
+     */
+    public function getSystemRequestCount(string $systemKey): int;
 
     /**
      * @param string $userId
