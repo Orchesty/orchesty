@@ -70,7 +70,6 @@ class JobMessage extends AMessage implements IMessage {
      * @param {IResult} result
      */
     public setResult(result: IResult): void {
-        this.measurement.markWorkerEnd();
         this.result = result;
     }
 

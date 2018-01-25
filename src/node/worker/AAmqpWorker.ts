@@ -103,8 +103,6 @@ abstract class AAmqpWorker implements IWorker {
      * @return {Promise<JobMessage[]>}
      */
     public processData(msg: JobMessage): Promise<JobMessage[]> {
-        msg.getMeasurement().markWorkerStart();
-
         const uuid = uuid4();
         const headersToSend = new Headers(msg.getHeaders().getRaw());
         headersToSend.setPFHeader(Headers.NODE_ID, this.settings.node_label.node_id);
