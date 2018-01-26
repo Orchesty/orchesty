@@ -33,3 +33,5 @@ services:
         arguments:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@rabbit-mq.producer.test_batch'
+        calls:
+            - ['setLogger', ['@monolog.logger.commons']]
