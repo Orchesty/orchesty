@@ -162,3 +162,7 @@ services:
         - [addExclude, ['Systems','Topologies']]
         - [addRoot,['Plugins',"%plugins_topologies%"]]
         - [addRoot,['Service',"%service_topologies%"]]
+
+    cc.system_metrics.manager:
+        class: CleverConnectors\AppBundle\Model\SystemMetrics\SystemMetrics
+        arguments:
