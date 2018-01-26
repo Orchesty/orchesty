@@ -1,4 +1,9 @@
 rabbit-mq:
+    exchanges:
+        pipes.test_batch:
+            durable: true
+            type: direct
+
     async_consumers:
         batch:
             class: Hanaboso\PipesFramework\CustomNode\Model\Batch\BatchConsumer
@@ -6,6 +11,12 @@ rabbit-mq:
             serializer:
             callback: hbpf.custom_nodes.batch_callback
             prefetch_count: 10
+
+    producers:
+        test_batch:
+            class: Hanaboso\PipesFramework\CustomNode\Model\Batch\BatchProducer
+            exchange: pipes.test_batch
+            serializer: Hanaboso\PipesFramework\RabbitMq\Serializers\JsonSerializer
 
 services:
     hbpf.custom_nodes.batch_action_callback:
