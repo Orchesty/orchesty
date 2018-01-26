@@ -100,4 +100,20 @@ class GeneratorUtils
         );
     }
 
+    /**
+     * @param string $topology
+     * @param string $nodeId
+     * @param string $nodeName
+     *
+     * @return string
+     */
+    public static function generateQueueNameFromStrings(string $topology, string $nodeId, string $nodeName): string
+    {
+        return sprintf(
+            'pipes.%s.%s',
+            $topology,
+            self::createNormalizedServiceName($nodeId, $nodeName)
+        );
+    }
+
 }
