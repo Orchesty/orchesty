@@ -42,6 +42,16 @@ class System
     protected $authType;
 
     /**
+     * @var int
+     */
+    protected $userCount = 0;
+
+    /**
+     * @var int
+     */
+    protected $requestCount = 0;
+
+    /**
      * @return string
      */
     public function getKey(): string
@@ -134,9 +144,49 @@ class System
      *
      * @return $this
      */
-    public function setAuthType(string $authType): System
+    public function setAuthType(string $authType): self
     {
         $this->authType = $authType;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getUserCount(): int
+    {
+        return $this->userCount;
+    }
+
+    /**
+     * @param int $userCount
+     *
+     * @return System
+     */
+    public function setUserCount(int $userCount): self
+    {
+        $this->userCount = $userCount;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getRequestCount(): int
+    {
+        return $this->requestCount;
+    }
+
+    /**
+     * @param int $requestCount
+     *
+     * @return System
+     */
+    public function setRequestCount(int $requestCount): self
+    {
+        $this->requestCount = $requestCount;
 
         return $this;
     }

@@ -16,11 +16,13 @@ namespace CcApi\ApiEntity;
 class SystemFactory
 {
 
-    private const KEY       = 'key';
-    private const NAME      = 'name';
-    private const DESC      = 'description';
-    private const TYPE      = 'type';
-    private const AUTH_TYPE = 'auth_type';
+    private const KEY           = 'key';
+    private const NAME          = 'name';
+    private const DESC          = 'description';
+    private const TYPE          = 'type';
+    private const AUTH_TYPE     = 'auth_type';
+    private const USER_COUNT    = 'user_count';
+    private const REQUEST_COUNT = 'request_count';
 
     /**
      * @param array $data
@@ -36,7 +38,9 @@ class SystemFactory
             ->setName($data[self::NAME] ?? '')
             ->setDescription($data[self::DESC] ?? '')
             ->setType($data[self::TYPE] ?? '')
-            ->setAuthType($data[self::AUTH_TYPE] ?? '');
+            ->setAuthType($data[self::AUTH_TYPE] ?? '')
+            ->setUserCount($data[self::USER_COUNT] ?? 0)
+            ->setRequestCount($data[self::REQUEST_COUNT] ?? 0);
 
         return $system;
     }
