@@ -8,6 +8,8 @@
 
 namespace CcApi\Connector;
 
+use CcApi\ApiEntity\Connector;
+use CcApi\ApiEntity\ConnectorFactory;
 use CcApi\ApiEntity\Subscriber;
 use CcApi\ApiEntity\System;
 use CcApi\ApiEntity\SystemFactory;
@@ -151,7 +153,7 @@ class ConnectorManager implements ConnectorInterface
     }
 
     /**
-     * @return iterable|System[]
+     * @return iterable|Connector[]
      * @throws ConnectorException
      */
     public function getAllSystemsList(): iterable
@@ -164,12 +166,12 @@ class ConnectorManager implements ConnectorInterface
 
         $response = $this->send($request);
 
-        $systems = [];
+        $connectors = [];
         foreach ($this->parseBody($response) as $item) {
-            $systems[] = SystemFactory::create($item);
+            $connectors[] = ConnectorFactory::create($item);
         }
 
-        return $systems;
+        return $connectors;
     }
 
     /**
@@ -192,16 +194,28 @@ class ConnectorManager implements ConnectorInterface
     }
 
     /**
-     * @param string $systemKey
+     * @param string   $systemKey
+     * @param int|null $page
+     * @param int|null $limit
      *
      * @return array
      * @throws ConnectorException
      */
-    public function getSystemUsers(string $systemKey): array
+    public function getSystemUsers(string $systemKey, ?int $page = NULL, ?int $limit = NULL): array
     {
+
+        $query = new Query();
+        if ($page !== NULL) {
+            $query->addQuery('page', (string) $page);
+        }
+
+        if ($limit !== NULL) {
+            $query->addQuery('limit', (string) $limit);
+        }
+
         $request = new Request(
             CurlSender::GET,
-            new Uri(sprintf('/system/%s/users', $systemKey)),
+            new Uri(sprintf('/system/%s/users?%s', $systemKey, $query->getQueryAsString())),
             $this->getDefaultHeaders()->getHeaders()
         );
 

@@ -13,7 +13,7 @@ final class SystemData
     /**
      * @var string
      */
-    private $systeKey;
+    private $systemKey;
 
     /**
      * @var string
@@ -23,35 +23,35 @@ final class SystemData
     /**
      * @var int
      */
-    private $userCount;
+    private $usersCount;
 
     /**
      * @var int
      */
-    private $requestCount;
+    private $requestsCount;
 
     /**
      * SystemDataDto constructor.
      *
-     * @param string $systeKey
+     * @param string $systemKey
      * @param string $systemName
      * @param int    $userCount
      * @param int    $requestCount
      */
-    public function __construct(string $systeKey, string $systemName, int $userCount, int $requestCount)
+    public function __construct(string $systemKey, string $systemName, int $userCount, int $requestCount)
     {
-        $this->systeKey     = $systeKey;
-        $this->systemName   = $systemName;
-        $this->userCount    = $userCount;
-        $this->requestCount = $requestCount;
+        $this->systemKey     = $systemKey;
+        $this->systemName    = $systemName;
+        $this->usersCount    = $userCount;
+        $this->requestsCount = $requestCount;
     }
 
     /**
      * @return string
      */
-    public function getSysteKey(): string
+    public function getSystemKey(): string
     {
-        return $this->systeKey;
+        return $this->systemKey;
     }
 
     /**
@@ -65,17 +65,17 @@ final class SystemData
     /**
      * @return int
      */
-    public function getUserCount(): int
+    public function getUsersCount(): int
     {
-        return $this->userCount;
+        return $this->usersCount;
     }
 
     /**
      * @return int
      */
-    public function getRequestCount(): int
+    public function getRequestsCount(): int
     {
-        return $this->requestCount;
+        return $this->requestsCount;
     }
 
     /**
@@ -84,10 +84,10 @@ final class SystemData
     public function toArray(): array
     {
         return [
-            'system_key'    => $this->systeKey,
-            'system_name'   => $this->systemName,
-            'user_count'    => $this->userCount,
-            'request_count' => $this->requestCount,
+            'system_key'     => $this->systemKey,
+            'system_name'    => $this->systemName,
+            'users_count'    => $this->usersCount,
+            'requests_count' => $this->requestsCount,
         ];
     }
 

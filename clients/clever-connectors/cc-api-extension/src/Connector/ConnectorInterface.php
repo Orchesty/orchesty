@@ -8,6 +8,7 @@
 
 namespace CcApi\Connector;
 
+use CcApi\ApiEntity\Connector;
 use CcApi\ApiEntity\Subscriber;
 use CcApi\ApiEntity\System;
 use CcApi\ApiEntity\UserSystem;
@@ -34,7 +35,7 @@ interface ConnectorInterface
     public function getAllSystems(?string $group = NULL, ?string $user = NULL): iterable;
 
     /**
-     * @return iterable|System[]
+     * @return iterable|Connector[]
      */
     public function getAllSystemsList(): iterable;
 
@@ -46,11 +47,13 @@ interface ConnectorInterface
     public function getSystem(string $systemKey): System;
 
     /**
-     * @param string $systemKey
+     * @param string   $systemKey
+     * @param int|null $page
+     * @param int|null $limit
      *
      * @return array
      */
-    public function getSystemUsers(string $systemKey): array;
+    public function getSystemUsers(string $systemKey, ?int $page = NULL, ?int $limit = NULL): array;
 
     /**
      * @param string $systemKey
