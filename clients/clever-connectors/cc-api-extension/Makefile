@@ -27,4 +27,9 @@ phpstan:
 phpunit:
 	$(DR) php ./vendor/bin/phpunit --color tests
 
-test: codesniffer phpstan phpunit
+removeCache:
+	rm -rf temp || true
+	mkdir temp
+	chmod -R 777 temp
+
+test: removeCache codesniffer phpstan phpunit removeCache
