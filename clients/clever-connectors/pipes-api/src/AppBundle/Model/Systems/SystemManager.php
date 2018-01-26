@@ -206,20 +206,28 @@ class SystemManager
 
     /**
      * @param string    $system
+     * @param int       $page
+     * @param int       $limit
      * @param bool|null $synchronized
      *
      * @return string[]
      * @throws SystemException
      */
-    public function getSystemUsers(string $system, ?bool $synchronized = NULL): array
+    public function getSystemUsers(string $system, int $page, int $limit, ?bool $synchronized = NULL): array
     {
         $this->systemLoader->getSystem($system);
+        $offset = --$page * $limit;
 
         /** @var SystemInstall[] $systems */
         if (is_null($synchronized)) {
-            $systems = $this->systemRepository->findBy(['system' => $system]);
+            $systems = $this->systemRepository->findBy(['system' => $system], NULL, $limit, $offset);
         } else {
-            $systems = $this->systemRepository->findBy(['system' => $system, 'synchronized' => $synchronized]);
+            $systems = $this->systemRepository->findBy(
+                ['system' => $system, 'synchronized' => $synchronized],
+                NULL,
+                $limit,
+                $offset
+            );
         }
         $users = [];
 
@@ -526,7 +534,7 @@ class SystemManager
             $data = new SystemData(
                 $system->getKey(),
                 $system->getName(),
-                count($this->getSystemUsers($system->getKey())),
+                $this->systemRepository->getUserCount($system->getKey()),
                 $this->getSystemRequestCount(
                     $system->getKey(),
                     DateTimeUtils::getUTCDateTime('-1 month')

@@ -95,8 +95,8 @@ final class SystemInstallRepositoryTest extends DatabaseTestCaseAbstract
         $this->dm->clear();
 
         $arr = [
-            PluginHeadersEnum::GUID     => $system->getUser(),
-            PluginHeadersEnum::TOKEN      => $system->getToken(),
+            PluginHeadersEnum::GUID   => $system->getUser(),
+            PluginHeadersEnum::TOKEN  => $system->getToken(),
             PluginHeadersEnum::SYSTEM => $system->getSystem(),
         ];
 
@@ -231,6 +231,22 @@ final class SystemInstallRepositoryTest extends DatabaseTestCaseAbstract
         $results = $repo->findBeforeExpiration($datetime);
 
         self::assertCount(1, $results);
+    }
+
+    /**
+     *
+     */
+    public function testGetUserCount(): void
+    {
+        /** @var SystemInstallRepository $repository */
+        $repository = $this->dm->getRepository(SystemInstall::class);
+
+        $this->persistAndFlush((new SystemInstall())->setSystem('system-one'));
+        $this->persistAndFlush((new SystemInstall())->setSystem('system-two'));
+        $this->persistAndFlush((new SystemInstall())->setSystem('system-two'));
+
+        self::assertEquals(1, $repository->getUserCount('system-one'));
+        self::assertEquals(2, $repository->getUserCount('system-two'));
     }
 
 }

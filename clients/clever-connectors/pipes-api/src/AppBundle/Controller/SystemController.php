@@ -362,14 +362,19 @@ class SystemController extends FOSRestController
      * @Route("/system/{system}/users")
      * @Method({"GET", "OPTIONS"})
      *
-     * @param string $system
+     * @param Request $request
+     * @param string  $system
      *
      * @return Response
      */
-    public function getSystemUsersAction(string $system): Response
+    public function getSystemUsersAction(Request $request, string $system): Response
     {
         try {
-            $data = $this->handler->getSystemUsers($system);
+            $data = $this->handler->getSystemUsers(
+                $system,
+                $request->query->get('page', 1),
+                $request->query->get('limit', 50)
+            );
 
             return $this->getResponse($data);
         } catch (SystemException $e) {
