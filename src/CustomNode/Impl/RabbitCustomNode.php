@@ -37,7 +37,7 @@ class RabbitCustomNode implements CustomNodeInterface, LoggerAwareInterface
     /**
      * @var LoggerInterface
      */
-    private $logger;
+    protected $logger;
 
     /**
      * RabbitCustomNode constructor.
@@ -113,4 +113,5 @@ class RabbitCustomNode implements CustomNodeInterface, LoggerAwareInterface
     {
         $this->logger = $logger;
     }
+
 }
