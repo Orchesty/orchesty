@@ -30,6 +30,13 @@ class Node
      *
      * @MongoDB\Field(type="string")
      */
+    protected $schemaId;
+
+    /**
+     * @var string
+     *
+     * @MongoDB\Field(type="string")
+     */
     protected $name;
 
     /**
@@ -81,6 +88,26 @@ class Node
      * @MongoDB\Field(type="string")
      */
     protected $cronParams;
+
+    /**
+     * @return string
+     */
+    public function getSchemaId(): string
+    {
+        return $this->schemaId;
+    }
+
+    /**
+     * @param string $schemaId
+     *
+     * @return Node
+     */
+    public function setSchemaId(string $schemaId): Node
+    {
+        $this->schemaId = $schemaId;
+
+        return $this;
+    }
 
     /**
      * @return string
@@ -138,6 +165,18 @@ class Node
     public function addNext(EmbedNode $next): Node
     {
         $this->next[] = $next;
+
+        return $this;
+    }
+
+    /**
+     * @param EmbedNode[] $next
+     *
+     * @return Node
+     */
+    public function setNext(array $next): Node
+    {
+        $this->next = $next;
 
         return $this;
     }
@@ -227,11 +266,11 @@ class Node
     }
 
     /**
-     * @param string $cron
+     * @param null|string $cron
      *
      * @return Node
      */
-    public function setCron(string $cron): Node
+    public function setCron(?string $cron): Node
     {
         $this->cron = $cron;
 
