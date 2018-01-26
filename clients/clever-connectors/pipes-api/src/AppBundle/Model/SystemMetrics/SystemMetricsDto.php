@@ -60,7 +60,6 @@ class SystemMetricsDto
         $this->to        = $to;
         $this->interval  = (new SystemMetricsIntervalEnum($interval ?? SystemMetricsIntervalEnum::DAY))->getValue();
         $this->guid      = $guid;
-
     }
 
     /**

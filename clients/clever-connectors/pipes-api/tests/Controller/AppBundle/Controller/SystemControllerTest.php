@@ -655,8 +655,8 @@ final class SystemControllerTest extends ControllerTestCaseAbstract
         $arr = (array) $response->content[11];
         self::assertArrayHasKey('system_key', $arr);
         self::assertArrayHasKey('system_name', $arr);
-        self::assertArrayHasKey('request_count', $arr);
-        self::assertArrayHasKey('user_count', $arr);
+        self::assertArrayHasKey('requests_count', $arr);
+        self::assertArrayHasKey('users_count', $arr);
     }
 
     /**

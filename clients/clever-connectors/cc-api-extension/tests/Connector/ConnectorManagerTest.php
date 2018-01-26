@@ -137,16 +137,16 @@ class ConnectorManagerTest extends TestCase
             $this->assertSame(CurlSender::GET, $request->getMethod());
             $this->assertSame('/systems/list', $request->getUri()->getPath());
 
-            return new Response(200, [], '[{"key":"key","name":"name","user_count":10,"request_count":20}]');
+            return new Response(200, [], '[{"system_key":"key","system_name":"name","users_count":10,"requests_count":20}]');
         };
 
         $cm      = new ConnectorManager($this->createSuccessResponse($cb));
-        $systems = $cm->getAllSystemsList();
+        $connectors = $cm->getAllSystemsList();
 
-        $this->assertSame('key', $systems[0]->getKey());
-        $this->assertSame('name', $systems[0]->getName());
-        $this->assertSame(10, $systems[0]->getUserCount());
-        $this->assertSame(20, $systems[0]->getRequestCount());
+        $this->assertSame('key', $connectors[0]->getSystemKey());
+        $this->assertSame('name', $connectors[0]->getSystemName());
+        $this->assertSame(10, $connectors[0]->getUsersCount());
+        $this->assertSame(20, $connectors[0]->getRequestsCount());
     }
 
     /**
@@ -180,6 +180,7 @@ class ConnectorManagerTest extends TestCase
             $this->assertSame('application/json', $request->getHeader('content-type')[0]);
             $this->assertSame(CurlSender::GET, $request->getMethod());
             $this->assertSame('/system/system/users', $request->getUri()->getPath());
+            $this->assertSame('page=1&limit=50', $request->getUri()->getQuery());
 
             return new Response(200, [], '{"count":1,"users":["someUser"]}');
         };
@@ -190,7 +191,7 @@ class ConnectorManagerTest extends TestCase
             'users' => [
                 'someUser',
             ],
-        ], $cm->getSystemUsers('system'));
+        ], $cm->getSystemUsers('system', 1, 50));
     }
 
     /**
