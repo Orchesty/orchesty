@@ -621,6 +621,67 @@ final class SystemControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
+     *
+     */
+    public function testGetSystemCount(): void
+    {
+        $response = $this->sendGet('/systems/count');
+
+        $arr = (array) $response->content;
+        self::assertArrayHasKey('count', $arr);
+        self::assertGreaterThanOrEqual(20, $arr['count']);
+    }
+
+    /**
+     *
+     */
+    public function testGetSystemUsers(): void
+    {
+        $response = $this->sendGet('/system/null.user/users');
+
+        $arr = (array) $response->content;
+        self::assertArrayHasKey('count', $arr);
+        self::assertArrayHasKey('users', $arr);
+    }
+
+    /**
+     *
+     */
+    public function testGetSystemList(): void
+    {
+        $response = $this->sendGet('/systems/list');
+
+        self::assertGreaterThanOrEqual(20, count($response->content));
+        $arr = (array) $response->content[11];
+        self::assertArrayHasKey('system_key', $arr);
+        self::assertArrayHasKey('system_name', $arr);
+        self::assertArrayHasKey('request_count', $arr);
+        self::assertArrayHasKey('user_count', $arr);
+    }
+
+    /**
+     *
+     */
+    public function testGetSystemMetrics(): void
+    {
+        $response = $this->sendGet('/system/null.user/metrics');
+
+        $arr = (array) $response->content;
+        self::assertEquals([], $arr);
+    }
+
+    /**
+     *
+     */
+    public function testGetSystemRequestCount(): void
+    {
+        $response = $this->sendGet('/system/null.user/request_count');
+
+        $arr = (array) $response->content;
+        self::assertArrayHasKey('count', $arr);
+    }
+
+    /**
      * @param SystemInstall|null $systemInstall
      *
      * @return array
