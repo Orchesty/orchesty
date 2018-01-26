@@ -3,6 +3,7 @@ parameters:
     systems.dev: 'systems.dev'
     systems.user.some_user: 'systems.user.some_user'
     systems.group.some_group: 'systems.group.some_group'
+    limit_refresh_interval: 86400
 
     systems.tags:
         - '%systems%'

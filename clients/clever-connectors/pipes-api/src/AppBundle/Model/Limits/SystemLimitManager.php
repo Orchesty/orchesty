@@ -4,16 +4,14 @@ namespace CleverConnectors\AppBundle\Model\Limits;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\Systems\SystemInterface;
+use CleverConnectors\AppBundle\Model\Systems\SystemLoader;
+use CleverConnectors\AppBundle\Model\Systems\SystemTopologyRunner;
+use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use CleverConnectors\AppBundle\Utils\TopologyNameUtils;
 use DateTime;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Hanaboso\PipesFramework\Configurator\Document\Node;
-use Hanaboso\PipesFramework\Configurator\Document\Topology;
-use Hanaboso\PipesFramework\Configurator\Repository\NodeRepository;
-use Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository;
-use Hanaboso\PipesFramework\Configurator\StartingPoint\StartingPoint;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
 use Symfony\Component\HttpFoundation\HeaderBag;
 
@@ -26,43 +24,62 @@ class SystemLimitManager
 {
 
     /**
-     * @var StartingPoint
+     * @var SystemLoader
      */
-    private $startingPoint;
+    private $systemLoader;
 
     /**
-     * @var TopologyRepository|ObjectRepository
+     * @var int
      */
-    private $topologyRepository;
+    private $limitRefreshInterval;
 
     /**
-     * @var NodeRepository|ObjectRepository
+     * @var SystemInstallRepository|ObjectRepository
      */
-    private $nodeRepository;
+    private $systemInstallRepository;
+
+    /**
+     * @var SystemTopologyRunner
+     */
+    private $systemTopologyRunner;
 
     /**
      * SystemLimitManager constructor.
      *
-     * @param StartingPoint   $startingPoint
-     * @param DocumentManager $dm
+     * @param SystemLoader         $systemLoader
+     * @param SystemTopologyRunner $systemTopologyRunner
+     * @param DocumentManager      $dm
+     * @param int                  $limitRefreshInterval
      */
-    public function __construct(StartingPoint $startingPoint, DocumentManager $dm)
+    public function __construct(
+        SystemLoader $systemLoader,
+        SystemTopologyRunner $systemTopologyRunner,
+        DocumentManager $dm,
+        int $limitRefreshInterval
+    )
     {
-        $this->startingPoint      = $startingPoint;
-        $this->topologyRepository = $dm->getRepository(Topology::class);
-        $this->nodeRepository     = $dm->getRepository(Node::class);
+        $this->systemLoader            = $systemLoader;
+        $this->systemInstallRepository = $dm->getRepository(SystemInstall::class);
+        $this->limitRefreshInterval    = $limitRefreshInterval;
+        $this->systemTopologyRunner    = $systemTopologyRunner;
     }
 
     /**
-     * @param SystemInterface $system
-     * @param SystemInstall   $systemInstall
-     * @param HeaderBag       $headers
+     * @param HeaderBag            $headers
+     * @param SystemInterface|null $system
+     * @param SystemInstall|null   $systemInstall
      */
-    public function addSystemLimitToRequestHeaders(SystemInterface $system, SystemInstall $systemInstall,
-                                                   HeaderBag $headers): void
+    public function addSystemLimitToRequestHeaders(HeaderBag $headers, ?SystemInterface $system = NULL,
+                                                   ?SystemInstall $systemInstall = NULL): void
     {
+        if (empty($system)) {
+            $system = $this->systemLoader->getSystem($headers->get(CMHeaders::createKey(CMHeaders::SYSTEM_KEY)));
+        }
+        if (empty($systemInstall)) {
+            $systemInstall = $this->systemInstallRepository->getSystemInstallFromHeaders($headers->all());
+        }
         $dto = $system->getLimit($systemInstall);
-        $this->checkLimitRefresh($dto, $system);
+        $this->checkLimitRefresh($dto, $system, $systemInstall);
 
         if ($dto) {
             $headers->set(CMHeaders::createKey(SystemLimitDto::LIMIT_KEY_HEADER), $dto->getLimitKey());
@@ -74,15 +91,15 @@ class SystemLimitManager
     }
 
     /**
-     * @param SystemInterface $system
-     * @param SystemInstall   $systemInstall
-     * @param SuccessMessage  $successMessage
+     * @param SuccessMessage $successMessage
      */
-    public function addSystemLimitToSuccessMessage(SystemInterface $system, SystemInstall $systemInstall,
-                                                   SuccessMessage $successMessage): void
+    public function addSystemLimitToSuccessMessage(SuccessMessage $successMessage): void
     {
+        $system        = $this->systemLoader->getSystem($successMessage->getHeader(CMHeaders::createKey(CMHeaders::SYSTEM_KEY)));
+        $systemInstall = $this->systemInstallRepository->getSystemInstallFromHeaders($successMessage->getHeaders());
+
         $dto = $system->getLimit($systemInstall);
-        $this->checkLimitRefresh($dto, $system);
+        $this->checkLimitRefresh($dto, $system, $systemInstall);
 
         if ($dto) {
             $successMessage->addHeader(CMHeaders::createKey(SystemLimitDto::LIMIT_KEY_HEADER), $dto->getLimitKey());
@@ -98,17 +115,13 @@ class SystemLimitManager
     /**
      * @param SystemLimitDto|null $dto
      * @param SystemInterface     $system
+     * @param SystemInstall       $systemInstall
      */
-    private function checkLimitRefresh(?SystemLimitDto $dto, SystemInterface $system): void
+    private function checkLimitRefresh(?SystemLimitDto $dto, SystemInterface $system, SystemInstall $systemInstall): void
     {
-        $timestamp = (new DateTime())->getTimestamp() - 86400;
+        $timestamp = (new DateTime())->getTimestamp() - $this->limitRefreshInterval;
         if (empty($dto) || empty($dto->getLastUpdate()) || $dto->getLastUpdate()->getTimestamp() < $timestamp) {
-            $topologyName = TopologyNameUtils::getTopologyName(TopologyNameUtils::GET_LIMIT, $system->getKey());
-            $topologies   = $this->topologyRepository->getRunnableTopologies($topologyName);
-            foreach ($topologies as $topology) {
-                $node = $this->nodeRepository->getStartingNode($topology);
-                $this->startingPoint->run($topology, $node);
-            }
+            $this->systemTopologyRunner->runTopologies(TopologyNameUtils::GET_LIMIT, $systemInstall, $system);
         }
     }
 

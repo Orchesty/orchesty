@@ -3,12 +3,9 @@
 namespace Tests\Unit\AppBundle\Listeners;
 
 use CleverConnectors\AppBundle\Controller\WebhookController;
-use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Document\Webhook;
 use CleverConnectors\AppBundle\Listeners\WebhookSecurityListener;
 use CleverConnectors\AppBundle\Model\Limits\SystemLimitManager;
-use CleverConnectors\AppBundle\Model\Systems\SystemLoader;
-use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
@@ -32,7 +29,6 @@ final class WebhookSecurityListenerTest extends KernelTestCaseAbstract
      */
     public function testCheckSecurity(): void
     {
-        $systemInstall = new SystemInstall();
 
         /** @var WebhookController|PHPUnit_Framework_MockObject_MockObject $repository */
         $controller = $this->createMock(WebhookController::class);
@@ -41,13 +37,9 @@ final class WebhookSecurityListenerTest extends KernelTestCaseAbstract
         $repository = $this->createMock(DocumentRepository::class);
         $repository->method('findOneBy')->willReturn((new Webhook())->setSystemKey('systemKey'));
 
-        $systemInstallRepository = $this->createMock(SystemInstallRepository::class);
-        $systemInstallRepository->method('getSystemInstallFromHeaders')->willReturn($systemInstall);
-
         /** @var DocumentManager|PHPUnit_Framework_MockObject_MockObject $documentManager */
         $documentManager = $this->createMock(DocumentManager::class);
-        $documentManager->expects($this->at(0))->method('getRepository')->willReturn($repository);
-        $documentManager->expects($this->at(1))->method('getRepository')->willReturn($systemInstallRepository);
+        $documentManager->method('getRepository')->willReturn($repository);
 
         /** @var CurlManagerInterface|PHPUnit_Framework_MockObject_MockObject $curlManager */
         $curlManager = $this->createMock(CurlManagerInterface::class);
@@ -67,10 +59,7 @@ final class WebhookSecurityListenerTest extends KernelTestCaseAbstract
         $systemLimitManager = $this->createMock(SystemLimitManager::class);
         $systemLimitManager->method('addSystemLimitToRequestHeaders');
 
-        /** @var SystemLoader|MockObject $systemLoader */
-        $systemLoader = $this->createMock(SystemLoader::class);
-
-        $security = new WebhookSecurityListener($documentManager, $curlManager, $systemLimitManager, $systemLoader);
+        $security = new WebhookSecurityListener($documentManager, $curlManager, $systemLimitManager);
         $security->checkSecurity($controllerEvent);
         $headers = $controllerEvent->getRequest()->headers;
 

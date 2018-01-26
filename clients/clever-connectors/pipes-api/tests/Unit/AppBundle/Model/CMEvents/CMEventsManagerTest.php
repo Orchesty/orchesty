@@ -6,13 +6,9 @@ use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\CMEvents\CMEventsManager;
 use CleverConnectors\AppBundle\Model\Limits\SystemLimitManager;
+use CleverConnectors\AppBundle\Model\Systems\SystemTopologyRunner;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Hanaboso\PipesFramework\Configurator\Document\Node;
-use Hanaboso\PipesFramework\Configurator\Document\Topology;
-use Hanaboso\PipesFramework\Configurator\Repository\NodeRepository;
-use Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository;
-use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\StartingPointHandler;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit_Framework_MockObject_MockObject;
 use Symfony\Component\HttpFoundation\Request;
@@ -42,46 +38,6 @@ final class CMEventsManagerTest extends KernelTestCaseAbstract
     /**
      *
      */
-    public function testRunEventMissingTopology(): void
-    {
-        $sysRepo = $this->createMock(SystemInstallRepository::class);
-        $sysRepo->expects($this->once())
-            ->method('getSystemInstallByEvent')->willReturn([
-                (new SystemInstall())->setUser('usgfhr')->setSystem('null.user')->setToken('tok'),
-            ]);
-
-        $topRepo = $this->createMock(TopologyRepository::class);
-        $topRepo->method('getRunnableTopologies')->willReturn([]);
-
-        $nodeRepo = $this->createMock(NodeRepository::class);
-
-        /** @var DocumentManager|PHPUnit_Framework_MockObject_MockObject $dm */
-        $dm = $this->createMock(DocumentManager::class);
-        $dm->expects($this->at(0))
-            ->method('getRepository')->willReturn($sysRepo);
-        $dm->expects($this->at(1))
-            ->method('getRepository')->willReturn($topRepo);
-        $dm->expects($this->at(2))
-            ->method('getRepository')->willReturn($nodeRepo);
-
-        /** @var StartingPointHandler $handler */
-        $handler = $this->createMock(StartingPointHandler::class);
-
-        $this->expectException(CleverConnectorsException::class);
-        $this->expectExceptionCode(CleverConnectorsException::TOPOLOGY_NOT_FOUND);
-
-        $loader = $this->container->get('cc.systems.loader');
-
-        /** @var SystemLimitManager|MockObject $systemLimitManager */
-        $systemLimitManager = $this->createMock(SystemLimitManager::class);
-
-        $mana = new CMEventsManager($dm, $handler, $loader, $systemLimitManager);
-        $mana->runEvent(new Request(), '', SystemInstall::EVENT_CREATE);
-    }
-
-    /**
-     *
-     */
     public function testRunEvent(): void
     {
         $sysRepo = $this->createMock(SystemInstallRepository::class);
@@ -90,31 +46,18 @@ final class CMEventsManagerTest extends KernelTestCaseAbstract
                 (new SystemInstall())->setUser('usr')->setSystem('null.user')->setToken('tok'),
             ]);
 
-        $topRepo = $this->createMock(TopologyRepository::class);
-        $topRepo->expects($this->once())
-            ->method('getRunnableTopologies')->willReturn([(new Topology())->setName('top-name')]);
-
-        $nodeRepo = $this->createMock(NodeRepository::class);
-        $nodeRepo->expects($this->once())
-            ->method('getStartingNode')->willReturn((new Node())->setName('node-name'));
-
         /** @var DocumentManager|PHPUnit_Framework_MockObject_MockObject $dm */
         $dm = $this->createMock(DocumentManager::class);
-        $dm->expects($this->at(0))
-            ->method('getRepository')->willReturn($sysRepo);
-        $dm->expects($this->at(1))
-            ->method('getRepository')->willReturn($topRepo);
-        $dm->expects($this->at(2))
-            ->method('getRepository')->willReturn($nodeRepo);
-
-        /** @var StartingPointHandler $handler */
-        $handler = $this->createMock(StartingPointHandler::class);
+        $dm->method('getRepository')->willReturn($sysRepo);
         $loader  = $this->container->get('cc.systems.loader');
 
         /** @var SystemLimitManager|MockObject $systemLimitManager */
         $systemLimitManager = $this->createMock(SystemLimitManager::class);
 
-        $mana = new CMEventsManager($dm, $handler, $loader, $systemLimitManager);
+        /** @var SystemTopologyRunner $systemTopologyRunner */
+        $systemTopologyRunner = $this->createMock(SystemTopologyRunner::class);
+
+        $mana = new CMEventsManager($dm, $loader, $systemLimitManager, $systemTopologyRunner);
         $mana->runEvent(new Request(), '', SystemInstall::EVENT_CREATE);
     }
 
@@ -129,69 +72,20 @@ final class CMEventsManagerTest extends KernelTestCaseAbstract
                 (new SystemInstall())->setUser('usr')->setSystem('null.user')->setToken('tok'),
             ]);
 
-        $topRepo = $this->createMock(TopologyRepository::class);
-        $topRepo->expects($this->at(0))
-            ->method('getRunnableTopologies')->willReturn([]);
-        $topRepo->expects($this->at(1))
-            ->method('getRunnableTopologies')->willReturn([(new Topology())->setName('top-name')]);
-
-        $nodeRepo = $this->createMock(NodeRepository::class);
-        $nodeRepo->expects($this->once())
-            ->method('getStartingNode')->willReturn((new Node())->setName('node-name'));
-
         /** @var DocumentManager|PHPUnit_Framework_MockObject_MockObject $dm */
         $dm = $this->createMock(DocumentManager::class);
-        $dm->expects($this->at(0))
-            ->method('getRepository')->willReturn($sysRepo);
-        $dm->expects($this->at(1))
-            ->method('getRepository')->willReturn($topRepo);
-        $dm->expects($this->at(2))
-            ->method('getRepository')->willReturn($nodeRepo);
+        $dm->method('getRepository')->willReturn($sysRepo);
 
-        /** @var StartingPointHandler $handler */
-        $handler = $this->createMock(StartingPointHandler::class);
         $loader  = $this->container->get('cc.systems.loader');
 
         /** @var SystemLimitManager|MockObject $systemLimitManager */
         $systemLimitManager = $this->createMock(SystemLimitManager::class);
 
-        $mana = new CMEventsManager($dm, $handler, $loader, $systemLimitManager);
+        /** @var SystemTopologyRunner $systemTopologyRunner */
+        $systemTopologyRunner = $this->createMock(SystemTopologyRunner::class);
+
+        $mana = new CMEventsManager($dm, $loader, $systemLimitManager, $systemTopologyRunner);
         $mana->runEvent(new Request(), '', SystemInstall::EVENT_CREATE);
-    }
-
-    /**
-     *
-     */
-    public function testSaveEventMissingTopology(): void
-    {
-        $topRepo = $this->createMock(TopologyRepository::class);
-        $topRepo->method('getRunnableTopologies')->willReturn([]);
-
-        /** @var DocumentManager|PHPUnit_Framework_MockObject_MockObject $dm */
-        $dm = $this->createMock(DocumentManager::class);
-        $dm->expects($this->at(0))
-            ->method('getRepository')->willReturn($this->createMock(SystemInstallRepository::class));
-        $dm->expects($this->at(1))
-            ->method('getRepository')->willReturn($topRepo);
-        $dm->expects($this->at(2))
-            ->method('getRepository')->willReturn($this->createMock(NodeRepository::class));
-
-        /** @var StartingPointHandler $handler */
-        $handler = $this->createMock(StartingPointHandler::class);
-
-        $this->expectException(CleverConnectorsException::class);
-        $this->expectExceptionCode(CleverConnectorsException::TOPOLOGY_NOT_FOUND);
-
-        $systemInstall = (new SystemInstall())->setUser('usr')->setSystem('null.user')->setToken('tok');
-        $data          = [SystemInstall::EVENT_HARD_BOUNCE => TRUE];
-
-        $loader = $this->container->get('cc.systems.loader');
-
-        /** @var SystemLimitManager|MockObject $systemLimitManager */
-        $systemLimitManager = $this->createMock(SystemLimitManager::class);
-
-        $mana = new CMEventsManager($dm, $handler, $loader, $systemLimitManager);
-        $mana->saveEventsForSystemInstall($systemInstall, $data);
     }
 
     /**
@@ -199,25 +93,9 @@ final class CMEventsManagerTest extends KernelTestCaseAbstract
      */
     public function testSaveEvent(): void
     {
-        $topRepo = $this->createMock(TopologyRepository::class);
-        $topRepo->expects($this->once())
-            ->method('getRunnableTopologies')->willReturn([(new Topology())->setName('top-name')]);
-
-        $nodeRepo = $this->createMock(NodeRepository::class);
-        $nodeRepo->expects($this->once())
-            ->method('getStartingNode')->willReturn((new Node())->setName('node-name'));
-
         /** @var DocumentManager|PHPUnit_Framework_MockObject_MockObject $dm */
         $dm = $this->createMock(DocumentManager::class);
-        $dm->expects($this->at(0))
-            ->method('getRepository')->willReturn($this->createMock(SystemInstallRepository::class));
-        $dm->expects($this->at(1))
-            ->method('getRepository')->willReturn($topRepo);
-        $dm->expects($this->at(2))
-            ->method('getRepository')->willReturn($nodeRepo);
-
-        /** @var StartingPointHandler $handler */
-        $handler = $this->createMock(StartingPointHandler::class);
+        $dm->method('getRepository')->willReturn($this->createMock(SystemInstallRepository::class));
 
         $systemInstall = (new SystemInstall())->setUser('usr')->setSystem('null.user')->setToken('tok');
         $data          = [
@@ -232,7 +110,10 @@ final class CMEventsManagerTest extends KernelTestCaseAbstract
         /** @var SystemLimitManager|MockObject $systemLimitManager */
         $systemLimitManager = $this->createMock(SystemLimitManager::class);
 
-        $mana = new CMEventsManager($dm, $handler, $loader, $systemLimitManager);
+        /** @var SystemTopologyRunner $systemTopologyRunner */
+        $systemTopologyRunner = $this->createMock(SystemTopologyRunner::class);
+
+        $mana = new CMEventsManager($dm, $loader, $systemLimitManager, $systemTopologyRunner);
         $mana->saveEventsForSystemInstall($systemInstall, $data);
         self::assertArrayNotHasKey(SystemInstall::EVENT_CREATE, $data);
         self::assertArrayNotHasKey(SystemInstall::EVENT_HARD_BOUNCE, $data);
@@ -247,27 +128,9 @@ final class CMEventsManagerTest extends KernelTestCaseAbstract
      */
     public function testSaveEventFindByName(): void
     {
-        $topRepo = $this->createMock(TopologyRepository::class);
-        $topRepo->expects($this->at(0))
-            ->method('getRunnableTopologies')->willReturn([]);
-        $topRepo->expects($this->at(1))
-            ->method('getRunnableTopologies')->willReturn([(new Topology())->setName('top-name')]);
-
-        $nodeRepo = $this->createMock(NodeRepository::class);
-        $nodeRepo->expects($this->once())
-            ->method('getStartingNode')->willReturn((new Node())->setName('node-name'));
-
         /** @var DocumentManager|PHPUnit_Framework_MockObject_MockObject $dm */
         $dm = $this->createMock(DocumentManager::class);
-        $dm->expects($this->at(0))
-            ->method('getRepository')->willReturn($this->createMock(SystemInstallRepository::class));
-        $dm->expects($this->at(1))
-            ->method('getRepository')->willReturn($topRepo);
-        $dm->expects($this->at(2))
-            ->method('getRepository')->willReturn($nodeRepo);
-
-        /** @var StartingPointHandler $handler */
-        $handler = $this->createMock(StartingPointHandler::class);
+        $dm->method('getRepository')->willReturn($this->createMock(SystemInstallRepository::class));
 
         $systemInstall = (new SystemInstall())->setUser('usr')->setSystem('null.user')->setToken('tok');
         $data          = [SystemInstall::EVENT_HARD_BOUNCE => TRUE, 'settings' => []];
@@ -277,7 +140,10 @@ final class CMEventsManagerTest extends KernelTestCaseAbstract
         /** @var SystemLimitManager|MockObject $systemLimitManager */
         $systemLimitManager = $this->createMock(SystemLimitManager::class);
 
-        $mana = new CMEventsManager($dm, $handler, $loader, $systemLimitManager);
+        /** @var SystemTopologyRunner $systemTopologyRunner */
+        $systemTopologyRunner = $this->createMock(SystemTopologyRunner::class);
+
+        $mana = new CMEventsManager($dm, $loader, $systemLimitManager, $systemTopologyRunner);
         $mana->saveEventsForSystemInstall($systemInstall, $data);
         self::assertArrayNotHasKey(SystemInstall::EVENT_CREATE, $data);
         self::assertArrayHasKey('settings', $data);

@@ -17,14 +17,12 @@ use CleverConnectors\AppBundle\Model\MapTemplate\MapManager;
 use CleverConnectors\AppBundle\Model\SystemMetrics\SystemMetricsInterface;
 use CleverConnectors\AppBundle\Model\Systems\SystemLoader;
 use CleverConnectors\AppBundle\Model\Systems\SystemManager;
+use CleverConnectors\AppBundle\Model\Systems\SystemTopologyRunner;
 use CleverConnectors\AppBundle\Model\Webhook\WebhookManager;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
-use Hanaboso\PipesFramework\Configurator\Repository\NodeRepository;
-use Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository;
-use Hanaboso\PipesFramework\Configurator\StartingPoint\StartingPoint;
 use Hanaboso\PipesFramework\TopologyGenerator\Request\RequestHandler;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -58,11 +56,6 @@ final class SystemManagerTest extends TestCase
     private $webhookManager;
 
     /**
-     * @var MockObject|StartingPoint
-     */
-    private $startingPoint;
-
-    /**
      * @var MockObject|CMEventsManager
      */
     private $eventsManager;
@@ -88,21 +81,25 @@ final class SystemManagerTest extends TestCase
     private $systemLimitManager;
 
     /**
+     * @var MockObject|SystemTopologyRunner
+     */
+    private $systemTopologyRunner;
+
+    /**
      *
      */
     public function setUp(): void
     {
-        $this->dm             = $this->getClassMock(DocumentManager::class);
-        $this->systemLoader   = $this->getClassMock(SystemLoader::class);
-        $this->webhookManager = $this->getClassMock(WebhookManager::class);
-        $this->startingPoint  = $this->getClassMock(StartingPoint::class);
-        $this->requestHandler = $this->getClassMock(RequestHandler::class);
-        $this->eventsManager  = $this->getClassMock(CMEventsManager::class);
-        $this->mapManager     = $this->getClassMock(MapManager::class);
-        $this->layoutManager  = $this->getClassMock(LayoutManager::class);
-        $this->metrics        = $this->getClassMock(SystemMetricsInterface::class);
-        $this->systemLimitManager = $this->getClassMock(SystemLimitManager::class);
-        $this->startingPoint->method('runWithRequest');
+        $this->dm                   = $this->getClassMock(DocumentManager::class);
+        $this->systemLoader         = $this->getClassMock(SystemLoader::class);
+        $this->webhookManager       = $this->getClassMock(WebhookManager::class);
+        $this->requestHandler       = $this->getClassMock(RequestHandler::class);
+        $this->eventsManager        = $this->getClassMock(CMEventsManager::class);
+        $this->mapManager           = $this->getClassMock(MapManager::class);
+        $this->layoutManager        = $this->getClassMock(LayoutManager::class);
+        $this->metrics              = $this->getClassMock(SystemMetricsInterface::class);
+        $this->systemLimitManager   = $this->getClassMock(SystemLimitManager::class);
+        $this->systemTopologyRunner = $this->getClassMock(SystemTopologyRunner::class);
     }
 
     /**
@@ -112,17 +109,19 @@ final class SystemManagerTest extends TestCase
     {
         $this->prepareDmMock(new Node());
 
+        $this->systemTopologyRunner->method('runTopologies')->willReturn([new Topology()]);
+
         $manager = new SystemManager(
             $this->dm,
             $this->systemLoader,
             $this->webhookManager,
-            $this->startingPoint,
             $this->requestHandler,
             $this->eventsManager,
             $this->mapManager,
             $this->layoutManager,
             $this->metrics,
-            $this->systemLimitManager
+            $this->systemLimitManager,
+            $this->systemTopologyRunner
         );
 
         $res = $manager->synchronizeSubscriptions('user', 'system');
@@ -135,21 +134,6 @@ final class SystemManagerTest extends TestCase
      */
     private function prepareDmMock(?Node $node = NULL): void
     {
-        $topo = $this->getClassMock(Topology::class);
-        $topo
-            ->method('getId')
-            ->willReturn('abc123');
-
-        $topoRepo = $this->getClassMock(TopologyRepository::class);
-        $topoRepo
-            ->method('getRunnableTopologies')
-            ->willReturn([$topo]);
-
-        $nodeRepo = $this->getClassMock(NodeRepository::class);
-        $nodeRepo
-            ->method('findOneBy')
-            ->willReturn($node);
-
         $systemRepo = $this->getClassMock(SystemInstallRepository::class);
         $systemRepo
             ->method('findOneBy')
@@ -157,7 +141,7 @@ final class SystemManagerTest extends TestCase
 
         $this->dm
             ->method('getRepository')
-            ->willReturnOnConsecutiveCalls($systemRepo, $topoRepo, $nodeRepo);
+            ->willReturn($systemRepo);
     }
 
     /**

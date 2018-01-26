@@ -33,9 +33,6 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
-use Hanaboso\PipesFramework\Configurator\Repository\NodeRepository;
-use Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository;
-use Hanaboso\PipesFramework\Configurator\StartingPoint\StartingPoint;
 use Hanaboso\PipesFramework\TopologyGenerator\Request\RequestHandler;
 
 /**
@@ -62,24 +59,9 @@ class SystemManager
     private $systemRepository;
 
     /**
-     * @var TopologyRepository|ObjectRepository
-     */
-    private $topologyRepository;
-
-    /**
-     * @var NodeRepository|ObjectRepository
-     */
-    private $nodeRepository;
-
-    /**
      * @var WebhookManager
      */
     private $webhookManager;
-
-    /**
-     * @var StartingPoint
-     */
-    private $startingPoint;
 
     /**
      * @var RequestHandler
@@ -112,45 +94,48 @@ class SystemManager
     private $systemLimitManager;
 
     /**
+     * @var SystemTopologyRunner
+     */
+    private $systemTopologyRunner;
+
+    /**
      * SystemManager constructor.
      *
      * @param DocumentManager        $dm
      * @param SystemLoader           $systemLoader
      * @param WebhookManager         $webhookManager
-     * @param StartingPoint          $startingPoint
      * @param RequestHandler         $requestHandler
      * @param CMEventsManager        $eventsManager
      * @param MapManager             $mapManager
      * @param LayoutManager          $layoutManager
      * @param SystemMetricsInterface $systemMetrics
      * @param SystemLimitManager     $systemLimitManager
+     * @param SystemTopologyRunner   $systemTopologyRunner
      */
     public function __construct(
         DocumentManager $dm,
         SystemLoader $systemLoader,
         WebhookManager $webhookManager,
-        StartingPoint $startingPoint,
         RequestHandler $requestHandler,
         CMEventsManager $eventsManager,
         MapManager $mapManager,
         LayoutManager $layoutManager,
         SystemMetricsInterface $systemMetrics,
-        SystemLimitManager $systemLimitManager
+        SystemLimitManager $systemLimitManager,
+        SystemTopologyRunner $systemTopologyRunner
     )
     {
-        $this->dm                 = $dm;
-        $this->systemLoader       = $systemLoader;
-        $this->systemRepository   = $dm->getRepository(SystemInstall::class);
-        $this->topologyRepository = $dm->getRepository(Topology::class);
-        $this->nodeRepository     = $dm->getRepository(Node::class);
-        $this->webhookManager     = $webhookManager;
-        $this->startingPoint      = $startingPoint;
-        $this->requestHandler     = $requestHandler;
-        $this->eventsManager      = $eventsManager;
-        $this->mapManager         = $mapManager;
-        $this->layoutManager      = $layoutManager;
-        $this->systemMetrics      = $systemMetrics;
-        $this->systemLimitManager = $systemLimitManager;
+        $this->dm                   = $dm;
+        $this->systemLoader         = $systemLoader;
+        $this->systemRepository     = $dm->getRepository(SystemInstall::class);
+        $this->webhookManager       = $webhookManager;
+        $this->requestHandler       = $requestHandler;
+        $this->eventsManager        = $eventsManager;
+        $this->mapManager           = $mapManager;
+        $this->layoutManager        = $layoutManager;
+        $this->systemMetrics        = $systemMetrics;
+        $this->systemLimitManager   = $systemLimitManager;
+        $this->systemTopologyRunner = $systemTopologyRunner;
     }
 
     /**
@@ -705,29 +690,9 @@ class SystemManager
         $request       = InnerRequestUtils::getRequest($systemInstall, $data);
         $request->setMethod(CurlManager::METHOD_POST);
 
-        $this->systemLimitManager->addSystemLimitToRequestHeaders($system, $systemInstall, $request->headers);
+        $this->systemLimitManager->addSystemLimitToRequestHeaders($request->headers, $system, $systemInstall);
 
-        $topologies = $this->topologyRepository->getRunnableTopologies(
-            TopologyNameUtils::getTopologyName(
-                $topology,
-                $systemInstall->getSystem(),
-                $systemInstall->getUser()
-            )
-        );
-
-        if (empty($topologies)) {
-            $name       = $system->getCustomTopologyName(
-                TopologyNameUtils::getTopologyName($topology, $systemInstall->getSystem())
-            );
-            $topologies = $this->topologyRepository->getRunnableTopologies($name);
-        }
-
-        foreach ($topologies as $topology) {
-            $node = $this->nodeRepository->getStartingNode($topology);
-            $this->startingPoint->runWithRequest($request, $topology, $node);
-        }
-
-        return $topologies;
+        return $this->systemTopologyRunner->runTopologies($topology, $systemInstall, $system, $request);
     }
 
     /**

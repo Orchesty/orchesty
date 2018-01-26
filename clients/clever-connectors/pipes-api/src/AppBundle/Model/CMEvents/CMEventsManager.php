@@ -15,6 +15,7 @@ use CleverConnectors\AppBundle\Model\Limits\SystemLimitManager;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\SystemInterface;
 use CleverConnectors\AppBundle\Model\Systems\SystemLoader;
+use CleverConnectors\AppBundle\Model\Systems\SystemTopologyRunner;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use CleverConnectors\AppBundle\Utils\InnerRequestUtils;
@@ -23,11 +24,6 @@ use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Exception;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
-use Hanaboso\PipesFramework\Configurator\Document\Node;
-use Hanaboso\PipesFramework\Configurator\Document\Topology;
-use Hanaboso\PipesFramework\Configurator\Repository\NodeRepository;
-use Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository;
-use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\StartingPointHandler;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -51,21 +47,6 @@ class CMEventsManager implements LoggerAwareInterface
     private $systemRepo;
 
     /**
-     * @var ObjectRepository|TopologyRepository
-     */
-    private $topologyRepo;
-
-    /**
-     * @var ObjectRepository|NodeRepository
-     */
-    private $nodeRepo;
-
-    /**
-     * @var StartingPointHandler
-     */
-    private $startingPoint;
-
-    /**
      * @var LoggerInterface
      */
     private $logger;
@@ -81,27 +62,30 @@ class CMEventsManager implements LoggerAwareInterface
     private $systemLimitManager;
 
     /**
+     * @var SystemTopologyRunner
+     */
+    private $systemTopologyRunner;
+
+    /**
      * CMEventHandler constructor.
      *
      * @param DocumentManager      $dm
-     * @param StartingPointHandler $startingPoint
      * @param SystemLoader         $loader
      * @param SystemLimitManager   $systemLimitManager
+     * @param SystemTopologyRunner $systemTopologyRunner
      */
     public function __construct(
         DocumentManager $dm,
-        StartingPointHandler $startingPoint,
         SystemLoader $loader,
-        SystemLimitManager $systemLimitManager
+        SystemLimitManager $systemLimitManager,
+        SystemTopologyRunner $systemTopologyRunner
     )
     {
-        $this->dm                 = $dm;
-        $this->systemRepo         = $this->dm->getRepository(SystemInstall::class);
-        $this->topologyRepo       = $this->dm->getRepository(Topology::class);
-        $this->nodeRepo           = $this->dm->getRepository(Node::class);
-        $this->startingPoint      = $startingPoint;
-        $this->loader             = $loader;
-        $this->systemLimitManager = $systemLimitManager;
+        $this->dm                   = $dm;
+        $this->systemRepo           = $this->dm->getRepository(SystemInstall::class);
+        $this->loader               = $loader;
+        $this->systemLimitManager   = $systemLimitManager;
+        $this->systemTopologyRunner = $systemTopologyRunner;
     }
 
     /**
@@ -146,16 +130,11 @@ class CMEventsManager implements LoggerAwareInterface
         foreach ($this->systemRepo->getSystemInstallByEvent($event, $userId) as $systemInstall) {
             InnerRequestUtils::addCMHeaders($systemInstall, $request);
             $system = $this->loader->getSystem($systemInstall->getSystem());
-            $this->systemLimitManager->addSystemLimitToRequestHeaders($system, $systemInstall, $request->headers);
-
-            $topologies = $this->getTopologiesForRun($system, $systemInstall, $const);
-            foreach ($topologies as $topology) {
-                try {
-                    $node = $this->nodeRepo->getStartingNode($topology);
-                    $this->startingPoint->runWithRequest($request, $topology->getName(), $node->getName());
-                } catch (Exception $e) {
-                    $this->logger->alert($e->getMessage(), ['exception' => $e]);
-                }
+            $this->systemLimitManager->addSystemLimitToRequestHeaders($request->headers, $system, $systemInstall);
+            try {
+                $this->systemTopologyRunner->runTopologies($const, $systemInstall, $system, $request);
+            } catch (Exception $e) {
+                $this->logger->alert($e->getMessage(), ['exception' => $e]);
             }
         }
     }
@@ -184,16 +163,13 @@ class CMEventsManager implements LoggerAwareInterface
         $request = InnerRequestUtils::getRequest($systemInstall, $changed);
         $request->setMethod(CurlManager::METHOD_POST);
 
-        $this->systemLimitManager->addSystemLimitToRequestHeaders($system, $systemInstall, $request->headers);
+        $this->systemLimitManager->addSystemLimitToRequestHeaders($request->headers, $system, $systemInstall);
 
-        $topologies = $this->getTopologiesForSave($system, $systemInstall);
-        foreach ($topologies as $topology) {
-            try {
-                $node = $this->nodeRepo->getStartingNode($topology);
-                $this->startingPoint->runWithRequest($request, $topology->getName(), $node->getName());
-            } catch (Exception $e) {
-                $this->logger->alert($e->getMessage(), ['exception' => $e]);
-            }
+        try {
+            $this->systemTopologyRunner->runTopologies(TopologyNameUtils::ACTIVATE_EVENT, $systemInstall, $system,
+                $request);
+        } catch (Exception $e) {
+            $this->logger->alert($e->getMessage(), ['exception' => $e]);
         }
 
         return $systemInstall;
@@ -202,79 +178,6 @@ class CMEventsManager implements LoggerAwareInterface
     /**
      * -------------------------------------- HELPERS ---------------------------------------------
      */
-
-    /**
-     * @param SystemInterface $system
-     * @param SystemInstall   $systemInstall
-     * @param string          $const
-     *
-     * @return array
-     * @throws CleverConnectorsException
-     */
-    private function getTopologiesForRun(SystemInterface $system, SystemInstall $systemInstall, string $const): array
-    {
-        $topologies = $this->topologyRepo->getRunnableTopologies(
-            TopologyNameUtils::getTopologyName($const, $systemInstall->getSystem(), $systemInstall->getUser())
-        );
-
-        $name = TopologyNameUtils::getTopologyName($const, $systemInstall->getSystem());
-        $name = $system->getCustomTopologyName($name);
-        if (empty($topologies)) {
-            $topologies = $this->topologyRepo->getRunnableTopologies($name);
-        }
-
-        /** @var Topology $topology */
-        if ($topologies) {
-            return $topologies;
-        }
-
-        throw new CleverConnectorsException(
-            sprintf('Topology ["%s"] not found!', $name),
-            CleverConnectorsException::TOPOLOGY_NOT_FOUND
-        );
-    }
-
-    /**
-     * @param SystemInterface|CMEventSystemInterface $system
-     * @param SystemInstall                          $systemInstall
-     *
-     * @return array
-     * @throws CleverConnectorsException
-     */
-    private function getTopologiesForSave(SystemInterface $system, SystemInstall $systemInstall): array
-    {
-        $topologies = $this->topologyRepo->getRunnableTopologies(
-            TopologyNameUtils::getServiceTopologyName(TopologyNameUtils::ACTIVATE_EVENT,
-                $systemInstall->getSystem(),
-                $systemInstall->getUser()
-            )
-        );
-
-        if (empty($topologies)) {
-            $topologies = $this->topologyRepo->getRunnableTopologies(
-                TopologyNameUtils::getServiceTopologyName(
-                    TopologyNameUtils::ACTIVATE_EVENT,
-                    $systemInstall->getSystem()
-                )
-            );
-        }
-
-        $name = TopologyNameUtils::getServiceTopologyName(TopologyNameUtils::ACTIVATE_EVENT);
-        $name = $system->getCustomTopologyName($name);
-        if (empty($topologies)) {
-            $topologies = $this->topologyRepo->getRunnableTopologies($name);
-        }
-
-        /** @var Topology $topology */
-        if (empty($topologies)) {
-            throw new CleverConnectorsException(
-                sprintf('Topology ["%s"] not found!', $name),
-                CleverConnectorsException::TOPOLOGY_NOT_FOUND
-            );
-        }
-
-        return $topologies;
-    }
 
     /**
      * @param CMEventSystemInterface $system
