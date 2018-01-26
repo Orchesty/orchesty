@@ -27,8 +27,10 @@ const publisher = new Publisher(conn, async (ch: Channel) => {
     await ch.assertQueue(firstFaucet.queue.name, firstFaucet.queue.options);
 });
 
+const proms = [];
+
 for (let i = 1; i <= POPULATOR_COUNT; i++) {
-    publisher.sendToQueue(
+     const prom = publisher.sendToQueue(
         firstFaucet.queue.name,
         new Buffer("populator test"),
         {
@@ -42,4 +44,11 @@ for (let i = 1; i <= POPULATOR_COUNT; i++) {
     ).then(() => {
         logger.info(`#${i} populator message sent.`);
     });
+
+     proms.push(prom);
 }
+
+Promise.all(proms).then(() => {
+    // In 10s hopefully all messages should be published to broker
+    setTimeout(() => {process.exit(0);}, 10000);
+});

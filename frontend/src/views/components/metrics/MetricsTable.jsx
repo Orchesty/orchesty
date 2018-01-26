@@ -30,7 +30,7 @@ class MetricsTable extends React.Component {
                 <td>Max: {data.waiting_time.max}</td>
                 <td>Max: {data.process_time.max}</td>
                 <td>Max: {data.cpu_time.max}</td>
-                <td>{data.error.total}</td>
+                <td>{data.process.errors} ({math.round(data.process.errors/data.process.total * 100)})</td>
                 <td>Max: {data.request_time.max}</td>
               </tr>
               <tr>
