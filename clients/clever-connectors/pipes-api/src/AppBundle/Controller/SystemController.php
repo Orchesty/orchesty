@@ -138,9 +138,7 @@ class SystemController extends FOSRestController
      *
      * @param string $userId
      * @param string $systemKey
-     *{
-"count": 28
-}
+     *
      * @return Response
      */
     public function getUserSystemAction(string $userId, string $systemKey): Response

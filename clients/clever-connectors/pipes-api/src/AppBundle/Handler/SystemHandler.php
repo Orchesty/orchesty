@@ -290,9 +290,7 @@ class SystemHandler
      */
     public function getSystemList(): array
     {
-        $a= $this->manager->getSystemList(TRUE);
-
-        return $a;
+        return $this->manager->getSystemList(TRUE);
     }
 
     /**
