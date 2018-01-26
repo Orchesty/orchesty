@@ -261,13 +261,15 @@ class SystemHandler
 
     /**
      * @param string $systemKey
+     * @param int    $page
+     * @param int    $limit
      *
      * @return array
      * @throws SystemException
      */
-    public function getSystemUsers(string $systemKey): array
+    public function getSystemUsers(string $systemKey, int $page, int $limit): array
     {
-        $users = $this->manager->getSystemUsers($systemKey);
+        $users = $this->manager->getSystemUsers($systemKey, $page, $limit);
 
         return [
             'count' => count($users),

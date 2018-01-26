@@ -6,8 +6,8 @@ use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\PluginHeadersEnum;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
+use CleverConnectors\AppBundle\Utils\DateTimeUtils;
 use DateTime;
-use DateTimeZone;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use Hanaboso\PipesFramework\Commons\Crypt\CryptManager;
 use LogicException;
@@ -112,9 +112,8 @@ class SystemInstallRepository extends DocumentRepository
      */
     public function setSyncTime(SystemInstall $systemInstall): void
     {
-        $now = new DateTime('now', new DateTimeZone('UTC'));
         $systemInstall
-            ->setSynchronizedTime($now)
+            ->setSynchronizedTime(DateTimeUtils::getUTCDateTime())
             ->setSynchronized(TRUE);
         $this->saveSystemInstall($systemInstall);
     }
@@ -159,14 +158,29 @@ class SystemInstallRepository extends DocumentRepository
     public function findBeforeExpiration(DateTime $dateTime): array
     {
         $query = $this->createQueryBuilder()->find()
-            ->field('expires')->notEqual(NULL)
-            ->field('expires')->lte($dateTime)
+            ->field(SystemInstall::EXPIRES)->notEqual(NULL)
+            ->field(SystemInstall::EXPIRES)->lte($dateTime)
             ->getQueryArray();
 
         $cursor = $this->dm->getDocumentCollection($this->getClassName())
             ->find($query);
 
         return $cursor->toArray();
+    }
+
+    /**
+     * @param string $systemKey
+     *
+     * @return int
+     */
+    public function getUserCount(string $systemKey): int
+    {
+        return $this->createQueryBuilder()
+            ->field(SystemInstall::SYSTEM)
+            ->equals($systemKey)
+            ->getQuery()
+            ->execute()
+            ->count();
     }
 
 }

@@ -438,26 +438,32 @@ final class SystemManagerTest extends DatabaseTestCaseAbstract
      */
     public function testGetSystemUsers(): void
     {
-        $system = (new SystemInstall())
-            ->setUser('user')
+
+        $this->persistAndFlush((new SystemInstall())
+            ->setUser('user-one')
             ->setSystem('null.user.group')
             ->setToken('token')
-            ->setSynchronized(TRUE);
-        $this->persistAndFlush($system);
+            ->setSynchronized(TRUE));
 
-        $system = (new SystemInstall())
+        $this->persistAndFlush((new SystemInstall())
+            ->setUser('user-two')
+            ->setSystem('null.user.group')
+            ->setToken('token')
+            ->setSynchronized(TRUE));
+
+        $this->persistAndFlush((new SystemInstall())
             ->setUser('anotherUser')
             ->setSystem('null.user.group')
             ->setToken('token')
-            ->setSynchronized(FALSE);
-        $this->persistAndFlush($system);
+            ->setSynchronized(FALSE));
 
-        $users = $this->manager->getSystemUsers('null.user.group', TRUE);
+        $users = $this->manager->getSystemUsers('null.user.group', 1, 50, TRUE);
 
-        $this->assertEquals(1, count($users));
-        $this->assertEquals('user', $users[0]);
+        $this->assertEquals(2, count($users));
+        $this->assertEquals('user-one', $users[0]);
+        $this->assertEquals('user-two', $users[1]);
 
-        $users = $this->manager->getSystemUsers('null.user.group', FALSE);
+        $users = $this->manager->getSystemUsers('null.user.group', 1, 50, FALSE);
 
         $this->assertEquals(1, count($users));
         $this->assertEquals('anotherUser', $users[0]);
@@ -471,7 +477,7 @@ final class SystemManagerTest extends DatabaseTestCaseAbstract
         $this->expectException(SystemException::class);
         $this->expectExceptionCode(SystemException::SYSTEM_NOT_FOUND);
 
-        $this->manager->getSystemUsers('unknown', TRUE);
+        $this->manager->getSystemUsers('unknown', 1, 50, TRUE);
     }
 
     /**
