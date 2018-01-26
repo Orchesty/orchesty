@@ -50,5 +50,5 @@ for (let i = 1; i <= POPULATOR_COUNT; i++) {
 
 Promise.all(proms).then(() => {
     // In 10s hopefully all messages should be published to broker
-    setTimeout(() => {process.exit(0);}, 10000);
+    setTimeout(() => { process.exit(0); }, 10000);
 });
