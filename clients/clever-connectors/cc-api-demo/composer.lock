@@ -4,34 +4,36 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "a53cdf8674356b8f6b31ce00c602608e",
+    "content-hash": "936629a62b69b219371658ecbe06f301",
     "packages": [
         {
             "name": "aleswita/formrenderer",
-            "version": "1.1",
+            "version": "1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aleswita/FormRenderer.git",
-                "reference": "f457af2f6c79f3d053eb57e51230bbeac15af7e0"
+                "reference": "c541a55c0ef65ac9c461e17c134410c180f48b17"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aleswita/FormRenderer/zipball/f457af2f6c79f3d053eb57e51230bbeac15af7e0",
-                "reference": "f457af2f6c79f3d053eb57e51230bbeac15af7e0",
+                "url": "https://api.github.com/repos/aleswita/FormRenderer/zipball/c541a55c0ef65ac9c461e17c134410c180f48b17",
+                "reference": "c541a55c0ef65ac9c461e17c134410c180f48b17",
                 "shasum": ""
             },
             "require": {
-                "latte/latte": "~2.4.0 || ~3.0.0",
-                "nette/application": "~2.4.0 || ~3.0.0",
-                "nette/forms": "~2.4.0 || ~3.0.0",
-                "nette/utils": "~2.4.0 || ~3.0.0",
-                "php": "~7.1"
+                "nette/forms": "^2.4 || ^3.0.0",
+                "nette/utils": "^2.4 || ^3.0.0",
+                "php": "^7.1"
             },
             "require-dev": {
-                "nette/bootstrap": "~2.4.0 || ~3.0.0",
-                "nette/robot-loader": "~2.4.0 || ~3.0.0",
-                "nette/tester": "~1.7.0",
-                "tracy/tracy": "~2.4.0 || ~3.0.0"
+                "latte/latte": "^2.4 || ^3.0.0",
+                "nette/application": "^2.4 || ^3.0.0",
+                "nette/bootstrap": "^2.4 || ^3.0.0",
+                "nette/forms": "^2.4 || ^3.0.0",
+                "nette/http": "^2.4 || ^3.0.0",
+                "nette/robot-loader": "^2.4 || ^3.0.0",
+                "nette/tester": "^2.0.0",
+                "tracy/tracy": "^2.4 || ^3.0.0"
             },
             "type": "library",
             "autoload": {
@@ -56,7 +58,7 @@
                 "nette",
                 "renderer"
             ],
-            "time": "2017-08-14T06:48:01+00:00"
+            "time": "2018-01-02T06:10:10+00:00"
         },
         {
             "name": "bunny/bunny",
@@ -122,13 +124,12 @@
             "time": "2016-09-13T18:57:54+00:00"
         },
         {
-            "name": "clever-monitor/cc-api-extension",
+            "name": "clever-monitor/cm-pipes-extension",
             "version": "0.0.1",
-            "dist": {
-                "type": "path",
-                "url": "../cc-api-extension",
-                "reference": "aac915e0e21d6a05fbf70b03bd3a17acfc7bfcd8",
-                "shasum": null
+            "source": {
+                "type": "git",
+                "url": "git@gitlab.hanaboso.net:clever-monitor/cm-pipes-extension.git",
+                "reference": "a0149e55bcb3b33859bbf8d4aee24adf8cd966fe"
             },
             "require": {
                 "guzzlehttp/guzzle": "^6.3",
@@ -138,10 +139,10 @@
                 "tracy/tracy": "^2.4"
             },
             "require-dev": {
-                "phpstan/phpstan": "^0.8",
-                "phpunit/phpunit": "^6.3",
-                "slevomat/coding-standard": "^3.3",
-                "squizlabs/php_codesniffer": "^3.1"
+                "phpstan/phpstan": "^0.9",
+                "phpunit/phpunit": "^6.5",
+                "slevomat/coding-standard": "^4.3",
+                "squizlabs/php_codesniffer": "^3.2"
             },
             "type": "library",
             "autoload": {
@@ -157,10 +158,7 @@
             "license": [
                 "proprietary"
             ],
-            "description": "Interface for communication with clever connectors.",
-            "transport-options": {
-                "symlink": true
-            }
+            "time": "2018-01-29T09:56:27+00:00"
         },
         {
             "name": "clever-monitor/cm-stream",

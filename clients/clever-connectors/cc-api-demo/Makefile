@@ -24,3 +24,9 @@ build: .env
 
 push:
 	docker push $(IMAGE_API_DEMO_FPM)
+
+composer-install:
+	$(DE) composer install --ignore-platform-reqs
+
+composer-update:
+	$(DE) composer update --ignore-platform-reqs

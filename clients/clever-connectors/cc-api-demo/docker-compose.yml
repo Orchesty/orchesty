@@ -24,6 +24,7 @@ services:
     working_dir: /var/www/html/clients/clever-connectors/cc-api-demo
     volumes:
       - ../../../:/var/www/html
+      - ${SSH_AUTH_SOCK}:/tmp/bound-ssh-agent
       - ${HOME}/.composer:/srv/.composer
     environment:
       BASE_URI: https://clever-conn1.stage.hanaboso.net/
