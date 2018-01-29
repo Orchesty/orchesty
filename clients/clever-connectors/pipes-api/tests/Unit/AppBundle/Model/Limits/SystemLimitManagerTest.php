@@ -67,7 +67,8 @@ class SystemLimitManagerTest extends TestCase
         $systemInstall = new SystemInstall();
         $systemInstall
             ->setUser('user_id')
-            ->setSystem('system_key');
+            ->setSystem('system_key')
+            ->setToken('token');
 
         $date           = new DateTime('2018-01-20 12:00:00');
         $systemLimitDto = new SystemLimitDto($systemInstall, SystemLimitDto::LIMIT_FOR_USER, 66, 22, $date);

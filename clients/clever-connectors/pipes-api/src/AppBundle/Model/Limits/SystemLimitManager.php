@@ -8,6 +8,7 @@ use CleverConnectors\AppBundle\Model\Systems\SystemLoader;
 use CleverConnectors\AppBundle\Model\Systems\SystemTopologyRunner;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
+use CleverConnectors\AppBundle\Utils\InnerRequestUtils;
 use CleverConnectors\AppBundle\Utils\TopologyNameUtils;
 use DateTime;
 use Doctrine\Common\Persistence\ObjectRepository;
@@ -69,8 +70,11 @@ class SystemLimitManager
      * @param SystemInterface|null $system
      * @param SystemInstall|null   $systemInstall
      */
-    public function addSystemLimitToRequestHeaders(HeaderBag $headers, ?SystemInterface $system = NULL,
-                                                   ?SystemInstall $systemInstall = NULL): void
+    public function addSystemLimitToRequestHeaders(
+        HeaderBag $headers,
+        ?SystemInterface $system = NULL,
+        ?SystemInstall $systemInstall = NULL
+    ): void
     {
         if (empty($system)) {
             $system = $this->systemLoader->getSystem($headers->get(CMHeaders::createKey(CMHeaders::SYSTEM_KEY)));
@@ -117,11 +121,20 @@ class SystemLimitManager
      * @param SystemInterface     $system
      * @param SystemInstall       $systemInstall
      */
-    private function checkLimitRefresh(?SystemLimitDto $dto, SystemInterface $system, SystemInstall $systemInstall): void
+    private function checkLimitRefresh(
+        ?SystemLimitDto $dto,
+        SystemInterface $system,
+        SystemInstall $systemInstall
+    ): void
     {
         $timestamp = (new DateTime())->getTimestamp() - $this->limitRefreshInterval;
         if (empty($dto) || empty($dto->getLastUpdate()) || $dto->getLastUpdate()->getTimestamp() < $timestamp) {
-            $this->systemTopologyRunner->runTopologies(TopologyNameUtils::GET_LIMIT, $systemInstall, $system);
+            $this->systemTopologyRunner->runTopologies(
+                TopologyNameUtils::GET_LIMIT,
+                $systemInstall,
+                $system,
+                InnerRequestUtils::getRequest($systemInstall, [])
+            );
         }
     }
 

@@ -242,7 +242,7 @@ class ZendeskSystem implements AuthorizationInterface, CMEventSystemInterface
                     $systemInstall,
                     SystemLimitDto::LIMIT_FOR_USER,
                     self::LIMIT_TIME,
-                    $systemLimits[SystemInstall::SYSTEM_LIMIT_VALUE],
+                    $systemLimits[SystemInstall::SYSTEM_LIMIT_VALUE] ?? 0,
                     $systemLimits[SystemInstall::SYSTEM_LIMIT_UPDATE] ?? NULL
                 );
             }
@@ -263,7 +263,7 @@ class ZendeskSystem implements AuthorizationInterface, CMEventSystemInterface
         if (array_key_exists(self::RATE_LIMIT, $data) && isset($data[self::RATE_LIMIT][0])) {
             $this->setSettings($systemInstall, [
                 SystemInstall::SYSTEM_LIMITS => [
-                    SystemInstall::SYSTEM_LIMIT_VALUE  => $data[self::RATE_LIMIT][0],
+                    SystemInstall::SYSTEM_LIMIT_VALUE  => (int) $data[self::RATE_LIMIT][0],
                     SystemInstall::SYSTEM_LIMIT_UPDATE => new DateTime(),
                 ],
             ]);
