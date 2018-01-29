@@ -183,6 +183,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
         $node5
             ->setName('node5')
             ->setType(TypeEnum::CONNECTOR)
+            ->setSchemaId('schema-node5')
             ->setTopology($top->getId())
             ->setHandler(HandlerEnum::EVENT)
             ->setEnabled(TRUE);
@@ -192,6 +193,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
         $node4
             ->setName('node4')
             ->setType(TypeEnum::CONNECTOR)
+            ->setSchemaId('schema-node4')
             ->setTopology($top->getId())
             ->setHandler(HandlerEnum::EVENT)
             ->setEnabled(TRUE)
@@ -202,6 +204,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
         $node3
             ->setName('node3')
             ->setType(TypeEnum::CONNECTOR)
+            ->setSchemaId('schema-node3')
             ->setTopology($top->getId())
             ->setHandler(HandlerEnum::EVENT)
             ->setEnabled(TRUE);
@@ -211,6 +214,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
         $node2
             ->setName('node2')
             ->setType(TypeEnum::CONNECTOR)
+            ->setSchemaId('schema-node2')
             ->setTopology($top->getId())
             ->setHandler(HandlerEnum::EVENT)
             ->setEnabled(TRUE)
@@ -222,6 +226,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
         $node1
             ->setName('node1')
             ->setType(TypeEnum::CONNECTOR)
+            ->setSchemaId('schema-node1')
             ->setTopology($top->getId())
             ->setHandler(HandlerEnum::EVENT)
             ->setEnabled(TRUE)
@@ -334,44 +339,134 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
         $this->persistAndFlush($topology);
 
         $topologyManager = $this->container->get('hbpf.configurator.manager.topology');
-        $topologyManager->saveTopologySchema($topology, '', $this->getSchema('schema.json'));
+        $result          = $topologyManager->saveTopologySchema($topology, '', $this->getSchema('schema.json'));
 
         /** @var Node[] $nodes */
         $nodes = $this->dm->getRepository(Node::class)->findBy(['topology' => $topology->getId()]);
 
+        self::assertEquals($topology->getId(), $result->getId());
         self::assertEquals(7, count($nodes));
-        self::assertEquals('Start Event', $nodes[0]->getName());
-        self::assertEquals(TypeEnum::CUSTOM, $nodes[0]->getType());
-        self::assertEquals(HandlerEnum::EVENT, $nodes[0]->getHandler());
 
-        self::assertEquals('Connector DEF', $nodes[1]->getName());
-        self::assertEquals(TypeEnum::CONNECTOR, $nodes[1]->getType());
-        self::assertEquals(HandlerEnum::ACTION, $nodes[1]->getHandler());
+        $this->assertNodesFromSchemaFile($nodes);
+    }
 
-        self::assertEquals('Mapper XYZ', $nodes[2]->getName());
-        self::assertEquals(TypeEnum::MAPPER, $nodes[2]->getType());
-        self::assertEquals(HandlerEnum::ACTION, $nodes[2]->getHandler());
+    /**
+     * @throws TopologyException
+     * @throws NodeException
+     */
+    public function testSaveTopologySchemaWithClone(): void
+    {
+        $topology = (new Topology())
+            ->setName('Topology')
+            ->setDescr('Topology')
+            ->setVisibility(TopologyStatusEnum::PUBLIC)
+            ->setContentHash('abcd');
 
-        self::assertEquals('Parser ABC', $nodes[3]->getName());
-        self::assertEquals(TypeEnum::XML_PARSER, $nodes[3]->getType());
-        self::assertEquals(HandlerEnum::ACTION, $nodes[3]->getHandler());
-        self::assertEquals(1, count($nodes[3]->getNext()));
-        self::assertEquals('Connector DEF', $nodes[3]->getNext()[0]->getName());
+        $this->dm->persist($topology);
 
-        self::assertEquals('Splitter SPI', $nodes[4]->getName());
-        self::assertEquals(TypeEnum::SPLITTER, $nodes[4]->getType());
-        self::assertEquals(HandlerEnum::ACTION, $nodes[4]->getHandler());
+        $node2 = new Node();
+        $node2
+            ->setName('node2')
+            ->setType(TypeEnum::CONNECTOR)
+            ->setSchemaId('schema-node2')
+            ->setTopology($topology->getId())
+            ->setHandler(HandlerEnum::EVENT)
+            ->setEnabled(TRUE);
+        $this->dm->persist($node2);
 
-        self::assertEquals('Event 1', $nodes[5]->getName());
-        self::assertEquals(TypeEnum::CRON, $nodes[5]->getType());
-        self::assertEquals(HandlerEnum::EVENT, $nodes[5]->getHandler());
-        self::assertEquals(1, count($nodes[5]->getNext()));
-        self::assertEquals('*/2 * * * *', $nodes[5]->getCron());
-        self::assertEquals('Parser ABC', $nodes[5]->getNext()[0]->getName());
+        $node1 = new Node();
+        $node1
+            ->setName('node1')
+            ->setType(TypeEnum::CONNECTOR)
+            ->setSchemaId('schema-node1')
+            ->setTopology($topology->getId())
+            ->setHandler(HandlerEnum::EVENT)
+            ->setEnabled(TRUE)
+            ->addNext(EmbedNode::from($node2));
+        $this->dm->persist($node1);
 
-        self::assertEquals('Event 2', $nodes[6]->getName());
-        self::assertEquals(TypeEnum::WEBHOOK, $nodes[6]->getType());
-        self::assertEquals(HandlerEnum::EVENT, $nodes[6]->getHandler());
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $topologyManager = $this->container->get('hbpf.configurator.manager.topology');
+        $result          = $topologyManager->saveTopologySchema($topology, '', $this->getSchema('schema.json'));
+
+        self::assertNotEquals($topology->getId(), $result->getId());
+
+        /** @var Node[] $nodes */
+        $nodes = $this->dm->getRepository(Node::class)->findBy(['topology' => $result->getId()]);
+
+        self::assertNotEquals($topology->getId(), $result->getId()); // because it is cloned
+        self::assertEquals(7, count($nodes));
+
+        $this->assertNodesFromSchemaFile($nodes);
+    }
+
+    /**
+     * @throws TopologyException
+     * @throws NodeException
+     */
+    public function testSaveTopologySchemaUpdateNodes(): void
+    {
+        $topology = (new Topology())
+            ->setName('Topology')
+            ->setDescr('Topology');
+        $this->dm->persist($topology);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $topologyManager = $this->container->get('hbpf.configurator.manager.topology');
+        $result1         = $topologyManager->saveTopologySchema($topology, '', $this->getSchema('schema.json'));
+        $result2         = $topologyManager->saveTopologySchema($result1, '', $this->getSchema('schema-update.json'));
+
+        /** @var Node[] $nodes1 */
+        $nodes1 = $this->dm->getRepository(Node::class)->findBy(['topology' => $result1->getId()]);
+
+        /** @var Node[] $nodes2 */
+        $nodes2 = $this->dm->getRepository(Node::class)->findBy(['topology' => $result2->getId()]);
+
+        self::assertEquals($topology->getId(), $result2->getId()); // it is only updated
+        self::assertEquals(7, count($nodes2));
+
+        self::assertEquals($nodes1[0]->getId(), $nodes2[0]->getId());
+        self::assertEquals('Start Event', $nodes2[0]->getName());
+        self::assertEquals(TypeEnum::CUSTOM, $nodes2[0]->getType());
+        self::assertEquals(HandlerEnum::EVENT, $nodes2[0]->getHandler());
+
+        self::assertEquals($nodes1[1]->getId(), $nodes2[1]->getId());
+        self::assertEquals('Connector DEF', $nodes2[1]->getName());
+        self::assertEquals(TypeEnum::CONNECTOR, $nodes2[1]->getType());
+        self::assertEquals(HandlerEnum::ACTION, $nodes2[1]->getHandler());
+
+        self::assertEquals($nodes1[2]->getId(), $nodes2[2]->getId());
+        self::assertEquals('Mapper XYZ', $nodes2[2]->getName());
+        self::assertEquals(TypeEnum::MAPPER, $nodes2[2]->getType());
+        self::assertEquals(HandlerEnum::ACTION, $nodes2[2]->getHandler());
+
+        self::assertEquals($nodes1[3]->getId(), $nodes2[3]->getId());
+        self::assertEquals('Parser ABC', $nodes2[3]->getName());
+        self::assertEquals(TypeEnum::XML_PARSER, $nodes2[3]->getType());
+        self::assertEquals(HandlerEnum::ACTION, $nodes2[3]->getHandler());
+        self::assertEquals(1, count($nodes2[3]->getNext()));
+        self::assertEquals('Connector DEF', $nodes2[3]->getNext()[0]->getName());
+
+        self::assertEquals($nodes1[4]->getId(), $nodes2[4]->getId());
+        self::assertEquals('Splitter SPI', $nodes2[4]->getName());
+        self::assertEquals(TypeEnum::SPLITTER, $nodes2[4]->getType());
+        self::assertEquals(HandlerEnum::ACTION, $nodes2[4]->getHandler());
+
+        self::assertEquals($nodes1[5]->getId(), $nodes2[5]->getId());
+        self::assertEquals('Event 1', $nodes2[5]->getName());
+        self::assertEquals(TypeEnum::CRON, $nodes2[5]->getType());
+        self::assertEquals(HandlerEnum::EVENT, $nodes2[5]->getHandler());
+        self::assertEquals(1, count($nodes2[5]->getNext()));
+        self::assertEquals('*/2 2 * * *', $nodes2[5]->getCron());
+        self::assertEquals('Parser ABC', $nodes2[5]->getNext()[0]->getName());
+
+        self::assertEquals($nodes1[6]->getId(), $nodes2[6]->getId());
+        self::assertEquals('Event 2', $nodes2[6]->getName());
+        self::assertEquals(TypeEnum::WEBHOOK, $nodes2[6]->getType());
+        self::assertEquals(HandlerEnum::EVENT, $nodes2[6]->getHandler());
     }
 
     /**
@@ -494,6 +589,45 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     private function getSchema(string $name = 'schema.json'): array
     {
         return json_decode(file_get_contents(sprintf('%s/data/%s', __DIR__, $name)), TRUE);
+    }
+
+    /**
+     * @param Node[] $nodes
+     */
+    private function assertNodesFromSchemaFile(array $nodes): void
+    {
+        self::assertEquals('Start Event', $nodes[0]->getName());
+        self::assertEquals(TypeEnum::CUSTOM, $nodes[0]->getType());
+        self::assertEquals(HandlerEnum::EVENT, $nodes[0]->getHandler());
+
+        self::assertEquals('Connector DEF', $nodes[1]->getName());
+        self::assertEquals(TypeEnum::CONNECTOR, $nodes[1]->getType());
+        self::assertEquals(HandlerEnum::ACTION, $nodes[1]->getHandler());
+
+        self::assertEquals('Mapper XYZ', $nodes[2]->getName());
+        self::assertEquals(TypeEnum::MAPPER, $nodes[2]->getType());
+        self::assertEquals(HandlerEnum::ACTION, $nodes[2]->getHandler());
+
+        self::assertEquals('Parser ABC', $nodes[3]->getName());
+        self::assertEquals(TypeEnum::XML_PARSER, $nodes[3]->getType());
+        self::assertEquals(HandlerEnum::ACTION, $nodes[3]->getHandler());
+        self::assertEquals(1, count($nodes[3]->getNext()));
+        self::assertEquals('Connector DEF', $nodes[3]->getNext()[0]->getName());
+
+        self::assertEquals('Splitter SPI', $nodes[4]->getName());
+        self::assertEquals(TypeEnum::SPLITTER, $nodes[4]->getType());
+        self::assertEquals(HandlerEnum::ACTION, $nodes[4]->getHandler());
+
+        self::assertEquals('Event 1', $nodes[5]->getName());
+        self::assertEquals(TypeEnum::CRON, $nodes[5]->getType());
+        self::assertEquals(HandlerEnum::EVENT, $nodes[5]->getHandler());
+        self::assertEquals(1, count($nodes[5]->getNext()));
+        self::assertEquals('*/2 * * * *', $nodes[5]->getCron());
+        self::assertEquals('Parser ABC', $nodes[5]->getNext()[0]->getName());
+
+        self::assertEquals('Event 2', $nodes[6]->getName());
+        self::assertEquals(TypeEnum::WEBHOOK, $nodes[6]->getType());
+        self::assertEquals(HandlerEnum::EVENT, $nodes[6]->getHandler());
     }
 
 }
