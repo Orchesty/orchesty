@@ -129,7 +129,7 @@ class SystemMetricsListener implements EventSubscriberInterface, LoggerAwareInte
             ],
             [
                 MetricsEnum::HOST           => gethostname(),
-                MetricsEnum::URI            => $request->getRequestUri(),
+                MetricsEnum::URI            => base64_encode($request->getRequestUri()),
                 MetricsEnum::TOPOLOGY_ID    => $headers->get(PipesHeaders::createKey(PipesHeaders::TOPOLOGY_ID)),
                 MetricsEnum::CORRELATION_ID => $headers->get(PipesHeaders::createKey(PipesHeaders::CORRELATION_ID)),
                 MetricsEnum::NODE_ID        => $headers->get(PipesHeaders::createKey(PipesHeaders::NODE_ID)),
