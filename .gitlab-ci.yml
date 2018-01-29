@@ -79,17 +79,6 @@ limiter-test:
     - export COMPOSE_FILE=docker-compose.ci.yml
     - make ${COMPOSE_FILE} ci-test
 
-cc-api-extension-image:
-  stage: stage1
-  script:
-    - DIR=clients/clever-connectors/cc-api-extension
-    - cd $REPO_ROOT/$DIR
-    - IMAGE=dkr.hanaboso.net/pipes/pipes/cc-api-extension:dev
-    - make build
-  only:
-    - dev
-    - master
-
 pf-bundles-test:
   stage: stage2
   script:
