@@ -151,8 +151,12 @@ class CurlManager implements CurlManagerInterface, LoggerAwareInterface
             );
         } catch (Exception $exception) {
             $times = CurlMetricUtils::getTimes($startTimes);
-            CurlMetricUtils::sendCurlMetrics($this->influxSender, $times, $request->getUri()->__toString(),
-                $info['node_id'][0] ?? NULL);
+            CurlMetricUtils::sendCurlMetrics(
+                $this->influxSender,
+                $times,
+                $request->getUri()->__toString(),
+                $info['node_id'][0] ?? NULL
+            );
             $this->logger->error(sprintf('CurlManager::send() failed: %s', $exception->getMessage()));
             throw new CurlException(
                 sprintf('CurlManager::send() failed: %s', $exception->getMessage()),
