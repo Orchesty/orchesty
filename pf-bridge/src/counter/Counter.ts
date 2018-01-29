@@ -251,13 +251,12 @@ export default class Counter implements ICounter, IStoppable {
         this.terminator.tryTerminate(process.topology);
 
         try {
-            await this.metrics.send(
-                {
+            await this.metrics.send({
                     counter_process_result: process.ok === process.total,
                     counter_process_duration: process.end_timestamp - process.start_timestamp,
                     counter_process_ok_count: process.ok,
                     counter_process_fail_count: process.nok,
-                });
+                }, true);
         } catch (e) {
             logger.warn("Unable to send counter metrics.", {
                 error: e,

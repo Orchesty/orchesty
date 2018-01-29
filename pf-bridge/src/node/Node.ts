@@ -154,7 +154,7 @@ class Node implements IStoppable {
 
             this.metrics.addTag("node_id", msg.getNodeLabel().node_id);
 
-            await this.metrics.send(measurements);
+            await this.metrics.send(measurements, false);
         } catch (err) {
             logger.warn("Unable to send metrics", logger.ctxFromMsg(msg, err));
         }
