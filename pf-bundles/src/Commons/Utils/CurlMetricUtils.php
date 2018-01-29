@@ -55,7 +55,7 @@ class CurlMetricUtils
     {
         $info = [
             MetricsEnum::HOST => gethostname(),
-            MetricsEnum::URI  => base64_encode($uri),
+            MetricsEnum::URI  => str_replace('=','',base64_encode($uri)),
         ];
 
         if ($nodeId) {
