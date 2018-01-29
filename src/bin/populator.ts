@@ -7,6 +7,7 @@ import Pipes from "../Pipes";
 import {ITopologyConfig} from "../topology/Configurator";
 
 const POPULATOR_COUNT = parseInt(process.env.POPULATOR_COUNT, 10) || 100;
+const POPULATOR_QUEUE = process.env.POPULATOR_QUEUE || "";
 
 const loadTopologyConfigFromFile = (): ITopologyConfig => {
     try {
@@ -19,19 +20,24 @@ const loadTopologyConfigFromFile = (): ITopologyConfig => {
 
 const pipes = new Pipes(loadTopologyConfigFromFile());
 const firstFaucet: IAmqpFaucetSettings = pipes.getTopologyConfig(true).nodes[0].faucet.settings;
+const inQueue = firstFaucet.queue;
+
+if (POPULATOR_QUEUE !== "") {
+    inQueue.name = POPULATOR_QUEUE;
+}
 
 logger.info(`Populator will publish ${POPULATOR_COUNT} messages to ${firstFaucet.queue.name}`);
 
 const conn = pipes.getDIContainer().get("amqp.connection");
 const publisher = new Publisher(conn, async (ch: Channel) => {
-    await ch.assertQueue(firstFaucet.queue.name, firstFaucet.queue.options);
+    await ch.assertQueue(inQueue.name, inQueue.options);
 });
 
 const proms = [];
 
 for (let i = 1; i <= POPULATOR_COUNT; i++) {
      const prom = publisher.sendToQueue(
-        firstFaucet.queue.name,
+        inQueue.name,
         new Buffer("populator test"),
         {
             headers: {
@@ -42,7 +48,7 @@ for (let i = 1; i <= POPULATOR_COUNT; i++) {
             },
         },
     ).then(() => {
-        logger.info(`#${i} populator message sent.`);
+        logger.info(`#${i} populator message sent to ${inQueue.name}.`);
     });
 
      proms.push(prom);
