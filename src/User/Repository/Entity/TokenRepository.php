@@ -47,7 +47,7 @@ class TokenRepository extends EntityRepository
             ->where('u.id = :id')
             ->setParameter('id', $user->getId())
             ->getQuery()
-            ->getArrayResult();
+            ->getResult();
     }
 
 }
