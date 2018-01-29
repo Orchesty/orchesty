@@ -30,6 +30,9 @@ func TestServerHealthCheck(t *testing.T) {
 	go tcpServer.Start(3334)
 	defer tcpServer.Stop()
 
+	// waiting for servers to start
+	time.Sleep(time.Millisecond * 20)
+
 	resp, err := SendTcpPacket("localhost:3334", CreateTcpHealthCheckRequestContent("someId"))
 	assert.Nil(t, err)
 	assert.Equal(t, "pf-health-check;someId;ok", resp)
@@ -45,7 +48,7 @@ func TestServerLimitCheck(t *testing.T) {
 	defer negServer.Stop()
 
 	// waiting for servers to start
-	time.Sleep(time.Millisecond * 10)
+	time.Sleep(time.Millisecond * 20)
 
 	resp, err := SendTcpPacket("localhost:3334", CreateTcpCheckRequestContent("someId", "someKey", 10, 50))
 	assert.Nil(t, err)
