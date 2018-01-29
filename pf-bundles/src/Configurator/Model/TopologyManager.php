@@ -115,11 +115,15 @@ class TopologyManager
         $newSchemaObject = TopologySchemaUtils::getSchemaObject($data);
         $newSchemaMd5    = TopologySchemaUtils::getIndexHash($newSchemaObject);
 
-        if ($topology->getContentHash() !== $newSchemaMd5) {
+        $cloned              = FALSE;
+        $originalContentHash = $topology->getContentHash();
+
+        if ($originalContentHash !== $newSchemaMd5) {
             $topology->setContentHash($newSchemaMd5);
 
-            if ($topology->getVisibility() === TopologyStatusEnum::PUBLIC) {
-                $topology = $this->cloneTopology($topology);
+            if (!empty($originalContentHash) && $topology->getVisibility() === TopologyStatusEnum::PUBLIC) {
+                $topology = $this->cloneTopologyShallow($topology);
+                $cloned   = TRUE;
             }
         }
 
@@ -127,7 +131,12 @@ class TopologyManager
             ->setBpmn($data)
             ->setRawBpmn($content);
 
-        $this->generateNodes($topology, $newSchemaObject);
+        if ($cloned || empty($originalContentHash)) {
+            $this->generateNodes($topology, $newSchemaObject); // first save of topology or after topology is cloned
+        } else {
+            $this->updateNodes($topology, $newSchemaObject);
+        }
+
         $this->dm->flush();
 
         return $topology;
@@ -159,21 +168,10 @@ class TopologyManager
      * @param Topology $topology
      *
      * @return Topology
-     * @throws NodeException
      */
     public function cloneTopology(Topology $topology): Topology
     {
-        $version = $this->topologyRepository->getMaxVersion($topology->getName());
-        $res     = (new Topology())
-            ->setName($topology->getName())
-            ->setVersion($version + 1)
-            ->setDescr($topology->getDescr())
-            ->setCategory($topology->getCategory())
-            ->setEnabled(FALSE)
-            ->setBpmn($topology->getBpmn())
-            ->setRawBpmn($topology->getRawBpmn());
-
-        $this->dm->persist($res);
+        $res = $this->cloneTopologyShallow($topology);
 
         /** @var Node[] $topologyNodes */
         $topologyNodes = $this->dm->getRepository(Node::class)->findBy(['topology' => $topology->getId()]);
@@ -181,11 +179,14 @@ class TopologyManager
 
         foreach ($topologyNodes as $topologyNode) {
             $nodeCopy = (new Node())
+                ->setSchemaId($topologyNode->getSchemaId())
                 ->setName($topologyNode->getName())
                 ->setType($topologyNode->getType())
                 ->setTopology($res->getId())
                 ->setHandler($topologyNode->getHandler())
-                ->setEnabled($topologyNode->isEnabled());
+                ->setEnabled($topologyNode->isEnabled())
+                ->setCron($topologyNode->getCron())
+                ->setCronParams($topologyNode->getCronParams());
             $this->dm->persist($nodeCopy);
 
             $nodesMap[$topologyNode->getId()] = ['orig' => $topologyNode, 'copy' => $nodeCopy];
@@ -232,6 +233,33 @@ class TopologyManager
     }
 
     /**
+     * ----------------------------------------------- HELPERS -----------------------------------------------
+     */
+
+    /**
+     * @param Topology $topology
+     *
+     * @return Topology
+     */
+    private function cloneTopologyShallow(Topology $topology): Topology
+    {
+        $version = $this->topologyRepository->getMaxVersion($topology->getName());
+        $res     = (new Topology())
+            ->setName($topology->getName())
+            ->setVersion($version + 1)
+            ->setDescr($topology->getDescr())
+            ->setCategory($topology->getCategory())
+            ->setEnabled(FALSE)
+            ->setContentHash($topology->getContentHash())
+            ->setBpmn($topology->getBpmn())
+            ->setRawBpmn($topology->getRawBpmn());
+
+        $this->dm->persist($res);
+
+        return $res;
+    }
+
+    /**
      * @param Topology $topology
      */
     private function removeNodesByTopology(Topology $topology): void
@@ -249,12 +277,9 @@ class TopologyManager
      * @param Schema   $dto
      *
      * @throws TopologyException
-     * @throws NodeException
      */
     private function generateNodes(Topology $topology, Schema $dto): void
     {
-        $this->removeNodesByTopology($topology);
-
         /** @var Node[] $nodes */
         /** @var EmbedNode[] $embedNodes */
         $nodes      = [];
@@ -284,6 +309,85 @@ class TopologyManager
     }
 
     /**
+     * @param Topology $topology
+     * @param Schema   $dto
+     *
+     * @throws NodeException
+     * @throws TopologyException
+     */
+    private function updateNodes(Topology $topology, Schema $dto): void
+    {
+        /** @var Node[] $nodes */
+        /** @var EmbedNode[] $embedNodes */
+        $nodes      = [];
+        $embedNodes = [];
+
+        foreach ($dto->getNodes() as $id => $node) {
+            $this->updateNode(
+                $topology,
+                $id,
+                $node['handler'],
+                $nodes,
+                $embedNodes,
+                $node['name'],
+                $node['pipes_type'],
+                $node['cron_time'],
+                $node['cron_params']
+            );
+        }
+
+        foreach ($dto->getSequences() as $source => $targets) {
+            $nodes[$source]->setNext([]);
+            foreach ($targets as $target) {
+                if (isset($nodes[$source]) && $embedNodes[$target]) {
+                    $nodes[$source]->addNext($embedNodes[$target]);
+                }
+            }
+        }
+    }
+
+    /**
+     * @param Topology    $topology
+     * @param string      $id
+     * @param string      $handler
+     * @param array       $nodes
+     * @param array       $embedNodes
+     * @param string|null $name
+     * @param string|null $type
+     * @param string|null $cron
+     * @param string|null $cron_params
+     *
+     * @return Node
+     * @throws TopologyException
+     */
+    private function createNode(
+        Topology $topology,
+        string $id,
+        string $handler,
+        array &$nodes,
+        array &$embedNodes,
+        ?string $name = NULL,
+        ?string $type = NULL,
+        ?string $cron = NULL,
+        ?string $cron_params = NULL
+    ): Node
+    {
+        $this->checkNodeAttributes($id, $name, $type, $cron);
+
+        $node = $this->setNodeAttributes($topology, new Node(), $name, $type, $id, $handler, $cron, $cron_params);
+
+        $this->dm->persist($node);
+        $this->dm->flush();
+
+        $nodes[$id]      = $node;
+        $embedNodes[$id] = EmbedNode::from($node);
+
+        $this->makePatchRequestForCron($node, $type, $id);
+
+        return $node;
+    }
+
+    /**
      * @param Topology    $topology
      * @param string      $id
      * @param string      $handler
@@ -298,7 +402,7 @@ class TopologyManager
      * @throws NodeException
      * @throws TopologyException
      */
-    private function createNode(
+    private function updateNode(
         Topology $topology,
         string $id,
         string $handler,
@@ -309,6 +413,69 @@ class TopologyManager
         ?string $cron = NULL,
         ?string $cron_params = NULL
     ): Node
+    {
+        $this->checkNodeAttributes($id, $name, $type, $cron);
+
+        $node = $this->getNodeBySchemaId($topology, $id);
+        $node = $this->setNodeAttributes($topology, $node, $name, $type, $id, $handler, $cron, $cron_params);
+
+        $nodes[$id]      = $node;
+        $embedNodes[$id] = EmbedNode::from($node);
+
+        $this->makePatchRequestForCron($node, $type, $id);
+
+        return $node;
+    }
+
+    /**
+     * @param Topology    $topology
+     * @param Node        $node
+     * @param string      $name
+     * @param string      $type
+     * @param string      $schemaId
+     * @param string      $handler
+     * @param null|string $cron
+     * @param null|string $cron_params
+     *
+     * @return Node
+     */
+    private function setNodeAttributes(
+        Topology $topology,
+        Node $node,
+        string $name,
+        string $type,
+        string $schemaId,
+        string $handler,
+        ?string $cron = NULL,
+        ?string $cron_params = NULL
+    ): Node
+    {
+        $node
+            ->setName($name)
+            ->setType($type)
+            ->setSchemaId($schemaId)
+            ->setTopology($topology->getId())
+            ->setHandler(Strings::endsWith($handler, 'vent') ? HandlerEnum::EVENT : HandlerEnum::ACTION)
+            ->setCronParams(urldecode($cron_params))
+            ->setCron($cron);
+
+        return $node;
+    }
+
+    /**
+     * @param string      $id
+     * @param null|string $name
+     * @param null|string $type
+     * @param null|string $cron
+     *
+     * @throws TopologyException
+     */
+    private function checkNodeAttributes(
+        string $id,
+        ?string $name = NULL,
+        ?string $type = NULL,
+        ?string $cron = NULL
+    ): void
     {
         if (!$name) {
             throw new TopologyException(
@@ -339,32 +506,53 @@ class TopologyManager
                 TopologyException::TOPOLOGY_NODE_CRON_NOT_VALID
             );
         }
+    }
 
-        $node = (new Node())
-            ->setName($name)
-            ->setType($type)
-            ->setTopology($topology->getId())
-            ->setHandler(Strings::endsWith($handler, 'vent') ? HandlerEnum::EVENT : HandlerEnum::ACTION)
-            ->setCronParams(urldecode($cron_params))
-            ->setCron($cron);
-        $this->dm->persist($node);
+    /**
+     * @param Topology $topology
+     * @param string   $schemaId
+     *
+     * @return Node
+     * @throws NodeException
+     */
+    private function getNodeBySchemaId(Topology $topology, string $schemaId): Node
+    {
+        /** @var Node $node */
+        $node = $this->dm->getRepository(Node::class)->findOneBy([
+            'topology' => $topology->getId(),
+            'schemaId' => $schemaId,
+        ]);
 
-        $nodes[$id]      = $node;
-        $embedNodes[$id] = EmbedNode::from($node);
+        if (!$node) {
+            throw new NodeException(
+                sprintf('Node [schema id: %s] for topology %s not found.', $schemaId, $topology->getId()),
+                NodeException::NODE_NOT_FOUND
+            );
+        }
 
+        return $node;
+    }
+
+    /**
+     * @param Node   $node
+     * @param string $type
+     * @param string $schemaId
+     *
+     * @throws TopologyException
+     */
+    private function makePatchRequestForCron(Node $node, string $type, string $schemaId): void
+    {
         if ($type == TypeEnum::CRON) {
             try {
                 $this->cronManager->patch($node, empty($cron));
             } catch (CronException | CurlException $e) {
                 throw new TopologyException(
-                    sprintf('Saving of Node [%s] & cron [%s] failed.', $id, $type),
+                    sprintf('Saving of Node [%s] & cron [%s] failed.', $schemaId, $type),
                     TopologyException::TOPOLOGY_NODE_CRON_NOT_AVAILABLE,
                     $e
                 );
             }
         }
-
-        return $node;
     }
 
     /**
