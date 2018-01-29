@@ -1,3 +1,5 @@
+import moment from 'moment';
+
 export default {
   login: {
     id: 'login',
@@ -64,7 +66,11 @@ export default {
     id: 'topology_detail',
     caption: 'Topology detail',
     defaultArgs: {
-      activeTab: 'nodes'
+      activeTab: 'nodes',
+      metricsRange: {
+        since: moment().format('L'),
+        till: moment().format('L'),
+      }
     },
     needAuth: true,
     acceptUrl: (path, query) => {

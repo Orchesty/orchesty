@@ -66,7 +66,7 @@ function mapActionsToProps(dispatch, ownProps){
   return {
     needList,
     needTopology: forced => dispatch(topologyActions.needTopology(ownProps.topologyId, forced)),
-    needMetricsList: forced => dispatch(metricsActions.needTopologyMetrics(ownProps.topologyId, forced))
+    needMetricsList: forced => dispatch(metricsActions.needTopologyMetrics(ownProps.topologyId, ownProps.metricsRange, forced))
   }
 }
 

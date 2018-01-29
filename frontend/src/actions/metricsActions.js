@@ -10,10 +10,11 @@ function setTopologyState(topologyId, state){
   }
 }
 
-function receiveItems(items){
+function receiveItems(items, suffix){
   return {
     type: types.METRICS_RECEIVE_ITEMS,
-    items
+    items,
+    suffix
   }
 }
 
@@ -41,24 +42,28 @@ function receive(nodeId, data){
   }
 }
 
-function loadTopologyMetrics(topologyId){
+function loadTopologyMetrics(topologyId, range){
   return dispatch => {
-    dispatch(setTopologyState(topologyId, stateType.LOADING));
-    return serverRequest(dispatch, 'GET', `/metrics/topology/${topologyId}`).then(response => {
+    const suffix = range ? `[${range.since}-${range.till}]` : '';
+    const key = `${topologyId}${suffix}`;
+    dispatch(setTopologyState(key, stateType.LOADING));
+    const queries = range ? {from: range.since, to: range.till} : null;
+    return serverRequest(dispatch, 'GET', `/metrics/topology/${topologyId}`, queries).then(response => {
       if (response){
-        dispatch(receiveItems(response));
+        dispatch(receiveItems(response, suffix));
       }
-      dispatch(response ? topologyReceive(topologyId, response) : setTopologyState(topologyId, stateType.ERROR));
+      dispatch(response ? topologyReceive(key, response) : setTopologyState(key, stateType.ERROR));
       return response;
     });
   }
 }
 
-export function needTopologyMetrics(topologyId, force = false){
+export function needTopologyMetrics(topologyId, range, force = false){
   return (dispatch, getState) => {
-    const list = getState().metrics.topologies[topologyId];
+    const key = range ? `${topologyId}[${range.since}-${range.till}]` : topologyId;
+    const list = getState().metrics.topologies[key];
     if (force || !list || list.state == stateType.NOT_LOADED || list.state == stateType.ERROR) {
-      return dispatch(loadTopologyMetrics(topologyId));
+      return dispatch(loadTopologyMetrics(topologyId, range));
     } else {
       return Promise.resolve(true);
     }

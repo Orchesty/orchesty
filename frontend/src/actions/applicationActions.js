@@ -53,3 +53,10 @@ export function changePageArgs(args) {
     return dispatch(selectPage(getState().application.selectedPage.key, args));
   }
 }
+
+export function setPageArgs(args) {
+  return (dispatch, getState) => {
+    const page = getState().application.selectedPage;
+    return dispatch(selectPage(page.key, Object.assign({}, page.args, args)));
+  }
+}

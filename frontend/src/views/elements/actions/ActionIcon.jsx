@@ -21,7 +21,6 @@ class ActionIcon extends React.Component {
 
   render() {
     const {item} = this.props;
-console.log(item);
     if (item){
       let content = null;
       switch (item.type){
