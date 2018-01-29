@@ -7,4 +7,5 @@ const (
 	AccessExpiration   Type = "access_expiration"
 	DataError          Type = "data_error"
 	ServiceUnavailable Type = "service_unavailable"
+	LimitExceeded      Type = "limit_exceeded"
 )

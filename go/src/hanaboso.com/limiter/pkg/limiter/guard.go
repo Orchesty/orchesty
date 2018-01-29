@@ -56,12 +56,12 @@ func (lg *limitGuard) Check(tooOldDuration time.Duration) {
 // TODO - format in order to be transformed to notification in logstash
 func (lg *limitGuard) sendNotificationLog(message *storage.Message) {
 	lg.logger.Notify(
-		notification.ServiceUnavailable,
+		notification.LimitExceeded,
 		fmt.Sprintf("There is a limiter message rotting in storage for a long time, key: '%s'", message.LimitKey),
 		logger.Context{
 			"system_key": message.Message.Headers[storage.SystemKeyHeader],
-			"guid": message.Message.Headers[storage.GuidHeader],
-			"token": message.Message.Headers[storage.TokenHeader],
+			"guid":       message.Message.Headers[storage.GuidHeader],
+			"token":      message.Message.Headers[storage.TokenHeader],
 		},
 	)
 }

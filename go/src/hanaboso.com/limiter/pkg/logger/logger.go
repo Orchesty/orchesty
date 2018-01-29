@@ -86,6 +86,7 @@ func (l *logger) Notify(t notification.Type, msg string, context Context) {
 	if context == nil {
 		context = Context{}
 	}
+
 	context["type"] = "notification"
 	context["notification_type"] = t
 
