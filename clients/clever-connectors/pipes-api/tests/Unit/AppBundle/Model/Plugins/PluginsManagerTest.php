@@ -8,13 +8,8 @@ use CleverConnectors\AppBundle\Model\CM\ListConnector\CMGetDistributionsConnecto
 use CleverConnectors\AppBundle\Model\Plugins\PluginsManager;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\SystemManager;
-use CleverConnectors\AppBundle\Utils\TopologyNameUtils;
+use CleverConnectors\AppBundle\Model\Systems\SystemTopologyRunner;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Hanaboso\PipesFramework\Configurator\Document\Node;
-use Hanaboso\PipesFramework\Configurator\Document\Topology;
-use Hanaboso\PipesFramework\Configurator\Repository\NodeRepository;
-use Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository;
-use Hanaboso\PipesFramework\Configurator\StartingPoint\StartingPoint;
 use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Component\HttpFoundation\Request;
 use Tests\KernelTestCaseAbstract;
@@ -251,14 +246,7 @@ final class PluginsManagerTest extends KernelTestCaseAbstract
         $sys = new SystemInstall();
         $sys->setSystem('null.user.group')->setUser('usr');
 
-        $sp = $this->mockStartingPoint(
-            'sys-' . TopologyNameUtils::CREATED_SUBSCRIBERS,
-            'sys-start-node'
-        );
-
-        $dm = $this->mockDm(TopologyNameUtils::CREATED_SUBSCRIBERS);
-
-        $plug = $this->mockPluginsManager($sp, $dm);
+        $plug = $this->mockPluginsManager();
         $plug->createSubscriber($sys, new Request());
     }
 
@@ -271,14 +259,7 @@ final class PluginsManagerTest extends KernelTestCaseAbstract
         $sys = new SystemInstall();
         $sys->setSystem('null.user.group')->setUser('usr');
 
-        $sp = $this->mockStartingPoint(
-            'sys-' . TopologyNameUtils::UPDATED_SUBSCRIBERS,
-            'sys-start-node'
-        );
-
-        $dm = $this->mockDm(TopologyNameUtils::UPDATED_SUBSCRIBERS);
-
-        $plug = $this->mockPluginsManager($sp, $dm);
+        $plug = $this->mockPluginsManager();
         $plug->createSubscriber($sys, new Request());
     }
 
@@ -291,14 +272,7 @@ final class PluginsManagerTest extends KernelTestCaseAbstract
         $sys = new SystemInstall();
         $sys->setSystem('null.user.group')->setUser('usr');
 
-        $sp = $this->mockStartingPoint(
-            'sys-' . TopologyNameUtils::DELETED_SUBSCRIBERS,
-            'sys-start-node'
-        );
-
-        $dm = $this->mockDm(TopologyNameUtils::DELETED_SUBSCRIBERS);
-
-        $plug = $this->mockPluginsManager($sp, $dm);
+        $plug = $this->mockPluginsManager();
         $plug->createSubscriber($sys, new Request());
     }
 
@@ -311,14 +285,7 @@ final class PluginsManagerTest extends KernelTestCaseAbstract
         $sys = new SystemInstall();
         $sys->setSystem('null.user.group')->setUser('usr');
 
-        $sp = $this->mockStartingPoint(
-            'sys-' . TopologyNameUtils::VALIDATE_SUBSCRIBERS,
-            'sys-start-node'
-        );
-
-        $dm = $this->mockDm(TopologyNameUtils::VALIDATE_SUBSCRIBERS);
-
-        $plug = $this->mockPluginsManager($sp, $dm);
+        $plug = $this->mockPluginsManager();
         $plug->createSubscriber($sys, new Request());
     }
 
@@ -327,59 +294,14 @@ final class PluginsManagerTest extends KernelTestCaseAbstract
      */
 
     /**
-     * @param string $topology
-     * @param string $node
+     * @param SystemTopologyRunner|null $systemTopologyRunner
+     * @param DocumentManager|null      $dm
+     * @param SystemManager|null        $manager
      *
-     * @return StartingPoint|MockObject
-     */
-    private function mockStartingPoint(string $topology, string $node)
-    {
-        $sp = $this->createMock(StartingPoint::class);
-        $sp->expects($this->once())
-            ->method('runWithRequest')->will($this->returnCallback(
-                function (Request $fRequest, Topology $fTopology, Node $fNode)
-                use ($topology, $node): void {
-                    self::assertEquals($topology, $fTopology->getName());
-                    self::assertEquals($node, $fNode->getName());
-                }
-            ));
-
-        return $sp;
-    }
-
-    /**
-     * @param string $type
-     *
-     * @return DocumentManager|MockObject
-     */
-    private function mockDm(string $type = '')
-    {
-        $nodeRepo = $this->createMock(NodeRepository::class);
-        $nodeRepo->expects($this->once())
-            ->method('getStartingNode')->willReturn((new Node)->setName('sys-start-node'));
-
-        $topRepo = $this->createMock(TopologyRepository::class);
-        $topRepo->expects($this->once())
-            ->method('getRunnableTopologies')->willReturn([(new Topology())->setName('sys-' . $type)]);
-
-        $dm = $this->createMock(DocumentManager::class);
-        $dm->expects($this->at(0))
-            ->method('getRepository')->willReturn($topRepo);
-        $dm->expects($this->at(1))
-            ->method('getRepository')->willReturn($nodeRepo);
-
-        return $dm;
-    }
-
-    /**
-     * @param StartingPoint|null   $start
-     * @param DocumentManager|null $dm
-     * @param SystemManager|null   $manager
-     *
-     * @return PluginsManager|MockObject
+     * @return PluginsManager
      */
     private function mockPluginsManager(
-        ?StartingPoint $start = NULL,
+        ?SystemTopologyRunner $systemTopologyRunner = NULL,
         ?DocumentManager $dm = NULL,
         ?SystemManager $manager = NULL
     ): PluginsManager
@@ -394,9 +316,9 @@ final class PluginsManagerTest extends KernelTestCaseAbstract
             $dm = $this->createMock(DocumentManager::class);
         }
 
-        if (!$start) {
-            /** @var StartingPoint|MockObject $start */
-            $start = $this->createMock(StartingPoint::class);
+        if (!$systemTopologyRunner) {
+            /** @var SystemTopologyRunner|MockObject $start */
+            $systemTopologyRunner = $this->createMock(SystemTopologyRunner::class);
         }
 
         /** @var CMGetDistributionsConnector|MockObject $distConn */
@@ -405,7 +327,7 @@ final class PluginsManagerTest extends KernelTestCaseAbstract
 
         $loader = $this->container->get('cc.systems.loader');
 
-        return new PluginsManager($dm, $start, $manager, $loader, $distConn);
+        return new PluginsManager($dm, $manager, $loader, $distConn, $systemTopologyRunner);
     }
 
 }

@@ -2,6 +2,7 @@
 
 namespace Tests\Controller\AppBundle\Controller;
 
+use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Document\Webhook;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
@@ -34,8 +35,15 @@ final class WebhookControllerTest extends ControllerTestCaseAbstract
         $curl->method('send')->willReturn($resp);
         $this->client->getContainer()->set('cc.transport.curl.manager', $curl);
 
+        $systemInstall = new SystemInstall();
+        $systemInstall
+            ->setSystem('null.user')
+            ->setToken('token')
+            ->setUser('userId');
+        $this->persistAndFlush($systemInstall);
+
         $web = (new Webhook())
-            ->setSystemKey('systemKey')
+            ->setSystemKey('null.user')
             ->setTopologyName('topName')
             ->setNodeName('nodeName');
         $this->persistAndFlush($web);
@@ -64,8 +72,15 @@ final class WebhookControllerTest extends ControllerTestCaseAbstract
         $curl->method('send')->willReturn($resp);
         $this->client->getContainer()->set('hbpf.transport.curl_manager', $curl);
 
+        $systemInstall = new SystemInstall();
+        $systemInstall
+            ->setSystem('null.user')
+            ->setToken('token')
+            ->setUser('userId');
+        $this->persistAndFlush($systemInstall);
+
         $web = (new Webhook())
-            ->setSystemKey('systemKey')
+            ->setSystemKey('null.user')
             ->setTopologyName('topName')
             ->setNodeName('nodeName');
         $this->persistAndFlush($web);

@@ -9,14 +9,20 @@
 
 namespace Tests\Unit\AppBundle\Model\CustomNode;
 
+use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\Command\AsyncCommandFactory;
 use CleverConnectors\AppBundle\Model\CustomNode\UserMessageGenerator;
+use CleverConnectors\AppBundle\Model\Limits\SystemLimitManager;
+use CleverConnectors\AppBundle\Model\Systems\SystemLoader;
+use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Exception;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
 use InvalidArgumentException;
 use JMS\Serializer\Serializer;
 use MongoDB\Exception\RuntimeException;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use PHPUnit_Framework_MockObject_MockObject;
 use React\EventLoop\Factory;
@@ -70,7 +76,18 @@ final class UserMessageGeneratorTest extends TestCase
         $serializer->method('deserialize')->willThrowException(new Exception('Json error.'));
         /** @var AsyncCommandFactory|PHPUnit_Framework_MockObject_MockObject $asyncCommandFactory */
         $asyncCommandFactory = $this->createMock(AsyncCommandFactory::class);
-        $callback            = new UserMessageGenerator($serializer, $asyncCommandFactory);
+
+        /** @var SystemLimitManager|MockObject $systemLimitManager */
+        $systemLimitManager = $this->createMock(SystemLimitManager::class);
+
+        /** @var DocumentManager|MockObject $dm */
+        $dm = $this->createMock(DocumentManager::class);
+
+        /** @var SystemLoader|MockObject $systemLoader */
+        $systemLoader = $this->createMock(SystemLoader::class);
+
+        $callback = new UserMessageGenerator($serializer, $asyncCommandFactory, $systemLimitManager, $dm,
+            $systemLoader);
 
         $callback
             ->processBatch($this->createMessage(), $loop, $this->callback)
@@ -96,7 +113,18 @@ final class UserMessageGeneratorTest extends TestCase
         $serializer->method('deserialize')->willReturn([]);
         /** @var AsyncCommandFactory|PHPUnit_Framework_MockObject_MockObject $asyncCommandFactory */
         $asyncCommandFactory = $this->createMock(AsyncCommandFactory::class);
-        $callback            = new UserMessageGenerator($serializer, $asyncCommandFactory);
+
+        /** @var SystemLimitManager|MockObject $systemLimitManager */
+        $systemLimitManager = $this->createMock(SystemLimitManager::class);
+
+        /** @var DocumentManager|MockObject $dm */
+        $dm = $this->createMock(DocumentManager::class);
+
+        /** @var SystemLoader|MockObject $systemLoader */
+        $systemLoader = $this->createMock(SystemLoader::class);
+
+        $callback = new UserMessageGenerator($serializer, $asyncCommandFactory, $systemLimitManager, $dm,
+            $systemLoader);
 
         $callback
             ->processBatch($this->createMessage(), $loop, $this->callback)
@@ -125,7 +153,18 @@ final class UserMessageGeneratorTest extends TestCase
         $asyncCommandFactory->method('create')->willReturn(new Promise(function ($resolve, $reject): void {
             $reject(new RuntimeException('Process exited with code 1.'));
         }));
-        $callback = new UserMessageGenerator($serializer, $asyncCommandFactory);
+
+        /** @var SystemLimitManager|MockObject $systemLimitManager */
+        $systemLimitManager = $this->createMock(SystemLimitManager::class);
+
+        /** @var DocumentManager|MockObject $dm */
+        $dm = $this->createMock(DocumentManager::class);
+
+        /** @var SystemLoader|MockObject $systemLoader */
+        $systemLoader = $this->createMock(SystemLoader::class);
+
+        $callback = new UserMessageGenerator($serializer, $asyncCommandFactory, $systemLimitManager, $dm,
+            $systemLoader);
 
         $callback
             ->processBatch($this->createMessage(['node_id' => '132']), $loop, $this->callback)
@@ -151,7 +190,18 @@ final class UserMessageGeneratorTest extends TestCase
         $serializer->method('deserialize')->willReturn(["param" => "test"], []);
         /** @var AsyncCommandFactory|PHPUnit_Framework_MockObject_MockObject $asyncCommandFactory */
         $asyncCommandFactory = $this->createMock(AsyncCommandFactory::class);
-        $callback            = new UserMessageGenerator($serializer, $asyncCommandFactory);
+
+        /** @var SystemLimitManager|MockObject $systemLimitManager */
+        $systemLimitManager = $this->createMock(SystemLimitManager::class);
+
+        /** @var DocumentManager|MockObject $dm */
+        $dm = $this->createMock(DocumentManager::class);
+
+        /** @var SystemLoader|MockObject $systemLoader */
+        $systemLoader = $this->createMock(SystemLoader::class);
+
+        $callback = new UserMessageGenerator($serializer, $asyncCommandFactory, $systemLimitManager, $dm,
+            $systemLoader);
         $asyncCommandFactory->method('create')->willReturn(new Promise(function ($resolve): void {
             $resolve('');
         }));
@@ -178,6 +228,8 @@ final class UserMessageGeneratorTest extends TestCase
      */
     public function testPrepareMessage(): void
     {
+        $systemInstall = new SystemInstall();
+
         $loop = Factory::create();
 
         /** @var Serializer|PHPUnit_Framework_MockObject_MockObject $serializer */
@@ -185,13 +237,28 @@ final class UserMessageGeneratorTest extends TestCase
         $serializer->method('deserialize')->willReturn(["param" => "test"]);
         /** @var AsyncCommandFactory|PHPUnit_Framework_MockObject_MockObject $asyncCommandFactory */
         $asyncCommandFactory = $this->createMock(AsyncCommandFactory::class);
-        $callback            = new UserMessageGenerator($serializer, $asyncCommandFactory);
+
+        /** @var SystemLimitManager|MockObject $systemLimitManager */
+        $systemLimitManager = $this->createMock(SystemLimitManager::class);
+
+        $systemInstallRepository = $this->createMock(SystemInstallRepository::class);
+        $systemInstallRepository->method('getSystemInstallFromHeaders')->willReturn($systemInstall);
+
+        /** @var DocumentManager|MockObject $dm */
+        $dm = $this->createMock(DocumentManager::class);
+        $dm->method('getRepository')->willReturn($systemInstallRepository);
+
+        /** @var SystemLoader|MockObject $systemLoader */
+        $systemLoader = $this->createMock(SystemLoader::class);
+
+        $callback = new UserMessageGenerator($serializer, $asyncCommandFactory, $systemLimitManager, $dm,
+            $systemLoader);
 
         $callback
-            ->prepareData(['id' => '5', 'token' => '123', 'user' => '123'], 1)
+            ->prepareData(['id' => '5', 'token' => '123', 'user' => '123', 'system' => 'system_key'], 1)
             ->then(function (SuccessMessage $message) use ($loop): void {
                 $this->assertSame(1, $message->getSequenceId());
-                $this->assertSame('{"system_install":{"id":"5","token":"123","user":"123"}}', $message->getData());
+                $this->assertSame('{"system_install":{"id":"5","token":"123","user":"123","system":"system_key"}}', $message->getData());
                 $loop->stop();
             })
             ->done();

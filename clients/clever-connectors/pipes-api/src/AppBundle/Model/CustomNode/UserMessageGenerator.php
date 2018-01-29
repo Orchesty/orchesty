@@ -10,6 +10,7 @@
 namespace CleverConnectors\AppBundle\Model\CustomNode;
 
 use CleverConnectors\AppBundle\Model\Command\AsyncCommandFactory;
+use CleverConnectors\AppBundle\Model\Limits\SystemLimitManager;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Exception;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
@@ -52,16 +53,27 @@ class UserMessageGenerator implements BatchInterface, CustomNodeInterface
     private $asyncCommandFactory;
 
     /**
+     * @var SystemLimitManager
+     */
+    private $systemLimitManager;
+
+    /**
      * CronBatchActionCallback constructor.
      *
      * @param Serializer          $serializer
      * @param AsyncCommandFactory $asyncCommandFactory
+     * @param SystemLimitManager  $systemLimitManager
      */
-    public function __construct(Serializer $serializer, AsyncCommandFactory $asyncCommandFactory)
+    public function __construct(
+        Serializer $serializer,
+        AsyncCommandFactory $asyncCommandFactory,
+        SystemLimitManager $systemLimitManager
+    )
     {
-        $this->serializer          = $serializer;
-        $this->asyncCommandFactory = $asyncCommandFactory;
-        $this->logger              = new NullLogger();
+        $this->serializer              = $serializer;
+        $this->asyncCommandFactory     = $asyncCommandFactory;
+        $this->logger                  = new NullLogger();
+        $this->systemLimitManager      = $systemLimitManager;
     }
 
     /**
@@ -147,6 +159,8 @@ class UserMessageGenerator implements BatchInterface, CustomNodeInterface
             ->addHeader(CMHeaders::createKey(CMHeaders::TOKEN), $item['token'] ?? '')
             ->addHeader(CMHeaders::createKey(CMHeaders::GUID), $item['user'] ?? '')
             ->addHeader(CMHeaders::createKey(CMHeaders::SYSTEM_KEY), $item['system'] ?? '');
+
+        $this->systemLimitManager->addSystemLimitToSuccessMessage($message);
 
         return resolve($message);
     }

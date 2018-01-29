@@ -40,6 +40,7 @@ final class TopologyNameUtils
     public const SUBSCRIBE_CONTACT   = 'subscribe-contact';
 
     public const SWITCH_TOKEN = 'switch-token';
+    public const GET_LIMIT = 'get-limit';
 
     /**
      * @var array
@@ -64,6 +65,7 @@ final class TopologyNameUtils
         self::HARD_BOUNCE_CONTACT,
         self::SUBSCRIBE_CONTACT,
         self::SWITCH_TOKEN,
+        self::GET_LIMIT,
     ];
 
     /**

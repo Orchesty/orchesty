@@ -8,17 +8,12 @@ use CleverConnectors\AppBundle\Model\CM\ListConnector\CMGetDistributionsConnecto
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\SystemLoader;
 use CleverConnectors\AppBundle\Model\Systems\SystemManager;
+use CleverConnectors\AppBundle\Model\Systems\SystemTopologyRunner;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use CleverConnectors\AppBundle\Utils\TopologyNameUtils;
-use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Exception;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
-use Hanaboso\PipesFramework\Configurator\Document\Node;
-use Hanaboso\PipesFramework\Configurator\Document\Topology;
-use Hanaboso\PipesFramework\Configurator\Repository\NodeRepository;
-use Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository;
-use Hanaboso\PipesFramework\Configurator\StartingPoint\StartingPoint;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -35,19 +30,9 @@ class PluginsManager
     private $dm;
 
     /**
-     * @var StartingPoint
-     */
-    private $startingPoint;
-
-    /**
      * @var SystemManager
      */
     private $manager;
-
-    /**
-     * @var TopologyRepository|ObjectRepository
-     */
-    private $topologyRepository;
 
     /**
      * @var SystemLoader
@@ -60,28 +45,32 @@ class PluginsManager
     private $distConn;
 
     /**
+     * @var SystemTopologyRunner
+     */
+    private $systemTopologyRunner;
+
+    /**
      * OpenSourcePluginsManager constructor.
      *
      * @param DocumentManager             $dm
-     * @param StartingPoint               $startingPoint
      * @param SystemManager               $manager
      * @param SystemLoader                $loader
      * @param CMGetDistributionsConnector $distConn
+     * @param SystemTopologyRunner        $systemTopologyRunner
      */
     public function __construct(
         DocumentManager $dm,
-        StartingPoint $startingPoint,
         SystemManager $manager,
         SystemLoader $loader,
-        CMGetDistributionsConnector $distConn
+        CMGetDistributionsConnector $distConn,
+        SystemTopologyRunner $systemTopologyRunner
     )
     {
-        $this->dm                 = $dm;
-        $this->startingPoint      = $startingPoint;
-        $this->manager            = $manager;
-        $this->topologyRepository = $dm->getRepository(Topology::class);
-        $this->loader             = $loader;
-        $this->distConn           = $distConn;
+        $this->dm                   = $dm;
+        $this->manager              = $manager;
+        $this->loader               = $loader;
+        $this->distConn             = $distConn;
+        $this->systemTopologyRunner = $systemTopologyRunner;
     }
 
     /**
@@ -224,32 +213,7 @@ class PluginsManager
     {
         $system = $this->loader->getSystem($systemInstall->getSystem());
 
-        $topologies = $this->topologyRepository->getRunnableTopologies(
-            TopologyNameUtils::getTopologyName(
-                $topology,
-                $systemInstall->getSystem(),
-                $systemInstall->getUser()
-            )
-        );
-
-        if (empty($topologies)) {
-            $name       = $system->getCustomTopologyName(
-                TopologyNameUtils::getTopologyName($topology, $systemInstall->getSystem())
-            );
-            $topologies = $this->topologyRepository->getRunnableTopologies($name);
-
-            if (empty($topologies)) {
-                throw new Exception(sprintf('No topology with name [%s] has been found.', $name));
-            }
-        }
-
-        foreach ($topologies as $topology) {
-            /** @var NodeRepository $repo */
-            $repo = $this->dm->getRepository(Node::class);
-            $node = $repo->getStartingNode($topology);
-
-            $this->startingPoint->runWithRequest($request, $topology, $node);
-        }
+        $this->systemTopologyRunner->runTopologies($topology, $systemInstall, $system, $request);
     }
 
     /**

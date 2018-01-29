@@ -17,17 +17,32 @@ services:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@cc.systems.loader'
             - '@cc.webhook.manager'
-            - '@hbpf.starting_point.starting_point'
             - '@hbpf.topology_generator.request.request_handler'
             - '@cc.events.manager'
             - '@cc.map_template.manager'
             - '@cc.layout.manager'
             - '@cc.system_metrics.manager'
+            - '@cc.system_limit.manager'
+            - '@cc.system_topology.runner'
 
     cc.systems.loader:
         class: CleverConnectors\AppBundle\Model\Systems\SystemLoader
         arguments:
             - '@service_container'
+
+    cc.system_limit.manager:
+        class: CleverConnectors\AppBundle\Model\Limits\SystemLimitManager
+        arguments:
+            - '@cc.systems.loader'
+            - '@cc.system_topology.runner'
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '%limit_refresh_interval%'
+
+    cc.system_topology.runner:
+        class: CleverConnectors\AppBundle\Model\Systems\SystemTopologyRunner
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.starting_point.starting_point'
 
     cc.last_sync.manager:
         class: CleverConnectors\AppBundle\Model\LastSync\LastSyncManager
@@ -48,8 +63,9 @@ services:
         class: CleverConnectors\AppBundle\Model\CMEvents\CMEventsManager
         arguments:
             - '@doctrine_mongodb.odm.default_document_manager'
-            - '@hbpf.handler.starting_point'
             - '@cc.systems.loader'
+            - '@cc.system_limit.manager'
+            - '@cc.system_topology.runner'
         calls:
             - [setLogger, ['@monolog.logger']]
 
@@ -89,10 +105,10 @@ services:
         class: CleverConnectors\AppBundle\Model\Plugins\PluginsManager
         arguments:
             - '@doctrine_mongodb.odm.default_document_manager'
-            - '@hbpf.starting_point.starting_point'
             - '@cc.systems.manager'
             - '@cc.systems.loader'
             - '@hbpf.connector.cleverconnectors-get-distributions-connector'
+            - '@cc.system_topology.runner'
 
     cc.plugins.handler:
         class: CleverConnectors\AppBundle\Handler\PluginsHandler

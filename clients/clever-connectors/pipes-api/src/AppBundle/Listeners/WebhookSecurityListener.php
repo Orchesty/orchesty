@@ -5,6 +5,7 @@ namespace CleverConnectors\AppBundle\Listeners;
 use CleverConnectors\AppBundle\Controller\WebhookController;
 use CleverConnectors\AppBundle\Document\Webhook;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
+use CleverConnectors\AppBundle\Model\Limits\SystemLimitManager;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -35,15 +36,26 @@ class WebhookSecurityListener implements EventSubscriberInterface
     private $curl;
 
     /**
+     * @var SystemLimitManager
+     */
+    private $systemLimitManager;
+
+    /**
      * WebhookSecurityListener constructor.
      *
      * @param DocumentManager      $dm
      * @param CurlManagerInterface $curl
+     * @param SystemLimitManager   $systemLimitManager
      */
-    function __construct(DocumentManager $dm, CurlManagerInterface $curl)
+    function __construct(
+        DocumentManager $dm,
+        CurlManagerInterface $curl,
+        SystemLimitManager $systemLimitManager
+    )
     {
-        $this->repo = $dm->getRepository(Webhook::class);
-        $this->curl = $curl;
+        $this->repo                    = $dm->getRepository(Webhook::class);
+        $this->curl                    = $curl;
+        $this->systemLimitManager      = $systemLimitManager;
     }
 
     /**
@@ -84,6 +96,8 @@ class WebhookSecurityListener implements EventSubscriberInterface
             $ev->getRequest()->headers->set(CMHeaders::createKey(CMHeaders::GUID), $params['userId']);
             $ev->getRequest()->headers->set(CMHeaders::createKey(CMHeaders::TOKEN), $params['token']);
             $ev->getRequest()->headers->set(CMHeaders::createKey(CMHeaders::SYSTEM_KEY), $res->getSystemKey());
+
+            $this->systemLimitManager->addSystemLimitToRequestHeaders($ev->getRequest()->headers);
 
             $req = new RequestDto('GET', new Uri('https://api.dev.clevermonitor.com/v1.2'));
             $req->setHeaders([
