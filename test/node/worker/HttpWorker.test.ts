@@ -3,12 +3,12 @@ import "mocha";
 
 import * as bodyParser from "body-parser";
 import * as express from "express";
+import * as http from "http";
 import Headers from "../../../src/message/Headers";
 import JobMessage from "../../../src/message/JobMessage";
 import {ResultCode} from "../../../src/message/ResultCode";
 import HttpWorker from "../../../src/node/worker/HttpWorker";
 import {INodeLabel} from "../../../src/topology/Configurator";
-import * as http from "http";
 
 const httpServer = express();
 const bodyParserRaw = {
@@ -61,7 +61,6 @@ httpServer.post("/empty-result-body", (req, resp) => {
 
     resp.set(replyHeaders.getRaw());
     resp.status(200).send();
-    console.log("sent");
 });
 httpServer.post("/ok-xml", (req, resp) => {
     assert.deepEqual(JSON.parse(req.body), { val: "original" });
