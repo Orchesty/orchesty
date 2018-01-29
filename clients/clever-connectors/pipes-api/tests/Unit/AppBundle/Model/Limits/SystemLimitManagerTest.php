@@ -82,7 +82,7 @@ class SystemLimitManagerTest extends TestCase
         $manager->addSystemLimitToRequestHeaders($headers, $system, $systemInstall);
 
         $expected = [
-            'pf-limit-key'         => ['user_id-system_key'],
+            'pf-limit-key'         => ['system_key|user_id'],
             'pf-limit-last-update' => [$date->getTimestamp()],
             'pf-limit-time'        => [66],
             'pf-limit-value'       => [22],
@@ -116,7 +116,7 @@ class SystemLimitManagerTest extends TestCase
         $manager->addSystemLimitToSuccessMessage($message);
 
         $expected = [
-            'pf-limit-key'         => 'user_id-system_key',
+            'pf-limit-key'         => 'system_key|user_id',
             'pf-limit-last-update' => strval($date->getTimestamp()),
             'pf-limit-time'        => '66',
             'pf-limit-value'       => '22',
