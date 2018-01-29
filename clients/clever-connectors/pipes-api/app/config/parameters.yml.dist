@@ -50,6 +50,7 @@ parameters:
         ca: '%kernel.project_dir%/var/secret/ca.crt'
         cert: '%kernel.project_dir%/var/secret/keypair.pem'
     access_token_refresh_interval: 3600
+    limit_refresh_interval: 86400
 
     connectors_topologies: '%kernel.project_dir%/src/AppBundle/Model/Systems/Impl'
     plugins_topologies: '%kernel.project_dir%/src/AppBundle/Model/Plugins/Topologies'
