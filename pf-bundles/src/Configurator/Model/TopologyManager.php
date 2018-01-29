@@ -121,8 +121,8 @@ class TopologyManager
         if ($originalContentHash !== $newSchemaMd5) {
             $topology->setContentHash($newSchemaMd5);
 
-            if ($topology->getVisibility() === TopologyStatusEnum::PUBLIC) {
-                $topology = $this->cloneTopology($topology);
+            if (!empty($originalContentHash) && $topology->getVisibility() === TopologyStatusEnum::PUBLIC) {
+                $topology = $this->cloneTopologyShallow($topology);
                 $cloned   = TRUE;
             }
         }
@@ -131,11 +131,9 @@ class TopologyManager
             ->setBpmn($data)
             ->setRawBpmn($content);
 
-        // if topology is cloned it has already generated new nodes
-        if (!$cloned && empty($originalContentHash)) {
-            // when saving nodes for the first time
-            $this->generateNodes($topology, $newSchemaObject);
-        } elseif (!$cloned) {
+        if ($cloned || empty($originalContentHash)) {
+            $this->generateNodes($topology, $newSchemaObject); // first save of topology or after topology is cloned
+        } else {
             $this->updateNodes($topology, $newSchemaObject);
         }
 
@@ -170,21 +168,10 @@ class TopologyManager
      * @param Topology $topology
      *
      * @return Topology
-     * @throws NodeException
      */
     public function cloneTopology(Topology $topology): Topology
     {
-        $version = $this->topologyRepository->getMaxVersion($topology->getName());
-        $res     = (new Topology())
-            ->setName($topology->getName())
-            ->setVersion($version + 1)
-            ->setDescr($topology->getDescr())
-            ->setCategory($topology->getCategory())
-            ->setEnabled(FALSE)
-            ->setBpmn($topology->getBpmn())
-            ->setRawBpmn($topology->getRawBpmn());
-
-        $this->dm->persist($res);
+        $res = $this->cloneTopologyShallow($topology);
 
         /** @var Node[] $topologyNodes */
         $topologyNodes = $this->dm->getRepository(Node::class)->findBy(['topology' => $topology->getId()]);
@@ -246,6 +233,33 @@ class TopologyManager
     }
 
     /**
+     * ----------------------------------------------- HELPERS -----------------------------------------------
+     */
+
+    /**
+     * @param Topology $topology
+     *
+     * @return Topology
+     */
+    private function cloneTopologyShallow(Topology $topology): Topology
+    {
+        $version = $this->topologyRepository->getMaxVersion($topology->getName());
+        $res     = (new Topology())
+            ->setName($topology->getName())
+            ->setVersion($version + 1)
+            ->setDescr($topology->getDescr())
+            ->setCategory($topology->getCategory())
+            ->setEnabled(FALSE)
+            ->setContentHash($topology->getContentHash())
+            ->setBpmn($topology->getBpmn())
+            ->setRawBpmn($topology->getRawBpmn());
+
+        $this->dm->persist($res);
+
+        return $res;
+    }
+
+    /**
      * @param Topology $topology
      */
     private function removeNodesByTopology(Topology $topology): void
@@ -263,7 +277,6 @@ class TopologyManager
      * @param Schema   $dto
      *
      * @throws TopologyException
-     * @throws NodeException
      */
     private function generateNodes(Topology $topology, Schema $dto): void
     {
@@ -345,7 +358,6 @@ class TopologyManager
      * @param string|null $cron_params
      *
      * @return Node
-     * @throws NodeException
      * @throws TopologyException
      */
     private function createNode(
@@ -365,6 +377,7 @@ class TopologyManager
         $node = $this->setNodeAttributes($topology, new Node(), $name, $type, $id, $handler, $cron, $cron_params);
 
         $this->dm->persist($node);
+        $this->dm->flush();
 
         $nodes[$id]      = $node;
         $embedNodes[$id] = EmbedNode::from($node);

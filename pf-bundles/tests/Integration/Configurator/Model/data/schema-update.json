@@ -1,0 +1,256 @@
+{
+  "@xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
+  "@xmlns:pipes": "http://www.omg.org/spec/Pipes/20100524/MODEL",
+  "@xmlns:dc": "http://www.omg.org/spec/DD/20100524/DC",
+  "@xmlns:di": "http://www.omg.org/spec/DD/20100524/DI",
+  "@xmlns:bpmndi": "http://www.omg.org/spec/BPMN/20100524/DI",
+  "@xmlns:bpmn": "http://www.omg.org/spec/BPMN/20100524/MODEL",
+  "@id": "Definitions_1",
+  "@targetNamespace": "http://bpmn.io/schema/bpmn",
+  "bpmn:process": {
+    "@id": "Process_1",
+    "@isExecutable": "false",
+    "bpmn:startEvent": {
+      "@id": "StartEvent_1",
+      "@name": "Start Event",
+      "@pipes:pipesType": "custom",
+      "#": ""
+    },
+    "bpmn:task": [
+      {
+        "@id": "Task_1t5rjrq",
+        "@name": "Connector DEF",
+        "@pipes:pipesType": "connector",
+        "bpmn:incoming": "SequenceFlow_1bipfui"
+      },
+      {
+        "@id": "Task_008psvb",
+        "@name": "Mapper XYZ",
+        "@pipes:pipesType": "mapper",
+        "#": ""
+      },
+      {
+        "@id": "Task_0np6d2k",
+        "@name": "Parser ABC",
+        "@pipes:pipesType": "xml_parser",
+        "bpmn:incoming": "SequenceFlow_15lu3i2",
+        "bpmn:outgoing": "SequenceFlow_1bipfui"
+      },
+      {
+        "@id": "Task_06eefzf",
+        "@name": "Splitter SPI",
+        "@pipes:pipesType": "splitter",
+        "#": ""
+      }
+    ],
+    "bpmn:event": [
+      {
+        "@id": "Event_1whl90w",
+        "@name": "Event 1",
+        "@pipes:pipesType": "cron",
+        "@pipes:cronTime": "*/2 2 * * *",
+        "bpmn:outgoing": "SequenceFlow_15lu3i2"
+      },
+      {
+        "@id": "Event_14a98wz",
+        "@name": "Event 2",
+        "@pipes:pipesType": "webhook",
+        "#": ""
+      }
+    ],
+    "bpmn:sequenceFlow": [
+      {
+        "@id": "SequenceFlow_1bipfui",
+        "@sourceRef": "Task_0np6d2k",
+        "@targetRef": "Task_1t5rjrq",
+        "#": ""
+      },
+      {
+        "@id": "SequenceFlow_15lu3i2",
+        "@sourceRef": "Event_1whl90w",
+        "@targetRef": "Task_0np6d2k",
+        "#": ""
+      }
+    ]
+  },
+  "bpmndi:BPMNDiagram": {
+    "@id": "BPMNDiagram_1",
+    "bpmndi:BPMNPlane": {
+      "@id": "BPMNPlane_1",
+      "@bpmnElement": "Process_1",
+      "bpmndi:BPMNShape": [
+        {
+          "@id": "_BPMNShape_StartEvent_2",
+          "@bpmnElement": "StartEvent_1",
+          "dc:Bounds": {
+            "@x": 170,
+            "@y": 60,
+            "@width": 36,
+            "@height": 36,
+            "#": ""
+          },
+          "bpmndi:BPMNLabel": {
+            "dc:Bounds": {
+              "@x": 153,
+              "@y": 91,
+              "@width": 90,
+              "@height": 20,
+              "#": ""
+            }
+          }
+        },
+        {
+          "@id": "Task_1_di",
+          "@bpmnElement": "Task_1",
+          "dc:Bounds": {
+            "@x": 280,
+            "@y": 33,
+            "@width": 100,
+            "@height": 80,
+            "#": ""
+          }
+        },
+        {
+          "@id": "Task_1t5rjrq_di",
+          "@bpmnElement": "Task_1t5rjrq",
+          "dc:Bounds": {
+            "@x": 451,
+            "@y": 377,
+            "@width": 100,
+            "@height": 80,
+            "#": ""
+          }
+        },
+        {
+          "@id": "Task_008psvb_di",
+          "@bpmnElement": "Task_008psvb",
+          "dc:Bounds": {
+            "@x": 610,
+            "@y": 377,
+            "@width": 100,
+            "@height": 80,
+            "#": ""
+          }
+        },
+        {
+          "@id": "Task_0np6d2k_di",
+          "@bpmnElement": "Task_0np6d2k",
+          "dc:Bounds": {
+            "@x": 280,
+            "@y": 377,
+            "@width": 100,
+            "@height": 80,
+            "#": ""
+          }
+        },
+        {
+          "@id": "Task_06eefzf_di",
+          "@bpmnElement": "Task_06eefzf",
+          "dc:Bounds": {
+            "@x": 774,
+            "@y": 377,
+            "@width": 100,
+            "@height": 80,
+            "#": ""
+          }
+        },
+        {
+          "@id": "Event_1whl90w_di",
+          "@bpmnElement": "Event_1whl90w",
+          "dc:Bounds": {
+            "@x": 137,
+            "@y": 399,
+            "@width": 36,
+            "@height": 36,
+            "#": ""
+          },
+          "bpmndi:BPMNLabel": {
+            "dc:Bounds": {
+              "@x": 155,
+              "@y": 439,
+              "@width": 0,
+              "@height": 12,
+              "#": ""
+            }
+          }
+        },
+        {
+          "@id": "Event_14a98wz_di",
+          "@bpmnElement": "Event_14a98wz",
+          "dc:Bounds": {
+            "@x": 274,
+            "@y": 175,
+            "@width": 36,
+            "@height": 36,
+            "#": ""
+          },
+          "bpmndi:BPMNLabel": {
+            "dc:Bounds": {
+              "@x": 292,
+              "@y": 215,
+              "@width": 0,
+              "@height": 12,
+              "#": ""
+            }
+          }
+        }
+      ],
+      "bpmndi:BPMNEdge": [
+        {
+          "@id": "SequenceFlow_1bipfui_di",
+          "@bpmnElement": "SequenceFlow_1bipfui",
+          "di:waypoint": [
+            {
+              "@xsi:type": "dc:Point",
+              "@x": 380,
+              "@y": 417,
+              "#": ""
+            },
+            {
+              "@xsi:type": "dc:Point",
+              "@x": 451,
+              "@y": 417,
+              "#": ""
+            }
+          ],
+          "bpmndi:BPMNLabel": {
+            "dc:Bounds": {
+              "@x": 415.5,
+              "@y": 396,
+              "@width": 0,
+              "@height": 12,
+              "#": ""
+            }
+          }
+        },
+        {
+          "@id": "SequenceFlow_15lu3i2_di",
+          "@bpmnElement": "SequenceFlow_15lu3i2",
+          "di:waypoint": [
+            {
+              "@xsi:type": "dc:Point",
+              "@x": 173,
+              "@y": 417,
+              "#": ""
+            },
+            {
+              "@xsi:type": "dc:Point",
+              "@x": 280,
+              "@y": 417,
+              "#": ""
+            }
+          ],
+          "bpmndi:BPMNLabel": {
+            "dc:Bounds": {
+              "@x": 226.5,
+              "@y": 396,
+              "@width": 0,
+              "@height": 12,
+              "#": ""
+            }
+          }
+        }
+      ]
+    }
+  }
+}
