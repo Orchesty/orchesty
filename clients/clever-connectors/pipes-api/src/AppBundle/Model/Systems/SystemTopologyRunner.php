@@ -54,7 +54,8 @@ class SystemTopologyRunner
      * @param string          $topology
      * @param SystemInstall   $systemInstall
      * @param SystemInterface $system
-     * @param Request|null    $request
+     * @param null|Request    $request
+     * @param bool            $service
      *
      * @return array
      * @throws CleverConnectorsException
@@ -63,20 +64,19 @@ class SystemTopologyRunner
         string $topology,
         SystemInstall $systemInstall,
         SystemInterface $system,
-        ?Request $request = NULL
+        ?Request $request = NULL,
+        bool $service = FALSE
     ): array
     {
-        $name = TopologyNameUtils::getTopologyName(
-            $topology,
-            $systemInstall->getSystem(),
-            $systemInstall->getUser()
-        );
+        $name = $this->getTopologyName($topology, $systemInstall->getSystem(), $systemInstall->getUser(), $service);
+
         $topologies = $this->topologyRepository->getRunnableTopologies($name);
 
         if (empty($topologies)) {
-            $name       = $system->getCustomTopologyName(
-                TopologyNameUtils::getTopologyName($topology, $systemInstall->getSystem())
+            $name = $system->getCustomTopologyName(
+                $this->getCustomTopologyName($topology, $systemInstall->getSystem(), $service)
             );
+
             $topologies = $this->topologyRepository->getRunnableTopologies($name);
         }
 
@@ -90,6 +90,35 @@ class SystemTopologyRunner
         }
 
         return $topologies;
+    }
+
+    /**
+     * @param string $topology
+     * @param string $system
+     * @param string $user
+     * @param bool   $service
+     *
+     * @return string
+     */
+    private function getTopologyName(string $topology, string $system, string $user, bool $service): string
+    {
+        return $service
+            ? TopologyNameUtils::getServiceTopologyName($topology, $system, $user)
+            : TopologyNameUtils::getTopologyName($topology, $system, $user);
+    }
+
+    /**
+     * @param string $topology
+     * @param string $system
+     * @param bool   $service
+     *
+     * @return string
+     */
+    private function getCustomTopologyName(string $topology, string $system, bool $service): string
+    {
+        return $service
+            ? TopologyNameUtils::getServiceTopologyName($topology, $system)
+            : TopologyNameUtils::getTopologyName($topology, $system);
     }
 
 }

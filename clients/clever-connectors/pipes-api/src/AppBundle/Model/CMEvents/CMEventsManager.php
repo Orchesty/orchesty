@@ -166,8 +166,13 @@ class CMEventsManager implements LoggerAwareInterface
         $this->systemLimitManager->addSystemLimitToRequestHeaders($request->headers, $system, $systemInstall);
 
         try {
-            $this->systemTopologyRunner->runTopologies(TopologyNameUtils::ACTIVATE_EVENT, $systemInstall, $system,
-                $request);
+            $this->systemTopologyRunner->runTopologies(
+                TopologyNameUtils::ACTIVATE_EVENT,
+                $systemInstall,
+                $system,
+                $request,
+                TRUE
+            );
         } catch (Exception $e) {
             $this->logger->alert($e->getMessage(), ['exception' => $e]);
         }
