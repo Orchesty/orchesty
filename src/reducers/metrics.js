@@ -6,13 +6,15 @@ const initialState = {
   topologies: {}
 };
 
-function addElements(oldElements, newElements){
+function addElements(oldElements, newElements, suffix = ''){
   const result = Object.assign({}, oldElements);
   Object.keys(newElements).forEach(id => {
-    result[id] = {
-      state: stateType.SUCCESS,
-      data: newElements[id]
-    };
+    if (id !== 'topology') {
+      result[id + suffix] = {
+        state: stateType.SUCCESS,
+        data: newElements[id]
+      };
+    }
   });
   return result;
 }
@@ -34,7 +36,7 @@ export default (state = initialState, action) => {
 
     case types.METRICS_RECEIVE_ITEMS:
       return Object.assign({}, state, {
-        elements: addElements(state.elements, action.items)
+        elements: addElements(state.elements, action.items, action.suffix)
       });
 
     case types.METRICS_TOPOLOGY_RECEIVE:
@@ -42,7 +44,8 @@ export default (state = initialState, action) => {
         topologies: Object.assign({}, state.topologies, {
           [action.id]: {
             state: stateType.SUCCESS,
-            items: Object.keys(action.items)
+            items: Object.keys(action.items),
+            data: action.items.topology
           }
         })
       });

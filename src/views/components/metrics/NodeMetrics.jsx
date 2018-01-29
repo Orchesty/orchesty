@@ -15,11 +15,17 @@ class NodeMetrics extends React.Component {
   }
 
   componentWillMount(){
-    this.sendActions();
+    this.sendActions(this.props);
   }
 
-  sendActions(){
-    const {node, setActions, metrics, tests, topology, runNode, updateNode} = this.props;
+  componentWillReceiveProps(props){
+    if (props.tests !== this.props.tests){
+      this.sendActions(props);
+    }
+  }
+
+  sendActions(props){
+    const {node, setActions, metrics, tests, topology, runNode, updateNode} = props;
     const actions = [];
     if (metrics.data.process.errors){
       actions.push({
@@ -32,7 +38,7 @@ class NodeMetrics extends React.Component {
     if (test){
       actions.push({
         type: menuItemType.TEXT,
-        icon: test.code == 200 ? 'fa fa-check green' : 'fa fa-warning',
+        icon: test.code == 200 ? 'fa fa-check green' : 'fa fa-warning orange',
         caption: test.message
       });
     }
@@ -108,8 +114,9 @@ NodeMetrics.propTypes = {
 
 function mapStateToProps(state, ownProps){
   const {node, metrics, topology} = state;
+  const key = ownProps.metricsRange ? `${ownProps.nodeId}[${ownProps.metricsRange.since}-${ownProps.metricsRange.till}]` : ownProps.nodeId;
   const nodeElement = node.elements[ownProps.nodeId];
-  const metricsElement = metrics.elements[ownProps.nodeId];
+  const metricsElement = metrics.elements[key];
   return {
     state: metricsElement && metricsElement.state,
     node: nodeElement,

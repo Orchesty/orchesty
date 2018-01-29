@@ -50,9 +50,9 @@ export default (WrappedComponent, parameters) => {
 					<div className="x_title">
 						<h2>{icon && <span className={icon} aria-hidden="true" />} {title}
 							{subTitle && <small>{subTitle}</small>}
-							{HeaderComponent && <HeaderComponent {...passProps}/>}
 						</h2>
 						<ActionIconPanel items={allActions}/>
+            {HeaderComponent && <HeaderComponent {...passProps}/>}
 						<div className="clearfix" />
 					</div>
 					{visible && <div className="x_content"><WrappedComponent {...passProps} setActions={this.setActions}/></div>}

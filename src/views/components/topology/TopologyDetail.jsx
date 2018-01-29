@@ -107,14 +107,14 @@ class TopologyDetail extends React.Component {
   }
 //{activeTab == 'nodes' && <TopologyNodeListTable topologyId={topologyId} setActions={this.setActions.bind(this, 'nodes')}/>}
   render() {
-    const {topologyId, activeTab, setActions, topology, onChangeTopology, pageKey} = this.props;
+    const {topologyId, activeTab, setActions, topology, onChangeTopology, pageKey, metricsRange} = this.props;
     let activeIndex = tabItems.findIndex(tab => activeTab == tab.id);
     const schemaVisible = activeTab == 'schema';
     return (
       <div className="topology-detail">
         <TabBar items={tabItems} active={activeIndex} onChangeTab={this.changeTab}/>
         <div className="tab-content">
-          {activeTab == 'nodes' && <TopologyNodeMetricsContainer topologyId={topologyId} componentKey={pageKey} />}
+          {activeTab == 'nodes' && <TopologyNodeMetricsContainer topologyId={topologyId} componentKey={pageKey} metricsRange={metricsRange} />}
           {activeTab == 'node_metrics' && <TopologyNodeMetricsListTable topologyId={topologyId} setActions={this.setActions.bind(this, 'nodeMetrics')}/>}
           <div className={'schema-wrapper' + ( schemaVisible ? '' : ' hidden')}>
             <TopologySchema
