@@ -27,7 +27,7 @@ final class CurlMetricsUtilsTest extends KernelTestCaseAbstract
                 function (array $times, array $data): bool {
                     self::assertGreaterThan(0, $times[MetricsEnum::REQUEST_TOTAL_DURATION_SENT]);
                     self::assertNotEmpty($data[MetricsEnum::HOST]);
-                    self::assertEquals(base64_encode('http://google.com'), $data[MetricsEnum::URI]);
+                    self::assertEquals(str_replace('=','',base64_encode('http://google.com')), $data[MetricsEnum::URI]);
 
                     return TRUE;
                 }
