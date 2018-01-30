@@ -271,13 +271,7 @@ class BigcommerceSystem implements WebhookSystemInterface, AuthorizationInterfac
             );
         }
 
-        return new SystemLimitDto(
-            $systemInstall,
-            SystemLimitDto::LIMIT_FOR_USER,
-            3600,
-            20000,
-            new DateTime()
-        );
+        return NULL;
     }
 
     /**
