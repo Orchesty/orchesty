@@ -177,6 +177,7 @@ abstract class AAmqpWorker implements IWorker {
             testHeaders.setPFHeader(Headers.PROCESS_ID, AAmqpWorker.TEST_ID);
             testHeaders.setPFHeader(Headers.PARENT_ID, "");
             testHeaders.setPFHeader(Headers.SEQUENCE_ID, "1");
+            testHeaders.setPFHeader(Headers.TOPOLOGY_ID, AAmqpWorker.TEST_ID);
 
             const jobMsg = new JobMessage(this.settings.node_label, testHeaders.getRaw(), new Buffer(""));
             const t: IWaiting = { resolveFn: resolveTestFn, message: jobMsg, sequence: 0 };
