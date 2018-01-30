@@ -11,6 +11,7 @@ namespace Hanaboso\PipesFramework\Commons\Metrics;
 
 use DateTime;
 use Exception;
+use Hanaboso\PipesFramework\Commons\Metrics\Exception\SystemMetricException;
 use Hanaboso\PipesFramework\Commons\Utils\ExceptionContextLoader;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
@@ -35,7 +36,7 @@ class UDPSender implements LoggerAwareInterface
     /**
      * @var string
      */
-    private $ip;
+    private $ip = "";
 
     /**
      * @var string
@@ -69,14 +70,15 @@ class UDPSender implements LoggerAwareInterface
         $this->collectorPort = $collectorPort;
         $this->logger        = new NullLogger();
 
-        if (apcu_exists(self::APCU_IP . $collectorHost) && apcu_exists(self::APCU_REFRESH . $collectorHost)) {
+        if (apcu_exists(self::APCU_IP . $collectorHost) &&
+            apcu_exists(self::APCU_REFRESH . $collectorHost)
+        ) {
             $this->ip            = apcu_fetch(self::APCU_IP . $collectorHost);
             $this->lastIPRefresh = apcu_fetch(self::APCU_REFRESH . $collectorHost);
-        } else {
-            $this->refreshCollectorIp();
         }
 
-        $this->socketCreate();
+        // limit the ip addr hostname resolution
+        putenv('RES_OPTIONS=retrans:1 retry:1 timeout:1 attempts:1');
     }
 
     /**
@@ -100,89 +102,99 @@ class UDPSender implements LoggerAwareInterface
      */
     public function send(string $message): bool
     {
-        // Recreate socket if needed
-        if (socket_last_error($this->socket) != 0) {
-            $this->socketCreate();
-        }
+        $ip     = $this->refreshIp($this->collectorHost);
+        $socket = $this->getSocket();
 
         try {
-            return $this->socketSendTo($message);
+            if ($ip === "") {
+                throw new SystemMetricException(
+                    sprintf('Could not sent udp packet. IP address for "%s" not resolved', $this->collectorHost)
+                );
+            }
+
+            $sent = @socket_sendto($socket, $message, strlen($message), 0, $ip, $this->collectorPort);
+
+            if ($sent === FALSE) {
+                throw new SystemMetricException(
+                    sprintf('Unable to send udp packet. Err: %s'), socket_strerror(socket_last_error())
+                );
+            }
+
+            return TRUE;
         } catch (Exception $e) {
-            $this->logger->error(
-                'Metrics sender: ' . $e->getMessage(),
-                ExceptionContextLoader::getContextForLogger($e)
-            );
+            $this->logger->error('Udp sender err:' . $e->getMessage(), ExceptionContextLoader::getContextForLogger($e));
 
             return FALSE;
         }
     }
 
     /**
+     * Returns socket resource or null if socket cannot be created
+     *
      * @return resource|null
      */
-    public function getSocket()
+    private function getSocket()
     {
+        if ($this->socket && socket_last_error($this->socket) != 0) {
+            $this->socket = NULL;
+        }
+
+        if (!$this->socket) {
+            $socket = @socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
+            if ($socket === FALSE) {
+                $this->logger->error(sprintf('Cannot create udp socket: %s', socket_strerror(socket_last_error())));
+                $socket = NULL;
+            }
+
+            $this->socket = $socket;
+        }
+
         return $this->socket;
     }
 
     /**
-     * @param string $message
+     * Returns the ip addr for the hostname
+     * Does the periodical checks
      *
-     * @return bool
-     */
-    private function socketSendTo(string $message): bool
-    {
-        if (!$this->ip || (new DateTime())->getTimestamp() > $this->lastIPRefresh + self::REFRESH_INTERVAL) {
-            $this->refreshCollectorIp();
-        }
-
-        $result = @socket_sendto($this->socket, $message, strlen($message), 0, $this->ip, $this->collectorPort);
-
-        if ($result === FALSE) {
-            $this->logger->error(
-                sprintf('socket_sendto() failed: %s', socket_strerror(socket_last_error()))
-            );
-
-            return FALSE;
-        }
-
-        return TRUE;
-    }
-
-    /**
-     *
-     */
-    private function socketCreate(): void
-    {
-        $socket = @socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
-
-        if ($socket === FALSE) {
-            $this->logger->error(
-                sprintf('socket_create() failed: %s', socket_strerror(socket_last_error()))
-            );
-            $socket = NULL;
-        }
-
-        $this->socket = $socket;
-    }
-
-    /**
-     * Updates host ip to actual value
+     * @param $hostname
      *
      * @return string
      */
-    private function refreshCollectorIp(): string
+    private function refreshIp($hostname): string
     {
-        $this->ip            = gethostbyname($this->collectorHost);
+        if ($this->ip !== "" &&
+            (new DateTime())->getTimestamp() <= $this->lastIPRefresh + self::REFRESH_INTERVAL
+        ) {
+            return $this->ip;
+        }
+
+        $this->ip            = $this->getIp($hostname);
         $this->lastIPRefresh = (new DateTime())->getTimestamp();
 
-        apcu_delete(self::APCU_IP . $this->collectorHost);
-        apcu_delete(self::APCU_REFRESH . $this->collectorHost);
+        apcu_delete(self::APCU_IP . $hostname);
+        apcu_delete(self::APCU_REFRESH . $hostname);
 
-        apcu_add(self::APCU_IP . $this->collectorHost, $this->ip);
-        apcu_add(self::APCU_REFRESH . $this->collectorHost, $this->lastIPRefresh);
+        apcu_add(self::APCU_IP . $hostname, $this->ip);
+        apcu_add(self::APCU_REFRESH . $hostname, $this->lastIPRefresh);
 
         return $this->ip;
+    }
+
+    /**
+     * Returns the ip for the given hostname or returns empty string
+     *
+     * @param string $host
+     *
+     * @return string
+     */
+    public function getIp(string $host): string
+    {
+        $ip = gethostbyname($host);
+        if ($ip !== $host) {
+            return $ip;
+        }
+
+        return "";
     }
 
 }
