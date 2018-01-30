@@ -195,7 +195,7 @@ const expectedTopo: ITopologyConfig = {
                         node_name: "b",
                         topology_id: "test-topo",
                     },
-                    prefetch: 1000,
+                    prefetch: 5,
                     queue: {
                         name: "pipes.test-topo.node_b",
                         options: {},
