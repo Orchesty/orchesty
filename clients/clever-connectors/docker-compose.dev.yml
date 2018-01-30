@@ -224,7 +224,7 @@ services:
           - grafana
           - spitter-api
           - topology-api
-          - notification-sender-api
+          - notification-sender-fpm
     ## END DEV
     ## BEGIN STAGE
     #    image: dkr.hanaboso.net/pipes/pipes/frontend:dev
@@ -242,6 +242,7 @@ services:
               - ftp-api
               - mapper-api
               - monolith-api
+              - notification-sender-api
 
     stream:
         image: dkr.hanaboso.net/pipes/pipes/stream:dev
@@ -416,7 +417,7 @@ services:
         links:
           - mongo
 
-    notification-sender-api:
+    notification-sender-fpm:
         ## BEGIN DEV
         image: dkr.hanaboso.net/clever-monitor/clever-notification-sender:master
         environment:
