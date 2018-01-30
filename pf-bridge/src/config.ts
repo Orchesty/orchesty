@@ -20,7 +20,7 @@ export const amqpConnectionOptions: IConnectionOptions = {
 };
 
 export const amqpFaucetOptions = {
-    prefetch: parseInt(process.env.FAUCET_PREFETCH, 10) || 1000,
+    prefetch: parseInt(process.env.FAUCET_PREFETCH, 10) || 5,
     dead_letter_exchange: { name: "pipes.dead-letter", type: "direct", options: {} },
 };
 
