@@ -102,7 +102,7 @@ class UDPSender implements LoggerAwareInterface
      */
     public function send(string $message): bool
     {
-        $ip     = $this->refreshIp($this->collectorHost);
+        $ip     = $this->refreshIp();
         $socket = $this->getSocket();
 
         try {
@@ -116,7 +116,7 @@ class UDPSender implements LoggerAwareInterface
 
             if ($sent === FALSE) {
                 throw new SystemMetricException(
-                    sprintf('Unable to send udp packet. Err: %s'), socket_strerror(socket_last_error())
+                    sprintf('Unable to send udp packet. Err: %s', socket_strerror(socket_last_error()))
                 );
             }
 
@@ -156,11 +156,9 @@ class UDPSender implements LoggerAwareInterface
      * Returns the ip addr for the hostname
      * Does the periodical checks
      *
-     * @param $hostname
-     *
      * @return string
      */
-    private function refreshIp($hostname): string
+    public function refreshIp(): string
     {
         if ($this->ip !== "" &&
             (new DateTime())->getTimestamp() <= $this->lastIPRefresh + self::REFRESH_INTERVAL
@@ -168,14 +166,14 @@ class UDPSender implements LoggerAwareInterface
             return $this->ip;
         }
 
-        $this->ip            = $this->getIp($hostname);
+        $this->ip            = $this->getIp($this->collectorHost);
         $this->lastIPRefresh = (new DateTime())->getTimestamp();
 
-        apcu_delete(self::APCU_IP . $hostname);
-        apcu_delete(self::APCU_REFRESH . $hostname);
+        apcu_delete(self::APCU_IP . $this->collectorHost);
+        apcu_delete(self::APCU_REFRESH . $this->collectorHost);
 
-        apcu_add(self::APCU_IP . $hostname, $this->ip);
-        apcu_add(self::APCU_REFRESH . $hostname, $this->lastIPRefresh);
+        apcu_add(self::APCU_IP . $this->collectorHost, $this->ip);
+        apcu_add(self::APCU_REFRESH . $this->collectorHost, $this->lastIPRefresh);
 
         return $this->ip;
     }
@@ -187,7 +185,7 @@ class UDPSender implements LoggerAwareInterface
      *
      * @return string
      */
-    public function getIp(string $host): string
+    private function getIp(string $host): string
     {
         $ip = gethostbyname($host);
         if ($ip !== $host) {

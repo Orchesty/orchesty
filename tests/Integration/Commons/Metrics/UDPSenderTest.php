@@ -13,44 +13,61 @@ use PHPUnit\Framework\TestCase;
  */
 final class UDPSenderTest extends TestCase
 {
+
+    /**
+     * Test whether resolving ip address returns the ip address string or empty string if cannot be resolved.
+     * Also tests if the resolving of invalid host does not take too long.
+     *
+     * @covers UDPSender::refreshIp()
+     */
+    public function testRefreshIp(): void
+    {
+        $start = (new DateTime())->getTimestamp();
+
+        $sender = new UDPSender('localhost', 61999);
+        $ip     = $sender->refreshIp();
+        $this->assertEquals('127.0.0.1', $ip);
+
+        $ip = $sender->refreshIp();
+        $this->assertEquals('127.0.0.1', $ip);
+
+        $sender = new UDPSender('google.com', 61999);
+        $ip     = $sender->refreshIp();
+        $this->assertCount(4, explode(".", $ip));
+
+        $sender = new UDPSender('invalidhostname', 61999);
+        $ip     = $sender->refreshIp();
+        $this->assertEquals('', $ip);
+
+        $end = (new DateTime())->getTimestamp();
+        $this->assertLessThanOrEqual(1, $end - $start);
+    }
+
     /**
      * @covers UDPSender::send()
      */
     public function testSend(): void
     {
+        $start = (new DateTime())->getTimestamp();
+
         $message = 'abc,name=def,host=ghi key1=val1,key2=val2 1465839830100400200';
-
-
-        $sender = new UDPSender('invalidHost', 61999);
-        $result = $sender->send($message);
-        $this->assertFalse($result);
 
         $sender = new UDPSender('localhost', 61999);
         $result = $sender->send($message);
         $this->assertTrue($result);
 
-//        $start = (new DateTime())->getTimestamp();
-//        $end = (new DateTime())->getTimestamp();
-//        $this->assertGreaterThanOrEqual($end, $start + 1);
-    }
+        $sender = new UDPSender('invalidhost', 61999);
+        $result = $sender->send($message);
+        $this->assertFalse($result);
 
-//    private function createServer()
-//    {
-//        //Create a UDP socket
-//        $sock = @socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
-//        $this->assertNotEquals(FALSE, $sock, "Failed creating socket.");
-//
-//        $bind = @socket_bind($sock, "0.0.0.0", 61999);
-//        $this->assertEquals(TRUE, $bind);
-//
-//        $this->serverOn = TRUE;
-//
-//        while ($this->serverOn) {
-//            socket_recvfrom($sock, $buf, 512, 0, $remote_ip, $remote_port);
-//            $this->receivedPacket = $buf;
-//        }
-//
-//        socket_close($sock);
-//    }
+        // here we cannot assert result because we don't know if influxdb host exists
+        // but we can check if packets are delivered right in influxdb container using tcpdump or similar tool
+        $sender = new UDPSender('influxdb', 61999);
+        $sender->send($message);
+
+        // Check if sending is not delaying too much
+        $end = (new DateTime())->getTimestamp();
+        $this->assertLessThanOrEqual(1, $end - $start);
+    }
 
 }
