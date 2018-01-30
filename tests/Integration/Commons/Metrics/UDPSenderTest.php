@@ -70,4 +70,24 @@ final class UDPSenderTest extends TestCase
         $this->assertLessThanOrEqual(1, $end - $start);
     }
 
+    /**
+     * @covers UDPSender::send()
+     */
+    public function testSendManyOnNonExistingHost(): void
+    {
+        $start = (new DateTime())->getTimestamp();
+
+        $message = 'abc,name=def,host=ghi key1=val1,key2=val2 1465839830100400200';
+        $sender = new UDPSender('invalidhost', 61999);
+
+        for ($i = 0; $i < 1000; $i++) {
+            $result = $sender->send($message);
+            $this->assertFalse($result);
+        }
+
+        // Check if sending is not delaying too much
+        $end = (new DateTime())->getTimestamp();
+        $this->assertLessThanOrEqual(1, $end - $start);
+    }
+
 }

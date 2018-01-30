@@ -160,9 +160,8 @@ class UDPSender implements LoggerAwareInterface
      */
     public function refreshIp(): string
     {
-        if ($this->ip !== "" &&
-            (new DateTime())->getTimestamp() <= $this->lastIPRefresh + self::REFRESH_INTERVAL
-        ) {
+        // we want to refresh it only in predefined time periods
+        if ((new DateTime())->getTimestamp() <= $this->lastIPRefresh + self::REFRESH_INTERVAL) {
             return $this->ip;
         }
 
