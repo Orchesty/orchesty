@@ -310,8 +310,8 @@ class SystemHandler
 
         return $this->manager->getSystemMetrics(
             $systemKey,
-            $from ? DateTimeUtils::getUTCDateTime($from) : DateTimeUtils::getUTCDateTime(),
-            $to ? DateTimeUtils::getUTCDateTime($to) : DateTimeUtils::getUTCDateTime(),
+            $from ? DateTimeUtils::getUTCDateTime($from) : NULL,
+            $to ? DateTimeUtils::getUTCDateTime($to) : NULL,
             $interval,
             $guid
         );

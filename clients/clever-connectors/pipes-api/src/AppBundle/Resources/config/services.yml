@@ -180,6 +180,13 @@ services:
         - [addRoot,['Plugins',"%plugins_topologies%"]]
         - [addRoot,['Service',"%service_topologies%"]]
 
+    cc.elastica.client:
+        class: Elastica\Client
+        arguments:
+            - { host: '%elastic_host%' }
+
     cc.system_metrics.manager:
         class: CleverConnectors\AppBundle\Model\SystemMetrics\SystemMetrics
         arguments:
+            - '@cc.elastica.client'
+
