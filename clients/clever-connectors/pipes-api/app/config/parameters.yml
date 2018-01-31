@@ -29,7 +29,7 @@ parameters:
     cron_host: 'http://cron-api:5000'
     spitter_host: 'http://spitter-api'
     monolith_host: 'http://monolith-api'
-    notification_host: 'http://notification-sender-api'
+    notification_host: 'http://notification-sender-api/notification-sender'
     clevermonitor:
         ca: '%kernel.project_dir%/var/secret/ca.crt'
         cert: '%kernel.project_dir%/var/secret/keypair.pem'

@@ -9,3 +9,5 @@ services:
         arguments:
             - '@hbpf.transport.curl_manager'
             - '%notification_host%'
+        calls:
+            - ['setLogger', ['@monolog.logger.commons']]
