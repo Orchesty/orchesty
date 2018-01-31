@@ -420,6 +420,7 @@ services:
     notification-sender-fpm:
         ## BEGIN DEV
         image: dkr.hanaboso.net/clever-monitor/clever-notification-sender:master
+        user: ${DEV_UID}:${DEV_GID}
         environment:
             - DEV_UID=${DEV_UID}
             - DEV_GID=${DEV_GID}
