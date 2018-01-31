@@ -73,6 +73,27 @@ services:
     #      BACKEND_HOST: ${BACKEND_URL}/
     ## END STAGE
 
+    ## BEGIN DEV
+    notification-sender:
+        image: dkr.hanaboso.net/clever-monitor/clever-notification-sender:master
+        environment:
+          - DEV_UID=${DEV_UID}
+          - DEV_GID=${DEV_GID}
+          - BACKEND_HOST=${BACKEND_URL}/
+        depends_on:
+          - mongo
+          - redis
+          - mailhog
+        command: bin/console rabbit_mq:consumer:notification
+    ## END DEV
+    ## BEGIN STAGE
+    #notification-sender:
+    #    image: dkr.hanaboso.net/clever-monitor/clever-notification-sender:master
+    #    command: bin/console rabbit_mq:consumer:notification
+    #    environment:
+    #      BACKEND_HOST: ${BACKEND_URL}/
+    ## END STAGE
+
     multi-probe:
       image: 'dkr.hanaboso.net/pipes/pipes/multi-probe:dev'
       environment:
@@ -420,7 +441,6 @@ services:
     notification-sender-fpm:
         ## BEGIN DEV
         image: dkr.hanaboso.net/clever-monitor/clever-notification-sender:master
-        user: ${DEV_UID}:${DEV_GID}
         environment:
             - DEV_UID=${DEV_UID}
             - DEV_GID=${DEV_GID}
