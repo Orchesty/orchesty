@@ -9,6 +9,9 @@ use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Notification\Exception\NotificationException;
 use Nette\Utils\Json;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use Throwable;
 
 /**
@@ -16,7 +19,7 @@ use Throwable;
  *
  * @package Hanaboso\PipesFramework\Notification\Model
  */
-class NotificationManager
+class NotificationManager implements LoggerAwareInterface
 {
 
     private const URL = '%s/notification_settings';
@@ -32,6 +35,11 @@ class NotificationManager
     private $backend;
 
     /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    /**
      * NotificationManager constructor.
      *
      * @param CurlManagerInterface $curlManager
@@ -41,10 +49,12 @@ class NotificationManager
     {
         $this->curlManager = $curlManager;
         $this->backend     = $backend;
+        $this->logger      = new NullLogger();
     }
 
     /**
      * @return ResponseDto
+     * @throws NotificationException
      */
     public function getSettings(): ResponseDto
     {
@@ -57,6 +67,7 @@ class NotificationManager
      * @param array $data
      *
      * @return ResponseDto
+     * @throws NotificationException
      */
     public function updateSettings(array $data): ResponseDto
     {
@@ -91,11 +102,27 @@ class NotificationManager
         try {
             return $this->curlManager->send($dto);
         } catch (Throwable $e) {
+            $this->logger->error('Notification sender error.',
+                ['Exception' => json_encode($e), 'Request' => json_encode($dto)]
+            );
+
             throw new NotificationException(
                 sprintf('Notification API failed: %s', $e->getMessage()),
                 NotificationException::NOTIFICATION_EXCEPTION
             );
         }
+    }
+
+    /**
+     * Sets a logger instance on the object.
+     *
+     * @param LoggerInterface $logger
+     *
+     * @return void
+     */
+    public function setLogger(LoggerInterface $logger): void
+    {
+        $this->logger = $logger;
     }
 
 }
