@@ -47,3 +47,10 @@ services:
             - '@hbpf.topology_generator.request.request_handler'
         tags:
             -  { name: console.command }
+
+    clever_connectors.testx_command:
+        class: CleverConnectors\AppBundle\Command\TestBatchCommand
+        arguments:
+            - '@rabbit-mq.manager'
+        tags:
+            -  { name: console.command }

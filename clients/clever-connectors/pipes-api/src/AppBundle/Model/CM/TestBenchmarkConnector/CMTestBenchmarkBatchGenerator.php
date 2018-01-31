@@ -9,6 +9,7 @@ use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use React\EventLoop\LoopInterface;
+use function React\Promise\map;
 use React\Promise\PromiseInterface;
 use RuntimeException;
 use function React\Promise\resolve;
@@ -44,15 +45,53 @@ class CMTestBenchmarkBatchGenerator implements BatchInterface, CustomNodeInterfa
             throw new RuntimeException('Count param is missing');
         }
 
-        for ($i = 1; $i <= $data['count']; $i++) {
-            $callbackItem((new SuccessMessage(0))
-                ->setData(
-                    '{"BenchmarkTotal": ' . $data['count'] . ', "BenchmarkNumber": ' . $i . '}'
-                )
-            );
-        }
+        $i = 0;
 
-        return resolve();
+        return $this->send((int) $data['count'], $callbackItem, $i);
+    }
+
+    /**
+     * @param $count
+     * @param $callback
+     * @param $i
+     *
+     * @return $this|PromiseInterface|\React\Promise\RejectedPromise|static
+     */
+    private function send(int $count, callable $callback, int &$i)
+    {
+        return resolve()
+            ->then(function () use ($count, &$i): array {
+
+                $max = 1000;
+                if ($count < 1000) {
+                    $max = $count;
+                }
+
+                if (($count - $i) < $max) {
+                    $max = $count - $i;
+                }
+
+                $msgs = [];
+                for ($j = 0; ($j < $max); $j++) {
+                    $msg = new SuccessMessage($i);
+                    $msg->setData('{"BenchmarkTotal": ' . $count . ', "BenchmarkNumber": ' . $i . '}');
+                    $msgs[] = $msg;
+                    $i++;
+                }
+
+                return $msgs;
+            })
+            ->then(function ($msgs) use ($callback) {
+                return map($msgs, $callback);
+            })
+            ->then(function () use ($count, $callback, $i): PromiseInterface {
+
+                if ($count <= $i) {
+                    return resolve();
+                } else {
+                    return $this->send($count, $callback, $i);
+                }
+            });
     }
 
     /**
