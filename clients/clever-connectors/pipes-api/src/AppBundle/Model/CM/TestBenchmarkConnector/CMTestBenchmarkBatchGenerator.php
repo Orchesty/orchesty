@@ -9,16 +9,15 @@ use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use React\EventLoop\LoopInterface;
-use function React\Promise\map;
 use React\Promise\PromiseInterface;
 use RuntimeException;
+use function React\Promise\map;
 use function React\Promise\resolve;
 
 /**
- * Created by PhpStorm.
- * User: lukas.hlavac
- * Date: 1/16/18
- * Time: 6:10 PM
+ * Class CMTestBenchmarkBatchGenerator
+ *
+ * @package CleverConnectors\AppBundle\Model\CM\TestBenchmarkConnector
  */
 class CMTestBenchmarkBatchGenerator implements BatchInterface, CustomNodeInterface, LoggerAwareInterface
 {
@@ -51,11 +50,11 @@ class CMTestBenchmarkBatchGenerator implements BatchInterface, CustomNodeInterfa
     }
 
     /**
-     * @param $count
-     * @param $callback
-     * @param $i
+     * @param int      $count
+     * @param callable $callback
+     * @param int      $i
      *
-     * @return $this|PromiseInterface|\React\Promise\RejectedPromise|static
+     * @return PromiseInterface|mixed
      */
     private function send(int $count, callable $callback, int &$i)
     {
