@@ -94,6 +94,19 @@ services:
     #      BACKEND_HOST: ${BACKEND_URL}/
     ## END STAGE
 
+    notification-center:
+        image: dkr.hanaboso.net/clever-monitor/notification-center:master
+        ## BEGIN DEV
+        environment:
+          - DEV_UID=${DEV_UID}
+          - DEV_GID=${DEV_GID}
+        depends_on:
+          - mongo
+          - redis
+          - mailhog
+        ## END DEV
+        command: bin/console rabbit_mq:consumer:clever-notification-client
+
     multi-probe:
       image: 'dkr.hanaboso.net/pipes/pipes/multi-probe:dev'
       environment:
@@ -246,6 +259,7 @@ services:
           - spitter-api
           - topology-api
           - notification-sender-fpm
+          - notification-center-fpm
     ## END DEV
     ## BEGIN STAGE
     #    image: dkr.hanaboso.net/pipes/pipes/frontend:dev
@@ -264,6 +278,7 @@ services:
               - mapper-api
               - monolith-api
               - notification-sender-api
+              - notification-center-api
 
     stream:
         image: dkr.hanaboso.net/pipes/pipes/stream:dev
@@ -451,6 +466,14 @@ services:
         #environment:
         #    - BACKEND_HOST=${BACKEND_URL}
         ## END STAGE
+
+    notification-center-fpm:
+        image: dkr.hanaboso.net/clever-monitor/notification-center:master
+        ## BEGIN DEV
+        environment:
+            - DEV_UID=${DEV_UID}
+            - DEV_GID=${DEV_GID}
+        ## END DEV
 
 ## BEGIN DEV
 volumes:
