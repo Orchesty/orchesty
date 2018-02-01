@@ -1,4 +1,13 @@
 .top_search {
+  max-width: 400px;
+  min-width: 200px;
+  position: relative;
+  margin: 0 10px 0 0;
+
+  .input-group{
+    margin: 0;
+  }
+
   .selector {
     display: block;
     position: absolute;
@@ -6,15 +15,15 @@
     float: left;
     z-index: 1000;
     border: 1px solid #D9DEE4;
-    //top: 100%;
-    //left: 0;
-    width: ~"calc(100% - 20px)";
     font-size: 12px;
     border-radius: 0 0 4px 4px;
     background-color: #fff;
     box-sizing: border-box;
     max-height: 300px;
     overflow-y: auto;
+    line-height: normal;
+    width: 100%;
+    color: #73879C;
 
     ul {
       list-style: none;

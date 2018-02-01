@@ -1,0 +1,30 @@
+.tab-bar, ul.bar_tabs{
+  background: none;
+  margin-bottom: 0;
+  border-bottom: none;
+
+  > li {
+    a {
+      border-bottom: none;
+      padding-right: 22px;
+
+      .tab-close {
+        cursor: pointer;
+        margin-left: 6px;
+        display: none;
+
+        i{
+          font-weight: 400;
+        }
+      }
+
+      &:hover {
+        padding-right: 6px;
+        .tab-close {
+          display: inline;
+        }
+      }
+    }
+  }
+}
+

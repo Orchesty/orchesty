@@ -1,15 +1,15 @@
 import React from 'react'
 import { connect } from 'react-redux';
 import config from '../config';
-import * as applicationActions from '../actions/applicationActions';
-
+import * as applicationActions from 'actions/applicationActions';
 
 import './vendor/bootstrap/css/bootstrap.css';
 import './vendor/font-awesome/css/font-awesome.css';
 import './vendor/iCheck/skins/flat/green.css';
 import './custom.css';
+import './App.less';
 
-import LeftSidePanel from 'containers/LeftSidePanel';
+import LeftSideBar from 'containers/LeftSideBar';
 import TopNavigation from 'containers/TopNavigation';
 import ActivePage from 'containers/ActivePage';
 import Toaster from 'containers/Toaster';
@@ -20,9 +20,6 @@ import ResetPasswordPage from 'pages/nonAuth/ResetPasswordPage';
 import SetPasswordPage from 'pages/nonAuth/SetPasswordPage';
 import ActivationPage from 'pages/nonAuth/ActivationPage';
 import Error404Page from 'pages/nonAuth/Error404Page';
-
-import './App.less';
-
 
 class App extends React.Component {
   constructor(props) {
@@ -38,16 +35,16 @@ class App extends React.Component {
     } else {
       if (isLogged && (!pageDef || pageDef.needAuth)) {
         return (
-          <div className={showMenu ? 'main-app nav-md' : 'main-app nav-sm'}>
-            <div className="container body">
-              <div className="main_container">
-                <LeftSidePanel />
-                <TopNavigation />
-                <ActivePage />
+          <div className="main-app">
+            <TopNavigation/>
+            <div className="content-area">
+              <LeftSideBar/>
+              <div className="content-container">
+                <ActivePage/>
               </div>
-              <Toaster />
             </div>
-            <ActiveModal />
+            <Toaster />
+            <ActiveModal/>
           </div>
         );
       } else {

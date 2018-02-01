@@ -29,6 +29,26 @@ function addElements(oldElements, newElements){
   return result;
 }
 
+function treeItemReducer(state, action){
+  switch (action.type){
+    case types.CATEGORY_TREE_TOGGLE:
+      if (action.itemId == state.id){
+        return Object.assign({}, state, {open: !state.open});
+      } else {
+        let changed = false;
+        const newItems = state.items.map(item => {
+          const newItem = treeItemReducer(item, action);
+          changed = changed || (newItem !== item);
+          return newItem
+        });
+
+        return changed ? Object.assign({}, state, {items: newItems}) : state;
+      }
+    default:
+      return state;
+  }
+}
+
 function reducer(state, action){
   switch (action.type){
     case types.CATEGORY_RECEIVE_ITEMS:
@@ -91,6 +111,15 @@ function reducer(state, action){
         trees: Object.assign({}, state.trees, {
           [action.id]: Object.assign({}, state.trees[action.id], {
             selectedId: action.itemId
+          })
+        })
+      });
+
+    case types.CATEGORY_TREE_TOGGLE:
+      return Object.assign({}, state, {
+        trees: Object.assign({}, state.trees, {
+          [action.id]: Object.assign({}, state.trees[action.id], {
+            root: treeItemReducer(state.trees[action.id].root, action)
           })
         })
       });

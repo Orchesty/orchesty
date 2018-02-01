@@ -3,8 +3,10 @@ import { connect } from 'react-redux';
 
 import * as applicationActions from 'actions/applicationActions';
 import GeneralSearch from 'rootApp/views/components/search/GeneralSearch';
+import TopMainMenu from 'containers/TopMainMenu';
 
 import './TopNavigation.less';
+import UserMenu from 'rootApp/views/containers/UserMenu';
 
 class TopNavigation extends React.Component {
   constructor(props) {
@@ -12,6 +14,16 @@ class TopNavigation extends React.Component {
   }
 
   render() {
+    return (
+      <div className="top-navigation">
+        <div className="app-name"><i className="fa fa-connectdevelop" /> Pipes</div>
+        <TopMainMenu />
+        <div className="middle-content" />
+        <GeneralSearch />
+        <UserMenu buttonClassName="top-menu-item"/>
+      </div>
+    );
+
     return (
       <div className="top_nav">
         <div className="nav_menu">
