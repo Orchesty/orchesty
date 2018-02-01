@@ -239,7 +239,7 @@ export default class Counter implements ICounter, IStoppable {
         await this.publisher.publish(e.name, rKey, new Buffer(JSON.stringify(process)), options);
 
         logger.info(
-            `Counter job evaluated as finished. Success: ${process.success}`,
+            `Counter job evaluated as finished. Status: ${process.success}`,
             {
                 node_id: "counter",
                 correlation_id: process.correlation_id,
@@ -251,12 +251,14 @@ export default class Counter implements ICounter, IStoppable {
         this.terminator.tryTerminate(process.topology);
 
         try {
-            await this.metrics.send({
+            const metricMsg = await this.metrics.send({
+                    counter_process_topology_id: process.topology,
                     counter_process_result: process.ok === process.total,
                     counter_process_duration: process.end_timestamp - process.start_timestamp,
                     counter_process_ok_count: process.ok,
                     counter_process_fail_count: process.nok,
                 }, true);
+            logger.info(metricMsg);
         } catch (e) {
             logger.warn("Unable to send counter metrics.", {
                 error: e,
