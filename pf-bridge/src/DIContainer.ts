@@ -65,9 +65,9 @@ class DIContainer extends Container {
             );
         });
 
-        this.set("metrics", (topology: string, node: string) => {
+        this.set("metrics", (topology: string, node: string, measurement: string) => {
             return new Metrics(
-                metricsOptions.node_measurement,
+                measurement,
                 {topology_id: topology, node_id: node},
                 metricsOptions.server,
                 metricsOptions.port,
@@ -94,7 +94,11 @@ class DIContainer extends Container {
                 () => Promise.resolve(),
                 {},
             );
-            const metrics = this.get("metrics")(settings.node_label.topology_id, settings.node_label.id);
+            const metrics = this.get("metrics")(
+                settings.node_label.topology_id,
+                settings.node_label.id,
+                metricsOptions.node_measurement,
+            );
 
             return new AmqpDrain(settings, counterPub, followersPub, assertionPub, metrics);
         });
@@ -109,7 +113,11 @@ class DIContainer extends Container {
             return new AppenderWorker(settings);
         });
         this.set(`${wPrefix}.http`, (settings: IHttpWorkerSettings) => {
-            const metrics = this.get("metrics")(settings.node_label.topology_id, settings.node_label.id);
+            const metrics = this.get("metrics")(
+                settings.node_label.topology_id,
+                settings.node_label.id,
+                metricsOptions.node_measurement,
+            );
 
             return new HttpWorker(settings, metrics);
         });
@@ -121,7 +129,11 @@ class DIContainer extends Container {
             );
         });
         this.set(`${wPrefix}.http_xml_parser`, (settings: IHttpXmlParserWorkerSettings) => {
-            const metrics = this.get("metrics")(settings.node_label.topology_id, settings.node_label.id);
+            const metrics = this.get("metrics")(
+                settings.node_label.topology_id,
+                settings.node_label.id,
+                metricsOptions.node_measurement,
+            );
 
             return new HttpXmlParserWorker(settings, metrics);
         });
