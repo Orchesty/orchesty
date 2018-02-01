@@ -101,7 +101,7 @@ class Pipes implements INodeConfigProvider {
             this.dic.get("amqp.connection"),
             this.dic.get("counter.storage"),
             this.dic.get("topology.terminator")(true),
-            this.dic.get("metrics")(topoId, "counter", metricsOptions.counter_measurement),
+            this.dic.get("metrics")(topoId, "multi-counter", metricsOptions.counter_measurement),
         );
 
         await counter.start();

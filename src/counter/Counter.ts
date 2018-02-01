@@ -251,8 +251,8 @@ export default class Counter implements ICounter, IStoppable {
         this.terminator.tryTerminate(process.topology);
 
         try {
+            this.metrics.addTag("topology_id", process.topology.split("-")[0]);
             const metricMsg = await this.metrics.send({
-                    counter_process_topology_id: process.topology,
                     counter_process_result: process.ok === process.total,
                     counter_process_duration: process.end_timestamp - process.start_timestamp,
                     counter_process_ok_count: process.ok,
