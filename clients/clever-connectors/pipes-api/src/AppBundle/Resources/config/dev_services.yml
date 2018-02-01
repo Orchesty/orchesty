@@ -32,3 +32,5 @@ services:
         arguments:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.providers.oauth2_provider'
+        calls:
+            - ['setLogger',['@monolog.logger.notification']]
