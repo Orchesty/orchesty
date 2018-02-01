@@ -1,6 +1,6 @@
 import {Container} from "hb-utils/dist/lib/Container";
 import {IMetrics} from "metrics-sender/dist/lib/metrics/IMetrics";
-import {mongoStorageOptions, probeOptions, repeaterOptions} from "./config";
+import {metricsOptions, mongoStorageOptions, probeOptions, repeaterOptions} from "./config";
 import Counter from "./counter/Counter";
 import DIContainer from "./DIContainer";
 import IStoppable from "./IStoppable";
@@ -79,7 +79,7 @@ class Pipes implements INodeConfigProvider {
             this.dic.get("amqp.connection"),
             this.dic.get("counter.storage"),
             this.dic.get("topology.terminator")(false),
-            this.dic.get("metrics")(topo.id, "counter"),
+            this.dic.get("metrics")(topo.id, "counter", metricsOptions.counter_measurement),
         );
 
         await counter.start();
@@ -101,7 +101,7 @@ class Pipes implements INodeConfigProvider {
             this.dic.get("amqp.connection"),
             this.dic.get("counter.storage"),
             this.dic.get("topology.terminator")(true),
-            this.dic.get("metrics")(topoId, "counter"),
+            this.dic.get("metrics")(topoId, "counter", metricsOptions.counter_measurement),
         );
 
         await counter.start();
@@ -199,7 +199,7 @@ class Pipes implements INodeConfigProvider {
             this.dic.get(nodeCfg.worker.type)(nodeCfg.worker.settings, drain) :
             this.dic.get(nodeCfg.worker.type)(nodeCfg.worker.settings);
 
-        const metrics: IMetrics = this.dic.get("metrics")(topo.id, id);
+        const metrics: IMetrics = this.dic.get("metrics")(topo.id, id, metricsOptions.node_measurement);
 
         const node = new Node(id, worker, faucet, drain, metrics);
 
