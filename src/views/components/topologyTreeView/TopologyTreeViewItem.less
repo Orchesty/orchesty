@@ -1,0 +1,83 @@
+.topology-tree-view-item{
+  display: block;
+  position: relative;
+
+  a{
+    font-size: 12px;
+    padding: 9px;
+    font-weight: 500;
+    cursor: pointer;
+    display: block;
+    color: inherit;
+    user-select: none;
+
+    i{
+      width: 26px;
+      opacity: .99;
+      display: inline-block;
+      font-style: normal;
+      font-weight: 400;
+      font-size: 18px;
+    }
+
+    span.fa{
+      float: right;
+      text-align: center;
+      margin-top: 5px;
+      font-size: 10px;
+      min-width: inherit;
+      color: #C4CFDA;
+      width: 26px;
+      opacity: .99;
+      display: inline-block;
+      font-style: normal;
+      font-weight: 400;
+    }
+
+    &:hover{
+      color: #2A3F54;
+      background-color: #f5f5f5;
+    }
+  }
+
+  &.topology{
+    a{
+      i{
+        color: #1ABB9C;
+        font-size: 16px;
+      }
+    }
+  }
+
+  &.top-level-list{
+    padding-left: 0;
+  }
+
+  &.next-level-item{
+    padding-left: 36px;
+
+    &:before{
+      background: #ebebeb;
+      bottom: auto;
+      content: "";
+      height: 8px;
+      left: 23px;
+      margin-top: 15px;
+      position: absolute;
+      right: auto;
+      width: 8px;
+      z-index: 1;
+      border-radius: 50%;
+    }
+
+    &:after{
+      border-left: 1px solid #ebebeb;
+      bottom: 0;
+      content: "";
+      left: 27px;
+      position: absolute;
+      top: 0;
+    }
+  }
+
+}

@@ -6,33 +6,15 @@ import processes from 'rootApp/enums/processes';
 import * as topologyActions from 'rootApp/actions/topologyActions';
 import * as applicationActions from 'rootApp/actions/applicationActions';
 
-import TabBar from 'elements/tab/TabBar';
-import TopologyNodeListTable from 'components/node/TopologyNodeListTable';
-import TopologyNodeMetricsListTable from 'components/node/TopologyNodeMetricsListTable';
 import TopologySchema from './TopologySchema';
 import TopologyNodeMetricsContainer from 'components/node/TopologyNodeMetricsContainer';
 
 import './TopologyDetail.less';
-
-const tabItems = [
-  {
-    id: 'nodes',
-    caption: 'Nodes'
-  },
-  {
-    id: 'schema',
-    caption: 'Schema'
-  },
-  {
-    id: 'node_metrics',
-    caption: 'Metrics'
-  }
-];
+import {menuItemType} from 'rootApp/types';
 
 class TopologyDetail extends React.Component {
   constructor(props) {
     super(props);
-    this.changeTab = this.changeTab.bind(this);
     this.schemaImported = this.schemaImported.bind(this);
     this._actions = {
       nodes: null,
@@ -55,36 +37,67 @@ class TopologyDetail extends React.Component {
   }
 
   _sendActions(props){
-    const {topology, setActions, testTopology, edit, clone, publish, topologyDelete, topologyId} = props;
-    const pageActions = [];
+    const {topology, setActions, testTopology, edit, clone, publish, topologyDelete, topologyId, onChangeTab} = props;
+    const otherActions = {
+      type: menuItemType.SUB_MENU,
+      caption: '...',
+      items: [],
+      noCaret: true
+    };
+    const pageActions = [
+      {
+        caption: 'Nodes',
+        icon: 'fa fa-edit',
+        type: menuItemType.ACTION,
+        action: () => onChangeTab('nodes'),
+        color: 'default',
+        round: true
+      },
+      {
+        caption: 'Schema',
+        icon: 'fa fa-tasks',
+        type: menuItemType.ACTION,
+        action: () => onChangeTab('schema'),
+        color: 'default',
+        round: true
+      },
+      {
+        caption: 'Graphs',
+        icon: 'fa fa-area-chart',
+        type: menuItemType.ACTION,
+        action: () => onChangeTab('graphs'),
+        color: 'info',
+        round: true
+      }
+    ];
     if (edit){
-      pageActions.push({caption: 'Edit', action: edit});
+      otherActions.items.push({caption: 'Edit', action: edit});
     }
-    if (clone){
-      pageActions.push({
-        caption: 'Clone',
-        processId: processes.topologyClone(topologyId),
-        action: clone
-      })
+    if (testTopology) {
+      otherActions.items.push({
+        caption: 'Test topology',
+        action: testTopology,
+        processId: processes.topologyTest(topologyId)
+      });
     }
     if (publish){
-      pageActions.push({
+      otherActions.items.push({
         caption: 'Publish',
         action: publish,
         processId: processes.topologyPublish(topologyId),
         disabled: !topology || topology.visibility == 'public'
       });
     }
-    if (testTopology) {
-      pageActions.push({
-        caption: 'Test topology',
-        action: testTopology,
-        processId: processes.topologyTest(topologyId)
-      });
+    if (clone){
+      otherActions.items.push({
+        caption: 'Clone',
+        processId: processes.topologyClone(topologyId),
+        action: clone
+      })
     }
     if (topologyDelete){
       const deleteDisabled = !topology || (topology.visibility == 'public' && topology.enabled);
-      pageActions.push({
+      otherActions.items.push({
         caption: 'Delete',
         processId: processes.topologyDelete(topologyId),
         action: topologyDelete,
@@ -93,29 +106,31 @@ class TopologyDetail extends React.Component {
       });
     }
     if (this._actions['schema']){
-      pageActions.push(...this._actions['schema']);
+      this._actions['schema'].forEach(menuItem => {
+        if (menuItem.type != menuItemType.SUB_MENU){
+          pageActions.push(menuItem);
+        } else {
+          otherActions.items.push({type: menuItemType.SEPARATOR});
+          otherActions.items.push(...menuItem.items);
+        }
+      });
     }
+    pageActions.push(otherActions);
     setActions(pageActions);
   }
 
-  changeTab(tab, index){
-    this.props.onChangeTab(tab.id);
+  schemaImported(msg){
+    this.props.onChangeTab('schema');
   }
 
-  schemaImported(msg){
-    this.props.onChangeTab(tabItems[1].id);
-  }
-//{activeTab == 'nodes' && <TopologyNodeListTable topologyId={topologyId} setActions={this.setActions.bind(this, 'nodes')}/>}
   render() {
     const {topologyId, activeTab, setActions, topology, onChangeTopology, pageKey, metricsRange} = this.props;
-    let activeIndex = tabItems.findIndex(tab => activeTab == tab.id);
     const schemaVisible = activeTab == 'schema';
     return (
       <div className="topology-detail">
-        <TabBar items={tabItems} active={activeIndex} onChangeTab={this.changeTab}/>
+
         <div className="tab-content">
           {activeTab == 'nodes' && <TopologyNodeMetricsContainer topologyId={topologyId} componentKey={pageKey} metricsRange={metricsRange} />}
-          {activeTab == 'node_metrics' && <TopologyNodeMetricsListTable topologyId={topologyId} setActions={this.setActions.bind(this, 'nodeMetrics')}/>}
           <div className={'schema-wrapper' + ( schemaVisible ? '' : ' hidden')}>
             <TopologySchema
               schemaId={topologyId}
@@ -133,14 +148,14 @@ class TopologyDetail extends React.Component {
 }
 
 TopologyDetail.defaultProps = {
-  activeTab: tabItems[0].id,
+  activeTab: 'nodes',
   componentKey: PropTypes.string.isRequired
 };
 
 TopologyDetail.propTypes = {
   topologyId: PropTypes.string.isRequired,
   topology: PropTypes.object,
-  activeTab: PropTypes.oneOf(tabItems.map(tab => tab.id)).isRequired,
+  activeTab: PropTypes.string.isRequired,
   onChangeTab: PropTypes.func.isRequired,
   setActions: PropTypes.func.isRequired,
   onChangeTopology: PropTypes.func.isRequired,
@@ -159,7 +174,7 @@ function mapActionsToProps(dispatch, ownProps){
     testTopology: () => {
       dispatch(topologyActions.testTopology(ownProps.topologyId)).then(result => {
         if (result){
-          ownProps.onChangeTab(tabItems[0].id);
+          ownProps.onChangeTab('nodes');
         }
         return result;
       })

@@ -1,4 +1,5 @@
 import React from 'react'
+import {menuItemType} from 'rootApp/types';
 
 class LocalMenuItem extends React.Component {
   constructor(props) {
@@ -19,7 +20,12 @@ class LocalMenuItem extends React.Component {
 
   render() {
     const {item} = this.props;
-    return <li className={item.disabled ? 'disabled' : ''}><a href="#" onClick={!item.disabled ? this.makeAction.bind(this) : null}>{item.caption}</a></li>
+    switch (item.type) {
+      case menuItemType.SEPARATOR:
+        return <li className="divider" />;
+      default:
+        return <li className={item.disabled ? 'disabled' : ''}><a href="#" onClick={!item.disabled ? this.makeAction.bind(this) : null}>{item.caption}</a></li>;
+    }
   }
 }
 

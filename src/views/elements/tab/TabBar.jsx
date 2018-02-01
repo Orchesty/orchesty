@@ -1,6 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types';
 
+import './TabBar.less';
+
 class TabBar extends React.Component {
   constructor(props) {
     super(props);
@@ -14,15 +16,24 @@ class TabBar extends React.Component {
     }
   }
 
+  closeClick(index, e){
+    const {onClose} = this.props;
+    e.preventDefault();
+    onClose(index);
+  }
+
   render() {
-    const {items, active} = this.props;
+    const {items, active, onClose} = this.props;
     const tabs = items.map((item, index) => (
       <li key={index} className={index == active ? 'active' : null} role="presentation">
-        <a href="#" role="tab" onClick={this.tabClick.bind(this, index)}>{item.caption}</a>
+        <a href="#" role="tab" onClick={this.tabClick.bind(this, index)}>
+          {item.caption}
+          {onClose && <span className="tab-close" onClick={this.closeClick.bind(this, index)}><i className="fa fa-close" /></span>}
+        </a>
       </li>
     ));
     return (
-      <ul className="nav nav-tabs bar_tabs" role="tablist">
+      <ul className={'nav nav-tabs bar_tabs tab-bar' + (onClose ? ' tab-closeable' : '')} role="tablist">
         {tabs}
       </ul>
     );
@@ -34,7 +45,8 @@ TabBar.propTypes = {
     caption: PropTypes.string.isRequired
   })).isRequired,
   active: PropTypes.number,
-  onChangeTab: PropTypes.func
+  onChangeTab: PropTypes.func,
+  onClose: PropTypes.func
 };
 
 export default TabBar;

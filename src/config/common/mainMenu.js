@@ -1,23 +1,31 @@
-export default [
+import {menuItemType} from 'rootApp/types';
+import * as applicationActions from 'rootApp/actions/applicationActions';
+
+export default dispatch => [
   {
-    "id": "topology_list",
-    "type": "item",
-    "icon": "fa fa-connectdevelop",
-    "caption": "Topologies",
-    "page": "topology_list"
+    type: menuItemType.SUB_MENU,
+    caption: 'File',
+    items: [
+      {
+        type: menuItemType.ACTION,
+        caption: 'New folder',
+        action: () => alert('TODO')
+      },
+      {
+        type: menuItemType.ACTION,
+        caption: 'New topology',
+        action: () => alert('TODO')
+      }
+    ]
   },
   {
-    "id": "authorization_list",
-    "type": "item",
-    "icon": "fa fa-universal-access",
-    "caption": "Authorizations",
-    "page": "authorization_list"
+    type: menuItemType.ACTION,
+    caption: 'Authorizations',
+    action: () => dispatch(applicationActions.selectPage('authorization_list'))
   },
   {
-    "id": "notification_settings",
-    "type": "item",
-    "icon": "fa fa-inbox",
-    "caption": "Notification settings",
-    "page": "notification_settings"
+    type: menuItemType.ACTION,
+    caption: 'Notifications',
+    action: () => dispatch(applicationActions.selectPage('notification_settings'))
   }
 ];

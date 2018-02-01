@@ -15,12 +15,14 @@ export default function (initialState, composeWithDevTools) {
   const engine = createEngine('pipes');
   const decoratedEngine = storageFilter(engine, [
     ['auth', 'user'],
-    ['server', 'apiGateway']
+    ['server', 'apiGateway'],
+    ['application', 'showSideBar']
   ]);
   const storageMiddleware = storage.createMiddleware(decoratedEngine, [], [
     types.USER_LOGGED,
     types.USER_LOGOUT,
-    types.SERVER_API_GATEWAY_CHANGE
+    types.SERVER_API_GATEWAY_CHANGE,
+    types.LEFT_SIDEBAR_TOGGLE
   ]);
 
   const middlewares = [thunkMiddleware, storageMiddleware];

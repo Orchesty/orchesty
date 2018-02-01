@@ -1,12 +1,43 @@
-.top_nav{
-  .navbar-nav{
+.top-navigation {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-between;
+  font-size: 13px;
+  color: #edf1f2;
+  line-height: 57px;
 
-    .top_search{
-      padding: 12px 0 11px;
-      margin-bottom: 0;
+  .app-name {
+    font-size: 22px;
+    padding: 0 30px 0 15px;
+  }
 
-      .input-group{
-        margin-bottom: 0;
+  .middle-content {
+    flex: 1;
+  }
+
+  .top_search{
+    flex: 100;
+    .form-control{
+      margin: 11px 0 12px;
+    }
+  }
+
+  .top-main-menu, .user-menu {
+    .btn-group {
+      vertical-align: inherit;
+
+      &:hover {
+        background-color: #425567;
+      }
+
+      .top-menu-item {
+        padding: 13px 15px 12px;
+        color: white;
+        cursor: pointer;
+      }
+
+      .dropdown-menu {
+        margin: 0;
       }
     }
   }

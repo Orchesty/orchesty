@@ -1,16 +1,9 @@
 import * as types from 'rootApp/actionTypes';
 import config from 'rootApp/config';
 
-export function toggleMainSubMenu(id){
+export function leftSidebarToggle() {
   return {
-    type: types.TOGGLE_MAIN_SUB_MENU,
-    id
-  }
-}
-
-export function toggleMainMenu() {
-  return {
-    type: types.TOGGLE_MAIN_MENU
+    type: types.LEFT_SIDEBAR_TOGGLE
   }
 }
 
