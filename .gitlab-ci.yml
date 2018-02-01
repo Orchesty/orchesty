@@ -100,7 +100,6 @@ pf-bridge-test:
     - export METRICS_HOST=influxdb
     - docker-compose up -d
     - docker-compose exec -T test npm run lint
-    - docker-compose exec -T test bash -c 'apt-get update && apt-get install -y netcat'
     - docker-compose exec -T test bash -c 'while ! nc -z rabbitmq 5672; do sleep 1; done'
     - docker-compose exec -T test npm test
 
