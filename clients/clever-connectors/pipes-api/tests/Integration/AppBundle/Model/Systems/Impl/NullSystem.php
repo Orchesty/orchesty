@@ -49,9 +49,9 @@ class NullSystem extends PluginSystemAbstract implements WebhookSystemInterface,
     /**
      * NullSystem constructor.
      *
-     * @param OAuth2Provider $provider
+     * @param OAuth2Provider|null $provider
      */
-    function __construct(OAuth2Provider $provider)
+    function __construct(?OAuth2Provider $provider = NULL)
     {
         parent::__construct();
 
