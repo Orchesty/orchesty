@@ -470,15 +470,14 @@ services:
           - mongo
 
     notification-sender-fpm:
-        ## BEGIN DEV
         image: dkr.hanaboso.net/clever-monitor/clever-notification-sender:master
+        ## BEGIN DEV
         environment:
             - DEV_UID=${DEV_UID}
             - DEV_GID=${DEV_GID}
             - BACKEND_HOST=${BACKEND_URL}
         ## END DEV
         ## BEGIN STAGE
-        #image: dkr.hanaboso.net/clever-monitor/clever-notification-sender:master
         #environment:
         #    - BACKEND_HOST=${BACKEND_URL}
         ## END STAGE
