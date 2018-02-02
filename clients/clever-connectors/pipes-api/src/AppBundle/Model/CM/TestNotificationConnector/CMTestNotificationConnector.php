@@ -3,11 +3,11 @@
 namespace CleverConnectors\AppBundle\Model\CM\TestNotificationConnector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Model\Systems\Impl\Bigcommerce\BigcommerceSystem;
 use CleverConnectors\AppBundle\Traits\LoggerTrait;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
 use Psr\Log\LoggerAwareInterface;
-use Tests\Integration\AppBundle\Model\Systems\Impl\NullSystem;
 
 /**
  * Class CMTestNotificationConnector
@@ -35,8 +35,7 @@ class CMTestNotificationConnector implements CustomNodeInterface, LoggerAwareInt
 
             foreach ($data as $key => $value) {
                 if ($value) {
-
-                    $this->logger->info($key, self::getMessage($key, new NullSystem(), $systemInstall));
+                    $this->logger->info($key, self::getMessage($key, new BigcommerceSystem(), $systemInstall));
                 }
             }
         }
