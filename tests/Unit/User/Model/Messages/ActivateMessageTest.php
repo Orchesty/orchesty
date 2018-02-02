@@ -9,6 +9,7 @@
 
 namespace Tests\Unit\User\Model\Messages;
 
+use Hanaboso\PipesFramework\User\Document\Token;
 use Hanaboso\PipesFramework\User\Document\User;
 use Hanaboso\PipesFramework\User\Model\Messages\ActivateMessage;
 use Hanaboso\PipesFramework\User\Model\MessageSubject;
@@ -27,15 +28,18 @@ class ActivateMessageTest extends TestCase
      */
     public function testGetMessage(): void
     {
+        $tkn = new Token();
+
         $user = $this->getMockBuilder(User::class)->disableOriginalConstructor()->getMock();
         $user->method('getEmail')->willReturn('test@example.com');
+        $user->method('getToken')->willReturn($tkn);
         $message = new ActivateMessage($user);
         $this->assertEquals(
             [
                 'to'          => 'test@example.com',
                 'subject'     => MessageSubject::USER_ACTIVATE,
                 'content'     => '',
-                'dataContent' => [],
+                'dataContent' => ['token' => $tkn->getHash()],
                 'template'    => '',
             ], $message->getMessage()
         );

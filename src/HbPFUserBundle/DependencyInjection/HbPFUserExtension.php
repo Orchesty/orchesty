@@ -32,6 +32,7 @@ class HbPFUserExtension extends Extension implements PrependExtensionInterface
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/prepend-config'));
         $loader->load('doctrine.yml');
+        $loader->load('rabbitmq.yml');
 
         $container->setParameter('src_dir', __DIR__ . '/../..');
     }
