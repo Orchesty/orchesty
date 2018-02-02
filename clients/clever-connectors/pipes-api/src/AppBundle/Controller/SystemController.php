@@ -372,8 +372,8 @@ class SystemController extends FOSRestController
         try {
             $data = $this->handler->getSystemUsers(
                 $system,
-                $request->query->get('page', 1),
-                $request->query->get('limit', 50)
+                intval($request->query->get('page', 1)),
+                intval($request->query->get('limit', 50))
             );
 
             return $this->getResponse($data);
