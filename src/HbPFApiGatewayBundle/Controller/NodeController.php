@@ -11,8 +11,6 @@ use Symfony\Component\HttpFoundation\Response;
  * Class NodeController
  *
  * @package Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller
- *
- * @Route(service="hbpf.api_gateway.controller.node")
  */
 class NodeController extends FOSRestController
 {

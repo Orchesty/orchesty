@@ -17,8 +17,6 @@ use Symfony\Component\HttpFoundation\Response;
  * Class TopologyController
  *
  * @package Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller
- *
- * @Route(service="hbpf.configurator.controller.topology")
  */
 class TopologyController extends FOSRestController
 {
@@ -31,6 +29,16 @@ class TopologyController extends FOSRestController
     private $topologyHandler;
 
     /**
+     * TopologyController constructor.
+     *
+     * @param TopologyHandler $topologyHandler
+     */
+    public function __construct(TopologyHandler $topologyHandler)
+    {
+        $this->topologyHandler = $topologyHandler;
+    }
+
+    /**
      * @Route("/topologies")
      * @Method({"GET", "OPTIONS"})
      *
@@ -40,7 +48,6 @@ class TopologyController extends FOSRestController
      */
     public function getTopologiesAction($query): Response
     {
-        $this->construct();
         $limit  = $query->get('limit');
         $offset = $query->get('offset');
         $data   = $this->topologyHandler->getTopologies(

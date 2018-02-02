@@ -1,3 +1,11 @@
+parameters:
+    # Rabbitmq
+    rabbitmq.host: rabbitmq
+    rabbitmq.port: 5672
+    rabbitmq.vhost: /
+    rabbitmq.user: guest
+    rabbitmq.password: guest
+
 #DEMO
 rabbit-mq:
     exchanges:

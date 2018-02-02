@@ -14,8 +14,6 @@ use Symfony\Component\HttpFoundation\Response;
  * Class NodeController
  *
  * @package Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller
- *
- * @Route(service="hbpf.configurator.controller.node")
  */
 class NodeController extends FOSRestController
 {
@@ -28,6 +26,16 @@ class NodeController extends FOSRestController
     private $nodeHandler;
 
     /**
+     * NodeController constructor.
+     *
+     * @param NodeHandler $nodeHandler
+     */
+    public function __construct(NodeHandler $nodeHandler)
+    {
+        $this->nodeHandler = $nodeHandler;
+    }
+
+    /**
      * @Route("/topologies/{id}/nodes", defaults={}, requirements={"id": "\w+"})
      * @Method({"GET", "OPTIONS"})
      *
@@ -37,7 +45,6 @@ class NodeController extends FOSRestController
      */
     public function getNodesAction(string $id): Response
     {
-        $this->construct();
         $data = $this->nodeHandler->getNodes($id);
 
         return $this->getResponse($data);
@@ -53,7 +60,6 @@ class NodeController extends FOSRestController
      */
     public function getNodeAction(string $id): Response
     {
-        $this->construct();
         $data = $this->nodeHandler->getNode($id);
 
         return $this->getResponse($data);
@@ -70,20 +76,9 @@ class NodeController extends FOSRestController
      */
     public function updateNodeAction(Request $request, string $id): Response
     {
-        $this->construct();
         $data = $this->nodeHandler->updateNode($id, $request->request->all());
 
         return $this->getResponse($data);
-    }
-
-    /**
-     *
-     */
-    private function construct(): void
-    {
-        if (!$this->nodeHandler) {
-            $this->nodeHandler = $this->container->get('hbpf.configurator.handler.node');
-        }
     }
 
 }

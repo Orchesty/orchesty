@@ -1,31 +1,16 @@
 services:
-    hbpf.configurator.controller.topology:
-        class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController
-        arguments:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
+        bind:
+            $topologyHandler: '@hbpf.configurator.handler.topology'
+            $nodeHandler: '@hbpf.configurator.handler.node'
+            $generatorHandler: '@hbpf.handler.generator_handler'
+            $controllingProducer: '@rabbit-mq.producer.topology-destroy'
+            $startingPointHandler: '@hbpf.handler.starting_point'
+            $categoryHandler: '@hbpf.handler.category'
 
-    hbpf.configurator.controller.node:
-        class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\NodeController
-        arguments:
-
-    hbpf.controller.starting_point:
-        class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\StartingPointController
-        arguments:
-
-    hbpf.api_gateway.controller.test:
-        class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TestController
-        arguments:
-            - '@doctrine.odm.mongodb.document_manager'
-            - '@hbpf.handler.starting_point'
-            - "%kernel.project_dir%"
-            - "@monolog.logger.test"
-            - '@hbpf.docker_compose.volume_path_definition_factory'
-
-    hbpf.configurator.generator_controller:
-        class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\GeneratorController
-        arguments:
-            - '@hbpf.handler.generator_handler'
-            - '@monolog.logger.security'
-
-    hbpf.configurator.controller.category:
-        class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\CategoryController
-        arguments:
+    Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\:
+        resource: '../../Controller'
+        tags: ['controller.service_arguments']

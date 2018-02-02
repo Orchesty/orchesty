@@ -54,7 +54,7 @@ class AccessManager implements EventSubscriberInterface
     private $resProvider;
 
     /**
-     * @var mixed
+     * @var string
      */
     private $resEnum;
 
@@ -65,14 +65,14 @@ class AccessManager implements EventSubscriberInterface
      * @param RuleFactory                $factory
      * @param DatabaseProvider           $dbProvider
      * @param ResourceProvider           $resProvider
-     * @param mixed                      $resEnum
+     * @param string                     $resEnum
      */
     function __construct(
         UserDatabaseManagerLocator $userDml,
         RuleFactory $factory,
         DatabaseProvider $dbProvider,
         ResourceProvider $resProvider,
-        $resEnum
+        string $resEnum
     )
     {
         $this->dm          = $userDml->get();

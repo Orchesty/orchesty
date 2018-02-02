@@ -1,4 +1,7 @@
 services:
+    _defaults:
+        public: '%public.services%'
+
     # Starting point
     hbpf.starting_point.starting_point:
         class: Hanaboso\PipesFramework\Configurator\StartingPoint\StartingPoint

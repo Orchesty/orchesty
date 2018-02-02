@@ -25,7 +25,8 @@ if [[ -n ${GENERATOR_PATH} ]]; then
 fi
 
 if [[ -d /srv/project/app  ]]; then
-	sudo chmod -R 774 /srv/project/app/logs && sudo chown -R dev:dev /srv/project/app/logs
+	sudo chmod -R 774 /srv/project/var/log && sudo chown -R dev:dev /srv/project/var/log
+	sudo chmod -R 774 /srv/project/var/cache && sudo chown -R dev:dev /srv/project/var/cache
 fi
 
 sudo usermod -aG docker dev

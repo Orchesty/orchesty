@@ -18,8 +18,6 @@ use Symfony\Component\HttpFoundation\Response;
  * Class GeneratorController
  *
  * @package Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller
- *
- * @Route(service="hbpf.api_gateway.controller.generator")
  */
 class GeneratorController extends FOSRestController
 {

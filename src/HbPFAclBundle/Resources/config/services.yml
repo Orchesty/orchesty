@@ -1,4 +1,7 @@
 services:
+    _defaults:
+        public: '%public.services%'
+
     hbpf.acl.provider.database:
         class: Hanaboso\PipesFramework\Acl\Provider\Impl\DatabaseProvider
         arguments:

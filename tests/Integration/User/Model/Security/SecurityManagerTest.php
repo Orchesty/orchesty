@@ -6,6 +6,8 @@ use Doctrine\Common\Persistence\ObjectRepository;
 use Hanaboso\PipesFramework\User\Document\User;
 use Hanaboso\PipesFramework\User\Model\Security\SecurityManager;
 use Hanaboso\PipesFramework\User\Model\Security\SecurityManagerException;
+use Symfony\Component\Security\Core\Encoder\BCryptPasswordEncoder;
+use Symfony\Component\Security\Core\Encoder\EncoderFactory;
 use Symfony\Component\Security\Core\Encoder\PasswordEncoderInterface;
 use Tests\DatabaseTestCaseAbstract;
 
@@ -38,8 +40,8 @@ class SecurityManagerTest extends DatabaseTestCaseAbstract
     protected function setUp(): void
     {
         parent::setUp();
-        $encodeFactory         = $this->container->get('security.encoder_factory');
-        $this->encoder         = $encodeFactory->getEncoder(User::class);
+        $this->encoder         = new BCryptPasswordEncoder(12);
+        $encodeFactory         = new EncoderFactory([$this->encoder]);
         $this->securityManager = new SecurityManager(
             $this->container->get('hbpf.database_manager_locator.user'),
             $encodeFactory,

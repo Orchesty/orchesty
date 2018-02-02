@@ -1,7 +1,9 @@
 services:
+    _defaults:
+        public: '%public.services%'
+
     listener.controller.exception:
         class: Hanaboso\PipesFramework\ApiGateway\Listener\ControllerExceptionListener
-        arguments:
         calls:
             - ['setLogger', ['@monolog.logger.commons']]
         tags:

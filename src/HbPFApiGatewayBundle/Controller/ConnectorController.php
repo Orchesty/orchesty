@@ -11,8 +11,6 @@ use Symfony\Component\HttpFoundation\Response;
  * Class ConnectorController
  *
  * @package Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller
- *
- * @Route(service="hbpf.api_gateway.controller.connector")
  */
 class ConnectorController extends FOSRestController
 {

@@ -21,8 +21,6 @@ use Throwable;
 /**
  * Class StartingPointController
  *
- * @Route(service="hbpf.controller.starting_point")
- *
  * @package Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller
  */
 class StartingPointController extends FOSRestController
@@ -33,7 +31,17 @@ class StartingPointController extends FOSRestController
     /**
      * @var StartingPointHandler
      */
-    private $handler;
+    private $startingPointHandler;
+
+    /**
+     * StartingPointController constructor.
+     *
+     * @param StartingPointHandler $startingPointHandler
+     */
+    public function __construct(StartingPointHandler $startingPointHandler)
+    {
+        $this->startingPointHandler = $startingPointHandler;
+    }
 
     /**
      * @Route("/topologies/{topologyName}/nodes/{nodeName}/run", defaults={}, requirements={"topologyName": "\w+", "nodeName": "[\w-\.]+"})
@@ -47,9 +55,8 @@ class StartingPointController extends FOSRestController
      */
     public function runAction(Request $request, string $topologyName, string $nodeName): Response
     {
-        $this->construct();
         try {
-            $this->handler->runWithRequest($request, $topologyName, $nodeName);
+            $this->startingPointHandler->runWithRequest($request, $topologyName, $nodeName);
         } catch (Throwable $e) {
             return $this->getErrorResponse($e);
         }
@@ -69,9 +76,8 @@ class StartingPointController extends FOSRestController
      */
     public function runByIdAction(Request $request, string $topologyId, string $nodeId): Response
     {
-        $this->construct();
         try {
-            $this->handler->runWithRequestById($request, $topologyId, $nodeId);
+            $this->startingPointHandler->runWithRequestById($request, $topologyId, $nodeId);
         } catch (Throwable $e) {
             return $this->getErrorResponse($e);
         }
@@ -89,20 +95,9 @@ class StartingPointController extends FOSRestController
      */
     public function testAction(string $topologyId): Response
     {
-        $this->construct();
-        $data = $this->handler->runTest($topologyId);
+        $data = $this->startingPointHandler->runTest($topologyId);
 
         return $this->getResponse($data, 200, ['Content-Type' => 'application/json']);
-    }
-
-    /**
-     *
-     */
-    private function construct(): void
-    {
-        if (!$this->handler) {
-            $this->handler = $this->container->get('hbpf.handler.starting_point');
-        }
     }
 
 }

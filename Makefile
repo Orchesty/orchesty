@@ -59,7 +59,7 @@ phpcontroller:
 	$(DE) ./vendor/bin/phpunit -c phpunit.xml.dist --colors --stderr tests/Controller
 
 phpintegration: database-create
-	$(DE) ./vendor/bin/phpunit -c phpunit.xml.dist --colors --stderr tests/Integration/
+	$(DE) ./vendor/bin/phpunit -c phpunit.xml.dist --colors --stderr tests/Integration
 
 phpmanual-up:
 	cd tests/Manual; $(MAKE) docker-up-force;

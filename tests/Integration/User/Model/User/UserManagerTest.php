@@ -12,6 +12,7 @@ use Hanaboso\PipesFramework\User\Enum\UserTypeEnum;
 use Hanaboso\PipesFramework\User\Model\Token\TokenManagerException;
 use Hanaboso\PipesFramework\User\Model\User\UserManager;
 use Hanaboso\PipesFramework\User\Model\User\UserManagerException;
+use Symfony\Component\Security\Core\Encoder\BCryptPasswordEncoder;
 use Symfony\Component\Security\Core\Encoder\PasswordEncoderInterface;
 use Tests\DatabaseTestCaseAbstract;
 use Tests\PrivateTrait;
@@ -59,12 +60,11 @@ class UserManagerTest extends DatabaseTestCaseAbstract
     protected function setUp(): void
     {
         parent::setUp();
-        $encoderFactory          = $this->container->get('security.encoder_factory');
         $this->userManager       = $this->container->get('hbpf.user.manager.user');
         $this->userRepository    = $this->dm->getRepository(User::class);
         $this->tmpUserRepository = $this->dm->getRepository(TmpUser::class);
         $this->tokenRepository   = $this->dm->getRepository(Token::class);
-        $this->encoder           = $encoderFactory->getEncoder(User::class);
+        $this->encoder           = new BCryptPasswordEncoder(12);
     }
 
     /**

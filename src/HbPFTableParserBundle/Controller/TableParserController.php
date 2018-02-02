@@ -17,10 +17,8 @@ use Symfony\Component\HttpFoundation\Response;
  * Class ApiController
  *
  * @package Hanaboso\PipesFramework\HbPFTableParserBundle\Controller
- *
- * @Route(service="hbpf.parser.table.controller.api")
  */
-class ApiController extends FOSRestController
+class TableParserController extends FOSRestController
 {
 
     use ControllerTrait;

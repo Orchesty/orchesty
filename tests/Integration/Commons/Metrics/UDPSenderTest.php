@@ -2,7 +2,6 @@
 
 namespace Tests\Integration\Commons\Metrics;
 
-use DateTime;
 use Hanaboso\PipesFramework\Commons\Metrics\UDPSender;
 use PHPUnit\Framework\TestCase;
 
@@ -14,6 +13,8 @@ use PHPUnit\Framework\TestCase;
 final class UDPSenderTest extends TestCase
 {
 
+    private const LIMIT = 1;
+
     /**
      * Test whether resolving ip address returns the ip address string or empty string if cannot be resolved.
      * Also tests if the resolving of invalid host does not take too long.
@@ -22,7 +23,7 @@ final class UDPSenderTest extends TestCase
      */
     public function testRefreshIp(): void
     {
-        $start = (new DateTime())->getTimestamp();
+        $start = microtime(TRUE);
 
         $sender = new UDPSender('localhost', 61999);
         $ip     = $sender->refreshIp();
@@ -39,8 +40,8 @@ final class UDPSenderTest extends TestCase
         $ip     = $sender->refreshIp();
         $this->assertEquals('', $ip);
 
-        $end = (new DateTime())->getTimestamp();
-        $this->assertLessThanOrEqual(1, $end - $start);
+        $end = microtime(TRUE);
+        $this->assertLessThanOrEqual(self::LIMIT, $end - $start);
     }
 
     /**
@@ -48,7 +49,7 @@ final class UDPSenderTest extends TestCase
      */
     public function testSend(): void
     {
-        $start = (new DateTime())->getTimestamp();
+        $start = microtime(TRUE);
 
         $message = 'abc,name=def,host=ghi key1=val1,key2=val2 1465839830100400200';
 
@@ -66,8 +67,8 @@ final class UDPSenderTest extends TestCase
         $sender->send($message);
 
         // Check if sending is not delaying too much
-        $end = (new DateTime())->getTimestamp();
-        $this->assertLessThanOrEqual(1, $end - $start);
+        $end = microtime(TRUE);
+        $this->assertLessThanOrEqual(self::LIMIT, $end - $start);
     }
 
     /**
@@ -75,10 +76,10 @@ final class UDPSenderTest extends TestCase
      */
     public function testSendManyOnNonExistingHost(): void
     {
-        $start = (new DateTime())->getTimestamp();
+        $start = microtime(TRUE);
 
         $message = 'abc,name=def,host=ghi key1=val1,key2=val2 1465839830100400200';
-        $sender = new UDPSender('invalidhost', 61999);
+        $sender  = new UDPSender('invalidhost', 61999);
 
         for ($i = 0; $i < 1000; $i++) {
             $result = $sender->send($message);
@@ -86,8 +87,8 @@ final class UDPSenderTest extends TestCase
         }
 
         // Check if sending is not delaying too much
-        $end = (new DateTime())->getTimestamp();
-        $this->assertLessThanOrEqual(1, $end - $start);
+        $end = microtime(TRUE);
+        $this->assertLessThanOrEqual(self::LIMIT, $end - $start);
     }
 
 }

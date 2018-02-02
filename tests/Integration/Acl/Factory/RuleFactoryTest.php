@@ -4,7 +4,6 @@ namespace Tests\Integration\Acl\Factory;
 
 use Hanaboso\PipesFramework\Acl\Document\Group;
 use Hanaboso\PipesFramework\Acl\Document\Rule;
-use Hanaboso\PipesFramework\Acl\Factory\RuleFactory;
 use Hanaboso\PipesFramework\User\Document\User;
 use Hanaboso\PipesFramework\User\Model\User\Event\UserEvent;
 use Tests\DatabaseTestCaseAbstract;
@@ -12,13 +11,14 @@ use Tests\DatabaseTestCaseAbstract;
 /**
  * Class RuleFactoryTest
  *
- * @package Tests\Integration\Acl\Factory
+ * @coversDefaultClass Hanaboso\PipesFramework\Acl\Factory\RuleFactory
+ * @package            Tests\Integration\Acl\Factory
  */
 class RuleFactoryTest extends DatabaseTestCaseAbstract
 {
 
     /**
-     * @covers RuleFactory::createRule()
+     * @covers ::createRule()
      */
     public function testRuleFactory(): void
     {
@@ -37,8 +37,7 @@ class RuleFactoryTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers RuleFactory::getDefaultRules()
-     * @covers UserEventSubscriber::createGroup()
+     * @covers ::getDefaultRules()
      */
     public function testSetDefaultRules(): void
     {

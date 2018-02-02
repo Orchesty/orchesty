@@ -2,20 +2,20 @@
 
 namespace Tests\Controller\HbPFMapperBundle\Controller;
 
-use Hanaboso\PipesFramework\HbPFMapperBundle\Controller\MapperController;
 use Hanaboso\PipesFramework\HbPFMapperBundle\Handler\MapperHandler;
 use Tests\ControllerTestCaseAbstract;
 
 /**
  * Class MapperControllerTest
  *
+ * @coversDefaultClass  Hanaboso\PipesFramework\HbPFMapperBundle\Controller\MapperController
  * @package Tests\Controller\HbPFMapperBundle\Controller
  */
 final class MapperControllerTest extends ControllerTestCaseAbstract
 {
 
     /**
-     * @covers MapperController::processTestAction()
+     * @covers ::processTestAction()
      */
     public function testProcessTest(): void
     {
@@ -29,7 +29,7 @@ final class MapperControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers MapperController::processAction()
+     * @covers ::processAction()
      */
     public function testProcess(): void
     {

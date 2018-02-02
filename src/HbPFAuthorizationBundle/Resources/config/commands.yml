@@ -1,4 +1,7 @@
 services:
+    _defaults:
+        public: '%public.services%'
+
     app.command.account_active_check:
         class: Hanaboso\PipesFramework\Authorization\Command\InstallAuthorizationsCommand
         arguments:

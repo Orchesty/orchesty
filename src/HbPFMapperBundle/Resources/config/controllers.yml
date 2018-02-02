@@ -1,5 +1,11 @@
 services:
-    hbpf.mapper.controller.mapper:
-        class: Hanaboso\PipesFramework\HbPFMapperBundle\Controller\MapperController
-        arguments:
-            - '@hbpf.mapper.handler.mapper'
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
+        bind:
+            $mapperHandler: '@hbpf.mapper.handler.mapper'
+
+    Hanaboso\PipesFramework\HbPFMapperBundle\Controller\:
+        resource: '../../Controller'
+        tags: ['controller.service_arguments']

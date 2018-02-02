@@ -68,8 +68,8 @@ class HbPFRabbitMqBundle extends Bundle
     {
         /** @var Command[] $commands */
         $commands = [
-            $this->container->get("command.rabbit-mq.setup"),
             $this->container->get("command.rabbit-mq.consumer"),
+            $this->container->get("command.rabbit-mq.setup"),
             $this->container->get("command.rabbit-mq.async-consumer"),
         ];
 

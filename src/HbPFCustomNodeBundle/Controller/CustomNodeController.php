@@ -27,8 +27,6 @@ use Throwable;
  * Class CustomNodeController
  *
  * @package Hanaboso\PipesFramework\HbPFCustomNodeBundle\Controller
- *
- * @Route(service="hbpf.custom.custom_node")
  */
 class CustomNodeController extends FOSRestController implements LoggerAwareInterface
 {
@@ -48,11 +46,11 @@ class CustomNodeController extends FOSRestController implements LoggerAwareInter
     /**
      * CustomNodeController constructor.
      *
-     * @param CustomNodeHandler $handler
+     * @param CustomNodeHandler $customNodeHandler
      */
-    public function __construct(CustomNodeHandler $handler)
+    public function __construct(CustomNodeHandler $customNodeHandler)
     {
-        $this->handler = $handler;
+        $this->handler = $customNodeHandler;
         $this->logger  = new NullLogger();
     }
 
@@ -100,6 +98,8 @@ class CustomNodeController extends FOSRestController implements LoggerAwareInter
     }
 
     /**
+     * @required
+     *
      * @param LoggerInterface $logger
      */
     public function setLogger(LoggerInterface $logger): void

@@ -22,8 +22,6 @@ use Symfony\Component\HttpFoundation\Response;
  * Class JoinerController
  *
  * @package Hanaboso\PipesFramework\HbPFJoinerBundle\Controller
- *
- * @Route(service="hbpf.controller.joiner")
  */
 class JoinerController extends FOSRestController
 {
@@ -33,16 +31,16 @@ class JoinerController extends FOSRestController
     /**
      * @var JoinerHandler
      */
-    private $handler;
+    private $joinerHandler;
 
     /**
      * JoinerController constructor.
      *
-     * @param JoinerHandler $handler
+     * @param JoinerHandler $joinerHandler
      */
-    public function __construct(JoinerHandler $handler)
+    public function __construct(JoinerHandler $joinerHandler)
     {
-        $this->handler = $handler;
+        $this->joinerHandler = $joinerHandler;
     }
 
     /**
@@ -57,7 +55,7 @@ class JoinerController extends FOSRestController
     public function sendAction(Request $request, string $joinerId): Response
     {
         try {
-            $data = $this->handler->processJoiner($joinerId, $request->request->all());
+            $data = $this->joinerHandler->processJoiner($joinerId, $request->request->all());
 
             return $this->getResponse($data);
         } catch (JoinerException $e) {
@@ -77,7 +75,7 @@ class JoinerController extends FOSRestController
     public function sendTestAction(Request $request, string $joinerId): Response
     {
         try {
-            $this->handler->processJoinerTest($joinerId, $request->request->all());
+            $this->joinerHandler->processJoinerTest($joinerId, $request->request->all());
 
             return $this->getResponse([]);
         } catch (JoinerException $e) {

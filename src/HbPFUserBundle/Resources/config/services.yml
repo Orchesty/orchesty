@@ -1,4 +1,7 @@
 services:
+    _defaults:
+        public: '%public.services%'
+
     hbpf.user.handler.user:
         class: Hanaboso\PipesFramework\HbPFUserBundle\Handler\UserHandler
         arguments:

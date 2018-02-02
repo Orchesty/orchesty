@@ -1,11 +1,14 @@
 services:
+    _defaults:
+        public: '%public.services%'
+
     hbpf.configurator.handler.topology:
-            class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler
-            arguments:
-                - '@hbpf.database_manager_locator'
-                - '@hbpf.configurator.manager.topology'
-                - '@hbpf.handler.generator_handler'
-                - '@hbpf.topology_generator.request.request_handler'
+        class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler
+        arguments:
+            - '@hbpf.database_manager_locator'
+            - '@hbpf.configurator.manager.topology'
+            - '@hbpf.handler.generator_handler'
+            - '@hbpf.topology_generator.request.request_handler'
 
     hbpf.configurator.handler.node:
         class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\NodeHandler

@@ -1,4 +1,7 @@
 services:
+    _defaults:
+        public: '%public.services%'
+
     hbpf.handler.custom_node:
         class: Hanaboso\PipesFramework\HbPFCustomNodeBundle\Handler\CustomNodeHandler
         arguments:

@@ -1,8 +1,7 @@
 .env
 .idea
 /vendor
-/app/cache
-/app/logs
+/var
 
 /tests/Unit/TopologyGenerator/DockerCompose/output/*
 !/tests/Unit/TopologyGenerator/DockerCompose/output/.gitkeep

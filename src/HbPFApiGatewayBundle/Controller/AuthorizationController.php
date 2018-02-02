@@ -11,8 +11,6 @@ use Symfony\Component\HttpFoundation\Response;
  * Class AuthorizationController
  *
  * @package Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller
- *
- * @Route(service="hbpf.api_gateway.controller.authorization")
  */
 class AuthorizationController extends FOSRestController
 {

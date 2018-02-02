@@ -36,6 +36,16 @@ class MetricsController extends FOSRestController
     private $metricsHandler;
 
     /**
+     * MetricsController constructor.
+     *
+     * @param MetricsHandler $metricsHandler
+     */
+    public function __construct(MetricsHandler $metricsHandler)
+    {
+        $this->metricsHandler = $metricsHandler;
+    }
+
+    /**
      * @Route("/metrics/topology/{topologyId}")
      * @Method({"GET", "OPTIONS"})
      *
@@ -46,7 +56,6 @@ class MetricsController extends FOSRestController
      */
     public function topologyMetricsAction(Request $request, string $topologyId): Response
     {
-        $this->construct();
         try {
             /** @var ParameterBag $query */
             $query = $request->attributes->all()['query'];
@@ -70,7 +79,6 @@ class MetricsController extends FOSRestController
      */
     public function nodeMetricsAction(Request $request, string $topologyId, string $nodeId): Response
     {
-        $this->construct();
         try {
             /** @var ParameterBag $query */
             $query = $request->attributes->all()['query'];
@@ -93,7 +101,6 @@ class MetricsController extends FOSRestController
      */
     public function topologyRequestsCountMetricsAction(Request $request, string $topologyId): Response
     {
-        $this->construct();
         try {
             /** @var ParameterBag $query */
             $query = $request->attributes->all()['query'];
@@ -103,16 +110,6 @@ class MetricsController extends FOSRestController
         }
 
         return $this->getResponse($data);
-    }
-
-    /**
-     *
-     */
-    private function construct(): void
-    {
-        if (!$this->metricsHandler) {
-            $this->metricsHandler = $this->container->get('hbpf.metrics.handler.metrics');
-        }
     }
 
 }

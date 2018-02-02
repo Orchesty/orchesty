@@ -1,7 +1,9 @@
 services:
+    _defaults:
+        public: '%public.services%'
+
     hbpf.transport.curl_client_factory:
-            class: Hanaboso\PipesFramework\Commons\Transport\Curl\CurlClientFactory
-            arguments:
+        class: Hanaboso\PipesFramework\Commons\Transport\Curl\CurlClientFactory
 
     hbpf.transport.curl_manager:
         class: Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager
@@ -10,7 +12,6 @@ services:
             - '@hbpf.influxdb_sender'
         calls:
             - ['setLogger', ['@monolog.logger.commons']]
-            
 
     hbpf.transport.soap_client_factory:
         class: Hanaboso\PipesFramework\Commons\Transport\Soap\SoapClientFactory

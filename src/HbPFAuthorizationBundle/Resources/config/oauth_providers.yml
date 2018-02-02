@@ -1,4 +1,7 @@
 services:
+    _defaults:
+        public: '%public.services%'
+
     hbpf.providers.oauth1_provider:
         class: Hanaboso\PipesFramework\Authorization\Provider\OAuth1Provider
         arguments:

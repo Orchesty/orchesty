@@ -28,10 +28,8 @@ class UserControllerTest extends ControllerTestCaseAbstract
     protected function setUp(): void
     {
         // Intentionally not calling parent setUp
-        $this->client = self::createClient([], ['HTTP_X-Requested-With' => 'XMLHttpRequest']);
+        $this->client = self::createClient([], []);
         $this->dm->getConnection()->dropDatabase('pipes');
-        $this->session->invalidate();
-        $this->session->clear();
     }
 
     /**
@@ -237,10 +235,9 @@ class UserControllerTest extends ControllerTestCaseAbstract
         $user     = $this->loginUser('email@example.com', 'passw0rd');
         $response = $this->sendPost('/api/user/change_password', ['password' => 'anotherPassw0rd']);
 
+        $this->assertEquals(200, $response->status);
         $this->dm->clear();
         $existingUser = $this->dm->getRepository(User::class)->find($user->getId());
-
-        $this->assertEquals(200, $response->status);
         $this->assertNotSame($user->getPassword(), $existingUser->getPassword());
     }
 

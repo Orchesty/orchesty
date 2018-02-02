@@ -12,8 +12,6 @@ use Symfony\Component\HttpFoundation\Response;
  * Class NotificationController
  *
  * @package Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller
- *
- * @Route(service="hbpf.api_gateway.controller.notification")
  */
 class NotificationController extends FOSRestController
 {

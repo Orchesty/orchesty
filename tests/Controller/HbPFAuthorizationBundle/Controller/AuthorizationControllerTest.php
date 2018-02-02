@@ -2,22 +2,21 @@
 
 namespace Tests\Controller\HbPFAuthorizationBundle\Controller;
 
-use Hanaboso\PipesFramework\HbPFAuthorizationBundle\Controller\AuthorizationController;
 use Hanaboso\PipesFramework\HbPFAuthorizationBundle\Handler\AuthorizationHandler;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Tests\ControllerTestCaseAbstract;
 
 /**
- * Created by PhpStorm.
- * User: stano
- * Date: 30.8.17
- * Time: 13:35
+ * Class AuthorizationControllerTest
+ *
+ * @coversDefaultClass Hanaboso\PipesFramework\HbPFAuthorizationBundle\Controller\AuthorizationController
+ * @package Tests\Controller\HbPFAuthorizationBundle\Controller
  */
 final class AuthorizationControllerTest extends ControllerTestCaseAbstract
 {
 
     /**
-     * @covers AuthorizationController::authorization()
+     * @covers ::authorization()
      */
     public function testAuthorization(): void
     {
@@ -34,7 +33,7 @@ final class AuthorizationControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers AuthorizationController::authorization()
+     * @covers ::authorization()
      */
     public function testAuthorizationFail(): void
     {
@@ -48,7 +47,7 @@ final class AuthorizationControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers AuthorizationController::authorization()
+     * @covers ::authorization()
      */
     public function testSaveToken(): void
     {
@@ -62,7 +61,7 @@ final class AuthorizationControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers AuthorizationController::getAuthorizations()
+     * @covers ::getAuthorizations()
      */
     public function testGetAuthorizations(): void
     {

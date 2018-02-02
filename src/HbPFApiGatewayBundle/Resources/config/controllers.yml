@@ -1,40 +1,9 @@
 services:
-    hbpf.api_gateway.controller.node:
-        class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\NodeController
-        arguments:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
 
-    hbpf.api_gateway.controller.topology:
-        class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\TopologyController
-        arguments:
-
-    hbpf.api_gateway.controller.user:
-        class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\UserController
-        arguments:
-
-    hbpf.api_gateway.controller.authorization:
-        class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\AuthorizationController
-        arguments:
-
-    hbpf.api_gateway.controller.starting_point:
-        class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\StartingPointController
-        arguments:
-
-    hbpf.api_gateway.controller.connector:
-        class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ConnectorController
-        arguments:
-
-    hbpf.api_gateway.controller.generator:
-        class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\GeneratorController
-        arguments:
-
-    hbpf.api_gateway.controller.category:
-        class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\CategoryController
-        arguments:
-
-    hbpf.api_gateway.controller.metrics:
-        class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\MetricsController
-        arguments:
-
-    hbpf.api_gateway.controller.notification:
-        class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\NotificationController
-        arguments:
+    Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\:
+        resource: '../../Controller'
+        tags: ['controller.service_arguments']

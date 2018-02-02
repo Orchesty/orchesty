@@ -1,0 +1,12 @@
+parameters:
+     # InfluxDb
+    influx.host: influxdb
+    influx.api_port: 8086
+    influx.udp_port: 8089
+    influx.user: admin
+    influx.password: password
+    influx.database: pipes
+    influx.node_table: pipes_node
+    influx.fpm_table: pipes_monolith_fpm
+    influx.rabbit_table: rabbitmq_queue
+    influx.counter_table: pipes_counter
