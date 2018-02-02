@@ -58,6 +58,8 @@ services:
         user: ${DEV_UID}:${DEV_GID}
         environment:
           BACKEND_HOST: ${BACKEND_URL}/
+          ELASTIC_HOST: elasticsearch
+          ELASTIC_INDEX: 'index'
         command: bash -c 'while ! [ -f vendor/autoload.php ];do sleep 1; echo "sleep 1"; done; bin/console rabbit-mq:consumer status-service'
         working_dir: /var/www/pipes/clients/clever-connectors/pipes-api
         volumes:
@@ -71,6 +73,8 @@ services:
     #    command: bin/console rabbit-mq:consumer status-service
     #    environment:
     #      BACKEND_HOST: ${BACKEND_URL}/
+    #      ELASTIC_HOST: elasticsearch
+    #      ELASTIC_INDEX: 'logstash-2018.01.31'
     ## END STAGE
 
     ## BEGIN DEV

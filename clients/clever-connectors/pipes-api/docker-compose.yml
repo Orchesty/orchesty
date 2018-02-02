@@ -12,6 +12,7 @@ services:
           DEV_GID: ${DEV_GID}
           BACKEND_HOST: ${BACKEND_HOST}
           ELASTIC_HOST: elasticsearch
+          ELASTIC_INDEX: index
         volumes:
           - ../../../:/var/www/pipes
           - ${SSH_AUTH_SOCK}:/tmp/bound-ssh-agent

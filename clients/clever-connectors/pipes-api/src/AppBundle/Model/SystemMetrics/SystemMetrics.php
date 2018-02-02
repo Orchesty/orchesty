@@ -14,7 +14,7 @@ use Elastica\Request;
 class SystemMetrics implements SystemMetricsInterface
 {
 
-    private const PATH = 'index/limiter/_search';
+    private const PATH = '%s/limiter/_search';
 
     private const SYSTEM_METRICS_GROUP_BY = 'group_by_timestamp';
     private const SYSTEM_REQUEST_GROUP_BY = 'group_by_system-key';
@@ -25,13 +25,20 @@ class SystemMetrics implements SystemMetricsInterface
     private $client;
 
     /**
+     * @var string
+     */
+    private $index;
+
+    /**
      * SystemMetrics constructor.
      *
      * @param Client $client
+     * @param string $index
      */
-    public function __construct(Client $client)
+    public function __construct(Client $client, string $index)
     {
         $this->client = $client;
+        $this->index  = $index;
     }
 
     /**
@@ -54,7 +61,7 @@ class SystemMetrics implements SystemMetricsInterface
 
         $query = json_encode($this->processParameters($dto, $query));
 
-        return $this->processSystemMetrics($this->client->request(self::PATH, Request::GET, $query)->getData());
+        return $this->processSystemMetrics($this->client->request($this->getPath(), Request::GET, $query)->getData());
     }
 
     /**
@@ -76,7 +83,17 @@ class SystemMetrics implements SystemMetricsInterface
 
         $query = json_encode($this->processParameters($dto, $query));
 
-        return $this->processSystemRequestCount($this->client->request(self::PATH, Request::GET, $query)->getData());
+        return $this->processSystemRequestCount(
+            $this->client->request($this->getPath(), Request::GET, $query)->getData()
+        );
+    }
+
+    /**
+     * @return string
+     */
+    private function getPath(): string
+    {
+        return sprintf(self::PATH, $this->index);
     }
 
     /**

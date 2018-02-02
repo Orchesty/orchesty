@@ -189,4 +189,5 @@ services:
         class: CleverConnectors\AppBundle\Model\SystemMetrics\SystemMetrics
         arguments:
             - '@cc.elastica.client'
+            - '%elastic_index%'
 
