@@ -1,4 +1,7 @@
 services:
+    _defaults:
+        public: '%public.services%'
+
     hbpf.configurator.manager.topology:
         class: Hanaboso\PipesFramework\Configurator\Model\TopologyManager
         arguments:

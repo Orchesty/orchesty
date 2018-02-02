@@ -10,7 +10,8 @@ RUN apt-get update && \
     apt-get install -y docker-ce && \
     apt-get clean
 
-ENV SYMFONY_ENV=prod
+ENV APP_ENV=prod
+ENV APP_DEBUG=0
 
 COPY ./ /var/www/html/
 

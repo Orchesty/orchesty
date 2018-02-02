@@ -1,9 +1,0 @@
-services:
-    hbpf.configurator.handler.topology:
-        class: CleverConnectors\AppBundle\Handler\TopologyHandler
-        arguments:
-            - '@hbpf.database_manager_locator'
-            - '@hbpf.configurator.manager.topology'
-            - '@hbpf.handler.generator_handler'
-            - '@cc.systems.manager'
-            - '@hbpf.topology_generator.request.request_handler'

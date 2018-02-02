@@ -3,7 +3,6 @@
 namespace Tests\Unit\AppBundle\Model\Systems\Impl\Shopify\Mapper;
 
 use CleverConnectors\AppBundle\Enum\CleverFieldsEnum;
-use CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\Mapper\ShopifyUpdatedCustomerMapper;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Nette\Utils\Json;
 use Tests\ConnectorTestCaseAbstract;
@@ -11,13 +10,14 @@ use Tests\ConnectorTestCaseAbstract;
 /**
  * Class ShopifyUpdatedCustomerMapperTest
  *
- * @package Tests\Unit\AppBundle\Model\Systems\Impl\Shopify\Mapper
+ * @coversDefaultClass CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\Mapper\ShopifyUpdatedCustomerMapper
+ * @package            Tests\Unit\AppBundle\Model\Systems\Impl\Shopify\Mapper
  */
 final class ShopifyUpdatedCustomerMapperTest extends ConnectorTestCaseAbstract
 {
 
     /**
-     * @covers ShopifyUpdatedCustomerMapper::process()
+     * @covers ::process()
      */
     public function testProcess(): void
     {

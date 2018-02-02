@@ -1,4 +1,6 @@
 services:
+    _defaults:
+        public: '%public.services%'
 
     cc.topology.listener:
         class: CleverConnectors\AppBundle\Listeners\TopologyEventListener

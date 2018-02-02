@@ -1,0 +1,41 @@
+cc:
+    resource: '@AppBundle/Controller/'
+    type: annotation
+
+cc_plugins:
+    resource: '@AppBundle/Controller/PluginsController.php'
+    type: annotation
+    prefix: /plugins
+
+hb_pf_api_gateway:
+    resource: '@HbPFApiGatewayBundle/Controller'
+    type:     annotation
+    prefix:   /api
+
+hb_pf_authorization:
+    resource: "@HbPFAuthorizationBundle/Controller"
+    type: annotation
+
+hb_pf_mapper:
+    resource: "@HbPFMapperBundle/Controller"
+    type: annotation
+
+hb_pf_connector:
+    resource: "@HbPFConnectorBundle/Controller"
+    type: annotation
+
+hb_pf_cutom_node:
+    resource: "@HbPFCustomNodeBundle/Controller"
+    type: annotation
+
+hb_pf_configurator:
+    resource: "@HbPFConfiguratorBundle/Controller"
+    type: annotation
+
+hb_pf_user:
+    resource: "@HbPFUserBundle/Controller"
+    type: annotation
+
+hb_pf_metrics:
+    resource: "@HbPFMetricsBundle/Controller"
+    type: annotation

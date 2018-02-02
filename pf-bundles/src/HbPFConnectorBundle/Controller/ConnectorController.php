@@ -15,7 +15,9 @@ use FOS\RestBundle\Controller\FOSRestController;
 use Hanaboso\PipesFramework\Commons\Traits\ControllerTrait;
 use Hanaboso\PipesFramework\HbPFConnectorBundle\Handler\ConnectorHandler;
 use Hanaboso\PipesFramework\Utils\ControllerUtils;
+use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -25,10 +27,9 @@ use Throwable;
  * Class ConnectorController
  *
  * @package Hanaboso\PipesFramework\HbPFConnectorBundle\Controller
- *
- * @Route(service="hbpf.controller.connector")
+ * @todo    remove logger
  */
-class ConnectorController extends FOSRestController
+class ConnectorController extends FOSRestController implements LoggerAwareInterface
 {
 
     use ControllerTrait;
@@ -36,12 +37,23 @@ class ConnectorController extends FOSRestController
     /**
      * @var ConnectorHandler
      */
-    private $handler;
+    private $connectorHandler;
 
     /**
      * @var LoggerInterface
      */
     private $logger;
+
+    /**
+     * ConnectorController constructor.
+     *
+     * @param ConnectorHandler $connectorHandler
+     */
+    public function __construct(ConnectorHandler $connectorHandler)
+    {
+        $this->connectorHandler = $connectorHandler;
+        $this->logger           = new NullLogger();
+    }
 
     /**
      * @Route("/connector/{id}/webhook")
@@ -54,10 +66,8 @@ class ConnectorController extends FOSRestController
      */
     public function processEventAction(string $id, Request $request): Response
     {
-        $this->construct();
-
         try {
-            $data = $this->handler->processEvent($id, $request);
+            $data = $this->connectorHandler->processEvent($id, $request);
 
             return $this->getResponse($data->getData(), 200, ControllerUtils::createHeaders($data->getHeaders()));
         } catch (Exception|Throwable $e) {
@@ -78,10 +88,8 @@ class ConnectorController extends FOSRestController
      */
     public function processEventTestAction(Request $request, string $id): Response
     {
-        $this->construct();
-
         try {
-            $this->handler->processTest($id);
+            $this->connectorHandler->processTest($id);
 
             return $this->getResponse('');
         } catch (Exception|Throwable $e) {
@@ -102,10 +110,8 @@ class ConnectorController extends FOSRestController
      */
     public function processActionAction(string $id, Request $request): Response
     {
-        $this->construct();
-
         try {
-            $data = $this->handler->processAction($id, $request);
+            $data = $this->connectorHandler->processAction($id, $request);
 
             return $this->getResponse($data->getData(), 200, ControllerUtils::createHeaders($data->getHeaders()));
         } catch (Exception|Throwable $e) {
@@ -126,10 +132,8 @@ class ConnectorController extends FOSRestController
      */
     public function processActionTestAction(Request $request, string $id): Response
     {
-        $this->construct();
-
         try {
-            $this->handler->processTest($id);
+            $this->connectorHandler->processTest($id);
 
             return $this->getResponse('');
         } catch (Exception|Throwable $e) {
@@ -140,17 +144,15 @@ class ConnectorController extends FOSRestController
     }
 
     /**
+     * @required
      *
+     * @param LoggerInterface $logger
+     *
+     * @return void
      */
-    private function construct(): void
+    public function setLogger(LoggerInterface $logger): void
     {
-        if (!$this->handler) {
-            $this->handler = $this->container->get('hbpf.handler.connector');
-        }
-
-        if (!$this->logger) {
-            $this->logger = $this->container->get('monolog.logger.commons');
-        }
+        $this->logger = $logger;
     }
 
 }

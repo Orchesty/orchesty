@@ -1,4 +1,7 @@
 services:
+    _defaults:
+        public: '%public.services%'
+
     cc.webhook.manager:
         class: CleverConnectors\AppBundle\Model\Webhook\WebhookManager
         arguments:

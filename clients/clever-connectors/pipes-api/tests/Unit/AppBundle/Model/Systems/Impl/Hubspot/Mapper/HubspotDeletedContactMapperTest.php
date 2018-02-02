@@ -5,7 +5,6 @@ namespace Tests\Unit\AppBundle\Model\Systems\Impl\Hubspot\Mapper;
 use CleverConnectors\AppBundle\Enum\CleverFieldsEnum;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\Mapper\HubspotDeletedContactMapper;
-use CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\Mapper\HubspotUpdatedContactMapper;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Nette\Utils\Json;
@@ -20,7 +19,7 @@ final class HubspotDeletedContactMapperTest extends ConnectorTestCaseAbstract
 {
 
     /**
-     * @var HubspotDeletedContactMapper|object
+     * @var HubspotDeletedContactMapper
      */
     private $mapper;
 
@@ -49,7 +48,7 @@ final class HubspotDeletedContactMapperTest extends ConnectorTestCaseAbstract
     }
 
     /**
-     * @covers HubspotUpdatedContactMapper::process()
+     * @covers HubspotDeletedContactMapper::process()
      */
     public function testProcessFail(): void
     {
@@ -160,9 +159,9 @@ final class HubspotDeletedContactMapperTest extends ConnectorTestCaseAbstract
     }
 
     /**
-     * @return HubspotDeletedContactMapper|object
+     * @return HubspotDeletedContactMapper
      */
-    private function getMapper()
+    private function getMapper(): HubspotDeletedContactMapper
     {
         if (!$this->mapper) {
             return $this->container->get('hbpf.custom_node.hubspot-deleted-contact-mapper');

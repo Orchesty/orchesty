@@ -1,4 +1,7 @@
 services:
+    _defaults:
+        public: '%public.services%'
+
     systems.shoptet:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Shoptet\ShoptetSystem
         arguments:

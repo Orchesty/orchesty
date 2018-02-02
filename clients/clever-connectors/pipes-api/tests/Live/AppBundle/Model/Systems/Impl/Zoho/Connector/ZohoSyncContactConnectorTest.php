@@ -3,7 +3,6 @@
 namespace Tests\Live\AppBundle\Model\Systems\Impl\Zoho\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
-use CleverConnectors\AppBundle\Model\Systems\Impl\Zendesk\Connector\ZendeskSyncUserConnector;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
 use Nette\Utils\Json;
 use React\EventLoop\Factory;
@@ -12,14 +11,15 @@ use Tests\ConnectorTestCaseAbstract;
 /**
  * Class ZohoSyncContactConnectorTest
  *
+ * @coversDefaultClass CleverConnectors\AppBundle\Model\Systems\Impl\Zendesk\Connector\ZendeskSyncUserConnector
  * @package Tests\Live\AppBundle\Model\Systems\Impl\Zoho\Connector
  */
 final class ZohoSyncContactConnectorTest extends ConnectorTestCaseAbstract
 {
 
     /**
-     * @covers ZendeskSyncUserConnector::processBatch()
-     * @covers ZendeskSyncUserConnector::getPage()
+     * @covers ::processBatch()
+     * @covers ::getPage()
      */
     public function testProcessBatch(): void
     {

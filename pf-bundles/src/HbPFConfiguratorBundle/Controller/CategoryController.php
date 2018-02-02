@@ -21,9 +21,6 @@ use Symfony\Component\HttpFoundation\Response;
  * Class CategoryController
  *
  * @package Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller
- *
- * @Route(service="hbpf.configurator.controller.category")
- *
  */
 class CategoryController extends FOSRestController
 {
@@ -36,6 +33,16 @@ class CategoryController extends FOSRestController
     private $categoryHandler;
 
     /**
+     * CategoryController constructor.
+     *
+     * @param CategoryHandler $categoryHandler
+     */
+    public function __construct(CategoryHandler $categoryHandler)
+    {
+        $this->categoryHandler = $categoryHandler;
+    }
+
+    /**
      * @Route("/categories")
      * @Method({"GET", "OPTIONS"})
      *
@@ -43,7 +50,6 @@ class CategoryController extends FOSRestController
      */
     public function getCategoriesAction(): Response
     {
-        $this->construct();
         $data = $this->categoryHandler->getCategories();
 
         return $this->getResponse($data);
@@ -59,7 +65,6 @@ class CategoryController extends FOSRestController
      */
     public function createCategoryAction(Request $request): Response
     {
-        $this->construct();
         $data = $this->categoryHandler->createCategory($request->request->all());
 
         return $this->getResponse($data);
@@ -76,7 +81,6 @@ class CategoryController extends FOSRestController
      */
     public function updateCategoryAction(Request $request, string $id): Response
     {
-        $this->construct();
         $data = $this->categoryHandler->updateCategory($id, $request->request->all());
 
         return $this->getResponse($data);
@@ -92,20 +96,9 @@ class CategoryController extends FOSRestController
      */
     public function deleteCategoryAction(string $id): Response
     {
-        $this->construct();
         $data = $this->categoryHandler->deleteCategory($id);
 
         return $this->getResponse($data);
-    }
-
-    /**
-     *
-     */
-    private function construct(): void
-    {
-        if (!$this->categoryHandler) {
-            $this->categoryHandler = $this->container->get('hbpf.handler.category');
-        }
     }
 
 }

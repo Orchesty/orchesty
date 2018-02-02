@@ -1,0 +1,34 @@
+parameters:
+    database_host: mongo
+    database_port: null
+    database_name: clever-connectors
+    database_user: root
+    database_password: root
+
+doctrine_mongodb:
+    auto_generate_proxy_classes: true
+    auto_generate_hydrator_classes: true
+    auto_generate_persistent_collection_classes: 3
+    proxy_namespace: Proxies
+    proxy_dir: "%kernel.cache_dir%/doctrine/odm/mongodb/Proxies"
+    hydrator_namespace: Hydrators
+    hydrator_dir: "%kernel.cache_dir%/doctrine/odm/mongodb/Hydrators"
+    connections:
+        default:
+            server: "mongodb://%database_host%"
+            options:
+                connectTimeoutMS: 5000
+                socketTimeoutMS: 5000
+    default_database: '%database_name%'
+    document_managers:
+        default:
+            mappings:
+                CCDocument:
+                    type: annotation
+                    is_bundle: false
+                    dir: "%kernel.root_dir%/../src/AppBundle/Document"
+                    prefix: CleverConnectors\AppBundle\Document
+            filters:
+                deleted:
+                    class: CleverConnectors\AppBundle\Database\DeletedFilter
+                    enabled: true

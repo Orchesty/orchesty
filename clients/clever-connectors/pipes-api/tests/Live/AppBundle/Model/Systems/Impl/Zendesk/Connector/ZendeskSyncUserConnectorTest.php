@@ -3,7 +3,6 @@
 namespace Tests\Live\AppBundle\Model\Systems\Impl\Zendesk\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
-use CleverConnectors\AppBundle\Model\Systems\Impl\Zendesk\Connector\ZendeskSyncUserConnector;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
@@ -16,14 +15,15 @@ use Tests\DatabaseTestCaseAbstract;
 /**
  * Class ZendeskSyncUserConnectorTest
  *
+ * @coversDefaultClass CleverConnectors\AppBundle\Model\Systems\Impl\Zendesk\Connector\ZendeskSyncUserConnector
  * @package Tests\Live\AppBundle\Model\Systems\Impl\Zendesk\Connector
  */
 final class ZendeskSyncUserConnectorTest extends DatabaseTestCaseAbstract
 {
 
     /**
-     * @covers ZendeskSyncUserConnector::processBatch()
-     * @covers ZendeskSyncUserConnector::getPage()
+     * @covers ::processBatch()
+     * @covers ::getPage()
      */
     public function testProcessBatch(): void
     {

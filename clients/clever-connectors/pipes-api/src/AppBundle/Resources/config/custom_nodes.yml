@@ -1,4 +1,6 @@
 services:
+    _defaults:
+        public: '%public.services%'
 
     hbpf.custom_node.user-message-generator:
         class: CleverConnectors\AppBundle\Model\CustomNode\UserMessageGenerator

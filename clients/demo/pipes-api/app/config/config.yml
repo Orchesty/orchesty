@@ -1,9 +1,0 @@
-imports:
-    - { resource: parameters.yml }
-    - { resource: security.yml }
-    - { resource: services.yml }
-    - { resource: monolog.yml }
-    - { resource: bundles/fos_rest.yml }
-    - { resource: bundles/framework.yml }
-    - { resource: bundles/doctrine.yml }
-    - { resource: bundles/nelmio.yml }

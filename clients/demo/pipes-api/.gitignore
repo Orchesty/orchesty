@@ -1,5 +1,5 @@
 /.web-server-pid
-/app/config/parameters.yml
+/clients/demo/pipes-api/config/package/parameters.yml
 /build/
 /phpunit.xml
 /var/*

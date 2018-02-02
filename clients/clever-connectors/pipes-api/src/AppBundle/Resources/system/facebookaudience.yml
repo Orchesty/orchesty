@@ -1,4 +1,6 @@
 services:
+    _defaults:
+        public: '%public.services%'
 
     systems.facebookaudience:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\FacebookaudienceSystem

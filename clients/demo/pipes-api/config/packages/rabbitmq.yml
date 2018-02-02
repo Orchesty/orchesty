@@ -1,0 +1,6 @@
+parameters:
+    rabbitmq.host: rabbitmq
+    rabbitmq.port: 5672
+    rabbitmq.vhost: /
+    rabbitmq.user: guest
+    rabbitmq.password: guest

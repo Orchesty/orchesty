@@ -21,7 +21,7 @@ class StartingPointControllerTest extends ControllerTestCaseAbstract
 {
 
     /**
-     * @covers ApiController::runAction
+     * @covers TableParserController::runAction
      */
     public function testRunWithRequest(): void
     {
@@ -46,7 +46,7 @@ class StartingPointControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers ApiController::runTest
+     * @covers TableParserController::runTest
      */
     public function testRunTest(): void
     {

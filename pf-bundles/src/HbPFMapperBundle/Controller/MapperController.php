@@ -15,8 +15,6 @@ use Symfony\Component\HttpFoundation\Response;
  * Class MapperController
  *
  * @package Hanaboso\PipesFramework\HbPFMapperBundle\Controller
- *
- * @Route(service="hbpf.mapper.controller.mapper")
  */
 class MapperController extends FOSRestController
 {

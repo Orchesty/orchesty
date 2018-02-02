@@ -97,7 +97,8 @@ class SecurityManager
         $user = $this->getUser($data['email']);
         $this->validateUser($user, $data);
 
-        $token = new Token($user, $data['password'], self::SECURED_AREA);
+        //@todo required role ???
+        $token = new Token($user, $data['password'], self::SECURED_AREA, ['USER_LOGGED']);
         $this->tokenStorage->setToken($token);
         $this->session->set($this->sessionName, serialize($token));
 

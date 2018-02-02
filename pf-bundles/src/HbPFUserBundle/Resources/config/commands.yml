@@ -1,4 +1,7 @@
 services:
+    _defaults:
+        public: '%public.services%'
+
     hbpf.command.change_password:
         class: Hanaboso\PipesFramework\HbPFUserBundle\Command\ChangePasswordCommand
         arguments:

@@ -1,6 +1,10 @@
 services:
+    _defaults:
+        public: '%public.services%'
+
     hbpf.mapper.loader.mapper:
         class: Hanaboso\PipesFramework\HbPFMapperBundle\Loader\MapperLoader
+        public: true
         arguments:
             - '@service_container'
 

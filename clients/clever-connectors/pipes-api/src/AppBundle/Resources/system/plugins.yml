@@ -1,4 +1,6 @@
 services:
+    _defaults:
+        public: '%public.services%'
 
     hbpf.connector.plugin-created-subscriber-connector:
         class: CleverConnectors\AppBundle\Model\Plugins\Connector\PluginCreatedSubscriberConnector

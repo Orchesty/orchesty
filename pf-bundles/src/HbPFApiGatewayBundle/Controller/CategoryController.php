@@ -12,8 +12,6 @@ use Symfony\Component\HttpFoundation\Response;
  * Class CategoryController
  *
  * @package Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller
- *
- * @Route(service="hbpf.api_gateway.controller.category")
  */
 class CategoryController extends FOSRestController
 {

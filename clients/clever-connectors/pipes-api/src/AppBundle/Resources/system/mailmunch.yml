@@ -1,4 +1,7 @@
 services:
+    _defaults:
+        public: '%public.services%'
+
     systems.mailmunch:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Mailmunch\MailmunchSystem
         arguments:

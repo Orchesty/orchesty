@@ -89,6 +89,16 @@ pf-bundles-test:
     - export COMPOSE_FILE=docker-compose.ci.yml                # CLEANUP bundles
     - make ${COMPOSE_FILE} docker-up-force composer-install test
 
+cm-pipes-api-test:
+  stage: stage2
+  script:
+    - DIR=clients/clever-connectors/pipes-api
+    - skip_unmodified $DIR
+    - cd $REPO_ROOT/$DIR
+    - export COMPOSE_PROJECT_NAME="p${CI_PIPELINE_ID}-cm-pipes-api" # CLEANUP bundles
+    - export COMPOSE_FILE=docker-compose.ci.yml                     # CLEANUP bundles
+    - make ${COMPOSE_FILE} test
+
 pf-bridge-test:
   stage: stage3
   script:
@@ -156,6 +166,7 @@ stage-cm1:
   script:
     - cd clients/clever-connectors
     - make docker-compose.ci.yml
+    - source <(../../build/bin/map-branch-image-tags.sh ./branch-image-tag-map ${CI_BUILD_REF_NAME} -e)
     - export DEPLOYMENT_PREFIX=cc-stage1
     - export PUBLISH_HTTP_PORT=6540
     - export BACKEND_URL=https://clever-conn1.stage.hanaboso.net
@@ -169,6 +180,7 @@ stage-cm2:
   script:
     - cd clients/clever-connectors
     - make docker-compose.ci.yml
+    - source <(../../build/bin/map-branch-image-tags.sh ./branch-image-tag-map ${CI_BUILD_REF_NAME} -e)
     - export DEPLOYMENT_PREFIX=cc-stage2
     - export PUBLISH_HTTP_PORT=6541
     - export BACKEND_URL=https://clever-conn2.stage.hanaboso.net
@@ -182,6 +194,7 @@ stage-cm3:
   script:
     - cd clients/clever-connectors
     - make docker-compose.ci.yml
+    - source <(../../build/bin/map-branch-image-tags.sh ./branch-image-tag-map ${CI_BUILD_REF_NAME} -e)
     - export DEPLOYMENT_PREFIX=cc-stage3
     - export PUBLISH_HTTP_PORT=6542
     - export BACKEND_URL=https://clever-conn3.stage.hanaboso.net
@@ -212,6 +225,12 @@ cleanup:
     - export COMPOSE_PROJECT_NAME=p${CI_PIPELINE_ID}-bundles
     - export COMPOSE_FILE=docker-compose.ci.yml
     - make ${COMPOSE_FILE} docker-down-clean || echo "bundles cleanup phase failed"
+
+    - ": cm-pipes-api-test"
+    - cd $REPO_ROOT/clients/clever-connectors/pipes-api
+    - export COMPOSE_PROJECT_NAME=p${CI_PIPELINE_ID}-cm-pipes-api-test
+    - export COMPOSE_FILE=docker-compose.ci.yml
+    - make ${COMPOSE_FILE} docker-down-clean || echo "cm-pipes-api-test cleanup phase failed"
 
     - ": bridge"
     - cd $REPO_ROOT/pf-bridge/test

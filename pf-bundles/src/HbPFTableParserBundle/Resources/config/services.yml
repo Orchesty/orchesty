@@ -1,4 +1,7 @@
 services:
+    _defaults:
+        public: '%public.services%'
+
     hbpf.parser.table.handler:
         class: Hanaboso\PipesFramework\HbPFTableParserBundle\Handler\TableParserHandler
         arguments:

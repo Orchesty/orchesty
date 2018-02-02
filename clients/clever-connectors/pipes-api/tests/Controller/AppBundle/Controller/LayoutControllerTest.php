@@ -2,7 +2,6 @@
 
 namespace Tests\Controller\AppBundle\Controller;
 
-use CleverConnectors\AppBundle\Controller\LayoutController;
 use CleverConnectors\AppBundle\Document\DataLayout;
 use CleverConnectors\AppBundle\Document\MapTemplate;
 use CleverConnectors\AppBundle\Document\SystemInstall;
@@ -16,13 +15,14 @@ use Tests\ControllerTestCaseAbstract;
 /**
  * Class LayoutControllerTest
  *
+ * @coversDefaultClass CleverConnectors\AppBundle\Controller\LayoutController
  * @package Tests\Controller\AppBundle\Controller
  */
 final class LayoutControllerTest extends ControllerTestCaseAbstract
 {
 
     /**
-     * @covers LayoutController::createAction()
+     * @covers ::createAction()
      */
     public function testCreate(): void
     {
@@ -61,7 +61,7 @@ final class LayoutControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers LayoutController::updateAction()
+     * @covers ::updateAction()
      */
     public function testUpdate(): void
     {
@@ -113,7 +113,7 @@ final class LayoutControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers LayoutController::deleteAction()
+     * @covers ::deleteAction()
      */
     public function testDelete(): void
     {

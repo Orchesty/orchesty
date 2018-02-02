@@ -1,4 +1,7 @@
 services:
+    _defaults:
+        public: '%public.services%'
+
     # Magento2Old
     hbpf.authorization.magento2.auth:
         class: Hanaboso\PipesFramework\Authorization\Impl\Magento2\Magento2Authorization

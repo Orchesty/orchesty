@@ -1,0 +1,15 @@
+parameters:
+    locale: en
+    secret: ThisTokenIsNotSoSecretChangeIt
+
+    backend_host: 127.0.0.66
+    cron_host: 127.0.0.66
+    monolith_host: 'http://php-dev'
+    notification_host: 127.0.0.2
+    activateLink: '%backend_host%/user/%s/activate'
+    access_token_refresh_interval: 3600
+
+services:
+    Demo\Controller\:
+        resource: '../src/Controller'
+        tags: ['controller.service_arguments']

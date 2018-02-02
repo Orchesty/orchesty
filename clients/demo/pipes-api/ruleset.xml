@@ -6,7 +6,7 @@
     <rule ref="SlevomatCodingStandard.Files.TypeNameMatchesFileName">
         <properties>
             <property name="rootNamespaces" type="array" value="
-                src/AppBundle=>AppBundle,
+                src=>Demo,
                 tests=>Tests
             "/>
         </properties>

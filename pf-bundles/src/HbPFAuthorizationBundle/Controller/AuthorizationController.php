@@ -17,8 +17,6 @@ use Symfony\Component\HttpFoundation\Response;
  * Class AuthorizationController
  *
  * @package Hanaboso\PipesFramework\HbPFCommonsBundle\Controller
- *
- * @Route(service="hbpf.authorization.controller.authorization")
  */
 class AuthorizationController extends FOSRestController
 {
@@ -28,7 +26,17 @@ class AuthorizationController extends FOSRestController
     /**
      * @var AuthorizationHandler
      */
-    private $handler;
+    private $authorizationHandler;
+
+    /**
+     * AuthorizationController constructor.
+     *
+     * @param AuthorizationHandler $authorizationHandler
+     */
+    public function __construct(AuthorizationHandler $authorizationHandler)
+    {
+        $this->authorizationHandler = $authorizationHandler;
+    }
 
     /**
      * @Route("/authorizations/{authorizationId}/authorize", defaults={}, requirements={"authorizationId": "\w+"})
@@ -41,9 +49,8 @@ class AuthorizationController extends FOSRestController
      */
     public function authorizationAction(Request $request, string $authorizationId): Response
     {
-        $this->construct();
         try {
-            $this->handler->authorize($authorizationId);
+            $this->authorizationHandler->authorize($authorizationId);
 
             return new RedirectResponse($request->request->get('redirect_url'));
         } catch (AuthorizationException | InvalidArgumentException $e) {
@@ -62,7 +69,7 @@ class AuthorizationController extends FOSRestController
     public function getSettingsAction(string $authorizationId): Response
     {
         try {
-            return $this->getResponse($this->handler->getSettings($authorizationId));
+            return $this->getResponse($this->authorizationHandler->getSettings($authorizationId));
         } catch (AuthorizationException $e) {
             return $this->getErrorResponse($e);
         }
@@ -80,7 +87,7 @@ class AuthorizationController extends FOSRestController
     public function saveSettingsAction(Request $request, string $authorizationId): Response
     {
         try {
-            $this->handler->saveSettings($request->request->all(), $authorizationId);
+            $this->authorizationHandler->saveSettings($request->request->all(), $authorizationId);
 
             return $this->getResponse([]);
         } catch (AuthorizationException $e) {
@@ -99,9 +106,8 @@ class AuthorizationController extends FOSRestController
      */
     public function saveTokenAction(Request $request, string $authorizationId): Response
     {
-        $this->construct();
         try {
-            $this->handler->saveToken($request->request->all(), $authorizationId);
+            $this->authorizationHandler->saveToken($request->request->all(), $authorizationId);
 
             return new RedirectResponse($this->container->getParameter('frontend_host') . '/close-me.html');
         } catch (AuthorizationException $e) {
@@ -119,19 +125,7 @@ class AuthorizationController extends FOSRestController
      */
     public function getAuthorizationsAction(Request $request): Response
     {
-        $this->construct();
-
-        return $this->getResponse($this->handler->getAuthInfo($request->getSchemeAndHttpHost()));
-    }
-
-    /**
-     *
-     */
-    private function construct(): void
-    {
-        if (!$this->handler) {
-            $this->handler = $this->container->get('hbpf.handler.authorization');
-        }
+        return $this->getResponse($this->authorizationHandler->getAuthInfo($request->getSchemeAndHttpHost()));
     }
 
 }

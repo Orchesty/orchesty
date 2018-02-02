@@ -5,7 +5,7 @@ RUN apt-get update && \
     apt-get install -y --force-yes nginx-extras && \
     apt-get clean
 
-ENV PHP_APP_INDEX app.php
+ENV PHP_APP_INDEX index.php
 ENV PHP_WEBROOT /srv/app
 
 COPY nginx.conf /etc/nginx/

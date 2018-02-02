@@ -1,4 +1,7 @@
 services:
+    _defaults:
+        public: '%public.services%'
+
     systems.pipedrive:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Pipedrive\PipedriveSystem
         arguments:

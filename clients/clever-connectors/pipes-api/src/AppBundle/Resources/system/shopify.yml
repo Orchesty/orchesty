@@ -1,4 +1,7 @@
 services:
+    _defaults:
+        public: '%public.services%'
+
     systems.shopify:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\ShopifySystem
         arguments:

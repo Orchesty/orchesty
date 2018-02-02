@@ -29,6 +29,16 @@ class NotificationController extends FOSRestController
     private $notificationHandler;
 
     /**
+     * NotificationController constructor.
+     *
+     * @param NotificationHandler $notificationHandler
+     */
+    public function __construct(NotificationHandler $notificationHandler)
+    {
+        $this->notificationHandler = $notificationHandler;
+    }
+
+    /**
      * @Route("/notification_settings")
      * @Method({"GET", "OPTIONS"})
      *
@@ -36,8 +46,6 @@ class NotificationController extends FOSRestController
      */
     public function getSettingsAction(): Response
     {
-        $this->construct();
-
         try {
             return $this->getResponse($this->notificationHandler->getSettings());
         } catch (NotificationException $e) {
@@ -55,22 +63,10 @@ class NotificationController extends FOSRestController
      */
     public function updateSettingsAction(Request $request): Response
     {
-        $this->construct();
-
         try {
             return $this->getResponse($this->notificationHandler->updateSettings($request->request->all()));
         } catch (NotificationException $e) {
             return $this->getErrorResponse($e);
-        }
-    }
-
-    /**
-     *
-     */
-    private function construct(): void
-    {
-        if (!$this->notificationHandler) {
-            $this->notificationHandler = $this->container->get('hbpf.notification.handler.notification');
         }
     }
 

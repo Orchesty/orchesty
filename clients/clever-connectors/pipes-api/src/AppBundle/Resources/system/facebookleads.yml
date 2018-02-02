@@ -1,4 +1,7 @@
 services:
+    _defaults:
+        public: '%public.services%'
+
     systems.facebookleads:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\FacebookLeads\FacebookLeadsSystem
         arguments:

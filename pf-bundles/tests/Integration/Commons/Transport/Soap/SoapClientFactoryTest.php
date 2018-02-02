@@ -19,6 +19,14 @@ final class SoapClientFactoryTest extends TestCase
 {
 
     /**
+     *
+     */
+    public function setUp(): void
+    {
+        parent::setUp();
+    }
+
+    /**
      * @covers SoapClientFactory::create()
      */
     public function testCreateSoapClientWsdlFail(): void

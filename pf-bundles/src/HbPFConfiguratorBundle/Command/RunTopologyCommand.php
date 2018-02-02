@@ -34,11 +34,10 @@ class RunTopologyCommand extends Command
      * RunTopologyCommand constructor.
      *
      * @param StartingPointHandler $handler
-     * @param null                 $name
      */
-    public function __construct(StartingPointHandler $handler, $name = NULL)
+    public function __construct(StartingPointHandler $handler)
     {
-        parent::__construct($name);
+        parent::__construct();
         $this->handler = $handler;
     }
 
@@ -59,6 +58,8 @@ class RunTopologyCommand extends Command
     /**
      * @param InputInterface  $input
      * @param OutputInterface $output
+     *
+     * @throws \Exception
      */
     protected function execute(InputInterface $input, OutputInterface $output): void
     {

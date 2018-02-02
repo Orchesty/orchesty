@@ -16,7 +16,6 @@ use Hanaboso\PipesFramework\Configurator\TopologyControlling\Messages\TopologyMe
 use Hanaboso\PipesFramework\Configurator\TopologyControlling\TopologyControllingProducer;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\GeneratorHandler;
 use Hanaboso\PipesFramework\TopologyGenerator\Exception\TopologyGeneratorException;
-use Psr\Log\LoggerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -24,8 +23,6 @@ use Symfony\Component\HttpFoundation\Response;
  * Class GeneratorController
  *
  * @package Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller
- *
- * @Route(service="hbpf.configurator.generator_controller")
  */
 class GeneratorController extends FOSRestController
 {
@@ -33,19 +30,26 @@ class GeneratorController extends FOSRestController
     use ControllerTrait;
 
     /**
-     * @var LoggerInterface|NULL
-     */
-    protected $logger = NULL;
-
-    /**
      * @var GeneratorHandler|NULL
      */
-    protected $generatorHandler = NULL;
+    protected $generatorHandler;
 
     /**
-     * @var TopologyControllingProducer|NULL
+     * @var TopologyControllingProducer
      */
-    protected $topologyControllingProducer = NULL;
+    protected $controllingProducer;
+
+    /**
+     * GeneratorController constructor.
+     *
+     * @param GeneratorHandler            $generatorHandler
+     * @param TopologyControllingProducer $controllingProducer
+     */
+    public function __construct(GeneratorHandler $generatorHandler, TopologyControllingProducer $controllingProducer)
+    {
+        $this->generatorHandler    = $generatorHandler;
+        $this->controllingProducer = $controllingProducer;
+    }
 
     /**
      * @Route("/topology/generate/{id}")
@@ -58,8 +62,6 @@ class GeneratorController extends FOSRestController
      */
     public function generateAction(string $id): Response
     {
-        //TODO: Make much better !!!!
-        $this->construct();
         $statusCode = 400;
 
         if ($this->generatorHandler) {
@@ -83,8 +85,6 @@ class GeneratorController extends FOSRestController
      */
     public function runAction(string $id): Response
     {
-        //TODO: Make much better !!!!
-        $this->construct();
         $statusCode = 400;
         $result     = NULL;
 
@@ -108,13 +108,11 @@ class GeneratorController extends FOSRestController
      */
     public function stopAction(string $id): Response
     {
-        //TODO: Make much better !!!!
-        $this->construct();
         $statusCode = 200;
 
-        if ($this->topologyControllingProducer) {
+        if ($this->controllingProducer) {
             $message = new TopologyMessage($id, TopologyMessage::STOP);
-            $this->topologyControllingProducer->publish($message->getMessage());
+            $this->controllingProducer->publish($message->getMessage());
         }
 
         /*if ($this->generatorHandler) {
@@ -140,14 +138,12 @@ class GeneratorController extends FOSRestController
      */
     public function deleteAction(string $id): Response
     {
-        //TODO: Make much better !!!!
-        $this->construct();
         $statusCode = 200;
 
-        if ($this->topologyControllingProducer) {
+        if ($this->controllingProducer) {
 
             $message = new TopologyMessage($id, TopologyMessage::DELETE);
-            $this->topologyControllingProducer->publish($message->getMessage());
+            $this->controllingProducer->publish($message->getMessage());
         }
 
         /*if ($this->generatorHandler) {
@@ -170,8 +166,6 @@ class GeneratorController extends FOSRestController
      */
     public function infoAction(string $id): Response
     {
-        //TODO: Make much better !!!!
-        $this->construct();
         $statusCode = 400;
         $result     = NULL;
 
@@ -181,23 +175,6 @@ class GeneratorController extends FOSRestController
         }
 
         return $this->getResponse(["result" => $statusCode, "docker_info" => $result], $statusCode);
-    }
-
-    /**
-     * fake __construct
-     */
-    public function construct(): void
-    {
-        if (!$this->generatorHandler) {
-            $this->generatorHandler = $this->container->get('hbpf.handler.generator_handler');
-        }
-        if (!$this->logger) {
-            $this->logger = $this->container->get('monolog.logger.security');
-        }
-
-        if (!$this->topologyControllingProducer) {
-            $this->topologyControllingProducer = $this->container->get('rabbit-mq.producer.topology-destroy');
-        }
     }
 
 }

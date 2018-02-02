@@ -2,9 +2,9 @@
 
 namespace Tests\Integration\AppBundle\Model\Systems;
 
-use AppKernel;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\SystemLoader;
+use CleverConnectors\Kernel;
 use Tests\Integration\AppBundle\Model\Systems\Impl\NullSystem;
 use Tests\KernelTestCaseAbstract;
 
@@ -57,7 +57,7 @@ final class SystemLoaderTest extends KernelTestCaseAbstract
      */
     public function testGetSystemsInProduction(): void
     {
-        $kernel = new AppKernel('prod', TRUE);
+        $kernel = new Kernel('prod', TRUE);
         $kernel->boot();
         $this->loader = $kernel->getContainer()->get('cc.systems.loader');
 

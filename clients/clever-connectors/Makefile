@@ -24,7 +24,8 @@ DE_DEVT=docker-compose -f $(DEV_YML) exec
 		-e "s|{DEV_GID}|$(shell id -u)|g" \
 		-e "s|{DOCKER_SOCKET_PATH}|$(shell test -S /var/run/docker-$${USER}.sock && echo /var/run/docker-$${USER}.sock || echo /var/run/docker.sock)|g" \
 		-e "s|{PROJECT_SOURCE_PATH}|$(shell pwd)|g" \
-		.env.dist >> .env; \
+		.env.dist > .env && \
+	../../build/bin/map-branch-image-tags.sh ./branch-image-tag-map $(shell git rev-parse --symbolic-full-name --abbrev-ref HEAD) >> .env
 
 docker-pull-dev:
 	$(DC_DEV) pull
@@ -63,9 +64,10 @@ build-monolith-fpm:
 		-v ${HOME}/.composer:/srv/.composer \
 		-w /build/${CLIENT_DIR}/pipes-api \
 		-e COMPOSER=composer.prod.json \
-		-e SYMFONY_ENV=prod \
+		-e APP_ENV=prod \
+		-e APP_DEBUG=0 \
 		${IMAGE_PHP_DEV} \
-		composer install --no-dev --optimize-autoloader && \
+		bash -c 'composer install --no-dev --optimize-autoloader && bin/console cache:warmup' && \
 	: Build an app docker image from the artifacts && \
 	docker build -f docker/Dockerfile.monolith-fpm -t ${IMAGE_MONOLITH_FPM} .
 

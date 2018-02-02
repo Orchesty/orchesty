@@ -1,0 +1,18 @@
+parameters:
+    # FTP
+    ftp.host: ''
+    ftp.port: 21
+    ftp.ssl: false
+    ftp.timeout: 15
+    ftp.user: ''
+    ftp.password: ''
+
+    # SFTP
+    sftp.host: ''
+    sftp.port: 22
+    sftp.timeout: 15
+    sftp.user: ''
+    sftp.password: ''
+
+    cron_host: 'http://cron-api:5000'
+    monolith_host: 'http://php-dev'

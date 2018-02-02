@@ -1,6 +1,6 @@
 services:
-    hbpf.commons.node_handler:
-        class: Hanaboso\PipesFramework\HbPFCommonsBundle\Handler\NodeHandler
+    _defaults:
+        public: '%public.services%'
 
     hbpf.commons.session_handler:
         class: Hanaboso\PipesFramework\Commons\Session\Handler\CachedSessionHandler

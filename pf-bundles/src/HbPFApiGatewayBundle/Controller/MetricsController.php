@@ -12,8 +12,6 @@ use Symfony\Component\HttpFoundation\Response;
  * Class UserController
  *
  * @package Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller
- *
- * @Route(service="hbpf.api_gateway.controller.metrics")
  */
 class MetricsController extends FOSRestController
 {

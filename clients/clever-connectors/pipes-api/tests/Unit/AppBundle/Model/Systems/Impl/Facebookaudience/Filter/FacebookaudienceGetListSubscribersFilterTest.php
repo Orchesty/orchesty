@@ -4,7 +4,6 @@ namespace Tests\Unit\AppBundle\Model\Systems\Impl\Facebookaudience\Filter;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\Filter\FacebookaudienceGetListSubscribersFilter;
-use CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\Filter\FacebookaudienceGetSubscribersFilter;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
@@ -48,7 +47,7 @@ final class FacebookaudienceGetListSubscribersFilterTest extends ConnectorTestCa
     }
 
     /**
-     * @covers FacebookaudienceGetSubscribersFilter::process()
+     * @covers FacebookaudienceGetListSubscribersFilter::process()
      */
     public function testProcess2(): void
     {

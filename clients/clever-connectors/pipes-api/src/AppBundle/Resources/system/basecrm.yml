@@ -1,4 +1,7 @@
 services:
+    _defaults:
+        public: '%public.services%'
+
     systems.basecrm:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Basecrm\BasecrmSystem
         arguments:

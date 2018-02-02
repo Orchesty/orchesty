@@ -1,5 +1,11 @@
 services:
-    hbpf.parser.table.controller.api:
-        class: Hanaboso\PipesFramework\HbPFTableParserBundle\Controller\ApiController
-        arguments:
-            - '@hbpf.parser.table.handler'
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
+        bind:
+            $tableParserHandler: '@hbpf.parser.table.handler'
+
+    Hanaboso\PipesFramework\HbPFTableParserBundle\Controller\:
+        resource: '../../Controller'
+        tags: ['controller.service_arguments']

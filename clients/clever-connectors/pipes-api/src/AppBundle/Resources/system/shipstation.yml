@@ -1,4 +1,7 @@
 services:
+    _defaults:
+        public: '%public.services%'
+
     systems.shipstation:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Shipstation\ShipstationSystem
         arguments:

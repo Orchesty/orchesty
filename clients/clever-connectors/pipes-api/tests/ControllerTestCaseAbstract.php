@@ -50,27 +50,21 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
     protected $tokenStorage;
 
     /**
-     * @var BCryptPasswordEncoder
-     */
-    protected $encoder;
-
-    /**
      * ControllerTestCaseAbstract constructor.
      *
      * @param null   $name
      * @param array  $data
      * @param string $dataName
+     * DatabaseTestCase constructor.
      */
     public function __construct($name = NULL, array $data = [], $dataName = '')
     {
         parent::__construct($name, $data, $dataName);
         self::bootKernel();
-        $this->container = self::$kernel->getContainer();
-        $this->dm        = $this->container->get('doctrine_mongodb.odm.default_document_manager');
+        $this->container    = self::$kernel->getContainer();
+        $this->dm           = $this->container->get('doctrine_mongodb.odm.default_document_manager');
         $this->session      = $this->container->get('session');
         $this->tokenStorage = $this->container->get('security.token_storage');
-        $encoderFactory     = $this->container->get('security.encoder_factory');
-        $this->encoder      = $encoderFactory->getEncoder(User::class);
     }
 
     /**
@@ -169,10 +163,11 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
      */
     protected function loginUser(string $username, string $password): User
     {
-        $user = new User();
+        $encoder = new BCryptPasswordEncoder(5);
+        $user    = new User();
         $user
             ->setEmail($username)
-            ->setPassword($this->encoder->encodePassword($password, ''));
+            ->setPassword($encoder->encodePassword($password, ''));
 
         $this->persistAndFlush($user);
 

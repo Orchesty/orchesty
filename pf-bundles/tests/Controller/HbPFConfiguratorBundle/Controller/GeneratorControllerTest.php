@@ -9,20 +9,20 @@
 
 namespace Tests\Controller\HbPFConfiguratorBundle\Controller;
 
-use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\GeneratorController;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\GeneratorHandler;
 use Tests\ControllerTestCaseAbstract;
 
 /**
  * Class GeneratorControllerTest
  *
- * @package Tests\Controller\HbPFConfiguratorBundle\Controller
+ * @coversDefaultClass Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\GeneratorController
+ * @package            Tests\Controller\HbPFConfiguratorBundle\Controller
  */
 final class GeneratorControllerTest extends ControllerTestCaseAbstract
 {
 
     /**
-     * @covers       GeneratorController::generateAction()
+     * @covers ::generateAction()
      */
     public function testGenerateActionTrue(): void
     {
@@ -46,7 +46,7 @@ final class GeneratorControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers       GeneratorController::generateAction()
+     * @covers ::generateAction()
      */
     public function testGenerateActionFalse(): void
     {
@@ -70,7 +70,7 @@ final class GeneratorControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers       GeneratorController::runAction()
+     * @covers ::runAction()
      */
     public function testRunAction(): void
     {
@@ -94,7 +94,7 @@ final class GeneratorControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers GeneratorController::stopAction()
+     * @covers ::stopAction()
      */
     public function testStopTopology(): void
     {
@@ -118,7 +118,7 @@ final class GeneratorControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers GeneratorController::deleteAction()
+     * @covers ::deleteAction()
      */
     public function testDeleteAction(): void
     {
@@ -143,7 +143,7 @@ final class GeneratorControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers GeneratorController::infoAction()
+     * @covers ::infoAction()
      */
     public function testInfoAction(): void
     {

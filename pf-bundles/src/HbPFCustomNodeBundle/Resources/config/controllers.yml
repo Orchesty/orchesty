@@ -1,7 +1,12 @@
 services:
-    hbpf.custom.custom_node:
-        class: Hanaboso\PipesFramework\HbPFCustomNodeBundle\Controller\CustomNodeController
-        arguments:
-            - '@hbpf.handler.custom_node'
-        calls:
-            - ['setLogger', ['@monolog.logger.commons']]
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
+        bind:
+            $customNodeHandler: '@hbpf.handler.custom_node'
+            $logger: '@monolog.logger.commons'
+
+    Hanaboso\PipesFramework\HbPFCustomNodeBundle\Controller\:
+        resource: '../../Controller'
+        tags: ['controller.service_arguments']

@@ -18,8 +18,6 @@ use Symfony\Component\HttpFoundation\Response;
  * Class UserController
  *
  * @package Hanaboso\PipesFramework\HbPFUserBundle\Controller
- *
- * @Route(service="hbpf.user.controller.user")
  */
 class UserController extends FOSRestController
 {
@@ -32,6 +30,16 @@ class UserController extends FOSRestController
     private $userHandler;
 
     /**
+     * UserController constructor.
+     *
+     * @param UserHandler $userHandler
+     */
+    public function __construct(UserHandler $userHandler)
+    {
+        $this->userHandler = $userHandler;
+    }
+
+    /**
      *
      * @Route("/user/login")
      * @Method({"POST", "OPTIONS"})
@@ -42,7 +50,6 @@ class UserController extends FOSRestController
      */
     public function loginAction(Request $request): Response
     {
-        $this->construct();
         try {
             return $this->getResponse($this->userHandler->login($request->request->all())->toArray());
         } catch (SecurityManagerException $e) {
@@ -59,7 +66,6 @@ class UserController extends FOSRestController
      */
     public function logoutAction(): Response
     {
-        $this->construct();
         try {
             return $this->getResponse($this->userHandler->logout());
         } catch (SecurityManagerException $e) {
@@ -78,7 +84,6 @@ class UserController extends FOSRestController
      */
     public function registerAction(Request $request): Response
     {
-        $this->construct();
         try {
             return $this->getResponse($this->userHandler->register($request->request->all()));
         } catch (UserManagerException $e) {
@@ -97,7 +102,6 @@ class UserController extends FOSRestController
      */
     public function activateAction(string $token): Response
     {
-        $this->construct();
         try {
             return $this->getResponse($this->userHandler->activate($token));
         } catch (TokenManagerException $e) {
@@ -117,7 +121,6 @@ class UserController extends FOSRestController
      */
     public function setPasswordAction(Request $request, string $token): Response
     {
-        $this->construct();
         try {
             return $this->getResponse($this->userHandler->setPassword($token, $request->request->all()));
         } catch (TokenManagerException $e) {
@@ -135,7 +138,6 @@ class UserController extends FOSRestController
      */
     public function changePasswordAction(Request $request): Response
     {
-        $this->construct();
         try {
             return $this->getResponse($this->userHandler->changePassword($request->request->all()));
         } catch (SecurityManagerException $e) {
@@ -154,7 +156,6 @@ class UserController extends FOSRestController
      */
     public function resetPasswordAction(Request $request): Response
     {
-        $this->construct();
         try {
             return $this->getResponse($this->userHandler->resetPassword($request->request->all()));
         } catch (UserManagerException $e) {
@@ -174,21 +175,10 @@ class UserController extends FOSRestController
      */
     public function deleteAction(string $id): Response
     {
-        $this->construct();
         try {
             return $this->getResponse($this->userHandler->delete($id)->toArray());
         } catch (AclException | UserManagerException $e) {
             return $this->getErrorResponse($e);
-        }
-    }
-
-    /**
-     *
-     */
-    private function construct(): void
-    {
-        if (!$this->userHandler) {
-            $this->userHandler = $this->container->get('hbpf.user.handler.user');
         }
     }
 

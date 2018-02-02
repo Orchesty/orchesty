@@ -1,4 +1,7 @@
 services:
+    _defaults:
+        public: '%public.services%'
+
     systems.zapier:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Zapier\ZapierSystem
         arguments:

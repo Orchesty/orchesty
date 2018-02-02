@@ -1,0 +1,11 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
+        bind:
+            $metricsHandler: '@hbpf.metrics.handler.metrics'
+
+    Hanaboso\PipesFramework\HbPFMetricsBundle\Controller\:
+        resource: '../../Controller'
+        tags: ['controller.service_arguments']

@@ -1,0 +1,10 @@
+services:
+    _defaults:
+        autoconfigure: true
+        autowire: false
+        public: true
+
+    hbpf.commons.session_handler:
+        class: Hanaboso\PipesFramework\Commons\Session\Handler\RedisSessionHandler
+        arguments:
+            - '@snc_redis.default'

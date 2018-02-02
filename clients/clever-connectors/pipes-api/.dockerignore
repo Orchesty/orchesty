@@ -1,8 +1,10 @@
 *
-!app
 !bin
+!config
+!public
 !src
 !topology
 !var
 !vendor
-!web
+!composer.json
+!composer.lock

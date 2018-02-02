@@ -3,7 +3,6 @@
 namespace Tests\Unit\AppBundle\Model\Systems\Impl\Facebookaudience\Mapper;
 
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
-use CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\Mapper\FacebookaudienceCreateSubscribersMapper;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Nette\Utils\Json;
 use Tests\ConnectorTestCaseAbstract;
@@ -11,13 +10,14 @@ use Tests\ConnectorTestCaseAbstract;
 /**
  * Class FacebookaudienceCreateSubscribersMapperTest
  *
- * @package Tests\Unit\AppBundle\Model\Systems\Impl\Facebookaudience\Mapper
+ * @coversDefaultClass CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\Mapper\FacebookaudienceCreateSubscribersMapper
+ * @package            Tests\Unit\AppBundle\Model\Systems\Impl\Facebookaudience\Mapper
  */
 final class FacebookaudienceCreateSubscribersMapperTest extends ConnectorTestCaseAbstract
 {
 
     /**
-     * @covers FacebookaudienceCreateSubscribersMapper::process()
+     * @covers ::process()
      */
     public function testProcess(): void
     {
@@ -45,7 +45,7 @@ final class FacebookaudienceCreateSubscribersMapperTest extends ConnectorTestCas
     }
 
     /**
-     * @covers FacebookaudienceCreateSubscribersMapper::process()
+     * @covers ::process()
      */
     public function testProcessMissingData(): void
     {

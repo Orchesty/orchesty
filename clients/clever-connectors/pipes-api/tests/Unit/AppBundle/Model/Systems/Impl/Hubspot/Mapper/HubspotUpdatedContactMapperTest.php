@@ -19,7 +19,7 @@ final class HubspotUpdatedContactMapperTest extends ConnectorTestCaseAbstract
 {
 
     /**
-     * @var HubspotUpdatedContactMapper|object
+     * @var HubspotUpdatedContactMapper
      */
     private $mapper;
 
@@ -163,9 +163,9 @@ final class HubspotUpdatedContactMapperTest extends ConnectorTestCaseAbstract
     }
 
     /**
-     * @return HubspotUpdatedContactMapper|object
+     * @return HubspotUpdatedContactMapper
      */
-    private function getMapper()
+    private function getMapper(): HubspotUpdatedContactMapper
     {
         if (!$this->mapper) {
             return $this->container->get('hbpf.custom_node.hubspot-updated-contact-mapper');

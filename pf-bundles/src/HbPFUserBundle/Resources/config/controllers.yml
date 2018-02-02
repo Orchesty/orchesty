@@ -1,4 +1,11 @@
 services:
-    hbpf.user.controller.user:
-        class: Hanaboso\PipesFramework\HbPFUserBundle\Controller\UserController
-        arguments:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
+        bind:
+            $userHandler: '@hbpf.user.handler.user'
+
+    Hanaboso\PipesFramework\HbPFUserBundle\Controller\:
+        resource: '../../Controller'
+        tags: ['controller.service_arguments']

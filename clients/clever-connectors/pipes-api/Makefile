@@ -64,17 +64,14 @@ phplive: #database-create
 phpcontroller: #database-create
 	$(DE) ./vendor/bin/phpunit -c phpunit.xml.dist --colors --stderr tests/Controller
 
-test: docker-up-force composer-install codesniffer phpstan clear-cache phpunit phpintergration phpcontroller
+test: docker-up-force composer-install codesniffer phpstan phpunit phpintergration phpcontroller
 
-fasttest: codesniffer phpstan clear-cache phpunit phpintergration phpcontroller
+fasttest: codesniffer phpstan phpunit phpintergration phpcontroller
 
 #Other
 
 console:
 	$(DE) php bin/console ${command}
-
-clear-cache:
-	$(DE) sudo rm -rf app/cache
 
 create-schema:
 	$(DE) bin/console doctrine:mongodb:schema:create
@@ -91,3 +88,7 @@ database-create:
 			-e "s/{DEV_GID}/$(shell id -u)/g" \
 			.env.dist >> .env; \
 	fi;
+
+docker-compose.ci.yml:
+	# Comment out any port forwarding
+	sed -r 's/^(\s+ports:)$$/#\1/g; s/^(\s+- \$$\{DEV_IP\}.*)$$/#\1/g' docker-compose.yml > docker-compose.ci.yml

@@ -140,6 +140,7 @@ class RabbitMqCompilerPass implements CompilerPassInterface
                 $value['content_type'],
                 new Reference($this->managerServiceId),
             ]);
+            $definition->setPublic(TRUE);
 
             if (array_key_exists(LoggerAwareInterface::class, class_implements($value['class']))) {
                 $definition->addMethodCall('setLogger', [
@@ -187,12 +188,14 @@ class RabbitMqCompilerPass implements CompilerPassInterface
                 ]);
             }
 
-            $definition->addMethodCall('setCallback', [
-                [
-                    new Reference($value['callback'], ContainerInterface::EXCEPTION_ON_INVALID_REFERENCE),
-                    'handleMessage',
-                ],
-            ]);
+            if ($value['callback']) {
+                $definition->addMethodCall('setCallback', [
+                    [
+                        new Reference($value['callback'], ContainerInterface::EXCEPTION_ON_INVALID_REFERENCE),
+                        'handleMessage',
+                    ],
+                ]);
+            }
 
             $consumers[$key] = $definition;
 
@@ -228,7 +231,9 @@ class RabbitMqCompilerPass implements CompilerPassInterface
                 ]);
             }
 
-            $definition->addMethodCall('setCallback', [new Reference($value['callback'])]);
+            if ($value['callback']) {
+                $definition->addMethodCall('setCallback', [new Reference($value['callback'])]);
+            }
 
             $asyncConsumers[$key] = $definition;
 
@@ -236,10 +241,7 @@ class RabbitMqCompilerPass implements CompilerPassInterface
             $container->setDefinition($serviceName, $definition);
         }
 
-        /**
-         * Connection definition
-         */
-        $container->setDefinition($this->clientServiceId, new Definition('%rabbit-mq.bunny-client%', [
+        $clientDefinition = new Definition('%rabbit-mq.bunny-client%', [
             [
                 'host'      => $config["host"],
                 'port'      => $config["port"],
@@ -248,7 +250,13 @@ class RabbitMqCompilerPass implements CompilerPassInterface
                 'password'  => $config["password"],
                 'heartbeat' => $config["heartbeat"],
             ],
-        ]));
+        ]);
+        $clientDefinition->setPublic(TRUE);
+
+        /**
+         * Connection definition
+         */
+        $container->setDefinition($this->clientServiceId, $clientDefinition);
 
         /**
          * BunnyManager
@@ -266,10 +274,11 @@ class RabbitMqCompilerPass implements CompilerPassInterface
         $channel->setFactory([new Reference($this->managerServiceId), "getChannel"]);
         $container->setDefinition($this->channelServiceId, $channel);
 
-        $container->setDefinition($this->setupCommandServiceId,
-            new Definition('%rabbit-mq.command.setup%', [
-                new Reference($this->managerServiceId),
-            ]));
+        $setupCommand = new Definition('%rabbit-mq.command.setup%', [
+            new Reference($this->managerServiceId),
+        ]);
+        $setupCommand->setPublic(TRUE);
+        $container->setDefinition($this->setupCommandServiceId, $setupCommand);
 
         // CONSUMER COMMAND
         $consumerCommand = new Definition('%rabbit-mq.command.consumer%', [
@@ -277,6 +286,7 @@ class RabbitMqCompilerPass implements CompilerPassInterface
             new Reference($this->managerServiceId),
             $consumers,
         ]);
+        $consumerCommand->setPublic(TRUE);
         $consumerCommand->addMethodCall('setLogger', [
             new Reference('monolog.logger.rabbit-mq', ContainerInterface::IGNORE_ON_INVALID_REFERENCE),
         ]);
@@ -287,17 +297,11 @@ class RabbitMqCompilerPass implements CompilerPassInterface
             $asyncConsumers,
             $config,
         ]);
+        $asyncConsumerCommand->setPublic(TRUE);
         $asyncConsumerCommand->addMethodCall('setLogger', [
             new Reference('monolog.logger.rabbit-mq', ContainerInterface::IGNORE_ON_INVALID_REFERENCE),
         ]);
         $container->setDefinition($this->asyncConsumerCommandServiceId, $asyncConsumerCommand);
-
-        //        $container->setDefinition($this->producerCommandServiceId,
-        //            new Definition('%rabbit-mq.command.producer%', [
-        //                new Reference("service_container"),
-        //                new Reference($this->managerServiceId),
-        //                $consumers,
-        //            ]));
     }
 
     /**

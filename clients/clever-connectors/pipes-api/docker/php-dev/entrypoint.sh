@@ -9,4 +9,5 @@ echo "gitlab.hanaboso.net ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDIwOgk1SAbzW3WX/
 
 exec "$@"
 
-chmod -R 774 /srv/project/app/logs && chown -R dev:dev /srv/project/app/logs
+chmod -R 774 /srv/project/var/log && chown -R dev:dev /srv/project/var/log
+chmod -R 774 /srv/project/var/cache && chown -R dev:dev /srv/project/var/cache

@@ -11,7 +11,6 @@ namespace Tests\Unit\AppBundle\Model\CustomNode;
 
 use CleverConnectors\AppBundle\Model\Command\AsyncCommandFactory;
 use CleverConnectors\AppBundle\Model\CustomNode\TokenMessageGenerator;
-use CleverConnectors\AppBundle\Model\CustomNode\UserMessageGenerator;
 use Exception;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
@@ -24,7 +23,9 @@ use React\Promise\Promise;
 /**
  * Class TokenMessageGeneratorTest
  *
- * @package Tests\Unit\AppBundle\Model\CustomNode
+ * @coversDefaultClass CleverConnectors\AppBundle\Model\CustomNode\TokenMessageGenerator
+ * @coversDefaultClass CleverConnectors\AppBundle\Model\CustomNode\UserMessageGenerator
+ * @package            Tests\Unit\AppBundle\Model\CustomNode
  */
 final class TokenMessageGeneratorTest extends TestCase
 {
@@ -57,8 +58,8 @@ final class TokenMessageGeneratorTest extends TestCase
     }
 
     /**
-     * @covers TokenMessageGenerator::parseBody()
-     * @covers TokenMessageGenerator::getExpiredSystems()
+     * @covers ::parseBody()
+     * @covers ::getExpiredSystems()
      */
     public function testParseBodyError(): void
     {
@@ -87,7 +88,7 @@ final class TokenMessageGeneratorTest extends TestCase
     }
 
     /**
-     * @covers UserMessageGenerator::prepareData()
+     * @covers ::prepareData()
      */
     public function testPrepareMessage(): void
     {

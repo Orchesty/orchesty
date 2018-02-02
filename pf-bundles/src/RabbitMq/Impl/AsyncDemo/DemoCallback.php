@@ -85,9 +85,9 @@ class DemoCallback implements BatchActionInterface
      * @param Browser          $browser
      * @param RequestInterface $request
      *
-     * @return Promise
+     * @return PromiseInterface|Promise
      */
-    protected function fetchData(Browser $browser, RequestInterface $request): Promise
+    protected function fetchData(Browser $browser, RequestInterface $request): PromiseInterface
     {
         return $browser->send($request);
     }

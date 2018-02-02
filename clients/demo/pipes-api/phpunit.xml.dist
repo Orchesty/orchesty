@@ -6,10 +6,16 @@
          backupGlobals="false"
          colors="true"
          bootstrap="vendor/autoload.php"
+         beStrictAboutTestsThatDoNotTestAnything="false"
+         beStrictAboutTestSize="false"
+         beStrictAboutOutputDuringTests="false"
+         beStrictAboutChangesToGlobalState="false"
+         checkForUnintentionallyCoveredCode="false"
 >
     <php>
         <ini name="error_reporting" value="-1" />
-        <server name="KERNEL_CLASS" value="AppKernel" />
+        <env name="KERNEL_CLASS" value="Demo\Kernel" />
+        <env name="SYMFONY_DEPRECATIONS_HELPER" value="weak"/>
     </php>
 
     <testsuites>

@@ -1,6 +1,10 @@
 services:
+    _defaults:
+        public: '%public.services%'
+
     hbpf.loader.custom_node:
         class: Hanaboso\PipesFramework\HbPFCustomNodeBundle\Loader\CustomNodeLoader
+        public: true
         arguments:
             - '@service_container'
 

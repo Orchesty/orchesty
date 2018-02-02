@@ -1,4 +1,7 @@
 services:
+    _defaults:
+        public: '%public.services%'
+
     systems.wisepops:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Wisepops\WisepopsSystem
         arguments:

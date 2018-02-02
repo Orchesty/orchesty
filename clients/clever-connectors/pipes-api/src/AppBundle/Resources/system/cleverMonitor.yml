@@ -1,4 +1,7 @@
 services:
+    _defaults:
+        public: '%public.services%'
+
     hbpf.connector.cleverconnectors-create-subscriptions-connector:
         class: CleverConnectors\AppBundle\Model\CM\SubscriberConnector\CMCreateSubscriberConnector
         arguments:

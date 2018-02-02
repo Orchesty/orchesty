@@ -1,12 +1,12 @@
 services:
+    _defaults:
+        public: '%public.services%'
 
     hbpf.ftp.ftp_adapter:
         class: Hanaboso\PipesFramework\Commons\Transport\Ftp\Adapter\FtpAdapter
-        arguments:
 
     hbpf.ftp.sftp_adapter:
         class: Hanaboso\PipesFramework\Commons\Transport\Ftp\Adapter\SftpAdapter
-        arguments:
 
     hbpf.ftp.service.factory:
         class: Hanaboso\PipesFramework\Commons\Transport\Ftp\FtpServiceFactory

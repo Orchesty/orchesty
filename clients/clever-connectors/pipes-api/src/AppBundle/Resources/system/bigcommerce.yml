@@ -1,4 +1,7 @@
 services:
+    _defaults:
+        public: '%public.services%'
+
     systems.bigcommerce:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Bigcommerce\BigcommerceSystem
         arguments:

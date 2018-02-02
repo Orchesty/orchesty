@@ -1,4 +1,6 @@
 services:
+    _defaults:
+        public: '%public.services%'
 
     cc.systems.controller:
         class: CleverConnectors\AppBundle\Controller\SystemController

@@ -1,0 +1,10 @@
+declare -A BRANCH_IMAGE_TAG_MAP=(
+
+  # default tags
+  [MONOLITH_default]="symf-4"
+  [FRONTEND_default]="symf-4"
+
+  # branch: perf
+  [FRONTEND_perf]="perf"
+
+)

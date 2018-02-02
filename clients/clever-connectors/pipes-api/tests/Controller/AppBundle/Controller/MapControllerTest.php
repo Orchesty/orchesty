@@ -2,7 +2,6 @@
 
 namespace Tests\Controller\AppBundle\Controller;
 
-use CleverConnectors\AppBundle\Controller\MapController;
 use CleverConnectors\AppBundle\Document\MapTemplate;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\TypeEnum;
@@ -15,13 +14,14 @@ use Tests\ControllerTestCaseAbstract;
 /**
  * Class MapControllerTest
  *
+ * @coversDefaultClass CleverConnectors\AppBundle\Controller\MapController
  * @package Tests\Controller\AppBundle\Controller
  */
 final class MapControllerTest extends ControllerTestCaseAbstract
 {
 
     /**
-     * @covers MapController::createAction()
+     * @covers ::createAction()
      */
     public function testCreate(): void
     {
@@ -64,7 +64,7 @@ final class MapControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers MapController::updateAction()
+     * @covers ::updateAction()
      */
     public function testUpdate(): void
     {
@@ -117,7 +117,7 @@ final class MapControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers MapController::deleteAction()
+     * @covers ::deleteAction()
      */
     public function testDelete(): void
     {

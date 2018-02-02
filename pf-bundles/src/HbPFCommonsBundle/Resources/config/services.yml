@@ -1,4 +1,6 @@
 services:
+    _defaults:
+        public: '%public.services%'
 
     hbpf.system_metrics_listener:
         class: Hanaboso\PipesFramework\Commons\Listener\SystemMetricsListener

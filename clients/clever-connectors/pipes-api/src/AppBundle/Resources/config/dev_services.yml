@@ -1,4 +1,6 @@
 services:
+    _defaults:
+        public: '%public.services%'
 
     systems.null.user:
         class: Tests\Integration\AppBundle\Model\Systems\Impl\NullSystem
