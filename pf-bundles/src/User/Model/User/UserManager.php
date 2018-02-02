@@ -5,12 +5,14 @@ namespace Hanaboso\PipesFramework\User\Model\User;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ORM\EntityManager;
 use Hanaboso\PipesFramework\HbPFUserBundle\Provider\ResourceProvider;
+use Hanaboso\PipesFramework\RabbitMq\Producer\AbstractProducer;
 use Hanaboso\PipesFramework\User\DatabaseManager\UserDatabaseManagerLocator;
 use Hanaboso\PipesFramework\User\Document\User as OdmUser;
 use Hanaboso\PipesFramework\User\Entity\TmpUserInterface;
 use Hanaboso\PipesFramework\User\Entity\User as OrmUser;
 use Hanaboso\PipesFramework\User\Entity\UserInterface;
 use Hanaboso\PipesFramework\User\Enum\ResourceEnum;
+use Hanaboso\PipesFramework\User\Model\Messages\ActivateMessage;
 use Hanaboso\PipesFramework\User\Model\Security\SecurityManager;
 use Hanaboso\PipesFramework\User\Model\Token\TokenManager;
 use Hanaboso\PipesFramework\User\Model\Token\TokenManagerException;
@@ -72,6 +74,11 @@ class UserManager
     private $provider;
 
     /**
+     * @var AbstractProducer
+     */
+    private $producer;
+
+    /**
      * UserManager constructor.
      *
      * @param UserDatabaseManagerLocator $userDml
@@ -80,6 +87,7 @@ class UserManager
      * @param EncoderFactory             $encoderFactory
      * @param EventDispatcherInterface   $eventDispatcher
      * @param ResourceProvider           $provider
+     * @param AbstractProducer           $producer
      */
     public function __construct(
         UserDatabaseManagerLocator $userDml,
@@ -87,7 +95,8 @@ class UserManager
         TokenManager $tokenManager,
         EncoderFactory $encoderFactory,
         EventDispatcherInterface $eventDispatcher,
-        ResourceProvider $provider
+        ResourceProvider $provider,
+        AbstractProducer $producer
     )
     {
         $this->dm                = $userDml->get();
@@ -98,6 +107,7 @@ class UserManager
         $this->encoder           = $encoderFactory->getEncoder($provider->getResource(ResourceEnum::USER));
         $this->eventDispatcher   = $eventDispatcher;
         $this->provider          = $provider;
+        $this->producer          = $producer;
     }
 
     /**
@@ -156,6 +166,8 @@ class UserManager
         $token->setTmpUser($user);
         $this->dm->flush();
 
+        $msg = new ActivateMessage($user);
+        $this->producer->publish(json_encode($msg->getMessage()));
         $this->eventDispatcher->dispatch(UserEvent::USER_REGISTER, new UserEvent($user));
     }
 
