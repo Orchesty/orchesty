@@ -10,6 +10,7 @@ import TabBar from 'elements/tab/TabBar';
 import TopologyNodeListTable from 'components/node/TopologyNodeListTable';
 import TopologyNodeMetricsListTable from 'components/node/TopologyNodeMetricsListTable';
 import TopologySchema from './TopologySchema';
+import TopologyNodeMetricsContainer from 'components/node/TopologyNodeMetricsContainer';
 
 import './TopologyDetail.less';
 
@@ -104,16 +105,16 @@ class TopologyDetail extends React.Component {
   schemaImported(msg){
     this.props.onChangeTab(tabItems[1].id);
   }
-
+//{activeTab == 'nodes' && <TopologyNodeListTable topologyId={topologyId} setActions={this.setActions.bind(this, 'nodes')}/>}
   render() {
-    const {topologyId, activeTab, setActions, topology, onChangeTopology} = this.props;
+    const {topologyId, activeTab, setActions, topology, onChangeTopology, pageKey, metricsRange} = this.props;
     let activeIndex = tabItems.findIndex(tab => activeTab == tab.id);
     const schemaVisible = activeTab == 'schema';
     return (
       <div className="topology-detail">
         <TabBar items={tabItems} active={activeIndex} onChangeTab={this.changeTab}/>
         <div className="tab-content">
-          {activeTab == 'nodes' && <TopologyNodeListTable topologyId={topologyId} setActions={this.setActions.bind(this, 'nodes')}/>}
+          {activeTab == 'nodes' && <TopologyNodeMetricsContainer topologyId={topologyId} componentKey={pageKey} metricsRange={metricsRange} />}
           {activeTab == 'node_metrics' && <TopologyNodeMetricsListTable topologyId={topologyId} setActions={this.setActions.bind(this, 'nodeMetrics')}/>}
           <div className={'schema-wrapper' + ( schemaVisible ? '' : ' hidden')}>
             <TopologySchema
@@ -132,7 +133,8 @@ class TopologyDetail extends React.Component {
 }
 
 TopologyDetail.defaultProps = {
-  activeTab: tabItems[0].id
+  activeTab: tabItems[0].id,
+  componentKey: PropTypes.string.isRequired
 };
 
 TopologyDetail.propTypes = {
