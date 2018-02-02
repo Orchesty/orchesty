@@ -3,7 +3,11 @@
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Zapier;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Enum\CleverCustomKeysEnum;
 use CleverConnectors\AppBundle\Enum\SystemTypeEnum;
+use CleverConnectors\AppBundle\Model\CMEvents\CMEventObject;
+use CleverConnectors\AppBundle\Model\CMEvents\CMEventSystemInterface;
+use CleverConnectors\AppBundle\Model\CMEvents\Traits\CMEventSystemTrait;
 use CleverConnectors\AppBundle\Model\Form\Field;
 use CleverConnectors\AppBundle\Model\Form\Form;
 use CleverConnectors\AppBundle\Model\Limits\SystemLimitDto;
@@ -24,12 +28,13 @@ use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
  *
  * @package AppBundle\Model\Systems\Impl\Zapier
  */
-class ZapierSystem implements WebhookSystemInterface, AuthorizationInterface
+class ZapierSystem implements WebhookSystemInterface, AuthorizationInterface, CMEventSystemInterface
 {
 
     use SystemTrait;
     use WebhookSystemTrait;
     use AuthorizationTrait;
+    use CMEventSystemTrait;
 
     public const CREATE_WEBHOOK_URL = 'create_webhook_url';
     public const UPDATE_WEBHOOK_URL = 'update_webhook_url';
@@ -40,6 +45,13 @@ class ZapierSystem implements WebhookSystemInterface, AuthorizationInterface
      */
     public function __construct()
     {
+
+        $this->addCMEvent(new CMEventObject('', SystemInstall::EVENT_CREATE, ''));
+        $this->addCMEvent(new CMEventObject(CleverCustomKeysEnum::UNSUBSCRIBE,
+            SystemInstall::EVENT_UNSUBSCRIBE, ''));
+        $this->addCMEvent(new CMEventObject(CleverCustomKeysEnum::HARD_BOUNCE,
+            SystemInstall::EVENT_HARD_BOUNCE, ''));
+
         $this->subscriptions[] = new WebhookSubscribes(
             'zapier-created-subscriber-connector',
             TopologyNameUtils::getTopologyName(TopologyNameUtils::CREATED_SUBSCRIBERS, $this->getKey())
@@ -178,13 +190,37 @@ class ZapierSystem implements WebhookSystemInterface, AuthorizationInterface
             FALSE
         );
 
+        $field6 = new Field(
+            Field::CHECKBOX,
+            SystemInstall::EVENT_CREATE,
+            'Create event',
+            $systemInstall->isEventCreate()
+        );
+
+        $field7 = new Field(
+            Field::CHECKBOX,
+            SystemInstall::EVENT_UNSUBSCRIBE,
+            'Unsubscribe event',
+            $systemInstall->isEventUnsubscribe()
+        );
+
+        $field8 = new Field(
+            Field::CHECKBOX,
+            SystemInstall::EVENT_HARD_BOUNCE,
+            'Hard bounce events',
+            $systemInstall->isEventHardBounce()
+        );
+
         $form = new Form();
         $form
             ->addField($field1)
             ->addField($field2)
             ->addField($field3)
             ->addField($field4)
-            ->addField($field5);
+            ->addField($field5)
+            ->addField($field6)
+            ->addField($field7)
+            ->addField($field8);
 
         return $form->toArray();
     }
@@ -240,6 +276,16 @@ class ZapierSystem implements WebhookSystemInterface, AuthorizationInterface
             'Method [getUnsubscribeRequest] not implemented in Zapier system.',
             SystemException::SYSTEM_METHOD_NOT_FOUND
         );
+    }
+
+    /**
+     * @param SystemInstall $systemInstall
+     *
+     * @return RequesterInterface|null
+     */
+    public function getCMEventRequester(SystemInstall $systemInstall): ?RequesterInterface
+    {
+        return NULL;
     }
 
 }
