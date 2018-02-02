@@ -34,7 +34,8 @@ class ActivateMessage extends UserMessageAbstract
      */
     public function getMessage(): array
     {
-        $this->message["to"] = $this->user->getEmail();
+        $this->message["to"]                   = $this->user->getEmail();
+        $this->message['dataContent']['token'] = $this->user->getToken()->getHash();
 
         return $this->message;
     }
