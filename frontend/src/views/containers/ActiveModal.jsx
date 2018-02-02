@@ -8,6 +8,7 @@ import AuthorizationSettingsEditModal from 'modals/AuthorizationSettingsEditModa
 import TopologyRunFormModal from 'modals/TopologyRunFormModal';
 import TopologyDeleteDialog from 'modals/dialogs/TopologyDeleteDialog';
 import TopologyCategoryChangeModal from 'modals/TopologyCategoryChangeModal';
+import CategoryEditModal from 'modals/CategoryEditModal';
 
 
 class ActiveModal extends React.Component {
@@ -25,6 +26,9 @@ class ActiveModal extends React.Component {
     switch (modal){
       case 'topology_edit':
         return <TopologyEditModal {...modalData} onCloseModal={this._close} componentKey={modal}/>;
+
+      case 'category_edit':
+        return <CategoryEditModal {...modalData} onCloseModal={this._close} componentKey={modal}/>;
 
       case 'authorization_settings_edit':
         return <AuthorizationSettingsEditModal {...modalData} onCloseModal={this._close} componentKey={modal} />;

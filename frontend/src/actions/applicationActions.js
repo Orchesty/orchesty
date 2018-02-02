@@ -53,3 +53,20 @@ export function setPageArgs(args) {
     return dispatch(selectPage(page.key, Object.assign({}, page.args, args)));
   }
 }
+
+export function openContextMenu(menuKey, args, componentKey, x, y){
+  return {
+    type: types.CONTEXT_MENU_OPEN,
+    menuKey,
+    args,
+    componentKey,
+    x,
+    y
+  }
+}
+
+export function closeContextMenu() {
+  return {
+    type: types.CONTEXT_MENU_CLOSE
+  }
+}

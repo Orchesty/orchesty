@@ -11,9 +11,9 @@ class TopologyTreeViewList extends React.Component {
   }
 
   render() {
-    const {topLevel, category, topologies, toggleCategory, openTopology} = this.props;
-    const categoriesComp = category.children ? category.children.map(item => <TopologyTreeViewItem toggleCategory={toggleCategory} key={item.id} item={item} objectType="category" topLevel={topLevel} openTopology={openTopology}/>) : null;
-    const topologiesComp = topologies.map(item => <TopologyTreeViewItem key={item._id} item={item} objectType="topology" topLevel={topLevel} openTopology={openTopology} />);
+    const {topLevel, category, topologies, toggleCategory, openTopology, openContextMenu} = this.props;
+    const categoriesComp = category.children ? category.children.map(item => <TopologyTreeViewItem toggleCategory={toggleCategory} key={item.id} item={item} objectType="category" topLevel={topLevel} openTopology={openTopology} openContextMenu={openContextMenu}/>) : null;
+    const topologiesComp = topologies.map(item => <TopologyTreeViewItem key={item._id} item={item} objectType="topology" topLevel={topLevel} openTopology={openTopology} openContextMenu={openContextMenu} />);
     if ((categoriesComp && categoriesComp.length > 0) || topologiesComp.length) {
       return (
         <ul className={'topology-tree-view-list' + (topLevel ? ' top-level-list' : ' next-level-list')}>
@@ -36,7 +36,8 @@ TopologyTreeViewList.propTypes = {
   topologies: PropTypes.array.isRequired,
   topLevel: PropTypes.bool.isRequired,
   toggleCategory: PropTypes.func.isRequired,
-  openTopology: PropTypes.func.isRequired
+  openTopology: PropTypes.func.isRequired,
+  openContextMenu: PropTypes.func
 };
 
 function mapStateToProps(state, ownProps){

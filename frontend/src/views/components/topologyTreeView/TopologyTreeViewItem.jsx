@@ -9,6 +9,7 @@ class TopologyTreeViewItem extends React.Component {
     super(props);
     this.categoryClick = this.categoryClick.bind(this);
     this.topologyClick = this.topologyClick.bind(this);
+    this.contextMenuClick = this.contextMenuClick.bind(this);
   }
 
   categoryClick(e){
@@ -23,22 +24,28 @@ class TopologyTreeViewItem extends React.Component {
     openTopology(item._id);
   }
 
+  contextMenuClick(e){
+    const {openContextMenu, objectType, item} = this.props;
+    e.preventDefault();
+    openContextMenu(item.id || item._id, objectType, e.clientX, e.clientY);
+  }
+
   render() {
-    const {openTopology, topLevel, item, objectType, toggleCategory} = this.props;
+    const {openTopology, topLevel, item, objectType, toggleCategory, openContextMenu} = this.props;
     switch (objectType){
       case 'category':
         return (
           <li className={'topology-tree-view-item' + (topLevel ? ' top-level-item' : ' next-level-item')}>
-            <a onClick={this.categoryClick}>
+            <a onClick={this.categoryClick} onContextMenu={this.contextMenuClick}>
               <i className={item.open ? 'fa fa-folder-open-o' : 'fa fa-folder-o'} />{item.caption} <span className="fa fa-chevron-down" />
             </a>
-            {item.open && <TopologyTreeViewList category={item} toggleCategory={toggleCategory} openTopology={openTopology} />}
+            {item.open && <TopologyTreeViewList category={item} toggleCategory={toggleCategory} openTopology={openTopology} openContextMenu={openContextMenu} />}
           </li>
         );
       case 'topology':
         return (
           <li className={'topology-tree-view-item topology' + (topLevel ? ' top-level-item' : ' next-level-item')} >
-            <a onClick={this.topologyClick}>
+            <a onClick={this.topologyClick} onContextMenu={this.contextMenuClick}>
               <i className="fa fa-file-code-o" />{item.name}.v{item.version}
               </a>
           </li>

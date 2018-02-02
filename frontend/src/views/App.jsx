@@ -14,6 +14,7 @@ import TopNavigation from 'containers/TopNavigation';
 import ActivePage from 'containers/ActivePage';
 import Toaster from 'containers/Toaster';
 import ActiveModal from 'containers/ActiveModal';
+import ActiveContextMenu from 'containers/ActiveContextMenu';
 import LoginPage from 'pages/nonAuth/LoginPage';
 import RegistrationPage from 'pages/nonAuth/RegistrationPage';
 import ResetPasswordPage from 'pages/nonAuth/ResetPasswordPage';
@@ -44,7 +45,8 @@ class App extends React.Component {
               </div>
             </div>
             <Toaster />
-            <ActiveModal/>
+            <ActiveModal />
+            <ActiveContextMenu />
           </div>
         );
       } else {

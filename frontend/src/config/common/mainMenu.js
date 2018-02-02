@@ -8,13 +8,13 @@ export default dispatch => [
     items: [
       {
         type: menuItemType.ACTION,
-        caption: 'New folder',
-        action: () => alert('TODO')
+        caption: 'New topology',
+        action: () => dispatch(applicationActions.openModal('topology_edit', {addNew: true}))
       },
       {
         type: menuItemType.ACTION,
-        caption: 'New topology',
-        action: () => alert('TODO')
+        caption: 'New category',
+        action: () => dispatch(applicationActions.openModal('category_edit', {addNew: true}))
       }
     ]
   },
