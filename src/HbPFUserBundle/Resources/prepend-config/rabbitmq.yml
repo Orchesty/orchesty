@@ -1,0 +1,19 @@
+rabbit-mq:
+    exchanges:
+        pipes.messages:
+            durable: true
+            type: direct
+
+    queues:
+        pipes.messages:
+            durable: true
+            bindings:
+                - exchange: pipes.messages
+                  routing_key: pipes.messages
+
+    producers:
+        pipes.messages:
+            class: Hanaboso\PipesFramework\User\Model\Messages\MessageProducer
+            exchange: pipes.messages
+            serializer: Hanaboso\PipesFramework\RabbitMq\Serializers\JsonSerializer
+            routing_key: pipes.messages
