@@ -17,10 +17,10 @@ class TopologyTreeView extends React.Component {
   }
 
   render() {
-    const {root, toggleCategory, openTopology} = this.props;
+    const {root, toggleCategory, openTopology, openContextMenu} = this.props;
     return (
       <div className="topology-tree-view">
-        {root && root.children.length > 0 ? <TopologyTreeViewList category={root} toggleCategory={toggleCategory} openTopology={openTopology} topLevel /> : 'Empty'}
+        {root && root.children.length > 0 ? <TopologyTreeViewList category={root} toggleCategory={toggleCategory} openTopology={openTopology} openContextMenu={openContextMenu} topLevel /> : 'Empty'}
       </div>
     );
   }
@@ -58,7 +58,17 @@ function mapActionsToProps(dispatch, ownProps){
       dispatch(topologyActions.needTopologyList('complete'));
     },
     toggleCategory: id => dispatch(categoryActions.treeToggle(ownProps.componentKey, id)),
-    openTopology: id => dispatch(applicationActions.selectPage('topology_detail', {topologyId: id}))
+    openTopology: id => dispatch(applicationActions.selectPage('topology_detail', {topologyId: id})),
+    openContextMenu: (id, type, x, y) => {
+      switch (type){
+        case 'category':
+          return dispatch(applicationActions.openContextMenu('CategoryFileContextMenu', {categoryId: id}, ownProps.componentKey, x, y));
+        case 'topology':
+          return dispatch(applicationActions.openContextMenu('TopologyFileContextMenu', {topologyId: id}, ownProps.componentKey, x, y));
+        default:
+          throw Error(`Unknown type [${type}]`);
+      }
+    }
   }
 }
 

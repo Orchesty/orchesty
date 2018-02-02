@@ -27,4 +27,4 @@ function mapActionsToProps(dispatch, ownProps){
   }
 }
 
-export default connect(() => ({}), mapActionsToProps)(TopMainMenu);
+export default connect(null, mapActionsToProps)(TopMainMenu);

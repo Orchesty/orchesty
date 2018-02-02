@@ -10,7 +10,8 @@ const initialState = {
   },
   showSideBar: true,
   modal: null,
-  modalData: null
+  modalData: null,
+  contextMenu: null
 };
 
 export default (state = initialState, action) => {
@@ -57,7 +58,21 @@ export default (state = initialState, action) => {
         modal: null,
         modalData: null
       });
-    
+
+    case types.CONTEXT_MENU_OPEN:
+      return Object.assign({}, state, {
+        contextMenu: {
+          menuKey: action.menuKey,
+          args: action.args,
+          componentKey: action.componentKey,
+          x: action.x,
+          y: action.y
+        }
+      });
+
+    case types.CONTEXT_MENU_CLOSE:
+      return Object.assign({}, state, {contextMenu: null});
+
     default:
       return state;
   }

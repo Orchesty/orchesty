@@ -13,6 +13,8 @@ class TopologyMetrics extends React.Component {
 
   render() {
     const {metrics: {data}} = this.props;
+    // TODO return null pred pushem smazat
+    return null;
     return (
       <div className="node-metrics tile_count">
         <div className="tile_stats_count">
@@ -23,10 +25,6 @@ class TopologyMetrics extends React.Component {
           <span className="count_top">Process Time</span>
           <div className="count">{data.process_time.avg}</div>
         </div>
-        <div className="tile_stats_count">
-          <span className="count_top">CPU Time</span>
-          <div className="count">{data.cpu_time.avg}</div>
-        </div>
       </div>
     );
   }
@@ -35,13 +33,13 @@ class TopologyMetrics extends React.Component {
 TopologyMetrics.propTypes = {};
 
 function mapStateToProps(state, ownProps){
-  const {metrics} = state;
+  const {metrics, topology} = state;
   const key = ownProps.metricsRange ? `${ownProps.topologyId}[${ownProps.metricsRange.since}-${ownProps.metricsRange.till}]` : ownProps.topologyId;
   const metricsElement = metrics.topologies[key];
   return {
     state: metricsElement && metricsElement.state,
     metrics: metricsElement,
-    title: 'Metrics for time range',
+    title: topology.elements[ownProps.topologyId].name,
   }
 }
 

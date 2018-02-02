@@ -12,7 +12,6 @@ class ToggleLocalMenu extends React.Component {
   componentDidMount(){
     document.addEventListener('mousedown', this._click);
     document.addEventListener('ontouchstart', this._click);
-    // document.addEventListener('scroll', this._close);
     window.addEventListener('resize', this._close);
     document.addEventListener('contextmenu', this._close);
   }
@@ -20,7 +19,6 @@ class ToggleLocalMenu extends React.Component {
   componentWillUnmount(){
     document.removeEventListener('mousedown', this._click);
     document.removeEventListener('ontouchstart', this._click);
-    //document.removeEventListener('scroll', this._close);
     window.removeEventListener('resize', this._close);
     document.removeEventListener('contextmenu', this._close);
   }

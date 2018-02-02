@@ -30,15 +30,19 @@ export function search(searchStr){
       if (searchStr) {
         dispatch(startSearch(searchStr));
         return Promise.all([
-          dispatch(topologyActions.needTopologyList('complete')),
-          dispatch(categoryActions.needCategoryList('complete')),
+          dispatch(topologyActions.needTopologyList('complete'))
+          //dispatch(categoryActions.needCategoryList('complete')),
         ]).then(() => {
           const state = getState();
-          const categoryElements = state.category.elements;
+         // const categoryElements = state.category.elements;
           const topologyGroupElements = state.topologyGroup.elements;
-          let items = Object.keys(categoryElements)
-            .filter(key => categoryElements[key].name.toLocaleLowerCase().indexOf(searchStr) >= 0)
-            .map(key => ({id: key, objectType: 'category'}));
+          let items = [];
+          // Category search
+          // let items = Object.keys(categoryElements)
+          //   .filter(key => categoryElements[key].name.toLocaleLowerCase().indexOf(searchStr) >= 0)
+          //   .map(key => ({id: key, objectType: 'category'}));
+
+          // Topology search
           items = items.concat(Object.keys(topologyGroupElements)
             .filter(key => key.toLocaleLowerCase().indexOf(searchStr) >= 0)
             .map(key => ({id: key, objectType: 'topologyGroup'})));

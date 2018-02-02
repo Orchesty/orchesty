@@ -72,6 +72,7 @@ export default (EditComponent, View, parameters = {valueKey: 'value'}) => {
     setControlFunction: PropTypes.func
   };
 
+  Editable.displayName = `Editable(${EditComponent.displayName || EditComponent.name || 'Component'})`;
 
   function mapStateToProps(state, ownProps) {
     const {editable} = state;
