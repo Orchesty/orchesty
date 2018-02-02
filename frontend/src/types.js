@@ -17,3 +17,11 @@ export const filterType = {
   SEARCH: 'search',
   BOOLEAN: 'boolean_str'
 };
+
+export const menuItemType = {
+  SUB_MENU: 'sub_menu',
+  ACTION: 'action',
+  SEPARATOR: 'separator',
+  BADGE: 'badge',
+  TEXT: 'text'
+};
