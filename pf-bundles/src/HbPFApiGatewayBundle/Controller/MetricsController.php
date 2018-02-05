@@ -30,7 +30,8 @@ class MetricsController extends FOSRestController
     public function topologyMetricsAction(Request $request, string $topologyId): Response
     {
         return $this->forward('HbPFMetricsBundle:Metrics:topologyMetrics',
-            ['query' => $request->query, 'topologyId' => $topologyId]);
+            ['query' => $request->query, 'topologyId' => $topologyId]
+        );
     }
 
     /**
@@ -47,6 +48,22 @@ class MetricsController extends FOSRestController
     {
         return $this->forward('HbPFMetricsBundle:Metrics:nodeMetrics',
             ['query' => $request->query, 'topologyId' => $topologyId, 'nodeId' => $nodeId]
+        );
+    }
+
+    /**
+     * @Route("/metrics/topology/{topologyId}/requests")
+     * @Method({"GET", "OPTIONS"})
+     *
+     * @param Request $request
+     * @param string  $topologyId
+     *
+     * @return Response
+     */
+    public function topologyRequestsCountMetricsAction(Request $request, string $topologyId): Response
+    {
+        return $this->forward('HbPFMetricsBundle:Metrics:topologyRequestsCountMetrics',
+            ['query' => $request->query, 'topologyId' => $topologyId]
         );
     }
 
