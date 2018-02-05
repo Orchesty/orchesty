@@ -33,7 +33,8 @@ ActionButtonPanel.defaultProps = {
 ActionButtonPanel.propTypes = {
   items: PropTypes.array,
   size: PropTypes.string,
-  right: PropTypes.bool
+  right: PropTypes.bool,
+  buttonClassName: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
 };
 
 export default ActionButtonPanel;

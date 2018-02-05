@@ -7,8 +7,7 @@ import TopologyListPage from 'pages/TopologyListPage';
 import TopologyDetailPage from 'pages/TopologyDetailPage';
 import SchemaPage from 'pages/SchemaPage';
 import AuthorizationListPage from 'pages/AuthorizationListPage';
-import TopologyCategoryListPage from 'pages/TopologyCategoryListPage';
-import NotificationSettingsPage from 'rootApp/views/pages/NotificationSettingsPage';
+import NotificationSettingsPage from 'pages/NotificationSettingsPage';
 
 class ActivePage extends React.Component {
   render() {
@@ -16,8 +15,6 @@ class ActivePage extends React.Component {
     switch (page.key){
       case 'dashboard':
         return <DashboardPage pageKey={page.key} {...page.args}/>;
-      case 'topology_list':
-        return <TopologyCategoryListPage pageKey={page.key} {...page.args}/>;
       case 'topology_list_all':
         return <TopologyListPage pageKey={page.key} {...page.args}/>;
       case 'topology_detail':

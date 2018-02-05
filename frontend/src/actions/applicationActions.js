@@ -1,16 +1,9 @@
 import * as types from 'rootApp/actionTypes';
 import config from 'rootApp/config';
 
-export function toggleMainSubMenu(id){
+export function leftSidebarToggle() {
   return {
-    type: types.TOGGLE_MAIN_SUB_MENU,
-    id
-  }
-}
-
-export function toggleMainMenu() {
-  return {
-    type: types.TOGGLE_MAIN_MENU
+    type: types.LEFT_SIDEBAR_TOGGLE
   }
 }
 
@@ -58,5 +51,22 @@ export function setPageArgs(args) {
   return (dispatch, getState) => {
     const page = getState().application.selectedPage;
     return dispatch(selectPage(page.key, Object.assign({}, page.args, args)));
+  }
+}
+
+export function openContextMenu(menuKey, args, componentKey, x, y){
+  return {
+    type: types.CONTEXT_MENU_OPEN,
+    menuKey,
+    args,
+    componentKey,
+    x,
+    y
+  }
+}
+
+export function closeContextMenu() {
+  return {
+    type: types.CONTEXT_MENU_CLOSE
   }
 }

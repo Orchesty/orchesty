@@ -72,6 +72,14 @@ function treeSelect(treeId, itemId){
   }
 }
 
+export function treeToggle(treeId, itemId){
+  return {
+    type: types.CATEGORY_TREE_TOGGLE,
+    id: treeId,
+    itemId
+  }
+}
+
 function loadList(listId){
   return (dispatch, getState) => {
     dispatch(listLoading(listId));
@@ -100,22 +108,22 @@ export function needCategoryList(listId, forced = false) {
   }
 }
 
-function buildTreeFromList(elements, list, id){
+function buildTreeFromList(elements, list, id, open = true){
   return {
     id: id,
-    open: true,
-    items: list.items.filter(childId => elements[childId].parent === id).map(childId => buildTreeFromList(elements, list, childId))
+    open,
+    items: list.items.filter(childId => elements[childId].parent === id).map(childId => buildTreeFromList(elements, list, childId, open))
   }
 }
 
-function loadTree(treeId, force = false) {
+function loadTree(treeId, force = false, open = true) {
   return (dispatch, getState) => {
     dispatch(treeLoading(treeId));
     return dispatch(needCategoryList('complete', force)).then(ok => {
       if (ok) {
         const category = getState().category;
         const list = category.lists['complete'];
-        dispatch(treeReceive(treeId, buildTreeFromList(category.elements, list, null)));
+        dispatch(treeReceive(treeId, buildTreeFromList(category.elements, list, null, open)));
       } else {
         dispatch(treeError(treeId));
       }
@@ -124,7 +132,7 @@ function loadTree(treeId, force = false) {
   }
 }
 
-export function needCategoryTree(treeId, forced = false, selectedId = undefined) {
+export function needCategoryTree(treeId, forced = false, selectedId = undefined, open = true) {
   return (dispatch, getState) => {
     const tree = getState().category.trees[treeId];
     if (!tree) {
@@ -133,7 +141,7 @@ export function needCategoryTree(treeId, forced = false, selectedId = undefined)
       dispatch(treeSelect(treeId, selectedId));
     }
     if (forced || !tree || tree.state == stateType.NOT_LOADED || tree.state == stateType.ERROR){
-      return dispatch(loadTree(treeId, forced));
+      return dispatch(loadTree(treeId, forced, open));
     } else {
       return Promise.resolve(true);
     }

@@ -35,4 +35,4 @@ function mapActionsToProps(dispatch){
   }
 }
 
-export default connect(() => {return {}}, mapActionsToProps)(DashboardPage);
+export default connect(null, mapActionsToProps)(DashboardPage);

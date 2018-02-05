@@ -4,7 +4,7 @@ export default {
   allowChangeServer: false,
   urlPrefix: null,
   preferPaging: false,
-  mainPage: 'topology_list',
+  mainPage: 'topology_list_all',
   clearGeneralSearch: false,
 
   hotKeys: {
