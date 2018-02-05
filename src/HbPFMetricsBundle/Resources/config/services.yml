@@ -22,5 +22,6 @@ services:
             - "%influx.node_table%"
             - "%influx.fpm_table%"
             - "%influx.rabbit_table%"
+            - "%influx.counter_table%"
         calls:
             - ['setLogger', ['@monolog.logger.commons']]
