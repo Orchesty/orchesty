@@ -26,8 +26,11 @@ httpServer.post("/ok", (req, resp) => {
     replyHeaders.setPFHeader(Headers.RESULT_CODE, `${ResultCode.SUCCESS}`);
     replyHeaders.setPFHeader(Headers.RESULT_MESSAGE, "ok");
 
-    resp.set(replyHeaders.getRaw());
-    resp.status(200).send(JSON.stringify({ val: "modified" }));
+    // delay response a little
+    setTimeout(() => {
+        resp.set(replyHeaders.getRaw());
+        resp.status(200).send(JSON.stringify({ val: "modified" }));
+    }, 20);
 });
 httpServer.post("/invalid-status-code", (req, resp) => {
     assert.deepEqual(JSON.parse(req.body), { val: "original" });
@@ -183,6 +186,32 @@ describe("HttpWorker", () => {
 
                 assert.equal(outMsg.getResult().code, ResultCode.HTTP_ERROR);
                 assert.equal(outMsg.getContent(), JSON.stringify({ val: "original" }));
+            });
+    });
+
+    it("should return original message content and set repeat code when worker timeouted on valid route", () => {
+        const node: INodeLabel = {id: "nodeId", node_id: "nodeId", node_name: "nodeName", topology_id: "topoId"};
+        const headers = new Headers();
+        headers.setPFHeader(Headers.CORRELATION_ID, "123");
+        headers.setPFHeader(Headers.PROCESS_ID, "123");
+        headers.setPFHeader(Headers.PARENT_ID, "");
+        headers.setPFHeader(Headers.SEQUENCE_ID, "1");
+        const msg = new JobMessage(node, headers.getRaw(), new Buffer(JSON.stringify({ val: "original" })));
+
+        const worker = createHttpWorker(4020, "/ok");
+        // This should emit ETIMEDOUT error "/ok" responds after 20ms
+        worker.setTimeout(5);
+
+        return worker.processData(msg)
+            .then((outMsgs: JobMessage[]) => {
+                assert.lengthOf(outMsgs, 1);
+                const outMsg: JobMessage = outMsgs[0];
+
+                assert.equal(outMsg.getResult().code, ResultCode.REPEAT);
+                assert.equal(outMsg.getContent(), JSON.stringify({ val: "original" }));
+                assert.isTrue(outMsg.getHeaders().hasPFHeader(Headers.REPEAT_MAX_HOPS));
+                assert.isTrue(outMsg.getHeaders().hasPFHeader(Headers.REPEAT_HOPS));
+                assert.isTrue(outMsg.getHeaders().hasPFHeader(Headers.REPEAT_INTERVAL));
             });
     });
 

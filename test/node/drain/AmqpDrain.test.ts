@@ -166,6 +166,8 @@ describe("AmqpDrain", () => {
     it("should send counter error message on repeat message with missing repeat interval", () => {
         const msg = createMockMessage();
         msg.setResult({ code: ResultCode.REPEAT, message: "repeat please"});
+        msg.getHeaders().setPFHeader(Headers.REPEAT_HOPS, "1");
+        msg.getHeaders().setPFHeader(Headers.REPEAT_MAX_HOPS, "10");
 
         const counterPub: CounterPublisher = mock.mock(CounterPublisher);
         counterPub.send = (toCounter: JobMessage) => {
@@ -217,6 +219,28 @@ describe("AmqpDrain", () => {
             originalHeaders.setPFHeader(Headers.REPEAT_QUEUE, settings.faucet.queue.name);
 
             assert.deepEqual(options.headers, originalHeaders.getRaw());
+
+            return Promise.resolve();
+        };
+
+        const drain = new AmqpDrain(settings, counterPubFailMock, followPubFailMock, nonStandardPub, metricsMock);
+
+        drain.forward(msg);
+    });
+
+    it("should forward message directly to node's input queue n repeat code with small repeat interval", () => {
+        const msg = createMockMessage();
+        msg.setResult({ code: ResultCode.REPEAT, message: "repeat please"});
+
+        msg.getHeaders().setPFHeader(Headers.REPEAT_INTERVAL, "0");
+        msg.getHeaders().setPFHeader(Headers.REPEAT_MAX_HOPS, "5");
+        msg.getHeaders().setPFHeader(Headers.REPEAT_HOPS, "1");
+
+        const nonStandardPub: AssertionPublisher = mock.mock(AssertionPublisher);
+        nonStandardPub.sendToQueue = (queue: string, body: Buffer, options: any) => {
+            assert.equal(queue, settings.faucet.queue.name);
+            assert.equal(body.toString(), msg.getContent());
+            assert.deepEqual(options.headers, msg.getHeaders().getRaw());
 
             return Promise.resolve();
         };

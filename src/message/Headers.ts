@@ -28,6 +28,9 @@ class Headers {
     public static readonly REPEAT_MAX_HOPS = "repeat-max-hops";
     public static readonly REPEAT_HOPS = "repeat-hops";
 
+    // force queue forwarding
+    public static readonly FORCE_TARGET_QUEUE = "force-target-queue";
+
     // limit headers
     public static readonly LIMIT_KEY = "limit-key";
     public static readonly LIMIT_TIME = "limit-time";
