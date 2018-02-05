@@ -13,8 +13,6 @@ class TopologyMetrics extends React.Component {
 
   render() {
     const {metrics: {data}} = this.props;
-    // TODO return null pred pushem smazat
-    return null;
     return (
       <div className="node-metrics tile_count">
         <div className="tile_stats_count">
