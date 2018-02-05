@@ -8,6 +8,7 @@ use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use Exception;
 use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Controller\FOSRestController;
+use Hanaboso\PipesFramework\Commons\Exception\EnumException;
 use Hanaboso\PipesFramework\Commons\Exception\PipesFrameworkException;
 use Hanaboso\PipesFramework\Commons\Traits\ControllerTrait;
 use Hanaboso\PipesFramework\Commons\Utils\Base64;
@@ -73,7 +74,7 @@ class SystemController extends FOSRestController
             $data = $this->handler->getSystemList();
 
             return $this->getResponse($data);
-        } catch (SystemException $e) {
+        } catch (SystemException|EnumException $e) {
             return $this->processException($e);
         }
     }
@@ -187,7 +188,7 @@ class SystemController extends FOSRestController
                 $this->handler->saveSystemSettings($userId, $systemKey, $request->request->all()),
                 200
             );
-        } catch (SystemException $e) {
+        } catch (SystemException|CleverConnectorsException $e) {
             return $this->processException($e);
         }
     }
@@ -224,7 +225,7 @@ class SystemController extends FOSRestController
     {
         try {
             return $this->getResponse($this->handler->switchToken($userId, $systemKey, $request->request->all()), 200);
-        } catch (SystemException | PipesFrameworkException $e) {
+        } catch (SystemException | PipesFrameworkException | CleverConnectorsException $e) {
             return $this->processException($e);
         }
     }
@@ -242,7 +243,7 @@ class SystemController extends FOSRestController
     {
         try {
             return $this->getResponse($this->handler->synchronizeSubscriptions($userId, $systemKey), 202);
-        } catch (SystemException $e) {
+        } catch (SystemException|CleverConnectorsException $e) {
             return $this->processException($e);
         }
     }
@@ -305,9 +306,13 @@ class SystemController extends FOSRestController
      */
     public function userSaveTokenAction(Request $request, string $userId, string $systemKey): Response
     {
-        $url = $this->handler->saveToken($userId, $systemKey, $request->query->all());
+        try {
+            $url = $this->handler->saveToken($userId, $systemKey, $request->query->all());
 
-        return new RedirectResponse($url);
+            return new RedirectResponse($url);
+        } catch (SystemException $e) {
+            return $this->processException($e);
+        }
     }
 
     /**
@@ -394,10 +399,10 @@ class SystemController extends FOSRestController
     public function getSystemMetricsAction(Request $request, string $system): Response
     {
         try {
-            $data = $this->handler->getSystemMetrics($system, $request->request->all());
+            $data = $this->handler->getSystemMetrics($system, $request->query->all());
 
             return $this->getResponse($data);
-        } catch (SystemException $e) {
+        } catch (SystemException|EnumException $e) {
             return $this->processException($e);
         }
     }
@@ -414,10 +419,10 @@ class SystemController extends FOSRestController
     public function getSystemRequestCountAction(Request $request, string $system): Response
     {
         try {
-            $data = $this->handler->getSystemRequestCount($system, $request->request->all());
+            $data = $this->handler->getSystemRequestCount($system, $request->query->all());
 
             return $this->getResponse($data);
-        } catch (SystemException $e) {
+        } catch (SystemException|EnumException $e) {
             return $this->processException($e);
         }
     }
@@ -432,29 +437,38 @@ class SystemController extends FOSRestController
         $code = 500;
 
         $className = get_class($e);
-        if ($className == SystemException::class) {
-            $sysNotFound = [
-                SystemException::SYSTEM_NOT_FOUND,
-                SystemException::SYSTEM_METHOD_NOT_FOUND,
-                SystemException::SYSTEM_OR_USER_NOT_FOUND,
-                SystemException::SYSTEM_PROPERTY_NOT_FOUND,
-            ];
-            if (in_array($e->getCode(), $sysNotFound)) {
-                $code = 404;
-            }
+        switch ($className) {
+
+            case SystemException::class:
+                $sysNotFound = [
+                    SystemException::SYSTEM_NOT_FOUND,
+                    SystemException::SYSTEM_METHOD_NOT_FOUND,
+                    SystemException::SYSTEM_OR_USER_NOT_FOUND,
+                    SystemException::SYSTEM_PROPERTY_NOT_FOUND,
+                ];
+                if (in_array($e->getCode(), $sysNotFound)) {
+                    $code = 404;
+                }
+                break;
+
+            case CleverConnectorsException::class:
+                $code = 400;
+                break;
+
+            case PipesFrameworkException::class:
+                if ($e->getCode() == PipesFrameworkException::REQUIRED_PARAMETER_NOT_FOUND) {
+                    $code = 400;
+                }
+                break;
+
+            case EnumException::class:
+                $code = 400;
+                break;
+
+            default:
+                $code = 500;
         }
 
-        if ($className == CleverConnectorsException::class) {
-            if ($e->getCode() == CleverConnectorsException::SYSTEM_ALREADY_INSTALLED) {
-                $code = 400;
-            }
-        }
-
-        if ($className == PipesFrameworkException::class) {
-            if ($e->getCode() == PipesFrameworkException::REQUIRED_PARAMETER_NOT_FOUND) {
-                $code = 400;
-            }
-        }
 
         return $this->getErrorResponse($e, $code);
     }
