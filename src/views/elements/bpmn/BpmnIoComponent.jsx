@@ -11,6 +11,7 @@ import emptySchema from './empty-schema.bpmn';
 
 import CustomBPMNModeler from './custom-modeler';
 import download from 'utils/download';
+import {menuItemType} from 'rootApp/types';
 
 class BpmnIoComponent extends React.Component {
   constructor(props){
@@ -24,22 +25,27 @@ class BpmnIoComponent extends React.Component {
     this.props.setActions([
       {
         caption: 'Save',
+        type: menuItemType.ACTION,
         action: this.saveBPMN.bind(this),
         disabled: !this._changed,
         processId: this.props.saveProcessId
       },
       {
         caption: 'Import / Export',
+        type: menuItemType.SUB_MENU,
         items: [
           {
+            type: menuItemType.ACTION,
             caption: 'Import BPMN',
             action: this.importBPMN.bind(this)
           },
           {
+            type: menuItemType.ACTION,
             caption: 'Export BPMN',
             action: this.exportBPMN.bind(this)
           },
           {
+            type: menuItemType.ACTION,
             caption: 'Export SVG',
             action: this.exportSVG.bind(this)
           }

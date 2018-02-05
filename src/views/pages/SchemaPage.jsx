@@ -13,7 +13,7 @@ function mapActionsToProps(dispatch, ownProps){
   }
 }
 
-var SchemaPage = connect(() => ({}), mapActionsToProps)(Page(TopologySchema, 'Topology schema'));
+const SchemaPage = connect(null, mapActionsToProps)(Page(TopologySchema, 'Topology schema'));
 
 SchemaPage.propTypes = {
   schemaId: PropTypes.string

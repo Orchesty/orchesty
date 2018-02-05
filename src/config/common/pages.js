@@ -39,18 +39,19 @@ export default {
   //   needAuth: true,
   //   simpleRoute: '/'
   // },
-  topology_list: {
-    id: 'topology_list',
-    caption: 'Topology list',
-    needAuth: true,
-    acceptUrl: path => path == '/topologies' || path == '/',
-    createUrl: page => '/'
-  },
+  // topology_list: {
+  //   id: 'topology_list',
+  //   caption: 'Topology list',
+  //   needAuth: true,
+  //   acceptUrl: path => path == '/topologies' || path == '/',
+  //   createUrl: page => '/'
+  // },
   topology_list_all: {
     id: 'topology_list_all',
     caption: 'Topology list',
     needAuth: true,
-    simpleRoute: '/topologies/all'
+    acceptUrl: path => path == '/topologies' || path == '/',
+    createUrl: page => '/'
   },
   topology_schema: {
     id: 'topology_scheme',

@@ -1,18 +1,17 @@
 import * as types from 'rootApp/actionTypes';
 import objectEquals from 'utils/objectEquals';
-import config from 'rootApp/config';
 
 
 const initialState = {
-  mainMenu: config.mainMenu,
   selectedPage: {
     key: 'dashboard',
     args: null,
     data: null
   },
-  showMenu: true,
+  showSideBar: true,
   modal: null,
-  modalData: null
+  modalData: null,
+  contextMenu: null
 };
 
 export default (state = initialState, action) => {
@@ -36,17 +35,10 @@ export default (state = initialState, action) => {
           data: Object.assign({}, state.selectedPage.data, action.data)
         })
       });
-      
-    case types.TOGGLE_MAIN_SUB_MENU:
+
+    case types.LEFT_SIDEBAR_TOGGLE:
       return Object.assign({}, state, {
-        mainMenu: state.mainMenu.map(
-          item => item.open === true || (item.open !== true && item.id == action.id) ? Object.assign({}, item, {open: !item.open}) : item
-        )
-      });
-    
-    case types.TOGGLE_MAIN_MENU:
-      return Object.assign({}, state, {
-        showMenu: !state.showMenu
+        showSideBar: !state.showSideBar
       });
     
     case types.MODAL_OPEN:
@@ -66,7 +58,21 @@ export default (state = initialState, action) => {
         modal: null,
         modalData: null
       });
-    
+
+    case types.CONTEXT_MENU_OPEN:
+      return Object.assign({}, state, {
+        contextMenu: {
+          menuKey: action.menuKey,
+          args: action.args,
+          componentKey: action.componentKey,
+          x: action.x,
+          y: action.y
+        }
+      });
+
+    case types.CONTEXT_MENU_CLOSE:
+      return Object.assign({}, state, {contextMenu: null});
+
     default:
       return state;
   }
