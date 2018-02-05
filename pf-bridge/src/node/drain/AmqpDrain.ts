@@ -47,6 +47,8 @@ export interface IAmqpDrainSettings {
     followers: IFollower[];
 }
 
+const MAX_REPEAT_IMMEDIATELY_LIMIT = 200;
+
 /**
  * Drain is responsible for passing messages to following node and for informing counter
  */
@@ -141,26 +143,14 @@ class AmqpDrain implements IDrain, IPartialForwarder {
      * @param {JobMessage} message
      */
     private forwardRepeat(message: JobMessage): void {
-        const targetQueue: string = this.settings.repeater.queue.name;
         const headers = message.getHeaders();
 
-        if (!targetQueue) {
-            message.setResult({code: ResultCode.REPEAT_INVALID_QUEUE, message: "Invalid repeat queue name"});
-            return this.forward(message);
-        }
-
-        if (!headers.hasPFHeader(Headers.REPEAT_INTERVAL)) {
-            message.setResult({
-                code: ResultCode.REPEAT_INVALID_INTERVAL,
-                message: `Missing "${Headers.REPEAT_INTERVAL}" header.`,
-            });
-            return this.forward(message);
-        }
-
-        if (!headers.hasPFHeader(Headers.REPEAT_HOPS) || !headers.hasPFHeader(Headers.REPEAT_MAX_HOPS)) {
+        if (!headers.hasPFHeader(Headers.REPEAT_HOPS) ||
+            !headers.hasPFHeader(Headers.REPEAT_MAX_HOPS)
+        ) {
             message.setResult({
                 code: ResultCode.REPEAT_INVALID_HOPS,
-                message: `Missing or invalid repeat hops headers. Headers: ${JSON.stringify(headers.getRaw())}`,
+                message: "Forward Repeat Error. Missing or invalid repeat hops headers.}",
             });
             return this.forward(message);
         }
@@ -171,17 +161,49 @@ class AmqpDrain implements IDrain, IPartialForwarder {
         if (actualHops > maxHops) {
             message.setResult({
                 code: ResultCode.REPEAT_MAX_HOPS_REACHED,
-                message: `Max repeat hops "${maxHops}" reached.`,
+                message: `Forward Repeat Error. Max repeat hops "${maxHops}" reached.`,
             });
             return this.forward(message);
         }
 
-        // Send message to repeater
-        // TODO - forward message properties
-        headers.setPFHeader(Headers.REPEAT_QUEUE, this.settings.faucet.queue.name);
-        const props = { headers: message.getHeaders().getRaw() };
+        if (!headers.hasPFHeader(Headers.REPEAT_INTERVAL)) {
+            message.setResult({
+                code: ResultCode.REPEAT_INVALID_INTERVAL,
+                message: `Forward Repeat Error. Missing "${Headers.REPEAT_INTERVAL}" header.`,
+            });
+            return this.forward(message);
+        }
 
-        this.nonStandardPublisher.sendToQueue(targetQueue, message.getBody(), props);
+        const interval = parseInt(headers.getPFHeader(Headers.REPEAT_INTERVAL), 10);
+        if (interval < MAX_REPEAT_IMMEDIATELY_LIMIT) {
+            // Repeat immediately by sending to node's input queue
+            message.getHeaders().setPFHeader(Headers.FORCE_TARGET_QUEUE, this.settings.faucet.queue.name);
+            return this.forwardToTargetQueue(message);
+        }
+
+        // Send to repeater microservice
+        return this.forwardToRepeater(message);
+    }
+
+    /**
+     * Sends message to repeater microservice
+     *
+     * @param {JobMessage} message
+     */
+    private forwardToRepeater(message: JobMessage): void {
+        const repeaterQ: string = this.settings.repeater.queue.name;
+
+        if (!repeaterQ) {
+            message.setResult({
+                code: ResultCode.REPEAT_INVALID_QUEUE,
+                message: "Forward to Repeater error. Invalid repeater queue name",
+            });
+            return this.forward(message);
+        }
+
+        // Set the queue name where to repeat the message and send it to repeater
+        message.getHeaders().setPFHeader(Headers.REPEAT_QUEUE, this.settings.faucet.queue.name);
+        this.nonStandardPublisher.sendToQueue(repeaterQ, message.getBody(), {headers: message.getHeaders().getRaw()});
     }
 
     /**
@@ -189,19 +211,17 @@ class AmqpDrain implements IDrain, IPartialForwarder {
      * @param {JobMessage} message
      */
     private forwardToTargetQueue(message: JobMessage): void {
-        const targetQueue: string = message.getHeaders().getRaw().target_queue;
+        const q: string = message.getHeaders().getPFHeader(Headers.FORCE_TARGET_QUEUE);
 
-        if (!targetQueue) {
-            // Let the message fail
+        if (!q) {
             message.setResult({
                 code: ResultCode.INVALID_NON_STANDARD_TARGET_QUEUE,
-                message: `Missing or invalid target_queue header '${targetQueue}'`,
+                message: `Forward to target queue error. Missing or invalid target_queue header '${q}'`,
             });
             return this.forward(message);
         }
 
-        // TODO - prepare message options
-        this.nonStandardPublisher.sendToQueue(targetQueue, message.getBody(), {});
+        this.nonStandardPublisher.sendToQueue(q, message.getBody(), {headers: message.getHeaders().getRaw()});
     }
 
     /**

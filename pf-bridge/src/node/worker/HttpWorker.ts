@@ -19,17 +19,22 @@ export interface IHttpWorkerSettings {
     opts: any;
 }
 
+// wait maximally 60s for the http response
+const DEFAULT_HTTP_TIMEOUT = 60000;
+
 /**
  * Converts JobMessage to Http request and then converts received Http response back to JobMessage object
  */
 class HttpWorker implements IWorker {
 
+    private timeout: number;
     private agent: http.Agent;
 
     constructor(
         protected settings: IHttpWorkerSettings,
         protected metrics: IMetrics,
     ) {
+        this.timeout = DEFAULT_HTTP_TIMEOUT;
         this.agent = new http.Agent({ keepAlive: true, maxSockets: Infinity });
     }
 
@@ -39,6 +44,14 @@ class HttpWorker implements IWorker {
      */
     public setAgent(agent: http.Agent) {
         this.agent = agent;
+    }
+
+    /**
+     *
+     * @param {number} timeout
+     */
+    public setTimeout(timeout: number) {
+        this.timeout = timeout;
     }
 
     /**
@@ -166,6 +179,7 @@ class HttpWorker implements IWorker {
             followAllRedirects: true,
             headers: this.getHttpRequestHeaders(inMsg).getRaw(),
             agent: this.agent,
+            timeout: this.timeout,
         };
 
         if (method === "POST" || method === "PATCH" || method === "PUT") {
@@ -238,6 +252,18 @@ class HttpWorker implements IWorker {
      * @param err
      */
     private onRequestError(msg: JobMessage, reqParams: request.Options, err: any): void {
+        if (err.code === "ETIMEDOUT" || err.code === "ESOCKETTIMEDOUT") {
+            logger.warn(`Worker[type='http'] http timeout error. Repeating message.`, logger.ctxFromMsg(msg, err));
+            msg.setResult({ code: ResultCode.REPEAT,  message: err.message });
+
+            const h = msg.getHeaders();
+            h.setPFHeader(Headers.REPEAT_INTERVAL, "0");
+            h.setPFHeader(Headers.REPEAT_HOPS, h.getPFHeader(Headers.REPEAT_HOPS) || "1");
+            h.setPFHeader(Headers.REPEAT_MAX_HOPS, h.getPFHeader(Headers.REPEAT_MAX_HOPS) || "5");
+
+            return;
+        }
+
         logger.warn(`Worker[type='http'] http error: ${err}.`, logger.ctxFromMsg(msg, err));
         msg.setResult({
             code: ResultCode.HTTP_ERROR,
