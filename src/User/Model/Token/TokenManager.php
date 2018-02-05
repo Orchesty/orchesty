@@ -52,9 +52,10 @@ class TokenManager
     {
         $class = $this->provider->getResource(ResourceEnum::TOKEN);
         /** @var TokenInterface $token */
-        $token = new $class();
         $this->removeExistingTokens($user);
+        $token = new $class();
         $user->getType() === UserTypeEnum::USER ? $token->setUser($user) : $token->setTmpUser($user);
+        $user->setToken($token);
 
         $this->dm->persist($token);
         $this->dm->flush();
@@ -104,6 +105,7 @@ class TokenManager
         foreach ($repo->getExistingTokens($user) as $token) {
             $this->dm->remove($token);
         }
+        $user->setToken(NULL);
     }
 
 }
