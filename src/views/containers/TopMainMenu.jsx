@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
-import ActionButtonPanel from 'rootApp/views/elements/actions/ActionButtonPanel';
+import ActionButtonPanel from 'elements/actions/ActionButtonPanel';
 import mainMenu from 'rootApp/config/mainMenu';
 
 class TopMainMenu extends React.Component {
