@@ -41,6 +41,7 @@ class ActivateMessageTest extends TestCase
                 'content'     => '',
                 'dataContent' => ['link' => $tkn->getHash()],
                 'template'    => '',
+                'from'    => '',
             ], $message->getMessage()
         );
     }

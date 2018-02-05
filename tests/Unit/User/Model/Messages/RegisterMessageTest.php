@@ -37,6 +37,7 @@ class RegisterMessageTest extends TestCase
                 'content'     => '',
                 'dataContent' => [],
                 'template'    => '',
+                'from'    => '',
             ], $message->getMessage()
         );
     }
