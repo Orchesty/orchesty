@@ -174,9 +174,10 @@ class UserManager
     /**
      * @param string $token
      *
+     * @return UserInterface
      * @throws TokenManagerException
      */
-    public function activate(string $token): void
+    public function activate(string $token): UserInterface
     {
         $token = $this->tokenManager->validate($token);
 
@@ -196,6 +197,8 @@ class UserManager
         $this->dm->remove($token->getTmpUser());
         $token->setUser($user)->setTmpUser(NULL);
         $this->dm->flush();
+
+        return $user;
     }
 
     /**

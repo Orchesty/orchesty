@@ -103,9 +103,9 @@ class UserHandler implements LogoutSuccessHandlerInterface, EventSubscriberInter
      */
     public function activate(string $token): array
     {
-        $this->userManager->activate($token);
+        $user = $this->userManager->activate($token);
 
-        return [];
+        return ['email' => $user->getEmail()];
     }
 
     /**
