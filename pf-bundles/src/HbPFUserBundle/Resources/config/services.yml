@@ -24,6 +24,7 @@ services:
             - '@event_dispatcher'
             - '@hbpf.user.provider.resource'
             - '@rabbit-mq.producer.pipes.messages'
+            - '%activateLink%'
 
     hbpf.user.manager.security:
         class: Hanaboso\PipesFramework\User\Model\Security\SecurityManager

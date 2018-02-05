@@ -49,6 +49,7 @@ parameters:
     spitter_host: 'http://spitter-api'
     monolith_host: 'http://monolith-api'
     notification_host: 'http://notification-sender-api/notification-sender'
+    activateLink: '%env(BACKEND_HOST)%/user/%s/activate'
 
     clevermonitor:
         ca: '%kernel.project_dir%/var/secret/ca.crt'

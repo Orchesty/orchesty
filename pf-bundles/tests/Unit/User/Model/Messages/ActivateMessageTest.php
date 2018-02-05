@@ -39,7 +39,7 @@ class ActivateMessageTest extends TestCase
                 'to'          => 'test@example.com',
                 'subject'     => MessageSubject::USER_ACTIVATE,
                 'content'     => '',
-                'dataContent' => ['token' => $tkn->getHash()],
+                'dataContent' => ['link' => $tkn->getHash()],
                 'template'    => '',
             ], $message->getMessage()
         );
