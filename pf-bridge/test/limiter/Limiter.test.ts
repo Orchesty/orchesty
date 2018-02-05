@@ -76,44 +76,51 @@ describe("Limiter", () => {
         assert.isTrue(result);
     });
 
-    it("canBeProcessed should return what true when limiter returns positive response", async () => {
+    it("canBeProcessed should return what true when limiter returns positive response", (done) => {
         const positive = net.createServer((socket) => {
             socket.write("pf-check;someid;ok");
             socket.pipe(socket);
         });
-        positive.listen(1338, "localhost");
+        positive.listen(1338, "localhost", async () => {
+            assert.isTrue(positive.listening);
+            const tcp = new TcpClient("localhost", 1338);
+            const publisher: any = {};
+            const limiter = new Limiter(tcp, publisher);
 
-        const tcp = new TcpClient("localhost", 1338);
-        const publisher: any = {};
-        const limiter = new Limiter(tcp, publisher);
+            const msg = createBasicMessage();
+            msg.getHeaders().setPFHeader(Headers.LIMIT_KEY, "lkey");
+            msg.getHeaders().setPFHeader(Headers.LIMIT_TIME, "ltime");
+            msg.getHeaders().setPFHeader(Headers.LIMIT_VALUE, "lvalue");
 
-        const msg = createBasicMessage();
-        msg.getHeaders().setPFHeader(Headers.LIMIT_KEY, "lkey");
-        msg.getHeaders().setPFHeader(Headers.LIMIT_TIME, "ltime");
-        msg.getHeaders().setPFHeader(Headers.LIMIT_VALUE, "lvalue");
+            const result = await limiter.canBeProcessed(msg);
+            assert.isTrue(result);
 
-        const result = await limiter.canBeProcessed(msg);
-        assert.isTrue(result);
+            done();
+        });
     });
 
-    it("canBeProcessed should return what true when limiter returns negative response", async () => {
-        const positive = net.createServer((socket) => {
+    it("canBeProcessed should return what true when limiter returns negative response", (done) => {
+        const negative = net.createServer((socket) => {
             socket.write("pf-check;someid;nok");
             socket.pipe(socket);
         });
-        positive.listen(1339, "localhost");
+        negative.listen(1339, "localhost", async () => {
+            assert.isTrue(negative.listening);
 
-        const tcp = new TcpClient("localhost", 1339);
-        const publisher: any = {};
-        const limiter = new Limiter(tcp, publisher);
+            const tcp = new TcpClient("localhost", 1339);
+            const publisher: any = {};
+            const limiter = new Limiter(tcp, publisher);
 
-        const msg = createBasicMessage();
-        msg.getHeaders().setPFHeader(Headers.LIMIT_KEY, "lkey");
-        msg.getHeaders().setPFHeader(Headers.LIMIT_TIME, "ltime");
-        msg.getHeaders().setPFHeader(Headers.LIMIT_VALUE, "lvalue");
+            const msg = createBasicMessage();
+            msg.getHeaders().setPFHeader(Headers.LIMIT_KEY, "lkey");
+            msg.getHeaders().setPFHeader(Headers.LIMIT_TIME, "ltime");
+            msg.getHeaders().setPFHeader(Headers.LIMIT_VALUE, "lvalue");
 
-        const result = await limiter.canBeProcessed(msg);
-        assert.isFalse(result);
+            const result = await limiter.canBeProcessed(msg);
+            assert.isFalse(result);
+
+            done();
+        });
     });
 
     //
