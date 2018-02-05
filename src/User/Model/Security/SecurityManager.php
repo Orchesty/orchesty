@@ -151,11 +151,7 @@ class SecurityManager
     public function getLoggedUser(): UserInterface
     {
         if (!$this->isLoggedIn()) {
-            throw new SecurityManagerException(
-                'User not logged.',
-                SecurityManagerException::USER_NOT_LOGGED
-            );
-
+            $this->userNotLogged();
         }
 
         return $this->getUserFromSession();
@@ -163,6 +159,7 @@ class SecurityManager
 
     /**
      * @return UserInterface
+     * @throws SecurityManagerException
      */
     private function getUserFromSession(): UserInterface
     {
@@ -172,7 +169,20 @@ class SecurityManager
         /** @var UserInterface $user */
         $user = $this->userRepository->find($token->getUser()->getId());
 
+        if (!$user) {
+            $this->logout();
+            $this->userNotLogged();
+        }
+
         return $user;
+    }
+
+    /**
+     * @throws SecurityManagerException
+     */
+    private function userNotLogged(): void
+    {
+        throw new SecurityManagerException('User not logged.', SecurityManagerException::USER_NOT_LOGGED);
     }
 
 }
