@@ -39,6 +39,7 @@ class ResetPasswordMessageTest extends TestCase
                 'content'     => '',
                 'dataContent' => ['username' => 'FooTooBoo'],
                 'template'    => NULL,
+                'from'        => '',
             ], $message->getMessage()
         );
     }

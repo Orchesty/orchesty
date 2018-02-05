@@ -30,14 +30,20 @@ abstract class UserMessageAbstract
     protected $template;
 
     /**
+     * @var string
+     */
+    protected $from = '';
+
+    /**
      * @var array
      */
     protected $message = [
-        "to"          => "",
-        "subject"     => "",
-        "content"     => "",
-        "dataContent" => [],
-        "template"    => "",
+        'to'          => '',
+        'subject'     => '',
+        'content'     => '',
+        'dataContent' => [],
+        'template'    => '',
+        'from'        => '',
     ];
 
     /**
@@ -53,8 +59,20 @@ abstract class UserMessageAbstract
     public function __construct(UserInterface $user)
     {
         $this->user                = $user;
-        $this->message["subject"]  = $this->subject;
-        $this->message["template"] = $this->template;
+        $this->message['subject']  = $this->subject;
+        $this->message['template'] = $this->template;
+    }
+
+    /**
+     * @param string $from
+     *
+     * @return UserMessageAbstract
+     */
+    public function setFrom(string $from): UserMessageAbstract
+    {
+        $this->from = $from;
+
+        return $this;
     }
 
     /**
