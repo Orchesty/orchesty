@@ -79,6 +79,11 @@ class UserManager
     private $producer;
 
     /**
+     * @var string
+     */
+    private $activateLink;
+
+    /**
      * UserManager constructor.
      *
      * @param UserDatabaseManagerLocator $userDml
@@ -88,6 +93,7 @@ class UserManager
      * @param EventDispatcherInterface   $eventDispatcher
      * @param ResourceProvider           $provider
      * @param AbstractProducer           $producer
+     * @param string                     $activateLink
      */
     public function __construct(
         UserDatabaseManagerLocator $userDml,
@@ -96,7 +102,8 @@ class UserManager
         EncoderFactory $encoderFactory,
         EventDispatcherInterface $eventDispatcher,
         ResourceProvider $provider,
-        AbstractProducer $producer
+        AbstractProducer $producer,
+        string $activateLink
     )
     {
         $this->dm                = $userDml->get();
@@ -108,6 +115,7 @@ class UserManager
         $this->eventDispatcher   = $eventDispatcher;
         $this->provider          = $provider;
         $this->producer          = $producer;
+        $this->activateLink      = $activateLink;
     }
 
     /**
@@ -167,6 +175,7 @@ class UserManager
         $this->dm->flush();
 
         $msg = new ActivateMessage($user);
+        $msg->setHost($this->activateLink);
         $this->producer->publish(json_encode($msg->getMessage()));
         $this->eventDispatcher->dispatch(UserEvent::USER_REGISTER, new UserEvent($user));
     }

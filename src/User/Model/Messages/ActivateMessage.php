@@ -30,12 +30,29 @@ class ActivateMessage extends UserMessageAbstract
     protected $template = NULL;
 
     /**
+     * @var string
+     */
+    protected $host = '%s';
+
+    /**
+     * @param string $host
+     *
+     * @return ActivateMessage
+     */
+    public function setHost(string $host): ActivateMessage
+    {
+        $this->host = $host;
+
+        return $this;
+    }
+
+    /**
      * @return array
      */
     public function getMessage(): array
     {
-        $this->message["to"]                   = $this->user->getEmail();
-        $this->message['dataContent']['token'] = $this->user->getToken()->getHash();
+        $this->message["to"]                  = $this->user->getEmail();
+        $this->message['dataContent']['link'] = sprintf($this->host, $this->user->getToken()->getHash());
 
         return $this->message;
     }
