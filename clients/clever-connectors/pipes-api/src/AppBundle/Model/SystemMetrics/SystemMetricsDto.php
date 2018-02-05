@@ -4,6 +4,7 @@ namespace CleverConnectors\AppBundle\Model\SystemMetrics;
 
 use CleverConnectors\AppBundle\Enum\SystemMetricsIntervalEnum;
 use DateTime;
+use Hanaboso\PipesFramework\Commons\Exception\EnumException;
 
 /**
  * Class SystemMetricsDto
@@ -44,8 +45,10 @@ class SystemMetricsDto
      * @param string        $systemKey
      * @param DateTime|null $from
      * @param DateTime|null $to
-     * @param string|null   $interval
-     * @param string|null   $guid
+     * @param null|string   $interval
+     * @param null|string   $guid
+     *
+     * @throws EnumException
      */
     public function __construct(
         string $systemKey,
@@ -134,6 +137,7 @@ class SystemMetricsDto
      * @param string $interval
      *
      * @return SystemMetricsDto
+     * @throws EnumException
      */
     public function setInterval(string $interval): SystemMetricsDto
     {

@@ -28,6 +28,7 @@ use CleverConnectors\AppBundle\Utils\TopologyNameUtils;
 use DateTime;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Hanaboso\PipesFramework\Commons\Exception\EnumException;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
@@ -344,6 +345,7 @@ class SystemManager
      * @param string $token
      *
      * @return SystemInstall
+     * @throws CleverConnectorsException
      * @throws SystemException
      */
     public function switchToken(string $user, string $system, string $token): SystemInstall
@@ -364,6 +366,7 @@ class SystemManager
      * @param string $system
      *
      * @return int
+     * @throws CleverConnectorsException
      * @throws SystemException
      */
     public function synchronizeSubscriptions(string $user, string $system): int
@@ -505,6 +508,7 @@ class SystemManager
 
     /**
      * @return int
+     * @throws SystemException
      */
     public function getSystemCount(): int
     {
@@ -515,6 +519,7 @@ class SystemManager
      * @param bool $toArray
      *
      * @return array
+     * @throws EnumException
      * @throws SystemException
      */
     public function getSystemList(bool $toArray = FALSE): array
@@ -544,16 +549,17 @@ class SystemManager
      * @param string        $systemKey
      * @param DateTime|null $from
      * @param DateTime|null $to
-     * @param int|null      $interval
+     * @param null|string   $interval
      * @param null|string   $guid
      *
      * @return array
+     * @throws EnumException
      */
     public function getSystemMetrics(
         string $systemKey,
         ?DateTime $from = NULL,
         ?DateTime $to = NULL,
-        ?int $interval = NULL,
+        ?string $interval = NULL,
         ?string $guid = NULL
     ): array
     {
@@ -566,16 +572,17 @@ class SystemManager
      * @param string        $systemKey
      * @param DateTime|null $from
      * @param DateTime|null $to
-     * @param int|null      $interval
+     * @param null|string   $interval
      * @param null|string   $guid
      *
      * @return int
+     * @throws EnumException
      */
     public function getSystemRequestCount(
         string $systemKey,
         ?DateTime $from = NULL,
         ?DateTime $to = NULL,
-        ?int $interval = NULL,
+        ?string $interval = NULL,
         ?string $guid = NULL
     ): int
     {
@@ -658,6 +665,7 @@ class SystemManager
      * @param array  $data
      *
      * @return array
+     * @throws CleverConnectorsException
      * @throws SystemException
      */
     private function runTopologies(string $user, string $system, string $topology, array $data): array
@@ -676,6 +684,7 @@ class SystemManager
      * @param SystemInstall $systemInstall
      * @param string        $token
      *
+     * @throws CleverConnectorsException
      * @throws SystemException
      */
     private function runSwitchTokenTopologies(SystemInstall $systemInstall, string $token): void

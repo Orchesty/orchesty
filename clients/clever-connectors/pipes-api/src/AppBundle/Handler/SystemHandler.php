@@ -9,6 +9,7 @@ use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\SystemManager;
 use CleverConnectors\AppBundle\Utils\DateTimeUtils;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Hanaboso\PipesFramework\Commons\Exception\EnumException;
 use Hanaboso\PipesFramework\Utils\ControllerUtils;
 
 /**
@@ -161,7 +162,7 @@ class SystemHandler
      * @param array  $data
      *
      * @return array
-     *
+     * @throws CleverConnectorsException
      * @throws SystemException
      */
     public function switchToken(string $user, string $system, array $data): array
@@ -177,6 +178,7 @@ class SystemHandler
      * @param string $system
      *
      * @return array
+     * @throws CleverConnectorsException
      * @throws SystemException
      */
     public function synchronizeSubscriptions(string $user, string $system): array
@@ -288,6 +290,7 @@ class SystemHandler
 
     /**
      * @return array
+     * @throws EnumException
      * @throws SystemException
      */
     public function getSystemList(): array
@@ -300,13 +303,14 @@ class SystemHandler
      * @param array  $data
      *
      * @return array
+     * @throws EnumException
      */
     public function getSystemMetrics(string $systemKey, array $data): array
     {
         $from     = isset($data['from']) ? (string) $data['from'] : NULL;
         $to       = isset($data['to']) ? (string) $data['to'] : NULL;
         $guid     = isset($data['guid']) ? (string) $data['guid'] : NULL;
-        $interval = isset($data['interval']) ? (int) $data['interval'] : NULL;
+        $interval = isset($data['interval']) ? (string) $data['interval'] : NULL;
 
         return $this->manager->getSystemMetrics(
             $systemKey,
@@ -322,13 +326,14 @@ class SystemHandler
      * @param array  $data
      *
      * @return array
+     * @throws EnumException
      */
     public function getSystemRequestCount(string $systemKey, array $data): array
     {
         $from     = isset($data['from']) ? (string) $data['from'] : NULL;
         $to       = isset($data['to']) ? (string) $data['to'] : NULL;
         $guid     = isset($data['guid']) ? (string) $data['guid'] : NULL;
-        $interval = isset($data['interval']) ? (int) $data['interval'] : NULL;
+        $interval = isset($data['interval']) ? (string) $data['interval'] : NULL;
 
         return [
             'count' => $this->manager->getSystemRequestCount(
