@@ -89,7 +89,7 @@ trait FacebookTrait
             $httpCode = $response->getStatusCode();
             if ($response->getStatusCode() == 400) {
                 $data      = json_decode($response->getBody()->getContents(), TRUE);
-                $errorCode = isset($data['error']['code']) ? $data['error']['code'] : NULL;
+                $errorCode = $data['error']['code'] ?? NULL;
                 if (in_array($errorCode, [4, 17])) {
                     if ($throw) {
                         $httpCode = 429;

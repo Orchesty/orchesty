@@ -136,10 +136,10 @@ final class InstallManagerTest extends TestCase
      */
     private function createRedisRecord(): string
     {
-        $topo = new Topology;
+        $topo = new Topology();
         $topo->setName('file-upl');
 
-        $topo2 = new Topology;
+        $topo2 = new Topology();
         $topo2->setName('file-del');
         $this->setProperty($topo2, 'id', '345');
 
