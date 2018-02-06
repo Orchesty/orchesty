@@ -181,6 +181,6 @@ describe("Linear Topology test", () => {
             );
             return publisher.sendToQueue(firstQueue, new Buffer(msgTestContent), msgHeaders);
         });
-    });
+    }).timeout(5000);
 
 });
