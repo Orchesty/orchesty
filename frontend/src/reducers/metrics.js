@@ -9,7 +9,7 @@ const initialState = {
 function addElements(oldElements, newElements, suffix = ''){
   const result = Object.assign({}, oldElements);
   Object.keys(newElements).forEach(id => {
-    if (id !== 'topology') {
+    if (id !== 'topology' || id != 'requests') {
       result[id + suffix] = {
         state: stateType.SUCCESS,
         data: newElements[id]
@@ -44,8 +44,8 @@ export default (state = initialState, action) => {
         topologies: Object.assign({}, state.topologies, {
           [action.id]: {
             state: stateType.SUCCESS,
-            items: Object.keys(action.items),
-            data: action.items.topology
+            items: Object.keys(action.items).filter(key => key != 'topology' && key != 'requests'),
+            data: Object.assign({}, action.items.topology, {requests: action.items.requests})
           }
         })
       });

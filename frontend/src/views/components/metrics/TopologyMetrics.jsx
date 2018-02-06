@@ -32,7 +32,9 @@ TopologyMetrics.propTypes = {};
 
 function mapStateToProps(state, ownProps){
   const {metrics, topology} = state;
-  const key = ownProps.metricsRange ? `${ownProps.topologyId}[${ownProps.metricsRange.since}-${ownProps.metricsRange.till}]` : ownProps.topologyId;
+  let key = ownProps.topologyId;
+  key = ownProps.interval ? `${key}[${ownProps.interval}]` : key;
+  key = ownProps.metricsRange ? `${key}[${ownProps.metricsRange.since}-${ownProps.metricsRange.till}]` : key;
   const metricsElement = metrics.topologies[key];
   return {
     state: metricsElement && metricsElement.state,
