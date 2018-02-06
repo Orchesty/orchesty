@@ -12,6 +12,7 @@ namespace Tests\Integration\Metrics;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Metrics\Client\MetricsClient;
+use Hanaboso\PipesFramework\Metrics\Enum\MetricsIntervalEnum;
 use Hanaboso\PipesFramework\Metrics\Exception\MetricsException;
 use Hanaboso\PipesFramework\Metrics\MetricsManager;
 use Hanaboso\PipesFramework\TopologyGenerator\GeneratorUtils;
@@ -64,16 +65,20 @@ final class MetricsManagerTest extends KernelTestCaseAbstract
      */
     public function testGetTopologyMetrics(): void
     {
-        $topo = $this->createTopo();
-        $node = $this->createNode($topo);
+        $topo      = $this->createTopo();
+        $node      = $this->createNode($topo);
+        $nodeTwo   = $this->createNode($topo);
+        $nodeThree = $this->createNode($topo);
 
         $this->setFakeData($topo, $node);
+        $this->setFakeData($topo, $nodeTwo);
+        $this->setFakeData($topo, $nodeThree);
 
         $manager = $this->getManager();
         $result  = $manager->getTopologyMetrics($topo, []);
 
         self::assertTrue(is_array($result));
-        self::assertCount(1, $result);
+        self::assertCount(4, $result);
         self::assertArrayHasKey($node->getId(), $result);
         $result = $result[$node->getId()];
 
@@ -85,6 +90,32 @@ final class MetricsManagerTest extends KernelTestCaseAbstract
         self::assertArrayHasKey(MetricsManager::CPU_TIME, $result);
         self::assertArrayHasKey(MetricsManager::REQUEST_TIME, $result);
         self::assertArrayHasKey(MetricsManager::PROCESS, $result);
+    }
+
+    /**
+     * @throws Database\Exception
+     * @throws Exception
+     * @throws MetricsException
+     */
+    public function testGetTopologyRequestCountMetric(): void
+    {
+        $topo = $this->createTopo();
+        $node = $this->createNode($topo);
+
+        $this->setFakeData($topo, $node);
+        $this->setFakeData($topo, $this->createNode($topo));
+        $this->setFakeData($topo, $this->createNode($topo));
+
+        $manager = $this->getManager();
+        $result  = $manager->getTopologyRequestCountMetrics($topo, [
+            'from'     => '-10 day',
+            'to'       => '+10 day',
+            'interval' => MetricsIntervalEnum::DAY,
+        ]);
+
+        self::assertTrue(is_array($result));
+        self::assertCount(5, $result);
+        self::assertCount(21, $result['requests']);
     }
 
     /**
@@ -139,11 +170,12 @@ final class MetricsManagerTest extends KernelTestCaseAbstract
      */
     private function getManager(): MetricsManager
     {
-        $nodeTable   = $this->container->getParameter('influx.node_table');
-        $fpmTable    = $this->container->getParameter('influx.fpm_table');
-        $rabbitTable = $this->container->getParameter('influx.rabbit_table');
+        $nodeTable    = $this->container->getParameter('influx.node_table');
+        $fpmTable     = $this->container->getParameter('influx.fpm_table');
+        $rabbitTable  = $this->container->getParameter('influx.rabbit_table');
+        $counterTable = $this->container->getParameter('influx.counter_table');
 
-        return new MetricsManager($this->getClient(), $this->dm, $nodeTable, $fpmTable, $rabbitTable);
+        return new MetricsManager($this->getClient(), $this->dm, $nodeTable, $fpmTable, $rabbitTable, $counterTable);
     }
 
     /**
@@ -156,14 +188,19 @@ final class MetricsManagerTest extends KernelTestCaseAbstract
      */
     private function setFakeData(Topology $topology, Node $node): void
     {
-        $this->getClient()->createClient()->selectDB('test')->create(new RetentionPolicy('test', '1d', 1, TRUE));
+        $client = $this->getClient()->createClient();
+        $client->selectDB('test')->drop();
+        $client->query('', 'CREATE DATABASE test');
+        $client->selectDB('test')->create(new RetentionPolicy('test', '1d', 1, TRUE));
         $database = $this->getClient()->getDatabase('test');
-        $points   = [
+
+        $points = [
             new Point(
                 'pipes_node',
                 NULL,
                 [
-                    MetricsManager::NODE => $node->getId(),
+                    MetricsManager::TOPOLOGY => $topology->getId(),
+                    MetricsManager::NODE     => $node->getId(),
                 ],
                 [
                     MetricsManager::WAIT_TIME         => 10,
@@ -179,7 +216,8 @@ final class MetricsManagerTest extends KernelTestCaseAbstract
                 'pipes_monolith_fpm',
                 NULL,
                 [
-                    MetricsManager::NODE => $node->getId(),
+                    MetricsManager::TOPOLOGY => $topology->getId(),
+                    MetricsManager::NODE     => $node->getId(),
                 ],
                 [
                     MetricsManager::REQUEST_TOTAL_TIME => 2,
@@ -205,17 +243,52 @@ final class MetricsManagerTest extends KernelTestCaseAbstract
 
         $database->writePoints($points, Database::PRECISION_NANOSECONDS);
         usleep(10);
-        $points   = [
+        $points = [
+            new Point(
+                'pipes_counter',
+                NULL,
+                [
+                    MetricsManager::TOPOLOGY          => $topology->getId(),
+                    MetricsManager::NODE              => $node->getId(),
+                    MetricsManager::NODE_RESULT_ERROR => 0,
+                ],
+                [
+                    MetricsManager::PROCESS_DURATION => 2,
+                ]
+            ),
+        ];
+
+        $database->writePoints($points, Database::PRECISION_NANOSECONDS);
+        usleep(10);
+        $points = [
+            new Point(
+                'pipes_counter',
+                NULL,
+                [
+                    MetricsManager::TOPOLOGY          => $topology->getId(),
+                    MetricsManager::NODE              => $node->getId(),
+                    MetricsManager::NODE_RESULT_ERROR => 1,
+                ],
+                [
+                    MetricsManager::PROCESS_DURATION => 1,
+                ]
+            ),
+        ];
+
+        $database->writePoints($points, Database::PRECISION_NANOSECONDS);
+        usleep(10);
+        $points = [
             new Point(
                 'pipes_node',
                 NULL,
                 [
-                    MetricsManager::NODE => $node->getId(),
+                    MetricsManager::TOPOLOGY          => $topology->getId(),
+                    MetricsManager::NODE              => $node->getId(),
+                    MetricsManager::NODE_RESULT_ERROR => 0,
                 ],
                 [
                     MetricsManager::WAIT_TIME         => 1,
                     MetricsManager::NODE_PROCESS_TIME => 1,
-                    MetricsManager::NODE_RESULT_ERROR => 0,
                 ]
             ),
         ];
@@ -226,7 +299,8 @@ final class MetricsManagerTest extends KernelTestCaseAbstract
                 'pipes_monolith_fpm',
                 NULL,
                 [
-                    MetricsManager::NODE => $node->getId(),
+                    MetricsManager::TOPOLOGY => $topology->getId(),
+                    MetricsManager::NODE     => $node->getId(),
                 ],
                 [
                     MetricsManager::REQUEST_TOTAL_TIME => 4,
@@ -246,6 +320,40 @@ final class MetricsManagerTest extends KernelTestCaseAbstract
                 ],
                 [
                     MetricsManager::MESSAGES => 0,
+                ]
+            ),
+        ];
+
+        $database->writePoints($points, Database::PRECISION_NANOSECONDS);
+        usleep(10);
+        $points = [
+            new Point(
+                'pipes_counter',
+                NULL,
+                [
+                    MetricsManager::TOPOLOGY          => $topology->getId(),
+                    MetricsManager::NODE              => $node->getId(),
+                    MetricsManager::NODE_RESULT_ERROR => 0,
+                ],
+                [
+                    MetricsManager::PROCESS_DURATION => 4,
+                ]
+            ),
+        ];
+
+        $database->writePoints($points, Database::PRECISION_NANOSECONDS);
+        usleep(10);
+        $points = [
+            new Point(
+                'pipes_counter',
+                NULL,
+                [
+                    MetricsManager::TOPOLOGY          => $topology->getId(),
+                    MetricsManager::NODE              => $node->getId(),
+                    MetricsManager::NODE_RESULT_ERROR => 1,
+                ],
+                [
+                    MetricsManager::PROCESS_DURATION => 2,
                 ]
             ),
         ];
