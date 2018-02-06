@@ -78,6 +78,27 @@ class MetricsController extends FOSRestController
     }
 
     /**
+     * @Route("/metrics/topology/{topologyId}/requests")
+     * @Method({"GET", "OPTIONS"})
+     *
+     * @param Request $request
+     * @param string  $topologyId
+     *
+     * @return Response
+     */
+    public function topologyRequestsCountMetricsAction(Request $request, string $topologyId): Response
+    {
+        $this->construct();
+        try {
+            $data = $this->metricsHandler->getRequestsCountMetrics($topologyId, $request->attributes->all());
+        } catch (Throwable $e) {
+            return $this->getErrorResponse($e, 400);
+        }
+
+        return $this->getResponse($data);
+    }
+
+    /**
      *
      */
     private function construct(): void

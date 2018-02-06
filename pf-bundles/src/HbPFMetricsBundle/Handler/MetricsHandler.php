@@ -50,20 +50,10 @@ class MetricsHandler
      * @param array  $params
      *
      * @return array
-     * @throws MetricsException
      */
     public function getTopologyMetrics(string $topologyId, array $params): array
     {
-        /** @var Topology $topology */
-        $topology = $this->dm->getRepository(Topology::class)->find($topologyId);
-        if (!$topology) {
-            throw new MetricsException(
-                sprintf('Topology "%s" not found!', $topologyId),
-                MetricsException::NODE_NOT_FOUND
-            );
-        }
-
-        return $this->metricsManager->getTopologyMetrics($topology, $params);
+        return $this->metricsManager->getTopologyMetrics($this->getTopologyById($topologyId), $params);
     }
 
     /**
@@ -72,23 +62,68 @@ class MetricsHandler
      * @param array  $params
      *
      * @return array
-     * @throws MetricsException
      */
     public function getNodeMetrics(string $topologyId, string $nodeId, array $params): array
     {
+        return $this->metricsManager->getNodeMetrics(
+            $this->getNodeByTopologyAndNodeId($topologyId, $nodeId),
+            $this->getTopologyById($topologyId),
+            $params
+        );
+    }
+
+    /**
+     * @param string $topologyId
+     * @param array  $params
+     *
+     * @return array
+     */
+    public function getRequestsCountMetrics(string $topologyId, array $params): array
+    {
+        return $this->metricsManager->getTopologyRequestCountMetrics($this->getTopologyById($topologyId), $params);
+    }
+
+    /**
+     * @param string $id
+     *
+     * @return Topology
+     * @throws MetricsException
+     */
+    private function getTopologyById(string $id): Topology
+    {
+        /** @var Topology $topology */
+        $topology = $this->dm->getRepository(Topology::class)->find($id);
+
+        if (!$topology) {
+            throw new MetricsException(
+                sprintf('Topology "%s" not found!', $id),
+                MetricsException::TOPOLOGY_NOT_FOUND
+            );
+        }
+
+        return $topology;
+    }
+
+    /**
+     * @param string $topologyId
+     * @param string $nodeId
+     *
+     * @return Node
+     * @throws MetricsException
+     */
+    private function getNodeByTopologyAndNodeId(string $topologyId, string $nodeId): Node
+    {
         /** @var Node $node */
         $node = $this->dm->getRepository(Node::class)->findBy(['id' => $nodeId, 'topology' => $topologyId]);
-        /** @var Topology $topology */
-        $topology = $this->dm->getRepository(Topology::class)->find($topologyId);
 
-        if (!$node || !$topology) {
+        if (!$node) {
             throw new MetricsException(
-                sprintf('Node "%s" with Topology "%s" not found!', $nodeId, $topologyId),
+                sprintf('Node "%s" with topology "%s" not found!', $nodeId, $topologyId),
                 MetricsException::NODE_NOT_FOUND
             );
         }
 
-        return $this->metricsManager->getNodeMetrics($node, $topology, $params);
+        return $node;
     }
 
 }
