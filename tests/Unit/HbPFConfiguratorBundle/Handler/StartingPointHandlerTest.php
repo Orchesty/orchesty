@@ -142,7 +142,7 @@ class StartingPointHandlerTest extends KernelTestCaseAbstract
 
         $nodeRepo = $this->createMock(NodeRepository::class);
         $nodeRepo->method('getNodeByTopology')->willReturn(NULL);
-        $nodeRepo->method('find')->willReturn(new Node);
+        $nodeRepo->method('find')->willReturn(new Node());
 
         $topRepo = $this->createMock(TopologyRepository::class);
         $topRepo->method('getRunnableTopologies')->willReturn([$top]);

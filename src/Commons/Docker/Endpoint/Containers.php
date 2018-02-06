@@ -34,8 +34,8 @@ class Containers extends EndpointAbstract
 
         $queryParams = [];
 
-        $params['headers'] = isset($params['headers']) ? $params['headers'] : [];
-        $params['body'] = isset($params['body']) ? $params['body'] : '';
+        $params['headers'] = $params['headers'] ?? [];
+        $params['body']    = $params['body'] ?? '';
 
         if (isset($params['all']) && isset($params['all'])) {
             $queryParams[] = 'all=1';
