@@ -8,6 +8,7 @@ import * as applicationActions from 'rootApp/actions/applicationActions';
 
 import TopologySchema from './TopologySchema';
 import TopologyNodeMetricsContainer from 'components/node/TopologyNodeMetricsContainer';
+import TopologyNodeGraphsContainer from 'components/node/TopologyNodeGraphsContainer';
 
 import './TopologyDetail.less';
 import {menuItemType} from 'rootApp/types';
@@ -124,13 +125,14 @@ class TopologyDetail extends React.Component {
   }
 
   render() {
-    const {topologyId, activeTab, setActions, topology, onChangeTopology, pageKey, metricsRange} = this.props;
+    const {topologyId, activeTab, setActions, topology, onChangeTopology, pageKey, metricsRange, interval} = this.props;
     const schemaVisible = activeTab == 'schema';
     return (
       <div className="topology-detail">
 
         <div className="tab-content">
           {activeTab == 'nodes' && <TopologyNodeMetricsContainer topologyId={topologyId} componentKey={pageKey} metricsRange={metricsRange} />}
+          {activeTab == 'graphs' && <TopologyNodeGraphsContainer topologyId={topologyId} componentKey={pageKey} metricsRange={metricsRange} interval={interval} />}
           <div className={'schema-wrapper' + ( schemaVisible ? '' : ' hidden')}>
             <TopologySchema
               schemaId={topologyId}

@@ -70,6 +70,34 @@ export function needTopologyMetrics(topologyId, range, force = false){
   }
 }
 
+export function loadTopologyMetricsWithRequest(topologyId, interval, range){
+  return dispatch => {
+    const suffix = range ? `[${interval}][${range.since}-${range.till}]` : `[${interval}]`;
+    const key = `${topologyId}${suffix}`;
+    dispatch(setTopologyState(key, stateType.LOADING));
+    const queries = range ? {from: range.since, to: range.till, interval} : {interval};
+    return serverRequest(dispatch, 'GET', `/metrics/topology/${topologyId}/requests`, queries).then(response => {
+      if (response){
+        dispatch(receiveItems(response, suffix));
+      }
+      dispatch(response ? topologyReceive(key, response) : setTopologyState(key, stateType.ERROR));
+      return response;
+    });
+  }
+}
+
+export function needTopologyMetricsWithRequests(topologyId, interval, range, force = false){
+  return (dispatch, getState) => {
+    const key = `${topologyId}[${interval}]` + (range ? `[${range.since}-${range.till}]` : '');
+    const list = getState().metrics.topologies[key];
+    if (force || !list || list.state == stateType.NOT_LOADED || list.state == stateType.ERROR) {
+      return dispatch(loadTopologyMetricsWithRequest(topologyId, interval, range));
+    } else {
+      return Promise.resolve(true);
+    }
+  };
+}
+
 function loadMetrics(topologyId, nodeId){
   return dispatch => {
     dispatch(setMetricsState(nodeId, stateType.LOADING));

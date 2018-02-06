@@ -1,4 +1,5 @@
 import moment from 'moment';
+import {intervalType} from 'rootApp/types';
 
 export default {
   login: {
@@ -71,7 +72,8 @@ export default {
       metricsRange: {
         since: moment().format('L'),
         till: moment().format('L'),
-      }
+      },
+      interval: intervalType.FOUR_WEEK.value
     },
     needAuth: true,
     acceptUrl: (path, query) => {
