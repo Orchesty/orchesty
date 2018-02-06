@@ -2,6 +2,12 @@
 
 use Symfony\Component\HttpFoundation\Request;
 
+if (getallheaders()["pf-force-plain-php-response"] === "true") {
+    header('Content-Type: application/json');
+    echo json_encode(["status" => "success"]);
+    return;
+}
+
 require __DIR__.'/../vendor/autoload.php';
 if (PHP_VERSION_ID < 70000) {
     include_once __DIR__.'/../var/bootstrap.php.cache';
