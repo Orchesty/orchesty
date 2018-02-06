@@ -186,6 +186,11 @@ class HttpWorker implements IWorker {
             httpParams.body = this.getHttpRequestBody(inMsg);
         }
 
+        // TODO - remove this header after performance testing
+        if (process.env.FORCE_PLAIN_PHP === "true") {
+            httpParams.headers["pf-force-plain-php-response"] = "true";
+        }
+
         return httpParams;
     }
 
