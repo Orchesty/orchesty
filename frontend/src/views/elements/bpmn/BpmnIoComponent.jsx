@@ -79,9 +79,15 @@ class BpmnIoComponent extends React.Component {
     })
   }
 
-  componentWillUnmount() {
+  componentWillUnmount(){
     this.props.setActions(null);
     this._modeler.detach();
+  }
+
+  componentDidUpdate(prevProps){
+    if (prevProps.schema !== this.props.schema){
+      this.loadXML();
+    }
   }
 
   changed(){
