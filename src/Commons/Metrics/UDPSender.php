@@ -23,8 +23,8 @@ use Psr\Log\NullLogger;
 class UDPSender implements LoggerAwareInterface
 {
 
-    private const APCU_IP      = 'metrics_collector_ip';
-    private const APCU_REFRESH = 'metrics_collector_refresh';
+    private const APCU_IP      = 'metrics_collector_ip:';
+    private const APCU_REFRESH = 'metrics_collector_refresh:';
 
     private const REFRESH_INTERVAL = 60;
 
