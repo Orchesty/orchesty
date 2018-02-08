@@ -62,6 +62,8 @@ class SecurityManager
      * @param Session                    $session
      * @param TokenStorage               $tokenStorage
      * @param ResourceProvider           $provider
+     *
+     * @throws \Hanaboso\PipesFramework\HbPFUserBundle\Exception\UserException
      */
     public function __construct(
         UserDatabaseManagerLocator $userDml,
@@ -84,6 +86,7 @@ class SecurityManager
      *
      * @return UserInterface
      * @throws SecurityManagerException
+     * @throws \Hanaboso\PipesFramework\HbPFUserBundle\Exception\UserException
      */
     public function login(array $data): UserInterface
     {
@@ -91,34 +94,8 @@ class SecurityManager
             return $this->getUserFromSession();
         }
 
-        /** @var UserInterface $user */
-        $user = $this->userRepository->findOneBy([
-            'email'   => $data['email'],
-            'deleted' => FALSE,
-        ]);
-
-        if (!$user) {
-            throw new SecurityManagerException(
-                sprintf('User \'%s\' or password not valid.', $data['email']),
-                SecurityManagerException::USER_OR_PASSWORD_NOT_VALID
-            );
-        }
-
-        $encoder = $this->encoderFactory->getEncoder($this->provider->getResource(ResourceEnum::USER));
-
-        if (!$encoder) {
-            throw new SecurityManagerException(
-                sprintf('User \'%s\' encoder not found.', $data['email']),
-                SecurityManagerException::USER_ENCODER_NOT_FOUND
-            );
-        }
-
-        if (!$encoder->isPasswordValid($user->getPassword(), $data['password'], '')) {
-            throw new SecurityManagerException(
-                sprintf('User \'%s\' or password not valid.', $data['email']),
-                SecurityManagerException::USER_OR_PASSWORD_NOT_VALID
-            );
-        }
+        $user = $this->getUser($data['email']);
+        $this->validateUser($user, $data);
 
         $token = new Token($user, $data['password'], self::SECURED_AREA);
         $this->tokenStorage->setToken($token);
@@ -183,6 +160,56 @@ class SecurityManager
     private function userNotLogged(): void
     {
         throw new SecurityManagerException('User not logged.', SecurityManagerException::USER_NOT_LOGGED);
+    }
+
+    /**
+     * @param string $email
+     *
+     * @return UserInterface
+     * @throws SecurityManagerException
+     */
+    private function getUser(string $email): UserInterface
+    {
+        /** @var UserInterface $user */
+        $user = $this->userRepository->findOneBy([
+            'email'   => $email,
+            'deleted' => FALSE,
+        ]);
+
+        if (!$user) {
+            throw new SecurityManagerException(
+                sprintf('User \'%s\' or password not valid.', $email),
+                SecurityManagerException::USER_OR_PASSWORD_NOT_VALID
+            );
+        }
+
+        return $user;
+    }
+
+    /**
+     * @param UserInterface $user
+     * @param array         $data
+     *
+     * @throws SecurityManagerException
+     * @throws \Hanaboso\PipesFramework\HbPFUserBundle\Exception\UserException
+     */
+    private function validateUser(UserInterface $user, array $data): void
+    {
+        $encoder = $this->encoderFactory->getEncoder($this->provider->getResource(ResourceEnum::USER));
+
+        if (!$encoder) {
+            throw new SecurityManagerException(
+                sprintf('User \'%s\' encoder not found.', $data['email']),
+                SecurityManagerException::USER_ENCODER_NOT_FOUND
+            );
+        }
+
+        if (!$encoder->isPasswordValid($user->getPassword(), $data['password'], '')) {
+            throw new SecurityManagerException(
+                sprintf('User \'%s\' or password not valid.', $data['email']),
+                SecurityManagerException::USER_OR_PASSWORD_NOT_VALID
+            );
+        }
     }
 
 }
