@@ -55,11 +55,15 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
     protected $encoder;
 
     /**
-     * DatabaseTestCase constructor.
+     * ControllerTestCaseAbstract constructor.
+     *
+     * @param null   $name
+     * @param array  $data
+     * @param string $dataName
      */
-    public function __construct()
+    public function __construct($name = NULL, array $data = [], $dataName = '')
     {
-        parent::__construct();
+        parent::__construct($name, $data, $dataName);
         self::bootKernel();
         $this->container = self::$kernel->getContainer();
         $this->dm        = $this->container->get('doctrine_mongodb.odm.default_document_manager');
