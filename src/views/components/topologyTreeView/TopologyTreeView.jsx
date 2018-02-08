@@ -20,7 +20,7 @@ class TopologyTreeView extends React.Component {
     const {root, toggleCategory, openTopology, openContextMenu} = this.props;
     return (
       <div className="topology-tree-view">
-        {root && root.children.length > 0 ? <TopologyTreeViewList category={root} toggleCategory={toggleCategory} openTopology={openTopology} openContextMenu={openContextMenu} topLevel /> : 'Empty'}
+        {root && root.children && root.children.length > 0 ? <TopologyTreeViewList category={root} toggleCategory={toggleCategory} openTopology={openTopology} openContextMenu={openContextMenu} topLevel /> : null}
       </div>
     );
   }
