@@ -171,8 +171,8 @@ class UDPSender implements LoggerAwareInterface
         apcu_delete(self::APCU_IP . $this->collectorHost);
         apcu_delete(self::APCU_REFRESH . $this->collectorHost);
 
-        apcu_add(self::APCU_IP . $this->collectorHost, $this->ip);
-        apcu_add(self::APCU_REFRESH . $this->collectorHost, $this->lastIPRefresh);
+        apcu_store(self::APCU_IP . $this->collectorHost, $this->ip);
+        apcu_store(self::APCU_REFRESH . $this->collectorHost, $this->lastIPRefresh);
 
         return $this->ip;
     }

@@ -5,6 +5,11 @@ namespace Tests\Integration\Commons\Session\Handler;
 use Hanaboso\PipesFramework\Commons\Session\Handler\RedisSessionHandler;
 use Tests\KernelTestCaseAbstract;
 
+/**
+ * Class RedisSessionHandlerTest
+ *
+ * @package Tests\Integration\Commons\Session\Handler
+ */
 class RedisSessionHandlerTest extends KernelTestCaseAbstract
 {
 
@@ -13,7 +18,10 @@ class RedisSessionHandlerTest extends KernelTestCaseAbstract
      */
     private $handler;
 
-    public function setUp()
+    /**
+     * Prepares handler for testing
+     */
+    public function setUp(): void
     {
         $this->handler = $this->container->get('hbpf.commons.session_handler');
     }
@@ -22,7 +30,7 @@ class RedisSessionHandlerTest extends KernelTestCaseAbstract
      * @covers RedisSessionHandler::open()
      * @throws \Exception
      */
-    public function testOpen()
+    public function testOpen(): void
     {
         $this->assertTrue($this->handler->open('some/path', 'some name'));
         $this->assertTrue($this->handler->open('some/path', 'another name'));
@@ -32,7 +40,7 @@ class RedisSessionHandlerTest extends KernelTestCaseAbstract
      * @covers RedisSessionHandler::close()
      * @throws \Exception
      */
-    public function testClose()
+    public function testClose(): void
     {
         $this->assertTrue($this->handler->close());
     }
@@ -41,7 +49,7 @@ class RedisSessionHandlerTest extends KernelTestCaseAbstract
      * @covers RedisSessionHandler::gc()
      * @throws \Exception
      */
-    public function testGc()
+    public function testGc(): void
     {
         $this->assertTrue($this->handler->gc(0));
         $this->assertTrue($this->handler->gc(999));
@@ -54,7 +62,7 @@ class RedisSessionHandlerTest extends KernelTestCaseAbstract
      * @covers RedisSessionHandler::destroy()
      * @throws \Exception
      */
-    public function testReadWriteDestroy()
+    public function testReadWriteDestroy(): void
     {
         $this->assertTrue($this->handler->destroy("foo"));
         $this->assertEmpty($this->handler->read("foo"));
