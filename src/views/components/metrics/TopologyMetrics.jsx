@@ -20,7 +20,7 @@ class TopologyMetrics extends React.Component {
           <div className="count">{data.process.total}</div>
         </div>
         <div className="tile_stats_count">
-          <span className="count_top">Process Time</span>
+          <span className="count_top">Average Process Time [ms]</span>
           <div className="count">{data.process_time.avg}</div>
         </div>
       </div>
