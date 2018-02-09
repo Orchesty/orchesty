@@ -74,17 +74,17 @@ class NodeMetrics extends React.Component {
           <span className="count_bottom red">Failed: {data.process.errors}</span>
         </div>
         <div className="tile_stats_count">
-          <span className="count_top">Queue Depth</span>
+          <span className="count_top">Queue Depth [msg]</span>
           <div className="count">{data.queue_depth.min}</div>
           <span className="count_bottom red">Max: {data.queue_depth.max}</span>
         </div>
         <div className="tile_stats_count">
-          <span className="count_top">Waiting Time</span>
+          <span className="count_top">Waiting Time [ms]</span>
           <div className="count">{data.waiting_time.avg}</div>
           <span className="count_bottom green">Min: {data.waiting_time.min}</span> | <span className="count_bottom red">Max: {data.waiting_time.max}</span>
         </div>
         <div className="tile_stats_count">
-          <span className="count_top">Process Time</span>
+          <span className="count_top">Process Time [ms]</span>
           <div className="count">{data.process_time.avg}</div>
           <span className="count_bottom green">Min: {data.process_time.min}</span> | <span className="count_bottom red">Max: {data.process_time.max}</span>
         </div>
@@ -94,7 +94,7 @@ class NodeMetrics extends React.Component {
           <span className="count_bottom green">Min: {data.cpu_time.min}</span> | <span className="count_bottom red">Max: {data.cpu_time.max}</span>
         </div>
         <div className="tile_stats_count">
-          <span className="count_top">Request Time</span>
+          <span className="count_top">Request Time [ms]</span>
           <div className="count">{data.request_time.avg}</div>
           <span className="count_bottom green">Min: {data.request_time.min}</span> | <span className="count_bottom red">Max: {data.request_time.max}</span>
         </div>
