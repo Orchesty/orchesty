@@ -168,6 +168,28 @@ class TopologyManager
      * @param Topology $topology
      *
      * @return Topology
+     * @throws TopologyException
+     */
+    public function unPublishTopology(Topology $topology): Topology
+    {
+        $nodes = $this->dm->getRepository(Node::class)->findBy(['topology' => $topology->getId()]);
+        if (empty($nodes)) {
+            throw new TopologyException(
+                'Topology has no nodes.',
+                TopologyException::TOPOLOGY_HAS_NO_NODES
+            );
+        }
+
+        $topology->setVisibility(TopologyStatusEnum::DRAFT);
+        $this->dm->flush();
+
+        return $topology;
+    }
+
+    /**
+     * @param Topology $topology
+     *
+     * @return Topology
      */
     public function cloneTopology(Topology $topology): Topology
     {
