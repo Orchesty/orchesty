@@ -2,9 +2,10 @@
 
 namespace Tests\Unit\AppBundle\Model\CMEvents;
 
-use CleverConnectors\AppBundle\Amq\CMActivatorProducer;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\CMEvents\CMEventActivator;
+use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
+use CleverConnectors\AppBundle\Model\Systems\SystemLoader;
 use CleverConnectors\AppBundle\Model\Systems\SystemManager;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -16,6 +17,8 @@ use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSenderFactory;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use PHPUnit\Framework\MockObject\MockObject;
 use React\EventLoop\Factory;
+use ReflectionException;
+use Tests\Integration\AppBundle\Model\Systems\Impl\NullSystem;
 use Tests\KernelTestCaseAbstract;
 use function React\Promise\resolve;
 
@@ -28,18 +31,20 @@ class CMEventActivatorTest extends KernelTestCaseAbstract
 {
 
     /**
-     *
+     * @throws ReflectionException
+     * @throws SystemException
      */
     public function testProcessBatch(): void
     {
-        /** @var CMActivatorProducer|MockObject $producer */
-        $producer = $this->createMock(CMActivatorProducer::class);
+        /** @var SystemLoader|MockObject $producer */
+        $loader = $this->createMock(SystemLoader::class);
+        $loader->method('getSystem')->willReturn(new NullSystem());
 
         $node = new CMEventActivator(
             $this->mockSystemManager(),
             $this->mockDm(),
             $this->mockCurl(),
-            $producer
+            $loader
         );
 
         $dto = new ProcessDto();
@@ -65,10 +70,12 @@ class CMEventActivatorTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @return SystemManager|MockObject
+     * @return SystemManager
+     * @throws ReflectionException
      */
     private function mockSystemManager(): SystemManager
     {
+        /** @var SystemManager|MockObject $manager */
         $manager = $this->createMock(SystemManager::class);
         $manager->expects($this->once())
             ->method('getSystem')->willReturn($this->container->get('systems.null.user.group'));
@@ -77,7 +84,8 @@ class CMEventActivatorTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @return DocumentManager|MockObject
+     * @return DocumentManager
+     * @throws ReflectionException
      */
     private function mockDm(): DocumentManager
     {
@@ -85,9 +93,11 @@ class CMEventActivatorTest extends KernelTestCaseAbstract
         $sys->setUser('usr')
             ->setSystem('sys');
 
+        /** @var SystemInstallRepository|MockObject $repo */
         $repo = $this->createMock(SystemInstallRepository::class);
         $repo->method('getSystemInstallFromHeaders')->willReturn($sys);
 
+        /** @var DocumentManager|MockObject $dm */
         $dm = $this->createMock(DocumentManager::class);
         $dm->method('getRepository')->willReturn($repo);
 
@@ -95,12 +105,14 @@ class CMEventActivatorTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @return CurlSenderFactory|MockObject
+     * @return CurlSenderFactory
+     * @throws ReflectionException
      */
     private function mockCurl(): CurlSenderFactory
     {
         $test = $this;
 
+        /** @var CurlSender|MockObject $curl */
         $curl = $this->createMock(CurlSender::class);
         $curl->expects($this->at(0))
             ->method('send')->will($this->returnCallback(function (RequestDto $requestDto) use ($test) {
@@ -123,6 +135,7 @@ class CMEventActivatorTest extends KernelTestCaseAbstract
                 return resolve(new Response(200, [], 'msg'));
             }));
 
+        /** @var CurlSenderFactory|MockObject $fac */
         $fac = $this->createMock(CurlSenderFactory::class);
         $fac->method('create')->willReturn($curl);
 

@@ -2,13 +2,17 @@
 
 namespace CleverConnectors\AppBundle\Model\CMEvents;
 
-use CleverConnectors\AppBundle\Amq\CMActivatorProducer;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\Requester\RequesterInterface;
 use CleverConnectors\AppBundle\Model\Requester\ResultDto;
+use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
+use CleverConnectors\AppBundle\Model\Systems\SystemInterface;
+use CleverConnectors\AppBundle\Model\Systems\SystemLoader;
 use CleverConnectors\AppBundle\Model\Systems\SystemManager;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
+use CleverConnectors\AppBundle\Traits\LoggerTrait;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
+use Clue\React\Buzz\Message\ResponseException;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
@@ -20,6 +24,7 @@ use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\BatchInterface;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Log\LoggerAwareInterface;
 use React\EventLoop\LoopInterface;
 use React\Promise\PromiseInterface;
 use RuntimeException;
@@ -30,8 +35,10 @@ use function React\Promise\all;
  *
  * @package CleverConnectors\AppBundle\Model\CMEvents
  */
-class CMEventActivator implements BatchInterface, CustomNodeInterface
+class CMEventActivator implements BatchInterface, CustomNodeInterface, LoggerAwareInterface
 {
+
+    use LoggerTrait;
 
     /**
      * @var SystemManager
@@ -49,35 +56,35 @@ class CMEventActivator implements BatchInterface, CustomNodeInterface
     protected $factory;
 
     /**
-     * @var CMActivatorProducer
-     */
-    protected $streamProducer;
-
-    /**
      * @var DocumentManager
      */
     protected $dm;
 
     /**
+     * @var SystemLoader
+     */
+    private $loader;
+
+    /**
      * CMEventActivator constructor.
      *
-     * @param SystemManager       $manager
-     * @param DocumentManager     $dm
-     * @param CurlSenderFactory   $factory
-     * @param CMActivatorProducer $streamProducer
+     * @param SystemManager     $manager
+     * @param DocumentManager   $dm
+     * @param CurlSenderFactory $factory
+     * @param SystemLoader      $loader
      */
     function __construct(
         SystemManager $manager,
         DocumentManager $dm,
         CurlSenderFactory $factory,
-        CMActivatorProducer $streamProducer
+        SystemLoader $loader
     )
     {
         $this->systemInstallRepository = $dm->getRepository(SystemInstall::class);
         $this->manager                 = $manager;
         $this->factory                 = $factory;
-        $this->streamProducer          = $streamProducer;
         $this->dm                      = $dm;
+        $this->loader                  = $loader;
     }
 
     /**
@@ -96,6 +103,7 @@ class CMEventActivator implements BatchInterface, CustomNodeInterface
      * @param callable      $callbackItem
      *
      * @return PromiseInterface
+     * @throws SystemException
      */
     public function processBatch(ProcessDto $dto, LoopInterface $loop, callable $callbackItem): PromiseInterface
     {
@@ -121,12 +129,6 @@ class CMEventActivator implements BatchInterface, CustomNodeInterface
         $promise = all($requests);
 
         $this->dm->flush();
-
-        $this->streamProducer->publish([
-            'event'   => 'event-activator',
-            'groups'  => $systemInstall->getUser(),
-            'content' => json_encode($results),
-        ]);
 
         return $promise;
     }
@@ -167,8 +169,22 @@ class CMEventActivator implements BatchInterface, CustomNodeInterface
                     $results[] = $res;
 
                     return $this->createSuccessMessage($res, $index);
+                },
+                function (ResponseException $e) use ($systemInstall, $index): SuccessMessage {
+                    return $this->batchConnectorError($e, $this->getSystem($systemInstall), $systemInstall, $index);
                 })
             ->then($callbackItem);
+    }
+
+    /**
+     * @param SystemInstall $systemInstall
+     *
+     * @return SystemInterface
+     * @throws SystemException
+     */
+    protected function getSystem(SystemInstall $systemInstall): SystemInterface
+    {
+        return $this->loader->getSystem($systemInstall->getSystem());
     }
 
     /**

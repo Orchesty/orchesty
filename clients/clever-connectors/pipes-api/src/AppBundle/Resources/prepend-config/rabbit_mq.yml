@@ -18,10 +18,3 @@ rabbit-mq:
             content_type: application/json
             serializer: Hanaboso\PipesFramework\RabbitMq\Serializers\JsonSerializer
             routing_key: pipes.stream
-
-        cm_activator_stream:
-            class: CleverConnectors\AppBundle\Amq\CMActivatorProducer
-            exchange: pipes.stream
-            content_type: application/json
-            serializer: Hanaboso\PipesFramework\RabbitMq\Serializers\JsonSerializer
-            routing_key: pipes.stream

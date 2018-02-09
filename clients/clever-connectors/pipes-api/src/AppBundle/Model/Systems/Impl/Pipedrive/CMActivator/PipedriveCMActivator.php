@@ -4,9 +4,12 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\Pipedrive\CMActivator;
 
 use CleverConnectors\AppBundle\Model\CMEvents\CMEventActivator;
 use CleverConnectors\AppBundle\Model\CMEvents\CMEventSystemInterface;
+use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Pipedrive\Requester\PipedriveCMEventRequester;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
+use Clue\React\Buzz\Message\ResponseException;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
 use Psr\Http\Message\ResponseInterface;
 use React\EventLoop\LoopInterface;
 use React\Promise\PromiseInterface;
@@ -26,6 +29,7 @@ class PipedriveCMActivator extends CMEventActivator
      * @param callable      $callbackItem
      *
      * @return PromiseInterface
+     * @throws SystemException
      */
     public function processBatch(ProcessDto $dto, LoopInterface $loop, callable $callbackItem): PromiseInterface
     {
@@ -46,7 +50,11 @@ class PipedriveCMActivator extends CMEventActivator
                 $responseDto = $this->createDtoFromResponse($response);
 
                 return $requester->processListResponse($data, $responseDto);
-            })->then(function (array $fields) use (
+            },
+                function (ResponseException $e) use ($systemInstall): SuccessMessage {
+                    return $this->batchConnectorError($e, $this->getSystem($systemInstall), $systemInstall, 1);
+                })
+            ->then(function (array $fields) use (
                 $sender, $requester, $systemInstall, $system, $callbackItem, &$results
             ) {
                 $requests = [];
@@ -61,12 +69,6 @@ class PipedriveCMActivator extends CMEventActivator
 
                 return $promise;
             });
-
-        $this->streamProducer->publish([
-            'event'   => 'event-activator',
-            'groups'  => $systemInstall->getUser(),
-            'content' => json_encode($results),
-        ]);
 
         return $promise;
     }
