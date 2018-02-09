@@ -28,7 +28,7 @@ class App extends React.Component {
   }
   
   render() {
-    const {showMenu, isLogged, page, selectPage} = this.props;
+    const {isLogged, page, selectPage} = this.props;
     const pageDef = config.pages[page.key];
     if (!isLogged && pageDef && pageDef.needAuth){
       selectPage('login');
@@ -73,7 +73,6 @@ function mapStateToProps(state){
   const {application, auth} = state;
 
   return {
-    showMenu: application.showMenu,
     isLogged: Boolean(auth.user),
     page: application.selectedPage
   }

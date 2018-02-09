@@ -34,6 +34,8 @@
     "css-loader": "^0.28.5",
     "deepmerge": "^1.5.1",
     "diagram-js": "^0.20.0",
+    "echarts": "^4.0.2",
+    "echarts-for-react": "^2.0.6",
     "file-loader": "^0.11.2",
     "inherits": "^2.0.3",
     "isomorphic-fetch": "^2.2.1",
