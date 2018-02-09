@@ -17,6 +17,7 @@ use Hanaboso\PipesFramework\Configurator\Model\TopologyManager;
 use Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository;
 use Hanaboso\PipesFramework\TopologyGenerator\Request\RequestHandler;
 use Hanaboso\PipesFramework\Utils\ControllerUtils;
+use Throwable;
 
 /**
  * Class TopologyHandler
@@ -87,7 +88,8 @@ class TopologyHandler
      */
     public function getTopologies(?int $limit = NULL, ?int $offset = NULL, $orderBy = NULL): array
     {
-        $sort       = UriParams::parseOrderBy($orderBy);
+        $sort = UriParams::parseOrderBy($orderBy);
+        /** @var Topology[] $topologies */
         $topologies = $this->topologyRepository->findBy([], $sort, $limit, $offset);
 
         $data = [
@@ -185,16 +187,30 @@ class TopologyHandler
     public function publishTopology(string $id): ResponseDto
     {
         $topology = $this->getTopologyById($id);
-        $this->manager->publishTopology($topology);
-        $data = $this->getTopologyData($topology);
+        $topology = $this->manager->publishTopology($topology);
+        $data     = $this->getTopologyData($topology);
 
-        $generateResult = $this->requestHandler->generateTopology($id);
-        $runResult      = $this->requestHandler->runTopology($id);
+        try {
+            $generateResult = $this->requestHandler->generateTopology($id);
+            $runResult      = $this->requestHandler->runTopology($id);
+            $code           = 200;
+            if ($generateResult->getStatusCode() !== 200 || $runResult->getStatusCode() !== 200) {
+                $code = 400;
+            }
+            $generateResultBody = $generateResult->getBody();
+            $runResultBody      = $runResult->getBody();
+        } catch (Throwable $e) {
+            $code               = 400;
+            $generateResultBody = $e->getMessage();
+            $runResultBody      = '';
+        }
 
-        if ($generateResult->getStatusCode() !== 200 || $runResult->getStatusCode() !== 200) {
+        if ($code !== 200) {
+            $this->manager->unPublishTopology($topology);
+
             return new ResponseDto(400, '', json_encode([
-                'generate_result' => $generateResult->getBody(),
-                'run_result'      => $runResult->getBody(),
+                'generate_result' => $generateResultBody,
+                'run_result'      => $runResultBody,
             ]), []);
         } else {
             return new ResponseDto(200, '', json_encode($data), []);

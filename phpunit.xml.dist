@@ -12,9 +12,8 @@
 >
 
     <php>
-        <server name="KERNEL_DIR" value="app/" />
+        <server name="KERNEL_DIR" value="app/"/>
         <env name="SYMFONY_DEPRECATIONS_HELPER" value="weak"/>
-        <ini name="apc.enable_cli" value="1"/>
     </php>
 
     <filter>
