@@ -20,7 +20,7 @@ class TopologyTreeView extends React.Component {
     const {root, toggleCategory, openTopology, openContextMenu} = this.props;
     return (
       <div className="topology-tree-view">
-        {root && root.children && root.children.length > 0 ? <TopologyTreeViewList category={root} toggleCategory={toggleCategory} openTopology={openTopology} openContextMenu={openContextMenu} topLevel /> : null}
+        {root ? <TopologyTreeViewList category={root} toggleCategory={toggleCategory} openTopology={openTopology} openContextMenu={openContextMenu} topLevel /> : null}
       </div>
     );
   }
@@ -37,7 +37,7 @@ function treeItemToTreeView(elements, treeItem){
     id: treeItem.id,
     open: treeItem.open,
     caption: item ? item.name : 'Root',
-    children: treeItem.items && treeItem.items.length ? treeItem.items.map(childTreeItem => treeItemToTreeView(elements, childTreeItem)) : null
+    children: treeItem.items && treeItem.items.length ? treeItem.items.map(childTreeItem => treeItemToTreeView(elements, childTreeItem)) : []
   }
 }
 
