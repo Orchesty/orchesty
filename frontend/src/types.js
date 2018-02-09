@@ -25,3 +25,10 @@ export const menuItemType = {
   BADGE: 'badge',
   TEXT: 'text'
 };
+
+export const intervalType = {
+  HOUR: {caption: 'hour', value: '1h'},
+  DAY: {caption: 'day', value: '1d'},
+  WEEK: {caption: 'week', value: '1w'},
+  FOUR_WEEK: {caption: '4 weeks', value: '4w'},
+};
