@@ -250,11 +250,15 @@ class PipedriveSystem implements WebhookSystemInterface, AuthorizationInterface,
     /**
      * @param SystemInstall $systemInstall
      *
-     * @return SystemLimitDto
+     * @return SystemLimitDto|null
      */
-    public function getLimit(SystemInstall $systemInstall): SystemLimitDto
+    public function getLimit(SystemInstall $systemInstall): ?SystemLimitDto
     {
         $sett = $systemInstall->getSettings();
+
+        if (!array_key_exists(SystemInstall::SYSTEM_LIMITS, $sett)) {
+            return NULL;
+        }
 
         return new SystemLimitDto(
             $systemInstall,
