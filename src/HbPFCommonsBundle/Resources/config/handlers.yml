@@ -2,12 +2,13 @@ services:
     hbpf.commons.node_handler:
         class: Hanaboso\PipesFramework\HbPFCommonsBundle\Handler\NodeHandler
 
-    hbpf.commons.session_handler:
-        class: Hanaboso\PipesFramework\Commons\Session\Handler\CachedSessionHandler
-        arguments:
-            - '@hbpf.commons.redis_session_handler'
+#    hbpf.commons.session_handler:
+#        class: Hanaboso\PipesFramework\Commons\Session\Handler\CachedSessionHandler
+#        arguments:
+#            - '@hbpf.commons.redis_session_handler'
 
-    hbpf.commons.redis_session_handler:
+#    hbpf.commons.redis_session_handler:
+    hbpf.commons.session_handler:
         class: Hanaboso\PipesFramework\Commons\Session\Handler\RedisSessionHandler
         arguments:
-            - '@snc_redis.default'
+            - '@snc_redis.sessions'

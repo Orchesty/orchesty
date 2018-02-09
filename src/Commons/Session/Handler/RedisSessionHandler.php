@@ -33,8 +33,6 @@ final class RedisSessionHandler implements SessionHandlerInterface
     {
         $this->client   = $client;
         $this->lifeTime = $lifeTime;
-
-        $this->client->select(10);
     }
 
     /**
