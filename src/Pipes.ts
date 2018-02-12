@@ -77,7 +77,7 @@ class Pipes implements INodeConfigProvider {
         const counter = new Counter(
             topo.counter,
             this.dic.get("amqp.connection"),
-            this.dic.get("counter.storage"),
+            this.dic.get("counter.storage")(),
             this.dic.get("topology.terminator")(false),
             this.dic.get("metrics")(topo.id, "counter", metricsOptions.counter_measurement),
         );
@@ -99,7 +99,7 @@ class Pipes implements INodeConfigProvider {
         const counter = new Counter(
             Configurator.getCounterDefaultSettings(true, topoId),
             this.dic.get("amqp.connection"),
-            this.dic.get("counter.storage"),
+            this.dic.get("counter.storage")(),
             this.dic.get("topology.terminator")(true),
             this.dic.get("metrics")(topoId, "multi-counter", metricsOptions.counter_measurement),
         );

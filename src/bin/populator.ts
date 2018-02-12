@@ -6,7 +6,9 @@ import {IAmqpFaucetSettings} from "../node/faucet/AmqpFaucet";
 import Pipes from "../Pipes";
 import {ITopologyConfig} from "../topology/Configurator";
 
-const POPULATOR_COUNT = parseInt(process.env.POPULATOR_COUNT, 10) || 100;
+const POPULATOR_COUNT = parseInt(process.env.POPULATOR_COUNT, 10) || 1000;
+const POPULATOR_BATCH = parseInt(process.env.POPULATOR_BATCH, 10) || 500;
+const POPULATOR_BATCH_TIMEOUT = parseInt(process.env.POPULATOR_BATCH_TIMEOUT, 10) || 1000;
 const POPULATOR_QUEUE = process.env.POPULATOR_QUEUE || "";
 
 const loadTopologyConfigFromFile = (): ITopologyConfig => {
@@ -33,10 +35,14 @@ const publisher = new Publisher(conn, async (ch: Channel) => {
     await ch.assertQueue(inQueue.name, inQueue.options);
 });
 
-const proms = [];
-
 for (let i = 1; i <= POPULATOR_COUNT; i++) {
-     const prom = publisher.sendToQueue(
+    setTimeout(() => {
+        sendMessage(i);
+    }, Math.floor(i / POPULATOR_BATCH) * POPULATOR_BATCH_TIMEOUT);
+}
+
+const sendMessage = (i: number) => {
+    publisher.sendToQueue(
         inQueue.name,
         new Buffer("populator test"),
         {
@@ -50,11 +56,7 @@ for (let i = 1; i <= POPULATOR_COUNT; i++) {
     ).then(() => {
         logger.info(`#${i} populator message sent to ${inQueue.name}.`);
     });
+};
 
-     proms.push(prom);
-}
-
-Promise.all(proms).then(() => {
-    // In 10s hopefully all messages should be published to broker
-    setTimeout(() => { process.exit(0); }, 10000);
-});
+// In 5s after the last batch everything should be published
+setTimeout(() => { process.exit(0); }, (Math.floor(POPULATOR_COUNT / POPULATOR_BATCH) + 5) * POPULATOR_BATCH_TIMEOUT);
