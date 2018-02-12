@@ -46,7 +46,7 @@ class DIContainer extends Container {
         this.set("amqp.connection", new Connection(amqpConnectionOptions, logger));
 
         // this.set("counter.storage", new InMemoryStorage());
-        this.set("counter.storage", new RedisStorage(redisStorageOptions));
+        this.set("counter.storage", () => new RedisStorage(redisStorageOptions));
 
         this.set("probe.multi", new MultiProbeConnector(multiProbeOptions.host, multiProbeOptions.port));
 
@@ -54,14 +54,14 @@ class DIContainer extends Container {
             if (isMulti) {
                 return new Terminator(
                     topologyTerminatorOptions.port,
-                    this.get("counter.storage"),
+                    this.get("counter.storage")(),
                     this.get("probe.multi"),
                 );
             }
 
             return new Terminator(
                 topologyTerminatorOptions.port,
-                this.get("counter.storage"),
+                this.get("counter.storage")(),
             );
         });
 
