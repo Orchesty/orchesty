@@ -14,6 +14,7 @@ use FOS\RestBundle\Controller\FOSRestController;
 use Hanaboso\PipesFramework\Commons\Traits\ControllerTrait;
 use Hanaboso\PipesFramework\HbPFMetricsBundle\Handler\MetricsHandler;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Throwable;
@@ -47,7 +48,9 @@ class MetricsController extends FOSRestController
     {
         $this->construct();
         try {
-            $data = $this->metricsHandler->getTopologyMetrics($topologyId, $request->attributes->all());
+            /** @var ParameterBag $query */
+            $query = $request->attributes->all()['query'];
+            $data = $this->metricsHandler->getTopologyMetrics($topologyId, $query->all());
         } catch (Throwable $e) {
             return $this->getErrorResponse($e, 400);
         }
@@ -69,7 +72,9 @@ class MetricsController extends FOSRestController
     {
         $this->construct();
         try {
-            $data = $this->metricsHandler->getNodeMetrics($topologyId, $nodeId, $request->attributes->all());
+            /** @var ParameterBag $query */
+            $query = $request->attributes->all()['query'];
+            $data = $this->metricsHandler->getNodeMetrics($topologyId, $nodeId, $query->all());
         } catch (Throwable $e) {
             return $this->getErrorResponse($e, 400);
         }
@@ -90,7 +95,9 @@ class MetricsController extends FOSRestController
     {
         $this->construct();
         try {
-            $data = $this->metricsHandler->getRequestsCountMetrics($topologyId, $request->attributes->all());
+            /** @var ParameterBag $query */
+            $query = $request->attributes->all()['query'];
+            $data = $this->metricsHandler->getRequestsCountMetrics($topologyId, $query->all());
         } catch (Throwable $e) {
             return $this->getErrorResponse($e, 400);
         }
