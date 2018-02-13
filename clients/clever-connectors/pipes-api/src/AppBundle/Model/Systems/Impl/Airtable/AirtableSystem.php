@@ -287,7 +287,7 @@ class AirtableSystem implements AuthorizationInterface, CMEventSystemInterface
         $settings   = $systemInstall->getSettings();
 
         if (array_key_exists(SystemInstall::SYSTEM_LIMIT_VALUE, $settings)) {
-            $limitValue = $settings[SystemInstall::SYSTEM_LIMIT_VALUE];
+            $limitValue = (int) $settings[SystemInstall::SYSTEM_LIMIT_VALUE];
         }
 
         return new SystemLimitDto(
