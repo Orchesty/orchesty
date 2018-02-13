@@ -15,9 +15,18 @@
       flex: 1;
       display: flex;
       flex-flow: row wrap-reverse;
+      overflow: visible;
       justify-content: space-between;
-      .tab-bar{
-        width: auto;
+
+      .tab-container{
+        flex: 1;
+      }
+
+      > .action-button-panel{
+        flex: 0 0 250px;
+        min-width: 250px;
+        margin-bottom: 5px;
+        margin-left: 5px;
       }
     }
   }

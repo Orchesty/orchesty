@@ -25,45 +25,55 @@ import Error404Page from 'pages/nonAuth/Error404Page';
 class App extends React.Component {
   constructor(props) {
     super(props);
+    this.checkAuthPage(props);
   }
-  
+
+  componentWillReceiveProps(nextProps){
+    this.checkAuthPage(nextProps);
+  }
+
+  checkAuthPage(props) {
+    const {isLogged, page, openPage} = props;
+    if (page) {
+      const pageDef = config.pages[page.key];
+      if (!isLogged && pageDef && pageDef.needAuth) {
+        openPage('login');
+      }
+    }
+  }
+
   render() {
-    const {isLogged, page, selectPage} = this.props;
-    const pageDef = config.pages[page.key];
-    if (!isLogged && pageDef && pageDef.needAuth){
-      selectPage('login');
-      return null;
-    } else {
-      if (isLogged && (!pageDef || pageDef.needAuth)) {
-        return (
-          <div className="main-app">
-            <TopNavigation/>
-            <div className="content-area">
-              <LeftSideBar/>
-              <div className="content-container">
-                <ActivePage/>
-              </div>
+    const {isLogged, page} = this.props;
+    const pageDef = page ? config.pages[page.key] : null;
+    if (isLogged && (!pageDef || pageDef.needAuth)) {
+      return (
+        <div className="main-app">
+          <TopNavigation/>
+          <div className="content-area">
+            <LeftSideBar/>
+            <div className="content-container">
+              <ActivePage/>
             </div>
-            <Toaster />
-            <ActiveModal />
-            <ActiveContextMenu />
           </div>
-        );
-      } else {
-        switch (page.key){
-          case 'login':
-            return <LoginPage componentKey={page.key} {...page.args}/>;
-          case 'registration':
-            return <RegistrationPage componentKey={page.key} {...page.args} />;
-          case 'reset_password':
-            return <ResetPasswordPage componentKey={page.key} {...page.args} />;
-          case 'set_password':
-            return <SetPasswordPage componentKey={page.key} {...page.args} />;
-          case 'user_activation':
-            return <ActivationPage componentKey={page.key} {...page.args} />;
-          default:
-            return <Error404Page />;
-        }
+          <Toaster />
+          <ActiveModal />
+          <ActiveContextMenu />
+        </div>
+      );
+    } else {
+      switch (page.key){
+        case 'login':
+          return <LoginPage componentKey={page.key} {...page.args}/>;
+        case 'registration':
+          return <RegistrationPage componentKey={page.key} {...page.args} />;
+        case 'reset_password':
+          return <ResetPasswordPage componentKey={page.key} {...page.args} />;
+        case 'set_password':
+          return <SetPasswordPage componentKey={page.key} {...page.args} />;
+        case 'user_activation':
+          return <ActivationPage componentKey={page.key} {...page.args} />;
+        default:
+          return <Error404Page />;
       }
     }
   }
@@ -74,13 +84,13 @@ function mapStateToProps(state){
 
   return {
     isLogged: Boolean(auth.user),
-    page: application.selectedPage
+    page: application.pages[application.selectedPage]
   }
 }
 
 function mapActionsToProps(dispatch){
   return {
-    selectPage: (key, args) => dispatch(applicationActions.selectPage(key, args))
+    openPage: (key, args) => dispatch(applicationActions.openPage(key, args))
   }
 }
 

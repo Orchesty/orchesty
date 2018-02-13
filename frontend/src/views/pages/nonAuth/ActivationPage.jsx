@@ -77,7 +77,7 @@ function mapStateToProps(state, ownProps) {
 function mapActionsToProps(dispatch, ownProps) {
   return {
     activate: token => dispatch(authActions.activate(token, ownProps.componentKey)),
-    switchToLogin: () => dispatch(applicationActions.selectPage('login'))
+    switchToLogin: () => dispatch(applicationActions.openPage('login'))
   }
 }
 

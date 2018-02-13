@@ -1,5 +1,6 @@
+export const OPEN_PAGE = 'OPEN_PAGE';
+export const CLOSE_PAGE = 'CLOSE_PAGE';
 export const SELECT_PAGE = 'SELECT_PAGE';
-export const SET_PAGE_DATA = 'SET_PAGE_DATA';
 
 export const MODAL_OPEN = 'MODAL_OPEN';
 export const MODAL_CLOSE = 'MODAL_CLOSE';
