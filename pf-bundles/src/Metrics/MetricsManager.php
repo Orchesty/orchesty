@@ -363,8 +363,6 @@ class MetricsManager implements LoggerAwareInterface
         }
         $this->logger->info('Metrics was selected.', ['Query' => $qb->getQuery()]);
         try {
-            $_a = $qb->getQuery();
-            $_b = $qb->getResultSet();
             $series = $qb->getResultSet()->getSeries();
         } catch (Throwable $e) {
             $this->logger->info($e->getMessage(), ['Exception' => $e]);
