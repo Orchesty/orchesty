@@ -16,13 +16,16 @@ export default function (initialState, composeWithDevTools) {
   const decoratedEngine = storageFilter(engine, [
     ['auth', 'user'],
     ['server', 'apiGateway'],
-    ['application', 'showSideBar']
+    ['application', 'showSideBar'],
+    ['application', 'pages']
   ]);
   const storageMiddleware = storage.createMiddleware(decoratedEngine, [], [
     types.USER_LOGGED,
     types.USER_LOGOUT,
     types.SERVER_API_GATEWAY_CHANGE,
-    types.LEFT_SIDEBAR_TOGGLE
+    types.LEFT_SIDEBAR_TOGGLE,
+    types.OPEN_PAGE,
+    types.CLOSE_PAGE
   ]);
 
   const middlewares = [thunkMiddleware, storageMiddleware];
@@ -35,12 +38,12 @@ export default function (initialState, composeWithDevTools) {
 
   const store = createStoreWithMiddleware(reducer, initialState);
 
-  router.init(store);
   apiGatewayServer.init(store);
 
   return new Promise((resolve, reject) => {
     storage.createLoader(engine)(store).then(
       () => {
+        router.init(store);
         resolve(store)
       }
     ).catch(

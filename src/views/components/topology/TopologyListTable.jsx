@@ -53,7 +53,7 @@ class TopologyListTable extends React.Component {
   }
 
   render() {
-    const {list, elements, listChangeFilter, openModal, clone, topologyDelete, publish, changeCategory, selectPage, list: {items}} = this.props;
+    const {list, elements, listChangeFilter, openModal, clone, topologyDelete, publish, changeCategory, openPage, list: {items}} = this.props;
 
     let rows = null;
     if (items){
@@ -62,7 +62,7 @@ class TopologyListTable extends React.Component {
           const menuItems = [
             {
               caption: 'Detail',
-              action: () => {selectPage('topology_detail', {topologyId: id});}
+              action: () => {openPage('topology_detail', {topologyId: id});}
             },
             {
               caption: 'Edit',
@@ -104,7 +104,7 @@ class TopologyListTable extends React.Component {
           }
           return (
             <tr key={item._id}>
-              <td><a href="#" onClick={e => {e.preventDefault(); selectPage('topology_detail', {topologyId: item._id});}}>{item.name}</a></td>
+              <td><a href="#" onClick={e => {e.preventDefault(); openPage('topology_detail', {topologyId: item._id});}}>{item.name}</a></td>
               <td>{item.version}</td>
               <td>{item.descr}</td>
               <td>{item.visibility}</td>
@@ -143,7 +143,7 @@ TopologyListTable.propTypes = {
   list: PropTypes.object.isRequired,
   elements: PropTypes.object.isRequired,
   openModal: PropTypes.func.isRequired,
-  selectPage: PropTypes.func.isRequired,
+  openPage: PropTypes.func.isRequired,
   needList: PropTypes.func.isRequired,
   listChangeSort: PropTypes.func,
   listChangePage: PropTypes.func,

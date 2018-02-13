@@ -10,7 +10,7 @@ import Page from 'wrappers/Page';
 
 function mapStateToProps(state, ownProps){
   const {authorization, process} = state;
-  const list = authorization.lists[ownProps.pageKey];
+  const list = authorization.lists[ownProps.componentKey];
   return {
     list: list,
     elements: authorization.elements,
@@ -19,11 +19,11 @@ function mapStateToProps(state, ownProps){
 }
 
 function mapActionsToProps(dispatch, ownProps){
-  const needList = forced => dispatch(authorizationActions.needAuthorizationList(ownProps.pageKey));
+  const needList = forced => dispatch(authorizationActions.needAuthorizationList(ownProps.componentKey));
   return {
     needList,
     notLoadedCallback: needList,
-    listChangePage: (page) => dispatch(authorizationActions.authorizationsListChangePage(ownProps.pageKey, page)),
+    listChangePage: (page) => dispatch(authorizationActions.authorizationsListChangePage(ownProps.componentKey, page)),
     editSettings: authorizationId => dispatch(applicationActions.openModal('authorization_settings_edit', {authorizationId})),
     authorize: authorizationId => dispatch(authorizationActions.authorize(authorizationId))
   }

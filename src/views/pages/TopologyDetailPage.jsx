@@ -25,8 +25,8 @@ function mapStateToProps(state, ownProps) {
 function mapActionsToProps(dispatch, ownProps){
   return {
     notLoadedCallback: () => dispatch(topologyActions.needTopology(ownProps.topologyId)),
-    onChangeTopology: id => dispatch(applicationActions.changePageArgs(Object.assign({}, ownProps, {topologyId: id}))),
-    onChangeTab: tabId => dispatch(applicationActions.changePageArgs(Object.assign({}, ownProps, {activeTab: tabId})))
+    onChangeTopology: id => dispatch(applicationActions.openPage('topology_detail', Object.assign({}, ownProps, {topologyId: id}))),
+    onChangeTab: tabId => dispatch(applicationActions.openPage('topology_detail', Object.assign({}, ownProps, {activeTab: tabId})))
   }
 }
 

@@ -10,7 +10,7 @@ import StateComponent from 'rootApp/views/wrappers/StateComponent';
 
 function mapStateToProps(state, ownProps){
   const {category} = state;
-  const tree = category.trees[ownProps.pageKey];
+  const tree = category.trees[ownProps.componentKey];
   return {
     state: tree && tree.state
   }
@@ -18,7 +18,7 @@ function mapStateToProps(state, ownProps){
 
 function mapActionsToProps(dispatch, ownProps){
   return {
-    notLoadedCallback: forced => dispatch(categoryActions.needCategoryTree(ownProps.pageKey, forced, ownProps.categoryId))
+    notLoadedCallback: forced => dispatch(categoryActions.needCategoryTree(ownProps.componentKey, forced, ownProps.categoryId))
   }
 }
 

@@ -26,7 +26,7 @@ export function login(data, processHash = 'default') {
     return serverRequest(dispatch, 'POST', '/user/login', null, data).then(response => {
       if (response){
         dispatch(userLogged(response));
-        dispatch(applicationActions.selectPage(config.params.mainPage));
+        dispatch(applicationActions.openPage(config.params.mainPage));
       }
       dispatch(processActions.finishProcess(processes.authLogin(processHash), response));
       return response;
@@ -36,7 +36,7 @@ export function login(data, processHash = 'default') {
 
 export function afterLogout() {
   return dispatch => {
-    dispatch(applicationActions.selectPage('login'));
+    dispatch(applicationActions.openPage('login'));
     dispatch(userLogout());
   }
 }
@@ -73,7 +73,7 @@ export function activate(token, processHash = 'default'){
     dispatch(processActions.startProcess(processes.authActivate(processHash)));
     return serverRequest(dispatch, 'POST', `/user/${token}/activate`).then(response => {
       if (response){
-        dispatch(applicationActions.selectPage('set_password', {token}));
+        dispatch(applicationActions.openPage('set_password', {token}));
         dispatch(notificationActions.addSuccess('You account was activated'));
       }
       dispatch(processActions.finishProcess(processes.authActivate(processHash), response));
@@ -98,7 +98,7 @@ export function setPassword(token, password, processHash = 'default') {
     dispatch(processActions.startProcess(processes.authSetPassword(processHash)));
     return serverRequest(dispatch, 'POST', `/user/${token}/set_password`, null, {password}).then(response => {
       if (response){
-        dispatch(applicationActions.selectPage('login'));
+        dispatch(applicationActions.openPage('login'));
         dispatch(notificationActions.addSuccess('Password was set'));
       }
       dispatch(processActions.finishProcess(processes.authSetPassword(processHash), response));
