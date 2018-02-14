@@ -35,6 +35,6 @@ phpstan:
 phpunit:
 	$(DE) php ./vendor/bin/phpunit -c phpunit.xml.dist --dont-report-useless-tests --colors --stderr tests
 
-init: docker-up composer-install
+init: docker-up-force composer-install
 
 test: docker-up-force composer-install codesniffer phpstan phpunit

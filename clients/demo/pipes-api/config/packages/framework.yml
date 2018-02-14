@@ -1,19 +1,15 @@
 framework:
-    translator: { fallbacks: ['%locale%'] }
     secret: '%secret%'
     router:
         strict_requirements: ~
     csrf_protection:
         enabled: false
-    templating:
-        engines: ['twig']
     default_locale: '%locale%'
     trusted_hosts: ~
     session:
         handler_id: hbpf.commons.session_handler
     fragments: ~
     http_method_override: true
-    assets: ~
-    test: ~
+    test: false
     php_errors:
         log: true
