@@ -1,8 +1,8 @@
 declare -A BRANCH_IMAGE_TAG_MAP=(
 
   # default tags
-  [MONOLITH_default]="symf-4"
-  [FRONTEND_default]="symf-4"
+  [MONOLITH_default]="dev"
+  [FRONTEND_default]="dev"
 
   # branch: perf
   [FRONTEND_perf]="perf"
