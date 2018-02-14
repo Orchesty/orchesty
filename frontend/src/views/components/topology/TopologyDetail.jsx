@@ -48,7 +48,7 @@ class TopologyDetail extends React.Component {
     const pageActions = [
       {
         caption: 'Nodes',
-        icon: 'fa fa-edit',
+        icon: 'fa fa-tasks',
         type: menuItemType.ACTION,
         action: () => onChangeTab('nodes'),
         color: activeTab == 'nodes' ? 'info' : 'default',
@@ -56,7 +56,7 @@ class TopologyDetail extends React.Component {
       },
       {
         caption: 'Schema',
-        icon: 'fa fa-tasks',
+        icon: 'fa fa-edit',
         type: menuItemType.ACTION,
         action: () => onChangeTab('schema'),
         color: activeTab == 'schema' ? 'info' : 'default',
