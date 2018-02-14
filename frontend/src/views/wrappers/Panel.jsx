@@ -37,7 +37,7 @@ export default (WrappedComponent, parameters) => {
     }
 
 		render() {
-			const {title, subTitle, icon, HeaderComponent, visible, toggleVisible, ...passProps} = this.props;
+			const {title, subTitle, icon, HeaderComponent, visible, toggleVisible, middleHeader, ...passProps} = this.props;
 			const {actions} = this.state;
 			const allActions = [...actions, {
 			  icon: 'fa fa-chevron-' + (visible ? 'up' : 'down'),
@@ -51,6 +51,7 @@ export default (WrappedComponent, parameters) => {
 						<h2>{icon && <span className={icon} aria-hidden="true" />} {title}
 							{subTitle && <small>{subTitle}</small>}
 						</h2>
+						{middleHeader}
 						<ActionIconPanel items={allActions}/>
             {HeaderComponent && <HeaderComponent {...passProps}/>}
 						<div className="clearfix" />

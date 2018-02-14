@@ -38,7 +38,7 @@ class TopologyDetail extends React.Component {
   }
 
   _sendActions(props){
-    const {topology, setActions, testTopology, edit, clone, publish, topologyDelete, topologyId, onChangeTab} = props;
+    const {topology, setActions, testTopology, edit, clone, publish, topologyDelete, topologyId, onChangeTab, activeTab} = props;
     const otherActions = {
       type: menuItemType.SUB_MENU,
       caption: '...',
@@ -51,7 +51,7 @@ class TopologyDetail extends React.Component {
         icon: 'fa fa-edit',
         type: menuItemType.ACTION,
         action: () => onChangeTab('nodes'),
-        color: 'default',
+        color: activeTab == 'nodes' ? 'info' : 'default',
         round: true
       },
       {
@@ -59,7 +59,7 @@ class TopologyDetail extends React.Component {
         icon: 'fa fa-tasks',
         type: menuItemType.ACTION,
         action: () => onChangeTab('schema'),
-        color: 'default',
+        color: activeTab == 'schema' ? 'info' : 'default',
         round: true
       },
       {
@@ -67,7 +67,7 @@ class TopologyDetail extends React.Component {
         icon: 'fa fa-area-chart',
         type: menuItemType.ACTION,
         action: () => onChangeTab('graphs'),
-        color: 'info',
+        color: activeTab == 'graphs' ? 'info' : 'default',
         round: true
       }
     ];
