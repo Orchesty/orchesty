@@ -1,5 +1,5 @@
 import {Message} from "amqplib";
-import {Db, DeleteWriteOpResultObject, MongoClient} from "mongodb";
+import {Db, DeleteWriteOpResultObject, MongoClient, MongoClientOptions} from "mongodb";
 import logger from "../../logger/Logger";
 import IMessageStorage from "./IMessageStorage";
 
@@ -115,7 +115,14 @@ class MongoMessageStorage implements IMessageStorage {
      * Created new mongodb connection
      */
     private createConnection(): void {
-        this.db = MongoClient.connect(`mongodb://${this.settings.host}/${this.settings.db}`)
+        const url = `mongodb://${this.settings.host}/${this.settings.db}`;
+        const options: MongoClientOptions = {
+            autoReconnect : true,
+            reconnectTries: Number.MAX_SAFE_INTEGER, // keep trying reconnect almost forever
+            reconnectInterval: 5000,
+        };
+
+        this.db = MongoClient.connect(url, options)
             .then((db: Db) => {
                 logger.info("MongoDb connection opened.", { node_id: "repeater" });
 
