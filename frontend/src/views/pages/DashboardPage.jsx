@@ -14,14 +14,14 @@ class DashboardPage extends React.Component {
   }
 
   render() {
-    const {selectPage, pageKey} = this.props;
+    const {openPage, componentKey} = this.props;
     return (
       <div className="right_col" role="main">
         <div className="main-page">
           <div>
             Welcome, continue to topology list <br/>
-            <a className="btn btn-primary" onClick={() => selectPage('topology_list')}>Go To Topology List</a>
-            <TestPanel componentKey={pageKey} title="Test panel" icon="fa fa-user"/>
+            <a className="btn btn-primary" onClick={() => openPage('topology_list')}>Go To Topology List</a>
+            <TestPanel componentKey={componentKey} title="Test panel" icon="fa fa-user"/>
           </div>
         </div>
       </div>
@@ -31,7 +31,7 @@ class DashboardPage extends React.Component {
 
 function mapActionsToProps(dispatch){
   return {
-    selectPage: type => dispatch(applicationActions.selectPage(type)),
+    openPage: type => dispatch(applicationActions.openPage(type)),
   }
 }
 

@@ -267,7 +267,7 @@ export function topologyDelete(id, redirectToList = false){
         if (response) {
           dispatch(invalidateLists());
           if (redirectToList){
-            dispatch(applicationActions.selectPage('topology_list'));
+            dispatch(applicationActions.openPage('topology_list'));
           }
           dispatch(remove(id));
         }

@@ -82,7 +82,7 @@ function mapStateToProps(state, ownProps) {
 function mapActionsToProps(dispatch, ownProps){
   return {
     register: email => dispatch(authActions.register(email, ownProps.componentKey)),
-    switchToLogin: () => dispatch(applicationActions.selectPage('login'))
+    switchToLogin: () => dispatch(applicationActions.openPage('login'))
   }
 }
 

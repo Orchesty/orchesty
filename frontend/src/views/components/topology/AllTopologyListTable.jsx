@@ -27,7 +27,7 @@ function mapActionsToProps(dispatch, ownProps){
     listChangeFilter: (filter) => dispatch(topologyActions.topologyListChangeFilter(ownProps.componentKey, filter)),
     openModal: (id, data) => dispatch(applicationActions.openModal(id, data)),
     openNewTopology: () => dispatch(applicationActions.openModal('topology_edit', {addNew: true})),
-    selectPage: (key, args) => dispatch(applicationActions.selectPage(key, args)),
+    openPage: (key, args) => dispatch(applicationActions.openPage(key, args)),
     clone: id => dispatch(topologyActions.cloneTopology(id)),
     topologyDelete: id => dispatch(applicationActions.openModal('topology_delete_dialog', {topologyId: id})),
     publish: id => dispatch(topologyActions.publishTopology(id)),

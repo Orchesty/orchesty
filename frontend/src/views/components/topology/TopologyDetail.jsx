@@ -38,7 +38,7 @@ class TopologyDetail extends React.Component {
   }
 
   _sendActions(props){
-    const {topology, setActions, testTopology, edit, clone, publish, topologyDelete, topologyId, onChangeTab} = props;
+    const {topology, setActions, testTopology, edit, clone, publish, topologyDelete, topologyId, onChangeTab, activeTab} = props;
     const otherActions = {
       type: menuItemType.SUB_MENU,
       caption: '...',
@@ -48,18 +48,18 @@ class TopologyDetail extends React.Component {
     const pageActions = [
       {
         caption: 'Nodes',
-        icon: 'fa fa-edit',
+        icon: 'fa fa-tasks',
         type: menuItemType.ACTION,
         action: () => onChangeTab('nodes'),
-        color: 'default',
+        color: activeTab == 'nodes' ? 'info' : 'default',
         round: true
       },
       {
         caption: 'Schema',
-        icon: 'fa fa-tasks',
+        icon: 'fa fa-edit',
         type: menuItemType.ACTION,
         action: () => onChangeTab('schema'),
-        color: 'default',
+        color: activeTab == 'schema' ? 'info' : 'default',
         round: true
       },
       {
@@ -67,7 +67,7 @@ class TopologyDetail extends React.Component {
         icon: 'fa fa-area-chart',
         type: menuItemType.ACTION,
         action: () => onChangeTab('graphs'),
-        color: 'info',
+        color: activeTab == 'graphs' ? 'info' : 'default',
         round: true
       }
     ];
@@ -125,14 +125,13 @@ class TopologyDetail extends React.Component {
   }
 
   render() {
-    const {topologyId, activeTab, setActions, topology, onChangeTopology, pageKey, metricsRange, interval} = this.props;
+    const {topologyId, activeTab, setActions, topology, onChangeTopology, componentKey, metricsRange, interval, setPageArgs} = this.props;
     const schemaVisible = activeTab == 'schema';
     return (
       <div className="topology-detail">
-
         <div className="tab-content">
-          {activeTab == 'nodes' && <TopologyNodeMetricsContainer topologyId={topologyId} componentKey={pageKey} metricsRange={metricsRange} />}
-          {activeTab == 'graphs' && <TopologyNodeGraphsContainer topologyId={topologyId} componentKey={pageKey} metricsRange={metricsRange} interval={interval} />}
+          {activeTab == 'nodes' && <TopologyNodeMetricsContainer setPageArgs={setPageArgs} topologyId={topologyId} componentKey={componentKey} metricsRange={metricsRange} />}
+          {activeTab == 'graphs' && <TopologyNodeGraphsContainer topologyId={topologyId} componentKey={componentKey} metricsRange={metricsRange} interval={interval} />}
           <div className={'schema-wrapper' + ( schemaVisible ? '' : ' hidden')}>
             <TopologySchema
               schemaId={topologyId}

@@ -1,5 +1,4 @@
 import * as types from 'rootApp/actionTypes';
-import config from 'rootApp/config';
 
 export function leftSidebarToggle() {
   return {
@@ -7,23 +6,29 @@ export function leftSidebarToggle() {
   }
 }
 
-export function setPageData(data){
+export function openPage(key, args = null){
+  if (!key){
+    throw new Error('openPage action: Missing page key');
+  }
   return {
-    type: types.SET_PAGE_DATA,
-    data
+    type: types.OPEN_PAGE,
+    key,
+    args
   }
 }
 
-export function selectPage(key, args = null, data = null){
-  const page = config.pages[key];
-  if (page && page.defaultArgs){
-    args = Object.assign({}, page.defaultArgs, args);
+export function closePage(id, newId){
+  return {
+    type: types.CLOSE_PAGE,
+    id,
+    newId
   }
+}
+
+export function selectPage(id){
   return {
     type: types.SELECT_PAGE,
-    key,
-    args,
-    data
+    id
   }
 }
 
@@ -38,19 +43,6 @@ export function openModal(id, data){
 export function closeModal(){
   return {
     type: types.MODAL_CLOSE
-  }
-}
-
-export function changePageArgs(args) {
-  return (dispatch, getState) => {
-    return dispatch(selectPage(getState().application.selectedPage.key, args));
-  }
-}
-
-export function setPageArgs(args) {
-  return (dispatch, getState) => {
-    const page = getState().application.selectedPage;
-    return dispatch(selectPage(page.key, Object.assign({}, page.args, args)));
   }
 }
 

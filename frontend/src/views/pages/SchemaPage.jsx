@@ -9,7 +9,7 @@ import TopologySchema from 'components/topology/TopologySchema';
 
 function mapActionsToProps(dispatch, ownProps){
   return {
-    onChangeTopology: id => dispatch(applicationActions.changePageArgs(Object.assign({}, ownProps, {schemaId: id})))
+    onChangeTopology: id => dispatch(applicationActions.openPage('topology_schema', Object.assign({}, ownProps, {schemaId: id})))
   }
 }
 

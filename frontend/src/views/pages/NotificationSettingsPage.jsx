@@ -13,7 +13,7 @@ function mapStateToProps(state, ownProps) {
     initialValues: notificationSettings.data,
     state: notificationSettings.state,
     pageTitle: 'Notification settings',
-    form: ownProps.pageKey,
+    form: ownProps.componentKey,
     processId: processes.notificationSettingsUpdate()
   }
 }

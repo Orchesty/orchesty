@@ -21,7 +21,7 @@ class ProcessChart extends React.Component {
 }
 
 ProcessChart.propTypes = {
-  requests: PropTypes.object.isRequired
+  requests: PropTypes.oneOfType([PropTypes.object, PropTypes.array]).isRequired
 };
 
 export default ProcessChart;

@@ -218,9 +218,9 @@ function mapActionsToProps(dispatch, ownProps){
     searchAction: searchStr => dispatch(generalSearchActions.search(searchStr)),
     clearAction: () => dispatch(generalSearchActions.clear()),
     redirectActions: {
-      topologyGroup: id => dispatch(applicationActions.selectPage('topology_detail', {topologyId: id})),
+      topologyGroup: id => dispatch(applicationActions.openPage('topology_detail', {topologyId: id})),
       category: id => {
-        dispatch(applicationActions.selectPage('topology_list', {categoryId: id}));
+        dispatch(applicationActions.openPage('topology_list', {categoryId: id}));
         dispatch(categoryActions.treeItemClick('topology_list', id, () => {
           dispatch(topologyActions.refreshList('topology_list'))
         }));
