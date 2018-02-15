@@ -1,0 +1,10 @@
+---
+version: '3'
+
+services:
+    topology-generator:
+        image: golang:latest
+        working_dir: /go/src/hanaboso.com/topologygenerator
+        volumes:
+          - ../:/go/src/hanaboso.com/
+        command: bash -c 'sleep infinity'

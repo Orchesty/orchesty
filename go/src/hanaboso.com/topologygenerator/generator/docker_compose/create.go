@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"hanaboso.com/topologygenerator/generator"
 	"hanaboso.com/utils/topology"
-	str "hanaboso.com/utils/string"
+	str "hanaboso.com/utils/strings"
 	"gopkg.in/yaml.v2"
 	"hanaboso.com/utils/servicename"
 )
