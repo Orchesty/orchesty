@@ -4,10 +4,10 @@ import config from 'rootApp/config';
 import * as applicationActions from 'actions/applicationActions';
 import objectEquals from 'utils/objectEquals';
 
-var unsubscribe = null;
-var prevSelectedPage = null;
-var historyIndex = 0;
-var routerAction = false;
+let unsubscribe = null;
+let prevSelectedPage = null;
+let historyIndex = 0;
+let routerAction = false;
 
 function processUrl(store, path, query){
   let pageKey = '';
@@ -33,10 +33,9 @@ function processUrl(store, path, query){
 
   try {
     routerAction = true;
-    store.dispatch(applicationActions.selectPage(
+    store.dispatch(applicationActions.openPage(
       pageKey,
-      pageData && pageData.hasOwnProperty('args') ? pageData.args : null,
-      pageData && pageData.hasOwnProperty('data') ? pageData.data : null
+      pageData && pageData.hasOwnProperty('args') ? pageData.args : null
     ));
   } finally {
     routerAction = false;
@@ -91,11 +90,12 @@ export function init (store){
 
   processUrl(store, path, qs.parse(window.location.search));
 
-  prevSelectedPage = store.getState().application.selectedPage;
+  const application = store.getState().application;
+  prevSelectedPage = application.pages[application.selectedPage];
 
   unsubscribe = store.subscribe(() => {
     const state = store.getState();
-    const selectedPage = state.application.selectedPage;
+    const selectedPage = state.application.pages[state.application.selectedPage];
     if (!objectEquals(selectedPage, prevSelectedPage)){
       refreshUrlHistory(selectedPage);
       prevSelectedPage = selectedPage;

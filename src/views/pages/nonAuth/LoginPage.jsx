@@ -89,8 +89,8 @@ function mapStateToProps(state, ownProps) {
 function mapActionsToProps(dispatch, ownProps){
   return {
     login: data => dispatch(authActions.login(data, ownProps.componentKey)),
-    switchToRegistration: () => dispatch(applicationActions.selectPage('registration')),
-    switchToResetPassword: () => dispatch(applicationActions.selectPage('reset_password'))
+    switchToRegistration: () => dispatch(applicationActions.openPage('registration')),
+    switchToResetPassword: () => dispatch(applicationActions.openPage('reset_password'))
   }
 }
 

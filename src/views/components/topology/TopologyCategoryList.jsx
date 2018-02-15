@@ -33,17 +33,17 @@ class TopologyCategoryList extends React.Component {
   }
 
   render() {
-    const {pageKey} = this.props;
+    const {componentKey} = this.props;
     const topologyFilter = {
       category: {
         type: filterType.EXACT_NULL,
-        storedValue: ['category', 'trees', pageKey, 'selectedId'],
+        storedValue: ['category', 'trees', componentKey, 'selectedId'],
         property: 'category'
       }
     };
     return (
       <div className="topology-category-list">
-        <CategoryTreeView componentKey={pageKey} onSelect={this.categorySelected}/>
+        <CategoryTreeView componentKey={componentKey} onSelect={this.categorySelected}/>
         <div className="topology-sub-page">
           <div className="sub-page-title">
             <div className="pull-right">
@@ -51,7 +51,7 @@ class TopologyCategoryList extends React.Component {
             </div>
           </div>
           <div className="sub-page-content">
-            <AllTopologyListTable componentKey={pageKey} filter={topologyFilter}/>
+            <AllTopologyListTable componentKey={componentKey} filter={topologyFilter}/>
           </div>
         </div>
       </div>
@@ -63,7 +63,7 @@ TopologyCategoryList.propTypes = {};
 
 function mapStateToProps(state, ownProps) {
   const {category} = state;
-  const tree = category.trees[ownProps.pageKey];
+  const tree = category.trees[ownProps.componentKey];
   return {
     categoryId: tree ? tree.selectedId : null
   }
@@ -71,7 +71,7 @@ function mapStateToProps(state, ownProps) {
 
 function mapActionsToProps(dispatch, ownProps){
   return {
-    refreshList: () => dispatch(topologyActions.refreshList(ownProps.pageKey)),
+    refreshList: () => dispatch(topologyActions.refreshList(ownProps.componentKey)),
     openNewTopology: categoryId => dispatch(applicationActions.openModal('topology_edit', {addNew: true, categoryId})),
   }
 }

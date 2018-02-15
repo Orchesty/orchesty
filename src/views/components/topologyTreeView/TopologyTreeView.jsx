@@ -58,7 +58,7 @@ function mapActionsToProps(dispatch, ownProps){
       dispatch(topologyActions.needTopologyList('complete'));
     },
     toggleCategory: id => dispatch(categoryActions.treeToggle(ownProps.componentKey, id)),
-    openTopology: id => dispatch(applicationActions.selectPage('topology_detail', {topologyId: id})),
+    openTopology: id => dispatch(applicationActions.openPage('topology_detail', {topologyId: id})),
     openContextMenu: (id, type, x, y) => {
       switch (type){
         case 'category':
@@ -66,7 +66,7 @@ function mapActionsToProps(dispatch, ownProps){
         case 'topology':
           return dispatch(applicationActions.openContextMenu('TopologyFileContextMenu', {topologyId: id}, ownProps.componentKey, x, y));
         default:
-          throw Error(`Unknown type [${type}]`);
+          throw new Error(`Unknown type [${type}]`);
       }
     }
   }

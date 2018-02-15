@@ -1,42 +1,31 @@
 import React from 'react'
 import { connect } from 'react-redux';
 
+import * as pages from 'pages/pages';
 import Error404Page from 'pages/Error404Page';
-import DashboardPage from 'pages/DashboardPage';
-import TopologyListPage from 'pages/TopologyListPage';
-import TopologyDetailPage from 'pages/TopologyDetailPage';
-import SchemaPage from 'pages/SchemaPage';
-import AuthorizationListPage from 'pages/AuthorizationListPage';
-import NotificationSettingsPage from 'pages/NotificationSettingsPage';
+import * as applicationActions from 'actions/applicationActions';
 
-class ActivePage extends React.Component {
-  render() {
-    const {page} = this.props;
-    switch (page.key){
-      case 'dashboard':
-        return <DashboardPage pageKey={page.key} {...page.args}/>;
-      case 'topology_list_all':
-        return <TopologyListPage pageKey={page.key} {...page.args}/>;
-      case 'topology_detail':
-        return <TopologyDetailPage pageKey={page.key} {...page.args}/>;
-      case 'topology_schema':
-        return <SchemaPage pageKey={page.key} {...page.args}/>;
-      case 'authorization_list':
-        return <AuthorizationListPage pageKey={page.key} {...page.args}/>;
-      case 'notification_settings':
-        return <NotificationSettingsPage pageKey={page.key} {...page.args}/>;
-      default:
-        return <Error404Page />;
-    }
-  }
-}
+const ActivePage = ({page, setPageArgs}) => page && page.key ? React.createElement(pages[page.key], {
+  componentKey: page.key,
+  setPageArgs: setPageArgs.bind(null, page),
+  ...page.args
+}) : <Error404Page />;
+
+
+ActivePage.displayName = 'ActivePage';
 
 function mapStateToProps(state){
   const {application} = state;
 
   return {
-    page: application.selectedPage
+    page: application.pages[application.selectedPage]
   }
 }
 
-export default connect(mapStateToProps)(ActivePage);
+function mapActionsToProps(dispatch, ownProps){
+  return {
+    setPageArgs: (page, newArgs) => dispatch(applicationActions.openPage(page.key, Object.assign({}, page.args, newArgs)))
+  }
+}
+
+export default connect(mapStateToProps, mapActionsToProps)(ActivePage);

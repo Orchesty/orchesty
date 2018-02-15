@@ -30,16 +30,46 @@ class TopologyMetrics extends React.Component {
 
 TopologyMetrics.propTypes = {};
 
+function getTopologyState(topology){
+  if (topology.visibility === 'draft'){
+    return {
+      label: 'default',
+      title: 'Draft'
+    };
+  } else if (topology.visibility === 'public'){
+    if (topology.enabled){
+      return {
+        label: 'success',
+        title: 'Enabled'
+      }
+    } else {
+      return {
+        label: 'warning',
+        title: 'Disabled'
+      }
+    }
+  } else {
+    return {
+      label: 'danger',
+      title: 'Invalid state'
+    }
+  }
+}
+
 function mapStateToProps(state, ownProps){
   const {metrics, topology} = state;
   let key = ownProps.topologyId;
   key = ownProps.interval ? `${key}[${ownProps.interval}]` : key;
   key = ownProps.metricsRange ? `${key}[${ownProps.metricsRange.since}-${ownProps.metricsRange.till}]` : key;
   const metricsElement = metrics.topologies[key];
+  const topologyElement = topology.elements[ownProps.topologyId];
+  const topologyState = getTopologyState(topologyElement);
+
   return {
     state: metricsElement && metricsElement.state,
     metrics: metricsElement,
-    title: topology.elements[ownProps.topologyId].name,
+    title: `${topologyElement.name}.v${topologyElement.version}`,
+    middleHeader: <div className="middle-label"><span className={'label label-' + topologyState.label}>{topologyState.title}</span></div>
   }
 }
 
