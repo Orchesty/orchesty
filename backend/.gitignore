@@ -1,5 +1,0 @@
-.env
-.idea
-/vendor
-/var
-/app/bootstrap.php.cache
