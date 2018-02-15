@@ -51,7 +51,7 @@ multi-probe-image:
 limiter-image:
   stage: stage1
   script:
-    - cd $REPO_ROOT/go/src/hanaboso.com/limiter
+    - cd $REPO_ROOT/clients/clever-connectors/go/src/clever-monitor.com/limiter
     - IMAGE=dkr.hanaboso.net/pipes/pipes/limiter:${CI_BUILD_REF_NAME}
     - cd ../ && docker build -t ${IMAGE} -f ./limiter/Dockerfile .
     - docker push ${IMAGE}
@@ -239,7 +239,7 @@ cleanup:
     - docker-compose down -v || echo "bridge cleanup phase failed"
 
     - ": limiter"
-    - cd $REPO_ROOT/go/src/hanaboso.com/limiter
+    - cd $REPO_ROOT/clients/clever-connectors/go/src/clever-monitor.com/limiter
     - export COMPOSE_PROJECT_NAME="p${CI_PIPELINE_ID}-go"
     - export COMPOSE_FILE=docker-compose.ci.yml
     - make ${COMPOSE_FILE}
