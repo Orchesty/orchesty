@@ -18,3 +18,6 @@ go-test:
 ci-test:
 	docker-compose up -d
 	docker-compose exec topology-generator make install-deps go-test
+
+run:
+	go run *.go
