@@ -72,7 +72,7 @@ limiter-image:
 limiter-test:
   stage: stage2
   script:
-    - DIR=/clients/clever-connectors/go/src/clever-monitor.com/limiter
+    - DIR=clients/clever-connectors/go/src/clever-monitor.com/limiter
     - skip_unmodified $DIR
     - cd $REPO_ROOT/$DIR
     - export COMPOSE_PROJECT_NAME="p${CI_PIPELINE_ID}-go"
