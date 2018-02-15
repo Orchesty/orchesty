@@ -1,0 +1,24 @@
+---
+version: '3'
+
+services:
+  rabbitmq:
+    image: rabbitmq:management-alpine
+    ports:
+      - ${DEV_IP}:15672:15672
+      - ${DEV_IP}:5672:5672
+  mongodb:
+    image: mongo
+    ports:
+      - ${DEV_IP}:27017:27017
+  logstash:
+    image: kedlas/udplogger:latest
+    ports:
+      - ${DEV_IP}:5120:4444/udp
+
+  limiter:
+    image: golang:latest
+    working_dir: /go/src/clever-monitor.com/limiter
+    volumes:
+      - ../:/go/src/clever-monitor.com
+    command: bash -c 'sleep infinity'
