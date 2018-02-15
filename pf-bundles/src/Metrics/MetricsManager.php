@@ -359,7 +359,10 @@ class MetricsManager implements LoggerAwareInterface
         }
 
         if ($dateFrom && $dateTo) {
-            $qb->setTimeRange((new DateTime($dateFrom))->getTimestamp(), (new DateTime($dateTo))->getTimestamp());
+            $qb->setTimeRange(
+                (new DateTime($dateFrom))->getTimestamp(),
+                (new DateTime($dateTo))->modify('+ 1 Day')->getTimestamp()
+            );
         }
         $this->logger->info('Metrics was selected.', ['Query' => $qb->getQuery()]);
         try {
