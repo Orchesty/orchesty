@@ -20,4 +20,5 @@ ci-test:
 	docker-compose exec topology-generator make install-deps go-test
 
 run:
+	export DOCKER_API_VERSION=1.30
 	go run *.go

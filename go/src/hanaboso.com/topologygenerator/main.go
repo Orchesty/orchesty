@@ -24,9 +24,6 @@ func main() {
 
 	defer handler.Close()
 
-	//RabbitMQ consumers
-	//go rabbitmq.Consumers()
-
 	var routes = router.Routes{
 		router.Route{
 			Name:        "TopologyGenerate",
