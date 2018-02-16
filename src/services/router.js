@@ -33,7 +33,6 @@ function processUrl(store, path, query){
 
   try {
     routerAction = true;
-    console.log(pageKey);
     store.dispatch(applicationActions.openPage(
       pageKey,
       pageData && pageData.hasOwnProperty('args') ? pageData.args : null
