@@ -73,8 +73,8 @@ function mapActionsToProps(dispatch, ownProps){
       needNodeList(false);
       needMetricsList(false);
     },
-    changeMetricsRange: (since, till) => dispatch(applicationActions.setPageArgs({metricsRange: {since, till}})),
-    changeMetricsInterval: interval => dispatch(applicationActions.setPageArgs({interval}))
+    changeMetricsRange: (since, till) => dispatch(applicationActions.setPageArgs(ownProps.pageId, {metricsRange: {since, till}})),
+    changeMetricsInterval: interval => dispatch(applicationActions.setPageArgs(ownProps.pageId, {interval}))
   }
 }
 

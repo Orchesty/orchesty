@@ -125,13 +125,13 @@ class TopologyDetail extends React.Component {
   }
 
   render() {
-    const {topologyId, activeTab, setActions, topology, onChangeTopology, componentKey, metricsRange, interval, setPageArgs} = this.props;
+    const {topologyId, activeTab, setActions, topology, onChangeTopology, componentKey, metricsRange, interval, pageId} = this.props;
     const schemaVisible = activeTab == 'schema';
     return (
       <div className="topology-detail">
         <div className="tab-content">
-          {activeTab == 'nodes' && <TopologyNodeMetricsContainer setPageArgs={setPageArgs} topologyId={topologyId} componentKey={componentKey} metricsRange={metricsRange} />}
-          {activeTab == 'graphs' && <TopologyNodeGraphsContainer topologyId={topologyId} componentKey={componentKey} metricsRange={metricsRange} interval={interval} />}
+          {activeTab == 'nodes' && <TopologyNodeMetricsContainer pageId={pageId} topologyId={topologyId} componentKey={componentKey} metricsRange={metricsRange} />}
+          {activeTab == 'graphs' && <TopologyNodeGraphsContainer pageId={pageId} topologyId={topologyId} componentKey={componentKey} metricsRange={metricsRange} interval={interval} />}
           <div className={'schema-wrapper' + ( schemaVisible ? '' : ' hidden')}>
             <TopologySchema
               schemaId={topologyId}
@@ -156,6 +156,7 @@ TopologyDetail.defaultProps = {
 TopologyDetail.propTypes = {
   topologyId: PropTypes.string.isRequired,
   topology: PropTypes.object,
+  pageId: PropTypes.string.isRequired,
   activeTab: PropTypes.string.isRequired,
   onChangeTab: PropTypes.func.isRequired,
   setActions: PropTypes.func.isRequired,
