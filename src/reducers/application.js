@@ -16,7 +16,7 @@ export default (state = initialState, action) => {
   switch (action.type){
     case types.OPEN_PAGE:
       const id = getPageId(action.key, action.args);
-      if (!state.pages[id] || !objectEquals(state.pages[id].args, action.args)) {
+      if (id && (!state.pages[id] || !objectEquals(state.pages[id].args, action.args))) {
         return Object.assign({}, state, {
           selectedPage: id,
           pages: Object.assign({}, state.pages, {
