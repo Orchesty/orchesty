@@ -46,12 +46,23 @@
     "symfony/monolog-bundle": "^3.1",
     "symfony/security-bundle": "^4.0",
     "symfony/twig-bundle": "^4.0",
-    "symfony/yaml": "^4.0"
+    "symfony/yaml": "^4.0",
+    "hanaboso/email-service-bundle": "1.0.0",
+    "symfony/lts": "^4@dev",
+    "symfony/intl": "^4.0",
+    "symfony/serializer": "^4.0"
   },
   "require-dev": {
     "hanaboso/php-check-utils": "^1.0",
     "phpunit/phpunit": "^7.0",
     "symfony/debug-bundle": "^4.0",
     "symfony/web-profiler-bundle": "^4.0"
-  }
+  },
+  "repositories": [
+    {
+      "type": "git",
+      "url": "git@gitlab.hanaboso.net:hanaboso/email-service-bundle.git"
+    }
+  ]
+
 }

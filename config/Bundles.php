@@ -1,6 +1,7 @@
 <?php
 
 use Doctrine\Bundle\MongoDBBundle\DoctrineMongoDBBundle;
+use EmailServiceBundle\EmailServiceBundle;
 use FOS\RestBundle\FOSRestBundle;
 use Hanaboso\PipesFramework\HbPFAclBundle\HbPFAclBundle;
 use Hanaboso\PipesFramework\HbPFApiGatewayBundle\HbPFApiGatewayBundle;
@@ -10,7 +11,6 @@ use Hanaboso\PipesFramework\HbPFConfiguratorBundle\HbPFConfiguratorBundle;
 use Hanaboso\PipesFramework\HbPFConnectorBundle\HbPFConnectorBundle;
 use Hanaboso\PipesFramework\HbPFCustomNodeBundle\HbPFCustomNodeBundle;
 use Hanaboso\PipesFramework\HbPFJoinerBundle\HbPFJoinerBundle;
-use Hanaboso\PipesFramework\HbPFMailerBundle\HbPFMailerBundle;
 use Hanaboso\PipesFramework\HbPFMapperBundle\HbPFMapperBundle;
 use Hanaboso\PipesFramework\HbPFMetricsBundle\HbPFMetricsBundle;
 use Hanaboso\PipesFramework\HbPFNotificationBundle\HbPFNotificationBundle;
@@ -31,6 +31,7 @@ return [
     Symfony\Bundle\TwigBundle\TwigBundle::class                          => ['all' => TRUE],
     Symfony\Bundle\DebugBundle\DebugBundle::class                        => ['dev' => TRUE, 'test' => TRUE],
     Symfony\Bundle\WebProfilerBundle\WebProfilerBundle::class            => ['dev' => TRUE, 'test' => TRUE],
+    Symfony\Bundle\SwiftmailerBundle\SwiftmailerBundle::class            => ['all' => TRUE],
     DoctrineMongoDBBundle::class                                         => ['all' => TRUE],
     FOSRestBundle::class                                                 => ['all' => TRUE],
     JMSSerializerBundle::class                                           => ['all' => TRUE],
@@ -50,5 +51,5 @@ return [
     HbPFRabbitMqBundle::class      => ['all' => TRUE],
     HbPFMetricsBundle::class       => ['all' => TRUE],
     HbPFNotificationBundle::class  => ['all' => TRUE],
-
+    EmailServiceBundle::class      => ['all' => TRUE],
 ];

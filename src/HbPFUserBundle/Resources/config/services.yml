@@ -26,7 +26,7 @@ services:
             - '@security.encoder_factory.generic'
             - '@event_dispatcher'
             - '@hbpf.user.provider.resource'
-            - '@rabbit-mq.producer.pipes.messages'
+            - '@hbpf.user.mailer'
             - '%activateLink%'
 
     hbpf.user.manager.security:
@@ -49,3 +49,19 @@ services:
         class: Hanaboso\PipesFramework\HbPFUserBundle\Provider\ResourceProvider
         arguments:
             - '%db_res%'
+
+    hbpf.user.mailer:
+        class: Hanaboso\PipesFramework\User\Model\Mailer\Mailer
+        arguments:
+            - '@rabbit-mq.producer.pipes.messages'
+            - '@EmailServiceBundle\Handler\MailHandler'
+            - '%mailer_from%'
+            - '%mailer_async%'
+            - '%mailer_builder_id%'
+
+    EmailServiceBundle\Transport\Impl\SwiftMailerTransport:
+        class: EmailServiceBundle\Transport\Impl\SwiftMailerTransport
+        arguments:
+            - '@swiftmailer.mailer.default'
+        calls:
+            - ['setLogger', ['@monolog.logger.mailer']]
