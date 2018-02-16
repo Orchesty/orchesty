@@ -1,6 +1,5 @@
 parameters:
-    # @todo better solutio
-    public.services: true
+    public.services: false
 
     locale: en
     secret: ThisTokenIsNotSoSecretChangeIt
