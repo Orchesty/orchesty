@@ -33,6 +33,7 @@ function processUrl(store, path, query){
 
   try {
     routerAction = true;
+    console.log(pageKey);
     store.dispatch(applicationActions.openPage(
       pageKey,
       pageData && pageData.hasOwnProperty('args') ? pageData.args : null
@@ -76,7 +77,7 @@ function refreshUrlHistory(selectedPage){
 function getClearUrl(rawUrl){
   if (config.params.urlPrefix){
     if (rawUrl.startsWith(config.params.urlPrefix)) {
-      return rawUrl.substring(config.params.urlPrefix.length);
+      return rawUrl.substring(config.params.urlPrefix.length) || '/';
     } else {
       return null;
     }

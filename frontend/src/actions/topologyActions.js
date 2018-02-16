@@ -14,6 +14,7 @@ import * as topologyGroupActions from './topologyGroupActions';
 import {listType, stateType} from 'rootApp/types';
 import filterCallback from 'rootApp/utils/filterCallback';
 import nestedValue from 'rootApp/utils/nestedValue';
+import {getPageId} from 'rootApp/utils/pageUtils';
 
 const {createPaginationList, createCompleteList, listLoading, listError, listReceive, listDelete, listChangeSort, listChangePage, listChangeFilter, invalidateLists} = listFactory('TOPOLOGY/LIST/');
 
@@ -267,7 +268,7 @@ export function topologyDelete(id, redirectToList = false){
         if (response) {
           dispatch(invalidateLists());
           if (redirectToList){
-            dispatch(applicationActions.openPage('topology_list'));
+            dispatch(applicationActions.closePage(getPageId('topology_detail', {topologyId: id})));
           }
           dispatch(remove(id));
         }
