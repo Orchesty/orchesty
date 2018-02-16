@@ -2676,25 +2676,21 @@
         },
         {
             "name": "paragonie/sodium_compat",
-            "version": "v1.5.6",
+            "version": "v1.6.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/paragonie/sodium_compat.git",
-                "reference": "ca9d0656dbd6e6f7b23675ff7abd90d5e9cea054"
+                "reference": "1f6e5682eff4a5a6a394b14331a1904f1740e432"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/paragonie/sodium_compat/zipball/ca9d0656dbd6e6f7b23675ff7abd90d5e9cea054",
-                "reference": "ca9d0656dbd6e6f7b23675ff7abd90d5e9cea054",
+                "url": "https://api.github.com/repos/paragonie/sodium_compat/zipball/1f6e5682eff4a5a6a394b14331a1904f1740e432",
+                "reference": "1f6e5682eff4a5a6a394b14331a1904f1740e432",
                 "shasum": ""
             },
             "require": {
                 "paragonie/random_compat": "^1|^2",
                 "php": "^5.2.4|^5.3|^5.4|^5.5|^5.6|^7"
-            },
-            "provide": {
-                "ext-libsodium": "*",
-                "ext-sodium": "*"
             },
             "require-dev": {
                 "phpunit/phpunit": "^3|^4|^5"
@@ -2758,7 +2754,7 @@
                 "secret-key cryptography",
                 "side-channel resistant"
             ],
-            "time": "2018-01-30T13:19:20+00:00"
+            "time": "2018-02-15T05:50:20+00:00"
         },
         {
             "name": "php-http/client-common",
@@ -6480,16 +6476,16 @@
         },
         {
             "name": "phpunit/phpunit-mock-objects",
-            "version": "6.0.0",
+            "version": "6.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit-mock-objects.git",
-                "reference": "e495e5d3660321b62c294d8c0e954d02d6ce2573"
+                "reference": "e3249dedc2d99259ccae6affbc2684eac37c2e53"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit-mock-objects/zipball/e495e5d3660321b62c294d8c0e954d02d6ce2573",
-                "reference": "e495e5d3660321b62c294d8c0e954d02d6ce2573",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit-mock-objects/zipball/e3249dedc2d99259ccae6affbc2684eac37c2e53",
+                "reference": "e3249dedc2d99259ccae6affbc2684eac37c2e53",
                 "shasum": ""
             },
             "require": {
@@ -6532,7 +6528,7 @@
                 "mock",
                 "xunit"
             ],
-            "time": "2018-02-01T13:11:13+00:00"
+            "time": "2018-02-15T05:27:38+00:00"
         },
         {
             "name": "sebastian/code-unit-reverse-lookup",
@@ -7099,16 +7095,16 @@
         },
         {
             "name": "slevomat/coding-standard",
-            "version": "4.4.5",
+            "version": "4.4.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/slevomat/coding-standard.git",
-                "reference": "2a24b1ba0c68a834fa4fc6b28cc8233119590717"
+                "reference": "861e7b55d348c81a9dd0b3655dbbc83076d60c05"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/slevomat/coding-standard/zipball/2a24b1ba0c68a834fa4fc6b28cc8233119590717",
-                "reference": "2a24b1ba0c68a834fa4fc6b28cc8233119590717",
+                "url": "https://api.github.com/repos/slevomat/coding-standard/zipball/861e7b55d348c81a9dd0b3655dbbc83076d60c05",
+                "reference": "861e7b55d348c81a9dd0b3655dbbc83076d60c05",
                 "shasum": ""
             },
             "require": {
@@ -7135,7 +7131,7 @@
                 "MIT"
             ],
             "description": "Slevomat Coding Standard for PHP_CodeSniffer complements Consistence Coding Standard by providing sniffs with additional checks.",
-            "time": "2018-02-09T21:17:33+00:00"
+            "time": "2018-02-15T17:13:28+00:00"
         },
         {
             "name": "squizlabs/php_codesniffer",
