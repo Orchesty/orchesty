@@ -32,6 +32,16 @@ export function selectPage(id){
   }
 }
 
+export function setPageArgs(id, args){
+  return (dispatch, getState) => {
+    const page = getState().application.pages[id];
+    if (!page){
+      throw new Error(`Page [${id}] not found.`);
+    }
+    return dispatch(openPage(page.key, Object.assign({}, page.args, args)));
+  }
+}
+
 export function openModal(id, data){
   return {
     type: types.MODAL_OPEN,

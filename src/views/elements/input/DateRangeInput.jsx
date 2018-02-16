@@ -29,7 +29,7 @@ class DateRangeInput extends React.Component {
     const {label, input, readOnly, meta: {touched, error} = {}, value} = this.props;
     const valueStr = typeof value == 'object' ? `${value.since} - ${value.till}` : value;
     return (
-      <DateRangePicker ranges={ranges} opens="left" onApply={this.datePickerChanged}>
+      <DateRangePicker ranges={ranges} opens="left" onApply={this.datePickerChanged} startDate={value ? value.since : undefined} endDate={value ? value.till : undefined}>
         <input type="text" className={'form-control' + (touched && error ? ' parsley-error' : '')} onChange={()=>{}} value={valueStr} {...input} readOnly={readOnly}/>
       </DateRangePicker>
     );
