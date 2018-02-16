@@ -251,6 +251,7 @@ class MetricsManager implements LoggerAwareInterface
      * @param array    $params
      *
      * @return array
+     * @throws MetricsException
      */
     public function getTopologyProcessTimeMetrics(Topology $topology, array $params): array
     {
@@ -284,43 +285,20 @@ class MetricsManager implements LoggerAwareInterface
 
         $dateFrom = $params['from'] ?? NULL;
         $dateTo   = $params['to'] ?? NULL;
+        $groupBy  = sprintf(
+            'TIME(%s)',
+            (new MetricsIntervalEnum($params['interval'] ?? MetricsIntervalEnum::DAY))->getValue()
+        );
 
-        $queryBuilder = $this->client->getQueryBuilder()
-            ->select('COUNT(*) AS count')
-            ->from($this->counterTable)
-            ->where([sprintf("%s = '%s'", self::TOPOLOGY, $topology->getId())])
-            ->groupBy(sprintf(
-                'TIME(%s)',
-                (new MetricsIntervalEnum($params['interval'] ?? MetricsIntervalEnum::DAY))->getValue()
-            ));
-
-        if (isset($params['from']) && isset($params['to'])) {
-            $queryBuilder->setTimeRange(
-                (new DateTime($dateFrom))->getTimestamp(),
-                (new DateTime($dateTo))->getTimestamp()
-            );
-        } elseif (isset($params['from'])) {
-            $queryBuilder->setTimeRange((new DateTime($dateFrom))->getTimestamp(), (new DateTime())->getTimestamp());
-        } elseif (isset($params['to'])) {
-            $queryBuilder->setTimeRange(0, (new DateTime($dateTo))->getTimestamp());
-        } else {
-            $queryBuilder->setTimeRange(0, (new DateTime())->getTimestamp());
-        }
-
-        $this->logger->info('Metrics was selected.', ['Query' => $queryBuilder->getQuery()]);
-        try {
-            $series = $queryBuilder->getResultSet()->getSeries();
-        } catch (Throwable $e) {
-            $this->logger->info($e->getMessage(), ['Exception' => $e]);
-            throw new MetricsException('Unknown error occurred during query.', MetricsException::QUERY_ERROR);
-        }
-
-        $data['requests'] = [];
-        if (isset($series[0]['values'])) {
-            foreach ($series[0]['values'] as $item) {
-                $data['requests'][(new DateTime($item[0]))->getTimestamp()] = $item[1];
-            }
-        }
+        $data['requests'] = $this->runQuery(
+            'COUNT(*) AS count',
+            $this->counterTable,
+            [sprintf("%s = '%s'", self::TOPOLOGY, $topology->getId())],
+            $groupBy,
+            $dateFrom,
+            $dateTo,
+            TRUE
+        );
 
         return $data;
     }
@@ -336,6 +314,7 @@ class MetricsManager implements LoggerAwareInterface
      * @param string|NULL $group
      * @param string|NULL $dateFrom
      * @param string|NULL $dateTo
+     * @param bool        $forGraph
      *
      * @return array
      * @throws MetricsException
@@ -346,13 +325,14 @@ class MetricsManager implements LoggerAwareInterface
         array $where,
         ?string $group = NULL,
         ?string $dateFrom = NULL,
-        ?string $dateTo = NULL
+        ?string $dateTo = NULL,
+        bool $forGraph = FALSE
     ): array
     {
         $qb = $this->client->getQueryBuilder()
             ->select($select)
             ->from($from)
-            ->where(self::getConditions($where));
+            ->where($forGraph ? $where : self::getConditions($where));
 
         if ($group) {
             $qb->groupBy($group);
@@ -370,6 +350,10 @@ class MetricsManager implements LoggerAwareInterface
         } catch (Throwable $e) {
             $this->logger->info($e->getMessage(), ['Exception' => $e]);
             throw new MetricsException('Unknown error occurred during query.', MetricsException::QUERY_ERROR);
+        }
+
+        if ($forGraph) {
+            return $this->processGraphResult($series);
         }
 
         return $this->processResultSet($this->getPoints($series));
@@ -477,6 +461,23 @@ class MetricsManager implements LoggerAwareInterface
         }
 
         return $this->generateOutput($queue, $waiting, $process, $cpu, $request, $error, $counter);
+    }
+
+    /**
+     * @param array $series
+     *
+     * @return array
+     */
+    private function processGraphResult(array $series): array
+    {
+        $data = [];
+        if (isset($series[0]['values'])) {
+            foreach ($series[0]['values'] as $item) {
+                $data[(new DateTime($item[0]))->getTimestamp()] = $item[1];
+            }
+        }
+
+        return $data;
     }
 
     /**
