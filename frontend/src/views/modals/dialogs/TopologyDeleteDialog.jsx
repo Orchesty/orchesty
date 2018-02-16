@@ -18,7 +18,6 @@ function mapActionsToProps(dispatch, ownProps){
   }
 }
 
-
 export default connect(mapStateToProps, mapActionsToProps)(ConfirmDialog);
 
 
