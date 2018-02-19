@@ -59,25 +59,38 @@ limiter-image:
     - dev
     - master
 
-# multi-probe-test:
-#   stage: stage2
-#   script:
-#     - DIR=go/src/hanaboso.com/multi-probe
-#     - skip_unmodified $DIR
-#     - cd $REPO_ROOT/$DIR
-#     - export COMPOSE_PROJECT_NAME="p${CI_PIPELINE_ID}-go"
-#     - export COMPOSE_FILE=docker-compose.ci.yml
-#     - make ${COMPOSE_FILE} ci-test
-
-limiter-test:
-  stage: stage2
+# GO LANG
+.go_test: &go_test
   script:
-    - DIR=clients/clever-connectors/go/src/clever-monitor.com/limiter
     - skip_unmodified $DIR
     - cd $REPO_ROOT/$DIR
-    - export COMPOSE_PROJECT_NAME="p${CI_PIPELINE_ID}-go"
+    - export COMPOSE_PROJECT_NAME="${CI_JOB_NAME}_${CI_PIPELINE_ID}"
     - export COMPOSE_FILE=docker-compose.ci.yml
     - make ${COMPOSE_FILE} ci-test
+
+multi-probe-test:
+  <<: *go_test
+  variables:
+    DIR: go/src/hanaboso.com/multi-probe
+  stage: stage2
+
+utils-test:
+  <<: *go_test
+  variables:
+    DIR: go/src/hanaboso.com/utils
+  stage: stage2
+
+topology-generator-test:
+  <<: *go_test
+  variables:
+    DIR: go/src/hanaboso.com/topologygenerator
+  stage: stage2
+
+limiter-test:
+  <<: *go_test
+  variables:
+    DIR: clients/clever-connectors/go/src/clever-monitor.com/limiter
+  stage: stage2
 
 pf-bundles-test:
   stage: stage2
@@ -228,9 +241,9 @@ cleanup:
 
     - ": cm-pipes-api-test"
     - cd $REPO_ROOT/clients/clever-connectors/pipes-api
-    - export COMPOSE_PROJECT_NAME=p${CI_PIPELINE_ID}-cm-pipes-api-test
+    - export COMPOSE_PROJECT_NAME=p${CI_PIPELINE_ID}-cm-pipes-api
     - export COMPOSE_FILE=docker-compose.ci.yml
-    - make ${COMPOSE_FILE} docker-down-clean || echo "cm-pipes-api-test cleanup phase failed"
+    - make ${COMPOSE_FILE} docker-down-clean || echo "cm-pipes-api cleanup phase failed"
 
     - ": bridge"
     - cd $REPO_ROOT/pf-bridge/test
@@ -240,8 +253,29 @@ cleanup:
 
     - ": limiter"
     - cd $REPO_ROOT/clients/clever-connectors/go/src/clever-monitor.com/limiter
-    - export COMPOSE_PROJECT_NAME="p${CI_PIPELINE_ID}-go"
+    - export COMPOSE_PROJECT_NAME="limiter-test_${CI_PIPELINE_ID}"
     - export COMPOSE_FILE=docker-compose.ci.yml
     - make ${COMPOSE_FILE}
     - docker-compose down -v || echo "limiter cleanup phase failed"
+
+    - ": multi-probe"
+    - cd $REPO_ROOT/go/src/hanaboso.com/multi-probe
+    - export COMPOSE_PROJECT_NAME="multi-probe-test_${CI_PIPELINE_ID}"
+    - export COMPOSE_FILE=docker-compose.ci.yml
+    - make ${COMPOSE_FILE}
+    - docker-compose down -v || echo "multi-probe cleanup phase failed"
+
+    - ": utils"
+    - cd $REPO_ROOT/go/src/hanaboso.com/utils
+    - export COMPOSE_PROJECT_NAME="utils-test_${CI_PIPELINE_ID}"
+    - export COMPOSE_FILE=docker-compose.ci.yml
+    - make ${COMPOSE_FILE}
+    - docker-compose down -v || echo "utils cleanup phase failed"
+
+    - ": topology generator"
+    - cd $REPO_ROOT/go/src/hanaboso.com/topologygenerator
+    - export COMPOSE_PROJECT_NAME="topology-generator-test_${CI_PIPELINE_ID}"
+    - export COMPOSE_FILE=docker-compose.ci.yml
+    - make ${COMPOSE_FILE}
+    - docker-compose down -v || echo "topology generator cleanup phase failed"
     
