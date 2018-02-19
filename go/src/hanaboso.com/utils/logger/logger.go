@@ -1,8 +1,8 @@
 package logger
 
 import (
-	"sync"
 	"os"
+	"sync"
 )
 
 // Context
