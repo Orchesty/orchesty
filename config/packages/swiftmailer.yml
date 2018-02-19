@@ -9,5 +9,5 @@ parameters:
 
     # Mailer service params
     mailer_from: dev@hanaboso.com
-    mailer_async: true
+    mailer_async: false
     mailer_builder_id: generic
