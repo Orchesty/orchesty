@@ -82,7 +82,7 @@ console:
 	$(DE) php bin/console ${command}
 
 clear-cache:
-	$(DE) sudo rm -rf app/cache
+	$(DE) sudo rm -rf var/cache
 
 database-create:
 	$(DE) php bin/console doctrine:database:drop --force || true

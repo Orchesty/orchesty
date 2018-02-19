@@ -1,0 +1,13 @@
+parameters:
+
+    # Swift mailer params
+    mailer_transport: smtp
+    mailer_host: ''
+    mailer_port: ''
+    mailer_user: ''
+    mailer_password: ''
+
+    # Mailer service params
+    mailer_from: dev@hanaboso.com
+    mailer_async: true
+    mailer_builder_id: generic
