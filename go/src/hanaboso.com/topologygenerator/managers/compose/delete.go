@@ -4,10 +4,11 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+
 	"hanaboso.com/utils/topology"
 )
 
-func Delete(topology topology.Topology) (int, string) {
+func Delete(topology *topology.Topology) (int, string) {
 
 	var (
 		status  int

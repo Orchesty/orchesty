@@ -1,17 +1,18 @@
 package topology_json
 
 import (
-	"fmt"
-	"hanaboso.com/topologygenerator/model"
-	"strings"
 	"encoding/json"
-	"hanaboso.com/utils/topology"
+	"fmt"
+	"strings"
+
+	"hanaboso.com/topologygenerator/model"
 	"hanaboso.com/utils/servicename"
+	"hanaboso.com/utils/topology"
 )
 
 const DEFAULTPORT = 8008
 
-func Create(te topology.Topology, node []topology.Node) ([]byte, error) {
+func Create(te *topology.Topology, node []topology.Node) ([]byte, error) {
 
 	var bridges = getBridges(te, node)
 
@@ -27,7 +28,7 @@ func Create(te topology.Topology, node []topology.Node) ([]byte, error) {
 	return bytes, err
 }
 
-func getBridges(te topology.Topology, nodes []topology.Node) []topology.TopologyBridgeJson {
+func getBridges(te *topology.Topology, nodes []topology.Node) []topology.TopologyBridgeJson {
 
 	var (
 		bridges []topology.TopologyBridgeJson

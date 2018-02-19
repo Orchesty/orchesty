@@ -2,19 +2,20 @@ package compose
 
 import (
 	"fmt"
+	"net/http"
+
 	"github.com/spf13/viper"
 	"hanaboso.com/topologygenerator/commands"
-	"net/http"
 	"hanaboso.com/utils/topology"
 )
 
-func GetDstDir(topology topology.Topology) string {
+func GetDstDir(topology *topology.Topology) string {
 	dstDir := fmt.Sprintf("%s/%s", viper.GetString("generator.path"), topology.GetSaveDir())
 
 	return dstDir
 }
 
-func GetStopCommand(topology topology.Topology) (string, []string) {
+func GetStopCommand(topology *topology.Topology) (string, []string) {
 
 	dstDir := GetDstDir(topology)
 	config := fmt.Sprintf("%s/docker-compose.yml", dstDir)
@@ -24,7 +25,7 @@ func GetStopCommand(topology topology.Topology) (string, []string) {
 	return "docker-compose", args
 }
 
-func Stop(topology topology.Topology) (int, string) {
+func Stop(topology *topology.Topology) (int, string) {
 
 	var (
 		status  int

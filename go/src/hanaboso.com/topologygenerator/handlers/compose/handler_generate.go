@@ -1,39 +1,94 @@
 package compose
 
 import (
-	"net/http"
-	"github.com/gorilla/mux"
-	"hanaboso.com/topologygenerator/response"
 	"fmt"
-	"github.com/docker/docker/api/types"
-	"hanaboso.com/topologygenerator/generator/topology_json"
+	"log"
+	"net/http"
+
+	"github.com/gorilla/mux"
 	"github.com/spf13/viper"
 	"hanaboso.com/topologygenerator/commands"
 	"hanaboso.com/topologygenerator/generator/docker_compose"
-	"log"
+	"hanaboso.com/topologygenerator/generator/topology_json"
 	"hanaboso.com/topologygenerator/model"
-	"hanaboso.com/utils/topology"
+	"hanaboso.com/topologygenerator/response"
 )
 
+// GenerateAction creates topology files.
 func (h *DockerCompose) GenerateAction(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	var (
-		topologyId     = vars["topologyId"]
+	/*var (
+		topologyID     = vars["topologyId"]
 		topologyEntity topology.Topology
 		nodes          []topology.Node
 		containers     []types.Container
 
-		message = "Missing topologyId parameter"
-		status  = http.StatusNotFound
-	)
+		message string
+		status  int
+	)*/
 
-	if len(topologyId) != 0 {
+	resp := func(msg string, status int) {
+		log.Printf("GenerateAction: %s", msg)
+		requestResponse := response.RequestResponse{Message: msg}
+		response.ResponseWithJSON(w, requestResponse.Prepare(), status)
+	}
 
-		topologyEntity, _ = h.Db.GetTopologyById(topologyId)
-		nodes, _ = h.Db.GetNodesByTopologyId(topologyId)
+	vars := mux.Vars(r)
+
+	topologyID, ok := vars["topologyId"]
+	if !ok {
+		resp("Missing topologyId parameter", http.StatusNotFound)
+		return
+	}
+
+	topologyEntity, err := h.Db.GetTopologyById(topologyID)
+	if err != nil {
+		resp(fmt.Sprintf("Topology[id=%s] not found. Reason: %v", topologyID, err), http.StatusNotFound)
+		return
+	}
+
+	nodes, err := h.Db.GetNodesByTopologyId(topologyID)
+	if err != nil {
+		resp(fmt.Sprintf("Topology[id=%s] not found. Reason: %v", topologyID, err), http.StatusNotFound)
+		return
+	}
+
+	topologyJSON, err := topology_json.Create(topologyEntity, nodes)
+	if err != nil {
+		panic(model.AppError{Message: err.Error(), Type: model.ACTIONS})
+	}
+
+	if err := commands.WriteFile(
+		fmt.Sprintf("%s/%s", viper.GetString("generator.path"), topologyEntity.GetSaveDir()),
+		"topology.json",
+		topologyJSON,
+	); err != nil {
+		resp(fmt.Sprintf("Writing topology[id=%s, file=topology.json] failed. Reason: %v", topologyID, err), http.StatusInternalServerError)
+		return
+	}
+
+	dockerCompose, err := docker_compose.Create(topologyEntity, nodes, viper.GetString("generator.mode"))
+	if err != nil {
+		panic(model.AppError{Message: err.Error(), Type: model.ACTIONS})
+	}
+
+	if err := commands.WriteFile(
+		fmt.Sprintf("%s/%s", viper.GetString("generator.path"), topologyEntity.GetSaveDir()),
+		"docker-compose.yml",
+		dockerCompose,
+	); err != nil {
+		resp(fmt.Sprintf("Writing topology[id=%s, file=docker-compose.json] failed. Reason: %v", topologyID, err), http.StatusInternalServerError)
+		return
+	}
+
+	resp(fmt.Sprintf("ID: %s", topologyID), http.StatusOK)
+
+	/*if len(topologyID) != 0 {
+
+		topologyEntity, _ = h.Db.GetTopologyById(topologyID)
+		nodes, _ = h.Db.GetNodesByTopologyId(topologyID)
 
 		if topologyEntity.ID.Hex() != "" {
-			topologyJson, err := topology_json.Create(topologyEntity, nodes)
+			topologyJSON, err := topology_json.Create(topologyEntity, nodes)
 
 			if err != nil {
 				panic(model.AppError{Message: err.Error(), Type: model.ACTIONS})
@@ -42,7 +97,7 @@ func (h *DockerCompose) GenerateAction(w http.ResponseWriter, r *http.Request) {
 			err = commands.WriteFile(
 				fmt.Sprintf("%s/%s", viper.GetString("generator.path"), topologyEntity.GetSaveDir()),
 				"topology.json",
-				topologyJson,
+				topologyJSON,
 			)
 
 			dockerCompose, err := docker_compose.Create(topologyEntity, nodes, viper.GetString("generator.mode"))
@@ -56,7 +111,7 @@ func (h *DockerCompose) GenerateAction(w http.ResponseWriter, r *http.Request) {
 			if err != nil {
 				//TODO: add panic
 				status = http.StatusInternalServerError
-				message = fmt.Sprintf("ID: %s - %s", topologyId, err.Error())
+				message = fmt.Sprintf("ID: %s - %s", topologyID, err.Error())
 			} else {
 				status = http.StatusOK
 				message = fmt.Sprintf("ID: %s", vars["topologyId"])
@@ -69,5 +124,5 @@ func (h *DockerCompose) GenerateAction(w http.ResponseWriter, r *http.Request) {
 
 	log.Printf("GenerateAction: %s", message)
 	requestResponse := response.RequestResponse{Message: message, DockerInfo: containers}
-	response.ResponseWithJSON(w, requestResponse.Prepare(), status)
+	response.ResponseWithJSON(w, requestResponse.Prepare(), status)*/
 }

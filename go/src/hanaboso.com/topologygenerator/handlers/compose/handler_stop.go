@@ -1,13 +1,14 @@
 package compose
 
 import (
-	"net/http"
-	"github.com/gorilla/mux"
-	"hanaboso.com/topologygenerator/response"
 	"fmt"
-	"github.com/docker/docker/api/types"
-	"hanaboso.com/topologygenerator/managers/compose"
 	"log"
+	"net/http"
+
+	"github.com/docker/docker/api/types"
+	"github.com/gorilla/mux"
+	"hanaboso.com/topologygenerator/managers/compose"
+	"hanaboso.com/topologygenerator/response"
 	"hanaboso.com/utils/topology"
 )
 
@@ -15,7 +16,7 @@ func (h *DockerCompose) StopAction(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	var (
 		topologyId = vars["topologyId"]
-		topology   topology.Topology
+		topology   *topology.Topology
 		containers []types.Container
 
 		message = "Missing topologyId parameter"

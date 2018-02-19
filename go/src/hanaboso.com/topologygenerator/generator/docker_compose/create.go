@@ -1,16 +1,17 @@
 package docker_compose
 
 import (
-	"github.com/spf13/viper"
 	"fmt"
-	"hanaboso.com/topologygenerator/generator"
-	"hanaboso.com/utils/topology"
-	str "hanaboso.com/utils/strings"
+
+	"github.com/spf13/viper"
 	"gopkg.in/yaml.v2"
+	"hanaboso.com/topologygenerator/generator"
 	"hanaboso.com/utils/servicename"
+	str "hanaboso.com/utils/strings"
+	"hanaboso.com/utils/topology"
 )
 
-func Create(te topology.Topology, nodes []topology.Node, mode string) ([]byte, error) {
+func Create(te *topology.Topology, nodes []topology.Node, mode string) ([]byte, error) {
 
 	var (
 		services map[string]*Service
@@ -42,7 +43,7 @@ func getGeneratorVersion(mode string) string {
 	}
 }
 
-func GetConfigName(te topology.Topology) string {
+func GetConfigName(te *topology.Topology) string {
 	return fmt.Sprintf(
 		"%s_%s_config",
 		viper.GetString("generator.topology-prefix"),
@@ -50,7 +51,7 @@ func GetConfigName(te topology.Topology) string {
 	)
 }
 
-func GetTopologyPrefix(te topology.Topology) string {
+func GetTopologyPrefix(te *topology.Topology) string {
 	return fmt.Sprintf(
 		"%s_%s",
 		viper.GetString("generator.topology-prefix"),
@@ -58,7 +59,7 @@ func GetTopologyPrefix(te topology.Topology) string {
 	)
 }
 
-func getServices(te topology.Topology, nodes []topology.Node, mode string) map[string]*Service {
+func getServices(te *topology.Topology, nodes []topology.Node, mode string) map[string]*Service {
 	var services = make(map[string]*Service)
 
 	////Add Probe
@@ -120,7 +121,7 @@ func getImage() string {
 	)
 }
 
-func getConfigs(m string, te topology.Topology) map[string]*Configs {
+func getConfigs(m string, te *topology.Topology) map[string]*Configs {
 	var configs = make(map[string]*Configs)
 
 	if m == generator.MODESWARM {
@@ -132,7 +133,7 @@ func getConfigs(m string, te topology.Topology) map[string]*Configs {
 	return configs
 }
 
-func getServiceConfigs(m string, te topology.Topology) []ServiceConfigs {
+func getServiceConfigs(m string, te *topology.Topology) []ServiceConfigs {
 	var configs []ServiceConfigs
 
 	if m == generator.MODESWARM {
@@ -146,7 +147,7 @@ func getServiceConfigs(m string, te topology.Topology) []ServiceConfigs {
 	return configs
 }
 
-func getVolumes(m string, topology topology.Topology) []string {
+func getVolumes(m string, topology *topology.Topology) []string {
 	var volumes []string
 
 	if m == generator.MODECOMPOSE {

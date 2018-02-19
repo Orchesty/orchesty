@@ -2,19 +2,20 @@ package swarm
 
 import (
 	"fmt"
-	"hanaboso.com/topologygenerator/commands"
 	"net/http"
+
+	"hanaboso.com/topologygenerator/commands"
 	"hanaboso.com/topologygenerator/generator/docker_compose"
 	"hanaboso.com/utils/topology"
 )
 
-func GetStopCommand(topology topology.Topology) (string, []string) {
+func GetStopCommand(topology *topology.Topology) (string, []string) {
 
 	var args = []string{"stack", "rm", docker_compose.GetTopologyPrefix(topology)}
 	return "docker", args
 }
 
-func Stop(topology topology.Topology) (int, string) {
+func Stop(topology *topology.Topology) (int, string) {
 
 	var (
 		status  int

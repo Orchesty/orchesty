@@ -1,17 +1,18 @@
 package swarm
 
 import (
-	"net/http"
-	"github.com/gorilla/mux"
-	"hanaboso.com/topologygenerator/response"
 	"fmt"
+	"log"
+	"net/http"
+
 	"github.com/docker/docker/api/types"
-	"hanaboso.com/topologygenerator/generator/topology_json"
+	"github.com/gorilla/mux"
 	"github.com/spf13/viper"
 	"hanaboso.com/topologygenerator/commands"
 	"hanaboso.com/topologygenerator/generator/docker_compose"
+	"hanaboso.com/topologygenerator/generator/topology_json"
 	"hanaboso.com/topologygenerator/model"
-	"log"
+	"hanaboso.com/topologygenerator/response"
 	"hanaboso.com/utils/topology"
 )
 
@@ -19,7 +20,7 @@ func (h *Swarm) GenerateAction(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	var (
 		topologyId     = vars["topologyId"]
-		topologyEntity topology.Topology
+		topologyEntity *topology.Topology
 		nodes          []topology.Node
 		containers     []types.Container
 
