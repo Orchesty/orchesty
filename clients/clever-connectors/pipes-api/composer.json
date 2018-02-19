@@ -26,7 +26,8 @@
     "phpunit/phpunit": "^7.0",
     "symfony/debug-bundle": "^4.0",
     "symfony/web-profiler-bundle": "^4.0",
-    "symfony/browser-kit": "^4.0"
+    "symfony/browser-kit": "^4.0",
+    "symfony/lts": "^4@dev"
   },
   "config": {
     "sort-packages": true
@@ -38,6 +39,10 @@
       "options": {
         "symlink": true
       }
+    },
+    {
+      "type": "git",
+      "url": "git@gitlab.hanaboso.net:hanaboso/email-service-bundle.git"
     }
   ]
 }
