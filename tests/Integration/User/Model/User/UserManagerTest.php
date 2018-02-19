@@ -9,10 +9,12 @@ use Hanaboso\PipesFramework\User\Document\TmpUser;
 use Hanaboso\PipesFramework\User\Document\Token;
 use Hanaboso\PipesFramework\User\Document\User;
 use Hanaboso\PipesFramework\User\Enum\UserTypeEnum;
+use Hanaboso\PipesFramework\User\Model\Mailer\Mailer;
 use Hanaboso\PipesFramework\User\Model\Token\TokenManagerException;
 use Hanaboso\PipesFramework\User\Model\User\UserManager;
 use Hanaboso\PipesFramework\User\Model\User\UserManagerException;
 use Symfony\Component\Security\Core\Encoder\BCryptPasswordEncoder;
+use Symfony\Component\Security\Core\Encoder\EncoderFactory;
 use Symfony\Component\Security\Core\Encoder\PasswordEncoderInterface;
 use Tests\DatabaseTestCaseAbstract;
 use Tests\PrivateTrait;
@@ -72,6 +74,7 @@ class UserManagerTest extends DatabaseTestCaseAbstract
      */
     public function testRegister(): void
     {
+        $this->prepareMailerMock();
         $this->userManager->register(['email' => 'email@example.com']);
 
         /** @var TmpUser[] $tmpUsers */
@@ -163,6 +166,7 @@ class UserManagerTest extends DatabaseTestCaseAbstract
      */
     public function testResetPassword(): void
     {
+        $this->prepareMailerMock();
         $user = (new User())->setEmail('email@example.com');
         $this->persistAndFlush($user);
 
@@ -212,6 +216,23 @@ class UserManagerTest extends DatabaseTestCaseAbstract
         $this->expectException(TokenManagerException::class);
         $this->expectExceptionCode(TokenManagerException::TOKEN_NOT_VALID);
         $this->userManager->setPassword($token->getHash(), ['password' => 'passw0rd']);
+    }
+
+    /**
+     *
+     */
+    private function prepareMailerMock(): void
+    {
+        $this->userManager = new UserManager(
+            $this->container->get('hbpf.database_manager_locator.user'),
+            $this->container->get('hbpf.user.manager.security'),
+            $this->container->get('hbpf.user.manager.token'),
+            $this->createMock(EncoderFactory::class),
+            $this->container->get('event_dispatcher'),
+            $this->container->get('hbpf.user.provider.resource'),
+            $this->createMock(Mailer::class),
+            'active-link'
+        );
     }
 
 }

@@ -8,6 +8,7 @@ use Hanaboso\PipesFramework\Acl\Exception\AclException;
 use Hanaboso\PipesFramework\User\Document\TmpUser;
 use Hanaboso\PipesFramework\User\Document\Token;
 use Hanaboso\PipesFramework\User\Document\User;
+use Hanaboso\PipesFramework\User\Model\Mailer\Mailer;
 use Hanaboso\PipesFramework\User\Model\Security\SecurityManagerException;
 use Hanaboso\PipesFramework\User\Model\Token\TokenManagerException;
 use Hanaboso\PipesFramework\User\Model\User\UserManagerException;
@@ -123,6 +124,8 @@ class UserControllerTest extends ControllerTestCaseAbstract
      */
     public function testRegister(): void
     {
+        $this->prepareMailerMock();
+
         $response = $this->sendPost('/api/user/register', [
             'email' => 'email@example.com',
         ]);
@@ -256,6 +259,7 @@ class UserControllerTest extends ControllerTestCaseAbstract
      */
     public function testResetPassword(): void
     {
+        $this->prepareMailerMock();
         $this->loginUser('email@example.com', 'passw0rd');
 
         $user = (new User())->setEmail('email@example.com');
@@ -287,7 +291,7 @@ class UserControllerTest extends ControllerTestCaseAbstract
         $response = $this->sendPost('/api/user/reset_password', [
             'email' => '',
         ]);
-        $content = $response->content;
+        $content  = $response->content;
 
         $this->assertEquals(500, $response->status);
         $this->assertEquals(UserManagerException::class, $content->type);
@@ -335,7 +339,7 @@ class UserControllerTest extends ControllerTestCaseAbstract
         $this->loginUser('email@example.com', 'passw0rd');
 
         $response = $this->sendDelete('/api/user/0/delete');
-        $content = $response->content;
+        $content  = $response->content;
 
         $this->assertEquals(500, $response->status);
         $this->assertEquals(UserManagerException::class, $content->type);
@@ -365,7 +369,7 @@ class UserControllerTest extends ControllerTestCaseAbstract
         $this->dm->flush();
 
         $response = $this->sendDelete(sprintf('/api/user/%s/delete', $loggedUser->getId()));
-        $content = $response->content;
+        $content  = $response->content;
 
         $this->assertEquals(500, $response->status);
         $this->assertEquals(UserManagerException::class, $content->type);
@@ -385,11 +389,19 @@ class UserControllerTest extends ControllerTestCaseAbstract
         $this->persistAndFlush($user);
 
         $response = $this->sendDelete(sprintf('/api/user/%s/delete', $user->getId()));
-        $content = $response->content;
+        $content  = $response->content;
 
         $this->assertEquals(500, $response->status);
         $this->assertEquals(AclException::class, $content->type);
         $this->assertEquals(2001, $content->error_code);
+    }
+
+    /**
+     *
+     */
+    private function prepareMailerMock(): void
+    {
+        $this->client->getContainer()->set('hbpf.user.mailer', $this->createMock(Mailer::class));
     }
 
 }
