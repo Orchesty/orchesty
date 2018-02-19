@@ -50,7 +50,8 @@
     "hanaboso/email-service-bundle": "1.0.0",
     "symfony/lts": "^4@dev",
     "symfony/intl": "^4.0",
-    "symfony/serializer": "^4.0"
+    "symfony/serializer": "^4.0",
+    "symfony/browser-kit": "^4.0"
   },
   "require-dev": {
     "hanaboso/php-check-utils": "^1.0",
