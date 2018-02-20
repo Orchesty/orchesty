@@ -2,6 +2,7 @@
 
 use CleverConnectors\AppBundle\AppBundle;
 use Doctrine\Bundle\MongoDBBundle\DoctrineMongoDBBundle;
+use EmailServiceBundle\EmailServiceBundle;
 use FOS\RestBundle\FOSRestBundle;
 use Hanaboso\PipesFramework\HbPFApiGatewayBundle\HbPFApiGatewayBundle;
 use Hanaboso\PipesFramework\HbPFAuthorizationBundle\HbPFAuthorizationBundle;
@@ -28,6 +29,7 @@ return [
     Symfony\Bundle\TwigBundle\TwigBundle::class                          => ['all' => TRUE],
     Symfony\Bundle\DebugBundle\DebugBundle::class                        => ['dev' => TRUE, 'test' => TRUE],
     Symfony\Bundle\WebProfilerBundle\WebProfilerBundle::class            => ['dev' => TRUE, 'test' => TRUE],
+    Symfony\Bundle\SwiftmailerBundle\SwiftmailerBundle::class            => ['all' => TRUE],
     DoctrineMongoDBBundle::class                                         => ['all' => TRUE],
     FOSRestBundle::class                                                 => ['all' => TRUE],
     JMSSerializerBundle::class                                           => ['all' => TRUE],
@@ -45,4 +47,5 @@ return [
     HbPFMetricsBundle::class       => ['all' => TRUE],
     HbPFUserBundle::class          => ['all' => TRUE],
     HbPFRabbitMqBundle::class      => ['all' => TRUE],
+    EmailServiceBundle::class      => ['all' => TRUE],
 ];

@@ -1,6 +1,7 @@
 <?php
 
 use Doctrine\Bundle\MongoDBBundle\DoctrineMongoDBBundle;
+use EmailServiceBundle\EmailServiceBundle;
 use FOS\RestBundle\FOSRestBundle;
 use Hanaboso\PipesFramework\HbPFApiGatewayBundle\HbPFApiGatewayBundle;
 use Hanaboso\PipesFramework\HbPFAuthorizationBundle\HbPFAuthorizationBundle;
@@ -25,6 +26,7 @@ return [
     Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle::class => ['all' => TRUE],
     Symfony\Bundle\MonologBundle\MonologBundle::class                    => ['all' => TRUE],
     Symfony\Bundle\TwigBundle\TwigBundle::class                          => ['all' => TRUE],
+    Symfony\Bundle\SwiftmailerBundle\SwiftmailerBundle::class            => ['all' => TRUE],
     Symfony\Bundle\DebugBundle\DebugBundle::class                        => ['dev' => TRUE, 'test' => TRUE],
     Symfony\Bundle\WebProfilerBundle\WebProfilerBundle::class            => ['dev' => TRUE, 'test' => TRUE],
     DoctrineMongoDBBundle::class                                         => ['all' => TRUE],
@@ -43,4 +45,5 @@ return [
     HbPFMetricsBundle::class       => ['all' => TRUE],
     HbPFUserBundle::class          => ['all' => TRUE],
     HbPFRabbitMqBundle::class      => ['all' => TRUE],
+    EmailServiceBundle::class      => ['all' => TRUE],
 ];
