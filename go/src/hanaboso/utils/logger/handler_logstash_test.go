@@ -1,8 +1,9 @@
 package logger
 
 import (
-	"testing"
 	"encoding/json"
+	"testing"
+
 	"github.com/stretchr/testify/assert"
 )
 
@@ -25,7 +26,7 @@ func (s *mockSenderForHandler) Send(data []byte) {
 }
 
 func TestLogStashHandler_Handle(t *testing.T) {
-	handler := NewLogStashHandler(&mockSenderForHandler{t: t})
+	handler := NewLogStashHandler(&mockSenderForHandler{t: t}, "limiter")
 
 	var fields = make(map[string]interface{})
 

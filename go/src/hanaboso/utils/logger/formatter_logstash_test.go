@@ -1,13 +1,14 @@
 package logger
 
 import (
-	"testing"
-	"github.com/stretchr/testify/assert"
 	"encoding/json"
+	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestLogStashFormatter_Format(t *testing.T) {
-	f := logStashFormatter{}
+	f := logStashFormatter{"limiter"}
 
 	var fields = make(map[string]interface{})
 

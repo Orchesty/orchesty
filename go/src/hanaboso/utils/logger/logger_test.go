@@ -1,8 +1,9 @@
 package logger
 
 import (
-	"testing"
 	"encoding/json"
+	"testing"
+
 	"github.com/stretchr/testify/assert"
 )
 
@@ -32,7 +33,7 @@ func (m *mockSender) Send(data []byte) {
 func TestLogger_Log(t *testing.T) {
 
 	l := NewLogger()
-	l.AddHandler(NewLogStashHandler(&mockSender{t: t}))
+	l.AddHandler(NewLogStashHandler(&mockSender{t: t}, "limiter"))
 
 	l.Log("info", "my-message", Context{"notification_type": "test"})
 }

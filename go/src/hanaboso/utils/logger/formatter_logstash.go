@@ -7,6 +7,7 @@ import (
 )
 
 type logStashFormatter struct {
+	app string
 }
 
 func (f *logStashFormatter) Format(data map[string]interface{}) ([]byte, error) {
@@ -15,13 +16,13 @@ func (f *logStashFormatter) Format(data map[string]interface{}) ([]byte, error) 
 	data["hostname"] = hostname
 
 	if val, ok := data["type"]; !ok || val == "" {
-		data["type"] = "limiter"
+		data["type"] = f.app
 	}
 
 	return json.Marshal(data)
 }
 
 // NewLogStashFormatter creates formatter with logstash pattern
-func NewLogStashFormatter() Formatter {
-	return &logStashFormatter{}
+func NewLogStashFormatter(app string) Formatter {
+	return &logStashFormatter{app}
 }
