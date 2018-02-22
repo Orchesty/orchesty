@@ -6,7 +6,9 @@ import {Connection} from "amqplib-plus/dist/lib/Connection";
 import {Publisher} from "amqplib-plus/dist/lib/Publisher";
 import {SimpleConsumer} from "amqplib-plus/dist/lib/SimpleConsumer";
 import * as config from "../../src/config";
+import {redisStorageOptions} from "../../src/config";
 import {ICounterProcessInfo} from "../../src/counter/CounterProcess";
+import RedisStorage from "../../src/counter/storage/RedisStorage";
 import {ResultCode} from "../../src/message/ResultCode";
 import Pipes from "../../src/Pipes";
 import Terminator from "../../src/terminator/Terminator";
@@ -80,6 +82,9 @@ describe("Linear topology with splitter test", () => {
         // manually set the terminator port not to collide with other tests
         const dic = pip.getDIContainer();
         dic.set("topology.terminator", () => new Terminator(8557, dic.get("counter.storage")));
+
+        const redis = new RedisStorage(redisStorageOptions);
+        redis.remove(testTopology.id, msgHeaders.headers["pf-process-id"]);
 
         Promise.all([
             pip.startCounter(),
