@@ -35,17 +35,19 @@ export interface ICounterSettings {
     };
 }
 
-// interface IProcessesSyncMap {
-//     [key: string]: {
-//         msg: CounterMessage,
-//         resolve: () => {},
-//         reject: () => {},
-//     };
-// }
-//
-// interface ITopologiesSyncMap {
-//     [key: string]: IProcessesSyncMap;
-// }
+interface ISyncObject {
+    msg: CounterMessage;
+    resolve: any;
+    reject: any;
+}
+
+interface IProcessesSyncMap {
+    [key: string]: ISyncObject[];
+}
+
+interface ITopologiesSyncMap {
+    [key: string]: IProcessesSyncMap;
+}
 
 /**
  * Topology component that receives signals(messages) and watches if some process run through whole topology
@@ -83,7 +85,7 @@ export default class Counter implements ICounter, IStoppable {
     private terminator: Terminator;
     private metrics: IMetrics;
     private consumerTag: string;
-    private syncQueue: any[];
+    private syncQueue: ITopologiesSyncMap;
 
     /**
      *
@@ -106,7 +108,7 @@ export default class Counter implements ICounter, IStoppable {
         this.terminator = terminator;
         this.metrics = metrics;
 
-        this.syncQueue = [];
+        this.syncQueue = {};
 
         this.prepareConsumer();
         this.preparePublisher();
@@ -204,10 +206,19 @@ export default class Counter implements ICounter, IStoppable {
             });
 
             return new Promise((resolve, reject) => {
-                this.syncQueue.push({msg: cm, resolve, reject});
 
-                if (this.syncQueue.length === 1) {
-                    this.handleQueue();
+                if (!this.syncQueue[cm.getTopologyId()]) {
+                    this.syncQueue[cm.getTopologyId()] = {};
+                }
+
+                if (!this.syncQueue[cm.getTopologyId()][cm.getProcessId()]) {
+                    this.syncQueue[cm.getTopologyId()][cm.getProcessId()] = [];
+                }
+
+                this.syncQueue[cm.getTopologyId()][cm.getProcessId()].push({msg: cm, resolve, reject});
+
+                if (this.syncQueue[cm.getTopologyId()][cm.getProcessId()].length === 1) {
+                    this.handleQueue(cm.getTopologyId(), cm.getProcessId());
                 }
             });
         } catch (e) {
@@ -220,23 +231,33 @@ export default class Counter implements ICounter, IStoppable {
     /**
      * Recursively process messages in synchronous way
      *
-     * @return {Promise<void>}
      */
-    private async handleQueue() {
-        if (this.syncQueue.length === 0) {
+    private handleQueue(topoId: string, processId: string): void {
+        if (!this.syncQueue[topoId]) {
             return;
         }
 
-        const first = this.syncQueue[0];
-
-        try {
-            await this.updateProcessInfo(first.msg);
-            first.resolve();
-            this.syncQueue.shift();
-            this.handleQueue();
-        } catch (e) {
-            first.reject(e);
+        if (!this.syncQueue[topoId][processId]) {
+            return;
         }
+
+        if (this.syncQueue[topoId][processId].length === 0) {
+            delete this.syncQueue[topoId][processId];
+            return;
+        }
+
+        const first = this.syncQueue[topoId][processId][0];
+
+        (async () => {
+            try {
+                await this.updateProcessInfo(first.msg);
+                first.resolve();
+                this.syncQueue[topoId][processId].shift();
+                this.handleQueue(topoId, processId);
+            } catch (e) {
+                first.reject(e);
+            }
+        })();
     }
 
     /**
