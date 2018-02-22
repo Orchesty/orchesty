@@ -23,7 +23,7 @@ describe("TcpLimiter", () => {
             const result = await limiter.isReady();
             assert.isTrue(result);
             done();
-        }, 100);
+        }, 300);
     });
 
 });

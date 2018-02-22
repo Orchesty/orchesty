@@ -29,6 +29,7 @@ services:
         REDIS_PORT: '6379'
         REDIS_PASS: ''
         REDIS_DB: '0'
+        COUNTER_PREFETCH: '100'
       depends_on:
         - redis
         - rabbitmq

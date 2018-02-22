@@ -1,6 +1,7 @@
 import { assert } from "chai";
 import "mocha";
 
+import {counterOptions} from "../../src/config";
 import Configurator, {ITopologyConfig, ITopologyConfigSkeleton} from "../../src/topology/Configurator";
 
 const testTopo: ITopologyConfigSkeleton = {
@@ -50,7 +51,7 @@ const expectedTopo: ITopologyConfig = {
             queue: {
                 name: "pipes.test-topo.counter",
                 options: {},
-                prefetch: 1,
+                prefetch: counterOptions.prefetch,
             },
         },
     },
