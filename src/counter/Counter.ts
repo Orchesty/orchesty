@@ -48,8 +48,8 @@ export default class Counter implements ICounter, IStoppable {
     private storage: ICounterStorage;
     private terminator: Terminator;
     private metrics: IMetrics;
-
     private consumerTag: string;
+    private syncQueue: any[];
 
     /**
      *
@@ -71,6 +71,8 @@ export default class Counter implements ICounter, IStoppable {
         this.storage = storage;
         this.terminator = terminator;
         this.metrics = metrics;
+
+        this.syncQueue = [];
 
         this.prepareConsumer();
         this.preparePublisher();
@@ -127,9 +129,7 @@ export default class Counter implements ICounter, IStoppable {
         this.consumer = new CounterConsumer(
             this.connection,
             prepareFn,
-            async (msg: Message) => {
-                return await this.handleMessage(msg);
-            },
+            async (msg: Message) => await this.handleSyncMessage(msg),
         );
     }
 
@@ -150,6 +150,44 @@ export default class Counter implements ICounter, IStoppable {
         };
 
         this.publisher = new Publisher(this.connection, prepareFn);
+    }
+
+    /**
+     *
+     * @param {Message} msg
+     * @return {Promise<any>}
+     */
+    private async handleSyncMessage(msg: Message): Promise<any> {
+        return new Promise((resolve, reject) => {
+
+            this.syncQueue.push({msg, resolve, reject});
+
+            if (this.syncQueue.length === 1) {
+                this.handleQueue();
+            }
+        });
+    }
+
+    /**
+     * Recursively process messages in synchronous way
+     *
+     * @return {Promise<void>}
+     */
+    private async handleQueue() {
+        if (this.syncQueue.length === 0) {
+            return;
+        }
+
+        const first = this.syncQueue[0];
+
+        try {
+            await this.handleMessage(first.msg);
+            first.resolve();
+            this.syncQueue.shift();
+            this.handleQueue();
+        } catch (e) {
+            first.reject(e);
+        }
     }
 
     /**

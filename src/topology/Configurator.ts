@@ -1,4 +1,4 @@
-import {amqpFaucetOptions, repeaterOptions} from "../config";
+import {amqpFaucetOptions, counterOptions, repeaterOptions} from "../config";
 import { ICounterSettings } from "../counter/Counter";
 import {IAmqpDrainSettings} from "../node/drain/AmqpDrain";
 import {IAmqpFaucetSettings} from "../node/faucet/AmqpFaucet";
@@ -90,7 +90,7 @@ class Configurator {
                 sub: {
                     queue: {
                         name: "pipes.multi-counter",
-                        prefetch: 1, // this should be set to 1 in order to counter work properly (no msgs outruns)
+                        prefetch: counterOptions.prefetch,
                         options: {},
                     },
                 },
@@ -113,7 +113,7 @@ class Configurator {
             sub: {
                 queue: {
                     name: `pipes.${topoId}.counter`,
-                    prefetch: 1, // this should be set to 1 in order to counter work properly (no msgs outruns)
+                    prefetch: counterOptions.prefetch,
                     options: {},
                 },
             },

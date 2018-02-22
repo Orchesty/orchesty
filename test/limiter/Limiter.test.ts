@@ -74,7 +74,7 @@ describe("Limiter", () => {
 
         const result = await limiter.canBeProcessed(msg);
         assert.isTrue(result);
-    });
+    }).timeout(4000);
 
     it("canBeProcessed should return what true when limiter returns positive response", (done) => {
         const positive = net.createServer((socket) => {

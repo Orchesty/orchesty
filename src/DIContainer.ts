@@ -45,7 +45,7 @@ class DIContainer extends Container {
     private setServices() {
         this.set("amqp.connection", new Connection(amqpConnectionOptions, logger));
 
-        // this.set("counter.storage", new InMemoryStorage());
+        // this.set("counter.storage", () => new InMemoryStorage());
         this.set("counter.storage", () => new RedisStorage(redisStorageOptions));
 
         this.set("probe.multi", new MultiProbeConnector(multiProbeOptions.host, multiProbeOptions.port));

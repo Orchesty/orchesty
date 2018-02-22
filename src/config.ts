@@ -84,3 +84,7 @@ export const limiterOptions: ILimiterSettings = {
         options: {},
     },
 };
+
+export const counterOptions = {
+    prefetch: parseInt(process.env.COUNTER_PREFETCH, 10) || 10,
+};
