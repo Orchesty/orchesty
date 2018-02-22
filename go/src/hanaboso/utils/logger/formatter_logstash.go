@@ -1,9 +1,9 @@
 package logger
 
 import (
+	"encoding/json"
 	"os"
 	"time"
-	"encoding/json"
 )
 
 type logStashFormatter struct {
@@ -19,4 +19,9 @@ func (f *logStashFormatter) Format(data map[string]interface{}) ([]byte, error) 
 	}
 
 	return json.Marshal(data)
+}
+
+// NewLogStashFormatter creates formatter with logstash pattern
+func NewLogStashFormatter() Formatter {
+	return &logStashFormatter{}
 }

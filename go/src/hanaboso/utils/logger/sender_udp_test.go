@@ -1,12 +1,13 @@
 package logger
 
 import (
-	"testing"
 	"net"
+	"testing"
+
 	"github.com/stretchr/testify/assert"
 )
 
-func TestUpdSender_Send(t *testing.T) {
+func TestUDPSender_Send(t *testing.T) {
 
 	quitTest := make(chan bool)
 
@@ -39,7 +40,7 @@ func TestUpdSender_Send(t *testing.T) {
 		}
 	}()
 
-	s := NewUpdSender("localhost", "5120")
+	s := NewUDPSender("localhost", "5120")
 	s.Send([]byte("test"))
 
 	<-quitTest

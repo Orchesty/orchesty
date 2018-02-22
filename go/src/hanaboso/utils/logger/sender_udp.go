@@ -1,13 +1,13 @@
 package logger
 
 import (
-	"net"
-	"log"
 	"fmt"
+	"log"
+	"net"
 	"time"
 )
 
-type updSender struct {
+type udpSender struct {
 	url           string
 	refreshTime   int
 	addr          *net.UDPAddr
@@ -15,31 +15,31 @@ type updSender struct {
 	resolveTicker *time.Ticker
 }
 
-func (u *updSender) findHost() error {
+func (u *udpSender) findHost() error {
 	var err error
 	u.addr, err = net.ResolveUDPAddr("udp", u.url)
 
 	if err != nil {
-		log.Println(fmt.Sprintf("Resolve ip addr for host %s error: %s", u.url, err))
+		log.Printf("Resolve IP addr for host %s error: %s", u.url, err)
 		return err
 	}
 
 	return nil
 }
 
-func (u *updSender) resolveHost() {
+func (u *udpSender) resolveHost() {
 	if u.resolveTicker == nil {
 		u.resolveTicker = time.NewTicker(time.Second * time.Duration(u.refreshTime))
 		go func() {
 			for t := range u.resolveTicker.C {
 				u.findHost()
-				log.Println(fmt.Sprintf("Resolving host in %s", t))
+				log.Printf("Resolving host in %s", t)
 			}
 		}()
 	}
 }
 
-func (u *updSender) Send(data []byte) {
+func (u *udpSender) Send(data []byte) {
 
 	u.resolveHost()
 
@@ -49,7 +49,7 @@ func (u *updSender) Send(data []byte) {
 			resErr := u.findHost()
 
 			if resErr != nil {
-				log.Println(fmt.Sprintf("Udp resolve host error: %s", resErr))
+				log.Printf("UDP resolve host error: %s", resErr)
 				return
 			}
 		}
@@ -59,7 +59,7 @@ func (u *updSender) Send(data []byte) {
 			u.conn, err = net.DialUDP("udp", nil, u.addr)
 
 			if err != nil {
-				log.Println(fmt.Sprintf("Udp sender coonection error: %s", err))
+				log.Printf("UDP sender coonection error: %s", err)
 				return
 			}
 		}
@@ -67,14 +67,14 @@ func (u *updSender) Send(data []byte) {
 		_, err := u.conn.Write(data)
 
 		if err != nil {
-			log.Println(fmt.Sprintf("Udp sender write error: %s", err))
+			log.Printf("UDP sender write error: %s", err)
 		}
 
 		return
 	}()
-
 }
 
-func NewUpdSender(host string, port string) Sender {
-	return &updSender{url: fmt.Sprintf("%s:%s", host, port), refreshTime: 30}
+// NewUDPSender creates Sender to target host and port
+func NewUDPSender(host string, port string) Sender {
+	return &udpSender{url: fmt.Sprintf("%s:%s", host, port), refreshTime: 30}
 }
