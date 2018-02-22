@@ -9,8 +9,8 @@ import (
 	"github.com/spf13/viper"
 )
 
-func CreateHandler(mode string) model.UrlHandler {
-	var handler model.UrlHandler
+func CreateHandler(mode string) model.URLHandler {
+	var handler model.URLHandler
 
 	switch mode {
 	case generator.MODECOMPOSE:

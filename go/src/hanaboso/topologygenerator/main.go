@@ -5,7 +5,8 @@ package main
 
 import (
 	"fmt"
-	"log"
+	"hanaboso/topologygenerator/log"
+
 	"net/http"
 
 	"hanaboso/topologygenerator/handlers"
@@ -17,7 +18,7 @@ import (
 var compiled = "NA"
 
 func main() {
-	log.Printf("App compiled version: %s", compiled)
+	log.Infof("App compiled version: %s", compiled)
 
 	handler := handlers.CreateHandler(viper.GetString("generator.mode"))
 	if handler == nil {
@@ -62,6 +63,6 @@ func main() {
 	router := router.Router(routes)
 
 	server := fmt.Sprintf("%s:%d", viper.GetString("service.host"), viper.GetInt("service.port"))
-	log.Println("Start http server " + server)
+	log.Info("Start http server " + server)
 	log.Fatal(http.ListenAndServe(server, router))
 }

@@ -2,7 +2,7 @@ package compose
 
 import (
 	"fmt"
-	"log"
+	"hanaboso/topologygenerator/log"
 	"net/http"
 
 	"hanaboso/topologygenerator/commands"
@@ -28,7 +28,7 @@ func (h *DockerCompose) GenerateAction(w http.ResponseWriter, r *http.Request) {
 	)*/
 
 	resp := func(msg string, status int) {
-		log.Printf("GenerateAction: %s", msg)
+		log.Infof("GenerateAction: %s", msg)
 		requestResponse := response.RequestResponse{Message: msg}
 		response.ResponseWithJSON(w, requestResponse.Prepare(), status)
 	}
@@ -82,48 +82,4 @@ func (h *DockerCompose) GenerateAction(w http.ResponseWriter, r *http.Request) {
 	}
 
 	resp(fmt.Sprintf("ID: %s", topologyID), http.StatusOK)
-
-	/*if len(topologyID) != 0 {
-
-		topologyEntity, _ = h.Db.GetTopologyById(topologyID)
-		nodes, _ = h.Db.GetNodesByTopologyId(topologyID)
-
-		if topologyEntity.ID.Hex() != "" {
-			topologyJSON, err := topology_json.Create(topologyEntity, nodes)
-
-			if err != nil {
-				panic(model.AppError{Message: err.Error(), Type: model.ACTIONS})
-			}
-
-			err = commands.WriteFile(
-				fmt.Sprintf("%s/%s", viper.GetString("generator.path"), topologyEntity.GetSaveDir()),
-				"topology.json",
-				topologyJSON,
-			)
-
-			dockerCompose, err := docker_compose.Create(topologyEntity, nodes, viper.GetString("generator.mode"))
-
-			err = commands.WriteFile(
-				fmt.Sprintf("%s/%s", viper.GetString("generator.path"), topologyEntity.GetSaveDir()),
-				"docker-compose.yml",
-				dockerCompose,
-			)
-
-			if err != nil {
-				//TODO: add panic
-				status = http.StatusInternalServerError
-				message = fmt.Sprintf("ID: %s - %s", topologyID, err.Error())
-			} else {
-				status = http.StatusOK
-				message = fmt.Sprintf("ID: %s", vars["topologyId"])
-			}
-
-		} else {
-			message = fmt.Sprintf("Topology ID: %s. Not found", vars["topologyId"])
-		}
-	}
-
-	log.Printf("GenerateAction: %s", message)
-	requestResponse := response.RequestResponse{Message: message, DockerInfo: containers}
-	response.ResponseWithJSON(w, requestResponse.Prepare(), status)*/
 }

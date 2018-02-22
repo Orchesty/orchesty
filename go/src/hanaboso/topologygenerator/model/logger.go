@@ -1,7 +1,7 @@
 package model
 
 import (
-	"log"
+	"hanaboso/topologygenerator/log"
 	"net/http"
 	"time"
 )
@@ -19,7 +19,7 @@ func Logger(inner http.Handler, name string) http.Handler {
 
 func LogRequest(r *http.Request, name string, start time.Time, statusCode int) {
 
-	log.Printf(
+	log.Infof(
 		"%s[%d]\t%s\t%s\t%s",
 		r.Method,
 		statusCode,

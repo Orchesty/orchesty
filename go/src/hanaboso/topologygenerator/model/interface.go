@@ -2,10 +2,11 @@ package model
 
 import (
 	"net/http"
+
 	"github.com/streadway/amqp"
 )
 
-type UrlHandler interface {
+type URLHandler interface {
 	GenerateAction(w http.ResponseWriter, r *http.Request)
 	RunAction(w http.ResponseWriter, r *http.Request)
 	StopAction(w http.ResponseWriter, r *http.Request)

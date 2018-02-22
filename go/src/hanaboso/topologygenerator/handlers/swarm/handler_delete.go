@@ -2,7 +2,7 @@ package swarm
 
 import (
 	"fmt"
-	"log"
+	"hanaboso/topologygenerator/log"
 	"net/http"
 
 	"hanaboso/topologygenerator/managers/swarm"
@@ -35,7 +35,7 @@ func (h *Swarm) DeleteAction(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	log.Printf("DeleteAction: %s", message)
+	log.Infof("DeleteAction: %s", message)
 	requestResponse := response.RequestResponse{Message: message, DockerInfo: containers}
 	response.ResponseWithJSON(w, requestResponse.Prepare(), status)
 }

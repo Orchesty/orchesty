@@ -2,7 +2,7 @@ package model
 
 import (
 	"fmt"
-	"log"
+	"hanaboso/topologygenerator/log"
 
 	"hanaboso/utils/topology"
 
@@ -37,13 +37,13 @@ func CreateConnection(host string, port int) (conn *MongoDb) {
 
 func (m *MongoDb) connect(host string, port int) (err error) {
 	url := fmt.Sprintf("mongodb://%s:%d", host, port)
-	log.Printf("Mongodb server: %s", url)
+	log.Infof("Mongodb server: %s", url)
 	m.session, err = mgo.Dial(url)
 
 	if err != nil {
 		panic(AppError{Message: err.Error(), Type: MONGODB})
 	} else {
-		log.Println("Connection established to mongodb server:", url)
+		log.Infof("Connection established to mongodb server: %s", url)
 	}
 
 	m.session.SetMode(mgo.Monotonic, true)

@@ -2,7 +2,7 @@ package swarm
 
 import (
 	"fmt"
-	"log"
+	"hanaboso/topologygenerator/log"
 	"net/http"
 
 	"hanaboso/topologygenerator/commands"
@@ -71,7 +71,7 @@ func (h *Swarm) RunAction(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	log.Printf("Swarm RunAction: %s", message)
+	log.Infof("Swarm RunAction: %s", message)
 	requestResponse := response.RequestResponse{Message: message, DockerInfo: containers}
 	response.ResponseWithJSON(w, requestResponse.Prepare(), status)
 }

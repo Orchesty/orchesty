@@ -2,7 +2,7 @@ package swarm
 
 import (
 	"fmt"
-	"log"
+	"hanaboso/topologygenerator/log"
 	"net/http"
 
 	"hanaboso/topologygenerator/managers/swarm"
@@ -31,7 +31,7 @@ func (h *Swarm) StopAction(w http.ResponseWriter, r *http.Request) {
 		message = fmt.Sprintf("Topology ID: %s. Not found", vars["topologyId"])
 	}
 
-	log.Printf("Swarm StopAction: %s", message)
+	log.Infof("Swarm StopAction: %s", message)
 	requestResponse := response.RequestResponse{Message: message, DockerInfo: containers}
 	response.ResponseWithJSON(w, requestResponse.Prepare(), status)
 }

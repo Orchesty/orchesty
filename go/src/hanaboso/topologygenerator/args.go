@@ -1,23 +1,24 @@
 package main
 
 import (
-	"fmt"
-	"github.com/spf13/pflag"
-	"github.com/spf13/viper"
+	"hanaboso/topologygenerator/log"
+	golog "log"
 	"os"
 	"strconv"
-	"log"
+
+	"github.com/spf13/pflag"
+	"github.com/spf13/viper"
 )
 
 func init() {
 	version, err := strconv.ParseFloat(os.Getenv("DOCKER_API_VERSION"), 64)
 
 	if err != nil {
-		log.Fatalln("Please set environment DOCKER_API_VERSION")
+		golog.Fatalln("Please set environment DOCKER_API_VERSION")
 	}
 
 	if version*100 < 129 {
-		log.Fatalln("Minimum support docker version is 1.30")
+		golog.Fatalln("Minimum support docker version is 1.30")
 	}
 
 	parseArgs()
@@ -32,7 +33,7 @@ func parseArgs() {
 	err := viper.ReadInConfig()
 
 	if err != nil {
-		log.Println(fmt.Sprintf("Fatal error config file: %s not exist, load default", err))
+		log.Fatalf("Fatal error config file: %s not exist, load default", err)
 	}
 
 	var (
@@ -178,5 +179,4 @@ func parseArgs() {
 		projectSourcePath := os.Getenv("PROJECT_SOURCE_PATH")
 		viper.Set("generator.project-path", projectSourcePath)
 	}
-
 }

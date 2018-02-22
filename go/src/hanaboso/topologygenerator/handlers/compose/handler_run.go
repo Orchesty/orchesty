@@ -2,7 +2,7 @@ package compose
 
 import (
 	"fmt"
-	"log"
+	"hanaboso/topologygenerator/log"
 	"net/http"
 
 	"hanaboso/topologygenerator/commands"
@@ -56,7 +56,7 @@ func (h *DockerCompose) RunAction(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	log.Printf("RunAction: %s", message)
+	log.Infof("RunAction: %s", message)
 	requestResponse := response.RequestResponse{Message: message, DockerInfo: containers}
 	response.ResponseWithJSON(w, requestResponse.Prepare(), status)
 }

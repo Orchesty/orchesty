@@ -2,10 +2,12 @@ package router
 
 import (
 	"encoding/json"
+	"hanaboso/topologygenerator/log"
 	"hanaboso/topologygenerator/model"
 	"hanaboso/topologygenerator/response"
-	"log"
+
 	"net/http"
+	"os"
 	"reflect"
 	"time"
 
@@ -60,10 +62,11 @@ func panicHandler(next http.Handler) http.Handler {
 
 				r := response.RequestResponse{Message: message, DockerInfo: nil}
 
-				log.Printf("PanicHandler: %s", message)
+				log.Fatalf("PanicHandler: %s", message)
 				respBody, err := json.MarshalIndent(r, "", "  ")
 				if err != nil {
 					log.Fatal(err)
+					os.Exit(1) // TODO: Really exit?
 				}
 
 				response.ResponseWithJSON(w, respBody, http.StatusInternalServerError)

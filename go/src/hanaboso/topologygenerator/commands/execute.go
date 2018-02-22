@@ -2,13 +2,13 @@ package commands
 
 import (
 	"bytes"
+	"hanaboso/topologygenerator/log"
 	"os/exec"
-	"log"
 )
 
 func Execute(command string, args ...string) (string, error, string) {
 
-	log.Printf("CMD: %s %s", command, args)
+	log.Infof("CMD: %s %s", command, args)
 
 	cmd := exec.Command(command, args...)
 	var (
@@ -22,15 +22,15 @@ func Execute(command string, args ...string) (string, error, string) {
 	err := cmd.Run()
 
 	if err != nil {
-		log.Printf("Exit:%s", err)
+		log.Infof("Exit:%s", err)
 	}
 
 	if out.Len() > 0 {
-		log.Printf("OUT %s %s > %s\n", cmd.Path, cmd.Args, out.String())
+		log.Infof("OUT %s %s > %s\n", cmd.Path, cmd.Args, out.String())
 	}
 
 	if stdErr.Len() > 0 {
-		log.Printf("STDERR %s\n", stdErr.String())
+		log.Infof("STDERR %s\n", stdErr.String())
 	}
 
 	return out.String(), err, stdErr.String()

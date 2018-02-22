@@ -5,6 +5,6 @@ import (
 )
 
 type DockerCompose struct {
-	model.UrlHandler
+	model.URLHandler
 	Db *model.MongoDb
 }

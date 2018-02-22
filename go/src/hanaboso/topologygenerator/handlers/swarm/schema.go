@@ -3,6 +3,6 @@ package swarm
 import "hanaboso/topologygenerator/model"
 
 type Swarm struct {
-	model.UrlHandler
+	model.URLHandler
 	Db *model.MongoDb
 }

@@ -2,7 +2,7 @@ package compose
 
 import (
 	"fmt"
-	"log"
+	"hanaboso/topologygenerator/log"
 	"net/http"
 
 	"hanaboso/topologygenerator/managers/compose"
@@ -34,7 +34,7 @@ func (h *DockerCompose) StopAction(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	log.Printf("StopAction: %s", message)
+	log.Infof("StopAction: %s", message)
 	requestResponse := response.RequestResponse{Message: message, DockerInfo: containers}
 	response.ResponseWithJSON(w, requestResponse.Prepare(), status)
 }
