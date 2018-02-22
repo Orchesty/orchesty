@@ -35,11 +35,45 @@ export interface ICounterSettings {
     };
 }
 
+// interface IProcessesSyncMap {
+//     [key: string]: {
+//         msg: CounterMessage,
+//         resolve: () => {},
+//         reject: () => {},
+//     };
+// }
+//
+// interface ITopologiesSyncMap {
+//     [key: string]: IProcessesSyncMap;
+// }
+
 /**
  * Topology component that receives signals(messages) and watches if some process run through whole topology
  * If yes, it sends process finished message
  */
 export default class Counter implements ICounter, IStoppable {
+
+    /**
+     * Creates CounterMessage object from AMQPMessage object
+     * @param {Message} msg
+     * @return {CounterMessage}
+     */
+    private static createCounterMessage(msg: Message): CounterMessage {
+        const headers = new Headers(msg.properties.headers);
+        const content = JSON.parse(msg.content.toString());
+        const processId = CounterProcess.getMostTopProcessId(headers.getPFHeader(Headers.PROCESS_ID));
+        headers.setPFHeader(Headers.PROCESS_ID, processId);
+        const node: INodeLabel = headers.createNodeLabel();
+
+        return new CounterMessage(
+            node,
+            headers.getRaw(),
+            content.result.code,
+            content.result.message,
+            parseInt(content.route.following, 10),
+            parseInt(content.route.multiplier, 10),
+        );
+    }
 
     private settings: any;
     private connection: Connection;
@@ -129,7 +163,7 @@ export default class Counter implements ICounter, IStoppable {
         this.consumer = new CounterConsumer(
             this.connection,
             prepareFn,
-            async (msg: Message) => await this.handleSyncMessage(msg),
+            async (msg: Message) => await this.handleMessage(msg),
         );
     }
 
@@ -157,15 +191,30 @@ export default class Counter implements ICounter, IStoppable {
      * @param {Message} msg
      * @return {Promise<any>}
      */
-    private async handleSyncMessage(msg: Message): Promise<any> {
-        return new Promise((resolve, reject) => {
+    private async handleMessage(msg: Message): Promise<any> {
+        try {
+            const cm = Counter.createCounterMessage(msg);
 
-            this.syncQueue.push({msg, resolve, reject});
+            logger.info(`Counter message received: "${cm.toString()}"`, {
+                topology_id: cm.getTopologyId(),
+                node_id: cm.getNodeId(),
+                correlation_id: cm.getCorrelationId(),
+                process_id: cm.getProcessId(),
+                parent_id: cm.getParentId(),
+            });
 
-            if (this.syncQueue.length === 1) {
-                this.handleQueue();
-            }
-        });
+            return new Promise((resolve, reject) => {
+                this.syncQueue.push({msg: cm, resolve, reject});
+
+                if (this.syncQueue.length === 1) {
+                    this.handleQueue();
+                }
+            });
+        } catch (e) {
+            logger.error("Cannot create counter message from amqp message.", {error: e});
+
+            return Promise.reject(e);
+        }
     }
 
     /**
@@ -181,51 +230,12 @@ export default class Counter implements ICounter, IStoppable {
         const first = this.syncQueue[0];
 
         try {
-            await this.handleMessage(first.msg);
+            await this.updateProcessInfo(first.msg);
             first.resolve();
             this.syncQueue.shift();
             this.handleQueue();
         } catch (e) {
             first.reject(e);
-        }
-    }
-
-    /**
-     * Handles incoming message
-     *
-     * @param {Message} msg
-     * @return {boolean}
-     */
-    private async handleMessage(msg: Message): Promise<void> {
-        try {
-            const headers = new Headers(msg.properties.headers);
-            const content = JSON.parse(msg.content.toString());
-            const processId = CounterProcess.getMostTopProcessId(headers.getPFHeader(Headers.PROCESS_ID));
-            headers.setPFHeader(Headers.PROCESS_ID, processId);
-            const node: INodeLabel = headers.createNodeLabel();
-
-            const cm = new CounterMessage(
-                node,
-                headers.getRaw(),
-                content.result.code,
-                content.result.message,
-                parseInt(content.route.following, 10),
-                parseInt(content.route.multiplier, 10),
-            );
-
-            logger.info(`Counter message received: "${cm.toString()}"`, {
-                topology_id: cm.getTopologyId(),
-                node_id: cm.getNodeId(),
-                correlation_id: cm.getCorrelationId(),
-                process_id: cm.getProcessId(),
-                parent_id: cm.getParentId(),
-            });
-
-            await this.updateProcessInfo(cm);
-        } catch (e) {
-            logger.error("Cannot handle counter message.", {error: e});
-
-            return Promise.reject(e);
         }
     }
 
