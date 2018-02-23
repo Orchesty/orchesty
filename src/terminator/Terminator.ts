@@ -44,7 +44,7 @@ export default class Terminator {
     }
 
     /**
-     * Checks if counter can be terminated and if so, send http request about it
+     * Checks if topology can be terminated and if so, send http request about it
      */
     public async tryTerminate(topologyId: string): Promise<boolean> {
         if (!this.requestedTerminations.has(topologyId)) {

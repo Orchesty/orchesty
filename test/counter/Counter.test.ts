@@ -9,6 +9,7 @@ import {Replies} from "amqplib/properties";
 import {amqpConnectionOptions, redisStorageOptions} from "../../src/config";
 import {default as Counter, ICounterSettings} from "../../src/counter/Counter";
 import {ICounterProcessInfo} from "../../src/counter/CounterProcess";
+import Distributor from "../../src/counter/distributor/Distributor";
 import InMemoryStorage from "../../src/counter/storage/InMemoryStorage";
 import RedisStorage from "../../src/counter/storage/RedisStorage";
 import {ResultCode} from "../../src/message/ResultCode";
@@ -386,7 +387,8 @@ describe("Counter", () => {
 
         const storage = new InMemoryStorage();
         const terminator = new Terminator(7955, storage);
-        const counter = new Counter(counterSettings, conn, storage, terminator, metricsMock);
+        const distributor = new Distributor();
+        const counter = new Counter(counterSettings, conn, storage, distributor, terminator, metricsMock);
         runCounterTest(counter, testOutputQueue, done);
     });
 
@@ -406,7 +408,8 @@ describe("Counter", () => {
 
         const storage = new RedisStorage(redisStorageOptions);
         const terminator = new Terminator(7956, storage);
-        const counter = new Counter(counterSettings, conn, storage, terminator, metricsMock);
+        const distributor = new Distributor();
+        const counter = new Counter(counterSettings, conn, storage, distributor, terminator, metricsMock);
         runCounterTest(counter, testOutputQueue, done);
     });
 
@@ -421,7 +424,8 @@ describe("Counter", () => {
         };
         const storage = new InMemoryStorage();
         const terminator = new Terminator(7957, storage);
-        const counter = new Counter(counterSettings, conn, storage, terminator, metricsMock);
+        const distributor = new Distributor();
+        const counter = new Counter(counterSettings, conn, storage, distributor, terminator, metricsMock);
 
         try {
             const msg: Message = {content: new Buffer(""), fields: {}, properties: {}};
