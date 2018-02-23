@@ -11,6 +11,7 @@ rabbit-mq:
             queue: pipes.results
             serializer: Hanaboso\PipesFramework\RabbitMq\Serializers\JsonSerializer
             callback: hanaboso.pipes_framework.commons.status_service.status_service_callback
+            prefetch_count: 100
 
 services:
     # callback for status service
