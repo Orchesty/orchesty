@@ -76,7 +76,10 @@ class TmpUser extends UserAbstract implements TmpUserInterface
      */
     public function toArray(): array
     {
-        return [];
+        return [
+            'id'    => $this->getId(),
+            'email' => $this->getEmail(),
+        ];
     }
 
 }

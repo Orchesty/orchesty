@@ -3,10 +3,12 @@
 namespace Hanaboso\PipesFramework\Acl\Document;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Hanaboso\PipesFramework\Acl\Entity\GroupInterface;
 use Hanaboso\PipesFramework\Acl\Entity\RuleInterface;
 use Hanaboso\PipesFramework\Commons\Traits\Document\IdTrait;
+use Hanaboso\PipesFramework\User\Document\TmpUser;
 use Hanaboso\PipesFramework\User\Entity\UserInterface;
 
 /**
@@ -41,6 +43,13 @@ class Group extends DocumentAbstract implements GroupInterface
      * @ODM\ReferenceMany(targetDocument="Hanaboso\PipesFramework\User\Document\User", strategy="set")
      */
     private $users = [];
+
+    /**
+     * @var Collection|TmpUser[]|array
+     *
+     * @ODM\ReferenceMany(targetDocument="Hanaboso\PipesFramework\User\Document\TmpUser", strategy="set")
+     */
+    private $tmpUsers = [];
 
     /**
      * @var int
@@ -157,6 +166,26 @@ class Group extends DocumentAbstract implements GroupInterface
     public function setLevel(int $level): GroupInterface
     {
         $this->level = $level;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|TmpUser[]|array
+     */
+    public function getTmpUsers()
+    {
+        return $this->tmpUsers;
+    }
+
+    /**
+     * @param TmpUser $tmpUser
+     *
+     * @return Group
+     */
+    public function addTmpUsers(TmpUser $tmpUser): Group
+    {
+        $this->tmpUsers->add($tmpUser);
 
         return $this;
     }
