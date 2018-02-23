@@ -61,7 +61,8 @@ build-monolith-fpm:
 		--rm \
 		-u $$(id -u):$$(id -g) \
 		-v $$(pwd)/../../../:/build \
-		-v ${HOME}/.composer:/srv/.composer \
+		-v $${SSH_AUTH_SOCK}:/tmp/bound-ssh-agent \
+		-v $${HOME}/.composer:/srv/.composer \
 		-w /build/${CLIENT_DIR}/pipes-api \
 		-e COMPOSER=composer.prod.json \
 		-e APP_ENV=prod \

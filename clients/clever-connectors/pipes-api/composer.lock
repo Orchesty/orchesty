@@ -2033,7 +2033,7 @@
             ],
             "description": "PipesFramework for Symfony",
             "transport-options": {
-                "symlink": true
+                "symlink": false
             }
         },
         {
