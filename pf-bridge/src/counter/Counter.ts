@@ -10,6 +10,7 @@ import Terminator from "../terminator/Terminator";
 import {INodeLabel} from "../topology/Configurator";
 import CounterConsumer from "./CounterConsumer";
 import {default as CounterProcess, ICounterProcessInfo} from "./CounterProcess";
+import Distributor from "./distributor/Distributor";
 import ICounter from "./ICounter";
 import ICounterStorage from "./storage/ICounterStorage";
 
@@ -33,20 +34,6 @@ export interface ICounterSettings {
             options: {},
         },
     };
-}
-
-interface ISyncObject {
-    msg: CounterMessage;
-    resolve: any;
-    reject: any;
-}
-
-interface IProcessesSyncMap {
-    [key: string]: ISyncObject[];
-}
-
-interface ITopologiesSyncMap {
-    [key: string]: IProcessesSyncMap;
 }
 
 /**
@@ -85,13 +72,14 @@ export default class Counter implements ICounter, IStoppable {
     private terminator: Terminator;
     private metrics: IMetrics;
     private consumerTag: string;
-    private syncQueue: ITopologiesSyncMap;
+    private distributor: Distributor;
 
     /**
      *
      * @param settings
      * @param connection
      * @param storage
+     * @param distributor
      * @param terminator
      * @param metrics
      */
@@ -99,16 +87,16 @@ export default class Counter implements ICounter, IStoppable {
         settings: ICounterSettings,
         connection: Connection,
         storage: ICounterStorage,
+        distributor: Distributor,
         terminator: Terminator,
         metrics: IMetrics,
     ) {
         this.settings = settings;
         this.connection = connection;
         this.storage = storage;
+        this.distributor = distributor;
         this.terminator = terminator;
         this.metrics = metrics;
-
-        this.syncQueue = {};
 
         this.prepareConsumer();
         this.preparePublisher();
@@ -206,18 +194,9 @@ export default class Counter implements ICounter, IStoppable {
             });
 
             return new Promise((resolve, reject) => {
+                this.distributor.add(cm.getTopologyId(), cm.getProcessId(), {msg: cm, resolve, reject});
 
-                if (!this.syncQueue[cm.getTopologyId()]) {
-                    this.syncQueue[cm.getTopologyId()] = {};
-                }
-
-                if (!this.syncQueue[cm.getTopologyId()][cm.getProcessId()]) {
-                    this.syncQueue[cm.getTopologyId()][cm.getProcessId()] = [];
-                }
-
-                this.syncQueue[cm.getTopologyId()][cm.getProcessId()].push({msg: cm, resolve, reject});
-
-                if (this.syncQueue[cm.getTopologyId()][cm.getProcessId()].length === 1) {
+                if (this.distributor.length(cm.getTopologyId(), cm.getProcessId()) === 1) {
                     this.handleQueue(cm.getTopologyId(), cm.getProcessId());
                 }
             });
@@ -233,26 +212,26 @@ export default class Counter implements ICounter, IStoppable {
      *
      */
     private handleQueue(topoId: string, processId: string): void {
-        if (!this.syncQueue[topoId]) {
+        if (this.distributor.has(topoId, processId) === false) {
             return;
         }
 
-        if (!this.syncQueue[topoId][processId]) {
+        if (this.distributor.length(topoId, processId) === 0) {
+            this.distributor.deleteSoftly(topoId, processId);
             return;
         }
 
-        if (this.syncQueue[topoId][processId].length === 0) {
-            delete this.syncQueue[topoId][processId];
+        const first = this.distributor.first(topoId, processId);
+
+        if (typeof first === "undefined") {
             return;
         }
-
-        const first = this.syncQueue[topoId][processId][0];
 
         (async () => {
             try {
                 await this.updateProcessInfo(first.msg);
                 first.resolve();
-                this.syncQueue[topoId][processId].shift();
+                this.distributor.shift(topoId, processId);
                 this.handleQueue(topoId, processId);
             } catch (e) {
                 first.reject(e);
@@ -299,35 +278,41 @@ export default class Counter implements ICounter, IStoppable {
             return;
         }
 
-        const e = this.settings.pub.exchange;
-        const rKey = this.settings.pub.routing_key;
-        const options: Options.Publish = {
-            contentType: "application/json",
-        };
-
-        await this.publisher.publish(e.name, rKey, new Buffer(JSON.stringify(process)), options);
-
-        logger.info(
-            `Counter job evaluated as finished. Status: ${process.success}`,
-            {
-                node_id: "counter",
-                correlation_id: process.correlation_id,
-                process_id: process.process_id,
-                topology_id: process.topology,
-            },
-        );
-
+        this.publishResult(process);
         this.terminator.tryTerminate(process.topology);
 
+        this.logFinished(process);
+        this.sendMetrics(process);
+    }
+
+    /**
+     *
+     * @param {ICounterProcessInfo} process
+     * @return {Promise<void>}
+     */
+    private async publishResult(process: ICounterProcessInfo): Promise<void> {
+        const ex = this.settings.pub.exchange;
+        const rKey = this.settings.pub.routing_key;
+        const options: Options.Publish = { contentType: "application/json" };
+
+        await this.publisher.publish(ex.name, rKey, new Buffer(JSON.stringify(process)), options);
+    }
+
+    /**
+     *
+     * @param {ICounterProcessInfo} process
+     * @return {Promise<void>}
+     */
+    private async sendMetrics(process: ICounterProcessInfo): Promise<void> {
         try {
             this.metrics.removeTag("node_id");
             this.metrics.addTag("topology_id", process.topology.split("-")[0]);
             const metricMsg = await this.metrics.send({
-                    counter_process_result: process.ok === process.total,
-                    counter_process_duration: process.end_timestamp - process.start_timestamp,
-                    counter_process_ok_count: process.ok,
-                    counter_process_fail_count: process.nok,
-                }, true);
+                counter_process_result: process.ok === process.total,
+                counter_process_duration: process.end_timestamp - process.start_timestamp,
+                counter_process_ok_count: process.ok,
+                counter_process_fail_count: process.nok,
+            }, true);
             logger.info(metricMsg);
         } catch (e) {
             logger.warn("Unable to send counter metrics.", {
@@ -337,6 +322,22 @@ export default class Counter implements ICounter, IStoppable {
                 process_id: process.process_id,
             });
         }
+    }
+
+    /**
+     *
+     * @param {ICounterProcessInfo} process
+     */
+    private logFinished(process: ICounterProcessInfo): void {
+        logger.info(
+            `Counter job evaluated as finished. Status: ${process.success}`,
+            {
+                node_id: "counter",
+                correlation_id: process.correlation_id,
+                process_id: process.process_id,
+                topology_id: process.topology,
+            },
+        );
     }
 
 }

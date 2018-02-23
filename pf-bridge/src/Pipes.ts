@@ -2,6 +2,7 @@ import {Container} from "hb-utils/dist/lib/Container";
 import {IMetrics} from "metrics-sender/dist/lib/metrics/IMetrics";
 import {metricsOptions, mongoStorageOptions, probeOptions, repeaterOptions} from "./config";
 import Counter from "./counter/Counter";
+import Distributor from "./counter/distributor/Distributor";
 import DIContainer from "./DIContainer";
 import IStoppable from "./IStoppable";
 import logger from "./logger/Logger";
@@ -78,6 +79,7 @@ class Pipes implements INodeConfigProvider {
             topo.counter,
             this.dic.get("amqp.connection"),
             this.dic.get("counter.storage")(),
+            new Distributor(),
             this.dic.get("topology.terminator")(false),
             this.dic.get("metrics")(topo.id, "counter", metricsOptions.counter_measurement),
         );
@@ -100,6 +102,7 @@ class Pipes implements INodeConfigProvider {
             Configurator.getCounterDefaultSettings(true, topoId),
             this.dic.get("amqp.connection"),
             this.dic.get("counter.storage")(),
+            new Distributor(),
             this.dic.get("topology.terminator")(true),
             this.dic.get("metrics")(topoId, "multi-counter", metricsOptions.counter_measurement),
         );
