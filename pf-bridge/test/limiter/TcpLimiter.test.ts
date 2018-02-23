@@ -20,10 +20,10 @@ describe("TcpLimiter", () => {
 
         setTimeout( async () => {
             const limiter = new TcpLimiter({host: "localhost", port: 65337});
-            const result = await limiter.isReady();
-            assert.isTrue(result);
+
+            assert.isTrue(await limiter.isReady());
             done();
-        }, 300);
+        }, 100);
     });
 
 });
