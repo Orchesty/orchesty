@@ -35,11 +35,47 @@ export interface ICounterSettings {
     };
 }
 
+interface ISyncObject {
+    msg: CounterMessage;
+    resolve: any;
+    reject: any;
+}
+
+interface IProcessesSyncMap {
+    [key: string]: ISyncObject[];
+}
+
+interface ITopologiesSyncMap {
+    [key: string]: IProcessesSyncMap;
+}
+
 /**
  * Topology component that receives signals(messages) and watches if some process run through whole topology
  * If yes, it sends process finished message
  */
 export default class Counter implements ICounter, IStoppable {
+
+    /**
+     * Creates CounterMessage object from AMQPMessage object
+     * @param {Message} msg
+     * @return {CounterMessage}
+     */
+    private static createCounterMessage(msg: Message): CounterMessage {
+        const headers = new Headers(msg.properties.headers);
+        const content = JSON.parse(msg.content.toString());
+        const processId = CounterProcess.getMostTopProcessId(headers.getPFHeader(Headers.PROCESS_ID));
+        headers.setPFHeader(Headers.PROCESS_ID, processId);
+        const node: INodeLabel = headers.createNodeLabel();
+
+        return new CounterMessage(
+            node,
+            headers.getRaw(),
+            content.result.code,
+            content.result.message,
+            parseInt(content.route.following, 10),
+            parseInt(content.route.multiplier, 10),
+        );
+    }
 
     private settings: any;
     private connection: Connection;
@@ -49,7 +85,7 @@ export default class Counter implements ICounter, IStoppable {
     private terminator: Terminator;
     private metrics: IMetrics;
     private consumerTag: string;
-    private syncQueue: any[];
+    private syncQueue: ITopologiesSyncMap;
 
     /**
      *
@@ -72,7 +108,7 @@ export default class Counter implements ICounter, IStoppable {
         this.terminator = terminator;
         this.metrics = metrics;
 
-        this.syncQueue = [];
+        this.syncQueue = {};
 
         this.prepareConsumer();
         this.preparePublisher();
@@ -129,7 +165,7 @@ export default class Counter implements ICounter, IStoppable {
         this.consumer = new CounterConsumer(
             this.connection,
             prepareFn,
-            async (msg: Message) => await this.handleSyncMessage(msg),
+            async (msg: Message) => await this.handleMessage(msg),
         );
     }
 
@@ -157,61 +193,9 @@ export default class Counter implements ICounter, IStoppable {
      * @param {Message} msg
      * @return {Promise<any>}
      */
-    private async handleSyncMessage(msg: Message): Promise<any> {
-        return new Promise((resolve, reject) => {
-
-            this.syncQueue.push({msg, resolve, reject});
-
-            if (this.syncQueue.length === 1) {
-                this.handleQueue();
-            }
-        });
-    }
-
-    /**
-     * Recursively process messages in synchronous way
-     *
-     * @return {Promise<void>}
-     */
-    private async handleQueue() {
-        if (this.syncQueue.length === 0) {
-            return;
-        }
-
-        const first = this.syncQueue[0];
-
+    private async handleMessage(msg: Message): Promise<any> {
         try {
-            await this.handleMessage(first.msg);
-            first.resolve();
-            this.syncQueue.shift();
-            this.handleQueue();
-        } catch (e) {
-            first.reject(e);
-        }
-    }
-
-    /**
-     * Handles incoming message
-     *
-     * @param {Message} msg
-     * @return {boolean}
-     */
-    private async handleMessage(msg: Message): Promise<void> {
-        try {
-            const headers = new Headers(msg.properties.headers);
-            const content = JSON.parse(msg.content.toString());
-            const processId = CounterProcess.getMostTopProcessId(headers.getPFHeader(Headers.PROCESS_ID));
-            headers.setPFHeader(Headers.PROCESS_ID, processId);
-            const node: INodeLabel = headers.createNodeLabel();
-
-            const cm = new CounterMessage(
-                node,
-                headers.getRaw(),
-                content.result.code,
-                content.result.message,
-                parseInt(content.route.following, 10),
-                parseInt(content.route.multiplier, 10),
-            );
+            const cm = Counter.createCounterMessage(msg);
 
             logger.info(`Counter message received: "${cm.toString()}"`, {
                 topology_id: cm.getTopologyId(),
@@ -221,12 +205,59 @@ export default class Counter implements ICounter, IStoppable {
                 parent_id: cm.getParentId(),
             });
 
-            await this.updateProcessInfo(cm);
+            return new Promise((resolve, reject) => {
+
+                if (!this.syncQueue[cm.getTopologyId()]) {
+                    this.syncQueue[cm.getTopologyId()] = {};
+                }
+
+                if (!this.syncQueue[cm.getTopologyId()][cm.getProcessId()]) {
+                    this.syncQueue[cm.getTopologyId()][cm.getProcessId()] = [];
+                }
+
+                this.syncQueue[cm.getTopologyId()][cm.getProcessId()].push({msg: cm, resolve, reject});
+
+                if (this.syncQueue[cm.getTopologyId()][cm.getProcessId()].length === 1) {
+                    this.handleQueue(cm.getTopologyId(), cm.getProcessId());
+                }
+            });
         } catch (e) {
-            logger.error("Cannot handle counter message.", {error: e});
+            logger.error("Cannot create counter message from amqp message.", {error: e});
 
             return Promise.reject(e);
         }
+    }
+
+    /**
+     * Recursively process messages in synchronous way
+     *
+     */
+    private handleQueue(topoId: string, processId: string): void {
+        if (!this.syncQueue[topoId]) {
+            return;
+        }
+
+        if (!this.syncQueue[topoId][processId]) {
+            return;
+        }
+
+        if (this.syncQueue[topoId][processId].length === 0) {
+            delete this.syncQueue[topoId][processId];
+            return;
+        }
+
+        const first = this.syncQueue[topoId][processId][0];
+
+        (async () => {
+            try {
+                await this.updateProcessInfo(first.msg);
+                first.resolve();
+                this.syncQueue[topoId][processId].shift();
+                this.handleQueue(topoId, processId);
+            } catch (e) {
+                first.reject(e);
+            }
+        })();
     }
 
     /**
