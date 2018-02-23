@@ -43,7 +43,7 @@ final class SalesforceCreatedContactMapperTest extends ConnectorTestCaseAbstract
 
         $connector = new SalesforceCreatedContactMapper($dm);
         $response  = Json::decode($connector->process(
-            (new ProcessDto())->setData($this->getRequest('SalesforceUpdatedContactMapper.json'))->setHeaders([]))
+            (new ProcessDto())->setData($this->getRequest('SalesforceCreatedContactMapper.json'))->setHeaders([]))
             ->getData(),
             TRUE
         );

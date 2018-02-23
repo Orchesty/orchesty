@@ -95,7 +95,7 @@ class SalesforceUpdatedContactConnector extends SalesforceContactConnectorAbstra
     protected function createPageContactRequest(int $page, string $timeQuery, RequestDto $dto): RequestDto
     {
         $query = sprintf(
-            'select+email,+firstname,+lastname+from+contact%s+limit+%s+offset+%s',
+            'select+CreatedDate,+LastUpdatedDate,+email,+firstname,+lastname+from+contact%s+limit+%s+offset+%s',
             $timeQuery,
             self::PAGE_LIMIT,
             self::PAGE_LIMIT * $page
