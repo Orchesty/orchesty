@@ -3,8 +3,10 @@
 namespace Hanaboso\PipesFramework\Acl\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Hanaboso\PipesFramework\Commons\Traits\Entity\IdTrait;
+use Hanaboso\PipesFramework\User\Entity\TmpUser;
 use Hanaboso\PipesFramework\User\Entity\UserInterface;
 
 /**
@@ -50,6 +52,15 @@ class Group extends EntityAbstract implements GroupInterface
      * @ORM\JoinTable(name="group_owner")
      */
     protected $owner = [];
+
+    /**
+     * @var Collection|TmpUser[]|array
+     *
+     * @ORM\ManyToMany(targetEntity="Hanaboso\PipesFramework\User\Entity\TmpUser")
+     * @ORM\JoinColumn(name="tmp_user_id", referencedColumnName="id", nullable=true)
+     * @ORM\JoinTable(name="group_tmp_user")
+     */
+    private $tmpUsers = [];
 
     /**
      * @var int
@@ -166,6 +177,26 @@ class Group extends EntityAbstract implements GroupInterface
     public function setLevel(int $level): GroupInterface
     {
         $this->level = $level;
+
+        return $this;
+    }
+
+    /**
+     * @return array|Collection|array
+     */
+    public function getTmpUsers()
+    {
+        return $this->tmpUsers;
+    }
+
+    /**
+     * @param TmpUser $tmpUser
+     *
+     * @return Group
+     */
+    public function addTmpUser(TmpUser $tmpUser): Group
+    {
+        $this->tmpUsers->add($tmpUser);
 
         return $this;
     }
