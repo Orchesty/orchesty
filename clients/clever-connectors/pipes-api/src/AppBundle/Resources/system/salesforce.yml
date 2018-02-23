@@ -75,6 +75,11 @@ services:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Salesforce\Mapper\SalesforceCreateContactMapper
         arguments:
 
+    hbpf.custom_node.salesforce-sync-contact-mapper:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Salesforce\Mapper\SalesforceSyncContactMapper
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+
     hbpf.custom_node.salesforce-created-contact-mapper:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Salesforce\Mapper\SalesforceCreatedContactMapper
         arguments:

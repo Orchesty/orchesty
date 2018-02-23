@@ -10,4 +10,14 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\Salesforce\Mapper;
 class SalesforceUpdatedContactMapper extends SalesforceContactMapperAbstract
 {
 
+    /**
+     * @param array $data
+     *
+     * @return bool
+     */
+    protected function checkDate(array $data): bool
+    {
+        return $data['CreatedDate'] !== $data['LastModifiedDate'];
+    }
+
 }

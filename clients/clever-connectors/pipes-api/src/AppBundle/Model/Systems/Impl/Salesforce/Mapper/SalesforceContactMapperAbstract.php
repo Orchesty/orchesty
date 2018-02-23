@@ -6,6 +6,7 @@ use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\CM\SubscriberConnector\SubscriberObject\CMSubscriber;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
+use CleverConnectors\AppBundle\Utils\HeadersUtils;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
@@ -57,6 +58,10 @@ abstract class SalesforceContactMapperAbstract implements CustomNodeInterface
             );
         }
 
+        if (!$this->checkDate($data)) {
+            return HeadersUtils::setStopHeaderToDto($dto);
+        }
+
         $subscriber = (new CMSubscriber())->setEmail($data['Email']);
 
         if (array_key_exists('FirstName', $data)) {
@@ -79,5 +84,12 @@ abstract class SalesforceContactMapperAbstract implements CustomNodeInterface
 
         return $dto->setData(Json::encode($subscriber->toArray()));
     }
+
+    /**
+     * @param array $data
+     *
+     * @return bool
+     */
+    protected abstract function checkDate(array $data): bool;
 
 }

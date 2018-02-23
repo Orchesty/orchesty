@@ -3,11 +3,11 @@
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Salesforce\Mapper;
 
 /**
- * Class SalesforceCreatedContactMapper
+ * Class SalesforceSyncContactMapper
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\Salesforce\Mapper
  */
-class SalesforceCreatedContactMapper extends SalesforceContactMapperAbstract
+class SalesforceSyncContactMapper extends SalesforceContactMapperAbstract
 {
 
     /**
@@ -22,7 +22,7 @@ class SalesforceCreatedContactMapper extends SalesforceContactMapperAbstract
      */
     protected function checkDate(array $data): bool
     {
-        return $data['CreatedDate'] === $data['LastModifiedDate'];
+        return TRUE;
     }
 
 }
