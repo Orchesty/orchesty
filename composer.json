@@ -23,7 +23,7 @@
     "doctrine/orm": "^2.6",
     "friendsofsymfony/rest-bundle": "^2.3",
     "guzzlehttp/guzzle": "^6.3",
-    "hanaboso/email-service-bundle": "1.0.0",
+    "hanaboso/email-service-bundle": "1.0.1",
     "influxdb/influxdb-php": "^1.4",
     "jms/serializer-bundle": "^2.3",
     "league/oauth2-client": "^2.3",
