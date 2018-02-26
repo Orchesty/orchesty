@@ -60,7 +60,9 @@ class SalesforceDeletedContactConnector extends SalesforceContactConnectorAbstra
                     return $this->getTotalPages($response);
                 },
                 function (ResponseException $e) use ($systemInstall, $callbackItem) {
-                    return $callbackItem($this->batchConnectorError($e, $this->system, $systemInstall, 1));
+                    $success = $this->batchConnectorError($e, $this->system, $systemInstall, 1);
+
+                    return $callbackItem($success);
                 }
             )->then(
                 function (int $total) use ($browser, $callbackItem, $timeQuery, $requestDto, $systemInstall) {

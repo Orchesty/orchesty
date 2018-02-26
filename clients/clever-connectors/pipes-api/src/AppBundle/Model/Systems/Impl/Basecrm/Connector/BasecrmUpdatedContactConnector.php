@@ -152,7 +152,8 @@ class BasecrmUpdatedContactConnector implements ConnectorInterface, BatchInterfa
                 }
             },
             function (ResponseException $e) use ($systemInstall, $callbackItem, $page) {
-                $callbackItem($this->batchConnectorError($e, $this->system, $systemInstall, $page));
+                $success = $this->batchConnectorError($e, $this->system, $systemInstall, $page);
+                $callbackItem($success);
 
                 return resolve();
             }

@@ -12,6 +12,7 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\Connector;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\LastSync\LastSyncManager;
 use CleverConnectors\AppBundle\Model\ProgressCounter\ProgressCounterService;
+use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\QuickbooksSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
@@ -84,6 +85,7 @@ class QuickbooksSyncCustomerConnector extends QuickbooksCustomerConnectorAbstrac
      * @param callable      $callbackItem
      *
      * @return PromiseInterface
+     * @throws SystemException
      */
     public function processBatch(ProcessDto $dto, LoopInterface $loop, callable $callbackItem): PromiseInterface
     {
@@ -101,7 +103,8 @@ class QuickbooksSyncCustomerConnector extends QuickbooksCustomerConnectorAbstrac
                 return $this->getTotalPages($response);
             },
             function (ResponseException $exception) use ($systemInstall, $callbackItem) {
-                $callbackItem($this->batchConnectorError($exception, $this->system, $systemInstall, 1));
+                $success = $this->batchConnectorError($exception, $this->system, $systemInstall, 1);
+                $callbackItem($success);
 
                 return reject();
             }

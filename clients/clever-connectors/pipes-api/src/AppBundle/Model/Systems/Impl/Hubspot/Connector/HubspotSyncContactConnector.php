@@ -189,7 +189,9 @@ class HubspotSyncContactConnector implements BatchInterface, ConnectorInterface,
                     return resolve();
                 },
                 function (ResponseException $e) use ($systemInstall, $callbackItem, $page) {
-                    return $callbackItem($this->batchConnectorError($e, $this->system, $systemInstall, $page));
+                    $success = $this->batchConnectorError($e, $this->system, $systemInstall, $page);
+
+                    return $callbackItem($success);
                 }
             );
 

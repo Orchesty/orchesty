@@ -120,6 +120,7 @@ class NutshellSyncContactConnector implements BatchInterface, ConnectorInterface
      * @param callable      $callbackItem
      *
      * @return PromiseInterface
+     * @throws SystemException
      */
     public function processBatch(ProcessDto $dto, LoopInterface $loop, callable $callbackItem): PromiseInterface
     {
@@ -227,7 +228,9 @@ class NutshellSyncContactConnector implements BatchInterface, ConnectorInterface
                 }
             },
             function (ResponseException $e) use ($systemInstall, $callbackItem, $page): SuccessMessage {
-                return $callbackItem($this->batchConnectorError($e, $this->system, $systemInstall, $page));
+                $success = $this->batchConnectorError($e, $this->system, $systemInstall, $page);
+
+                return $callbackItem($success);
             }
         );
 

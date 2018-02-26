@@ -11,6 +11,7 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\Connector;
 
 use CleverConnectors\AppBundle\Document\LastSync;
 use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\LastSync\LastSyncManager;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\QuickbooksSystem;
@@ -110,6 +111,8 @@ abstract class QuickbooksCustomerConnectorAbstract implements BatchInterface, Co
      * @param callable      $callbackItem
      *
      * @return PromiseInterface
+     * @throws SystemException
+     * @throws CleverConnectorsException
      */
     public function processBatch(ProcessDto $dto, LoopInterface $loop, callable $callbackItem): PromiseInterface
     {
@@ -127,7 +130,9 @@ abstract class QuickbooksCustomerConnectorAbstract implements BatchInterface, Co
                 return $this->getTotalPages($response);
             },
             function (ResponseException $exception) use ($systemInstall, $callbackItem) {
-                $callbackItem($this->batchConnectorError($exception, $this->system, $systemInstall, 1));
+                $success = $this->batchConnectorError($exception, $this->system, $systemInstall, 1);
+
+                $callbackItem($success);
 
                 return reject();
             }
@@ -209,8 +214,9 @@ abstract class QuickbooksCustomerConnectorAbstract implements BatchInterface, Co
                         return $this->createSuccessMessage($response, $i + 1);
                     },
                     function (ResponseException $exception) use ($systemInstall, $callbackItem, $i): SuccessMessage {
-                        return $callbackItem($this->batchConnectorError($exception, $this->system, $systemInstall,
-                            $i + 1));
+                        $success = $this->batchConnectorError($exception, $this->system, $systemInstall, $i + 1);
+
+                        return $callbackItem($success);
                     }
                 )
                 ->then($callbackItem);
@@ -256,6 +262,7 @@ abstract class QuickbooksCustomerConnectorAbstract implements BatchInterface, Co
      * @param ProcessDto $dto
      *
      * @return SystemInstall
+     * @throws CleverConnectorsException
      */
     protected function getSystemInstall(ProcessDto $dto): SystemInstall
     {

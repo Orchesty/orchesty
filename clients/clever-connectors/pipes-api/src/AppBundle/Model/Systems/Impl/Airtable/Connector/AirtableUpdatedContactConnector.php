@@ -157,7 +157,9 @@ class AirtableUpdatedContactConnector extends AirtableContactConnectorAbstract
                 }
             },
             function (ResponseException $e) use ($systemInstall, $callbackItem, $page) {
-                return $callbackItem($this->batchConnectorError($e, $this->system, $systemInstall, $page + 1));
+                $success = $this->batchConnectorError($e, $this->system, $systemInstall, $page + 1);
+
+                return $callbackItem($success);
             }
         );
     }

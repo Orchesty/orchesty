@@ -122,6 +122,7 @@ class BigcommerceSyncCustomerConnector implements BatchInterface, ConnectorInter
      * @param callable      $callbackItem
      *
      * @return PromiseInterface
+     * @throws SystemException
      */
     public function processBatch(ProcessDto $dto, LoopInterface $loop, callable $callbackItem): PromiseInterface
     {
@@ -138,7 +139,9 @@ class BigcommerceSyncCustomerConnector implements BatchInterface, ConnectorInter
                     return $this->getTotalPages($response);
                 },
                 function (ResponseException $e) use ($systemInstall, $callbackItem) {
-                    return $callbackItem($this->batchConnectorError($e, $this->system, $systemInstall, 1));
+                    $success = $this->batchConnectorError($e, $this->system, $systemInstall, 1);
+
+                    return $callbackItem($success);
                 }
             )->then(
                 function (int $total) use ($sender, $callbackItem, $requestDto, $systemInstall, $processId) {

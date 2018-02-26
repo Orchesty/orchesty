@@ -166,7 +166,9 @@ abstract class ZendeskUserConnectorAbstract implements ConnectorInterface, Batch
                     }
                 },
                 function (ResponseException $e) use ($systemInstall, $callbackItem, $page): SuccessMessage {
-                    return $callbackItem($this->batchConnectorError($e, $this->system, $systemInstall, $page));
+                    $success = $this->batchConnectorError($e, $this->system, $systemInstall, $page);
+
+                    return $callbackItem($success);
                 }
             );
 

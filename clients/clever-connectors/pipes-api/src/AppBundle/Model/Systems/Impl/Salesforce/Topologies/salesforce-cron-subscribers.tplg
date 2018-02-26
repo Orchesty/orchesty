@@ -49,11 +49,15 @@
     <bpmn:sequenceFlow id="SequenceFlow_1bv39j4" sourceRef="Event_0bqfon9" targetRef="Task_0vxl0du" />
     <bpmn:sequenceFlow id="SequenceFlow_1hxvose" sourceRef="Task_0vxl0du" targetRef="Task_1gojdr7" />
     <bpmn:sequenceFlow id="SequenceFlow_089z673" sourceRef="Task_0vxl0du" targetRef="Task_09wbc65" />
-    <bpmn:task id="Task_110a68i" pipes:pipesType="connector" name="cleverconnectors-create-subscriptions-connector" />
+    <bpmn:task id="Task_110a68i" pipes:pipesType="connector" name="cleverconnectors-create-subscriptions-connector">
+      <bpmn:incoming>SequenceFlow_1ji9buv</bpmn:incoming>
+    </bpmn:task>
     <bpmn:task id="Task_08aqozf" pipes:pipesType="custom" name="salesforce-created-contact-mapper">
       <bpmn:incoming>SequenceFlow_1n8vima</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1ji9buv</bpmn:outgoing>
     </bpmn:task>
     <bpmn:sequenceFlow id="SequenceFlow_1n8vima" sourceRef="Task_151d6mb" targetRef="Task_08aqozf" />
+    <bpmn:sequenceFlow id="SequenceFlow_1ji9buv" sourceRef="Task_08aqozf" targetRef="Task_110a68i" />
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_1">
@@ -175,7 +179,14 @@
         <di:waypoint xsi:type="dc:Point" x="466" y="52" />
         <di:waypoint xsi:type="dc:Point" x="484" y="52" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="481" y="102" width="0" height="12" />
+          <dc:Bounds x="436" y="102" width="90" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_1ji9buv_di" bpmnElement="SequenceFlow_1ji9buv">
+        <di:waypoint xsi:type="dc:Point" x="584" y="52" />
+        <di:waypoint xsi:type="dc:Point" x="628" y="52" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="606" y="31" width="0" height="12" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>

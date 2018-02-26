@@ -5,6 +5,7 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\Shipstation\Connector;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\LastSync\LastSyncManager;
 use CleverConnectors\AppBundle\Model\ProgressCounter\ProgressCounterService;
+use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Shipstation\ShipstationSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
@@ -66,6 +67,7 @@ class ShipstationSyncCustomerConnector extends ShipstationCustomerConnectorAbstr
      * @param callable      $callbackItem
      *
      * @return PromiseInterface
+     * @throws SystemException
      */
     public function processBatch(ProcessDto $dto, LoopInterface $loop, callable $callbackItem): PromiseInterface
     {
@@ -81,7 +83,9 @@ class ShipstationSyncCustomerConnector extends ShipstationCustomerConnectorAbstr
                     return $this->getTotalPages($response);
                 },
                 function (ResponseException $e) use ($systemInstall, $callbackItem) {
-                    return $callbackItem($this->batchConnectorError($e, $this->system, $systemInstall, 1));
+                    $success = $this->batchConnectorError($e, $this->system, $systemInstall, 1);
+
+                    return $callbackItem($success);
                 }
             )->then(
                 function (int $total) use ($sender, $callbackItem, $requestDto, $processId, $systemInstall) {

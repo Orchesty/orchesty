@@ -2,6 +2,8 @@
 
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Shipstation\Connector;
 
+use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
+use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use CleverConnectors\AppBundle\Utils\CronUtils;
 use Clue\React\Buzz\Message\ResponseException;
@@ -35,6 +37,8 @@ class ShipstationUpdateCustomerConnector extends ShipstationCustomerConnectorAbs
      * @param callable      $callbackItem
      *
      * @return PromiseInterface
+     * @throws CleverConnectorsException
+     * @throws SystemException
      */
     public function processBatch(ProcessDto $dto, LoopInterface $loop, callable $callbackItem): PromiseInterface
     {
@@ -51,7 +55,9 @@ class ShipstationUpdateCustomerConnector extends ShipstationCustomerConnectorAbs
                     return $this->getTotalPages($response);
                 },
                 function (ResponseException $e) use ($systemInstall, $callbackItem) {
-                    return $callbackItem($this->batchConnectorError($e, $this->system, $systemInstall, 1));
+                    $success = $this->batchConnectorError($e, $this->system, $systemInstall, 1);
+
+                    return $callbackItem($success);
                 }
             )->then(
                 function (int $total) use ($browser, $callbackItem, $requestDto, $systemInstall) {
