@@ -30,6 +30,8 @@ services:
             - '@hbpf.transport.curl_manager'
             - '@systems.basecrm'
             - '@doctrine_mongodb.odm.default_document_manager'
+        calls:
+            - ['setLogger', ['@monolog.logger.notification']]
 
     hbpf.connector.basecrm-create-contact-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Basecrm\Connector\BasecrmCreateContactConnector
@@ -73,3 +75,5 @@ services:
     hbpf.custom_node.basecrm-update-contact-mapper:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Basecrm\Mapper\BasecrmUpdateContactMapper
         arguments:
+        calls:
+            - ['setLogger', ['@monolog.logger.notification']]

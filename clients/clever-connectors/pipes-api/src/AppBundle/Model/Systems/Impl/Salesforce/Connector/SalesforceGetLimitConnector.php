@@ -22,6 +22,7 @@ use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
 use Nette\Utils\Json;
 use Nette\Utils\Strings;
 use Psr\Log\LoggerAwareInterface;
+use Psr\Log\NullLogger;
 
 /**
  * Class SalesforceGetLimitConnector
@@ -72,6 +73,7 @@ class SalesforceGetLimitConnector implements ConnectorInterface, LoggerAwareInte
         $this->manager                 = $manager;
         $this->dm                      = $documentManager;
         $this->systemInstallRepository = $documentManager->getRepository(SystemInstall::class);
+        $this->logger                  = new NullLogger();
     }
 
     /**

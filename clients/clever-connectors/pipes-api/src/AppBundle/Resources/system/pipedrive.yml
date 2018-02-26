@@ -15,6 +15,8 @@ services:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.transport.async_curl_factory'
             - '@cc.progress_counter.async_progress_counter_service'
+        calls:
+            - ['setLogger', ['@monolog.logger.notification']]
 
     hbpf.connector.pipedrive-updated-person-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Pipedrive\Connector\PipedriveUpdatedPersonConnector

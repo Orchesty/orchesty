@@ -19,6 +19,7 @@ use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
 use Psr\Log\LoggerAwareInterface;
+use Psr\Log\NullLogger;
 
 /**
  * Class ZendeskGetLimitConnector
@@ -69,6 +70,7 @@ class ZendeskGetLimitConnector implements ConnectorInterface, LoggerAwareInterfa
         $this->manager                 = $manager;
         $this->dm                      = $documentManager;
         $this->systemInstallRepository = $documentManager->getRepository(SystemInstall::class);
+        $this->logger                  = new NullLogger();
     }
 
     /**

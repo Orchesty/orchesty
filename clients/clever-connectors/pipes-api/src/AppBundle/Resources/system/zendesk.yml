@@ -25,6 +25,8 @@ services:
             - '@systems.zendesk'
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.transport.curl_manager'
+        calls:
+            - ['setLogger', ['@monolog.logger.notification']]
 
     hbpf.connector.zendesk-updated-user-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Zendesk\Connector\ZendeskUpdatedUserConnector

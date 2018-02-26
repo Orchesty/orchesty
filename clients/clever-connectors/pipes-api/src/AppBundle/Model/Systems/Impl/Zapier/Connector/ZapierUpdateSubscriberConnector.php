@@ -17,6 +17,7 @@ use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
 use Psr\Log\LoggerAwareInterface;
+use Psr\Log\NullLogger;
 
 /**
  * Class ZapierCreateSubscriberConnector
@@ -55,6 +56,7 @@ class ZapierUpdateSubscriberConnector implements ConnectorInterface, LoggerAware
         $this->system                  = $system;
         $this->systemInstallRepository = $dm->getRepository(SystemInstall::class);
         $this->curl                    = $curl;
+        $this->logger                  = new NullLogger();
     }
 
     /**

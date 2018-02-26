@@ -34,6 +34,8 @@ services:
             - '@systems.salesforce'
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.transport.curl_manager'
+        calls:
+            - ['setLogger', ['@monolog.logger.notification']]
 
     hbpf.connector.salesforce-create-contact-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Salesforce\Connector\SalesforceCreateContactConnector

@@ -15,7 +15,7 @@ services:
             - '@hbpf.transport.async_curl_factory'
             - '@cc.progress_counter.async_progress_counter_service'
         calls:
-            - [setLogger, ['@monolog.logger.notification']]
+            - ['setLogger', ['@monolog.logger.notification']]
 
     hbpf.connector.bigcommerce-get-customer-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Bigcommerce\Connector\BigcommerceGetCustomerConnector
@@ -24,7 +24,7 @@ services:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.transport.curl_manager'
         calls:
-            - [setLogger, ['@monolog.logger.notification']]
+            - ['setLogger', ['@monolog.logger.notification']]
 
     hbpf.connector.bigcommerce-get-store-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Bigcommerce\Connector\BigcommerceGetStoreConnector
@@ -33,7 +33,7 @@ services:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.transport.curl_manager'
         calls:
-            - [setLogger, ['@monolog.logger.notification']]
+            - ['setLogger', ['@monolog.logger.notification']]
 
     hbpf.connector.bigcommerce-create-customer-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Bigcommerce\Connector\BigcommerceCreateCustomerConnector
@@ -42,7 +42,7 @@ services:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.transport.curl_manager'
         calls:
-            - [setLogger, ['@monolog.logger.notification']]
+            - ['setLogger', ['@monolog.logger.notification']]
 
     hbpf.connector.bigcommerce-created-customer-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Bigcommerce\Connector\BigcommerceCreatedCustomerConnector

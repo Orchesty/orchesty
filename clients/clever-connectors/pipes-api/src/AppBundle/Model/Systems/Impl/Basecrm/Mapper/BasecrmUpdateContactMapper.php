@@ -10,6 +10,7 @@ use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
 use Psr\Log\LoggerAwareInterface;
+use Psr\Log\NullLogger;
 
 /**
  * Class BasecrmUpdateContactMapper
@@ -20,6 +21,14 @@ class BasecrmUpdateContactMapper implements CustomNodeInterface, LoggerAwareInte
 {
 
     use LoggerTrait;
+
+    /**
+     * BasecrmUpdateContactMapper constructor.
+     */
+    public function __construct()
+    {
+        $this->logger = new NullLogger();
+    }
 
     /**
      * @param ProcessDto $dto
