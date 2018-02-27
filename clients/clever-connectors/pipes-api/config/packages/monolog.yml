@@ -3,7 +3,7 @@ parameters:
 
 monolog:
     use_microseconds: false
-    channels: [webhook_systems, notification]
+    channels: [webhook_systems, notification, app]
     handlers:
         app:
            type: service

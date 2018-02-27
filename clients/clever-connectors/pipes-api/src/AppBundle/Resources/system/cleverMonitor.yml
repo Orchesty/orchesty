@@ -7,21 +7,21 @@ services:
         arguments:
             - '@cc.transport.curl.manager'
         calls:
-            - ['setLogger', ['@monolog.logger.commons']]
+            - ['setLogger', ['@monolog.logger.notification']]
 
     hbpf.connector.cleverconnectors-update-subscriptions-connector:
         class: CleverConnectors\AppBundle\Model\CM\SubscriberConnector\CMUpdateSubscriberConnector
         arguments:
             - '@cc.transport.curl.manager'
         calls:
-            - ['setLogger', ['@monolog.logger.commons']]
+            - ['setLogger', ['@monolog.logger.notification']]
 
     hbpf.connector.cleverconnectors-delete-subscriptions-connector:
         class: CleverConnectors\AppBundle\Model\CM\SubscriberConnector\CMDeleteSubscriberConnector
         arguments:
             - '@cc.transport.curl.manager'
         calls:
-            - ['setLogger', ['@monolog.logger.commons']]
+            - ['setLogger', ['@monolog.logger.notification']]
 
     hbpf.connector.cleverconnectors-get-distributions-connector:
         class: CleverConnectors\AppBundle\Model\CM\ListConnector\CMGetDistributionsConnector
@@ -33,7 +33,7 @@ services:
         arguments:
             - '@cc.transport.curl.manager'
         calls:
-            - ['setLogger', ['@monolog.logger.commons']]
+            - ['setLogger', ['@monolog.logger.notification']]
 
     hbpf.connector.cleverconnectors-get-subscribers-connector:
         class: CleverConnectors\AppBundle\Model\CM\SubscriberConnector\CMGetSubscribersConnector
@@ -54,7 +54,7 @@ services:
     hbpf.custom_node.cleverconnectors-benchmark-batch-generator:
         class: CleverConnectors\AppBundle\Model\CM\TestBenchmarkConnector\CMTestBenchmarkBatchGenerator
         calls:
-            - ['setLogger', ['@monolog.logger.commons']]
+            - ['setLogger', ['@monolog.logger.notification']]
 
     hbpf.custom_node.cleverconnectors-benchmark-mapper:
         class: CleverConnectors\AppBundle\Model\CM\TestBenchmarkConnector\CMTestBenchmarkMapper
@@ -65,4 +65,4 @@ services:
             - '@hbpf.transport.curl_manager'
             - '%spitter_host%'
         calls:
-            - ['setLogger', ['@monolog.logger.commons']]
+            - ['setLogger', ['@monolog.logger.notification']]
