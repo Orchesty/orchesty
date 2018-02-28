@@ -69,7 +69,7 @@ services:
             - '@cc.system_limit.manager'
             - '@cc.system_topology.runner'
         calls:
-            - [setLogger, ['@monolog.logger']]
+            - [setLogger, ['@monolog.logger.commons']]
 
     cc.progress_counter.sync_publisher:
         class: CleverConnectors\AppBundle\Model\ProgressCounter\Publisher\SyncPublisher
@@ -135,7 +135,7 @@ services:
             - '@cc.category.parser'
             - ['%connectors_topologies%', '%plugins_topologies%', '%service_topologies%']
         calls:
-            - [setLogger, ['@monolog.logger']]
+            - [setLogger, ['@monolog.logger.commons']]
 
     cc.layout.controller:
         class: CleverConnectors\AppBundle\Controller\LayoutController

@@ -26,6 +26,7 @@ use Exception;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -86,6 +87,7 @@ class CMEventsManager implements LoggerAwareInterface
         $this->loader               = $loader;
         $this->systemLimitManager   = $systemLimitManager;
         $this->systemTopologyRunner = $systemTopologyRunner;
+        $this->logger               = new NullLogger();
     }
 
     /**
@@ -106,6 +108,7 @@ class CMEventsManager implements LoggerAwareInterface
      */
     public function runEvent(Request $request, string $userId, string $event): void
     {
+        $this->logger->info(sprintf('Try to run %s event.', $event), ['user' => $userId]);
         SystemInstall::checkEvent($event);
         $request->headers->set(CMHeaders::createKey(CMHeaders::CM_EVENT_TYPE), $event);
         switch ($event) {
@@ -134,7 +137,7 @@ class CMEventsManager implements LoggerAwareInterface
             try {
                 $this->systemTopologyRunner->runTopologies($const, $systemInstall, $system, $request);
             } catch (Exception $e) {
-                $this->logger->alert($e->getMessage(), ['exception' => $e]);
+                $this->logger->error($e->getMessage(), ['exception' => $e]);
             }
         }
     }
