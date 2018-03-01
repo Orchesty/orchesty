@@ -280,7 +280,7 @@ class HttpWorker implements IWorker {
      */
     private onInvalidStatusCode(msg: JobMessage, req: request.Options, statusCode: number, response: string): void {
         const context = logger.ctxFromMsg(msg);
-        context.data = JSON.stringify({request: req, response});
+        context.data = JSON.stringify({request: { body: req.body }, response});
         logger.warn(
             `Worker[type='http'] received response with statusCode="${statusCode}"`,
             context,
