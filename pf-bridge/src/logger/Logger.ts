@@ -16,6 +16,7 @@ export interface ILogContext {
     result_code?: ResultCode;
     result_message?: string;
     error?: Error;
+    data?: string;
 }
 
 interface ILoggerFormat {
@@ -32,6 +33,7 @@ interface ILoggerFormat {
         message: string,
         trace?: string,
     };
+    data?: string;
 }
 
 class Logger implements ILogger {
@@ -83,6 +85,10 @@ class Logger implements ILogger {
                     message: `${context.error}`.toString(),
                 };
             }
+        }
+
+        if (context.data) {
+            line.data = context.data;
         }
 
         return JSON.stringify(line);
