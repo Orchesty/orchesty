@@ -12,6 +12,7 @@ use Hanaboso\PipesFramework\HbPFConnectorBundle\HbPFConnectorBundle;
 use Hanaboso\PipesFramework\HbPFCustomNodeBundle\HbPFCustomNodeBundle;
 use Hanaboso\PipesFramework\HbPFMapperBundle\HbPFMapperBundle;
 use Hanaboso\PipesFramework\HbPFMetricsBundle\HbPFMetricsBundle;
+use Hanaboso\PipesFramework\HbPFNotificationBundle\HbPFNotificationBundle;
 use Hanaboso\PipesFramework\HbPFRabbitMqBundle\HbPFRabbitMqBundle;
 use Hanaboso\PipesFramework\HbPFUserBundle\HbPFUserBundle;
 use JMS\SerializerBundle\JMSSerializerBundle;
@@ -45,6 +46,7 @@ return [
     HbPFCustomNodeBundle::class    => ['all' => TRUE],
     HbPFMapperBundle::class        => ['all' => TRUE],
     HbPFMetricsBundle::class       => ['all' => TRUE],
+    HbPFNotificationBundle::class  => ['all' => TRUE],
     HbPFUserBundle::class          => ['all' => TRUE],
     HbPFRabbitMqBundle::class      => ['all' => TRUE],
     EmailServiceBundle::class      => ['all' => TRUE],

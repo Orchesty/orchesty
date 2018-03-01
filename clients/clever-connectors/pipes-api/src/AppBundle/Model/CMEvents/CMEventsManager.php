@@ -129,8 +129,11 @@ class CMEventsManager implements LoggerAwareInterface
                 break;
         }
 
+        $systems = $this->systemRepo->getSystemInstallByEvent($event, $userId);
+        $this->logger->info(sprintf('Try to run %s topologies.', count($systems)), ['user' => $userId]);
+
         /** @var SystemInstall $systemInstall */
-        foreach ($this->systemRepo->getSystemInstallByEvent($event, $userId) as $systemInstall) {
+        foreach ($systems as $systemInstall) {
             InnerRequestUtils::addCMHeaders($systemInstall, $request);
             $system = $this->loader->getSystem($systemInstall->getSystem());
             $this->systemLimitManager->addSystemLimitToRequestHeaders($request->headers, $system, $systemInstall);

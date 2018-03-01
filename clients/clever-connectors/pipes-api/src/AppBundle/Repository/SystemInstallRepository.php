@@ -25,7 +25,7 @@ class SystemInstallRepository extends DocumentRepository
      * @param string $event
      * @param string $userId
      *
-     * @return array
+     * @return SystemInstall[]
      * @throws CleverConnectorsException
      */
     public function getSystemInstallByEvent(string $event, string $userId): array
