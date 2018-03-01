@@ -78,7 +78,7 @@ class HttpWorker implements IWorker {
                 }
 
                 if (!response.statusCode || response.statusCode !== 200) {
-                    this.onInvalidStatusCode(msg, response.statusCode);
+                    this.onInvalidStatusCode(msg, reqParams, response.statusCode, body);
                     return resolve([msg]);
                 }
 
@@ -274,17 +274,21 @@ class HttpWorker implements IWorker {
     /**
      *
      * @param {JobMessage} msg
+     * @param {request.Options} req
      * @param {number} statusCode
+     * @param {string} response
      */
-    private onInvalidStatusCode(msg: JobMessage, statusCode: number): void {
+    private onInvalidStatusCode(msg: JobMessage, req: request.Options, statusCode: number, response: string): void {
+        const context = logger.ctxFromMsg(msg);
+        context.data = JSON.stringify({request: req, response});
         logger.warn(
             `Worker[type='http'] received response with statusCode="${statusCode}"`,
-            logger.ctxFromMsg(msg),
+            context,
         );
         msg.setResult(
             {
                 code: ResultCode.HTTP_ERROR,
-                message: `Http response with code ${statusCode} received`,
+                message: `Http response with invalid status code "${statusCode}" received`,
             },
         );
     }
