@@ -93,12 +93,22 @@ class SystemTopologyRunner implements LoggerAwareInterface
 
         $topologies = $this->topologyRepository->getRunnableTopologies($name);
 
+        $this->logger->info(
+            sprintf('Try to find topologies with name "%s": %s found', $name, count($topologies)),
+            ['user' => $systemInstall->getUser()]
+        );
+
         if (empty($topologies)) {
             $name = $system->getCustomTopologyName(
                 $this->getCustomTopologyName($topology, $systemInstall->getSystem(), $service)
             );
 
             $topologies = $this->topologyRepository->getRunnableTopologies($name);
+
+            $this->logger->info(
+                sprintf('Try to find topologies with name "%s": %s found', $name, count($topologies)),
+                ['user' => $systemInstall->getUser()]
+            );
         }
 
         foreach ($topologies as $topology) {

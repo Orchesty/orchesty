@@ -86,9 +86,9 @@ class ShopifySystem implements WebhookSystemInterface, OAuth2Interface, CMEventS
         $this->addCMEvent(new CMEventObject(CleverCustomKeysEnum::HARD_BOUNCE, SystemInstall::EVENT_HARD_BOUNCE, ''));
         $this->addCMEvent(new CMEventObject(CleverCustomKeysEnum::UNSUBSCRIBE, SystemInstall::EVENT_UNSUBSCRIBE, ''));
 
-        $this->topologyNames['shopify-create-contact']      = 'shopify-create-customer';
-        $this->topologyNames['shopify-unsubscribe-contact'] = 'shopify-unsubscribe-customer';
-        $this->topologyNames['shopify-hard-bounce-contact'] = 'shopify-unsubscribe-customer';
+        $this->topologyNames[TopologyNameUtils::getTopologyName(TopologyNameUtils::HARD_BOUNCE_CONTACT,
+            $this->getKey())] = TopologyNameUtils::getTopologyName(TopologyNameUtils::UNSUBSCRIBE_CONTACT,
+            $this->getKey());
     }
 
     /**
