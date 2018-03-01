@@ -45,6 +45,8 @@ services:
         arguments:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.starting_point.starting_point'
+        calls:
+            - ['setLogger', ['@monolog.logger.commons']]
 
     cc.last_sync.manager:
         class: CleverConnectors\AppBundle\Model\LastSync\LastSyncManager
@@ -69,7 +71,7 @@ services:
             - '@cc.system_limit.manager'
             - '@cc.system_topology.runner'
         calls:
-            - [setLogger, ['@monolog.logger.commons']]
+            - ['setLogger', ['@monolog.logger.commons']]
 
     cc.progress_counter.sync_publisher:
         class: CleverConnectors\AppBundle\Model\ProgressCounter\Publisher\SyncPublisher
@@ -135,7 +137,7 @@ services:
             - '@cc.category.parser'
             - ['%connectors_topologies%', '%plugins_topologies%', '%service_topologies%']
         calls:
-            - [setLogger, ['@monolog.logger.commons']]
+            - ['setLogger', ['@monolog.logger.commons']]
 
     cc.layout.controller:
         class: CleverConnectors\AppBundle\Controller\LayoutController
@@ -177,10 +179,10 @@ services:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.configurator.manager.category'
         calls:
-        - [addRoot,['Systems',"%connectors_topologies%"]]
-        - [addExclude, ['Systems','Topologies']]
-        - [addRoot,['Plugins',"%plugins_topologies%"]]
-        - [addRoot,['Service',"%service_topologies%"]]
+        - ['addRoot',['Systems',"%connectors_topologies%"]]
+        - ['addExclude', ['Systems','Topologies']]
+        - ['addRoot',['Plugins',"%plugins_topologies%"]]
+        - ['addRoot',['Service',"%service_topologies%"]]
 
     cc.elastica.client:
         class: Elastica\Client
@@ -192,4 +194,3 @@ services:
         arguments:
             - '@cc.elastica.client'
             - '%elastic_index%'
-

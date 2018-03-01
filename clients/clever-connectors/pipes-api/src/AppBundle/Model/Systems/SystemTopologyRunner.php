@@ -12,6 +12,9 @@ use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Repository\NodeRepository;
 use Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository;
 use Hanaboso\PipesFramework\Configurator\StartingPoint\StartingPoint;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -19,7 +22,7 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * @package CleverConnectors\AppBundle\Model\Systems
  */
-class SystemTopologyRunner
+class SystemTopologyRunner implements LoggerAwareInterface
 {
 
     /**
@@ -38,6 +41,11 @@ class SystemTopologyRunner
     private $startingPoint;
 
     /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    /**
      * SystemTopologyRunner constructor.
      *
      * @param DocumentManager $dm
@@ -48,6 +56,19 @@ class SystemTopologyRunner
         $this->topologyRepository = $dm->getRepository(Topology::class);
         $this->nodeRepository     = $dm->getRepository(Node::class);
         $this->startingPoint      = $startingPoint;
+        $this->logger             = new NullLogger();
+    }
+
+    /**
+     * Sets a logger instance on the object.
+     *
+     * @param LoggerInterface $logger
+     *
+     * @return void
+     */
+    public function setLogger(LoggerInterface $logger): void
+    {
+        $this->logger = $logger;
     }
 
     /**
@@ -81,6 +102,11 @@ class SystemTopologyRunner
         }
 
         foreach ($topologies as $topology) {
+            $this->logger->info(
+                sprintf('Try to run "%s" topology with name "%s".', $topology->getId(), $topology->getName()),
+                ['user' => $systemInstall->getUser()]
+            );
+
             $node = $this->nodeRepository->getStartingNode($topology);
             if ($request) {
                 $this->startingPoint->runWithRequest($request, $topology, $node);
