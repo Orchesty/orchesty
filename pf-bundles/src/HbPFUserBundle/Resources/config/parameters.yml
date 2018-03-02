@@ -1,8 +1,5 @@
 parameters:
     resource_enum: Hanaboso\PipesFramework\User\Enum\ResourceEnum
-    database_type:
-        - 'ODM'
-#        ODM | ORM
 
     # Swift mailer params
     mailer_transport: '%env(SMTP_TRANSPORT)%'

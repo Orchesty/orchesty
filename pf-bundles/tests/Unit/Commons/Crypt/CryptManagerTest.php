@@ -15,21 +15,6 @@ final class CryptManagerTest extends KernelTestCaseAbstract
 {
 
     /**
-     * @var CryptManager
-     */
-    private $cryptManager;
-
-    /**
-     *
-     */
-    public function setUp(): void
-    {
-        parent::setUp();
-
-        $this->cryptManager = $this->container->get('hbpf.crypt.crypt_manager');
-    }
-
-    /**
      * @covers CryptManager::encrypt()
      * @covers CryptManager::decrypt()
      */
@@ -47,8 +32,8 @@ final class CryptManagerTest extends KernelTestCaseAbstract
         $arr[]           = $stdClass;
 
         foreach ($arr as $item) {
-            $encrypted = $this->cryptManager->encrypt($item);
-            $decrypted = $this->cryptManager->decrypt($encrypted);
+            $encrypted = CryptManager::encrypt($item);
+            $decrypted = CryptManager::decrypt($encrypted);
             $this->assertEquals($item, $decrypted);
         }
     }

@@ -5,7 +5,7 @@ services:
     hbpf.user.handler.user:
         class: Hanaboso\PipesFramework\HbPFUserBundle\Handler\UserHandler
         arguments:
-            - '@hbpf.database_manager_locator.user'
+            - '@hbpf.database_manager_locator'
             - '@hbpf.user.manager.user'
             - '@hbpf.user.provider.resource'
         tags:
@@ -14,13 +14,13 @@ services:
     hbpf.user.manager.token:
         class: Hanaboso\PipesFramework\User\Model\Token\TokenManager
         arguments:
-           - '@hbpf.database_manager_locator.user'
+           - '@hbpf.database_manager_locator'
            - '@hbpf.user.provider.resource'
 
     hbpf.user.manager.user:
         class: Hanaboso\PipesFramework\User\Model\User\UserManager
         arguments:
-            - '@hbpf.database_manager_locator.user'
+            - '@hbpf.database_manager_locator'
             - '@hbpf.user.manager.security'
             - '@hbpf.user.manager.token'
             - '@security.encoder_factory.generic'
@@ -32,18 +32,11 @@ services:
     hbpf.user.manager.security:
         class: Hanaboso\PipesFramework\User\Model\Security\SecurityManager
         arguments:
-            - '@hbpf.database_manager_locator.user'
+            - '@hbpf.database_manager_locator'
             - '@security.encoder_factory'
             - '@session'
             - '@security.token_storage'
             - '@hbpf.user.provider.resource'
-
-    hbpf.database_manager_locator.user:
-        class: Hanaboso\PipesFramework\User\DatabaseManager\UserDatabaseManagerLocator
-        arguments:
-            - '@doctrine_mongodb.odm.default_document_manager'
-            - '@doctrine.orm.default_entity_manager'
-            - '%database_type%'
 
     hbpf.user.provider.resource:
         class: Hanaboso\PipesFramework\HbPFUserBundle\Provider\ResourceProvider

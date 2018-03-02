@@ -1,12 +1,12 @@
 <?php declare(strict_types=1);
 
-namespace Hanaboso\PipesFramework\HbPFCommonsBundle\Command;
+namespace Hanaboso\PipesFramework\HbPFConfiguratorBundle\Command;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Hanaboso\PipesFramework\Commons\Cron\CronManager;
 use Hanaboso\PipesFramework\Commons\Enum\TypeEnum;
 use Hanaboso\PipesFramework\Commons\Exception\CronException;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlException;
+use Hanaboso\PipesFramework\Configurator\Cron\CronManager;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -15,7 +15,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * Class RefreshCronCommand
  *
- * @package Hanaboso\PipesFramework\HbPFCommonsBundle\Command
+ * @package Hanaboso\PipesFramework\HbPFConfiguratorBundle\Command
  */
 class RefreshCronCommand extends Command
 {

@@ -5,20 +5,20 @@ services:
     hbpf.acl.provider.database:
         class: Hanaboso\PipesFramework\Acl\Provider\Impl\DatabaseProvider
         arguments:
-            - '@hbpf.database_manager_locator.user'
+            - '@hbpf.database_manager_locator'
             - '@hbpf.user.provider.resource'
 
     hbpf.factory.rule:
         class: Hanaboso\PipesFramework\Acl\Factory\RuleFactory
         arguments:
-            - '@hbpf.database_manager_locator.user'
+            - '@hbpf.database_manager_locator'
             - '%acl_rule%'
             - '%resource_enum%'
 
     hbpf.access.manager:
         class: Hanaboso\PipesFramework\Acl\Manager\AccessManager
         arguments:
-            - '@hbpf.database_manager_locator.user'
+            - '@hbpf.database_manager_locator'
             - '@hbpf.factory.rule'
             - '@hbpf.acl.provider.database'
             - '@hbpf.user.provider.resource'

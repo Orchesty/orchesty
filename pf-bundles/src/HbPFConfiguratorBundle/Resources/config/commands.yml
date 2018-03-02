@@ -8,3 +8,11 @@ services:
             - '@hbpf.handler.starting_point'
         tags:
             -  { name: console.command }
+
+    hbpf.command.refresh_cron:
+        class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Command\RefreshCronCommand
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.cron.manager'
+        tags:
+            -  { name: console.command }

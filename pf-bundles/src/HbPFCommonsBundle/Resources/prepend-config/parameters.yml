@@ -1,6 +1,8 @@
 parameters:
     logger_handler: syslog
     mongo_host: mongo
+    database_type: 'ODM'
+#        ODM | ORM
 
     docker.connection.settings:
         remote_socket: 'unix:///var/run/docker.sock'

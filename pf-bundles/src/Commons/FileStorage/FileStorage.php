@@ -10,11 +10,13 @@
 namespace Hanaboso\PipesFramework\Commons\FileStorage;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ORM\EntityManager;
+use Hanaboso\PipesFramework\Commons\DatabaseManager\DatabaseManagerLocator;
 use Hanaboso\PipesFramework\Commons\Exception\FileStorageException;
-use Hanaboso\PipesFramework\Commons\FileStorage\Document\File;
 use Hanaboso\PipesFramework\Commons\FileStorage\Driver\FileStorageDriverLocator;
 use Hanaboso\PipesFramework\Commons\FileStorage\Dto\FileContentDto;
 use Hanaboso\PipesFramework\Commons\FileStorage\Dto\FileStorageDto;
+use Hanaboso\PipesFramework\Commons\FileStorage\Entity\FileInterface;
 
 /**
  * Class FileStorage
@@ -30,33 +32,42 @@ class FileStorage
     private $locator;
 
     /**
-     * @var DocumentManager
+     * @var EntityManager|DocumentManager
      */
     private $dm;
+
+    /**
+     * @var string
+     */
+    private $fileNamespace;
 
     /**
      * FileStorage constructor.
      *
      * @param FileStorageDriverLocator $locator
-     * @param DocumentManager          $dm
+     * @param DatabaseManagerLocator   $dm
+     * @param string                   $fileNamespace
      */
-    function __construct(FileStorageDriverLocator $locator, DocumentManager $dm)
+    function __construct(FileStorageDriverLocator $locator, DatabaseManagerLocator $dm, string $fileNamespace)
     {
-        $this->locator = $locator;
-        $this->dm      = $dm;
+        $this->locator       = $locator;
+        $this->dm            = $dm->get();
+        $this->fileNamespace = $fileNamespace;
     }
 
     /**
      * @param FileContentDto $content
      *
-     * @return File
+     * @return FileInterface
+     * @throws FileStorageException
      */
-    public function saveFileFromContent(FileContentDto $content): File
+    public function saveFileFromContent(FileContentDto $content): FileInterface
     {
         $driver = $this->locator->get($content->getStorageType());
         $info   = $driver->save($content->getContent(), $content->getFilename());
 
-        $file = new File();
+        /** @var FileInterface $file */
+        $file = new $this->fileNamespace();
         $file
             ->setFilename($content->getFilename() ?? $info->getUrl())
             ->setFileFormat($content->getFormat())
@@ -71,11 +82,12 @@ class FileStorage
     }
 
     /**
-     * @param File $file
+     * @param FileInterface $file
      *
      * @return FileStorageDto
+     * @throws FileStorageException
      */
-    public function getFileStorage(File $file): FileStorageDto
+    public function getFileStorage(FileInterface $file): FileStorageDto
     {
         $driver = $this->locator->get($file->getStorageType());
 
@@ -83,9 +95,11 @@ class FileStorage
     }
 
     /**
-     * @param File $file
+     * @param FileInterface $file
+     *
+     * @throws FileStorageException
      */
-    public function deleteFile(File $file): void
+    public function deleteFile(FileInterface $file): void
     {
         $driver = $this->locator->get($file->getStorageType());
         $driver->delete($file->getFileUrl());
@@ -97,13 +111,13 @@ class FileStorage
     /**
      * @param string $fileId
      *
-     * @return File
+     * @return FileInterface
      * @throws FileStorageException
      */
-    public function getFileDocument(string $fileId): File
+    public function getFileDocument(string $fileId): FileInterface
     {
-        /** @var File $file */
-        $file = $this->dm->getRepository(File::class)->find($fileId);
+        /** @var FileInterface $file */
+        $file = $this->dm->getRepository($this->fileNamespace)->find($fileId);
 
         if (!$file) {
             throw new FileStorageException(
