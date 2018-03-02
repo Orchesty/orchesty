@@ -111,7 +111,7 @@ abstract class CMSubscriberConnectorAbstract extends CMAuthorization implements 
         $req = new RequestDto($method, new Uri($this->getUrl($email)));
 
         $req->setHeaders($this->getAuthorizationHeaders($user, $token));
-        $req->setBody(json_encode($this->getData($dto, $system)));
+        $req->setBody($this->getDataAsJson($dto, $system));
 
         try {
             $res = $this->curl->send($req);
@@ -182,6 +182,18 @@ abstract class CMSubscriberConnectorAbstract extends CMAuthorization implements 
         // -----------------------------------------------
 
         return $data;
+    }
+
+    /**
+     * @param ProcessDto $dto
+     * @param string     $system
+     *
+     * @return string
+     */
+    private function getDataAsJson(ProcessDto $dto, string $system): string
+    {
+        // Do not remove: Encode multibyte Unicode characters literally
+        return json_encode($this->getData($dto, $system), JSON_UNESCAPED_UNICODE);
     }
 
 }
