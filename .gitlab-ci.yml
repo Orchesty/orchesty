@@ -59,6 +59,14 @@ limiter-image:
     - dev
     - master
 
+topology-api:
+  stage: stage1
+  script:
+    - cd go/src/hanaboso/topologygenerator && make docker-push
+  only:
+    - dev
+    - master
+
 # GO LANG
 .go_test: &go_test
   script:
