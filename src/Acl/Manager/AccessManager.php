@@ -16,8 +16,8 @@ use Hanaboso\PipesFramework\Acl\Factory\RuleFactory;
 use Hanaboso\PipesFramework\Acl\Provider\Impl\DatabaseProvider;
 use Hanaboso\PipesFramework\Acl\Repository\Document\GroupRepository as DocumentGroupRepository;
 use Hanaboso\PipesFramework\Acl\Repository\Entity\GroupRepository as EntityGroupRepository;
+use Hanaboso\PipesFramework\Commons\DatabaseManager\DatabaseManagerLocator;
 use Hanaboso\PipesFramework\HbPFUserBundle\Provider\ResourceProvider;
-use Hanaboso\PipesFramework\User\DatabaseManager\UserDatabaseManagerLocator;
 use Hanaboso\PipesFramework\User\Entity\UserInterface;
 use Hanaboso\PipesFramework\User\Enum\ResourceEnum;
 use Hanaboso\PipesFramework\User\Model\User\Event\UserEvent;
@@ -61,14 +61,14 @@ class AccessManager implements EventSubscriberInterface
     /**
      * AccessManager constructor.
      *
-     * @param UserDatabaseManagerLocator $userDml
-     * @param RuleFactory                $factory
-     * @param DatabaseProvider           $dbProvider
-     * @param ResourceProvider           $resProvider
-     * @param string                     $resEnum
+     * @param DatabaseManagerLocator $userDml
+     * @param RuleFactory            $factory
+     * @param DatabaseProvider       $dbProvider
+     * @param ResourceProvider       $resProvider
+     * @param string                 $resEnum
      */
     function __construct(
-        UserDatabaseManagerLocator $userDml,
+        DatabaseManagerLocator $userDml,
         RuleFactory $factory,
         DatabaseProvider $dbProvider,
         ResourceProvider $resProvider,

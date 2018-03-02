@@ -28,3 +28,11 @@ services:
         class: Hanaboso\PipesFramework\TopologyGenerator\Request\RequestHandler
         arguments:
             - '@hbpf.transport.curl_manager'
+
+    hbpf.cron.manager:
+        class: Hanaboso\PipesFramework\Configurator\Cron\CronManager
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.transport.curl_manager'
+            - '%monolith_host%'
+            - '%cron_host%'

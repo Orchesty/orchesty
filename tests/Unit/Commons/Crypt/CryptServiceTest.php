@@ -16,21 +16,6 @@ final class CryptServiceTest extends KernelTestCaseAbstract
 {
 
     /**
-     * @var CryptService
-     */
-    private $cryptService;
-
-    /**
-     *
-     */
-    public function setUp(): void
-    {
-        parent::setUp();
-
-        $this->cryptService = $this->container->get('hbpf.crypt.crypt_service');
-    }
-
-    /**
      * @covers CryptService::encrypt()
      * @covers CryptService::decrypt()
      */
@@ -48,8 +33,8 @@ final class CryptServiceTest extends KernelTestCaseAbstract
         $arr[]           = $stdClass;
 
         foreach ($arr as $item) {
-            $encrypted = $this->cryptService->encrypt($item);
-            $decrypted = $this->cryptService->decrypt($encrypted);
+            $encrypted = CryptService::encrypt($item);
+            $decrypted = CryptService::decrypt($encrypted);
             $this->assertEquals($item, $decrypted);
         }
     }
@@ -62,12 +47,12 @@ final class CryptServiceTest extends KernelTestCaseAbstract
     {
         $str = 'Some random text';
 
-        $encrypted = $this->cryptService->encrypt($str);
+        $encrypted = CryptService::encrypt($str);
 
         $this->expectException(CryptException::class);
         $this->expectExceptionCode(CryptException::UNKNOWN_PREFIX);
 
-        $this->cryptService->decrypt('abc' . $encrypted);
+        CryptService::decrypt('abc' . $encrypted);
     }
 
     /**
@@ -77,13 +62,13 @@ final class CryptServiceTest extends KernelTestCaseAbstract
     public function testEncryptAndDecrypt2(): void
     {
         $str          = 'asdf12342~!@#$%^&*()_+{}|:"<>?[]\;,./';
-        $encryptedStr = $this->cryptService->encrypt($str);
+        $encryptedStr = CryptService::encrypt($str);
 
         $arr          = ['key' => 'val', 'str' => $encryptedStr];
-        $encryptedArr = $this->cryptService->encrypt($arr);
+        $encryptedArr = CryptService::encrypt($arr);
 
-        $decryptedArr = $this->cryptService->decrypt($encryptedArr);
-        $decryptedStr = $this->cryptService->decrypt($decryptedArr['str']);
+        $decryptedArr = CryptService::decrypt($encryptedArr);
+        $decryptedStr = CryptService::decrypt($decryptedArr['str']);
 
         $this->assertEquals($str, $decryptedStr);
         $this->assertEquals($arr, $decryptedArr);

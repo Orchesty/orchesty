@@ -4,8 +4,8 @@ namespace Hanaboso\PipesFramework\User\Model\Token;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ORM\EntityManager;
+use Hanaboso\PipesFramework\Commons\DatabaseManager\DatabaseManagerLocator;
 use Hanaboso\PipesFramework\HbPFUserBundle\Provider\ResourceProvider;
-use Hanaboso\PipesFramework\User\DatabaseManager\UserDatabaseManagerLocator;
 use Hanaboso\PipesFramework\User\Entity\TokenInterface;
 use Hanaboso\PipesFramework\User\Entity\UserInterface;
 use Hanaboso\PipesFramework\User\Enum\ResourceEnum;
@@ -34,10 +34,10 @@ class TokenManager
     /**
      * TokenManager constructor.
      *
-     * @param UserDatabaseManagerLocator $userDml
-     * @param ResourceProvider           $provider
+     * @param DatabaseManagerLocator $userDml
+     * @param ResourceProvider       $provider
      */
-    public function __construct(UserDatabaseManagerLocator $userDml, ResourceProvider $provider)
+    public function __construct(DatabaseManagerLocator $userDml, ResourceProvider $provider)
     {
         $this->dm       = $userDml->get();
         $this->provider = $provider;

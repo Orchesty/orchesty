@@ -2,8 +2,8 @@
 
 namespace Hanaboso\PipesFramework\User\Model\Security;
 
+use Hanaboso\PipesFramework\Commons\DatabaseManager\DatabaseManagerLocator;
 use Hanaboso\PipesFramework\HbPFUserBundle\Provider\ResourceProvider;
-use Hanaboso\PipesFramework\User\DatabaseManager\UserDatabaseManagerLocator;
 use Hanaboso\PipesFramework\User\Entity\UserInterface;
 use Hanaboso\PipesFramework\User\Enum\ResourceEnum;
 use Hanaboso\PipesFramework\User\Model\Token;
@@ -57,16 +57,16 @@ class SecurityManager
     /**
      * SecurityManager constructor.
      *
-     * @param UserDatabaseManagerLocator $userDml
-     * @param EncoderFactory             $encoderFactory
-     * @param Session                    $session
-     * @param TokenStorage               $tokenStorage
-     * @param ResourceProvider           $provider
+     * @param DatabaseManagerLocator $userDml
+     * @param EncoderFactory         $encoderFactory
+     * @param Session                $session
+     * @param TokenStorage           $tokenStorage
+     * @param ResourceProvider       $provider
      *
      * @throws \Hanaboso\PipesFramework\HbPFUserBundle\Exception\UserException
      */
     public function __construct(
-        UserDatabaseManagerLocator $userDml,
+        DatabaseManagerLocator $userDml,
         EncoderFactory $encoderFactory,
         Session $session,
         TokenStorage $tokenStorage,

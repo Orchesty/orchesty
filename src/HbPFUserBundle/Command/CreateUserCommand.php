@@ -4,8 +4,8 @@ namespace Hanaboso\PipesFramework\HbPFUserBundle\Command;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ORM\EntityManager;
+use Hanaboso\PipesFramework\Commons\DatabaseManager\DatabaseManagerLocator;
 use Hanaboso\PipesFramework\HbPFUserBundle\Provider\ResourceProvider;
-use Hanaboso\PipesFramework\User\DatabaseManager\UserDatabaseManagerLocator;
 use Hanaboso\PipesFramework\User\Entity\UserInterface;
 use Hanaboso\PipesFramework\User\Enum\ResourceEnum;
 use Hanaboso\PipesFramework\User\Repository\Document\UserRepository as OdmRepo;
@@ -49,12 +49,12 @@ class CreateUserCommand extends Command
     /**
      * ChangePasswordCommand constructor.
      *
-     * @param UserDatabaseManagerLocator $userDml
-     * @param ResourceProvider           $provider
-     * @param EncoderFactory             $encoderFactory
+     * @param DatabaseManagerLocator $userDml
+     * @param ResourceProvider       $provider
+     * @param EncoderFactory         $encoderFactory
      */
     public function __construct(
-        UserDatabaseManagerLocator $userDml,
+        DatabaseManagerLocator $userDml,
         ResourceProvider $provider,
         EncoderFactory $encoderFactory
     )
@@ -84,7 +84,7 @@ class CreateUserCommand extends Command
     {
         $output->writeln('Creating user, select user email:');
 
-        $pwd1 = '';
+        $pwd1  = '';
         $email = readline();
         /** @var UserInterface $user */
         $user = $this->repo->findOneBy(['email' => $email]);

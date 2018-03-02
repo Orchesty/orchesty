@@ -13,6 +13,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Hanaboso\PipesFramework\Commons\Enum\FileFormatEnum;
 use Hanaboso\PipesFramework\Commons\Enum\StorageTypeEnum;
 use Hanaboso\PipesFramework\Commons\Exception\FileStorageException;
+use Hanaboso\PipesFramework\Commons\FileStorage\Entity\FileInterface;
 use Hanaboso\PipesFramework\Commons\FileStorage\FileTypes;
 use Hanaboso\PipesFramework\Commons\Traits\Document\IdTrait;
 
@@ -23,7 +24,7 @@ use Hanaboso\PipesFramework\Commons\Traits\Document\IdTrait;
  *
  * @ODM\Document
  */
-class File
+class File implements FileInterface
 {
 
     use IdTrait;
@@ -81,9 +82,9 @@ class File
     /**
      * @param string $filename
      *
-     * @return File
+     * @return FileInterface
      */
-    public function setFilename(string $filename): File
+    public function setFilename(string $filename): FileInterface
     {
         $this->filename = $filename;
 
@@ -101,10 +102,10 @@ class File
     /**
      * @param string $fileFormat
      *
-     * @return File
+     * @return FileInterface
      * @throws FileStorageException
      */
-    public function setFileFormat(string $fileFormat): File
+    public function setFileFormat(string $fileFormat): FileInterface
     {
         if (!FileFormatEnum::isValid($fileFormat)) {
             throw new FileStorageException(
@@ -113,7 +114,7 @@ class File
             );
         }
 
-        $this->mimeType = FileTypes::fromExtension($fileFormat);
+        $this->mimeType   = FileTypes::fromExtension($fileFormat);
         $this->fileFormat = $fileFormat;
 
         return $this;
@@ -138,9 +139,9 @@ class File
     /**
      * @param string $fileUrl
      *
-     * @return File
+     * @return FileInterface
      */
-    public function setFileUrl(string $fileUrl): File
+    public function setFileUrl(string $fileUrl): FileInterface
     {
         $this->fileUrl = $fileUrl;
 
@@ -158,9 +159,9 @@ class File
     /**
      * @param string $size
      *
-     * @return File
+     * @return FileInterface
      */
-    public function setSize(string $size): File
+    public function setSize(string $size): FileInterface
     {
         $this->size = $size;
 
@@ -178,10 +179,10 @@ class File
     /**
      * @param string $storageType
      *
-     * @return File
+     * @return FileInterface
      * @throws FileStorageException
      */
-    public function setStorageType(string $storageType): File
+    public function setStorageType(string $storageType): FileInterface
     {
         if (!StorageTypeEnum::isValid($storageType)) {
             throw new FileStorageException(

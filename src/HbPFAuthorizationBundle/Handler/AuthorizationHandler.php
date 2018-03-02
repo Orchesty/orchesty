@@ -10,8 +10,8 @@
 namespace Hanaboso\PipesFramework\HbPFAuthorizationBundle\Handler;
 
 use Hanaboso\PipesFramework\Authorization\Base\OAuthAuthorizationInterface;
+use Hanaboso\PipesFramework\Commons\Utils\ControllerUtils;
 use Hanaboso\PipesFramework\HbPFAuthorizationBundle\Loader\AuthorizationLoader;
-use Hanaboso\PipesFramework\Utils\ControllerUtils;
 
 /**
  * Class AuthorizationHandler

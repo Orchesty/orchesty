@@ -2,7 +2,7 @@
 
 namespace Hanaboso\PipesFramework\Commons\Traits;
 
-use Hanaboso\PipesFramework\Utils\ControllerUtils;
+use Hanaboso\PipesFramework\Commons\Utils\ControllerUtils;
 use Symfony\Component\HttpFoundation\Response;
 use Throwable;
 

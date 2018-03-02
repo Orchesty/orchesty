@@ -63,7 +63,8 @@ class FileStorageTest extends DatabaseTestCaseAbstract
 
         $locator = new FileStorageDriverLocator($driver, $driver, $driver);
 
-        $storage = new FileStorage($locator, $this->container->get('doctrine_mongodb.odm.default_document_manager'));
+        $storage = new FileStorage($locator, $this->container->get('hbpf.database_manager_locator'),
+            'Hanaboso\PipesFramework\Commons\FileStorage\Document\File');
 
         return $storage;
     }

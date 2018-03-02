@@ -224,7 +224,7 @@ class UserManagerTest extends DatabaseTestCaseAbstract
     private function prepareMailerMock(): void
     {
         $this->userManager = new UserManager(
-            $this->container->get('hbpf.database_manager_locator.user'),
+            $this->container->get('hbpf.database_manager_locator'),
             $this->container->get('hbpf.user.manager.security'),
             $this->container->get('hbpf.user.manager.token'),
             $this->createMock(EncoderFactory::class),

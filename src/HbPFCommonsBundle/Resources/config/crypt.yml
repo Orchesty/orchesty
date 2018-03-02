@@ -1,9 +1,0 @@
-services:
-    _defaults:
-        public: '%public.services%'
-
-    hbpf.crypt.crypt_service:
-        class: Hanaboso\PipesFramework\Commons\Crypt\CryptService
-
-    hbpf.crypt.crypt_manager:
-        class: Hanaboso\PipesFramework\Commons\Crypt\CryptManager

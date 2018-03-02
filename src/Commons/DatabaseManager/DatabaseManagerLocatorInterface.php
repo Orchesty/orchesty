@@ -14,13 +14,13 @@ interface DatabaseManagerLocatorInterface
 {
 
     /**
-     * @return DocumentManager
+     * @return DocumentManager|null
      */
-    public function getDm(): DocumentManager;
+    public function getDm(): ?DocumentManager;
 
     /**
-     * @return EntityManager
+     * @return EntityManager|null
      */
-    public function getEm(): EntityManager;
+    public function getEm(): ?EntityManager;
 
 }

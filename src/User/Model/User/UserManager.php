@@ -4,8 +4,8 @@ namespace Hanaboso\PipesFramework\User\Model\User;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ORM\EntityManager;
+use Hanaboso\PipesFramework\Commons\DatabaseManager\DatabaseManagerLocator;
 use Hanaboso\PipesFramework\HbPFUserBundle\Provider\ResourceProvider;
-use Hanaboso\PipesFramework\User\DatabaseManager\UserDatabaseManagerLocator;
 use Hanaboso\PipesFramework\User\Document\User as OdmUser;
 use Hanaboso\PipesFramework\User\Entity\TmpUserInterface;
 use Hanaboso\PipesFramework\User\Entity\User as OrmUser;
@@ -87,17 +87,17 @@ class UserManager
     /**
      * UserManager constructor.
      *
-     * @param UserDatabaseManagerLocator $userDml
-     * @param SecurityManager            $securityManager
-     * @param TokenManager               $tokenManager
-     * @param EncoderFactory             $encoderFactory
-     * @param EventDispatcherInterface   $eventDispatcher
-     * @param ResourceProvider           $provider
-     * @param Mailer                     $mailer
-     * @param string                     $activateLink
+     * @param DatabaseManagerLocator   $userDml
+     * @param SecurityManager          $securityManager
+     * @param TokenManager             $tokenManager
+     * @param EncoderFactory           $encoderFactory
+     * @param EventDispatcherInterface $eventDispatcher
+     * @param ResourceProvider         $provider
+     * @param Mailer                   $mailer
+     * @param string                   $activateLink
      */
     public function __construct(
-        UserDatabaseManagerLocator $userDml,
+        DatabaseManagerLocator $userDml,
         SecurityManager $securityManager,
         TokenManager $tokenManager,
         EncoderFactory $encoderFactory,

@@ -1,16 +1,16 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Unit\Commons\Utils;
+namespace Tests\Unit\Configurator\Utils;
 
-use Hanaboso\PipesFramework\Commons\Utils\CronUtils;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
+use Hanaboso\PipesFramework\Configurator\Utils\CronUtils;
 use Tests\KernelTestCaseAbstract;
 
 /**
  * Class CronUtilsTest
  *
- * @package Tests\Unit\Commons\Utils
+ * @package Tests\Unit\Configurator\Utils
  */
 final class CronUtilsTest extends KernelTestCaseAbstract
 {

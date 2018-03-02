@@ -1,8 +1,0 @@
-services:
-    hbpf.command.refresh_cron:
-        class: Hanaboso\PipesFramework\HbPFCommonsBundle\Command\RefreshCronCommand
-        arguments:
-            - '@doctrine_mongodb.odm.default_document_manager'
-            - '@hbpf.cron.manager'
-        tags:
-            -  { name: console.command }

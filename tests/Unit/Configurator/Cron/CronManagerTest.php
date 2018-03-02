@@ -1,15 +1,15 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Unit\Commons\Cron;
+namespace Tests\Unit\Configurator\Cron;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Hanaboso\PipesFramework\Commons\Cron\CronManager;
 use Hanaboso\PipesFramework\Commons\Enum\TypeEnum;
 use Hanaboso\PipesFramework\Commons\Exception\CronException;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlException;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
+use Hanaboso\PipesFramework\Configurator\Cron\CronManager;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Exception\NodeException;
@@ -21,7 +21,7 @@ use Tests\KernelTestCaseAbstract;
 /**
  * Class CronManagerTest
  *
- * @package Tests\Unit\Commons\Cron
+ * @package Tests\Unit\Configurator\Cron
  */
 final class CronManagerTest extends KernelTestCaseAbstract
 {

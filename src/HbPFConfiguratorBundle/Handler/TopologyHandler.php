@@ -9,6 +9,7 @@ use Hanaboso\PipesFramework\Commons\Enum\TopologyStatusEnum;
 use Hanaboso\PipesFramework\Commons\Exception\PipesFrameworkException;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
+use Hanaboso\PipesFramework\Commons\Utils\ControllerUtils;
 use Hanaboso\PipesFramework\Commons\Utils\UriParams;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Exception\NodeException;
@@ -16,7 +17,6 @@ use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyManager;
 use Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository;
 use Hanaboso\PipesFramework\TopologyGenerator\Request\RequestHandler;
-use Hanaboso\PipesFramework\Utils\ControllerUtils;
 use Throwable;
 
 /**
