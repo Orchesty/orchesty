@@ -9,7 +9,7 @@ use Hanaboso\PipesFramework\Acl\Entity\GroupInterface;
 use Hanaboso\PipesFramework\Acl\Entity\Rule as OrmRule;
 use Hanaboso\PipesFramework\Acl\Entity\RuleInterface;
 use Hanaboso\PipesFramework\Acl\Exception\AclException;
-use Hanaboso\PipesFramework\User\DatabaseManager\UserDatabaseManagerLocator;
+use Hanaboso\PipesFramework\Commons\DatabaseManager\DatabaseManagerLocator;
 
 /**
  * Class RuleFactory
@@ -37,13 +37,13 @@ class RuleFactory
     /**
      * RuleFactory constructor.
      *
-     * @param UserDatabaseManagerLocator $userDml
-     * @param array                      $rules
-     * @param mixed                      $resEnum
+     * @param DatabaseManagerLocator $userDml
+     * @param array                  $rules
+     * @param mixed                  $resEnum
      *
      * @throws AclException
      */
-    function __construct(UserDatabaseManagerLocator $userDml, array $rules, $resEnum)
+    function __construct(DatabaseManagerLocator $userDml, array $rules, $resEnum)
     {
         if (!is_array($rules) || !array_key_exists('owner', $rules)) {
             throw new AclException(

@@ -4,8 +4,8 @@ namespace Hanaboso\PipesFramework\HbPFUserBundle\Command;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ORM\EntityManager;
+use Hanaboso\PipesFramework\Commons\DatabaseManager\DatabaseManagerLocator;
 use Hanaboso\PipesFramework\HbPFUserBundle\Provider\ResourceProvider;
-use Hanaboso\PipesFramework\User\DatabaseManager\UserDatabaseManagerLocator;
 use Hanaboso\PipesFramework\User\Entity\UserInterface;
 use Hanaboso\PipesFramework\User\Enum\ResourceEnum;
 use Hanaboso\PipesFramework\User\Repository\Document\UserRepository as OdmRepo;
@@ -37,11 +37,11 @@ class DeleteUserCommand extends Command
     /**
      * CreateUserCommand constructor.
      *
-     * @param UserDatabaseManagerLocator $userDml
-     * @param ResourceProvider           $provider
+     * @param DatabaseManagerLocator $userDml
+     * @param ResourceProvider       $provider
      */
     public function __construct(
-        UserDatabaseManagerLocator $userDml,
+        DatabaseManagerLocator $userDml,
         ResourceProvider $provider
     )
     {

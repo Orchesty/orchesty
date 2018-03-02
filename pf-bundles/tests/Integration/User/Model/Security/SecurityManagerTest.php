@@ -43,7 +43,7 @@ class SecurityManagerTest extends DatabaseTestCaseAbstract
         $this->encoder         = new BCryptPasswordEncoder(12);
         $encodeFactory         = new EncoderFactory([$this->encoder]);
         $this->securityManager = new SecurityManager(
-            $this->container->get('hbpf.database_manager_locator.user'),
+            $this->container->get('hbpf.database_manager_locator'),
             $encodeFactory,
             $this->session,
             $this->container->get('security.token_storage'),

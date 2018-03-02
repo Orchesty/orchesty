@@ -8,8 +8,8 @@ use Hanaboso\PipesFramework\Acl\Entity\RuleInterface;
 use Hanaboso\PipesFramework\Acl\Provider\ProviderInterface;
 use Hanaboso\PipesFramework\Acl\Repository\Document\GroupRepository as OdmRepo;
 use Hanaboso\PipesFramework\Acl\Repository\Entity\GroupRepository as OrmRepo;
+use Hanaboso\PipesFramework\Commons\DatabaseManager\DatabaseManagerLocator;
 use Hanaboso\PipesFramework\HbPFUserBundle\Provider\ResourceProvider;
-use Hanaboso\PipesFramework\User\DatabaseManager\UserDatabaseManagerLocator;
 use Hanaboso\PipesFramework\User\Entity\UserInterface;
 use Hanaboso\PipesFramework\User\Enum\ResourceEnum;
 
@@ -34,10 +34,10 @@ class DatabaseProvider implements ProviderInterface
     /**
      * DatabaseProvider constructor.
      *
-     * @param UserDatabaseManagerLocator $userDml
-     * @param ResourceProvider           $provider
+     * @param DatabaseManagerLocator $userDml
+     * @param ResourceProvider       $provider
      */
-    public function __construct(UserDatabaseManagerLocator $userDml, ResourceProvider $provider)
+    public function __construct(DatabaseManagerLocator $userDml, ResourceProvider $provider)
     {
         $this->dm       = $userDml->get();
         $this->provider = $provider;

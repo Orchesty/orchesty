@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Hanaboso\PipesFramework\Commons\Utils;
+namespace Hanaboso\PipesFramework\Configurator\Utils;
 
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
@@ -8,7 +8,7 @@ use Hanaboso\PipesFramework\Configurator\Document\Topology;
 /**
  * Class CronUtils
  *
- * @package Hanaboso\PipesFramework\Commons\Utils
+ * @package Hanaboso\PipesFramework\Configurator\Utils
  */
 class CronUtils
 {

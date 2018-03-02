@@ -37,13 +37,15 @@ services:
         class: Hanaboso\PipesFramework\Commons\FileStorage\FileStorage
         arguments:
             - '@hbpf.file_storage.locator'
-            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.database_manager_locator'
+            - 'Hanaboso\PipesFramework\Commons\FileStorage\Document\File'
 
     hbpf.database_manager_locator:
         class: Hanaboso\PipesFramework\Commons\DatabaseManager\DatabaseManagerLocator
         arguments:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@doctrine.orm.default_entity_manager'
+            - '%database_type%'
 
     hbpf.docker.handler.docker_handler:
         class: Hanaboso\PipesFramework\Commons\Docker\Handler\DockerHandler
@@ -71,11 +73,3 @@ services:
         arguments:
             - '@udp_metrics_sender'
             - '%influx.fpm_table%'
-
-    hbpf.cron.manager:
-        class: Hanaboso\PipesFramework\Commons\Cron\CronManager
-        arguments:
-            - '@doctrine_mongodb.odm.default_document_manager'
-            - '@hbpf.transport.curl_manager'
-            - '%monolith_host%'
-            - '%cron_host%'

@@ -51,7 +51,7 @@ final class TableParserHandlerTest extends KernelTestCaseAbstract
     public function testParseToJson(): void
     {
 
-        $this->container->get('hbpf.database_manager_locator.user');
+        $this->container->get('hbpf.database_manager_locator');
 
         $result = $this->handler->parseToJson([
             'file_id'     => sprintf('%s/input-10.xlsx', $this->path),

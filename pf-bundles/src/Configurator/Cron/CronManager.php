@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Hanaboso\PipesFramework\Commons\Cron;
+namespace Hanaboso\PipesFramework\Configurator\Cron;
 
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -11,17 +11,17 @@ use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
-use Hanaboso\PipesFramework\Commons\Utils\CronUtils;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository;
+use Hanaboso\PipesFramework\Configurator\Utils\CronUtils;
 use stdClass;
 use Throwable;
 
 /**
  * Class CronManager
  *
- * @package Hanaboso\PipesFramework\Commons\Cron
+ * @package Hanaboso\PipesFramework\Configurator\Cron
  */
 class CronManager
 {

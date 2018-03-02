@@ -70,7 +70,9 @@ phpmanual-tests:
 phpmanual-down:
 	cd tests/Manual; $(MAKE) docker-down-clean;
 
-test: docker-up-force composer-install codesniffer phpstan clear-cache phpunit phpcontroller phpintegration
+test: docker-up-force composer-install codesniffer phpstan clear-cache phpunit phpintegration phpcontroller
+
+fasttest: codesniffer phpstan clear-cache phpunit phpintegration phpcontroller
 
 docker-compose.ci.yml:
 	# Comment out any port forwarding

@@ -5,7 +5,7 @@ services:
     hbpf.command.change_password:
         class: Hanaboso\PipesFramework\HbPFUserBundle\Command\ChangePasswordCommand
         arguments:
-            - '@hbpf.database_manager_locator.user'
+            - '@hbpf.database_manager_locator'
             - '@hbpf.user.provider.resource'
             - '@security.encoder_factory.generic'
         tags:
@@ -14,7 +14,7 @@ services:
     hbpf.command.create_user:
         class: Hanaboso\PipesFramework\HbPFUserBundle\Command\CreateUserCommand
         arguments:
-            - '@hbpf.database_manager_locator.user'
+            - '@hbpf.database_manager_locator'
             - '@hbpf.user.provider.resource'
             - '@security.encoder_factory.generic'
         tags:
@@ -23,7 +23,7 @@ services:
     hbpf.command.list_user:
         class: Hanaboso\PipesFramework\HbPFUserBundle\Command\ListUsersCommand
         arguments:
-            - '@hbpf.database_manager_locator.user'
+            - '@hbpf.database_manager_locator'
             - '@hbpf.user.provider.resource'
         tags:
             -  { name: console.command }
@@ -31,7 +31,7 @@ services:
     hbpf.command.delete_user:
         class: Hanaboso\PipesFramework\HbPFUserBundle\Command\DeleteUserCommand
         arguments:
-            - '@hbpf.database_manager_locator.user'
+            - '@hbpf.database_manager_locator'
             - '@hbpf.user.provider.resource'
         tags:
             -  { name: console.command }
