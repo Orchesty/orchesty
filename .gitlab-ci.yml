@@ -170,6 +170,16 @@ stage-demo:
     - export COMPOSE_PROJECT_NAME=stagedemo
     - export NPM_INSTALL="yes"
     - make docker-pull-dev init-dev DEV_YML=docker-compose.ci.yml
+  script:
+    - cd clients/demo
+    - make docker-compose.ci.yml
+    - source <(../../build/bin/map-branch-image-tags.sh ./branch-image-tag-map ${CI_BUILD_REF_NAME} -e)
+    - export DEPLOYMENT_PREFIX=demo
+    - export PUBLISH_HTTP_PORT=6539
+    - export BACKEND_URL=https://demo.stage.hanaboso.net
+    - export DOCKER_HOST=192.168.10.31:2376
+    - export DOCKER_TLS_VERIFY=1
+    - docker stack deploy --with-registry-auth -c docker-compose.ci.yml ${DEPLOYMENT_PREFIX}
 
 
 # Client: Clever Monitor
