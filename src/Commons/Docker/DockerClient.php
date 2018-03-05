@@ -42,7 +42,6 @@ class DockerClient
     protected $version = '1.24';
 
     /**
-     *
      * Client constructor.
      *
      * @param array  $connectOption

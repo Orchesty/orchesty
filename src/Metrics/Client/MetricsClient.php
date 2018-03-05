@@ -77,7 +77,6 @@ class MetricsClient implements ClientInterface
     }
 
     /**
-     *
      * @param null $name
      *
      * @return Database

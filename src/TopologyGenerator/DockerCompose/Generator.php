@@ -391,7 +391,6 @@ class Generator implements GeneratorInterface
     }
 
     /**
-     *
      * @return array
      */
     private function getJsonSplitterConfig(): array
@@ -414,7 +413,6 @@ class Generator implements GeneratorInterface
     }
 
     /**
-     *
      * @return array
      */
     private function getResequencerWorkerConfig(): array

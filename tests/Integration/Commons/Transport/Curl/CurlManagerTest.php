@@ -16,7 +16,9 @@ use Tests\KernelTestCaseAbstract;
 class CurlManagerTest extends KernelTestCaseAbstract
 {
 
-    /** @var CurlManager */
+    /**
+     * @var CurlManager
+     */
     private $curl;
 
     /**

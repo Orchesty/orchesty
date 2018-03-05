@@ -63,7 +63,6 @@ class SystemMetricsListener implements EventSubscriberInterface, LoggerAwareInte
      * Adds system metrics values to request object
      *
      * @param FilterControllerEvent $event
-     *
      */
     public function onKernelController(FilterControllerEvent $event): void
     {

@@ -16,7 +16,6 @@ class UserController extends FOSRestController
 {
 
     /**
-     *
      * @Route("/user/login")
      * @Method({"POST", "OPTIONS"})
      *
@@ -28,7 +27,6 @@ class UserController extends FOSRestController
     }
 
     /**
-     *
      * @Route("/user/logout")
      * @Method({"POST", "OPTIONS"})
      *
@@ -40,7 +38,6 @@ class UserController extends FOSRestController
     }
 
     /**
-     *
      * @Route("/user/register")
      * @Method({"POST", "OPTIONS"})
      *
@@ -52,7 +49,6 @@ class UserController extends FOSRestController
     }
 
     /**
-     *
      * @Route("/user/{token}/activate", requirements={"token": "\w+"})
      * @Method({"POST", "OPTIONS"})
      *
@@ -66,7 +62,6 @@ class UserController extends FOSRestController
     }
 
     /**
-     *
      * @Route("/user/{token}/set_password", requirements={"token": "\w+"})
      * @Method({"POST", "OPTIONS"})
      *
@@ -91,7 +86,6 @@ class UserController extends FOSRestController
     }
 
     /**
-     *
      * @Route("/user/reset_password")
      * @Method({"POST", "OPTIONS"})
      *
@@ -103,7 +97,6 @@ class UserController extends FOSRestController
     }
 
     /**
-     *
      * @Route("/user/{id}/delete")
      * @Method({"DELETE", "OPTIONS"})
      *

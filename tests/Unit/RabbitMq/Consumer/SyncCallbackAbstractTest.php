@@ -101,7 +101,9 @@ class SyncCallbackAbstractTest extends TestCase
         $baseCallback = new class($callbackStatus) extends SyncCallbackAbstract
         {
 
-            /** @var int|null */
+            /**
+             * @var int|null
+             */
             private $callbackStatus;
 
             /**

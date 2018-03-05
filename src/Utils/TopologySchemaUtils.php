@@ -25,7 +25,9 @@ class TopologySchemaUtils
     private const INCOMING      = 'bpmn:incoming';
     private const OUTGOING      = 'bpmn:outgoing';
 
-    /** @var array */
+    /**
+     * @var array
+     */
     private static $handlers = [self::START_EVENT, self::TASK, self::EVENT, self::END_EVENT];
 
     /**

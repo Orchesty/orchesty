@@ -21,7 +21,9 @@ use Tests\KernelTestCaseAbstract;
 class ConnectorLoaderTest extends KernelTestCaseAbstract
 {
 
-    /** @var  ConnectorLoader */
+    /**
+     * @var  ConnectorLoader
+     */
     private $loader;
 
     /**

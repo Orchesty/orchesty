@@ -33,16 +33,24 @@ use TypeError;
 class ConsumerCommand extends Command implements LoggerAwareInterface
 {
 
-    /** @var ContainerInterface */
+    /**
+     * @var ContainerInterface
+     */
     protected $container;
 
-    /** @var BunnyManager */
+    /**
+     * @var BunnyManager
+     */
     protected $manager;
 
-    /** @var BaseSyncConsumerAbstract[][] */
+    /**
+     * @var BaseSyncConsumerAbstract[][]
+     */
     protected $consumers;
 
-    /** @var int */
+    /**
+     * @var int
+     */
     protected $messages = 0;
 
     /**

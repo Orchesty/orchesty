@@ -45,7 +45,6 @@ class TableParserController extends FOSRestController
      * @param Request $request
      *
      * @return Response
-     *
      */
     public function toJsonAction(Request $request): Response
     {
