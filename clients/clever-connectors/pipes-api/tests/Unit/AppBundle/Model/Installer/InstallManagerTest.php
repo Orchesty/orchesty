@@ -37,7 +37,6 @@ final class InstallManagerTest extends TestCase
     use PrivateTrait;
 
     /**
-     *
      * @throws CleverConnectorsException
      */
     public function testPrepareInstall(): void
@@ -54,7 +53,6 @@ final class InstallManagerTest extends TestCase
     }
 
     /**
-     *
      * @throws CleverConnectorsException
      */
     public function testMakeInstall(): void
@@ -73,7 +71,6 @@ final class InstallManagerTest extends TestCase
     }
 
     /**
-     *
      * @throws CleverConnectorsException
      */
     public function testMakeInstallEx(): void

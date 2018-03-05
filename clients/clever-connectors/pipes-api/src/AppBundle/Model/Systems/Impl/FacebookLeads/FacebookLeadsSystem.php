@@ -66,7 +66,6 @@ class FacebookLeadsSystem implements SystemInterface, OAuth2Interface
      *
      * @param OAuth2Provider     $provider
      * @param ContainerInterface $container
-     *
      */
     public function __construct(
         OAuth2Provider $provider,

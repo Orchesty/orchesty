@@ -162,7 +162,6 @@ class Service
     }
 
     /**
-     *
      * @param string $key
      * @param string $value
      *

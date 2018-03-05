@@ -369,7 +369,6 @@ class HubspotSystem implements WebhookSystemInterface, OAuth2Interface, CMEventS
     /******************************************  HELPERS  ****************************************/
 
     /**
-     *
      * @param string      $type
      * @param null|string $propertyName
      *

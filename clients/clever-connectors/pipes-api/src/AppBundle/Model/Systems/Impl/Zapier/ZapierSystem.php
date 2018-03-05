@@ -41,7 +41,6 @@ class ZapierSystem implements WebhookSystemInterface, AuthorizationInterface, CM
 
     /**
      * ZapierSystem constructor.
-     *
      */
     public function __construct()
     {
@@ -251,7 +250,6 @@ class ZapierSystem implements WebhookSystemInterface, AuthorizationInterface, CM
      *
      * @return RequesterInterface
      * @throws SystemException
-     *
      */
     public function getSubscribeRequester(
         SystemInstall $systemInstall
@@ -268,7 +266,6 @@ class ZapierSystem implements WebhookSystemInterface, AuthorizationInterface, CM
      *
      * @return RequesterInterface
      * @throws SystemException
-     *
      */
     public function getUnsubscribeRequester(SystemInstall $systemInstall): RequesterInterface
     {

@@ -27,7 +27,6 @@ interface ClientInterface
     public function getQueryBuilder(): Builder;
 
     /**
-     *
      * @param null $name
      *
      * @return Database

@@ -4,7 +4,7 @@ namespace CleverConnectors\AppBundle\Handler;
 
 use CleverConnectors\AppBundle\Model\DataLayout\LayoutManager;
 use CleverConnectors\AppBundle\Model\Systems\SystemManager;
-use Hanaboso\PipesFramework\Utils\ControllerUtils;
+use Hanaboso\PipesFramework\Commons\Utils\ControllerUtils;
 
 /**
  * Class LayoutHandler

@@ -31,7 +31,6 @@ class SystemLimitManagerTest extends TestCase
     private $systemLoader;
 
     /**
-     *
      * @var DocumentManager|MockObject
      */
     private $dm;

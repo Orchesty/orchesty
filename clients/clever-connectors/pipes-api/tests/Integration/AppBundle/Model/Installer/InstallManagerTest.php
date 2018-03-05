@@ -36,7 +36,6 @@ final class InstallManagerTest extends DatabaseTestCaseAbstract
     private $redis;
 
     /**
-     *
      * @throws CleverConnectorsException
      */
     public function testPrepareInstall(): void
@@ -58,7 +57,6 @@ final class InstallManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     *
      * @throws CleverConnectorsException
      */
     public function testMakeInstall(): void
@@ -84,7 +82,6 @@ final class InstallManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     *
      * @throws CleverConnectorsException
      */
     public function testMakeInstallEx(): void

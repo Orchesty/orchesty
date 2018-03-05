@@ -31,7 +31,6 @@ final class UniversalMapperNodeTest extends DatabaseTestCaseAbstract
     /**
      * @covers \CleverConnectors\AppBundle\Model\CustomNode\UniversalMapperNode::process()
      * @covers \CleverConnectors\AppBundle\Model\CustomNode\UniversalMapperNode::getMapTemplate()
-     *
      */
     public function testProcess(): void
     {
@@ -73,7 +72,6 @@ final class UniversalMapperNodeTest extends DatabaseTestCaseAbstract
     /**
      * @covers \CleverConnectors\AppBundle\Model\CustomNode\UniversalMapperNode::process()
      * @covers \CleverConnectors\AppBundle\Model\CustomNode\UniversalMapperNode::getMapTemplate()
-     *
      */
     public function testProcessActionNotExist(): void
     {

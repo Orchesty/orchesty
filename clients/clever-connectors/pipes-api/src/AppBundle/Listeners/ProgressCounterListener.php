@@ -32,7 +32,6 @@ class ProgressCounterListener implements EventSubscriberInterface
 
     /**
      * @param ProcessStatusEvent $ev
-     *
      */
     public function updateStatus(ProcessStatusEvent $ev): void
     {

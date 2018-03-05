@@ -13,7 +13,6 @@ use Hanaboso\PipesFramework\User\Entity\UserInterface;
  * Class UserAbstract
  *
  * @package Hanaboso\PipesFramework\User\Document
- *
  */
 abstract class UserAbstract implements UserInterface
 {

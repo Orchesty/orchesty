@@ -31,7 +31,6 @@ class ProgressCounterListener implements EventSubscriberInterface
      * ProgressCounterListener constructor.
      *
      * @param ProgressCounterAbstract $counter
-     *
      */
     public function __construct(ProgressCounterAbstract $counter)
     {

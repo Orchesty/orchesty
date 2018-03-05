@@ -35,7 +35,6 @@ abstract class FacebookLeadConnectorAbstract implements ConnectorInterface, Logg
     protected $dm;
 
     /**
-     *
      * @var FacebookLeadsSystem
      */
     protected $system;

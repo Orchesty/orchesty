@@ -11,7 +11,6 @@ use Hanaboso\PipesFramework\Commons\Traits\Entity\IdTrait;
  * Class UserAbstract
  *
  * @package Hanaboso\PipesFramework\User\Entity
- *
  */
 abstract class UserAbstract implements UserInterface
 {
