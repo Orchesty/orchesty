@@ -127,16 +127,21 @@ class TopologyManager
             }
         }
 
+        try {
+            if ($cloned || empty($originalContentHash)) {
+                $this->generateNodes($topology, $newSchemaObject); // first save of topology or after topology is cloned
+            } else {
+                $this->updateNodes($topology, $newSchemaObject);
+            }
+        } catch (TopologyException $e) {
+            $topology->setContentHash('');
+            $this->removeNodesByTopology($topology);
+            throw $e;
+        }
+
         $topology
             ->setBpmn($data)
             ->setRawBpmn($content);
-
-        if ($cloned || empty($originalContentHash)) {
-            $this->generateNodes($topology, $newSchemaObject); // first save of topology or after topology is cloned
-        } else {
-            $this->updateNodes($topology, $newSchemaObject);
-        }
-
         $this->dm->flush();
 
         return $topology;
@@ -543,6 +548,7 @@ class TopologyManager
         $node = $this->dm->getRepository(Node::class)->findOneBy([
             'topology' => $topology->getId(),
             'schemaId' => $schemaId,
+            'deleted'  => FALSE,
         ]);
 
         if (!$node) {

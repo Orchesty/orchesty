@@ -1,3 +1,6 @@
+parameters:
+    stdout_path: 'php://stdout'
+
 monolog:
     handlers:
         main:

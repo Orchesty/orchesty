@@ -1,7 +1,7 @@
 parameters:
     database_host: mongo
     database_port: null
-    database_name: clever-connectors
+    database_name: demo
     database_user: root
     database_password: root
 

@@ -17,3 +17,4 @@ fos_rest:
 
     exception:
         enabled: true
+        exception_controller: 'fos_rest.exception.controller:showAction'

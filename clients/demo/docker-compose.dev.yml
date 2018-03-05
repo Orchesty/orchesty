@@ -1,49 +1,62 @@
 ---
 
+## BEGIN DEV
 version: '2'
+## END DEV
+## BEGIN STAGE
+#version: '3.3'
+## END STAGE
 
 services:
-    # Nodes
-
-    # PHP Services monolith
-    monolith-fpm:
+    ## BEGIN DEV
+    batch:
         image: dkr.hanaboso.net/pipes/pipes/php-dev:dev
         user: ${DEV_UID}:${DEV_GID}
-        working_dir: /var/www/pipes/clients/demo/pipes-api
         environment:
-          DEV_UID: ${DEV_UID}
-          DEV_GID: ${DEV_GID}
-          DEPLOYMENT_PREFIX: ${DEPLOYMENT_PREFIX}
+          BACKEND_HOST: ${BACKEND_URL}/
+          ELASTIC_HOST: elasticsearch
+          ELASTIC_INDEX: 'index'
+        command: bash -c 'while ! [ -f vendor/autoload.php ];do sleep 1; echo "sleep 1"; done; bin/console rabbit-mq:async-consumer batch'
+        working_dir: /var/www/pipes/clients/demo/pipes-api
         volumes:
           - ../../:/var/www/pipes
-          - ${SSH_AUTH_SOCK}:/ssh-agent
+          - ${SSH_AUTH_SOCK}:/tmp/bound-ssh-agent
           - ${HOME}/.composer:/srv/.composer
-        depends_on:
-          - mongo
-          - rabbitmq
-        networks:
-          - pipesdemo_default
+    ## END DEV
+    ## BEGIN STAGE
+    #batch:
+    #    image: dkr.hanaboso.net/pipes/client-cm/monolith-fpm:${TAG_MONOLITH}
+    #    command: bin/console rabbit-mq:async-consumer batch
+    #    environment:
+    #      BACKEND_HOST: ${BACKEND_URL}/
+    #      ELASTIC_HOST: elasticsearch
+    #      ELASTIC_INDEX: 'logstash-2018.01.31'
+    ## END STAGE
 
-    # Services
-    topology-fpm:
+    ## BEGIN DEV
+    status-service:
         image: dkr.hanaboso.net/pipes/pipes/php-dev:dev
         user: ${DEV_UID}:${DEV_GID}
-        working_dir: /var/www/pipes/clients/demo/pipes-api
         environment:
-          DEV_UID: ${DEV_UID}
-          DEV_GID: ${DEV_GID}
-          DEPLOYMENT_PREFIX: ${DEPLOYMENT_PREFIX}
-          GENERATOR_PATH: ${GENERATOR_PATH}
-          DOCKER_NETWORK: ${DOCKER_NETWORK}
+          BACKEND_HOST: ${BACKEND_URL}/
+          ELASTIC_HOST: elasticsearch
+          ELASTIC_INDEX: 'index'
+        command: bash -c 'while ! [ -f vendor/autoload.php ];do sleep 1; echo "sleep 1"; done; bin/console rabbit-mq:consumer status-service'
+        working_dir: /var/www/pipes/clients/demo/pipes-api
         volumes:
           - ../../:/var/www/pipes
-          - ${SSH_AUTH_SOCK}:/ssh-agent
-          - ./../topology:${GENERATOR_PATH}
+          - ${SSH_AUTH_SOCK}:/tmp/bound-ssh-agent
           - ${HOME}/.composer:/srv/.composer
-        depends_on:
-          - mongo
-        networks:
-          - pipesdemo_default
+    ## END DEV
+    ## BEGIN STAGE
+    #status-service:
+    #    image: dkr.hanaboso.net/pipes/client-cm/monolith-fpm:${TAG_MONOLITH}
+    #    command: bin/console rabbit-mq:consumer status-service
+    #    environment:
+    #      BACKEND_HOST: ${BACKEND_URL}/
+    #      ELASTIC_HOST: elasticsearch
+    #      ELASTIC_INDEX: 'logstash-2018.01.31'
+    ## END STAGE
 
     multi-probe:
       image: 'dkr.hanaboso.net/pipes/pipes/multi-probe:dev'
@@ -52,14 +65,13 @@ services:
         REDIS_PORT: '6379'
         REDIS_PASS: ''
         REDIS_DB: '0'
-      depends_on:
-        - redis
       ports:
         - ${DEV_IP}:8007:8007
 
     multi-counter:
       image: 'dkr.hanaboso.net/pipes/pipes/pf-bridge:dev'
       user: ${DEV_UID}:${DEV_GID}
+      command: './dist/src/bin/pipes.js start multi_counter'
       environment:
         RABBITMQ_HOST: rabbitmq
         RABBITMQ_PORT: '5672'
@@ -75,10 +87,18 @@ services:
         - redis
         - rabbitmq
       command: './dist/src/bin/pipes.js start multi_counter'
+      ports:
+        - ${DEV_IP}:8005:8005
+      # TODO: unify usages and remove the alias
+      networks:
+        default:
+          aliases:
+            - multi-counter-api
 
     repeater:
       image: 'dkr.hanaboso.net/pipes/pipes/pf-bridge:dev'
       user: ${DEV_UID}:${DEV_GID}
+      command: './dist/src/bin/pipes.js start repeater'
       environment:
         RABBITMQ_HOST: rabbitmq
         RABBITMQ_PORT: '5672'
@@ -87,33 +107,86 @@ services:
         RABBITMQ_VHOST: /
         MONGO_HOST: mongo
         REPEATER_CHECK_TIMEOUT: '5000'
-      depends_on:
-        - mongo
-        - rabbitmq
-      command: './dist/src/bin/pipes.js start repeater'
 
-    xml-parser-api:
-        image: 'dkr.hanaboso.net/pipes/pipes/python-xml-parser:prod'
+    # PHP Services monolith
+    ## BEGIN DEV
+    monolith-fpm:
+        image: dkr.hanaboso.net/pipes/pipes/php-dev:dev
+        user: ${DEV_UID}:${DEV_GID}
         environment:
-          PARSER_HOST: xml-parser-api
-          PARSER_PORT: '80'
-          PARSER_RELOADED: '1'
-          METRICS_HOST: metrics
-          METRICS_PORT: '5555'
-        ports:
-          - ${DEV_IP}:8080:80
-        networks:
-          - pipesdemo_default
+          BACKEND_HOST: ${BACKEND_URL}/
+          ELASTIC_HOST: elasticsearch
+          ELASTIC_INDEX: 'index'
+        working_dir: /var/www/pipes/clients/demo/pipes-api
+        volumes:
+          - ../../:/var/www/pipes
+          - ${SSH_AUTH_SOCK}:/tmp/bound-ssh-agent
+          - ${HOME}/.composer:/srv/.composer
+    ## END DEV
+    ## BEGIN STAGE
+    #monolith-fpm:
+    #    image: dkr.hanaboso.net/pipes/client-cm/monolith-fpm:${TAG_MONOLITH}
+    #    environment:
+    #      BACKEND_HOST: ${BACKEND_URL}/
+    #      ELASTIC_HOST: elasticsearch
+    #      ELASTIC_INDEX: 'logstash-2018.01.31'
+    #    secrets:
+    #      - source: clevermonitor-ca.pem
+    #        target: /var/www/html/var/secret/ca.crt
+    #      - source: clevermonitor-hanaboso.pem
+    #        target: /var/www/html/var/secret/keypair.pem
+    ## END STAGE
 
-    # Frontend
+    ## BEGIN DEV
+    topology-api:
+        user: ${DEV_UID}:${DEV_GID}
+        image: dkr.hanaboso.net/pipes/pipes/topology-api:dev
+        environment:
+          DEPLOYMENT_PREFIX: demo
+          GENERATOR_NETWORK: demo_default
+          GENERATOR_MODE: compose
+          GENERATOR_PATH: /srv/topology
+          MONGO_HOST: mongo
+          MONGO_DATABASE: demo
+          RABBITMQ_HOST: rabbitmq
+          PROJECT_SOURCE_PATH: ${PROJECT_SOURCE_PATH}/../topology
+        volumes:
+          - ${DOCKER_SOCKET_PATH}:/var/run/docker.sock
+          - ../topology:/srv/topology
+    ## END DEV
+    ## BEGIN STAGE
+    #topology-api:
+    #    image: dkr.hanaboso.net/pipes/pipes/topology-api:dev
+    #    environment:
+    #      DEPLOYMENT_PREFIX: ${DEPLOYMENT_PREFIX}
+    #      DOCKER_HOST: tcp://${DOCKER_HOST}
+    #      DOCKER_CERT_PATH: /srv/docker-pki
+    #      DOCKER_TLS_VERIFY: 1
+    #      GENERATOR_NETWORK: ${DEPLOYMENT_PREFIX}_default
+    #      GENERATOR_MODE: swarm
+    #      GENERATOR_PATH: /tmp
+    #      MONGO_HOST: mongo
+    #      MONGO_DATABASE: demo
+    #      RABBITMQ_HOST: rabbitmq
+    #    secrets:
+    #      - source: docker-ca.pem
+    #        target: /srv/docker-pki/ca.pem
+    #      - source: docker-client-cert.pem
+    #        target: /srv/docker-pki/cert.pem
+    #      - source: docker-client-key.pem
+    #        target: /srv/docker-pki/key.pem
+    #      - source: docker-config.json
+    #        target: /root/.docker/config.json
+    ## END STAGE
+
     frontend:
+    ## BEGIN DEV
         image: dkr.hanaboso.net/pipes/pipes/nodejs-build:dev
         user: ${DEV_UID}:${DEV_GID}
         working_dir: /var/www/pipes/frontend
         environment:
-          DEV_UID: ${DEV_UID}
-          DEV_GID: ${DEV_GID}
-          PHP_WEBROOT: /var/www/pipes/clients/demo/pipes-api/web
+          PHP_WEBROOT: /var/www/pipes/clients/demo/pipes-api/public
+          PHP_APP_INDEX: index.php
           NPM_INSTALL: ${NPM_INSTALL}
           NPM_START: "yes" # webpackserver
         ports:
@@ -121,26 +194,31 @@ services:
           - ${DEV_IP}:81:8080
         volumes:
           - ../../:/var/www/pipes
-          - ${SSH_AUTH_SOCK}:/ssh-agent
+          - ${SSH_AUTH_SOCK}:/tmp/bound-ssh-agent
+          - ./stack/nginx.conf:/etc/nginx/nginx.conf
+        # TODO: Use dynamic dns resolution in Nginx instead
+        depends_on:
+          - monolith-fpm
+          - topology-api
+          - cron-api
+    ## END DEV
+    ## BEGIN STAGE
+    #    image: dkr.hanaboso.net/pipes/pipes/frontend:${TAG_FRONTEND}
+    #    environment:
+    #      BACKEND_URL: ${BACKEND_URL}/api
+    #      PHP_WEBROOT: /var/www/html/public
+    #    ports:
+    #      - ${PUBLISH_HTTP_PORT}:80
+    ## END STAGE
         networks:
-          pipesdemo_default:
+          default:
             aliases:
               - connector-api
               - mailer-api
               - ftp-api
               - mapper-api
               - monolith-api
-              - topology-api
-              - stream
-              - api-demo-fpm
-              - cron-api
-        depends_on:
-          - monolith-fpm
-          - topology-fpm
-          - api-demo-fpm
-          - grafana
-          - kibana
-          - cron-api
+              - notification-sender-api
 
     stream:
         image: dkr.hanaboso.net/pipes/pipes/stream:dev
@@ -160,8 +238,10 @@ services:
           - ${DEV_IP}:15672:15672
         volumes:
           - rabbitmq:/var/lib/rabbitmq
-        networks:
-          - pipesdemo_default
+        ## BEGIN STAGE
+        #ports:
+        #  - 15672:15672
+        ## END STAGE
 
     # Storage
     mongo:
@@ -170,75 +250,10 @@ services:
           - ${DEV_IP}:27017:27017
         volumes:
           - mongodb:/data/db
-        networks:
-          - pipesdemo_default
-
-    # ELK
-    elasticsearch:
-        image: docker.elastic.co/elasticsearch/elasticsearch:5.6.0
-        environment:
-          xpack.security.enabled: "false"
-        ports:
-          - ${DEV_IP}:9200:9200
-        volumes:
-          - elasticsearch:/usr/share/elasticsearch/data
-        networks:
-          - pipesdemo_default
-
-    kibana:
-        image: docker.elastic.co/kibana/kibana:5.6.0
-        command: sh -c 'bin/kibana-plugin remove x-pack; /usr/local/bin/kibana-docker'
-        ports:
-          - ${DEV_IP}:5601:5601
-        networks:
-          - pipesdemo_default
-
-    logstash:
-        image: docker.elastic.co/logstash/logstash:5.6.0
-        command: --log.level debug
-        volumes:
-          - ./logstash.conf:/usr/share/logstash/pipeline/logstash.conf
-        networks:
-          - pipesdemo_default
-
-    # Metrics
-    grafana:
-        image: grafana/grafana:4.2.0
-        environment:
-          GF_SERVER_ROOT_URL: http://${DEV_IP}:3000
-          GF_SECURITY_ADMIN_PASSWORD: password
-        ports:
-          - ${DEV_IP}:3000:3000
-        volumes:
-          - grafana:/var/lib/grafana
-        networks:
-          - pipesdemo_default
-
-    influxdb:
-        image: influxdb:1.2-alpine
-        ports:
-          - ${DEV_IP}:8083:8083
-          - ${DEV_IP}:8086:8086
-          - ${DEV_IP}:8089:8089/udp
-        volumes:
-          - influxdb:/var/lib/influxdb
-          - ./influxdb.conf:/etc/influxdb/influxdb.conf
-        networks:
-          - pipesdemo_default
-
-    telegraf:
-        image: telegraf:1.4.2
-        volumes:
-          - telegraf:/var/lib/telegraf
-          - ./telegraf.conf:/etc/telegraf/telegraf.conf
-
-    # Fake Services
-    mailhog:
-        image: mailhog/mailhog
-        ports:
-          - ${DEV_IP}:8025:8025
-        networks:
-          - pipesdemo_default
+        ## BEGIN STAGE
+        #ports:
+        #  - 27017:27017
+        ## END STAGE
 
     redis:
         image: redis:3.2-alpine
@@ -247,42 +262,152 @@ services:
         volumes:
         - redis:/data
 
-    api-demo-fpm:
-        image: dkr.hanaboso.net/pipes/pipes/php-dev:dev
-        user: ${DEV_UID}:${DEV_GID}
-        working_dir: /var/www/pipes/clients/clever-connectors/cc-api-demo
-        environment:
-          DEV_UID: ${DEV_UID}
-          DEV_GID: ${DEV_GID}
+    logstash:
+        image: docker.elastic.co/logstash/logstash:5.6.0
+        command: --log.level debug
+        ## BEGIN DEV
         volumes:
-          - ../../:/var/www/pipes
-          - ${SSH_AUTH_SOCK}:/ssh-agent
-          - ${HOME}/.composer:/srv/.composer
-        depends_on:
-          - rabbitmq
+          - ./stack/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
+        ## END DEV
+        ## BEGIN STAGE
+        #configs:
+        #  - source: logstash.conf
+        #    target: /usr/share/logstash/pipeline/logstash.conf
+        ## END STAGE
+
+    # Metrics
+    influxdb:
+        image: influxdb:1.2-alpine
+        ports:
+          - ${DEV_IP}:8083:8083
+          - ${DEV_IP}:8086:8086
+          - ${DEV_IP}:8089:8089/udp
+        volumes:
+          - influxdb:/var/lib/influxdb
+        ## BEGIN DEV
+          - ./stack/influxdb.conf:/etc/influxdb/influxdb.conf
+        ## END DEV
+        ## BEGIN STAGE
+        #configs:
+        #  - source: influxdb.conf
+        #    target: /etc/influxdb/influxdb.conf
+        ## END STAGE
+
+    telegraf:
+        image: telegraf:1.4.2
+        ## BEGIN DEV
+        volumes:
+          - ./stack/telegraf.conf:/etc/telegraf/telegraf.conf
+        ## END DEV
+        ## BEGIN STAGE
+        #configs:
+        #  - source: telegraf.conf
+        #    target: /etc/telegraf/telegraf.conf
+        ## END STAGE
+
+    notification-sender-fpm:
+        image: dkr.hanaboso.net/clever-monitor/clever-notification-sender:master
+        ## BEGIN DEV
+        environment:
+            - DEV_UID=${DEV_UID}
+            - DEV_GID=${DEV_GID}
+            - BACKEND_HOST=${BACKEND_URL}
+        ## END DEV
+        ## BEGIN STAGE
+        #environment:
+        #    - BACKEND_HOST=${BACKEND_URL}
+        ## END STAGE
 
     cron-api:
-        user: ${DEV_UID}:${DEV_GID}
         image: dkr.hanaboso.net/pipes/pipes/python-cron:dev
+        ## BEGIN DEV
+        user: ${DEV_UID}:${DEV_GID}
         environment:
           - DEV_UID={DEV_UID}
           - DEV_GID={DEV_GID}
+        ## END DEV
         ports:
-          - ${DEV_IP}:8050:5000
+          - ${DEV_IP}:5000:5000
         links:
           - mongo
-        depends_on:
-          - mongo
 
+## BEGIN DEV
 volumes:
-  elasticsearch: {}
-  grafana: {}
-  influxdb: {}
   mongodb: {}
+  grafana: {}
   rabbitmq: {}
+  elasticsearch: {}
   redis: {}
-  telegraf: {}
+  influxdb: {}
+## END DEV
 
-networks:
-  pipesdemo_default:
-    external: true
+## BEGIN STAGE
+#volumes:
+#  elasticsearch:
+#    driver: local
+#    driver_opts:
+#      type: none
+#      device: /mnt/docker-volumes/${DEPLOYMENT_PREFIX}/elasticsearch
+#      o: bind
+#  grafana:
+#    driver: local
+#    driver_opts:
+#      type: none
+#      device: /mnt/docker-volumes/${DEPLOYMENT_PREFIX}/grafana
+#      o: bind
+#  influxdb:
+#    driver: local
+#    driver_opts:
+#      type: none
+#      device: /mnt/docker-volumes/${DEPLOYMENT_PREFIX}/influxdb
+#      o: bind
+#  mongodb:
+#    driver: local
+#    driver_opts:
+#      type: none
+#      device: /mnt/docker-volumes/${DEPLOYMENT_PREFIX}/mongodb
+#      o: bind
+#  rabbitmq:
+#    driver: local
+#    driver_opts:
+#      type: none
+#      device: /mnt/docker-volumes/${DEPLOYMENT_PREFIX}/rabbitmq
+#      o: bind
+#  redis:
+#    driver: local
+#    driver_opts:
+#      type: none
+#      device: /mnt/docker-volumes/${DEPLOYMENT_PREFIX}/redis
+#      o: bind
+#
+#configs:
+#  logstash.conf:
+#    file: ./stack/logstash.conf
+#  influxdb.conf:
+#    file: ./stack/influxdb.conf
+#  telegraf.conf:
+#    file: ./stack/telegraf.conf
+#
+#secrets:
+#  stage-staff.pem:
+#    external: true
+#  clevermonitor-ca.pem:
+#    external: true
+#  clevermonitor-hanaboso.pem:
+#    external: true
+#  docker-ca.pem:
+#    external: true
+#  docker-client-cert.pem:
+#    external: true
+#  docker-client-key.pem:
+#    external: true
+#  docker-config.json:
+#    external: true
+#
+#networks:
+#  default:
+#    driver: overlay
+#    ipam:
+#      config:
+#        - subnet: 10.75.0.0/16
+## END STAGE
