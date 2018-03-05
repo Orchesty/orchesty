@@ -344,41 +344,23 @@ volumes:
 ## BEGIN STAGE
 #volumes:
 #  elasticsearch:
-#    driver: local
-#    driver_opts:
-#      type: none
-#      device: /mnt/docker-volumes/${DEPLOYMENT_PREFIX}/elasticsearch
-#      o: bind
+#    external:
+#      name: ${DEPLOYMENT_PREFIX}-elasticsearch
 #  grafana:
-#    driver: local
-#    driver_opts:
-#      type: none
-#      device: /mnt/docker-volumes/${DEPLOYMENT_PREFIX}/grafana
-#      o: bind
+#    external:
+#      name: ${DEPLOYMENT_PREFIX}-grafana
 #  influxdb:
-#    driver: local
-#    driver_opts:
-#      type: none
-#      device: /mnt/docker-volumes/${DEPLOYMENT_PREFIX}/influxdb
-#      o: bind
+#    external:
+#      name: ${DEPLOYMENT_PREFIX}-influxdb
 #  mongodb:
-#    driver: local
-#    driver_opts:
-#      type: none
-#      device: /mnt/docker-volumes/${DEPLOYMENT_PREFIX}/mongodb
-#      o: bind
+#    external:
+#      name: ${DEPLOYMENT_PREFIX}-mongodb
 #  rabbitmq:
-#    driver: local
-#    driver_opts:
-#      type: none
-#      device: /mnt/docker-volumes/${DEPLOYMENT_PREFIX}/rabbitmq
-#      o: bind
+#    external:
+#      name: ${DEPLOYMENT_PREFIX}-rabbitmq
 #  redis:
-#    driver: local
-#    driver_opts:
-#      type: none
-#      device: /mnt/docker-volumes/${DEPLOYMENT_PREFIX}/redis
-#      o: bind
+#    external:
+#      name: ${DEPLOYMENT_PREFIX}-redis
 #
 #configs:
 #  logstash.conf:
