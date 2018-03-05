@@ -250,10 +250,6 @@ services:
           - ${DEV_IP}:27017:27017
         volumes:
           - mongodb:/data/db
-        ## BEGIN STAGE
-        #ports:
-        #  - 27017:27017
-        ## END STAGE
 
     redis:
         image: redis:3.2-alpine
