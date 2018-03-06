@@ -4,6 +4,8 @@ namespace CleverConnectors\AppBundle\Model\Plugins;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\PluginHeadersEnum;
+use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
+use CleverConnectors\AppBundle\Model\CM\ListConnector\CMCreateDistributionListConnector;
 use CleverConnectors\AppBundle\Model\CM\ListConnector\CMGetDistributionsConnector;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\SystemLoader;
@@ -42,7 +44,7 @@ class PluginsManager
     /**
      * @var CMGetDistributionsConnector
      */
-    private $distConn;
+    private $getDistributionsConnector;
 
     /**
      * @var SystemTopologyRunner
@@ -50,27 +52,35 @@ class PluginsManager
     private $systemTopologyRunner;
 
     /**
+     * @var CMCreateDistributionListConnector
+     */
+    private $createDistributionListConnector;
+
+    /**
      * OpenSourcePluginsManager constructor.
      *
-     * @param DocumentManager             $dm
-     * @param SystemManager               $manager
-     * @param SystemLoader                $loader
-     * @param CMGetDistributionsConnector $distConn
-     * @param SystemTopologyRunner        $systemTopologyRunner
+     * @param DocumentManager                   $dm
+     * @param SystemManager                     $manager
+     * @param SystemLoader                      $loader
+     * @param CMGetDistributionsConnector       $getDistributionsConnector
+     * @param SystemTopologyRunner              $systemTopologyRunner
+     * @param CMCreateDistributionListConnector $createDistributionListConnector
      */
     public function __construct(
         DocumentManager $dm,
         SystemManager $manager,
         SystemLoader $loader,
-        CMGetDistributionsConnector $distConn,
-        SystemTopologyRunner $systemTopologyRunner
+        CMGetDistributionsConnector $getDistributionsConnector,
+        SystemTopologyRunner $systemTopologyRunner,
+        CMCreateDistributionListConnector $createDistributionListConnector
     )
     {
-        $this->dm                   = $dm;
-        $this->manager              = $manager;
-        $this->loader               = $loader;
-        $this->distConn             = $distConn;
-        $this->systemTopologyRunner = $systemTopologyRunner;
+        $this->dm                              = $dm;
+        $this->manager                         = $manager;
+        $this->loader                          = $loader;
+        $this->getDistributionsConnector       = $getDistributionsConnector;
+        $this->systemTopologyRunner            = $systemTopologyRunner;
+        $this->createDistributionListConnector = $createDistributionListConnector;
     }
 
     /**
@@ -78,6 +88,7 @@ class PluginsManager
      *
      * @return array
      * @throws SystemException
+     * @throws CleverConnectorsException
      */
     public function install(Request $request): array
     {
@@ -149,6 +160,8 @@ class PluginsManager
     /**
      * @param SystemInstall $systemInstall
      * @param Request       $request
+     *
+     * @throws Exception
      */
     public function createSubscriber(SystemInstall $systemInstall, Request $request): void
     {
@@ -158,6 +171,8 @@ class PluginsManager
     /**
      * @param SystemInstall $systemInstall
      * @param Request       $request
+     *
+     * @throws Exception
      */
     public function updateSubscriber(SystemInstall $systemInstall, Request $request): void
     {
@@ -167,6 +182,8 @@ class PluginsManager
     /**
      * @param SystemInstall $systemInstall
      * @param Request       $request
+     *
+     * @throws Exception
      */
     public function deleteSubscriber(SystemInstall $systemInstall, Request $request): void
     {
@@ -176,6 +193,8 @@ class PluginsManager
     /**
      * @param SystemInstall $systemInstall
      * @param Request       $request
+     *
+     * @throws Exception
      */
     public function validateSubscriber(SystemInstall $systemInstall, Request $request): void
     {
@@ -186,6 +205,7 @@ class PluginsManager
      * @param array $headers
      *
      * @return array
+     * @throws CleverConnectorsException
      */
     public function getDistributionLists(array $headers): array
     {
@@ -195,7 +215,27 @@ class PluginsManager
             CMHeaders::createKey(CMHeaders::TOKEN) => PluginHeadersEnum::get(PluginHeadersEnum::TOKEN, $headers),
         ]);
 
-        return $this->distConn->getDistributionsArray($dto);
+        return $this->getDistributionsConnector->getDistributionsArray($dto);
+    }
+
+    /**
+     * @param array  $headers
+     * @param string $body
+     *
+     * @return array
+     * @throws CleverConnectorsException
+     */
+    public function createDistributionList(array $headers, string $body): array
+    {
+        $dto = new ProcessDto();
+        $dto
+            ->setHeaders([
+                CMHeaders::createKey(CMHeaders::GUID)  => PluginHeadersEnum::get(PluginHeadersEnum::GUID, $headers),
+                CMHeaders::createKey(CMHeaders::TOKEN) => PluginHeadersEnum::get(PluginHeadersEnum::TOKEN, $headers),
+            ])
+            ->setData($body);
+
+        return $this->createDistributionListConnector->createList($dto);
     }
 
     /**

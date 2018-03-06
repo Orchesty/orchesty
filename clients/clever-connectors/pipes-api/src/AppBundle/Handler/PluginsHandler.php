@@ -3,9 +3,12 @@
 namespace CleverConnectors\AppBundle\Handler;
 
 use CleverConnectors\AppBundle\Enum\PluginHeadersEnum;
+use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Plugins\PluginsManager;
 use CleverConnectors\AppBundle\Model\Plugins\PluginsSecurityManager;
+use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
+use Exception;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -42,6 +45,8 @@ class PluginsHandler
      * @param Request $request
      *
      * @return array
+     * @throws SystemException
+     * @throws CleverConnectorsException
      */
     public function install(Request $request): array
     {
@@ -52,6 +57,8 @@ class PluginsHandler
      * @param Request $request
      *
      * @return array
+     * @throws CleverConnectorsException
+     * @throws SystemException
      */
     public function check(Request $request): array
     {
@@ -60,6 +67,9 @@ class PluginsHandler
 
     /**
      * @param Request $request
+     *
+     * @throws CleverConnectorsException
+     * @throws Exception
      */
     public function createSubscriber(Request $request): void
     {
@@ -70,6 +80,9 @@ class PluginsHandler
 
     /**
      * @param Request $request
+     *
+     * @throws CleverConnectorsException
+     * @throws Exception
      */
     public function updateSubscriber(Request $request): void
     {
@@ -80,6 +93,9 @@ class PluginsHandler
 
     /**
      * @param Request $request
+     *
+     * @throws CleverConnectorsException
+     * @throws Exception
      */
     public function deleteSubscriber(Request $request): void
     {
@@ -90,6 +106,9 @@ class PluginsHandler
 
     /**
      * @param Request $request
+     *
+     * @throws CleverConnectorsException
+     * @throws Exception
      */
     public function validateSubscriber(Request $request): void
     {
@@ -102,10 +121,22 @@ class PluginsHandler
      * @param Request $request
      *
      * @return array
+     * @throws CleverConnectorsException
      */
     public function getDistributionLists(Request $request): array
     {
         return $this->manager->getDistributionLists($request->headers->all());
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @return array
+     * @throws CleverConnectorsException
+     */
+    public function createDistributionList(Request $request): array
+    {
+        return $this->manager->createDistributionList($request->headers->all(), $request->getContent());
     }
 
     /**

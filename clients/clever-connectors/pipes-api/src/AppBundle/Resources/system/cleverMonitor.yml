@@ -28,6 +28,11 @@ services:
         arguments:
             - '@cc.transport.curl.manager'
 
+    hbpf.connector.cleverconnectors-create-distributionlist-connector:
+        class: CleverConnectors\AppBundle\Model\CM\ListConnector\CMCreateDistributionListConnector
+        arguments:
+            - '@cc.transport.curl.manager'
+
     hbpf.connector.cleverconnectors-validate-subscriptions-connector:
         class: CleverConnectors\AppBundle\Model\CM\SubscriberConnector\CMValidateSubscriberConnector
         arguments:

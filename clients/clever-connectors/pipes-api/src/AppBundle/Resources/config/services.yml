@@ -113,6 +113,7 @@ services:
             - '@cc.systems.loader'
             - '@hbpf.connector.cleverconnectors-get-distributions-connector'
             - '@cc.system_topology.runner'
+            - '@hbpf.connector.cleverconnectors-create-distributionlist-connector'
 
     cc.plugins.handler:
         class: CleverConnectors\AppBundle\Handler\PluginsHandler

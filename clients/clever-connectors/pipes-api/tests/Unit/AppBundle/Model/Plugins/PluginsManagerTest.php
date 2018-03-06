@@ -4,12 +4,14 @@ namespace Tests\Unit\AppBundle\Model\Plugins;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\PluginHeadersEnum;
+use CleverConnectors\AppBundle\Model\CM\ListConnector\CMCreateDistributionListConnector;
 use CleverConnectors\AppBundle\Model\CM\ListConnector\CMGetDistributionsConnector;
 use CleverConnectors\AppBundle\Model\Plugins\PluginsManager;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\SystemManager;
 use CleverConnectors\AppBundle\Model\Systems\SystemTopologyRunner;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Exception;
 use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Component\HttpFoundation\Request;
 use Tests\KernelTestCaseAbstract;
@@ -23,7 +25,7 @@ final class PluginsManagerTest extends KernelTestCaseAbstract
 {
 
     /**
-     *
+     * @throws Exception
      */
     public function testInstall(): void
     {
@@ -70,6 +72,8 @@ final class PluginsManagerTest extends KernelTestCaseAbstract
     /**
      * @covers PluginsManager::install()
      * @covers PluginsManager::getUrl()
+     *
+     * @throws Exception
      */
     public function testInstall2(): void
     {
@@ -114,7 +118,7 @@ final class PluginsManagerTest extends KernelTestCaseAbstract
     }
 
     /**
-     *
+     * @throws Exception
      */
     public function testInstall3(): void
     {
@@ -148,7 +152,7 @@ final class PluginsManagerTest extends KernelTestCaseAbstract
     }
 
     /**
-     *
+     * @throws Exception
      */
     public function testInstall4(): void
     {
@@ -186,6 +190,8 @@ final class PluginsManagerTest extends KernelTestCaseAbstract
     /**
      * @covers PluginsManager::check()
      * @covers PluginsManager::systemToArray()
+     *
+     * @throws Exception
      */
     public function testCheck(): void
     {
@@ -219,6 +225,8 @@ final class PluginsManagerTest extends KernelTestCaseAbstract
 
     /**
      * @covers PluginsManager::check()
+     *
+     * @throws Exception
      */
     public function testWrongUrl(): void
     {
@@ -240,6 +248,8 @@ final class PluginsManagerTest extends KernelTestCaseAbstract
     /**
      * @covers PluginsManager::createSubscriber()
      * @covers PluginsManager::startTopologies()
+     *
+     * @throws Exception
      */
     public function testCreateSubscriber(): void
     {
@@ -253,6 +263,8 @@ final class PluginsManagerTest extends KernelTestCaseAbstract
     /**
      * @covers PluginsManager::updateSubscriber()
      * @covers PluginsManager::startTopologies()
+     *
+     * @throws Exception
      */
     public function testUpdateSubscriber(): void
     {
@@ -266,6 +278,7 @@ final class PluginsManagerTest extends KernelTestCaseAbstract
     /**
      * @covers PluginsManager::deleteSubscriber()
      * @covers PluginsManager::startTopologies()
+     * @throws Exception
      */
     public function testDeleteSubscriber(): void
     {
@@ -279,6 +292,8 @@ final class PluginsManagerTest extends KernelTestCaseAbstract
     /**
      * @covers PluginsManager::validateSubscriber()
      * @covers PluginsManager::startTopologies()
+     *
+     * @throws Exception
      */
     public function testValidateSubscriber(): void
     {
@@ -299,6 +314,7 @@ final class PluginsManagerTest extends KernelTestCaseAbstract
      * @param SystemManager|null        $manager
      *
      * @return PluginsManager
+     * @throws Exception
      */
     private function mockPluginsManager(
         ?SystemTopologyRunner $systemTopologyRunner = NULL,
@@ -325,9 +341,13 @@ final class PluginsManagerTest extends KernelTestCaseAbstract
         $distConn = $this->createMock(CMGetDistributionsConnector::class);
         $distConn->method('getDistributionsArray')->willReturn([]);
 
+        /** @var CMCreateDistributionListConnector|MockObject $createdListConn */
+        $createdListConn = $this->createMock(CMCreateDistributionListConnector::class);
+        $createdListConn->method('createList')->willReturn([]);
+
         $loader = $this->container->get('cc.systems.loader');
 
-        return new PluginsManager($dm, $manager, $loader, $distConn, $systemTopologyRunner);
+        return new PluginsManager($dm, $manager, $loader, $distConn, $systemTopologyRunner, $createdListConn);
     }
 
 }

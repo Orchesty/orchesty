@@ -151,6 +151,23 @@ class PluginsController extends FOSRestController
     }
 
     /**
+     * @Route("/create-distribution-list")
+     * @Method({"POST"})
+     *
+     * @param Request $request
+     *
+     * @return Response
+     */
+    public function createDistributionListAction(Request $request): Response
+    {
+        try {
+            return $this->getResponse($this->handler->createDistributionList($request));
+        } catch (Throwable $e) {
+            return $this->processException($e);
+        }
+    }
+
+    /**
      * @Route("/subscriber/validate")
      * @Method({"POST"})
      *

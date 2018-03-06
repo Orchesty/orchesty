@@ -3,41 +3,23 @@
 namespace CleverConnectors\AppBundle\Model\CM\ListConnector;
 
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
-use CleverConnectors\AppBundle\Model\CM\CMAuthorization;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
-use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
-use Hanaboso\PipesFramework\Connector\ConnectorInterface;
-use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
 
 /**
  * Class CMGetDistributionsConnector
  *
  * @package CleverConnectors\AppBundle\Model\CM\ListConnector
  */
-class CMGetDistributionsConnector extends CMAuthorization implements ConnectorInterface
+class CMGetDistributionsConnector extends CMDistributionListAbstract
 {
 
-    private const URL   = 'https://api.dev.clevermonitor.com/v1.2/lists?count=%s&offset=%s';
+    private const URL_PART   = '?count=%s&offset=%s';
     private const LIMIT = 50;
 
-    /**
-     * @var CurlManagerInterface
-     */
-    private $curl;
-
-    /**
-     * CMGetDistributionsConnector constructor.
-     *
-     * @param CurlManagerInterface $curl
-     */
-    public function __construct(CurlManagerInterface $curl)
-    {
-        $this->curl = $curl;
-    }
 
     /**
      * @return string
@@ -45,20 +27,6 @@ class CMGetDistributionsConnector extends CMAuthorization implements ConnectorIn
     public function getId(): string
     {
         return 'clevermonitors-get-distributions-connector';
-    }
-
-    /**
-     * @param ProcessDto $dto
-     *
-     * @return ProcessDto
-     * @throws ConnectorException
-     */
-    public function processEvent(ProcessDto $dto): ProcessDto
-    {
-        throw new ConnectorException(
-            'CMDistributions has no support for event.',
-            ConnectorException::CONNECTOR_DOES_NOT_HAVE_PROCESS_EVENT
-        );
     }
 
     /**
@@ -141,7 +109,7 @@ class CMGetDistributionsConnector extends CMAuthorization implements ConnectorIn
      */
     private function getUrl(int $page = 0): string
     {
-        return sprintf(self::URL, self::LIMIT, self::LIMIT * $page);
+        return sprintf(self::URL. self::URL_PART, self::LIMIT, self::LIMIT * $page);
     }
 
 }
