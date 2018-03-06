@@ -1,0 +1,8 @@
+services:
+    _defaults:
+        public: '%public.services%'
+
+    systems.salesforceapp:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\SalesforceApp\SalesforceAppSystem
+        arguments:
+        tags: ['%systems%']
