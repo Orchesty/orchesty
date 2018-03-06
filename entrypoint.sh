@@ -9,4 +9,7 @@ fi
 
 sed -ri "s|http://url\.to\.api\.gateway|$BACKEND_URL|g" -i /var/www/html/ui/bundle.js
 
+upstream_resolver
+upstream_resolver --periodic &
+
 exec "$@"

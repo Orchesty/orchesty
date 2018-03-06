@@ -1,0 +1,54 @@
+#!/bin/bash
+
+TEMPLATE=/etc/nginx/nginx.conf.tpl
+CONF=/etc/nginx/nginx.conf
+
+HOSTS=$(sed -nr 's/^.*resolve_([a-z0-9.-]+).*$/\1/p' $TEMPLATE | sort | uniq)
+BLACKHOLE=10.0.0.0
+
+PREV_ADDRS=""
+
+function update {
+	# resolve all hosts
+	declare -A ADDRS
+	for HOST in $HOSTS; do
+		IP=$(host -4 -W 5 $HOST | sed -nr 's/^.*has address ([0-9.]+)/\1/p')
+		if [ "$IP" == "" ]; then
+			# we need SOME ip to be set
+			IP=$BLACKHOLE
+		fi
+		ADDRS[$HOST]=$IP
+		sleep .1
+	done
+
+	# detect changes
+	if [ "$PREV_ADDRS" != "$(echo ${ADDRS[@]} ${!ADDRS[@]})" ]; then
+		PREV_ADDRS="$(echo ${ADDRS[@]} ${!ADDRS[@]})"
+		echo -n "Upstream resolver update "
+		date
+		for H in "${!ADDRS[@]}"; do
+			echo $H ${ADDRS[$H]};
+		done
+		echo
+
+		# update nginx
+		cp $TEMPLATE $CONF.tmp
+		for HOST in "${!ADDRS[@]}"; do
+			sed "s/resolve_$HOST/${ADDRS[$HOST]}/g" -i $CONF.tmp
+		done
+		mv $CONF.tmp $CONF
+
+		return 2
+	fi
+	return 0
+}
+
+if [ "$1" == "--periodic" ]; then
+	while true; do
+		sleep 15
+		update
+		[ $? -eq 2 ] && nginx -t && pkill -HUP ^nginx$
+	done
+else
+	update || [ $? -eq 2 ]
+fi

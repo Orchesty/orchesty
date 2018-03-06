@@ -63,29 +63,31 @@ http {
 	##
 
 	include /etc/nginx/conf.d/*.conf;
-	# include /etc/nginx/sites-enabled/*;
+
+	# resolve_ prefix before any hostname causes it to be periodicaly replaced
+	# with its current IP address by upstream_resolver.sh
 
 	upstream monolith-fpm-upstream {
-		server monolith-fpm:9000;
+		server resolve_monolith-fpm:9000;
 		keepalive 64;
 	}
 
 	upstream notification-sender-fpm-upstream {
-		server notification-sender-fpm:9000;
+		server resolve_notification-sender-fpm:9000;
 		keepalive 64;
 	}
 
 	upstream notification-center-fpm-upstream {
-		server notification-center-fpm:9000;
+		server resolve_notification-center-fpm:9000;
 		keepalive 64;
 	}
 
 	server {
-		set_by_lua $php_app_index 'return os.getenv("PHP_APP_INDEX")';
-		set_by_lua $php_webroot 'return os.getenv("PHP_WEBROOT")';
-
 		server_name _;
 		listen 80 default_server;
+
+		set_by_lua $php_app_index 'return os.getenv("PHP_APP_INDEX")';
+		set_by_lua $php_webroot 'return os.getenv("PHP_WEBROOT")';
 
 		location /ui {
 			root /var/www/html;
@@ -94,19 +96,19 @@ http {
 		}
 
 		location /grafana/ {
-			proxy_pass http://grafana:3000/;
+			proxy_pass http://resolve_grafana:3000/;
 		}
 
 		location /spitter-api {
-			proxy_pass http://spitter-api:3000/;
+			proxy_pass http://resolve_spitter-api:3000/;
 		}
 
 		location /cron-api {
-			proxy_pass http://cron-api:5000/;
+			proxy_pass http://resolve_cron-api:5000/;
 		}
 
 		location /socket.io {
-			proxy_pass http://stream;
+			proxy_pass http://resolve_stream;
 			proxy_http_version 1.1;
 			proxy_set_header Upgrade $http_upgrade;
 			proxy_set_header Connection "upgrade";
@@ -118,38 +120,38 @@ http {
 			fastcgi_param SCRIPT_NAME index.php;
 			fastcgi_param SCRIPT_FILENAME /var/www/html/www/index.php; # TODO: make non-CM specific
 			fastcgi_param PATH_INFO $request_uri;
-			fastcgi_pass api-demo-fpm:9000;
+			fastcgi_pass resolve_api-demo-fpm:9000;
 		}
 
 		location /notification-sender {
-            set $path_info "/";
-            if ($request_uri ~* ^/notification-sender(/.+)$) {
-                set $path_info $1;
-            }
+			set $path_info "/";
+			if ($request_uri ~* ^/notification-sender(/.+)$) {
+				set $path_info $1;
+			}
 
-            include fastcgi_params;
-            fastcgi_param SCRIPT_NAME index.php;
-            fastcgi_param SCRIPT_FILENAME /srv/project/public/index.php; # TODO: make non-CM specific
-            fastcgi_param PATH_INFO $path_info;
-            fastcgi_param REQUEST_URI $path_info;
-            fastcgi_keep_conn on;
-            fastcgi_pass notification-sender-fpm:9000;
-        }
+			include fastcgi_params;
+			fastcgi_param SCRIPT_NAME index.php;
+			fastcgi_param SCRIPT_FILENAME /srv/project/public/index.php; # TODO: make non-CM specific
+			fastcgi_param PATH_INFO $path_info;
+			fastcgi_param REQUEST_URI $path_info;
+			fastcgi_keep_conn on;
+			fastcgi_pass notification-sender-fpm-upstream;
+		}
 
 		location /notification-center {
-		    set $path_info "/";
-		    if ($request_uri ~* ^/notification-center(/.+)$) {
-                set $path_info $1;
-            }
+			set $path_info "/";
+			if ($request_uri ~* ^/notification-center(/.+)$) {
+				set $path_info $1;
+			}
 
-            include fastcgi_params;
-            fastcgi_param SCRIPT_NAME index.php;
-            fastcgi_param SCRIPT_FILENAME /srv/project/public/index.php; # TODO: make non-CM specific
-            fastcgi_param PATH_INFO $path_info;
-            fastcgi_param REQUEST_URI $path_info;
-            fastcgi_keep_conn on;
-            fastcgi_pass notification-center-fpm:9000;
-        }
+			include fastcgi_params;
+			fastcgi_param SCRIPT_NAME index.php;
+			fastcgi_param SCRIPT_FILENAME /srv/project/public/index.php; # TODO: make non-CM specific
+			fastcgi_param PATH_INFO $path_info;
+			fastcgi_param REQUEST_URI $path_info;
+			fastcgi_keep_conn on;
+			fastcgi_pass notification-center-fpm-upstream;
+		}
 
 		# FCGI monolith route (API fallback)
 		location / {
@@ -158,7 +160,7 @@ http {
 			fastcgi_param SCRIPT_FILENAME $php_webroot/$php_app_index;
 			fastcgi_param PATH_INFO $request_uri;
 			fastcgi_keep_conn on;
-			fastcgi_pass monolith-fpm:9000;
+			fastcgi_pass monolith-fpm-upstream;
 		}
 	}
 }
