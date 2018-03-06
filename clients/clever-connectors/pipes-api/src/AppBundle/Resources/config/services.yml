@@ -194,3 +194,6 @@ services:
         arguments:
             - '@cc.elastica.client'
             - '%elastic_index%'
+
+    cc.default.controller:
+        class: CleverConnectors\AppBundle\Controller\DefaultController
