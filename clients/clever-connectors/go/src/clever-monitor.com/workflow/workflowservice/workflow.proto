@@ -1,0 +1,107 @@
+syntax = "proto3";
+
+package workflowservice;
+
+service WorkflowService {
+    rpc CreateWorkflow (WorkflowRequest) returns (WorkflowResponse);
+    rpc ReadWorkflow (WorkflowRequest) returns (WorkflowResponse);
+    rpc UpdateWorkflow (WorkflowRequest) returns (WorkflowResponse);
+    rpc DeleteWorkflow (WorkflowRequest) returns (WorkflowResponse);
+    rpc ReadConfig (WorkflowRequest) returns (WorkflowConfig);
+}
+
+message WorkflowRequest {
+    string id = 1;
+    string json = 2;
+}
+
+message WorkflowResponse {
+    int32 code = 1;
+    string message = 2;
+    string id = 3;
+    string json = 4;
+}
+
+message WorkflowConfig {
+    message Filter {
+        repeated string in_segment = 1; // TODO: why string hash?
+        repeated string not_in_segment = 2; // TODO: why string hash?
+        repeated string in_tag = 3;
+        int32 priority = 4;
+        string filtering_variable = 5;
+    }
+    message Step {
+        message Recommendation {
+            enum Type {
+                STANDARD = 0;
+                CUSTOM = 1;
+            }
+            Type recommendation_type = 1;
+        }
+        message Segmentation {
+            enum Type {
+                BUSINESS = 0;
+                GRAPHICS = 1;
+                BOTH = 2;
+            }
+            Type segmentation_type = 1;
+        }
+        message ChannelMap {
+            enum Schedule {
+                NOW = 0;
+                DELAYED = 1;
+            }
+            message Email {
+                string template = 1;
+                string dynamic_fields = 2;
+                Schedule send_time = 3;
+            }
+            message Action {
+                enum Family {
+                    TAG = 0;
+                    LIST = 1;
+                }
+                enum Type {
+                    ADD = 0;
+                    REMOVE = 1;
+                    CHECK = 2;
+                    UPDATE = 3;
+                }
+                enum Time {
+                    NOW = 0;
+                    TRIGGER = 1;
+                }
+                enum Trigger {
+                    EMPTY = 0;
+                    CONDITION = 1;
+                }
+                Family action_family = 1;
+                Type action_type = 2;
+                Time action_time = 3;
+                Trigger action_trigger = 4;
+                string action_subject = 5; // TODO: "tag_name/segment_hash" ???
+            }
+            Email email = 1;
+            repeated Action action = 2; // TODO: should be plural
+        }
+        message NextFlow {
+            int32 client_id = 1;
+            string type = 2; // TODO: "synthetic" only ???
+            string config = 3; // TODO: see id_config
+        }
+        string condition = 1;
+        Recommendation recommendations = 2; // TODO: should be singular
+        Segmentation segmentation = 3;
+        ChannelMap channels = 4;
+        NextFlow next_flow = 5;
+    }
+
+    string domain_id = 1; // TODO: obsolete
+    string type = 2;
+    int32 client_id = 3;
+    string client_guild = 4;
+    string id_config = 5; // TODO: mongo objectid hex?, rfc rename to id
+    Filter filter = 6;
+    repeated Step steps = 7;
+}
+
