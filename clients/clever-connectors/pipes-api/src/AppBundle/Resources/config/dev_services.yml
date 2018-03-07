@@ -33,4 +33,4 @@ services:
         class: CleverConnectors\AppBundle\Model\CM\TestNotificationConnector\CMTestNotificationConnector
         arguments:
         calls:
-            - [setLogger, ['@monolog.logger.notification']]
+            - ['setLogger', ['@monolog.logger.notification']]

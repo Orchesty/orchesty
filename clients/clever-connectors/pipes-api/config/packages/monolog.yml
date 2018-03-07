@@ -3,13 +3,8 @@ parameters:
 
 monolog:
     use_microseconds: false
-    channels: [webhook_systems, notification, app]
+    channels: [webhook_systems, notification]
     handlers:
-        app:
-           type: service
-           id: udp_handler
-           level: info
-           channels: [app]
         webhook_systems:
             type: service
             id: udp_handler

@@ -9,7 +9,7 @@ services:
             - '@clever_connector.async_command_factory'
             - '@cc.system_limit.manager'
         calls:
-            - [setLogger, ['@monolog.logger.rabbit-mq']]
+            - ['setLogger', ['@monolog.logger.rabbit-mq']]
 
     hbpf.custom_node.refresh-tokens-message-generator:
         class: CleverConnectors\AppBundle\Model\CustomNode\TokenMessageGenerator
@@ -17,7 +17,7 @@ services:
             - '@jms_serializer.serializer'
             - '@clever_connector.async_command_factory'
         calls:
-            - [setLogger, ['@monolog.logger.rabbit-mq']]
+            - ['setLogger', ['@monolog.logger.rabbit-mq']]
 
     hbpf.custom_node.token-refresher:
         class: CleverConnectors\AppBundle\Model\CustomNode\TokenRefresher
@@ -47,7 +47,7 @@ services:
             - '@hbpf.transport.async_curl_factory'
             - '@cc.systems.loader'
         calls:
-            - [setLogger, ['@monolog.logger.notification']]
+            - ['setLogger', ['@monolog.logger.notification']]
 
     hbpf.custom_node.universal-mapper:
         class: CleverConnectors\AppBundle\Model\CustomNode\UniversalMapperNode
@@ -55,7 +55,7 @@ services:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@cc.systems.loader'
         calls:
-            - [setLogger, ['@monolog.logger']]
+            - ['setLogger', ['@monolog.logger.notification']]
 
     hbpf.custom_node.universal-mapper-in:
         class: CleverConnectors\AppBundle\Model\CustomNode\UniversalMapperNode
@@ -63,8 +63,8 @@ services:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@cc.systems.loader'
         calls:
-            - [setLogger, ['@monolog.logger']]
-            - [setSuffix, ['in']]
+            - ['setLogger', ['@monolog.logger.notification']]
+            - ['setSuffix', ['in']]
 
     hbpf.custom_node.universal-mapper-out:
         class: CleverConnectors\AppBundle\Model\CustomNode\UniversalMapperNode
@@ -72,5 +72,5 @@ services:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@cc.systems.loader'
         calls:
-            - [setLogger, ['@monolog.logger']]
-            - [setSuffix, ['out']]
+            - ['setLogger', ['@monolog.logger.notification']]
+            - ['setSuffix', ['out']]
