@@ -6,9 +6,11 @@ import (
 	"os"
 	"time"
 	"encoding/json"
+	"hanaboso/utils/env"
 )
 
 type logStashFormatter struct {
+	appName string
 }
 
 func (f *logStashFormatter) Format(data map[string]interface{}) ([]byte, error) {
@@ -17,7 +19,7 @@ func (f *logStashFormatter) Format(data map[string]interface{}) ([]byte, error) 
 	data["hostname"] = hostname
 
 	if val, ok := data["type"]; !ok || val == "" {
-		data["type"] = "limiter"
+		data["type"] = f.appName
 	}
 
 	return json.Marshal(data)
@@ -40,5 +42,5 @@ func (h *logStashHandler) Handle(data map[string]interface{}) {
 }
 
 func NewLogStashHandler(sender Sender) Handler {
-	return &logStashHandler{sender, &logStashFormatter{}}
+	return &logStashHandler{sender, &logStashFormatter{appName: env.GetEnv("APP_NAME", "app_name")}}
 }

@@ -17,6 +17,8 @@ import (
 
 // main runs the limiter program
 func main() {
+	os.Setenv("APP_NAME", "limiter")
+
 	prepareLogger()
 	store := prepareStorage()
 	guard := prepareGuard(store)

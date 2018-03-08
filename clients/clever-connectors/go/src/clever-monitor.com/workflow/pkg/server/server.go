@@ -6,64 +6,54 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 	"clever-monitor.com/limiter/pkg/logger"
+	"clever-monitor.com/workflow/pkg/handler"
 	ws "clever-monitor.com/workflow/workflowservice"
 )
 
-
 type server struct{
+	addr string
+	wfHandler handler.Handler
 	logger logger.Logger
 }
 
+func NewServer(addr string, h handler.Handler, l logger.Logger) *server {
+	return &server{addr: addr, wfHandler: h, logger: l}
+}
+
 func (s *server) Start() {
+	lis, err := net.Listen("tcp", s.addr)
+	if err != nil {
+		s.logger.Error("Failed to listen to grpc", logger.Context{"error": err})
+	}
+	grpcServer := grpc.NewServer()
 
+	ws.RegisterWorkflowServiceServer(grpcServer, s)
+
+	// Register reflection service on gRPC server.
+	reflection.Register(grpcServer)
+	if err := grpcServer.Serve(lis); err != nil {
+		s.logger.Error("Failed to serve", logger.Context{"error": err})
+	}
 }
 
-func (s *server) CreateWorkflow(context.Context, *ws.WorkflowRequest) (*ws.WorkflowResponse, error) {
-	s.logger.Info("CreateWorkflow request accepted.", logger.Context{})
-
-	return &ws.WorkflowResponse{Message: "Create OK"}, nil
+func (s *server) CreateWorkflow(ctx context.Context, in *ws.WorkflowRequest) (*ws.WorkflowResponse, error) {
+	return s.wfHandler.Handle(handler.HandleCreate, in), nil
 }
 
-func (s *server) ReadWorkflow(context.Context, *ws.WorkflowRequest) (*ws.WorkflowResponse, error) {
-	s.logger.Info("ReadWorkflow request accepted.", logger.Context{})
-
-	return &ws.WorkflowResponse{Message: "Read OK"}, nil
+func (s *server) ReadWorkflow(ctx context.Context, in *ws.WorkflowRequest) (*ws.WorkflowResponse, error) {
+	return s.wfHandler.Handle(handler.HandleRead, in), nil
 }
 
-func (s *server) UpdateWorkflow(context.Context, *ws.WorkflowRequest) (*ws.WorkflowResponse, error) {
-	s.logger.Info("UpdateWorkflow request accepted.", logger.Context{})
-
-	return &ws.WorkflowResponse{Message: "Update OK"}, nil
+func (s *server) UpdateWorkflow(ctx context.Context, in *ws.WorkflowRequest) (*ws.WorkflowResponse, error) {
+	return s.wfHandler.Handle(handler.HandleUpdate, in), nil
 }
 
-func (s *server) DeleteWorkflow(context.Context, *ws.WorkflowRequest) (*ws.WorkflowResponse, error) {
-	s.logger.Info("DeleteWorkflow request accepted.", logger.Context{})
-
-	return &ws.WorkflowResponse{Message: "Delete OK"}, nil
+func (s *server) DeleteWorkflow(ctx context.Context, in *ws.WorkflowRequest) (*ws.WorkflowResponse, error) {
+	return s.wfHandler.Handle(handler.HandleDelete, in), nil
 }
 
-func (s *server) ReadConfig(context.Context, *ws.WorkflowRequest) (*ws.WorkflowConfig, error) {
+func (s *server) ReadConfig(ctx context.Context, in *ws.WorkflowRequest) (*ws.WorkflowConfig, error) {
 	s.logger.Info("ReadConfig request accepted.", logger.Context{})
 
 	return &ws.WorkflowConfig{}, nil
-}
-
-func NewServer(addr string, l logger.Logger) *server {
-	lis, err := net.Listen("tcp", addr)
-	if err != nil {
-		l.Error("Failed to listen to grpc", logger.Context{"error": err})
-	}
-	s := grpc.NewServer()
-
-	srv := &server{logger: l}
-
-	ws.RegisterWorkflowServiceServer(s, srv)
-
-	// Register reflection service on gRPC server.
-	reflection.Register(s)
-	if err := s.Serve(lis); err != nil {
-		l.Error("Failed to serve", logger.Context{"error": err})
-	}
-
-	return srv
 }

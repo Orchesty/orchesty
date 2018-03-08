@@ -8,7 +8,6 @@ type Storage interface {
 }
 
 type Creator interface {
-	// TODO - remove interface{}
 	Create(json interface{}) (string, error)
 }
 
@@ -17,11 +16,9 @@ type Deleter interface {
 }
 
 type Finder interface {
-	// TODO - remove interface{}
-	Find(key string) (interface{}, error)
+	Find(id string) (interface{}, error)
 }
 
 type Updater interface {
-	// TODO - remove interface{}
-	Update(id string, json interface{}) (interface{}, error)
+	Update(id string, json interface{}) (string, error)
 }

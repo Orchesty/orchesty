@@ -18,31 +18,9 @@ type Mongo struct {
 	logger     logger.Logger
 }
 
-func (s *Mongo) Connect() {
-	var err error
-	s.logger.Info(fmt.Sprintf("Mongo DB connecting to: %s", s.host), nil)
-	s.session, err = mgo.Dial(s.host)
-
-	if err != nil {
-		s.logger.Error(fmt.Sprintf("Mongo DB error: %s", err), logger.Context{"error": err})
-		s.reconnect()
-		return
-	}
-
-	s.logger.Info(fmt.Sprintf("Mongo DB is connected to: %s", s.host), nil)
-}
-
-func (s *Mongo) Disconnect() {
-	if s.session != nil {
-		s.session.Close()
-	}
-}
-
-func (s *Mongo) reconnect() {
-	s.logger.Info("Waiting 1s.", nil)
-	time.Sleep(time.Second * 1)
-	s.Disconnect()
-	s.Connect()
+// Returns the pointer to new created mongo storage instance
+func NewMongo(host string, db string, collection string, logger logger.Logger) (*Mongo) {
+	return &Mongo{host: host, db: db, collection: collection, logger: logger}
 }
 
 // Create persists new record to mongo storage and returns it's id
@@ -62,7 +40,7 @@ func (s *Mongo) Delete(id string) (bool, error) {
 	return true, nil
 }
 
-// Find tries to find up the record in storage by it's id key
+// Find tries to find up the record in storage by it's id
 func (s *Mongo) Find(id string) (interface{}, error) {
 	var record interface{}
 
@@ -100,7 +78,29 @@ func (s *Mongo) DropCollection() {
 	s.session.DB(s.db).C(s.collection).DropCollection()
 }
 
-// Returns the pointer to new created mongo storage instance
-func NewMongo(host string, db string, collection string, logger logger.Logger) (*Mongo) {
-	return &Mongo{host: host, db: db, collection: collection, logger: logger}
+func (s *Mongo) Connect() {
+	var err error
+	s.logger.Info(fmt.Sprintf("Mongo DB connecting to: %s", s.host), nil)
+	s.session, err = mgo.Dial(s.host)
+
+	if err != nil {
+		s.logger.Error(fmt.Sprintf("Mongo DB error: %s", err), logger.Context{"error": err})
+		s.reconnect()
+		return
+	}
+
+	s.logger.Info(fmt.Sprintf("Mongo DB is connected to: %s", s.host), nil)
+}
+
+func (s *Mongo) Disconnect() {
+	if s.session != nil {
+		s.session.Close()
+	}
+}
+
+func (s *Mongo) reconnect() {
+	s.logger.Info("Waiting 1s.", nil)
+	time.Sleep(time.Second * 1)
+	s.Disconnect()
+	s.Connect()
 }
