@@ -6,7 +6,6 @@ import (
 	"os"
 	"time"
 	"encoding/json"
-	"hanaboso/utils/env"
 )
 
 type logStashFormatter struct {
@@ -42,5 +41,5 @@ func (h *logStashHandler) Handle(data map[string]interface{}) {
 }
 
 func NewLogStashHandler(sender Sender) Handler {
-	return &logStashHandler{sender, &logStashFormatter{appName: env.GetEnv("APP_NAME", "app_name")}}
+	return &logStashHandler{sender, &logStashFormatter{appName: os.Getenv("APP_NAME")}}
 }

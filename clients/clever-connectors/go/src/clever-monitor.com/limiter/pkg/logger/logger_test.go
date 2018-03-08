@@ -4,6 +4,7 @@ import (
 	"testing"
 	"encoding/json"
 	"github.com/stretchr/testify/assert"
+	"os"
 )
 
 type mockSender struct {
@@ -23,13 +24,14 @@ func (m *mockSender) Send(data []byte) {
 	assert.Contains(m.t, result, "timestamp")
 	assert.Contains(m.t, result, "hostname")
 	assert.Contains(m.t, result, "type")
-	assert.Equal(m.t, "limiter", result["type"])
+	assert.Equal(m.t, "limiter_app", result["type"])
 	assert.Contains(m.t, result, "notification_type")
 	assert.Equal(m.t, "test", result["notification_type"])
 	assert.Len(m.t, result, 6)
 }
 
 func TestLogger_Log(t *testing.T) {
+	os.Setenv("APP_NAME", "limiter_app")
 
 	l := NewLogger()
 	l.AddHandler(NewLogStashHandler(&mockSender{t: t}))
@@ -54,7 +56,7 @@ func (m *mockSenderMetrics) Send(data []byte) {
 	assert.Contains(m.t, result, "timestamp")
 	assert.Contains(m.t, result, "hostname")
 	assert.Contains(m.t, result, "type")
-	assert.Equal(m.t, "limiter", result["type"])
+	assert.Equal(m.t, "limiter_app", result["type"])
 	assert.Contains(m.t, result, "guid")
 	assert.Equal(m.t, "#123", result["guid"])
 	assert.Contains(m.t, result, "system_key")
@@ -63,6 +65,7 @@ func (m *mockSenderMetrics) Send(data []byte) {
 }
 
 func TestLogger_Metrics(t *testing.T) {
+	os.Setenv("APP_NAME", "limiter_app")
 
 	l := NewLogger()
 	l.AddHandler(NewLogStashHandler(&mockSenderMetrics{t: t}))
