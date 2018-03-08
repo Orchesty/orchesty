@@ -9,6 +9,14 @@ const (
 	HandleDelete = "delete"
 )
 
+type ResponseCode int
+
+const (
+	OK ResponseCode = iota
+	InvalidRequest
+	InternalError
+)
+
 type Handler interface {
 	Handle(method string, in *ws.WorkflowRequest) *ws.WorkflowResponse
 }

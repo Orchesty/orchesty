@@ -30,7 +30,7 @@ func (s *Mongo) Create(json interface{}) (string, error) {
 
 // Delete removes the document by it's unique id
 func (s *Mongo) Delete(id string) (bool, error) {
-	c := s.session.DB(s.db).C(s.collection)
+	c := s.getActiveSession().DB(s.db).C(s.collection)
 	err := c.RemoveId(id)
 
 	if err != nil {
@@ -44,7 +44,7 @@ func (s *Mongo) Delete(id string) (bool, error) {
 func (s *Mongo) Find(id string) (interface{}, error) {
 	var record interface{}
 
-	c := s.session.DB(s.db).C(s.collection)
+	c := s.getActiveSession().DB(s.db).C(s.collection)
 	err := c.FindId(id).One(&record)
 
 	if err != nil {
@@ -63,7 +63,7 @@ func (s *Mongo) Update(id string, json interface{}) (string, error) {
 // It updates the record if it already exists
 // It creates new record if no record with given id is in storage
 func (s *Mongo) upsert(id bson.ObjectId, json interface{}) (string, error) {
-	c := s.session.DB(s.db).C(s.collection)
+	c := s.getActiveSession().DB(s.db).C(s.collection)
 	err := c.Insert(bson.M{"_id": bson.ObjectId(id), "data": json})
 
 	if err != nil {
@@ -75,7 +75,7 @@ func (s *Mongo) upsert(id bson.ObjectId, json interface{}) (string, error) {
 
 // DropCollection drops current collection
 func (s *Mongo) DropCollection() {
-	s.session.DB(s.db).C(s.collection).DropCollection()
+	s.getActiveSession().DB(s.db).C(s.collection).DropCollection()
 }
 
 func (s *Mongo) Connect() {
@@ -103,4 +103,9 @@ func (s *Mongo) reconnect() {
 	time.Sleep(time.Second * 1)
 	s.Disconnect()
 	s.Connect()
+}
+
+// getActiveSession always returns the active mongo session
+func (s *Mongo) getActiveSession() (*mgo.Session) {
+	return s.session.Clone()
 }

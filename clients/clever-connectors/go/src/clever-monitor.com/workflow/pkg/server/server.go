@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"net"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
@@ -10,10 +11,13 @@ import (
 	ws "clever-monitor.com/workflow/workflowservice"
 )
 
+const MaxInt = int(^uint(0) >> 1)
+
 type server struct{
 	addr string
 	wfHandler handler.Handler
 	logger logger.Logger
+	requestCount int
 }
 
 func NewServer(addr string, h handler.Handler, l logger.Logger) *server {
@@ -37,23 +41,62 @@ func (s *server) Start() {
 }
 
 func (s *server) CreateWorkflow(ctx context.Context, in *ws.WorkflowRequest) (*ws.WorkflowResponse, error) {
-	return s.wfHandler.Handle(handler.HandleCreate, in), nil
+	reqId := s.getRequestId()
+	s.logger.Info("CreateWorkflow request received", logger.Context{"reqId": reqId})
+
+	result := s.wfHandler.Handle(handler.HandleCreate, in)
+
+	s.logger.Info("CreateWorkflow sending response: " + result.Message, logger.Context{"reqId": reqId})
+
+	return result, nil
 }
 
 func (s *server) ReadWorkflow(ctx context.Context, in *ws.WorkflowRequest) (*ws.WorkflowResponse, error) {
-	return s.wfHandler.Handle(handler.HandleRead, in), nil
+	reqId := s.getRequestId()
+	s.logger.Info("ReadWorkflow request received", logger.Context{"reqId": reqId})
+
+	result := s.wfHandler.Handle(handler.HandleRead, in)
+
+	s.logger.Info("ReadWorkflow sending response: " + result.Message, logger.Context{"reqId": reqId})
+
+	return result, nil
 }
 
 func (s *server) UpdateWorkflow(ctx context.Context, in *ws.WorkflowRequest) (*ws.WorkflowResponse, error) {
-	return s.wfHandler.Handle(handler.HandleUpdate, in), nil
+	reqId := s.getRequestId()
+	s.logger.Info("UpdateWorkflow request received", logger.Context{"reqId": reqId})
+
+	result := s.wfHandler.Handle(handler.HandleUpdate, in)
+
+	s.logger.Info("UpdateWorkflow sending response: " + result.Message, logger.Context{"reqId": reqId})
+
+	return result, nil
 }
 
 func (s *server) DeleteWorkflow(ctx context.Context, in *ws.WorkflowRequest) (*ws.WorkflowResponse, error) {
-	return s.wfHandler.Handle(handler.HandleDelete, in), nil
+	reqId := s.getRequestId()
+	s.logger.Info("DeleteWorkflow request received", logger.Context{"reqId": reqId})
+
+	result := s.wfHandler.Handle(handler.HandleDelete, in)
+
+	s.logger.Info("DeleteWorkflow sending response: " + result.Message, logger.Context{"reqId": reqId})
+
+	return result, nil
 }
 
 func (s *server) ReadConfig(ctx context.Context, in *ws.WorkflowRequest) (*ws.WorkflowConfig, error) {
 	s.logger.Info("ReadConfig request accepted.", logger.Context{})
 
 	return &ws.WorkflowConfig{}, nil
+}
+
+// getRequestId returns id to be used to pair request and response
+func (s *server) getRequestId() string {
+	if s.requestCount > MaxInt {
+		s.requestCount = 0
+	}
+
+	s.requestCount++
+
+	return fmt.Sprintf("#%d", s.requestCount)
 }

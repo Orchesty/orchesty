@@ -11,9 +11,10 @@ import (
 	"hanaboso/utils/env"
 
 	ws "clever-monitor.com/workflow/workflowservice"
+	"gopkg.in/mgo.v2/bson"
+	"fmt"
 )
 
-const defaultId = "someId"
 
 func main() {
 	address := env.GetEnv("SERVER_HOST", "localhost") + ":" + env.GetEnv("SERVER_PORT", "50051")
@@ -27,7 +28,7 @@ func main() {
 	client := ws.NewWorkflowServiceClient(conn)
 
 	// Contact the server and print out its response.
-	id := defaultId
+	id := bson.NewObjectId().Hex()
 	if len(os.Args) > 1 {
 		id = os.Args[1]
 	}
@@ -35,8 +36,8 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
-	log.Println("Called CreateWorkflow:")
-	r, err := client.CreateWorkflow(ctx, &ws.WorkflowRequest{Id: id})
+	log.Println(fmt.Sprintf("Called CreateWorkflow with id: %s", id))
+	r, err := client.UpdateWorkflow(ctx, &ws.WorkflowRequest{Id: id, Json: "{\"foo\": \"bar\"}"})
 	if err != nil {
 		log.Fatalf("could not create workflow: %v", err)
 	}

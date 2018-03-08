@@ -4,6 +4,11 @@ DOCKER_SERVICE_NAME := workflow
 DOCKER_DEFAULT_TAG := dev
 DOCKER_REGISTRY := dkr.hanaboso.net/pipes/pipes/
 
+.env:
+	sed -e "s|{DEV_UID}|$(shell id -u)|g" \
+		-e "s|{DEV_GID}|$(shell id -u)|g" \
+		.env.dist >> .env; \
+
 install-deps:
 	go get -u github.com/stretchr/testify/assert
 	go get -u gopkg.in/mgo.v2
@@ -17,7 +22,7 @@ docker-build:
 docker-push:
 	docker push $(DOCKER_REGISTRY)$(DOCKER_SERVICE_NAME):$(DOCKER_DEFAULT_TAG)
 
-go-test:
+go-test: .env
 	# for mac users: $ sudo ifconfig lo0 alias 127.0.0.11 up
 	docker-compose up -d
 	RABBITMQ_HOST=127.0.0.11 MONGO_HOST=127.0.0.11 go test ./...
@@ -26,7 +31,7 @@ docker-compose.ci.yml:
 	# Comment out any port forwarding
 	sed -r 's/^(\s+ports:)$$/#\1/g; s/^(\s+- \$$\{DEV_IP\}.*)$$/#\1/g' docker-compose.yml > docker-compose.ci.yml
 
-ci-test:
+ci-test: .env
 	docker-compose up -d --force-recreate
 	docker-compose exec -T workflow make install-deps
 	docker-compose exec -T workflow go test ./...
