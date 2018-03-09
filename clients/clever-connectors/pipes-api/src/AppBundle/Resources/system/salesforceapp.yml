@@ -5,4 +5,11 @@ services:
     systems.salesforceapp:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\SalesforceApp\SalesforceAppSystem
         arguments:
+            - '@hbpf.providers.oauth2_provider'
+            - '@hbpf.connector.salesforce_app-auth-connector'
         tags: ['%systems%']
+
+    hbpf.connector.salesforce_app-auth-connector:
+            class: CleverConnectors\AppBundle\Model\Systems\Impl\SalesforceApp\Connector\SalesforceAuthConnector
+            arguments:
+                - '@hbpf.transport.curl_manager'

@@ -63,6 +63,8 @@ class SalesforceSystem implements OAuth2Interface, CMEventSystemInterface
      * SalesforceSystem constructor.
      *
      * @param OAuth2Provider $provider
+     *
+     * @throws CleverConnectorsException
      */
     public function __construct(OAuth2Provider $provider)
     {
@@ -272,6 +274,7 @@ class SalesforceSystem implements OAuth2Interface, CMEventSystemInterface
      * @param SystemInstall $systemInstall
      *
      * @return array
+     * @throws CleverConnectorsException
      */
     public function getSettingFields(SystemInstall $systemInstall): array
     {

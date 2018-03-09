@@ -4,6 +4,7 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\Salesforce\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
+use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Salesforce\SalesforceSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use CleverConnectors\AppBundle\Traits\LoggerTrait;
@@ -79,6 +80,7 @@ class SalesforceCreateContactConnector implements ConnectorInterface, LoggerAwar
      * @return ProcessDto
      * @throws CleverConnectorsException
      * @throws CurlException
+     * @throws SystemException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {
@@ -116,8 +118,8 @@ class SalesforceCreateContactConnector implements ConnectorInterface, LoggerAwar
     public function processEvent(ProcessDto $dto): ProcessDto
     {
         throw new ConnectorException(
-            'Salesforce has no support for action!',
-            ConnectorException::CONNECTOR_DOES_NOT_HAVE_PROCESS_BATCH
+            'Salesforce has no support for event!',
+            ConnectorException::CONNECTOR_DOES_NOT_HAVE_PROCESS_EVENT
         );
     }
 
