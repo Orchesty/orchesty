@@ -8,17 +8,17 @@ type Storage interface {
 }
 
 type Creator interface {
-	Create(json interface{}) (string, error)
-}
-
-type Deleter interface {
-	Delete(id string) (bool, error)
-}
-
-type Finder interface {
-	Find(id string) (interface{}, error)
+	Create(json string) (string, error)
 }
 
 type Updater interface {
-	Update(id string, json interface{}) (string, error)
+	Update(id string, json string) (string, error)
+}
+
+type Finder interface {
+	Find(id string) (string, error)
+}
+
+type Deleter interface {
+	Delete(id string) (error)
 }

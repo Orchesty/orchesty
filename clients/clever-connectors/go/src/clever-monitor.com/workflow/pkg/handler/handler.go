@@ -15,6 +15,7 @@ const (
 	OK ResponseCode = iota
 	InvalidRequest
 	InternalError
+	NotFound
 )
 
 type Handler interface {

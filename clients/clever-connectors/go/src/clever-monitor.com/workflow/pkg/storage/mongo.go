@@ -18,59 +18,62 @@ type Mongo struct {
 	logger     logger.Logger
 }
 
+type workflowRecord struct {
+	Id   string `bson:"_id,omitempty"`
+	Json string `bson:"json"`
+}
+
 // Returns the pointer to new created mongo storage instance
 func NewMongo(host string, db string, collection string, logger logger.Logger) (*Mongo) {
 	return &Mongo{host: host, db: db, collection: collection, logger: logger}
 }
 
 // Create persists new record to mongo storage and returns it's id
-func (s *Mongo) Create(json interface{}) (string, error) {
-	return s.upsert(bson.NewObjectId(), json)
+func (s *Mongo) Create(json string) (string, error) {
+	c := s.getActiveSession().DB(s.db).C(s.collection)
+	rec := workflowRecord{Id: bson.NewObjectId().Hex(), Json: json}
+	err := c.Insert(rec)
+
+	if err != nil {
+		return "", err
+	}
+
+	fmt.Println(rec.Id)
+	return rec.Id, nil
 }
 
 // Delete removes the document by it's unique id
-func (s *Mongo) Delete(id string) (bool, error) {
+func (s *Mongo) Delete(id string) (error) {
 	c := s.getActiveSession().DB(s.db).C(s.collection)
-	err := c.RemoveId(id)
 
-	if err != nil {
-		return false, err
-	}
-
-	return true, nil
+	return c.RemoveId(id)
 }
 
 // Find tries to find up the record in storage by it's id
-func (s *Mongo) Find(id string) (interface{}, error) {
-	var record interface{}
+func (s *Mongo) Find(id string) (string, error) {
+	var record workflowRecord
 
 	c := s.getActiveSession().DB(s.db).C(s.collection)
 	err := c.FindId(id).One(&record)
 
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
-	return record, nil
+	return record.Json, nil
 }
 
 // Update persists record to mongo storage and returns it's id
-func (s *Mongo) Update(id string, json interface{}) (string, error) {
-	return s.upsert(bson.ObjectId(id), json)
-}
-
-// upsert persists new record to mongo storage and returns it's id
-// It updates the record if it already exists
-// It creates new record if no record with given id is in storage
-func (s *Mongo) upsert(id bson.ObjectId, json interface{}) (string, error) {
+func (s *Mongo) Update(id string, json string) (string, error) {
 	c := s.getActiveSession().DB(s.db).C(s.collection)
-	err := c.Insert(bson.M{"_id": bson.ObjectId(id), "data": json})
+	rec := workflowRecord{Id: id, Json: json}
+	err := c.UpdateId(id, rec)
 
 	if err != nil {
-		return id.String(), err
+		return "", err
 	}
 
-	return id.String(), nil
+	return rec.Id, nil
 }
 
 // DropCollection drops current collection
