@@ -38,7 +38,7 @@
                         </a>
                     {/if}
                 </div>
-                <div class="col-md-2" n:if='$system->getKey() !== basecrm'>
+                <div class="col-md-2" n:if="!in_array($system->getKey(), ['basecrm', 'mailmunch'], TRUE)">
                     <a n:href="startSync!" class="btn btn-info btn-sm btn-block ajax">
                         Sync
                     </a>
