@@ -5,6 +5,7 @@ import (
 	"github.com/golang/protobuf/jsonpb"
 	ws "clever-monitor.com/workflow/workflowservice"
 	"strings"
+	"fmt"
 )
 
 type ConfigProvider interface {
@@ -15,7 +16,7 @@ type configHandler struct {
 	storage storage.Finder
 }
 
-func NewConfigHandler(storage storage.Storage) *configHandler {
+func NewConfigHandler(storage storage.Finder) *configHandler {
 	return &configHandler{storage: storage}
 }
 
@@ -28,7 +29,27 @@ func (ch *configHandler) GetConfig(in *ws.WorkflowRequest) *ws.WorkflowConfig {
 	}
 
 	config := &ws.WorkflowConfig{}
-	jsonpb.Unmarshal(strings.NewReader(json), config)
+	err = jsonpb.Unmarshal(strings.NewReader(json), config)
+	if err != nil {
+		fmt.Println(err.Error())
+	}
 
 	return config
+}
+
+func (ch *configHandler) configToJson(conf *ws.WorkflowConfig) (string, error) {
+	marshaler := jsonpb.Marshaler{}
+	str, err := marshaler.MarshalToString(conf)
+	if err != nil {
+		return "", err
+	}
+
+	return str, nil
+}
+
+func (ch *configHandler) jsonToConfig(json string) (*ws.WorkflowConfig, error){
+	var conf ws.WorkflowConfig
+	err := jsonpb.UnmarshalString(json, &conf)
+
+	return &conf, err
 }

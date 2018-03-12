@@ -1,0 +1,1 @@
+{\"domainId\":\"domain\",\"type\":\"type\",\"clientId\":999,\"clientGuild\":\"guid\",\"idConfig\":\"id\",\"filter\":{\"inSegment\":[\"seg1\",\"seg2\"],\"notInSegment\":[],\"inTag\":[\"tag1\"],\"priority\":1,\"filteringVariable\":\"var\"}}
