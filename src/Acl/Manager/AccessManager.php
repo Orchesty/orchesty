@@ -313,7 +313,7 @@ class AccessManager implements EventSubscriberInterface
      */
     private function checkGroupLvl(?RuleInterface &$old, RuleInterface $new, int &$userLvl): void
     {
-        if (is_null($old) || ($old->getGroup()->getLevel() < $new->getGroup()->getLevel())) {
+        if (is_null($old) || ($old->getGroup()->getLevel() > $new->getGroup()->getLevel())) {
             $old     = $new;
             $userLvl = $new->getGroup()->getLevel();
         }
