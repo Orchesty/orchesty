@@ -2,7 +2,6 @@ package handler
 
 import (
 	"fmt"
-	"clever-monitor.com/limiter/pkg/logger"
 	"clever-monitor.com/workflow/pkg/storage"
 	ws "clever-monitor.com/workflow/workflowservice"
 	"gopkg.in/mgo.v2/bson"
@@ -22,11 +21,10 @@ const (
 
 type workflowHandler struct {
 	storage storage.Storage
-	logger  logger.Logger
 }
 
-func NewWorkflowHandler(storage storage.Storage, logger logger.Logger) *workflowHandler {
-	return &workflowHandler{storage: storage, logger: logger}
+func NewWorkflowHandler(storage storage.Storage) *workflowHandler {
+	return &workflowHandler{storage: storage}
 }
 
 // Handle processes the workflow request

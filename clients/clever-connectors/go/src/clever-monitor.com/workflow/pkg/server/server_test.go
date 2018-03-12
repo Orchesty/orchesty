@@ -1,7 +1,7 @@
 package server
 
-import "testing"
 import (
+	"testing"
 	ws "clever-monitor.com/workflow/workflowservice"
 	"clever-monitor.com/limiter/pkg/logger"
 	"github.com/stretchr/testify/assert"
@@ -10,12 +10,17 @@ import (
 
 type handlerMock struct{}
 
-// Handle mock retursn the called method in response ID field
+// Handle mock returns the called method in response ID field
 func (h *handlerMock) Handle(method string, in *ws.WorkflowRequest) *ws.WorkflowResponse {
 	return &ws.WorkflowResponse{Id: method}
 }
 
-var s = NewServer("localhost:6060", &handlerMock{}, logger.GetNullLogger())
+func (h *handlerMock) GetConfig(in *ws.WorkflowRequest) *ws.WorkflowConfig {
+	return &ws.WorkflowConfig{IdConfig: "configId"}
+}
+
+
+var s = NewServer("localhost:6060", &handlerMock{}, &handlerMock{}, logger.GetNullLogger())
 
 func TestServer_CreateWorkflow(t *testing.T) {
 	response, err := s.CreateWorkflow(nil, &ws.WorkflowRequest{})
@@ -46,8 +51,9 @@ func TestServer_DeleteWorkflow(t *testing.T) {
 }
 
 func TestServer_ReadConfig(t *testing.T) {
-	_, err := s.ReadConfig(nil, &ws.WorkflowRequest{})
+	conf, err := s.ReadConfig(nil, &ws.WorkflowRequest{})
 
 	assert.Nil(t, err)
+	assert.Equal(t, "configId", conf.IdConfig)
 }
 

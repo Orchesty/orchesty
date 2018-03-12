@@ -3,7 +3,6 @@ package handler
 import (
 	"testing"
 	"github.com/stretchr/testify/assert"
-	"clever-monitor.com/limiter/pkg/logger"
 	ws "clever-monitor.com/workflow/workflowservice"
 	"fmt"
 )
@@ -46,7 +45,7 @@ func (s *storageMock) Delete(id string) (error) {
 }
 
 func TestWorkflowHandler_Handle_InvalidMethod(t *testing.T) {
-	handler := NewWorkflowHandler(&storageMock{}, logger.GetNullLogger())
+	handler := NewWorkflowHandler(&storageMock{})
 	response := handler.Handle("foo", &ws.WorkflowRequest{})
 
 	assert.Equal(t, int32(InvalidRequest), response.Code)
@@ -54,7 +53,7 @@ func TestWorkflowHandler_Handle_InvalidMethod(t *testing.T) {
 }
 
 func TestWorkflowHandler_Handle_Create(t *testing.T) {
-	handler := NewWorkflowHandler(&storageMock{}, logger.GetNullLogger())
+	handler := NewWorkflowHandler(&storageMock{})
 
 	response := handler.Handle(HandleCreate, &ws.WorkflowRequest{})
 	assert.Equal(t, int32(InvalidRequest), response.Code)
@@ -70,7 +69,7 @@ func TestWorkflowHandler_Handle_Create(t *testing.T) {
 }
 
 func TestWorkflowHandler_Handle_Read(t *testing.T) {
-	handler := NewWorkflowHandler(&storageMock{}, logger.GetNullLogger())
+	handler := NewWorkflowHandler(&storageMock{})
 
 	response := handler.Handle(HandleRead, &ws.WorkflowRequest{})
 	assert.Equal(t, int32(InvalidRequest), response.Code)
@@ -90,7 +89,7 @@ func TestWorkflowHandler_Handle_Read(t *testing.T) {
 }
 
 func TestWorkflowHandler_Handle_Update(t *testing.T) {
-	handler := NewWorkflowHandler(&storageMock{}, logger.GetNullLogger())
+	handler := NewWorkflowHandler(&storageMock{})
 
 	response := handler.Handle(HandleUpdate, &ws.WorkflowRequest{})
 	assert.Equal(t, int32(InvalidRequest), response.Code)
@@ -110,7 +109,7 @@ func TestWorkflowHandler_Handle_Update(t *testing.T) {
 }
 
 func TestWorkflowHandler_Handle_Delete(t *testing.T) {
-	handler := NewWorkflowHandler(&storageMock{}, logger.GetNullLogger())
+	handler := NewWorkflowHandler(&storageMock{})
 
 	response := handler.Handle(HandleDelete, &ws.WorkflowRequest{})
 	assert.Equal(t, int32(InvalidRequest), response.Code)

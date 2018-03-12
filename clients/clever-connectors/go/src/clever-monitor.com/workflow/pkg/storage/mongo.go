@@ -38,7 +38,6 @@ func (s *Mongo) Create(json string) (string, error) {
 		return "", err
 	}
 
-	fmt.Println(rec.Id)
 	return rec.Id, nil
 }
 

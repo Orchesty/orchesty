@@ -8,13 +8,17 @@ import (
 	"clever-monitor.com/limiter/pkg/logger"
 	"clever-monitor.com/workflow/pkg/server"
 	"clever-monitor.com/workflow/pkg/storage"
+	"syscall"
+	"os/signal"
 )
 
 func main() {
 	os.Setenv("APP_NAME", "workflow")
 
 	prepareLogger()
-	runGrpcServer()
+	go runGrpcServer()
+
+	gracefulShutdown()
 }
 
 func prepareLogger() {
@@ -43,8 +47,27 @@ func runGrpcServer() {
 	)
 	db.Connect()
 
-	wfHandler := handler.NewWorkflowHandler(db, logger.GetLogger())
+	wfHandler := handler.NewWorkflowHandler(db)
+	cHandler := handler.NewConfigHandler(db)
 
-	grpcServer := server.NewServer(addr, wfHandler, logger.GetLogger())
-	grpcServer.Start()
+	grpcServer := server.NewServer(addr, wfHandler, cHandler, logger.GetLogger())
+	go grpcServer.Start()
 }
+
+// gracefulShutdown handles SIGINT and SIGTERM signal to stop the app gracefully
+func gracefulShutdown() {
+	sigs := make(chan os.Signal, 1)
+	quit := make(chan bool, 1)
+
+	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
+
+	go func() {
+		sig := <-sigs
+		logger.GetLogger().Info("Signal received: " + sig.String(), nil)
+
+		quit <- true
+	}()
+
+	<-quit
+}
+
