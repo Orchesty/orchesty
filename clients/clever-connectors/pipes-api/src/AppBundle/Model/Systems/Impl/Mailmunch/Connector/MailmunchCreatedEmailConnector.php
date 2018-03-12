@@ -40,7 +40,7 @@ class MailmunchCreatedEmailConnector implements ConnectorInterface
             );
         }
 
-        return $dto;
+        return $dto->setData(json_encode($arr));
     }
 
     /**

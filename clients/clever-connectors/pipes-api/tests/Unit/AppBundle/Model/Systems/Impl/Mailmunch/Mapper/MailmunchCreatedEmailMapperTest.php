@@ -38,8 +38,13 @@ final class MailmunchCreatedEmailMapperTest extends KernelTestCaseAbstract
         $dm->expects($this->once())
             ->method('getRepository')->willReturn($repo);
 
-        $data = 'last-name=&first-name=sdf&email=asd%40asd.com&site-id=432743&form-id=559774&form-name=jgn&referral=http%3A%2F%2F194.213.36.182%2F&ip-address=188.122.212.69';
-        $dto  = new ProcessDto();
+        $data = json_encode([
+            'first-name' => 'first',
+            'last-name'  => 'last',
+            'email'      => 'asd@asd.com',
+        ]);
+
+        $dto = new ProcessDto();
         $dto->setData($data)->setHeaders([]);
 
         $mapper = new MailmunchCreatedEmailMapper($dm);
@@ -47,7 +52,8 @@ final class MailmunchCreatedEmailMapperTest extends KernelTestCaseAbstract
 
         $expt = [
             CleverFieldsEnum::EMAIL      => 'asd@asd.com',
-            CleverFieldsEnum::FIRST_NAME => 'sdf',
+            CleverFieldsEnum::FIRST_NAME => 'first',
+            CleverFieldsEnum::LAST_NAME  => 'last',
             CleverFieldsEnum::REACTIVATE => TRUE,
             CleverFieldsEnum::SEND_OPTIN => FALSE,
             CleverFieldsEnum::LISTS      => ['someList'],
