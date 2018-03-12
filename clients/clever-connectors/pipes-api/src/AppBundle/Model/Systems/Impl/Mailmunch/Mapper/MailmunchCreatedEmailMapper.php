@@ -10,7 +10,6 @@ use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
-use function GuzzleHttp\Psr7\parse_query;
 
 /**
  * Class MailmunchCreatedEmailMapper
@@ -43,7 +42,7 @@ class MailmunchCreatedEmailMapper implements CustomNodeInterface
      */
     public function process(ProcessDto $dto): ProcessDto
     {
-        $data = parse_query($dto->getData(), TRUE);
+        $data = json_decode($dto->getData(), TRUE);
 
         if (!array_key_exists('email', $data)) {
             throw new CleverConnectorsException(
