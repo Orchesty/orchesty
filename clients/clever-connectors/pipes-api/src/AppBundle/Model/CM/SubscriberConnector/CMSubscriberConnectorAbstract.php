@@ -10,8 +10,10 @@ namespace CleverConnectors\AppBundle\Model\CM\SubscriberConnector;
  */
 
 use CleverConnectors\AppBundle\Enum\CleverFieldsEnum;
+use CleverConnectors\AppBundle\Enum\NotificationTypeEnum;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\CM\CMAuthorization;
+use CleverConnectors\AppBundle\Traits\LoggerTrait;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
@@ -30,6 +32,8 @@ use Throwable;
  */
 abstract class CMSubscriberConnectorAbstract extends CMAuthorization implements ConnectorInterface, LoggerAwareInterface
 {
+
+    use LoggerTrait;
 
     /**
      * @var CurlManagerInterface
@@ -74,18 +78,6 @@ abstract class CMSubscriberConnectorAbstract extends CMAuthorization implements 
     }
 
     /**
-     * @param LoggerInterface $logger
-     *
-     * @return ConnectorInterface
-     */
-    public function setLogger(LoggerInterface $logger): ConnectorInterface
-    {
-        $this->logger = $logger;
-
-        return $this;
-    }
-
-    /**
      * @param ProcessDto $dto
      * @param string     $method
      * @param int[]      $statusCode
@@ -116,8 +108,10 @@ abstract class CMSubscriberConnectorAbstract extends CMAuthorization implements 
         try {
             $res = $this->curl->send($req);
         } catch (Throwable $e) {
-            $this->logger->error(sprintf('CM %s subscription failed.', $method),
-                ['body' => $req->getBody(), 'exception' => $e]);
+            $this->logger->error(
+                sprintf('CM %s subscription failed.', $method),
+                $this->getContext(NotificationTypeEnum::SERVICE_UNAVAILABLE, $user, $token, $e, $req->getBody())
+            );
             throw new ConnectorException(
                 sprintf('%s subscription failed.', $method),
                 ConnectorException::CONNECTOR_FAILED_TO_PROCESS
@@ -125,8 +119,10 @@ abstract class CMSubscriberConnectorAbstract extends CMAuthorization implements 
         }
 
         if (!in_array($res->getStatusCode(), $statusCode)) {
-            $this->logger->error(sprintf('CM %s subscription failed.', $method),
-                ['body' => $req->getBody(), 'exception' => $res->getBody()]);
+            $this->logger->error(
+                sprintf('CM %s subscription failed.', $method),
+                $this->getContext(NotificationTypeEnum::DATA_ERROR, $user, $token, $res->getBody(), $req->getBody())
+            );
             throw new ConnectorException(
                 sprintf('%s subscription returned [%s] status code.', $method, $res->getStatusCode()),
                 ConnectorException::CONNECTOR_FAILED_TO_PROCESS
@@ -194,6 +190,28 @@ abstract class CMSubscriberConnectorAbstract extends CMAuthorization implements 
     {
         // Do not remove: Encode multibyte Unicode characters literally
         return json_encode($this->getData($dto, $system), JSON_UNESCAPED_UNICODE);
+    }
+
+    /**
+     * @param string $type
+     * @param string $user
+     * @param string $token
+     * @param mixed  $t
+     * @param string $body
+     *
+     * @return array
+     */
+    private function getContext(string $type, string $user, string $token, $t, string $body): array
+    {
+        return [
+            self::$notificationType => $type,
+            self::$guid             => $user,
+            self::$token            => $token,
+            self::$systemKey        => 'CM_Subscriber',
+            self::$systemName       => 'CM_Subscriber',
+            'exception'             => $t,
+            'body'                  => $body,
+        ];
     }
 
 }

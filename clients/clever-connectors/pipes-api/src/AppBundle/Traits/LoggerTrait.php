@@ -23,27 +23,27 @@ trait LoggerTrait
     /**
      * @var string
      */
-    private static $guid = 'guid';
+    protected static $guid = 'guid';
 
     /**
      * @var string
      */
-    private static $token = 'token';
+    protected static $token = 'token';
 
     /**
      * @var string
      */
-    private static $systemKey = 'system_key';
+    protected static $systemKey = 'system_key';
 
     /**
      * @var string
      */
-    private static $systemName = 'system_name';
+    protected static $systemName = 'system_name';
 
     /**
      * @var string
      */
-    private static $notificationType = 'notification_type';
+    protected static $notificationType = 'notification_type';
 
     /**
      * @var LoggerInterface
