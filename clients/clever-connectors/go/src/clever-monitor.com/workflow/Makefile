@@ -12,9 +12,21 @@ DOCKER_REGISTRY := dkr.hanaboso.net/pipes/pipes/
 install-deps:
 	go get -u github.com/stretchr/testify/assert
 	go get -u gopkg.in/mgo.v2
+	go get -u google.golang.org/grpc
 
 proto-gen:
-    protoc -I workflow/ workflow/workflow.proto --go_out=plugins=grpc:workflow
+	# Downloading protofile
+	rm -rf protofiles
+	git clone git@gitlab.hanaboso.net:clever-monitor/protofiles.git
+	rm -rf workflowservice
+	mkdir workflowservice
+	cp ./protofiles/protos/workflow/WorkflowService.proto ./workflowservice
+	rm -rf protofiles
+	# Generating structs from proto file
+	# Todo download protoc binary
+	protoc -I workflowservice/ workflowservice/WorkflowService.proto --go_out=plugins=grpc:WorkflowService
+
+init: install-deps proto-gen
 
 docker-build:
 	cd ../ && docker build -t $(DOCKER_SERVICE_NAME):$(DOCKER_DEFAULT_TAG) -t $(DOCKER_REGISTRY)$(DOCKER_SERVICE_NAME):$(DOCKER_DEFAULT_TAG) -f ./$(DOCKER_SERVICE_NAME)/Dockerfile .

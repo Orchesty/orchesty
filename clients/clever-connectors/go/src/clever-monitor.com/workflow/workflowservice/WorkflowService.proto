@@ -27,8 +27,9 @@ message WorkflowConfig {
         repeated string in_segment = 1; // TODO: why string hash?
         repeated string not_in_segment = 2; // TODO: why string hash?
         repeated string in_tag = 3;
-        int32 priority = 4;
-        string filtering_variable = 5;
+        repeated string not_in_tag = 4;
+        int32 priority = 5;
+        string filtering_variable = 6;
     }
     message Step {
         message Recommendation {
@@ -99,9 +100,8 @@ message WorkflowConfig {
     string domain_id = 1; // TODO: obsolete
     string type = 2;
     int32 client_id = 3;
-    string client_guild = 4;
+    string client_guid = 4;
     string id_config = 5; // TODO: mongo objectid hex?, rfc rename to id
     Filter filter = 6;
     repeated Step steps = 7;
 }
-

@@ -115,7 +115,7 @@ func (s *server) logResponse(response *ws.WorkflowResponse, reqId string) {
 
 func (s *server) logConfig(config *ws.WorkflowConfig, reqId string) {
 	s.logger.Info(
-		fmt.Sprintf("Sending config response. Id: '%d'", config.IdConfig),
+		fmt.Sprintf("Sending config response. Id: '%s'", config.IdConfig),
 		logger.Context{"reqId": reqId},
 	)
 }
