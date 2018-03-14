@@ -138,7 +138,10 @@ class AirtableUpdatedContactConnector extends AirtableContactConnectorAbstract
                 $sender, $requestDto, $table, $callbackItem, $page, $from, $view, $systemInstall
             ) {
                 $data = json_decode($response->getBody()->getContents(), TRUE);
-                $callbackItem($this->createSuccessMessage($data, $page));
+
+                if (!empty($data)) {
+                    $callbackItem($this->createSuccessMessage($data, $page));
+                }
 
                 if ($this->hasOffset($data)) {
                     return $this->getPage(
