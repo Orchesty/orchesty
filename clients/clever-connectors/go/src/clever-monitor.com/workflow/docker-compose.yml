@@ -11,7 +11,7 @@ services:
     ports:
       - ${DEV_IP}:5120:4444/udp
 
-  limiter:
+  workflow:
     image: golang:latest
     working_dir: /go/src/clever-monitor.com/workflow
     volumes:
