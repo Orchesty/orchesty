@@ -9,6 +9,31 @@ version: '2'
 
 services:
     ## BEGIN DEV
+    downloader:
+        image: dkr.hanaboso.net/pipes/pipes/php-dev:dev
+        user: ${DEV_UID}:${DEV_GID}
+        environment:
+          BACKEND_HOST: ${BACKEND_URL}/
+          ELASTIC_HOST: elasticsearch
+          ELASTIC_INDEX: 'index'
+        command: bash -c 'while ! [ -f vendor/autoload.php ];do sleep 1; echo "sleep 1"; done; bin/console downloader:run'
+        working_dir: /var/www/pipes/clients/demo/pipes-api
+        volumes:
+          - ../../:/var/www/pipes
+          - ${SSH_AUTH_SOCK}:/tmp/bound-ssh-agent
+          - ${HOME}/.composer:/srv/.composer
+    ## END DEV
+    ## BEGIN STAGE
+    #donwlader:
+    #    image: dkr.hanaboso.net/pipes/client-cm/monolith-fpm:${TAG_MONOLITH}
+    #    command: bin/console downloader:run
+    #    environment:
+    #      BACKEND_HOST: ${BACKEND_URL}/
+    #      ELASTIC_HOST: elasticsearch
+    #      ELASTIC_INDEX: 'logstash-2018.01.31'
+    ## END STAGE
+
+    ## BEGIN DEV
     batch:
         image: dkr.hanaboso.net/pipes/pipes/php-dev:dev
         user: ${DEV_UID}:${DEV_GID}

@@ -13,3 +13,22 @@ services:
     Demo\Controller\:
         resource: '../src/Controller'
         tags: ['controller.service_arguments']
+
+
+    hbpf.custom_node.filter-bids:
+        class: Demo\CustomNode\FilterStockExchange
+        public: true
+        arguments:
+            - 'bids'
+
+    hbpf.custom_node.filter-asks:
+        class: Demo\CustomNode\FilterStockExchange
+        public: true
+        arguments:
+            - 'asks'
+
+    demo.downloader.command:
+        class: Demo\Command\DownloaderCommand
+        public: true
+        tags:
+            -  { name: console.command }
