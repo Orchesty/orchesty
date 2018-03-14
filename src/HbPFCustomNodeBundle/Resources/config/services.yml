@@ -39,3 +39,9 @@ services:
             - '@rabbit-mq.producer.test_batch'
         calls:
             - ['setLogger', ['@monolog.logger.commons']]
+
+    hbpf.custom_node.requestbin:
+        class: Hanaboso\PipesFramework\CustomNode\Impl\RequestbinConnector
+        arguments:
+            - 'https://requestb.in/11tw3st1'
+            - '@hbpf.transport.curl_manager'
