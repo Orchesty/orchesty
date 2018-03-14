@@ -59,6 +59,17 @@ limiter-image:
     - dev
     - master
 
+workflow-image:
+  stage: stage1
+  script:
+    - cd $REPO_ROOT/clients/clever-connectors/go/src/clever-monitor.com/workflow
+    - IMAGE=dkr.hanaboso.net/pipes/pipes/workflow:${CI_BUILD_REF_NAME}
+    - cd ../ && docker build -t ${IMAGE} -f ./workflow/Dockerfile .
+    - docker push ${IMAGE}
+  only:
+    - dev
+    - master
+
 topology-api:
   stage: stage1
   script:
@@ -98,6 +109,12 @@ limiter-test:
   <<: *go_test
   variables:
     DIR: clients/clever-connectors/go/src/clever-monitor.com/limiter
+  stage: stage2
+
+workflow-test:
+  <<: *go_test
+  variables:
+    DIR: clients/clever-connectors/go/src/clever-monitor.com/workflow
   stage: stage2
 
 pf-bundles-test:
@@ -265,6 +282,13 @@ cleanup:
     - export COMPOSE_FILE=docker-compose.ci.yml
     - make ${COMPOSE_FILE}
     - docker-compose down -v || echo "limiter cleanup phase failed"
+
+    - ": workflow"
+    - cd $REPO_ROOT/clients/clever-connectors/go/src/clever-monitor.com/workflow
+    - export COMPOSE_PROJECT_NAME="workflow-test_${CI_PIPELINE_ID}"
+    - export COMPOSE_FILE=docker-compose.ci.yml
+    - make ${COMPOSE_FILE}
+    - docker-compose down -v || echo "workflow cleanup phase failed"
 
     - ": multi-probe"
     - cd $REPO_ROOT/go/src/hanaboso/multi-probe
