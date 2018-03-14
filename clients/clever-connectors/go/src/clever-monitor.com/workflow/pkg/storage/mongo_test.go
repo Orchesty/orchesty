@@ -5,7 +5,7 @@ import (
 	"time"
 	"os"
 	"github.com/stretchr/testify/assert"
-	"clever-monitor.com/limiter/pkg/env"
+	"clever-monitor.com/utils/env"
 	"clever-monitor.com/limiter/pkg/logger"
 	"gopkg.in/mgo.v2/bson"
 )

@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"clever-monitor.com/limiter/pkg/env"
+	"clever-monitor.com/utils/env"
 	"clever-monitor.com/limiter/pkg/logger"
 	"clever-monitor.com/limiter/pkg/rabbitmq"
 	"clever-monitor.com/limiter/pkg/storage"

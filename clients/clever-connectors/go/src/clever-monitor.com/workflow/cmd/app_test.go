@@ -7,7 +7,7 @@ import (
 	"os"
 	"github.com/stretchr/testify/assert"
 	"golang.org/x/net/context"
-	"clever-monitor.com/limiter/pkg/env"
+	"clever-monitor.com/utils/env"
 	"google.golang.org/grpc"
 	ws "clever-monitor.com/workflow/workflowservice"
 	"clever-monitor.com/workflow/pkg/handler"

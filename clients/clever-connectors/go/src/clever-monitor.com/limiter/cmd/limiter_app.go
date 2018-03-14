@@ -8,7 +8,7 @@ import (
 	"log"
 	"clever-monitor.com/limiter/pkg/rabbitmq"
 	"clever-monitor.com/limiter/pkg/storage"
-	"clever-monitor.com/limiter/pkg/env"
+	"clever-monitor.com/utils/env"
 	"strconv"
 	"clever-monitor.com/limiter/pkg/logger"
 	"time"
