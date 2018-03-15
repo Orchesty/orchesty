@@ -5,7 +5,7 @@ import (
 	"os"
 	"clever-monitor.com/utils/env"
 	"clever-monitor.com/workflow/pkg/handler"
-	"clever-monitor.com/limiter/pkg/logger"
+	"clever-monitor.com/utils/logger"
 	"clever-monitor.com/workflow/pkg/server"
 	"clever-monitor.com/workflow/pkg/storage"
 	"syscall"

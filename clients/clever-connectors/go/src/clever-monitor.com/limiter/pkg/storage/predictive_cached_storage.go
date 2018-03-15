@@ -3,7 +3,7 @@ package storage
 import (
 	"gopkg.in/mgo.v2/bson"
 	"time"
-	"clever-monitor.com/limiter/pkg/logger"
+	"clever-monitor.com/utils/logger"
 	"fmt"
 )
 

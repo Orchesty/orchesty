@@ -8,10 +8,10 @@ import (
 	"time"
 
 	"clever-monitor.com/utils/env"
-	"clever-monitor.com/limiter/pkg/logger"
+	"clever-monitor.com/utils/logger"
 	"clever-monitor.com/limiter/pkg/rabbitmq"
 	"clever-monitor.com/limiter/pkg/storage"
-	stringsUtils "clever-monitor.com/limiter/pkg/strings"
+	stringsUtils "clever-monitor.com/utils/strings"
 	"clever-monitor.com/limiter/pkg/tcp"
 	"github.com/streadway/amqp"
 	"github.com/stretchr/testify/assert"

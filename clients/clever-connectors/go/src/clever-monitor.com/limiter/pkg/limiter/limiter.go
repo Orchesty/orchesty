@@ -4,7 +4,7 @@ import (
 	"clever-monitor.com/limiter/pkg/storage"
 	"clever-monitor.com/limiter/pkg/rabbitmq"
 	"github.com/streadway/amqp"
-	"clever-monitor.com/limiter/pkg/logger"
+	"clever-monitor.com/utils/logger"
 	"fmt"
 )
 
@@ -65,7 +65,7 @@ func (l *limiter) IsFreeLimit(key string, time int, value int) (bool, error) {
 func (l *limiter) handleAmqpMessage(m amqp.Delivery) error {
 	defer m.Ack(false)
 
-	context := logger.CtxFromDelivery(m)
+	context := ctxFromDelivery(m)
 	l.logger.Info("Limiter received message from RabbitMQ", context)
 
 	msg, err := storage.NewMessage(&m)
@@ -94,4 +94,9 @@ func (l *limiter) handleAmqpMessage(m amqp.Delivery) error {
 	l.timerChan <- msg
 
 	return nil
+}
+
+// ctxFromDelivery creates logger context from amqp message
+func ctxFromDelivery(m amqp.Delivery) logger.Context {
+	return logger.Context{"headers": m.Headers, "body": string(m.Body)}
 }

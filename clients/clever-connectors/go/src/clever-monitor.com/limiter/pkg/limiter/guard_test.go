@@ -4,7 +4,7 @@ import (
 	"testing"
 	"clever-monitor.com/limiter/pkg/storage"
 	"time"
-	"clever-monitor.com/limiter/pkg/logger"
+	"clever-monitor.com/utils/logger"
 	"github.com/stretchr/testify/assert"
 )
 

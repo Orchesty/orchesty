@@ -2,7 +2,6 @@ package logger
 
 import (
 	"sync"
-	"github.com/streadway/amqp"
 	"os"
 	"clever-monitor.com/limiter/pkg/notification"
 	"strings"
@@ -10,14 +9,6 @@ import (
 
 // Context
 type Context map[string]interface{}
-
-func CtxFromDelivery(m amqp.Delivery) Context {
-	return Context{"headers": m.Headers, "body": string(m.Body)}
-}
-
-func CtxFromPublishing(m amqp.Publishing) Context {
-	return Context{"headers": m.Headers, "body": string(m.Body)}
-}
 
 // Logger
 type Logger interface {

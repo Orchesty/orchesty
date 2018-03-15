@@ -3,7 +3,7 @@ package rabbitmq
 import (
 	"github.com/streadway/amqp"
 	"fmt"
-	"clever-monitor.com/limiter/pkg/logger"
+	"clever-monitor.com/utils/logger"
 	"os"
 	"sync/atomic"
 )

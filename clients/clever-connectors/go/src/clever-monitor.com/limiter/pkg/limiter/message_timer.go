@@ -6,7 +6,7 @@ import (
 	"log"
 	"fmt"
 	"clever-monitor.com/limiter/pkg/rabbitmq"
-	"clever-monitor.com/limiter/pkg/logger"
+	"clever-monitor.com/utils/logger"
 )
 
 type MessageTimer interface {

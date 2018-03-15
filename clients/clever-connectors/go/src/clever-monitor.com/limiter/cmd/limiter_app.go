@@ -10,7 +10,7 @@ import (
 	"clever-monitor.com/limiter/pkg/storage"
 	"clever-monitor.com/utils/env"
 	"strconv"
-	"clever-monitor.com/limiter/pkg/logger"
+	"clever-monitor.com/utils/logger"
 	"time"
 	"clever-monitor.com/limiter/pkg/tcp"
 )

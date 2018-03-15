@@ -13,8 +13,6 @@ install-deps:
 	go get -u github.com/stretchr/testify/assert
 	go get -u gopkg.in/mgo.v2
 	go get -u google.golang.org/grpc
-	# TODO remove amqp dependency - is dependency of limiter but we use it's loggger
-	go get -u github.com/streadway/amqp
 
 proto-gen:
 	# Downloading protofile
@@ -25,7 +23,7 @@ proto-gen:
 	cp ./protofiles/protos/workflow/WorkflowService.proto ./workflowservice
 	rm -rf protofiles
 	# Generating structs from proto file
-	# Todo download protoc binary
+	# Todo download protoc binary in order to run following command
 	protoc -I workflowservice/ workflowservice/WorkflowService.proto --go_out=plugins=grpc:WorkflowService
 
 init: install-deps proto-gen
