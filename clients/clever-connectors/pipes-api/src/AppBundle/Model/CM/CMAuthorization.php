@@ -27,7 +27,7 @@ abstract class CMAuthorization
     protected function getAuthorizationHeaders(string $user, string $token, array $headers = []): array
     {
         $headers['Accept']       = 'application/json';
-        $headers['Content-type'] = 'application/json';
+        $headers['Content-type'] = 'application/json; charset=utf-8';
         $headers['X-Api-Key']    = sprintf('%s:%s', $user, $token);
 
         return $headers;
