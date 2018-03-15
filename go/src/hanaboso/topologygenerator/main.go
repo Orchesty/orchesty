@@ -5,20 +5,25 @@ package main
 
 import (
 	"fmt"
-	"hanaboso/topologygenerator/log"
-
+	"os"
 	"net/http"
 
+	"github.com/docker/docker/api/types"
+	"github.com/spf13/viper"
+
+	"hanaboso/topologygenerator/log"
 	"hanaboso/topologygenerator/handlers"
 	"hanaboso/topologygenerator/router"
-
-	"github.com/spf13/viper"
+	"hanaboso/topologygenerator/docker"
+	"hanaboso/topologygenerator/commands"
 )
 
 var compiled = "NA"
 
 func main() {
 	log.Infof("App compiled version: %s", compiled)
+
+	checkEnvironment()
 
 	handler := handlers.CreateHandler(viper.GetString("generator.mode"))
 	if handler == nil {
@@ -65,4 +70,28 @@ func main() {
 	server := fmt.Sprintf("%s:%d", viper.GetString("service.host"), viper.GetInt("service.port"))
 	log.Info("Start http server " + server)
 	log.Fatal(http.ListenAndServe(server, router))
+}
+
+// checkEnvironment runs app environment check and fails the program if some check fails
+func checkEnvironment() {
+	defer checkExit()
+
+	// check docker.socket ability to handle commands
+	docker.ContainerList(types.ContainerListOptions{})
+	log.Info("Docker daemon socket check - OK")
+
+	commands.WriteFile(
+		fmt.Sprintf("%s/%s", viper.GetString("generator.path"), "check"),
+		"check.txt",
+		[]byte("check"),
+	)
+	log.Info("Topology folder writeable - OK")
+}
+
+func checkExit() {
+	if r := recover(); r!= nil {
+		log.Info(fmt.Sprintf("Check failed. %s --> %s", r, "Exiting program."))
+
+		os.Exit(1)
+	}
 }

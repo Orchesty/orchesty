@@ -26,7 +26,7 @@ func close() {
 	}
 }
 
-func containerList(containerOptions types.ContainerListOptions) []types.Container {
+func ContainerList(containerOptions types.ContainerListOptions) []types.Container {
 
 	defer close()
 

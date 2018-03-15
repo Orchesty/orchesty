@@ -17,7 +17,7 @@ func ComposeTopologyInfo(projectName string, status string) []types.Container {
 		Filters: filters,
 	}
 
-	containers := containerList(options)
+	containers := ContainerList(options)
 
 	return containers
 }
@@ -33,7 +33,7 @@ func SwarmTopologyInfo(projectName string, status string) []types.Container {
 		Filters: filters,
 	}
 
-	containers := containerList(options)
+	containers := ContainerList(options)
 
 	return containers
 }
