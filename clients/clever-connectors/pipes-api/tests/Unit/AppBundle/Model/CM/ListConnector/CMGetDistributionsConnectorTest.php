@@ -79,7 +79,7 @@ class CMGetDistributionsConnectorTest extends ConnectorTestCaseAbstract
                         new Uri('https://api.dev.clevermonitor.com/v1.2/lists?count=50&offset=0'));
                     $expt->setHeaders([
                         'Accept'       => 'application/json',
-                        'Content-type' => 'application/json',
+                        'Content-type' => 'application/json; charset=utf-8',
                         'X-Api-Key'    => 'guid:token',
                     ]);
                     self::assertEquals($expt, $requestDto);
