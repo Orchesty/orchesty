@@ -14,6 +14,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Request;
 use Ratchet\Client\Connector;
 use Ratchet\Client\WebSocket;
+use Ratchet\RFC6455\Messaging\MessageInterface;
 use React\EventLoop\Factory;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -55,7 +56,9 @@ class DownloaderCommand extends Command
         $connector($uri)
             ->then(function (WebSocket $ws) use ($output, $uri): void {
 
-                $ws->on('message', function (string $json) use ($ws, $output, $uri): void {
+                $ws->on('message', function (MessageInterface $json) use ($ws, $output, $uri): void {
+
+                    $json = (string) $json;
 
                     $data = json_decode($json, TRUE);
 
