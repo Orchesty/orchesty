@@ -44,7 +44,7 @@ class StartingPointController extends FOSRestController
     }
 
     /**
-     * @Route("/topologies/{topologyName}/nodes/{nodeName}/run", defaults={}, requirements={"topologyName": "\w+", "nodeName": "[\w-\.]+"})
+     * @Route("/topologies/{topologyName}/nodes/{nodeName}/run")
      * @Method({"POST"})
      *
      * @param Request $request
@@ -65,7 +65,7 @@ class StartingPointController extends FOSRestController
     }
 
     /**
-     * @Route("/topologies/{topologyId}/nodes/{nodeId}/run_by_id", defaults={}, requirements={"topologyId": "\w+", "nodeId": "[\w-\.]+"})
+     * @Route("/topologies/{topologyId}/nodes/{nodeId}/run_by_id")
      * @Method({"POST"})
      *
      * @param Request $request
@@ -86,7 +86,7 @@ class StartingPointController extends FOSRestController
     }
 
     /**
-     * @Route("/topologies/{topologyId}/test", defaults={}, requirements={"topologyId": "\w+"})
+     * @Route("/topologies/{topologyId}/test")
      * @Method({"GET"})
      *
      * @param string $topologyId
