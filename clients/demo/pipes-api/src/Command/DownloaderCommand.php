@@ -111,8 +111,9 @@ class DownloaderCommand extends Command
     {
         $request = new Request(
             'POST',
-            'http://frontend/api/topologies/stock-exchange/nodes/null/run_by_name',
+            'http://frontend/topologies/stock-exchange/nodes/null/run',
             [
+                'Accept'       => 'application/json',
                 'Content-Type' => 'application/json',
             ],
             $data
