@@ -138,7 +138,7 @@ func (wh *workflowHandler) validateJson(json string) error {
 		return fmt.Errorf(messageErrorJsonEmpty)
 	}
 
-	_, err := JsonToConfig(json)
+	_, err := jsonToConfig(json)
 	if err != nil {
 		return fmt.Errorf(messageErrorJsonInvalid)
 	}

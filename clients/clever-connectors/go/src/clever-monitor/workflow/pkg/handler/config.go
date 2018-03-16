@@ -37,7 +37,7 @@ func (ch *configHandler) GetConfig(in *ws.WorkflowRequest) *ws.WorkflowConfig {
 	return config
 }
 
-func ConfigToJson(conf *ws.WorkflowConfig) (string, error) {
+func configToJson(conf *ws.WorkflowConfig) (string, error) {
 	marshaler := jsonpb.Marshaler{}
 	str, err := marshaler.MarshalToString(conf)
 	if err != nil {
@@ -47,7 +47,7 @@ func ConfigToJson(conf *ws.WorkflowConfig) (string, error) {
 	return str, nil
 }
 
-func JsonToConfig(json string) (*ws.WorkflowConfig, error){
+func jsonToConfig(json string) (*ws.WorkflowConfig, error){
 	var conf ws.WorkflowConfig
 	err := jsonpb.UnmarshalString(json, &conf)
 

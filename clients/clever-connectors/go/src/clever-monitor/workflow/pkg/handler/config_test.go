@@ -10,7 +10,7 @@ import (
 func TestConfigHandler_JsonToConfig(t *testing.T) {
 	json := getExampleFileJson(t)
 
-	conf, err := JsonToConfig(json)
+	conf, err := jsonToConfig(json)
 
 	assert.Nil(t, err)
 	assertExampleConfig(t, conf)
@@ -19,7 +19,7 @@ func TestConfigHandler_JsonToConfig(t *testing.T) {
 func TestConfigHandler_ConfigToJson(t *testing.T) {
 	config := createConfig()
 
-	str, err := ConfigToJson(config)
+	str, err := configToJson(config)
 	assert.Nil(t, err)
 
 	// check if we generate still same json
@@ -27,7 +27,7 @@ func TestConfigHandler_ConfigToJson(t *testing.T) {
 	assert.Equal(t, string(b), str)
 
 	// by hydrating from json we should get config struct with same values as original
-	regenerated, err := JsonToConfig(str)
+	regenerated, err := jsonToConfig(str)
 	assert.Nil(t, err)
 	assert.EqualValues(t, config, regenerated)
 }
