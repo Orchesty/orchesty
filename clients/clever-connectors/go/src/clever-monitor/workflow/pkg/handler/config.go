@@ -21,7 +21,7 @@ func NewConfigHandler(storage storage.Finder) *configHandler {
 }
 
 func (ch *configHandler) GetConfig(in *ws.WorkflowRequest) *ws.WorkflowConfig {
-	// todo valdiate id value
+	// todo validate id value
 	json, err := ch.storage.Find(in.Id)
 	if err != nil {
 		// todo what to return if not found by id?
@@ -37,7 +37,7 @@ func (ch *configHandler) GetConfig(in *ws.WorkflowRequest) *ws.WorkflowConfig {
 	return config
 }
 
-func (ch *configHandler) configToJson(conf *ws.WorkflowConfig) (string, error) {
+func ConfigToJson(conf *ws.WorkflowConfig) (string, error) {
 	marshaler := jsonpb.Marshaler{}
 	str, err := marshaler.MarshalToString(conf)
 	if err != nil {
@@ -47,7 +47,7 @@ func (ch *configHandler) configToJson(conf *ws.WorkflowConfig) (string, error) {
 	return str, nil
 }
 
-func (ch *configHandler) jsonToConfig(json string) (*ws.WorkflowConfig, error){
+func JsonToConfig(json string) (*ws.WorkflowConfig, error){
 	var conf ws.WorkflowConfig
 	err := jsonpb.UnmarshalString(json, &conf)
 

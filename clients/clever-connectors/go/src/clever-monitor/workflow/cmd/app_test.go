@@ -50,19 +50,16 @@ func testGrpcMethods(t *testing.T, stopTest chan bool) {
 }
 
 func testWorkflowCRUDMethods(t *testing.T, client ws.WorkflowServiceClient, ctx context.Context) {
-	id := assertCRUDCreate(t, client, ctx, "{\"foo\": \"bar\"}")
-	assertCRUDRead(t, client, ctx, id, "{\"foo\": \"bar\"}")
-	assertCRUDUpdate(t, client, ctx, id, "{\"foo\": \"changed\"}")
-	assertCRUDRead(t, client, ctx, id, "{\"foo\": \"changed\"}")
+	id := assertCRUDCreate(t, client, ctx, getValidJsonExample(t, "example.json"))
+	assertCRUDRead(t, client, ctx, id, getValidJsonExample(t, "example.json"))
+	assertCRUDUpdate(t, client, ctx, id, getValidJsonExample(t, "generated.json"))
+	assertCRUDRead(t, client, ctx, id, getValidJsonExample(t, "generated.json"))
 	assertCRUDDelete(t, client, ctx, id)
 	assertCRUDReadFailure(t, client, ctx, id)
 }
 
 func testConfigMethods(t *testing.T, client ws.WorkflowServiceClient, ctx context.Context) {
-	b, err := ioutil.ReadFile("../pkg/handler/examples/example.json")
-	assert.Nil(t, err)
-
-	r, err := client.CreateWorkflow(ctx, &ws.WorkflowRequest{Json: string(b)})
+	r, err := client.CreateWorkflow(ctx, &ws.WorkflowRequest{Json: getValidJsonExample(t, "example.json")})
 	assert.Nil(t, err)
 
 	config, err := client.ReadConfig(ctx, &ws.WorkflowRequest{Id: r.Id})
@@ -122,4 +119,11 @@ func createGrpcClient(t *testing.T) (ws.WorkflowServiceClient, *grpc.ClientConn,
 	ctx, _ := context.WithTimeout(context.Background(), time.Hour*5)
 
 	return client, conn, ctx
+}
+
+func getValidJsonExample(t *testing.T, file string) string {
+	b, err := ioutil.ReadFile("../pkg/handler/examples/" + file)
+	assert.Nil(t, err)
+
+	return string(b)
 }

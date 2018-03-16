@@ -12,6 +12,7 @@ const (
 	messageErrorIdEmpty = "empty id given"
 	messageErrorIdInvalid = "invalid id given (is not ObjectId)"
 	messageErrorJsonEmpty = "empty json given"
+	messageErrorJsonInvalid = "invalid json given"
 
 	messageSuccessCreated = "created"
 	messageSuccessUpdated= "updated"
@@ -135,6 +136,11 @@ func (wh *workflowHandler) validateId(id string) error {
 func (wh *workflowHandler) validateJson(json string) error {
 	if json == "" {
 		return fmt.Errorf(messageErrorJsonEmpty)
+	}
+
+	_, err := JsonToConfig(json)
+	if err != nil {
+		return fmt.Errorf(messageErrorJsonInvalid)
 	}
 
 	return nil

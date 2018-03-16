@@ -5,6 +5,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	ws "clever-monitor/workflow/pkg/workflowservice"
 	"fmt"
+	"io/ioutil"
 )
 
 const (
@@ -59,11 +60,14 @@ func TestWorkflowHandler_Handle_Create(t *testing.T) {
 	assert.Equal(t, int32(InvalidRequest), response.Code)
 	assert.Equal(t, messageErrorJsonEmpty, response.Message)
 
-	response = handler.Handle(HandleCreate, &ws.WorkflowRequest{Json: failureToken})
-	assert.Equal(t, int32(InternalError), response.Code)
-	assert.Equal(t, "storage create error", response.Message)
-
 	response = handler.Handle(HandleCreate, &ws.WorkflowRequest{Json: "{\"foo\": \"bar\"}"})
+	assert.Equal(t, int32(InvalidRequest), response.Code)
+	assert.Equal(t, messageErrorJsonInvalid, response.Message)
+
+	b, err := ioutil.ReadFile("examples/example.json")
+	assert.Nil(t, err)
+
+	response = handler.Handle(HandleCreate, &ws.WorkflowRequest{Json: string(b)})
 	assert.Equal(t, int32(OK), response.Code)
 	assert.Equal(t, messageSuccessCreated, response.Message)
 }
@@ -99,11 +103,18 @@ func TestWorkflowHandler_Handle_Update(t *testing.T) {
 	assert.Equal(t, int32(InvalidRequest), response.Code)
 	assert.Equal(t, messageErrorIdInvalid, response.Message)
 
-	response = handler.Handle(HandleUpdate, &ws.WorkflowRequest{Id: errorObjectId, Json: "{\"foo\": \"bar\"}"})
+	response = handler.Handle(HandleUpdate, &ws.WorkflowRequest{Id: successObjectId, Json: "{\"foo\": \"bar\"}"})
+	assert.Equal(t, int32(InvalidRequest), response.Code)
+	assert.Equal(t, messageErrorJsonInvalid, response.Message)
+
+	b, err := ioutil.ReadFile("examples/example.json")
+	assert.Nil(t, err)
+
+	response = handler.Handle(HandleUpdate, &ws.WorkflowRequest{Id: errorObjectId, Json: string(b)})
 	assert.Equal(t, int32(InternalError), response.Code)
 	assert.Equal(t, "storage update error", response.Message)
 
-	response = handler.Handle(HandleUpdate, &ws.WorkflowRequest{Id: successObjectId, Json: "{\"foo\": \"bar\"}"})
+	response = handler.Handle(HandleUpdate, &ws.WorkflowRequest{Id: successObjectId, Json: string(b)})
 	assert.Equal(t, int32(OK), response.Code)
 	assert.Equal(t, messageSuccessUpdated, response.Message)
 }
