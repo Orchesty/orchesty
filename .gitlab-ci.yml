@@ -51,7 +51,7 @@ multi-probe-image:
 limiter-image:
   stage: stage1
   script:
-    - cd $REPO_ROOT/clients/clever-connectors/go/src/clever-monitor.com/limiter
+    - cd $REPO_ROOT/clients/clever-connectors/go/src/clever-monitor/limiter
     - IMAGE=dkr.hanaboso.net/pipes/pipes/limiter:${CI_BUILD_REF_NAME}
     - cd ../ && docker build -t ${IMAGE} -f ./limiter/Dockerfile .
     - docker push ${IMAGE}
@@ -62,7 +62,7 @@ limiter-image:
 workflow-image:
   stage: stage1
   script:
-    - cd $REPO_ROOT/clients/clever-connectors/go/src/clever-monitor.com/workflow
+    - cd $REPO_ROOT/clients/clever-connectors/go/src/clever-monitor/workflow
     - IMAGE=dkr.hanaboso.net/pipes/pipes/workflow:${CI_BUILD_REF_NAME}
     - cd ../ && docker build -t ${IMAGE} -f ./workflow/Dockerfile .
     - docker push ${IMAGE}
@@ -108,13 +108,13 @@ topology-generator-test:
 limiter-test:
   <<: *go_test
   variables:
-    DIR: clients/clever-connectors/go/src/clever-monitor.com/limiter
+    DIR: clients/clever-connectors/go/src/clever-monitor/limiter
   stage: stage2
 
 workflow-test:
   <<: *go_test
   variables:
-    DIR: clients/clever-connectors/go/src/clever-monitor.com/workflow
+    DIR: clients/clever-connectors/go/src/clever-monitor/workflow
   stage: stage2
 
 pf-bundles-test:
@@ -287,14 +287,14 @@ cleanup:
     - docker-compose down -v || echo "bridge cleanup phase failed"
 
     - ": limiter"
-    - cd $REPO_ROOT/clients/clever-connectors/go/src/clever-monitor.com/limiter
+    - cd $REPO_ROOT/clients/clever-connectors/go/src/clever-monitor/limiter
     - export COMPOSE_PROJECT_NAME="limiter-test_${CI_PIPELINE_ID}"
     - export COMPOSE_FILE=docker-compose.ci.yml
     - make ${COMPOSE_FILE}
     - docker-compose down -v || echo "limiter cleanup phase failed"
 
     - ": workflow"
-    - cd $REPO_ROOT/clients/clever-connectors/go/src/clever-monitor.com/workflow
+    - cd $REPO_ROOT/clients/clever-connectors/go/src/clever-monitor/workflow
     - export COMPOSE_PROJECT_NAME="workflow-test_${CI_PIPELINE_ID}"
     - export COMPOSE_FILE=docker-compose.ci.yml
     - make ${COMPOSE_FILE}
