@@ -3,7 +3,7 @@ package handler
 import (
 	"clever-monitor.com/workflow/pkg/storage"
 	"github.com/golang/protobuf/jsonpb"
-	ws "clever-monitor.com/workflow/workflowservice"
+	ws "clever-monitor.com/workflow/pkg/workflowservice"
 	"strings"
 	"fmt"
 )

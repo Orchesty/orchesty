@@ -9,7 +9,7 @@ import (
 	"google.golang.org/grpc/reflection"
 	"clever-monitor.com/utils/logger"
 	"clever-monitor.com/workflow/pkg/handler"
-	ws "clever-monitor.com/workflow/workflowservice"
+	ws "clever-monitor.com/workflow/pkg/workflowservice"
 )
 
 const MaxInt = int(^uint(0) >> 1)

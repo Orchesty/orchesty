@@ -3,7 +3,7 @@ package handler
 import (
 	"fmt"
 	"clever-monitor.com/workflow/pkg/storage"
-	ws "clever-monitor.com/workflow/workflowservice"
+	ws "clever-monitor.com/workflow/pkg/workflowservice"
 	"gopkg.in/mgo.v2/bson"
 )
 

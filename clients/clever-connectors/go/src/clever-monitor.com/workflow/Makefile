@@ -18,14 +18,14 @@ proto-gen:
 	# Downloading protofile
 	rm -rf protofiles
 	git clone git@gitlab.hanaboso.net:clever-monitor/protofiles.git
-	rm -rf workflowservice
-	mkdir workflowservice
-	cp ./protofiles/protos/workflow/WorkflowService.proto ./workflowservice
+	rm -rf pkg/workflowservice
+	mkdir pkg/workflowservice
+	cp ./protofiles/protos/workflow/WorkflowService.proto .
 	rm -rf protofiles
 	# Generating structs from proto file
 	# Todo download protoc binary in order to run following command
-	protoc -I workflowservice/ workflowservice/WorkflowService.proto --go_out=plugins=grpc:WorkflowService
-	rm workflowservice/WorkflowService.proto
+	protoc ./WorkflowService.proto --go_out=plugins=grpc:pkg/WorkflowService
+	rm ./WorkflowService.proto
 
 init: install-deps proto-gen
 

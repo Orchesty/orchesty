@@ -4,7 +4,7 @@ import (
 	"testing"
 	"io/ioutil"
 	"github.com/stretchr/testify/assert"
-	ws "clever-monitor.com/workflow/workflowservice"
+	ws "clever-monitor.com/workflow/pkg/workflowservice"
 )
 
 func TestConfigHandler_JsonToConfig(t *testing.T) {

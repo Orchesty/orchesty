@@ -1,6 +1,6 @@
 package handler
 
-import ws "clever-monitor.com/workflow/workflowservice"
+import ws "clever-monitor.com/workflow/pkg/workflowservice"
 
 const (
 	HandleCreate = "create"
