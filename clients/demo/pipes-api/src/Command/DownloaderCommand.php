@@ -54,7 +54,13 @@ class DownloaderCommand extends Command
         $uri = 'wss://ws.pusherapp.com/app/de504dc5763aeef9ff52?client=php-ratchet&version=0.0.1&protocol=5';
 
         $connector($uri)
-            ->then(function (WebSocket $ws) use ($output, $uri): void {
+            ->then(function (WebSocket $ws) use ($loop, $output, $uri): void {
+
+                $loop->addPeriodicTimer(5, function () use ($ws) {
+                    $ws->send(json_encode([
+                        'event' => 'pusher:ping', 'data' => [],
+                    ]));
+                });
 
                 $ws->on('message', function (MessageInterface $json) use ($ws, $output, $uri): void {
 
