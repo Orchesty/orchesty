@@ -1,4 +1,5 @@
 *
+!docker/monolith
 !bin
 !config
 !public
