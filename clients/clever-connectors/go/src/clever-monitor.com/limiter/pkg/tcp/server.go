@@ -11,7 +11,7 @@ import (
 	"time"
 	"sync"
 	"strconv"
-	"clever-monitor.com/limiter/pkg/logger"
+	"clever-monitor.com/utils/logger"
 	"clever-monitor.com/limiter/pkg/limiter"
 )
 

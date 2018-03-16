@@ -7,7 +7,7 @@ import (
 )
 
 func TestLogStashFormatter_Format(t *testing.T) {
-	f := logStashFormatter{}
+	f := logStashFormatter{appName: "limiter_app"}
 
 	var fields = make(map[string]interface{})
 
@@ -28,6 +28,6 @@ func TestLogStashFormatter_Format(t *testing.T) {
 	assert.Contains(t, result, "notification_type")
 	assert.Equal(t, "test", result["notification_type"])
 	assert.Contains(t, result, "type")
-	assert.Equal(t, "limiter", result["type"])
+	assert.Equal(t, "limiter_app", result["type"])
 	assert.Len(t, result, 4)
 }

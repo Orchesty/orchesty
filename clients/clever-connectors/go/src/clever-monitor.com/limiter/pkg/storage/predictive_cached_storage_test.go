@@ -6,7 +6,7 @@ import (
 	"github.com/streadway/amqp"
 	"github.com/stretchr/testify/assert"
 	"time"
-	"clever-monitor.com/limiter/pkg/logger"
+	"clever-monitor.com/utils/logger"
 )
 
 type mongoMock struct{}

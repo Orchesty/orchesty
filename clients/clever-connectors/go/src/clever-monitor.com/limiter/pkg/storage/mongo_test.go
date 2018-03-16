@@ -6,8 +6,8 @@ import (
 	"github.com/streadway/amqp"
 	"time"
 	"os"
-	"clever-monitor.com/limiter/pkg/env"
-	"clever-monitor.com/limiter/pkg/logger"
+	"clever-monitor.com/utils/env"
+	"clever-monitor.com/utils/logger"
 )
 
 const (

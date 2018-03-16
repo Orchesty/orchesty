@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/streadway/amqp"
 	"time"
-	"clever-monitor.com/limiter/pkg/logger"
+	"clever-monitor.com/utils/logger"
 	"strconv"
 )
 

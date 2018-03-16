@@ -8,15 +8,17 @@ import (
 	"log"
 	"clever-monitor.com/limiter/pkg/rabbitmq"
 	"clever-monitor.com/limiter/pkg/storage"
-	"clever-monitor.com/limiter/pkg/env"
+	"clever-monitor.com/utils/env"
 	"strconv"
-	"clever-monitor.com/limiter/pkg/logger"
+	"clever-monitor.com/utils/logger"
 	"time"
 	"clever-monitor.com/limiter/pkg/tcp"
 )
 
 // main runs the limiter program
 func main() {
+	os.Setenv("APP_NAME", "limiter")
+
 	prepareLogger()
 	store := prepareStorage()
 	guard := prepareGuard(store)

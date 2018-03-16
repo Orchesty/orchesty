@@ -3,7 +3,7 @@ package rabbitmq
 import (
 	"github.com/streadway/amqp"
 	"fmt"
-	"clever-monitor.com/limiter/pkg/logger"
+	"clever-monitor.com/utils/logger"
 )
 
 type Publisher interface {
@@ -37,7 +37,7 @@ func (p *publisher) Publish(msg amqp.Publishing) {
 
 	err := p.getChannel().Publish(p.exchange, p.routingKey, p.mandatory, p.immediate, msg)
 
-	context := logger.CtxFromPublishing(msg)
+	context := ctxFromPublishing(msg)
 
 	if err != nil {
 		context["error"] = err
@@ -78,4 +78,8 @@ func (p *publisher) SetImmediate(i bool) {
 
 func NewPublisher(conn Connection, routingKey string, logger logger.Logger) (p Publisher) {
 	return &publisher{connection: conn, routingKey: routingKey, channelId: -1, logger: logger}
+}
+
+func ctxFromPublishing(m amqp.Publishing) logger.Context {
+	return logger.Context{"headers": m.Headers, "body": string(m.Body)}
 }

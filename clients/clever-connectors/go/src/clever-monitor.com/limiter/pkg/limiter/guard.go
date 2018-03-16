@@ -3,7 +3,7 @@ package limiter
 import (
 	"time"
 	"clever-monitor.com/limiter/pkg/storage"
-	"clever-monitor.com/limiter/pkg/logger"
+	"clever-monitor.com/utils/logger"
 	"clever-monitor.com/limiter/pkg/notification"
 	"fmt"
 )

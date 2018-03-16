@@ -5,7 +5,7 @@ import (
 	"clever-monitor.com/limiter/pkg/storage"
 	"fmt"
 	"github.com/stretchr/testify/assert"
-	"clever-monitor.com/limiter/pkg/logger"
+	"clever-monitor.com/utils/logger"
 	"github.com/streadway/amqp"
 	"time"
 )

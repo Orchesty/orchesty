@@ -1,0 +1,44 @@
+{
+  "id": "507f1f77bcf86cd799439011",
+  "clientDomain": "domainId_compatible",
+  "type": "page_view_or_other",
+  "clientId": 555,
+  "clientGuid": "client_guid",
+  "filter": {
+    "in_segment": ["hash_segmentu"],
+    "not_in_segment": ["hash_segmentu"],
+    "in_tag": ["tag"],
+    "not_in_tag": ["tag"],
+    "priority": 10,
+    "filtering_variable":"variable_name/column_name/etc"
+  },
+  "steps":
+  [{
+    "condition":"10<x<30",
+    "recommendation": {
+      "recommendation_type": "CUSTOM"
+    },
+    "segmentation": {
+      "segmentation_type": "BOTH"
+    },
+    "channels": {
+      "email": {
+        "template": "template_id",
+        "dynamic_fields": "dynamic_field",
+        "send_time": "NOW"
+      },
+      "actions": [
+        {
+          "action_family": "LIST",
+          "action_type": "ADD",
+          "action_time": "TRIGGER",
+          "action_trigger": "EMPTY",
+          "action_subject": "subject"
+        }
+      ]
+    },
+    "next_flow": {
+      "id": "507f1f77bcf86cd799439022"
+    }
+  }]
+}

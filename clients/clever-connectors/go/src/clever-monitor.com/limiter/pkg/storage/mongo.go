@@ -5,7 +5,7 @@ import (
 	"time"
 	"fmt"
 	"gopkg.in/mgo.v2/bson"
-	"clever-monitor.com/limiter/pkg/logger"
+	"clever-monitor.com/utils/logger"
 )
 
 type Mongo struct {
@@ -50,7 +50,7 @@ func (s *Mongo) CanHandle(key string, time int, value int) (bool, error) {
 
 // Delete removes the document by it's unique id
 func (s *Mongo) Remove(key string, id bson.ObjectId) (bool, error) {
-	c := s.session.DB(s.db).C(s.collection)
+	c := s.getActiveSession().DB(s.db).C(s.collection)
 	err := c.RemoveId(id)
 
 	if err != nil {
@@ -62,7 +62,7 @@ func (s *Mongo) Remove(key string, id bson.ObjectId) (bool, error) {
 
 // Save persists Message to mongo storage and returns it's limitKey
 func (s *Mongo) Save(m *Message) (string, error) {
-	c := s.session.DB(s.db).C(s.collection)
+	c := s.getActiveSession().DB(s.db).C(s.collection)
 	err := c.Insert(m)
 
 	if err != nil {
@@ -74,7 +74,7 @@ func (s *Mongo) Save(m *Message) (string, error) {
 
 // Exists return boolean if any document found with given key or returns error if some mongo error occurs
 func (s *Mongo) Exists(key string) (bool, error) {
-	c := s.session.DB(s.db).C(s.collection)
+	c := s.getActiveSession().DB(s.db).C(s.collection)
 	count, err := c.Find(bson.M{"limitkey": key}).Limit(1).Count()
 
 	if err != nil {
@@ -91,7 +91,7 @@ func (s *Mongo) Exists(key string) (bool, error) {
 // Get tries to find up to X messages in the storage by their key, where X is the length param value
 func (s *Mongo) Get(key string, length int) ([]*Message, error) {
 	var messages []*Message
-	c := s.session.DB(s.db).C(s.collection)
+	c := s.getActiveSession().DB(s.db).C(s.collection)
 
 	err := c.Find(bson.M{"limitkey": key}).Limit(length).Sort("created").Iter().All(&messages)
 
@@ -104,7 +104,7 @@ func (s *Mongo) Get(key string, length int) ([]*Message, error) {
 
 // Get tries to find up to X messages in the storage by their key, where X is the length param value
 func (s *Mongo) Count(key string) (int, error) {
-	c := s.session.DB(s.db).C(s.collection)
+	c := s.getActiveSession().DB(s.db).C(s.collection)
 
 	return c.Find(bson.M{"limitkey": key}).Count()
 }
@@ -133,10 +133,10 @@ func (s *Mongo) GetDistinctFirstItems() (map[string]*Message, error) {
 	return items, nil
 }
 
-// getDistinctKeys returns the distint limitkey values from collection
+// getDistinctKeys returns the distinct limitkey values from collection
 func (s *Mongo) getDistinctKeys() ([]string, error) {
 	var keys []string
-	c := s.session.DB(s.db).C(s.collection)
+	c := s.getActiveSession().DB(s.db).C(s.collection)
 	err := c.Find(nil).Distinct("limitkey", &keys)
 
 	if err != nil {
@@ -144,6 +144,11 @@ func (s *Mongo) getDistinctKeys() ([]string, error) {
 	}
 
 	return keys, nil
+}
+
+// getActiveSession always returns the active session
+func (s *Mongo) getActiveSession() (*mgo.Session) {
+	return s.session.Clone()
 }
 
 // DropCollection drops current collection

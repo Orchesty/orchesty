@@ -1,0 +1,16 @@
+---
+version: '3'
+
+services:
+  mongodb:
+    image: mongo
+
+  logstash:
+    image: kedlas/udplogger:latest
+
+  workflow:
+    image: golang:latest
+    working_dir: /go/src/clever-monitor.com/workflow
+    volumes:
+      - ../:/go/src/clever-monitor.com
+    command: bash -c 'sleep infinity'
