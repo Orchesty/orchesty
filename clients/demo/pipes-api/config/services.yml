@@ -27,6 +27,10 @@ services:
         arguments:
             - 'asks'
 
+    hbpf.custom_node.split-file:
+        class: Demo\CustomNode\SplitFileBatch
+        public: true
+
     demo.downloader.command:
         class: Demo\Command\DownloaderCommand
         public: true

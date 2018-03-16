@@ -76,6 +76,14 @@ class DownloaderCommand extends Command
                         case 'pusher_internal:subscription_succeeded':
                             $output->writeln(sprintf('Success subscribe to channel: %s', $data['channel']));
                             break;
+                        case 'pusher:ping':
+                            $ws->send(json_encode([
+                                'event' => 'pusher:pong', 'data' => [],
+                            ]));
+                            break;
+                        case 'pusher:pong':
+                            $output->writeln('Received pong event.');
+                            break;
                         default:
                             $output->writeln(sprintf(
                                 'Received event: %s for channel %s.',
@@ -111,7 +119,7 @@ class DownloaderCommand extends Command
     {
         $request = new Request(
             'POST',
-            'http://frontend/topologies/stock-exchange/nodes/null/run',
+            'http://frontend/topologies/stock-exchange/nodes/split-file/run',
             [
                 'Accept'       => 'application/json',
                 'Content-Type' => 'application/json',

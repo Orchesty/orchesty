@@ -45,10 +45,8 @@ class FilterStockExchange implements CustomNodeInterface
     {
         $data = json_decode($dto->getData(), TRUE);
 
-        if (array_key_exists('data', $data)) {
-            if (array_key_exists($this->key, json_decode($data['data'], TRUE))) {
-                return $dto->setData($data['data']);
-            }
+        if (array_key_exists($this->key, $data)) {
+            return $dto->setData(json_encode($data[$this->key]));
         }
 
         $dto->setData('');
