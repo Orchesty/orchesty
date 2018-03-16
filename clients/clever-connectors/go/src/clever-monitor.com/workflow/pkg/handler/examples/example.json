@@ -1,9 +1,9 @@
 {
-  "domainId": "domainId_compatible",
+  "id": "507f1f77bcf86cd799439011",
+  "clientDomain": "domainId_compatible",
   "type": "page_view_or_other",
   "clientId": 555,
   "clientGuid": "client_guid",
-  "id_config": "hash_configu",
   "filter": {
     "in_segment": ["hash_segmentu"],
     "not_in_segment": ["hash_segmentu"],
@@ -15,7 +15,7 @@
   "steps":
   [{
     "condition":"10<x<30",
-    "recommendations": {
+    "recommendation": {
       "recommendation_type": "CUSTOM"
     },
     "segmentation": {
@@ -27,7 +27,7 @@
         "dynamic_fields": "dynamic_field",
         "send_time": "NOW"
       },
-      "action": [
+      "actions": [
         {
           "action_family": "LIST",
           "action_type": "ADD",
@@ -38,9 +38,7 @@
       ]
     },
     "next_flow": {
-      "clientId": 666,
-      "type": "synthetic",
-      "config": "config_hash"
+      "id": "507f1f77bcf86cd799439022"
     }
   }]
 }

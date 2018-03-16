@@ -25,6 +25,7 @@ proto-gen:
 	# Generating structs from proto file
 	# Todo download protoc binary in order to run following command
 	protoc -I workflowservice/ workflowservice/WorkflowService.proto --go_out=plugins=grpc:WorkflowService
+	rm workflowservice/WorkflowService.proto
 
 init: install-deps proto-gen
 

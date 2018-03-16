@@ -2,9 +2,9 @@ package handler
 
 import (
 	"testing"
-	ws "clever-monitor.com/workflow/workflowservice"
-	"github.com/stretchr/testify/assert"
 	"io/ioutil"
+	"github.com/stretchr/testify/assert"
+	ws "clever-monitor.com/workflow/workflowservice"
 )
 
 func TestConfigHandler_JsonToConfig(t *testing.T) {
@@ -47,11 +47,11 @@ func getExampleFileJson(t *testing.T) string {
 
 func assertExampleConfig(t *testing.T, conf *ws.WorkflowConfig) {
 	// Basic fields
-	assert.Equal(t, "domainId_compatible", conf.DomainId)
+	assert.Equal(t, "507f1f77bcf86cd799439011", conf.Id)
+	assert.Equal(t, "domainId_compatible", conf.ClientDomain)
 	assert.Equal(t, "page_view_or_other", conf.Type)
 	assert.Equal(t, int32(555), conf.ClientId)
 	assert.Equal(t, "client_guid", conf.ClientGuid)
-	assert.Equal(t, "hash_configu", conf.IdConfig)
 
 	// Filter fields
 	assert.Len(t, conf.Filter.InSegment, 1)
@@ -70,34 +70,32 @@ func assertExampleConfig(t *testing.T, conf *ws.WorkflowConfig) {
 	step := conf.Steps[0]
 
 	assert.Equal(t, "10<x<30", step.Condition)
-	assert.Equal(t, ws.WorkflowConfig_Step_Recommendation_CUSTOM, step.Recommendations.RecommendationType)
+	assert.Equal(t, ws.WorkflowConfig_Step_Recommendation_CUSTOM, step.Recommendation.RecommendationType)
 	assert.Equal(t, ws.WorkflowConfig_Step_Segmentation_BOTH, step.Segmentation.SegmentationType)
 
 	assert.Equal(t, "template_id", step.Channels.Email.Template)
 	assert.Equal(t, "dynamic_field", step.Channels.Email.DynamicFields)
 	assert.Equal(t, ws.WorkflowConfig_Step_ChannelMap_NOW, step.Channels.Email.SendTime)
 
-	assert.Len(t, step.Channels.Action, 1)
-	action := step.Channels.Action[0]
+	assert.Len(t, step.Channels.Actions, 1)
+	action := step.Channels.Actions[0]
 	assert.Equal(t, ws.WorkflowConfig_Step_ChannelMap_Action_LIST, action.ActionFamily)
 	assert.Equal(t, ws.WorkflowConfig_Step_ChannelMap_Action_ADD, action.ActionType)
 	assert.Equal(t, ws.WorkflowConfig_Step_ChannelMap_Action_TRIGGER, action.ActionTime)
 	assert.Equal(t, ws.WorkflowConfig_Step_ChannelMap_Action_EMPTY, action.ActionTrigger)
 	assert.Equal(t, "subject", action.ActionSubject)
 
-	assert.Equal(t, int32(666), step.NextFlow.ClientId)
-	assert.Equal(t, "synthetic", step.NextFlow.Type)
-	assert.Equal(t, "config_hash", step.NextFlow.Config)
+	assert.Equal(t, "507f1f77bcf86cd799439022", step.NextFlow.Id)
 }
 
 func createConfig() *ws.WorkflowConfig {
 	conf := &ws.WorkflowConfig{}
 
-	conf.IdConfig = "id"
+	conf.Id = "507f1f77bcf86cd799439011"
 	conf.Type = "type"
 	conf.ClientGuid = "guid"
 	conf.ClientId = 999
-	conf.DomainId = "domain"
+	conf.ClientDomain = "domain"
 
 	conf.Filter = &ws.WorkflowConfig_Filter{}
 	conf.Filter.Priority = 1
@@ -109,7 +107,7 @@ func createConfig() *ws.WorkflowConfig {
 
 	stepOne := &ws.WorkflowConfig_Step{
 		Condition: "x>0",
-		Recommendations: &ws.WorkflowConfig_Step_Recommendation{
+		Recommendation: &ws.WorkflowConfig_Step_Recommendation{
 			RecommendationType: ws.WorkflowConfig_Step_Recommendation_CUSTOM,
 		},
 		Segmentation: &ws.WorkflowConfig_Step_Segmentation{
@@ -121,7 +119,7 @@ func createConfig() *ws.WorkflowConfig {
 				DynamicFields: "dyn1, dyn2",
 				SendTime:      ws.WorkflowConfig_Step_ChannelMap_DELAYED,
 			},
-			Action: []*ws.WorkflowConfig_Step_ChannelMap_Action{
+			Actions: []*ws.WorkflowConfig_Step_ChannelMap_Action{
 				{
 					ActionSubject: "subject",
 					ActionFamily:  ws.WorkflowConfig_Step_ChannelMap_Action_LIST,
@@ -139,15 +137,13 @@ func createConfig() *ws.WorkflowConfig {
 			},
 		},
 		NextFlow: &ws.WorkflowConfig_Step_NextFlow{
-			ClientId: 999,
-			Type:     "synthetic",
-			Config:   "config_id",
+			Id:   "507f1f77bcf86cd799439022",
 		},
 	}
 
 	stepTwo := &ws.WorkflowConfig_Step{
 		Condition: "x>0",
-		Recommendations: &ws.WorkflowConfig_Step_Recommendation{
+		Recommendation: &ws.WorkflowConfig_Step_Recommendation{
 			RecommendationType: ws.WorkflowConfig_Step_Recommendation_CUSTOM,
 		},
 		Segmentation: &ws.WorkflowConfig_Step_Segmentation{
@@ -159,16 +155,14 @@ func createConfig() *ws.WorkflowConfig {
 				DynamicFields: "dyn1, dyn2",
 				SendTime:      ws.WorkflowConfig_Step_ChannelMap_NOW,
 			},
-			Action: []*ws.WorkflowConfig_Step_ChannelMap_Action{
+			Actions: []*ws.WorkflowConfig_Step_ChannelMap_Action{
 				{
 					ActionSubject: "just subject",
 				},
 			},
 		},
 		NextFlow: &ws.WorkflowConfig_Step_NextFlow{
-			ClientId: 999,
-			Type:     "natural",
-			Config:   "config_id",
+			Id:   "507f1f77bcf86cd799439033",
 		},
 	}
 

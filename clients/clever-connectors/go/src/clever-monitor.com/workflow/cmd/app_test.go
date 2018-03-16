@@ -67,7 +67,7 @@ func testConfigMethods(t *testing.T, client ws.WorkflowServiceClient, ctx contex
 
 	config, err := client.ReadConfig(ctx, &ws.WorkflowRequest{Id: r.Id})
 	assert.Nil(t, err)
-	assert.Equal(t, "hash_configu", config.IdConfig)
+	assert.Equal(t, "507f1f77bcf86cd799439011", config.Id)
 
 	client.DeleteWorkflow(ctx, &ws.WorkflowRequest{Id: r.Id})
 }

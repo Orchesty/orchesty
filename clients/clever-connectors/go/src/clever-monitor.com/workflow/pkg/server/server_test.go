@@ -16,7 +16,7 @@ func (h *handlerMock) Handle(method string, in *ws.WorkflowRequest) *ws.Workflow
 }
 
 func (h *handlerMock) GetConfig(in *ws.WorkflowRequest) *ws.WorkflowConfig {
-	return &ws.WorkflowConfig{IdConfig: "configId"}
+	return &ws.WorkflowConfig{Id: "507f1f77bcf86cd799439011"}
 }
 
 
@@ -54,6 +54,6 @@ func TestServer_ReadConfig(t *testing.T) {
 	conf, err := s.ReadConfig(nil, &ws.WorkflowRequest{})
 
 	assert.Nil(t, err)
-	assert.Equal(t, "configId", conf.IdConfig)
+	assert.Equal(t, "507f1f77bcf86cd799439011", conf.Id)
 }
 
