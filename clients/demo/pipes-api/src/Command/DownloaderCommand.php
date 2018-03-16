@@ -75,9 +75,22 @@ class DownloaderCommand extends Command
                     switch ($data['event']) {
                         case 'pusher:connection_established':
                             $output->writeln(sprintf('Connection created: %s', $uri));
-                            $ws->send(json_encode([
-                                'event' => 'pusher:subscribe', 'data' => ['channel' => 'order_book_eurusd'],
-                            ]));
+                            $channels = [
+                                'order_book', // btcusd
+                                'order_book_eurusd',
+                                'order_book_btceur',
+                                'order_book_xrpusd',
+                                'order_book_xrpeur',
+                                'order_book_xrpbtc',
+                                'order_book_ltcusd',
+                                'order_book_ltceur',
+                                'order_book_ltcbtc',
+                            ];
+                            foreach ($channels as $channel) {
+                                $ws->send(json_encode([
+                                    'event' => 'pusher:subscribe', 'data' => ['channel' => $channel],
+                                ]));
+                            }
                             break;
                         case 'pusher_internal:subscription_succeeded':
                             $output->writeln(sprintf('Success subscribe to channel: %s', $data['channel']));
