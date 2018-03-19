@@ -2,10 +2,8 @@ import React from 'react'
 import PropTypes from 'prop-types';
 
 import './TabBar.less';
-import MenuItem from 'rootApp/views/elements/mainMenu/MenuItem';
 import {menuItemType} from 'rootApp/types';
 import ActionButton from 'rootApp/views/elements/actions/ActionButton';
-import ActionButtonPanel from 'rootApp/views/elements/actions/ActionButtonPanel';
 
 class TabBar extends React.Component {
   constructor(props) {
@@ -21,7 +19,7 @@ class TabBar extends React.Component {
   componentDidMount(){
     this._intervalId = setInterval(() => {
       if (this._self){
-        const maxBottom = this._self.getClientRects()[0].bottom;
+        const maxBottom = this._self.getClientRects()[0].bottom + 1;
         const children = this._self.childNodes;
         let maxIndex = null;
         for (let i = 0, solved = false; i < children.length && !solved; i++){
