@@ -105,3 +105,6 @@ export const GENERAL_SEARCH_CLEAR = 'GENERAL_SEARCH_CLEAR';
 
 // Panel
 export const PANEL_TOGGLE = 'PANEL_TOOGLE';
+
+// Log
+export const LOG_RECEIVE_ITEMS = 'LOG_RECEIVE_ITEMS';
