@@ -95,21 +95,20 @@ class DownloaderCommand extends Command
                         case 'pusher_internal:subscription_succeeded':
                             $output->writeln(sprintf('Success subscribe to channel: %s', $data['channel']));
                             break;
-                        case 'pusher:ping':
-                            $ws->send(json_encode([
-                                'event' => 'pusher:pong', 'data' => [],
-                            ]));
-                            break;
                         case 'pusher:pong':
                             $output->writeln('Received pong event.');
                             break;
                         default:
-                            $output->writeln(sprintf(
-                                'Received event: %s for channel %s.',
-                                $data['event'],
-                                $data['channel']
-                            ));
-                            $this->sendData($json, $output);
+                            if (array_key_exists('event', $data) && array_key_exists('channel', $data)) {
+                                $output->writeln(sprintf(
+                                    'Received event: %s for channel %s.',
+                                    $data['event'],
+                                    $data['channel']
+                                ));
+                                $this->sendData($json, $output);
+                            } else {
+                                $output->writeln(sprintf('Received unknown event: %s', json_encode($data)));
+                            }
                     }
 
                 });
