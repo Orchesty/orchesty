@@ -359,8 +359,8 @@ class StartingPoint implements LoggerAwareInterface
             [
                 'type'                                           => self::COUNTER_MESSAGE_TYPE,
                 'app_id'                                         => 'starting_point',
-                PipesHeaders::createKey(PipesHeaders::NODE_ID)   => $node->getId(),
-                PipesHeaders::createKey(PipesHeaders::NODE_NAME) => $node->getName(),
+                PipesHeaders::createKey(PipesHeaders::NODE_ID)   => 'starting_point',
+                PipesHeaders::createKey(PipesHeaders::NODE_NAME) => 'starting_point',
             ]
         );
         $content = json_encode($content);
