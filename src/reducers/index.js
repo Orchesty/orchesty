@@ -17,6 +17,7 @@ import metrics from './metrics';
 import notificationSettings from './notificationSettings';
 import generalSearch from './generalSearch';
 import panel from './panel';
+import log from './log';
 
 const rootReducer = combineReducers({
   application,
@@ -34,7 +35,8 @@ const rootReducer = combineReducers({
   metrics,
   notificationSettings,
   generalSearch,
-  panel
+  panel,
+  log
 });
 
 export default rootReducer;
