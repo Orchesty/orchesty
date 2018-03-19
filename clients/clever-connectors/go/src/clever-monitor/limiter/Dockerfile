@@ -2,12 +2,13 @@
 FROM cmhanaboso.azurecr.io/devtools/go-build:latest
 ARG UID
 ARG GID
-USER $UID:$GID
 WORKDIR /go/src/clever-monitor/limiter/cmd/
 COPY ./limiter /go/src/clever-monitor/limiter
 COPY ./utils /go/src/clever-monitor/utils
-RUN dep ensure && dep status && \
-    CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o ./../build/limiter .
+RUN chown -R $UID:$GID /go/src/clever-monitor/limiter && \
+    chown -R $UID:$GID /go/src/clever-monitor/utils
+USER $UID:$GID
+RUN CGO_ENABLED=0 GOOS=linux /entrypoint.sh go build -a -installsuffix cgo -o ./../build/limiter .
 
 # Create runnable image with the binary only
 FROM scratch

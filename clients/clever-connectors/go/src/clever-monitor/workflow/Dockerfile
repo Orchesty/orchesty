@@ -2,12 +2,13 @@
 FROM cmhanaboso.azurecr.io/devtools/go-build:latest
 ARG UID
 ARG GID
-USER $UID:$GID
 WORKDIR /go/src/clever-monitor/workflow/cmd/
 COPY ./workflow /go/src/clever-monitor/workflow
 COPY ./utils /go/src/clever-monitor/utils
-RUN dep ensure && dep status && \
-    CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o ./../build/workflow .
+RUN chown -R $UID:$GID /go/src/clever-monitor/workflow && \
+    chown -R $UID:$GID /go/src/clever-monitor/utils
+USER $UID:$GID
+RUN CGO_ENABLED=0 GOOS=linux /entrypoint.sh go build -a -installsuffix cgo -o ./../build/workflow .
 
 # Create lightweigh runnable image just with the binary
 FROM scratch
