@@ -1,0 +1,14 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
+        bind:
+            $dm: '@doctrine_mongodb.odm.default_document_manager'
+
+    Hanaboso\PipesFramework\HbPFLogsBundle\Controller\:
+        resource: '../../Controller'
+        tags: ['controller.service_arguments']
+
+    Hanaboso\PipesFramework\HbPFLogsBundle\Handler\:
+        resource: '../../Handler'
