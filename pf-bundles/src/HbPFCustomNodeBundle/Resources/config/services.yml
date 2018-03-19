@@ -43,5 +43,5 @@ services:
     hbpf.custom_node.requestbin:
         class: Hanaboso\PipesFramework\CustomNode\Impl\RequestbinConnector
         arguments:
-            - 'https://requestb.in/11tw3st1'
+            - 'https://requestb.in/1g0mi3a1'
             - '@hbpf.transport.curl_manager'
