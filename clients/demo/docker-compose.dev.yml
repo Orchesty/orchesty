@@ -107,7 +107,7 @@ services:
         REDIS_PORT: '6379'
         REDIS_PASS: ''
         REDIS_DB: '0'
-        COUNTER_PREFETCH: '100'
+        COUNTER_PREFETCH: '1'
       depends_on:
         - redis
         - rabbitmq
@@ -320,6 +320,18 @@ services:
         #configs:
         #  - source: telegraf.conf
         #    target: /etc/telegraf/telegraf.conf
+        ## END STAGE
+
+    kapacitor:
+        image: kapacitor:1.4
+        ## BEGIN DEV
+        volumes:
+          - ./stack/kapacitor.conf:/etc/kapacitor/kapacitor.conf
+        ## END DEV
+        ## BEGIN STAGE
+        #configs:
+        #  - source: kapacitor.conf
+        #    target: /etc/kapacitor/kapacitor.conf
         ## END STAGE
 
     notification-sender-fpm:
