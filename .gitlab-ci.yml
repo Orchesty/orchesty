@@ -53,7 +53,7 @@ limiter-image:
   script:
     - cd $REPO_ROOT/clients/clever-connectors/go/src/clever-monitor/limiter
     - IMAGE=dkr.hanaboso.net/pipes/pipes/limiter:${CI_BUILD_REF_NAME}
-    - cd ../ && docker build -t ${IMAGE} -f ./limiter/Dockerfile .
+    - cd ../ && docker build --build-arg UID=$(id -u) --build-arg GID=$(id -u) -t ${IMAGE} -f ./limiter/Dockerfile .
     - docker push ${IMAGE}
   only:
     - dev
@@ -64,7 +64,7 @@ workflow-image:
   script:
     - cd $REPO_ROOT/clients/clever-connectors/go/src/clever-monitor/workflow
     - IMAGE=dkr.hanaboso.net/pipes/pipes/workflow:${CI_BUILD_REF_NAME}
-    - cd ../ && docker build -t ${IMAGE} -f ./workflow/Dockerfile .
+    - cd ../ && docker build --build-arg UID=$(id -u) --build-arg GID=$(id -u) -t ${IMAGE} -f ./workflow/Dockerfile .
     - docker push ${IMAGE}
   only:
     - dev
