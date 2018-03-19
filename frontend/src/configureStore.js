@@ -9,6 +9,8 @@ import * as apiGatewayServer from 'services/apiGatewayServer';
 
 import rootReducer from 'reducers/index';
 import * as types from './actionTypes';
+import * as applicationActions from 'actions/applicationActions';
+import config from 'rootApp/config';
 
 export default function (initialState, composeWithDevTools) {
   const reducer = storage.reducer(rootReducer);
@@ -43,6 +45,12 @@ export default function (initialState, composeWithDevTools) {
   return new Promise((resolve, reject) => {
     storage.createLoader(engine)(store).then(
       () => {
+        const pages = store.getState().application.pages;
+        Object.keys(pages).forEach(id => {
+          if (!config.pages[pages[id].key]){
+            store.dispatch(applicationActions.closePage(id))
+          }
+        });
         router.init(store);
         resolve(store)
       }
