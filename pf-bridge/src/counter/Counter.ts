@@ -313,7 +313,12 @@ export default class Counter implements ICounter, IStoppable {
                 counter_process_ok_count: process.ok,
                 counter_process_fail_count: process.nok,
             }, true);
-            logger.info(metricMsg);
+            logger.debug(`Counter metrics[${metricMsg}].`, {
+                node_id: "counter",
+                correlation_id: process.correlation_id,
+                process_id: process.process_id,
+                topology_id: process.topology,
+            });
         } catch (e) {
             logger.warn("Unable to send counter metrics.", {
                 error: e,
