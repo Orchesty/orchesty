@@ -66,7 +66,7 @@ class MongoMessageStorage implements IMessageStorage {
             logger.info(
                 "Message persisted.",
                 {
-                    node_id: "repeater",
+                    node_name: "repeater",
                     correlation_id: message.properties.headers.correlation_id,
                     process_id: message.properties.headers.process_id,
                 });
@@ -101,12 +101,12 @@ class MongoMessageStorage implements IMessageStorage {
             })
             .then((deletion: DeleteWriteOpResultObject) => {
                 if (deletion.deletedCount !== docs.length) {
-                    logger.error("MongoDb deleted count not equal with retrieved count.", { node_id: "repeater" });
+                    logger.error("MongoDb deleted count not equal with retrieved count.", { node_name: "repeater" });
                 }
                 return docs;
             })
             .catch((err) => {
-                logger.error("MongoDb findExpired error.", { node_id: "repeater", error: err });
+                logger.error("MongoDb findExpired error.", { node_name: "repeater", error: err });
                 return [];
             });
     }
@@ -124,12 +124,12 @@ class MongoMessageStorage implements IMessageStorage {
 
         this.db = MongoClient.connect(url, options)
             .then((db: Db) => {
-                logger.info("MongoDb connection opened.", { node_id: "repeater" });
+                logger.info("MongoDb connection opened.", { node_name: "repeater" });
 
                 return db;
             })
             .catch((err: any) => {
-                logger.error("MongoDb connection error.", { node_id: "repeater", error: err });
+                logger.error("MongoDb connection error.", { node_name: "repeater", error: err });
 
                 return null;
             });
@@ -148,7 +148,7 @@ class MongoMessageStorage implements IMessageStorage {
         } catch (e) {
             logger.error(
                 `Error finding mongo document. Query: ${JSON.stringify(query)}`,
-                { node_id: "repeater", error: e },
+                { node_name: "repeater", error: e },
             );
 
             return [];

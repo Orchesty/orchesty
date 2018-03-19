@@ -48,7 +48,7 @@ class Repeater implements IStoppable {
 
         this.consumerTag = await this.consumer.consume(q, {});
 
-        logger.info(`Repeater consumer started consumption of messages in '${q}'`, { node_id: "repeater" });
+        logger.info(`Repeater consumer started consumption of messages in '${q}'`, { node_name: "repeater" });
 
         this.checkMessages();
     }
@@ -77,7 +77,7 @@ class Repeater implements IStoppable {
 
                 logger.info(
                     `Found ${toResend.length} messages to resend. Next check in ${this.settings.check_timeout}ms.`,
-                    { node_id: "repeater" },
+                    { node_name: "repeater" },
                 );
 
                 toResend.forEach((msg: Message) => {
@@ -86,7 +86,7 @@ class Repeater implements IStoppable {
                             const h = msg.properties.headers;
                             logger.info(
                                 "Message repeated.",
-                                { node_id: "repeater", correlation_id: h.correlation_id, process_id: h.process_id },
+                                { node_name: "repeater", correlation_id: h.correlation_id, process_id: h.process_id },
                             );
                         });
                 });
@@ -115,7 +115,7 @@ class Repeater implements IStoppable {
             const h = message.properties.headers;
             logger.error(
                 "Repeater could not resend message",
-                { node_id: "repeater", correlation_id: h.correlation_id, process_id: h.process_id },
+                { node_name: "repeater", correlation_id: h.correlation_id, process_id: h.process_id },
             );
 
             return Promise.resolve();
@@ -131,7 +131,7 @@ class Repeater implements IStoppable {
             return new Promise((resolve) => {
                 ch.assertQueue(this.settings.input.queue.name, this.settings.input.queue.options)
                     .then(() => {
-                        logger.info("Repeater consumer ready.", { node_id: "repeater" });
+                        logger.info("Repeater consumer ready.", { node_name: "repeater" });
                         resolve();
                     });
             });
@@ -145,7 +145,7 @@ class Repeater implements IStoppable {
                     `Repeater discarded message. Missing 'REPEAT_QUEUE' or 'REPEAT_INTERVAL' headers.
                      Headers: "${JSON.stringify(headers.getRaw())}"`,
                     {
-                        node_id: "repeater",
+                        node_name: "repeater",
                         correlation_id: headers.getPFHeader(Headers.CORRELATION_ID),
                         process_id: headers.getPFHeader(Headers.PROCESS_ID),
                     },
@@ -171,7 +171,7 @@ class Repeater implements IStoppable {
         return new AssertionPublisher(
             this.amqpCon,
             () => {
-                logger.info("Repeater publisher ready.", { node_id: "repeater" });
+                logger.info("Repeater publisher ready.", { node_name: "repeater" });
                 return Promise.resolve();
             },
         );
