@@ -34,13 +34,6 @@ export default {
     acceptUrl: (path, query) => path == '/activation' ? {args: {token: query.token}} : false,
     createUrl: page => ({path: '/activation', query: {token: page.args.token}})
   },
-  topology_list_all: {
-    key: 'topology_list_all',
-    caption: 'Topology list',
-    needAuth: true,
-    acceptUrl: path => path == '/topologies' || path == '/',
-    createUrl: page => '/'
-  },
   topology_detail: {
     key: 'topology_detail',
     id: args => `topology_detail-${args.topologyId}`,
@@ -73,4 +66,11 @@ export default {
     needAuth: true,
     simpleRoute: '/notification_settings'
   },
+  log_list: {
+    key: 'log_list',
+    caption: 'Log list',
+    needAuth: true,
+    acceptUrl: path => path == '/logs' || path == '/',
+    createUrl: page => '/'
+  }
 }
