@@ -1,5 +1,7 @@
 # Build the binary
 FROM cmhanaboso.azurecr.io/devtools/go-build:latest
+ARG UID
+ARG GID
 USER $UID:$GID
 WORKDIR /go/src/clever-monitor/limiter/cmd/
 COPY ./limiter /go/src/clever-monitor/limiter
