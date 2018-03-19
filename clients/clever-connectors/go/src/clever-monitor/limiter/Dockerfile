@@ -1,11 +1,10 @@
 # Build the binary
-FROM golang:1.9
+FROM cmhanaboso.azurecr.io/devtools/go-build:latest
 WORKDIR /go/src/clever-monitor/limiter/cmd/
 COPY ./limiter /go/src/clever-monitor/limiter
 # Add custom local non-published dependencies like below
 COPY ./utils /go/src/clever-monitor/utils
-RUN curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh && \
-    dep ensure && dep status && \
+RUN dep ensure && dep status && \
     CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o ./../build/limiter .
 
 # Create runnable image with the binary only
