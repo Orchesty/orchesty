@@ -3,6 +3,8 @@ import {Db, DeleteWriteOpResultObject, MongoClient, MongoClientOptions} from "mo
 import logger from "../../logger/Logger";
 import IMessageStorage from "./IMessageStorage";
 
+const RECONNECT_INTERVAL = 5000;
+
 export interface IMongoMessageStorageSettings {
     host: string;
     port: number;
@@ -69,9 +71,19 @@ class MongoMessageStorage implements IMessageStorage {
                     node_name: "repeater",
                     correlation_id: message.properties.headers.correlation_id,
                     process_id: message.properties.headers.process_id,
-                });
+                },
+            );
             return true;
         } catch (e) {
+            logger.error(
+                "Cannot save document",
+                {
+                    node_name: "repeater",
+                    correlation_id: message.properties.headers.correlation_id,
+                    process_id: message.properties.headers.process_id,
+                    error: e,
+                },
+            );
             return false;
         }
     }
@@ -119,7 +131,7 @@ class MongoMessageStorage implements IMessageStorage {
         const options: MongoClientOptions = {
             autoReconnect : true,
             reconnectTries: Number.MAX_SAFE_INTEGER, // keep trying reconnect almost forever
-            reconnectInterval: 5000,
+            reconnectInterval: RECONNECT_INTERVAL,
         };
 
         this.db = MongoClient.connect(url, options)
@@ -130,6 +142,8 @@ class MongoMessageStorage implements IMessageStorage {
             })
             .catch((err: any) => {
                 logger.error("MongoDb connection error.", { node_name: "repeater", error: err });
+
+                setTimeout(() => { this.createConnection(); }, RECONNECT_INTERVAL);
 
                 return null;
             });
@@ -161,9 +175,25 @@ class MongoMessageStorage implements IMessageStorage {
      * @return {Promise<DeleteWriteOpResultObject>}
      */
     private async deleteDocuments(query: any): Promise<DeleteWriteOpResultObject> {
-        const mongo: Db = await this.db;
+        try {
+            const mongo: Db = await this.db;
 
-        return mongo.collection(COLLECTION_NAME).deleteMany(query);
+            return mongo.collection(COLLECTION_NAME).deleteMany(query);
+        } catch (e) {
+            logger.error(
+                "Cannot delete documents",
+                {
+                    node_name: "repeater",
+                    data: JSON.stringify(query),
+                    error: e,
+                },
+            );
+
+            return {
+                result: {ok: 0, n: 0},
+                deletedCount: 0,
+            };
+        }
     }
 
 }
