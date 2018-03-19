@@ -70,7 +70,7 @@ final class CMCreateDistributionListConnectorTest extends ConnectorTestCaseAbstr
                         new Uri('https://api.dev.clevermonitor.com/v1.2/lists'));
                     $expt->setHeaders([
                         'Accept'       => 'application/json',
-                        'Content-type' => 'application/json; charset=utf-8',
+                        'Content-type' => 'application/json',
                         'X-Api-Key'    => 'guid:token',
                     ]);
                     $expt->setBody(json_encode(['name' => 'Distribution Group', 'note' => 'abc']));

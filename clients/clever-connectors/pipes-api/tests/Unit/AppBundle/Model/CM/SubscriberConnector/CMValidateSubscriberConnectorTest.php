@@ -30,7 +30,7 @@ final class CMValidateSubscriberConnectorTest extends KernelTestCaseAbstract
             $expt = new RequestDto('POST', new Uri('https://api.dev.clevermonitor.com/v1.2/validation/email'));
             $expt->setHeaders([
                 'Accept'       => 'application/json',
-                'Content-type' => 'application/json; charset=utf-8',
+                'Content-type' => 'application/json',
                 'X-Api-Key'    => 'gguid:ttoken',
             ])->setBody('{"data":[]}');
 
