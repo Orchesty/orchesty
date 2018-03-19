@@ -147,7 +147,7 @@ class NutshellSystem implements AuthorizationInterface, CMEventSystemInterface, 
         return (new RequestDto($method, new Uri(self::SYSTEM_URL)))
             ->setHeaders([
                 'Authorization' => sprintf('Basic %s', base64_encode($authorization)),
-                'Content-Type'  => 'application/json',
+                'Content-Type'  => 'application/json; charset=utf-8',
                 'Accept'        => 'application/json',
             ]);
     }
