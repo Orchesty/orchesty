@@ -247,6 +247,8 @@ class AmqpDrain implements IDrain, IPartialForwarder {
         try {
             message.getMeasurement().markFinished();
             await this.counterPublisher.send(message);
+            // TODO - remove delay
+            await (new Promise((resolve) => setTimeout(resolve, 1000)));
             await this.followersPublisher.send(message);
         } catch (e) {
             logger.error("AmqpDrain could not forward message", logger.ctxFromMsg(message, e));
