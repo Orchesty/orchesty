@@ -21,6 +21,7 @@ func main() {
 	gracefulShutdown()
 }
 
+// prepareLogger sets logger handlers
 func prepareLogger() {
 	logger.GetLogger().AddHandler(logger.NewLogStashHandler(logger.NewStdOutSender()))
 
@@ -36,6 +37,7 @@ func prepareLogger() {
 	}
 }
 
+// runGrpcServer prepares and starts grpc server
 func runGrpcServer() {
 	addr := ":" + env.GetEnv("SERVER_PORT", "50051")
 

@@ -24,6 +24,7 @@ type workflowHandler struct {
 	storage storage.Storage
 }
 
+// NewWorkflowHandler creates and returns ne workflowHandler struct
 func NewWorkflowHandler(storage storage.Storage) *workflowHandler {
 	return &workflowHandler{storage: storage}
 }

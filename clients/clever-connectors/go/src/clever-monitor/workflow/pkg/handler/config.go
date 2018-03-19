@@ -16,10 +16,12 @@ type configHandler struct {
 	storage storage.Finder
 }
 
+// NewConfigHandler creates new instance of configHandler
 func NewConfigHandler(storage storage.Finder) *configHandler {
 	return &configHandler{storage: storage}
 }
 
+// GetConfig creates WorkflowConfig object from stored json in storage
 func (ch *configHandler) GetConfig(in *ws.WorkflowRequest) *ws.WorkflowConfig {
 	// todo validate id value
 	json, err := ch.storage.Find(in.Id)
@@ -37,6 +39,7 @@ func (ch *configHandler) GetConfig(in *ws.WorkflowRequest) *ws.WorkflowConfig {
 	return config
 }
 
+// configToJson converts WorkflowConfig object into json string
 func configToJson(conf *ws.WorkflowConfig) (string, error) {
 	marshaler := jsonpb.Marshaler{}
 	str, err := marshaler.MarshalToString(conf)
@@ -47,6 +50,7 @@ func configToJson(conf *ws.WorkflowConfig) (string, error) {
 	return str, nil
 }
 
+// jsonToConfig converts json string into WorkflowCOnfig instance
 func jsonToConfig(json string) (*ws.WorkflowConfig, error){
 	var conf ws.WorkflowConfig
 	err := jsonpb.UnmarshalString(json, &conf)

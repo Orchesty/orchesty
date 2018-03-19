@@ -80,6 +80,7 @@ func (s *Mongo) DropCollection() {
 	s.getActiveSession().DB(s.db).C(s.collection).DropCollection()
 }
 
+// Connect creates new connection to mongodb instance
 func (s *Mongo) Connect() {
 	var err error
 	s.logger.Info(fmt.Sprintf("Mongo DB connecting to: %s", s.host), nil)
@@ -94,12 +95,14 @@ func (s *Mongo) Connect() {
 	s.logger.Info(fmt.Sprintf("Mongo DB is connected to: %s", s.host), nil)
 }
 
+// Disconnect cancels existing mongodb connection
 func (s *Mongo) Disconnect() {
 	if s.session != nil {
 		s.session.Close()
 	}
 }
 
+// reconnect tries to create new mongodb connection
 func (s *Mongo) reconnect() {
 	s.logger.Info("Waiting 1s.", nil)
 	time.Sleep(time.Second * 1)

@@ -15,6 +15,7 @@ import (
 	"io/ioutil"
 )
 
+// TestMain_CRUD runs integration test
 func TestMain_CRUD(t *testing.T) {
 	os.Setenv("SERVER_PORT", "55505")
 	os.Setenv("MONGO_DB", "test")
@@ -106,6 +107,7 @@ func assertCRUDDelete(t *testing.T, client ws.WorkflowServiceClient, ctx context
 	assert.Equal(t, id, r.Id)
 }
 
+// createGrpcClient creates grpc client to be used for testing grpc server
 func createGrpcClient(t *testing.T) (ws.WorkflowServiceClient, *grpc.ClientConn, context.Context) {
 	address := env.GetEnv("SERVER_HOST", "localhost") + ":" + os.Getenv("SERVER_PORT")
 
@@ -121,6 +123,7 @@ func createGrpcClient(t *testing.T) (ws.WorkflowServiceClient, *grpc.ClientConn,
 	return client, conn, ctx
 }
 
+// getValidJsonExample returns valid json example in string
 func getValidJsonExample(t *testing.T, file string) string {
 	b, err := ioutil.ReadFile("../pkg/handler/examples/" + file)
 	assert.Nil(t, err)

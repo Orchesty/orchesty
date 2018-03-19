@@ -22,6 +22,7 @@ type server struct {
 	requestCount   int
 }
 
+// NewServer creates and returns new server struct instance
 func NewServer(addr string, workflow handler.Handler, config handler.ConfigProvider, l logger.Logger) *server {
 	return &server{addr: addr, wfHandler: workflow, configProvider: config, logger: l}
 }
@@ -49,26 +50,32 @@ func (s *server) Start() {
 	}
 }
 
+// CreateWorkflow creates new workflow from request
 func (s *server) CreateWorkflow(ctx context.Context, in *ws.WorkflowRequest) (*ws.WorkflowResponse, error) {
 	return s.processWorkflow(in, handler.HandleCreate)
 }
 
+// ReadWorkflow returns content of existing workflow
 func (s *server) ReadWorkflow(ctx context.Context, in *ws.WorkflowRequest) (*ws.WorkflowResponse, error) {
 	return s.processWorkflow(in, handler.HandleRead)
 }
 
+// UpdateWorkflow updates the content of stored workflow
 func (s *server) UpdateWorkflow(ctx context.Context, in *ws.WorkflowRequest) (*ws.WorkflowResponse, error) {
 	return s.processWorkflow(in, handler.HandleUpdate)
 }
 
+// DeleteWorkflow removes existing workflow
 func (s *server) DeleteWorkflow(ctx context.Context, in *ws.WorkflowRequest) (*ws.WorkflowResponse, error) {
 	return s.processWorkflow(in, handler.HandleDelete)
 }
 
+// ReadConfig returns hydrated WorkflowConfig from stored workflow
 func (s *server) ReadConfig(ctx context.Context, in *ws.WorkflowRequest) (*ws.WorkflowConfig, error) {
 	return s.processConfig(in)
 }
 
+// processWorkflow calls Handle method and logs request and response
 func (s *server) processWorkflow(in *ws.WorkflowRequest, method string) (*ws.WorkflowResponse, error) {
 	reqId := s.getRequestId(method)
 	go s.logRequest(in, reqId)
@@ -80,6 +87,7 @@ func (s *server) processWorkflow(in *ws.WorkflowRequest, method string) (*ws.Wor
 	return response, nil
 }
 
+// processConfig calls configProvider and logs request and response
 func (s *server) processConfig(in *ws.WorkflowRequest) (*ws.WorkflowConfig, error) {
 	reqId := s.getRequestId("config")
 	go s.logRequest(in, reqId)
@@ -102,10 +110,12 @@ func (s *server) getRequestId(method string) string {
 	return fmt.Sprintf("#%d-%s", s.requestCount, method)
 }
 
+// logRequest logs request using logger
 func (s *server) logRequest(req *ws.WorkflowRequest, reqId string) {
 	s.logger.Info("Request received", logger.Context{"reqId": reqId})
 }
 
+// logResponse logs response using logger
 func (s *server) logResponse(response *ws.WorkflowResponse, reqId string) {
 	s.logger.Info(
 		fmt.Sprintf("Sending response. Code: '%d' Message: '%s'", response.Code, response.Message),
@@ -113,6 +123,7 @@ func (s *server) logResponse(response *ws.WorkflowResponse, reqId string) {
 	)
 }
 
+// logConfig logs WorkflowConfig response using logger
 func (s *server) logConfig(config *ws.WorkflowConfig, reqId string) {
 	s.logger.Info(
 		fmt.Sprintf("Sending config response. Id: '%s'", config.Id),
