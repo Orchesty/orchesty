@@ -48,6 +48,12 @@ multi-probe-image:
     - master
     - ci
 
+logstash-build:
+    stage: stage1
+    script:
+        - cd $REPO_ROOT/logstash
+        - make docker-build docker-push
+
 limiter-image:
   stage: stage1
   script:

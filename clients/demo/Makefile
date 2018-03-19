@@ -36,7 +36,7 @@ up: .env
 
 init-dev: .env
 	$(DC_DEV) pull
-	rm -rf pipes-api/var/cache/*
+	rm -rf pipes-api/var/cache
 	$(DC_DEV) up -d --force-recreate --remove-orphans
 #	$(DE_DEV) monolith-fpm composer global require hirak/prestissimo
 	$(DE_DEV) monolith-fpm composer install --ignore-platform-reqs
