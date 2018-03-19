@@ -9,6 +9,7 @@ import {default as winston} from "./Winston";
 export interface ILogContext {
     topology_id?: string;
     node_id?: string;
+    node_name?: string;
     correlation_id?: string;
     process_id?: string;
     parent_id?: string;
@@ -26,6 +27,7 @@ interface ILoggerFormat {
     severity: string;
     message: string;
     node_id?: string;
+    node_name?: string;
     correlation_id?: string;
     result_code?: ResultCode;
     result_message?: string;
@@ -64,6 +66,10 @@ class Logger implements ILogger {
 
         if (context.node_id) {
             line.node_id = context.node_id;
+        }
+
+        if (context.node_name) {
+            line.node_name = context.node_name;
         }
 
         if (context.result_code >= 0) {
