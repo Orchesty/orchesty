@@ -230,8 +230,8 @@ export default class Counter implements ICounter, IStoppable {
         (async () => {
             try {
                 await this.updateProcessInfo(first.msg);
-                first.resolve();
                 this.distributor.shift(topoId, processId);
+                first.resolve();
                 this.handleQueue(topoId, processId);
             } catch (e) {
                 first.reject(e);

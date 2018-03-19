@@ -1,6 +1,6 @@
 import {default as CounterMessage} from "../../message/CounterMessage";
 
-interface ISyncObject {
+export interface ISyncObject {
     msg: CounterMessage;
     resolve: any;
     reject: any;
