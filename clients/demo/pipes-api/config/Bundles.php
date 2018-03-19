@@ -9,6 +9,7 @@ use Hanaboso\PipesFramework\HbPFCommonsBundle\HbPFCommonsBundle;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\HbPFConfiguratorBundle;
 use Hanaboso\PipesFramework\HbPFConnectorBundle\HbPFConnectorBundle;
 use Hanaboso\PipesFramework\HbPFCustomNodeBundle\HbPFCustomNodeBundle;
+use Hanaboso\PipesFramework\HbPFLogsBundle\HbPFLogsBundle;
 use Hanaboso\PipesFramework\HbPFMapperBundle\HbPFMapperBundle;
 use Hanaboso\PipesFramework\HbPFMetricsBundle\HbPFMetricsBundle;
 use Hanaboso\PipesFramework\HbPFRabbitMqBundle\HbPFRabbitMqBundle;
@@ -46,4 +47,5 @@ return [
     HbPFUserBundle::class          => ['all' => TRUE],
     HbPFRabbitMqBundle::class      => ['all' => TRUE],
     EmailServiceBundle::class      => ['all' => TRUE],
+    HbPFLogsBundle::class          => ['all' => TRUE],
 ];

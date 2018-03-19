@@ -16,6 +16,8 @@ use Ratchet\Client\Connector;
 use Ratchet\Client\WebSocket;
 use Ratchet\RFC6455\Messaging\MessageInterface;
 use React\EventLoop\Factory;
+use React\EventLoop\LoopInterface;
+use React\EventLoop\Timer\Timer;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -28,6 +30,11 @@ use Throwable;
  */
 class DownloaderCommand extends Command
 {
+
+    /**
+     * @var Timer
+     */
+    private $heartbeat;
 
     /**
      * DownloaderCommand constructor.
@@ -49,6 +56,17 @@ class DownloaderCommand extends Command
 
         $loop = Factory::create();
 
+        $this->connect($loop, $output);
+
+        $loop->run();
+    }
+
+    /**
+     * @param LoopInterface   $loop
+     * @param OutputInterface $output
+     */
+    private function connect(LoopInterface $loop, OutputInterface $output): void
+    {
         $connector = new Connector($loop);
 
         $uri = 'wss://ws.pusherapp.com/app/de504dc5763aeef9ff52?client=php-ratchet&version=0.0.1&protocol=5';
@@ -56,7 +74,7 @@ class DownloaderCommand extends Command
         $connector($uri)
             ->then(function (WebSocket $ws) use ($loop, $output, $uri): void {
 
-                $loop->addPeriodicTimer(5, function () use ($ws) {
+                $this->heartbeat = $loop->addPeriodicTimer(5, function () use ($ws) {
                     $ws->send(json_encode([
                         'event' => 'pusher:ping', 'data' => [],
                     ]));
@@ -113,20 +131,37 @@ class DownloaderCommand extends Command
 
                 });
 
-                $ws->on('error', function (Exception $e) use ($output): void {
+                $ws->on('error', function (Exception $e) use ($ws, $loop, $output): void {
                     $output->writeln(sprintf('WS error: %s', $e->getMessage()));
+                    $loop->cancelTimer($this->heartbeat);
+                    $loop->addTimer(1, function () use ($ws, $loop, $output) {
+                        $this->reconnect($ws, $loop, $output);
+                    });
                 });
 
-                $ws->on('close', function ($code, $reason) use ($output): void {
+                $ws->on('close', function ($code, $reason) use ($ws, $output, $loop): void {
                     $output->writeln(sprintf('WS close with code %s: %s', $code, $reason));
+                    $loop->cancelTimer($this->heartbeat);
+                    $loop->addTimer(1, function () use ($ws, $loop, $output) {
+                        $this->reconnect($ws, $loop, $output);
+                    });
                 });
 
             })
             ->otherwise(function (Throwable $e) use ($output): void {
                 $output->writeln(sprintf('Connection error: %s', $e->getMessage()));
             });
+    }
 
-        $loop->run();
+    /**
+     *
+     */
+    private function reconnect(WebSocket $ws, LoopInterface $loop, OutputInterface $output): void
+    {
+        $output->writeln('Reconnecting.');
+        $ws->close();
+        $ws->removeAllListeners();
+        $this->connect($loop, $output);
     }
 
     /**
