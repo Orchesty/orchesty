@@ -74,6 +74,8 @@ export default class Counter implements ICounter, IStoppable {
     private consumerTag: string;
     private distributor: Distributor;
 
+    private logIterator: number;
+
     /**
      *
      * @param settings
@@ -97,6 +99,8 @@ export default class Counter implements ICounter, IStoppable {
         this.distributor = distributor;
         this.terminator = terminator;
         this.metrics = metrics;
+
+        this.logIterator = 1;
 
         this.prepareConsumer();
         this.preparePublisher();
@@ -248,20 +252,29 @@ export default class Counter implements ICounter, IStoppable {
         const topologyId = cm.getTopologyId();
         const processId = cm.getProcessId();
 
+        logger.info(`${this.logIterator} - Received counter message`, {data: JSON.stringify(cm)});
+
         let processInfo: ICounterProcessInfo = await this.storage.get(topologyId, processId);
 
         if (!processInfo) {
             processInfo = CounterProcess.createProcessInfo(topologyId, cm);
         }
 
+        logger.info(`${this.logIterator} - Process info in storage`, {data: JSON.stringify(processInfo)});
+
         processInfo = CounterProcess.updateProcessInfo(processInfo, cm);
 
+        logger.info(`${this.logIterator} - Updated process info`, {data: JSON.stringify(processInfo)});
+
         if (CounterProcess.isProcessFinished(processInfo)) {
+            logger.info(`${this.logIterator} - Process info evaluated finished`, {data: JSON.stringify(processInfo)});
+            this.logIterator++;
             processInfo.end_timestamp = Date.now();
             await this.onJobFinished(processInfo);
             await this.storage.remove(topologyId, processId);
             return Promise.resolve();
         } else {
+            this.logIterator++;
             await this.storage.add(topologyId, processInfo);
             return Promise.resolve();
         }
