@@ -1,5 +1,6 @@
 # Build the binary
 FROM cmhanaboso.azurecr.io/devtools/go-build:latest
+USER $UID:$GID
 WORKDIR /go/src/clever-monitor/workflow/cmd/
 COPY ./workflow /go/src/clever-monitor/workflow
 COPY ./utils /go/src/clever-monitor/utils
