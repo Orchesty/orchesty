@@ -32,6 +32,7 @@ class CounterPublisher extends Publisher {
                         });
                 });
             },
+            true, // use confirm channel
         );
         this.settings = settings;
     }
