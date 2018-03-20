@@ -87,7 +87,7 @@ class FtpService implements FtpServiceInterface, LoggerAwareInterface
 
         try {
             $this->adapter->uploadFile($remoteFile, $filename);
-            $this->logger->info(sprintf('File %s successfully uploaded.', $remoteFile));
+            $this->logger->debug(sprintf('File %s successfully uploaded.', $remoteFile));
         } catch (FtpException $e) {
             $this->logger->error($e->getMessage());
             throw $e;
@@ -115,7 +115,7 @@ class FtpService implements FtpServiceInterface, LoggerAwareInterface
 
         try {
             $this->adapter->downloadFile($remoteFile, $localFile);
-            $this->logger->info(sprintf('File %s successfully downloaded to %s.', $remoteFile, $localFile));
+            $this->logger->debug(sprintf('File %s successfully downloaded to %s.', $remoteFile, $localFile));
         } catch (FtpException $e) {
             $this->logger->error($e->getMessage());
             throw $e;
@@ -141,13 +141,13 @@ class FtpService implements FtpServiceInterface, LoggerAwareInterface
 
         try {
             $list = $this->adapter->listDir($dir);
-            $this->logger->info(sprintf('Downloading files from %s directory', $dir));
+            $this->logger->debug(sprintf('Downloading files from %s directory', $dir));
 
             foreach ($list as $file) {
                 $downloaded[] = $this->downloadFile(trim($dir, '/') . '/' . $file);
             }
 
-            $this->logger->info('Downloading files finished successfully.');
+            $this->logger->debug('Downloading files finished successfully.');
         } catch (FtpException $e) {
             $this->logger->error($e->getMessage());
             throw $e;

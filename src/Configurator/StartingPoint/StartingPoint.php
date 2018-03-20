@@ -276,7 +276,7 @@ class StartingPoint implements LoggerAwareInterface
         $channel->queueDeclare(self::createCounterQueueName(), FALSE, TRUE);
 
         $correlation_id = PipesHeaders::get(PipesHeaders::CORRELATION_ID, $headers->getHeaders());
-        $this->logger->info('Starting point info message', [
+        $this->logger->debug('Starting point info message', [
             'correlation_id' => $correlation_id,
             'process_id'     => PipesHeaders::get(PipesHeaders::PROCESS_ID, $headers->getHeaders()),
             'parent_id'      => PipesHeaders::get(PipesHeaders::PARENT_ID, $headers->getHeaders()),
@@ -322,7 +322,7 @@ class StartingPoint implements LoggerAwareInterface
     {
         /** @var string $content */
         $content = $request->getContent();
-        $this->logger->info(
+        $this->logger->debug(
             TransportFormatter::requestToString(
                 $request->getMethod(), $request->getUri(), $request->headers->all(), $content
             ),
@@ -366,7 +366,7 @@ class StartingPoint implements LoggerAwareInterface
         $content = json_encode($content);
 
         $channel->publish($content, $headers, '', $queue);
-        $this->logger->info(
+        $this->logger->debug(
             'Starting point - publish counter message',
             array_merge(
                 $this->prepareMessage($content, '', $queue, $headers),
@@ -394,7 +394,7 @@ class StartingPoint implements LoggerAwareInterface
             '',
             $queue
         );
-        $this->logger->info(
+        $this->logger->debug(
             'Starting point - publish process message',
             array_merge(
                 $this->prepareMessage($content, '', $queue, $headers->getHeaders()),

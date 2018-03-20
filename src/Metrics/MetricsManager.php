@@ -344,11 +344,11 @@ class MetricsManager implements LoggerAwareInterface
                 (new DateTime($dateTo))->modify('+ 1 Day')->getTimestamp()
             );
         }
-        $this->logger->info('Metrics was selected.', ['Query' => $qb->getQuery()]);
+        $this->logger->debug('Metrics was selected.', ['Query' => $qb->getQuery()]);
         try {
             $series = $qb->getResultSet()->getSeries();
         } catch (Throwable $e) {
-            $this->logger->info($e->getMessage(), ['Exception' => $e]);
+            $this->logger->error($e->getMessage(), ['Exception' => $e]);
             throw new MetricsException('Unknown error occurred during query.', MetricsException::QUERY_ERROR);
         }
 

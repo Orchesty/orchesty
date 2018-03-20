@@ -165,7 +165,7 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
         return $this
             ->validate($message)
             ->then(function () use ($message): void {
-                $this->logger->info(
+                $this->logger->debug(
                     'Batch consumer received message',
                     array_merge(
                         $this->prepareBunnyMessage($message),
@@ -251,7 +251,7 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
         return $channel
             ->publish('', $headers, '', $message->getHeader(self::REPLY_TO))
             ->then(function () use ($message, $headers): void {
-                $this->logger->info(
+                $this->logger->debug(
                     'Published test item.',
                     array_merge(
                         $this->prepareMessage('', '', $message->getHeader(self::REPLY_TO), $headers),
@@ -278,7 +278,7 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
         return $channel
             ->publish('', $headers, '', $message->getHeader(self::REPLY_TO))
             ->then(function () use ($message, $headers): void {
-                $this->logger->info(
+                $this->logger->debug(
                     'Published test item error.',
                     array_merge(
                         $this->prepareMessage('', '', $message->getHeader(self::REPLY_TO), $headers),
@@ -350,7 +350,7 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
             $message->getHeader(self::REPLY_TO)
         )
             ->then(function () use ($successMessage, $message, $headers): void {
-                $this->logger->info(
+                $this->logger->debug(
                     sprintf('Published batch item %s.', $successMessage->getSequenceId()),
                     array_merge(
                         $this->prepareMessage('', '', $message->getHeader(self::REPLY_TO), $headers),
@@ -386,7 +386,7 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
         return $channel
             ->publish('', $headers, '', $message->getHeader(self::REPLY_TO)
             )->then(function () use ($message, $headers): void {
-                $this->logger->info(
+                $this->logger->debug(
                     'Published batch end.',
                     array_merge(
                         $this->prepareMessage('', '', $message->getHeader(self::REPLY_TO), $headers),
@@ -417,7 +417,7 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
         return $channel
             ->publish('', $headers, '', $message->getHeader(self::REPLY_TO))
             ->then(function () use ($message, $headers): void {
-                $this->logger->info(
+                $this->logger->error(
                     'Published batch error end.',
                     array_merge(
                         $this->prepareMessage('', '', $message->getHeader(self::REPLY_TO), $headers),

@@ -102,7 +102,7 @@ class CurlManager implements CurlManagerInterface, LoggerAwareInterface
 
         try {
 
-            $this->logger->info(TransportFormatter::requestToString(
+            $this->logger->debug(TransportFormatter::requestToString(
                 $dto->getMethod(),
                 (string) $dto->getUri(),
                 $dto->getHeaders(),
@@ -123,7 +123,7 @@ class CurlManager implements CurlManagerInterface, LoggerAwareInterface
                 $psrResponse->getHeaders()
             );
 
-            $this->logger->info(TransportFormatter::responseToString(
+            $this->logger->debug(TransportFormatter::responseToString(
                 $psrResponse->getStatusCode(),
                 $psrResponse->getReasonPhrase(),
                 $psrResponse->getHeaders(),

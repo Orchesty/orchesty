@@ -101,14 +101,14 @@ class ConsumerCommand extends Command implements LoggerAwareInterface
         do {
             $wait = 2;
             sleep($wait);
-            $this->logger->info(sprintf('Waiting for %ss.', $wait));
+            $this->logger->debug(sprintf('Waiting for %ss.', $wait));
             try {
                 $this->manager->getClient(TRUE)->connect();
                 $connect = TRUE;
-                $this->logger->info('RabbitMQ is connected.');
+                $this->logger->debug('RabbitMQ is connected.');
             } catch (ClientException $e) {
                 $connect = FALSE;
-                $this->logger->info('RabbitMQ is not connected.', ['exception' => $e]);
+                $this->logger->error('RabbitMQ is not connected.', ['exception' => $e]);
             }
 
         } while (!$connect);
@@ -132,10 +132,10 @@ class ConsumerCommand extends Command implements LoggerAwareInterface
         array_unshift($consumerArgv, $consumerName);
 
         try {
-            $this->logger->info('RabbitMQ setup.');
+            $this->logger->debug('RabbitMQ setup.');
             $this->manager->setUp();
         } catch (ClientException $e) {
-            $this->logger->info('RabbitMQ is not connected.', ['exception' => $e]);
+            $this->logger->error('RabbitMQ is not connected.', ['exception' => $e]);
             $this->reconnect();
             $this->manager->setUp();
         }
