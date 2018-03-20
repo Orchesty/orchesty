@@ -134,25 +134,25 @@ trait LoggerTrait
             case 404:
             case 409:
             case 422:
-                $this->logger->info(
+                $this->logger->error(
                     NotificationTypeEnum::DATA_ERROR,
                     self::getMessage(NotificationTypeEnum::DATA_ERROR, $system, $systemInstall)
                 );
                 break;
             case 401:
-                $this->logger->info(
+                $this->logger->error(
                     NotificationTypeEnum::ACCESS_EXPIRATION,
                     self::getMessage(NotificationTypeEnum::ACCESS_EXPIRATION, $system, $systemInstall)
                 );
                 break;
             case 429:
-                $this->logger->info(
+                $this->logger->error(
                     NotificationTypeEnum::SERVICE_UNAVAILABLE,
                     self::getMessage(NotificationTypeEnum::SERVICE_UNAVAILABLE, $system, $systemInstall)
                 );
                 break;
             default:
-                $this->logger->info(
+                $this->logger->error(
                     NotificationTypeEnum::SERVICE_UNAVAILABLE,
                     self::getMessage(NotificationTypeEnum::SERVICE_UNAVAILABLE, $system, $systemInstall)
                 );

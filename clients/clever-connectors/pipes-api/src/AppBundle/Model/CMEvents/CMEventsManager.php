@@ -108,7 +108,7 @@ class CMEventsManager implements LoggerAwareInterface
      */
     public function runEvent(Request $request, string $userId, string $event): void
     {
-        $this->logger->info(sprintf('Try to run %s event.', $event), ['user' => $userId]);
+        $this->logger->debug(sprintf('Try to run %s event.', $event), ['user' => $userId]);
         SystemInstall::checkEvent($event);
         $request->headers->set(CMHeaders::createKey(CMHeaders::CM_EVENT_TYPE), $event);
         switch ($event) {
@@ -130,7 +130,7 @@ class CMEventsManager implements LoggerAwareInterface
         }
 
         $systems = $this->systemRepo->getSystemInstallByEvent($event, $userId);
-        $this->logger->info(sprintf('Try to run %s topologies.', count($systems)), ['user' => $userId]);
+        $this->logger->debug(sprintf('Try to run %s topologies.', count($systems)), ['user' => $userId]);
 
         /** @var SystemInstall $systemInstall */
         foreach ($systems as $systemInstall) {

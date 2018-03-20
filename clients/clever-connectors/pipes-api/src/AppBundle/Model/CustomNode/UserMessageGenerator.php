@@ -190,7 +190,7 @@ class UserMessageGenerator implements BatchInterface, CustomNodeInterface
      */
     private function getSystems(LoopInterface $loop, string $systemKey): PromiseInterface
     {
-        $this->logger->info(sprintf('Start finding user system for key "%s".', $systemKey));
+        $this->logger->debug(sprintf('Start finding user system for key "%s".', $systemKey));
 
         return $this->asyncCommandFactory
             ->create($loop, sprintf('react:get-system %s', $systemKey))

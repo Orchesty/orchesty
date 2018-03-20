@@ -187,7 +187,7 @@ final class BasecrmUpdateContactConnectorTest extends ConnectorTestCaseAbstract
         /** @var LoggerInterface|PHPUnit_Framework_MockObject_MockObject $logger */
         $logger = $this->createMock(LoggerInterface::class);
         $logger->expects($this->once())
-            ->method('info')->will($this->returnCallback(
+            ->method('error')->will($this->returnCallback(
                 function (string $type, $data): void {
 
                     $this->assertEquals(NotificationTypeEnum::DATA_ERROR, $type);

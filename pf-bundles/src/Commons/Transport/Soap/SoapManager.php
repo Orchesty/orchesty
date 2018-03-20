@@ -74,7 +74,7 @@ final class SoapManager implements SoapManagerInterface, LoggerAwareInterface
         try {
             $client = $this->soapClientFactory->create($request, $this->composeOptions($request, $options));
 
-            $this->logger->info(sprintf('Request: Type: %s, Uri: %s, Headers: %s, User: %s, Password: %s',
+            $this->logger->debug(sprintf('Request: Type: %s, Uri: %s, Headers: %s, User: %s, Password: %s',
                 $request->getType(),
                 $request->getUri(),
                 $this->getHeadersAsString($request->getHeader()->getParams()),
@@ -132,14 +132,14 @@ final class SoapManager implements SoapManagerInterface, LoggerAwareInterface
         $response = new ResponseDto($soapCallResponse, $lastResponseHeaders, $outputHeaders);
 
         if ($response->getResponseHeaderDto()) {
-            $this->logger->info(sprintf('Response: Status Code: %s, Reason Phrase: %s, Headers: %s, Body: %s',
+            $this->logger->debug(sprintf('Response: Status Code: %s, Reason Phrase: %s, Headers: %s, Body: %s',
                 $response->getResponseHeaderDto()->getHttpStatusCode(),
                 $response->getResponseHeaderDto()->getHttpReason(),
                 $response->getLastResponseHeaders(),
                 $response->getSoapCallResponse()
             ));
         } else {
-            $this->logger->info(sprintf('Response: Body: %s', $response->getSoapCallResponse()));
+            $this->logger->debug(sprintf('Response: Body: %s', $response->getSoapCallResponse()));
         }
 
         count([$request]);

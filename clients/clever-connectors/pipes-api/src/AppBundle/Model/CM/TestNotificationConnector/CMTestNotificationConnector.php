@@ -35,7 +35,7 @@ class CMTestNotificationConnector implements CustomNodeInterface, LoggerAwareInt
 
             foreach ($data as $key => $value) {
                 if ($value) {
-                    $this->logger->info($key, self::getMessage($key, new BigcommerceSystem(), $systemInstall));
+                    $this->logger->error($key, self::getMessage($key, new BigcommerceSystem(), $systemInstall));
                 }
             }
         }

@@ -100,12 +100,12 @@ trait ZohoLoggerTrait
     protected function logError(int $status, SystemInterface $system, SystemInstall $systemInstall): void
     {
         if ($status === 401) {
-            $this->logger->info(
+            $this->logger->error(
                 NotificationTypeEnum::ACCESS_EXPIRATION,
                 LoggerTrait::getMessage(NotificationTypeEnum::ACCESS_EXPIRATION, $system, $systemInstall)
             );
         } else {
-            $this->logger->info(
+            $this->logger->error(
                 NotificationTypeEnum::DATA_ERROR,
                 LoggerTrait::getMessage(NotificationTypeEnum::DATA_ERROR, $system, $systemInstall)
             );

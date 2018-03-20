@@ -231,7 +231,7 @@ final class ShopifyUpdateCustomerConnectorTest extends ConnectorTestCaseAbstract
         /** @var LoggerInterface $logger */
         $logger = $this->createMock(LoggerInterface::class);
         $logger->expects($this->once())
-            ->method('info')->willReturnCallback(function (string $type, array $content): void {
+            ->method('error')->willReturnCallback(function (string $type, array $content): void {
                 $this->assertEquals('access_expiration', $type);
                 $this->assertEquals([
                     'notification_type' => 'access_expiration',
