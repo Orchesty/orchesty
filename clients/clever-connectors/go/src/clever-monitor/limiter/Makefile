@@ -17,7 +17,7 @@ install-dependencies:
 		.env.dist >> .env; \
 
 docker-build:
-	cd ../ && docker build --build-arg UID=$(shell id -u) --build-arg GID=$(shell id -u) -t $(DOCKER_SERVICE_NAME):$(DOCKER_DEFAULT_TAG) -t $(DOCKER_REGISTRY)$(DOCKER_SERVICE_NAME):$(DOCKER_DEFAULT_TAG) -f ./$(DOCKER_SERVICE_NAME)/Dockerfile .
+	cd ../ && docker build --build-arg UID=$(shell id -u) --build-arg GID=$(shell id -g) -t $(DOCKER_SERVICE_NAME):$(DOCKER_DEFAULT_TAG) -t $(DOCKER_REGISTRY)$(DOCKER_SERVICE_NAME):$(DOCKER_DEFAULT_TAG) -f ./$(DOCKER_SERVICE_NAME)/Dockerfile .
 
 docker-push:
 	docker push $(DOCKER_REGISTRY)$(DOCKER_SERVICE_NAME):$(DOCKER_DEFAULT_TAG)
@@ -32,7 +32,9 @@ docker-compose.ci.yml:
 	sed -r 's/^(\s+ports:)$$/#\1/g; s/^(\s+- \$$\{DEV_IP\}.*)$$/#\1/g' docker-compose.yml > docker-compose.ci.yml
 
 ci-test: .env
-	docker-compose up -d --force-recreate
-	docker-compose exec -T limiter make install-dep
-	docker-compose exec -T limiter make install-dependencies
-	docker-compose exec -T limiter go test ./...
+	#docker-compose up -d --force-recreate
+	#docker-compose exec -T limiter make install-dep
+	#docker-compose exec -T limiter make install-dependencies
+	#docker-compose exec -T limiter go test ./...
+	#docker run --rm -e GID=$(shell id -g) -e UID=$(shell id -u) -v ${CURDIR}/..:/go/src/clever-monitor -w /go/src/clever-monitor/limiter cmhanaboso.azurecr.io/devtools/go-build:latest go test ./...
+	docker-compose run --rm -e GID=$(shell id -g) -e UID=$(shell id -u) limiter go test ./...
