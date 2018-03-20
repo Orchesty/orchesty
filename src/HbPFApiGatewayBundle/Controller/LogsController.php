@@ -1,4 +1,5 @@
-<?php
+<?php declare(strict_types=1);
+
 /**
  * Created by PhpStorm.
  * User: venca
@@ -25,6 +26,8 @@ class LogsController extends FOSRestController
     /**
      * @Route("/logs")
      * @Method({"GET"})
+     *
+     * @param Request $request
      *
      * @return Response
      */
