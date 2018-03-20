@@ -281,6 +281,10 @@ services:
 
     logstash:
         image: dkr.hanaboso.net/pipes/pipes/logstash:dev
+        environment:
+          - MONGO_HOST=mongo
+          - MONGO_DATABASE=demo
+          - MONGO_COLLECTION=Logs
         command: --log.level debug
         ## BEGIN DEV
         volumes:
