@@ -54,7 +54,7 @@ class LogsController extends FOSRestController
     public function getDataForTableAction(Request $request): Response
     {
         $data = $this->logsHandler->getData(
-            $request->query->get('limit', "10"),
+            $request->query->get('limit', "20"),
             $request->query->get('offset', "0")
         );
 

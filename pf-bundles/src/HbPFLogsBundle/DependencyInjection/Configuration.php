@@ -2,6 +2,7 @@
 
 namespace Hanaboso\PipesFramework\HbPFLogsBundle\DependencyInjection;
 
+use Hanaboso\PipesFramework\HbPFLogsBundle\HbPFLogsBundle;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
@@ -19,10 +20,16 @@ class Configuration implements ConfigurationInterface
     public function getConfigTreeBuilder(): TreeBuilder
     {
         $treeBuilder = new TreeBuilder();
-        $rootNode    = $treeBuilder->root('hbpf');
+        $rootNode    = $treeBuilder->root(HbPFLogsBundle::KEY);
 
         $rootNode->children()
-            ->arrayNode('logs');
+            ->enumNode("type")->values(['mongodb', 'elastic'])->isRequired()
+            ->end();
+
+        $rootNode->children()
+            ->scalarNode("storage_name")->isRequired()
+            ->info('Set name of mongodb database or elastic index.')
+            ->end();
 
         return $treeBuilder;
     }

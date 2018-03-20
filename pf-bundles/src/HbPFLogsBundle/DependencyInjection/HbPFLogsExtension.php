@@ -2,6 +2,7 @@
 
 namespace Hanaboso\PipesFramework\HbPFLogsBundle\DependencyInjection;
 
+use Hanaboso\PipesFramework\HbPFLogsBundle\HbPFLogsBundle;
 use RuntimeException;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -16,6 +17,14 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
  */
 class HbPFLogsExtension extends Extension implements PrependExtensionInterface
 {
+
+    /**
+     * @return string
+     */
+    public function getAlias(): string
+    {
+        return HbPFLogsBundle::KEY;
+    }
 
     /**
      * Allow an extension to prepend the extension configurations.
@@ -35,8 +44,8 @@ class HbPFLogsExtension extends Extension implements PrependExtensionInterface
      */
     public function load(array $configs, ContainerBuilder $container): void
     {
-        $configuration = new Configuration();
-        $this->processConfiguration($configuration, $configs);
+        $config = $this->processConfiguration(new Configuration(), $configs);
+        $container->setParameter(HbPFLogsBundle::KEY, $config);
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('services.yml');

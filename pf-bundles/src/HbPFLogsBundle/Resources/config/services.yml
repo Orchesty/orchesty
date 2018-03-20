@@ -3,8 +3,6 @@ services:
         autowire: true
         autoconfigure: true
         public: false
-        bind:
-            $dm: '@doctrine_mongodb.odm.default_document_manager'
 
     Hanaboso\PipesFramework\HbPFLogsBundle\Controller\:
         resource: '../../Controller'
@@ -12,3 +10,6 @@ services:
 
     Hanaboso\PipesFramework\HbPFLogsBundle\Handler\:
         resource: '../../Handler'
+
+    Hanaboso\PipesFramework\Logs\:
+        resource: '../../../Logs'
