@@ -49,6 +49,13 @@ class Ad
     private $settings;
 
     /**
+     * @var Audience|NULL
+     *
+     * @ORM\ManyToOne(targetEntity="CleverCore\SocialMultichannel\Entities\Audience", inversedBy="ads")
+     */
+    private $audience;
+
+    /**
      * @return string
      */
     public function getAudienceId(): string
@@ -124,6 +131,26 @@ class Ad
     public function setSettings(string $settings): Ad
     {
         $this->settings = $settings;
+
+        return $this;
+    }
+
+    /**
+     * @return Audience|NULL
+     */
+    public function getAudience(): ?Audience
+    {
+        return $this->audience;
+    }
+
+    /**
+     * @param Audience|NULL $audience
+     *
+     * @return Ad
+     */
+    public function setAudience(?Audience $audience): Ad
+    {
+        $this->audience = $audience;
 
         return $this;
     }

@@ -3,6 +3,7 @@
 namespace CleverCore\SocialMultichannel\DI;
 
 use CleverCore\SocialMultichannel\Enums\AdTypeEnum;
+use CleverCore\SocialMultichannel\Enums\AudienceSourceEnum;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use Nette\DI\CompilerExtension;
 
@@ -47,6 +48,9 @@ class SocialMultichannelExtension extends CompilerExtension
 
         $setup[0]->arguments[0]['DirectorySourceEnum'] = 'AdTypeEnum';
         $setup[1]->arguments[0]['DirectorySourceEnum'] = AdTypeEnum::class;
+
+        $setup[0]->arguments[0]['DirectorySourceEnum'] = 'AudienceSourceEnum';
+        $setup[1]->arguments[0]['DirectorySourceEnum'] = AudienceSourceEnum::class;
 
         $connection->setSetup($setup);
 
