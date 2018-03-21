@@ -7,6 +7,8 @@ import Headers from "../../../message/Headers";
 import JobMessage from "../../../message/JobMessage";
 import {IAmqpDrainSettings} from "../AmqpDrain";
 
+const IS_CONFIRM_CHANNEL = false;
+
 /**
  * This class will be injected to all drains and all counter result messages will be published using it
  */
@@ -32,7 +34,8 @@ class CounterPublisher extends Publisher {
                         });
                 });
             },
-            true, // use confirm channel
+            IS_CONFIRM_CHANNEL,
+            console,
         );
         this.settings = settings;
     }
