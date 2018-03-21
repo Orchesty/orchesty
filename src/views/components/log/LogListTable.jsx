@@ -3,19 +3,25 @@ import PropTypes from 'prop-types';
 import AbstractTable from 'components/AbstractTable';
 import StateComponent from 'wrappers/StateComponent';
 
+import './LogListTable.less';
+
 class LogListTable extends AbstractTable {
   constructor(props) {
     super(props);
   }
 
+  getClassName(){
+    return super.getClassName() + ' log-list-table';
+  }
+
   _renderHead(){
     return (
       <tr>
-        <th>Time</th>
-        <th>Type</th>
+        <th className="time-col">Time</th>
+        <th className="type-col">Type</th>
         <th>Message</th>
-        <th>Topology name</th>
-        <th>Node name</th>
+        <th className="topology-col">Topology name</th>
+        <th className="node-col">Node name</th>
       </tr>
     );
   }
