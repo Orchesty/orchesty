@@ -98,3 +98,4 @@ services:
 extensions:
 	cc_api: CcApi\Bridges\DI\CcApiExtension
 	- WebChemistry\Forms\Controls\DI\MultiplierExtension
+	social_multichannel: CleverCore\SocialMultichannel\DI\SocialMultichannelExtension
