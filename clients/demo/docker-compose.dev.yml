@@ -285,7 +285,8 @@ services:
           - MONGO_HOST=mongo
           - MONGO_DATABASE=demo
           - MONGO_COLLECTION=Logs
-        command: --log.level debug
+        #command: --log.level debug
+        restart: on-failure
         ## BEGIN DEV
         volumes:
           - ./stack/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
