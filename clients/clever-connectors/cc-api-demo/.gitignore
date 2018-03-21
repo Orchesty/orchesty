@@ -14,3 +14,4 @@ cert/*
 .env
 composer.prod.json
 composer.prod.lock
+/ca/

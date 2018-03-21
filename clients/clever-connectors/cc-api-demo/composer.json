@@ -3,10 +3,19 @@
   "description": "Demo for cc-api-extension",
   "license": "proprietary",
   "version": "0.0.1",
+  "autoload": {
+    "psr-4": {
+      "App\\": "src/",
+      "CleverCore\\Commons\\": "commonsSrc/",
+      "CleverCore\\SocialMultichannel\\": "socialMultichannel/src"
+    }
+  },
   "require": {
     "php": ">=7.1",
     "aleswita/formrenderer": "^1.1",
     "bunny/bunny": "^0.2",
+    "cleverapp/enum": "dev-develop",
+    "clevercore/datalayer": "dev-develop",
     "clever-monitor/cm-pipes-extension": "^0.0.1",
     "clever-monitor/cm-stream": "0.0.1",
     "nette/nette": "^2.4",
@@ -24,6 +33,18 @@
       "url": "../cm-stream",
       "options": {
         "symlink": true
+      }
+    },
+    {
+      "type": "composer",
+      "url": "https://packages.dev.clevermonitor.com",
+      "options": {
+        "ssl": {
+          "verify_peer": true,
+          "allow_self_signed": true,
+          "cafile": "ca/ca.crt",
+          "local_cert": "ca/cm-composer.pem"
+        }
       }
     }
   ]
