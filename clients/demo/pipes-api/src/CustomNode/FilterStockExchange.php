@@ -10,6 +10,7 @@
 namespace Demo\CustomNode;
 
 use EmailServiceBundle\Utils\PipesHeaders;
+use Exception;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
 
@@ -43,13 +44,13 @@ class FilterStockExchange implements CustomNodeInterface
      */
     public function process(ProcessDto $dto): ProcessDto
     {
-        throw new \Exception('xxxx');
         $data = json_decode($dto->getData(), TRUE);
 
         if (array_key_exists($this->key, $data)) {
             return $dto->setData(json_encode($data[$this->key]));
         }
 
+        throw new Exception('This is a test error message.');
         $dto->setData('');
 
         return $dto->addHeader(PipesHeaders::createKey(PipesHeaders::RESULT_CODE), "1003");

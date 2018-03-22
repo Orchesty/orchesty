@@ -17,7 +17,7 @@ use Ratchet\Client\WebSocket;
 use Ratchet\RFC6455\Messaging\MessageInterface;
 use React\EventLoop\Factory;
 use React\EventLoop\LoopInterface;
-use React\EventLoop\Timer\Timer;
+use React\EventLoop\Timer\TimerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -32,7 +32,7 @@ class DownloaderCommand extends Command
 {
 
     /**
-     * @var Timer
+     * @var TimerInterface
      */
     private $heartbeat;
 
@@ -74,7 +74,7 @@ class DownloaderCommand extends Command
         $connector($uri)
             ->then(function (WebSocket $ws) use ($loop, $output, $uri): void {
 
-                $this->heartbeat = $loop->addPeriodicTimer(5, function () use ($ws) {
+                $this->heartbeat = $loop->addPeriodicTimer(5, function () use ($ws): void {
                     $ws->send(json_encode([
                         'event' => 'pusher:ping', 'data' => [],
                     ]));
@@ -134,7 +134,7 @@ class DownloaderCommand extends Command
                 $ws->on('error', function (Exception $e) use ($ws, $loop, $output): void {
                     $output->writeln(sprintf('WS error: %s', $e->getMessage()));
                     $loop->cancelTimer($this->heartbeat);
-                    $loop->addTimer(1, function () use ($ws, $loop, $output) {
+                    $loop->addTimer(1, function () use ($ws, $loop, $output): void {
                         $this->reconnect($ws, $loop, $output);
                     });
                 });
@@ -142,7 +142,7 @@ class DownloaderCommand extends Command
                 $ws->on('close', function ($code, $reason) use ($ws, $output, $loop): void {
                     $output->writeln(sprintf('WS close with code %s: %s', $code, $reason));
                     $loop->cancelTimer($this->heartbeat);
-                    $loop->addTimer(1, function () use ($ws, $loop, $output) {
+                    $loop->addTimer(1, function () use ($ws, $loop, $output): void {
                         $this->reconnect($ws, $loop, $output);
                     });
                 });
@@ -154,7 +154,9 @@ class DownloaderCommand extends Command
     }
 
     /**
-     *
+     * @param WebSocket       $ws
+     * @param LoopInterface   $loop
+     * @param OutputInterface $output
      */
     private function reconnect(WebSocket $ws, LoopInterface $loop, OutputInterface $output): void
     {
