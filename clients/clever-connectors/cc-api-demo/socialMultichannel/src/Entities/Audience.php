@@ -4,6 +4,7 @@ namespace CleverCore\SocialMultichannel\Entities;
 
 use CleverCore\Commons\Traits\IdTrait;
 use CleverCore\SocialMultichannel\Enums\AudienceSourceEnum;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
 /**
@@ -61,6 +62,14 @@ class Audience
      * @ORM\OneToMany(targetEntity="CleverCore\SocialMultichannel\Entities\ad", mappedBy="audience")
      */
     private $ads;
+
+    /**
+     * Audience constructor.
+     */
+    public function __construct()
+    {
+        $this->ads = new ArrayCollection;
+    }
 
     /**
      * @return string
