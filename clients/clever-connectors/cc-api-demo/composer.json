@@ -12,6 +12,10 @@
   "require": {
     "php": ">=7.1",
     "aleswita/formrenderer": "^1.1",
+    "bazo/nette-document-manager-extension": "dev-master",
+    "mongodb/mongodb": "^1.2",
+    "doctrine/mongodb-odm": "2.0.x-dev",
+    "alcaeus/mongo-php-adapter": "^1.1",
     "bunny/bunny": "^0.2",
     "cleverapp/enum": "dev-develop",
     "clevercore/datalayer": "dev-develop",

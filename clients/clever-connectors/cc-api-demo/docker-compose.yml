@@ -37,3 +37,16 @@ services:
       - ${DEV_IP}:80:80
     depends_on:
       - app
+
+
+
+  # Storage
+  mongo:
+    image: mongo:3.4
+    ports:
+      - ${DEV_IP}:27017:27017
+    volumes:
+      - mongodb:/data/db
+
+volumes:
+  mongodb: {}

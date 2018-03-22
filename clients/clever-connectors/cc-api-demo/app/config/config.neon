@@ -22,6 +22,13 @@ parameters:
 			cert: %appDir%/../cert/clever.pem
 			ca: %appDir%/../cert/ca.crt
 
+	mongo:
+		dbhost: mongo
+		dbname: api-demo
+		user: root
+		password: root
+		documentsDir: '%appDir%/../socialMultichannel/src/Documents'
+
 cc_api:
 	base_uri: ::getenv('BASE_URI')
 	cert: %appDir%/../cert/stage-staff.pem
@@ -95,7 +102,12 @@ services:
 	mapping_form_factory:
 		class: App\Forms\MappingFormFactory
 
+	- Mongo(mongodb://%mongo.user%:%mongo.password%@%mongo.dbhost%)
+	- @Mongo::dbname
+
 extensions:
 	cc_api: CcApi\Bridges\DI\CcApiExtension
 	- WebChemistry\Forms\Controls\DI\MultiplierExtension
 	social_multichannel: CleverCore\SocialMultichannel\DI\SocialMultichannelExtension
+	bazo_doctrine: Bazo\MongoDb\DI\DoctrineODMCommandsExtension
+	bazo_dm: Bazo\MongoDb\DI\DocumentManagerExtension
