@@ -11,7 +11,7 @@ import LimiterPublisher from "./limiter/amqp/LimiterPublisher";
 import {default as Limiter} from "./limiter/Limiter";
 import TcpClient from "./limiter/TcpClient";
 import logger from "./logger/Logger";
-import CounterPublisher from "./node/drain/amqp/CounterPublisher";
+import CounterPublisher, {ICounterPublisherSettings} from "./node/drain/amqp/CounterPublisher";
 import FollowersPublisher from "./node/drain/amqp/FollowersPublisher";
 import {default as AmqpDrain, IAmqpDrainSettings} from "./node/drain/AmqpDrain";
 import IPartialForwarder from "./node/drain/IPartialForwarder";
@@ -82,12 +82,16 @@ class DIContainer extends Container {
             ),
         ));
 
+        this.set("counter.publisher", (settings: ICounterPublisherSettings) => {
+            return new CounterPublisher(this.get("amqp.connection"), settings);
+        });
+
         this.set("faucet.amqp", (settings: IAmqpFaucetSettings) => {
             return new AmqpFaucet(settings, this.get("amqp.connection"));
         });
 
         this.set("drain.amqp", (settings: IAmqpDrainSettings) => {
-            const counterPub = new CounterPublisher(this.get("amqp.connection"), settings);
+            const counterPub = this.get("counter.publisher");
             const followersPub = new FollowersPublisher(this.get("amqp.connection"), settings);
             const assertionPub = new AssertionPublisher(
                 this.get("amqp.connection"),
@@ -148,19 +152,33 @@ class DIContainer extends Container {
         });
 
         // Splitter workers
-        this.set(`${sPrefix}.amqprpc`, (settings: IAmqpWorkerSettings, forwarder: IPartialForwarder) => {
-            return new AmqpNonBlockingWorker(this.get("amqp.connection"), settings, forwarder);
-        });
-        this.set(`${sPrefix}.json`, (settings: IJsonSplitterWorkerSettings, forwarder: IPartialForwarder) => {
-            return new JsonSplitterWorker(settings, forwarder);
-        });
-        this.set(`${sPrefix}.amqprpc_limited`, (settings: IAmqpWorkerSettings, forwarder: IPartialForwarder) => {
-            return new LimiterWorker(
-                this.get("limiter"),
-                this.get(`${sPrefix}.amqprpc`)(settings, forwarder),
-                this.nodeConfigurator.getNodeConfig(settings.node_label.id, false).faucet,
-            );
-        });
+        this.set(
+            `${sPrefix}.amqprpc`,
+            (settings: IAmqpWorkerSettings, fwd: IPartialForwarder, cps: ICounterPublisherSettings) => {
+                return new AmqpNonBlockingWorker(
+                    this.get("amqp.connection"),
+                    settings,
+                    fwd,
+                    this.get("counter.publisher")(cps),
+                );
+            },
+        );
+        this.set(
+            `${sPrefix}.json`,
+            (settings: IJsonSplitterWorkerSettings, forwarder: IPartialForwarder, cps: ICounterPublisherSettings) => {
+                return new JsonSplitterWorker(settings, forwarder);
+            },
+        );
+        this.set(
+            `${sPrefix}.amqprpc_limited`,
+            (settings: IAmqpWorkerSettings, forwarder: IPartialForwarder, cps: ICounterPublisherSettings) => {
+                return new LimiterWorker(
+                    this.get("limiter"),
+                    this.get(`${sPrefix}.amqprpc`)(settings, forwarder),
+                    this.nodeConfigurator.getNodeConfig(settings.node_label.id, false).faucet,
+                );
+            },
+        );
 
         // Test workers
         this.set(`${wPrefix}.capture`, (settings: {}) => {

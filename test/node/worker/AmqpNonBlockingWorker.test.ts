@@ -9,6 +9,7 @@ import {amqpConnectionOptions} from "../../../src/config";
 import Headers from "../../../src/message/Headers";
 import JobMessage from "../../../src/message/JobMessage";
 import {ResultCode} from "../../../src/message/ResultCode";
+import {ICounterPublisher} from "../../../src/node/drain/amqp/CounterPublisher";
 import IPartialForwarder from "../../../src/node/drain/IPartialForwarder";
 import {IAmqpWorkerSettings, IWaiting} from "../../../src/node/worker/AAmqpWorker";
 import AmqpNonBlockingWorker from "../../../src/node/worker/AmqpNonBlockingWorker";
@@ -34,7 +35,10 @@ describe("AmqpNonBlockingWorker", () => {
         const forwarder: IPartialForwarder = {
             forwardPart: async () => { assert.fail("This should be never called."); },
         };
-        const rpcWorker = new AmqpNonBlockingWorker(conn, settings, forwarder);
+        const counterPublisher: ICounterPublisher = {
+            send: async () => { assert.fail("This should be never called."); },
+        };
+        const rpcWorker = new AmqpNonBlockingWorker(conn, settings, forwarder, counterPublisher);
 
         const headers = new Headers();
         headers.setPFHeader(Headers.RESULT_CODE, `${ResultCode.UNKNOWN_ERROR}`);
@@ -70,7 +74,10 @@ describe("AmqpNonBlockingWorker", () => {
         const partialForwarder: IPartialForwarder = {
             forwardPart: () => Promise.resolve(),
         };
-        const rpcWorker = new AmqpNonBlockingWorker(conn, settings, partialForwarder);
+        const counterPublisher: ICounterPublisher = {
+            send: async () => Promise.resolve(),
+        };
+        const rpcWorker = new AmqpNonBlockingWorker(conn, settings, partialForwarder, counterPublisher);
 
         const publisher = new Publisher(conn, (ch: Channel) =>  Promise.resolve() );
         const externalWorkerMock = new SimpleConsumer(
@@ -135,7 +142,10 @@ describe("AmqpNonBlockingWorker", () => {
                 return Promise.resolve();
             },
         };
-        const rpcWorker = new AmqpNonBlockingWorker(conn, settings, partialForwarder);
+        const counterPublisher: ICounterPublisher = {
+            send: async () => Promise.resolve(),
+        };
+        const rpcWorker = new AmqpNonBlockingWorker(conn, settings, partialForwarder, counterPublisher);
         const publisher = new Publisher(conn, (ch: Channel) =>  Promise.resolve() );
         const externalWorkerMock = new SimpleConsumer(
             conn,
@@ -245,7 +255,7 @@ describe("AmqpNonBlockingWorker", () => {
                 const outMsg: JobMessage = outMsgs[0];
 
                 assert.instanceOf(outMsg, JobMessage);
-                assert.equal(outMsg.getMultiplier(), 5);
+                assert.equal(outMsg.getMultiplier(), 0);
                 assert.isFalse(outMsg.getForwardSelf());
                 assert.equal(ResultCode.SUCCESS, outMsg.getResult().code);
                 assert.equal("everything okay", outMsg.getResult().message);
