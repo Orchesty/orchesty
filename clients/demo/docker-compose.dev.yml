@@ -108,6 +108,8 @@ services:
         REDIS_PASS: ''
         REDIS_DB: '0'
         COUNTER_PREFETCH: '30'
+        METRICS_HOST: 'kapacitor'
+        METRICS_PORT: '9092'
       depends_on:
         - redis
         - rabbitmq
