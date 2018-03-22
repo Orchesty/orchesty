@@ -89,7 +89,6 @@ class AmqpDrain implements IDrain, IPartialForwarder {
             })});
 
         if (!message.getForwardSelf()) {
-            this.forwardToCounterOnly(message);
             return;
         }
 
