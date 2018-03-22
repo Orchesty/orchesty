@@ -25,13 +25,6 @@ class Ad
      *
      * @ORM\Column(type="string")
      */
-    private $audienceId;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(type="string")
-     */
     private $audienceMirrorId;
 
     /**
@@ -47,26 +40,6 @@ class Ad
      * @ORM\Column(type="string")
      */
     private $settings;
-
-    /**
-     * @return string
-     */
-    public function getAudienceId(): string
-    {
-        return $this->audienceId;
-    }
-
-    /**
-     * @param string $audienceId
-     *
-     * @return Ad
-     */
-    public function setAudienceId(string $audienceId): Ad
-    {
-        $this->audienceId = $audienceId;
-
-        return $this;
-    }
 
     /**
      * @return string
@@ -109,21 +82,21 @@ class Ad
     }
 
     /**
-     * @return string
+     * @return array
      */
-    public function getSettings(): string
+    public function getSettings(): array
     {
-        return $this->settings;
+        return json_decode($this->settings, TRUE);
     }
 
     /**
-     * @param string $settings
+     * @param array $settings
      *
      * @return Ad
      */
-    public function setSettings(string $settings): Ad
+    public function setSettings(array $settings): Ad
     {
-        $this->settings = $settings;
+        $this->settings = json_encode($settings);
 
         return $this;
     }
