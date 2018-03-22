@@ -24,8 +24,7 @@ class NullWorker implements IWorker {
      * @return {Promise<JobMessage[]>}
      */
     public processData(msg: JobMessage): Promise<JobMessage[]> {
-        logger.info(`Worker[type="null"] is processing message. Headers: ${JSON.stringify(msg.getHeaders().getRaw())}. \
-            Content: ${msg.getContent()}`, logger.ctxFromMsg(msg));
+        logger.info(`Worker[type="null"] is processing message. Headers: ${JSON.stringify(msg.getHeaders().getRaw())}`);
 
         // msg.setResult({code: ResultCode.SUCCESS, message: "Null worker passed message."});
 
@@ -56,6 +55,7 @@ class NullWorker implements IWorker {
 
                 if (parseInt(lastChar, 10) % 2 === 0) {
                     if (data.bids) {
+                        msg.setContent("All ok");
                         msg.setResult({code: ResultCode.SUCCESS, message: "Bids filter OK."});
                         msg.setContent(JSON.stringify(data));
                     } else {
@@ -64,6 +64,7 @@ class NullWorker implements IWorker {
                     }
                 } else {
                     if (data.asks) {
+                        msg.setContent("All ok");
                         msg.setResult({code: ResultCode.SUCCESS, message: "Asks filter OK."});
                         msg.setContent(JSON.stringify(data));
                     } else {
