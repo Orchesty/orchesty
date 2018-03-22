@@ -80,6 +80,7 @@ class MongoDbStorage
             ])
             ->limit((int) $limit)
             ->skip((int) $offset)
+            ->sort('_id', 'desc')
             ->getQuery();
     }
 
