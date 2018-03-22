@@ -3,19 +3,25 @@ import PropTypes from 'prop-types';
 import AbstractTable from 'components/AbstractTable';
 import StateComponent from 'wrappers/StateComponent';
 
+import './LogListTable.less';
+
 class LogListTable extends AbstractTable {
   constructor(props) {
     super(props);
   }
 
+  getClassName(){
+    return super.getClassName() + ' log-list-table';
+  }
+
   _renderHead(){
     return (
       <tr>
-        <th>Time</th>
-        <th>Type</th>
+        <th className="no-wrap">Time</th>
+        <th className="no-wrap">Severity</th>
         <th>Message</th>
-        <th>Topology name</th>
-        <th>Node name</th>
+        <th className="no-wrap">Topology name</th>
+        <th className="no-wrap">Node name</th>
       </tr>
     );
   }
@@ -26,11 +32,11 @@ class LogListTable extends AbstractTable {
       const item = elements[id];
       return (
         <tr key={item.id}>
-          <td>{item.time.toLocaleString()}</td>
-          <td>{item.type}</td>
+          <td className="no-wrap">{item.time.toLocaleString()}</td>
+          <td className="no-wrap">{item.severity}</td>
           <td>{item.message}</td>
-          <td>{item.topology_name}</td>
-          <td>{item.node_name}</td>
+          <td className="no-wrap">{item.topology_name}</td>
+          <td className="no-wrap">{item.node_name}</td>
         </tr>
       )
     }) : null;

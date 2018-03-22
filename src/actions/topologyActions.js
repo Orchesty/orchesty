@@ -15,6 +15,7 @@ import {listType, stateType} from 'rootApp/types';
 import filterCallback from 'rootApp/utils/filterCallback';
 import nestedValue from 'rootApp/utils/nestedValue';
 import {getPageId} from 'rootApp/utils/pageUtils';
+import * as metricsActions from 'rootApp/actions/metricsActions';
 
 const {createPaginationList, createCompleteList, listLoading, listError, listReceive, listDelete, listChangeSort, listChangePage, listChangeFilter, invalidateLists} = listFactory('TOPOLOGY/LIST/');
 
@@ -357,6 +358,7 @@ export function saveTopologySchema(id, schema, silent = false){
           }
         }
         dispatch(nodeActions.nodeInvalidateLists('topology', response._id));
+        dispatch(metricsActions.invalidateTopologyMetrics(response._id));
       }
       dispatch(processActions.finishProcess(processes.topologySaveScheme(id), response));
       return response;
