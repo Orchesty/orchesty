@@ -2,10 +2,11 @@ import * as types from 'rootApp/actionTypes';
 import {stateType} from 'rootApp/types';
 import serverRequest from 'services/apiGatewayServer';
 
-function setTopologyState(topologyId, state){
+function setTopologyState(topologyId, key, state){
   return {
     type: types.METRICS_TOPOLOGY_SET_STATE,
     id: topologyId,
+    key,
     state
   }
 }
@@ -18,10 +19,11 @@ function receiveItems(items, suffix){
   }
 }
 
-function topologyReceive(topologyId, items){
+function topologyReceive(topologyId, key, items){
   return {
     type: types.METRICS_TOPOLOGY_RECEIVE,
     id: topologyId,
+    key,
     items
   }
 }
@@ -42,17 +44,24 @@ function receive(nodeId, data){
   }
 }
 
+export function invalidateTopologyMetrics(topologyId){
+  return {
+    type: types.METRICS_TOPOLOGY_INVALIDATE,
+    id: topologyId
+  }
+}
+
 function loadTopologyMetrics(topologyId, range){
   return dispatch => {
     const suffix = range ? `[${range.since}-${range.till}]` : '';
     const key = `${topologyId}${suffix}`;
-    dispatch(setTopologyState(key, stateType.LOADING));
+    dispatch(setTopologyState(topologyId, key, stateType.LOADING));
     const queries = range ? {from: range.since, to: range.till} : null;
     return serverRequest(dispatch, 'GET', `/metrics/topology/${topologyId}`, queries).then(response => {
       if (response){
         dispatch(receiveItems(response, suffix));
       }
-      dispatch(response ? topologyReceive(key, response) : setTopologyState(key, stateType.ERROR));
+      dispatch(response ? topologyReceive(topologyId, key, response) : setTopologyState(topologyId, key, stateType.ERROR));
       return response;
     });
   }
@@ -74,13 +83,13 @@ export function loadTopologyMetricsWithRequest(topologyId, interval, range){
   return dispatch => {
     const suffix = range ? `[${interval}][${range.since}-${range.till}]` : `[${interval}]`;
     const key = `${topologyId}${suffix}`;
-    dispatch(setTopologyState(key, stateType.LOADING));
+    dispatch(setTopologyState(topologyId, key, stateType.LOADING));
     const queries = range ? {from: range.since, to: range.till, interval} : {interval};
     return serverRequest(dispatch, 'GET', `/metrics/topology/${topologyId}/requests`, queries).then(response => {
       if (response){
         dispatch(receiveItems(response, suffix));
       }
-      dispatch(response ? topologyReceive(key, response) : setTopologyState(key, stateType.ERROR));
+      dispatch(response ? topologyReceive(topologyId, key, response) : setTopologyState(topologyId, key, stateType.ERROR));
       return response;
     });
   }
