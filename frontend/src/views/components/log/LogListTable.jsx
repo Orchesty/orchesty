@@ -17,11 +17,11 @@ class LogListTable extends AbstractTable {
   _renderHead(){
     return (
       <tr>
-        <th className="time-col">Time</th>
-        <th className="type-col">Type</th>
+        <th className="no-wrap">Time</th>
+        <th className="no-wrap">Severity</th>
         <th>Message</th>
-        <th className="topology-col">Topology name</th>
-        <th className="node-col">Node name</th>
+        <th className="no-wrap">Topology name</th>
+        <th className="no-wrap">Node name</th>
       </tr>
     );
   }
@@ -32,11 +32,11 @@ class LogListTable extends AbstractTable {
       const item = elements[id];
       return (
         <tr key={item.id}>
-          <td>{item.time.toLocaleString()}</td>
-          <td>{item.type}</td>
+          <td className="no-wrap">{item.time.toLocaleString()}</td>
+          <td className="no-wrap">{item.severity}</td>
           <td>{item.message}</td>
-          <td>{item.topology_name}</td>
-          <td>{item.node_name}</td>
+          <td className="no-wrap">{item.topology_name}</td>
+          <td className="no-wrap">{item.node_name}</td>
         </tr>
       )
     }) : null;
