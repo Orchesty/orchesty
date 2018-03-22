@@ -3,8 +3,6 @@
   "description": "Demo for cc-api-extension",
   "license": "proprietary",
   "version": "0.0.1",
-  "minimum-stability": "dev",
-  "prefer-stable": true,
   "autoload": {
     "psr-4": {
       "CleverCore\\Commons\\": "commonsSrc/",
