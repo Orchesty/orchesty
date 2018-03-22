@@ -11,5 +11,5 @@
 uncomment frontend 81
 
 
-docker-compose exec monolith-fpm php bin/console user:create
-docker-compose exec monolith-fpm php bin/console doctrine:mongodb:schema:create
+docker-compose exec monolith-api php bin/console user:create
+docker-compose exec monolith-api php bin/console doctrine:mongodb:schema:create

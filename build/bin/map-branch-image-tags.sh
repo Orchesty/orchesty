@@ -46,6 +46,7 @@ for KEY in "${!BRANCH_IMAGE_TAG_MAP[@]}"; do
   fi 
 done
 
+echo # Intentional blank line
 for KEY in "${!OUT[@]}"; do
   echo "${PREPEND}${KEY}=${OUT[$KEY]}"
 done
