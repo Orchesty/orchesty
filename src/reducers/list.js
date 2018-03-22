@@ -17,7 +17,7 @@ function listReducer(state, action, getElementId) {
         count: typeof data.count === 'string' ? parseInt(data.count) : data.count,
         limit: typeof data.limit === 'string' ? parseInt(data.limit) : data.limit,
         offset: typeof data.offset === 'string' ? parseInt(data.offset) : data.offset,
-        total: typeof data.total === 'string' ? parseInt(data.count) : data.total
+        total: typeof data.total === 'string' ? parseInt(data.total) : data.total
       });
 
     case types.LIST_ERROR:
