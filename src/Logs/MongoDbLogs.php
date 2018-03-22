@@ -62,7 +62,7 @@ class MongoDbLogs implements LogsInterface
         foreach ($logsQuery->toArray() as $item) {
             $pipes    = $item['pipes'] ?? [];
             $result[] = [
-                'id'             => $item['_id'] ? (string) $item['_id'] : '',
+                'id'             => array_key_exists('_id', $item) ? (string) $item['_id'] : '',
                 'severity'       => $pipes['severity'] ?? '',
                 'message'        => $item['message'] ?? '',
                 'type'           => $pipes['type'] ?? '',
