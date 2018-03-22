@@ -55,4 +55,5 @@ class SocialMultichannelExtension extends CompilerExtension
         $connection->setSetup($setup);
 
     }
+
 }

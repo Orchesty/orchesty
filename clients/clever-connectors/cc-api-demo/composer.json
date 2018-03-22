@@ -5,7 +5,6 @@
   "version": "0.0.1",
   "autoload": {
     "psr-4": {
-      "App\\": "src/",
       "CleverCore\\Commons\\": "commonsSrc/",
       "CleverCore\\SocialMultichannel\\": "socialMultichannel/src"
     }
@@ -16,12 +15,28 @@
     "bunny/bunny": "^0.2",
     "cleverapp/enum": "dev-develop",
     "clevercore/datalayer": "dev-develop",
+    "clevercore/utils": "dev-develop",
+    "cleverdbschema/app": "dev-develop",
+    "cleverdbschema/auth": "dev-develop",
+    "cleverextensions/doctrine": "dev-develop",
     "clever-monitor/cm-pipes-extension": "^0.0.1",
     "clever-monitor/cm-stream": "0.0.1",
-    "nette/nette": "^2.4",
+    "nette/application": "^2.4",
+    "nette/bootstrap": "^2.4.2",
+    "nette/caching": "^2.5",
+    "nette/di": "^2.4",
+    "nette/finder": "^2.4",
+    "nette/http": "^2.4",
+    "nette/mail": "^2.4",
+    "nette/robot-loader": "^2.4 || ^3.0",
+    "nette/safe-stream": "^2.3",
+    "nette/security": "^2.4",
+    "nette/utils": "^2.4",
     "webchemistry/forms-multiplier": "^2.0"
   },
   "require-dev": {
+    "hanaboso/php-check-utils": "^1.0",
+    "phpunit/phpunit": "^7.0"
   },
   "repositories": [
     {

@@ -8,8 +8,12 @@ IMAGE_API_DEMO_FPM=dkr.hanaboso.net/pipes/client-cm/api-demo:latest
 	sed -e "s/{DEV_UID}/$(shell id -u)/g; s/{DEV_GID}/$(shell id -u)/g; s/{DEV_USERNAME}/$(shell id -un)/g;" .env.dist > .env
 
 init: .env
-	$(DC) up -d --force-recreate
+	$(DC) up -d --force-recreate --remove-orphans
 	$(DE) composer install
+
+docker-up-force: .env
+	$(DC) pull
+	$(DC) up -d --force-recreate --remove-orphans
 
 build: .env
 	: Disable dependency symlinking in composer and do a fresh install && \
@@ -30,3 +34,12 @@ composer-install:
 
 composer-update:
 	$(DE) composer update --ignore-platform-reqs
+
+
+codesniffer:
+	$(DE) ./vendor/bin/phpcs --standard=./ruleset.xml --colors -p socialMultichannel/
+
+phpstan:
+	$(DE) ./vendor/bin/phpstan --memory-limit=200M analyse -c phpstan.neon -l 4 socialMultichannel/
+
+test: docker-up-force composer-install codesniffer phpstan

@@ -1,0 +1,8 @@
+parameters:
+	ignoreErrors:
+
+includes:
+	- vendor/phpstan/phpstan-doctrine/extension.neon
+	- vendor/phpstan/phpstan-phpunit/extension.neon
+	- vendor/hanaboso/php-check-utils/phpstan.neon
+	- vendor/phpstan/phpstan-phpunit/rules.neon

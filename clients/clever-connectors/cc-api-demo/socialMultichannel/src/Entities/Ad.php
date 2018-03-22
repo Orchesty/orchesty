@@ -13,7 +13,6 @@ use Doctrine\ORM\Mapping as ORM;
  *
  * @ORM\Table("ad")
  * @ORM\Entity(repositoryClass="CleverCore\SocialMultichannel\Repositories\AdRepository")
- *
  */
 class Ad
 {

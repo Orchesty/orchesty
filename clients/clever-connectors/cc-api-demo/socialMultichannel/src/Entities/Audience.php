@@ -14,7 +14,6 @@ use Doctrine\Common\Collections\Collection;
  *
  * @ORM\Table("audience")
  * @ORM\Entity(repositoryClass="CleverCore\SocialMultichannel\Repositories\AudienceRepository")
- *
  */
 class Audience
 {
@@ -68,7 +67,7 @@ class Audience
      */
     public function __construct()
     {
-        $this->ads = new ArrayCollection;
+        $this->ads = new ArrayCollection();
     }
 
     /**
