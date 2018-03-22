@@ -12,10 +12,24 @@ use CleverCore\SocialMultichannel\Entities\Ad;
 interface AdModuleInterface
 {
 
+    /**
+     * @param array $data
+     *
+     * @return Ad
+     */
     public function createAd(array $data): Ad;
 
+    /**
+     * @param Ad    $ad
+     * @param array $data
+     *
+     * @return Ad
+     */
     public function updateAd(Ad $ad, array $data): Ad;
 
+    /**
+     * @param Ad $ad
+     */
     public function deleteAd(Ad $ad): void;
 
 }
