@@ -405,6 +405,8 @@ volumes:
 #    file: ./stack/influxdb.conf
 #  telegraf.conf:
 #    file: ./stack/telegraf.conf
+#  kapacitor.conf:
+#    file: ./stack/kapacitor.conf
 #
 #secrets:
 #  stage-staff.pem:
