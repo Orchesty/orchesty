@@ -42,7 +42,7 @@ class KapacitorCommand extends Command
     {
         $output->writeln('Kapacitor start.');
 
-        $sender = new InfluxDbSender(new UDPSender('kapicitor', 9100), 'test');
+        $sender = new InfluxDbSender(new UDPSender('kapacitor', 9100), 'test');
 
         while (TRUE) {
             $sender->send(
