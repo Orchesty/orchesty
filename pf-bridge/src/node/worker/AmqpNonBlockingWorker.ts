@@ -40,6 +40,7 @@ class AmqpNonBlockingWorker extends AAmqpWorker {
         try {
             const stored: IWaiting = this.waiting.get(corrId);
             stored.sequence++;
+            stored.message.setForwardSelf(false);
             // stored.message.setMultiplier(stored.message.getMultiplier() + 1);
 
             const item = new JobMessage(this.settings.node_label, resultMsg.properties.headers, resultMsg.content);
@@ -69,6 +70,12 @@ class AmqpNonBlockingWorker extends AAmqpWorker {
      */
     private async forwardBatchItem(msg: JobMessage): Promise<void> {
         try {
+            logger.warn("SPLITTER WILL FORWARD", { data: JSON.stringify({
+                    fwdSelf: msg.getForwardSelf(),
+                    group: msg.getResultGroup(),
+                    result: msg.getResult(),
+                })});
+
             await this.counterPublisher.send(msg);
             await this.partialForwarder.forwardPart(msg);
         } catch (e) {
