@@ -4,6 +4,7 @@ import logger from "../../logger/Logger";
 import Headers from "../../message/Headers";
 import JobMessage from "../../message/JobMessage";
 import {ResultCode} from "../../message/ResultCode";
+import {ICounterPublisher} from "../drain/amqp/CounterPublisher";
 import IPartialForwarder from "../drain/IPartialForwarder";
 import AAmqpWorker, {IAmqpWorkerSettings, IWaiting} from "./AAmqpWorker";
 
@@ -18,13 +19,15 @@ class AmqpNonBlockingWorker extends AAmqpWorker {
      * @param {Connection} connection
      * @param {IAmqpWorkerSettings} settings
      * @param {IPartialForwarder} partialForwarder
+     * @param counterPublisher
      */
     constructor(
         protected connection: Connection,
         protected settings: IAmqpWorkerSettings,
         private partialForwarder: IPartialForwarder,
+        private counterPublisher: ICounterPublisher,
     ) {
-            super(connection, settings);
+        super(connection, settings);
     }
 
     /**
@@ -37,7 +40,7 @@ class AmqpNonBlockingWorker extends AAmqpWorker {
         try {
             const stored: IWaiting = this.waiting.get(corrId);
             stored.sequence++;
-            stored.message.setMultiplier(stored.message.getMultiplier() + 1);
+            // stored.message.setMultiplier(stored.message.getMultiplier() + 1);
 
             const item = new JobMessage(this.settings.node_label, resultMsg.properties.headers, resultMsg.content);
             item.getMeasurement().copyValues(stored.message.getMeasurement());
@@ -66,6 +69,7 @@ class AmqpNonBlockingWorker extends AAmqpWorker {
      */
     private async forwardBatchItem(msg: JobMessage): Promise<void> {
         try {
+            await this.counterPublisher.send(msg);
             await this.partialForwarder.forwardPart(msg);
         } catch (e) {
             logger.warn(`Worker[type='amqprpc'] partial forward failed.`, logger.ctxFromMsg(msg, e));

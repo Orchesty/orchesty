@@ -5,23 +5,44 @@ import logger from "../../../logger/Logger";
 import CounterMessage from "../../../message/CounterMessage";
 import Headers from "../../../message/Headers";
 import JobMessage from "../../../message/JobMessage";
-import {IAmqpDrainSettings} from "../AmqpDrain";
+import {INodeLabel} from "../../../topology/Configurator";
+
+export interface ICounterPublisherSettings {
+    node_label: INodeLabel;
+    counter: {
+        queue: {
+            name: string;
+            options: any;
+        };
+    };
+    followers: any[];
+}
 
 const IS_CONFIRM_CHANNEL = false;
+
+export interface ICounterPublisher {
+
+    /**
+     *
+     * @param {JobMessage} message
+     * @return {Promise<void>}
+     */
+    send(message: JobMessage): Promise<void>;
+}
 
 /**
  * This class will be injected to all drains and all counter result messages will be published using it
  */
-class CounterPublisher extends Publisher {
+class CounterPublisher extends Publisher implements ICounterPublisher {
 
-    private settings: IAmqpDrainSettings;
+    private settings: ICounterPublisherSettings;
 
     /**
      *
      * @param {Connection} conn
-     * @param {IAmqpDrainSettings} settings
+     * @param {ICounterPublisherSettings} settings
      */
-    constructor(conn: Connection, settings: IAmqpDrainSettings) {
+    constructor(conn: Connection, settings: ICounterPublisherSettings) {
         super(
             conn,
             (ch: Channel) => {
