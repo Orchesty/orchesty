@@ -43,6 +43,7 @@ class FilterStockExchange implements CustomNodeInterface
      */
     public function process(ProcessDto $dto): ProcessDto
     {
+        throw new \Exception('xxxx');
         $data = json_decode($dto->getData(), TRUE);
 
         if (array_key_exists($this->key, $data)) {

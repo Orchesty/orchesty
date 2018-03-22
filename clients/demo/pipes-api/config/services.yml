@@ -36,3 +36,9 @@ services:
         public: true
         tags:
             -  { name: console.command }
+
+    demo.kapacitor.command:
+        class: Demo\Command\KapacitorCommand
+        public: true
+        tags:
+            -  { name: console.command }

@@ -29,6 +29,10 @@ class AbstractTable extends React.Component {
     return null;
   }
 
+  getClassName(){
+    return 'list-table';
+  }
+
   render() {
     const {list, listChangePage} = this.props;
     let rows = this._renderRows();
@@ -36,7 +40,7 @@ class AbstractTable extends React.Component {
       rows = <tr><td colSpan={6}>No items</td></tr>;
     }
     return (
-      <div className="list-table">
+      <div className={this.getClassName()}>
         <div className="table-wrapper">
           <table className="table table-hover">
             <thead>
