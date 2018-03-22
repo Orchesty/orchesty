@@ -91,7 +91,7 @@ class DIContainer extends Container {
         });
 
         this.set("drain.amqp", (settings: IAmqpDrainSettings) => {
-            const counterPub = this.get("counter.publisher");
+            const counterPub = this.get("counter.publisher")(settings);
             const followersPub = new FollowersPublisher(this.get("amqp.connection"), settings);
             const assertionPub = new AssertionPublisher(
                 this.get("amqp.connection"),

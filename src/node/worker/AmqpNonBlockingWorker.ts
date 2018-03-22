@@ -19,7 +19,7 @@ class AmqpNonBlockingWorker extends AAmqpWorker {
      * @param {Connection} connection
      * @param {IAmqpWorkerSettings} settings
      * @param {IPartialForwarder} partialForwarder
-     * @param counterPublisher
+     * @param {ICounterPublisher} counterPublisher
      */
     constructor(
         protected connection: Connection,
