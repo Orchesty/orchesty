@@ -1,4 +1,3 @@
-import logger from "../logger/Logger";
 import {default as CounterMessage} from "../message/CounterMessage";
 import {ResultCode, ResultCodeGroup} from "../message/ResultCode";
 
@@ -12,6 +11,7 @@ export interface ICounterProcessInfo {
     topology: string;
     correlation_id: string;
     process_id: string;
+    parent_id: string;
     total: number;
     ok: number;
     nok: number;
@@ -49,6 +49,7 @@ class CounterProcess {
             topology,
             correlation_id: cm.getCorrelationId(),
             process_id: cm.getProcessId(),
+            parent_id: cm.getParentId(),
             total: 1,
             ok: 0,
             nok: 0,
