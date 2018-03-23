@@ -5,7 +5,8 @@
     <rule ref="SlevomatCodingStandard.Files.TypeNameMatchesFileName">
         <properties>
             <property name="rootNamespaces" type="array" value="
-                socialMultichannel/src=>CleverCore\SocialMultichannel
+                socialMultichannel/src=>CleverCore\SocialMultichannel,
+                socialMultichannel/tests=>Tests
             "/>
         </properties>
     </rule>

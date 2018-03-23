@@ -42,4 +42,7 @@ codesniffer:
 phpstan:
 	$(DE) ./vendor/bin/phpstan --memory-limit=200M analyse -c phpstan.neon -l 4 socialMultichannel/
 
-test: docker-up-force composer-install codesniffer phpstan
+phpunit:
+	$(DE) ./vendor/bin/phpunit -c phpunit.xml.dist --colors --stderr socialMultichannel/tests/
+
+test: docker-up-force composer-install codesniffer phpstan phpunit
