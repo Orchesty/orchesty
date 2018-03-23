@@ -6,7 +6,7 @@ CLIENT_DIR="clients/demo"
 
 TAG?=dev
 TAG_MONOLITH_FPM?=$(TAG)
-IMAGE_MONOLITH_FPM=dkr.hanaboso.net/pipes/client-cm/monolith-fpm:$(TAG_MONOLITH_FPM)
+IMAGE_MONOLITH_FPM=dkr.hanaboso.net/pipes/client-demo/monolith-fpm:$(TAG_MONOLITH_FPM)
 
 
 # Generic vars

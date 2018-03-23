@@ -25,7 +25,7 @@ services:
     ## END DEV
     ## BEGIN STAGE
     #donwlader:
-    #    image: dkr.hanaboso.net/pipes/client-cm/monolith-fpm:${TAG_MONOLITH}
+    #    image: dkr.hanaboso.net/pipes/client-demo/monolith-fpm:${TAG_MONOLITH}
     #    command: bin/console downloader:run
     #    environment:
     #      BACKEND_HOST: ${BACKEND_URL}/
@@ -50,7 +50,7 @@ services:
     ## END DEV
     ## BEGIN STAGE
     #batch:
-    #    image: dkr.hanaboso.net/pipes/client-cm/monolith-fpm:${TAG_MONOLITH}
+    #    image: dkr.hanaboso.net/pipes/client-demo/monolith-fpm:${TAG_MONOLITH}
     #    command: bin/console rabbit-mq:async-consumer batch
     #    environment:
     #      BACKEND_HOST: ${BACKEND_URL}/
@@ -75,7 +75,7 @@ services:
     ## END DEV
     ## BEGIN STAGE
     #status-service:
-    #    image: dkr.hanaboso.net/pipes/client-cm/monolith-fpm:${TAG_MONOLITH}
+    #    image: dkr.hanaboso.net/pipes/client-demo/monolith-fpm:${TAG_MONOLITH}
     #    command: bin/console rabbit-mq:consumer status-service
     #    environment:
     #      BACKEND_HOST: ${BACKEND_URL}/
@@ -152,7 +152,7 @@ services:
     ## END DEV
     ## BEGIN STAGE
     #monolith-fpm:
-    #    image: dkr.hanaboso.net/pipes/client-cm/monolith-fpm:${TAG_MONOLITH}
+    #    image: dkr.hanaboso.net/pipes/client-demo/monolith-fpm:${TAG_MONOLITH}
     #    environment:
     #      BACKEND_HOST: ${BACKEND_URL}/
     #      ELASTIC_HOST: elasticsearch
