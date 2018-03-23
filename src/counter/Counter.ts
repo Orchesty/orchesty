@@ -281,8 +281,8 @@ export default class Counter implements ICounter, IStoppable {
         this.publishResult(process);
         this.terminator.tryTerminate(process.topology);
 
-        this.logFinished(process);
         this.sendMetrics(process);
+        this.logFinished(process);
     }
 
     /**
@@ -313,7 +313,7 @@ export default class Counter implements ICounter, IStoppable {
                 counter_process_ok_count: process.ok,
                 counter_process_fail_count: process.nok,
             }, true);
-            logger.debug(`Counter metrics[${metricMsg}].`, {
+            logger.debug(`Counter sent metrics[${metricMsg}].`, {
                 node_id: "counter",
                 correlation_id: process.correlation_id,
                 process_id: process.process_id,
@@ -335,12 +335,13 @@ export default class Counter implements ICounter, IStoppable {
      */
     private logFinished(process: ICounterProcessInfo): void {
         logger.info(
-            `Counter job evaluated as finished. Status: ${process.success}`,
+            `Counter job finished. Status: ${process.success}`,
             {
                 node_id: "counter",
                 correlation_id: process.correlation_id,
                 process_id: process.process_id,
                 topology_id: process.topology,
+                data: JSON.stringify({total: process.total, ok_count: process.ok, nok_count: process.nok}),
             },
         );
     }

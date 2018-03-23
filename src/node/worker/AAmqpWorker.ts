@@ -97,6 +97,14 @@ abstract class AAmqpWorker implements IWorker {
     public abstract onBatchItem(corrId: string, resultMsg: AmqpMessage): Promise<void>;
 
     /**
+     * Handle the worker's confirmation message informing you about the batch end
+     *
+     * @param {string} corrId
+     * @param {Message} msg
+     */
+    public abstract onBatchEnd(corrId: string, msg: AmqpMessage): void;
+
+    /**
      * Accepts message, returns unsatisfied promise, which should be satisfied later
      *
      * @param {JobMessage} msg
@@ -234,37 +242,6 @@ abstract class AAmqpWorker implements IWorker {
                     { node_id: this.settings.node_label.id, correlation_id: corrId },
                 );
         }
-    }
-
-    /**
-     * Resolves the stored promise with populated message
-     * @param {string} corrId
-     * @param {AmqpMessage} msg
-     */
-    private onBatchEnd(corrId: string, msg: AmqpMessage): void {
-        const stored: IWaiting = this.waiting.get(corrId);
-        if (!stored) {
-            logger.warn(`Worker[type='amqprpc'] cannot resolve non-existing waiting promise[corrId=${corrId}]`);
-            return;
-        }
-
-        const resultHeaders = new Headers(msg.properties.headers);
-
-        let resultCode = ResultCode.MISSING_RESULT_CODE;
-        const claimedCode = parseInt(resultHeaders.getPFHeader(Headers.RESULT_CODE), 10);
-        if (claimedCode in ResultCode) {
-            resultCode = claimedCode;
-        }
-
-        const resultMessage = resultHeaders.getPFHeader(Headers.RESULT_MESSAGE) ?
-            resultHeaders.getPFHeader(Headers.RESULT_MESSAGE) : "";
-
-        stored.message.setResult({ code: resultCode, message: resultMessage });
-
-        // Resolves waiting promise
-        stored.resolveFn([stored.message]);
-
-        this.waiting.delete(corrId);
     }
 
     /**

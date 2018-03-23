@@ -25,9 +25,10 @@ export interface ICounterPublisher {
     /**
      *
      * @param {JobMessage} message
+     * @param {number} followersCount
      * @return {Promise<void>}
      */
-    send(message: JobMessage): Promise<void>;
+    send(message: JobMessage, followersCount?: number): Promise<void>;
 }
 
 /**
@@ -65,9 +66,10 @@ class CounterPublisher extends Publisher implements ICounterPublisher {
      * Sends the counter info message
      *
      * @param {JobMessage} message
+     * @param {number} followersCount
      * @return {Promise<void>}
      */
-    public send(message: JobMessage): Promise<void> {
+    public send(message: JobMessage, followersCount: number = null): Promise<void> {
         message.getHeaders().setPFHeader(Headers.TOPOLOGY_ID, this.settings.node_label.topology_id);
 
         const counterMessage = new CounterMessage(
@@ -75,7 +77,7 @@ class CounterPublisher extends Publisher implements ICounterPublisher {
             message.getHeaders().getRaw(),
             message.getResult().code, // 0 OK, >0 NOK
             message.getResult().message,
-            this.settings.followers.length,
+            followersCount !== null ? followersCount : this.settings.followers.length,
             message.getMultiplier(),
         );
 

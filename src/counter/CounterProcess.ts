@@ -1,6 +1,6 @@
 import logger from "../logger/Logger";
 import {default as CounterMessage} from "../message/CounterMessage";
-import {ResultCode} from "../message/ResultCode";
+import {ResultCode, ResultCodeGroup} from "../message/ResultCode";
 
 interface ICounterLog {
     resultCode: ResultCode;
@@ -67,7 +67,8 @@ class CounterProcess {
      */
     public static updateProcessInfo(processInfo: ICounterProcessInfo, cm: CounterMessage): ICounterProcessInfo {
         if (cm.getResultCode() === ResultCode.SUCCESS ||
-            cm.getResultCode() === ResultCode.DO_NOT_CONTINUE) {
+            cm.getResultGroup() === ResultCodeGroup.NON_STANDARD
+        ) {
             processInfo.ok += 1;
         } else {
             processInfo.nok += 1;
