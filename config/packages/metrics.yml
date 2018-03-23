@@ -9,4 +9,4 @@ parameters:
     influx.node_table: pipes_node
     influx.fpm_table: pipes_monolith_fpm
     influx.rabbit_table: rabbitmq_queue
-    influx.counter_table: pipes_counter
+    influx.counter_table: processes

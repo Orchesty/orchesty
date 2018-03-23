@@ -12,6 +12,7 @@ namespace Hanaboso\PipesFramework\Metrics;
 use DateTime;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Hanaboso\PipesFramework\Commons\Exception\EnumException;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Repository\NodeRepository;
@@ -19,6 +20,7 @@ use Hanaboso\PipesFramework\Metrics\Client\ClientInterface;
 use Hanaboso\PipesFramework\Metrics\Dto\MetricsDto;
 use Hanaboso\PipesFramework\Metrics\Enum\MetricsIntervalEnum;
 use Hanaboso\PipesFramework\Metrics\Exception\MetricsException;
+use Hanaboso\PipesFramework\Metrics\Retention\RetentionFactory;
 use Hanaboso\PipesFramework\TopologyGenerator\GeneratorUtils;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
@@ -54,7 +56,13 @@ class MetricsManager implements LoggerAwareInterface
     public const CPU_KERNEL_TIME    = 'fpm_cpu_kernel_time';
     public const REQUEST_TOTAL_TIME = 'sent_request_total_duration';
     public const MESSAGES           = 'messages';
-    public const PROCESS_DURATION   = 'counter_process_duration';
+    //    public const PROCESS_DURATION   = 'counter_process_duration';
+
+    public const MAX_TIME     = 'max.time';
+    public const MIN_TIME     = 'min.time';
+    public const AVG_TIME     = 'avg.time';
+    public const TOTAL_COUNT  = 'total.count';
+    public const FAILED_COUNT = 'failed.count';
 
     // ALIASES - COUNT
     private const PROCESSED_COUNT     = 'top_processed_count';
@@ -208,7 +216,7 @@ class MetricsManager implements LoggerAwareInterface
             self::CPU_KERNEL_TIME    => self::CPU_COUNT,
             self::REQUEST_TOTAL_TIME => self::REQUEST_COUNT,
             self::NODE_RESULT_ERROR  => self::REQUEST_ERROR_COUNT,
-            self::PROCESS_DURATION   => self::PROCESS_TIME_COUNT,
+            //            self::PROCESS_DURATION   => self::PROCESS_TIME_COUNT,
         ]);
         $select = self::addStringSeparator($select);
         $select .= self::getSumForSelect([
@@ -217,7 +225,7 @@ class MetricsManager implements LoggerAwareInterface
             self::CPU_KERNEL_TIME    => self::CPU_SUM,
             self::REQUEST_TOTAL_TIME => self::REQUEST_SUM,
             self::NODE_RESULT_ERROR  => self::REQUEST_ERROR_SUM,
-            self::PROCESS_DURATION   => self::PROCESS_TIME_SUM,
+            //            self::PROCESS_DURATION   => self::PROCESS_TIME_SUM,
         ]);
         $select = self::addStringSeparator($select);
         $select .= self::getMinForSelect([
@@ -226,7 +234,7 @@ class MetricsManager implements LoggerAwareInterface
             self::CPU_KERNEL_TIME    => self::CPU_MIN,
             self::REQUEST_TOTAL_TIME => self::REQUEST_MIN,
             self::MESSAGES           => self::QUEUE_MIN,
-            self::PROCESS_DURATION   => self::PROCESS_TIME_MIN,
+            //            self::PROCESS_DURATION   => self::PROCESS_TIME_MIN,
         ]);
         $select = self::addStringSeparator($select);
         $select .= self::getMaxForSelect([
@@ -235,7 +243,7 @@ class MetricsManager implements LoggerAwareInterface
             self::CPU_KERNEL_TIME    => self::CPU_MAX,
             self::REQUEST_TOTAL_TIME => self::REQUEST_MAX,
             self::MESSAGES           => self::QUEUE_MAX,
-            self::PROCESS_DURATION   => self::PROCESS_TIME_MAX,
+            //            self::PROCESS_DURATION   => self::PROCESS_TIME_MAX,
         ]);
 
         $where = [
@@ -259,15 +267,19 @@ class MetricsManager implements LoggerAwareInterface
         $dateTo   = $params['to'] ?? NULL;
         $from     = $this->counterTable;
 
-        $select = self::getCountForSelect([self::PROCESS_DURATION => self::PROCESS_TIME_COUNT]);
+        $select = self::getCountForSelect([self::AVG_TIME => self::PROCESS_TIME_COUNT]);
         $select = self::addStringSeparator($select);
-        $select .= self::getSumForSelect([self::PROCESS_DURATION => self::PROCESS_TIME_SUM]);
+        $select .= self::getSumForSelect([self::AVG_TIME => self::PROCESS_TIME_SUM]);
         $select = self::addStringSeparator($select);
-        $select .= self::getMinForSelect([self::PROCESS_DURATION => self::PROCESS_TIME_MIN]);
+        $select .= self::getMinForSelect([self::MIN_TIME => self::PROCESS_TIME_MIN]);
         $select = self::addStringSeparator($select);
-        $select .= self::getMaxForSelect([self::PROCESS_DURATION => self::PROCESS_TIME_MAX]);
+        $select .= self::getMaxForSelect([self::MAX_TIME => self::PROCESS_TIME_MAX]);
+        $select = self::addStringSeparator($select);
+        $select .= self::getSumForSelect([self::TOTAL_COUNT => self::REQUEST_ERROR_COUNT]);
+        $select = self::addStringSeparator($select);
+        $select .= self::getSumForSelect([self::FAILED_COUNT => self::REQUEST_ERROR_SUM]);
 
-        $where = [self::TOPOLOGY => $topology->getId(), self::NODE_RESULT_ERROR => 0];
+        $where = [self::TOPOLOGY => $topology->getId()];
 
         return $this->runQuery($select, $from, $where, NULL, $dateFrom, $dateTo);
     }
@@ -278,6 +290,7 @@ class MetricsManager implements LoggerAwareInterface
      *
      * @return array
      * @throws MetricsException
+     * @throws EnumException
      */
     public function getTopologyRequestCountMetrics(Topology $topology, array $params): array
     {
@@ -339,10 +352,11 @@ class MetricsManager implements LoggerAwareInterface
         }
 
         if ($dateFrom && $dateTo) {
-            $qb->setTimeRange(
-                (new DateTime($dateFrom))->getTimestamp(),
-                (new DateTime($dateTo))->modify('+ 1 Day')->getTimestamp()
-            );
+            $from = new DateTime($dateFrom);
+            $to   = new DateTime($dateTo);
+            $qb
+                ->setTimeRange($from->getTimestamp(), $to->getTimestamp())
+                ->retentionPolicy(RetentionFactory::getRetention($from, $to));
         }
         $this->logger->debug('Metrics was selected.', ['Query' => $qb->getQuery()]);
         try {
@@ -441,9 +455,7 @@ class MetricsManager implements LoggerAwareInterface
                     $result[$this->nodeTable][self::PROCESSED_COUNT] ?? '',
                     $result[$this->nodeTable][self::PROCESSED_SUM] ?? ''
                 );
-            $error
-                ->setTotal($result[$this->nodeTable][self::REQUEST_ERROR_COUNT] ?? '')
-                ->setErrors($result[$this->nodeTable][self::REQUEST_ERROR_SUM] ?? '');
+
         }
         if (isset($result[$this->rabbitTable])) {
             $queue
@@ -458,6 +470,9 @@ class MetricsManager implements LoggerAwareInterface
                     $result[$this->counterTable][self::PROCESS_TIME_COUNT] ?? '',
                     $result[$this->counterTable][self::PROCESS_TIME_SUM] ?? ''
                 );
+            $error
+                ->setTotal($result[$this->counterTable][self::REQUEST_ERROR_COUNT] ?? '')
+                ->setErrors($result[$this->counterTable][self::REQUEST_ERROR_SUM] ?? '');
         }
 
         return $this->generateOutput($queue, $waiting, $process, $cpu, $request, $error, $counter);
