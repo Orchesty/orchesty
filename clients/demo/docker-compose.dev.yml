@@ -109,10 +109,7 @@ services:
         REDIS_DB: '0'
         COUNTER_PREFETCH: '30'
         METRICS_HOST: 'kapacitor'
-        METRICS_PORT: '9092'
-      depends_on:
-        - redis
-        - rabbitmq
+        METRICS_PORT: '9100'
       command: './dist/src/bin/pipes.js start multi_counter'
       ports:
         - ${DEV_IP}:8005:8005
@@ -330,7 +327,7 @@ services:
         ## END STAGE
 
     kapacitor:
-        image: kapacitor:1.4
+        image: dkr.hanaboso.net/pipes/pipes/kapacitor:dev
         ## BEGIN DEV
         volumes:
           - ./stack/kapacitor.conf:/etc/kapacitor/kapacitor.conf
