@@ -333,6 +333,18 @@ services:
         #  - 27017:27017
         ## END STAGE
 
+    mariadb:
+        image: mariadb:10.3
+        command: "mysqld --innodb_flush_method=nosync"
+        environment:
+          MYSQL_ROOT_PASSWORD: root
+        volumes:
+          - mariadb:/var/lib/mysql
+        ## BEGIN STAGE
+        #ports:
+        #  - 3306:3306
+        ## END STAGE
+
     redis:
         image: redis:3.2-alpine
         ports:
@@ -500,6 +512,7 @@ volumes:
   elasticsearch: {}
   redis: {}
   influxdb: {}
+  mariadb: {}
 ## END DEV
 
 ## BEGIN STAGE
@@ -527,6 +540,12 @@ volumes:
 #    driver_opts:
 #      type: none
 #      device: /mnt/docker-volumes/${DEPLOYMENT_PREFIX}/mongodb
+#      o: bind
+#  mariadb:
+#    driver: local
+#    driver_opts:
+#      type: none
+#      device: /mnt/docker-volumes/${DEPLOYMENT_PREFIX}/mariadb
 #      o: bind
 #  rabbitmq:
 #    driver: local

@@ -23,7 +23,7 @@ parameters:
 			ca: %appDir%/../cert/ca.crt
 
 	mongo:
-		dbhost: mongo
+		dbhost: mongodb
 		dbname: api-demo
 		user: root
 		password: root
@@ -102,12 +102,33 @@ services:
 	mapping_form_factory:
 		class: App\Forms\MappingFormFactory
 
-	- Mongo(mongodb://%mongo.user%:%mongo.password%@%mongo.dbhost%)
-	- @Mongo::dbname
+mongo:
+	uri: mongodb://mongo
+	dbname: cmfile
+	documentsDir:
+		- %appDir%/../socialMultichannel/src/Documents
+
+doctrine:
+	host: mariadb
+	user: root
+	password: root
+	dbname: cm-apidemo
+
+console:
+	name: 'API DEMO'
+	version: '(endless version)'
 
 extensions:
 	cc_api: CcApi\Bridges\DI\CcApiExtension
 	- WebChemistry\Forms\Controls\DI\MultiplierExtension
 	social_multichannel: CleverCore\SocialMultichannel\DI\SocialMultichannelExtension
-	bazo_doctrine: Bazo\MongoDb\DI\DoctrineODMCommandsExtension
-	bazo_dm: Bazo\MongoDb\DI\DocumentManagerExtension
+
+	## Mongo
+	mongo: Bazo\MongoDb\DI\DocumentManagerExtension
+	mongocomm: Bazo\MongoDb\DI\DoctrineODMCommandsExtension
+
+	## Doctrine
+	console: 'Kdyby\Console\DI\ConsoleExtension'
+	events: 'Kdyby\Events\DI\EventsExtension'
+	annotations: 'Kdyby\Annotations\DI\AnnotationsExtension'
+	doctrine: 'Kdyby\Doctrine\DI\OrmExtension'
