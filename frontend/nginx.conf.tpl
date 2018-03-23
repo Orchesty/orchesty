@@ -67,8 +67,8 @@ http {
 	# resolve_ prefix before any hostname causes it to be periodicaly replaced
 	# with its current IP address by upstream_resolver.sh
 
-	upstream monolith-fpm-upstream {
-		server resolve_monolith-fpm:9000;
+	upstream monolith-api-upstream {
+		server resolve_monolith-api;
 		keepalive 64;
 	}
 
@@ -153,14 +153,9 @@ http {
 			fastcgi_pass notification-center-fpm-upstream;
 		}
 
-		# FCGI monolith route (API fallback)
+		# monolith route (API fallback)
 		location / {
-			include fastcgi_params;
-			fastcgi_param SCRIPT_NAME $php_app_index;
-			fastcgi_param SCRIPT_FILENAME $php_webroot/$php_app_index;
-			fastcgi_param PATH_INFO $request_uri;
-			fastcgi_keep_conn on;
-			fastcgi_pass monolith-fpm-upstream;
+			proxy_pass http://monolith-api-upstream;
 		}
 	}
 }

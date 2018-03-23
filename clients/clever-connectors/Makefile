@@ -1,4 +1,4 @@
-.PHONY: init-dev init-prod generate build-monolith-fpm push-monolith-fpm
+.PHONY: init-dev init-prod generate build-monolith push-monolith
 
 # Client-specific vars
 
@@ -6,7 +6,9 @@ CLIENT_DIR="clients/clever-connectors"
 
 TAG?=dev
 TAG_MONOLITH_FPM?=$(TAG)
-IMAGE_MONOLITH_FPM=dkr.hanaboso.net/pipes/client-cm/monolith-fpm:$(TAG_MONOLITH_FPM)
+IMAGE_MONOLITH_FPM=dkr.hanaboso.net/pipes/client-cm/monolith:$(TAG_MONOLITH_FPM)
+TAG_MONOLITH?=$(TAG)
+IMAGE_MONOLITH=dkr.hanaboso.net/pipes/client-cm/monolith:$(TAG_MONOLITH_FPM)
 
 
 # Generic vars
@@ -38,17 +40,17 @@ init-dev: .env
 	$(DC_DEV) pull
 	rm -rf pipes-api/var/cache/*
 	$(DC_DEV) up -d --force-recreate --remove-orphans
-#	$(DE_DEV) monolith-fpm composer global require hirak/prestissimo
-	$(DE_DEV) monolith-fpm composer install --ignore-platform-reqs
+#	$(DE_DEV) monolith-api composer global require hirak/prestissimo
+	$(DE_DEV) monolith-api composer install --ignore-platform-reqs
 
 destroy-dev:
 	$(DC_DEV) down -v
 
 composer-update-dev:
-	$(DE_DEV) monolith-fpm composer global require hirak/prestissimo
-	$(DE_DEV) monolith-fpm composer update --ignore-platform-reqs
+	$(DE_DEV) monolith-api composer global require hirak/prestissimo
+	$(DE_DEV) monolith-api composer update --ignore-platform-reqs
 
-build-monolith-fpm:
+build-monolith:
 	cd pipes-api && \
 	: Disable dependency symlinking in composer and do a fresh install && \
 	rm -rf vendor && \
@@ -70,10 +72,10 @@ build-monolith-fpm:
 		${IMAGE_PHP_DEV} \
 		bash -c 'composer install --no-dev --optimize-autoloader && bin/console cache:warmup' && \
 	: Build an app docker image from the artifacts && \
-	docker build -f docker/Dockerfile.monolith-fpm -t ${IMAGE_MONOLITH_FPM} .
+	docker build -f docker/Dockerfile.monolith -t ${IMAGE_MONOLITH} .
 
-push-monolith-fpm:
-	docker push $(IMAGE_MONOLITH_FPM)
+push-monolith:
+	docker push $(IMAGE_MONOLITH)
 
 docker-compose.ci.yml:
 	# Comment out any port forwarding
@@ -85,4 +87,4 @@ generate:
 	curl -X POST -H content-type=application/json http://127.0.0.66/api/gateway/test/topology/generate
 
 cache-clear:
-	$(DE_DEV) monolith-fpm bin/console cache:clear
+	$(DE_DEV) monolith-api bin/console cache:clear

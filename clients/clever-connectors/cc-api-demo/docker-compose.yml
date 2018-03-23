@@ -37,3 +37,27 @@ services:
       - ${DEV_IP}:80:80
     depends_on:
       - app
+
+
+
+  # Storage
+  mongodb:
+    image: mongo:3.4
+    ports:
+      - ${DEV_IP}:27017:27017
+    volumes:
+      - mongodb:/data/db
+
+  mariadb:
+    image: mariadb:10.3
+    command: "mysqld --innodb_flush_method=nosync"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - ${DEV_IP}:3306:3306
+    volumes:
+      - mariadb:/var/lib/mysql
+
+volumes:
+  mongodb: {}
+  mariadb: {}

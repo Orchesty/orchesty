@@ -4,7 +4,7 @@ TODO
 
 | Service         | Gracious shutdown | x | y | z |
 |-----------------|-------------------|---|---|---|
-| monolith-fpm    | ✔ *T              |   |   |   |
+| monolith-api    | ✔ *T              |   |   |   |
 | frontend        | ✔ *T              |   |   |   |
 
 

@@ -1,4 +1,4 @@
-FROM dkr.hanaboso.net/hanaboso/symfony3-base:latest
+FROM dkr.hanaboso.net/hanaboso/symfony3-base:php-7.2
 
 COPY ./ ./
 

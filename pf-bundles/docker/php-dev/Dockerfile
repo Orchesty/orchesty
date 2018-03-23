@@ -1,17 +1,7 @@
-FROM dkr.hanaboso.net/hanaboso/symfony3-base
+FROM dkr.hanaboso.net/hanaboso/symfony3-base:php-7.2
 
 RUN apt-get update && \
-    apt-get install -y apt-transport-https ca-certificates curl gnupg2 software-properties-common && \
-    curl -fsSL https://download.docker.com/linux/$(. /etc/os-release; echo "$ID")/gpg | apt-key add - && \
-    add-apt-repository \
-       "deb [arch=amd64] https://download.docker.com/linux/$(. /etc/os-release; echo "$ID") \
-       $(lsb_release -cs) \
-       stable"
-
-
-
-RUN apt-get update && \
-    apt-get install -y git mc sudo docker-ce libpng-dev && \
+    apt-get install -y git mc sudo nginx-extras libpng-dev && \
     curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer && \
     composer global require "hirak/prestissimo:^0.3" && \
     pecl install xdebug && \
@@ -20,7 +10,11 @@ RUN apt-get update && \
     apt-get clean && apt-get autoremove -y && \
     rm -rf /var/lib/apt/lists/* /var/lib/log/* /var/log/* /tmp/* /var/tmp/*
 
-RUN groupmod -g 800 docker
+# Nginx & FPM config
+ENV PHP_APP_INDEX index.php
+COPY nginx.conf /etc/nginx/nginx.conf
+COPY php-fpm.conf /usr/local/etc/php-fpm.d/zzz-local.conf
+RUN mkdir -p /var/log/nginx
 
 # Container has the same ssh as the host machine
 ENV SSH_AUTH_SOCK=/tmp/bound-ssh-agent

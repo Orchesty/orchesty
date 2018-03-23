@@ -233,7 +233,7 @@ final class SystemControllerTest extends ControllerTestCaseAbstract
             'system' => 'null.user.group',
             'user'   => 'someUser',
         ]);
-        $this->assertEquals(1, count($system));
+        $this->assertEquals(1, count([$system]));
         $this->assertEquals(200, $response->status);
         $this->assertEquals(
             (object) array_merge($this->getArrayDataForAssert($system), [

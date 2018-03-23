@@ -9,6 +9,7 @@ use CleverConnectors\AppBundle\Enum\TypeEnum;
 use CleverConnectors\AppBundle\Model\DataLayout\LayoutField;
 use CleverConnectors\AppBundle\Model\Systems\Dto\ActionDto;
 use CleverConnectors\AppBundle\Utils\TopologyNameUtils;
+use Exception;
 use Nette\Utils\Json;
 use Tests\ControllerTestCaseAbstract;
 
@@ -16,7 +17,7 @@ use Tests\ControllerTestCaseAbstract;
  * Class LayoutControllerTest
  *
  * @coversDefaultClass CleverConnectors\AppBundle\Controller\LayoutController
- * @package Tests\Controller\AppBundle\Controller
+ * @package            Tests\Controller\AppBundle\Controller
  */
 final class LayoutControllerTest extends ControllerTestCaseAbstract
 {
@@ -53,7 +54,7 @@ final class LayoutControllerTest extends ControllerTestCaseAbstract
             'action'        => $action,
         ]);
 
-        $this->assertEquals(1, count($layout));
+        $this->assertEquals(1, count([$layout]));
         $this->assertEquals(200, $response->status);
 
         $content = Json::decode(Json::encode($response->content), TRUE);
@@ -62,6 +63,8 @@ final class LayoutControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers ::updateAction()
+     *
+     * @throws Exception
      */
     public function testUpdate(): void
     {
@@ -102,7 +105,7 @@ final class LayoutControllerTest extends ControllerTestCaseAbstract
 
         $layout = $this->dm->getRepository(DataLayout::class)->find($layout->getId());
 
-        $this->assertEquals(1, count($layout));
+        $this->assertEquals(1, count([$layout]));
         $this->assertEquals(200, $response->status);
 
         $content = Json::decode(Json::encode($response->content), TRUE);
@@ -114,6 +117,8 @@ final class LayoutControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers ::deleteAction()
+     *
+     * @throws Exception
      */
     public function testDelete(): void
     {

@@ -8,6 +8,7 @@ use CleverConnectors\AppBundle\Enum\TypeEnum;
 use CleverConnectors\AppBundle\Model\MapTemplate\MapField;
 use CleverConnectors\AppBundle\Model\Systems\Dto\ActionDto;
 use CleverConnectors\AppBundle\Utils\TopologyNameUtils;
+use Exception;
 use Nette\Utils\Json;
 use Tests\ControllerTestCaseAbstract;
 
@@ -56,7 +57,7 @@ final class MapControllerTest extends ControllerTestCaseAbstract
             'direction'     => MapTemplate::DIRECTION_IN,
         ]);
 
-        $this->assertEquals(1, count($map));
+        $this->assertEquals(1, count([$map]));
         $this->assertEquals(200, $response->status);
 
         $content = Json::decode(Json::encode($response->content), TRUE);
@@ -65,6 +66,8 @@ final class MapControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers ::updateAction()
+     *
+     * @throws Exception
      */
     public function testUpdate(): void
     {
@@ -109,7 +112,7 @@ final class MapControllerTest extends ControllerTestCaseAbstract
 
         $map = $this->dm->getRepository(MapTemplate::class)->find($map->getId());
 
-        $this->assertEquals(1, count($map));
+        $this->assertEquals(1, count([$map]));
         $this->assertEquals(200, $response->status);
 
         $content = Json::decode(Json::encode($response->content), TRUE);
@@ -118,6 +121,8 @@ final class MapControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers ::deleteAction()
+     *
+     * @throws Exception
      */
     public function testDelete(): void
     {
