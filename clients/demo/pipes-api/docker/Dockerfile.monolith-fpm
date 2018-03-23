@@ -1,0 +1,21 @@
+FROM dkr.hanaboso.net/hanaboso/symfony3-base:latest
+
+RUN apt-get update && \
+    apt-get install -y apt-transport-https && \
+    curl -fsSL https://download.docker.com/linux/$(. /etc/os-release; echo "$ID")/gpg | apt-key add - && \
+    echo "deb [arch=amd64] https://download.docker.com/linux/$(. /etc/os-release; echo "$ID") \
+      $(sed -nr 's/VERSION=".* \((.+)\)"/\1/p' /etc/os-release) \
+      stable" > /etc/apt/sources.list.d/docker.list && \
+    apt-get update && \
+    apt-get install -y docker-ce && \
+    apt-get clean
+
+ENV APP_ENV=prod
+ENV APP_DEBUG=0
+
+COPY ./ /var/www/html/
+
+RUN mkdir /srv/topology && \
+    chmod 0777 /srv/topology
+
+RUN chown -R www-data:www-data ./var
