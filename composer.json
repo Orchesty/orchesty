@@ -2,7 +2,7 @@
   "name": "hanaboso/pipes-framework",
   "license": "proprietary",
   "description": "PipesFramework for Symfony",
-  "version": "1.0.15",
+  "version": "1.0.16",
   "autoload": {
     "psr-4": {
       "Hanaboso\\PipesFramework\\": "src/"
@@ -31,7 +31,7 @@
     "mtdowling/cron-expression": "^1.2",
     "nette/http": "^2.4",
     "nette/utils": "^2.4",
-    "paragonie/halite": "3.4",
+    "paragonie/halite": "^4.4",
     "php": ">=7.1",
     "php-http/client-common": "^1.7",
     "php-http/message": "^1.6",

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "b61bf37171c908bee2589bc5e6c9406a",
+    "content-hash": "1e2d05d0a77d6ada6d6e7fdb32efed53",
     "packages": [
         {
             "name": "alcaeus/mongo-php-adapter",
@@ -1221,16 +1221,16 @@
         },
         {
             "name": "doctrine/mongodb-odm-bundle",
-            "version": "3.4.1",
+            "version": "3.4.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/DoctrineMongoDBBundle.git",
-                "reference": "a18b75b6e48a13c070df14364349d9920fbfee72"
+                "reference": "2e1790760942ee41d9f3d81f494fa80c8f0712a6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/DoctrineMongoDBBundle/zipball/a18b75b6e48a13c070df14364349d9920fbfee72",
-                "reference": "a18b75b6e48a13c070df14364349d9920fbfee72",
+                "url": "https://api.github.com/repos/doctrine/DoctrineMongoDBBundle/zipball/2e1790760942ee41d9f3d81f494fa80c8f0712a6",
+                "reference": "2e1790760942ee41d9f3d81f494fa80c8f0712a6",
                 "shasum": ""
             },
             "require": {
@@ -1247,7 +1247,7 @@
             },
             "require-dev": {
                 "doctrine/data-fixtures": "@dev",
-                "phpunit/phpunit": "^5.7",
+                "phpunit/phpunit": "^5.7 || ^6.5",
                 "symfony/form": "^2.7 || ^3.0 || ^4.0",
                 "symfony/phpunit-bridge": "^2.7 || ^3.0 || ^4.0",
                 "symfony/yaml": "^2.7 || ^3.0 || ^4.0"
@@ -1258,7 +1258,7 @@
             "type": "symfony-bundle",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "3.4-dev"
+                    "dev-master": "3.5-dev"
                 }
             },
             "autoload": {
@@ -1291,7 +1291,7 @@
                 "persistence",
                 "symfony"
             ],
-            "time": "2017-11-18T08:21:36+00:00"
+            "time": "2018-03-22T17:49:16+00:00"
         },
         {
             "name": "doctrine/orm",
@@ -2686,51 +2686,67 @@
         },
         {
             "name": "paragonie/halite",
-            "version": "v3.4.0",
+            "version": "v4.4.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/paragonie/halite.git",
-                "reference": "e1c194ea9bfa8600b5e0c1ac66659d59dddcceca"
+                "reference": "eacdf396747c7d0019cef944305c6d05e99485d5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/paragonie/halite/zipball/e1c194ea9bfa8600b5e0c1ac66659d59dddcceca",
-                "reference": "e1c194ea9bfa8600b5e0c1ac66659d59dddcceca",
+                "url": "https://api.github.com/repos/paragonie/halite/zipball/eacdf396747c7d0019cef944305c6d05e99485d5",
+                "reference": "eacdf396747c7d0019cef944305c6d05e99485d5",
                 "shasum": ""
             },
             "require": {
                 "paragonie/constant_time_encoding": "^2",
-                "paragonie/sodium_compat": "^1",
-                "php": "^7"
+                "paragonie/sodium_compat": "^1.6",
+                "php": "^7.2"
             },
             "require-dev": {
-                "phpunit/phpunit": "^6"
-            },
-            "suggest": {
-                "ext-libsodium": "^1.0.6 - Legacy",
-                "ext-sodium": "^2.0.4 - Preferred"
+                "phpunit/phpunit": "^7",
+                "vimeo/psalm": "^0|^1"
             },
             "type": "library",
             "autoload": {
                 "psr-4": {
-                    "ParagonIE\\Halite\\": "src"
-                },
-                "files": [
-                    "stub/Sodium.stub.php"
-                ]
+                    "ParagonIE\\Halite\\": "./src"
+                }
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
-                "GPL3"
+                "MPL-2.0"
             ],
             "authors": [
                 {
                     "name": "Paragon Initiative Enterprises",
-                    "email": "info@paragonie.com"
+                    "email": "info@paragonie.com",
+                    "homepage": "https://paragonie.com"
                 }
             ],
             "description": "High-level cryptography interface powered by libsodium",
-            "time": "2018-01-29T15:42:43+00:00"
+            "homepage": "https://github.com/paragonie/halite",
+            "keywords": [
+                "Argon2i",
+                "BLAKE",
+                "BLAKE2",
+                "BLAKE2b",
+                "Curve25519",
+                "Ed25519",
+                "X25519",
+                "Xsalsa20",
+                "argon2",
+                "cryptography",
+                "encryption",
+                "ext-sodium",
+                "hashing",
+                "libsodium",
+                "password",
+                "public-key",
+                "signatures",
+                "sodium"
+            ],
+            "time": "2018-02-27T17:28:03+00:00"
         },
         {
             "name": "paragonie/random_compat",
@@ -2782,16 +2798,16 @@
         },
         {
             "name": "paragonie/sodium_compat",
-            "version": "v1.6.0",
+            "version": "v1.6.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/paragonie/sodium_compat.git",
-                "reference": "1f6e5682eff4a5a6a394b14331a1904f1740e432"
+                "reference": "9857e17bf9c1464485d8cc804eb13f2bcddc4cf0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/paragonie/sodium_compat/zipball/1f6e5682eff4a5a6a394b14331a1904f1740e432",
-                "reference": "1f6e5682eff4a5a6a394b14331a1904f1740e432",
+                "url": "https://api.github.com/repos/paragonie/sodium_compat/zipball/9857e17bf9c1464485d8cc804eb13f2bcddc4cf0",
+                "reference": "9857e17bf9c1464485d8cc804eb13f2bcddc4cf0",
                 "shasum": ""
             },
             "require": {
@@ -2860,7 +2876,7 @@
                 "secret-key cryptography",
                 "side-channel resistant"
             ],
-            "time": "2018-02-15T05:50:20+00:00"
+            "time": "2018-03-21T17:08:08+00:00"
         },
         {
             "name": "php-http/client-common",
