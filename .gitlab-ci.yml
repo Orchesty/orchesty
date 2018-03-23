@@ -219,7 +219,7 @@ monolith-demo:
   script:
     - ": This job is being run all the time because the most changes happen in its dependencies. Can anyone come up with an optimization?"
     - cd clients/demo
-    - make build-monolith-fpm push-monolith-fpm TAG=${CI_BUILD_REF_NAME}
+    - make build-monolith push-monolith TAG=${CI_BUILD_REF_NAME}
 
 stage-cm1:
   stage: stage3
