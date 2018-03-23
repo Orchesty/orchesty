@@ -49,8 +49,8 @@ export default {
     defaultArgs: {
       activeTab: 'nodes',
       metricsRange: {
-        since: moment().subtract(1, 'minutes').format('L HH:mm:ss'),
-        till: moment().format('L HH:mm:ss'),
+        since: moment().subtract(1, 'minutes').format(),
+        till: moment().format(),
       },
       interval: intervalType.FOUR_WEEK.value
     },
