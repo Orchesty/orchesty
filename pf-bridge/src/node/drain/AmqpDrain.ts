@@ -81,17 +81,6 @@ class AmqpDrain implements IDrain, IPartialForwarder {
      * @param {JobMessage} message
      */
     public forward(message: JobMessage): void {
-
-        logger.warn("DRAIN WILL FORWARD", { data: JSON.stringify({
-                fwdSelf: message.getForwardSelf(),
-                group: message.getResultGroup(),
-                result: message.getResult(),
-            })});
-
-        if (!message.getForwardSelf()) {
-            return;
-        }
-
         if (message.getResultGroup() === ResultCodeGroup.NON_STANDARD) {
             this.forwardNonStandard(message);
             return;
@@ -136,6 +125,10 @@ class AmqpDrain implements IDrain, IPartialForwarder {
 
             case ResultCode.DO_NOT_CONTINUE:
                 this.forwardToCounterOnly(message);
+                break;
+
+            case ResultCode.SPLITTER_BATCH_END:
+                // do nothing, final counter message already sent by splitter
                 break;
 
             default:

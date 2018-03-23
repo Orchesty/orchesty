@@ -2,7 +2,7 @@ import {INodeLabel} from "../topology/Configurator";
 import AMessage from "./AMessage";
 import Headers from "./Headers";
 import IMessage from "./IMessage";
-import { ResultCode } from "./ResultCode";
+import {ResultCode, ResultCodeGroup} from "./ResultCode";
 
 interface ICounterMessageContent {
     result: { code: ResultCode, message: string };
@@ -61,6 +61,15 @@ class CounterMessage extends AMessage implements IMessage {
      */
     public getResultCode(): ResultCode {
         return this.resultCode;
+    }
+
+    /**
+     * Returns the first char of ResultCode that should equal to one of ResultCodeGroup
+     *
+     * @return {ResultCodeGroup}
+     */
+    public getResultGroup(): ResultCodeGroup {
+        return parseInt(`${this.resultCode}`.charAt(0), 10);
     }
 
     /**
