@@ -80,11 +80,9 @@ func checkEnvironment() {
 	docker.ContainerList(types.ContainerListOptions{})
 	log.Info("Docker daemon socket check - OK")
 
-	commands.WriteFile(
-		fmt.Sprintf("%s/%s", viper.GetString("generator.path"), "check"),
-		"check.txt",
-		[]byte("check"),
-	)
+	dir := fmt.Sprintf("%s/%s", viper.GetString("generator.path"), "check")
+	commands.WriteFile(dir, "check.txt", []byte("check content"))
+	commands.RemoveDirectory(dir)
 	log.Info("Topology folder writeable - OK")
 }
 
