@@ -1,6 +1,7 @@
 import {Channel, Options} from "amqplib";
 import {Connection} from "amqplib-plus/dist/lib/Connection";
 import {Publisher} from "amqplib-plus/dist/lib/Publisher";
+import * as uuid4 from "uuid/v4";
 import logger from "../../../logger/Logger";
 import Headers from "../../../message/Headers";
 import JobMessage from "../../../message/JobMessage";
@@ -73,19 +74,30 @@ class FollowersPublisher extends Publisher {
             return [Promise.resolve()];
         }
 
-        const contentType = message.getHeaders().getHeader(Headers.CONTENT_TYPE);
+        const originalContentType = message.getHeaders().getHeader(Headers.CONTENT_TYPE);
         message.getHeaders().removeHeader(Headers.CONTENT_TYPE);
 
+        const splitIntoChildProcesses = this.settings.followers.length > 1;
+        const processId = message.getHeaders().getPFHeader(Headers.PROCESS_ID);
+
         const promises: Array<Promise<void>> = [];
-        const options: Options.Publish = {
-            contentType,
-            headers: message.getHeaders().getRaw(),
-            type: "job_message",
-            timestamp: Date.now(),
-            appId: this.settings.node_label.id,
-        };
 
         for (const follower of this.settings.followers) {
+            const newHeaders = new Headers(message.getHeaders().getRaw());
+
+            if (splitIntoChildProcesses) {
+                newHeaders.setPFHeader(Headers.PARENT_ID, processId);
+                newHeaders.setPFHeader(Headers.PROCESS_ID, uuid4());
+            }
+
+            const options: Options.Publish = {
+                headers: newHeaders.getRaw(),
+                contentType: originalContentType,
+                type: "job_message",
+                timestamp: Date.now(),
+                appId: this.settings.node_label.id,
+            };
+
             const prom = this.publish(
                 follower.exchange.name,
                 follower.routing_key,

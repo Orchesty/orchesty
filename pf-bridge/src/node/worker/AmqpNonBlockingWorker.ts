@@ -30,16 +30,16 @@ class AmqpNonBlockingWorker extends AAmqpWorker {
         super(connection, settings);
     }
 
-    /**
-     *
-     * @param {JobMessage} msg
-     * @return {Promise<JobMessage[]>}
-     */
-    public async processData(msg: JobMessage): Promise<JobMessage[]> {
-        await this.counterPublisher.send(this.createMessageCopy(msg), 1);
-
-        return super.processData(msg);
-    }
+    // /**
+    //  *
+    //  * @param {JobMessage} msg
+    //  * @return {Promise<JobMessage[]>}
+    //  */
+    // public async processData(msg: JobMessage): Promise<JobMessage[]> {
+    //     await this.counterPublisher.send(this.createMessageCopy(msg), 1);
+    //
+    //     return super.processData(msg);
+    // }
 
     /**
      * Updates the JobMessage object stored in memory
@@ -84,7 +84,7 @@ class AmqpNonBlockingWorker extends AAmqpWorker {
         }
 
         stored.message.setResult(this.getResultFromBatchEnd(msg));
-        await this.counterPublisher.send(stored.message, 0);
+        // await this.counterPublisher.send(stored.message, 0);
         stored.resolveFn([stored.message]); // Resolves waiting promise
         this.waiting.delete(corrId);
     }

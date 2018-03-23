@@ -124,7 +124,7 @@ class AmqpDrain implements IDrain, IPartialForwarder {
                 break;
 
             case ResultCode.DO_NOT_CONTINUE:
-                this.forwardToCounterOnly(message);
+                this.forwardToCounterOnly(message, 0);
                 break;
 
             case ResultCode.SPLITTER_BATCH_END:
@@ -230,12 +230,13 @@ class AmqpDrain implements IDrain, IPartialForwarder {
     /**
      *
      * @param {JobMessage} message
+     * @param {number} followersCount
      */
-    private async forwardToCounterOnly(message: JobMessage): Promise<void> {
+    private async forwardToCounterOnly(message: JobMessage, followersCount: number = null): Promise<void> {
         try {
             message.setMultiplier(0);
             message.getMeasurement().markFinished();
-            await this.counterPublisher.send(message);
+            await this.counterPublisher.send(message, followersCount);
         } catch (e) {
             logger.error("AmqpDrain could not send result message to counter", logger.ctxFromMsg(message, e));
         }

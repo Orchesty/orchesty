@@ -6,6 +6,7 @@ import IStoppable from "../IStoppable";
 import logger from "../logger/Logger";
 import {default as CounterMessage} from "../message/CounterMessage";
 import Headers from "../message/Headers";
+import {ResultCode} from "../message/ResultCode";
 import Terminator from "../terminator/Terminator";
 import {INodeLabel} from "../topology/Configurator";
 import CounterConsumer from "./CounterConsumer";
@@ -185,14 +186,6 @@ export default class Counter implements ICounter, IStoppable {
         try {
             const cm = Counter.createCounterMessage(msg);
 
-            logger.info(`Counter message received: "${cm.toString()}"`, {
-                topology_id: cm.getTopologyId(),
-                node_id: cm.getNodeId(),
-                correlation_id: cm.getCorrelationId(),
-                process_id: cm.getProcessId(),
-                parent_id: cm.getParentId(),
-            });
-
             return new Promise((resolve, reject) => {
                 this.distributor.add(cm.getTopologyId(), cm.getProcessId(), {msg: cm, resolve, reject});
 
@@ -257,8 +250,11 @@ export default class Counter implements ICounter, IStoppable {
         processInfo = CounterProcess.updateProcessInfo(processInfo, cm);
 
         if (CounterProcess.isProcessFinished(processInfo)) {
+
+            logger.info(`Process Finished: ${processInfo.process_id}`);
+
             processInfo.end_timestamp = Date.now();
-            await this.onJobFinished(processInfo);
+            await this.onJobFinished(processInfo, cm);
             await this.storage.remove(topologyId, processId);
             return Promise.resolve();
         } else {
@@ -271,11 +267,16 @@ export default class Counter implements ICounter, IStoppable {
      * Publish message informing that job is completed
      *
      * @param process
+     * @param cm
      */
-    private async onJobFinished(process: ICounterProcessInfo): Promise<void> {
+    private async onJobFinished(process: ICounterProcessInfo, cm: CounterMessage): Promise<void> {
         if (!process) {
             logger.warn(`Counter onJobFinished received invalid process info data: "${process}"`);
             return;
+        }
+
+        if (process.parent_id !== "") {
+            return await this.evaluateParent(process, cm);
         }
 
         this.publishResult(process);
@@ -283,6 +284,26 @@ export default class Counter implements ICounter, IStoppable {
 
         this.sendMetrics(process);
         this.logFinished(process);
+    }
+
+    /**
+     *
+     * @param {ICounterProcessInfo} process
+     * @param {CounterMessage} cm
+     * @return {Promise<void>}
+     */
+    private async evaluateParent(process: ICounterProcessInfo, cm: CounterMessage): Promise<void> {
+        // make object copy and change id
+        const headers = new Headers(cm.getHeaders().getRaw());
+        headers.setPFHeader(Headers.PARENT_ID, "");
+        headers.setPFHeader(Headers.PROCESS_ID, process.parent_id);
+
+        // TODO - unknown error instead of some concrete error from sub-process (take it from message maybe)
+        const result = process.success === true ? ResultCode.SUCCESS : ResultCode.UNKNOWN_ERROR;
+
+        const parentCm = new CounterMessage(cm.getNodeLabel(), headers.getRaw(), result, "sub process evaluated", 0, 1);
+
+        return await this.updateProcessInfo(parentCm);
     }
 
     /**
