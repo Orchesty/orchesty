@@ -27,16 +27,18 @@ class DateRangeInput extends React.Component {
   datePickerChanged(e, picker){
     const onChange = this.props.onChange ? this.props.onChange : this.props.input.onChange;
     if (onChange){
-      onChange(picker.startDate.format('L HH:mm:ss'), picker.endDate.format('L HH:mm:ss'));
+      onChange(picker.startDate.format(), picker.endDate.format());
      // onChange(picker.startDate.format('L'), picker.endDate.format('L'));
     }
   }
 
   render() {
     const {label, input, readOnly, meta: {touched, error} = {}, value} = this.props;
-    const valueStr = typeof value == 'object' ? `${value.since} - ${value.till}` : value;
+    const since = moment(value.since);
+    const till = moment(value.till);
+    const valueStr = typeof value == 'object' ? `${since.format('DD.MM.YYYY HH:mm:ss')} - ${till.format('DD.MM.YYYY HH:mm:ss')}` : value;
     return (
-      <DateRangePicker ranges={rangesMetrics} autoUpdateInput={false}  timePicker24Hour timePicker timePickerSeconds opens="left" onApply={this.datePickerChanged} startDate={value ? value.since : undefined} endDate={value ? value.till : undefined}>
+      <DateRangePicker ranges={rangesMetrics} autoUpdateInput={false} locale={{format: 'DD.MM.YYYY HH:mm:ss'}}  timePicker24Hour timePicker timePickerSeconds opens="left" onApply={this.datePickerChanged} startDate={value ? since : undefined} endDate={value ? till : undefined}>
         <input type="text" className={'form-control' + (touched && error ? ' parsley-error' : '')} onChange={()=>{}} value={valueStr} {...input} readOnly={readOnly}/>
       </DateRangePicker>
     );
