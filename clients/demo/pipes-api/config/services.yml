@@ -42,3 +42,5 @@ services:
     hbpf.custom_node.google:
         class: Demo\CustomNode\GoogleConnector
         public: true
+        arguments:
+            - '@hbpf.transport.curl_manager'
