@@ -145,7 +145,7 @@ class Node implements IStoppable {
                 bridge_job_waiting_duration: msg.getMeasurement().getWaitingDuration(),
                 bridge_job_worker_duration: msg.getMeasurement().getWorkerDuration(),
                 bridge_job_total_duration: msg.getMeasurement().getNodeTotalDuration(),
-                bridge_job_result_success: isSuccess ? 1 : 0,
+                bridge_job_result_success: isSuccess ? "true" : "false",
             };
 
             this.metrics.addTag("node_id", msg.getNodeLabel().node_id);
