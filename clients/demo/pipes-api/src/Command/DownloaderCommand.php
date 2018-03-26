@@ -31,18 +31,12 @@ use Throwable;
 class DownloaderCommand extends Command
 {
 
+    protected static $defaultName = 'downloader:run';
+
     /**
      * @var TimerInterface
      */
     private $heartbeat;
-
-    /**
-     * DownloaderCommand constructor.
-     */
-    public function __construct()
-    {
-        parent::__construct('downloader:run');
-    }
 
     /**
      * @param InputInterface  $input

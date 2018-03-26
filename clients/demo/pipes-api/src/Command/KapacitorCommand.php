@@ -25,11 +25,11 @@ class KapacitorCommand extends Command
 {
 
     /**
-     * DownloaderCommand constructor.
+     *
      */
-    public function __construct()
+    protected function configure()
     {
-        parent::__construct('kapacitor:run');
+        $this->setName('kapacitor:run');
     }
 
     /**
