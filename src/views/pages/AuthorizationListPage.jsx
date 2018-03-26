@@ -6,7 +6,7 @@ import * as applicationActions from 'actions/applicationActions';
 
 import AuthorizationListTable from 'components/authorization/AuthorizationListTable';
 import Page from 'wrappers/Page';
-
+import Panel from 'wrappers/Panel';
 
 function mapStateToProps(state, ownProps){
   const {authorization, process} = state;
@@ -29,4 +29,4 @@ function mapActionsToProps(dispatch, ownProps){
   }
 }
 
-export default Page(connect(mapStateToProps, mapActionsToProps)(AuthorizationListTable));
+export default Page(Panel(connect(mapStateToProps, mapActionsToProps)(AuthorizationListTable), {title: 'Authorizations'}));
