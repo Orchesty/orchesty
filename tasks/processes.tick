@@ -17,7 +17,7 @@ var total = data
         //.as('total')
 
 var totalFailed = data
-    |where(lambda: "counter_process_result" == 'false')
+    |where(lambda: "counter_process_result" == FALSE)
     |count('counter_process_result')
         //.as('failed')
 
