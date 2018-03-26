@@ -20,7 +20,7 @@ services:
             - "@hbpf.metrics.metrics_client"
             - "@doctrine_mongodb.odm.default_document_manager"
             - "%influx.node_table%"
-            - "%influx.fpm_table%"
+            - "%influx.monolith_table%"
             - "%influx.rabbit_table%"
             - "%influx.counter_table%"
         calls:

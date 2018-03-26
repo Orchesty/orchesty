@@ -5,7 +5,7 @@ services:
     hbpf.system_metrics_listener:
         class: Hanaboso\PipesFramework\Commons\Listener\SystemMetricsListener
         arguments:
-            - '@hbpf.influxdb_sender'
+            - '@hbpf.influxdb_sender_monolith'
         calls:
             - ['setLogger', ['@monolog.logger.commons']]
         tags:
@@ -68,8 +68,14 @@ services:
         calls:
             - ['setLogger', ['@monolog.logger.commons']]
 
-    hbpf.influxdb_sender:
+    hbpf.influxdb_sender_connector:
         class: Hanaboso\PipesFramework\Commons\Metrics\InfluxDbSender
         arguments:
             - '@udp_metrics_sender'
-            - '%influx.fpm_table%'
+            - '%influx.connector_table%'
+
+    hbpf.influxdb_sender_monolith:
+        class: Hanaboso\PipesFramework\Commons\Metrics\InfluxDbSender
+        arguments:
+            - '@udp_metrics_sender'
+            - '%influx.monolith_table%'
