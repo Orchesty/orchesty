@@ -30,4 +30,4 @@ docker run --rm \
 chmod +x dist/src/bin/pipes.js
 
 docker build -t ${IMAGE} .
-#docker push ${IMAGE}
+docker push ${IMAGE}
