@@ -38,3 +38,7 @@ services:
     hbpf.custom_node.split-file:
         class: Demo\CustomNode\SplitFileBatch
         public: true
+
+    hbpf.custom_node.google:
+        class: Demo\CustomNode\GoogleConnector
+        public: true
