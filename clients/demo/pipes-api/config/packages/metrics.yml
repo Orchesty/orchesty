@@ -1,6 +1,6 @@
 parameters:
-    influx.host: influxdb
-    influx.udp_port: 8089
+    influx.host: kapacitor
+    influx.udp_port: 9100
     influx.api_port: 8086
     influx.user: admin
     influx.password: password
