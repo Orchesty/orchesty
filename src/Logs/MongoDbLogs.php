@@ -95,11 +95,13 @@ class MongoDbLogs implements LogsInterface
             }
         }
 
+        $count = $logsQuery->count();
+
         return [
             'limit'  => $limit,
             'offset' => $offset,
             'count'  => (string) $logsQuery->count(TRUE),
-            'total'  => (string) $logsQuery->count(),
+            'total'  => $count >= 1000 ? (string) 1000 : (string) $count,
             'items'  => $result,
         ];
     }
