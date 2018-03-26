@@ -12,7 +12,7 @@ function update {
 	# resolve all hosts
 	declare -A ADDRS
 	for HOST in $HOSTS; do
-		IP=$(host -4 -W 5 $HOST | sed -nr 's/^.*has address ([0-9.]+)/\1/p')
+		IP=$(host -4 -W 5 $HOST | sed -nr 's/^.*has address ([0-9.]+)/\1/p' | head -1)
 		if [ "$IP" == "" ]; then
 			# we need SOME ip to be set
 			IP=$BLACKHOLE
