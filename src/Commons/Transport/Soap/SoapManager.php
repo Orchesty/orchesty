@@ -92,8 +92,12 @@ final class SoapManager implements SoapManagerInterface, LoggerAwareInterface
             );
             $times            = CurlMetricUtils::getTimes($startTimes);
             $info             = $request->getHeader()->getParams();
-            CurlMetricUtils::sendCurlMetrics($this->influxSender, $times, $request->getUri()->__toString(),
-                $info['node_id'][0] ?? NULL);
+            CurlMetricUtils::sendCurlMetrics(
+                $this->influxSender,
+                $times,
+                $info['node_id'][0] ?? NULL,
+                $info['correlation_id'][0] ?? NULL
+            );
 
             return $this->handleResponse(
                 $soapCallResponse,

@@ -127,8 +127,7 @@ class SystemMetricsListener implements EventSubscriberInterface, LoggerAwareInte
                 MetricsEnum::CPU_KERNEL_TIME        => $times[CurlMetricUtils::KEY_KERNEL_TIME],
             ],
             [
-                MetricsEnum::HOST           => gethostname(),
-                MetricsEnum::URI            => str_replace('=','',base64_encode($request->getRequestUri())),
+                //MetricsEnum::HOST           => gethostname(),
                 MetricsEnum::TOPOLOGY_ID    => $headers->get(PipesHeaders::createKey(PipesHeaders::TOPOLOGY_ID)),
                 MetricsEnum::CORRELATION_ID => $headers->get(PipesHeaders::createKey(PipesHeaders::CORRELATION_ID)),
                 MetricsEnum::NODE_ID        => $headers->get(PipesHeaders::createKey(PipesHeaders::NODE_ID)),
