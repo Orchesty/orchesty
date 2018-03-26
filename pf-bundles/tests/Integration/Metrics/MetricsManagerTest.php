@@ -164,7 +164,7 @@ final class MetricsManagerTest extends KernelTestCaseAbstract
     private function getManager(): MetricsManager
     {
         $nodeTable    = $this->container->getParameter('influx.node_table');
-        $fpmTable     = $this->container->getParameter('influx.fpm_table');
+        $fpmTable     = $this->container->getParameter('influx.monolith_table');
         $rabbitTable  = $this->container->getParameter('influx.rabbit_table');
         $counterTable = $this->container->getParameter('influx.counter_table');
 

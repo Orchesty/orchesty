@@ -7,6 +7,7 @@ parameters:
     influx.password: password
     influx.database: pipes
     influx.node_table: pipes_node
-    influx.fpm_table: pipes_monolith_fpm
+    influx.connector_table: connector
+    influx.monolith_table: monolith
     influx.rabbit_table: rabbitmq_queue
     influx.counter_table: processes

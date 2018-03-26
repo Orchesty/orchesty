@@ -125,7 +125,7 @@ services:
         class: CleverConnectors\AppBundle\Transport\Curl\CMCurlManager
         arguments:
             - '@hbpf.transport.curl_client_factory'
-            - '@hbpf.influxdb_sender'
+            - '@hbpf.influxdb_sender_connector'
             - '%clevermonitor%'
 
     cc.install.manager:
