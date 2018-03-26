@@ -250,9 +250,6 @@ export default class Counter implements ICounter, IStoppable {
         processInfo = CounterProcess.updateProcessInfo(processInfo, cm);
 
         if (CounterProcess.isProcessFinished(processInfo)) {
-
-            logger.info(`Process Finished: ${processInfo.process_id}`);
-
             processInfo.end_timestamp = Date.now();
             await this.onJobFinished(processInfo, cm);
             await this.storage.remove(topologyId, processId);
@@ -271,7 +268,7 @@ export default class Counter implements ICounter, IStoppable {
      */
     private async onJobFinished(process: ICounterProcessInfo, cm: CounterMessage): Promise<void> {
         if (!process) {
-            logger.warn(`Counter onJobFinished received invalid process info data: "${process}"`);
+            logger.error(`Counter onJobFinished received invalid process info data: "${process}"`);
             return;
         }
 
@@ -283,7 +280,7 @@ export default class Counter implements ICounter, IStoppable {
         this.terminator.tryTerminate(process.topology);
 
         this.sendMetrics(process);
-        this.logFinished(process);
+        this.logFinishedProcess(process);
     }
 
     /**
@@ -293,15 +290,14 @@ export default class Counter implements ICounter, IStoppable {
      * @return {Promise<void>}
      */
     private async evaluateParent(process: ICounterProcessInfo, cm: CounterMessage): Promise<void> {
-        // make object copy and change id
+        // make object copy and change id to fake parental counter message
         const headers = new Headers(cm.getHeaders().getRaw());
         headers.setPFHeader(Headers.PARENT_ID, "");
         headers.setPFHeader(Headers.PROCESS_ID, process.parent_id);
 
-        // TODO - unknown error instead of some concrete error from sub-process (take it from message maybe)
-        const result = process.success === true ? ResultCode.SUCCESS : ResultCode.UNKNOWN_ERROR;
+        const result = process.success === true ? ResultCode.SUCCESS : ResultCode.CHILD_PROCESS_ERROR;
 
-        const parentCm = new CounterMessage(cm.getNodeLabel(), headers.getRaw(), result, "sub process evaluated", 0, 1);
+        const parentCm = new CounterMessage(cm.getNodeLabel(), headers.getRaw(), result, "sub-process evaluated", 0, 1);
 
         return await this.updateProcessInfo(parentCm);
     }
@@ -328,18 +324,12 @@ export default class Counter implements ICounter, IStoppable {
         try {
             this.metrics.removeTag("node_id");
             this.metrics.addTag("topology_id", process.topology.split("-")[0]);
-            const metricMsg = await this.metrics.send({
+            await this.metrics.send({
                 counter_process_result: process.ok === process.total,
                 counter_process_duration: process.end_timestamp - process.start_timestamp,
                 counter_process_ok_count: process.ok,
                 counter_process_fail_count: process.nok,
             }, true);
-            logger.debug(`Counter sent metrics[${metricMsg}].`, {
-                node_id: "counter",
-                correlation_id: process.correlation_id,
-                process_id: process.process_id,
-                topology_id: process.topology,
-            });
         } catch (e) {
             logger.warn("Unable to send counter metrics.", {
                 error: e,
@@ -354,13 +344,14 @@ export default class Counter implements ICounter, IStoppable {
      *
      * @param {ICounterProcessInfo} process
      */
-    private logFinished(process: ICounterProcessInfo): void {
+    private logFinishedProcess(process: ICounterProcessInfo): void {
         logger.info(
-            `Counter job finished. Status: ${process.success}`,
+            `Finished process [processId='${process.process_id}]', parentId='${process.parent_id}'`,
             {
                 node_id: "counter",
                 correlation_id: process.correlation_id,
                 process_id: process.process_id,
+                parent_id: process.parent_id,
                 topology_id: process.topology,
                 data: JSON.stringify({total: process.total, ok_count: process.ok, nok_count: process.nok}),
             },

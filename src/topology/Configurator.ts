@@ -143,7 +143,7 @@ class Configurator {
 
         let i = 0;
         skeleton.nodes.forEach((nodeSkeleton: INodeConfigSkeleton) => {
-            const node = this.createNodeConfig(skeleton.id, nodeSkeleton, i, isMulti);
+            const node = this.createNodeConfig(skeleton.topology_id, nodeSkeleton, i, isMulti);
             nodes.push(node);
             i++;
         });
@@ -153,7 +153,7 @@ class Configurator {
             topology_id: skeleton.topology_id,
             topology_name: skeleton.topology_name,
             nodes,
-            counter: skeleton.counter || this.getCounterDefaultSettings(isMulti, skeleton.id),
+            counter: skeleton.counter || this.getCounterDefaultSettings(isMulti, skeleton.topology_id),
         };
     }
 
