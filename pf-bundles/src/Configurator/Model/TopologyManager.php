@@ -572,7 +572,7 @@ class TopologyManager
     {
         if ($type == TypeEnum::CRON) {
             try {
-                $this->cronManager->patch($node, empty($cron));
+                $this->cronManager->patch($node, empty($node->getCron()));
             } catch (CronException | CurlException $e) {
                 throw new TopologyException(
                     sprintf('Saving of Node [%s] & cron [%s] failed.', $schemaId, $type),

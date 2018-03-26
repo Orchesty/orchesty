@@ -6,7 +6,12 @@
   "autoload": {
     "psr-4": {
       "CleverCore\\Commons\\": "commonsSrc/",
-      "CleverCore\\SocialMultichannel\\": "socialMultichannel/src"
+      "CleverCore\\SocialMultichannel\\": "socialMultichannel/src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Tests\\": ["socialMultichannel/tests/"]
     }
   },
   "require": {

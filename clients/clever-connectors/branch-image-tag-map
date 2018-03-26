@@ -9,10 +9,10 @@ declare -A BRANCH_IMAGE_TAG_MAP=(
   # branch: perf
   [FRONTEND_perf]="perf"
 
-  # branch: nginx-in-monolith
-  [MONOLITH_nginx-in-monolith]="nginx-in-monolith"
-  [PHPDEV_nginx-in-monolith]="nginx-in-monolith"
-  [FRONTEND_nginx-in-monolith]="nginx-in-monolith"
-  [NJSBUILD_default]="nginx-in-monolith"
+  # branch: nim-fixes
+  [MONOLITH_nim-fixes]="nim-fixes"
+  [PHPDEV_nim-fixes]="nim-fixes"
+  [FRONTEND_nim-fixes]="nim-fixes"
+  [NJSBUILD_default]="nim-fixes"
 
 )
