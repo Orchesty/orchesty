@@ -158,7 +158,7 @@ final class StartingPointTest extends TestCase
     public function testCreateQueueName(): void
     {
         $name = StartingPoint::createQueueName($this->topology, $this->node);
-        $this->assertSame('pipes.1-top.1-mag-cus', $name);
+        $this->assertSame('pipes.1.1-mag-cus', $name);
     }
 
     /**
