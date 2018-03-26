@@ -158,6 +158,9 @@ frontend:
     - skip_unmodified $DIR
     - cd $DIR
     - make build image push TAG=${CI_BUILD_REF_NAME}
+  only:
+    - dev
+    - master
 
 pf-bridge:
   stage: stage2
