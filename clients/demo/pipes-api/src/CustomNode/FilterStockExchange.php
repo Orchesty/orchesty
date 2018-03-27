@@ -50,7 +50,10 @@ class FilterStockExchange implements CustomNodeInterface
             return $dto->setData(json_encode($data[$this->key]));
         }
 
-        throw new Exception('This is a test error message.');
+        if (mt_rand(1, 10) == 5) {
+            throw new \Exception('My test error exception');
+        }
+
         $dto->setData('');
 
         return $dto->addHeader(PipesHeaders::createKey(PipesHeaders::RESULT_CODE), "1003");

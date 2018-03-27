@@ -6,11 +6,11 @@ var connectorData = stream
    |from()
        .database('pipes')
        .retentionPolicy('default')
-       .measurement('connector')
+       .measurement('connectors')
    |window()
        .period(sample)
        .every(sample)
-   |groupBy('topology_id', 'node_id')
+   |groupBy('node_id')
 
 // Monolith data
 

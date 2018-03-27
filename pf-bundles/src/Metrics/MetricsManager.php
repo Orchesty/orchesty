@@ -77,6 +77,7 @@ class MetricsManager implements LoggerAwareInterface
     private const CPU_COUNT           = 'cpu_count';
     private const REQUEST_COUNT       = 'request_count';
     private const REQUEST_ERROR_COUNT = 'request_error_count';
+    private const NODE_TOTAL_SUM      = 'total_count';
     private const PROCESS_TIME_COUNT  = 'process_time_count';
 
     // ALIASES - SUM
@@ -236,7 +237,6 @@ class MetricsManager implements LoggerAwareInterface
             self::AVG_WAIT_TIME    => self::WAIT_COUNT,
             self::CPU_KERNEL_AVG   => self::CPU_COUNT,
             self::AVG_TIME         => self::REQUEST_COUNT,
-            self::FAILED_COUNT     => self::REQUEST_ERROR_COUNT,
         ]);
         $select = self::addStringSeparator($select);
         $select .= self::getSumForSelect([
@@ -245,6 +245,7 @@ class MetricsManager implements LoggerAwareInterface
             self::CPU_KERNEL_AVG   => self::CPU_SUM,
             self::AVG_TIME         => self::REQUEST_SUM,
             self::FAILED_COUNT     => self::REQUEST_ERROR_SUM,
+            self::TOTAL_COUNT      => self::NODE_TOTAL_SUM,
         ]);
         $select = self::addStringSeparator($select);
         $select .= self::getMinForSelect([
@@ -292,7 +293,7 @@ class MetricsManager implements LoggerAwareInterface
         $select = self::addStringSeparator($select);
         $select .= self::getMaxForSelect([self::MAX_TIME => self::PROCESS_TIME_MAX]);
         $select = self::addStringSeparator($select);
-        $select .= self::getSumForSelect([self::TOTAL_COUNT => self::REQUEST_ERROR_COUNT]);
+        $select .= self::getSumForSelect([self::TOTAL_COUNT => self::NODE_TOTAL_SUM]);
         $select = self::addStringSeparator($select);
         $select .= self::getSumForSelect([self::FAILED_COUNT => self::REQUEST_ERROR_SUM]);
 
@@ -475,7 +476,7 @@ class MetricsManager implements LoggerAwareInterface
                     $result[$this->nodeTable][self::PROCESSED_SUM] ?? ''
                 );
             $error
-                ->setTotal($result[$this->nodeTable][self::REQUEST_ERROR_COUNT] ?? '')
+                ->setTotal($result[$this->nodeTable][self::NODE_TOTAL_SUM] ?? '')
                 ->setErrors($result[$this->nodeTable][self::REQUEST_ERROR_SUM] ?? '');
 
         }
@@ -493,7 +494,7 @@ class MetricsManager implements LoggerAwareInterface
                     $result[$this->counterTable][self::PROCESS_TIME_SUM] ?? ''
                 );
             $error
-                ->setTotal($result[$this->counterTable][self::REQUEST_ERROR_COUNT] ?? '')
+                ->setTotal($result[$this->counterTable][self::NODE_TOTAL_SUM] ?? '')
                 ->setErrors($result[$this->counterTable][self::REQUEST_ERROR_SUM] ?? '');
         }
 
