@@ -1,17 +1,17 @@
 import * as winston from "winston";
 
-const nodeEnv = process.env.NODE_ENV || "production";
+const nodeEnv = process.env.NODE_ENV || "prod";
 
 let level;
 switch (nodeEnv) {
-    case "production":
-        level = "info";
+    case "debug":
+        level = "debug";
         break;
     case "test":
-        level = "warn";
+        level = "alert";
         break;
     default:
-        level = "debug";
+        level = "info";
 }
 
 const transports = [
@@ -23,10 +23,5 @@ const transports = [
 ];
 
 const winstonLogger = new (winston.Logger)({ transports });
-
-// Do not output anything when running test
-if (nodeEnv === "test") {
-    winstonLogger.remove(transports[0]);
-}
 
 export default winstonLogger;

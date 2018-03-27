@@ -30,7 +30,7 @@ class ResequencerWorker implements IWorker {
     public processData(msg: JobMessage): Promise<JobMessage[]> {
         const sId = msg.getSequenceId();
         const waitingFor = this.resequencer.getWaitingForSequenceId(msg.getProcessId());
-        logger.info(`Worker[type=resequencer] accepted message with sequenceId="${sId} \
+        logger.debug(`Worker[type=resequencer] accepted message with sequenceId="${sId} \
             while waiting for sequenceId="${waitingFor}"`, logger.ctxFromMsg(msg));
 
         const bufferedMessages = this.resequencer.getMessages(msg);
@@ -51,7 +51,7 @@ class ResequencerWorker implements IWorker {
      * @return {Promise<boolean>}
      */
     public isWorkerReady(): Promise<boolean> {
-        logger.info(`Worker[type="resequencer"] isWorkerReady() called. Responding with true.`);
+        logger.debug(`Worker[type="resequencer"] isWorkerReady() called. Responding with true.`);
 
         return Promise.resolve(true);
     }

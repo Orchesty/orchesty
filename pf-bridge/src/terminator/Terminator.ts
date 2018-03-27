@@ -1,4 +1,5 @@
 import * as express from "express";
+import {Request, Response} from "express";
 import {Container} from "hb-utils/dist/lib/Container";
 import ICounterStorage from "../counter/storage/ICounterStorage";
 import logger from "../logger/Logger";
@@ -48,28 +49,23 @@ export default class Terminator {
      */
     public async tryTerminate(topologyId: string): Promise<boolean> {
         if (!this.requestedTerminations.has(topologyId)) {
-            return Promise.resolve(false);
+            return false;
         }
 
-        const isSomeRunning = await this.storage.hasSome(topologyId);
-        if (isSomeRunning) {
-            return Promise.resolve(false);
+        const isRunning = await this.storage.hasSome(topologyId);
+        if (isRunning) {
+            return false;
         }
+
+        logger.debug("Topology can be terminated now.", {topology_id: topologyId});
 
         if (this.multiProbe) {
             this.multiProbe.removeTopology(topologyId);
         }
 
-        // Should terminate -> send request and expect being terminated
-        const terminateOptions = {
-            url: this.requestedTerminations.get(topologyId),
-            method: "GET",
-            timeout: 5000,
-        };
+        this.sendTerminateRequest(topologyId);
 
-        RequestSender.send(terminateOptions);
-
-        return Promise.resolve(true);
+        return true;
     }
 
     /**
@@ -79,27 +75,49 @@ export default class Terminator {
         const server = express();
 
         server.get(ROUTE_TOPOLOGY_TERMINATE, (req, resp) => {
-            if (!req.params || !req.params.topologyId) {
-                return resp.status(400).send("Missing topologyId");
+            try {
+                logger.info(`Terminator received termination request. ${JSON.stringify(req.params)}`);
+                this.handleTerminateRequest(req, resp);
+
+                resp.status(200).send("Topology will be terminated as soon as possible.");
+            } catch (e) {
+                resp.status(400).send(e.message);
             }
-
-            const topologyId = req.params.topologyId;
-            const reqHeaders: any = req.headers;
-            const headers = new Headers(reqHeaders);
-            if (!headers.hasPFHeader(Headers.TOPOLOGY_DELETE_URL)) {
-                return resp.status(400).send(`Missing PF header "pf-${Headers.TOPOLOGY_DELETE_URL}"`);
-            }
-
-            resp.status(200).send("Topology will be terminated as soon as possible.");
-
-            logger.info(`Terminator received termination request. ${JSON.stringify(req.params)}`);
-
-            this.requestedTerminations.set(topologyId, headers.getPFHeader(Headers.TOPOLOGY_DELETE_URL));
-
-            this.tryTerminate(topologyId);
         });
 
         this.httpServer = server;
+    }
+
+    private handleTerminateRequest(req: Request, resp: Response): void {
+        if (!req.params || !req.params.topologyId) {
+            throw new Error("Missing topologyId");
+        }
+
+        const topologyId = req.params.topologyId;
+        const reqHeaders: any = req.headers;
+        const headers = new Headers(reqHeaders);
+        if (!headers.hasPFHeader(Headers.TOPOLOGY_DELETE_URL)) {
+            throw new Error(`Missing PF header "pf-${Headers.TOPOLOGY_DELETE_URL}"`);
+        }
+
+        this.requestedTerminations.set(topologyId, headers.getPFHeader(Headers.TOPOLOGY_DELETE_URL));
+
+        this.tryTerminate(topologyId);
+    }
+
+    /**
+     * Sends http request to url previously given
+     *
+     * @param {string} topologyId
+     */
+    private sendTerminateRequest(topologyId: string) {
+        const terminateOptions = {
+            url: this.requestedTerminations.get(topologyId),
+            method: "GET",
+            timeout: 5000,
+        };
+
+        RequestSender.send(terminateOptions);
     }
 
 }

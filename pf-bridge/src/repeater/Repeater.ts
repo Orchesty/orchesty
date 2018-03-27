@@ -75,7 +75,7 @@ class Repeater implements IStoppable {
                     return;
                 }
 
-                logger.info(
+                logger.debug(
                     `Found ${toResend.length} messages to resend. Next check in ${this.settings.check_timeout}ms.`,
                     { node_name: "repeater" },
                 );
