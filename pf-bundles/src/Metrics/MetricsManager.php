@@ -52,13 +52,6 @@ class MetricsManager implements LoggerAwareInterface
     // METRICS
     public const MESSAGES = 'messages';
 
-    //    public const NODE_RESULT_ERROR = 'bridge_job_result_error';
-    //    public const WAIT_TIME = 'bridge_job_waiting_duration';
-    //    public const NODE_PROCESS_TIME = 'bridge_job_worker_duration';
-    //    public const REQUEST_TOTAL_TIME = 'sent_request_total_duration';
-    //    public const CPU_KERNEL_TIME    = 'fpm_cpu_kernel_time';
-    //    public const PROCESS_DURATION   = 'counter_process_duration';
-
     public const MAX_WAIT_TIME = 'job_max.waiting';
     public const MIN_WAIT_TIME = 'job_min.waiting';
     public const AVG_WAIT_TIME = 'avg_waiting.time';
@@ -235,7 +228,6 @@ class MetricsManager implements LoggerAwareInterface
             $this->nodeTable,
             $this->fpmTable,
             $this->rabbitTable,
-            //$this->counterTable,
             $this->connectorTable
         );
 
@@ -245,7 +237,6 @@ class MetricsManager implements LoggerAwareInterface
             self::CPU_KERNEL_AVG   => self::CPU_COUNT,
             self::AVG_TIME         => self::REQUEST_COUNT,
             self::FAILED_COUNT     => self::REQUEST_ERROR_COUNT,
-            //            self::PROCESS_DURATION   => self::PROCESS_TIME_COUNT,
         ]);
         $select = self::addStringSeparator($select);
         $select .= self::getSumForSelect([
@@ -254,7 +245,6 @@ class MetricsManager implements LoggerAwareInterface
             self::CPU_KERNEL_AVG   => self::CPU_SUM,
             self::AVG_TIME         => self::REQUEST_SUM,
             self::FAILED_COUNT     => self::REQUEST_ERROR_SUM,
-            //            self::PROCESS_DURATION   => self::PROCESS_TIME_SUM,
         ]);
         $select = self::addStringSeparator($select);
         $select .= self::getMinForSelect([
@@ -263,7 +253,6 @@ class MetricsManager implements LoggerAwareInterface
             self::CPU_KERNEL_MIN   => self::CPU_MIN,
             self::MIN_TIME         => self::REQUEST_MIN,
             self::MESSAGES         => self::QUEUE_MIN,
-            //            self::PROCESS_DURATION   => self::PROCESS_TIME_MIN,
         ]);
         $select = self::addStringSeparator($select);
         $select .= self::getMaxForSelect([
@@ -272,7 +261,6 @@ class MetricsManager implements LoggerAwareInterface
             self::CPU_KERNEL_MAX   => self::CPU_MAX,
             self::MAX_TIME         => self::REQUEST_MAX,
             self::MESSAGES         => self::QUEUE_MAX,
-            //            self::PROCESS_DURATION   => self::PROCESS_TIME_MAX,
         ]);
 
         $where = [
@@ -461,12 +449,14 @@ class MetricsManager implements LoggerAwareInterface
                     $result[$this->fpmTable][self::CPU_COUNT] ?? '',
                     $result[$this->fpmTable][self::CPU_SUM] ?? ''
                 );
+        }
+        if (isset($result[$this->connectorTable])) {
             $request
-                ->setMin($result[$this->fpmTable][self::REQUEST_MIN] ?? '')
-                ->setMax($result[$this->fpmTable][self::REQUEST_MAX] ?? '')
+                ->setMin($result[$this->connectorTable][self::REQUEST_MIN] ?? '')
+                ->setMax($result[$this->connectorTable][self::REQUEST_MAX] ?? '')
                 ->setAvg(
-                    $result[$this->fpmTable][self::REQUEST_COUNT] ?? '',
-                    $result[$this->fpmTable][self::REQUEST_SUM] ?? ''
+                    $result[$this->connectorTable][self::REQUEST_COUNT] ?? '',
+                    $result[$this->connectorTable][self::REQUEST_SUM] ?? ''
                 );
         }
         if (isset($result[$this->nodeTable])) {
@@ -484,6 +474,9 @@ class MetricsManager implements LoggerAwareInterface
                     $result[$this->nodeTable][self::PROCESSED_COUNT] ?? '',
                     $result[$this->nodeTable][self::PROCESSED_SUM] ?? ''
                 );
+            $error
+                ->setTotal($result[$this->nodeTable][self::REQUEST_ERROR_COUNT] ?? '')
+                ->setErrors($result[$this->nodeTable][self::REQUEST_ERROR_SUM] ?? '');
 
         }
         if (isset($result[$this->rabbitTable])) {
