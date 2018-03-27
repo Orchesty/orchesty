@@ -38,7 +38,7 @@ class TopologyRepository extends DocumentRepository
      */
     public function getTotalCount(): int
     {
-        return $this->createQueryBuilder()->count()->getQuery()->execute();
+        return $this->createQueryBuilder()->field('deleted')->equals(FALSE)->count()->getQuery()->execute();
     }
 
     /**

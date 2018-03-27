@@ -48,22 +48,18 @@ export default class Terminator {
      * Checks if topology can be terminated and if so, send http request about it
      */
     public async tryTerminate(topologyId: string): Promise<boolean> {
-        if (!this.requestedTerminations.has(topologyId)) {
+        const canBeTerminated = await this.canBeTerminated(topologyId);
+
+        if (!canBeTerminated) {
+            logger.debug(
+                "Topology cannot be terminated right now. Waiting for topology processes to be finished.",
+                {topology_id: topologyId},
+            );
+
             return false;
         }
 
-        const isRunning = await this.storage.hasSome(topologyId);
-        if (isRunning) {
-            return false;
-        }
-
-        logger.debug("Topology can be terminated now.", {topology_id: topologyId});
-
-        if (this.multiProbe) {
-            this.multiProbe.removeTopology(topologyId);
-        }
-
-        this.sendTerminateRequest(topologyId);
+        this.terminateTopology(topologyId);
 
         return true;
     }
@@ -74,10 +70,9 @@ export default class Terminator {
     private prepareHttpServer() {
         const server = express();
 
-        server.get(ROUTE_TOPOLOGY_TERMINATE, (req, resp) => {
+        server.get(ROUTE_TOPOLOGY_TERMINATE, async (req, resp) => {
             try {
-                logger.info(`Terminator received termination request. ${JSON.stringify(req.params)}`);
-                this.handleTerminateRequest(req, resp);
+                await this.handleTerminateRequest(req, resp);
 
                 resp.status(200).send("Topology will be terminated as soon as possible.");
             } catch (e) {
@@ -88,7 +83,13 @@ export default class Terminator {
         this.httpServer = server;
     }
 
-    private handleTerminateRequest(req: Request, resp: Response): void {
+    /**
+     * Handles HTTP request requesting topology termination
+     *
+     * @param {e.Request} req
+     * @param {e.Response} resp
+     */
+    private async handleTerminateRequest(req: Request, resp: Response): Promise<void> {
         if (!req.params || !req.params.topologyId) {
             throw new Error("Missing topologyId");
         }
@@ -100,17 +101,49 @@ export default class Terminator {
             throw new Error(`Missing PF header "pf-${Headers.TOPOLOGY_DELETE_URL}"`);
         }
 
+        logger.info(
+            `Terminator received termination request.`,
+            {topology_id: topologyId, data: JSON.stringify({url: headers.getPFHeader(Headers.TOPOLOGY_DELETE_URL)})},
+        );
+
         this.requestedTerminations.set(topologyId, headers.getPFHeader(Headers.TOPOLOGY_DELETE_URL));
+
+        const canBeTerminated = await this.canBeTerminated(topologyId);
+        if (!canBeTerminated) {
+            logger.info(
+                "Topology cannot be terminated right now. Waiting for topology processes to be finished.",
+                {topology_id: topologyId},
+            );
+        }
 
         this.tryTerminate(topologyId);
     }
 
     /**
-     * Sends http request to url previously given
+     *
+     * @param {string} topologyId
+     * @return {Promise<void>}
+     */
+    private async canBeTerminated(topologyId: string): Promise<boolean> {
+        if (!this.requestedTerminations.has(topologyId)) {
+            return false;
+        }
+
+        const isRunning = await this.storage.hasSome(topologyId);
+
+        return !isRunning;
+    }
+
+    /**
+     * Removes topology from multi-probe and send request to previously given url
      *
      * @param {string} topologyId
      */
-    private sendTerminateRequest(topologyId: string) {
+    private terminateTopology(topologyId: string): void {
+        if (this.multiProbe) {
+            this.multiProbe.removeTopology(topologyId);
+        }
+
         const terminateOptions = {
             url: this.requestedTerminations.get(topologyId),
             method: "GET",

@@ -139,7 +139,7 @@ class Node implements IStoppable {
     private async sendBridgeMetrics(msg: JobMessage): Promise<void> {
         try {
             const isSuccess = msg.getResult().code === ResultCode.SUCCESS ||
-                msg.getResultGroup() !== ResultCodeGroup.NON_STANDARD;
+                msg.getResultGroup() === ResultCodeGroup.NON_STANDARD;
 
             const measurements = {
                 bridge_job_waiting_duration: msg.getMeasurement().getWaitingDuration(),
