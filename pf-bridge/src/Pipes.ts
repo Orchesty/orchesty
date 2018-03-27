@@ -54,6 +54,7 @@ class Pipes implements INodeConfigProvider {
      * @return {Promise<IStoppable[]>}
      */
     public async startMultiBridge(): Promise<IStoppable[]> {
+        logger.debug("debug debug");
         const topo = this.getTopologyConfig(true);
         const proms: Node[] = [];
 

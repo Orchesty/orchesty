@@ -65,7 +65,7 @@ class HttpWorker implements IWorker {
         return new Promise((resolve) => {
             Object.assign(reqParams, this.settings.opts);
 
-            logger.info(
+            logger.debug(
                 `Worker[type='http'] sent request to ${reqParams.url}. Headers: ${JSON.stringify(reqParams.headers)}`,
                 logger.ctxFromMsg(msg),
             );
@@ -118,7 +118,7 @@ class HttpWorker implements IWorker {
             const nodeId = this.settings.node_label.id;
             const reqParams = { method: "GET", url: this.getUrl(this.settings.status_path)};
 
-            logger.info(`Worker[type'http'] asking worker if is ready on ${reqParams.url}`, {node_id: nodeId});
+            logger.debug(`Worker[type'http'] asking worker if is ready on ${reqParams.url}`, {node_id: nodeId});
 
             request(reqParams, (err, response) => {
                 if (err) {
@@ -136,7 +136,7 @@ class HttpWorker implements IWorker {
                     return resolve(false);
                 }
 
-                logger.info("Worker[type'http'] ready", { node_id: nodeId });
+                logger.debug("Worker[type'http'] ready", { node_id: nodeId });
 
                 return resolve(true);
             });
@@ -230,7 +230,7 @@ class HttpWorker implements IWorker {
         responseHeaders: Headers,
         result: IResult,
     ) {
-        logger.info("Worker[type='http'] received valid response.", logger.ctxFromMsg(msg));
+        logger.debug("Worker[type='http'] received valid response.", logger.ctxFromMsg(msg));
 
         if (!responseBody) {
             responseBody = "";
