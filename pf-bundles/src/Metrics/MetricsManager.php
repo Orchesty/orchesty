@@ -381,11 +381,11 @@ class MetricsManager implements LoggerAwareInterface
         }
 
         if ($dateFrom && $dateTo) {
-            $from = new DateTime($dateFrom);
-            $to   = new DateTime($dateTo);
+            $fromDate = new DateTime($dateFrom);
+            $to       = new DateTime($dateTo);
             $qb
-                ->setTimeRange($from->getTimestamp(), $to->getTimestamp())
-                ->retentionPolicy(RetentionFactory::getRetention($from, $to));
+                ->setTimeRange($fromDate->getTimestamp(), $to->getTimestamp())
+                ->from($this->addRetentionPolicy($from, $fromDate, $to));
         }
         $this->logger->debug('Metrics was selected.', ['Query' => $qb->getQuery()]);
         try {
@@ -672,6 +672,27 @@ class MetricsManager implements LoggerAwareInterface
         }
 
         return $ret;
+    }
+
+    /**
+     * @param string   $fromTables
+     * @param DateTime $from
+     * @param DateTime $to
+     *
+     * @return string
+     */
+    private function addRetentionPolicy(string $fromTables, DateTime $from, DateTime $to): string
+    {
+        $out = '';
+        foreach (explode(',', $fromTables) as $item) {
+            if (!empty($out)) {
+                $out .= ',';
+            }
+
+            $out .= sprintf('"%s".%s', RetentionFactory::getRetention($from, $to), $item);
+        }
+
+        return $out;
     }
 
 }
