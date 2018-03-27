@@ -50,14 +50,22 @@ class MetricsManager implements LoggerAwareInterface
     public const QUEUE    = 'queue';
 
     // METRICS
-    public const WAIT_TIME         = 'bridge_job_waiting_duration';
-    public const NODE_PROCESS_TIME = 'bridge_job_worker_duration';
-    public const NODE_RESULT_ERROR = 'bridge_job_result_error';
-    public const MESSAGES          = 'messages';
+    public const MESSAGES = 'messages';
 
+    //    public const NODE_RESULT_ERROR = 'bridge_job_result_error';
+    //    public const WAIT_TIME = 'bridge_job_waiting_duration';
+    //    public const NODE_PROCESS_TIME = 'bridge_job_worker_duration';
     //    public const REQUEST_TOTAL_TIME = 'sent_request_total_duration';
     //    public const CPU_KERNEL_TIME    = 'fpm_cpu_kernel_time';
     //    public const PROCESS_DURATION   = 'counter_process_duration';
+
+    public const MAX_WAIT_TIME = 'job_max.waiting';
+    public const MIN_WAIT_TIME = 'job_min.waiting';
+    public const AVG_WAIT_TIME = 'avg_waiting.time';
+
+    public const MAX_PROCESS_TIME = 'job_max.process';
+    public const MIN_PROCESS_TIME = 'job_min.process';
+    public const AVG_PROCESS_TIME = 'avg_process.time';
 
     public const MAX_TIME = 'max.time';
     public const MIN_TIME = 'min.time';
@@ -223,47 +231,47 @@ class MetricsManager implements LoggerAwareInterface
         $dateFrom = $params['from'] ?? NULL;
         $dateTo   = $params['to'] ?? NULL;
         $from     = sprintf(
-            '%s,%s,%s,%s,%s',
+            '%s,%s,%s,%s',
             $this->nodeTable,
             $this->fpmTable,
             $this->rabbitTable,
-            $this->counterTable,
+            //$this->counterTable,
             $this->connectorTable
         );
 
         $select = self::getCountForSelect([
-            self::NODE_PROCESS_TIME => self::PROCESSED_COUNT,
-            self::WAIT_TIME         => self::WAIT_COUNT,
-            self::CPU_KERNEL_AVG    => self::CPU_COUNT,
-            self::AVG_TIME          => self::REQUEST_COUNT,
-            self::NODE_RESULT_ERROR => self::REQUEST_ERROR_COUNT,
+            self::AVG_PROCESS_TIME => self::PROCESSED_COUNT,
+            self::AVG_WAIT_TIME    => self::WAIT_COUNT,
+            self::CPU_KERNEL_AVG   => self::CPU_COUNT,
+            self::AVG_TIME         => self::REQUEST_COUNT,
+            self::FAILED_COUNT     => self::REQUEST_ERROR_COUNT,
             //            self::PROCESS_DURATION   => self::PROCESS_TIME_COUNT,
         ]);
         $select = self::addStringSeparator($select);
         $select .= self::getSumForSelect([
-            self::NODE_PROCESS_TIME => self::PROCESSED_SUM,
-            self::WAIT_TIME         => self::WAIT_SUM,
-            self::CPU_KERNEL_AVG    => self::CPU_SUM,
-            self::AVG_TIME          => self::REQUEST_SUM,
-            self::NODE_RESULT_ERROR => self::REQUEST_ERROR_SUM,
+            self::AVG_PROCESS_TIME => self::PROCESSED_SUM,
+            self::AVG_WAIT_TIME    => self::WAIT_SUM,
+            self::CPU_KERNEL_AVG   => self::CPU_SUM,
+            self::AVG_TIME         => self::REQUEST_SUM,
+            self::FAILED_COUNT     => self::REQUEST_ERROR_SUM,
             //            self::PROCESS_DURATION   => self::PROCESS_TIME_SUM,
         ]);
         $select = self::addStringSeparator($select);
         $select .= self::getMinForSelect([
-            self::NODE_PROCESS_TIME => self::PROCESSED_MIN,
-            self::WAIT_TIME         => self::WAIT_MIN,
-            self::CPU_KERNEL_MIN    => self::CPU_MIN,
-            self::MIN_TIME          => self::REQUEST_MIN,
-            self::MESSAGES          => self::QUEUE_MIN,
+            self::MIN_PROCESS_TIME => self::PROCESSED_MIN,
+            self::MIN_WAIT_TIME    => self::WAIT_MIN,
+            self::CPU_KERNEL_MIN   => self::CPU_MIN,
+            self::MIN_TIME         => self::REQUEST_MIN,
+            self::MESSAGES         => self::QUEUE_MIN,
             //            self::PROCESS_DURATION   => self::PROCESS_TIME_MIN,
         ]);
         $select = self::addStringSeparator($select);
         $select .= self::getMaxForSelect([
-            self::NODE_PROCESS_TIME => self::PROCESSED_MAX,
-            self::WAIT_TIME         => self::WAIT_MAX,
-            self::CPU_KERNEL_MAX    => self::CPU_MAX,
-            self::MAX_TIME          => self::REQUEST_MAX,
-            self::MESSAGES          => self::QUEUE_MAX,
+            self::MAX_PROCESS_TIME => self::PROCESSED_MAX,
+            self::MAX_WAIT_TIME    => self::WAIT_MAX,
+            self::CPU_KERNEL_MAX   => self::CPU_MAX,
+            self::MAX_TIME         => self::REQUEST_MAX,
+            self::MESSAGES         => self::QUEUE_MAX,
             //            self::PROCESS_DURATION   => self::PROCESS_TIME_MAX,
         ]);
 
