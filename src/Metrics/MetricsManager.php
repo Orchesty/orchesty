@@ -50,19 +50,25 @@ class MetricsManager implements LoggerAwareInterface
     public const QUEUE    = 'queue';
 
     // METRICS
-    public const WAIT_TIME          = 'bridge_job_waiting_duration';
-    public const NODE_PROCESS_TIME  = 'bridge_job_worker_duration';
-    public const NODE_RESULT_ERROR  = 'bridge_job_result_error';
-    public const CPU_KERNEL_TIME    = 'fpm_cpu_kernel_time';
-    public const REQUEST_TOTAL_TIME = 'sent_request_total_duration';
-    public const MESSAGES           = 'messages';
+    public const WAIT_TIME         = 'bridge_job_waiting_duration';
+    public const NODE_PROCESS_TIME = 'bridge_job_worker_duration';
+    public const NODE_RESULT_ERROR = 'bridge_job_result_error';
+    public const MESSAGES          = 'messages';
+
+    //    public const REQUEST_TOTAL_TIME = 'sent_request_total_duration';
+    //    public const CPU_KERNEL_TIME    = 'fpm_cpu_kernel_time';
     //    public const PROCESS_DURATION   = 'counter_process_duration';
 
-    public const MAX_TIME     = 'max.time';
-    public const MIN_TIME     = 'min.time';
-    public const AVG_TIME     = 'avg.time';
+    public const MAX_TIME = 'max.time';
+    public const MIN_TIME = 'min.time';
+    public const AVG_TIME = 'avg.time';
+
     public const TOTAL_COUNT  = 'total.count';
     public const FAILED_COUNT = 'failed.count';
+
+    public const CPU_KERNEL_MIN = 'cpu_min.kernel';
+    public const CPU_KERNEL_MAX = 'cpu_max.kernel';
+    public const CPU_KERNEL_AVG = 'cpu_kernel.avg';
 
     // ALIASES - COUNT
     private const PROCESSED_COUNT     = 'top_processed_count';
@@ -127,6 +133,11 @@ class MetricsManager implements LoggerAwareInterface
     private $counterTable;
 
     /**
+     * @var string
+     */
+    private $connectorTable;
+
+    /**
      * @var LoggerInterface
      */
     private $logger;
@@ -140,6 +151,7 @@ class MetricsManager implements LoggerAwareInterface
      * @param string          $fpmTable
      * @param string          $rabbitTable
      * @param string          $counterTable
+     * @param string          $connectorTable
      */
     public function __construct(
         ClientInterface $client,
@@ -147,7 +159,8 @@ class MetricsManager implements LoggerAwareInterface
         string $nodeTable,
         string $fpmTable,
         string $rabbitTable,
-        string $counterTable
+        string $counterTable,
+        string $connectorTable
     )
     {
         $this->client         = $client;
@@ -155,6 +168,7 @@ class MetricsManager implements LoggerAwareInterface
         $this->fpmTable       = $fpmTable;
         $this->rabbitTable    = $rabbitTable;
         $this->counterTable   = $counterTable;
+        $this->connectorTable = $connectorTable;
         $this->nodeRepository = $dm->getRepository(Node::class);
         $this->logger         = new NullLogger();
     }
@@ -208,41 +222,48 @@ class MetricsManager implements LoggerAwareInterface
     {
         $dateFrom = $params['from'] ?? NULL;
         $dateTo   = $params['to'] ?? NULL;
-        $from     = sprintf('%s,%s,%s,%s', $this->nodeTable, $this->fpmTable, $this->rabbitTable, $this->counterTable);
+        $from     = sprintf(
+            '%s,%s,%s,%s,%s',
+            $this->nodeTable,
+            $this->fpmTable,
+            $this->rabbitTable,
+            $this->counterTable,
+            $this->connectorTable
+        );
 
         $select = self::getCountForSelect([
-            self::NODE_PROCESS_TIME  => self::PROCESSED_COUNT,
-            self::WAIT_TIME          => self::WAIT_COUNT,
-            self::CPU_KERNEL_TIME    => self::CPU_COUNT,
-            self::REQUEST_TOTAL_TIME => self::REQUEST_COUNT,
-            self::NODE_RESULT_ERROR  => self::REQUEST_ERROR_COUNT,
+            self::NODE_PROCESS_TIME => self::PROCESSED_COUNT,
+            self::WAIT_TIME         => self::WAIT_COUNT,
+            self::CPU_KERNEL_AVG    => self::CPU_COUNT,
+            self::AVG_TIME          => self::REQUEST_COUNT,
+            self::NODE_RESULT_ERROR => self::REQUEST_ERROR_COUNT,
             //            self::PROCESS_DURATION   => self::PROCESS_TIME_COUNT,
         ]);
         $select = self::addStringSeparator($select);
         $select .= self::getSumForSelect([
-            self::NODE_PROCESS_TIME  => self::PROCESSED_SUM,
-            self::WAIT_TIME          => self::WAIT_SUM,
-            self::CPU_KERNEL_TIME    => self::CPU_SUM,
-            self::REQUEST_TOTAL_TIME => self::REQUEST_SUM,
-            self::NODE_RESULT_ERROR  => self::REQUEST_ERROR_SUM,
+            self::NODE_PROCESS_TIME => self::PROCESSED_SUM,
+            self::WAIT_TIME         => self::WAIT_SUM,
+            self::CPU_KERNEL_AVG    => self::CPU_SUM,
+            self::AVG_TIME          => self::REQUEST_SUM,
+            self::NODE_RESULT_ERROR => self::REQUEST_ERROR_SUM,
             //            self::PROCESS_DURATION   => self::PROCESS_TIME_SUM,
         ]);
         $select = self::addStringSeparator($select);
         $select .= self::getMinForSelect([
-            self::NODE_PROCESS_TIME  => self::PROCESSED_MIN,
-            self::WAIT_TIME          => self::WAIT_MIN,
-            self::CPU_KERNEL_TIME    => self::CPU_MIN,
-            self::REQUEST_TOTAL_TIME => self::REQUEST_MIN,
-            self::MESSAGES           => self::QUEUE_MIN,
+            self::NODE_PROCESS_TIME => self::PROCESSED_MIN,
+            self::WAIT_TIME         => self::WAIT_MIN,
+            self::CPU_KERNEL_MIN    => self::CPU_MIN,
+            self::MIN_TIME          => self::REQUEST_MIN,
+            self::MESSAGES          => self::QUEUE_MIN,
             //            self::PROCESS_DURATION   => self::PROCESS_TIME_MIN,
         ]);
         $select = self::addStringSeparator($select);
         $select .= self::getMaxForSelect([
-            self::NODE_PROCESS_TIME  => self::PROCESSED_MAX,
-            self::WAIT_TIME          => self::WAIT_MAX,
-            self::CPU_KERNEL_TIME    => self::CPU_MAX,
-            self::REQUEST_TOTAL_TIME => self::REQUEST_MAX,
-            self::MESSAGES           => self::QUEUE_MAX,
+            self::NODE_PROCESS_TIME => self::PROCESSED_MAX,
+            self::WAIT_TIME         => self::WAIT_MAX,
+            self::CPU_KERNEL_MAX    => self::CPU_MAX,
+            self::MAX_TIME          => self::REQUEST_MAX,
+            self::MESSAGES          => self::QUEUE_MAX,
             //            self::PROCESS_DURATION   => self::PROCESS_TIME_MAX,
         ]);
 
