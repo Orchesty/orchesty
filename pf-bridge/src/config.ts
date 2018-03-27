@@ -72,7 +72,7 @@ export const topologyTerminatorOptions = {
 export const redisStorageOptions: IRedisStorageSettings = {
     host: process.env.REDIS_HOST || "redis",
     port: parseInt(process.env.REDIS_PORT, 10) || 6379,
-    pass: process.env.REDIS_PASS || "",
+    password: process.env.REDIS_PASS || "",
     db: parseInt(process.env.REDIS_DB, 10) || 0,
 };
 
