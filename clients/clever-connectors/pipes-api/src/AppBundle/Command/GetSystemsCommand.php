@@ -28,6 +28,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 class GetSystemsCommand extends Command implements LoggerAwareInterface
 {
 
+    private const SYSTEM = 'system-key';
+    private const USER   = 'user';
+
     /**
      * @var DocumentManager
      */
@@ -63,7 +66,8 @@ class GetSystemsCommand extends Command implements LoggerAwareInterface
      */
     protected function configure(): void
     {
-        $this->addArgument('system-key', InputArgument::REQUIRED, 'System key');
+        $this->addArgument(self::SYSTEM, InputArgument::REQUIRED, 'System key');
+        $this->addArgument(self::USER, InputArgument::OPTIONAL, 'User GUID');
     }
 
     /**
@@ -75,9 +79,7 @@ class GetSystemsCommand extends Command implements LoggerAwareInterface
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         try {
-            $cursor = $this->dm->getDocumentCollection(SystemInstall::class)->find([
-                'system' => $input->getArgument('system-key'),
-            ]);
+            $cursor = $this->dm->getDocumentCollection(SystemInstall::class)->find($this->getConditions($input));
 
             $output->writeln(json_encode($cursor->toArray()));
         } catch (Exception $e) {
@@ -87,6 +89,22 @@ class GetSystemsCommand extends Command implements LoggerAwareInterface
         }
 
         return 0;
+    }
+
+    /**
+     * @param InputInterface $input
+     *
+     * @return array
+     */
+    protected function getConditions(InputInterface $input): array
+    {
+        $cond = [SystemInstall::SYSTEM => $input->getArgument(self::SYSTEM)];
+
+        if ($input->hasArgument(self::USER) && !empty($input->getArgument(self::USER))) {
+            $cond[SystemInstall::USER] = $input->getArgument(self::USER);
+        }
+
+        return $cond;
     }
 
 }

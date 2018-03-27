@@ -13,9 +13,7 @@ use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\Command\AsyncCommandFactory;
 use CleverConnectors\AppBundle\Model\CustomNode\UserMessageGenerator;
 use CleverConnectors\AppBundle\Model\Limits\SystemLimitManager;
-use CleverConnectors\AppBundle\Model\Systems\SystemLoader;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
-use Doctrine\ODM\MongoDB\DocumentManager;
 use Exception;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
@@ -66,6 +64,8 @@ final class UserMessageGeneratorTest extends TestCase
 
     /**
      * @covers UserMessageGenerator::parseBody()
+     *
+     * @throws Exception
      */
     public function testParseBodyError(): void
     {
@@ -80,14 +80,7 @@ final class UserMessageGeneratorTest extends TestCase
         /** @var SystemLimitManager|MockObject $systemLimitManager */
         $systemLimitManager = $this->createMock(SystemLimitManager::class);
 
-        /** @var DocumentManager|MockObject $dm */
-        $dm = $this->createMock(DocumentManager::class);
-
-        /** @var SystemLoader|MockObject $systemLoader */
-        $systemLoader = $this->createMock(SystemLoader::class);
-
-        $callback = new UserMessageGenerator($serializer, $asyncCommandFactory, $systemLimitManager, $dm,
-            $systemLoader);
+        $callback = new UserMessageGenerator($serializer, $asyncCommandFactory, $systemLimitManager);
 
         $callback
             ->processBatch($this->createMessage(), $loop, $this->callback)
@@ -102,7 +95,9 @@ final class UserMessageGeneratorTest extends TestCase
     }
 
     /**
-     * @covers UserMessageGenerator::getSystemKey()
+     * @covers UserMessageGenerator::getParams()
+     *
+     * @throws Exception
      */
     public function testSystemKeyError(): void
     {
@@ -117,20 +112,13 @@ final class UserMessageGeneratorTest extends TestCase
         /** @var SystemLimitManager|MockObject $systemLimitManager */
         $systemLimitManager = $this->createMock(SystemLimitManager::class);
 
-        /** @var DocumentManager|MockObject $dm */
-        $dm = $this->createMock(DocumentManager::class);
-
-        /** @var SystemLoader|MockObject $systemLoader */
-        $systemLoader = $this->createMock(SystemLoader::class);
-
-        $callback = new UserMessageGenerator($serializer, $asyncCommandFactory, $systemLimitManager, $dm,
-            $systemLoader);
+        $callback = new UserMessageGenerator($serializer, $asyncCommandFactory, $systemLimitManager);
 
         $callback
             ->processBatch($this->createMessage(), $loop, $this->callback)
             ->then(NULL, function (Exception $e) use ($loop): void {
                 $this->assertInstanceOf(InvalidArgumentException::class, $e);
-                $this->assertSame('Body has not system key.', $e->getMessage());
+                $this->assertSame('Body has no system key.', $e->getMessage());
                 $loop->stop();
             })
             ->done();
@@ -140,6 +128,8 @@ final class UserMessageGeneratorTest extends TestCase
 
     /**
      * @covers UserMessageGenerator::getSystems()
+     *
+     * @throws Exception
      */
     public function testProcessSystemReject(): void
     {
@@ -157,14 +147,7 @@ final class UserMessageGeneratorTest extends TestCase
         /** @var SystemLimitManager|MockObject $systemLimitManager */
         $systemLimitManager = $this->createMock(SystemLimitManager::class);
 
-        /** @var DocumentManager|MockObject $dm */
-        $dm = $this->createMock(DocumentManager::class);
-
-        /** @var SystemLoader|MockObject $systemLoader */
-        $systemLoader = $this->createMock(SystemLoader::class);
-
-        $callback = new UserMessageGenerator($serializer, $asyncCommandFactory, $systemLimitManager, $dm,
-            $systemLoader);
+        $callback = new UserMessageGenerator($serializer, $asyncCommandFactory, $systemLimitManager);
 
         $callback
             ->processBatch($this->createMessage(['node_id' => '132']), $loop, $this->callback)
@@ -180,6 +163,8 @@ final class UserMessageGeneratorTest extends TestCase
 
     /**
      * @covers UserMessageGenerator::batchAction()
+     *
+     * @throws Exception
      */
     public function testBatchAction(): void
     {
@@ -194,14 +179,7 @@ final class UserMessageGeneratorTest extends TestCase
         /** @var SystemLimitManager|MockObject $systemLimitManager */
         $systemLimitManager = $this->createMock(SystemLimitManager::class);
 
-        /** @var DocumentManager|MockObject $dm */
-        $dm = $this->createMock(DocumentManager::class);
-
-        /** @var SystemLoader|MockObject $systemLoader */
-        $systemLoader = $this->createMock(SystemLoader::class);
-
-        $callback = new UserMessageGenerator($serializer, $asyncCommandFactory, $systemLimitManager, $dm,
-            $systemLoader);
+        $callback = new UserMessageGenerator($serializer, $asyncCommandFactory, $systemLimitManager);
         $asyncCommandFactory->method('create')->willReturn(new Promise(function ($resolve): void {
             $resolve('');
         }));
@@ -225,6 +203,8 @@ final class UserMessageGeneratorTest extends TestCase
 
     /**
      * @covers UserMessageGenerator::prepareData()
+     *
+     * @throws Exception
      */
     public function testPrepareMessage(): void
     {
@@ -244,21 +224,14 @@ final class UserMessageGeneratorTest extends TestCase
         $systemInstallRepository = $this->createMock(SystemInstallRepository::class);
         $systemInstallRepository->method('getSystemInstallFromHeaders')->willReturn($systemInstall);
 
-        /** @var DocumentManager|MockObject $dm */
-        $dm = $this->createMock(DocumentManager::class);
-        $dm->method('getRepository')->willReturn($systemInstallRepository);
-
-        /** @var SystemLoader|MockObject $systemLoader */
-        $systemLoader = $this->createMock(SystemLoader::class);
-
-        $callback = new UserMessageGenerator($serializer, $asyncCommandFactory, $systemLimitManager, $dm,
-            $systemLoader);
+        $callback = new UserMessageGenerator($serializer, $asyncCommandFactory, $systemLimitManager);
 
         $callback
             ->prepareData(['id' => '5', 'token' => '123', 'user' => '123', 'system' => 'system_key'], 1)
             ->then(function (SuccessMessage $message) use ($loop): void {
                 $this->assertSame(1, $message->getSequenceId());
-                $this->assertSame('{"system_install":{"id":"5","token":"123","user":"123","system":"system_key"}}', $message->getData());
+                $this->assertSame('{"system_install":{"id":"5","token":"123","user":"123","system":"system_key"}}',
+                    $message->getData());
                 $loop->stop();
             })
             ->done();
