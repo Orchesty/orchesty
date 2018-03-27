@@ -165,10 +165,19 @@ final class MetricsManagerTest extends KernelTestCaseAbstract
     {
         $nodeTable    = $this->container->getParameter('influx.node_table');
         $fpmTable     = $this->container->getParameter('influx.monolith_table');
+        $connTable    = $this->container->getParameter('influx.connector_table');
         $rabbitTable  = $this->container->getParameter('influx.rabbit_table');
         $counterTable = $this->container->getParameter('influx.counter_table');
 
-        return new MetricsManager($this->getClient(), $this->dm, $nodeTable, $fpmTable, $rabbitTable, $counterTable);
+        return new MetricsManager(
+            $this->getClient(),
+            $this->dm,
+            $nodeTable,
+            $fpmTable,
+            $rabbitTable,
+            $counterTable,
+            $connTable
+        );
     }
 
     /**
@@ -204,15 +213,34 @@ final class MetricsManagerTest extends KernelTestCaseAbstract
         usleep(10);
         $points = [
             new Point(
-                'pipes_monolith_fpm',
+                'connector',
                 NULL,
                 [
                     MetricsManager::TOPOLOGY => $topology->getId(),
                     MetricsManager::NODE     => $node->getId(),
                 ],
                 [
-                    MetricsManager::REQUEST_TOTAL_TIME => 2,
-                    MetricsManager::CPU_KERNEL_TIME    => 2,
+                    MetricsManager::MAX_TIME => 10,
+                    MetricsManager::MIN_TIME => 2,
+                    MetricsManager::AVG_TIME => 6,
+                ]
+            ),
+        ];
+
+        $database->writePoints($points, Database::PRECISION_NANOSECONDS);
+        usleep(10);
+        $points = [
+            new Point(
+                'monolith',
+                NULL,
+                [
+                    MetricsManager::TOPOLOGY => $topology->getId(),
+                    MetricsManager::NODE     => $node->getId(),
+                ],
+                [
+                    MetricsManager::CPU_KERNEL_MAX => 10,
+                    MetricsManager::CPU_KERNEL_MIN => 2,
+                    MetricsManager::CPU_KERNEL_AVG => 6,
                 ]
             ),
         ];
@@ -291,15 +319,34 @@ final class MetricsManagerTest extends KernelTestCaseAbstract
         usleep(10);
         $points = [
             new Point(
-                'pipes_monolith_fpm',
+                'connector',
                 NULL,
                 [
                     MetricsManager::TOPOLOGY => $topology->getId(),
                     MetricsManager::NODE     => $node->getId(),
                 ],
                 [
-                    MetricsManager::REQUEST_TOTAL_TIME => 4,
-                    MetricsManager::CPU_KERNEL_TIME    => 4,
+                    MetricsManager::MAX_TIME => 10,
+                    MetricsManager::MIN_TIME => 2,
+                    MetricsManager::AVG_TIME => 6,
+                ]
+            ),
+        ];
+
+        $database->writePoints($points, Database::PRECISION_NANOSECONDS);
+        usleep(10);
+        $points = [
+            new Point(
+                'monolith',
+                NULL,
+                [
+                    MetricsManager::TOPOLOGY => $topology->getId(),
+                    MetricsManager::NODE     => $node->getId(),
+                ],
+                [
+                    MetricsManager::CPU_KERNEL_MAX => 10,
+                    MetricsManager::CPU_KERNEL_MIN => 2,
+                    MetricsManager::CPU_KERNEL_AVG => 6,
                 ]
             ),
         ];
