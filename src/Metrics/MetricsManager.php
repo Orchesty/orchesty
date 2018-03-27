@@ -461,12 +461,14 @@ class MetricsManager implements LoggerAwareInterface
                     $result[$this->fpmTable][self::CPU_COUNT] ?? '',
                     $result[$this->fpmTable][self::CPU_SUM] ?? ''
                 );
+        }
+        if (isset($result[$this->connectorTable])) {
             $request
-                ->setMin($result[$this->fpmTable][self::REQUEST_MIN] ?? '')
-                ->setMax($result[$this->fpmTable][self::REQUEST_MAX] ?? '')
+                ->setMin($result[$this->connectorTable][self::REQUEST_MIN] ?? '')
+                ->setMax($result[$this->connectorTable][self::REQUEST_MAX] ?? '')
                 ->setAvg(
-                    $result[$this->fpmTable][self::REQUEST_COUNT] ?? '',
-                    $result[$this->fpmTable][self::REQUEST_SUM] ?? ''
+                    $result[$this->connectorTable][self::REQUEST_COUNT] ?? '',
+                    $result[$this->connectorTable][self::REQUEST_SUM] ?? ''
                 );
         }
         if (isset($result[$this->nodeTable])) {
