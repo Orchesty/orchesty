@@ -50,7 +50,8 @@ class MetricsManager implements LoggerAwareInterface
     public const QUEUE    = 'queue';
 
     // METRICS
-    public const MESSAGES = 'messages';
+    public const AVG_MESSAGES = 'avg.message';
+    public const MAX_MESSAGES = 'max.message';
 
     public const MAX_WAIT_TIME = 'job_max.waiting';
     public const MIN_WAIT_TIME = 'job_min.waiting';
@@ -72,28 +73,28 @@ class MetricsManager implements LoggerAwareInterface
     public const CPU_KERNEL_AVG = 'cpu_kernel.avg';
 
     // ALIASES - COUNT
-    private const PROCESSED_COUNT     = 'top_processed_count';
-    private const WAIT_COUNT          = 'wait_count';
-    private const CPU_COUNT           = 'cpu_count';
-    private const REQUEST_COUNT       = 'request_count';
-    private const REQUEST_ERROR_COUNT = 'request_error_count';
-    private const NODE_TOTAL_SUM      = 'total_count';
-    private const PROCESS_TIME_COUNT  = 'process_time_count';
+    private const PROCESSED_COUNT    = 'top_processed_count';
+    private const WAIT_COUNT         = 'wait_count';
+    private const CPU_COUNT          = 'cpu_count';
+    private const REQUEST_COUNT      = 'request_count';
+    private const PROCESS_TIME_COUNT = 'process_time_count';
+    private const QUEUE_COUNT        = 'queue_count';
 
     // ALIASES - SUM
-    private const PROCESSED_SUM     = 'top_processed_sum';
-    private const WAIT_SUM          = 'wait_sum';
-    private const CPU_SUM           = 'cpu_sum';
-    private const REQUEST_SUM       = 'request_sum';
-    private const REQUEST_ERROR_SUM = 'request_error_sum';
-    private const PROCESS_TIME_SUM  = 'process_time_sum';
+    private const PROCESSED_SUM    = 'top_processed_sum';
+    private const WAIT_SUM         = 'wait_sum';
+    private const CPU_SUM          = 'cpu_sum';
+    private const REQUEST_SUM      = 'request_sum';
+    private const PROCESS_TIME_SUM = 'process_time_sum';
+    private const NODE_ERROR_SUM   = 'request_error_sum';
+    private const NODE_TOTAL_SUM   = 'total_count';
+    private const QUEUE_SUM        = 'QUEUE_SUM';
 
     // ALIASES - MIN
     private const PROCESSED_MIN    = 'top_processed_min';
     private const WAIT_MIN         = 'wait_min';
     private const CPU_MIN          = 'cpu_min';
     private const REQUEST_MIN      = 'request_min';
-    private const QUEUE_MIN        = 'queue_min';
     private const PROCESS_TIME_MIN = 'process_time_min';
 
     // ALIASES - MAX
@@ -237,6 +238,7 @@ class MetricsManager implements LoggerAwareInterface
             self::AVG_WAIT_TIME    => self::WAIT_COUNT,
             self::CPU_KERNEL_AVG   => self::CPU_COUNT,
             self::AVG_TIME         => self::REQUEST_COUNT,
+            self::AVG_MESSAGES     => self::QUEUE_COUNT,
         ]);
         $select = self::addStringSeparator($select);
         $select .= self::getSumForSelect([
@@ -244,8 +246,9 @@ class MetricsManager implements LoggerAwareInterface
             self::AVG_WAIT_TIME    => self::WAIT_SUM,
             self::CPU_KERNEL_AVG   => self::CPU_SUM,
             self::AVG_TIME         => self::REQUEST_SUM,
-            self::FAILED_COUNT     => self::REQUEST_ERROR_SUM,
+            self::FAILED_COUNT     => self::NODE_ERROR_SUM,
             self::TOTAL_COUNT      => self::NODE_TOTAL_SUM,
+            self::AVG_MESSAGES     => self::QUEUE_SUM,
         ]);
         $select = self::addStringSeparator($select);
         $select .= self::getMinForSelect([
@@ -253,7 +256,6 @@ class MetricsManager implements LoggerAwareInterface
             self::MIN_WAIT_TIME    => self::WAIT_MIN,
             self::CPU_KERNEL_MIN   => self::CPU_MIN,
             self::MIN_TIME         => self::REQUEST_MIN,
-            self::MESSAGES         => self::QUEUE_MIN,
         ]);
         $select = self::addStringSeparator($select);
         $select .= self::getMaxForSelect([
@@ -261,7 +263,7 @@ class MetricsManager implements LoggerAwareInterface
             self::MAX_WAIT_TIME    => self::WAIT_MAX,
             self::CPU_KERNEL_MAX   => self::CPU_MAX,
             self::MAX_TIME         => self::REQUEST_MAX,
-            self::MESSAGES         => self::QUEUE_MAX,
+            self::MAX_MESSAGES     => self::QUEUE_MAX,
         ]);
 
         $where = [
@@ -295,7 +297,7 @@ class MetricsManager implements LoggerAwareInterface
         $select = self::addStringSeparator($select);
         $select .= self::getSumForSelect([self::TOTAL_COUNT => self::NODE_TOTAL_SUM]);
         $select = self::addStringSeparator($select);
-        $select .= self::getSumForSelect([self::FAILED_COUNT => self::REQUEST_ERROR_SUM]);
+        $select .= self::getSumForSelect([self::FAILED_COUNT => self::NODE_ERROR_SUM]);
 
         $where = [self::TOPOLOGY => $topology->getId()];
 
@@ -477,13 +479,16 @@ class MetricsManager implements LoggerAwareInterface
                 );
             $error
                 ->setTotal($result[$this->nodeTable][self::NODE_TOTAL_SUM] ?? '')
-                ->setErrors($result[$this->nodeTable][self::REQUEST_ERROR_SUM] ?? '');
+                ->setErrors($result[$this->nodeTable][self::NODE_ERROR_SUM] ?? '');
 
         }
         if (isset($result[$this->rabbitTable])) {
             $queue
-                ->setMin($result[$this->rabbitTable][self::QUEUE_MIN] ?? '')
-                ->setMax($result[$this->rabbitTable][self::QUEUE_MAX] ?? '');
+                ->setMax($result[$this->rabbitTable][self::QUEUE_MAX] ?? '')
+                ->setAvg(
+                    $result[$this->rabbitTable][self::QUEUE_COUNT] ?? '',
+                    $result[$this->rabbitTable][self::QUEUE_SUM] ?? ''
+                );
         }
         if (isset($result[$this->counterTable])) {
             $counter
@@ -495,7 +500,7 @@ class MetricsManager implements LoggerAwareInterface
                 );
             $error
                 ->setTotal($result[$this->counterTable][self::NODE_TOTAL_SUM] ?? '')
-                ->setErrors($result[$this->counterTable][self::REQUEST_ERROR_SUM] ?? '');
+                ->setErrors($result[$this->counterTable][self::NODE_ERROR_SUM] ?? '');
         }
 
         return $this->generateOutput($queue, $waiting, $process, $cpu, $request, $error, $counter);

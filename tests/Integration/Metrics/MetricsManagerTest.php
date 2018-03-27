@@ -253,13 +253,14 @@ final class MetricsManagerTest extends KernelTestCaseAbstract
         usleep(10);
         $points = [
             new Point(
-                'rabbitmq_queue',
+                'rabbitmq',
                 NULL,
                 [
                     MetricsManager::QUEUE => GeneratorUtils::generateQueueName($topology, $node),
                 ],
                 [
-                    MetricsManager::MESSAGES => 5,
+                    MetricsManager::AVG_MESSAGES => 5,
+                    MetricsManager::MAX_MESSAGES => 10,
                 ]
             ),
         ];
@@ -363,13 +364,14 @@ final class MetricsManagerTest extends KernelTestCaseAbstract
         usleep(10);
         $points = [
             new Point(
-                'rabbitmq_queue',
+                'rabbitmq',
                 NULL,
                 [
                     MetricsManager::QUEUE => GeneratorUtils::generateQueueName($topology, $node),
                 ],
                 [
-                    MetricsManager::MESSAGES => 0,
+                    MetricsManager::AVG_MESSAGES => 5,
+                    MetricsManager::MAX_MESSAGES => 10,
                 ]
             ),
         ];
