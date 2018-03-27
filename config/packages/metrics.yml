@@ -1,8 +1,11 @@
 parameters:
-     # InfluxDb
+    # Kapacitor
+    kapacitor.host: kapacitor
+    kapacitor.port: 9100
+    # InfluxDb
     influx.host: influxdb
-    influx.api_port: 8086
     influx.udp_port: 8089
+    influx.api_port: 8086
     influx.user: admin
     influx.password: password
     influx.database: pipes
