@@ -47,7 +47,7 @@ class AmqpFaucet implements IFaucet {
     public async open(processData: FaucetProcessMsgFn): Promise<void> {
         const s = this.settings;
 
-        logger.info(`AmqpFaucet configured to consume "${s.queue.name}"`, { node_id: s.node_label.id});
+        logger.debug(`AmqpFaucet configured to consume "${s.queue.name}"`, { node_id: s.node_label.id});
 
         const prepareFn = async (ch: Channel) => {
             s.exchange.options["x-dead-letter-exchange"] = s.dead_letter_exchange.name;
@@ -74,7 +74,7 @@ class AmqpFaucet implements IFaucet {
         this.consumer = new Consumer(s.node_label, this.connection, prepareFn, processData);
         this.consumerTag = await this.consumer.consume(s.queue.name, {});
 
-        logger.info(`AmqpFaucet started consuming "${s.queue.name}"`, { node_id: s.node_label.id });
+        logger.debug(`AmqpFaucet started consuming "${s.queue.name}"`, { node_id: s.node_label.id });
     }
 
     /**

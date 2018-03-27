@@ -24,7 +24,7 @@ class NullWorker implements IWorker {
      * @return {Promise<JobMessage[]>}
      */
     public processData(msg: JobMessage): Promise<JobMessage[]> {
-        logger.info(`Worker[type="null"] is processing message. Headers: ${JSON.stringify(msg.getHeaders().getRaw())}`);
+        logger.debug(`Worker[type="null"] is processing message. Headers: ${JSON.stringify(msg.getHeaders().getRaw())}`);
 
         // msg.setResult({code: ResultCode.SUCCESS, message: "Null worker passed message."});
 
@@ -89,7 +89,7 @@ class NullWorker implements IWorker {
      * @return {Promise<boolean>}
      */
     public isWorkerReady(): Promise<boolean> {
-        logger.info(`Worker[type="null"] isWorkerReady() called. Responding with true.`);
+        logger.debug(`Worker[type="null"] isWorkerReady() called. Responding with true.`);
 
         return Promise.resolve(true);
     }

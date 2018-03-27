@@ -184,6 +184,8 @@ export default class Counter implements ICounter, IStoppable {
      */
     private async handleMessage(msg: Message): Promise<any> {
         try {
+            logger.debug("Counter message received.", {data: JSON.stringify(msg)});
+
             const cm = Counter.createCounterMessage(msg);
 
             return new Promise((resolve, reject) => {
@@ -331,7 +333,7 @@ export default class Counter implements ICounter, IStoppable {
                 counter_process_fail_count: process.nok,
             }, true);
         } catch (e) {
-            logger.warn("Unable to send counter metrics.", {
+            logger.error("Unable to send counter metrics.", {
                 error: e,
                 node_id: "counter",
                 correlation_id: process.correlation_id,

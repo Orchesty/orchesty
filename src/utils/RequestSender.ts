@@ -9,7 +9,7 @@ export default class RequestSender {
      * @param {request.UrlOptions} options
      */
     public static send(options: UrlOptions): void {
-        logger.info(`Sending request to: ${options.url}`);
+        logger.debug(`Sending request to: ${options.url}`);
         request(options, (err, response) => {
             if (err) {
                 logger.error(`Request to ${options.url} ended with error: ${err.message}`);
@@ -23,7 +23,7 @@ export default class RequestSender {
                 return;
             }
 
-            logger.info(`Request to: ${options.url} OK.`);
+            logger.debug(`Request to: ${options.url} OK.`);
         });
     }
 

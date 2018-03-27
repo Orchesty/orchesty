@@ -47,7 +47,7 @@ class Consumer extends BasicConsumer {
             inMsg.getMeasurement().setPublished(Consumer.getPublishedTimestamp(inMsg, amqMsg));
             inMsg.getHeaders().setHeader("content-type", amqMsg.properties.contentType);
 
-            logger.info(`AmqpFaucet received message.`, logger.ctxFromMsg(inMsg));
+            logger.debug(`AmqpFaucet received message.`, logger.ctxFromMsg(inMsg));
         } catch (e) {
             logger.error(`AmqpFaucet dead-lettering message`, {node_id: this.node.id, error: e});
             channel.nack(amqMsg, false, false); // dead-letter due to invalid message
@@ -58,7 +58,7 @@ class Consumer extends BasicConsumer {
             .then(() => {
                 try {
                     channel.ack(amqMsg);
-                    logger.info("AmqpFaucet message ack", logger.ctxFromMsg(inMsg));
+                    logger.debug("AmqpFaucet message ack", logger.ctxFromMsg(inMsg));
                 } catch (ackErr) {
                     logger.error(`Could not ack message. Error: ${ackErr}`, logger.ctxFromMsg(inMsg));
                 }

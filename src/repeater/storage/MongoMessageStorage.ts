@@ -65,7 +65,7 @@ class MongoMessageStorage implements IMessageStorage {
         try {
             const mongo: Db = await this.db;
             const result = await mongo.collection(COLLECTION_NAME).insertOne(document);
-            logger.info(
+            logger.debug(
                 "Message persisted.",
                 {
                     node_name: "repeater",

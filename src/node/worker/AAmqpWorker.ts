@@ -80,7 +80,7 @@ abstract class AAmqpWorker implements IWorker {
 
         this.resultsConsumer.consume(this.resultsQueue.name, {})
             .then(() => {
-                logger.info(
+                logger.debug(
                     `Worker[type='amqprpc'] consuming ${this.resultsQueue.name}`,
                     { node_id: this.settings.node_label.id},
                 );
@@ -126,7 +126,7 @@ abstract class AAmqpWorker implements IWorker {
                 headers: headersToSend.getRaw(),
             },
         ).then(() => {
-            logger.info(
+            logger.debug(
                 `Worker[type='amqprpc'] sent request to "${this.settings.publish_queue.name}" queue.`,
                 logger.ctxFromMsg(msg),
             );
@@ -205,7 +205,7 @@ abstract class AAmqpWorker implements IWorker {
         const t: IWaiting = { resolveFn: resolveReadinessTestFn, message: jobMsg, sequence: 0 };
         this.waiting.set(testCorrelationId, t);
 
-        logger.info(
+        logger.debug(
             `Worker[type'amqp'] asking worker if is ready via queue ${this.settings.publish_queue.name}`,
             {node_id: this.settings.node_label.node_id},
         );

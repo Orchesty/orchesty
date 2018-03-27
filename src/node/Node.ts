@@ -105,7 +105,7 @@ class Node implements IStoppable {
 
         return this.faucet.open(processFn)
             .then(() => {
-                logger.info("Faucet has been opened.", {node_id: this.id});
+                logger.debug("Faucet has been opened.", {node_id: this.id});
             });
     }
 
@@ -150,7 +150,7 @@ class Node implements IStoppable {
 
             this.metrics.addTag("node_id", msg.getNodeLabel().node_id);
 
-            logger.info(`Sending metrics: ${JSON.stringify(measurements)}`, logger.ctxFromMsg(msg));
+            logger.debug(`Sending metrics: ${JSON.stringify(measurements)}`, logger.ctxFromMsg(msg));
             await this.metrics.send(measurements, false);
         } catch (err) {
             logger.warn("Unable to send metrics", logger.ctxFromMsg(msg, err));

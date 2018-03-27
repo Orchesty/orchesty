@@ -56,7 +56,7 @@ class JsonSplitterWorker implements IWorker {
                     message: `Split into ${splits.length} messages was successful.`,
                 });
 
-                logger.info(
+                logger.debug(
                     `Worker[type"splitter"] split message. \
                     Status="${msg.getResult().code}" message="${msg.getResult().message}"]`,
                     logger.ctxFromMsg(msg),

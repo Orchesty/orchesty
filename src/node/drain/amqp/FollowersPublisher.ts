@@ -40,7 +40,7 @@ class FollowersPublisher extends Publisher {
 
                 return Promise.all(followersPromises)
                     .then(() => {
-                        logger.info("AmqpDrain followers publisher ready", {node_id: this.settings.node_label.id});
+                        logger.debug("AmqpDrain followers publisher ready", {node_id: this.settings.node_label.id});
                     });
             });
         this.settings = settings;
@@ -56,7 +56,7 @@ class FollowersPublisher extends Publisher {
 
         return Promise.all(sent)
             .then(() => {
-                logger.info(
+                logger.debug(
                     `AmqpDrain forwarded ${sent.length}x message. Followers: ${this.settings.followers.length}`,
                     logger.ctxFromMsg(message),
                 );
@@ -104,7 +104,7 @@ class FollowersPublisher extends Publisher {
                 new Buffer(message.getContent()),
                 options,
             ).then(() => {
-                logger.info(
+                logger.debug(
                     `Forwarded message. E: "${follower.exchange.name}", RK: "${follower.routing_key}"
                         Headers: ${JSON.stringify(options.headers)}`,
                     logger.ctxFromMsg(message),
