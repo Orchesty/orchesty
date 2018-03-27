@@ -172,10 +172,16 @@ abstract class AAmqpWorker implements IWorker {
                 if (msg.getCorrelationId() === AAmqpWorker.TEST_ID &&
                     msg.getResult().code === ResultCode.SUCCESS
                 ) {
-                    logger.info(`Worker[type'amqp'] worker ready.`, {node_id: this.settings.node_label.node_id});
+                    logger.info(`Worker[type'amqp'] worker ready - OK.`, {node_id: this.settings.node_label.node_id});
                     resolve(true);
                 } else {
-                    logger.warn(`Worker[type'amqp'] worker not ready.`, {node_id: this.settings.node_label.node_id});
+                    logger.warn(
+                        `Worker[type'amqp'] worker not ready. Result code=[${msg.getResult().code}]`,
+                        {
+                            node_id: this.settings.node_label.node_id,
+                            data : JSON.stringify(msg.getResult()),
+                        },
+                    );
                     resolve(false);
                 }
             };
