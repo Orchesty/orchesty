@@ -18,7 +18,7 @@ var total = bridgeData
    |count('bridge_job_result_success')
 
 var totalFailed = bridgeData
-   |where(lambda: "bridge_job_result_success" == 0)
+   |where(lambda: "bridge_job_result_success" == FALSE)
    |count('bridge_job_result_success')
 
 // Bridge data

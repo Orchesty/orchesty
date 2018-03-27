@@ -39,8 +39,8 @@ services:
         class: Demo\CustomNode\SplitFileBatch
         public: true
 
-    hbpf.custom_node.google:
-        class: Demo\CustomNode\GoogleConnector
+    hbpf.custom_node.idnes:
+        class: Demo\CustomNode\IdnesConnector
         public: true
         arguments:
             - '@hbpf.transport.curl_manager'

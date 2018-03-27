@@ -13,4 +13,4 @@ parameters:
     influx.connector_table: connector
     influx.monolith_table: monolith
     influx.rabbit_table: rabbitmq_queue
-    influx.counter_table: pipes_counter
+    influx.counter_table: proceses

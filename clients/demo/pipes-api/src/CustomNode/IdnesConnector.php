@@ -8,12 +8,14 @@
 
 namespace Demo\CustomNode;
 
+use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
+use Hanaboso\PipesFramework\Commons\Utils\PipesHeaders;
 use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
 
-class GoogleConnector implements CustomNodeInterface
+class IdnesConnector implements CustomNodeInterface
 {
 
     /**
@@ -38,7 +40,8 @@ class GoogleConnector implements CustomNodeInterface
      */
     public function process(ProcessDto $dto): ProcessDto
     {
-        $requestDto = new RequestDto('GET', 'https://google.com');
+        $requestDto = new RequestDto('GET', new Uri('https://www.idnes.cz/'));
+        $requestDto->setDebugInfo(PipesHeaders::debugInfo($dto->getHeaders()));
 
         $this->curlManager->send($requestDto);
 
