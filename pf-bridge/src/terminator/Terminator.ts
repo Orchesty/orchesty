@@ -72,7 +72,6 @@ export default class Terminator {
 
         server.get(ROUTE_TOPOLOGY_TERMINATE, (req, resp) => {
             try {
-                logger.info(`Terminator received termination request. ${JSON.stringify(req.params)}`);
                 this.handleTerminateRequest(req, resp);
 
                 resp.status(200).send("Topology will be terminated as soon as possible.");
@@ -101,6 +100,11 @@ export default class Terminator {
         if (!headers.hasPFHeader(Headers.TOPOLOGY_DELETE_URL)) {
             throw new Error(`Missing PF header "pf-${Headers.TOPOLOGY_DELETE_URL}"`);
         }
+
+        logger.info(
+            `Terminator received termination request.`,
+            {topology_id: topologyId, data: JSON.stringify({url: headers.getPFHeader(Headers.TOPOLOGY_DELETE_URL)})},
+        );
 
         this.requestedTerminations.set(topologyId, headers.getPFHeader(Headers.TOPOLOGY_DELETE_URL));
 

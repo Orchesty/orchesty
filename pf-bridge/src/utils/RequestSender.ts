@@ -18,8 +18,10 @@ export default class RequestSender {
 
             if (response.statusCode !== 200) {
                 const code = response.statusCode;
-                logger.error(`Request to ${options.url} resulted with statusCode: ${code}.`);
-                logger.error(`Response body: ${JSON.stringify(response.body)}`);
+                logger.error(
+                    `Request to ${options.url} resulted with statusCode: ${code}.`,
+                    {data: JSON.stringify(response.body)},
+                );
                 return;
             }
 
