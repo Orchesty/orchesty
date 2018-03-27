@@ -2,6 +2,7 @@
 
 namespace CleverCore\SocialMultichannel\Repositories;
 
+use CleverCore\SocialMultichannel\Entities\Audience;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 
 /**
@@ -11,5 +12,15 @@ use Doctrine\ODM\MongoDB\DocumentRepository;
  */
 class AudienceMirrorRepository extends DocumentRepository
 {
+
+    /**
+     * @param Audience $audience
+     *
+     * @return array
+     */
+    public function getByAudience(Audience $audience): array
+    {
+        return $this->findBy(['audienceId' => $audience->getId()]);
+    }
 
 }
